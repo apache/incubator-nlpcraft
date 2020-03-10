@@ -1,0 +1,14 @@
+**/*.iml
+*.iml
+.idea
+venv/
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+target
+out
+zips
+model.yaml
+model.json
+docs/Gemfile.lock

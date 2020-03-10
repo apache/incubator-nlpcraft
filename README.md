@@ -2,7 +2,7 @@
 <br>
 <a target=_ href="https://gitter.im/nlpcraftorg/community"><img alt="Gitter" src="https://badges.gitter.im/nlpcraftorg/community.svg"></a>&nbsp;
 <a target=_ href="https://travis-ci.org/nlpcrafters/nlpcraft#"><img alt="Build" src="https://travis-ci.org/nlpcrafters/nlpcraft.svg?branch=master"></a>&nbsp;
-<a target=_ href="https://search.maven.org/search?q=org.nlpcraft"><img src="https://maven-badges.herokuapp.com/maven-central/org.nlpcraft/nlpcraft/badge.svg" alt="Maven"></a>
+<a target=_ href="https://search.maven.org/search?q=org.apache.nlpcraft"><img src="https://maven-badges.herokuapp.com/maven-central/org.apache.nlpcraft/nlpcraft/badge.svg" alt="Maven"></a>
 
 ### Overview
 [NLPCraft](https://nlpcraft.org/) is an open source library for adding a natural language interface to any applications. 
