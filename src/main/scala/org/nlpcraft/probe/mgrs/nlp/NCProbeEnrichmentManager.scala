@@ -202,7 +202,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         require(nlpSens.nonEmpty)
 
         logger.info(
-            s"Sentences received [" +
+            s"New sentences received [" +
                 s"txt='${nlpSens.head.text}', " +
                 s"count=${nlpSens.size}, " +
                 s"usrId=$usrId, " +
