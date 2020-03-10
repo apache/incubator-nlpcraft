@@ -1,0 +1,14 @@
+{
+    "JJ": [
+        ["main", "base", "important"]
+    ],
+
+    "NN": [
+        ["site", "website"],
+        ["user", "visitor"]
+    ],
+
+    "DT": [
+        ["this", "that"]
+    ]
+}

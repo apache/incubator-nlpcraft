@@ -1,0 +1,53 @@
+---
+rel_ver: 0.3.0
+layout: release-notes
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<section id="new">
+    <span class="section-title">🙌 New</span>
+    <ul>
+        <li>
+            Model dump utility. Allows safe review and testing of the model's matching logic by a 3rd party.
+            See <a target="javadoc" href="/apis/latest/org/nlpcraft/model/tools/dump/package-summary.html">org.nlpcraft.model.tools.dump</a> package.
+        </li>
+    </ul>
+</section>
+<section id="enhancements">
+    <span class="section-title">🤖 Enhancements</span>
+    <ul>
+        <li>Improved Javadoc and Developer Guide documentation.</li>
+        <li>Improved OpenNLP and Stanford CoreNLP integration.</li>
+    </ul>
+</section>
+<section id="fixes">
+    <span class="section-title">🧐 Fixes</span>
+    <ul>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/3">Issue #3</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/4">Issue #4</a>.</li>
+        <li>
+            Server configuration property for base NLP engine <code>server.nlp.engine</code> is removed and replaced by
+            the system property <code>NLPCRAFT_NLP_ENGINE</code>. That system property can have two values:
+            <code>opennlp</code> for Apache OpenNLP and <code>stanford</code> for Stanford CoreNLP engine. This
+            system property must be set to the same value on both server and the probe JVMs. If not set
+            the default NLP engine will be Apache OpenNLP.
+        </li>
+    </ul>
+</section>
+

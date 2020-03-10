@@ -1,0 +1,458 @@
+---
+active_crumb: REST API
+layout: documentation
+id: rest
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div class="col-md-8 second-column">
+    <section id="overview">
+        <span class="section-title">Overview</span>
+        <p>
+            REST API provides a universal integration path for any type of user application to connect to and use NLPCraft.
+            By using REST API these applications can ask natural language questions, get results and perform
+            many supporting operations such as user management.
+        </p>
+        <p>
+            REST server accepts the REST call,
+            interprets and routes it to the appropriate data probe which in turn invokes one of its deployed
+            data models. The result of data model processing travels all the way through the same chain of components
+            back to the user application that made the original call.
+        </p>
+        <p>
+            In this chapter we'll provide an overview on using REST API. Note that the full REST API specification
+            is hosted on <a href="https://nlpcraft.docs.apiary.io" target="apiary">apiary.io</a> where you can review
+            it and test with it against your localhost or remote NLPCraft installation.
+        </p>
+        <div class="bq warn">
+            <p>
+                <b>apiary.io <span class="amp">&amp;</span> localhost</b>
+            </p>
+            <p>
+                If you are using <a href="https://nlpcraft.docs.apiary.io" target="apiary">apiary.io</a> to test REST API against localhost make sure
+                to install Chrome Apiary extension. Note that this will only work in Chrome browser.
+            </p>
+        </div>
+        <div class="bq info">
+            <p>
+                If you downloaded ZIP archive the REST API specification is also available in
+                <code>openapi/nlpcraft_swagger.yml</code> file
+                or on <a target="github" href="https://github.com/nlpcrafters/nlpcraft/blob/master/openapi/nlpcraft_swagger.yml">GitHub</a>.
+            </p>
+        </div>
+    </section>
+    <section id="java-client">
+        <span class="section-sub-title">Java Client <i class="fab fa-java"></i></span>
+        <p>
+            NLPCraft provide native Java client that enables easy-to-use Java-based API wrapping standard
+            NLPCraft REST APIs. It can be used by any JVM language that provides Java interop such as Scala, Groovy, or Kotlin:
+        </p>
+        <ul>
+            <li>Maven/Grape/Gradle/SBT <a href="download.html#java-client">instructions</a></li>
+            <li>Latest <a target=_ href="https://nlpcrafters.github.io/nlpcraft-java-client/apis/latest/index.html">Javadoc</a></li>
+            <li>Watch, star or fork <a target="github" href="https://github.com/nlpcrafters/nlpcraft-java-client">GitHub Project</a></li>
+        </ul>
+
+    </section>
+    <section id="format">
+        <span class="section-sub-title">REST URL</span>
+        <p>
+            REST API accepts only <code>POST</code> HTTP calls and <code>application/json</code> content type
+            for JSON payload and responses. When issuing a REST call you will be using the following URL:
+        </p>
+        <pre class="brush: plain">
+            https://localhost:8081/api/v1/signin
+        </pre>
+        <p>
+        where:
+        <dl>
+            <dt><code>http</code></dt>
+                <dd>Either <code>http</code> or <code>https</code> protocol.</dd>
+            <dt><code>localhost:8081</code></dt>
+                <dd>Host and port on which REST server is started. <code>localhost:8081</code> is the default configuration and can be <a href="server-and-probe.html">changed</a>.</dd>
+            <dt><code>/api/v1</code></dt>
+                <dd>Mandatory prefix indicating API version.</dd>
+            <dt><code>/signin</code></dt>
+                <dd>Specific REST call.</dd>
+        </dl>
+        <div class="bq info">
+            <p>
+                <b>bin/nccurl.sh</b>
+            </p>
+            <p>
+                <a target="wiki" href="https://en.wikipedia.org/wiki/CURL">cURL</a> is an excellent utility for testing REST services from the command line and scripts.
+                NLPCraft comes with a convenient wrapper script <code>bin/nccurl.sh</code> that shortens
+                command line of the standard cURL. We recommend adding <code>bin/nccurl.sh</code> to your
+                <code>$PATH</code> environment variable.
+            </p>
+        </div>
+        <p>
+            REST API is divided into five functional groups:
+        </p>
+        <ul>
+            <li><a href="#auth">Authentication</a></li>
+            <li><a href="#asking">Asking</a></li>
+            <li><a href="#company">Company Management</a></li>
+            <li><a href="#user">User Management</a></li>
+            <li><a href="#data_probe">Data Probe Management</a></li>
+        </ul>
+        <div class="bq info">
+            <b>Admins</b>
+            <p>
+                Note that many operations are only available to the users with administrative privileges. Note
+                also that some operations will implicitly behave differently based on whether the currently signed in user
+                have administrative privileges or not.
+            </p>
+        </div>
+        <div class="bq info">
+            <b>External User ID</b>
+            <p>
+                Many calls on REST API accept external "on-behalf-of" user ID (<code>usrExtId</code>) additionally to the regular
+                user ID (<code>usrID</code>). In these methods zero, one or both IDs must be provided. If none are provided
+                the ID of the currently signed in user will be used. If both are provided they should point to the same user.
+                External user ID allows to use user identification from the external systems without a need to import all the
+                existing users into NLPCraft in the first place.
+            </p>
+            <p>
+                Typical usage pattern for integrating NLPCraft into existing
+                system is to create a single administrative NLPCraft user, sign in with that account and then use external
+                "on-behalf-of" user IDs in all the requests. This way you get the same functionality as if using ordinary
+                user IDs but without a need to migrate and synchronize all user accounts from the existing system to NLPCraft.
+            </p>
+        </div>
+    </section>
+    <section id="auth">
+        <span class="section-sub-title">Authentication</span>
+        <p>
+            Before performing any REST calls a registered user needs to sign in to receive
+            an <b>access token</b> that will be used in all subsequent operations:
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>REST call</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/authentication"><nobr><code>/signin</code></nobr></a></td>
+                    <td>Sign in and obtain <b>access token</b>.</td>
+                </tr>
+                <tr>
+                    <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/authentication"><nobr><code>/signout</code></nobr></a></td>
+                    <td>Sign out and invalidate previously obtained <b>access token</b>.</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="bq info">
+            <b>Default User</b>
+            <p>
+                NLPCraft comes with a default built-in credentials that you can use when signing in for the
+                first time:
+            </p>
+            <ul>
+                <li>Email: <code>admin@admin.com</code></li>
+                <li>Password: <code>admin</code></li>
+            </ul>
+        </div>
+        <div class="bq warn">
+            <p>
+                In production environment make sure to delete this default user once you add at least one of your
+                own users with administrative privileges.
+            </p>
+        </div>
+    </section>
+    <section id="asking">
+        <span class="section-sub-title">Asking</span>
+        <p>
+            This is the main group of operation that allows to ask questions, check the status and get
+            result:
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>REST call</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/asking"><nobr><code>/ask</code></nobr></a></td>
+                <td>Submit the sentence to be processed <b>asynchronously</b>.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/asking"><nobr><code>/ask/sync</code></nobr></a></td>
+                <td>Submit the sentence to be processed <b>synchronously</b>. </td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/asking"><nobr><code>/check</code></nobr></a></td>
+                <td>Get statuses and results for previously submitted <code>/ask</code> requests.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/asking"><nobr><code>/cancel</code></nobr></a></td>
+                <td>
+                    Remove results from the server memory.
+                </td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/asking"><nobr><code>/clear/conversation</code></nobr></a></td>
+                <td>
+                    Clear the conversation STM for current user and data model.
+                </td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/asking"><nobr><code>/clear/dialog</code></nobr></a></td>
+                <td>
+                    Clear the dialog flow for current user and data model.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+    <section id="company">
+        <span class="section-sub-title">Company Management</span>
+        <p>
+            This group of operations allows to add, update and remove companies in the systems.
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>REST call</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/company/get</code></nobr></a></td>
+                <td>Gets current user company.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/company/add</code></nobr></a></td>
+                <td>Add new company.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/company/update</code></nobr></a></td>
+                <td>Update company information.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/company/delete</code></nobr></a></td>
+                <td>Delete company.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/company/token/reset</code></nobr></a></td>
+                <td>Reset company's authentication token.</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+    <section id="user">
+        <span class="section-sub-title">User Management</span>
+        <p>
+            This group of operations allows to add, update and remove users in the systems:
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>REST call</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/user/get</code></nobr></a></td>
+                <td>Get current user information.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/user/all</code></nobr></a></td>
+                <td>Get all users.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/user/add</code></nobr></a></td>
+                <td>Add new user.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/user/update</code></nobr></a></td>
+                <td>Update user information.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/user/delete</code></nobr></a></td>
+                <td>Delete user.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/user/admin</code></nobr></a></td>
+                <td>Change user administrative privileges.</td>
+            </tr>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/users"><nobr><code>/user/passwd/reset</code></nobr></a></td>
+                <td>
+                    Reset the current user password.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+    <section id="data_probe">
+        <span class="section-sub-title">Data Probe Management</span>
+        <p>
+            This group of operations allows to get the information about connected data probes:
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>REST call</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/data-probes"><nobr><code>/probes/all</code></nobr></a></td>
+                <td>Get information about connected probes.</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+    <section id="server_errors">
+        <span class="section-title">Server Errors</span>
+        <p>
+            When REST server returns HTTP error the response body contains JSON object (<code>Content-Type → application/json</code>)
+            with two fields <code>code</code> and <code>msg</code>:
+        </p>
+        <pre class="brush: js">
+        {
+            "code": "NC_INVALID_ACCESS_TOKEN",
+            "msg": "Unknown access token: PPdxjwXBOIMpAWNgpKq1"
+        }
+        </pre>
+        <p>
+            Following tables shows all possible <code>code</code> values for these server errors:
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>Code</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>NC_INVALID_ACCESS_TOKEN</code></td>
+                <td>
+                    The access token is invalid or no longer valid. Note that previously issued existing access
+                    tokens can expire or be otherwise invalidated and have to be obtained again.
+                </td>
+            </tr>
+            <tr>
+                <td><code>NC_SIGNIN_FAILURE</code></td>
+                <td>
+                    Invalid or unknown user email and/or user password during <code>/signin</code> call. This can
+                    indicate either the attempt to signin by the user that hasn't been added yet, or the invalid
+                    password for the existing user.
+                </td>
+            </tr>
+            <tr>
+                <td><code>NC_NOT_IMPLEMENTED</code></td>
+                <td>
+                    Particular feature is not implemented yet or not available. This is reserved for API extensions and
+                    future backward compatibility.
+                </td>
+            </tr>
+            <tr>
+                <td><code>NC_INVALID_FIELD</code></td>
+                <td>
+                    This indicated a problem with a field. It's either too bit, too small, empty or otherwise invalid.
+                    See <code>msg</code> field in the error response for details.
+                </td>
+            </tr>
+            <tr>
+                <td><code>NC_ADMIN_REQUIRED</code></td>
+                <td>
+                    Calling user is required to have admin privileges to execute given call.
+                </td>
+            </tr>
+            <tr>
+                <td><code>NC_INVALID_OPERATION</code></td>
+                <td>
+                    Indicates that a given operation cannot be performed as specified. For example, this error
+                    is returned when you attempt to remove or revoke admin privileges from the
+                    last admin user.
+                </td>
+            </tr>
+            <tr>
+                <td><code>NC_ERROR</code></td>
+                <td>Indicates a general server error.</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+<div class="col-md-2 third-column">
+    <ul class="side-nav">
+        <li class="side-nav-title">On This Page</li>
+        <li><a href="#format">REST URL</a></li>
+        <li><a href="#auth">Authentication</a></li>
+        <li><a href="#company">Company</a></li>
+        <li><a href="#user">Users</a></li>
+        <li><a href="#asking">Asking</a></li>
+        <li><a href="#data_probe">Data Probes</a></li>
+        <li><a href="#server_errors">Server Errors</a></li>
+        <li class="side-nav-title">Quick Links</li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
+            target="github"
+            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
+            target=_
+            href="/apis/latest/index.html">Javadoc</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
+            href="https://nlpcraft.docs.apiary.io"
+            target="apiary">REST API</a>
+        </li>
+        <li>
+            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
+        </li>
+        <li>
+            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
+        </li>
+        <li class="side-nav-title">Support</li>
+        <li>
+            <nobr>
+                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
+            </nobr>
+        </li>
+    </ul>
+</div>
+
+
+
+

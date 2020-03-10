@@ -1,0 +1,211 @@
+ga:metro, ga:entrances
+(not set), 315403
+San Francisco-Oakland-San Jose CA, 38628
+New York NY, 21867
+Los Angeles CA, 8784
+Boston MA-Manchester NH, 8362
+Washington DC (Hagerstown MD), 6944
+Chicago IL, 6784
+Houston TX, 5243
+Tampa-St. Petersburg (Sarasota) FL, 5088
+Dallas-Ft. Worth TX, 4459
+Atlanta GA, 4390
+Seattle-Tacoma WA, 4026
+Philadelphia PA, 3602
+Denver CO, 3238
+Austin TX, 2217
+Minneapolis-St. Paul MN, 2067
+San Diego CA, 2055
+Phoenix AZ, 2035
+Raleigh-Durham (Fayetteville) NC, 1902
+Detroit MI, 1873
+Portland OR, 1831
+Miami-Ft. Lauderdale FL, 1626
+Charlotte NC, 1516
+Baltimore MD, 1476
+Sacramento-Stockton-Modesto CA, 1455
+Salt Lake City UT, 1286
+Wichita-Hutchinson KS, 1141
+San Antonio TX, 1061
+Orlando-Daytona Beach-Melbourne FL, 1001
+Hartford & New Haven CT, 998
+Columbus OH, 972
+Pittsburgh PA, 909
+St. Louis MO, 904
+Kansas City MO, 851
+Cleveland-Akron (Canton) OH, 740
+Indianapolis IN, 707
+Nashville TN, 699
+Milwaukee WI, 604
+Providence RI-New Bedford MA, 581
+Cincinnati OH, 572
+Waco-Temple-Bryan TX, 571
+Jacksonville FL, 519
+Las Vegas NV, 515
+Cedar Rapids-Waterloo-Iowa City & Dubuque IA, 477
+Oklahoma City OK, 455
+Honolulu HI, 453
+Greenville-Spartanburg SC-Asheville NC-Anderson SC, 425
+Omaha NE, 419
+West Palm Beach-Ft. Pierce FL, 415
+Norfolk-Portsmouth-Newport News VA, 412
+Louisville KY, 409
+Rochester NY, 400
+Dayton OH, 395
+Madison WI, 374
+Albuquerque-Santa Fe NM, 360
+Little Rock-Pine Bluff AR, 354
+Colorado Springs-Pueblo CO, 351
+Memphis TN, 348
+Birmingham AL, 345
+Syracuse NY, 333
+Reno NV, 329
+Monterey-Salinas CA, 328
+Albany-Schenectady-Troy NY, 322
+Fresno-Visalia CA, 320
+Chattanooga TN, 317
+Des Moines-Ames IA, 317
+New Orleans LA, 296
+Buffalo NY, 287
+Greensboro-High Point-Winston Salem NC, 276
+Harrisburg-Lancaster-Lebanon-York PA, 260
+Champaign & Springfield-Decatur IL, 258
+Grand Rapids-Kalamazoo-Battle Creek MI, 257
+Richmond-Petersburg VA, 257
+Burlington VT-Plattsburgh NY, 253
+Santa Barbara-Santa Maria-San Luis Obispo CA, 240
+Knoxville TN, 226
+Tulsa OK, 223
+Boise ID, 219
+Mobile AL-Pensacola (Ft. Walton Beach) FL, 216
+Bowling Green KY, 212
+Ft. Myers-Naples FL, 200
+South Bend-Elkhart IN, 200
+Wilkes Barre-Scranton PA, 199
+Portland-Auburn ME, 195
+Huntsville-Decatur (Florence) AL, 189
+Charleston SC, 185
+Toledo OH, 184
+Ft. Smith-Fayetteville-Springdale-Rogers AR, 180
+Peoria-Bloomington IL, 170
+Lexington KY, 169
+Springfield-Holyoke MA, 169
+Tucson (Sierra Vista) AZ, 166
+Roanoke-Lynchburg VA, 165
+Columbus-Tupelo-West Point MS, 164
+Charlottesville VA, 162
+Columbia SC, 162
+Spokane WA, 161
+Yakima-Pasco-Richland-Kennewick WA, 161
+Lafayette IN, 160
+Johnstown-Altoona PA, 156
+Columbia-Jefferson City MO, 153
+Green Bay-Appleton WI, 151
+Eugene OR, 147
+El Paso TX, 146
+Medford-Klamath Falls OR, 145
+Evansville IN, 144
+Lansing MI, 140
+Charleston-Huntington WV, 139
+Davenport IA-Rock Island-Moline IL, 138
+La Crosse-Eau Claire WI, 134
+Ft. Wayne IN, 130
+Flint-Saginaw-Bay City MI, 127
+Lincoln & Hastings-Kearney NE, 125
+Springfield MO, 125
+Tallahassee FL-Thomasville GA, 125
+Harlingen-Weslaco-Brownsville-McAllen TX, 121
+Gainesville FL, 119
+Augusta GA, 115
+Paducah KY-Cape Girardeau MO-Harrisburg-Mount Vernon IL, 115
+Topeka KS, 112
+Rochester MN-Mason City IA-Austin MN, 110
+Wilmington NC, 109
+Savannah GA, 108
+Shreveport LA, 108
+Youngstown OH, 106
+Macon GA, 104
+Jackson MS, 103
+Anchorage AK, 100
+Columbus GA, 100
+Sioux Falls(Mitchell) SD, 97
+Baton Rouge LA, 93
+Florence-Myrtle Beach SC, 92
+Fargo-Valley City ND, 87
+Panama City FL, 84
+Chico-Redding CA, 79
+Lafayette LA, 79
+Bakersfield CA, 78
+Amarillo TX, 73
+Erie PA, 72
+Greenville-New Bern-Washington NC, 69
+Billings Mount, 67
+Tri-Cities TN-VA, 66
+Tyler-Longview(Lufkin & Nacogdoches) TX, 66
+Lubbock TX, 63
+Ottumwa IA-Kirksville MO, 63
+Clarksburg-Weston WV, 62
+Palm Springs CA, 61
+Idaho Falls-Pocatello ID, 59
+Minot-Bismarck-Dickinson(Williston) ND, 58
+Binghamton NY, 57
+Grand Junction-Montrose CO, 56
+Missoula Mount, 56
+Montgomery (Selma) AL, 55
+Abilene-Sweetwater TX, 54
+Hattiesburg-Laurel MS, 52
+Quincy IL-Hannibal MO-Keokuk IA, 52
+Utica NY, 51
+Rockford IL, 50
+Duluth MN-Superior WI, 49
+Joplin MO-Pittsburg KS, 49
+Traverse City-Cadillac MI, 48
+Salisbury MD, 46
+Corpus Christi TX, 45
+Bend OR, 43
+Biloxi-Gulfport MS, 43
+Eureka CA, 41
+Odessa-Midland TX, 40
+Wausau-Rhinelander WI, 40
+Beaumont-Port Arthur TX, 39
+Sioux City IA, 39
+Bangor ME, 38
+Monroe LA-El Dorado AR, 36
+Twin Falls ID, 36
+Wichita Falls TX & Lawton OK, 36
+Sherman TX-Ada OK, 35
+Albany GA, 34
+Butte-Bozeman Mount, 34
+Dothan AL, 34
+Rapid City SD, 34
+Yuma AZ-El Centro CA, 34
+Jackson TN, 32
+Watertown NY, 32
+Elmira NY, 30
+Harrisonburg VA, 30
+Terre Haute IN, 29
+Cheyenne WY-Scottsbluff NE, 28
+Mankato MN, 28
+Alexandria LA, 27
+Marquette MI, 27
+Bluefield-Beckley-Oak Hill WV, 25
+Parkersburg WV, 25
+St. Joseph MO, 23
+Laredo TX, 22
+Wheeling WV-Steubenville OH, 22
+Helena Mount, 21
+Greenwood-Greenville MS, 20
+Lake Charles LA, 20
+Fairbanks AK, 19
+Great Falls Mount, 18
+Meridian MS, 18
+San Angelo TX, 17
+Casper-Riverton WY, 16
+Lima OH, 14
+Zanesville OH, 14
+Jonesboro AR, 11
+Victoria TX, 11
+Juneau AK, 9
+North Platte NE, 8
+Glendive Mount, 7
+Alpena MI, 1

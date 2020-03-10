@@ -1,0 +1,295 @@
+---
+title: Использование именованных сущностей в NLPCraft
+author: Dmitriy Monakhov
+avatar_url: images/monakhov.png
+publish_date: July 18, 2019
+flag-ico: images/ru-flag-128x128.png
+layout: blog
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<section>
+    <div class="blog-header">
+        <div class="blog-title">{{page.title}}</div>
+        <div class="blog-sub-title">
+            <img class="avatar-img" src="{{ page.avatar_url | relative_url}}">
+            <span class="blog-author text-nowrap">{{ page.author }}</span>
+            <img class="flag-img" src="{{ page.flag-ico | relative_url}}">
+            <span class="text-nowrap blog-date">{{ page.publish_date }}</span>
+        </div>
+    </div>
+    <p>
+        Первая задача, с решения которой начинается процесс работы каждой NLU/I системы, это необходимость максимально
+        детального разбора пользовательского запроса и извлечения из него всей доступной в нем информации.
+    </p>
+    <p>
+        NLP система должна:
+    </p>
+    <ul>
+        <li>Разбить текст запроса на составляющие (слова, токены).</li>
+        <li>
+            Привести их в базовую форму (леммы, стеммы). Получить, если это необходимо, сведения о
+            частях речи и прочую низкоуровневую информацию.
+        </li>
+        <li>
+            Распознать слова и словосочетания, то есть вычленить из текста
+            <a target=_ href="https://www.wikiwand.com/en/Named_entity">именованные сущности</a> и попытаться
+            извлечь из них так называемые нормализованные значения.
+        </li>
+    </ul>
+    <p>
+        Этот процесс называется распознаванием именованных сущностей —
+        <a target=_ href="https://www.wikiwand.com/en/Named-entity_recognition">NER</a> (Named Entity Recognition), а модули,
+        занимающиеся их извлечением — компонентами NER.
+    </p>
+    <p>
+        С первыми двумя задачами успешно справляется множество коммерческих и open-source продуктов, и в
+        данной заметке мы не будем останавливаться на них подробно. Сегодня поговорим о NER компонентах.
+    </p>
+    <p>
+        Существует целый ряд зарекомендовавших себя решений, предоставляющих весь необходимый инструментарий и
+        наборы готовых моделей для распознавания множества стандартных сущностей (таких как дата, время или
+        географические объекты), а также предоставляющих пользователям средства для формирования и обучения собственных моделей.
+    </p>
+    <p>
+        Остановимся чуть подробнее на наиболее известных из них:
+    </p>
+    <div class="blog-h1">Spacy</div>
+    <ul>
+        <li>Сайт <a href="https://spacy.io">https://spacy.io</a></li>
+        <li>
+            Подробнее о NER <a href="https://spacy.io/usage/rule-based-matching#entityruler">https://spacy.io/usage/rule-based-matching#entityruler</a>
+        </li>
+        <li>
+            Список поддерживаемых распознаваемых сущностей (для одной из схем)
+            <a href="https://spacy.io/api/annotation#named-entities">https://spacy.io/api/annotation#named-entities</a>.
+            Поддерживается поиск таких распространенных NE как PERSON, PRODUCT, EVENT, MONEY и т. д.
+        <li>Поставка — Python библиотека</li>
+    </ul>
+    <div class="blog-h1">OpenNLP</div>
+    <ul>        
+        <li>Сайт <a href="https://opennlp.apache.org">https://opennlp.apache.org</a></li>
+        <li>Подробнее о NER <a href="https://www.tutorialspoint.com/opennlp/opennlp_named_entity_recognition.htm">https://www.tutorialspoint.com/opennlp/opennlp_named_entity_recognition.htm</a></li>
+        <li>Список моделей <a href="http://opennlp.sourceforge.net/models-1.5">http://opennlp.sourceforge.net/models-1.5</a> поможет распознать такие сущности как DATE, TIME,
+            MONEY, LOCATION и т. д.
+        </li>
+        <li>Поставка — Java библиотека</li>
+    </ul>
+    <div class="blog-h1">StanfordNLP</div>
+    <ul>
+        <li>Сайт <a href="https://nlp.stanford.edu/">https://nlp.stanford.edu/</a></li>
+        <li>
+            Подробнее о NER <a href="https://stanfordnlp.github.io/CoreNLP/ner.html">https://stanfordnlp.github.io/CoreNLP/ner.html</a>
+        </li>
+        <li>
+            Список поддерживаемых распознаваемых сущностей <a href="https://nlp.stanford.edu/software/CRF-NER.html">https://nlp.stanford.edu/software/CRF-NER.html</a>
+            очень широк и помимо знакомых DATE, MONEY и т. д. включает в себя ряд ранее не встречавшихся среди прочих
+            решений, таких как EMAIL, URL, IDEOLOGY, NATIONALITY, RELIGION и т. д.
+        </li>
+        <li>Поставка — Java библиотека</li>
+    </ul>
+    <div class="blog-h1">Google Language API</div>
+    <ul>
+        <li>Сайт <a href="https://cloud.google.com/natural-language">https://cloud.google.com/natural-language</a></li>
+        <li>Подробнее о NER <a href="https://cloud.google.com/natural-language/docs/analyzing-entities">https://cloud.google.com/natural-language/docs/analyzing-entities</a></li>
+        <li>
+            Доступный по ссылке <a href="https://cloud.google.com/natural-language/docs/reference/rest/v1/Entity">https://cloud.google.com/natural-language/docs/reference/rest/v1/Entity</a> список
+            распознаваемых сущностей содержит уже знакомые PERSON, LOCATION, ORGANIZATION и т. д. а также ряд
+            уникальных, таких как WORK_OF_ART, CONSUMER_GOOD и т. д.
+        </li>
+        <li>
+            Поставка — SaaS решение. Доступ к нему осуществляется через REST API. Также доступны библиотеки доступа на
+            множестве языков — Java, C#, Python, Go и т. д.
+        </li>
+        
+    </ul>
+    <p>
+        Кроме поставки обученных модулей распознавания стандартных сущностей, каждая из вышеперечисленных систем
+        позволяет создавать и тренировать собственные модели, служащие для распознавания собственных пользовательских
+        элементов.
+    </p>
+    <p>
+        Не будем заниматься детальным сравнением и оценкой вышеперечисленных систем, остановимся кратко на их
+        основных отличительных особенностях:
+    </p>
+    <ul>
+        <li>
+            <a href="https://opennlp.apache.org">OpenNLP</a> привлекает свободной лицензией на использование и,
+            как и почти любой продукт от Apache Software
+            Foundation, проверенным качеством.
+        </li>
+        <li>
+            <a href="https://spacy.io">Spacy</a> — интересен прежде всего наличием большого числа готовых моделей
+            для множества языков, а также привычной для аналитиков средой разработки (язык Python).
+        </li>
+        <li>
+            <a href="https://nlp.stanford.edu/">StanfordNLP</a> интересен значительным количеством готовых моделей,
+            прежде всего для английского языка, а также
+            поддержкой ими генерации нормализованных значений для ряда NE (Пример. Хорошо когда слово ‘tomorrow’
+            определяется как дата — но еще лучше, если дополнительно предоставляется значение даты относительно текущего
+            времени)
+        </li>
+        <li>
+            <a href="https://cloud.google.com/natural-language">Google Language API</a> — отличается высоким качеством
+            распознавания, поддержкой нормализованных значений в готовых моделях и, несмотря на то, что решение от
+            данной компании появилось относительно недавно, уже сейчас нет никаких сомнений в том, что оно будет
+            одним из самых значимых на рынке.
+        </li>
+    </ul>
+    <div class="blog-h1">NLPCraft</div>
+    <p>
+        Помимо вышеперечисленных провайдеров NER компонентов, NLPCraft представляет собственный механизм распознавания
+        таких элементов как <b>DATE</b>, <b>GEO</b>, <b>NUM</b>, <b>COORDINATE</b> и <b>FUNCTION</b>.
+    </p>
+    <p>
+        Последняя, <b>FUNCTION</b> — не имеющая аналогов сущность второго порядка, применяемая к другим ранее
+        определенным сущностям. Например в тексте находится “сравнение” двух ранее найденных GEO объектов и т. д.
+        Но, об этом подробнее за рамками данной заметки.
+    </p>
+    <p>
+        Причина по которой NLPCraft создала ряд своих собственных NER модулей — желание предоставить наилучшее
+        качество для самых распространенных из них, а также удовлетворить потребность в наличии ряда дополнительных
+        атрибутов (нормализованных значений), без которых даже распознанная сущность представляет собой ограниченную
+        ценность при дальнейшем использовании.
+    </p>
+    <p>
+        Немного подробнее об извлечении из текста информации о пользовательских сущностях.
+    </p>
+    <p>
+        Когда пользователю нужно извлечь из текста элементы, характерные для его бизнеса, он может:
+    </p>
+    <ul>
+        <li>
+            Разработать и обучить свою собственную модель при помощи одного из вышеперечисленных продуктов
+            (вероятностная модель, необходимость в значительном обучающем корпусе).
+        </li>
+         <li>
+            Создать семантическую модель NLPCraft, определив наборы синонимов, регулярных выражений и правил
+             основанных на предикатах для слов и словосочетаний или предложений в целом (быстрый старт проекта,
+             корпус не требуется).
+         </li>
+    </ul>
+    <p>
+        Описание второго способа определения пользовательских элементов находится за рамками данной заметки, сейчас нас
+        интересует работа именно с NER компонентами.
+    </p>
+    <p>
+        Так как же воспользоваться возможностями NER компонентов от всех вышеперечисленных провайдеров?
+    </p>
+    <p>
+        Последняя версия NLPCraft позволяет своим пользователям объединить всю мощь готовых решений и использовать любую
+        из вышеперечисленных систем распознавания именованных сущностей или даже все сразу.
+    </p>
+    <p>
+        Пользователь может настроить свою цепочку обработки текста, конфигурируя лишь те NER модули, которые
+        должны участвовать в его разборе.
+    </p>
+    <p>
+        Например, если пользователем сконфигурирована следующая цепочка: <code>“nlpcraft:num”</code>, <code>“spacy:money”</code>,
+        <code>“opennlp:organization”</code>, то в тексте будет осуществляться лишь поиск:
+    </p>
+    <ul>
+        <li><b>NUM</b> элементов (NER компонентами от NLPCraft),
+        <li><b>MONEY</b> элементов (NER компонентами от Spacy),</li>
+        <li><b>ORGANIZATION</b> элементов (NER компонентами от OpenNLP)</li>
+    </ul>
+    <div class="bq info">
+        <p>
+            <b>Практический совет</b>
+        </p>
+        <p>
+            Выбирайте лишь те сущности, в которых вы непосредственно нуждаетесь при работе над вашей задачей.
+            Нет никакого смысла заставлять программу искать в тексте, например, элементы <b>PERCENTAGE</b>, если
+            вам нет до них никакого дела в рамках вашей задачи. Не усложняйте структуру разобранных предложений,
+            не загружайте без надобности ресурсы системы.
+        </p>
+    </div>
+    <p>
+        Выбор используемых NER компонентов зависит:
+    </p>
+    <ul>
+        <li>от потребностей и предпочтений пользователя,
+        <li>от наличия уже существующих у него наработок, то есть собственных обученных моделей, или же просто
+        <li>от наличия тех или иных специалистов компании, которым проще и привычнее работать со знакомым средством.
+    </ul>
+    <p>
+        Остановимся чуть детальнее на том, какую информацию мы предоставляем для каждого NE по всем упомянутым провайдерам NER:
+    </p>
+    <p><b>OpenNLP</b></p>
+    <ul>
+        <li>Название — имя сущности.</li>
+        <li>probability — вероятностная оценка правильности определения найденной сущности.</li>
+        <li><em>Пример</em>. Слово <code>‘today’</code> определится в тесте как сущность <code>‘opennlp:date’</code> со значением
+            <code>‘probability’</code> равным 0.9987.</li>
+    </ul>
+    <p><b>Spacy</b></p>
+    <ul>
+        <li>Название — имя сущности.
+        <li>vector — численная характеристика обнаруженной в тексте сущности (подробнее <a href="https://spacy.io/api/span#vector_norm">https://spacy.io/api/span#vector_norm</a>)
+        <li>sentiment — оценка настроения предоставляемая для токена системой Spacy.
+        <li>meta — набор пар (ключ/значение) пользовательских атрибутов обнаруженных NE.
+        <li><em>Пример</em>. Слово <code>‘$299’</code> определится в тесте как сущность <code>‘spacy:money’</code> со значением vector равным 27.3814.
+    </ul>
+    <p><b>Stanford</b></p>
+    <ul>
+        <li>Название — имя сущности.
+        <li>confidence — вероятностная оценка правильности определения обнаруженной в тексте сущности
+        nne — нормализованное значение сущности (<code>23:00</code> значение времени для найденной сущности
+        <code>‘11PM’</code>).
+        <li><em>Пример</em>. Слово <code>‘http://nlpcraft.org'</code> определится в тесте как сущность.
+        <code>‘stanford:url’</code> со значением confidence равным 0.9993, NNE отсутствует.
+    </ul>
+    <p><b>Google</b></p>
+    <ul>
+        <li>Название — имя сущности.
+        <li>salience — численная характеристика обнаруженной в тексте сущности (подробнее <a href="https://cloud.google.com/natural-language/docs/basics">https://cloud.google.com/natural-language/docs/basics</a>).
+        <li>meta — набор пар (ключ/значение) атрибутов характерных для данной сущности.
+        mentionsBeginOffsets, mentionsContents, mentionsTypes- параметры, указывающие на ссылки на данную сущность в обрабатываемом тексте.
+        <li><em>Пример</em>. Слово <code>‘Hewlett-Packard’</code> определится в тесте как сущность
+        <code>‘google:organization’</code> со значением salience равным 0.12638 и дополнительной информацией в виде
+        ссылки на описание компании.
+    </ul>
+    <p><b>NLPCraft</b></p>
+    <ul>
+        <li>Название — имя сущности.
+        <li>
+            Атрибуты. Подробно расписывать все атрибуты элементов, возвращаемые NER компонентами системы NLPCraft
+            мы не будем, а лишь ограничимся ссылкой на соответствующий раздел документации
+            <a href="https://nlpcraft.org/apis/latest/org/nlpcraft/model/NCToken.html">https://nlpcraft.org/apis/latest/org/nlpcraft/model/NCToken.html</a></li>
+        <li>
+            <em>Пример</em>. Словосочетание <code>’21 meter’</code> определится в тесте как <code>'nlpcraft:num’</code>
+            со значением равным ‘27’, типом ‘meter’ и группой ‘length’.
+        </li>
+    </ul>
+    <p>
+        Вы могли обратить внимание на то, что некоторые однотипные атрибуты имеют различающиеся имена в разных
+        системах, так произошло оттого, что мы постарались сохранить принятую в них терминологию.
+    </p>
+    <p>
+        Итак, NLPCraft, начиная с версии 0.7.0, позволяет разработчикам распознавать именованные сущности в
+        тексте без ограничений на использование той или иной библиотеки. Выберите лучшую для своих целей или
+        просто пользуйтесь той, к которой привыкли. Мы уже добавили поддержку самых известных NER систем и
+        планируем расширять этот список постоянно.
+    </p>
+    <p>
+        Вы можете задействовать всю мощь инструментов NLPCraft, от разработки семантических моделей до
+        определения пользовательских интентов без отказа от использования привычных средств или с возможностью
+        выбора предпочтительных.
+    </p>
+</section>

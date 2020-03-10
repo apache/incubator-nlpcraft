@@ -1,0 +1,110 @@
+#
+#   "Commons Clause" License, https://commonsclause.com/
+#
+#   The Software is provided to you by the Licensor under the License,
+#   as defined below, subject to the following condition.
+#
+#   Without limiting other conditions in the License, the grant of rights
+#   under the License will not include, and the License does not grant to
+#   you, the right to Sell the Software.
+#
+#   For purposes of the foregoing, "Sell" means practicing any or all of
+#   the rights granted to you under the License to provide to third parties,
+#   for a fee or other consideration (including without limitation fees for
+#   hosting or consulting/support services related to the Software), a
+#   product or service whose value derives, entirely or substantially, from
+#   the functionality of the Software. Any license notice or attribution
+#   required by the License must also include this Commons Clause License
+#   Condition notice.
+#
+#   Software:    NLPCraft
+#   License:     Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+#   Licensor:    Copyright (C) NLPCraft. https://nlpcraft.org
+#
+#       _   ____      ______           ______
+#      / | / / /___  / ____/________ _/ __/ /_
+#     /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
+#    / /|  / / /_/ / /___/ /  / /_/ / __/ /_
+#   /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
+#          /_/
+#
+
+- title: О пользе кодирования при разработке NLP моделей
+  url: blogs/о_пользе_кодирования_при_разработке_NLP_моделей.html
+  excerpt: В данной статье мы попытается пояснить, отчего не стоит пытаться избегать кодирования при построении моделей обработки пользовательских запросов.
+  author: Dmitriy Monakhov
+  avatar_url: images/monakhov.png
+  publish_date: Jul 31, 2019
+  flag-ico: images/ru-flag-128x128.png
+
+- title: Short-Term Memory - Maintaining Conversational Context
+  url: blogs/short-term-memory-maintaining-conversational-context.html
+  excerpt: In this article, I’ll try to give a high-level overview of STM — Short-Term Memory...
+  author: Aaron Radzinksi
+  avatar_url: images/lion.jpg
+  publish_date: Jul 26, 2019
+  flag-ico: images/us-flag-128x128.png
+
+- title: Light switch with Natural Language Interface
+  url: blogs/lightswitch_with_natural_language_interface.html
+  excerpt: In this blog I’ll show how to build a natural language interface for a typical home light switch...
+  author: Aaron Radzinksi
+  avatar_url: images/lion.jpg
+  publish_date: Jul 16, 2019
+  flag-ico: images/us-flag-128x128.png
+
+- title: Here’s Why Developing Natural Language Interface Is Hard
+  url: blogs/why_natural_language_interface_is_hard.html
+  excerpt: In this article I would like to show why NLI (Natural Language Interface) is often so hard to do.
+  author: NLPCraft 
+  avatar_url: images/nlpcraft_logo.png
+  publish_date: Sep 27, 2018
+  flag-ico: images/us-flag-128x128.png
+
+- title: Использование именованных сущностей в NLPCraft
+  url: blogs/использование_именованных_сущностей_nlpcraft.html
+  excerpt: Первая задача, с решения которой начинается процесс работы каждой NLP системы, это...
+  author: Dmitriy Monakhov
+  avatar_url: images/monakhov.png
+  publish_date: July 18, 2019
+  flag-ico: images/ru-flag-128x128.png
+
+#- title: Introducing NLPCraft 0.6
+#  url: https://medium.com/@aradzinski/introducing-nlpcraft-0-6-74cea6a4d203
+#  excerpt: Google NL and Standford CoreNLP integration, new intent DSL, bugfixes & improvements.
+#  author: Aaron Radzinksi
+#  avatar_url: images/lion.jpg
+#  publish_date: June 21, 2019
+#  linkedin_id: aaron-radzinski-6b2228167
+#  twitter_id: aaron_radzinski
+#  medium_id: aradzinski
+
+#- title: Here’s Why Natural Language Interface Is Hard
+#  url: https://chatbotslife.com/heres-why-developing-natural-language-interface-is-hard-3cb2f8fe7de8
+#  excerpt: In this article I would like to show why NLI (Natural Language Interface) is often so hard to do.
+#  author: Aaron Radzinksi
+#  avatar_url: images/lion.jpg
+#  publish_date: Sep 27, 2018
+#  linkedin_id: aaron-radzinski-6b2228167
+#  twitter_id: aaron_radzinski
+#  medium_id: aradzinski
+
+#- title: Natural Language Interface In Enterprise
+#  url: https://medium.com/@aradzinski/natural-language-interface-in-enterprise-5f06ca7ed36f
+#  excerpt: Why enterprise application companies should take a cue from Apple Siri and Google Assistant.
+#  author: Aaron Radzinksi
+#  avatar_url: images/lion.jpg
+#  publish_date: July 29, 2018
+#  linkedin_id: aaron-radzinski-6b2228167
+#  twitter_id: aaron_radzinski
+#  medium_id: aradzinski
+
+#- title: The Problem With Conversational Interfaces - The Conversation
+#  url: https://medium.com/@aradzinski/the-problem-with-conversational-interfaces-the-conversation-eda4ad55453b
+#  excerpt: Here are my thoughts on the role of conversation in NLU/P systems.
+#  author: Aaron Radzinksi
+#  avatar_url: images/lion.jpg
+#  publish_date: July 23, 2018
+#  linkedin_id: aaron-radzinski-6b2228167
+#  twitter_id: aaron_radzinski
+#  medium_id: aradzinski

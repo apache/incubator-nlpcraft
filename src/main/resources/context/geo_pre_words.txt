@@ -1,0 +1,106 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+#
+# Auto-generated on: Thu Nov 13 19:41:07 MSK 2014
+# Total lines: 80
+#
+# +-------------------------+
+# | DO NOT MODIFY THIS FILE |
+# +-------------------------+
+#
+
+avail for
+avail from
+avail in
+avail on
+avail within
+came for
+came from
+came in
+came on
+came within
+come for
+come from
+come in
+come on
+come within
+for
+found for
+found from
+found in
+found on
+found within
+from
+in
+on
+origin for
+origin from
+origin in
+origin on
+origin within
+that avail for
+that avail from
+that avail in
+that avail on
+that avail within
+that came for
+that came from
+that came in
+that came on
+that came within
+that come for
+that come from
+that come in
+that come on
+that come within
+that found for
+that found from
+that found in
+that found on
+that found within
+that origin for
+that origin from
+that origin in
+that origin on
+that origin within
+which avail for
+which avail from
+which avail in
+which avail on
+which avail within
+which came for
+which came from
+which came in
+which came on
+which came within
+which come for
+which come from
+which come in
+which come on
+which come within
+which found for
+which found from
+which found in
+which found on
+which found within
+which origin for
+which origin from
+which origin in
+which origin on
+which origin within
+within

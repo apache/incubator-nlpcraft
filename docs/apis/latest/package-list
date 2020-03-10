@@ -1,0 +1,7 @@
+org.nlpcraft.model
+org.nlpcraft.model.factories.basic
+org.nlpcraft.model.factories.spring
+org.nlpcraft.model.opencensus
+org.nlpcraft.model.test
+org.nlpcraft.model.tools
+org.nlpcraft.probe.embedded

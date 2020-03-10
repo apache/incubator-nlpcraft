@@ -1,0 +1,394 @@
+---
+active_crumb: Docs
+layout: documentation
+id: getting_started
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div class="col-md-8 second-column">
+    <section id="getting-started">
+        <span class="section-title">Getting Started</span>
+        <p>
+            In this section we'll take a quick 10 minutes look at running and
+            testing <a href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples" target="github">examples</a>
+            shipped with NLPCraft along with
+            running the main components of NLPCraft - data probe and REST server. We assume the following:
+        </p>
+        <ul>
+            <li>You <a href="/download.html">downloaded</a> NLPCraft {{site.latest_version}} as a ZIP archive.</li>
+            <li>You followed <a href="/installation.html">installation</a> instructions.</li>
+            <li>You are using Mac OS/Linux environment.</li>
+        </ul>
+    </section>
+    <section id="probe-server">
+        <span class="section-title">Data Probe <span class="amp">&amp;</span> REST Server</span>
+        <p>
+            Data probes are used to deploy and host data model, while REST server (or a
+            cluster of servers) is used to accept client REST calls and route them to the data model deployed on data probes.
+        </p>
+        <p>
+            Both data probe and the REST server start the same way. NLPCraft ships with all-inclusive
+            single executable JAR file. We'll use command line to start the both.
+            Open two console windows and start server first and then data probe by typing these commands:
+        </p>
+        <nav>
+            <div class="nav nav-tabs" role="tablist">
+                <a class="nav-item nav-link active" data-toggle="tab" href="#nav-srv-start" role="tab" aria-controls="nav-home" aria-selected="true">REST Server</a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-probe-start" role="tab" aria-controls="nav-home" aria-selected="true">Data Probe</a>
+            </div>
+        </nav>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="nav-srv-start" role="tabpanel">
+                <pre class="brush: plain">
+                    $ cd build
+                    $ java -jar nlpcraft-{{site.latest_version}}-all-deps.jar -server
+                </pre>
+                <p>
+                    You can can also start it via Docker:
+                </p>
+                <pre class="brush: plain">
+                    $ docker run -m 8G -p 8081:8081 -p 8201:8201 -p 8202:8202 nlpcraftserver/server:{{site.latest_version}}
+                </pre>
+                <p>
+                    REST server starts with default configuration (<code>nlpcraft.conf</code> and
+                    <code>ignite.xml</code> files located in the same folder as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code>
+                    file). You should see the output similar to this:
+                </p>
+                <pre class="brush: plain">
+                        _   ____      ______           ______
+                       / | / / /___  / ____/________ _/ __/ /_
+                      /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
+                     / /|  / / /_/ / /___/ /  / /_/ / __/ /_
+                    /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
+                           /_/
+
+                    Server
+                    Version: {{site.latest_version}}
+                    Copyright (C) NLPCraft.
+
+                    ...
+
+                    +-------------------------+
+                    | Server started [19.35s] |
+                    +-------------------------+
+
+
+                    Mar-11 23:21:04 [INFO ] REST server is listening on 'localhost:8081'.
+                </pre>
+            </div>
+            <div class="tab-pane fade show" id="nav-probe-start" role="tabpanel">
+                <pre class="brush: plain">
+                    $ cd build
+                    $ java -jar nlpcraft-{{site.latest_version}}-all-deps.jar -probe
+                </pre>
+                <p>
+                    Data probe starts with default configuration (file <code>nlpcraft.conf</code> located in the same folder
+                    as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code> file) that deploys
+                    all example models shipped with NLPCraft. You should see the output similar to this:
+                </p>
+                <pre class="brush: plain">
+                    _   ____      ______           ______
+                   / | / / /___  / ____/________ _/ __/ /_
+                  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
+                 / /|  / / /_/ / /___/ /  / /_/ / __/ /_
+                /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
+                       /_/
+
+                Data Probe
+                Version: {{site.latest_version}}
+                Copyright (C) NLPCraft.
+
+                Mar-11 23:25:52 [INFO ] Probe Configuration:
+                +----------------------------------------------------------------------+
+                | Probe ID        | all.examples                                       |
+                | Probe Token     | 3141592653589793                                   |
+                | API Version     | {{site.latest_version}}, 2019-04-16                                  |
+                | Down-Link       | localhost:8202                                     |
+                | Up-Link         | localhost:8201                                     |
+                +-----------------+----------------------------------------------------+
+                | Model providers | org.nlpcraft.examples.alarm.AlarmModel             |
+                |                 | org.nlpcraft.examples.echo.EchoModel               |
+                |                 | org.nlpcraft.examples.helloworld.HelloWorldModel   |
+                |                 | org.nlpcraft.examples.time.TimeModel               |
+                |                 | org.nlpcraft.examples.weather.WeatherModel         |
+                |                 | org.nlpcraft.examples.lightswitch.LightSwitchModel |
+                +-----------------+----------------------------------------------------+
+                | JARs Folder     |                                                    |
+                +----------------------------------------------------------------------+
+
+                ...
+
+                Mar-11 23:25:56 [INFO ] Models deployed: 6
+
+                +===================================================================================+
+                |        Model ID         |            Name            | Ver. | Elements | Synonyms |
+                +===================================================================================+
+                | nlpcraft.alarm.ex       | Alarm Example Model        | 1.0  | 1        | 419      |
+                | nlpcraft.weather.ex     | Weather Example Model      | 1.0  | 3        | 9045     |
+                | nlpcraft.lightswitch.ex | Light Switch Example Model | 1.0  | 3        | 643      |
+                | nlpcraft.helloworld.ex  | HelloWorld Example Model   | 1.0  | 0        | 0        |
+                | nlpcraft.time.ex        | Time Example Model         | 1.0  | 1        | 432      |
+                | nlpcraft.echo.ex        | Echo Example Model         | 1.0  | 0        | 0        |
+                +-----------------------------------------------------------------------------------+
+
+                ...
+
+                +--------------------------+
+                | Probe started [5.12 sec] |
+                +--------------------------+
+
+                ...
+
+                Mar-11 23:25:58 [INFO ] Server connection established.
+                </pre>
+            </div>
+        </div>
+        <p>
+            At this point you have both the data probe and the REST server started and connected to each other.
+            We are ready to start calling REST API to use natural language to query our example models.
+        </p>
+    </section>
+    <section id="querying">
+        <span class="section-title">Weather Forecast</span>
+        <p>
+            We'll be testing <a target="github" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/weather">Weather Example</a>
+            to ask questions about weather forecast using REST APIs. This example returns a comprehensive JSON weather
+            data for variety of different inquiries about the past, present or future weather conditions.
+        </p>
+        <p>
+            There are <a target=_ href="https://medium.com/@alicealdaine/top-10-api-testing-tools-rest-soap-services-5395cb03cfa9">many ways</a> to issue
+            and test REST calls - for our examples we'll use standard
+            <a target="wiki" href="https://en.wikipedia.org/wiki/CURL">cURL</a> utility which you can simply use from the
+            command line in any OS.
+            NLPCraft comes with a convenient wrapper script <code>bin/nccurl.sh</code> that shortens
+            command line of the standard <code>cURL</code>. Note also that we'll be using Python to pretty format
+            cURL JSON responses.
+        </p>
+        <span class="section-sub-title">Sign In</span>
+        <p>
+            First, we need to sign in and obtain <b>access token</b>. We'll use <code>/signin</code>
+            REST call for that. When REST server starts
+            for the first time it creates a default user with email <code>admin@admin.com</code> and
+            <code>admin</code> password. Open new command line terminal and let's use these default credentials for sing in:
+        </p>
+        <pre class="brush: js; highlight: [3]">
+            $ nccurl.sh signin '{"email": "admin@admin.com", "passwd": "admin"}' | python -m json.tool
+            {
+                "acsTok": "KMGWMQJ44",
+                "status": "API_OK"
+            }
+        </pre>
+        <p>
+            Note the returned access token <code>KMGWMQJ44</code> which we'll use in subsequent operations. Keep in mind that you
+            will get different access tokens and IDs when you are performing these steps by yourself.
+        </p>
+        <span class="section-sub-title"><b>Query</b></span>
+        <p>
+            Now that we have signed in (access token <code>KMGWMQJ44</code>) we can go ahead and start asking natural language
+            questions against our data model (<code>nlpcraft.weather.ex</code>). For this example we'll use
+            <a target=apiary href="https://nlpcraft.docs.apiary.io/#reference/asking"><code>/ask/sync</code></a> REST call - a
+            call that submit the request and waits for its completion before returning the result.
+        </p>
+        <p>
+            <b>Q: What is the current forecast for Chicago?</b>
+        </p>
+        <pre class="brush: js highlight: [2, 3, 4, 5]">
+            $ nccurl.sh ask/sync '{"acsTok": "KMGWMQJ44", "txt": "What is the current forecast for Chicago?", "mdlId": "nlpcraft.weather.ex"}' | python -m json.tool
+        </pre>
+        <p>
+            And we get a full 5-day forecast for Chicago:
+        </p>
+        <pre class="brush: js">
+        {
+            "state": [
+                {
+                    "createTstamp": 1552527883277,
+                    "mdlId": "nlpcraft.weather.ex",
+                    "resBody": {
+                        "intentId": "fcast|date?|city?",
+                        "result": {
+                            "forecast": {
+                                "forecastday": [
+                                    {
+                                        "astro": {
+                                            "moonrise": "11:05 AM",
+                                            "moonset": "01:01 AM",
+                                            "sunrise": "07:06 AM",
+                                            "sunset": "06:55 PM"
+                                        },
+                                    }
+                                ]
+                            },
+                            ...
+                            "location": {
+                                "lat": "41.85",
+                                "localtime": "2019-03-13 20:44",
+                                "localtime_epoch": "1552527885",
+                                "lon": "-87.65",
+                                "name": "Chicago",
+                                "region": "Illinois",
+                                "tz_id": "America/Chicago"
+                            }
+                        }
+                    },
+                    "resType": "json",
+                    "srvReqId": "gJ0OJ0qXp",
+                    "status": "QRY_READY",
+                    "updateTstamp": 1552527885155,
+                    "usrId": 7001
+                }
+            ],
+            "status": "API_OK"
+        }
+        </pre>
+        <p>
+            <b>Q: Any chance of snow today in Moscow?</b>
+        </p>
+        <pre class="brush: js highlight: [2, 3, 4, 5]">
+            $ nccurl.sh ask/sync '{"acsTok": "KMGWMQJ44", "txt": "Any chance of snow today in Moscow?", "mdlId": "nlpcraft.weather.ex"}' | python -m json.tool
+        </pre>
+        <p>
+            And we get today's Moscow weather report:
+        </p>
+        <pre class="brush: js">
+            {
+                "states": [
+                    {
+                        "createTstamp": 1552529034568,
+                        "mdlId": "nlpcraft.weather.ex",
+                        "resBody": {
+                            "intentId": "curr|date?|city?",
+                            "result": {
+                                "forecast": {
+                                    "forecastday": [
+                                        {
+                                            "astro": {
+                                                "moonrise": "10:16 AM",
+                                                "moonset": "02:16 AM",
+                                                "sunrise": "06:49 AM",
+                                                "sunset": "06:30 PM"
+                                            },
+                                            "date": "2019-03-14",
+                                            "date_epoch": "1552521600",
+                                            "day": {
+                                                "avghumidity": 89.0,
+                                                "avgtemp_c": -3.9,
+                                                "avgtemp_f": 25.1,
+                                                "avgvis_km": 19.6,
+                                                "avgvis_miles": 12.0,
+                                                "condition": {
+                                                    "code": 1198.0,
+                                                    "icon": "//cdn.apixu.com/weather/64x64/day/311.png",
+                                                    "text": "Light freezing rain"
+                                                },
+                                                "maxtemp_c": -0.2,
+                                                "maxtemp_f": 31.6,
+                                                "maxwind_kph": 15.8,
+                                                "maxwind_mph": 9.8,
+                                                "mintemp_c": -7.3,
+                                                "mintemp_f": 18.9,
+                                                "totalprecip_in": 0.0,
+                                                "totalprecip_mm": 0.1,
+                                                "uv": 1.7
+                                            }
+                                        }
+                                    ]
+                                },
+                                "location": {
+                                    "lat": "55.75",
+                                    "localtime": "2019-03-14 5:03",
+                                    "localtime_epoch": "1552529035",
+                                    "lon": "37.62",
+                                    "name": "Moscow",
+                                    "region": "Moscow City",
+                                    "tz_id": "Europe/Moscow"
+                                }
+                            }
+                        },
+                        "resType": "json",
+                        "srvReqId": "bgp299kX0",
+                        "status": "QRY_READY",
+                        "updateTstamp": 1552529035186,
+                        "usrId": 7001
+                    }
+                ],
+                "status": "API_OK"
+            }
+        </pre>
+        <span class="section-sub-title">Sign Out</span>
+        <p>
+            Once we enjoyed our conversation about the weather we sign out:
+        </p>
+        <pre class="brush: js highlight: [3]">
+            $ nccurl.sh signout '{"acsTok": "KMGWMQJ44"}' | python -m json.tool
+            {
+                "status": "API_OK"
+            }
+        </pre>
+    </section>
+</div>
+<div class="col-md-2 third-column">
+    <ul class="side-nav">
+        <li class="side-nav-title">On This Page</li>
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#probe-server">Data Probe <span class="amp">&amp;</span> Server</a></li>
+        <li><a href="#querying">Using REST API</a></li>
+        <li class="side-nav-title">Quick Links</li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
+            target="github"
+            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
+            target=_
+            href="/apis/latest/index.html">Javadoc</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
+            href="https://nlpcraft.docs.apiary.io"
+            target="apiary">REST API</a>
+        </li>
+        <li>
+            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
+        </li>
+        <li>
+            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
+        </li>
+        <li class="side-nav-title">Support</li>
+        <li>
+            <nobr>
+                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
+            </nobr>
+        </li>
+    </ul>
+</div>
+
+
+

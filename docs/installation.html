@@ -1,0 +1,99 @@
+---
+active_crumb: Docs
+layout: documentation
+id: installation
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div class="col-md-8 second-column">
+    <section id="installation">
+        <span class="section-title">Installation</span>
+        <p>
+            NLPCraft requires <b>no special installation</b> operations:
+        </p>
+        <ul>
+            <li>If you <a href="/download.html">downloaded</a> ZIP archive - simply unzip it</li>
+            <li>If you <a href="/download.html">cloned</a> GitHub repository - use <code>mvn clean package</code> to build it</li>
+            <li>If you <a href="/download.html">used</a> Maven/Gradle/SBT - you know what you are doing 👍</li>
+        </ul>
+    </section>
+    <section id="ignite">
+        <span class="section-title">Apache Ignite 2.7 <span class="amp">&amp;</span> Java 9+</span>
+        <p>
+            By default NLPCraft uses <a target=_ href="https://ignite.apache.org/">Apache Ignite</a> project as its
+            underlying in-memory distributed storage and cluster computing framework. If running with Apache Ignite 2.7 or
+            earlier on Java 9/10/11 you need to follow these
+            <a target=_ href="https://apacheignite.readme.io/docs/getting-started#section-running-ignite-with-java-9-10-11">instructions.</a>
+            For Java 8 no additional parameters are required.
+        </p>
+        <div class="bq info">
+            <p>
+                <b>NOTE:</b> It is NOT recommended to change the version of Apache Ignite inside NLPCraft project.
+            </p>
+        </div>
+    </section>
+</div>
+<div class="col-md-2 third-column">
+    <ul class="side-nav">
+        <li class="side-nav-title">On This Page</li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#ignite">Apache Ignite</a></li>
+        <li class="side-nav-title">Quick Links</li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
+            target="github"
+            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
+            target=_
+            href="/apis/latest/index.html">Javadoc</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
+            href="https://nlpcraft.docs.apiary.io"
+            target="apiary">REST API</a>
+        </li>
+        <li>
+            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
+        </li>
+        <li>
+            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
+        </li>
+        <li class="side-nav-title">Support</li>
+        <li>
+            <nobr>
+                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
+            </nobr>
+        </li>
+    </ul>
+</div>
+
+
+

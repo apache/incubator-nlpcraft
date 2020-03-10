@@ -1,0 +1,210 @@
+---
+title: Here’s Why Developing Natural Language Interface Is Hard
+author: NLPCraft
+avatar_url: images/nlpcraft_logo.png
+publish_date: Sep 27, 2018
+flag-ico: images/us-flag-128x128.png
+layout: blog
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<section>
+    <div class="blog-header">
+        <div class="blog-title">{{page.title}}</div>
+        <div class="blog-sub-title">
+            <img class="avatar-img" src="{{ page.avatar_url | relative_url}}">
+            <span class="blog-author text-nowrap">{{ page.author }}</span>
+            <img class="flag-img" src="{{ page.flag-ico | relative_url}}">
+            <span class="text-nowrap blog-date">{{ page.publish_date }}</span>
+        </div>
+    </div>
+    <p>
+        In this article we would like to show why NLI (Natural Language Interface) is often so hard to do. To
+        illustrate this idea I’ll use a semi-trivial example to show that even for this simple use case the
+        natural language interface presents a formidable problem to solve.
+    </p>
+    <div class="blog-h1">Any Chance Of Rain?</div>
+    <p>
+        For our example let’s imagine we want to build (yet another) weather bot. Our bot will answer
+        weather-related questions for a given city and a date range. It will also support past, present
+        and future (forecast) weather requests. Our goal is to support natural language interface to our
+        bot as close to human cognition as possible, i.e. as if our users would be talking to a real
+        human being — trying to achieve that elusive free-form natural language comprehension.
+    </p>
+    <div class="blog-h1">Basic Intents</div>
+    <p>
+        Let’s start with simple and obvious examples of the requests we need to support:
+    </p>
+    <ul>
+        <li><code>What’s the current weather in New York?</code></li>
+        <li><code>Show me San Jose forecast for the next 5 days</code></li>
+    </ul>
+    <p>
+        These requests seems rather trivial to encode using common intent-based matching. You basically have
+        to detect three main entities:
+    </p>
+    <ul>
+        <li>A weather request indicator.</li>
+        <li>A city name.</li>
+        <li>A date range.</li>
+    </ul>
+    <p>
+        Once you’ve built the model (in whatever tool you prefer) to detect all three types of entities
+        you can relatively quickly build an action (i.e. an intent callback) that would return a weather
+        information for a given city and given date range.
+    </p>
+    <p>
+        Most of the tutorials and examples stop right here. However, this is far from being even remotely
+        equal to how real humans converse about weather...
+    </p>
+    <div class="blog-h1">Optionals</div>
+    <p>
+        Pretty obvious initial improvements one would need to make is to assume that city and date range
+        elements are optional. Indeed, if city isn’t present the user is likely asking about her current
+        location, and if date is not present she’s asking about the current date. These seem to be
+        reasonable assumptions:
+    </p>
+    <ul>
+        <li>
+            <code>What’s my current weather?</code><br>
+            Returning result for the current date and the current location.
+        </li>
+        <li>
+            <code>What’s Chicago’s weather?</code><br>
+            Returning result for current date and city of Chicago.
+        </li>
+        <li>
+            <code>Any chance of snow this Friday?</code><br>
+            Returning result for city of Chicago and this Friday.
+        </li>
+    </ul>
+    <p>
+        However, these assumptions have to be processed in a special way by conversation management.
+    </p>
+    <div class="blog-h1">Conversation Resolution</div>
+    <p>
+        Another thing you’ll notice right away is that you need to support conversational context.
+        Frequently, when people inquiry about weather they don’t just ask a single question but often
+        have followups. For example:
+    </p>
+    <ul>
+        <li>
+            <code>What’s the current Moscow weather?</code><br>
+            Returning result for Moscow today.
+        </li>
+        <li>
+            <code>Hm, what about tomorrow?</code><br>
+            Returning result for Moscow tomorrow.
+        </li>
+        <li>
+            <code>Any chance of rain?</code><br>
+            Returning result for precipitation in Moscow tomorrow.
+        </li>
+    </ul>
+    <p>
+        While in everyday life these seem rather trivial, the programmatic logic for supporting this type of
+        conversation management is far from trivial. For example:
+    </p>
+    <ul>
+        <li>When does conversation switch context and previous context should be “forgotten”?</li>
+        <li>When does conversation time out?</li>
+        <li>Which parts can or cannot be taken from previous sentences?</li>
+    </ul>
+    <p>
+        Depending on the framework you use this can be a significant project on its own.
+    </p>
+    <div class="blog-h1">Geographical Ambiguity</div>
+    <p>
+        Yet another problem you’ll discover pretty quickly as you let users play with your bot is that your current
+        model does not distinguish between these two sentences:
+    </p>
+    <ul>
+        <li><code>What’s the local Moscow weather?</code></li>
+        <li><code>What’s the local weather?</code></li>
+    </ul>
+    <p>
+        In the first example user is clearly asking about current Moscow weather, while in the second she’s
+        likely asking about her current location. But then it conflicts with the conversation support we discussed
+        above because city element “Moscow” is optional and we can pick it up from conversation which should
+        make second example equal to first! We have a contradiction...
+    </p>
+    <p>
+        That’s where things get complicated and naive conversation management doesn’t cut it anymore. The
+        one rule you can possibly come up with to bypass this dilemma is this: if there is a word
+        “local” (or its semantic siblings) and there’s no city in the current sentence — then user is asking about
+        the weather at her current location; otherwise — fall back to default conversation management.
+    </p>
+    <p>
+        As a side note your NLP toolkit should clearly disambiguate between New York (state) and New York (city),
+        Moscow (Russia) and Moscow (USA, ID), etc. It should also support common slang and abbreviations like LA
+        (for Los Angeles and not for State of Louisiana), Big Apple, NYC, SF, etc.
+    </p>
+    <div class="blog-h1">Temporal Ambiguity</div>
+    <p>
+        Another, more subtle, problem arises when we try to deal with date ranges. Look at these examples:
+    </p>
+    <ul>
+        <li>
+            <code>What’s my current forecast?</code><br>
+            Returning result for the default 5-day forecast from today.
+        </li>
+        <li>
+            <code>What’s the precipitation forecast for Sep 25 — Sep 30th?</code><br>
+            Returning result for given date range.
+        </li>
+        <li>
+            <code>What was the ice storm forecast last week?</code><br>
+            Returning result for the last week.
+        </li>
+    </ul>
+    <p>
+        All examples have word “forecast” meaning future by default. However, the second example also
+        specifies an explicit data range. Yet third example has word “forecast” but is asking
+        about past date range. The situation gets even more confusing when we account for conversational context.
+    </p>
+    <p>
+        You can probably come up with some basic set of rules:
+    </p>
+    <ul>
+        <li>Word “forecast” assumes standard 5-day forward weather forecast</li>
+        <li>Word “past” assumes some date range looking back, say past 3 days</li>
+        <li>Default forecast/past date ranges are overridden if there’s explicit date range in the user request</li>
+    </ul>
+    <div class="blog-h1">Meteorological Ambiguity</div>
+    <p>
+        Another complication is about weather request indicator we’ve mentioned at the very beginning.
+    </p>
+    <p>
+        Essentially, weather request is some form of a question about meteorological condition. In our example model
+        for this type of bot we have almost 10,000 different ways to express that... Which makes it almost
+        impossible to just train the model in supervised fashion. You need some formalized way to
+        effectively encode this model that would allow for proper versioning, testing, future extension, etc.
+    </p>
+    <p>
+        Make sure that whatever the tool you select to build this bot you are not asked to list all these 10,000 utterances manually!
+    </p>
+    <div class="blog-h1">Conclusion</div>
+    <p>
+        If you are somewhat confused by now — it’s absolutely fine. You have to be. The problem is that even
+        for this trivialized example the free-form natural language interface is rather a non-trivial task.
+        A lot of people jump head first into creating different NLI/NLU apps and chatbots just to realize that users
+        hate the interaction experience because it doesn’t match the human cognition by a l-o-n-g mile.
+        Technology is still developing in this space.
+    </p>
+</section>

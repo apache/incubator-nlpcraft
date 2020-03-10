@@ -1,0 +1,415 @@
+---
+active_crumb: First Example
+layout: documentation
+id: first_example
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div class="col-md-8 second-column">
+    <section id="setup">
+        <span class="section-title">Project Setup</span>
+        <p>
+            Let's setup a project for our first example with the following assumptions:
+        </p>
+        <ul>
+            <li>We'll use Mac OS/Linux environment</li>
+            <li>We'll use Scala to implement our model</li>
+            <li>We'll use <a target=_ href="https://maven.apache.org/install.html">Maven</a> to create and build our project</li>
+            <li>We'll use <a target=_ href="https://www.jetbrains.com/idea/">JetBrains IDEA</a> as our Scala/Java IDE</li>
+        </ul>
+    </section>
+    <section id="new_project">
+        <span class="section-sub-title">Create New Project</span>
+        <p>
+            You can create new Maven-based project in many different ways - we'll use maven archetype generation
+            for that. In your home folder run the following command:
+        </p>
+        <pre class="brush: text">
+            mvn archetype:generate -DgroupId=examples -DartifactId=my-app -DarchetypeVersion=1.4 -DinteractiveMode=false
+        </pre>
+        <p>
+            This will create <code>my-app</code> folder with the following default maven project structure:
+        </p>
+        <pre class="console">
+├── <b>pom.xml</b>
+└── src
+    ├── main
+    │   └── java
+    │       └── examples
+    │           └── App.java
+    └── test
+        └── java
+            └── examples
+                └── AppTest.java
+        </pre>
+        <p>
+            Create new IDEA project from this source folder (make sure to pick JDK 8 or later JDK and language support).
+            Let's also delete auto-generated files <code>App.java</code> and <code>AppTest.java</code> from our
+            project as we won't be using them.
+        </p>
+    </section>
+    <section id="add_nlpcraft">
+        <span class="section-sub-title">Add NLPCraft</span>
+        <p>
+            We also need to add NLPCraft dependency to our new project. Open <code>pom.xml</code> file and replace
+            <code>dependencies</code> section with the following code:
+        </p>
+        <pre class="brush: xml, highlight: [3, 4, 5]">
+            &lt;dependencies&gt;
+                &lt;dependency&gt;
+                    &lt;groupId&gt;org.nlpcraft&lt;/groupId&gt;
+                    &lt;artifactId&gt;nlpcraft&lt;/artifactId&gt;
+                    &lt;version&gt;{{site.latest_version}}&lt;/version&gt;
+                &lt;/dependency&gt;
+            &lt;/dependencies&gt;
+        </pre>
+        <p>
+            Also make sure that you have correct JDK version (1.8 or above) for the maven compiler plugin:
+        </p>
+        <pre class="brush: xml, highlight: [3, 4]">
+            &lt;properties&gt;
+                &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+                &lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+                &lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+            &lt;/properties&gt;
+        </pre>
+        <p>
+            IDEA should automatically reload the project with newly updated <code>pom.xml</code> file and
+            we should be ready now to develop our new first data model.
+        </p>
+    </section>
+    <section id="data_model">
+        <span class="section-title">Data Model</span>
+        <p>
+            For our example we'll develop a prototypical light switch that can be controlled through the natural language.
+            We'll keep <a target=_ href="https://cloud.google.com/speech-to-text/">speech-to-text conversion</a> and integration
+            with <a target=_    href="https://developer.apple.com/homekit/">HomeKit</a> or
+            <a href="https://www.arduino.cc/" target=_>Ardunio</a> outside of this example - and concentrate only on understanding the natural
+            language commands. At the end, we should be able to say <code>"Turn the lights off in the guest bedroom"</code>
+            or <code>"Could you please switch off all the lights?"</code>
+        </p>
+        <p>
+            In NLPCraft a data model is simply an implementation of <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModel.html">NCModel</a>
+            interface. You can move most of the model configuration out to an external JSON or YAML file and use
+            <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelFileAdapter.html">NCModelFileAdapter</a> to
+            load this external configuration when creating a new model. Note that this is a canonical pattern to build
+            models in NLPCraft and it allows you cleanly separate the logic of the model from its declarative configuration.
+        </p>
+        <p>
+            Let's add new <code>lightswitch_model.yml</code> file containing our model's static configuration in YAML
+            into <code>src/main/java/examples</code> folder with the following content:
+        </p>
+        <pre class="brush: js, highlight: [1, 14, 21, 28]">
+            id: "nlpcraft.lightswitch.ex"
+            name: "Light Switch Example Model"
+            version: "1.0"
+            description: "NLI-powered light switch example model."
+            macros:
+              - name: "&lt;ACTION&gt;"
+                macro: "{turn|switch|dial|control|let|set|get|put}"
+              - name: "&lt;ENTIRE_OPT&gt;"
+                macro: "{entire|full|whole|total|*}"
+              - name: "&lt;LIGHT&gt;"
+                macro: "{it|them|light|illumination|lamp|lamplight}"
+            enabledBuiltInTokens: [] # Don't use any built-in tokens.
+            elements:
+              - id: "ls:loc"
+                description: "Location of lights."
+                synonyms:
+                  - "&lt;ENTIRE_OPT&gt; {upstairs|downstairs|*} {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} room}"
+                  - "&lt;ENTIRE_OPT&gt; {upstairs|downstairs|*} {master|kid|children|child|guest|*} {bedroom|bathroom|washroom|storage} {closet|*}"
+                  - "&lt;ENTIRE_OPT&gt; {house|home|building|{1st|first} floor|{2nd|second} floor}"
+
+              - id: "ls:on"
+                group: "act"
+                description: "Light switch ON action."
+                synonyms:
+                  - "&lt;ACTION&gt; &lt;LIGHT&gt; on"
+                  - "&lt;ACTION&gt; on &lt;LIGHT&gt;"
+
+              - id: "ls:off"
+                group: "act"
+                description: "Light switch OFF action."
+                synonyms:
+                  - "&lt;ACTION&gt; &lt;LIGHT&gt; {off|out}"
+                  - "{&lt;ACTION&gt;|shut|kill|stop|eliminate} {off|out} &lt;LIGHT&gt;"
+                  - "no &lt;LIGHT&gt;"
+        </pre>
+        <p>
+            Notice the model ID <code>nlpcraft.lightswitch.ex</code> as well as semantic model elements
+            that we'll use later:
+        </p>
+        <ul>
+            <li><code>ls:loc</code></li>
+            <li><code>ls:on</code></li>
+            <li><code>ls:off</code></li>
+        </ul>
+        <p>
+            Model element <code>ls:loc</code> defines a location where we want to control the lights. Model
+            elements <code>ls:on</code> and <code>ls:off</code> defines corresponding "on" and "off" lights
+            actions. We'll use these elements in our model's intent-based matching logic.
+        </p>
+        <p>
+            Next let's go ahead and add model's logic. Create new <code>LightSwitchModel.scala</code> file along side
+            <code>lightswitch_model.json</code> configuration file and copy the following model code into it:
+        </p>
+        <pre class="brush: java, highlight: [7,9,10]">
+package examples;
+
+import org.nlpcraft.model._
+import org.nlpcraft.model.NCIntentTerm
+
+class LightSwitchModel extends NCModelFileAdapter("org/nlpcraft/examples/lightswitch/lightswitch_model.yaml") {
+    @NCIntent("intent=ls conv=false term(act)={groups @@ 'act'} term(loc)={id == 'ls:loc'}*")
+    def onMatch(
+        @NCIntentTerm("act") actTok: NCToken,
+        @NCIntentTerm("loc") locToks: List[NCToken]
+    ): NCResult = {
+        val status = if (actTok.getId == "ls:on") "on" else "off"
+        val locations =
+            if (locToks.isEmpty)
+                "entire house"
+            else
+                locToks.map(_.getOriginalText).mkString(", ")
+
+        // Add HomeKit, Arduino or other integration here.
+
+        NCResult.text(s"Lights '$status' in '${locations.toLowerCase}'.")
+    }
+}
+        </pre>
+        <p>
+            Chapter <a href="/data-model.html">Data Model</a> will provide detailed explanation on how
+            data models work. Here are few comments as to what this code does and how it is organized:
+        </p>
+        <ul>
+            <li>
+                On line 6 we use <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelFileAdapter.html">NCModelFileAdapter</a>
+                adapter and load model static configuration from <code>lightswitch_model.yml</code> file.
+            </li>
+            <li>
+                Our data model uses intent-based matching of the user input. Intent is a template and a callback for when
+                a template is matched.
+                Lines 7, 9 and 10 show the usage of
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/inteint/NCIntent.html">@NCIntent</a> and
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/inteint/NCIntent.html">@NCIntentTerm</a>
+                annotations that are used to connect the matching logic with a callback method.
+            </li>
+            <li>
+                The intent defined through <a target="javadoc" href="/apis/latest/org/nlpcraft/model/inteint/NCIntent.html">@NCIntent</a> annotation matches
+                two parts: first should be any token belonging to <code>act</code> group (i.e. "on" or "off" action),
+                and the second should be a zero or more tokens with ID equal to <code>ls:loc</code> (i.e. optional list of locations).
+            </li>
+            <li>
+                If and when our intent is matched the method <code>onMatch(...)</code> on line 8 is invoked. It simply
+                returns a text response that indicates the light status at a requested location. That's where you can
+                also add <a target=_    href="https://developer.apple.com/homekit/">HomeKit</a>,
+                <a href="https://www.arduino.cc/" target=_>Ardunio</a> or other integrations to make a real
+                lightswitch in your home.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <span class="section-sub-title">Start Data Probe</span>
+        <p>
+            NLPCraft data models get deployed into data probe. Let's start data probe to deploy our newly
+            created light switch data model. To start data probe we need to configure Run Configuration in IDEA with
+            the following parameters:
+        </p>
+        <ul>
+            <li>
+                <b>Main class:</b> <code>org.nlpcraft.NCStart</code>
+            </li>
+            <li>
+                <b>VM arguments:</b> <code>-Dconfig.override_with_env_vars=true</code>
+            </li>
+            <li>
+                <b>Environment variable:</b> <code>CONFIG_FORCE_nlpcraft_probe_models.0=org.nlpcraft.examples.lightswitch.LightSwitchModel</code>
+            </li>
+            <li>
+                <b>Program arguments: </b> <code>-probe</code>
+            </li>
+        </ul>
+        <div class="bq info">
+            <p>
+                <b>NOTE:</b> instead of supplying a <a href="server-and-probe.html">full configuration file</a> we just set one configuration property using
+                configuration override via environment variables.
+            </p>
+        </div>
+        <p>
+            Start this run configuration and make sure you have positive console output indicating that our model
+            has been successfully loaded and probe started.
+        </p>
+    </section>
+    <section>
+        <span class="section-sub-title">Start REST Server</span>
+        <p>
+            REST server listens for requests from client applications and routes them to the requested data models
+            via connected data probes. REST server starts the same way as the data probe. Configure new
+            Run Configuration in IDEA with the following parameters:
+        </p>
+        <ul>
+            <li>
+                <b>Main class:</b> <code>org.nlpcraft.NCStart</code>
+            </li>
+            <li>
+                <b>Program arguments: </b> <code>-server</code>
+            </li>
+        </ul>
+        <p>
+            Once started ensure that your REST server console output shows that data probe is connected and the
+            REST server is listening on the default <code>localhost:8081</code> endpoint.
+        </p>
+        <p>
+            At this point we've developed our data model, deployed it into the data probe, and started the REST server.
+            Our NLI-based light switch is ready to accept user requests. Instead of using direct REST calls we'll
+            demonstrate the built-in <a href="/testing-data-model.html">test framework</a> that allows you to write
+            convenient unit tests against your data model.
+        </p>
+    </section>
+    <section>
+        <span class="section-sub-title">Testing</span>
+        <p>
+            NLPCraft comes with easy to use <a target="javadoc" href="/apis/latest/org/nlpcraft/model/test/package-summary.html">test framework</a> for data models that can be used with
+            any unit testing framework like JUnit or ScalaTest. It is essentially a simplified
+            version of Java REST client that is custom designed for data model testing.
+        </p>
+        <p>
+            We would like to test the following user requests:
+        </p>
+        <ul>
+            <li><code>"Turn the lights off in the entire house."</code></li>
+            <li><code>"Switch on the illumination in the master bedroom closet."</code></li>
+            <li><code>"Get the lights on."</code></li>
+            <li><code>"Please, put the light out in the upstairs bedroom."</code></li>
+            <li><code>"Set the lights on in the entire house."</code></li>
+            <li><code>"Turn the lights off in the guest bedroom."</code></li>
+            <li><code>"Could you please switch off all the lights?"</code></li>
+            <li><code>"Dial off illumination on the 2nd floor."</code></li>
+            <li><code>"Please, no lights!"</code></li>
+            <li><code>"Kill off all the lights now!"</code></li>
+            <li><code>"No lights in the bedroom, please."</code></li>
+        </ul>
+        <p>
+            Let's create new Java class <code>LightSwitchTest.java</code> in <code>src/<b>test</b>/java/examples</code>
+            folder with the following code:
+        </p>
+        <pre class="brush: java, highlight: [17]">
+package examples;
+
+import org.junit.jupiter.api.*;
+import org.nlpcraft.common.*;
+import org.nlpcraft.model.tools.test.*;
+import java.io.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class LightSwitchTest {
+    private NCTestClient cli;
+
+    @BeforeEach
+    void setUp() throws NCException, IOException {
+        cli = new NCTestClientBuilder().newBuilder().build();
+
+        cli.open("nlpcraft.lightswitch.ex");
+    }
+
+    @AfterEach
+    void tearDown() throws NCException, IOException {
+        cli.close();
+    }
+
+    @Test
+    public void test() throws NCException, IOException {
+        assertTrue(cli.ask("Turn the lights off in the entire house.").isOk());
+        assertTrue(cli.ask("Switch on the illumination in the master bedroom closet.").isOk());
+        assertTrue(cli.ask("Get the lights on.").isOk());
+        assertTrue(cli.ask("Please, put the light out in the upstairs bedroom.").isOk());
+        assertTrue(cli.ask("Set the lights on in the entire house.").isOk());
+        assertTrue(cli.ask("Turn the lights off in the guest bedroom.").isOk());
+        assertTrue(cli.ask("Could you please switch off all the lights?").isOk());
+        assertTrue(cli.ask("Dial off illumination on the 2nd floor.").isOk());
+        assertTrue(cli.ask("Please, no lights!").isOk());
+        assertTrue(cli.ask("Kill off all the lights now!").isOk());
+        assertTrue(cli.ask("No lights in the bedroom, please.").isOk());
+    }
+}
+        </pre>
+        <p>
+            Right click on this class in the project view and run it. You should be getting standard output in
+            JUnit panel as well as the lights status based on the above requests.
+        </p>
+    </section>
+    <section>
+        <span class="section-title">Congratulation! 👌</span>
+        <p>
+            You've created your first data model, deployed it into the data probe, started the
+            REST server and tested the model using JUnit 5 and the built-in test framework.
+        </p>
+    </section>
+</div>
+<div class="col-md-2 third-column">
+    <ul class="side-nav">
+        <li class="side-nav-title">On This Page</li>
+        <li><a href="#setup">Project Setup</a></li>
+        <li><a href="#data_model">Data Model</a></li>
+        <li class="side-nav-title">Quick Links</li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
+            target="github"
+            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
+            target=_
+            href="/apis/latest/index.html">Javadoc</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
+            href="https://nlpcraft.docs.apiary.io"
+            target="apiary">REST API</a>
+        </li>
+        <li>
+            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
+        </li>
+        <li>
+            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
+        </li>
+        <li class="side-nav-title">Support</li>
+        <li>
+            <nobr>
+                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
+            </nobr>
+        </li>
+    </ul>
+</div>
+
+
+
+

@@ -1,0 +1,89 @@
+/*
+ * "Commons Clause" License, https://commonsclause.com/
+ *
+ * The Software is provided to you by the Licensor under the License,
+ * as defined below, subject to the following condition.
+ *
+ * Without limiting other conditions in the License, the    grant of rights
+ * under the License will not include, and the License does not grant to
+ * you, the right to Sell the Software.
+ *
+ * For purposes of the foregoing, "Sell" means practicing any or all of
+ * the rights granted to you under the License to provide to third parties,
+ * for a fee or other consideration (including without limitation fees for
+ * hosting or consulting/support services related to the Software), a
+ * product or service whose value derives, entirely or substantially, from
+ * the functionality of the Software. Any license notice or attribution
+ * required by the License must also include this Commons Clause License
+ * Condition notice.
+ *
+ * Software:    NLPCraft
+ * License:     Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+ * Licensor:    Copyright (C) NLPCraft. https://nlpcraft.org
+ *
+ *     _   ____      ______           ______
+ *    / | / / /___  / ____/________ _/ __/ /_
+ *   /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
+ *  / /|  / / /_/ / /___/ /  / /_/ / __/ /_
+ * /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
+ *        /_/
+ */
+
+#top-header {
+    display: flex;
+    background-image: linear-gradient(141deg, #6980fa 0%, #2cb5e8 51%, #4298fc 75%);
+
+    .nav-item > .nav-link {
+        color: #fff;
+    }
+    
+    .navbar-toggler {
+        border-color: #fff;
+        background: #fff;
+    }
+
+    i.fa-download {
+        color: $color-neon-green;
+        font-size: 80%;
+    }
+
+    .fork-link img {
+        vertical-align: sub;
+    }
+}
+
+.navbar-aligned {
+    margin: 12px 0 72px /* 60 + 12 */ 12px;
+
+    .breadcrumb {
+        background-color: transparent;
+        font-size: 90%;
+        color: $color-asbestos;
+        padding: 0;
+
+        a {
+            color: $color-river;
+        }
+    }
+
+    .breadcrumb > li + li:before {
+        content: "\f105";
+        padding: 0 5px;
+        color: $color-asbestos;
+        font-family: "Font Awesome\ 5 Free", serif;
+        font-style: normal;
+        font-weight: 700;
+        text-decoration: inherit;
+    }
+}
+
+.page-title, .page-title span {
+    font-weight: 700;
+    color: $color-slack;
+    margin-bottom: 30px;
+
+    & > i.fas {
+        //margin-left: -7px;
+        text-align: left;
+    }
+}

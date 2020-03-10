@@ -1,0 +1,297 @@
+---
+active_crumb: Basic Concepts
+layout: documentation
+id: basic_concepts
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div id="basic-concepts" class="col-md-8 second-column">
+    <section id="overview">
+        <span class="section-title">Basic Concepts</span>
+        <p>
+            Below we’ll cover some of the key concepts that are important for NLPCraft:
+        </p>
+        <ul>
+            <li><a href="#model">Data Model</a></li>
+            <li><a href="#ne">Named Entities</a></li>
+            <li><a href="#intent">Intent Matching</a></li>
+            <li><a href="#stm">Conversation <span class="amp">&amp;</span> STM</a></li>
+        </ul>
+    </section>
+    <section id="model">
+        <span class="section-sub-title">Data Model</span>
+        <p>
+            Data model is a central concept in NLPCraft. It defines natural language interface to your public or
+            private data sources like on-premise database or a cloud SaaS application.
+            NLPCraft employs <em>model-as-a-code</em> approach where entire data model is
+            an implementation of <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModel.html">NCModel</a>
+            interface which can be developed using any JVM programming language like Java, Scala, Kotlin, or Groovy.
+        </p>
+        <p>
+            A data model defines:
+        </p>
+        <ul>
+            <li>Set of model <a href="data-model.html">elements</a> (a.k.a. <em>named entities</em>) to be detected in the user input.</li>
+            <li>How to query a particular data source based on detected named entities.</li>
+            <li>Common model configuration and <a href="data-model.html">life-cycle</a> callbacks.</li>
+        </ul>
+        <p>
+            Note that model-as-a-code approach allows you to use any software lifecycle tools and
+            frameworks like various build tools, CI/SCM tools, IDEs, etc. to develop and maintain your data model.
+            You don't have to use additional web-based tools to manage some aspects of your
+            data models - your entire model and all of its components are part of your project source code.
+        </p>
+        <p>
+            Read more about data models <a href="data-model.html">here</a>.
+        </p>
+    </section>
+    <section id="ne">
+        <span class="section-sub-title">Named Entities</span>
+        <p>
+            Named entity, also known as a model element or a token, is main a component defined by the NLPCraft data model. A named
+            entity is one or more individual words that have a consistent semantic meaning and typically denote a
+            real-world object, such as persons, locations, number, date and time, organizations, products, etc. Such
+            object can be abstract or have a physical existence.
+        </p>
+        <p>
+            For example, in the following sentence:
+        </p>
+        <p>
+            <i class="fa fa-fw fa-angle-right"></i><code>Meeting is set for 12pm today in San Francisco.</code>
+        </p>
+        <p>
+            the following named entities can be detected:
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>Words</th>
+                <th>Type</th>
+                <th>Normalized Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>Meeting</code></td>
+                <td>CUSTOM_OBJ</td>
+                <td>meeting</td>
+            </tr>
+            <tr>
+                <td><code>set</code></td>
+                <td>CUSTOM_ACT</td>
+                <td>set</td>
+            </tr>
+            <tr>
+                <td><code>12pm today</code></td>
+                <td>DATE_TIME</td>
+                <td>12:00 September 1, 2019 GMT</td>
+            </tr>
+            <tr>
+                <td><code>San Francisco</code></td>
+                <td>GEO_CITY</td>
+                <td>San Francisco, CA USA</td>
+            </tr>
+            </tbody>
+        </table>
+        <p>
+            In most cases named entities will have associated <em>normalized value</em>. It is especially important for named entities that have many
+            different notational forms such as time and date, currency, geographical locations, etc. For example, <code>New York</code>,
+            <code>New York City</code> and <code>NYC</code> all refer to the same "New York City, NY USA" location which is a valid normalized form.
+        </p>
+        <p>
+            The process of detecting named entities is called Named Entity Recognition (NER). There are many
+            different ways of how a certain named entity can be detected: through list of synonyms, by name, rule-based or by using
+            statistical techniques like neural networks with large corpus of predefined data. NLPCraft allows you define
+            named entities through powerful DSL and also supports named entities that can be composed from other named entities
+            including named entities from external projects such OpenNLP, spaCy or Stanford CoreNLP.
+        </p>
+        <p>
+            Named entities allow you to abstract from basic linguistic forms like nouns and verbs to deal with the higher level semantic
+            abstractions like geographical location or time when you are trying to understand the meaning of the sentence.
+            One of the main goals of named entities is to act as an input ingredients for intent matching.
+        </p>
+        <p>
+            Read more in-depth about named entities <a href="data-model.html">here</a>.
+        </p>
+    </section>
+    <section id="intent">
+        <span class="section-sub-title">Intent Matching</span>
+        <p>
+            You can think of intent matching as regular expression matching where instead of characters you deal with detected named entities.
+            Intent defines a pattern in terms of detected named entities (or tokens) and a callback to call when submitted sentence
+            matches that pattern.
+        </p>
+        <p>
+            Intents can also match on the <em>dialog flow</em> additionally to the matching on the current user sentence.
+            Dialog flow matching means matching an intent based on what intents were matched previously for the same user
+            and data model, i.e. the flow of the dialog. Note that you should not confuse dialog flow intent matching with
+            conversational STM that is used to fill in missing tokens from memory.
+        </p>
+        <div class="bq success">
+            <p>
+                You can think of NLPCraft data model as a mechanism to define named entities and intents that use
+                these named entities to pattern match the user input.
+            </p>
+        </div>
+        <p>
+            Learn more details about intent matching <a href="intent-matching.html">here</a>.
+        </p>
+    </section>
+    <section id="stm">
+        <span class="section-sub-title">Conversation <span class="amp">&amp;</span> STM</span>
+        <p>
+            NLPCraft provides automatic conversation management right out of the box.
+            Conversation management is based on the idea of short-term-memory (STM). STM is automatically
+            maintained by NLPCraft per each user and data model. Essentially, NLPCraft "remembers"
+            the context of the conversation and can supply the currently missing elements from its memory (i.e. from STM).
+            STM implementation is also fully integrated with intent matching.
+        </p>
+        <p>
+            Maintaining conversation state is necessary for effective context resolution, so that users
+            could ask, for example, the following sequence of questions using example weather model:
+        </p>
+        <dl class="stm-example">
+            <dd><i class="fa fa-fw fa-angle-right"></i>What’s the weather in London today?</dd>
+            <dt>
+                <p>
+                    User gets the current London’s weather.
+                    STM is empty at this moment so NLPCraft expects to get all necessary information from
+                    the user sentence. Meaningful parts of the sentence get stored in STM.
+                </p>
+                <div class="stm-state">
+                    <div class="stm">
+                        <label>STM Before:</label>
+                        <span>&nbsp;</span>
+                    </div>
+                    <div class="stm">
+                        <label>STM After:</label>
+                        <span>weather</span>
+                        <span>London</span>
+                        <span>today</span>
+                    </div>
+                </div>
+            </dt>
+            <dd><i class="fa fa-fw fa-angle-right"></i>And what about Berlin?</dd>
+            <dt>
+                <p>
+                    User gets the current Berlin’s weather.
+                    The only useful data in the user sentence is name of the city <code>Berlin</code>. But since
+                    NLPCraft now has data from the previous question in its STM it can safely deduce that we
+                    are asking about <code>weather</code> for <code>today</code>.
+                    <code>Berlin</code> overrides <code>London</code> in STM.
+                </p>
+                <div class="stm-state">
+                    <div class="stm">
+                        <label>STM Before:</label>
+                        <span>weather</span>
+                        <span>London</span>
+                        <span>today</span>
+                    </div>
+                    <div class="stm">
+                        <label>STM After:</label>
+                        <span>weather</span>
+                        <span><b>Berlin</b></span>
+                        <span>today</span>
+                    </div>
+                </div>
+            </dt>
+            <dd><i class="fa fa-fw fa-angle-right"></i>Next week forecast?</dd>
+            <dt>
+                <p>
+                    User gets the next week forecast for Berlin.
+                    Again, the only useful data in the user sentence is <code>next week</code> and <code>forecast</code>.
+                    STM supplies <code>Berlin</code>. <code>Next week</code> override <code>today</code>, and
+                    <code>forecast</code> override <code>weather</code> in STM.
+                </p>
+                <div class="stm-state">
+                    <div class="stm">
+                        <label>STM Before:</label>
+                        <span>weather</span>
+                        <span>Berlin</span>
+                        <span>today</span>
+                    </div>
+                    <div class="stm">
+                        <label>STM After:</label>
+                        <span><b>forecast</b></span>
+                        <span>Berlin</span>
+                        <span><b>Next week</b></span>
+                    </div>
+                </div>
+            </dt>
+        </dl>
+        <p>
+            Note that STM is maintained per user and per data model.
+            Conversation management implementation is also smart enough to clear STM after certain
+            period of time, i.e. it “forgets” the conversational context after few minutes of inactivity.
+            Note also that conversational context can also be cleared explicitly
+            via <a href="https://nlpcraft.docs.apiary.io" target="apiary">REST API</a>.
+        </p>
+    </section>
+</div>
+<div class="col-md-2 third-column">
+    <ul class="side-nav">
+        <li class="side-nav-title">On This Page</li>
+        <li><a href="#model">Data Model</a></li>
+        <li><a href="#ne">Named Entities</a></li>
+        <li><a href="#intent">Intent Matching</a></li>
+        <li><a href="#stm">Conversation <span class="amp">&amp;</span> STM</a></li>
+        <li class="side-nav-title">Quick Links</li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
+            target="github"
+            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
+            target="_"
+            href="/apis/latest/index.html">Javadoc</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
+            href="https://nlpcraft.docs.apiary.io"
+            target="apiary">REST API</a>
+        </li>
+        <li>
+            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
+        </li>
+        <li>
+            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
+        </li>
+        <li class="side-nav-title">Support</li>
+        <li>
+            <nobr>
+                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
+            </nobr>
+        </li>
+    </ul>
+</div>
+
+
+
+

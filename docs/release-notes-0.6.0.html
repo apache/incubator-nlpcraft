@@ -1,0 +1,268 @@
+---
+rel_ver: 0.6.0
+layout: release-notes
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<section id="new">
+    <div class="bq info">
+        Release 0.6.0 is <b>NOT</b> backward compatible with previous releases.<br>
+        <a href="mailto:support@nlpcraft.org">Contact us</a> if you need help migrating from previous releases.
+    </div>
+    <span class="section-title">🙌 New</span>
+    <ul>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/59">Issue #59</a>.
+            <ul>
+                <li>
+                    Class <code>NCModelDescriptor</code> has been <b>removed</b> and replaced with direct methods
+                    on <code>NCModel</code> interface.
+                </li>
+                <li>
+                    Model and element builders have been <b>removed</b> and replaced with adapters.
+                </li>
+                <li>
+                    Classes <code>NCModelAdapter</code> and <code>NCModelFileAdapter</code> were introduced
+                    replacing builder functionality.
+                </li>
+            </ul>
+            <div class="bq warn">
+                Although this is a significant simplification - this is <b>NOT</b> a backward compatible change
+                and will require changes in your model logic. Look at the examples to learn how to use these
+                new APIs.
+            </div>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/51">Issue #51</a>.
+            <ul>
+                <li>
+                    New example added -
+                    <a target="github" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/Phone">Phone Dialer</a>
+                    that is using <a target=_ href="https://cloud.google.com/natural-language/">Google Natural Language</a> tokens.
+                </li>
+            </ul>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/53">Issue #53</a>.
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/36">Issue #36</a>.
+            <div class="bq warn">
+                In this release the processing of built-in tokens has been significantly enhanced
+                and it is <b>NOT</b> backward compatible.
+            </div>
+            <ul>
+                <li>
+                    Introduced support for new built-in tokens:
+                    <br/>
+                    <table class="gradient-table">
+                        <thead>
+                        <tr>
+                            <th>Token Provider</th>
+                            <th>Token ID Prefix</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <a href="https://opennlp.apache.org">OpenNLP</a>
+                            </td>
+                            <td><code>opennlp:</code></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="https://stanfordnlp.github.io/CoreNLP">Stanford CoreNLP</a>
+                            </td>
+                            <td><code>stanford:</code></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="https://cloud.google.com/natural-language/">Google Natural Language</a>
+                            </td>
+                            <td><code>google:</code></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </li>
+                <li>
+                    <code>NCToken</code> metadata properties <code>NLP_NE</code> and <code>NLP_NNE</code> have been
+                    <b>removed</b>.
+                </li>
+                <li>
+                    The following <code>NCModel</code> configurations properties, setters and getters, as
+                    well as REST error codes have been <b>removed</b>:
+                    <ul>
+                        <li><code>MAX_GEO_TOKENS</code></li>
+                        <li><code>MIN_GEO_TOKENS</code></li>
+                        <li><code>MAX_NUM_TOKENS</code></li>
+                        <li><code>MIN_NUM_TOKENS</code></li>
+                        <li><code>MAX_DATE_TOKENS</code></li>
+                        <li><code>MIN_DATE_TOKENS</code></li>
+                        <li><code>MAX_FUNCTION_TOKENS</code></li>
+                        <li><code>MIN_FUNCTION_TOKENS</code></li>
+                    </ul>
+                </li>
+                <li>
+                    REST <code>/probe/all</code> call return object field <code>model</code> has new array property
+                    <code>enabledBuiltInTokens</code>.
+                </li>
+                <li>
+                    REST server configuration has new property <code>tokenProviders</code>
+                    that provides an array of token providers that should be enabled and whose tokens will be
+                    detected by the server. Allowed values are: <code>opennlp</code>, <code>spacy</code>, <code>nlpcraft</code>,
+                    <code>stanford</code> and <code>google</code>. Default value if nto specified is <code>nlpcraft</code>.
+                    Property can be empty in which case no built-in NE tokens will be detected.
+                </li>
+                <li>
+                    Data model has new array property <code>enabledBuiltInTokens</code>
+                    that specifies all built-in NE tokens that this model is expecting to be detected. The default
+                    value is an empty array in which case no built-in NE tokens will be detected.
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>
+<section id="enhancements">
+    <span class="section-title">🤖 Enhancements</span>
+    <ul>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/62">Issue #62</a>:
+            <ul>
+                <li>
+                    System properties or environment variables <code>NLPCRAFT_SERVER_PROBE_LINKS_DOWNLINK</code> and
+                    <code>NLPCRAFT_SERVER_PROBE_LINKS_UPLINK</code> can override REST server configuration
+                    <code>server.probe.links.downLink</code> and <code>server.probe.links.upLink</code>. It is
+                    intended to be used for pre-configuring cloud images.
+                </li>
+            </ul>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/61">Issue #61</a>:
+            <ul>
+                <li>
+                    <p>
+                        NLPCraft built-in tokens now have have prefix <code>nlpcraft:</code> instead of
+                        <code>nlp:</code> to better align with new named entity tokens from Google, OpenNLP
+                        and Stanford CoreNLP:
+                    </p>
+                    <table class="gradient-table">
+                        <thead>
+                        <tr>
+                            <th>Old Name</th>
+                            <th>New Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr><td><b>nlp</b>:geo</td><td><b>nlpcraft</b>:geo</td></tr>
+                        <tr><td><b>nlp</b>:num</td><td><b>nlpcraft</b>:num</td></tr>
+                        <tr><td><b>nlp</b>:function</td><td><b>nlpcraft</b>:function</td></tr>
+                        <tr><td><b>nlp</b>:coordinate</td><td><b>nlpcraft</b>:coordinate</td></tr>
+                        <tr><td><b>nlp</b>:date</td><td><b>nlpcraft</b>:date</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="bq warn">
+                        This change may require an update to existing intents.
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/55">Issue #55</a>:
+            <ul>
+                <li>
+                    The following data model properties have been <b>removed</b> as unused:
+                    <ul>
+                        <li><code>VENDOR_NAME</code></li>
+                        <li><code>VENDOR_EMAIL</code></li>
+                        <li><code>VENDOR_CONTACT</code></li>
+                        <li><code>VENDOR_URL</code></li>
+                        <li><code>DOCS_URL</code></li>
+                    </ul>
+                    See <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/36">Issue #36</a>
+                    for other modifications to the data model properties.
+                </li>
+            </ul>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/32">Issue #32</a>,
+            <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/45">Issue #45</a>:
+            <ul>
+                <li>
+                    Method <code>NCIntentSolverContext.getTokens()</code> renamed to <code>getVariantTokens()</code>.
+                </li>
+                <li>
+                    New <code>@@</code> and <code>!@</code> intent RULE DSL operations added for collections containment check.
+                </li>
+                <li>
+                    New <code>@#</code> and <code>!#</code> intent RULE DSL operations added for map key containment check.
+                </li>
+                <li>
+                    New <code>@$</code> and <code>!$</code> intent RULE DSL operations added for map value containment check.
+                </li>
+                <li>
+                    New intent RULE DSL <code>~META[key]</code> operand notation for index or key access to the
+                    list or map metadata properties.
+                </li>
+                <li>
+                    Intent ITEMs have now default <code>min=1, max=1</code> quantifiers.
+                </li>
+                <li>
+                    Intent TERM now has only one ITEM (it was a redundant collection of ITEMs before).
+                </li>
+            </ul>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/47">Issue #47</a>:
+            <ul>
+                <li>
+                    Not-found function in the intent solver now accepts <code>NCContext</code> as a parameter
+                    so that the non-found function can have access to the original query.
+                </li>
+            </ul>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/72">Issue #72</a>:
+            <ul>
+                <li>
+                    Data probe configuration file <code>probe.conf</code> is no longer required and default probe
+                    configuration can be overridden via <a href="/server-and-probe.html#props">system properties</a>.
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>
+<section id="fixes">
+    <span class="section-title">🧐 Fixes</span>
+    <ul>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/57">Issue #57</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/54">Issue #54</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/40">Issue #40</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/63">Issue #63</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/65">Issue #65</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/64">Issue #64</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/66">Issue #66</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/70">Issue #70</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/73">Issue #73</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/67">Issue #67</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/74">Issue #74</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/75">Issue #75</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/76">Issue #76</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/77">Issue #77</a>.</li>
+    </ul>
+</section>

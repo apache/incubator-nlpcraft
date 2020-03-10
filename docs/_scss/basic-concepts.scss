@@ -1,0 +1,82 @@
+/*
+ * "Commons Clause" License, https://commonsclause.com/
+ *
+ * The Software is provided to you by the Licensor under the License,
+ * as defined below, subject to the following condition.
+ *
+ * Without limiting other conditions in the License, the    grant of rights
+ * under the License will not include, and the License does not grant to
+ * you, the right to Sell the Software.
+ *
+ * For purposes of the foregoing, "Sell" means practicing any or all of
+ * the rights granted to you under the License to provide to third parties,
+ * for a fee or other consideration (including without limitation fees for
+ * hosting or consulting/support services related to the Software), a
+ * product or service whose value derives, entirely or substantially, from
+ * the functionality of the Software. Any license notice or attribution
+ * required by the License must also include this Commons Clause License
+ * Condition notice.
+ *
+ * Software:    NLPCraft
+ * License:     Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+ * Licensor:    Copyright (C) NLPCraft. https://nlpcraft.org
+ *
+ *     _   ____      ______           ______
+ *    / | / / /___  / ____/________ _/ __/ /_
+ *   /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
+ *  / /|  / / /_/ / /___/ /  / /_/ / __/ /_
+ * /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
+ *        /_/
+ */
+
+#basic-concepts {
+    dl.stm-example {
+        padding: 20px;
+        border: 1px solid #ddd;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        margin-left: 0 !important;
+
+        dd {
+            font-weight: 400;
+            font-family: monospace;
+            margin-top: 20px;
+            font-size: 120%;
+
+            i.fa {
+                text-align: left;
+                vertical-align: text-bottom;
+            }
+        }
+
+        dt {
+            margin-left: 20px;
+            font-weight: 400;
+        }
+
+        .stm-state {
+            display: inline-flex;
+
+            .stm {
+                margin-right: 20px;
+
+                label {
+                    font-weight: 500;
+                    display: block;
+                }
+
+                span {
+                    min-width: 50px;
+                    display: inline-block;
+                    padding: 3px 6px;
+                    border: 1px solid #C5D2F7 !important;
+                    border-radius: 2px;
+                    text-align: center;
+                    font-weight: 200;
+                    letter-spacing: 0.02em;
+                }
+            }
+        }
+    }
+}

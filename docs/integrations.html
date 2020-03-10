@@ -1,0 +1,936 @@
+---
+active_crumb: Integrations
+layout: documentation
+id: integrations
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div id="integrations" class="col-md-8 second-column">
+    <section>
+        <span id="overview" class="section-title">Overview</span>
+        <p>
+            NLPCraft provides several integration points for a underlying <a href="">SQL storage</a> and
+            <a href="#nlp">NLP functionality</a>.
+        </p>
+        <span id="nlp" class="section-title">NLP Functionality</span>
+        <p>
+            NLPCraft comes with integrations for several 3rd party NLP libraries and projects. External
+            integrations can be used for two distinct purposes inside of NLPCraft:
+        </p>
+        <ul>
+            <li>
+                <b>Base NLP Engine</b>
+                <p>
+                    As a base NLP engine the external project is responsible for all basic NLP pre-processing
+                    such as tokenization, lemmatization, stemmatization, PoS tagging, etc. Base NLP engine
+                    has significant performance requirement and therefore cannot be based on a APIs that
+                    requires a network trip.
+                </p>
+            </li>
+            <li>
+                <b>Token Provider</b>
+                <p>
+                    As a token provider the external project will be used for detection of the named entities.
+                </p>
+            </li>
+        </ul>
+        <p>
+            Note that the same external project can be used for both roles, and projects can be mixed and matched
+            together through NLPCraft configuration. You can only have one base NLP engine but you can configure
+            multiple token providers. The following table shows supported 3rd party integrations and
+            their roles:
+        </p>
+        <table class="gradient-table checks">
+            <thead>
+            <tr>
+                <th>Project</th>
+                <th>Base NLP Engine</th>
+                <th>Token Provider</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>NLPCraft</td>
+                <td><center><i class="fas fa-times"></i></center></td>
+                <td><center><i class="fas fa-check-double"></i></center></td>
+            </tr>
+            <tr>
+                <td><a href="#opennlp">OpenNLP</a></td>
+                <td><center><i class="fas fa-check-double"></i></center></td>
+                <td><center><i class="fas fa-check"></i></center></td>
+            </tr>
+            <tr>
+                <td><a href="#google">Google Natural Language</a></td>
+                <td><center><i class="fas fa-times"></i></center></td>
+                <td><center><i class="fas fa-check"></i></center></td>
+            </tr>
+            <tr>
+                <td><a href="#stanford">Stanford CoreNLP</a></td>
+                <td><center><i class="fas fa-check"></i></center></td>
+                <td><center><i class="fas fa-check"></i></center></td>
+            </tr>
+            <tr>
+                <td><a href="#spacy">spaCy</a></td>
+                <td><center><i class="fas fa-times"></i></center></td>
+                <td><center><i class="fas fa-check"></i></center></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="bq warn">
+            <span class="section-sub-title">Configuring Token Providers</span>
+            <p>
+                REST server configuration support zero or more token providers. Data models also have to specify
+                the specific tokens they are expecting the REST server and probe to detect. This is done to limit the
+                unnecessary processing since implicit enabling of all token providers and all tokens can lead to
+                a significant slow down of processing.
+            </p>
+            <p>
+                REST server configuration property <code>tokenProvides</code> provides the list of enabled token providers. See its
+                <a href="/server-and-probe.html">documentation</a> for more details. Data model provides its required tokens via
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelView.html#getEnabledBuiltInTokens--">NCModelView.getEnabledBuiltInTokens()</a> method.
+            </p>
+        </div>
+    </section>
+    <section>
+        <img id="nlpcraft" class="img-title" src="/images/nlpcraft_logo_black.gif" height="48px" alt="">
+        <p>
+            NLPCraft is an open source library for adding natural language Interface to any applications.
+        </p>
+        <span class="section-sub-title">Base NLP Engine</span>
+        <p>
+            N/A
+        </p>
+        <span class="section-sub-title">Token Provider</span>
+        <p>
+            NLPCraft provides its own set of built-in elements. NLPCraft token IDs start with <code>nlpcraft</code>. Note
+            also that all NLPCraft built-in tokens are normalized named entities (NNE), i.e. they provide normalized
+            information and not just their IDs:
+        </p>
+        <table class="gradient-table">
+            <thead>
+            <tr>
+                <th>Token ID</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><code>nlpcraft:nlp</code></td>
+                <td>
+                    <p>
+                        This token denotes a word (always a single word) that is not a part of any other token. It's
+                        also call a free-word, i.e. a word that is not linked to any other detected model element.
+                    </p>
+                    <p>
+                        <b>NOTE:</b> the metadata from this token defines a common set of NLP properties and
+                        is present in every other token as well.
+                    </p>
+                </td>
+                <td>
+                    <ul>
+                        <li>Jamie goes <code>home</code> (assuming that a word 'home' does not belong to any model element).</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:date</code></td>
+                <td>
+                    This token denotes a date range. It recognizes dates from 1900 up to 2023. Note that it does not
+                    currently recognize time component.
+                </td>
+                <td>
+                    <ul>
+                        <li>Meeting <code>next tuesday</code>.</li>
+                        <li>Report for entire <code>2018 year</code>.</li>
+                        <li>Data <code>from 1/1/2017 to 12/31/2018</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:num</code></td>
+                <td>
+                    This token denotes a single numeric value or numeric condition.
+                </td>
+                <td>
+                    <ul>
+                        <li>Price <code>&gt; 100</code>.</li>
+                        <li>Price is <code>less than $100</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:continent</code></td>
+                <td>
+                    This token denotes a geographical continent.
+                </td>
+                <td>
+                    <ul>
+                        <li>Population of <code>Africa</code>.</li>
+                        <li>Surface area of <code>America</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:subcontinent</code></td>
+                <td>
+                    This token denotes a geographical subcontinent.
+                </td>
+                <td>
+                    <ul>
+                        <li>Population of <code>Alaskan peninsula</code>.</li>
+                        <li>Surface area of <code>South America</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:region</code></td>
+                <td>
+                    This token denotes a geographical region/state.
+                </td>
+                <td>
+                    <ul>
+                        <li>Population of <code>California</code>.</li>
+                        <li>Surface area of <code>South Dakota</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:country</code></td>
+                <td>
+                    This token denotes a country.
+                </td>
+                <td>
+                    <ul>
+                        <li>Population of <code>France</code>.</li>
+                        <li>Surface area of <code>USA</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:city</code></td>
+                <td>
+                    This token denotes a city.
+                </td>
+                <td>
+                    <ul>
+                        <li>Population of <code>Paris</code>.</li>
+                        <li>Surface area of <code>Washington DC</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:metro</code></td>
+                <td>
+                    This token denotes a metro area.
+                </td>
+                <td>
+                    <ul>
+                        <li>Population of <code>Cedar Rapids-Waterloo-Iowa City & Dubuque, IA</code> metro area.</li>
+                        <li>Surface area of <code>Norfolk-Portsmouth-Newport News, VA</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:sort</code></td>
+                <td>
+                    This token denotes a sorting or ordering.
+                </td>
+                <td>
+                    <ul>
+                        <li>Report <code>sorted from top to bottom</code>.</li>
+                        <li>Analysis <code>sorted in descending order</code>.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:limit</code></td>
+                <td>
+                    This token denotes a numerical limit.
+                </td>
+                <td>
+                    <ul>
+                        <li>Show <code>top 5</code> brands.</li>
+                        <li>Show <code>several</code> brands.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:coordinate</code></td>
+                <td>
+                    This token denotes a latitude and longitude coordinates.
+                </td>
+                <td>
+                    <ul>
+                        <li>Route the path to <code>55.7558, 37.6173</code> location.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:aggregation</code></td>
+                <td>
+                    This token denotes an aggregation function:
+                    <code>min</code>,
+                    <code>max</code>,
+                    <code>avg</code>,
+                    <code>sum</code>, or
+                    <code>group</code>.  Note this token always need another token that it references.
+                </td>
+                <td>
+                    <ul>
+                        <li>
+                            Show the <code><b>average</b></code> <code>price</code> (assuming that 'price' is also
+                            detected as a token).
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>nlpcraft:relation</code></td>
+                <td>
+                    This token denotes a relation function:
+                    <code>compare</code> or
+                    <code>correlate</code>. Note this token always need another two tokens that it references.
+                </td>
+                <td>
+                    <ul>
+                        <li>
+                            What is the <code><b>correlation between</b></code> <code>price</code> <code><b>and</b></code> <code>location</code>
+                            (assuming that 'price' and 'location' are also detected tokens).
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p>Notes:</p>
+        <ul>
+            <li>
+                See <a href="data-model.html#meta">token metadata</a> documentation for detailed information
+                for token metadata properties.
+            </li>
+            <li>
+                Make sure to enable this token provider <code>nlpcraft</code> in REST server configuration
+                using <code>nlpcraft.server.tokenProviders</code> property.
+            </li>
+            <li>
+                Make sure to also properly configure required tokens in you model configuration via
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelView.html#getEnabledBuiltInTokens--">NCModelView.getEnabledBuiltInTokens()</a> method.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <img id="opennlp" class="img-title" src="/images/opennlp-logo.png" height="48px" alt="">
+        <p>
+            <a href="https://opennlp.apache.org">Apache OpenNLP</a> is an open-source library for a machine learning based
+            processing of natural language text.
+        </p>
+        <span class="section-sub-title">Base NLP Engine</span>
+        <p>
+            <a href="https://opennlp.apache.org">Apache OpenNLP</a> is used by NLPCraft as a default base NLP engine. You can also set
+            it explicitly on REST server and probe via configuration property: <code>nlpcraft.nlpEngine=opennlp</code>
+        </p>
+        <span class="section-sub-title">Token Provider</span>
+        <p>
+            OpenNLP can be used independently as a token provider (even if other library is used as a base NLP engine).
+            OpenNLP provides its own set of built-in tokens supported by NLPCraft.
+            OpenNLP token IDs have a form of <code>opennlp:xxx</code>, where <code>xxx</code> is a lower case
+            name of the named entity in OpenNLP.
+        </p>
+        <p>
+            Configuration notes:
+        </p>
+        <ul>
+            <li>
+                <p>
+                    OpenNLP integration is configured with the following pre-train English OpenNLP
+                    <a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">models</a> version 1.5:
+                </p>
+                <table class="gradient-table">
+                    <thead>
+                    <tr>
+                        <th>Named Entity</th>
+                        <th>OpenNLP Model</th>
+                        <th>Token ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Location</td>
+                            <td><a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">en-ner-location.bin</a></td>
+                            <td><code>opennlp:location</code></td>
+                        </tr>
+                        <tr>
+                            <td>Money</td>
+                            <td><a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">en-ner-money.bin</a></td>
+                            <td><code>opennlp:money</code></td>
+                        </tr>
+                        <tr>
+                            <td>Person</td>
+                            <td><a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">en-ner-person.bin</a></td>
+                            <td><code>opennlp:person</code></td>
+                        </tr>
+                        <tr>
+                            <td>Organization</td>
+                            <td><a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">en-ner-organization.bin</a></td>
+                            <td><code>opennlp:organization</code></td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td><a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">en-ner-date.bin</a></td>
+                            <td><code>opennlp:date</code></td>
+                        </tr>
+                        <tr>
+                            <td>Time</td>
+                            <td><a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">en-ner-time.bin</a></td>
+                            <td><code>opennlp:time</code></td>
+                        </tr>
+                        <tr>
+                            <td>Percentage</td>
+                            <td><a target="opennlp" href="http://opennlp.sourceforge.net/models-1.5/">en-ner-percentage.bin</a></td>
+                            <td><code>opennlp:percentage</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </li>
+            <li>
+                See <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCToken.html#opennlp">NCToken</a>
+                documentation for token properties.
+            </li>
+            <li>
+                Make sure to enable this token provider <code>opennlp</code> in REST server configuration
+                using <code>nlpcraft.server.tokenProviders</code> property.
+            </li>
+            <li>
+                Make sure to properly configure required tokens in you model configuration via
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelView.html#getEnabledBuiltInTokens--">NCModelView.getEnabledBuiltInTokens()</a> method.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <img id="google" class="img-title" src="/images/google-cloud-logo-small.png" height="56px" alt="">
+        <p>
+            <a href="https://cloud.google.com/natural-language/">Google Natural Language</a> uses machine learning
+            to reveal the structure and meaning of text.
+        </p>
+        <span class="section-sub-title">Base NLP Engine</span>
+        <p>
+            N/A
+        </p>
+        <span class="section-sub-title">Token Provider</span>
+        <p>
+            Google Natural Language provides its own set of built-in elements.
+            To use Google token provider the environment variable <code>GOOGLE_APPLICATION_CREDENTIALS</code>
+            should be configured to point to proper Google JSON credential file (see
+            <a href="https://cloud.google.com/docs/authentication/production">Google documentation</a> for more details).
+            Google Natural Language token IDs have a form of <code>google:xxx</code>, where <code>xxx</code> is a lower
+            case name of the Named Entity in Google APIs, i.e. <code>google:person</code>, <code>google:location</code>,
+            etc.
+        </p>
+        <p>Configuration notes:</p>
+        <ul>
+            <li>
+                See Google Natural Language
+                <a target="google" href="https://cloud.google.com/natural-language/docs/reference/rest/v1/Entity#Type">documentation</a>
+                for more details on supported tokens.
+            </li>
+            <li>
+                See <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCToken.html#google">NCToken</a> documentation for token properties.
+            </li>
+            <li>
+                Make sure to enable this token provider <code>google</code> in REST server configuration
+                using <code>nlpcraft.server.tokenProviders</code> property.
+            </li>
+            <li>
+                Make sure to also properly configure required tokens in you model configuration via
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelView.html#getEnabledBuiltInTokens--">NCModelView.getEnabledBuiltInTokens()</a> method.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <img id="stanford" class="img-title" src="/images/corenlp-logo.png" height="64px" alt="">
+        <p>
+            <a href="https://stanfordnlp.github.io/CoreNLP">Stanford CoreNLP</a> is a set of human language technology tools.
+        </p>
+        <span class="section-sub-title">Base NLP Engine</span>
+        <p>
+            You can set Stanford CoreNLP as a base NLP engine. Note that due to licensing you need to add Stanford CoreNLP
+            dependencies separately and make it available to NLPCraft:
+        </p>
+        <nav>
+            <div class="nav nav-tabs" role="tablist">
+                <a class="nav-item nav-link active" data-toggle="tab" href="#nav-stanfordnlp-maven" role="tab" aria-controls="nav-home" aria-selected="true">Maven <sup>Java</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-stanfordnlp-grape" role="tab" aria-controls="nav-profile" aria-selected="false">Grape <sup>Groovy</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-stanfordnlp-gradle" role="tab" aria-controls="nav-profile" aria-selected="false">Gradle <sup>Kotlin</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-stanfordnlp-sbt" role="tab" aria-controls="nav-contact" aria-selected="false">SBT <sup>Scala</sup></a>
+            </div>
+        </nav>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="nav-stanfordnlp-maven" role="tabpanel">
+                    <pre class="brush: xml, highlight: 4">
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;edu.stanford.nlp&lt;/groupId&gt;
+                        &lt;artifactId&gt;stanford-corenlp&lt;/artifactId&gt;
+                        &lt;version&gt;3.9.2&lt;/version&gt;
+                    &lt;/dependency&gt;
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-stanfordnlp-grape" role="tabpanel">
+                    <pre class="brush: java">
+                    @Grab ('edu.stanford.nlp:stanford-corenlp:3.9.2')
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-stanfordnlp-gradle" role="tabpanel">
+                    <pre class="brush: java">
+                    dependencies {
+                        runtime group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '3.9.2'
+                    }
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-stanfordnlp-sbt" role="tabpanel">
+                    <pre class="brush: scala">
+                    libraryDependencies += "mysql" % "stanford-corenlp" % "3.9.2"
+                    </pre>
+            </div>
+        </div>
+        <p>
+            Comments:
+        </p>
+        <ul>
+            <li>
+                Stanford CoreNLP is licensed under
+                <a target=_ href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v3</a> - make
+                sure your usage is compliant with this license.
+            </li>
+            <li>
+                Stanford CoreNLP library must be available <b>on both</b> the REST server and the data probe.
+            </li>
+            <li>
+                Make sure to change <code>3.9.2</code> version to the latest or required one.
+            </li>
+            <li>
+                Set configuration property <code>nlpcraft.nlpEngine=stanford</code>
+            </li>
+            <li>
+                Note that you can also <a target=_ href="https://stanfordnlp.github.io/CoreNLP/">download</a>
+                Stanford CoreNLP as a separate JAR file and add it to your
+                project classpath if you are not using, or instead of, build tools.
+            </li>
+        </ul>
+        <span class="section-sub-title">Token Provider</span>
+        <p>
+            Stanford CoreNLP can be used as a token provider independently from base NLP engine.
+            Due to licensing you need to add Stanford CoreNLP dependencies separately and make it available to NLPCraft:
+        </p>
+        <nav>
+            <div class="nav nav-tabs" role="tablist">
+                <a class="nav-item nav-link active" data-toggle="tab" href="#nav-stanfordnlp-maven2" role="tab" aria-controls="nav-home" aria-selected="true">Maven <sup>Java</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-stanfordnlp-grape2" role="tab" aria-controls="nav-profile" aria-selected="false">Grape <sup>Groovy</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-stanfordnlp-gradle2" role="tab" aria-controls="nav-profile" aria-selected="false">Gradle <sup>Kotlin</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-stanfordnlp-sbt2" role="tab" aria-controls="nav-contact" aria-selected="false">SBT <sup>Scala</sup></a>
+            </div>
+        </nav>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="nav-stanfordnlp-maven2" role="tabpanel">
+                    <pre class="brush: xml, highlight: 4">
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;edu.stanford.nlp&lt;/groupId&gt;
+                        &lt;artifactId&gt;stanford-corenlp&lt;/artifactId&gt;
+                        &lt;version&gt;3.9.2&lt;/version&gt;
+                    &lt;/dependency&gt;
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-stanfordnlp-grape2" role="tabpanel">
+                    <pre class="brush: java">
+                    @Grab ('edu.stanford.nlp:stanford-corenlp:3.9.2')
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-stanfordnlp-gradle2" role="tabpanel">
+                    <pre class="brush: java">
+                    dependencies {
+                        runtime group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '3.9.2'
+                    }
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-stanfordnlp-sbt2" role="tabpanel">
+                    <pre class="brush: scala">
+                    libraryDependencies += "mysql" % "stanford-corenlp" % "3.9.2"
+                    </pre>
+            </div>
+        </div>
+        <p>
+            Comments:
+        </p>
+        <ul>
+            <li>
+                Stanford CoreNLP is licensed under
+                <a target=_ href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License v3</a> - make
+                sure your usage is compliant with this license.
+            </li>
+            <li>
+                Stanford CoreNLP library should <b>only</b> be available on the data probe.
+            </li>
+            <li>
+                Make sure to change <code>3.9.2</code> version to the latest or required one.
+            </li>
+            <li>
+                Note that you can also <a target=_ href="https://stanfordnlp.github.io/CoreNLP/">download</a>
+                Stanford CoreNLP as a separate JAR file and add it to your
+                project classpath if you are not using, or instead of, build tools.
+            </li>
+        </ul>
+        <p>
+            Stanford CoreNLP provides its own set of built-in elements.
+            Stanford CoreNLP token IDs have a form of <code>stanford:xxx</code>, where <code>xxx</code> is a lower
+            case name of the Named Entity in Stanford CoreNLP, i.e. <code>stanford:person</code>, <code>stanford:location</code>,
+            etc.
+        </p>
+        <p>Configuration notes:</p>
+        <ul>
+            <li>
+                See Stanford CoreNLP Named Entity Recognition
+                <a target="google" href="https://stanfordnlp.github.io/CoreNLP/ner.html">documentation</a>
+                for more details on supported token types.
+            </li>
+            <li>
+                See <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCToken.html#stanford">NCToken</a>
+                documentation for token properties.
+            </li>
+            <li>
+                Make sure to enable this token provider <code>stanford</code> in REST server configuration
+                using <code>nlpcraft.server.tokenProviders</code> property.
+            </li>
+            <li>
+                Make sure to also properly configure required tokens in you model configuration via
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelView.html#getEnabledBuiltInTokens--">NCModelView.getEnabledBuiltInTokens()</a> method.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <img id="spacy" class="img-title" src="/images/spacy-logo.png" height="48px" alt="">
+        <p>
+            <a href="https://spacy.io">spaCy</a> is a free open-source library for Natural Language Processing in Python.
+        </p>
+        <span class="section-sub-title">Base NLP Engine</span>
+        <p>
+            N/A
+        </p>
+        <span class="section-sub-title">Token Provider</span>
+        <p>
+            spaCy provides its own set of built-in elements. NLPCraft integrates with spaCy via local Python-based
+            REST server <code>/src/main/python/spacy_proxy.py</code>. It is a very simple Flask-based implementation
+            that you can freely modify to change the spaCy models or their external attributes that are made available.
+        </p>
+        <p>
+            This is entire source code for this local REST server:
+        </p>
+        <pre class="brush: python, highlight: [11, 29, 30, 58, 59]">
+import urllib.parse
+
+import spacy
+from flask import Flask, request
+from flask_restful import Resource, Api
+
+#
+# Add your own or modify spaCy libraries here.
+# By default, the English model 'en_core_web_sm' is loaded.
+#
+nlp = spacy.load("en_core_web_sm")
+
+app = Flask(__name__)
+api = Api(app)
+
+
+class Ner(Resource):
+    @staticmethod
+    def get():
+
+        doc = nlp(urllib.parse.unquote_plus(request.args.get('text')))
+        res = []
+        for e in doc.ents:
+            meta = {}
+
+            # Change the following two lines to implements your own logic for
+            # filling up meta object with custom user attributes. 'meta' should be a dictionary (JSON)
+            # with types 'string:string'.
+            for key in e._.span_extensions:
+                meta[key] = e._.__getattr__(key)
+
+            res.append(
+                {
+                    "text": e.text,
+                    "from": e.start_char,
+                    "to": e.end_char,
+                    "ner": e.label_,
+                    "vector": str(e.vector_norm),
+                    "sentiment": str(e.sentiment),
+                    "meta": meta
+                }
+            )
+
+        return res
+
+
+api.add_resource(Ner, '/spacy')
+
+#
+# Default endpoint is 'localhost:5002'.
+#
+# If the endpoint here is changed make sure to provide
+# the same endpoint via configuration property 'nlpcraft.server.spacy.proxy.url',
+# i.e. 'nlpcraft.server.spacy.proxy.url=myhost:1234'
+#
+if __name__ == '__main__':
+    app.run(
+        host="localhost",
+        port='5002'
+    )
+        </pre>
+        <p>
+            You need to start this REST server before you can use spaCy integration in NLPCraft. Note that for
+            production environment it is recommended to use
+            <a target=_ href="https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface">WSGI-based server</a> instead.
+        </p>
+        <p>
+            Comments:
+        </p>
+        <ul>
+            <li>
+                On line 11 you can add or change spaCy models to be loaded.
+            </li>
+            <li>
+                On lines 29-30 you can change how spans' external attributes are collected.
+            </li>
+            <li>
+                On lines 58-59 you can change the endpoint on which this REST server starts. Note that you
+                need to change the same endpoint on REST server via configuration property <code>nlpcraft.server.spacy.proxy.url</code>,
+                e.g. <code>nlpcraft.server.spacy.proxy.url=myhost:1234</code>.
+            </li>
+        </ul>
+        <p>
+            spaCy token IDs have a form of <code>spacy:xxx</code>, where <code>xxx</code> is a lower case name of the Named Entity
+            in spaCy APIs, i.e. <code>spacy:person</code>, <code>spacy:location</code>, etc.
+        </p>
+        <p>
+            Configuration notes:
+        </p>
+        <ul>
+            <li>
+                See spaCy Named Entity Recognition
+                <a target="spacy" href="https://spacy.io/usage/linguistic-features#named-entities">documentation</a>
+                for more details on supported token types.
+            </li>
+            <li>
+                See <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCToken.html#stanford">NCToken</a>
+                documentation for token properties.
+            </li>
+            <li>
+                Make sure to enable this token provider <code>spacy</code> in REST server configuration
+                using <code>nlpcraft.server.tokenProviders</code> property.
+            </li>
+            <li>
+                Make sure to also properly configure required tokens in you model configuration via
+                <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCModelView.html#getEnabledBuiltInTokens--">NCModelView.getEnabledBuiltInTokens()</a> method.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <img id="mysql" class="img-title" src="/images/mysql-logo.png" height="80px" alt="">
+        <p>
+            You can install and use MySQL as a system database in the REST server instead of the built-in
+            distributed SQL storage
+            from Apache Ignite that is used by default. Add the following dependency to your project:
+        </p>
+        <nav>
+            <div class="nav nav-tabs" role="tablist">
+                <a class="nav-item nav-link active" data-toggle="tab" href="#nav-mysql-maven" role="tab" aria-controls="nav-home" aria-selected="true">Maven <sup>Java</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-mysql-grape" role="tab" aria-controls="nav-profile" aria-selected="false">Grape <sup>Groovy</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-mysql-gradle" role="tab" aria-controls="nav-profile" aria-selected="false">Gradle <sup>Kotlin</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-mysql-sbt" role="tab" aria-controls="nav-contact" aria-selected="false">SBT <sup>Scala</sup></a>
+            </div>
+        </nav>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="nav-mysql-maven" role="tabpanel">
+                    <pre class="brush: xml, highlight: 4">
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;mysql&lt;/groupId&gt;
+                        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+                        &lt;version&gt;8.0.15&lt;/version&gt;
+                    &lt;/dependency&gt;
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-mysql-grape" role="tabpanel">
+                    <pre class="brush: java">
+                    @Grab ('mysql:mysql-connector-java:8.0.15')
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-mysql-gradle" role="tabpanel">
+                    <pre class="brush: java">
+                    dependencies {
+                        runtime group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+                    }
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-mysql-sbt" role="tabpanel">
+                    <pre class="brush: scala">
+                    libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.15"
+                    </pre>
+            </div>
+        </div>
+        <p>
+            Comments:
+        </p>
+        <ul>
+            <li>
+                Make sure to change <code>8.0.15</code> version to the latest or required one.
+            </li>
+            <li>
+                Update configuration property <code>nlpcraft.server.database.jdbc</code>
+                with required JDBC driver class and JDBC URL.
+            </li>
+            <li>
+                Use scripts from <code>sql/mysql</code> folder to create database and initialize DB schema.
+            </li>
+            <li>
+                Note that you can also <a target=_ href="https://dev.mysql.com/downloads/connector/j">download</a> MySQL
+                JDBC driver as a separate JAR file and add it to your
+                project classpath if you are not using, or instead of, build tools.
+            </li>
+        </ul>
+    </section>
+    <section>
+        <img id="postgres" class="img-title" src="/images/postgresql-logo.png" height="80px" alt="">
+        <p>
+            You can install and use PostgreSQL as a system database in the REST server instead of the built-in
+            distributed SQL storage
+            from Apache Ignite that is used by default. Add the following dependency to your project:
+        </p>
+        <nav>
+            <div class="nav nav-tabs" role="tablist">
+                <a class="nav-item nav-link active" data-toggle="tab" href="#nav-postgres-maven" role="tab" aria-controls="nav-home" aria-selected="true">Maven <sup>Java</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-postgres-grape" role="tab" aria-controls="nav-profile" aria-selected="false">Grape <sup>Groovy</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-postgres-gradle" role="tab" aria-controls="nav-profile" aria-selected="false">Gradle <sup>Kotlin</sup></a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#nav-postgres-sbt" role="tab" aria-controls="nav-contact" aria-selected="false">SBT <sup>Scala</sup></a>
+            </div>
+        </nav>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="nav-postgres-maven" role="tabpanel">
+                    <pre class="brush: xml, highlight: 4">
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+                        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+                        &lt;version&gt;42.2.5&lt;/version&gt;
+                    &lt;/dependency&gt;
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-postgres-grape" role="tabpanel">
+                    <pre class="brush: java">
+                    @Grab ('org.postgresql:postgresql:42.2.5')
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-postgres-gradle" role="tabpanel">
+                    <pre class="brush: java">
+                    dependencies {
+                        runtime group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+                    }
+                    </pre>
+            </div>
+            <div class="tab-pane fade" id="nav-postgres-sbt" role="tabpanel">
+                    <pre class="brush: scala">
+                    libraryDependencies += "org.postgresql" % "postgresql" % "42.2.5"
+                    </pre>
+            </div>
+        </div>
+        <p>
+            Comments:
+        </p>
+        <ul>
+            <li>
+                Make sure to change <code>42.2.5</code> version to the latest or required one.
+            </li>
+            <li>
+                Update configuration property <code>nlpcraft.server.database.jdbc</code> 
+                with required JDBC driver class and JDBC URL.
+            </li>
+            <li>
+                Use scripts from <code>sql/postgres</code> folder to create database and initialize DB schema.
+            </li>
+            <li>
+                Note that you can also <a target=_ href="https://jdbc.postgresql.org/">download</a> PostgreSQL
+                JDBC driver as a separate JAR file and add it to your
+                project classpath if you are not using, or instead of, build tools.
+            </li>
+        </ul>
+    </section>
+</div>
+<div class="col-md-2 third-column">
+    <ul class="side-nav">
+        <li class="side-nav-title">On This Page</li>
+        <li><a href="#nlpcraft">NLPCraft</a></li>
+        <li><a href="#opennlp">OpenNLP</a></li>
+        <li><a href="#google">Google</a></li>
+        <li><a href="#stanford">Stanford CoreNLP</a></li>
+        <li><a href="#spacy">spaCy</a></li>
+        <li><a href="#mysql">MySQL</a></li>
+        <li><a href="#postgres">PostgreSQL</a></li>
+        <li class="side-nav-title">Quick Links</li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
+            target="github"
+            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
+            target=_
+            href="/apis/latest/index.html">Javadoc</a>
+        </li>
+        <li>
+            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
+            href="https://nlpcraft.docs.apiary.io"
+            target="apiary">REST API</a>
+        </li>
+        <li>
+            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
+        </li>
+        <li>
+            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
+        </li>
+        <li class="side-nav-title">Support</li>
+        <li>
+            <nobr>
+                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
+            </nobr>
+        </li>
+    </ul>
+</div>
+
+
+
+

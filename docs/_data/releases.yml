@@ -1,0 +1,164 @@
+#
+#   "Commons Clause" License, https://commonsclause.com/
+#
+#   The Software is provided to you by the Licensor under the License,
+#   as defined below, subject to the following condition.
+#
+#   Without limiting other conditions in the License, the grant of rights
+#   under the License will not include, and the License does not grant to
+#   you, the right to Sell the Software.
+#
+#   For purposes of the foregoing, "Sell" means practicing any or all of
+#   the rights granted to you under the License to provide to third parties,
+#   for a fee or other consideration (including without limitation fees for
+#   hosting or consulting/support services related to the Software), a
+#   product or service whose value derives, entirely or substantially, from
+#   the functionality of the Software. Any license notice or attribution
+#   required by the License must also include this Commons Clause License
+#   Condition notice.
+#
+#   Software:    NLPCraft
+#   License:     Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+#   Licensor:    Copyright (C) NLPCraft. https://nlpcraft.org
+#
+#       _   ____      ______           ______
+#      / | / / /___  / ____/________ _/ __/ /_
+#     /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
+#    / /|  / / /_/ / /___/ /  / /_/ / __/ /_
+#   /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
+#          /_/
+#
+
+- version: 0.8.2
+  date: Jan 14, 2020
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.2/nlpcraft-0.8.2.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.2/nlpcraft-0.8.2.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.2/nlpcraft-0.8.2.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.2/nlpcraft-0.8.2.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.2/nlpcraft-0.8.2.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.8.2
+  dockerhub_link: https://hub.docker.com/r/nlpcraftserver/server
+  backward_compatible: yes
+
+- version: 0.8.1
+  date: Dec 21, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.1/nlpcraft-0.8.1.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.1/nlpcraft-0.8.1.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.1/nlpcraft-0.8.1.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.1/nlpcraft-0.8.1.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.8.1/nlpcraft-0.8.1.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.8.1
+  dockerhub_link: https://hub.docker.com/r/nlpcraftserver/server
+  backward_compatible: yes
+
+- version: 0.7.3
+  date: Dec 14, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.3/nlpcraft-0.7.3.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.3/nlpcraft-0.7.3.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.3/nlpcraft-0.7.3.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.3/nlpcraft-0.7.3.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.3/nlpcraft-0.7.3.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.7.3
+  dockerhub_link: https://hub.docker.com/r/nlpcraftserver/server
+  backward_compatible: no
+
+- version: 0.7.2
+  date: Jul 22, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.2/nlpcraft-0.7.2.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.2/nlpcraft-0.7.2.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.2/nlpcraft-0.7.2.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.2/nlpcraft-0.7.2.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.2/nlpcraft-0.7.2.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.7.2
+  backward_compatible: yes
+
+- version: 0.7.1
+  date: Jul 19, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.1/nlpcraft-0.7.1.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.1/nlpcraft-0.7.1.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.1/nlpcraft-0.7.1.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.1/nlpcraft-0.7.1.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.1/nlpcraft-0.7.1.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.7.1
+  backward_compatible: yes
+
+- version: 0.7.0
+  date: Jul 11, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.0/nlpcraft-0.7.0.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.0/nlpcraft-0.7.0.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.0/nlpcraft-0.7.0.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.0/nlpcraft-0.7.0.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.7.0/nlpcraft-0.7.0.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.7.0
+  backward_compatible: yes
+
+- version: 0.6.0
+  date: Jun 20, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.6.0/nlpcraft-0.6.0.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.6.0/nlpcraft-0.6.0.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.6.0/nlpcraft-0.6.0.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.6.0/nlpcraft-0.6.0.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.6.0/nlpcraft-0.6.0.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.6.0
+  backward_compatible: no
+
+- version: 0.5.1
+  date: May 11, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.1/nlpcraft-0.5.1.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.1/nlpcraft-0.5.1.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.1/nlpcraft-0.5.1.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.1/nlpcraft-0.5.1.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.1/nlpcraft-0.5.1.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.5.1
+  backward_compatible: yes
+
+- version: 0.5.0
+  date: May 08, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.0/nlpcraft-0.5.0.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.0/nlpcraft-0.5.0.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.0/nlpcraft-0.5.0.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.0/nlpcraft-0.5.0.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.5.0/nlpcraft-0.5.0.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.5.0
+  backward_compatible: yes
+
+- version: 0.4.0
+  date: Apr 16, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.4.0/nlpcraft-0.4.0.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.4.0/nlpcraft-0.4.0.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.4.0/nlpcraft-0.4.0.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.4.0/nlpcraft-0.4.0.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.4.0/nlpcraft-0.4.0.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.4.0
+  backward_compatible: yes
+
+- version: 0.3.0
+  date: Apr 10, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.3.0/nlpcraft-0.3.0.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.3.0/nlpcraft-0.3.0.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.3.0/nlpcraft-0.3.0.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.3.0/nlpcraft-0.3.0.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.3.0/nlpcraft-0.3.0.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.3.0
+  backward_compatible: yes
+
+- version: 0.2.0
+  date: Apr 05, 2019
+  zip_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.2.0/nlpcraft-0.2.0.zip
+  md5_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.2.0/nlpcraft-0.2.0.zip.md5
+  sha1_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.2.0/nlpcraft-0.2.0.zip.sha1
+  sha256_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.2.0/nlpcraft-0.2.0.zip.sha256
+  pgp_url: https://github.com/nlpcrafters/nlpcraft/releases/download/0.2.0/nlpcraft-0.2.0.zip.sig
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.2.0
+  backward_compatible: yes
+
+- version: 0.1.0
+  date: Mar 17, 2019
+  zip_url: https://www.dropbox.com/s/kxngj61yxmzooz2/nlpcraft-0.1.0.zip?dl=1
+  md5_url: https://www.dropbox.com/s/umhgh719w4b528t/nlpcraft-0.1.0.zip.md5?dl=1
+  sha1_url: https://www.dropbox.com/s/snnjfie6m1kp5e2/nlpcraft-0.1.0.zip.sha1?dl=1
+  sha256_url: https://www.dropbox.com/s/qdbtjaxq1yf7fg2/nlpcraft-0.1.0.zip.sha256?dl=1
+  pgp_url: https://www.dropbox.com/s/k5uy3umbifkjfao/nlpcraft-0.1.0.zip.sig?dl=1
+  github_link: https://github.com/nlpcrafters/nlpcraft/tree/0.1.0
+  backward_compatible: yes
+

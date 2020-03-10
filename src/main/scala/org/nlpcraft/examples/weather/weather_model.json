@@ -1,0 +1,84 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+{
+    "id": "nlpcraft.weather.ex",
+    "name": "Weather Example Model",
+    "version": "1.0",
+    "description": "Weather example model.",
+    "examples": [
+        "What's the local weather forecast?",
+        "What's the weather in Moscow?"
+    ],
+    "macros": [
+        {
+            "name": "<OF>",
+            "macro": "{of|for|per}"
+        },
+        {
+            "name": "<CHANCE>",
+            "macro": "{chance|possibility|probability|odds|likelihood|potential|risk|opportunity}"
+        },
+        {
+            "name": "<PHENOMENON>",
+            "macro": "{high sea|severe weather|hail|heat wave|cold wave|derecho|supercell|avalanche|cyclone|wildfire|landslide|firestorm|dust storm|thunder snow|winter storm|cloudburst|shower|condensation|precipitation|drizzle|rainstorm|rain storm|rainfall|rain|storm|sun|sunshine|cloud|hot|cold|dry|wet|wind||hurricane|typhoon|sand-storm|sand storm|tornado|humid|fog|snow|smog|black ice|haze|thundershower|thundersnow|sleet|drought|wildfire|blizzard|avalanche|mist|thunderstorm}"
+        },
+        {
+            "name": "<CUR>",
+            "macro": "{current|present|moment|now}"
+        },
+        {
+            "name": "<WEATHER>",
+            "macro": "{weather {condition|temp|temperature|data|*}|condition|temp|temperature}"
+        },
+        {
+            "name": "<FORECAST>",
+            "macro": "{forecast|prognosis|prediction}"
+        },
+        {
+            "name": "<HISTORY>",
+            "macro": "{history|past}"
+        }
+    ],
+    "elements": [
+        {
+            "id": "wt:hist",
+            "description": "Past weather conditions.",
+            "synonyms": [
+                "{<WEATHER>|*} <HISTORY>",
+                "<HISTORY> {<OF>|*} {<WEATHER>|<PHENOMENON>}"
+            ]
+        },
+        {
+            "id": "wt:curr",
+            "description": "Current weather conditions.",
+            "synonyms": [
+                "{<CUR>|*} {<WEATHER>|<PHENOMENON>}",
+                "<CHANCE> <OF> <PHENOMENON>",
+                "<PHENOMENON> {<CHANCE>|*}"
+            ]
+        },
+        {
+            "id": "wt:fcast",
+            "description": "Future weather forecast.",
+            "synonyms": [
+                "{<PHENOMENON>|<WEATHER>|*} <FORECAST>",
+                "<FORECAST> {<OF>|*} {<WEATHER>|<PHENOMENON>}"
+            ]
+        }
+    ]
+}

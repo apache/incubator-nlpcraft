@@ -1,0 +1,76 @@
+/*
+ * 2013-2015 Copyright (C) NLPCraft. All Rights Reserved.
+ *       ___      _          __ _
+ *      /   \__ _| |_ __ _  / /(_)_ __   __ ___   _____
+ *     / /\ / _` | __/ _` |/ / | | '_ \ / _` \ \ / / _ \
+ *    / /_// (_| | || (_| / /__| | | | | (_| |\ V / (_) |
+ *   /___,' \__,_|\__\__,_\____/_|_| |_|\__, | \_/ \___/
+ *                                      |___/
+ */
+
+@font-face {
+    font-family: 'canaroblack';
+    src: url('rene_bieder_-_canaro_black-webfont.eot');
+    src: url('rene_bieder_-_canaro_black-webfont.eot?#iefix') format('embedded-opentype'),
+         url('rene_bieder_-_canaro_black-webfont.woff') format('woff'),
+         url('rene_bieder_-_canaro_black-webfont.ttf') format('truetype'),
+         url('rene_bieder_-_canaro_black-webfont.svg#canaroblack') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'canaro_bookbold';
+    src: url('rene_bieder_-_canaro_bold-webfont.eot');
+    src: url('rene_bieder_-_canaro_bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('rene_bieder_-_canaro_bold-webfont.woff') format('woff'),
+         url('rene_bieder_-_canaro_bold-webfont.ttf') format('truetype'),
+         url('rene_bieder_-_canaro_bold-webfont.svg#canaro_bookbold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'canarobook';
+    src: url('rene_bieder_-_canaro_book-webfont.eot');
+    src: url('rene_bieder_-_canaro_book-webfont.eot?#iefix') format('embedded-opentype'),
+         url('rene_bieder_-_canaro_book-webfont.woff') format('woff'),
+         url('rene_bieder_-_canaro_book-webfont.ttf') format('truetype'),
+         url('rene_bieder_-_canaro_book-webfont.svg#canarobook') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'canaroextralight';
+    src: url('rene_bieder_-_canaro_extralight-webfont.eot');
+    src: url('rene_bieder_-_canaro_extralight-webfont.eot?#iefix') format('embedded-opentype'),
+         url('rene_bieder_-_canaro_extralight-webfont.woff') format('woff'),
+         url('rene_bieder_-_canaro_extralight-webfont.ttf') format('truetype'),
+         url('rene_bieder_-_canaro_extralight-webfont.svg#canaroextralight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'canaromedium';
+    src: url('rene_bieder_-_canaro_medium-webfont.eot');
+    src: url('rene_bieder_-_canaro_medium-webfont.eot?#iefix') format('embedded-opentype'),
+         url('rene_bieder_-_canaro_medium-webfont.woff') format('woff'),
+         url('rene_bieder_-_canaro_medium-webfont.ttf') format('truetype'),
+         url('rene_bieder_-_canaro_medium-webfont.svg#canaromedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'stag_sanslight';
+    src: url('stagsans-light-webfont.eot');
+    src: url('stagsans-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('stagsans-light-webfont.woff') format('woff'),
+         url('stagsans-light-webfont.ttf') format('truetype'),
+         url('stagsans-light-webfont.svg#stag_sanslight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}

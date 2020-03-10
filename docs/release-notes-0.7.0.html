@@ -1,0 +1,105 @@
+---
+rel_ver: 0.7.0
+layout: release-notes
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<section id="new">
+    <span class="section-title">🙌 New</span>
+    <ul>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/29">Issue #29</a>.
+            <p>
+                Introduced custom user-defined model element parser. See <code>NCModel#getParser()</code> method.
+            </p>
+            <p>
+                By default the semantic data model detects its elements by their synonyms declared in the model. However,
+                in some cases the synonyms (or the regular expressions) are simply not expressive enough. In such cases,
+                a user-defined custom parser can be defined for the model that would allow the user to define its own
+                logic to detect the model elements in the user input programmatically. Note that there can be only one
+                custom parser per model and it can detect any number of model elements.
+            </p>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/58">Issue #58</a>.
+            <p style="margin-top: 10px">
+                <img src="/images/spacy-logo.png" height="48px" align="left" style="margin: 0 20px 0 0" alt="">
+                Introduced token provider integration with <a target=_ href="https://spacy.io">spaCy</a> framework.
+                See <a href="/integrations.html#nlp">Integrations</a> section for the details on how to configure
+                3rd party integrations.
+            </p>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/41">Issue #41</a>.
+            <p>
+                Introduced additional user properties that can be passed during user creation or update.
+                These user properties are available on <a target="javadoc" href="https://nlpcraft.org/apis/latest/org/nlpcraft/model/NCSentence.html">NCSentence</a> interface.
+            </p>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/50">Issue #50</a>.
+            <p style="margin-top: 10px">
+                <img src="/images/spring-logo.png" height="48px" align="left" style="margin: 0 20px 0 0" alt="">
+                Introduced integration with <a target=_ href="https://spring.io/">Spring Framework</a> so that data model can be instantiated and configured
+                inside the data probes using Spring. New example <a target="github" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/names">Names</a> added to demonstrate usage of the Spring integration.
+            </p>
+        </li>
+    </ul>
+</section>
+<section id="enhancements">
+    <span class="section-title">🤖 Enhancements</span>
+    <ul>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/81">Issue #81</a>:
+            <ul>
+                <li>
+                    Intents can now be defined in external JSON or YAML model configuration under
+                    <code>intents</code> property.
+                </li>
+                <li>
+                    New annotation <code>@NCIntentRef</code> introduced to reference externally defined
+                    intents.
+                </li>
+                <li>
+                    <code>NCModelFileAdapter</code> adapter class is refactored to automatically load
+                    intents and set up the intent solver when loading external JSON or YAML model
+                    configuration.
+                </li>
+            </ul>
+        </li>
+        <li>
+            Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/92">Issue #92</a>:
+            <ul>
+                <li>
+                    Ignite storage files are now placed under <code>.nlpcraft</code> folder in the current
+                    user home directory (instead of temp folder that can lead to DB reset).
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>
+<section id="fixes">
+    <span class="section-title">🧐 Fixes</span>
+    <ul>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/82">Issue #82</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/88">Issue #88</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/85">Issue #85</a>.</li>
+        <li>Fixed <a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues/84">Issue #84</a>.</li>
+    </ul>
+</section>

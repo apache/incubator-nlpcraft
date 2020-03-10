@@ -1,0 +1,237 @@
+/*
+ * "Commons Clause" License, https://commonsclause.com/
+ *
+ * The Software is provided to you by the Licensor under the License,
+ * as defined below, subject to the following condition.
+ *
+ * Without limiting other conditions in the License, the    grant of rights
+ * under the License will not include, and the License does not grant to
+ * you, the right to Sell the Software.
+ *
+ * For purposes of the foregoing, "Sell" means practicing any or all of
+ * the rights granted to you under the License to provide to third parties,
+ * for a fee or other consideration (including without limitation fees for
+ * hosting or consulting/support services related to the Software), a
+ * product or service whose value derives, entirely or substantially, from
+ * the functionality of the Software. Any license notice or attribution
+ * required by the License must also include this Commons Clause License
+ * Condition notice.
+ *
+ * Software:    NLPCraft
+ * License:     Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
+ * Licensor:    Copyright (C) NLPCraft. https://nlpcraft.org
+ *
+ *     _   ____      ______           ______
+ *    / | / / /___  / ____/________ _/ __/ /_
+ *   /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
+ *  / /|  / / /_/ / /___/ /  / /_/ / __/ /_
+ * /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
+ *        /_/
+ */
+
+.first-column {
+    ul.side-nav {
+        list-style: none;
+        margin: 0 0 20px 0;
+        padding: 0;
+
+        li.side-nav-title {
+            margin-top: 5px;
+            display: block;
+            font-size: 1.1rem;
+            color: #303e4c;
+            font-weight: 500;
+
+            &:not(:first-child) {
+                margin-top: 25px !important;
+            }
+        }
+
+        li:not(.side-nav-title) {
+            margin-left: 10px;
+        }
+
+        li {
+            padding: 3px 10px 3px 0;
+            display: block;
+            text-align: left;
+
+            a {
+                color: #999;
+                text-align: left;
+                width: 100%;
+                padding-right: 20px;
+                border-right: 1px solid white;
+
+                &:hover {
+                    cursor: pointer;
+                    text-decoration: none;
+                    color: #369;
+                    border-right: 3px solid $color-beta;
+                }
+            }
+        }
+    }
+}
+
+.second-column {
+    padding-right: 40px;
+    
+    section {
+        .section-title {
+            color: $color-slack2;
+            font-weight: 500;
+            margin-top: 0;
+            border-bottom: 1px solid #dfdfdf;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 150%;
+        }
+
+        .section-sub-title {
+            color: $color-slack2;
+            font-weight: 700;
+            margin-top: 0;
+            display: block;
+            font-size: 110%;
+            margin-bottom: 5px;
+        }
+
+        figure {
+            margin: 15px 0;
+
+            img {
+                display: block;
+                border: 1px solid #dfdfdf;
+                border-radius: 4px;
+                padding: 30px;
+            }
+
+            figcaption {
+                font-size: 80%;
+                text-align: left;
+                margin-top: 5px;
+            }
+        }
+
+        figure.alt {
+            margin: 15px 0;
+
+            img {
+                display: block;
+                border-radius: 4px;
+                padding: 0;
+                border: none;
+            }
+
+            figcaption {
+                font-size: 80%;
+                text-align: left;
+                margin-top: 5px;
+            }
+        }
+
+        dl {
+            margin-top: 10px;
+            margin-left: 20px;
+
+            dd {
+                margin-bottom: 10px;
+                margin-left: 20px;
+            }
+        }
+
+        div.bq {
+
+            h4 {
+                margin: 0 0 10px 0 !important;
+            }
+
+            p, li {
+                width: 100% !important;
+            }
+        }
+
+        margin-bottom: 35px;
+
+        p, li {
+            letter-spacing: 0.02em;
+        }
+    }
+    
+    section:last-child {
+        margin-bottom: 60px;
+    }
+}
+
+.third-column {
+    ul.side-nav {
+        list-style: none;
+        margin: 0 0 20px 0;
+        padding: 0 0 0 10px;
+        border-left: 1px solid #dfdfdf;
+
+        li.side-nav-title {
+            margin-top: 5px;
+            display: block;
+            font-size: 1.1rem;
+            color: #303e4c;
+            font-weight: 500;
+
+            &:not(:first-child) {
+                margin-top: 25px !important;
+            }
+        }
+
+        li:not(.side-nav-title) {
+            margin-left: 10px;
+        }
+
+        li {
+            padding: 3px 10px 3px 0;
+            display: block;
+            text-align: left;
+
+            a {
+                color: #999;
+                text-align: left;
+                width: 100%;
+                padding-right: 20px;
+                border-right: 1px solid white;
+
+                &:hover {
+                    cursor: pointer;
+                    text-decoration: none;
+                    color: #369;
+                    border-right: 3px solid $color-beta;
+                }
+            }
+        }
+    }
+}
+
+ul.side-nav {
+    & img.quick-link-img {
+        height: 16px;
+        vertical-align: text-top;
+    }
+
+    i.fa-download {
+        font-size: 90%;
+        color: $color-turquoise;
+    }
+}
+
+li.side-nav-title:after {
+    font-size: 75%;
+    content: "\f105";
+    padding-left: 5px;
+    font-family: "Font Awesome\ 5 Free", serif;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.three-cols-container {
+    margin: 12px 0 72px 0;
+    display: flex;
+}

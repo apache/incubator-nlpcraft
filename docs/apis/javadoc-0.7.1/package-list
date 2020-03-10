@@ -1,0 +1,8 @@
+org.nlpcraft.model
+org.nlpcraft.model.factories.basic
+org.nlpcraft.model.factories.spring
+org.nlpcraft.model.intent
+org.nlpcraft.model.parsing
+org.nlpcraft.model.test
+org.nlpcraft.model.tools.dump
+org.nlpcraft.model.utils

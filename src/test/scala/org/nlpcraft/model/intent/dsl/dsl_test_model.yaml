@@ -1,0 +1,55 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+id: "nlpcraft.dsl.test"
+name: "Intent DSL Test Model"
+version: "1.0"
+description: "Intent DSL test model."
+enabledBuiltInTokens: [
+  "nlpcraft:num",
+  "nlpcraft:date"
+] 
+elements:
+  - id: "a"
+    metadata:
+      txt: "//[xX]//"
+    groups:
+    - "grp1"
+    synonyms:
+    - "{a|aa|aaa}"
+  - id: "a2"
+    metadata:
+      intVal: 1
+      boolVal: false
+      floatVal: 1.5
+      textVal: "a2"
+    synonyms:
+    - "{second|2nd} ^^[alias1](trim(id) == 'a')^^"
+  - id: "a3"
+    metadata:
+      intVal: 2
+      boolVal: false
+      floatVal: 3.5
+      textVal: "a3"
+    synonyms:
+    - "^^id == 'nlpcraft:num'^^ ^^[alias2](trim(id) == ('a2', 'x', 'y'))^^ ^^[alias3](id == 'a')^^"
+  - id: "a4"
+    synonyms:
+      - "{fourth|4th} ^^[alias4](id == 'a3')^^"
+
+intents:
+  - "intent=i1 conv=false term(t1)={id == 'a' && ~txt == 'x'}"

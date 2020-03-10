@@ -1,0 +1,5 @@
+What are the top orders for the last 2 weeks sorted by order quantity?
+What are the best/least performing products/categories/employee/territory/region for the last quarter?
+What are the top 5 best/worst customers in CA for the last 90 days?
+What are the busiest shipper/supplier in CA for the last 90 days?
+What is the average/maximum/minimum unit price/discount/quantity in CA for the last 90 days?

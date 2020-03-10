@@ -1,0 +1,5 @@
+org.nlpcraft.model
+org.nlpcraft.model.builder
+org.nlpcraft.model.intent
+org.nlpcraft.model.test
+org.nlpcraft.model.utils

@@ -1,0 +1,239 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Basic predefined stop-words.
+#
+# Configuration contains:
+# - Words (processed as stem)
+# - Words with POSes list (processed as lemma)
+# - Words with wildcard, symbol `*` (processed as lemma)
+#
+# Words and POSes can me marked as excluded (symbol `~` before word)
+# Word can be marked as case sensitive (symbol `@` before word)
+#
+# Restrictions:
+# - POSes list cannot be defined for multiple words.
+# - Only one wildcard can be defined in the word.
+# - Wildcard cannot be applied to chunks of words.
+# - Only one case sensitive flag can be defined in the word.
+#
+# Examples:
+# ========
+# decent                - Includes word 'decent'.
+# *ent                  - Includes all words ending with 'ent'.
+# *ent | NN             - Includes all words with POS NN ending with 'ent'.
+# *ent | ~NN ~JJ        - Includes all words beside POSes NN and JJ ending with 'ent'.
+# ~dif*ly | JJ JJR JJS  - Excludes all JJ/JJR/JJS words starting with 'diff' and ending with 'ly'.
+# ~may | MD             - Excludes 'may' MD.
+# * | MD                - All words with MD POS.
+# ~@US                  - US is not stop word (exception).
+#
+# Invalid syntax examples:
+# ========================
+# te*ni*                    - Too many wildcards
+# tech* pers*               - Too many wildcards.
+# @Technical @Personal      - Too many case sensitive flags.
+# @Technical Personal | JJ  - POSes cannot be defined for chunks of words.
+#
+
+# POSes list.
+* | UH
+* | ,
+* | POS
+* | :
+* | .
+* | --
+* | MD
+* | EX
+* | DT
+
+# POSES list exceptions.
+~may
+
+# Postfixes list.
+*ent | ~NN ~NNS ~NNP ~NNPS
+*ant | ~NN ~NNS ~NNP ~NNPS
+*ive | ~NN ~NNS ~NNP ~NNPS ~CD
+*ly | ~NN ~NNS ~NNP ~NNPS
+*ry | ~NN ~NNS ~NNP ~NNPS
+*ial | ~NN ~NNS ~NNP ~NNPS
+*able | ~NN ~NNS ~NNP ~NNPS
+*able | ~NN ~NNS ~NNP ~NNPS
+*ible | ~NN ~NNS ~NNP ~NNPS
+*less | ~NN ~NNS ~NNP ~NNPS
+
+# Postfixes list exceptions.
+~less
+~monthly
+~daily
+~weekly
+~quarterly
+~yearly
+~badly
+~poorly
+~different
+
+# Words of concrete POSes.
+key | JJ JJR JJS
+vital | JJ JJR JJS
+critical | JJ JJR JJS
+pressing | JJ JJR JJS
+paramount | JJ JJR JJS
+high-priority | JJ JJR JJS
+must-have | JJ JJR JJS
+
+# Words of any POSes.
+a
+an
+avg
+average
+the
+etc
+fair
+approximate
+decent
+generous
+good
+ok
+okay
+so
+please
+well
+objective
+reasonable
+unbiased
+sincere
+trustworthy
+civil
+candid
+honest
+impartial
+legitimate
+straightforward
+moderate
+subjective
+partial
+rough
+fuzzy
+now
+all right
+let
+website
+web-site
+web site
+hey
+lol
+lulz
+omg
+omfg
+of the essence
+gr8
+lmao
+wtf
+xoxo
+j/k
+jk
+fyi
+imho
+imo
+btw
+fwiw
+thx
+wth
+afaik
+abt
+afaic
+aka
+a.k.a.
+awol
+b2b
+b2c
+byod
+ciao
+cmon
+eta
+huh
+nsfw
+otoh
+plz
+pls
+rotfl
+tgif
+zzzz
+zzz
+
+# GEO abbreviations exceptions.
+# Cities.
+~la
+~sf
+~kc
+~hk
+
+# States.
+~al
+~ak
+~az
+~ar
+~ca
+~co
+~ct
+~de
+~fl
+~ga
+~hi
+~id
+~il
+~in
+~ia
+~ks
+~ky
+~la
+~me
+~md
+~ma
+~mi
+~mn
+~ms
+~mo
+~mt
+~ne
+~nv
+~nh
+~nj
+~nm
+~ny
+~nc
+~nd
+~oh
+~ok
+~or
+~pa
+~ri
+~sc
+~sd
+~tn
+~tx
+~ut
+~vt
+~va
+~wa
+~wv
+~wi
+~wy
+
+# Upper case exceptions.
+~@US

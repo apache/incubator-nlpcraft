@@ -1,0 +1,344 @@
+---
+active_crumb: Metrics <span class="amp">&amp;</span> Tracing
+layout: documentation
+id: metrics
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div id="metrics-and-tracing" class="col-md-8 second-column">
+    <section id="overview">
+        <span class="section-title">Overview</span>
+        <p>
+            Both REST server and data probe come with <a target=_ href="https://opencensus.io">OpenCensus</a>
+            instrumentation. NLPCraft bundles several built-in exporters for various OpenCensus trace and stats
+            backends:
+        </p>
+        <table class="gradient-table checks">
+            <thead>
+            <tr>
+                <th>Backend</th>
+                <th>Built-In Exporters</th>
+                <th>Stats or Trace?</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <a target=_ href="https://www.jaegertracing.io/">
+                        <img alt="" style="width: 48px" src="/images/jaeger-logo-x.png">
+                        <div class="exporter-name">Jaeger</div>
+                    </a>
+                </td>
+                <td>
+                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter</code><br>
+                    Probe:
+                    <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCJaegerExporter.html">org.nlpcraft.model.opencensus.NCJaegerExporter</a>
+                </td>
+                <td><center>Trace</center></td>
+            </tr>
+            <tr>
+                <td>
+                    <a target=_ href="https://zipkin.io/">
+                        <img alt="" style="width: 48px" src="/images/zipkin-logo.jpg">
+                        <div class="exporter-name">Zipkin</div>
+                    </a>
+                </td>
+                <td>
+                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCZipkinExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCZipkinExporter.html">org.nlpcraft.model.opencensus.NCZipkinExporter</a>
+                </td>
+                <td><center>Trace</center></td>
+            </tr>
+            <tr>
+                <td>
+                    <a target=_ href="https://prometheus.io/">
+                        <img alt="" style="width: 48px" src="/images/prometheus-logo-x.png">
+                        <div class="exporter-name">Prometheus</div>
+                    </a>
+                </td>
+                <td>
+                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCPrometheusExporter.html">org.nlpcraft.model.opencensus.NCPrometheusExporter</a>
+                </td>
+                <td><center>Stats</center></td>
+            </tr>
+            <tr>
+                <td>
+                    <a target=_ href="https://grafana.com/">
+                        <img alt="" style="width: 48px" src="/images/grafana-logo-x.png">
+                        <div class="exporter-name">Grafana<sup>*</sup></div>
+                    </a>
+                </td>
+                <td>
+                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCPrometheusExporter.html">org.nlpcraft.model.opencensus.NCPrometheusExporter</a>
+                </td>
+                <td><center>Stats</center></td>
+            </tr>
+            <tr>
+                <td>
+                    <a target=_ href="https://cloud.google.com/stackdriver/">
+                        <img alt="" style="width: 48px" src="/images/stackdriver-stats-x.png">
+                        <div class="exporter-name">Stackdriver</div>
+                    </a>
+                </td>
+                <td>
+                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCStackdriverStatsExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverStatsExporter.html">org.nlpcraft.model.opencensus.NCStackdriverStatsExporter</a>
+                </td>
+                <td><center>Stats</center></td>
+            </tr>
+            <tr>
+                <td>
+                    <a target=_ href="https://cloud.google.com/stackdriver/">
+                        <img alt="" style="width: 48px" src="/images/stackdriver-trace-x.png">
+                        <div class="exporter-name">Stackdriver</div>
+                    </a>
+                </td>
+                <td>
+                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCStackdriverTraceExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverTraceExporter.html">org.nlpcraft.model.opencensus.NCStackdriverTraceExporter</a>
+                </td>
+                <td><center>Trace</center></td>
+            </tr>
+            </tbody>
+        </table>
+        <p>
+        <sup><b>NOTE:</b> (*) Grafana works through Prometheus integration.</sup>
+        </p>
+        <p>
+            All built-in exporters are a simple adaptation of the standard OpenCensus <a target=_ href="https://opencensus.io/exporters/supported-exporters/java/">exporters</a>
+            to life cycle components for the
+            REST server or the data probe. Each exporter has just a few lines of code and you can easily create your own
+            exporters for other backends. 
+        </p>
+    </section>
+    <section id="server">
+        <span class="section-title">Configuring Server</span>
+        <p>
+            OpenCensus exporters for the REST server are lifecycle components. Server lifecycle components are the implementations
+            of <code>NCServerLifecycle</code> trait. Lifecycle components get callbacks for various stages of the server
+            lifecycle and thus can register and unregister "primordial" components such as OpenCensus exporters.
+        </p>
+        <p>
+            REST server lifecycle components are specified in <code>nlpcraft.server.lifecycle</code>
+            <a href="server-and-probe.html">configuration</a> property. For example, for file based configuration:
+        </p>
+        <pre class="brush: js, highlight: [17, 18]">
+nlpcraft {
+    server {
+        ...
+        lifecycle = [
+            "org.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter",
+            "org.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter"
+        ]
+        ...
+    }
+}
+        </pre>
+        <p>
+            Note that each server exporter has default configuration that can be overridden via
+            <a href="server-and-probe.html">configuration</a> properties or environment variables. Note also that all
+            built-in <b>trace exporters</b> use "always" sampling by default that is suitable
+            only for demo or development purposes. For production usage you will need to modify the exporter
+            to provide more effective <a target=_ href="https://opencensus.io/tracing/sampling/">sampling strategy</a>.
+        </p>
+    </section>
+    <section id="probe">
+        <span class="section-title">Configuring Probe</span>
+        <p>
+            Just like on the REST server OpenCensus exporters for the data probe are lifecycle components. Probe lifecycle
+            components are the implementations
+            of <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCProbeLifecycle.html">org.nlpcraft.model.NCLifecycle</a>
+            interface. Lifecycle components get callbacks for various stages of the data probe
+            lifecycle and thus can register and unregister "primordial" components such as OpenCensus exporters. For example, using
+            file based configuration:
+        </p>
+        <pre class="brush: js, highlight: [14, 15]">
+nlpcraft {
+    probe {
+        ...
+        lifecycle = [
+            "org.nlpcraft.model.opencensus.NCPrometheusExporter",
+            "org.nlpcraft.model.opencensus.NCJaegerExporter"
+        ]
+        ...
+    }
+}
+        </pre>
+        <p>
+            Just like with server exporters, each probe exporter has default configuration that can be overridden via
+            <a href="server-and-probe.html">configuration</a> properties or environment variables. Note also that all
+            built-in <b>trace exporters</b> use "always" sampling by default that is suitable
+            only for demo or development purposes. For production usage you will need to modify the exporter
+            to provide more effective <a target=_ href="https://opencensus.io/tracing/sampling/">sampling strategy</a>.
+            Please consult individual exporter classes:
+        </p>
+        <ul>
+            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCJaegerExporter.html">NCJaegerExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCZipkinExporter.html">NCZipkinExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCPrometheusExporter.html">NCPrometheusExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverStatsExporter.html">NCStackdriverStatsExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverTraceExporter.html">NCStackdriverTraceExporter</a></li>
+        </ul>
+    </section>
+    <section id="traces">
+        <span class="section-title">Traces</span>
+        <p>
+            When traces are exporter, there are two service names used for NLPCraft traces that will appear on UI backends:
+        </p>
+        <ul>
+            <li><code>nlpcraft-server</code> for traces from REST server.</li>
+            <li><code>nlpcraft-probe</code> for traces from data probes.</li>
+        </ul>
+        <p>
+            All traces are extensively tagged with various information. Specifically, watch out for <code>srvReqId</code>,
+            <code>modelId</code> and <code>userId</code> tags that will help you navigate across traces pertaining to specific
+            request, models or users.
+        </p>
+    </section>
+    <section id="metrics">
+        <span class="section-title">Metrics</span>
+        <p>
+            When it comes to metrics each exporter has different set of configuration for either a namespace or
+            name prefix on how these metrics will be available on the UI backends:
+        </p>
+        <ul>
+            <li>
+                <a target=_ href="https://prometheus.io/">Prometheus</a> and <a target=_ href="https://grafana.com">Grafana</a>
+                stats exporters by default use <code>nlpcraft-server</code> and <code>nlpcraft-probe</code> namespaces.
+            </li>
+            <li>
+                <a target=_ href="https://cloud.google.com/stackdriver/">Stackdriver</a> stats exporters use default
+                <code>custom.googleapis.com/nlpcraft/server</code> and <code>custom.googleapis.com/nlpcraft/probe</code> metric
+                name prefixes.
+            </li>
+        </ul>
+        <p>
+            <b>NOTE:</b> default namespaces and service prefixes can be changed via <a href="server-and-probe.html">configuration</a>
+            properties or environment variables
+        </p>
+        <p>
+            The following metrics are generated by the REST server:
+        </p>
+        <table class="gradient-table checks">
+            <thead>
+            <tr>
+                <th>Name <sub>without prefix or namespace</sub></th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for api in site.data.metrics.server %}
+            <tr>
+                <td>
+                    <code>{{api.name}}_latdist_bucket</code><br>
+                    <code>{{api.name}}_latdist_count</code><br>
+                    <code>{{api.name}}_latdist_sum</code>
+                </td>
+                <td>Histogram, count and sum of values for the <b>{{api.description}}</b> latencies.</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>
+                    <code>roundtrip_latdist_bucket</code><br>
+                    <code>roundtrip_latdist_count</code><br>
+                    <code>roundtrip_latdist_sum</code>
+                </td>
+                <td>Histogram, count and sum of values for the full server-probe-server round trip latencies.</td>
+            </tr>
+            </tbody>
+        </table>
+        <p>
+            The following metrics are generated by the data probe:
+        </p>
+        <table class="gradient-table checks">
+            <thead>
+            <tr>
+                <th>Name <sub>without prefix or namespace</sub></th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for api in site.data.metrics.probe %}
+            <tr>
+                <td>
+                    <code>{{api.name}}_latdist_bucket</code><br>
+                    <code>{{api.name}}_latdist_count</code><br>
+                    <code>{{api.name}}_latdist_sum</code>
+                </td>
+                <td>Histogram, count and sum of values for the <b>{{api.description}}</b> latencies.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+<div class="col-md-2 third-column">
+    <ul class="side-nav">
+        <li class="side-nav-title">On This Page</li>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#server">Configuring Server</a></li>
+        <li><a href="#probe">Configuring Probe</a></li>
+        <li><a href="#traces">Traces</a></li>
+        <li><a href="#metrics">Metrics</a></li>
+        <li class="side-nav-title">Quick Links</li>
+        <li>
+            <img class="quick-link-img mr-2" src="/images/github_logo.png" alt=""><a
+            target="github"
+            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+        </li>
+        <li>
+            <img class="quick-link-img mr-2" src="/images/java.png" alt=""><a
+            target=_
+            href="/apis/latest/index.html">Javadoc</a>
+        </li>
+        <li>
+            <img class="quick-link-img mr-2" src="/images/apiary.svg" alt=""><a
+            href="https://nlpcraft.docs.apiary.io"
+            target="apiary">REST API</a>
+        </li>
+        <li>
+            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
+        </li>
+        <li>
+            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
+        </li>
+        <li class="side-nav-title">Support</li>
+        <li>
+            <nobr>
+                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
+            </nobr>
+        </li>
+        <li>
+            <nobr>
+                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
+            </nobr>
+        </li>
+    </ul>
+</div>
+
+
+
+

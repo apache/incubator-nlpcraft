@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>NLPCraft</name>
+    <artifactId>nlpcraft</artifactId>
+    <groupId>org.nlpcraft</groupId>
+    <version>0.8.2</version>
+    <url>https://nlpcraft.org</url>
+    <description>An open source API to convert natural language into actions.</description>
+
+    <developers>
+        <developer>
+            <id>aradzinski</id>
+            <name>Aaron Radzinski</name>
+            <email>aradzinski@nlpcraft.org</email>
+            <organization>nlpcraft</organization>
+            <organizationUrl>http://nlpcraft.org</organizationUrl>
+            <roles>
+                <role>architect</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+        <license>
+            <name>The Commons Clause</name>
+            <url>https://commonsclause.com/</url>
+            <distribution>repo</distribution>
+            <comments>A safer business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/nlpcrafters/nlpcraft.git</url>
+        <connection>scm:git:ssh://git@github.com/nlpcrafters/nlpcraft.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/nlpcrafters/nlpcraft.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <!-- Major Scala version. -->
+        <scala.base>2.11</scala.base>
+
+        <!-- Versions. -->
+        <ignite.ver>2.7.5</ignite.ver>
+        <scala.plugin.ver>3.3.1</scala.plugin.ver>
+        <log4j.ver>2.12.0</log4j.ver>
+        <scala.ver>${scala.base}.12</scala.ver>
+        <scala.config.ver>1.3.4</scala.config.ver>
+        <commons.codec.ver>1.12</commons.codec.ver>
+        <commons.io.ver>2.6</commons.io.ver>
+        <commons-lang3.ver>3.9</commons-lang3.ver>
+        <commons.validator.ver>1.6</commons.validator.ver>
+        <apache.commons.text.ver>1.7</apache.commons.text.ver>
+        <jgrapht.ver>0.7.3</jgrapht.ver>
+        <jsoup.ver>1.12.1</jsoup.ver>
+        <slf4j.ver>1.7.26</slf4j.ver>
+        <scala.logging.ver>3.9.2</scala.logging.ver>
+        <scala.arm.ver>2.0</scala.arm.ver>
+        <scala.xml.ver>1.1.1</scala.xml.ver>
+        <c3p0.ver>0.9.5.4</c3p0.ver> <!-- Upgraded to due security vulnerability. -->
+        <scalatest.ver>3.0.8</scalatest.ver>
+        <akka.ver>2.5.21</akka.ver>
+        <lift.json.ver>2.6.3</lift.json.ver>
+        <scalaj.ver>2.4.1</scalaj.ver>
+        <spray.ver>1.3.5</spray.ver>
+        <tika.ver>1.21</tika.ver>
+        <apache.http.client.ver>4.5.9</apache.http.client.ver>
+        <javax.websocket.ver>1.1</javax.websocket.ver>
+        <paranamer.ver>2.8</paranamer.ver>
+        <zeroturnaround.ver>1.12</zeroturnaround.ver>
+        <extjwnl.ver>2.0.2</extjwnl.ver>
+        <extjwnl.data.wn31.ver>1.2</extjwnl.data.wn31.ver>
+        <maven.jar.plugin.ver>3.1.1</maven.jar.plugin.ver>
+        <maven.compiler.plugin.ver>3.8.0</maven.compiler.plugin.ver>
+        <maven.enforcer.plugin.ver>1.4.1</maven.enforcer.plugin.ver>
+        <maven.surefire.plugin.ver>2.22.1</maven.surefire.plugin.ver>
+        <stringmetric.ver>0.27.4</stringmetric.ver>
+        <gson.ver>2.8.5</gson.ver>
+        <jackson.ver>2.10.1</jackson.ver>
+        <jackson.yaml.ver>2.10.1</jackson.yaml.ver>
+        <apache.math.ver>3.6.1</apache.math.ver>
+        <apache.common.lang.ver>3.8.1</apache.common.lang.ver>
+        <apache.httpcomponents.ver>4.5.7</apache.httpcomponents.ver>
+        <apache.opennlp.ver>1.9.1</apache.opennlp.ver>
+        <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
+        <maven.javadoc.plugin.ver>3.0.0-M1</maven.javadoc.plugin.ver>
+        <maven.shade.plugin.ver>3.2.1</maven.shade.plugin.ver>
+        <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
+        <maven.gpg.plugin.ver>1.6</maven.gpg.plugin.ver>
+        <maven.nexus.staging.plugin>1.6.7</maven.nexus.staging.plugin>
+        <org.antlr4.ver>4.8</org.antlr4.ver>
+        <akka.http.2.11.ver>10.1.9</akka.http.2.11.ver>
+        <akka.stream.2.11.ver>2.5.23</akka.stream.2.11.ver>
+        <akka.http.spray.json.2.11.ver>10.1.9</akka.http.spray.json.2.11.ver>
+        <google.guava.ver>28.1-jre</google.guava.ver>
+        <diff.utils.ver>4.5</diff.utils.ver>
+        <vertical.blank.ver>1.0</vertical.blank.ver>
+        <fliptables.ver>1.1.0</fliptables.ver>
+
+        <!--
+            Following libraries versions are compatible:
+             - google.protobuf.ver 3.9.1
+             - google-cloud-language 1.76.0
+             - opencensus 0.23.0
+            If you update versions - please ensure that they are compatible too.
+         -->
+        <google.protobuf.ver>3.9.1</google.protobuf.ver>
+        <google.clould.language.ver>1.76.0</google.clould.language.ver>
+        <opencensus.ver>0.23.0</opencensus.ver>
+
+        <prometheus.ver>0.3.0</prometheus.ver>
+        <lightstep.ver>0.0.3</lightstep.ver>
+        <lightstep.grpc.ver>0.15.8</lightstep.grpc.ver>
+        <junit.ver>5.5.1</junit.ver>
+
+        <!-- Force specific encoding on text resources. -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.ver}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${google.protobuf.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opencensus</groupId>
+            <artifactId>opencensus-api</artifactId>
+            <version>${opencensus.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opencensus</groupId>
+            <artifactId>opencensus-impl</artifactId>
+            <version>${opencensus.ver}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opencensus</groupId>
+            <artifactId>opencensus-exporter-trace-zipkin</artifactId>
+            <version>${opencensus.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opencensus</groupId>
+            <artifactId>opencensus-exporter-trace-jaeger</artifactId>
+            <version>${opencensus.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opencensus</groupId>
+            <artifactId>opencensus-exporter-stats-prometheus</artifactId>
+            <version>${opencensus.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opencensus</groupId>
+            <artifactId>opencensus-exporter-trace-stackdriver</artifactId>
+            <version>${opencensus.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opencensus</groupId>
+            <artifactId>opencensus-exporter-stats-stackdriver</artifactId>
+            <version>${opencensus.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_httpserver</artifactId>
+            <version>${prometheus.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>${org.antlr4.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-jdk1.5</artifactId>
+            <version>${jgrapht.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${apache.commons.text.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>${apache.math.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.scala-logging</groupId>
+            <artifactId>scala-logging_${scala.base}</artifactId>
+            <version>${scala.logging.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.opennlp</groupId>
+            <artifactId>opennlp-tools</artifactId>
+            <version>${apache.opennlp.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.httpcomponents.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons.codec.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jsuereth</groupId>
+            <artifactId>scala-arm_${scala.base}</artifactId>
+            <version>${scala.arm.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-langdetect</artifactId>
+            <version>${tika.ver}</version>
+            <!-- Ignite contains 13 version but it contains 12. -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.base}</artifactId>
+            <version>${scalatest.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commons.validator.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>${scala.config.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-json_${scala.base}</artifactId>
+            <version>${lift.json.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-core</artifactId>
+            <version>${ignite.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-spring</artifactId>
+            <version>${ignite.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-indexing</artifactId>
+            <version>${ignite.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-log4j2</artifactId>
+            <version>${ignite.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>${c3p0.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.extjwnl</groupId>
+            <artifactId>extjwnl</artifactId>
+            <version>${extjwnl.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.extjwnl</groupId>
+            <artifactId>extjwnl-data-wn31</artifactId>
+            <version>${extjwnl.data.wn31.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http_2.11</artifactId>
+            <version>${akka.http.2.11.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-stream_2.11</artifactId>
+            <version>${akka.stream.2.11.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http-spray-json_2.11</artifactId>
+            <version>${akka.http.spray.json.2.11.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.yaml.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-language</artifactId>
+            <version>${google.clould.language.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${google.guava.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.java-diff-utils</groupId>
+            <artifactId>java-diff-utils</artifactId>
+            <version>${diff.utils.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vertical-blank</groupId>
+            <artifactId>sql-formatter</artifactId>
+            <version>${vertical.blank.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jakewharton.fliptables</groupId>
+            <artifactId>fliptables</artifactId>
+            <version>${fliptables.ver}</version>
+        </dependency>
+
+        <!--
+            Due to GNU licensing - Stanford NLP dependencies should be excluded from build zip.
+        -->
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>${stanford.corenlp.ver}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>${stanford.corenlp.ver}</version>
+            <classifier>models</classifier>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/scala</directory>
+                <includes>
+                    <include>**/*.txt</include>
+                    <include>**/*.json</include>
+                    <include>**/*.yaml</include>
+                    <include>**/*.sql</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>${scala.plugin.ver}</version>
+                <configuration>
+                    <jvmArgs>
+                        <jvmArg>-Xms512m</jvmArg>
+                        <jvmArg>-Xmx4096m</jvmArg>
+                        <jvmArg>-Xss2048k</jvmArg>
+                    </jvmArgs>
+                    <args>
+                        <arg>-unchecked</arg>
+                        <arg>-deprecation</arg>
+                        <arg>-explaintypes</arg>
+                        <arg>-feature</arg>
+                    </args>
+                    <!-- Suppress warnings on release versions of Scala. -->
+                    <scalaCompatVersion>${scala.base}</scalaCompatVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>scala-test-compile</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.ver}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.ver}</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven.enforcer.plugin.ver}</version>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <message>
+                                [INFO] ------------------------------------------------------------------------
+                                [ERROR] You are trying to compile NLPCraft with inappropriate JDK version!
+                                [ERROR] Detected JDK Version: ${java.runtime.version}
+                                [ERROR] JDK version should be &gt;= 1.8.0_1.
+                            </message>
+                            <version>[1.8.0,)</version>
+                        </requireJavaVersion>
+                    </rules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.ver}</version>
+                <configuration>
+                    <!-- Required as of JDK 8u121 -->
+                    <additionalparam>--allow-script-in-comments, -Xdoclint:none</additionalparam>
+
+                    <javadocDirectory>${project.basedir}/javadoc</javadocDirectory>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <encoding>UTF-8</encoding>
+                    <failOnError>false</failOnError>
+                    <sourcepath>${project.basedir}/src/main/scala</sourcepath>
+                    <stylesheetfile>${project.basedir}/javadoc/stylesheet.css</stylesheetfile>
+                    <bottom>
+                        <![CDATA[
+                            Copyright &#169; {currentYear} Apache Software Foundation.
+                        ]]>
+                    </bottom>
+                    <top>
+                        <![CDATA[
+                            <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+                            <script src="{@docRoot}/resources/sh/scripts/XRegExp.js" type="text/javascript"></script>
+                            <script src="{@docRoot}/resources/sh/scripts/shCore.js" type="text/javascript"></script>
+                            <script src="{@docRoot}/resources/sh/scripts/shAutoloader.js" type="text/javascript"></script>
+                            <link href="{@docRoot}/resources/sh/styles/shCoreNLPCraft.css" rel="stylesheet" type="text/css" title="Style">
+                            <link href="{@docRoot}/resources/sh/styles/shThemeNLPCraft.css" rel="stylesheet" type="text/css" title="Style">
+                            <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+                            <script async defer src="https://buttons.github.io/buttons.js"></script>
+                        ]]>
+                    </top>
+                    <subpackages>
+                        org.nlpcraft.model:org.nlpcraft.probe.embedded
+                    </subpackages>
+                    <excludePackageNames>
+                        org.nlpcraft.model.intent.utils:org.nlpcraft.model.impl:org.nlpcraft.model.builder.parsing:org.nlpcraft.model.builder.impl:org.nlpcraft.model.intent.impl
+                    </excludePackageNames>
+                    <groups>
+                        <group>
+                            <title>Data Model APIs</title>
+                            <packages>
+                                org.nlpcraft.model.opencensus:org.nlpcraft.model.factories.basic:org.nlpcraft.model.factories.spring:org.nlpcraft.model:org.nlpcraft.model.utils:org.nlpcraft.model.intent:org.nlpcraft.model.parsing
+                            </packages>
+                        </group>
+                        <group>
+                            <title>Embedded Probe</title>
+                            <packages>org.nlpcraft.probe.embedded</packages>
+                        </group>
+                        <group>
+                            <title>Tools</title>
+                            <packages>org.nlpcraft.model.tools.sqlgen:org.nlpcraft.model.tools.test</packages>
+                        </group>
+                    </groups>
+                    <header>
+                        <![CDATA[
+                            NLPCraft ${project.version}
+                        ]]>
+                    </header>
+                    <footer>
+                        <![CDATA[
+                            <span style="vertical-align: super">NLPCraft ${project.version}</span>
+                            <a style="vertical-align: super; margin-right: 10px" href="https://github.com/nlpcrafters/nlpcraft" target="github"><i class="fa fa-github github-logo"></i></a>
+                            <a class="github-button" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples" data-icon="octicon-eye" aria-label="NLPCraft Examples">Examples</a>
+                            <a class="github-button" href="https://github.com/nlpcrafters/nlpcraft" data-icon="octicon-star" aria-label="Star on GitHub">Star</a>
+                            <a class="github-button" href="https://github.com/nlpcrafters/nlpcraft/fork" data-icon="octicon-repo-forked" aria-label="Fork on GitHub">Fork</a>
+                            <script type="text/javascript">
+                                SyntaxHighlighter.defaults["auto-links"] = false;
+                                SyntaxHighlighter.defaults["tab-size"] = 2;
+
+                                SyntaxHighlighter.autoloader(
+                                    'java                   {@docRoot}/resources/sh/scripts/shBrushJava.js',
+                                    'js jscript javascript  {@docRoot}/resources/sh/scripts/shBrushJScript.js',
+                                    'text plain             {@docRoot}/resources/sh/scripts/shBrushPlain.js',
+                                    'py python              {@docRoot}/resources/sh/scripts/shBrushPython.js',
+                                    'ruby rails ror rb      {@docRoot}/resources/sh/scripts/shBrushRuby.js',
+                                    'scala                  {@docRoot}/resources/sh/scripts/shBrushScala.js',
+                                    'sql                    {@docRoot}/resources/sh/scripts/shBrushSql.js',
+                                    'xml xhtml xslt html    {@docRoot}/resources/sh/scripts/shBrushXml.js'
+                                );
+                                SyntaxHighlighter.all();
+                            </script>
+                        ]]>
+                    </footer>
+                    <doctitle>
+                        <![CDATA[
+                            <img style="margin-bottom: 10px" src="https://nlpcraft.org/images/nlpcraft_logo_darkblue.png" height="54px"><br>
+                            Data Model API ${project.version}
+                        ]]>
+                    </doctitle>
+                    <windowtitle>NLPCraft ${project.version}</windowtitle>
+                    <show>public</show>
+                    <verbose>false</verbose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.ver}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven.shade.plugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>jar.all.deps</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>
+                                ${project.build.directory}/${project.artifactId}-${project.version}-all-deps.jar
+                            </outputFile>
+                            <transformers>
+                                <!--reference.conf - akka configuration file.-->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>reference.conf</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.nlpcraft.NCStart</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${maven.nexus.staging.plugin}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    <skipLocalStaging>true</skipLocalStaging>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <dependencies>
+                <!--Stanford NLP dependencies should be excluded from build zip.-->
+                <dependency>
+                    <groupId>edu.stanford.nlp</groupId>
+                    <artifactId>stanford-corenlp</artifactId>
+                    <version>${stanford.corenlp.ver}</version>
+                    <scope>provided</scope>
+                    <!-- org.apache.tika contains javax.activation. -->
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.activation</groupId>
+                            <artifactId>javax.activation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>edu.stanford.nlp</groupId>
+                    <artifactId>stanford-corenlp</artifactId>
+                    <version>${stanford.corenlp.ver}</version>
+                    <classifier>models</classifier>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.ver}</version>
+                        <configuration>
+                            <keyname>${gpg.keyname}</keyname>
+                            <passphrase>${gpg.passphrase}</passphrase>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

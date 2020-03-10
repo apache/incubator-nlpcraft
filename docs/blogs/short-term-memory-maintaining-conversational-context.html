@@ -1,0 +1,381 @@
+---
+title: "Short-Term Memory: Maintaining Conversational Context"
+author: Aaron Radzinksi
+avatar_url: images/lion.jpg
+publish_date: Jul 26, 2019
+flag-ico: images/us-flag-128x128.png
+layout: blog
+---
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<section>
+    <div class="blog-header">
+        <div class="blog-title">{{page.title}}</div>
+        <div class="blog-sub-title">
+            <img class="avatar-img" src="{{ page.avatar_url | relative_url}}">
+            <span class="blog-author text-nowrap">{{ page.author }}</span>
+            <img class="flag-img" src="{{ page.flag-ico | relative_url}}">
+            <span class="text-nowrap blog-date">{{ page.publish_date }}</span>
+        </div>
+    </div>
+    <p>
+        In this article, I’ll try to give a high-level overview of STM — Short-Term Memory, a technique
+        used to maintain conversational context in NLPCraft. Maintaining the proper conversation
+        context — remembering what the current conversation is about — is essential for all human
+        interaction and thus essential for computer-based natural language understanding. To my knowledge,
+        NLPCraft provides one of the most advanced implementations of STM, especially considering how
+        tightly it is integrated with NLPCraft’s unique intent-based
+        matching (Google’s <a href="https://cloud.google.com/dialogflow">DialogFlow</a> being a close second).
+    </p>
+    <div class="blog-h1">Parsing User Input</div>
+    <p>
+        One of the key objectives when parsing user input sentence for Natural Language Understanding (NLU) is
+        to detect all possible semantic entities, a.k.a named entities. Let’s consider a few examples:
+    </p>
+    <ul>
+        <li>
+            <code>“What’s the current weather in Tokyo?”</code><br>
+            This sentence is fully sufficient for the processing
+            since it contains the topic “weather” as well as all necessary parameters like
+            time (“current”) and location (“Tokyo”).
+        </li>
+        <li>
+            <code>“What about Tokyo?”</code><br>
+            This is an unclear sentence since it does not have the subject of the question.
+        </li>
+        <li>
+            <code>“What’s the weather?”</code><br>
+            This is also unclear since we are missing important parameters of location and time.
+        </li>
+    </ul>
+    <p>
+        Sometimes we can use default values like the current user’s location and the current time
+        (if they are missing). However, this can easily lead to the wrong interpretation if the
+        conversation has an existing context.
+    </p>
+    <p>
+        In real life, as well as in chatbots, we always try to start a conversation with a fully defined
+        sentence since without a context the missing information cannot be obtained and the sentenced cannot be interpreted.
+    </p>
+    <div class="blog-h1">Semantic Entities</div>
+    <p>
+        Let’s take a closer look at the named entities we can detect in the above examples:
+    </p>
+    <ul>
+        <li>
+            <code>“weather”</code><br>
+            This is an indicator of the subject of the conversation. Note that it indicates the type of question
+            rather than being an entity with multiple possible values.
+        </li>
+        <li>
+            <code>“current”</code><br>
+            This is an entity of type Date with the value of “now”.
+        </li>
+        <li>
+            <code>“Tokyo”</code><br>
+            This is an entity of type Location with two values “city” and “Tokyo, Japan”
+        </li>
+    </ul>
+    <p>
+        Note that we have two distinct classes of entities:
+    </p>
+    <ul>
+        <li>
+            Entities that have no values and only act as indicators or types. The entity “weather” is the type
+            indicator for the subject of the user input.
+        </li>
+        <li>
+            Entities that additionally have one or more specific values like “current” and “Tokyo” entities.
+        </li>
+    </ul>
+    <p>
+        Note that NLPCraft provides support for wide variety of named entities (with all built-in
+        ones being properly normalized) including integrations with
+        <a target=_ href="https://spacy.io">spaCy</a>,
+        <a target=_ href="https://opennlp.apache.org">OpenNLP</a>,
+        <a target=_ href="https://stanfordnlp.github.io">Stanford CoreNLP</a> or
+        <a target=_ href="https://cloud.google.com/natural-language">Google Natural Language</a>.
+    </p>
+    <div class="blog-h1">Incomplete Sentences</div>
+    <p>
+        Assuming previously asked questions about the weather in Tokyo (in the span of the ongoing conversation)
+        one could ask the following question using a shorter, incomplete, form:
+    </p>
+    <ul>
+        <li>
+            <code>“What about Kyoto?”</code><br>
+            This question is missing both the subject and the time. However, we can safely assume we are still
+            talking about current weather.
+        </li>
+        <li>
+            <code>“What about tomorrow?”</code><br>
+            Just like above we automatically assume the weather subject but use “Kyoto” as the location
+            since it was mentioned the last.
+        </li>
+
+    </ul>
+    <p>
+        These are incomplete sentences. This type of short-hands cannot be interpreted without prior
+        context (neither by humans or by machines) since by themselves they are missing necessary information.
+    </p>
+    <p>
+        In the context of the conversation, however, these incomplete sentences work. We can simply provide
+        one or two entities and rely on the “listener” to recall the rest of missing information
+        from a short-term memory, a.k.a conversation context.
+    </p>
+    <p>
+        In NLPCraft, the intent-matching logic will automatically try to find missing information in the
+        conversation history. Moreover, it will properly treat such recalled information since it naturally
+        has less “weight” than something that was found explicitly in the user input.
+    </p>
+    <div class="blog-h1">Short-Term Memory</div>
+    <p>
+        The short-term memory is exactly that... a memory that keeps only small amount of recently used
+        information and that evicts its contents after a short period of inactivity.
+    </p>
+    <p>
+        Let’s look at the example from real life. If you would call your friend in a couple
+        of hours asking about <code>“What about a day after?”</code> (still talking about weather in Kyoto) — he’ll
+        likely be confused. The conversation is timed out, and your friend has lost its context. You will
+        have to explain to your confused friend what is that you are asking about...
+    </p>
+    <p>
+        NLPCraft has a simple rule that 5 minutes pause in conversation leads to the conversation reset.
+        However, what happens if we switch the topic before this timeout elapsed?
+    </p>
+    <div class="blog-h1">Context Switch</div>
+    <p>
+        Resetting the context by the timeout is, obviously, not a hard thing to do. What can be trickier is
+        to detect when conversation topic is switched and the previous context needs to be forgotten to
+        avoid very confusing interpretation errors.
+    </p>
+    <p>
+        Let’s continue our weather-related conversation. All of a sudden, we ask:
+    </p>
+    <ul>
+        <li>
+            <code>“How much mocha latter at Starbucks?”</code><br>
+            At this point we should forget all about previous conversation about weather and assume going forward
+            that we are talking about coffee in Starbucks.
+        </li>
+        <li>
+            <code>"What about Peet’s?”</code><br>
+            We are talking about latter at Peet’s.
+        </li>
+        <li>
+            <code>“…and croissant?”</code><br>
+            Asking about Peet’s crescent-shaped fresh rolls.
+        </li>
+    </ul>
+    <p>
+        Despite seemingly obvious logic the implementation of context switch is not an exact science. Sometimes,
+        you can have a “soft” context switch where you don’t change the topic of the conversation 100% but yet
+        sufficiently enough to forget at least some parts of the previously collected context.
+    </p>
+    <p>
+        NLPCraft has logic to detect the hard switch in the conversation. It also exposes API to perform a
+        selective reset on the conversation in case of “soft” switch.
+    </p>
+    <div class="blog-h1">Overriding Entities</div>
+    <p>
+        As we’ve seen above one named entity can replace or override an older entity in the STM, e.g.
+        “Peet’s” replaced “Starbucks” in our previous questions. The actual algorithm that governs this logic is
+        one of the most important part of STM implementation. In human conversations we perform this logic
+        seemingly subconsciously — but the computer algorithm to do it is far from trivial.
+    </p>
+    <p>
+        Let’s see how it is done in NLPCraft.
+    </p>
+    <p>
+        One of the important supporting design decision is that an entity can belong to one or more groups. You
+        can think of groups as types, or classes of entities (to be mathematically precise these are the categories).
+        The entity’s membership in such groups is what drives the rule of overriding.
+    </p>
+    <p>
+        Let’s look at the specific example. Consider a data model that defined 3 entities:
+    </p>
+    <ul>
+        <li><code>“sell”</code> (with synonym “sales”)</li>
+        <li><code>“buy”</code> (with synonym “purchasing”)</li>
+        <li><code>“best_employee”</code> (with synonyms like “best”, “best employee”, “best colleague”)</li>
+    </ul>
+    <p>
+        Our task is to support for following conversation:
+    </p>
+    <ul>
+        <li>
+            <code>“Give me the sales data”</code><br>
+            We return sales information since we detected “sell” entity by its synonym “sales”.
+        </li>
+        <li>
+            <code>“Who was the best?”</code><br>
+            We return the best salesmen since we detected “best_employee” and we should pick “sell” entity from the STM.
+        </li>
+        <li>
+            <code>“OK, give me the purchasing report now.”</code><br>
+            This is a bit trickier. We should return general purchasing data and not a best purchaser employee. It
+            feels counter-intuitive but we should NOT take “best_employee” entity from STM and, in fact, we
+            should remove it from STM.
+        </li>
+        <li>
+            <code>“…and who’s the best there?”</code><br>
+            Now, we should return the best purchasing employee. We detected “best_employee” entity and we should
+            pick “buy” entity from STM.
+        </li>
+        <li>
+            <code>“One more time - show me the general purchasing data again”</code><br>
+            Once again, we should return a general purchasing report and ignore (and remove) “best_employee” from STM.
+        </li>
+    </ul>
+    <p>
+        It’s pretty clear that we need some well defined logic for how this overriding should work: sometimes entities
+        do override the older ones, sometime they don’t.
+    </p>
+    <div class="blog-h1">Overriding Rule</div>
+    <p>
+        Here’s the rule we developed at NLPCraft and have been successfully using in various models:
+    </p>
+    <div class="bq info">
+        <p>
+            <b>Overriding Rule</b>
+        </p>
+        <p>
+            The entity will override other entity or entities in STM that belong to the same group set or its superset.
+            In other words, an entity with a smaller group set (more specific one) will override entity with the same or
+            larger group set (more generic one).
+        </p>
+    </div>
+    <p>
+        Let’s consider an entity that belongs to the following groups: <code>{G1, G2, G3}</code>. This entity will:
+    </p>
+    <ul>
+        <li>override existing entity belonging to <code>{G1, G2, G3}</code> groups (same set)</li>
+        <li>override existing entity belonging to <code>{G1, G2, G3, G4}</code> groups (superset)</li>
+        <li>NOT override existing entity belonging to <code>{G1, G2}</code> groups</li>
+        <li>NOT override existing entity belonging to <code>{G10, G20}</code> groups</li>
+    </ul>
+    <p>
+        Let’s come back to our sell/buy/best example. To interpret the questions we’ve outlined above we
+        need to have the following 4 intents:
+    </p>
+    <ul>
+        <li><code>id=sale term={id==’sale’}</code></li>
+        <li><code>id=best_sale_person term={id==’sale’} term={id==best_employee}</code></li>
+        <li><code>id=buy term={id==’buy’}</code></li>
+        <li><code>id=buy_best_person term={id==’buy’} term={id==best_employee}</code></li>
+    </ul>
+    <p>
+        (this is actual intent DSL used by NLPCraft; term here is basically what’s often referred to as a slot in other systems).
+    </p>
+    <p>
+        We also need to properly configure groups for our entities (names of the groups are arbitrary):
+    </p>
+    <ul>
+        <li>Entity <code>“sell”</code> should belong to group <b>A</b></li>
+        <li>Entity <code>“buy”</code> should belong to group <b>B</b></li>
+        <li>Entity <code>“best_employee”</code> should belong to groups <b>A</b> and <b>B</b></li>
+    </ul>
+    <p>
+        Let’s run through our example again with this configuration:
+    </p>
+    <ul>
+        <li>
+            <code>“Give me the sales data”</code>
+            <ul>
+                <li>We detected entity from group <b>A</b>.</li>
+                <li>STM is empty at this point.</li>
+                <li>Return general sales report.</li>
+                <li>Store “sell” entity with group <b>A</b> in STM.</li>
+            </ul>
+        </li>
+        <li>
+            <code>“Who was the best?”</code>
+            <ul>
+                <li>We detected entity belonging to groups <b>A</b> and <b>B</b>.</li>
+                <li>STM has entity belonging to group <b>A</b>.</li>
+                <li><b>{A, B}</b> does NOT override <b>{A}</b>.</li>
+                <li> Return best salesmen report.</li>
+                <li>Store detected “best_employee” entity.</li>
+                <li>STM now has two entities with <b>{A}</b> and <b>{A, B}</b> group sets.</li>
+            </ul>
+        </li>
+        <li>
+            <code>“OK, give me the purchasing report now.”</code>
+            <ul>
+                <li>We detected “buy” entity with group <b>A</b>.</li>
+                <li>STM has two entities with <b>{A}</b> and <b>{A, B}</b> group sets.</li>
+                <li><b>{A}</b> overrides both <b>{A}</b> and <b>{A, B}</b>.</li>
+                <li>Return general purchasing report.</li>
+                <li>Store “buy” entity with group <b>A</b> in STM.</li>
+            </ul>
+        </li>
+    </ul>
+    <p>
+        And so on… easy, huh :-) In fact, the logic is indeed relatively straightforward. It also follows common
+        sense where the logic produced by this rule matches the expected human behavior.
+    </p>
+    <p>
+        Note also that we achieved this result without any usage of clunky deep learning networks and
+        lengthy prep/training phases.
+    </p>
+    <div class="blog-h1">Explicit Context Switch</div>
+    <p>
+        In some cases you may need to explicitly clear the conversation STM without relying on algorithmic
+        behavior. It happens when current and new topic of the conversation share some of the same entities.
+        Although at first it sounds counter-intuitive there are many examples of that in day to day life.
+    </p>
+    <p>
+        Let’s look at this sample conversation:
+    </p>
+    <ul>
+        <li>Q1: <code>“What the weather in Tokyo?</code></li>
+        <li>A1: Current weather in Tokyo.</li>
+    </ul>
+    <ul>
+        <li>Q2: <code>“Let’s do New York after all then!”</code></li>
+        <li>A2: Without an explicit conversation reset we would return current New York weather.</li>
+    </ul>
+    <p>
+        However, the second question was about going to New York (booking tickets, etc.). In real life — your
+        counterpart will likely ask what do you mean by “doing New York after all” and you’ll have to explain the
+        abrupt change in the topic.
+    </p>
+    <p>
+        You can avoid this confusion by simply saying: “Enough about weather! Let’s talk about this
+        weekend plans” — after which the second question becomes clear. That sentence is an
+        explicit context switch.
+    </p>
+    <p>
+        In NLPCraft you can also explicitly reset conversation through API or by switching the
+        model on the request.
+    </p>
+    <div class="blog-h1">Summary</div>
+    <p>
+        Let’s collect all our thoughts on STM into a few bullet points:
+    </p>
+    <ul>
+        <li>Missing entities in incomplete sentences can be auto-recalled from STM</li>
+        <li>Newly detected type/category entity is likely indicating the change of topic</li>
+        <li>The key property of STM is its short-time storage and overriding rule</li>
+        <li>The explicit context switch is an important mechanism</li>
+    </ul>
+    <div class="bq info">
+        It is uncanny how properly implemented STM can make conversational interface feel like a normal human conversation. It allows to minimize the amount of parasitic dialogs and Q&A driven interfaces without unnecessarily complicating the implementation of such systems.
+    </div>
+</section>
