@@ -27,6 +27,8 @@ import org.nlpcraft.probe.mgrs.NCModelDecorator
 
 import scala.collection.{Map, Seq}
 import scala.language.implicitConversions
+import scala.collection.JavaConverters._
+
 /**
  * Base class for NLP enricher.
  */
@@ -75,12 +77,25 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
     /**
       *
       * @param typ
-      * @param refNote
+      * @param refNoteName
+      * @param refNoteVal
       * @param matched
       */
-    protected def isReference(typ: String, refNote: String, matched: Seq[NCNlpSentenceToken]): Boolean =
+    protected def hasReference(typ: String, refNoteName: String, refNoteVal: String, matched: Seq[NCNlpSentenceToken]): Boolean =
         matched.forall(t ⇒
-            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒ n("note").asInstanceOf[String] == refNote)
+            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒ n(refNoteName).asInstanceOf[String] == refNoteVal)
+        )
+
+    /**
+      *
+      * @param typ
+      * @param refNoteName
+      * @param refNoteVals
+      * @param matched
+      */
+    protected def hasReferences(typ: String, refNoteName: String, refNoteVals: Seq[String], matched: Seq[NCNlpSentenceToken]): Boolean =
+        matched.forall(t ⇒
+            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒ n(refNoteName).asInstanceOf[java.util.List[String]].asScala == refNoteVals)
         )
 
     /**

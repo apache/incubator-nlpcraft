@@ -99,7 +99,7 @@ object NCAggregationEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (refNote ← m.refNotes if !isReference(TOK_ID, refNote, m.matched)) {
+                        for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, m.matched)) {
                             val note = NCNlpSentenceNote(
                                 m.matched.map(_.index),
                                 TOK_ID,

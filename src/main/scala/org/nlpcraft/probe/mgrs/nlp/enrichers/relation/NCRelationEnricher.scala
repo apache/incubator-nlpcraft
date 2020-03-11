@@ -129,7 +129,7 @@ object NCRelationEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (refNote ← m.refNotes if !isReference(TOK_ID, refNote, Seq(m.matched.head))) {
+                        for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, Seq(m.matched.head))) {
                             val note = NCNlpSentenceNote(
                                 Seq(m.matchedHead.index),
                                 TOK_ID,

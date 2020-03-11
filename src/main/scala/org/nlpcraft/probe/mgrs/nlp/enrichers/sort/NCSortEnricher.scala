@@ -28,6 +28,7 @@ import org.nlpcraft.probe.mgrs.NCModelDecorator
 import org.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, mutable}
 
 /**
@@ -103,10 +104,13 @@ object NCSortEnricher extends NCProbeEnricher {
         asc: Option[Boolean],
         main: Seq[NCNlpSentenceToken],
         stop: Seq[NCNlpSentenceToken],
-        subj: Seq[Seq[NoteData]],
-        by: Seq[Seq[NoteData]]
+        subjSeq: Seq[Seq[NoteData]],
+        bySeq: Seq[Seq[NoteData]]
     ) {
-        lazy val all = main ++ stop
+        require(main.nonEmpty)
+        require(subjSeq.nonEmpty)
+
+        lazy val all: Seq[NCNlpSentenceToken] = main ++ stop
     }
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
@@ -121,38 +125,32 @@ object NCSortEnricher extends NCProbeEnricher {
     // [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
     // [[A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4)]]
     private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
-        val all = toks.
+        val all: Seq[NoteData] = toks.
             flatten.
-            filter(n ⇒ !n.isNlp).
+            filter(!_.isNlp).
             map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
             sortBy(_.indexes.head)
 
-        val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
-        val used = mutable.ArrayBuffer.empty[NoteData]
+        if (all.nonEmpty) {
+            val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
-        def go(seq: mutable.ArrayBuffer[NoteData], nd: NoteData): Boolean =
-            if (!used.contains(nd)) {
-                if (seq.isEmpty) {
-                    if (nd.indexes.head == 0) {
-                        seq += nd
-                        used += nd
+            def go(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
+                seq += nd
 
-                        all.find(nd ⇒ !used.contains(nd)) match {
-                            case Some(next) ⇒ go(seq, next)
-                            case None ⇒ false
-                        }
-                    }
-                    else
-                        false
-                }
-                else {
-                    false
-                }
+                all.
+                    filter(p ⇒ p.indexes.head == nd.indexes.last + 1).
+                    foreach(go(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
+
+                if (seq.nonEmpty && seq.head.indexes.head == toks.head.index && seq.last.indexes.last == toks.last.index)
+                    res += seq
             }
-            else
-                false
 
-        res
+            go(all.head)
+
+            res
+        }
+        else
+            Seq.empty
     }
 
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
@@ -200,6 +198,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 case None ⇒ None
             }
 
+
         hOpt match {
             case Some(h) ⇒
                 val others = toks.filter(t ⇒ !h.all.contains(t))
@@ -222,19 +221,16 @@ object NCSortEnricher extends NCProbeEnricher {
 
                     require(subj.nonEmpty)
 
-                    val asc =
-                        h.order match {
-                            case Some(order) ⇒ Some(ORDER(order.synonymIndex)._2)
-                            case None ⇒ None
-                        }
-
                     Some(
                         Match(
-                            asc = asc,
+                            asc = h.order match {
+                                case Some(order) ⇒ Some(ORDER(order.synonymIndex)._2)
+                                case None ⇒ None
+                            },
                             main = h.sort.tokens,
                             stop = h.byTokens ++ h.orderTokens,
-                            subj = split(subj),
-                            by = split(by)
+                            subjSeq = split(subj),
+                            bySeq = split(by)
                         )
                     )
                 }
@@ -244,9 +240,9 @@ object NCSortEnricher extends NCProbeEnricher {
         }
     }
 
-//    def suitable(m: Match, notes: Seq[String], refName: String): Boolean =
-//        notes.forall(note ⇒ !isReference(TOK_ID, refName, note, m.all))
-//
+    // TODO:
+    private def suitable(m: Match, notes: Seq[String], refName: String): Boolean =
+        !hasReferences(TOK_ID, refName, notes, m.main)
 
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span): Boolean =
         startScopedSpan("enrich", parent,
@@ -256,41 +252,52 @@ object NCSortEnricher extends NCProbeEnricher {
             val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
             var changed: Boolean = false
 
-//            for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
-//                tryToMatch(toks) match {
-//                    case Some(m)
-////                        if suitable(m, m.subj.map(_.note), "subjNotes") &&
-////                        (m.by.isEmpty || suitable(m, m.by.map(_.note), "byNotes")) ⇒
-//                        ⇒
-//                        val params = mutable.ArrayBuffer.empty[(String, Any)]
-//
-//                        m.asc match {
-//                            case Some(asc) ⇒ params += "asc" → asc
-//                            case None ⇒ // No-op.
-//                        }
-//
-//                        def addNotes(seq: Seq[NoteData], notesName: String, idxsName: String): Unit = {
-//                            params += notesName → seq.map(_.note).asJava
-//                            params += idxsName → seq.map(_.indexes.asJava).asJava
-//                        }
-//
-//                        addNotes(m.subj, "subjNotes", "subjIndexes")
-//
-//                        if (m.by.nonEmpty)
-//                            addNotes(m.by, "byNotes", "byIndexes")
-//
-//                        val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params :_*)
-//
-//                        m.main.foreach(_.add(note))
-//                        m.stop.foreach(_.addStopReason(note))
-//
-//                        changed = true
-//
-//                    case None ⇒ // No-op.
-//
-//                if (changed)
-//                    buf += toks.toSet
-//            }
+            for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
+                tryToMatch(toks) match {
+                    case Some(m) ⇒
+                        for (subj ← m.subjSeq if suitable(m, subj.map(_.note), "subjNotes")) {
+                            def addNotes(
+                                params: ArrayBuffer[(String, Any)],
+                                seq: Seq[NoteData],
+                                notesName: String,
+                                idxsName: String
+                            ): ArrayBuffer[(String, Any)] = {
+                                params += notesName → seq.map(_.note).asJava
+                                params += idxsName → seq.map(_.indexes.asJava).asJava
+
+                                params
+                            }
+
+                            def mkParams(): ArrayBuffer[(String, Any)] = {
+                                val params = mutable.ArrayBuffer.empty[(String, Any)]
+
+                                if (m.asc.isDefined)
+                                    params += "asc" → m.asc.get
+
+                                addNotes(params, subj, "subjNotes", "subjIndexes")
+                            }
+
+                            def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
+                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params:_*)
+
+                                m.main.foreach(_.add(note))
+                                m.stop.foreach(_.addStopReason(note))
+
+                                changed = true
+                            }
+
+                            if (m.bySeq.nonEmpty)
+                                for (by ← m.bySeq if suitable(m, by.map(_.note), "byNotes"))
+                                    mkNote(addNotes(mkParams(), by, "byNotes", "byIndexes"))
+                            else
+                                mkNote(mkParams())
+                        }
+
+                    case None ⇒ // No-op.
+
+                if (changed)
+                    buf += toks.toSet
+            }
 
             changed
         }
