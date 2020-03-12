@@ -17,9 +17,6 @@
 
 source "https://rubygems.org"
 
-# Use GitHub Pages.
-gem "github-pages", group: :jekyll_plugins
-
 # Plugins.
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.9"

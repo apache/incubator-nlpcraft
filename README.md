@@ -10,7 +10,7 @@ lock-in:
  * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples)
  * Latest [Javadoc](https://github.com/apache/incubator-nlpcraft/apis/latest/index.html) and [REST APIs](https://nlpcraft.org/using-rest.html)
  * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.org/download.html)
- * File a bug or improvements in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
+ * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev@nlpcraft.apache.org)
