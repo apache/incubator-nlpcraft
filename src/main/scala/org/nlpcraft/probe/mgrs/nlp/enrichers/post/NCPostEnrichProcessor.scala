@@ -231,9 +231,10 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             Seq(
                 "nlpcraft:aggregation",
                 "nlpcraft:relation",
-                "nlpcraft:sort",
                 "nlpcraft:limit"
-            ).forall(t ⇒ fixIndexesReferences(t, ns, history))
+            ).forall(t ⇒ fixIndexesReferences(t, ns, history) &&
+            fixIndexesReferencesList("nlpcraft:limit", "subjIndexes", "subjNotes", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:limit", "byIndexes", "byNotes", ns, history))
 
         if (res)
             // Validation (all indexes calculated well)
@@ -251,7 +252,57 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
     }
 
     /**
+      *
+      * @param ns
+      * @param idxs
+      * @param notesType
+      * @param id
+      * @return
+      */
+    private def checkRelation(ns: NCNlpSentence, idxs: Seq[Int], notesType: String, id: String): Boolean = {
+        val types =
+            idxs.flatMap(idx ⇒ {
+                val types = ns(idx).map(p ⇒ p).filter(!_.isNlp).map(_.noteType)
+
+                types.size match {
+                    case 0 ⇒ None
+                    case 1 ⇒ Some(types.head)
+                    case _ ⇒ throw new AssertionError(s"Unexpected tokes: ${ns(idx)}")
+                }
+            }).distinct
+
+        /**
+        Example:
+             1. Sentence 'maximum x' (single element related function)
+              - maximum is aggregate function linked to date element.
+              - x defined as 2 elements: date and num.
+              So, the variant 'maximum x (as num)' should be excluded.
+
+              2. Sentence 'compare x and y' (multiple elements related function)
+              - compare is relation function linked to date element.
+              - x an y defined as 2 elements: date and num.
+              So, variants 'x (as num) and x (as date)'  and 'x (as date) and x (as num)'
+              should't be excluded, but invalid relation should be deleted for these combinations.
+          */
+
+        types.size match {
+            case 0 ⇒ throw new AssertionError("Unexpected empty types")
+            case 1 ⇒ types.head == notesType
+            case _ ⇒
+                // Equal elements should be processed together with function element.
+                if (types.size == 1)
+                    false
+                else {
+                    ns.removeNote(id)
+
+                    true
+                }
+        }
+    }
+
+    /**
       * Fixes notes with references to other notes indexes.
+      * Note that 'idxsField' is 'indexes' and 'noteField' is 'note' for all kind of references.
       *
       * @param noteType Note type.
       * @param ns Sentence.
@@ -262,7 +313,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
         ns.filter(_.isTypeOf(noteType)).foreach(tok ⇒
             tok.getNoteOpt(noteType, "indexes") match {
                 case Some(n) ⇒
-                    val idxs = n.data[java.util.List[Int]]("indexes").asScala
+                    val idxs: Seq[Int] = n.data[java.util.List[Int]]("indexes").asScala
                     var fixed = idxs
 
                     history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(i ⇒ if (i == idxOld) idxNew else i) }
@@ -280,48 +331,58 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             }
         )
 
-        ns.flatMap(_.getNotes(noteType)).forall(p = rel ⇒ {
-            val idxs = rel.data[java.util.List[Int]]("indexes")
-            val notesType = rel.data[String]("note")
+        ns.flatMap(_.getNotes(noteType)).forall(
+            n ⇒ checkRelation(ns, n.data[java.util.List[Int]]("indexes").asScala, n.data[String]("note"), n.id)
+        )
+    }
 
-                    val types =
-                        idxs.asScala.flatMap(idx ⇒ {
-                            val types = ns(idx).map(p ⇒ p).filter(!_.isNlp).map(_.noteType)
+    /**
+      * Fixes notes with references list to other notes indexes.
+      *
+      * @param noteType Note type.
+      * @param idxsField Indexes field.
+      * @param noteField Note field.
+      * @param ns Sentence.
+      * @param history Indexes transformation history.
+      * @return Valid flag.
+      */
+    private def fixIndexesReferencesList(
+        noteType: String,
+        idxsField: String,
+        noteField: String,
+        ns: NCNlpSentence,
+        history: Seq[(Int, Int)]
+    ): Boolean = {
+        ns.filter(_.isTypeOf(noteType)).foreach(tok ⇒
+            tok.getNoteOpt(noteType, idxsField) match {
+                case Some(n) ⇒
+                    val idxs: Seq[Seq[Int]] = n.data[java.util.List[java.util.List[Int]]](idxsField).asScala.map(_.asScala)
+                    var fixed = idxs
 
-                            types.size match {
-                                case 0 ⇒ None
-                                case 1 ⇒ Some(types.head)
-                                case _ ⇒ throw new AssertionError(s"Unexpected tokes: ${ns(idx)}")
-                            }
-                        }).distinct
+                    history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew else i)) }
 
-                    /**
-                    Example:
-                     1. Sentence 'maximum x' (single element related function)
-                      - maximum is aggregate function linked to date element.
-                      - x defined as 2 elements: date and num.
-                      So, the variant 'maximum x (as num)' should be excluded.
+                    fixed = fixed.distinct
 
-                      2. Sentence 'compare x and y' (multiple elements related function)
-                      - compare is relation function linked to date element.
-                      - x an y defined as 2 elements: date and num.
-                      So, variants 'x (as num) and x (as date)'  and 'x (as date) and x (as num)'
-                      should't be excluded, but invalid relation should be deleted for these combinations.
-                      */
+                    if (idxs != fixed) {
+                        n += idxsField → fixed.map(_.asJava).asJava.asInstanceOf[java.io.Serializable]
 
-                    types.size match {
-                        case 0 ⇒ throw new AssertionError("Unexpected empty types")
-                        case 1 ⇒ types.head == notesType
-                        case _ ⇒
-                            // Equal elements should be processed together with function element.
-                            if (types.size == 1)
-                                false
-                            else {
-                                ns.removeNote(rel.id)
+                        def x(seq: Seq[Seq[Int]]): String = s"[${seq.map(p ⇒ s"[${p.mkString(",")}]").mkString(", ")}]"
 
-                                true
-                            }
+                        logger.trace(s"`$noteType` note `indexes` fixed [old=${x(idxs)}}, new=${x(fixed)}]")
                     }
+                case None ⇒ // No-op.
+            }
+        )
+
+        ns.flatMap(_.getNotes(noteType)).forall(rel ⇒ {
+            val idxsList: util.List[util.List[Int]] = rel.data[java.util.List[java.util.List[Int]]](idxsField)
+            val notesTypes = rel.data[util.List[String]](noteField)
+
+            require(idxsList.size() == notesTypes.size())
+
+            idxsList.asScala.zip(notesTypes.asScala).forall {
+                case (idxs, notesType) ⇒ checkRelation(ns, idxs.asScala, notesType, rel.id)
+            }
         })
     }
 

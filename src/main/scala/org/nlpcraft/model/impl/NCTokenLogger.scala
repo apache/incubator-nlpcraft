@@ -465,11 +465,29 @@ object NCTokenLogger extends LazyLogging {
                             s"type=$t, indexes=[$getIndexes], note=$note"
 
                         case "nlpcraft:sort" ⇒
-                            val asc: Boolean = get("asc")
-                            val note = mkString("note")
+                            def n2s(l: java.util.List[String]): String = l.asScala.mkString(", ")
+                            def i2s(l: java.util.List[java.util.List[Int]]): String =
+                                l.asScala.map(_.asScala).map(p ⇒ s"[${p.mkString(", ")}]").mkString(", ")
 
-                            s"asc=$asc, indexes=[$getIndexes], note=$note"
+                            val subjNotes: java.util.List[String] = get("subjnotes")
+                            val subjIndexes: java.util.List[java.util.List[Int]] = get("subjindexes")
 
+                            var s = s"subjNotes=${n2s(subjNotes)}, subjIndexes=[${i2s(subjIndexes)}]"
+
+                            if (has("asc"))
+                                s = s"$s, asc=${get("asc")}"
+
+                            val byNotesOpt: Option[java.util.List[String]] = getOpt("bynotes")
+
+                            byNotesOpt match {
+                                case Some(byNotes) ⇒
+                                    val byIndexes: java.util.List[java.util.List[Int]] = get("byindexes")
+
+                                    s = s"$s, byNotes=${n2s(byNotes)}, byIndexes=[${i2s(byIndexes)}]"
+                                case None ⇒ // No-op.
+                            }
+
+                            s
                         case "nlpcraft:limit" ⇒
                             val limit = mkDouble3("limit")
                             val note = mkString("note")
