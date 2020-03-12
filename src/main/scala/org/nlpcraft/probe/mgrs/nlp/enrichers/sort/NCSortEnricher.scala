@@ -129,6 +129,19 @@ object NCSortEnricher extends NCProbeEnricher {
     }
 
     /**
+      * Return flag which indicates are token contiguous or not.
+      *
+      * @param toks Tokens.
+      * @param tok1Idx First token index.
+      * @param tok2Idx Second token index.
+      */
+    private def contiguous(toks: Seq[NCNlpSentenceToken], tok1Idx: Int, tok2Idx: Int): Boolean = {
+        val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
+
+        between.isEmpty || between.forall(_.isStopWord)
+    }
+
+    /**
       * [Token] -> [NoteData]
       * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
       * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
@@ -136,30 +149,23 @@ object NCSortEnricher extends NCProbeEnricher {
       * @param toks
       */
     private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
-        val all: Seq[NoteData] = toks.
-            flatten.
-            filter(!_.isNlp).
-            map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
-            sortBy(_.indexes.head)
+        val all =
+            toks.flatten.filter(!_.isNlp).map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).sortBy(_.indexes.head).distinct
 
         if (all.nonEmpty) {
-            val first = all.head.indexes.head
-            val last = all.last.indexes.last
-
             val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
             def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
                 seq += nd
 
                 all.
-                    filter(p ⇒ nd.indexes.last < p.indexes.head  && {
-                        val between = toks.slice(nd.indexes.last, p.indexes.head - 1)
-
-                        between.isEmpty || between.forall(_.isStopWord)
-                    }).
+                    filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(toks, nd.indexes.last, p.indexes.head)).
                     foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
 
-                if (seq.nonEmpty && seq.head.indexes.head == first && seq.last.indexes.last == last)
+                if (seq.nonEmpty &&
+                    seq.head.indexes.head == all.head.indexes.head &&
+                    seq.last.indexes.last == all.last.indexes.last
+                )
                     res += seq
             }
 
@@ -171,6 +177,10 @@ object NCSortEnricher extends NCProbeEnricher {
             Seq.empty
     }
 
+    /**
+      *
+      * @param toks
+      */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
         case class KeyWord(tokens: Seq[NCNlpSentenceToken], synonymIndex: Int) {
             // Added for tests reasons.
@@ -219,37 +229,47 @@ object NCSortEnricher extends NCProbeEnricher {
         hOpt match {
             case Some(h) ⇒
                 val others = toks.filter(t ⇒ !h.all.contains(t))
-                val othersWithoutStops = others.filter(!_.isStopWord)
 
-                if (
-                    othersWithoutStops.nonEmpty &&
-                    othersWithoutStops.forall(t ⇒ t.exists(n ⇒ n.isUser || SORT_TYPES.contains(n.noteType))) &&
-                    SEQS.contains(
-                        // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
-                        toks.map(t ⇒
-                            h.getKeyWordType(t).getOrElse("x")).
-                            foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
-                    )
-                ) {
-                    val subj = mutable.ArrayBuffer.empty[NCNlpSentenceToken]
-                    val by = mutable.ArrayBuffer.empty[NCNlpSentenceToken]
+                if (others.nonEmpty) {
+                    val othersRefs = others.filter(t ⇒ t.exists(n ⇒ n.isUser || SORT_TYPES.contains(n.noteType)))
 
-                    others.foreach(t ⇒ (if (subj.isEmpty || subj.last.index + 1 == t.index) subj else by) += t)
-
-                    require(subj.nonEmpty)
-
-                    Some(
-                        Match(
-                            asc = h.order match {
-                                case Some(order) ⇒ Some(ORDER(order.synonymIndex)._2)
-                                case None ⇒ None
-                            },
-                            main = h.sort.tokens,
-                            stop = h.byTokens ++ h.orderTokens,
-                            subjSeq = split(subj),
-                            bySeq = split(by)
+                    if (
+                        othersRefs.nonEmpty &&
+                        others.filter(p ⇒ !othersRefs.contains(p)).forall(_.isStopWord) &&
+                        SEQS.contains(
+                            // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
+                            toks.map(t ⇒
+                                h.getKeyWordType(t).getOrElse("x")).
+                                foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
                         )
-                    )
+                    ) {
+                        val subj = mutable.ArrayBuffer.empty[NCNlpSentenceToken]
+                        val by = mutable.ArrayBuffer.empty[NCNlpSentenceToken]
+
+                        others.foreach(t ⇒
+                            if (subj.isEmpty || by.isEmpty && contiguous(others, subj.last.index, t.index))
+                                subj += t
+                            else
+                                by += t
+                        )
+
+                        require(subj.nonEmpty)
+
+                        Some(
+                            Match(
+                                asc = h.order match {
+                                    case Some(order) ⇒ Some(ORDER(order.synonymIndex)._2)
+                                    case None ⇒ None
+                                },
+                                main = h.sort.tokens,
+                                stop = h.byTokens ++ h.orderTokens,
+                                subjSeq = split(subj),
+                                bySeq = split(by)
+                            )
+                        )
+                    }
+                    else
+                        None
                 }
                 else
                     None

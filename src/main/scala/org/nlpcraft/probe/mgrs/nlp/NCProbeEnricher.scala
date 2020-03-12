@@ -53,6 +53,8 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
             Set.empty
         else {
             def getCommon(sortedToks: Seq[NCNlpSentenceToken]): Set[String] = {
+                require(sortedToks.nonEmpty)
+
                 val h = sortedToks.head
                 val l = sortedToks.last
 
@@ -64,12 +66,16 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
                 notes.filter(!_.isNlp).filter(n ⇒ h.index == n.tokenFrom && l.index == n.tokenTo).map(_.noteType).toSet
             }
 
-            val sortedToks = toks.sortBy(_.index)
+            var sortedToks = toks.sortBy(_.index)
 
             var res = getCommon(sortedToks)
 
-            if (res.isEmpty)
-                res = getCommon(sortedToks.filter(!_.isStopWord))
+            if (res.isEmpty) {
+                sortedToks = sortedToks.filter(!_.isStopWord)
+
+                if (sortedToks.nonEmpty)
+                    res = getCommon(sortedToks)
+            }
 
             if (res.isEmpty) Set.empty else res
         }
@@ -83,7 +89,10 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
       */
     protected def hasReference(typ: String, refNoteName: String, refNoteVal: String, matched: Seq[NCNlpSentenceToken]): Boolean =
         matched.forall(t ⇒
-            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒ n(refNoteName).asInstanceOf[String] == refNoteVal)
+            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒ n.get(refNoteName) match {
+                case Some(s) ⇒ s.asInstanceOf[String] == refNoteVal
+                case None ⇒ false
+            })
         )
 
     /**
@@ -95,7 +104,12 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
       */
     protected def hasReferences(typ: String, refNoteName: String, refNoteVals: Seq[String], matched: Seq[NCNlpSentenceToken]): Boolean =
         matched.forall(t ⇒
-            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒ n(refNoteName).asInstanceOf[java.util.List[String]].asScala == refNoteVals)
+            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒
+                n.get(refNoteName) match {
+                    case Some(s) ⇒ s.asInstanceOf[java.util.List[String]].asScala == refNoteVals
+                    case None ⇒ false
+                }
+            )
         )
 
     /**
