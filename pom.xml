@@ -23,8 +23,8 @@
     <name>NLPCraft</name>
     <artifactId>nlpcraft</artifactId>
     <groupId>org.nlpcraft</groupId>
-    <version>0.8.2</version>
-    <url>https://nlpcraft.org</url>
+    <version>0.5.0</version>
+    <url>https://nlpcraft.apache.org</url>
     <description>An open source API to convert natural language into actions.</description>
 
     <developers>
@@ -32,8 +32,8 @@
             <id>aradzinski</id>
             <name>Aaron Radzinski</name>
             <email>aradzinski@nlpcraft.org</email>
-            <organization>nlpcraft</organization>
-            <organizationUrl>http://nlpcraft.org</organizationUrl>
+            <organization>apache</organization>
+            <organizationUrl>http://apache.org</organizationUrl>
             <roles>
                 <role>architect</role>
             </roles>
@@ -46,12 +46,6 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
             <comments>A business-friendly OSS license</comments>
-        </license>
-        <license>
-            <name>The Commons Clause</name>
-            <url>https://commonsclause.com/</url>
-            <distribution>repo</distribution>
-            <comments>A safer business-friendly OSS license</comments>
         </license>
     </licenses>
 
