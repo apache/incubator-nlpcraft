@@ -18,6 +18,7 @@
 package org.nlpcraft.probe.mgrs.nlp
 
 import java.io.Serializable
+import java.util
 
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
@@ -25,9 +26,9 @@ import org.nlpcraft.common.nlp._
 import org.nlpcraft.common.{NCService, _}
 import org.nlpcraft.probe.mgrs.NCModelDecorator
 
+import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq}
 import scala.language.implicitConversions
-import scala.collection.JavaConverters._
 
 /**
  * Base class for NLP enricher.
@@ -106,7 +107,7 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
         matched.forall(t ⇒
             t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒
                 n.get(refNoteName) match {
-                    case Some(s) ⇒ s.asInstanceOf[java.util.List[String]].asScala == refNoteVals
+                    case Some(s) ⇒ s.asInstanceOf[util.List[String]].asScala.intersect(refNoteVals).nonEmpty
                     case None ⇒ false
                 }
             )

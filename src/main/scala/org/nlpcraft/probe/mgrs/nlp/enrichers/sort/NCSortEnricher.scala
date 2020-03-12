@@ -96,6 +96,16 @@ object NCSortEnricher extends NCProbeEnricher {
         require(subjSeq.nonEmpty)
 
         lazy val all: Seq[NCNlpSentenceToken] = main ++ stop
+
+        // Added for debug reasons.
+        override def toString: String = {
+            def s1[T](seq: Seq[NCNlpSentenceToken]): String = s"[${seq.map(_.origText).mkString(", ")}]"
+            def s2[T](seq: Seq[NoteData]): String =
+                s"[${seq.map(p ⇒ s"${p.note}: [${p.indexes.mkString(", ")}]").mkString(", ")}]"
+            def s3[T](seq: Seq[Seq[NoteData]]): String = s"[${seq.map(s2).mkString(", ")}]"
+
+            s"Match [main=${s1(main)}, stop=${s1(stop)}, subjSeq=${s3(subjSeq)}, bySeq=${s3(bySeq)}]"
+        }
     }
 
     /**
@@ -243,15 +253,17 @@ object NCSortEnricher extends NCProbeEnricher {
                                 foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
                         )
                     ) {
-                        val subj = mutable.ArrayBuffer.empty[NCNlpSentenceToken]
-                        val by = mutable.ArrayBuffer.empty[NCNlpSentenceToken]
+                        val sepIdxs = h.all.
+                            map(_.index).
+                            filter(i ⇒ others.exists(_.index > i) && others.exists(_.index < i)).
+                            sorted
 
-                        others.foreach(t ⇒
-                            if (subj.isEmpty || by.isEmpty && contiguous(others, subj.last.index, t.index))
-                                subj += t
+                        // Devides separated by keywords.
+                        val (subj, by) =
+                            if (sepIdxs.isEmpty)
+                                (others, Seq.empty)
                             else
-                                by += t
-                        )
+                                (others.filter(_.index < sepIdxs.head), others.filter(_.index > sepIdxs.last))
 
                         require(subj.nonEmpty)
 
@@ -311,7 +323,7 @@ object NCSortEnricher extends NCProbeEnricher {
                             }
 
                             def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
-                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params:_*)
+                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
                                 m.main.foreach(_.add(note))
                                 m.stop.foreach(_.addStopReason(note))
@@ -320,17 +332,16 @@ object NCSortEnricher extends NCProbeEnricher {
                             }
 
                             if (m.bySeq.nonEmpty)
-                                for (by ← m.bySeq if !hasReferences(TOK_ID, "byNotes", by.map(_.note), m.main))
+                                for (by ← m.bySeq)
                                     mkNote(addNotes(mkParams(), by, "byNotes", "byIndexes"))
                             else
                                 mkNote(mkParams())
                         }
 
+                        if (changed)
+                            buf += toks.toSet
                     case None ⇒ // No-op.
-
-                if (changed)
-                    buf += toks.toSet
-            }
+                }
 
             changed
         }

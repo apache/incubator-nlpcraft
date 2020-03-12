@@ -233,8 +233,8 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                 "nlpcraft:relation",
                 "nlpcraft:limit"
             ).forall(t ⇒ fixIndexesReferences(t, ns, history) &&
-            fixIndexesReferencesList("nlpcraft:limit", "subjIndexes", "subjNotes", ns, history) &&
-            fixIndexesReferencesList("nlpcraft:limit", "byIndexes", "byNotes", ns, history))
+            fixIndexesReferencesList("nlpcraft:sort", "subjIndexes", "subjNotes", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "byIndexes", "byNotes", ns, history))
 
         if (res)
             // Validation (all indexes calculated well)
@@ -374,16 +374,19 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             }
         )
 
-        ns.flatMap(_.getNotes(noteType)).forall(rel ⇒ {
-            val idxsList: util.List[util.List[Int]] = rel.data[java.util.List[java.util.List[Int]]](idxsField)
-            val notesTypes = rel.data[util.List[String]](noteField)
+        ns.flatMap(_.getNotes(noteType)).forall(rel ⇒
+            rel.dataOpt[java.util.List[java.util.List[Int]]](idxsField) match {
+                case Some(idxsList) ⇒
+                    val notesTypes = rel.data[util.List[String]](noteField)
 
-            require(idxsList.size() == notesTypes.size())
+                    require(idxsList.size() == notesTypes.size())
 
-            idxsList.asScala.zip(notesTypes.asScala).forall {
-                case (idxs, notesType) ⇒ checkRelation(ns, idxs.asScala, notesType, rel.id)
+                    idxsList.asScala.zip(notesTypes.asScala).forall {
+                        case (idxs, notesType) ⇒ checkRelation(ns, idxs.asScala, notesType, rel.id)
+                    }
+                case None ⇒ true
             }
-        })
+        )
     }
 
     /**
