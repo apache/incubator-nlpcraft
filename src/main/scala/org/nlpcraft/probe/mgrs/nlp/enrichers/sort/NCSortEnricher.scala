@@ -35,13 +35,12 @@ import scala.collection.{Map, Seq, mutable}
   * Sort enricher.
   */
 object NCSortEnricher extends NCProbeEnricher {
-    private final val SORT: Seq[String] =
+    private final val SORT =
         Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle").map(NCNlpCoreManager.stem)
 
-    private final val BY: Seq[String] =
-        Seq("by", "on", "with").map(NCNlpCoreManager.stem)
+    private final val BY: Seq[String] = Seq("by", "on", "with").map(NCNlpCoreManager.stem)
 
-    private final val ORDER: Seq[(String, Boolean)] = {
+    private final val ORDER = {
         val p = NCMacroParser()
 
         Seq(
@@ -56,11 +55,9 @@ object NCSortEnricher extends NCProbeEnricher {
         ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc) }
     }
 
-    require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.unzip._1).distinct.size)
+    private final val TOK_ID = "nlpcraft:sort"
 
-    private final val TOK_ID: String = "nlpcraft:sort"
-
-    private final val SORT_TYPES: Seq[String] = Seq(
+    private final val SORT_TYPES = Seq(
         "nlpcraft:continent",
         "nlpcraft:subcontinent",
         "nlpcraft:country",
@@ -86,18 +83,6 @@ object NCSortEnricher extends NCProbeEnricher {
             s"SORT x BY ORDER"
         )
 
-    // Validation.
-    SEQS.map(_.split(" ")).foreach(seq ⇒ {
-        require(seq.forall(p ⇒ p == "SORT" || p == "ORDER" || p == "BY" || p == "x"))
-
-        seq.groupBy(p ⇒ p).foreach { case (key, group) ⇒
-            key match {
-                case "x" ⇒ require(group.length <= 2)
-                case _ ⇒ require(group.length == 1)
-            }
-        }
-    })
-
     case class NoteData(note: String, indexes: Seq[Int])
 
     private case class Match(
@@ -113,17 +98,43 @@ object NCSortEnricher extends NCProbeEnricher {
         lazy val all: Seq[NCNlpSentenceToken] = main ++ stop
     }
 
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        super.start()
+    /**
+      *
+      */
+    private def validate() {
+        require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.unzip._1).distinct.size)
+
+        val seq1 = SORT.flatMap(_.split(" "))
+        val seq2 = BY.flatMap(_.split(" "))
+        val seq3 = ORDER.map(_._1).flatMap(_.split(" "))
+
+        require(seq1.size == seq1.distinct.size)
+        require(seq2.size == seq2.distinct.size)
+        require(seq3.size == seq3.distinct.size)
+
+        require(seq1.intersect(seq2).isEmpty)
+        require(seq1.intersect(seq3).isEmpty)
+        require(seq2.intersect(seq3).isEmpty)
+
+        SEQS.map(_.split(" ")).foreach(seq ⇒ {
+            require(seq.forall(p ⇒ p == "SORT" || p == "ORDER" || p == "BY" || p == "x"))
+
+            seq.groupBy(p ⇒ p).foreach { case (key, group) ⇒
+                key match {
+                    case "x" ⇒ require(group.length <= 2)
+                    case _ ⇒ require(group.length == 1)
+                }
+            }
+        })
     }
 
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-    }
-
-    // [Token] -> [NoteData]
-    // [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
-    // [[A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4)]]
+    /**
+      * [Token] -> [NoteData]
+      * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
+      * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
+      *
+      * @param toks
+      */
     private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
         val all: Seq[NoteData] = toks.
             flatten.
@@ -132,20 +143,27 @@ object NCSortEnricher extends NCProbeEnricher {
             sortBy(_.indexes.head)
 
         if (all.nonEmpty) {
+            val first = all.head.indexes.head
+            val last = all.last.indexes.last
+
             val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
-            def go(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
+            def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
                 seq += nd
 
                 all.
-                    filter(p ⇒ p.indexes.head == nd.indexes.last + 1).
-                    foreach(go(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
+                    filter(p ⇒ nd.indexes.last < p.indexes.head  && {
+                        val between = toks.slice(nd.indexes.last, p.indexes.head - 1)
 
-                if (seq.nonEmpty && seq.head.indexes.head == toks.head.index && seq.last.indexes.last == toks.last.index)
+                        between.isEmpty || between.forall(_.isStopWord)
+                    }).
+                    foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
+
+                if (seq.nonEmpty && seq.head.indexes.head == first && seq.last.indexes.last == last)
                     res += seq
             }
 
-            go(all.head)
+            fill(all.head)
 
             res
         }
@@ -198,7 +216,6 @@ object NCSortEnricher extends NCProbeEnricher {
                 case None ⇒ None
             }
 
-
         hOpt match {
             case Some(h) ⇒
                 val others = toks.filter(t ⇒ !h.all.contains(t))
@@ -240,11 +257,7 @@ object NCSortEnricher extends NCProbeEnricher {
         }
     }
 
-    // TODO:
-    private def suitable(m: Match, notes: Seq[String], refName: String): Boolean =
-        !hasReferences(TOK_ID, refName, notes, m.main)
-
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Boolean =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
@@ -255,7 +268,7 @@ object NCSortEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (subj ← m.subjSeq if suitable(m, subj.map(_.note), "subjNotes")) {
+                        for (subj ← m.subjSeq if !hasReferences(TOK_ID, "subjNotes", subj.map(_.note), m.main)) {
                             def addNotes(
                                 params: ArrayBuffer[(String, Any)],
                                 seq: Seq[NoteData],
@@ -287,7 +300,7 @@ object NCSortEnricher extends NCProbeEnricher {
                             }
 
                             if (m.bySeq.nonEmpty)
-                                for (by ← m.bySeq if suitable(m, by.map(_.note), "byNotes"))
+                                for (by ← m.bySeq if !hasReferences(TOK_ID, "byNotes", by.map(_.note), m.main))
                                     mkNote(addNotes(mkParams(), by, "byNotes", "byIndexes"))
                             else
                                 mkNote(mkParams())
@@ -301,4 +314,14 @@ object NCSortEnricher extends NCProbeEnricher {
 
             changed
         }
+
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        validate()
+
+        super.start()
+    }
+
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        super.stop()
+    }
 }
