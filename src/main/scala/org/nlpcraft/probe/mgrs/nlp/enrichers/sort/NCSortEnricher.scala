@@ -55,7 +55,7 @@ object NCSortEnricher extends NCProbeEnricher {
         ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc) }
     }
 
-    require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.unzip._1).distinct.size)
+    require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.map(_._1)).distinct.size)
 
     private final val TOK_ID: String = "nlpcraft:sort"
 
@@ -196,7 +196,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
         val hOpt: Option[KeyWordsHolder] =
             get0(SORT, toks) match {
-                case Some(sort) ⇒ Some(KeyWordsHolder(sort, get0(BY, toks), get0(ORDER.unzip._1, toks)))
+                case Some(sort) ⇒ Some(KeyWordsHolder(sort, get0(BY, toks), get0(ORDER.map(_._1), toks)))
                 case None ⇒ None
             }
 
