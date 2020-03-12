@@ -553,7 +553,13 @@
                     <stylesheetfile>${project.basedir}/javadoc/stylesheet.css</stylesheetfile>
                     <bottom>
                         <![CDATA[
-                            Copyright &#169; {currentYear} Apache Software Foundation.
+                            <center>
+                                <br/>
+                                <span style="font-size: larger">Copyright &#169; {currentYear} Apache Software Foundation</span>
+                                <br/>
+                                <br/>
+                                <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
+                            </center>
                         ]]>
                     </bottom>
                     <top>
@@ -592,16 +598,16 @@
                     </groups>
                     <header>
                         <![CDATA[
-                            NLPCraft ${project.version}
+                            Apache NLPCraft <span style="font-size: 80%">${project.version}</span>
                         ]]>
                     </header>
                     <footer>
                         <![CDATA[
-                            <span style="vertical-align: super">NLPCraft ${project.version}</span>
-                            <a style="vertical-align: super; margin-right: 10px" href="https://github.com/nlpcrafters/nlpcraft" target="github"><i class="fa fa-github github-logo"></i></a>
-                            <a class="github-button" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples" data-icon="octicon-eye" aria-label="NLPCraft Examples">Examples</a>
-                            <a class="github-button" href="https://github.com/nlpcrafters/nlpcraft" data-icon="octicon-star" aria-label="Star on GitHub">Star</a>
-                            <a class="github-button" href="https://github.com/nlpcrafters/nlpcraft/fork" data-icon="octicon-repo-forked" aria-label="Fork on GitHub">Fork</a>
+                            <span style="vertical-align: super">Apache NLPCraft <span style="font-size: 80%">${project.version}</span></span>
+                            <a style="vertical-align: super; margin-right: 10px" href="https://github.com/apache/incubator-nlpcraft" target="github"><i class="fa fa-github github-logo"></i></a>
+                            <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples" data-icon="octicon-eye" aria-label="NLPCraft Examples">Examples</a>
+                            <a class="github-button" href="https://github.com/apache/incubator-nlpcraft" data-icon="octicon-star" aria-label="Star on GitHub">Star</a>
+                            <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/fork" data-icon="octicon-repo-forked" aria-label="Fork on GitHub">Fork</a>
                             <script type="text/javascript">
                                 SyntaxHighlighter.defaults["auto-links"] = false;
                                 SyntaxHighlighter.defaults["tab-size"] = 2;
@@ -622,11 +628,10 @@
                     </footer>
                     <doctitle>
                         <![CDATA[
-                            <img style="margin-bottom: 10px" src="https://nlpcraft.org/images/nlpcraft_logo_darkblue.png" height="54px"><br>
-                            Data Model API ${project.version}
+                            <img style="margin-bottom: 10px" src="https://nlpcraft.org/images/nlpcraft_logo_darkblue.png" height="54px">
                         ]]>
                     </doctitle>
-                    <windowtitle>NLPCraft ${project.version}</windowtitle>
+                    <windowtitle>Apache NLPCraft ${project.version}</windowtitle>
                     <show>public</show>
                     <verbose>false</verbose>
                 </configuration>
