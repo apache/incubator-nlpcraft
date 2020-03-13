@@ -15,27 +15,12 @@
 # limitations under the License.
 #
 
-- title: Использование именованных сущностей (NE) в NLPCraft
-  url: https://medium.com/@dmonakhov_47478/%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B8%D0%BC%D0%B5%D0%BD%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D0%B5%D0%B9-ne-%D0%B2-nlpcraft-e7c259a7290b
-  excerpt: Первая задача, с решения которой начинается процесс работы каждой NLP системы, это...
-  author: Dmitriy Monakhov
-  avatar_url: images/monakhov.png
-  publish_date: July 18, 2019
-  twitter_id: nlpcraftorg
-  medium_id: dmonakhov_47478
-
-- title: Light switch with Natural Language Interface
-  url: https://dzone.com/articles/light-switch-with-natural-language-interface
-  excerpt: In this blog I’ll show how to build a natural language interface for a typical home light switch...
-  pub_logo_url: images/dzone_logo.png
-  publish_date: July 16, 2019
-
-- title: Introducing NLPCraft 0.6
+- title: Introducing Apache NLPCraft 0.5.0
   url: https://medium.com/@aradzinski/introducing-nlpcraft-0-6-74cea6a4d203
-  excerpt: Google NL and Standford CoreNLP integration, new intent DSL, bugfixes & improvements.
+  excerpt: Announcing the 1st release of the Apache NLPCraft.
   author: Aaron Radzinksi
   avatar_url: images/lion.jpg
-  publish_date: June 21, 2019
+  publish_date: April 16, 2020
   linkedin_id: aaron-radzinski-6b2228167
   twitter_id: aaron_radzinski
   medium_id: aradzinski
