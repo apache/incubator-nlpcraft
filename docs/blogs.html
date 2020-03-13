@@ -57,42 +57,7 @@ layout: interior
     </div>
     <div class="col-md-2 third-column">
         <ul class="side-nav">
-            <li class="side-nav-title">Quick Links</li>
-            <li>
-                <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
-                target="github"
-                href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
-            </li>
-            <li>
-                <i class="fab fa-java mr-2"></i><a target="_" href="/apis/latest/index.html">Javadoc</a>
-            </li>
-            <li>
-                <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
-                href="https://nlpcraft.docs.apiary.io"
-                target="apiary">REST API</a>
-            </li>
-            <li>
-                <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
-            </li>
-            <li>
-                <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
-            </li>
-            <li class="side-nav-title">Support</li>
-            <li>
-                <nobr>
-                    <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:dev@nlpcraft.apache.org">Dev List</a>
-                </nobr>
-            </li>
-            <li>
-                <nobr>
-                    <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
-                </nobr>
-            </li>
-            <li>
-                <nobr>
-                    <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/apache/incubator-nlpcraft">GitHub</a>
-                </nobr>
-            </li>
+            {% include quick-links.html %}
         </ul>
     </div>
 </div>
