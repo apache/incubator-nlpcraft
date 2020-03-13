@@ -196,21 +196,25 @@ object NCSortEnricher extends NCProbeEnricher {
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
         case class KeyWord(tokens: Seq[NCNlpSentenceToken], synonymIndex: Int) {
             // Added for debug reasons.
-            override def toString = tokens.map(_.origText).mkString(" ")
+            override def toString = s"${tokens.map(_.origText).mkString(" ")} [${tokens.map(_.index).mkString(",")}]"
         }
 
         def get0(keyStems: Seq[String], toks: Seq[NCNlpSentenceToken]): Option[KeyWord] = {
             require(keyStems.nonEmpty)
 
-            val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
+            if (toks.nonEmpty) {
+                val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
 
-            (1 to maxWords).reverse.flatMap(i ⇒
-                toks.sliding(i).
-                    map(toks ⇒ toks.map(_.stem).mkString(" ") → toks).toMap.
-                    flatMap { case (stem, stemToks) ⇒
-                        if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
-                    }.toStream.headOption
-            ).toStream.headOption
+                (1 to maxWords).reverse.flatMap(i ⇒
+                    toks.sliding(i).
+                        map(toks ⇒ toks.map(_.stem).mkString(" ") → toks).toMap.
+                        flatMap { case (stem, stemToks) ⇒
+                            if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
+                        }.toStream.headOption
+                ).toStream.headOption
+            }
+            else
+                None
         }
 
         case class KeyWordsHolder(sort: KeyWord, by: Option[KeyWord], order: Option[KeyWord]) {
@@ -237,11 +241,20 @@ object NCSortEnricher extends NCProbeEnricher {
                 case Some(sort) ⇒
                     val orderOpt = get0(ORDER.unzip._1, toks)
 
-                    def mkHolder: Option[KeyWordsHolder] = Some(KeyWordsHolder(sort, get0(BY, toks), orderOpt))
+                    def mkHolder(sort: KeyWord): Option[KeyWordsHolder] = Some(KeyWordsHolder(sort, get0(BY, toks), orderOpt))
 
                     orderOpt match {
-                        case Some(order) ⇒ if (order.tokens.intersect(sort.tokens).isEmpty) mkHolder else None
-                        case None ⇒ mkHolder
+                        case Some(order) ⇒
+                            // ORDER and SORT can contains same words (See validation method.)
+                            if (order.tokens.intersect(sort.tokens).isEmpty)
+                                mkHolder(sort)
+                            else {
+                                get0(SORT, toks.filter(t ⇒ !order.tokens.contains(t))) match {
+                                    case Some(newSort) ⇒ mkHolder(newSort)
+                                    case None ⇒ None
+                                }
+                            }
+                        case None ⇒ mkHolder(sort)
                     }
                 case None ⇒ None
             }
