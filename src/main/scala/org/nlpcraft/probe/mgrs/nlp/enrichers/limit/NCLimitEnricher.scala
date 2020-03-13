@@ -45,16 +45,6 @@ object NCLimitEnricher extends NCProbeEnricher {
 
     private final val TOK_ID = "nlpcraft:limit"
 
-    private final val LIMIT_TYPES = Seq(
-        "nlpcraft:continent",
-        "nlpcraft:subcontinent",
-        "nlpcraft:country",
-        "nlpcraft:metro",
-        "nlpcraft:region",
-        "nlpcraft:city",
-        "nlpcraft:date"
-    )
-
     /**
       * Group of neighbouring tokens. All of them numbers or all of the not.
       *
@@ -249,7 +239,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         groupsMap: Map[Seq[NCNlpSentenceToken], GroupsHolder],
         toks: Seq[NCNlpSentenceToken]
     ): Option[Match] = {
-        val refCands = toks.filter(t ⇒ t.exists(n ⇒ n.isUser || LIMIT_TYPES.contains(n.noteType)))
+        val refCands = toks.filter(_.exists(_.isUser))
         val commonNotes = getCommonNotes(refCands)
 
         if (commonNotes.nonEmpty) {

@@ -42,18 +42,6 @@ object NCAggregationEnricher extends NCProbeEnricher {
     )
     private final val TOK_ID = "nlpcraft:aggregation"
 
-    private final val AGGR_TYPES = Seq(
-        "nlpcraft:continent",
-        "nlpcraft:subcontinent",
-        "nlpcraft:country",
-        "nlpcraft:metro",
-        "nlpcraft:region",
-        "nlpcraft:city",
-        "nlpcraft:coordinate",
-        "nlpcraft:date",
-        "nlpcraft:num"
-    )
-
     @volatile private var FUNCS: Map[String, String] = _
 
     /**
@@ -123,23 +111,17 @@ object NCAggregationEnricher extends NCProbeEnricher {
 
     /**
       *
-      * @param n
-      */
-    private def isRefCandidate(n: NCNlpSentenceNote): Boolean = n.isUser || AGGR_TYPES.contains(n.noteType)
-
-    /**
-      *
       * @param toks
       */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
-        val matchedCands = toks.takeWhile(!_.exists(isRefCandidate))
+        val matchedCands = toks.takeWhile(!_.exists(_.isUser))
 
         def try0(stem: String): Option[Match] =
             FUNCS.get(stem) match {
                 case Some(funcType) ⇒
                     val afterMatched = toks.drop(matchedCands.length)
-                    val refCands = afterMatched.filter(_.exists(isRefCandidate))
-                    val commonNotes = getCommonNotes(refCands, Some(isRefCandidate))
+                    val refCands = afterMatched.filter(_.exists(_.isUser))
+                    val commonNotes = getCommonNotes(refCands, Some((n: NCNlpSentenceNote) ⇒ n.isUser))
 
                     val ok =
                         commonNotes.nonEmpty &&

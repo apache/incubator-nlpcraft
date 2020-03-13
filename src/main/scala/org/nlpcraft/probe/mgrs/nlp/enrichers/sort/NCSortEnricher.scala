@@ -65,19 +65,6 @@ object NCSortEnricher extends NCProbeEnricher {
 
     private final val TOK_ID = "nlpcraft:sort"
 
-    // TODO: DROP it.
-    private final val SORT_TYPES = Seq(
-        "nlpcraft:continent",
-        "nlpcraft:subcontinent",
-        "nlpcraft:country",
-        "nlpcraft:metro",
-        "nlpcraft:region",
-        "nlpcraft:city",
-        "nlpcraft:coordinate",
-        "nlpcraft:date",
-        "nlpcraft:num"
-    )
-
     // Elemens: SORT, BY, ORDER, x.
     // Note that SORT, BY, ORDER - are sets of words (not single words)
     // x - means one or multiple words. x must be at least one for each line, maximum two.
@@ -278,7 +265,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 val others = toks.filter(t ⇒ !h.all.contains(t))
 
                 if (others.nonEmpty) {
-                    val othersRefs = others.filter(t ⇒ t.exists(n ⇒ n.isUser || SORT_TYPES.contains(n.noteType)))
+                    val othersRefs = others.filter(_.exists(_.isUser))
 
                     if (
                         othersRefs.nonEmpty &&
