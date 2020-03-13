@@ -228,13 +228,10 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
         unionStops(ns, notNlpTypes, history, idCache)
 
         val res =
-            Seq(
-                "nlpcraft:aggregation",
-                "nlpcraft:relation",
-                "nlpcraft:limit"
-            ).forall(t ⇒ fixIndexesReferences(t, ns, history) &&
+            Seq("nlpcraft:aggregation", "nlpcraft:relation", "nlpcraft:limit").
+                forall(t ⇒ fixIndexesReferences(t, ns, history)) &&
             fixIndexesReferencesList("nlpcraft:sort", "subjIndexes", "subjNotes", ns, history) &&
-            fixIndexesReferencesList("nlpcraft:sort", "byIndexes", "byNotes", ns, history))
+            fixIndexesReferencesList("nlpcraft:sort", "byIndexes", "byNotes", ns, history)
 
         if (res)
             // Validation (all indexes calculated well)
@@ -271,6 +268,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                 }
             }).distinct
 
+
         /**
         Example:
              1. Sentence 'maximum x' (single element related function)
@@ -286,7 +284,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
           */
 
         types.size match {
-            case 0 ⇒ throw new AssertionError("Unexpected empty types")
+            case 0 ⇒ throw new AssertionError(s"Unexpected empty types [notesType=$notesType]")
             case 1 ⇒ types.head == notesType
             case _ ⇒
                 // Equal elements should be processed together with function element.
@@ -359,16 +357,14 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     val idxs: Seq[Seq[Int]] = n.data[java.util.List[java.util.List[Int]]](idxsField).asScala.map(_.asScala)
                     var fixed = idxs
 
-                    history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew else i)) }
-
-                    fixed = fixed.distinct
+                    history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew else i).distinct) }
 
                     if (idxs != fixed) {
                         n += idxsField → fixed.map(_.asJava).asJava.asInstanceOf[java.io.Serializable]
 
                         def x(seq: Seq[Seq[Int]]): String = s"[${seq.map(p ⇒ s"[${p.mkString(",")}]").mkString(", ")}]"
 
-                        logger.trace(s"`$noteType` note `indexes` fixed [old=${x(idxs)}}, new=${x(fixed)}]")
+                        logger.info(s"`$noteType` note `indexes` fixed [old=${x(idxs)}}, new=${x(fixed)}]")
                     }
                 case None ⇒ // No-op.
             }
