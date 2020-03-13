@@ -35,11 +35,17 @@ import scala.collection.{Map, Seq, mutable}
   * Sort enricher.
   */
 object NCSortEnricher extends NCProbeEnricher {
+    // Single words.
     private final val SORT =
         Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle").map(NCNlpCoreManager.stem)
 
+    // Single words.
+    // Cannot be same as in SORT.
     private final val BY: Seq[String] = Seq("by", "on", "with").map(NCNlpCoreManager.stem)
 
+    // Multiple words.
+    // Cannot be same as in SORT and BY.
+    // Some words from chunks can be the same as SORT but cannot be same as BY.
     private final val ORDER = {
         val p = NCMacroParser()
 
@@ -57,6 +63,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
     private final val TOK_ID = "nlpcraft:sort"
 
+    // TODO: DROP it.
     private final val SORT_TYPES = Seq(
         "nlpcraft:continent",
         "nlpcraft:subcontinent",
@@ -69,18 +76,20 @@ object NCSortEnricher extends NCProbeEnricher {
         "nlpcraft:num"
     )
 
+    // Elemens: SORT, BY, ORDER, x.
     // Note that SORT, BY, ORDER - are sets of words (not single words)
+    // x - means one or multiple words. x must be at least one for each line, maximum two.
     private final val SEQS =
         Seq(
-            s"x SORT BY x ORDER",
-            s"x SORT BY x",
-            s"SORT x BY x",
-            s"x SORT",
-            s"SORT x ORDER BY x",
-            s"SORT x",
-            s"ORDER SORT x BY x",
-            s"ORDER SORT x",
-            s"SORT x BY ORDER"
+            "x SORT BY x ORDER",
+            "x SORT BY x",
+            "SORT x BY x",
+            "x SORT",
+            "SORT x ORDER BY x",
+            "SORT x",
+            "ORDER SORT x BY x",
+            "ORDER SORT x",
+            "SORT x BY ORDER"
         )
 
     case class NoteData(note: String, indexes: Seq[Int])
