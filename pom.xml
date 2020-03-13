@@ -61,9 +61,9 @@
     </distributionManagement>
 
     <scm>
-        <url>https://github.com/nlpcrafters/nlpcraft.git</url>
-        <connection>scm:git:ssh://git@github.com/nlpcrafters/nlpcraft.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/nlpcrafters/nlpcraft.git</developerConnection>
+        <url>https://github.com/apache/incubator-nlpcraft.git</url>
+        <connection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

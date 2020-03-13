@@ -1,7 +1,7 @@
 <img src="https://nlpcraft.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 <a target=_ href="https://gitter.im/apache-nlpcraft/community"><img alt="Gitter" src="https://badges.gitter.im/apache-nlpcraft/community.svg"></a>&nbsp;
-<a target=_ href="https://travis-ci.org/nlpcrafters/nlpcraft#"><img alt="Build" src="https://travis-ci.org/nlpcrafters/nlpcraft.svg?branch=master"></a>&nbsp;
+<a target=_ href="https://travis-ci.org/apache/incubator-nlpcraft#"><img alt="Build" src="https://travis-ci.org/apache/incubator-nlpcraft.svg?branch=master"></a>&nbsp;
 <a target=_ href="https://search.maven.org/search?q=org.apache.nlpcraft"><img src="https://maven-badges.herokuapp.com/maven-central/org.apache.nlpcraft/nlpcraft/badge.svg" alt="Maven"></a>
 
 ### Light Switch Example
