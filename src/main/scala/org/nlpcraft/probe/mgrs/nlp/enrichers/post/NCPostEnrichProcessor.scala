@@ -360,25 +360,28 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew else i).distinct) }
 
                     if (idxs != fixed) {
-                        n += idxsField → fixed.map(_.asJava).asJava.asInstanceOf[java.io.Serializable]
+                        fixed.foreach(p ⇒ require(p.size == 1))
+
+                        // Fix double dimension array to one dimension.
+                        n += idxsField → fixed.map(_.head).asJava.asInstanceOf[java.io.Serializable]
 
                         def x(seq: Seq[Seq[Int]]): String = s"[${seq.map(p ⇒ s"[${p.mkString(",")}]").mkString(", ")}]"
 
-                        logger.info(s"`$noteType` note `indexes` fixed [old=${x(idxs)}}, new=${x(fixed)}]")
+                        logger.trace(s"`$noteType` note `indexes` fixed [old=${x(idxs)}}, new=${x(fixed)}]")
                     }
                 case None ⇒ // No-op.
             }
         )
 
         ns.flatMap(_.getNotes(noteType)).forall(rel ⇒
-            rel.dataOpt[java.util.List[java.util.List[Int]]](idxsField) match {
+            rel.dataOpt[java.util.List[Int]](idxsField) match {
                 case Some(idxsList) ⇒
                     val notesTypes = rel.data[util.List[String]](noteField)
 
                     require(idxsList.size() == notesTypes.size())
 
                     idxsList.asScala.zip(notesTypes.asScala).forall {
-                        case (idxs, notesType) ⇒ checkRelation(ns, idxs.asScala, notesType, rel.id)
+                        case (idxs, notesType) ⇒ checkRelation(ns, Seq(idxs), notesType, rel.id)
                     }
                 case None ⇒ true
             }

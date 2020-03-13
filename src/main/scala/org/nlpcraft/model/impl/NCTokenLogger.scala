@@ -405,8 +405,8 @@ object NCTokenLogger extends LazyLogging {
                 opt
             }).mkString("|")
 
-            def getIndexes: String = {
-                val idxs: java.util.List[String] = get("indexes")
+            def getIndexes(name: String): String = {
+                val idxs: java.util.List[String] = get(name)
 
                 idxs.asScala.mkString(", ")
             }
@@ -456,23 +456,18 @@ object NCTokenLogger extends LazyLogging {
                             val t = mkString("type")
                             val note = mkString("note")
 
-                            s"type=$t, indexes=[$getIndexes], note=$note"
+                            s"type=$t, indexes=[${getIndexes("indexes")}], note=$note"
 
                         case "nlpcraft:relation" ⇒
                             val t = mkString("type")
                             val note = mkString("note")
 
-                            s"type=$t, indexes=[$getIndexes], note=$note"
+                            s"type=$t, indexes=[${getIndexes("indexes")}], note=$note"
 
                         case "nlpcraft:sort" ⇒
-                            def n2s(l: java.util.List[String]): String = l.asScala.mkString(", ")
-                            def i2s(l: java.util.List[java.util.List[Int]]): String =
-                                l.asScala.map(_.asScala).map(p ⇒ s"[${p.mkString(", ")}]").mkString(", ")
+                            def x(l: java.util.List[String]): String = l.asScala.mkString(", ")
 
-                            val subjNotes: java.util.List[String] = get("subjnotes")
-                            val subjIndexes: java.util.List[java.util.List[Int]] = get("subjindexes")
-
-                            var s = s"subjNotes=${n2s(subjNotes)}, subjIndexes=[${i2s(subjIndexes)}]"
+                            var s = s"subjNotes=${x(get("subjnotes"))}, subjIndexes=[${getIndexes("subjindexes")}]"
 
                             if (has("asc"))
                                 s = s"$s, asc=${get("asc")}"
@@ -481,9 +476,7 @@ object NCTokenLogger extends LazyLogging {
 
                             byNotesOpt match {
                                 case Some(byNotes) ⇒
-                                    val byIndexes: java.util.List[java.util.List[Int]] = get("byindexes")
-
-                                    s = s"$s, byNotes=${n2s(byNotes)}, byIndexes=[${i2s(byIndexes)}]"
+                                    s = s"$s, byNotes=${x(byNotes)}, byIndexes=[${getIndexes("byindexes")}]"
                                 case None ⇒ // No-op.
                             }
 
@@ -492,7 +485,7 @@ object NCTokenLogger extends LazyLogging {
                             val limit = mkDouble3("limit")
                             val note = mkString("note")
 
-                            var s = s"limit=$limit, indexes=[$getIndexes], note=$note"
+                            var s = s"limit=$limit, indexes=[${getIndexes("indexes")}], note=$note"
 
                             if (has("asc"))
                                 s = s"$s, asc=${get("asc")}"

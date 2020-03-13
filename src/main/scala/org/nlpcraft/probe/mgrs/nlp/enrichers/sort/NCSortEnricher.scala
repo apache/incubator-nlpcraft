@@ -61,6 +61,8 @@ object NCSortEnricher extends NCProbeEnricher {
         ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
     }
 
+    private val STEM_AND = NCNlpCoreManager.stem("and")
+
     private final val TOK_ID = "nlpcraft:sort"
 
     // TODO: DROP it.
@@ -159,7 +161,9 @@ object NCSortEnricher extends NCProbeEnricher {
       */
     private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
         val all =
-            toks.flatten.filter(!_.isNlp).map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).sortBy(_.indexes.head).distinct
+            toks.flatten.
+                filter(!_.isNlp).map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
+                sortBy(_.indexes.head).distinct
 
         if (all.nonEmpty) {
             val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
@@ -173,7 +177,7 @@ object NCSortEnricher extends NCProbeEnricher {
             def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
                 val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
 
-                between.isEmpty || between.forall(_.isStopWord)
+                between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
             }
 
             def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
@@ -204,14 +208,16 @@ object NCSortEnricher extends NCProbeEnricher {
       */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
         case class KeyWord(tokens: Seq[NCNlpSentenceToken], synonymIndex: Int) {
+            require(tokens.nonEmpty)
+
             // Added for debug reasons.
             override def toString = s"${tokens.map(_.origText).mkString(" ")} [${tokens.map(_.index).mkString(",")}]"
         }
 
-        def get0(keyStems: Seq[String], toks: Seq[NCNlpSentenceToken]): Option[KeyWord] = {
-            require(keyStems.nonEmpty)
-
+        def get0(keyStems: Seq[String], toks: Seq[NCNlpSentenceToken]): Option[KeyWord] =
             if (toks.nonEmpty) {
+                require(keyStems.nonEmpty)
+
                 val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
 
                 (1 to maxWords).reverse.flatMap(i ⇒
@@ -224,7 +230,6 @@ object NCSortEnricher extends NCProbeEnricher {
             }
             else
                 None
-        }
 
         case class KeyWordsHolder(sort: KeyWord, by: Option[KeyWord], order: Option[KeyWord]) {
             lazy val byTokens = by.toSeq.flatMap(_.tokens)
@@ -277,7 +282,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
                     if (
                         othersRefs.nonEmpty &&
-                        others.filter(p ⇒ !othersRefs.contains(p)).forall(_.isStopWord) &&
+                        others.filter(p ⇒ !othersRefs.contains(p)).forall(p ⇒ p.isStopWord || p.stem == STEM_AND) &&
                         SEQS.contains(
                             // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
                             toks.map(t ⇒
