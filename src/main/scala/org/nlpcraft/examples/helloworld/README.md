@@ -1,8 +1,6 @@
 <img src="https://nlpcraft.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 <a target=_ href="https://gitter.im/apache-nlpcraft/community"><img alt="Gitter" src="https://badges.gitter.im/apache-nlpcraft/community.svg"></a>&nbsp;
-<a target=_ href="https://travis-ci.org/apache/incubator-nlpcraft#"><img alt="Build" src="https://travis-ci.org/apache/incubator-nlpcraft.svg?branch=master"></a>&nbsp;
-<a target=_ href="https://search.maven.org/search?q=org.apache.nlpcraft"><img src="https://maven-badges.herokuapp.com/maven-central/org.apache.nlpcraft/nlpcraft/badge.svg" alt="Maven"></a>
 
 ### HelloWorld Example
 This trivial example simply responds with 'Hello World!' on any user input.
@@ -27,9 +25,13 @@ See [Getting Started](https://nlpcraft.org/getting-started.html) guide for more 
 
 For any questions, feedback or suggestions:
 
- * Send us a note at [support@nlpcraft.org](mailto:support@nlpcraft.org)
+ * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples)
+ * Latest [Javadoc](https://github.com/apache/incubator-nlpcraft/apis/latest/index.html) and [REST APIs](https://nlpcraft.org/using-rest.html)
+ * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.org/download.html)
+ * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
- * If you found a bug or have an idea file new issue on [GitHub](https://github.com/apache/incubator-nlpcraft/issues).
+ * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
+ * Join project developers on [dev@nlpcraft.apache.org](mailto:dev@nlpcraft.apache.org)
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
