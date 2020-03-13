@@ -52,7 +52,7 @@ object NCSortEnricher extends NCProbeEnricher {
             "desc" → false,
             "{in|by|from} {top down|descending} {order|way|fashion|*}" → false,
             "{in|by|from} {bottom up|ascending} {order|way|fashion|*}" → true
-        ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc) }
+        ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
     }
 
     private final val TOK_ID = "nlpcraft:sort"
@@ -112,20 +112,24 @@ object NCSortEnricher extends NCProbeEnricher {
       *
       */
     private def validate() {
+        // Not duplicated.
         require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.unzip._1).distinct.size)
 
-        val seq1 = SORT.flatMap(_.split(" "))
-        val seq2 = BY.flatMap(_.split(" "))
-        val seq3 = ORDER.map(_._1).flatMap(_.split(" "))
+        // Single words.
+        require(!SORT.exists(_.contains(" ")))
+        require(!BY.exists(_.contains(" ")))
 
-        require(seq1.size == seq1.distinct.size)
-        require(seq2.size == seq2.distinct.size)
-        require(seq3.size == seq3.distinct.size)
+        // Different words.
+        require(SORT.intersect(BY).isEmpty)
+        require(SORT.intersect(ORDER.unzip._1).isEmpty)
+        require(BY.intersect(ORDER.unzip._1).isEmpty)
 
-        require(seq1.intersect(seq2).isEmpty)
-        require(seq1.intersect(seq3).isEmpty)
-        require(seq2.intersect(seq3).isEmpty)
+        val ordersSeq: Seq[Seq[String]] = ORDER.unzip._1.map(_.split(" ").toSeq)
 
+        // ORDER doens't contains words fron BY (It can contains words from SORT)
+        require(!BY.exists(p ⇒ ordersSeq.contains(p)))
+
+        // Right order of keywords and references.
         SEQS.map(_.split(" ")).foreach(seq ⇒ {
             require(seq.forall(p ⇒ p == "SORT" || p == "ORDER" || p == "BY" || p == "x"))
 
@@ -139,23 +143,9 @@ object NCSortEnricher extends NCProbeEnricher {
     }
 
     /**
-      * Return flag which indicates are token contiguous or not.
-      *
-      * @param toks Tokens.
-      * @param tok1Idx First token index.
-      * @param tok2Idx Second token index.
-      */
-    private def contiguous(toks: Seq[NCNlpSentenceToken], tok1Idx: Int, tok2Idx: Int): Boolean = {
-        val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
-
-        between.isEmpty || between.forall(_.isStopWord)
-    }
-
-    /**
       * [Token] -> [NoteData]
       * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
       * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
-      *
       * @param toks
       */
     private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
@@ -165,11 +155,23 @@ object NCSortEnricher extends NCProbeEnricher {
         if (all.nonEmpty) {
             val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
+            /**
+              * Return flag which indicates are token contiguous or not.
+              *
+              * @param tok1Idx First token index.
+              * @param tok2Idx Second token index.
+              */
+            def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
+                val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
+
+                between.isEmpty || between.forall(_.isStopWord)
+            }
+
             def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
                 seq += nd
 
                 all.
-                    filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(toks, nd.indexes.last, p.indexes.head)).
+                    filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
                     foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
 
                 if (seq.nonEmpty &&
@@ -193,7 +195,7 @@ object NCSortEnricher extends NCProbeEnricher {
       */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
         case class KeyWord(tokens: Seq[NCNlpSentenceToken], synonymIndex: Int) {
-            // Added for tests reasons.
+            // Added for debug reasons.
             override def toString = tokens.map(_.origText).mkString(" ")
         }
 
@@ -226,13 +228,21 @@ object NCSortEnricher extends NCProbeEnricher {
                 else
                     None
 
-            // Added for tests reasons.
-            override def toString = s"Sort: $sort, by: ${by.toSeq.mkString(",")}, order: ${order.toSeq.mkString(",")}"
+            // Added for debug reasons.
+            override def toString = s"Sort: [$sort], by: [${by.toSeq.mkString(",")}], order: [${order.toSeq.mkString(",")}]"
         }
 
         val hOpt: Option[KeyWordsHolder] =
             get0(SORT, toks) match {
-                case Some(sort) ⇒ Some(KeyWordsHolder(sort, get0(BY, toks), get0(ORDER.unzip._1, toks)))
+                case Some(sort) ⇒
+                    val orderOpt = get0(ORDER.unzip._1, toks)
+
+                    def mkHolder: Option[KeyWordsHolder] = Some(KeyWordsHolder(sort, get0(BY, toks), orderOpt))
+
+                    orderOpt match {
+                        case Some(order) ⇒ if (order.tokens.intersect(sort.tokens).isEmpty) mkHolder else None
+                        case None ⇒ mkHolder
+                    }
                 case None ⇒ None
             }
 

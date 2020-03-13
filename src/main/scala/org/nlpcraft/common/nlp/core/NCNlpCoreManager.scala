@@ -72,7 +72,7 @@ object NCNlpCoreManager extends NCService {
       */
     def stem(words: String): String = {
         val seq = tokenizer.tokenize(words).map(p ⇒ p → NCNlpPorterStemmer.stem(p.token))
-     
+
         seq.zipWithIndex.map { case ((tok, stem), idx) ⇒
             idx match {
                 case 0 ⇒ stem
@@ -80,7 +80,7 @@ object NCNlpCoreManager extends NCService {
                 case _ ⇒ if (seq(idx - 1)._1.to + 1 < tok.from) s" $stem"
                 else stem
             }
-        }.mkString("")
+        }.mkString(" ")
     }
 
     /**
