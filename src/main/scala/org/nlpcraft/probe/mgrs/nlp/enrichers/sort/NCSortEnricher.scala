@@ -111,7 +111,7 @@ object NCSortEnricher extends NCProbeEnricher {
       */
     private def validate() {
         // Not duplicated.
-        require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.unzip._1).distinct.size)
+        require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.map(_._1)).distinct.size)
 
         // Single words.
         require(!SORT.exists(_.contains(" ")))
@@ -119,10 +119,10 @@ object NCSortEnricher extends NCProbeEnricher {
 
         // Different words.
         require(SORT.intersect(BY).isEmpty)
-        require(SORT.intersect(ORDER.unzip._1).isEmpty)
-        require(BY.intersect(ORDER.unzip._1).isEmpty)
+        require(SORT.intersect(ORDER.map(_._1)).isEmpty)
+        require(BY.intersect(ORDER.map(_._1)).isEmpty)
 
-        val ordersSeq: Seq[Seq[String]] = ORDER.unzip._1.map(_.split(" ").toSeq)
+        val ordersSeq: Seq[Seq[String]] = ORDER.map(_._1).map(_.split(" ").toSeq)
 
         // ORDER doens't contains words fron BY (It can contains words from SORT)
         require(!BY.exists(p ⇒ ordersSeq.contains(p)))
@@ -240,7 +240,7 @@ object NCSortEnricher extends NCProbeEnricher {
         val hOpt: Option[KeyWordsHolder] =
             get0(SORT, toks) match {
                 case Some(sort) ⇒
-                    val orderOpt = get0(ORDER.unzip._1, toks)
+                    val orderOpt = get0(ORDER.map(_._1), toks)
 
                     def mkHolder(sort: KeyWord): Option[KeyWordsHolder] = Some(KeyWordsHolder(sort, get0(BY, toks), orderOpt))
 
