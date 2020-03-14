@@ -101,13 +101,13 @@ id: server_and_probe
             <div class="tab-pane fade show" id="nav-srv-cmd" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -Xms1024m -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar org.nlpcraft.NCStart -server
+                    $ java -Xms1024m -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar org.apache.nlpcraft.NCStart -server
                 </pre>
             </div>
             <div class="tab-pane fade show" id="nav-srv-ide" role="tabpanel">
                 <p style="padding-top: 10px">
-                    Configure run configuration with the main class <code>org.nlpcraft.NCStart</code>.
-                    Note that <code>org.nlpcraft.NCStart</code> class starts both the REST server and the data probe and is the
+                    Configure run configuration with the main class <code>org.apache.nlpcraft.NCStart</code>.
+                    Note that <code>org.apache.nlpcraft.NCStart</code> class starts both the REST server and the data probe and is the
                     class that is configured as <code>Main-Class</code> in <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code>
                     JAR file manifest.
                 </p>
@@ -227,7 +227,7 @@ id: server_and_probe
             <div class="tab-pane fade show active" id="nav-probe-cmd" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -Xms1024m -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.nlpcraft.NCStart -probe -config=/my/project/probe.conf
+                    $ java -Xms1024m -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.apache.nlpcraft.NCStart -probe -config=/my/project/probe.conf
                 </pre>
                 <p>
                     Directory <code>/my/project/classes</code> should contain all compiled classes for your models.
@@ -237,12 +237,12 @@ id: server_and_probe
             </div>
             <div class="tab-pane fade show" id="nav-probe-ide" role="tabpanel">
                 <p style="padding-top: 10px">
-                    Configure run configuration with the main class <code>org.nlpcraft.NCStart</code>.
+                    Configure run configuration with the main class <code>org.apache.nlpcraft.NCStart</code>.
                 </p>
                 <div class="bq info">
-                    <b>Class <code>org.nlpcraft.NCStart</code></b>
+                    <b>Class <code>org.apache.nlpcraft.NCStart</code></b>
                     <p>
-                        Note that <code>org.nlpcraft.NCStart</code> class starts both the REST server and the data probe and is the
+                        Note that <code>org.apache.nlpcraft.NCStart</code> class starts both the REST server and the data probe and is the
                         class that is configured as <code>Main-Class</code> in <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code>
                         JAR file manifest.
                     </p>
@@ -280,10 +280,10 @@ id: server_and_probe
             </p>
             <pre class="brush: plain, highlight: 2">
                     $ cd build
-                    $ java -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.nlpcraft.NCStart -probe -config /my/project/probe.conf
+                    $ java -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.apache.nlpcraft.NCStart -probe -config /my/project/probe.conf
             </pre>
             Make sure to replace <code>/my/project/classes</code> with your own directory where your compiled model classes
-            are located. Note that you need to specify class <code>org.nlpcraft.NCStart</code> explicitly in this case.
+            are located. Note that you need to specify class <code>org.apache.nlpcraft.NCStart</code> explicitly in this case.
         </div>
         <p>
             When the data probe started you should see the log output similar to this:
@@ -308,11 +308,11 @@ id: server_and_probe
         | Down-Link       | localhost:8202                                   |
         | Up-Link         | localhost:8201                                   |
         +-----------------+--------------------------------------------------+
-        | Models          | org.nlpcraft.examples.alarm.AlarmModel           |
-        |                 | org.nlpcraft.examples.echo.EchoModel             |
-        |                 | org.nlpcraft.examples.helloworld.HelloWorldModel |
-        |                 | org.nlpcraft.examples.time.TimeModel             |
-        |                 | org.nlpcraft.examples.weather.WeatherModel       |
+        | Models          | org.apache.nlpcraft.examples.alarm.AlarmModel           |
+        |                 | org.apache.nlpcraft.examples.echo.EchoModel             |
+        |                 | org.apache.nlpcraft.examples.helloworld.HelloWorldModel |
+        |                 | org.apache.nlpcraft.examples.time.TimeModel             |
+        |                 | org.apache.nlpcraft.examples.weather.WeatherModel       |
         +-----------------+--------------------------------------------------+
         | Lifecycle       |                                                  |
         | JARs Folder     |                                                  |
@@ -421,13 +421,13 @@ nlpcraft {
         ...
 
         lifecycle = [
-            "org.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter"
+            "org.apache.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter"
         ]
 
         rest {
             host = "0.0.0.0"
             port = 8081
-            apiImpl = "org.nlpcraft.server.rest.NCBasicRestApi"
+            apiImpl = "org.apache.nlpcraft.server.rest.NCBasicRestApi"
         }
 
         ...
@@ -439,8 +439,8 @@ nlpcraft {
             </p>
             <p>
                 <code>CONFIG_FORCE_nlpcraft_server_rest_host=1.2.3.4</code><br>
-                <code>CONFIG_FORCE_nlpcraft_server_lifecycle.0=org.nlpcraft.server.lifecycle.opencensus.NCStackdriverTraceExporter</code><br>
-                <code>CONFIG_FORCE_nlpcraft_server_lifecycle.1=org.nlpcraft.server.lifecycle.opencensus.NCStackdriverStatsExporter</code>
+                <code>CONFIG_FORCE_nlpcraft_server_lifecycle.0=org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverTraceExporter</code><br>
+                <code>CONFIG_FORCE_nlpcraft_server_lifecycle.1=org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverStatsExporter</code>
             </p>
         </div>
     </section>

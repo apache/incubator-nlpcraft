@@ -9,7 +9,7 @@ For more REST API information:
 
 For any questions, feedback or suggestions:
 
- * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples)
+ * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
  * Latest [Javadoc](https://github.com/apache/incubator-nlpcraft/apis/latest/index.html) and [REST APIs](https://nlpcraft.org/using-rest.html)
  * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
