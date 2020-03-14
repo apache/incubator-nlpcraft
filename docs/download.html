@@ -54,94 +54,24 @@ layout: interior
             </p>
             <ul>
                 <li>
-                    Send us a note at <i class="far fa-envelope"></i>&nbsp;<a href="mailto:support@nlpcraft.org">support@nlpcraft.org</a>
+                    File a bug or improvement in <a target="jira" href="https://issues.apache.org/jira/projects/NLPCRAFT">NLPCraft JIRA</a>
                 </li>
                 <li>
                     Post a question at <i class="fab fa-stack-overflow"></i>&nbsp;<a href="https://stackoverflow.com/questions/ask">Stack Overflow</a> using <code>nlpcraft</code> tag
                 </li>
                 <li>
-                    If you have a bug or an idea open new issue on <i class="fab fa-github"></i>&nbsp;<a href="https://github.com/apache/incubator-nlpcraft/issues">GitHub</a>.
+                    Access <a target="github" href="https://github.com/apache/incubator-nlpcraft">GitHub</a> mirror repository.
+                </li>
+                <li>
+                    Join project developers on <a href="mailto:dev@nlpcraft.apache.org">dev@nlpcraft.apache.org</a>
                 </li>
             </ul>
             <p>
-                By downloading NLPCraft you are agreeing to <a href="/legal.html">license, terms <span class="amp">&amp;</span> conditions.</a>
+                By downloading NLPCraft you are agreeing to <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a> terms <span class="amp">&amp;</span> conditions.
             </p>
         </section>
-        <section id="maven">
-            <span class="section-title">Maven/Grape/SBT</span>
-            <p>
-                The easiest way to start using NLPCraft is to add Maven dependency (Grape, SBT, etc.) to your
-                project. NLPCraft project consists of a single module.
-            </p>
-            <nav>
-                <div class="nav nav-tabs" role="tablist">
-                    <a class="nav-item nav-link active" data-toggle="tab" href="#nav-maven" role="tab" aria-controls="nav-home" aria-selected="true">Maven <sup>Java</sup></a>
-                    <a class="nav-item nav-link" data-toggle="tab" href="#nav-grape" role="tab" aria-controls="nav-profile" aria-selected="false">Grape <sup>Groovy</sup></a>
-                    <a class="nav-item nav-link" data-toggle="tab" href="#nav-gradle" role="tab" aria-controls="nav-profile" aria-selected="false">Gradle <sup>Kotlin</sup></a>
-                    <a class="nav-item nav-link" data-toggle="tab" href="#nav-sbt" role="tab" aria-controls="nav-contact" aria-selected="false">SBT <sup>Scala</sup></a>
-                </div>
-            </nav>
-            <div class="tab-content">
-                <div class="tab-pane fade show active" id="nav-maven" role="tabpanel">
-                    <pre class="brush: xml">
-                    &lt;dependency&gt;
-                        &lt;groupId&gt;org.apache.nlpcraft&lt;/groupId&gt;
-                        &lt;artifactId&gt;nlpcraft&lt;/artifactId&gt;
-                        &lt;version&gt;{{site.latest_version}}&lt;/version&gt;
-                    &lt;/dependency&gt;
-                    </pre>
-                </div>
-                <div class="tab-pane fade" id="nav-grape" role="tabpanel">
-                    <pre class="brush: java">
-                    @Grab ('org.apache.nlpcraft:nlpcraft:{{site.latest_version}}')
-                    </pre>
-                </div>
-                <div class="tab-pane fade" id="nav-gradle" role="tabpanel">
-                    <pre class="brush: java">
-                    dependencies {
-                        runtime group: 'org.apache.nlpcraft', name: 'nlpcraft', version: '{{site.latest_version}}'
-                    }
-                    </pre>
-                </div>
-                <div class="tab-pane fade" id="nav-sbt" role="tabpanel">
-                    <pre class="brush: scala">
-                    libraryDependencies += "org.apache.nlpcraft" % "nlpcraft" % "{{site.latest_version}}"
-                    </pre>
-                </div>
-            </div>
-            <div class="bq info">
-                <p>
-                    <b>Latest Version</b>
-                </p>
-                <p>
-                    <code>{{site.latest_version}}</code> is the latest version. You can replace it
-                    with a desired version.
-                </p>
-            </div>
-        </section>
-        <section id="github">
-            <span class="section-title">GitHub</span>
-            <p>
-                If you want to contribute to the project or build it form the source
-                you need to get the full developer snapshot from <a target="github" href="https://github.com/apache/incubator-nlpcraft">GitHub</a>:
-            </p>
-            <pre class="brush: plain">
-            $ git clone https://github.com/apache/incubator-nlpcraft.git
-            $ mvn clean package
-            </pre>
-            <div class="bq info">
-                <p>
-                    <b>GitHub vs. ZIP vs. Maven</b>
-                </p>
-                <p>
-                    Use GitHub clone if you want to contribute to the project or build it from source.
-                    To build your own models and integrate into your own application it is recommended to
-                    download ZIP archive or use build tools and add build dependency.
-                </p>
-            </div>
-        </section>
-        <section id="zip">
-            <span class="section-title">ZIP Archive / Docker</span>
+        <section id="src">
+            <span class="section-title">Source Release</span>
             <p>
                 Download the NLPCraft release - <code><b>{{site.latest_version}}</b></code> is the latest version:
             </p>
@@ -156,7 +86,52 @@ layout: interior
                 </tr>
                 </thead>
                 <tbody>
-                {% for rel in site.data.releases %}
+                {% for rel in site.data.src-releases %}
+                <tr>
+                    <td>
+                        <i class="fa fa-fw fa-download"></i> <a href="{{rel.zip_url}}">{{rel.zip_name}}</a>
+                        {% unless rel.backward_compatible %}<i class="fas fa-fw fa-bomb"></i>{% endunless %}
+                    </td>
+                    <td>{{rel.version}}</td>
+                    <td>{{rel.date}}</td>
+                    <td class="download-sigs">
+                        <a href="{{rel.md5_url}}">MD5</a>
+                        <a href="{{rel.sha1_url}}">SHA1</a>
+                        <a href="{{rel.sha256_url}}">SHA256</a>
+                        <a href="{{rel.pgp_url}}">PGP</a>
+                    </td>
+                    <td>
+                        <a href="/release-notes-{{rel.version}}.html"><i class="fas fa-fw fa-file-alt"></i></a>
+                        <a target=_ href="/apis/javadoc-{{rel.version}}/index.html"><i class="fab fa-fw fa-java"></i></a>
+                        <a target="github" href="{{rel.github_link}}"><i class="fab fa-fw fa-github"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="bq info">
+                <p>
+                    Releases marked with <i class="fas fa-fw fa-bomb"></i> are <b>NOT</b> backward compatible.
+                </p>
+            </div>
+        </section>
+        <section id="zip">
+            <span class="section-title">Binary Release / Docker</span>
+            <p>
+                Download the NLPCraft binary release - <code><b>{{site.latest_version}}</b></code> is the latest version:
+            </p>
+            <table class="gradient-table">
+                <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Version</th>
+                    <th>Release Date</th>
+                    <th>Signatures</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for rel in site.data.bin-releases %}
                 <tr>
                     <td>
                         <i class="fa fa-fw fa-download"></i> <a href="{{rel.zip_url}}">{{rel.zip_name}}</a>
@@ -180,15 +155,46 @@ layout: interior
                 {% endfor %}
                 </tbody>
             </table>
+            <div class="bq warn">
+                <p>
+                    <b>Apache Release Policy</b>
+                </p>
+                <p>
+                    Binary downloads are provided for the convenience of our users and are not official Apache NLPCraft
+                    releases. In order to verify the release, we recommend that you download the official source
+                    distribution and <a href="#verification">verify</a> the signatures of the downloaded files before opening them.
+                </p>
+                <p>
+                    See <a target="asf" href="http://www.apache.org/dev/release.html#what">more</a> information about
+                    Apache release policy.
+                </p>
+            </div>
             <div class="bq info">
                 <p>
                     Releases marked with <i class="fas fa-fw fa-bomb"></i> are <b>NOT</b> backward compatible.
                 </p>
             </div>
+        </section>
+        <section id="build">
+            <span class="section-title">Building Binaries</span>
             <p>
-                If you obtained ZIP archive of NLPCraft project from places other than this website we highly
-                recommend to verify the integrity and authenticity of that archive by comparing cryptographic
-                signatures. 
+                To build binaries from the source release download the <a href="#src">source release</a> and run
+                the following commands:
+            </p>
+            <pre class="brush: plain, highlight: [2,3,6]">
+                # Unpack the source package.
+                $ unzip -q apache-nlpcraft-{{site.latest_version}}-src.zip
+                $ cd apache-nlpcraft-{{site.latest_version}}-src
+
+                # Build NLPCraft.
+                $ mvn clean package -DskipTests
+            </pre>
+        </section>
+        <section id="verification">
+            <span class="section-title">Release Verification</span>
+            <p>
+                We highly recommend to verify the integrity and authenticity of the ZIP archive by comparing cryptographic
+                signatures.
             </p>
             <div class="bq warn">
                 <p>
@@ -199,7 +205,7 @@ layout: interior
                 </p>
             </div>
             <p>
-                Following instructions assume Mac OS/Linux environment but the verification steps are
+                Following instructions assume binary release on Mac OS/Linux environment but the verification steps are
                 similar for Windows. Note that you can also verify signatures online at
                 <a target=_ href="https://md5file.com/calculator">File Hash Online Calculator</a> or
                 <a target=_ href="http://onlinemd5.com/">Online MD5</a>.
@@ -274,6 +280,79 @@ layout: interior
                 </div>
             </div>
         </section>
+        <section id="maven">
+            <span class="section-title">Maven/Grape/SBT</span>
+            <p>
+                The easiest way to start using NLPCraft is to add Maven dependency (Grape, SBT, etc.) to your
+                project. NLPCraft project consists of a single module.
+            </p>
+            <nav>
+                <div class="nav nav-tabs" role="tablist">
+                    <a class="nav-item nav-link active" data-toggle="tab" href="#nav-maven" role="tab" aria-controls="nav-home" aria-selected="true">Maven <sup>Java</sup></a>
+                    <a class="nav-item nav-link" data-toggle="tab" href="#nav-grape" role="tab" aria-controls="nav-profile" aria-selected="false">Grape <sup>Groovy</sup></a>
+                    <a class="nav-item nav-link" data-toggle="tab" href="#nav-gradle" role="tab" aria-controls="nav-profile" aria-selected="false">Gradle <sup>Kotlin</sup></a>
+                    <a class="nav-item nav-link" data-toggle="tab" href="#nav-sbt" role="tab" aria-controls="nav-contact" aria-selected="false">SBT <sup>Scala</sup></a>
+                </div>
+            </nav>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="nav-maven" role="tabpanel">
+                    <pre class="brush: xml">
+                    &lt;dependency&gt;
+                        &lt;groupId&gt;org.apache.nlpcraft&lt;/groupId&gt;
+                        &lt;artifactId&gt;nlpcraft&lt;/artifactId&gt;
+                        &lt;version&gt;{{site.latest_version}}&lt;/version&gt;
+                    &lt;/dependency&gt;
+                    </pre>
+                </div>
+                <div class="tab-pane fade" id="nav-grape" role="tabpanel">
+                    <pre class="brush: java">
+                    @Grab ('org.apache.nlpcraft:nlpcraft:{{site.latest_version}}')
+                    </pre>
+                </div>
+                <div class="tab-pane fade" id="nav-gradle" role="tabpanel">
+                    <pre class="brush: java">
+                    dependencies {
+                        runtime group: 'org.apache.nlpcraft', name: 'nlpcraft', version: '{{site.latest_version}}'
+                    }
+                    </pre>
+                </div>
+                <div class="tab-pane fade" id="nav-sbt" role="tabpanel">
+                    <pre class="brush: scala">
+                    libraryDependencies += "org.apache.nlpcraft" % "nlpcraft" % "{{site.latest_version}}"
+                    </pre>
+                </div>
+            </div>
+            <div class="bq info">
+                <p>
+                    <b>Latest Version</b>
+                </p>
+                <p>
+                    <code>{{site.latest_version}}</code> is the latest version. You can replace it
+                    with a desired version.
+                </p>
+            </div>
+        </section>
+        <section id="github">
+            <span class="section-title">GitHub</span>
+            <p>
+                If you want to contribute to the project or build it form the source
+                you need to get the full developer snapshot from <a target="github" href="https://github.com/apache/incubator-nlpcraft">GitHub</a>:
+            </p>
+            <pre class="brush: plain">
+            $ git clone https://github.com/apache/incubator-nlpcraft.git
+            $ mvn clean package
+            </pre>
+            <div class="bq info">
+                <p>
+                    <b>GitHub vs. ZIP vs. Maven</b>
+                </p>
+                <p>
+                    Use GitHub clone if you want to contribute to the project or build it from source.
+                    To build your own models and integrate into your own application it is recommended to
+                    download ZIP archive or use build tools and add build dependency.
+                </p>
+            </div>
+        </section>
         <section id="java-client">
             <span class="section-title">Java Client <i class="fab fa-java"></i></span>
             <p>
@@ -331,9 +410,12 @@ layout: interior
     <div class="col-md-2 third-column">
         <ul class="side-nav">
             <li class="side-nav-title">On This Page</li>
+            <li><a href="#src">Source Release</a></li>
+            <li><a href="#zip">Binary Release</a></li>
+            <li><a href="#build">Building Binaries</a></li>
+            <li><a href="#verification">Verification</a></li>
             <li><a href="#maven">Maven/Grape/SBT</a></li>
             <li><a href="#github">GitHub</a></li>
-            <li><a href="#zip">ZIP/Docker</a></li>
             <li><a href="#java-client">Java Client</a></li>
             {% include quick-links.html %}
         </ul>
