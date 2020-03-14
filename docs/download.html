@@ -159,7 +159,7 @@ layout: interior
                 {% for rel in site.data.releases %}
                 <tr>
                     <td>
-                        <i class="fa fa-fw fa-download"></i> <a href="{{rel.zip_url}}">nlpcraft-{{rel.version}}.zip</a>
+                        <i class="fa fa-fw fa-download"></i> <a href="{{rel.zip_url}}">{{rel.zip_name}}</a>
                         {% unless rel.backward_compatible %}<i class="fas fa-fw fa-bomb"></i>{% endunless %}
                     </td>
                     <td>{{rel.version}}</td>
