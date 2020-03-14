@@ -26,7 +26,7 @@ id: getting_started
         <span class="section-title">Getting Started</span>
         <p>
             In this section we'll take a quick 10 minutes look at running and
-            testing <a href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples" target="github">examples</a>
+            testing <a href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples" target="github">examples</a>
             shipped with NLPCraft along with
             running the main components of NLPCraft - data probe and REST server. We assume the following:
         </p>
@@ -57,7 +57,7 @@ id: getting_started
             <div class="tab-pane fade show active" id="nav-srv-start" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -jar nlpcraft-{{site.latest_version}}-all-deps.jar -server
+                    $ java -jar apache-nlpcraft-{{site.latest_version}}-all-deps.jar -server
                 </pre>
                 <p>
                     You can can also start it via Docker:
@@ -67,7 +67,7 @@ id: getting_started
                 </pre>
                 <p>
                     REST server starts with default configuration (<code>nlpcraft.conf</code> and
-                    <code>ignite.xml</code> files located in the same folder as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code>
+                    <code>ignite.xml</code> files located in the same folder as <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code>
                     file). You should see the output similar to this:
                 </p>
                 <pre class="brush: plain">
@@ -80,7 +80,7 @@ id: getting_started
 
                     Server
                     Version: {{site.latest_version}}
-                    Copyright (C) NLPCraft.
+                    Copyright (C) 2020 Apache Software Foundation.
 
                     ...
 
@@ -95,11 +95,11 @@ id: getting_started
             <div class="tab-pane fade show" id="nav-probe-start" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -jar nlpcraft-{{site.latest_version}}-all-deps.jar -probe
+                    $ java -jar apache-nlpcraft-{{site.latest_version}}-all-deps.jar -probe
                 </pre>
                 <p>
                     Data probe starts with default configuration (file <code>nlpcraft.conf</code> located in the same folder
-                    as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code> file) that deploys
+                    as <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code> file) that deploys
                     all example models shipped with NLPCraft. You should see the output similar to this:
                 </p>
                 <pre class="brush: plain">
@@ -112,7 +112,7 @@ id: getting_started
 
                 Data Probe
                 Version: {{site.latest_version}}
-                Copyright (C) NLPCraft.
+                Copyright (C) 2020 Apache Software Foundation.
 
                 Mar-11 23:25:52 [INFO ] Probe Configuration:
                 +----------------------------------------------------------------------+
@@ -167,7 +167,7 @@ id: getting_started
     <section id="querying">
         <span class="section-title">Weather Forecast</span>
         <p>
-            We'll be testing <a target="github" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/weather">Weather Example</a>
+            We'll be testing <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/weather">Weather Example</a>
             to ask questions about weather forecast using REST APIs. This example returns a comprehensive JSON weather
             data for variety of different inquiries about the past, present or future weather conditions.
         </p>
@@ -349,44 +349,7 @@ id: getting_started
         <li><a href="#getting-started">Getting Started</a></li>
         <li><a href="#probe-server">Data Probe <span class="amp">&amp;</span> Server</a></li>
         <li><a href="#querying">Using REST API</a></li>
-        <li class="side-nav-title">Quick Links</li>
-        <li>
-            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
-            target="github"
-            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
-        </li>
-        <li>
-            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
-            target=_
-            href="/apis/latest/index.html">Javadoc</a>
-        </li>
-        <li>
-            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
-            href="https://nlpcraft.docs.apiary.io"
-            target="apiary">REST API</a>
-        </li>
-        <li>
-            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
-        </li>
-        <li>
-            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
-        </li>
-        <li class="side-nav-title">Support</li>
-        <li>
-            <nobr>
-                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
-            </nobr>
-        </li>
-        <li>
-            <nobr>
-                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
-            </nobr>
-        </li>
-        <li>
-            <nobr>
-                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
-            </nobr>
-        </li>
+        {% include quick-links.html %}
     </ul>
 </div>
 

@@ -60,18 +60,18 @@ id: server_and_probe
 ├── bin
 ├── sql
 ├── build
-│   └── nlpcraft-{{site.latest_version}}
+│   └── apache-nlpcraft-{{site.latest_version}}
 │       ├── <b>nlpcraft.conf</b>
 │       ├── ignite.xml
 │       ├── log4j2.xml
-│       └── <b>nlpcraft-{{site.latest_version}}-all-deps.jar</b>
+│       └── <b>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</b>
 ├── javadoc
 ├── openapi
 └── src
         </pre>
         <p>
             Regardless of how NLPCraft was installed it comes with a single executable JAR file that includes all
-            necessary dependencies: <code>build/nlpcraft-{{site.latest_version}}/<b>nlpcraft-{{site.latest_version}}-all-deps.jar</b></code>.
+            necessary dependencies: <code>build/apache-nlpcraft-{{site.latest_version}}/<b>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</b></code>.
             This JAR file includes binaries for data probe, data model APIs and the REST server.
         </p>
     </section>
@@ -95,20 +95,20 @@ id: server_and_probe
             <div class="tab-pane fade show active" id="nav-srv-jar" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -Xms1024m -jar nlpcraft-{{site.latest_version}}-all-deps.jar -server
+                    $ java -Xms1024m -jar apache-nlpcraft-{{site.latest_version}}-all-deps.jar -server
                 </pre>
             </div>
             <div class="tab-pane fade show" id="nav-srv-cmd" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -Xms1024m -cp nlpcraft-{{site.latest_version}}-all-deps.jar org.nlpcraft.NCStart -server
+                    $ java -Xms1024m -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar org.nlpcraft.NCStart -server
                 </pre>
             </div>
             <div class="tab-pane fade show" id="nav-srv-ide" role="tabpanel">
                 <p style="padding-top: 10px">
                     Configure run configuration with the main class <code>org.nlpcraft.NCStart</code>.
                     Note that <code>org.nlpcraft.NCStart</code> class starts both the REST server and the data probe and is the
-                    class that is configured as <code>Main-Class</code> in <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code>
+                    class that is configured as <code>Main-Class</code> in <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code>
                     JAR file manifest.
                 </p>
             </div>
@@ -125,7 +125,7 @@ id: server_and_probe
             <dd>
                 <em>Optional</em> parameter to provide configuration file path.
                 Server will automatically look for <code>nlpcraft.conf</code> configuration file in the same directory
-                as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code> file. If the configuration
+                as <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code> file. If the configuration
                 file has different name or in different location use <code>-config=path</code> parameter
                 where <code>path</code> is an absolute path to the configuration file. Note that the server and the data
                 probe can use the same file for their configuration (just like the
@@ -136,7 +136,7 @@ id: server_and_probe
                 <em>Optional</em> parameter to provide <a target=_ href="https://ignite.apache.org/">Apache Ignite</a> configuration file path.
                 Note that Apache Ignite is used as a cluster computing plane and a default distributed storage.
                 Server will automatically look for <code>ignite.xml</code>
-                configuration file in the same directory as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code> file.
+                configuration file in the same directory as <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code> file.
                 If the configuration file has different name or in different location use <code>-igniteConfig=path</code> parameter
                 where <code>path</code> is an absolute path to the Ignite configuration file.
             </dd>
@@ -184,7 +184,7 @@ id: server_and_probe
 
             Server
             Version: {{site.latest_version}}
-            Copyright (C) NLPCraft.
+            Copyright (C) 2020 Apache Software Foundation.
 
             ...
 
@@ -213,7 +213,7 @@ id: server_and_probe
             <div class="tab-pane fade show" id="nav-probe-jar" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -Xms1024m -jar nlpcraft-{{site.latest_version}}-all-deps.jar -probe
+                    $ java -Xms1024m -jar apache-nlpcraft-{{site.latest_version}}-all-deps.jar -probe
                 </pre>
                 <div class="bq warn">
                     <p>
@@ -227,7 +227,7 @@ id: server_and_probe
             <div class="tab-pane fade show active" id="nav-probe-cmd" role="tabpanel">
                 <pre class="brush: plain">
                     $ cd build
-                    $ java -Xms1024m -cp nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.nlpcraft.NCStart -probe -config=/my/project/probe.conf
+                    $ java -Xms1024m -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.nlpcraft.NCStart -probe -config=/my/project/probe.conf
                 </pre>
                 <p>
                     Directory <code>/my/project/classes</code> should contain all compiled classes for your models.
@@ -243,7 +243,7 @@ id: server_and_probe
                     <b>Class <code>org.nlpcraft.NCStart</code></b>
                     <p>
                         Note that <code>org.nlpcraft.NCStart</code> class starts both the REST server and the data probe and is the
-                        class that is configured as <code>Main-Class</code> in <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code>
+                        class that is configured as <code>Main-Class</code> in <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code>
                         JAR file manifest.
                     </p>
                 </div>
@@ -262,7 +262,7 @@ id: server_and_probe
                 <p>
                     <em>Optional</em> parameter to provide probe configuration file path.
                     Data probe will automatically look for <code>nlpcraft.conf</code> configuration file in the same directory
-                    as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code> file. If the configuration
+                    as <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code> file. If the configuration
                     file has different name or in different location use <code>-config=path</code> parameter
                     where <code>path</code> is an absolute path to the data probe configuration file. Note that the server and the data
                     probe can use the same file for their configuration (just like the
@@ -275,12 +275,12 @@ id: server_and_probe
             <p>
                 Note that when you are using a <em>command line</em> to start the probe you can also add your own classes that implement
                 your models. To do that you need to use <code>-cp</code> option instead of <code>-jar</code> and
-                construct your JVM classpath to include both the <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code>
+                construct your JVM classpath to include both the <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code>
                 as well as directory where your compiled Java code is located:
             </p>
             <pre class="brush: plain, highlight: 2">
                     $ cd build
-                    $ java -cp nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.nlpcraft.NCStart -probe -config /my/project/probe.conf
+                    $ java -cp apache-nlpcraft-{{site.latest_version}}-all-deps.jar:/my/project/classes org.nlpcraft.NCStart -probe -config /my/project/probe.conf
             </pre>
             Make sure to replace <code>/my/project/classes</code> with your own directory where your compiled model classes
             are located. Note that you need to specify class <code>org.nlpcraft.NCStart</code> explicitly in this case.
@@ -298,7 +298,7 @@ id: server_and_probe
 
         Data Probe
         Version: {{site.latest_version}}
-        Copyright (C) NLPCraft.
+        Copyright (C) 2020 Apache Software Foundation.
 
         Mar-11 23:25:52 [INFO ] Probe Configuration:
         +--------------------------------------------------------------------+
@@ -357,7 +357,7 @@ id: server_and_probe
 
         <p>
             By default, when REST server or data probe start they look for <code>nlpcraft.conf</code> configuration file in the same directory
-            as <code>nlpcraft-{{site.latest_version}}-all-deps.jar</code> file and the on their classpath. You can change this behavior with
+            as <code>apache-nlpcraft-{{site.latest_version}}-all-deps.jar</code> file and the on their classpath. You can change this behavior with
             <code>-config=path</code> parameter.
         </p>
         <p>
@@ -451,44 +451,7 @@ nlpcraft {
         <li><a href="#server">REST Server</a></li>
         <li><a href="#probe">Data Probe</a></li>
         <li><a href="#config">Configuration</a></li>
-        <li class="side-nav-title">Quick Links</li>
-        <li>
-            <img class="quick-link-img mr-2" src="/images/github_logo.png" alt=""><a
-            target="github"
-            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
-        </li>
-        <li>
-            <img class="quick-link-img mr-2" src="/images/java.png" alt=""><a
-            target=_
-            href="/apis/latest/index.html">Javadoc</a>
-        </li>
-        <li>
-            <img class="quick-link-img mr-2" src="/images/apiary.svg" alt=""><a
-            href="https://nlpcraft.docs.apiary.io"
-            target="apiary">REST API</a>
-        </li>
-        <li>
-            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
-        </li>
-        <li>
-            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
-        </li>
-        <li class="side-nav-title">Support</li>
-        <li>
-            <nobr>
-                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
-            </nobr>
-        </li>
-        <li>
-            <nobr>
-                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
-            </nobr>
-        </li>
-        <li>
-            <nobr>
-                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
-            </nobr>
-        </li>
+        {% include quick-links.html %}
     </ul>
 </div>
 

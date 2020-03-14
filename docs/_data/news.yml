@@ -1,85 +1,26 @@
 #
-#   "Commons Clause" License, https://commonsclause.com/
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
 #
-#   The Software is provided to you by the Licensor under the License,
-#   as defined below, subject to the following condition.
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
-#   Without limiting other conditions in the License, the grant of rights
-#   under the License will not include, and the License does not grant to
-#   you, the right to Sell the Software.
-#
-#   For purposes of the foregoing, "Sell" means practicing any or all of
-#   the rights granted to you under the License to provide to third parties,
-#   for a fee or other consideration (including without limitation fees for
-#   hosting or consulting/support services related to the Software), a
-#   product or service whose value derives, entirely or substantially, from
-#   the functionality of the Software. Any license notice or attribution
-#   required by the License must also include this Commons Clause License
-#   Condition notice.
-#
-#   Software:    NLPCraft
-#   License:     Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0
-#   Licensor:    Copyright (C) NLPCraft. https://nlpcraft.org
-#
-#       _   ____      ______           ______
-#      / | / / /___  / ____/________ _/ __/ /_
-#     /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/
-#    / /|  / / /_/ / /___/ /  / /_/ / __/ /_
-#   /_/ |_/_/ .___/\____/_/   \__,_/_/  \__/
-#          /_/
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
-- title: Использование именованных сущностей (NE) в NLPCraft
-  url: https://medium.com/@dmonakhov_47478/%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B8%D0%BC%D0%B5%D0%BD%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D1%81%D1%83%D1%89%D0%BD%D0%BE%D1%81%D1%82%D0%B5%D0%B9-ne-%D0%B2-nlpcraft-e7c259a7290b
-  excerpt: Первая задача, с решения которой начинается процесс работы каждой NLP системы, это...
-  author: Dmitriy Monakhov
-  avatar_url: images/monakhov.png
-  publish_date: July 18, 2019
-  twitter_id: nlpcraftorg
-  medium_id: dmonakhov_47478
-
-- title: Light switch with Natural Language Interface
-  url: https://dzone.com/articles/light-switch-with-natural-language-interface
-  excerpt: In this blog I’ll show how to build a natural language interface for a typical home light switch...
-  pub_logo_url: images/dzone_logo.png
-  publish_date: July 16, 2019
-
-- title: Introducing NLPCraft 0.6
+- title: Introducing Apache NLPCraft 0.5.0
   url: https://medium.com/@aradzinski/introducing-nlpcraft-0-6-74cea6a4d203
-  excerpt: Google NL and Standford CoreNLP integration, new intent DSL, bugfixes & improvements.
+  excerpt: Announcing the 1st release of the Apache NLPCraft.
   author: Aaron Radzinksi
   avatar_url: images/lion.jpg
-  publish_date: June 21, 2019
+  publish_date: April 16, 2020
   linkedin_id: aaron-radzinski-6b2228167
   twitter_id: aaron_radzinski
   medium_id: aradzinski
-
-#- title: Here’s Why Natural Language Interface Is Hard
-#  url: https://chatbotslife.com/heres-why-developing-natural-language-interface-is-hard-3cb2f8fe7de8
-#  excerpt: In this article I would like to show why NLI (Natural Language Interface) is often so hard to do.
-#  author: Aaron Radzinksi
-#  avatar_url: images/lion.jpg
-#  publish_date: Sep 27, 2018
-#  linkedin_id: aaron-radzinski-6b2228167
-#  twitter_id: aaron_radzinski
-#  medium_id: aradzinski
-
-#- title: Natural Language Interface In Enterprise
-#  url: https://medium.com/@aradzinski/natural-language-interface-in-enterprise-5f06ca7ed36f
-#  excerpt: Why enterprise application companies should take a cue from Apple Siri and Google Assistant.
-#  author: Aaron Radzinksi
-#  avatar_url: images/lion.jpg
-#  publish_date: July 29, 2018
-#  linkedin_id: aaron-radzinski-6b2228167
-#  twitter_id: aaron_radzinski
-#  medium_id: aradzinski
-
-#- title: The Problem With Conversational Interfaces - The Conversation
-#  url: https://medium.com/@aradzinski/the-problem-with-conversational-interfaces-the-conversation-eda4ad55453b
-#  excerpt: Here are my thoughts on the role of conversation in NLU/P systems.
-#  author: Aaron Radzinksi
-#  avatar_url: images/lion.jpg
-#  publish_date: July 23, 2018
-#  linkedin_id: aaron-radzinski-6b2228167
-#  twitter_id: aaron_radzinski
-#  medium_id: aradzinski

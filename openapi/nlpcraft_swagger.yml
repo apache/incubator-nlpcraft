@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: REST API for [NLPCraft](https://nlpcraft.org) - an open source library for adding Natural Language Interface to any applications. For Data Model APIs see [Javadoc](https://nlpcraft.org/apis/latest/index.html) documentation.
-  version: 0.8.2
-  title: NLPCraft API
+  description: REST API for [Apache NLPCraft](https://nlpcraft.apache.org) - an open source library for adding Natural Language Interface to any applications. For Data Model APIs see [Javadoc](https://nlpcraft.org/apis/latest/index.html) documentation.
+  version: 0.5.0
+  title: Apache NLPCraft API
 host: localhost:8081
 basePath: /api/v1
 schemes:

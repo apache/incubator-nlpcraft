@@ -79,7 +79,7 @@ id: intent_matching
         </p>
         <p>
              An intent from
-            <a target="github" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/lightswitch">Light Switch</a> Scala example:
+            <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/lightswitch">Light Switch</a> Scala example:
         </p>
         <pre class="brush: java">
             &#64;NCIntent("intent=act conv=false term(act)={groups @@ 'act'} term(loc)={trim(id) == 'ls:loc'}*")
@@ -124,8 +124,8 @@ id: intent_matching
                 annotations.
             </li>
             <li>
-                Given the <a target="github" href="https://github.com/nlpcrafters/nlpcraft/blob/master/src/main/scala/org/nlpcraft/examples/lightswitch/lightswitch_model.yaml">data model</a>
-                from this <a target="github" href="https://github.com/nlpcrafters/nlpcraft/blob/master/src/main/scala/org/nlpcraft/examples/lightswitch/lightswitch_model.yaml">example</a> the following sentences will be matched by this intent:
+                Given the <a target="github" href="https://github.com/apache/incubator-nlpcraft/blob/master/src/main/scala/org/nlpcraft/examples/lightswitch/lightswitch_model.yaml">data model</a>
+                from this <a target="github" href="https://github.com/apache/incubator-nlpcraft/blob/master/src/main/scala/org/nlpcraft/examples/lightswitch/lightswitch_model.yaml">example</a> the following sentences will be matched by this intent:
                 <ul>
                     <li><code>Turn the lights off in the entire house.</code></li>
                     <li><code>Switch on the illumination in the master bedroom closet.</code></li>
@@ -143,7 +143,7 @@ id: intent_matching
         </ul>
         <br/>
         <p>
-            In the following <a target="github" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/alarm">Alarm Clock</a> Java example
+            In the following <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/alarm">Alarm Clock</a> Java example
             the intent is defined in JSON model definition and referenced in Java code using <code>@NCIntentTerm</code>
             annotation:
         </p>
@@ -206,7 +206,7 @@ id: intent_matching
             </li>
             <li>
                 Second term is defined as a zero or up to seven numeric built-in <code>nlpcraft:num</code> tokens that
-                have unit type of <code>datetime</code> and are single numbers. Note that <a target="github" href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/alarm">Alarm Clock</a>
+                have unit type of <code>datetime</code> and are single numbers. Note that <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/alarm">Alarm Clock</a>
                 model allows zero tokens in this term which would mean the current time.
             </li>
             <li>
@@ -223,7 +223,7 @@ id: intent_matching
         <span class="section-title">Intent DSL</span>
         <p>
             Regardless of how intent is defined - directly in <code>@NCIntent</code> annotation or in external model
-            declaration - it follow the exactly the same syntax (here's a full <a target=github href="https://github.com/nlpcrafters/nlpcraft/blob/master/src/main/scala/org/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4">ANTRL4 grammar</a>).
+            declaration - it follow the exactly the same syntax (here's a full <a target=github href="https://github.com/apache/incubator-nlpcraft/blob/master/src/main/scala/org/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4">ANTRL4 grammar</a>).
         </p>
         <p>
             Intent DSL grammar can be informally described using the following example (order of individual declarations is important):
@@ -590,44 +590,7 @@ id: intent_matching
         <li><a href="#syntax">Intent DSL</a></li>
         <li><a href="#callback">Intent Callback</a></li>
         <li><a href="#examples">Intent Examples</a></li>
-        <li class="side-nav-title">Quick Links</li>
-        <li>
-            <img alt="" class="quick-link-img mr-2" src="/images/github_logo.png"><a
-            target="github"
-            href="https://github.com/nlpcrafters/nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
-        </li>
-        <li>
-            <img alt="" class="quick-link-img mr-2" src="/images/java.png"><a
-            target=_
-            href="/apis/latest/index.html">Javadoc</a>
-        </li>
-        <li>
-            <img alt="" class="quick-link-img mr-2" src="/images/apiary.svg"><a
-            href="https://nlpcraft.docs.apiary.io"
-            target="apiary">REST API</a>
-        </li>
-        <li>
-            <i class="fas fa-download mr-2"></i><a href="/download.html">Download</a>
-        </li>
-        <li>
-            <i class="fas fa-blog mr-2"></i><a href="/blogs.html">Blogs</a>
-        </li>
-        <li class="side-nav-title">Support</li>
-        <li>
-            <nobr>
-                <i class="far fa-fw fa-envelope mr-2"></i><a href="mailto:support@nlpcraft.org">Email</a>
-            </nobr>
-        </li>
-        <li>
-            <nobr>
-                <i class="fab fa-fw fa-stack-overflow mr-2"></i><a target="so" href="https://stackoverflow.com/questions/ask">Stack Overflow</a>
-            </nobr>
-        </li>
-        <li>
-            <nobr>
-                <i class="fab fa-fw fa-github mr-2"></i><a target="github" href="https://github.com/nlpcrafters/nlpcraft/issues">GitHub</a>
-            </nobr>
-        </li>
+        {% include quick-links.html %}
     </ul>
 </div>
 

@@ -1,8 +1,6 @@
 <img src="https://nlpcraft.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
-<a target=_ href="https://gitter.im/nlpcraftorg/community"><img alt="Gitter" src="https://badges.gitter.im/nlpcraftorg/community.svg"></a>&nbsp;
-<a target=_ href="https://travis-ci.org/nlpcrafters/nlpcraft#"><img alt="Build" src="https://travis-ci.org/nlpcrafters/nlpcraft.svg?branch=master"></a>&nbsp;
-<a target=_ href="https://search.maven.org/search?q=org.apache.nlpcraft"><img src="https://maven-badges.herokuapp.com/maven-central/org.apache.nlpcraft/nlpcraft/badge.svg" alt="Maven"></a>
+<a target=_ href="https://gitter.im/apache-nlpcraft/community"><img alt="Gitter" src="https://badges.gitter.im/apache-nlpcraft/community.svg"></a>
 
 ### Docker
 Starting with version 0.7.3 NLPCraft provides docker image for NLPCraft server. You can 
@@ -36,6 +34,8 @@ You can prepare your own NLPCraft server image following these instructions:
 than allocated by default to the docker containers. Set memory value to 8G (`-m 8G`). 
           
 ### Copyright
-Copyright (C) 2013-2019 [NLPCraft.](https://nlpcraft.org) All Rights Reserved.
+Copyright (C) 2020 Apache Software Foundation
+
+<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
 
 
