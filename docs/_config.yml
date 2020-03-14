@@ -19,6 +19,7 @@ title: Apache NLPCraft
 copyright: Copyright 2020 (C) Apache Software Foundation.
 baseurl: ""
 url: ""
+zip_base: apache-nlpcraft
 
 twitter_username: nlpcraft
 github_username:  nlpcraft
