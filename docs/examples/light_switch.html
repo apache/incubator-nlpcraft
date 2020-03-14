@@ -32,7 +32,7 @@ id: light_switch
         </p>
         <p>
             Complexity: <span class="complexity-one-star"><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></span><br/>
-            Source code: <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples/lightswitch">GitHub</a>
+            Source code: <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/lightswitch">GitHub</a>
         </p>
     </section>
     <section id="new_project">
@@ -81,7 +81,7 @@ id: light_switch
         <pre class="brush: xml, highlight: [3, 4, 5]">
             &lt;dependencies&gt;
                 &lt;dependency&gt;
-                    &lt;groupId&gt;org.nlpcraft&lt;/groupId&gt;
+                    &lt;groupId&gt;org.apache.nlpcraft&lt;/groupId&gt;
                     &lt;artifactId&gt;nlpcraft&lt;/artifactId&gt;
                     &lt;version&gt;{{site.latest_version}}&lt;/version&gt;
                 &lt;/dependency&gt;
@@ -182,10 +182,10 @@ intents:
             Let's create new Scala class in <code>LightSwitchModel.scala</code> with the following code:
         </p>
         <pre class="brush: java, highlight: [4, 5, 6, 7, 8, 20]">
-import org.nlpcraft.model._
-import org.nlpcraft.model.NCIntentTerm
+import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.NCIntentTerm
 
-class LightSwitchModel extends NCModelFileAdapter("org/nlpcraft/examples/lightswitch/lightswitch_model.yaml") {
+class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/lightswitch/lightswitch_model.yaml") {
     @NCIntentRef("ls")
     def onMatch(
         @NCIntentTerm("act") actTok: NCToken,
@@ -238,7 +238,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/nlpcraft/examples/lightsw
         </p>
         <ul>
             <li>
-                <b>Main class:</b> <code>org.nlpcraft.NCStart</code>
+                <b>Main class:</b> <code>org.apache.nlpcraft.NCStart</code>
             </li>
             <li>
                 <b>VM arguments:</b> <code>-Dconfig.override_with_env_vars=true</code>
@@ -270,7 +270,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/nlpcraft/examples/lightsw
         </p>
         <ul>
             <li>
-                <b>Main class:</b> <code>org.nlpcraft.NCStart</code>
+                <b>Main class:</b> <code>org.apache.nlpcraft.NCStart</code>
             </li>
             <li>
                 <b>Program arguments: </b> <code>-server</code>
@@ -289,7 +289,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/nlpcraft/examples/lightsw
     <section>
         <span class="section-sub-title">Testing</span>
         <p>
-            NLPCraft comes with easy to use <a target="javadoc" href="/apis/latest/org/nlpcraft/model/test/package-summary.html">test framework</a> for
+            NLPCraft comes with easy to use <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/test/package-summary.html">test framework</a> for
             data models that can be used with
             any unit testing framework like JUnit or ScalaTest. It is essentially a simplified
             version of Java REST client that is custom designed for data model testing.
@@ -315,8 +315,8 @@ class LightSwitchModel extends NCModelFileAdapter("org/nlpcraft/examples/lightsw
         </p>
         <pre class="brush: java, highlight: [15, 24]">
 import org.junit.jupiter.api.*;
-import org.nlpcraft.common.*;
-import org.nlpcraft.model.tools.test.*;
+import org.apache.nlpcraft.common.*;
+import org.apache.nlpcraft.model.tools.test.*;
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -386,7 +386,7 @@ class LightSwitchTest {
         <li>
             <img alt=github" class="quick-link-img mr-2" src="/images/github_logo.png"><a
             target="github"
-            href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples">Examples</a>
+            href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples">Examples</a>
         </li>
         <li>
             <i class="fab fa-java mr-2"></i><a target="_" href="/apis/latest/index.html">Javadoc</a>

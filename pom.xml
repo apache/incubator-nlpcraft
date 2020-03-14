@@ -22,7 +22,7 @@
 
     <name>NLPCraft</name>
     <artifactId>nlpcraft</artifactId>
-    <groupId>org.nlpcraft</groupId>
+    <groupId>org.apache.nlpcraft</groupId>
     <version>0.5.0</version>
     <url>https://nlpcraft.apache.org</url>
     <description>An open source API to convert natural language into actions.</description>
@@ -569,25 +569,25 @@
                         ]]>
                     </top>
                     <subpackages>
-                        org.nlpcraft.model:org.nlpcraft.probe.embedded
+                        org.apache.nlpcraft.model:org.apache.nlpcraft.probe.embedded
                     </subpackages>
                     <excludePackageNames>
-                        org.nlpcraft.model.intent.utils:org.nlpcraft.model.impl:org.nlpcraft.model.builder.parsing:org.nlpcraft.model.builder.impl:org.nlpcraft.model.intent.impl
+                        org.apache.nlpcraft.model.intent.utils:org.apache.nlpcraft.model.impl:org.apache.nlpcraft.model.builder.parsing:org.apache.nlpcraft.model.builder.impl:org.apache.nlpcraft.model.intent.impl
                     </excludePackageNames>
                     <groups>
                         <group>
                             <title>Data Model APIs</title>
                             <packages>
-                                org.nlpcraft.model.opencensus:org.nlpcraft.model.factories.basic:org.nlpcraft.model.factories.spring:org.nlpcraft.model:org.nlpcraft.model.utils:org.nlpcraft.model.intent:org.nlpcraft.model.parsing
+                                org.apache.nlpcraft.model.opencensus:org.apache.nlpcraft.model.factories.basic:org.apache.nlpcraft.model.factories.spring:org.apache.nlpcraft.model:org.apache.nlpcraft.model.utils:org.apache.nlpcraft.model.intent:org.apache.nlpcraft.model.parsing
                             </packages>
                         </group>
                         <group>
                             <title>Embedded Probe</title>
-                            <packages>org.nlpcraft.probe.embedded</packages>
+                            <packages>org.apache.nlpcraft.probe.embedded</packages>
                         </group>
                         <group>
                             <title>Tools</title>
-                            <packages>org.nlpcraft.model.tools.sqlgen:org.nlpcraft.model.tools.test</packages>
+                            <packages>org.apache.nlpcraft.model.tools.sqlgen:org.apache.nlpcraft.model.tools.test</packages>
                         </group>
                     </groups>
                     <header>
@@ -599,7 +599,7 @@
                         <![CDATA[
                             <span style="vertical-align: super">Apache NLPCraft <span style="font-size: 80%">${project.version}</span></span>
                             <a style="vertical-align: super; margin-right: 10px" href="https://github.com/apache/incubator-nlpcraft" target="github"><i class="fa fa-github github-logo"></i></a>
-                            <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/nlpcraft/examples" data-icon="octicon-eye" aria-label="NLPCraft Examples">Examples</a>
+                            <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples" data-icon="octicon-eye" aria-label="NLPCraft Examples">Examples</a>
                             <a class="github-button" href="https://github.com/apache/incubator-nlpcraft" data-icon="octicon-star" aria-label="Star on GitHub">Star</a>
                             <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/fork" data-icon="octicon-repo-forked" aria-label="Fork on GitHub">Fork</a>
                             <script type="text/javascript">
@@ -671,7 +671,7 @@
                                     <resource>reference.conf</resource>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.nlpcraft.NCStart</mainClass>
+                                    <mainClass>org.apache.nlpcraft.NCStart</mainClass>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.handlers</resource>

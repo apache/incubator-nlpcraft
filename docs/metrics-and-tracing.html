@@ -46,9 +46,9 @@ id: metrics
                     </a>
                 </td>
                 <td>
-                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter</code><br>
+                    Server: <code>org.apache.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter</code><br>
                     Probe:
-                    <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCJaegerExporter.html">org.nlpcraft.model.opencensus.NCJaegerExporter</a>
+                    <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCJaegerExporter.html">org.apache.nlpcraft.model.opencensus.NCJaegerExporter</a>
                 </td>
                 <td><center>Trace</center></td>
             </tr>
@@ -60,8 +60,8 @@ id: metrics
                     </a>
                 </td>
                 <td>
-                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCZipkinExporter</code><br>
-                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCZipkinExporter.html">org.nlpcraft.model.opencensus.NCZipkinExporter</a>
+                    Server: <code>org.apache.nlpcraft.server.lifecycle.opencensus.NCZipkinExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCZipkinExporter.html">org.apache.nlpcraft.model.opencensus.NCZipkinExporter</a>
                 </td>
                 <td><center>Trace</center></td>
             </tr>
@@ -73,8 +73,8 @@ id: metrics
                     </a>
                 </td>
                 <td>
-                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter</code><br>
-                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCPrometheusExporter.html">org.nlpcraft.model.opencensus.NCPrometheusExporter</a>
+                    Server: <code>org.apache.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCPrometheusExporter.html">org.apache.nlpcraft.model.opencensus.NCPrometheusExporter</a>
                 </td>
                 <td><center>Stats</center></td>
             </tr>
@@ -86,8 +86,8 @@ id: metrics
                     </a>
                 </td>
                 <td>
-                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter</code><br>
-                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCPrometheusExporter.html">org.nlpcraft.model.opencensus.NCPrometheusExporter</a>
+                    Server: <code>org.apache.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCPrometheusExporter.html">org.apache.nlpcraft.model.opencensus.NCPrometheusExporter</a>
                 </td>
                 <td><center>Stats</center></td>
             </tr>
@@ -99,8 +99,8 @@ id: metrics
                     </a>
                 </td>
                 <td>
-                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCStackdriverStatsExporter</code><br>
-                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverStatsExporter.html">org.nlpcraft.model.opencensus.NCStackdriverStatsExporter</a>
+                    Server: <code>org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverStatsExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCStackdriverStatsExporter.html">org.apache.nlpcraft.model.opencensus.NCStackdriverStatsExporter</a>
                 </td>
                 <td><center>Stats</center></td>
             </tr>
@@ -112,8 +112,8 @@ id: metrics
                     </a>
                 </td>
                 <td>
-                    Server: <code>org.nlpcraft.server.lifecycle.opencensus.NCStackdriverTraceExporter</code><br>
-                    Probe: <a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverTraceExporter.html">org.nlpcraft.model.opencensus.NCStackdriverTraceExporter</a>
+                    Server: <code>org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverTraceExporter</code><br>
+                    Probe: <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCStackdriverTraceExporter.html">org.apache.nlpcraft.model.opencensus.NCStackdriverTraceExporter</a>
                 </td>
                 <td><center>Trace</center></td>
             </tr>
@@ -145,8 +145,8 @@ nlpcraft {
     server {
         ...
         lifecycle = [
-            "org.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter",
-            "org.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter"
+            "org.apache.nlpcraft.server.lifecycle.opencensus.NCPrometheusExporter",
+            "org.apache.nlpcraft.server.lifecycle.opencensus.NCJaegerExporter"
         ]
         ...
     }
@@ -165,7 +165,7 @@ nlpcraft {
         <p>
             Just like on the REST server OpenCensus exporters for the data probe are lifecycle components. Probe lifecycle
             components are the implementations
-            of <a target="javadoc" href="/apis/latest/org/nlpcraft/model/NCProbeLifecycle.html">org.nlpcraft.model.NCLifecycle</a>
+            of <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCProbeLifecycle.html">org.apache.nlpcraft.model.NCLifecycle</a>
             interface. Lifecycle components get callbacks for various stages of the data probe
             lifecycle and thus can register and unregister "primordial" components such as OpenCensus exporters. For example, using
             file based configuration:
@@ -175,8 +175,8 @@ nlpcraft {
     probe {
         ...
         lifecycle = [
-            "org.nlpcraft.model.opencensus.NCPrometheusExporter",
-            "org.nlpcraft.model.opencensus.NCJaegerExporter"
+            "org.apache.nlpcraft.model.opencensus.NCPrometheusExporter",
+            "org.apache.nlpcraft.model.opencensus.NCJaegerExporter"
         ]
         ...
     }
@@ -191,11 +191,11 @@ nlpcraft {
             Please consult individual exporter classes:
         </p>
         <ul>
-            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCJaegerExporter.html">NCJaegerExporter</a></li>
-            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCZipkinExporter.html">NCZipkinExporter</a></li>
-            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCPrometheusExporter.html">NCPrometheusExporter</a></li>
-            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverStatsExporter.html">NCStackdriverStatsExporter</a></li>
-            <li><a target="javadoc" href="/apis/latest/org/nlpcraft/model/opencensus/NCStackdriverTraceExporter.html">NCStackdriverTraceExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCJaegerExporter.html">NCJaegerExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCZipkinExporter.html">NCZipkinExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCPrometheusExporter.html">NCPrometheusExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCStackdriverStatsExporter.html">NCStackdriverStatsExporter</a></li>
+            <li><a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/opencensus/NCStackdriverTraceExporter.html">NCStackdriverTraceExporter</a></li>
         </ul>
     </section>
     <section id="traces">

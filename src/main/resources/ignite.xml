@@ -28,7 +28,7 @@
         http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
     <bean name="cache-store-session-listener" class="javax.cache.configuration.FactoryBuilder.ClassFactory">
-        <constructor-arg value="org.nlpcraft.server.tx.NCTxCacheStoreSessionListener"/>
+        <constructor-arg value="org.apache.nlpcraft.server.tx.NCTxCacheStoreSessionListener"/>
     </bean>
 
     <bean name="tcp-disco" class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
