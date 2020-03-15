@@ -622,7 +622,7 @@
                     </footer>
                     <doctitle>
                         <![CDATA[
-                            <img style="margin-bottom: 10px" src="https://nlpcraft.org/images/nlpcraft_logo_darkblue.png" height="54px">
+                            <img style="margin-top: 15px" src="https://nlpcraft.org/images/nlpcraft_logo_darkblue.png" height="54px">
                         ]]>
                     </doctitle>
                     <windowtitle>Apache NLPCraft ${project.version}</windowtitle>
