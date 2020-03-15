@@ -65,7 +65,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
     private final val TOK_ID = "nlpcraft:sort"
 
-    // Elemens: SORT, BY, ORDER, x.
+    // Elements: SORT, BY, ORDER, x.
     // Note that SORT, BY, ORDER - are sets of words (not single words)
     // x - means one or multiple words. x must be at least one for each line, maximum two.
     private final val SEQS =
@@ -124,7 +124,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
         val ordersSeq: Seq[Seq[String]] = ORDER.map(_._1).map(_.split(" ").toSeq)
 
-        // ORDER doesn't contains words fron BY (It can contains words from SORT)
+        // ORDER doesn't contains words from BY (it can contains words from SORT).
         require(!BY.exists(p ⇒ ordersSeq.contains(p)))
 
         // Right order of keywords and references.
@@ -144,6 +144,7 @@ object NCSortEnricher extends NCProbeEnricher {
       * [Token] -> [NoteData]
       * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
       * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
+      *
       * @param toks
       */
     private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
