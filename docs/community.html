@@ -92,6 +92,66 @@ layout: interior
                 suited for the quick start.
                 Still haven't found anything suitable? As always, check the latest discussions on <a target="asf" href="https://mail-archives.apache.org/mod_mbox/nlpcraft-dev/">dev@nlpcraft.apache.org</a>
             </p>
+            <span class="section-sub-title">Git Workflow</span>
+            <p>
+                NLPCraft project uses Git as its version control system. The same Git workflow rules apply to all
+                sub-projects:
+            </p>
+            <ul>
+                <li>
+                    <code>master</code> branch represents latest released version (i.e. the latest release).
+                    <ul>
+                        <li>
+                            Each release has corresponding Git tag.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <code>release</code> branch represent a root branch for the current release that is under development.
+                    <ul>
+                        <li>
+                            During release the <code>release</code> branch gets merged to <code>master</code>, Git tag
+                            is created and work on the next release continues with <code>release</code> branch.
+                        </li>
+                        <li>
+                            <code>master</code> branch gets updated <b>only</b> during release process.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Committers use feature branches for their work, while contributors use pull-requests from GitHub mirror.
+                    <ul>
+                        <li>
+                            Feature branches should be named after their JIRA tickets, i.e. for ticket <code>NLPCRAFT-012</code>
+                            the branch should be named <code>NLPCRAFT-012</code>.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Committers create feature branches off the <code>release</code> branch.
+                </li>
+                <li>
+                    Merging should use Git <code>squashing</code> to minimize number of intermittent commits.
+                </li>
+            </ul>
+            <span class="section-sub-title">Creating GitHub Pull-Request</span>
+            <pre>
++------------+             +---------------+            +-----------------+
+|            |   replica   |               |    fork    |                 |
+| Apache Git | ==========> | GitHub Mirror | ---------> | John Doe's Fork |
+|            |             |               |            |                 |
++------------+             +---------------+            +-----------------+
+       ^                            ^                            ^
+       |                            |                            |
+       |                            +------------------------+   | origin
+       |                                  upstream           |   |
+       |                                                     |   |
+       |                                                +-----------------+
+       |    *Apache Git remote handle for committers*   |                 |
+       +------------------------------------------------|   Local clone   |
+                                                        |                 |
+                                                        +-----------------+
+            </pre>
         </section>
     </div>
     <div class="col-md-2 third-column">
