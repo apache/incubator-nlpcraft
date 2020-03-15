@@ -50,9 +50,9 @@ layout: interior
                 One of our community members will add you to the contributors' list and you will be able to
                 go ahead and book NLPCraft tasks you would like to work on.
             </p>
-            <span class="section-sub-title">NLPCraft Dev List</span>
+            <span class="section-sub-title">Dev List</span>
             <p>
-                This list is the primary and the default communication channel - <a href="mailto:dev@nlpcraft.apache.org">dev@nlpcraft.apache.org</a>
+                This list is the primary and the default communication channel: <a href="mailto:dev@nlpcraft.apache.org">dev@nlpcraft.apache.org</a>
             </p>
             <p>
                 Send an email to <a href="mailto:dev-subscribe@ignite.apache.org">dev-subscribe@ignite.apache.org</a>
@@ -67,7 +67,7 @@ layout: interior
                 is a preferred way of engagement at ASF as well as within the NLPCraft community.
             </p>
             <p>
-                For the sake of openness, speed and transparency, the community members are free to use Slack, Skype or
+                For the sake of openness, speed and transparency, the community members are free to use Slack, Gitter, Skype or
                 meet via the tools like Google Meeting. But, as mentioned above, if any conversation took place between
                 contributors using channels like Slack, a summary of the discussion/decision has to be shared via the
                 dev list letting other contributors share their opinions. As a summary, final decisions are made only
@@ -95,8 +95,23 @@ layout: interior
             <span class="section-sub-title">Git Workflow</span>
             <p>
                 NLPCraft project uses Git as its version control system. The same Git workflow rules apply to all
-                sub-projects:
+                sub-projects.
             </p>
+            <p>ASF GitBox repos (committers only):</p>
+            <ul>
+                <li><a target="asf" href="https://git.apache.org/repos/asf/incubator-nlpcraft">https://git.apache.org/repos/asf/incubator-nlpcraft</a></li>
+                <li><a target="asf" href="https://git.apache.org/repos/asf/incubator-nlpcraft-java-client">https://git.apache.org/repos/asf/incubator-nlpcraft-java-client</a></li>
+                <li><a target="asf" href="https://git.apache.org/repos/asf/incubator-nlpcraft-ui">https://git.apache.org/repos/asf/incubator-nlpcraft-ui</a></li>
+            </ul>
+            <p>
+                GitHub mirrors (contributors pull-requests):
+            </p>
+            <ul>
+                <li><a target="github" href="https://github.com/apache/incubator-nlpcraft">https://github.com/apache/incubator-nlpcraft</a></li>
+                <li><a target="github" href="https://github.com/apache/incubator-nlpcraft-java-client">https://github.com/apache/incubator-nlpcraft-java-client</a></li>
+                <li><a target="github" href="https://github.com/apache/incubator-nlpcraft-ui">https://github.com/apache/incubator-nlpcraft-ui</a></li>
+            </ul>
+            <p>General Git workflow rules:</p>
             <ul>
                 <li>
                     <code>master</code> branch represents latest released version (i.e. the latest release).
@@ -152,6 +167,90 @@ layout: interior
                                                         |                 |
                                                         +-----------------+
             </pre>
+            <p>To start:</p>
+            <ul>
+                <li>
+                    Create a local fork of Apache NLPCraft mirror on GitHub.
+                    <ul>
+                        <li>
+                            Your remote origin will refer to
+                            <code>https://github.com/&lt;your_github_username&gt;/incubator-nlpcraft.git</code> (assuming the main project).
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    You will need to regularly update local <code>master</code> to merge up upstream changes:
+                    <ul>
+                        <li>
+                            Add remote for Apache NLPCraft mirror as a remote (you need to do it <b>once</b>):
+                            <pre class="brush: plain">
+                                git remote add upstream https://github.com/apache/incubator-nlpcraft.git
+                            </pre>
+                        </li>
+                        <li>
+                            Each time when you want to update your local <code>master</code> do the following:
+                            <pre class="brush: plain">
+                                git pull upstream
+                                git checkout release
+                            </pre>
+                        </li>
+                    </ul>
+                    <div class="bq info">
+                        <p><b>Branch Naming in Forks</b></p>
+                        <p>
+                            Note that you can use any naming scheme for the branches in your local forks (i.e. you can work
+                            in <code>master</code> branch in your local fork). However, when you up-merge from the GitHub
+                            mirror you need to make sure to use <code>release</code> branch to get the latest work-in-progress
+                            from the upstream.
+                        </p>
+                    </div>
+                </li>
+            </ul>
+            <p>To make the contribution:</p>
+            <ul>
+                <li>
+                    Fix or implement JIRA ticket in your fork. Provide JavaDocs or ScalaDocs whenever required. If you
+                    add a new package make sure that <code>package-info.java</code> file in it is in place with a
+                    description. Double-check all publicly visible JavaDoc.
+                </li>
+                <li>
+                    Commit branch to your local fork.
+                </li>
+                <li>
+                    Create pull request from the new remote branch in your fork to <code>release</code> of
+                    Apache NLPCraft mirror. Please, start a title of the pull request from <code>NLPCRAFT-xxx</code>
+                    referring to the JIRA ticket this pull-request is related to. An email about the pull request
+                    will be send to dev-list and the same JIRA comment will be added to the NLPCRAFT-xxx ticket.
+                </li>
+                <li>
+                    Move a corresponding JIRA ticket to <code>Patch Available</code> state by clicking on
+                    <b>"Submit Patch"</b> button and let the community know that you're ready for review.
+                </li>
+            </ul>
+            <div class="bq info">
+                <p><b>Existing Pull-Requests</b></p>
+                <p>
+                    Existing pull request should be updated instead of creation of new one. Do not create more
+                    than one pull request for one issue.
+                </p>
+            </div>
+            <span class="section-sub-title">Become A Committer And PMC Member</span>
+            <p>
+                We love contributions and gladly promote active contributors to committers and PMC members!
+                If you are new to Apache Software Foundation then NLPCraft will be an excellent starting point.
+            </p>
+            <p>
+                The most important point of becoming a committer for Apache projects is active participation
+                within the community. Being an active community member means participating in mailing list
+                discussions, helping to answer questions, being respectful towards others, and following the
+                meritocratic principles of community management.
+            </p>
+            <p>
+                Of course, code contributions are also important. Once you make a few code contributions, you will
+                become eligible to join NLPCraft committers, and possibly NLPCraft PMC. Candidates for new committers
+                or PMC members are suggested by the current committers, mentors, or PMC members, and then must be
+                approved by the PMC voting process.
+            </p>
         </section>
     </div>
     <div class="col-md-2 third-column">
