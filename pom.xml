@@ -623,8 +623,6 @@
                     <doctitle>
                         <![CDATA[
                             <img style="margin-top: 15px" src="https://nlpcraft.org/images/nlpcraft_logo_darkblue.png" height="54px">
-                            <br>
-                            An API to convert natural language into action
                         ]]>
                     </doctitle>
                     <windowtitle>Apache NLPCraft ${project.version}</windowtitle>
