@@ -124,7 +124,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
         val ordersSeq: Seq[Seq[String]] = ORDER.map(_._1).map(_.split(" ").toSeq)
 
-        // ORDER doens't contains words fron BY (It can contains words from SORT)
+        // ORDER doesn't contains words fron BY (It can contains words from SORT)
         require(!BY.exists(p ⇒ ordersSeq.contains(p)))
 
         // Right order of keywords and references.
@@ -156,7 +156,7 @@ object NCSortEnricher extends NCProbeEnricher {
             val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
             /**
-              * Return flag which indicates are token contiguous or not.
+              * Returns flag which indicates are token contiguous or not.
               *
               * @param tok1Idx First token index.
               * @param tok2Idx Second token index.
