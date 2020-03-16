@@ -286,7 +286,6 @@ $bq-success-border-color: $brand-success;
 }
 
 .gradient-table {
-    width: 100%;
     margin-top: 0;
     border-collapse: collapse;
     border-radius: 2px;
@@ -335,8 +334,12 @@ $bq-success-border-color: $brand-success;
             border-left: 1px solid #eee;
         }
     }
+
 }
 
+.max-width {
+    width: 100%;
+}
 a[target=javadoc] {
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 87.5%;
