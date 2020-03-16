@@ -1,6 +1,3 @@
----
----
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -18,50 +15,16 @@
  * limitations under the License.
  */
 
-/*
- * Constants.
- * ----------
- */
-$font-size: 14px;
-$default-font: "Helvetica Neue";
+#community {
+    table.checks {
+        i.fas {
+            &.fa-check, &.fa-check-double {
+                color: $color-turquoise;
+            }
 
-@import 'fonts';
-@import 'colors';
-@import 'misc';
-@import 'header';
-@import 'footer';
-@import 'sh';
-@import 'index';
-@import '404';
-@import 'buttons';
-@import 'download';
-@import 'three-cols';
-@import 'basic-concepts';
-@import 'use-cases';
-@import 'server-and-probes';
-@import 'metrics-and-tracing';
-@import 'integrations';
-@import 'community';
-
-html {
-    position: relative;
-    min-height: 100%;
-    height: 100%;
+            &.fa-times {
+                color: $color-alizarin
+            }
+        }
+    }
 }
-
-body {
-    background-color: $background-color;
-    color: $foreground-color;
-    min-height: 100%;
-    height: 100%;
-}
-
-em.high {
-    font-style: normal;
-    padding: 2px 4px 3px 4px;
-    background-color: #d36da6;
-    color: #fff;
-    border-radius: 1px;
-}
-
-
