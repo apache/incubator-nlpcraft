@@ -81,7 +81,10 @@ object NCSortEnricher extends NCProbeEnricher {
             "SORT x BY ORDER"
         )
 
-    case class NoteData(note: String, indexes: Seq[Int])
+    case class NoteData(note: String, indexes: Seq[Int]) {
+        // Added for debug reasons.
+        override def toString: String = s"NoteData [note=$note, indexes=[${indexes.mkString(",")}]]"
+    }
 
     private case class Match(
         asc: Option[Boolean],
@@ -147,47 +150,60 @@ object NCSortEnricher extends NCProbeEnricher {
       *
       * @param toks
       */
-    private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
+    private def split(toks: Seq[NCNlpSentenceToken], nullable: Boolean): Seq[Seq[NoteData]] = {
         val all =
             toks.flatten.
                 filter(!_.isNlp).map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
                 sortBy(_.indexes.head).distinct
 
-        if (all.nonEmpty) {
-            val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
+        val res =
+            if (all.nonEmpty) {
+                val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
-            /**
-              * Returns flag which indicates are token contiguous or not.
-              *
-              * @param tok1Idx First token index.
-              * @param tok2Idx Second token index.
-              */
-            def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
-                val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
+                /**
+                  * Returns flag which indicates are token contiguous or not.
+                  *
+                  * @param tok1Idx First token index.
+                  * @param tok2Idx Second token index.
+                  */
+                def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
+                    val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
 
-                between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
+                    between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
+                }
+
+                val min = toks.dropWhile(_.isNlp).head.index
+                val max = toks.reverse.dropWhile(_.isNlp).head.index
+
+                require(min <= max)
+
+                def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
+                    seq += nd
+
+                    all.
+                        filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
+                        foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
+
+                    if (seq.nonEmpty && seq.head.indexes.head == min && seq.last.indexes.last == max)
+                        res += seq
+                }
+
+                all.filter(_.indexes.head == min).foreach(p ⇒ fill(p))
+
+                res
             }
+            else
+                Seq.empty
 
-            def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
-                seq += nd
+        if (res.isEmpty && !nullable)
+            throw new AssertionError(s"Invalid null result " +
+                s"[tokens=[${toks.map(_.origText).mkString(", ")}]" +
+                s", tokensIndexes=[${toks.map(_.index).mkString(", ")}]" +
+                s", allData=[${all.mkString(", ")}]" +
+                s"]"
+            )
 
-                all.
-                    filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
-                    foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
-
-                if (seq.nonEmpty &&
-                    seq.head.indexes.head == all.head.indexes.head &&
-                    seq.last.indexes.last == all.last.indexes.last
-                )
-                    res += seq
-            }
-
-            fill(all.head)
-
-            res
-        }
-        else
-            Seq.empty
+        res
     }
 
     /**
@@ -292,18 +308,11 @@ object NCSortEnricher extends NCProbeEnricher {
 
                         require(subj.nonEmpty)
 
-                        Some(
-                            Match(
-                                asc = h.order match {
-                                    case Some(order) ⇒ Some(ORDER(order.synonymIndex)._2)
-                                    case None ⇒ None
-                                },
-                                main = h.sort.tokens,
-                                stop = h.byTokens ++ h.orderTokens,
-                                subjSeq = split(subj),
-                                bySeq = split(by)
-                            )
-                        )
+                        val subjSeq = split(subj, nullable = false)
+                        val bySeq = split(by, nullable = true)
+                        val asc = h.order.flatMap(order ⇒ Some(ORDER(order.synonymIndex)._2))
+
+                        Some(Match(asc, main = h.sort.tokens, stop = h.byTokens ++ h.orderTokens, subjSeq, bySeq))
                     }
                     else
                         None
