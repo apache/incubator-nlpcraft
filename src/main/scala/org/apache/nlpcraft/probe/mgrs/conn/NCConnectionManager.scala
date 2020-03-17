@@ -275,6 +275,8 @@ object NCConnectionManager extends NCService {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         require(NCCommandManager.isStarted)
         require(NCModelManager.isStarted)
+        
+        val ctrlLatch = new CountDownLatch(1)
      
         ctrlThread = U.mkThread("probe-ctrl-thread") { t ⇒
             var dnSock: NCSocket = null
@@ -320,7 +322,7 @@ object NCConnectionManager extends NCService {
                     
                     upSock.socket.setSoTimeout(SO_TIMEOUT)
             
-                    val latch = new CountDownLatch(1)
+                    val exitLatch = new CountDownLatch(1)
             
                     /**
                       *
@@ -335,7 +337,7 @@ object NCConnectionManager extends NCService {
                             logger.info(msg)
                         caller.interrupt() // Interrupt current calling thread.
                 
-                        latch.countDown()
+                        exitLatch.countDown()
                     }
             
                     upThread = U.mkThread("probe-uplink") { t ⇒
@@ -389,10 +391,14 @@ object NCConnectionManager extends NCService {
                     upThread.start()
                     dnThread.start()
                     
+                    // Indicate that server connection is established.
+                    ctrlLatch.countDown()
+                    
                     logger.info("REST server connection established.")
                     
-                    while (!t.isInterrupted && latch.getCount > 0) U.ignoreInterrupt {
-                        latch.await()
+                    // Wait until probe connection is closed.
+                    while (!t.isInterrupted && exitLatch.getCount > 0) U.ignoreInterrupt {
+                        exitLatch.await()
                     }
                     
                     closeAll()
@@ -444,6 +450,9 @@ object NCConnectionManager extends NCService {
         }
      
         ctrlThread.start()
+        
+        // Only return when probe successfully connected to the server.
+        ctrlLatch.await()
      
         super.start()
     }
