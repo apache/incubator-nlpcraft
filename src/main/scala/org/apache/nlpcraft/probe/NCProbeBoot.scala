@@ -61,6 +61,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     
     @volatile private var started = false
     @volatile private var shutdownHook: Thread = _
+    @volatile private var probeThread: Thread = _
     
     // This container designed only for internal usage (transfer common data between methods).
     private case class ProbeConfig(
@@ -163,6 +164,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param fut
       */
     private def start0(cfg: ProbeConfig, fut: CompletableFuture[Void]): Unit = {
+        probeThread = Thread.currentThread()
+        
         asciiLogo()
         ackConfig(cfg)
         
@@ -189,10 +192,15 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 fut.complete(null)
                 
                 // Wait indefinitely.
-                ignoring(classOf[InterruptedException]) {
-                    Thread.currentThread().join()
-                }
+                while (started)
+                    try
+                        Thread.currentThread().join()
+                    catch {
+                        case _: InterruptedException ⇒ ()
+                    }
         }
+    
+        logger.info("Embedded probe thread stopped OK.")
     }
     
     /**
@@ -207,6 +215,11 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         }
         
         started = false
+        
+        if (probeThread != null)
+            probeThread.interrupt()
+        
+        logger.info("Embedded probe shutdown OK.")
     }
     
     /**
@@ -332,7 +345,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             raw" / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $NL" +
             raw"/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $NL" +
             raw"       /_/                                  $NL$NL" +
-            s"Data Probe$NL" +
+            s"Embedded Data Probe$NL" +
             s"Version: ${ver.version}$NL" +
             raw"${NCVersion.copyright}$NL"
         
