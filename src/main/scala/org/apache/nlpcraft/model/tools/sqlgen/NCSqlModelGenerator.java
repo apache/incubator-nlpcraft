@@ -17,19 +17,35 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl;
 
 /**
  * Command line utility to generate NLPCraft model stub from given SQL RDBMS.
  * <p>
- * You need to provide JDBC URL and driver, database schema, as well as set of tables and columns for which you
- * want to generate NLPCraft model stub. After the model stub is generated you need to further configure and customize
- * it for your specific needs.
- * <p>
- * Run this class with <code>--help</code> parameter to get a full documentation:
+ * You need to provide JDBC URL and driver, database schema, as well as optional set of tables and columns for which you
+ * want to generate NLPCraft model stub. Run this class with <code>--help</code> parameter to get a full documentation:
  * <pre class="brush:plain">
  * java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator --help
  * </pre>
+ * <p>
+ * After the model stub is generated:
+ * <ul>
+ *     <li>
+ *         Modify and extend generated model stub to your own needs. In most cases, you'll need
+ *         to add, remove or modify auto-generated synonyms, add intents, etc. Note, however, that generated model
+ *         is fully complete and can be used as is.
+ *     </li>
+ *     <li>
+ *         Use generated YAML/JSON-based model together with {@link NCModelFileAdapter}
+ *         class to instantiate model from this file.
+ *     </li>
+ *     <li>
+ *         Use {@link NCSqlSchemaBuilder#makeSchema(NCModel)} method to get an object representation of the
+ *         SQL data schema for the model. You can use this object representation along with many utility
+ *         methods in {@link NCSqlUtils} class to efficiently auto-generate SQL queries against the original RDBMS.
+ *     </li>
+ * </ul>
  */
 public class NCSqlModelGenerator {
     /**
