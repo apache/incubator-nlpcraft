@@ -23,7 +23,7 @@ id: rest
 
 <div class="col-md-8 second-column">
     <section id="overview">
-        <span class="section-title">Overview</span>
+        <h2 class="section-title">Overview</h2>
         <p>
             REST API provides a universal integration path for any type of user application to connect to and use NLPCraft.
             By using REST API these applications can ask natural language questions, get results and perform
@@ -58,7 +58,7 @@ id: rest
         </div>
     </section>
     <section id="java-client">
-        <span class="section-sub-title">Java Client <i class="fab fa-java"></i></span>
+        <h3 class="section-title">Java Client <i class="fab fa-java"></i></h3>
         <p>
             NLPCraft provide native Java client that enables easy-to-use Java-based API wrapping standard
             NLPCraft REST APIs. It can be used by any JVM language that provides Java interop such as Scala, Groovy, or Kotlin:
@@ -71,7 +71,7 @@ id: rest
 
     </section>
     <section id="format">
-        <span class="section-sub-title">REST URL</span>
+        <h3 class="section-title">REST URL</h3>
         <p>
             REST API accepts only <code>POST</code> HTTP calls and <code>application/json</code> content type
             for JSON payload and responses. When issuing a REST call you will be using the following URL:
@@ -138,7 +138,7 @@ id: rest
         </div>
     </section>
     <section id="auth">
-        <span class="section-sub-title">Authentication</span>
+        <h3 class="section-title">Authentication</h3>
         <p>
             Before performing any REST calls a registered user needs to sign in to receive
             an <b>access token</b> that will be used in all subsequent operations:
@@ -180,7 +180,7 @@ id: rest
         </div>
     </section>
     <section id="asking">
-        <span class="section-sub-title">Asking</span>
+        <h3 class="section-title">Asking</h3>
         <p>
             This is the main group of operation that allows to ask questions, check the status and get
             result:
@@ -227,7 +227,7 @@ id: rest
         </table>
     </section>
     <section id="company">
-        <span class="section-sub-title">Company Management</span>
+        <h3 class="section-title">Company Management</h3>
         <p>
             This group of operations allows to add, update and remove companies in the systems.
         </p>
@@ -263,7 +263,7 @@ id: rest
         </table>
     </section>
     <section id="user">
-        <span class="section-sub-title">User Management</span>
+        <h3 class="section-title">User Management</h3>
         <p>
             This group of operations allows to add, update and remove users in the systems:
         </p>
@@ -309,7 +309,7 @@ id: rest
         </table>
     </section>
     <section id="data_probe">
-        <span class="section-sub-title">Data Probe Management</span>
+        <h3 class="section-title">Data Probe Management</h3>
         <p>
             This group of operations allows to get the information about connected data probes:
         </p>
@@ -329,7 +329,7 @@ id: rest
         </table>
     </section>
     <section id="server_errors">
-        <span class="section-title">Server Errors</span>
+        <h2 class="section-title">Server Errors</h2>
         <p>
             When REST server returns HTTP error the response body contains JSON object (<code>Content-Type → application/json</code>)
             with two fields <code>code</code> and <code>msg</code>:

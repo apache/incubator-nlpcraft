@@ -23,7 +23,7 @@ id: alarm_clock
 
 <div class="col-md-8 second-column">
     <section id="overview">
-        <span class="section-title">Overview</span>
+        <h2 class="section-title">Overview</h2>
         <p>
             This simple example provides a "alarm clock" implementation where you can ask to set the timer
             for a specific duration from now expressed in hours, minutes and/or seconds. You can say "ping me in 3 minutes",
@@ -36,7 +36,7 @@ id: alarm_clock
         </p>
     </section>
     <section id="new_project">
-        <span class="section-sub-title">Create New Project</span>
+        <h3 class="section-title">Create New Project</h3>
         <p>
             You can create new Java project in many different ways - we'll use Maven archetype generation
             for that. In your home folder run the following command:
@@ -73,7 +73,7 @@ id: alarm_clock
         </p>
     </section>
     <section id="add_nlpcraft">
-        <span class="section-sub-title">Add NLPCraft</span>
+        <h3 class="section-title">Add NLPCraft</h3>
         <p>
             Next we need to add NLPCraft dependency to our new project. Open <code>pom.xml</code> file and replace
             <code>dependencies</code> section with the following code:
@@ -103,7 +103,7 @@ id: alarm_clock
         </p>
     </section>
     <section id="model">
-        <span class="section-sub-title">Data Model</span>
+        <h3 class="section-title">Data Model</h3>
         <p>
             We are going to start with declaring our semantic model using JSON. Create new <code>alarm_model.json</code>
             file and add the following model declaration into it:
@@ -159,7 +159,7 @@ id: alarm_clock
         </p>
     </section>
     <section id="code">
-        <span class="section-sub-title">Model Class</span>
+        <h3 class="section-title">Model Class</h3>
         <p>
             Let's create new Java class in <code>AlarmModel.java</code> with the following code:
         </p>
@@ -276,7 +276,7 @@ public class AlarmModel extends NCModelFileAdapter {
         </ul>
     </section>
     <section>
-        <span class="section-sub-title">Start Data Probe</span>
+        <h3 class="section-title">Start Data Probe</h3>
         <p>
             NLPCraft data models get deployed into data probe. Let's start data probe with our newly
             created data model. To start data probe we need to configure Run Configuration in IDEA with
@@ -308,7 +308,7 @@ public class AlarmModel extends NCModelFileAdapter {
         </p>
     </section>
     <section>
-        <span class="section-sub-title">Start REST Server</span>
+        <h3 class="section-title">Start REST Server</h3>
         <p>
             REST server listens for requests from client applications and routes them to the requested data models
             via connected data probes. REST server starts the same way as the data probe. Configure new
@@ -333,7 +333,7 @@ public class AlarmModel extends NCModelFileAdapter {
         </p>
     </section>
     <section>
-        <span class="section-sub-title">Testing</span>
+        <h3 class="section-title">Testing</h3>
         <p>
             NLPCraft comes with easy to use <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/test/package-summary.html">test framework</a> for
             data models that can be used with
@@ -402,7 +402,7 @@ class AlarmTest {
         </p>
     </section>
     <section>
-        <span class="section-title">Done! 👌</span>
+        <h2 class="section-title">Done! 👌</h2>
         <p>
             You've created alarm clock data model, deployed it into the data probe, started the
             REST server and tested this model using JUnit 5 and the built-in test framework.
