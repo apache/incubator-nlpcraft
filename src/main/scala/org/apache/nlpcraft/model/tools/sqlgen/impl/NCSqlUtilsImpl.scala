@@ -25,7 +25,7 @@ import org.apache.nlpcraft.model.{NCModel, NCToken}
 
 import scala.collection.JavaConverters._
 
-object NCSqlUtilsAdapter {
+object NCSqlUtilsImpl {
     private def extractSqlColumn(schema: NCSqlSchema, colTok: NCToken): NCSqlColumn = {
         val tab: String = colTok.meta("sql:tablename")
         val col: String = colTok.meta("sql:name")

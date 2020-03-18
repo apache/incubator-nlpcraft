@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model.tools.sqlgen;
 
 import org.apache.nlpcraft.model.NCToken;
-import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlUtilsAdapter;
+import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlUtilsImpl;
 
 import java.util.List;
 
@@ -27,42 +27,42 @@ import java.util.List;
  */
 public class NCSqlUtils {
     public static NCSqlLimit extractLimit(NCSqlSchema schema, List<NCToken> variant, NCToken limitTok) {
-        return NCSqlUtilsAdapter.extractLimit(schema, variant, limitTok);
+        return NCSqlUtilsImpl.extractLimit(schema, variant, limitTok);
     }
 
     public static List<NCSqlSimpleCondition> extractDateRangeConditions(NCSqlSchema schema, NCToken colTok, NCToken dateTok) {
-        return NCSqlUtilsAdapter.extractDateRangeConditions(schema, colTok, dateTok);
+        return NCSqlUtilsImpl.extractDateRangeConditions(schema, colTok, dateTok);
     }
 
     public static List<NCSqlSimpleCondition> extractNumConditions(NCSqlSchema schema, NCToken colTok, NCToken numTok) {
-        return NCSqlUtilsAdapter.extractNumConditions(schema, colTok, numTok);
+        return NCSqlUtilsImpl.extractNumConditions(schema, colTok, numTok);
     }
 
     public static List<NCSqlInCondition> extractValuesConditions(NCSqlSchema schema, NCToken... allValsToks) {
-        return NCSqlUtilsAdapter.extractValuesConditions(schema, allValsToks);
+        return NCSqlUtilsImpl.extractValuesConditions(schema, allValsToks);
     }
 
     public static NCSqlSort extractSorts(NCSqlSchema schema, List<NCToken> variant, NCToken sortTok) {
-        return NCSqlUtilsAdapter.extractSorts(schema, variant, sortTok);
+        return NCSqlUtilsImpl.extractSorts(schema, variant, sortTok);
     }
 
     public static NCSqlAggregate extractAggregate(NCSqlSchema schema, List<NCToken> variant, NCToken aggrFunc, NCToken aggrGroupOpt) {
-        return NCSqlUtilsAdapter.extractAggregate(schema, variant, aggrFunc, aggrGroupOpt);
+        return NCSqlUtilsImpl.extractAggregate(schema, variant, aggrFunc, aggrGroupOpt);
     }
 
     public static NCSqlTable extractTable(NCSqlSchema schema, NCToken tok) {
-        return NCSqlUtilsAdapter.extractTable(schema, tok);
+        return NCSqlUtilsImpl.extractTable(schema, tok);
     }
 
     public static NCSqlColumn extractColumn(NCSqlSchema schema, NCToken tok) {
-        return NCSqlUtilsAdapter.extractColumn(schema, tok);
+        return NCSqlUtilsImpl.extractColumn(schema, tok);
     }
 
     public static NCSqlDateRange extractDateRange(NCToken tok) {
-        return NCSqlUtilsAdapter.extractDateRange(tok);
+        return NCSqlUtilsImpl.extractDateRange(tok);
     }
 
     public static NCToken findAnyColumnToken(NCToken tok) {
-        return NCSqlUtilsAdapter.findAnyColumnToken(tok);
+        return NCSqlUtilsImpl.findAnyColumnToken(tok);
     }
 }

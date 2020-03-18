@@ -26,9 +26,9 @@ import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl;
  * want to generate NLPCraft model stub. After the model stub is generated you need to further configure and customize
  * it for your specific needs.
  * <p>
- * Run this class with <code>--help</code> parameter to get a full up-to-date documentation:
+ * Run this class with <code>--help</code> parameter to get a full documentation:
  * <pre class="brush:plain">
- * java -cp nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator --help
+ * java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator --help
  * </pre>
  */
 public class NCSqlModelGenerator {

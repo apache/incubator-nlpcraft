@@ -17,11 +17,28 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+/**
+ * Exception thrown by various classes in model stub generator utility.
+ *
+ * @see NCSqlUtils
+ * @see NCSqlSchemaBuilder
+ */
 public class NCSqlException extends RuntimeException {
+    /**
+     * Creates new exception.
+     *
+     * @param message Error message.
+     */
     public NCSqlException(String message) {
         super(message);
     }
 
+    /**
+     * Creates new exception.
+     *
+     * @param message Error message.
+     * @param cause Optional cause of this exception.
+     */
     public NCSqlException(String message, Throwable cause) {
         super(message, cause);
     }

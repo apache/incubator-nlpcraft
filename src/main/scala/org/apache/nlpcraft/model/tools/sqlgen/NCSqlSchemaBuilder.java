@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.model.tools.sqlgen;
 
 import org.apache.nlpcraft.model.NCModel;
-import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlUtilsAdapter;
+import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlUtilsImpl;
 
 public class NCSqlSchemaBuilder {
     public static NCSqlSchema makeSchema(NCModel model) {
-        return NCSqlUtilsAdapter.makeSchema(model);
+        return NCSqlUtilsImpl.makeSchema(model);
     }
 }

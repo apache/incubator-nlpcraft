@@ -568,7 +568,7 @@ object NCSqlModelGeneratorImpl {
                    |    NCSqlModelGenerator -- NLPCraft model generator for SQL databases.
                    |
                    |SYNOPSIS:
-                   |    java -cp nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
+                   |    java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
                    |
                    |DESCRIPTION:
                    |    This utility generates NLPCraft model stub for a given SQL database schema. You
@@ -672,7 +672,7 @@ object NCSqlModelGeneratorImpl {
                |                             do not start with '_'.
                |
                |EXAMPLES:
-               |    java -cp nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
+               |    java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
                |        -r jdbc:postgresql://localhost:5432/mydb
                |        -d org.postgresql.Driver
                |        -f "tbl_, col_"

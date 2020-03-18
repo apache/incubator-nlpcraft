@@ -17,5 +17,10 @@
 
 /**
  * Contains model stub generator for SQL RDBMS.
+ * <p>
+ * Run the following from the command line to get a full documentation:
+ * <pre class="brush:plain">
+ * java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator --help
+ * </pre>
  */
 package org.apache.nlpcraft.model.tools.sqlgen;
