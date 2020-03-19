@@ -23,7 +23,6 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.jakewharton.fliptables.FlipTable
 import com.typesafe.scalalogging.LazyLogging
 import org.h2.jdbcx.JdbcDataSource
-import org.apache.nlpcraft.model.tools.sqlgen.NCSqlQuery
 import resource.managed
 
 import scala.collection.JavaConverters._
@@ -36,7 +35,7 @@ object SqlAccess extends LazyLogging {
 
     private var conn: Connection = _
 
-    def select(qry: NCSqlQuery, logResult: Boolean): SqlResult = {
+    def select(qry: SqlQuery, logResult: Boolean): SqlResult = {
         if (conn == null)
             conn = {
                 val ds = new JdbcDataSource

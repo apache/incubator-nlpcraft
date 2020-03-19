@@ -17,21 +17,26 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.util.Collection;
 
 /**
- * TODO: add description.
+ * Object presentation of SQL schema.
+ * 
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
 public interface NCSqlSchema {
     /**
+     * Gets collection of tables for this SQL schema.
      *
-     * @return
+     * @return Collection of tables for this SQL schema.
      */
     Collection<NCSqlTable> getTables();
 
     /**
-     *
-     * @return
+     * Gets collection of joins for this SQL schema.
+     * 
+     * @return Collection of joins for this SQL schema.
      */
     Collection<NCSqlJoin> getJoins();
 }

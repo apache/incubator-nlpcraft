@@ -271,7 +271,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     }
 
     @throws[NCSqlException]
-    def build(): NCSqlQuery = {
+    def build(): SqlQuery = {
         // Collects data.
         if (freeDateRangeOpt.isDefined &&
             this.conds.exists(cond ⇒ isDate(schemaCols(Key(cond.getColumn.getTable, cond.getColumn.getColumn))))
@@ -361,7 +361,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                     )
             }
 
-        new NCSqlQuery {
+        new SqlQuery {
             def getSql: String =
                 s"""
                    |SELECT

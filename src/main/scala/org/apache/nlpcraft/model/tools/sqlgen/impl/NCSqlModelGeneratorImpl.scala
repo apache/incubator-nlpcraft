@@ -777,9 +777,8 @@ object NCSqlModelGeneratorImpl {
       */
     def process(args: Array[String]): Unit = {
         val params = parseCmdParameters(args)
-        
-        val tables = readSqlMetadata(params)
+        val tbls = readSqlMetadata(params)
 
-        generateModel(tables, params)
+        generateModel(tbls, params)
     }
 }

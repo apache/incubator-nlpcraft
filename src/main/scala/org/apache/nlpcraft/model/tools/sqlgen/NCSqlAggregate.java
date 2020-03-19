@@ -17,8 +17,14 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.util.List;
 
+/**
+ * Object presentation of SQL aggregate condition.
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ */
 public interface NCSqlAggregate {
     // Can be empty.
     List<NCSqlFunction> getSelect();

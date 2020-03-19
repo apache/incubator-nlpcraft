@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.tools.sqlgen;
+package org.apache.nlpcraft.examples.sql.db;
 
 import java.util.List;
 
-public interface NCSqlQuery {
+public interface SqlQuery {
     String getSql();
     List<Object> getParameters();
 }

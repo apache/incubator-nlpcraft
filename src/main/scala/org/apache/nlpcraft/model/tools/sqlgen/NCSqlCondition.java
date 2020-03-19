@@ -17,6 +17,13 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
+
+/**
+ * Object presentation of the base SQL condition.
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ */
 public interface NCSqlCondition {
     NCSqlColumn getColumn();
 }

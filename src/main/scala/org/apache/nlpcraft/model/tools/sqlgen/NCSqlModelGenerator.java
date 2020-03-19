@@ -53,6 +53,7 @@ public class NCSqlModelGenerator {
      * 
      * @param args Command line parameters. Execute with <code>--help</code> parameter to get a full
      *      documentation.
+     * @throws NCSqlException Thrown in case of any errors.
      */
     public static void main(String[] args) {
         // Calling out Scala engine.

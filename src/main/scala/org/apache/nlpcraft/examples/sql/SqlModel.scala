@@ -100,7 +100,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     ): NCResult = {
         val ns = ctx.getVariant
 
-        var query: NCSqlQuery = null
+        var query: SqlQuery = null
 
         try {
             query =

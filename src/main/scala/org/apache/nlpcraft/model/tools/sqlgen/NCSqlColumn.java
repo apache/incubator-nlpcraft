@@ -17,8 +17,12 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
+
 /**
- * TODO: add description.
+ * Object presentation of SQL column.
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
 public interface NCSqlColumn {
     /**

@@ -17,46 +17,56 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * TODO: add description.
+ * Object presentation of SQL table.
+ * 
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel) 
  */
 public interface NCSqlTable {
     /**
+     * Gets table name.
      *
-     * @return
+     * @return table name.
      */
     String getTable();
 
     /**
+     * Gets collections of this table columns.
      *
-     * @return
+     * @return Collections of this table columns.
      */
     List<NCSqlColumn> getColumns();
 
     /**
+     * Gets default sort descriptor.
      *
-     * @return
+     * @return Default sort descriptor.
      */
     List<NCSqlSort> getDefaultSort();
 
     /**
-     * 
-     * @return
+     * Gets the list of the column names for the default select set.
+     *
+     * @return List of the column names for the default select set.
      */
     List<String> getDefaultSelect();
 
     /**
+     * Gets the list of extra tables this table is referencing.
      *
-     * @return
+     * @return List of extra tables this table is referencing.
      */
     List<String> getExtraTables();
 
     /**
-     * Note that this columns can contains to another table.
-     * @return
+     * Gets a column that defines a default date for this table. Note that this column
+     * can belong to another table.
+     *
+     * @return Column that defines a default date for this table
      */
     Optional<NCSqlColumn> getDefaultDate();
 }

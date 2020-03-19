@@ -22,7 +22,6 @@ import java.util.Collections
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.tools.sqlgen.NCSqlQuery
 
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
@@ -41,7 +40,7 @@ class SqlValueLoader extends NCValueLoader with LazyLogging {
         if (tab == null || col == null)
             throw new IllegalArgumentException(s"Missed required metadata for element: ${e.getId}")
 
-        SqlAccess.select(new NCSqlQuery {
+        SqlAccess.select(new SqlQuery {
             override def getSql: String = s"SELECT $col FROM $tab WHERE $col IS NOT NULL"
             override def getParameters: util.List[AnyRef] = Seq.empty.asJava
         }, false).
