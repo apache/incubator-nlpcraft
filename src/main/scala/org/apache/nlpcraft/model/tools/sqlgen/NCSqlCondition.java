@@ -25,5 +25,10 @@ import org.apache.nlpcraft.model.*;
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
 public interface NCSqlCondition {
+    /**
+     * Gets the SQL column this condition is on.
+     *
+     * @return SQL column this condition is on.
+     */
     NCSqlColumn getColumn();
 }

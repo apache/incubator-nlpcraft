@@ -21,14 +21,22 @@ import org.apache.nlpcraft.model.*;
 import java.util.List;
 
 /**
- * Object presentation of SQL aggregate condition.
+ * Object presentation of SQL aggregate.
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
 public interface NCSqlAggregate {
-    // Can be empty.
+    /**
+     * Gets potentially empty list of SQL functions for this SQL aggregate.
+     *
+     * @return List of SQL functions for this aggregate. Can be empty.
+     */
     List<NCSqlFunction> getSelect();
 
-    // Can be empty.
+    /**
+     * Gets potentially empty list of group-by columns for this SQL aggregate.
+     *
+     * @return List of group-by columns. Can be empty.
+     */
     List<NCSqlColumn> getGroupBy();
 }

@@ -29,7 +29,13 @@ import java.util.Optional;
 public interface NCSqlTable {
     /**
      * Gets table name.
-     *
+     * <p>
+     * In JSON/YAML generated model table name is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *      sql:name: "orders"
+     * </pre>
+     * Note also that all elements declaring SQL tables belong to <code>table</code> group.
      * @return table name.
      */
     String getTable();
@@ -43,6 +49,14 @@ public interface NCSqlTable {
 
     /**
      * Gets default sort descriptor.
+     * <p>
+     * In JSON/YAML generated model the default sort list is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:defaultsort:
+     *     - "order_id#desc"
+     * </pre>
+     * Note the <code>table#{asc|desc}</code> notation for identifying column name and sort order.
      *
      * @return Default sort descriptor.
      */
@@ -50,13 +64,32 @@ public interface NCSqlTable {
 
     /**
      * Gets the list of the column names for the default select set.
+     * <p>
+     * In JSON/YAML generated model the default select list is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:defaultselect:
+     *     - "order_id"
+     *     - "order_date"
+     *     - "required_date"
+     * </pre>
      *
      * @return List of the column names for the default select set.
      */
     List<String> getDefaultSelect();
 
     /**
-     * Gets the list of extra tables this table is referencing.
+     * Gets the list of extra tables this table is referencing. Extra tables are joined together with this table
+     * for default selection. Often, a single domain dataset if spread over multiple tables and this
+     * allows to have a meaningful default selection.
+     * <p>
+     * In JSON/YAML generated model the extra tables list is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:extratables:
+     *     - "other_table"
+     *     - "another_table"
+     * </pre>
      *
      * @return List of extra tables this table is referencing.
      */
@@ -65,6 +98,13 @@ public interface NCSqlTable {
     /**
      * Gets a column that defines a default date for this table. Note that this column
      * can belong to another table.
+     * <p>
+     * In JSON/YAML generated model the default date column is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:defaultdate: "orders.order_date"
+     * </pre>
+     * Note <code>table.column</code> notation for the table and column names.
      *
      * @return Column that defines a default date for this table
      */

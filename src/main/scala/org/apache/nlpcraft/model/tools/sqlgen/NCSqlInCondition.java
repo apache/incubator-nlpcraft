@@ -17,8 +17,19 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.util.List;
 
+/**
+ * Object presentation of SQL IN condition.
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ */
 public interface NCSqlInCondition extends NCSqlCondition {
+    /**
+     * Gets the list of SQL IN values.
+     *
+     * @return List of SQL IN values.
+     */
     List<Object> getValues();
 }

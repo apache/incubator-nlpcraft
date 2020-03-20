@@ -17,7 +17,25 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
+
+/**
+ * Object presentation of SQL function.
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ */
 public interface NCSqlFunction {
+    /**
+     * Gets SQL column this function is referring to.
+     *
+     * @return SQL column this function is referring to.
+     */
     NCSqlColumn getColumn();
+
+    /**
+     * Gets name of this function.
+     *
+     * @return Name of this function.
+     */
     String getFunction();
 }

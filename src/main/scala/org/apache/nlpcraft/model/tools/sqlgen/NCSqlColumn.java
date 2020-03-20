@@ -26,32 +26,39 @@ import org.apache.nlpcraft.model.*;
  */
 public interface NCSqlColumn {
     /**
+     * Gets name of the table this column belongs to.
      *
-     * @return
+     * @return Name of the table this column belongs to.
      */
     String getTable();
 
     /**
+     * Gets name of this column.
      *
-     * @return
+     * @return Name of this column.
      */
     String getColumn();
 
     /**
+     * Gets JDBC <a target="new" href="https://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">data type</a>
+     * for this column.
      *
-     * @return
+     * @return JDBC <a target="new" href="https://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">data type</a>
+     *      for this column.
      */
     int getDataType();
 
     /**
-     *
-     * @return
+     * Tests whether or not this column is a primary key column.
+     * 
+     * @return Whether or not this column is a primary key column.
      */
     boolean isPk();
 
     /**
+     * Tests whether or not this column is nullable.
      *
-     * @return
+     * @return Whether or not this column is nullable.
      */
     boolean isNullable();
 }

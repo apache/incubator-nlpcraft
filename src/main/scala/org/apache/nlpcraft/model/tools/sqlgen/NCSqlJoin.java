@@ -17,33 +17,52 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.util.List;
 
 /**
- * TODO: add description.
+ * Object presentation of SQL join (foreign key).
+ * <p>
+ * In JSON/YAML generated model SQL joins are declared with the following model
+ * metadata (example):
+ * <pre class="brush: js">
+ *   sql:joins:
+ *   - fromtable: "orders"
+ *     fromcolumns:
+ *     - "customer_id"
+ *     totable: "customers"
+ *     tocolumns:
+ *     - "customer_id"
+ * </pre>
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
 public interface NCSqlJoin {
     /**
+     * Gets the name of the originating table.
      *
-     * @return
+     * @return Name of the originating table.
      */
     String getFromTable();
 
     /**
+     * Gets the name of the target table.
      *
-     * @return
+     * @return Name of the target table.
      */
     String getToTable();
 
     /**
+     * Gets the list of columns in originating table.
      *
-     * @return
+     * @return List of columns in originating table.
      */
     List<String> getFromColumns();
 
     /**
-     * 
-     * @return
+     * Gets the list of columns in target table.
+     *
+     * @return List of columns in target table.
      */
     List<String> getToColumns();
 }
