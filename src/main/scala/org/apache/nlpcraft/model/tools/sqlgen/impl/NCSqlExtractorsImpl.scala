@@ -21,11 +21,11 @@ import java.sql.Timestamp
 import java.util
 
 import org.apache.nlpcraft.model.tools.sqlgen.{NCSqlLimit, _}
-import org.apache.nlpcraft.model.{NCModel, NCToken}
+import org.apache.nlpcraft.model.{NCModel, NCToken, NCVariant}
 
 import scala.collection.JavaConverters._
 
-object NCSqlUtilsImpl {
+object NCSqlExtractorsImpl {
     private def extractSqlColumn(schema: NCSqlSchema, colTok: NCToken): NCSqlColumn = {
         val tab: String = colTok.meta("sql:tablename")
         val col: String = colTok.meta("sql:name")
@@ -83,7 +83,7 @@ object NCSqlUtilsImpl {
         }
     }
 
-    private def getReference(schema: NCSqlSchema, variant: util.List[NCToken], indexedTok: NCToken): Option[NCSqlColumn] = {
+    private def getReference(schema: NCSqlSchema, variant: NCVariant, indexedTok: NCToken): Option[NCSqlColumn] = {
         val refTok = getLinkBySingleIndex(variant.asScala, indexedTok)
 
         findAnyColumnTokenOpt(refTok) match {
@@ -101,7 +101,7 @@ object NCSqlUtilsImpl {
     def findAnyColumnToken(tok: NCToken): NCToken =
         findAnyColumnTokenOpt(tok).getOrElse(throw new NCSqlException(s"No columns found for token: $tok"))
 
-    def extractLimit(schema: NCSqlSchema, variant: util.List[NCToken], limitTok: NCToken): NCSqlLimit = {
+    def extractLimit(schema: NCSqlSchema, variant: NCVariant, limitTok: NCToken): NCSqlLimit = {
         // Skips indexes to simplify.
         val limit: Double = limitTok.meta("nlpcraft:limit:limit")
 
@@ -164,13 +164,13 @@ object NCSqlUtilsImpl {
         seq.asJava
     }
 
-    def extractSorts(schema: NCSqlSchema, variant: util.List[NCToken], sortTok: NCToken): NCSqlSort =
+    def extractSorts(schema: NCSqlSchema, variant: NCVariant, sortTok: NCToken): NCSqlSort =
         NCSqlSortImpl(
             getReference(schema, variant, sortTok).getOrElse(throw new NCSqlException(s"Sort not found for: $sortTok")),
             sortTok.meta("nlpcraft:sort:asc")
         )
 
-    def extractAggregate(schema: NCSqlSchema, variant: util.List[NCToken], aggrFunc: NCToken, aggrGroupOpt: NCToken):
+    def extractAggregate(schema: NCSqlSchema, variant: NCVariant, aggrFunc: NCToken, aggrGroupOpt: NCToken):
         NCSqlAggregate =
     {
         val select =

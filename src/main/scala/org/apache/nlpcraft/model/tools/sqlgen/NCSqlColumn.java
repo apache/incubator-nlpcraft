@@ -27,6 +27,14 @@ import org.apache.nlpcraft.model.*;
 public interface NCSqlColumn {
     /**
      * Gets name of the table this column belongs to.
+     * <p>
+     * In JSON/YAML generated model the table name is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:extratables:
+     *     - "other_part_table"
+     *     - "another_part_table"
+     * </pre>
      *
      * @return Name of the table this column belongs to.
      */

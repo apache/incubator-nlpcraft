@@ -21,7 +21,7 @@ import com.google.gson.Gson
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.examples.sql.db._
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.tools.sqlgen.NCSqlUtils._
+import org.apache.nlpcraft.model.tools.sqlgen.NCSqlExtractors._
 import org.apache.nlpcraft.model.tools.sqlgen._
 
 import scala.collection.JavaConverters._
@@ -52,6 +52,17 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
         GSON.toJson(m)
     }
+    
+    private def findColumnToken(tok: NCToken): NCToken = {
+        val cols = (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains("column")) Some(p) else None)
+        
+        cols.size match {
+            case 1 ⇒ cols.head
+            case 0 ⇒ throw new NCSqlException(s"No columns found for token: $tok")
+            case _ ⇒ throw new NCSqlException("Too many columns found for token: $tok")
+        }
+    }
+    
 
     /**
       * Complex element contains 2 tokens: column + date ot numeric condition.
@@ -66,7 +77,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         require(parts.size == 2)
 
         val condTok = parts.find(_.getId == condTokId).get
-        val colTok = findAnyColumnToken(parts.filter(_ != condTok).head)
+        val colTok = findColumnToken(parts.filter(_ != condTok).head)
 
         Condition(colTok, condTok)
     }

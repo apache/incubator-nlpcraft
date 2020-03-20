@@ -23,19 +23,24 @@ import java.util.Optional;
 
 /**
  * Object presentation of SQL table.
- * 
+ * <p>
+ * In JSON/YAML generated model the table is the model element that belongs to <code>table</code>
+ * group and
+ * metadata (example):
+ *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel) 
  */
 public interface NCSqlTable {
     /**
      * Gets table name.
      * <p>
-     * In JSON/YAML generated model table name is declared with the following element
+     * In JSON/YAML generated model the table name is declared with the following element
      * metadata (example):
      * <pre class="brush: js">
      *      sql:name: "orders"
      * </pre>
      * Note also that all elements declaring SQL tables belong to <code>table</code> group.
+     *
      * @return table name.
      */
     String getTable();
@@ -87,11 +92,11 @@ public interface NCSqlTable {
      * metadata (example):
      * <pre class="brush: js">
      *     sql:extratables:
-     *     - "other_table"
-     *     - "another_table"
+     *     - "other_part_table"
+     *     - "another_part_table"
      * </pre>
      *
-     * @return List of extra tables this table is referencing.
+     * @return List of extra tables this table's default selection.
      */
     List<String> getExtraTables();
 
@@ -106,7 +111,7 @@ public interface NCSqlTable {
      * </pre>
      * Note <code>table.column</code> notation for the table and column names.
      *
-     * @return Column that defines a default date for this table
+     * @return Column that defines a default date for this table.
      */
     Optional<NCSqlColumn> getDefaultDate();
 }

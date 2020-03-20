@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.tools.sqlgen;
 /**
  * Exception thrown by various classes in model stub generator utility.
  *
- * @see NCSqlUtils
+ * @see NCSqlExtractors
  * @see NCSqlSchemaBuilder
  */
 public class NCSqlException extends RuntimeException {
