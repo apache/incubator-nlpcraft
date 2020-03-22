@@ -25,14 +25,92 @@ import org.apache.nlpcraft.model.{NCModel, NCToken, NCVariant}
 
 import scala.collection.JavaConverters._
 
-object NCSqlExtractorsImpl {
-    private def extractSqlColumn(schema: NCSqlSchema, colTok: NCToken): NCSqlColumn = {
-        val tab: String = colTok.meta("sql:tablename")
-        val col: String = colTok.meta("sql:name")
-
-        findSchemaColumn(findSchemaTable(schema, tab).getColumns, tab, col)
+/**
+  *
+  */
+class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlExtractor {
+    require(schema != null)
+    require(variant != null)
+    
+    /**
+      *
+      * @param tok
+      * @param id
+      */
+    private def checkTokenId(tok: NCToken, id: String): Unit =
+        if (tok.getId != id)
+            throw new NCSqlException(s"Expected token ID '$id' but got: $tok")
+    
+    /**
+      *
+      * @param tok
+      * @param grp
+      */
+    private def checkGroup(tok: NCToken, grp: String): Unit =
+        if (!tok.isOfGroup(grp))
+            throw new NCSqlException(s"Token does not belong to the group '$grp': $tok")
+    
+    /**
+      *
+      * @param name
+      * @return
+      */
+    private def findSchemaTable(name: String): NCSqlTable =
+        schema.getTables.asScala.find(_.getTable == name).getOrElse(throw new NCSqlException(s"Table not found: $name"))
+    
+    /**
+      *
+      * @param cols
+      * @param tbl
+      * @param col
+      * @return
+      */
+    private def findSchemaColumn(cols: util.List[NCSqlColumn], tbl: String, col: String): NCSqlColumn =
+        cols.asScala.find(_.getColumn == col).getOrElse(throw new NCSqlException(s"Column not found: $tbl.$col"))
+    
+    override def extractLimit(limitTok: NCToken) = ???
+    
+    override def extractDateRangeConditions(colTok: NCToken, dateTok: NCToken) = ???
+    
+    override def extractNumConditions(colTok: NCToken, numTok: NCToken) = ???
+    
+    override def extractInConditions(valToks: NCToken*) = ???
+    
+    override def extractSort(sortTok: NCToken) = ???
+    
+    override def extractAggregate(aggrFunTok: NCToken, aggrGrpTok: NCToken) = ???
+    
+    override def extractTable(tblTok: NCToken): NCSqlTable = {
+        checkGroup(tblTok, "table")
+        
+        findSchemaTable(tblTok.meta("sql:name"))
     }
-
+    
+    override def extractColumn(colTok: NCToken): NCSqlColumn = {
+        checkGroup(colTok, "column")
+    
+        val tbl: String = colTok.meta("sql:tablename")
+        val col: String = colTok.meta("sql:name")
+    
+        findSchemaColumn(findSchemaTable(tbl).getColumns, tbl, col)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+      * 
+      * @param variant
+      * @param tok
+      * @return
+      */
     private def getLinkBySingleIndex(variant: Seq[NCToken], tok: NCToken): NCToken = {
         val idxs: util.List[Integer] = tok.meta(s"${tok.getId}:indexes")
 
@@ -52,11 +130,6 @@ object NCSqlExtractorsImpl {
             throw new NCSqlException(s"Token not found with index: $idx")
     }
 
-    private def findSchemaTable(schema: NCSqlSchema, name: String): NCSqlTable =
-        schema.getTables.asScala.find(_.getTable == name).getOrElse(throw new NCSqlException(s"Table not found: $name"))
-
-    private def findSchemaColumn(cols: util.List[NCSqlColumn], tab: String, col: String): NCSqlColumn =
-        cols.asScala.find(_.getColumn == col).getOrElse(throw new NCSqlException(s"Table not found: $tab.$col"))
 
     private def getWithGroup(tok: NCToken, group: String): Seq[NCToken] =
         (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(group)) Some(p) else None)
@@ -100,8 +173,18 @@ object NCSqlExtractorsImpl {
 
     def findAnyColumnToken(tok: NCToken): NCToken =
         findAnyColumnTokenOpt(tok).getOrElse(throw new NCSqlException(s"No columns found for token: $tok"))
+    
 
+    /**
+      * 
+      * @param schema
+      * @param variant
+      * @param limitTok
+      * @return
+      */
     def extractLimit(schema: NCSqlSchema, variant: NCVariant, limitTok: NCToken): NCSqlLimit = {
+        checkTokenId(limitTok, "nlpcraft:limit")
+        
         // Skips indexes to simplify.
         val limit: Double = limitTok.meta("nlpcraft:limit:limit")
 
@@ -111,8 +194,18 @@ object NCSqlExtractorsImpl {
             limitTok.meta("nlpcraft:limit:asc")
         )
     }
-
+    
+    /**
+      *
+      * @param schema
+      * @param colTok
+      * @param dateTok
+      * @return
+      */
     def extractDateRangeConditions(schema: NCSqlSchema, colTok: NCToken, dateTok: NCToken): util.List[NCSqlSimpleCondition] = {
+        checkTokenId(dateTok, "nlpcraft:date")
+        checkGroup(colTok, "column")
+        
         val col = extractSqlColumn(schema, colTok)
         val range = extractDateRange(dateTok)
 
