@@ -33,6 +33,7 @@ import java.util.List;
  *     totable: "customers"
  *     tocolumns:
  *     - "customer_id"
+ *     jointype: "left"
  * </pre>
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
@@ -65,4 +66,11 @@ public interface NCSqlJoin {
      * @return List of columns in target table.
      */
     List<String> getToColumns();
+
+    /**
+     * Gets type of the join.
+     *
+     * @return Type of join.
+     */
+    NCSqlJoinType getType();
 }

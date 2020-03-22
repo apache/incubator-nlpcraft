@@ -12,62 +12,72 @@ metadata:
     totable: "customers"
     tocolumns:
     - "customer_id"
+    jointype: "left"
   - fromtable: "orders"
     fromcolumns:
     - "ship_via"
     totable: "shippers"
     tocolumns:
     - "shipper_id"
+    jointype: "left"
   - fromtable: "orders"
     fromcolumns:
     - "employee_id"
     totable: "employees"
     tocolumns:
     - "employee_id"
+    jointype: "left"
   - fromtable: "order_details"
     fromcolumns:
     - "order_id"
     totable: "orders"
     tocolumns:
     - "order_id"
+    jointype: "inner"
   - fromtable: "order_details"
     fromcolumns:
     - "product_id"
     totable: "products"
     tocolumns:
     - "product_id"
+    jointype: "inner"
   - fromtable: "territories"
     fromcolumns:
     - "region_id"
     totable: "region"
     tocolumns:
     - "region_id"
+    jointype: "inner"
   - fromtable: "products"
     fromcolumns:
     - "supplier_id"
     totable: "suppliers"
     tocolumns:
     - "supplier_id"
+    jointype: "left"
   - fromtable: "products"
     fromcolumns:
     - "category_id"
     totable: "categories"
     tocolumns:
     - "category_id"
+    jointype: "left"
   - fromtable: "employee_territories"
     fromcolumns:
     - "employee_id"
     totable: "employees"
     tocolumns:
     - "employee_id"
+    jointype: "inner"
   - fromtable: "employee_territories"
     fromcolumns:
     - "territory_id"
     totable: "territories"
     tocolumns:
     - "territory_id"
-  sql:output: "src/main/scala/org/apache/nlpcraft/examples/nlp2sql/nlp2sql_model.json"
-  sql:timestamp: "2020-01-22T09:13:42.716Z"
+    jointype: "inner"
+  sql:output: "/Users/sergeykhisamov/apache/incubator-nlpcraft/src/main/scala/org/apache/nlpcraft/examples/sql/sql_model.yaml"
+  sql:timestamp: "2020-03-21T11:50:54.433Z"
   sql:schema: "PUBLIC"
 macros:
 - name: "<OF>"
@@ -86,7 +96,7 @@ elements:
     - "region_id"
     - "region_description"
     sql:defaultsort:
-    - "region_id#desc"
+    - "region.region_id#desc"
   description: "Auto-generated from 'region' table."
 - id: "tbl:orders"
   groups:
@@ -100,7 +110,7 @@ elements:
     - "order_date"
     - "required_date"
     sql:defaultsort:
-    - "order_id#desc"
+    - "orders.order_id#desc"
     sql:extratables:
     - "customers"
     - "shippers"
@@ -119,7 +129,7 @@ elements:
     - "company_name"
     - "contact_name"
     sql:defaultsort:
-    - "supplier_id#desc"
+    - "suppliers.supplier_id#desc"
   description: "Auto-generated from 'suppliers' table."
 - id: "tbl:order_details"
   groups:
@@ -133,8 +143,8 @@ elements:
     - "quantity"
     - "discount"
     sql:defaultsort:
-    - "order_id#desc"
-    - "product_id#desc"
+    - "order_details.order_id#desc"
+    - "order_details.product_id#desc"
     sql:extratables:
     - "orders"
     - "products"
@@ -152,7 +162,7 @@ elements:
     - "territory_description"
     - "region_id"
     sql:defaultsort:
-    - "territory_id#desc"
+    - "territories.territory_id#desc"
     sql:extratables:
     - "region"
   description: "Auto-generated from 'territories' table."
@@ -168,7 +178,7 @@ elements:
     - "company_name"
     - "phone"
     sql:defaultsort:
-    - "shipper_id#desc"
+    - "shippers.shipper_id#desc"
   description: "Auto-generated from 'shippers' table."
 - id: "tbl:products"
   groups:
@@ -182,7 +192,7 @@ elements:
     - "product_name"
     - "quantity_per_unit"
     sql:defaultsort:
-    - "product_id#desc"
+    - "products.product_id#desc"
     sql:extratables:
     - "suppliers"
     - "categories"
@@ -199,8 +209,8 @@ elements:
     - "employee_id"
     - "territory_id"
     sql:defaultsort:
-    - "employee_id#desc"
-    - "territory_id#desc"
+    - "employee_territories.employee_id#desc"
+    - "employee_territories.territory_id#desc"
     sql:extratables:
     - "employees"
     - "territories"
@@ -218,7 +228,7 @@ elements:
     - "company_name"
     - "contact_name"
     sql:defaultsort:
-    - "customer_id#desc"
+    - "customers.customer_id#desc"
   description: "Auto-generated from 'customers' table."
 - id: "tbl:categories"
   groups:
@@ -232,7 +242,7 @@ elements:
     - "category_name"
     - "description"
     sql:defaultsort:
-    - "category_id#desc"
+    - "categories.category_id#desc"
   description: "Auto-generated from 'categories' table."
 - id: "tbl:employees"
   groups:
@@ -246,8 +256,7 @@ elements:
     - "last_name"
     - "first_name"
     sql:defaultsort:
-    - "employee_id#desc"
-    sql:defaultdate: "employees.birth_date"
+    - "employees.employee_id#desc"
   description: "Auto-generated from 'employees' table."
 - id: "col:region_region_id"
   groups:

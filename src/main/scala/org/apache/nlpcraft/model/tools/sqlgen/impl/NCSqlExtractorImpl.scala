@@ -370,7 +370,23 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                         cols.asScala,
                         defSort.
                             map(s ⇒ {
-                                val pair = s.split("#")
+                                var pair = defDate.split("\\.")
+
+                                val t =
+                                    pair.length match {
+                                        case 1 ⇒
+                                            pair = s.split("#")
+
+                                            // By default, same table name.
+                                            tab
+                                        case 2 ⇒
+                                            val t = pair.head
+
+                                            pair = pair.last.split("#")
+
+                                            t
+                                        case  _ ⇒ throw new NCSqlException(s"Invalid sort: $s")
+                                    }
 
                                 if (pair.length != 2)
                                     throw new NCSqlException(s"Invalid sort: $s")
@@ -381,7 +397,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                                 if (asc != "asc" && asc != "desc")
                                     throw new NCSqlException(s"Invalid sort: $pair")
 
-                                val sort: NCSqlSort = NCSqlSortImpl(findSchemaColumn(cols, tab, col), asc == "asc")
+                                val sort: NCSqlSort = NCSqlSortImpl(findSchemaColumn(cols, t, col), asc == "asc")
 
                                 sort
                             }),
@@ -414,7 +430,8 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                     m("fromtable").asInstanceOf[String],
                     m("totable").asInstanceOf[String],
                     m("fromcolumns").asInstanceOf[util.List[String]].asScala,
-                    m("tocolumns").asInstanceOf[util.List[String]].asScala
+                    m("tocolumns").asInstanceOf[util.List[String]].asScala,
+                    NCSqlJoinType.valueOf(m("jointype").asInstanceOf[String].toUpperCase())
                 )
 
             j

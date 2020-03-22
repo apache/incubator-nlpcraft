@@ -77,6 +77,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private def sql(clause: NCSqlSort): String = s"${sql(clause.getColumn)} ${if (clause.isAscending) "ASC" else "DESC"}"
     private def sql(clause: NCSqlFunction): String = s"${clause.getFunction.toLowerCase}(${sql(clause.getColumn)})"
 
+    // TODO: implement based on join type.
     private def sql(clause: NCSqlJoin): String =
         clause.getFromColumns.asScala.
             zip(clause.getToColumns.asScala).

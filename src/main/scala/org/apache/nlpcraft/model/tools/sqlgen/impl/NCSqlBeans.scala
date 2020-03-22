@@ -59,11 +59,12 @@ case class NCSqlFunctionImpl(column: NCSqlColumn, function: String) extends NCSq
     override def getFunction: String = function
 }
 
-case class NCSqlJoinImpl(fromTable: String, toTable: String, fromColumns: Seq[String], toColumns: Seq[String]) extends NCSqlJoin {
+case class NCSqlJoinImpl(fromTable: String, toTable: String, fromColumns: Seq[String], toColumns: Seq[String], typ: NCSqlJoinType) extends NCSqlJoin {
     override def getFromTable: String = fromTable
     override def getToTable: String = toTable
     override def getFromColumns: util.List[String] = fromColumns.asJava
     override def getToColumns: util.List[String] = toColumns.asJava
+    override def getType: NCSqlJoinType = typ
 }
 
 case class NCSqlSortImpl(column: NCSqlColumn, asc: Boolean) extends NCSqlSort {
