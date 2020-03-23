@@ -271,53 +271,6 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     
     /**
       *
-      * @param aggrFun
-      * @param aggrGrpTok
-      * @return
-      */
-    override def extractAggregate(aggrFun: NCToken, aggrGrpTok: NCToken): NCSqlAggregate = {
-        if (aggrFun != null)
-            checkTokenId(aggrFun, "nlpcraft:aggregation")
-        
-        val select = aggrFun match {
-            case null ⇒ Seq.empty
-            case _ ⇒
-                Seq(
-                    NCSqlFunctionImpl(
-                        extractColumn(findAnyColumnToken(getLinkBySingleIndex(variant, aggrFun))),
-                        aggrFun.meta(s"${aggrFun.getId}:type")
-                    )
-                )
-        
-        }
-    
-        val grpBy = aggrGrpTok match {
-            case null ⇒ Seq.empty
-            case aggrGrp ⇒
-                val grpTok = getLinkBySingleIndex(variant, aggrGrp)
-            
-                // If reference is column - group by column.
-                findAnyColumnTokenOpt(grpTok) match {
-                    case Some(grpCol) ⇒ Seq(extractColumn(grpCol))
-                    case None ⇒
-                        // If reference is table - group by all PK columns of table or
-                        // (if there aren't PKs, by any table column)
-                        findAnyTableTokenOpt(grpTok) match {
-                            case Some(tab) ⇒
-                                val cols = tab.getColumns.asScala
-                                val pkCols = cols.filter(_.isPk)
-                            
-                                if (pkCols.nonEmpty) pkCols else Seq(cols.head)
-                            case None ⇒ throw new NCException(s"Group by not found for: $aggrGrpTok")
-                        }
-                }
-        }
-    
-        NCSqlAggregateImpl(select, grpBy)
-    }
-    
-    /**
-      *
       * @param tblTok
       * @return
       */

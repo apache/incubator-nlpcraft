@@ -90,15 +90,6 @@ public interface NCSqlExtractor {
     NCSqlSort extractSort(NCToken sortTok);
 
     /**
-     * 
-     * @param aggrFunTok
-     * @param aggrGrpTok
-     * @return
-     * @throws NCException Thrown in case of any errors.
-     */
-    NCSqlAggregate extractAggregate(NCToken aggrFunTok, NCToken aggrGrpTok);
-
-    /**
      *
      * @param tblTok
      * @return
