@@ -200,19 +200,14 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
       *
       * @param ns Sentence.
       * @param notNlpTypes Token types.
-      * @param idCache ID cache.
       */
-    private def collapse(
-        ns: NCNlpSentence,
-        notNlpTypes: Seq[String],
-        idCache: mutable.HashMap[String, String]
-    ): Boolean = {
+    private def collapse(ns: NCNlpSentence, notNlpTypes: Seq[String]): Boolean = {
         ns.
             filter(!_.isNlp).
             filter(_.isStopWord).
             flatten.
             filter(_.isNlp).
-            foreach(_ += "stopWord" → false)
+            foreach(n ⇒ ns.fixNote(n, "stopWord" → false))
 
         val nsNotes: Map[String, Seq[Int]] = ns.tokens.flatten.map(p ⇒ p.noteType → p.tokenIndexes).toMap
 
@@ -221,13 +216,13 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             stopReason ← t.stopsReasons
             if nsNotes.getOrElse(stopReason.noteType, Seq.empty) == stopReason.tokenIndexes
         )
-            t.markAsStop()
+            ns.fixNote(t.getNlpNote, "stopWord" → true)
 
         val history = mutable.ArrayBuffer.empty[(Int, Int)]
 
-        notNlpTypes.foreach(typ ⇒ zipNotes(ns, typ, notNlpTypes, history, idCache))
+        notNlpTypes.foreach(typ ⇒ zipNotes(ns, typ, notNlpTypes, history))
 
-        unionStops(ns, notNlpTypes, history, idCache)
+        unionStops(ns, notNlpTypes, history)
 
         val res =
             Seq("nlpcraft:aggregation", "nlpcraft:relation", "nlpcraft:limit").
@@ -238,9 +233,8 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
         if (res)
             // Validation (all indexes calculated well)
             require(
-                !ns.
-                    flatten.
-                    exists(n ⇒ ns.filter(_.wordIndexes.exists(n.wordIndexes.contains)).exists(p ⇒ !p.contains(n.id))),
+                !ns.flatten.
+                    exists(n ⇒ ns.filter(_.wordIndexes.exists(n.wordIndexes.contains)).exists(t ⇒ !t.contains(n))),
                 s"Invalid sentence:\n" +
                     ns.map(t ⇒
                         // Human readable invalid sentence for debugging.
@@ -258,10 +252,10 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
       * @param ns
       * @param idxs
       * @param notesType
-      * @param id
+      * @param note
       * @return
       */
-    private def checkRelation(ns: NCNlpSentence, idxs: Seq[Int], notesType: String, id: String): Boolean = {
+    private def checkRelation(ns: NCNlpSentence, idxs: Seq[Int], notesType: String, note: NCNlpSentenceNote): Boolean = {
         val types =
             idxs.flatMap(idx ⇒ {
                 val types = ns(idx).map(p ⇒ p).filter(!_.isNlp).map(_.noteType)
@@ -296,7 +290,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                 if (types.size == 1)
                     false
                 else {
-                    ns.removeNote(id)
+                    ns.removeNote(note)
 
                     true
                 }
@@ -324,7 +318,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     fixed = fixed.distinct
 
                     if (idxs != fixed) {
-                        n += "indexes" → fixed.asJava.asInstanceOf[java.io.Serializable]
+                        ns.fixNote(n, "indexes" → fixed.asJava.asInstanceOf[java.io.Serializable])
 
                         def x(seq: Seq[Int]): String = s"[${seq.mkString(", ")}]"
 
@@ -335,7 +329,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
         )
 
         ns.flatMap(_.getNotes(noteType)).forall(
-            n ⇒ checkRelation(ns, n.data[java.util.List[Int]]("indexes").asScala, n.data[String]("note"), n.id)
+            n ⇒ checkRelation(ns, n.data[java.util.List[Int]]("indexes").asScala, n.data[String]("note"), n)
         )
     }
 
@@ -369,7 +363,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     if (fixed.forall(_.size == 1)) {
                         // Fix double dimension array to one dimension,
                         // so it should be called always inspite of fixIndexesReferences method.
-                        n += idxsField → fixed.map(_.head).asJava.asInstanceOf[java.io.Serializable]
+                        ns.fixNote(n, idxsField → fixed.map(_.head).asJava.asInstanceOf[java.io.Serializable])
 
                         def x(seq: Seq[Seq[Int]]): String = s"[${seq.map(p ⇒ s"[${p.mkString(",")}]").mkString(", ")}]"
 
@@ -389,7 +383,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                         require(idxsList.size() == notesTypes.size())
 
                         idxsList.asScala.zip(notesTypes.asScala).forall {
-                            case (idxs, notesType) ⇒ checkRelation(ns, Seq(idxs), notesType, rel.id)
+                            case (idxs, notesType) ⇒ checkRelation(ns, Seq(idxs), notesType, rel)
                         }
                     case None ⇒ true
                 }
@@ -403,14 +397,12 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
       * @param nType Notes type.
       * @param userNotesTypes Notes types.
       * @param history Indexes transformation history.
-      * @param idCache ID cache.
       */
     private def zipNotes(
         ns: NCNlpSentence,
         nType: String,
         userNotesTypes: Seq[String],
-        history: mutable.ArrayBuffer[(Int, Int)],
-        idCache: mutable.HashMap[String, String]
+        history: mutable.ArrayBuffer[(Int, Int)]
     ): Unit = {
         val nts = ns.getNotes(nType).filter(n ⇒ n.tokenFrom != n.tokenTo).sortBy(_.tokenFrom)
 
@@ -431,7 +423,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                         if (!buf.contains(n.tokenFrom)) {
                             buf += n.tokenFrom
 
-                            ns += mkCompound(ns, nsCopyToks, n.tokenIndexes, stop = false, ns.size, Some(n), history, idCache)
+                            ns += mkCompound(ns, nsCopyToks, n.tokenIndexes, stop = false, ns.size, Some(n), history)
                         }
                     case None ⇒ simpleCopy(ns, history, nsCopyToks, i)
                 }
@@ -446,13 +438,11 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
       * @param ns Sentence.
       * @param userNoteTypes Notes types.
       * @param history Indexes transformation history.
-      * @param idCache ID cache.
       */
     private def unionStops(
         ns: NCNlpSentence,
         userNoteTypes: Seq[String],
-        history: mutable.ArrayBuffer[(Int, Int)],
-        idCache: mutable.HashMap[String, String]
+        history: mutable.ArrayBuffer[(Int, Int)]
     ): Unit = {
         // Java collection used because using scala collections (mutable.Buffer.empty[mutable.Buffer[Token]]) is reason
         // Of compilation errors which seems as scala compiler internal error.
@@ -485,7 +475,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                         if (!buf.contains(idxs.head)) {
                             buf += idxs.head
 
-                            ns += mkCompound(ns, nsCopyToks, idxs, stop = true, ns.size, None, history, idCache)
+                            ns += mkCompound(ns, nsCopyToks, idxs, stop = true, ns.size, None, history)
                         }
                     case None ⇒ simpleCopy(ns, history, nsCopyToks, i)
                 }
@@ -519,20 +509,18 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
     private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]) {
         // Replaces other notes indexes.
         for (t ← userNoteTypes :+ "nlpcraft:nlp"; note ← ns.getNotes(t)) {
-            val id = note.id
-
-            val toks = ns.filter(_.contains(id)).sortBy(_.index)
+            val toks = ns.filter(_.contains(note)).sortBy(_.index)
 
             val newNote = note.clone(toks.map(_.index), toks.flatMap(_.wordIndexes).sorted)
 
             toks.foreach(t ⇒ {
-                t.remove(id)
+                t.remove(note)
                 t.add(newNote)
             })
         }
 
         // Special case - field index of core NLP note.
-        ns.zipWithIndex.foreach { case (tok, idx) ⇒ tok.getNlpNote += "index" → idx }
+        ns.zipWithIndex.foreach { case (tok, idx) ⇒ ns.fixNote(tok.getNlpNote, "index" → idx) }
     }
 
     /**
@@ -545,7 +533,6 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
       * @param idx Index.
       * @param commonNote Common note.
       * @param history Indexes transformation history.
-      * @param idCache ID cache.
       */
     private def mkCompound(
         ns: NCNlpSentence,
@@ -554,8 +541,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
         stop: Boolean,
         idx: Int,
         commonNote: Option[NCNlpSentenceNote],
-        history: mutable.ArrayBuffer[(Int, Int)],
-        idCache: mutable.HashMap[String, String]
+        history: mutable.ArrayBuffer[(Int, Int)]
     ): NCNlpSentenceToken = {
         val t = NCNlpSentenceToken(idx)
 
@@ -613,27 +599,14 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             "swear" → nsCopyToks.exists(_.getNlpNote.data[Boolean]("swear"))
         )
 
-        val complexId = content.map(_.getNlpNote.id).mkString(" ")
-
-        val id =
-            idCache.get(complexId) match {
-                case Some(cachedId) ⇒ cachedId
-                case None ⇒
-                    val id = U.genGuid()
-
-                    idCache += complexId → id
-
-                    id
-            }
-
-        val nlpNote = NCNlpSentenceNote(id, idxs, wordIdxs, "nlpcraft:nlp", params: _*)
+        val nlpNote = NCNlpSentenceNote(idxs, wordIdxs, "nlpcraft:nlp", params: _*)
 
         t.add(nlpNote)
 
         // Adds processed note with fixed indexes.
         commonNote match {
             case Some(n) ⇒
-                ns.removeNote(n.id)
+                ns.removeNote(n)
                 t.add(n.clone(idxs, wordIdxs))
             case None ⇒ // No-op.
         }
@@ -658,7 +631,6 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             // Some words with same note type can be detected various ways.
             // We keep only one variant -  with `best` direct and sparsity parameters,
             // other variants for these words are redundant.
-            val idCache = mutable.HashMap.empty[String, String]
 
             val redundant: Seq[NCNlpSentenceNote] =
                 ns.flatten.filter(!_.isNlp).distinct.
@@ -677,7 +649,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     flatMap(_.drop(1)).
                     toSeq
 
-            redundant.map(_.id).foreach(ns.removeNote)
+            redundant.foreach(ns.removeNote)
 
             def getNotNlpNotes(toks: Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceNote] =
                 toks.flatten.filter(!_.isNlp).distinct
@@ -711,7 +683,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                                 if (!deleted.exists(_.forall(delComb.contains))) {
                                     val nsClone = ns.clone()
 
-                                    delComb.map(_.id).foreach(nsClone.removeNote)
+                                    delComb.foreach(nsClone.removeNote)
 
                                     // Has overlapped notes for some tokens.
                                     require(!nsClone.exists(_.count(!_.isNlp) > 1))
@@ -720,7 +692,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
 
                                     val notNlpTypes = getNotNlpNotes(nsClone).map(_.noteType).distinct
 
-                                    if (collapse(nsClone, notNlpTypes, idCache)) Some(nsClone) else None
+                                    if (collapse(nsClone, notNlpTypes)) Some(nsClone) else None
                                 }
                                 else
                                     None
@@ -729,28 +701,25 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     // Removes sentences which have only one difference - 'direct' flag of their user tokens.
                     // `Direct` sentences have higher priority.
                     case class Key(
-                        sysNotes: Seq[mutable.HashMap[String, java.io.Serializable]],
-                        userNotes: Seq[mutable.HashMap[String, java.io.Serializable]]
+                        sysNotes: Seq[Map[String, java.io.Serializable]],
+                        userNotes: Seq[Map[String, java.io.Serializable]]
                     )
                     case class Value(sentence: NCNlpSentence, directCount: Int)
 
                     val m = mutable.HashMap.empty[Key, Value]
 
                     sens.map(sen ⇒ {
-                        val sysNotes = sen.flatten.filter(_.isSystem)
-                        val nlpNotes = sen.flatten.filter(_.isNlp)
-                        val userNotes = sen.flatten.filter(_.isUser)
+                        val notes = sen.flatten
 
-                        def get(seq: Seq[NCNlpSentenceNote], keys2Skip: String*): Seq[mutable.HashMap[String, java.io.Serializable]] =
-                            seq.map(p ⇒ {
-                                val m: mutable.HashMap[String, java.io.Serializable] = p.clone()
+                        val sysNotes = notes.filter(_.isSystem)
+                        val nlpNotes = notes.filter(_.isNlp)
+                        val userNotes = notes.filter(_.isUser)
 
+                        def get(seq: Seq[NCNlpSentenceNote], keys2Skip: String*): Seq[Map[String, java.io.Serializable]] =
+                            seq.map(p ⇒
                                 // We have to delete some keys to have possibility to compare sentences.
-                                m.remove("unid")
-                                m.remove("direct")
-
-                                m
-                            })
+                                p.clone().filter(_._1 != "direct")
+                            )
 
                         (Key(get(sysNotes), get(userNotes)), sen, nlpNotes.map(p ⇒ if (p.isDirect) 0 else 1).sum)
                     }).
@@ -767,7 +736,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     m.values.map(_.sentence).toSeq
                 }
                 else {
-                    if (collapse(ns, getNotNlpNotes(ns).map(_.noteType).distinct, idCache)) Seq(ns) else Seq.empty
+                    if (collapse(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Seq(ns) else Seq.empty
                 }.distinct
 
             sens.foreach(sen ⇒

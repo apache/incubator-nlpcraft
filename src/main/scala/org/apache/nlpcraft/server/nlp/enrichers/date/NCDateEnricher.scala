@@ -461,9 +461,7 @@ object NCDateEnricher extends NCServerEnricher {
                     seq.foreach(n ⇒ {
                         val r = convertRange(mkDateRange(n))
 
-                        n += "from" → r.from
-                        n += "to" → r.to
-                        n += "periods" → new util.ArrayList[String]()
+                        ns.fixNote(n, "from" → r.from, "to" → r.to, "periods" → new util.ArrayList[String]())
                     })
 
                     def optHolder(b: Boolean) = if (b) Some(base) else None
@@ -548,9 +546,9 @@ object NCDateEnricher extends NCServerEnricher {
         before: Option[NCNlpSentenceNote] = None,
         after: Option[NCNlpSentenceNote] = None) {
         if (!compressNotes(ns, seq, before, after)) {
-            def remove(hOpt: Option[NCNlpSentenceNote]): Unit =
-                hOpt match {
-                    case Some(h) ⇒ ns.removeNote(h.id)
+            def remove(nOpt: Option[NCNlpSentenceNote]): Unit =
+                nOpt match {
+                    case Some(h) ⇒ ns.removeNote(h)
                     case None ⇒ // No-op.
                 }
 
@@ -594,7 +592,7 @@ object NCDateEnricher extends NCServerEnricher {
     }
 
     private def removeDuplicates(ns: NCNlpSentence): Unit = {
-        val ids = findNeighbours(ns, andSupport = false).flatMap(g ⇒ {
+        val notes = findNeighbours(ns, andSupport = false).flatMap(g ⇒ {
             case class H(from: Long, to: Long) {
                 override def equals(obj: scala.Any): Boolean = obj match {
                     case v: H ⇒ v.from == from && v.to == to
@@ -612,10 +610,10 @@ object NCDateEnricher extends NCServerEnricher {
                 grouped.map(_._2.sortBy(h ⇒ -h("periods").asInstanceOf[java.util.List[String]].asScala.length))
 
             // First holder will be kept in group, others (tail) should be deleted.
-            hs.map(_.tail).flatMap(_.map(_.id))
+            hs.flatMap(_.tail)
         })
 
-        ids.foreach(ns.removeNote)
+        notes.foreach(ns.removeNote)
     }
 
     private def mkCalendar(d: Long) = {

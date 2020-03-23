@@ -28,7 +28,7 @@ import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
-import org.apache.nlpcraft.common.nlp.NCNlpSentence
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.{NCModelImpl, NCTokenLogger, NCVariantImpl}
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
@@ -59,7 +59,7 @@ import scala.concurrent.ExecutionContext
   * Probe enrichment manager.
   */
 object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
-    private final val MAX_NESTED_TOKENS = 256
+    private final val MAX_NESTED_TOKENS = 32
     
     private final val EC = ExecutionContext.fromExecutor(
         Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
@@ -346,17 +346,22 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         }
 
         val sensSeq = validNlpSens.flatMap(nlpSen ⇒ {
-            // Independent from references.
+            // Independent of references.
             NCDictionaryEnricher.enrich(mdlDec, nlpSen, senMeta, span)
             NCSuspiciousNounsEnricher.enrich(mdlDec, nlpSen, senMeta, span)
             NCStopWordEnricher.enrich(mdlDec, nlpSen, senMeta, span)
 
-            def get(name: String, e: NCProbeEnricher): Option[NCProbeEnricher] =
-                if (mdlDec.model.getEnabledBuiltInTokens.contains(name)) Some(e) else None
+            case class Holder(enricher: NCProbeEnricher, getNotes: () ⇒ Seq[NCNlpSentenceNote])
+
+            def get(name: String, e: NCProbeEnricher): Option[Holder] =
+                if (mdlDec.model.getEnabledBuiltInTokens.contains(name))
+                    Some(Holder(e, () ⇒ nlpSen.flatten.filter(_.noteType == name)))
+                else
+                    None
 
             val loopEnrichers =
                 Seq(
-                    Some(NCModelEnricher),
+                    Some(Holder(NCModelEnricher, () ⇒ nlpSen.flatten.filter(_.isUser))),
                     get("nlpcraft:aggregation", NCAggregationEnricher),
                     get("nlpcraft:sort", NCSortEnricher),
                     get("nlpcraft:limit", NCLimitEnricher),
@@ -372,14 +377,23 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 if (step >= MAX_NESTED_TOKENS)
                     throw new NCE(s"Stack overflow on nested tokens processing (> $MAX_NESTED_TOKENS).")
 
-                val seq = loopEnrichers.map(e ⇒ e → e.enrich(mdlDec, nlpSen, senMeta, span)).
-                    flatMap { case (e, execRes) ⇒ if (execRes) Some(U.cleanClassName(e.getClass)) else None }
+                val res = loopEnrichers.map(h ⇒ {
+                    def get(): Seq[NCNlpSentenceNote] = h.getNotes().sortBy(p ⇒ (p.tokenIndexes.head, p.noteType))
 
-                continue = seq.nonEmpty
+                    val notes1 = get()
+
+                    h → h.enricher.enrich(mdlDec, nlpSen, senMeta, span)
+
+                    val notes2 = get()
+
+                    h.enricher → (notes1 == notes2)
+                }).toMap
+
+                continue = res.exists { case (_, same) ⇒ !same }
 
                 if (DEEP_DEBUG)
                     if (continue)
-                        logger.info(s"Enrichment iteration finished - more needed [step=$step, changed=${seq.mkString(", ")}]")
+                        logger.info(s"Enrichment iteration finished - more needed [step=$step, changed=${res.keys.mkString(", ")}]")
                     else
                         logger.info(s"Enrichment finished [step=$step]")
             }
@@ -389,9 +403,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 sortBy(p ⇒
                 p.map(p ⇒ {
                     val data = p.
-                        notes.
-                        filter(!_._2.isNlp).
-                        flatMap(_._2.values.map(p ⇒ Objects.toString(p._2))).
+                        filter(!_.isNlp).
+                        map(Objects.toString).
                         toSeq.
                         sorted.
                         mkString("|")

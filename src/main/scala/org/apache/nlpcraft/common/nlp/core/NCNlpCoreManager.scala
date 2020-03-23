@@ -57,8 +57,6 @@ object NCNlpCoreManager extends NCService {
                 case _ ⇒ throw new AssertionError(s"Unexpected engine: ${Config.engine}")
             }
       
-        tokenizer.start()
-      
         super.start()
     }
     

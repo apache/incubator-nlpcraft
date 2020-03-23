@@ -68,18 +68,11 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
         catching(wrapIE) {
             cache = ignite.cache[String, Array[String]]("opennlp-cache")
         }
-
-        // Should be started even another NLP engine configured.
-        if (!NCOpenNlpTokenizer.isStarted)
-            NCOpenNlpTokenizer.start()
-
+        
         super.start()
     }
 
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        if (NCOpenNlpTokenizer.isStarted)
-            NCOpenNlpTokenizer.stop(parent)
-
         cache = null
     
         super.stop()

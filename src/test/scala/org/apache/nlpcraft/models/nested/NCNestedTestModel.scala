@@ -47,9 +47,9 @@ class NCNestedTestModel extends NCModelAdapter("nlpcraft.nested.test", "Nested E
     @NCIntent("intent=nested term={id=='x:nested'}")
     private def onNested(ctx: NCIntentMatch): NCResult = "nested"
 
-    @NCIntent("intent=nested term={id=='x:nested1'}")
+    @NCIntent("intent=nested1 term={id=='x:nested1'}")
     private def onNested1(ctx: NCIntentMatch): NCResult = "nested1"
 
-    @NCIntent("intent=nested term={id=='x:nested2'}")
+    @NCIntent("intent=nested2 term={id=='x:nested2'}")
     private def onNested2(ctx: NCIntentMatch): NCResult = "nested2"
 }

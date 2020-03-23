@@ -44,6 +44,8 @@ class NCDslTest {
     @AfterEach
     void tearDown() throws NCException, IOException {
         cli.close();
+    
+        NCEmbeddedProbe.stop();
     }
 
     @Test

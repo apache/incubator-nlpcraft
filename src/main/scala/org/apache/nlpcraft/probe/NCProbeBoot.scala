@@ -216,8 +216,10 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         started = false
         
-        if (probeThread != null)
+        if (probeThread != null) {
             probeThread.interrupt()
+            probeThread.join()
+        }
         
         logger.info("Embedded probe shutdown OK.")
     }

@@ -323,18 +323,18 @@ object NCSortEnricher extends NCProbeEnricher {
         }
     }
 
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
             val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
-            var changed: Boolean = false
 
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (subj ← m.subjSeq if !hasReferences(TOK_ID, "subjNotes", subj.map(_.note), m.main)) {
+                        //for (subj ← m.subjSeq if !hasReferences(TOK_ID, "subjNotes", subj.map(_.note), m.main)) {
+                        for (subj ← m.subjSeq) {
                             def addNotes(
                                 params: ArrayBuffer[(String, Any)],
                                 seq: Seq[NoteData],
@@ -362,7 +362,7 @@ object NCSortEnricher extends NCProbeEnricher {
                                 m.main.foreach(_.add(note))
                                 m.stop.foreach(_.addStopReason(note))
 
-                                changed = true
+                                buf += toks.toSet
                             }
 
                             if (m.bySeq.nonEmpty)
@@ -371,13 +371,8 @@ object NCSortEnricher extends NCProbeEnricher {
                             else
                                 mkNote(mkParams())
                         }
-
-                        if (changed)
-                            buf += toks.toSet
                     case None ⇒ // No-op.
                 }
-
-            changed
         }
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒

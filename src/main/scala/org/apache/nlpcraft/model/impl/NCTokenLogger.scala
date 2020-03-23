@@ -323,14 +323,14 @@ object NCTokenLogger extends LazyLogging {
                     s
 
                 // User tokens.
-                case _ ⇒ s"unid=${getValue("unid")}"
+                case _ ⇒ ""
             }
         }
     
         val v = if (sorted.lengthCompare(1) > 0) vals2String(sorted) else sorted.map(p ⇒ s"${p._2}").mkString(", ")
     
         if (note.tokenFrom < note.tokenTo)
-            s"$v ${s"<${note.tokenFrom} to ${note.tokenTo}, id=${note.id}>"}"
+            s"$v ${s"<${note.tokenFrom} to ${note.tokenTo}>"}"
         else
             s"$v"
     }

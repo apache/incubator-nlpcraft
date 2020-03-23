@@ -234,12 +234,17 @@ case class NCTestAggregationToken(text: String, `type`: String, indexes: Seq[Int
             s", note=$note>"
 }
 
+object NCTestAggregationToken {
+    def apply(text: String, `type`: String, index: Int, note: String): NCTestAggregationToken =
+        new NCTestAggregationToken(text, `type`, Seq(index), note)
+}
+
 case class NCTestLimitToken(
     text: String,
     limit: Double,
     indexes: Seq[Int],
     note: String,
-    asc: Option[Boolean] = None
+    asc: Option[Boolean]
 ) extends NCTestToken {
     require(text != null)
     require(indexes != null)
@@ -263,9 +268,24 @@ case class NCTestLimitToken(
     }
 }
 
+object NCTestLimitToken {
+    def apply(text: String, limit: Double, indexes: Seq[Int], note: String, asc: Boolean): NCTestLimitToken =
+        new NCTestLimitToken(text, limit, indexes, note, Some(asc))
+
+    def apply(text: String, limit: Double, indexes: Seq[Int], note: String): NCTestLimitToken =
+        new NCTestLimitToken(text, limit, indexes, note, None)
+
+    def apply(text: String, limit: Double, index: Int, note: String, asc: Boolean): NCTestLimitToken =
+        new NCTestLimitToken(text, limit, Seq(index), note, Some(asc))
+
+    def apply(text: String, limit: Double, index: Int, note: String): NCTestLimitToken =
+        new NCTestLimitToken(text, limit, Seq(index), note, None)
+}
+
 case class NCTestUserToken(text: String, id: String) extends NCTestToken {
     require(text != null)
     require(id != null)
+
     override def toString: String = s"$text(user)<id=$id>"}
 
 // Token and sentence beans and utilities.
@@ -332,7 +352,7 @@ object NCTestToken {
 
             case "nlpcraft:limit" ⇒
                 val indexes: java.util.List[Int] = t.meta("nlpcraft:limit:indexes")
-                val asc: Optional[Boolean] = t.metaOpt("nlpcraft:sort:asc")
+                val asc: Optional[Boolean] = t.metaOpt("nlpcraft:limit:asc")
 
                 NCTestLimitToken(
                     txt,

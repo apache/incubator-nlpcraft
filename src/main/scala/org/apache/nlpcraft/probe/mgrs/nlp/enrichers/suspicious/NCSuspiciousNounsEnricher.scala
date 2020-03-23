@@ -40,19 +40,11 @@ object NCSuspiciousNounsEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            val suspToks = ns.filter(t ⇒ mdl.suspiciousWordsStems.contains(t.stem))
-
-            if (suspToks.nonEmpty) {
-                suspToks.foreach(_.getNlpNote += "suspNoun" → true)
-
-                true
-            }
-            else
-                false
+            ns.filter(t ⇒ mdl.suspiciousWordsStems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "suspNoun" → true))
         }
 }

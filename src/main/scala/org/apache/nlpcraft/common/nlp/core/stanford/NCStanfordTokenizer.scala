@@ -20,14 +20,13 @@ package org.apache.nlpcraft.common.nlp.core.stanford
 import java.io.StringReader
 
 import edu.stanford.nlp.process.PTBTokenizer
-import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
 import scala.collection.JavaConverters._
 
 /**
   * Stanford tokenizer implementation.
   */
-object NCStanfordTokenizer extends NCService with NCNlpTokenizer {
+object NCStanfordTokenizer extends NCNlpTokenizer {
     override def tokenize(sen: String): Seq[NCNlpCoreToken] = {
         PTBTokenizer.newPTBTokenizer(new StringReader(sen)).
             tokenize().

@@ -133,7 +133,7 @@ object NCQuoteEnricher extends NCServerEnricher {
                         val nlpNote = newTok.getNlpNote
     
                         // NLP is single note.
-                        newTok.remove(nlpNote.id)
+                        newTok.remove(nlpNote)
                         newTok.add(nlpNote.clone(Seq(tokIdx), Seq(tokIdx), "index" → tokIdx, "quoted" → false))
     
                         // It shouldn't care about other kind of notes because

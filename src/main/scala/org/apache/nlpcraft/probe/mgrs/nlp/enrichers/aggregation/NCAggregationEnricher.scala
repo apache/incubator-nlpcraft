@@ -76,18 +76,18 @@ object NCAggregationEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
             val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
-            var changed: Boolean = false
 
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, m.matched)) {
+                        //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, m.matched)) {
+                        for (refNote ← m.refNotes) {
                             val note = NCNlpSentenceNote(
                                 m.matched.map(_.index),
                                 TOK_ID,
@@ -98,15 +98,11 @@ object NCAggregationEnricher extends NCProbeEnricher {
 
                             m.matched.foreach(_.add(note))
 
-                            changed = true
+                            buf += toks.toSet
                         }
 
-                        if (changed)
-                            buf += toks.toSet
                     case None ⇒ // No-op.
                 }
-
-            changed
         }
 
     /**

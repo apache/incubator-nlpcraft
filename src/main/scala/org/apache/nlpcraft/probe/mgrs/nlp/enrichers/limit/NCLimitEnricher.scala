@@ -183,13 +183,11 @@ object NCLimitEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            var changed: Boolean = false
-
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
 
@@ -200,33 +198,25 @@ object NCLimitEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)) if areSuitableTokens(buf, toks))
                 tryToMatch(numsMap, groupsMap, toks) match {
                     case Some(m) ⇒
-                        for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, m.matched)) {
-                            val note = NCNlpSentenceNote(
-                                m.matched.map(_.index),
-                                TOK_ID,
-                                Seq(
-                                    "limit" → m.limit,
-                                    "asc" →
-                                        (m.asc match {
-                                            case Some(a) ⇒ a
-                                            case None ⇒ null
-                                        }),
-                                    "indexes" → m.refIndexes,
-                                    "note" → refNote
-                                ).filter(_._2 != null): _*
-                            )
+                        //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, m.matched)) {
+                        for (refNote ← m.refNotes) {
+                            val params = mutable.ArrayBuffer.empty[(String, Any)]
+
+                            params += "limit" → m.limit
+                            params += "indexes" → m.refIndexes
+                            params += "note" → refNote
+
+                            if (m.asc.isDefined)
+                                params += "asc" → m.asc.get
+
+                            val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, params: _*)
 
                             m.matched.foreach(_.add(note))
 
-                            changed = true
-                        }
-
-                        if (changed)
                             buf += toks.toSet
+                        }
                     case None ⇒ // No-op.
                 }
-
-            changed
         }
     /**
       *

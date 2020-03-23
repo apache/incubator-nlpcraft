@@ -180,7 +180,7 @@ object NCGeoEnricher extends NCServerEnricher {
 
                         // Other types(JJ etc) and quoted word are not re-marked.
                         toks.filter(t ⇒ !NCPennTreebank.NOUNS_POS.contains(t.pos) && t.pos != "FW").
-                            foreach(t ⇒ t.getNlpNote += "pos" → NCPennTreebank.SYNTH_POS)
+                            foreach(t ⇒ ns.fixNote(t.getNlpNote, "pos" → NCPennTreebank.SYNTH_POS))
                     }
 
                 LOCATIONS.get(toks.map(_.normText).mkString(" ")) match {
@@ -331,8 +331,7 @@ object NCGeoEnricher extends NCServerEnricher {
         // Also added tokens with very short GEO names (with length is 1)
         excls ++= getGeoNotes(ns).filter(note ⇒ getName(extractKind(note), note).length == 1)
 
-        def removeNote(n: NCNlpSentenceNote): Unit =
-            ns.removeNote(n.id)
+        def removeNote(n: NCNlpSentenceNote): Unit = ns.removeNote(n)
 
         // Check that city is inside country or region.
         // When true - remove larger location note and replace with
@@ -464,8 +463,7 @@ object NCGeoEnricher extends NCServerEnricher {
                 val sortedByKind = sorted.groupBy(_.kind)
 
                 // Keeps best candidates for each GEO kind.
-                val remainHs = sortedByKind.
-                    unzip._2.
+                val remainHs = sortedByKind.values.
                     flatMap(hsByKind ⇒ Seq(hsByKind.head) ++ hsByKind.tail.filter(_.weight == hsByKind.head.weight)).
                     toSeq
 
@@ -476,6 +474,6 @@ object NCGeoEnricher extends NCServerEnricher {
         // Drops GEO notes which are not included into enabled built-in token list.
         // We can't do it before (or just ignore notes which are not from enabled list)
         // because GEO notes with different types influence on each other during processing.
-        GEO_TYPES.diff(ns.enabledBuiltInToks).flatMap(ns.getNotes).map(_.id).foreach(ns.removeNote)
+        GEO_TYPES.diff(ns.enabledBuiltInToks).flatMap(ns.getNotes).foreach(ns.removeNote)
     }
 }

@@ -17,9 +17,9 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
+import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
-
 import org.junit.jupiter.api.Assertions.{assertTrue, fail}
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
 import org.scalatest.Assertions
@@ -30,9 +30,21 @@ import org.scalatest.Assertions
 class NCEnricherBaseSpec {
     private var client: NCTestClient = _
 
+    // TODO:
+    def getModelClass[T <: NCModel]: Option[Class[NCModel]] = Some(classOf[NCEnricherTestModel].asInstanceOf[Class[NCModel]])
+
     @BeforeEach
     private[enrichers] def setUp(): Unit = {
-        NCEmbeddedProbe.start(classOf[NCEnricherTestModel])
+        getModelClass match {
+            case Some(claxx) ⇒
+                println(s"Embedded probe is going to start with model: $claxx")
+
+                NCEmbeddedProbe.start(claxx)
+            case None ⇒
+                println("Embedded probe will not be started")
+
+                None
+        }
 
         client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
 
@@ -40,7 +52,12 @@ class NCEnricherBaseSpec {
     }
 
     @AfterEach
-    private[enrichers] def tearDown(): Unit = client.close()
+    private[enrichers] def tearDown(): Unit = {
+        if (client != null)
+            client.close()
+
+        NCEmbeddedProbe.stop()
+    }
 
     /**
       * Checks single variant.
@@ -112,9 +129,9 @@ class NCEnricherBaseSpec {
 
         if (errs.nonEmpty) {
             errs.foreach { case (err, i) ⇒
-                System.err.println(s"${i + 1}. Test failed: ${err.getLocalizedMessage}")
+                println(s"${i + 1}. Test failed: ${err.getLocalizedMessage}")
 
-                err.printStackTrace()
+                err.printStackTrace(System.out)
             }
 
             Assertions.fail(s"Failed ${errs.size} tests. See errors list above.")

@@ -389,7 +389,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                 !isException(Seq(tok)) &&
                 stopPoses.contains(tok.pos) &&
                 ns(idx + 1).isStopWord) {
-            tok.markAsStop()
+            ns.fixNote(tok.getNlpNote, "stopWord" → true)
 
             stop = false
         }
@@ -457,7 +457,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                             val newTok = tok.clone(idx)
 
                             def replace(nt: String): Unit =
-                                newTok.getNotes(nt).map(n ⇒ (n.id, n.clone(Seq(idx), Seq(idx)))).foreach(p ⇒ {
+                                newTok.getNotes(nt).map(n ⇒ (n, n.clone(Seq(idx), Seq(idx)))).foreach(p ⇒ {
                                     newTok.remove(p._1)
                                     newTok.add(p._2)
                                 })
@@ -466,9 +466,9 @@ object NCStopWordEnricher extends NCServerEnricher {
                             replace("nlpcraft:nlp")
 
                             // NLP note special case because has index field.
-                            newTok.getNlpNote += "index" → idx
-
                             ns += newTok
+
+                            ns.fixNote(newTok.getNlpNote, "index" → idx)
                         }
 
                         if (isRBR(tok) && !tok.isQuoted)
@@ -597,7 +597,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                     // be, was, is etc. or have done etc.
                     isCommonVerbs("have", "do")
                 if (stop)
-                    tok.markAsStop()
+                    ns.fixNote(tok.getNlpNote, "stopWord" → true)
             }
             // +--------------------------------------+
             // | Pass #3.                             |
@@ -607,7 +607,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             val mix = ns.tokenMixWithStopWords()
             
             for (toks ← mix if !buf.exists(_.containsSlice(toks)) && isStop(toks) && !isException(toks)) {
-                toks.foreach(_.markAsStop())
+                toks.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
                 buf += toks
             }
             
@@ -619,7 +619,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             // | Check external possessive stop-word file.  |
             // +--------------------------------------------+
             for (tup ← origToks; key = tup._2 if POSSESSIVE_WORDS.contains(key) && !isException(tup._1))
-                tup._1.foreach(_.markAsStop())
+                tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
             
             // +--------------------------------------------------+
             // | Pass #5.                                         |
@@ -632,7 +632,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             val startToks = ns.takeWhile(_.isStopWord) ++ ns.find(!_.isStopWord).map(p ⇒ p)
             for (startTok ← startToks; tup ← origToks.filter(_._1.head == startTok); key = tup._2
                 if FIRST_WORDS.contains(key) && !isException(tup._1)) {
-                tup._1.foreach(_.markAsStop())
+                tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
                 foundKeys += key
             }
     
@@ -642,7 +642,9 @@ object NCStopWordEnricher extends NCServerEnricher {
             // +-------------------------------------------------+
             for (tup ← origToks; key = tup._2 if !foundKeys.contains(key) && !isException(tup._1))
                 foundKeys.find(key.startsWith) match {
-                    case Some(s) ⇒ if (NOUN_WORDS.contains(key.substring(s.length).trim)) tup._1.foreach(_.markAsStop())
+                    case Some(s) ⇒
+                        if (NOUN_WORDS.contains(key.substring(s.length).trim))
+                            tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
                     case None ⇒ ()
                 }
     
