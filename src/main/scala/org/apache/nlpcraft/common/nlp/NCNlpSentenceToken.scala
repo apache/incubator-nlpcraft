@@ -28,7 +28,7 @@ import scala.language.implicitConversions
   */
 case class NCNlpSentenceToken(
     index: Int,
-    notes: mutable.HashMap[String, NCNlpSentenceNote] = mutable.HashMap.empty[String, NCNlpSentenceNote],
+    private val notes: mutable.HashSet[NCNlpSentenceNote] = mutable.HashSet.empty[NCNlpSentenceNote],
     stopsReasons: mutable.HashSet[NCNlpSentenceNote] = mutable.HashSet.empty[NCNlpSentenceNote]
 ) extends java.io.Serializable {
     @transient
@@ -59,7 +59,7 @@ case class NCNlpSentenceToken(
       *
       * @param noteType Note type.
       */
-    def getNotes(noteType: String): Iterable[NCNlpSentenceNote] = notes.values.filter(_.noteType == noteType)
+    def getNotes(noteType: String): Iterable[NCNlpSentenceNote] = notes.filter(_.noteType == noteType)
 
     /**
       * Clones note.
@@ -69,9 +69,9 @@ case class NCNlpSentenceToken(
         NCNlpSentenceToken(
             index,
             {
-                val m = mutable.HashMap.empty[String, NCNlpSentenceNote]
+                val m = mutable.HashSet.empty[NCNlpSentenceNote]
 
-                notes.foreach { case (key, note) ⇒ m += key → note.clone() }
+                notes.foreach(n ⇒ m += n.clone())
 
                 m
             },
@@ -87,21 +87,17 @@ case class NCNlpSentenceToken(
     /**
       * Removes note with given ID. No-op if ID wasn't found.
       *
-      * @param id Note ID.
+      * @param note Note.
       */
-    def remove(id: String): Unit = notes -= id
+    def remove(note: NCNlpSentenceNote): Unit = notes.remove(note)
 
     /**
-      * Removes notes with given IDs. No-op if ID wasn't found.
-      *
-      * @param ids Note IDs.
+      * Tests whether or not this token contains note.
+      * It is important to convert notes to set each time,
+      * because otherwise note cannot be found because its content changed and its hashCode changed too.
+      * https://stackoverflow.com/questions/43553806/hashset-contains-returns-false-when-it-shouldnt/43554123
       */
-    def remove(ids: Iterable[String]): Unit = notes --= ids
-
-    /**
-      * Tests whether or not this token contains note with given ID.
-      */
-    def contains(id: String): Boolean = notes.contains(id)
+    def contains(note: NCNlpSentenceNote): Boolean = notes.contains(note)
 
     /**
       *
@@ -139,7 +135,7 @@ case class NCNlpSentenceToken(
       */
     def getNlpNote: NCNlpSentenceNote = {
         if (nlpNote == null)
-            nlpNote = notes.values.find(_.isNlp).orNull
+            nlpNote = notes.find(_.isNlp).orNull
 
         nlpNote
     }
@@ -172,25 +168,25 @@ case class NCNlpSentenceToken(
     /**
       * Adds element.
       *
-      * @param elem Element.
+      * @param note Element.
       */
-    def add(elem: NCNlpSentenceNote): Unit = {
-        notes += elem.id → elem
+    def add(note: NCNlpSentenceNote): Unit = {
+        val added = notes.add(note)
 
-        if (elem.isNlp)
-            nlpNote = elem
+        if (added && note.isNlp)
+            nlpNote = note
     }
 
     /**
       * Simple word is a non synthetic word that's also not part of any domain-specific note type.
       */
-    def isNlp: Boolean = this.forall(_.isNlp)
+    def isNlp: Boolean = notes.forall(_.isNlp)
 
     /**
       *
       * @return
       */
-    def isUser: Boolean = this.exists(_.isUser)
+    def isUser: Boolean = notes.exists(_.isUser)
 
     /**
       *
@@ -198,15 +194,13 @@ case class NCNlpSentenceToken(
       */
     def addStopReason(reason: NCNlpSentenceNote): Unit = stopsReasons += reason
 
-    /**
-      *
-      */
-    def markAsStop(): Unit = getNlpNote += "stopWord" → true
-
     override def toString: String =
-        notes.values.toSeq.sortBy(t ⇒ (if (t.isNlp) 0 else 1, t.noteType)).mkString("NLP token [", "|", "]")
+        notes.toSeq.sortBy(t ⇒ (if (t.isNlp) 0 else 1, t.noteType)).mkString("NLP token [", "|", "]")
 }
 
 object NCNlpSentenceToken {
-    implicit def toNotes(x: NCNlpSentenceToken): Iterable[NCNlpSentenceNote] = x.notes.values
+    /**
+     * To immutable iterator.
+     */
+    implicit def notes(x: NCNlpSentenceToken): Iterable[NCNlpSentenceNote] = x.notes.toSet
 }

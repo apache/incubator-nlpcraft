@@ -265,6 +265,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (isStarted)
             modelFactory.terminate()    
         
+        models.clear()
+        
         super.stop()
     }
 

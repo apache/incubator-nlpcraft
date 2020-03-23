@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation
 
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestLimitToken ⇒ lim, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestRelationToken ⇒ rel, NCTestUserToken ⇒ usr, NCTestNlpToken ⇒ nlp}
 import org.junit.jupiter.api.Test
 
 /**
-  * Limit enricher test.
+  * Relation enricher test.
   */
-class NCEnricherLimitSpec extends NCEnricherBaseSpec {
+class NCEnricherRelationSpec extends NCEnricherBaseSpec {
     /**
       *
       * @throws Exception
@@ -32,19 +32,11 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
     def test(): Unit = {
         runBatch(
             _ ⇒ checkExists(
-                "top A",
-                lim(text = "top", limit = 10, index = 1, note = "A", asc = false),
-                usr(text = "A", id = "A")
-            ),
-            _ ⇒ checkExists(
-                "few A B",
-                lim(text = "few", limit = 3, index = 1, note = "AB", asc = false),
-                usr(text = "A B", id = "AB")
-            ),
-            _ ⇒ checkExists(
-                "top 10 D1",
-                lim(text = "top 10", limit = 10, index = 1, note = "D1", asc = false),
-                usr(text = "D1", id = "D1")
+                "compare V1 and V2",
+                rel(text = "compare", `type` = "compare", indexes = Seq(1, 3), note = "V"),
+                usr(text = "V1", id = "V"),
+                nlp(text = "and", isStop = true),
+                usr(text = "V2", id = "V")
             )
         )
     }

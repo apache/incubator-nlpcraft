@@ -19,10 +19,9 @@ package org.apache.nlpcraft.common.nlp.core.opennlp
 
 import java.io.BufferedInputStream
 
-import io.opencensus.trace.Span
 import opennlp.tools.tokenize.{Tokenizer, TokenizerME, TokenizerModel}
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
-import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.common._
 import resource.managed
 
 import scala.language.{implicitConversions, postfixOps}
@@ -30,21 +29,11 @@ import scala.language.{implicitConversions, postfixOps}
 /**
   * OpenNLP tokenizer implementation.
   */
-object NCOpenNlpTokenizer extends NCService with NCNlpTokenizer {
+object NCOpenNlpTokenizer extends NCNlpTokenizer {
     private final val MODEL_PATH = "opennlp/en-token.bin"
     
-    @volatile private var tokenizer: Tokenizer = _
-
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent, "model" → MODEL_PATH) { _ ⇒
-        tokenizer = managed(new BufferedInputStream(U.getStream(MODEL_PATH))) acquireAndGet { in ⇒
-            new TokenizerME(new TokenizerModel(in))
-        }
-     
-        super.start()
-    }
-    
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+    private val tokenizer: Tokenizer = managed(new BufferedInputStream(U.getStream(MODEL_PATH))) acquireAndGet { in ⇒
+        new TokenizerME(new TokenizerModel(in))
     }
     
     override def tokenize(sen: String): Seq[NCNlpCoreToken] =

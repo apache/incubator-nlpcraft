@@ -38,8 +38,10 @@ class NCNlpSentence(
     val enabledBuiltInToks: Set[String],
     override val tokens: ArrayBuffer[NCNlpSentenceToken] = new ArrayBuffer[NCNlpSentenceToken](32)
 ) extends NCNlpSentenceTokenBuffer(tokens) with java.io.Serializable {
-    private lazy val hash =
-        Seq(srvReqId, text, enabledBuiltInToks, tokens).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
+    @transient
+    private var hash: java.lang.Integer = _
+
+    private def calcHash(): Int = Seq(srvReqId, text, enabledBuiltInToks, tokens).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
 
     // Deep copy.
     override def clone(): NCNlpSentence = new NCNlpSentence(srvReqId, text, weight, enabledBuiltInToks, tokens.map(_.clone()))
@@ -57,11 +59,28 @@ class NCNlpSentence(
       * Utility method that removes note with given ID from all tokens in this sentence.
       * No-op if such note wasn't found.
       *
-      * @param id Note ID.
+      * @param note Note.
       */
-    def removeNote(id: String): Unit = this.foreach(_.remove(id))
+    def removeNote(note: NCNlpSentenceNote): Unit = this.foreach(_.remove(note))
 
-    override def hashCode(): Int = hash
+    //noinspection HashCodeUsesVar
+    override def hashCode(): Int = {
+        if (hash == null)
+            hash = calcHash()
+
+        hash
+    }
+
+    def fixNote(note: NCNlpSentenceNote, kvs: (String, java.io.Serializable)*): Unit = {
+        val fixed = note.clone(kvs: _*)
+
+        this.filter(t ⇒ t.index >= fixed.tokenIndexes.head && t.index <= fixed.tokenIndexes.last).foreach(t ⇒ {
+            t.remove(note)
+            t.add(fixed)
+        })
+
+        hash = null
+    }
 
     override def equals(obj: Any): Boolean = obj match {
         case x: NCNlpSentence ⇒

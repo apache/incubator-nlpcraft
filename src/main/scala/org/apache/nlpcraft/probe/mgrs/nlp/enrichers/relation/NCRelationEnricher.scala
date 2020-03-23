@@ -116,12 +116,11 @@ object NCRelationEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            var changed: Boolean = false
             val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
 
             // Tries to grab tokens direct way.
@@ -129,7 +128,8 @@ object NCRelationEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, Seq(m.matched.head))) {
+                        //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, Seq(m.matched.head))) {
+                        for (refNote ← m.refNotes) {
                             val note = NCNlpSentenceNote(
                                 Seq(m.matchedHead.index),
                                 TOK_ID,
@@ -138,19 +138,14 @@ object NCRelationEnricher extends NCProbeEnricher {
                                 "note" → refNote
                             )
 
-                            m.matchedHead.add(note)
-
                             m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))
 
-                            changed = true
-                        }
+                            m.matchedHead.add(note)
 
-                        if (changed)
                             buf += toks.toSet
+                        }
                     case None ⇒ // No-op.
                 }
-
-            changed
         }
 
     /**
@@ -182,7 +177,7 @@ object NCRelationEnricher extends NCProbeEnricher {
             if (suitNotes.nonEmpty)
                 Some(
                     Reference(
-                        toks.filter(t ⇒ suitNotes.exists(t.notes.values.toSet.contains)),
+                        toks.filter(t ⇒ suitNotes.exists(t.contains)),
                         suitNotes.map(_.noteType).toSet
                     )
                 )

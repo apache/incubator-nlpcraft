@@ -170,6 +170,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
     /**
       *
+      * @param ns
       * @param elem
       * @param toks
       * @param direct
@@ -178,6 +179,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       * @param parts
       */
     private def mark(
+        ns: NCNlpSentence,
         elem: NCElement,
         toks: Seq[NCNlpSentenceToken],
         direct: Boolean,
@@ -225,7 +227,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         toks.foreach(_.add(note))
 
         // For NLP elements.
-        toks.foreach(_.getNlpNote += "direct" → direct)
+        toks.foreach(t ⇒ ns.fixNote(t.getNlpNote, "direct" → direct))
     }
 
     /**
@@ -297,7 +299,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
@@ -305,7 +307,6 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             val jiggleFactor = mdl.model.getJiggleFactor
             val cache = mutable.HashSet.empty[Seq[Int]]
             val matches = ArrayBuffer.empty[ElementMatch]
-            var changed: Boolean = false
 
             /**
               * Gets sequence of synonyms sorted in descending order by their weight, i.e. first synonym in
@@ -429,9 +430,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 val tokIdxs = m.tokens.map(_.index)
                 val direct = syn.isDirect && (tokIdxs == tokIdxs.sorted)
 
-                changed = true
-
-                mark(elem = elm, toks = m.tokens, direct = direct, syn = Some(syn), metaOpt = None, parts = m.parts)
+                mark(ns, elem = elm, toks = m.tokens, direct = direct, syn = Some(syn), metaOpt = None, parts = m.parts)
             }
 
             val parsers = mdl.model.getParsers
@@ -497,10 +496,9 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                     ).getOrElse(throw new AssertionError(s"Custom model parser returned an invalid custom token: $w"))
                                 )
                 
-                                if (!alreadyMarked(matchedToks, elemId)) {
-                                    changed = true
-                    
+                                if (!alreadyMarked(matchedToks, elemId))
                                     mark(
+                                        ns,
                                         elem = mdl.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
                                         toks = matchedToks,
                                         direct = true,
@@ -508,13 +506,10 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                         metaOpt = Some(e.getMetadata.asScala),
                                         parts = Seq.empty
                                     )
-                                }
                             })
                     }
                     
                     parser.onDiscard()
                 }
-
-            changed
         }
 }

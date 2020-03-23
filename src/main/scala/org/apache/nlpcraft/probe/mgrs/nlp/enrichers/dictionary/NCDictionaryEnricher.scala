@@ -54,27 +54,24 @@ object NCDictionaryEnricher extends NCProbeEnricher {
     }
     
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Boolean =
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            val res = ns.exists(!_.getNlpNote.contains("dict"))
-
             ns.foreach(t ⇒ {
                 // Dictionary.
                 val nlpNote = t.getNlpNote
-    
-                // Single letters seems suspiciously.
-                nlpNote += "dict" → (NCDictionaryManager.contains(t.lemma) && t.lemma.length > 1)
-    
-                // English.
-                nlpNote += "english" → t.origText.matches("""[\s\w\p{Punct}]+""")
-    
-                // Swearwords.
-                nlpNote += "swear" → swearWords.contains(t.stem)
-            })
 
-            res
+                ns.fixNote(
+                    nlpNote,
+                    // Single letters seems suspiciously.
+                    "dict" → (NCDictionaryManager.contains(t.lemma) && t.lemma.length > 1),
+                    // English.
+                    "english" → t.origText.matches("""[\s\w\p{Punct}]+"""),
+                    // Swearwords.
+                    "swear" → swearWords.contains(t.stem)
+                )
+            })
         }
 }

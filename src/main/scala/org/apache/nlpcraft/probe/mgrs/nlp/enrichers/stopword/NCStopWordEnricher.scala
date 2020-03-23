@@ -86,33 +86,20 @@ object NCStopWordEnricher extends NCProbeEnricher {
       * @param sen Sentence.
       * @param noteType Note type.
       */
-    private def markBefore(sen: NCNlpSentence, noteType: String): Boolean = {
-        var res = false
-
-        for (note ← sen.getNotes(noteType) if note.tokenFrom > 0) {
-            val part = sen.
+    private def markBefore(sen: NCNlpSentence, noteType: String): Unit =
+        for (note ← sen.getNotes(noteType) if note.tokenFrom > 0)
+            sen.
                 take(note.tokenFrom).
                 reverse.
                 takeWhile(t ⇒ t.isStopWord || t.isNlp && POSES.contains(t.pos)).
-                filter(!_.isStopWord)
-
-            if (part.nonEmpty) {
-                part.foreach(_.addStopReason(note))
-
-                res = true
-            }
-        }
-
-        res
-    }
+                filter(!_.isStopWord).foreach(_.addStopReason(note))
 
     /**
       * Processes geo tokens. Sets additional stopwords.
       *
       * @param ns Sentence.
       */
-    private def processGeo(ns: NCNlpSentence): Boolean = {
-        var res = false
+    private def processGeo(ns: NCNlpSentence): Unit = {
 
         // 1. Marks some specific words before GEO (like 'origin for London')
         for (note ← GEO_TYPES.flatMap(ns.getNotes)) {
@@ -126,14 +113,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
                 val stems = toks.map(_.stem)
 
                 GEO_PRE_WORDS.find(stems.endsWith) match {
-                    case Some(words) ⇒
-                        val part = toks.reverse.take(words.size).filter(!_.isStopWord)
-
-                        if (part.nonEmpty) {
-                            res = true
-
-                            part.foreach(_.addStopReason(note))
-                        }
+                    case Some(words) ⇒ toks.reverse.take(words.size).filter(!_.isStopWord).foreach(_.addStopReason(note))
                     case None ⇒ // No-op.
                 }
             }
@@ -144,11 +124,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
             for (geoNote ← ns.getNotes(typ)) {
                 def process(toks: Seq[NCNlpSentenceToken]): Unit =
                     toks.find(!_.isStopWord) match {
-                        case Some(t) ⇒ if (stops.contains(t.stem)) {
-                            res = true
-
-                            t.addStopReason(geoNote)
-                        }
+                        case Some(t) ⇒ if (stops.contains(t.stem)) t.addStopReason(geoNote)
                         case None ⇒ // No-op.
                     }
 
@@ -158,12 +134,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
         }
 
         // 3. Marks stop-words like prepositions before.
-        GEO_TYPES.foreach(t ⇒ {
-            if (markBefore(ns, t))
-                res = true
-        })
-
-        res
+        GEO_TYPES.foreach(t ⇒ markBefore(ns, t))
     }
 
     /**
@@ -171,9 +142,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
       *
       * @param ns Sentence.
       */
-    private def processNums(ns: NCNlpSentence): Boolean = {
-        var res = false
-
+    private def processNums(ns: NCNlpSentence): Unit =
         // Try to find words from configured list before numeric condition and mark them as STOP words.
         ns.getNotes("nlpcraft:num").foreach(numNote ⇒ {
             val before = ns.filter(_.index < numNote.tokenFrom)
@@ -185,39 +154,27 @@ object NCStopWordEnricher extends NCProbeEnricher {
                         (!t.isBracketed && !t.isQuoted)) &&
                     NUM_PREFIX_STOPS.contains(seq.filter(!_.isStopWord).map(_.stem).mkString(" "))
             ) match {
-                case Some(seq) ⇒
-                    val toks = seq.filter(!_.isStopWord)
-
-                    if (toks.nonEmpty) {
-                        res = true
-
-                        toks.foreach(_.addStopReason(numNote))
-                    }
+                case Some(seq) ⇒ seq.filter(!_.isStopWord).foreach(_.addStopReason(numNote))
                 case None ⇒ // No-op.
             }
         })
-
-        res
-    }
 
     /**
       * Processes dates. Sets additional stopwords.
       *
       * @param ns Sentence.
       */
-    private def processDate(ns: NCNlpSentence): Boolean = markBefore(ns, "nlpcraft:date")
+    private def processDate(ns: NCNlpSentence): Unit = markBefore(ns, "nlpcraft:date")
 
     /**
       * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
       */
-    private def processCommonStops(mdl: NCModelDecorator, ns: NCNlpSentence): Boolean = {
-        var res = false
-
+    private def processCommonStops(mdl: NCModelDecorator, ns: NCNlpSentence): Unit = {
         /**
           * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
           */
         @tailrec
-        def processCommonStops0(mdl: NCModelDecorator, ns: NCNlpSentence): Boolean = {
+        def processCommonStops0(mdl: NCModelDecorator, ns: NCNlpSentence): Unit = {
             val max = ns.size - 1
             var stop = true
 
@@ -229,44 +186,31 @@ object NCStopWordEnricher extends NCProbeEnricher {
                     POSES.contains(tok.pos) &&
                     ns(idx + 1).isStopWord
             ) {
-                tok.markAsStop()
-
-                res = true
+                ns.fixNote(tok.getNlpNote, "stopWord" → true)
 
                 stop = false
             }
 
-            if (stop) true else processCommonStops0(mdl, ns)
+            if (!stop)
+                processCommonStops0(mdl, ns)
         }
 
         processCommonStops0(mdl, ns)
-
-        res
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Boolean = {
-        def mark(stems: Set[String], f: Boolean): Boolean = {
-            val part = ns.filter(t ⇒ stems.contains(t.stem))
+    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+        def mark(stems: Set[String], f: Boolean): Unit =
+            ns.filter(t ⇒ stems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "stopWord" → f))
 
-            if (part.nonEmpty) {
-                part.foreach(_.getNlpNote += "stopWord" → f)
-
-                true
-            }
-            else
-                false
-        }
-    
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdl.model.getId, "txt" → ns.text) { _ ⇒
-            Seq(
-                mark(mdl.excludedStopWordsStems, f = false),
-                mark(mdl.additionalStopWordsStems, f = true),
-                processGeo(ns),
-                processDate(ns),
-                processNums(ns),
-                processCommonStops(mdl, ns)
-            ).contains(true)
+
+            mark(mdl.excludedStopWordsStems, f = false)
+            mark(mdl.additionalStopWordsStems, f = true)
+            processGeo(ns)
+            processDate(ns)
+            processNums(ns)
+            processCommonStops(mdl, ns)
         }
     }
 }

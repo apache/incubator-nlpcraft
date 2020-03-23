@@ -20,11 +20,10 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 import java.util
 import java.util.Collections
 
-import org.apache.nlpcraft.model.{NCContext, NCElement, NCModelAdapter, NCResult}
+import org.apache.nlpcraft.model.{NCContext, NCElement, NCModelAdapter, NCResult, NCValue}
 
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
-
 import NCEnricherTestModel._
 
 /**
@@ -42,7 +41,8 @@ class NCEnricherTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.
             mkElement("BC", "B C"),
             mkElement("ABC", "A B C"),
             mkElement("D1", "D"),
-            mkElement("D2", "D")
+            mkElement("D2", "D"),
+            mkValueElement("V", "V1", "V2")
         ).asJava
 
     private def mkElement(id: String, syns: String*): NCElement =
@@ -51,6 +51,18 @@ class NCEnricherTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.
             override def getSynonyms: util.List[String] = syns.asJava
             override def getGroups: util.List[String] = Collections.singletonList(GROUP)
         }
+
+    private def mkValueElement(id: String, vals: String*): NCElement =
+        new NCElement {
+            override def getId: String = id
+            override def getSynonyms: util.List[String] = Collections.singletonList(id)
+            override def getGroups: util.List[String] = Collections.singletonList(GROUP)
+            override def getValues: util.List[NCValue] = vals.map(v ⇒ new NCValue {
+                override def getName: String = v
+                override def getSynonyms: util.List[String] = Collections.singletonList(v)
+            }).asJava
+        }
+
 
     override def onContext(ctx: NCContext): NCResult =
         NCResult.text(

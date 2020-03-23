@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.probe.mgrs.nlp
 
 import java.io.Serializable
-import java.util
 
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
@@ -26,7 +25,6 @@ import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 
-import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq}
 import scala.language.implicitConversions
 
@@ -61,7 +59,7 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
 
                 val notes = pred match {
                     case Some(p) ⇒ h.filter(p)
-                    case None ⇒ h.map(n ⇒ n)
+                    case None ⇒ h.map(p ⇒ p)
                 }
 
                 notes.filter(!_.isNlp).filter(n ⇒ h.index == n.tokenFrom && l.index == n.tokenTo).map(_.noteType).toSet
@@ -83,46 +81,13 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
 
     /**
       *
-      * @param typ
-      * @param refNoteName
-      * @param refNoteVal
-      * @param matched
-      */
-    protected def hasReference(typ: String, refNoteName: String, refNoteVal: String, matched: Seq[NCNlpSentenceToken]): Boolean =
-        matched.forall(t ⇒
-            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒ n.get(refNoteName) match {
-                case Some(s) ⇒ s.asInstanceOf[String] == refNoteVal
-                case None ⇒ false
-            })
-        )
-
-    /**
-      *
-      * @param typ
-      * @param refNoteName
-      * @param refNoteVals
-      * @param matched
-      */
-    protected def hasReferences(typ: String, refNoteName: String, refNoteVals: Seq[String], matched: Seq[NCNlpSentenceToken]): Boolean =
-        matched.forall(t ⇒
-            t.isTypeOf(typ) && t.getNotes(typ).exists(n ⇒
-                n.get(refNoteName) match {
-                    case Some(s) ⇒ s.asInstanceOf[util.List[String]].asScala.intersect(refNoteVals).nonEmpty
-                    case None ⇒ false
-                }
-            )
-        )
-
-    /**
-      *
       * Processes this NLP sentence.
       *
       * @param mdl Model decorator.
       * @param ns NLP sentence to enrich.
       * @param senMeta Sentence metadata.
       * @param parent Span parent.
-      * @return Flag which indicates was the sentence enriched or not.
       */
     @throws[NCE]
-    def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span): Boolean
+    def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span): Unit
 }

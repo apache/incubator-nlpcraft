@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.aggregation
 
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestLimitToken ⇒ lim, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestAggregationToken ⇒ agg, NCTestUserToken ⇒ usr}
 import org.junit.jupiter.api.Test
 
 /**
-  * Limit enricher test.
+  * Aggregation enricher test.
   */
-class NCEnricherLimitSpec extends NCEnricherBaseSpec {
+class NCEnricherAggregationSpec extends NCEnricherBaseSpec {
     /**
       *
       * @throws Exception
@@ -32,19 +32,9 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
     def test(): Unit = {
         runBatch(
             _ ⇒ checkExists(
-                "top A",
-                lim(text = "top", limit = 10, index = 1, note = "A", asc = false),
+                "max A",
+                agg(text = "max", `type` = "max", index = 1, note = "A"),
                 usr(text = "A", id = "A")
-            ),
-            _ ⇒ checkExists(
-                "few A B",
-                lim(text = "few", limit = 3, index = 1, note = "AB", asc = false),
-                usr(text = "A B", id = "AB")
-            ),
-            _ ⇒ checkExists(
-                "top 10 D1",
-                lim(text = "top 10", limit = 10, index = 1, note = "D1", asc = false),
-                usr(text = "D1", id = "D1")
             )
         )
     }
