@@ -21,8 +21,42 @@ import org.apache.nlpcraft.model.*;
 
 /**
  * Object presentation of SQL column.
+ * <p>
+ * In JSON/YAML generated model SQL column is represented by the model element (example):
+ * <pre class="brush: js">
+ *   elements:
+ *     - id: "col:orders_customer_id"
+ *     groups:
+ *     - "column"
+ *     synonyms:
+ *     - "{customer_id|customer &lt;ID&gt;}"
+ *     - "orders {customer_id|customer &lt;ID&gt;}"
+ *     - "{customer_id|customer &lt;ID&gt;} &lt;OF&gt; orders"
+ *     metadata:
+ *       sql:name: "customer_id"
+ *       sql:tablename: "orders"
+ *       sql:datatype: 12
+ *       sql:isnullable: true
+ *       sql:ispk: false
+ *     description: "Auto-generated from 'orders.customer_id' column."
+ *     valueLoader: "org.apache.nlpcraft.examples.sql.db.SqlValueLoader"
+ * </pre>
+ * Few notes:
+ * <ul>
+ *     <li>All model elements representing SQL column have ID in a form of <code>col:sql_table_name</code>.</li>
+ *     <li>All model elements representing SQL column belong to <code>column</code> group.</li>
+ *     <li>
+ *         These model elements have auto-generated synonyms and set of mandatory metadata.
+ *     </li>
+ *     <li>
+ *         User can freely add group membership, change synonyms, add new metadata, add or change value loader.
+ *     </li>
+ * </ul>
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant) 
+ * @see NCSqlExtractor#extractColumn(NCToken)
+ * @see NCSqlTable#getColumns() 
  */
 public interface NCSqlColumn {
     /**
@@ -31,9 +65,7 @@ public interface NCSqlColumn {
      * In JSON/YAML generated model the table name is declared with the following element
      * metadata (example):
      * <pre class="brush: js">
-     *     sql:extratables:
-     *     - "other_part_table"
-     *     - "another_part_table"
+     *     sql:tablename: "customer_id"
      * </pre>
      *
      * @return Name of the table this column belongs to.
@@ -41,7 +73,13 @@ public interface NCSqlColumn {
     String getTable();
 
     /**
-     * Gets name of this column.
+     * Gets native name of this column.
+     * <p>
+     * In JSON/YAML generated model the native column name is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:name: "customer_id"
+     * </pre>
      *
      * @return Name of this column.
      */
@@ -50,6 +88,12 @@ public interface NCSqlColumn {
     /**
      * Gets JDBC <a target="new" href="https://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">data type</a>
      * for this column.
+     * <p>
+     * In JSON/YAML generated model the data type is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:datatype: 12
+     * </pre>
      *
      * @return JDBC <a target="new" href="https://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">data type</a>
      *      for this column.
@@ -58,13 +102,25 @@ public interface NCSqlColumn {
 
     /**
      * Tests whether or not this column is a primary key column.
-     * 
+     * <p>
+     * In JSON/YAML generated model the primary key flag is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:ispk: false
+     * </pre>
+     *
      * @return Whether or not this column is a primary key column.
      */
     boolean isPk();
 
     /**
      * Tests whether or not this column is nullable.
+     * <p>
+     * In JSON/YAML generated model the nullable flag is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:isnullable: false
+     * </pre>
      *
      * @return Whether or not this column is nullable.
      */

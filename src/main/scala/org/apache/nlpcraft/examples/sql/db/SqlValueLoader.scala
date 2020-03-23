@@ -31,14 +31,11 @@ import scala.language.implicitConversions
  */
 class SqlValueLoader extends NCValueLoader with LazyLogging {
     override def load(e: NCElement): java.util.Set[NCValue] = {
-        if (!e.getGroups.contains("column"))
+        if (!e.isMemberOf("column"))
             throw new IllegalArgumentException(s"Unexpected element: ${e.getId}")
 
-        val tab: String = e.meta("sql:tablename")
-        val col: String = e.meta("sql:name")
-
-        if (tab == null || col == null)
-            throw new IllegalArgumentException(s"Missed required metadata for element: ${e.getId}")
+        val tab: String = e.metax("sql:tablename")
+        val col: String = e.metax("sql:name")
 
         SqlAccess.select(new SqlQuery {
             override def getSql: String = s"SELECT $col FROM $tab WHERE $col IS NOT NULL"

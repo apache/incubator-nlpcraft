@@ -24,19 +24,21 @@ import java.sql.Timestamp;
  * Object presentation of SQL date range.
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
+ * @see NCSqlExtractor#extractDateRange(NCToken) 
  */
 public interface NCSqlDateRange {
     /**
      * Gets 'from' timestamp.
      *
-     * @return From timestamp.
+     * @return The 'from' timestamp.
      */
     Timestamp getFrom();
 
     /**
      * Gets 'to' timestamp.
      *
-     * @return To timestamp.
+     * @return The 'to' timestamp.
      */
     Timestamp getTo();
 }

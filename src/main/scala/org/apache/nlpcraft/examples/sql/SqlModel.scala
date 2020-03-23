@@ -37,7 +37,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
         m.put("columns", res.columns.asJava)
         m.put("rows", res.rows.map(_.asJava).asJava)
-        // Added to result fo debug reasons.
+        // Added to result for debug reasons.
         m.put("sql", sql)
         m.put("parameters", params)
 
@@ -114,8 +114,8 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         try {
             query =
                 SqlBuilder(SCHEMA).
-                    withTables(tabs.map(t ⇒ ext.extractTable(t)): _*).
-                    withColumns(cols.map(col ⇒ ext.extractColumn(col)): _*).
+                    withTables(tabs.map(ext.extractTable): _*).
+                    withColumns(cols.map(ext.extractColumn): _*).
                     withAndConditions(ext.extractInConditions(condVals: _*).asScala: _*).
                     withAndConditions(
                         condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒

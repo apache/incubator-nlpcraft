@@ -18,12 +18,15 @@
 package org.apache.nlpcraft.model.tools.sqlgen;
 
 import org.apache.nlpcraft.model.*;
-import java.util.List;
+import java.util.*;
 
 /**
- * Object presentation of SQL aggregate.
+ * Object presentation of SQL aggregate. You can get an instance of this interface by
+ * using {@link NCSqlExtractor#extractAggregate(NCToken, NCToken)} method.
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
+ * @see NCSqlExtractor#extractAggregate(NCToken, NCToken)
  */
 public interface NCSqlAggregate {
     /**

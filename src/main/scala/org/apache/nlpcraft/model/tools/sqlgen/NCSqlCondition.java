@@ -23,6 +23,9 @@ import org.apache.nlpcraft.model.*;
  * Object presentation of the base SQL condition.
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
+ * @see NCSqlInCondition
+ * @see NCSqlSimpleCondition
  */
 public interface NCSqlCondition {
     /**

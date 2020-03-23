@@ -201,7 +201,7 @@ public interface NCToken extends NCMetadata {
      * @param grp Group to test.
      * @return <code>True</code> if this token belongs to the group <code>grp</code>, {@code false} otherwise.
      */
-    default boolean isOfGroup(String grp) {
+    default boolean isMemberOf(String grp) {
         return getGroups().contains(grp);
     }
 

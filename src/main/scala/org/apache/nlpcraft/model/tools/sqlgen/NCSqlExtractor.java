@@ -27,7 +27,10 @@ import java.util.*;
  * <p>
  * Note that {@link NCSqlExtractorBuilder} builder requires {@link NCSqlSchema} and {@link NCVariant}
  * objects when creating an instance of SQL extractor. Many methods in this interface will search
- * that parsing variant ans schema to find necessary referenced tokens.
+ * that parsing variant and schema to find necessary referenced tokens.
+ * <p>
+ * Note also that wherever necessary the implementation will scan part (constituent) tokens as well
+ * (see {@link NCToken#findPartTokens(String...)} for more information).
  *
  * @see NCSqlExtractorBuilder
  */
@@ -42,29 +45,38 @@ public interface NCSqlExtractor {
     NCSqlLimit extractLimit(NCToken limitTok);
 
     /**
-     * Extracts date range conditions object from given tokens.
+     * Extracts date range conditions object from given tokens. Result list will have multiple conditions that
+     * all will have to be AND-combined to make <code>colTok</code> to be within a date range
+     * defined by <code>dateTok</code> parameter.
      *
      * @param colTok Token representing detected SQL column (i.e. detected model element that belongs
      *      to <code>column</code> group).
      * @param dateTok Date range token with ID <code>nlpcraft:date</code>.
-     * @return List of date range conditions extracted from given parameters.
+     * @return List of conditions extracted from given parameters that have to be AND-combined.
      * @throws NCException Thrown in case of any errors.
      */
     List<NCSqlSimpleCondition> extractDateRangeConditions(NCToken colTok, NCToken dateTok);
 
     /**
+     * Extracts numeric conditions object from given tokens. Result list will have multiple conditions that
+     * all will have to be AND-combined to make <code>colTok</code> act as an operand to the numeric
+     * condition defined by <code>numTok</code> parameter.
      *
-     * @param colTok
-     * @param numTok
-     * @return
+     * @param colTok Token representing detected SQL column (i.e. detected model element that belongs
+     *      to <code>column</code> group).
+     * @param numTok Numeric token with ID <code>nlpcraft:num</code>. This token provides numeric value
+     *      as well as type of logical condition on that numeric value.
+     * @return List of conditions extracted from given parameters that have to be AND-combined.
      * @throws NCException Thrown in case of any errors.
      */
     List<NCSqlSimpleCondition> extractNumConditions(NCToken colTok, NCToken numTok);
 
     /**
      *
-     * @param valToks
-     * @return
+     * @param valToks Zero or more tokens representing values for the SQL IN condition. Note that only
+     *      those token that have non-{@code null} values (see {@link NCToken#getValue()} method) will
+     *      be used in the result conditions.
+     * @return List of conditions extracted from given parameters that have to be AND-combined.
      * @throws NCException Thrown in case of any errors.
      */
     List<NCSqlInCondition> extractInConditions(NCToken... valToks);

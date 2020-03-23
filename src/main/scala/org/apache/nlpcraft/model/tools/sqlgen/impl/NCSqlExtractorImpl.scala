@@ -48,7 +48,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @param grp
       */
     private def checkGroup(tok: NCToken, grp: String): Unit =
-        if (!tok.isOfGroup(grp))
+        if (!tok.isMemberOf(grp))
             throw new NCException(s"Token does not belong to the group '$grp': $tok")
     
     /**
@@ -72,11 +72,19 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     /**
       *
       * @param tok
-      * @param group
       * @return
       */
-    private def getWithGroup(tok: NCToken, group: String): Seq[NCToken] =
-        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(group)) Some(p) else None)
+    private def tree(tok: NCToken): Seq[NCToken] =
+        Seq(tok) ++ tok.findPartTokens().asScala
+    
+    /**
+      *
+      * @param tok
+      * @param grp
+      * @return
+      */
+    private def getWithGroup(tok: NCToken, grp: String): Seq[NCToken] =
+        tree(tok).flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
     
     /**
       *
@@ -114,7 +122,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @return
       */
     private def getReference(refTok: NCToken): Option[NCSqlColumn] = {
-        val tok = getLinkBySingleIndex(variant.asScala, refTok)
+        val tok = getLinkBySingleIndex(variant, refTok)
         
         findAnyColumnTokenOpt(tok) match {
             // If reference is column - sort by column.
@@ -167,12 +175,11 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         val col = extractColumn(colTok)
         val range = extractDateRange(dateTok)
         
-        val seq: Seq[NCSqlSimpleCondition] = Seq(
+        Seq[NCSqlSimpleCondition](
             NCSqlSimpleConditionImpl(col, ">=", range.getFrom),
             NCSqlSimpleConditionImpl(col, "<=", range.getTo)
         )
-        
-        seq.asJava
+        .asJava
     }
     
     /**
@@ -227,14 +234,14 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       */
     override def extractInConditions(allValsToks: NCToken*): util.List[NCSqlInCondition] = {
         allValsToks.map(tok ⇒ {
-            val valToks = (Seq(tok) ++ tok.findPartTokens().asScala).filter(_.getValue != null)
+            val valToks = tree(tok).filter(_.getValue != null)
             
             val valTok =
                 valToks.size match {
                     case 1 ⇒ valToks.head
                     
-                    case 0 ⇒ throw new NCException(s"Values column not found for token: $tok")
-                    case _ ⇒ throw new NCException(s"Too many values columns found token: $tok")
+                    case 0 ⇒ throw new NCException(s"Values column not found for: $tok")
+                    case _ ⇒ throw new NCException(s"Too many values columns found for: $tok")
                 }
             
             extractColumn(valTok) → valTok.getValue
@@ -277,7 +284,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
             case _ ⇒
                 Seq(
                     NCSqlFunctionImpl(
-                        extractColumn(findAnyColumnToken(getLinkBySingleIndex(variant.asScala, aggrFun))),
+                        extractColumn(findAnyColumnToken(getLinkBySingleIndex(variant, aggrFun))),
                         aggrFun.meta(s"${aggrFun.getId}:type")
                     )
                 )
@@ -287,7 +294,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         val grpBy = aggrGrpTok match {
             case null ⇒ Seq.empty
             case aggrGrp ⇒
-                val grpTok = getLinkBySingleIndex(variant.asScala, aggrGrp)
+                val grpTok = getLinkBySingleIndex(variant, aggrGrp)
             
                 // If reference is column - group by column.
                 findAnyColumnTokenOpt(grpTok) match {
@@ -354,15 +361,18 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @param tok
       * @return
       */
-    private def getLinkBySingleIndex(variant: Seq[NCToken], tok: NCToken): NCToken = {
+    private def getLinkBySingleIndex(variant: NCVariant, tok: NCToken): NCToken = {
         val idxs: util.List[Integer] = tok.metax(s"${tok.getId}:indexes")
+        
+        if (idxs.isEmpty)
+            throw new NCException(s"Empty indexes for: $tok")
 
-        val idx = idxs.asScala.head
+        val idx = idxs.get(0)
 
-        if (idx < variant.length) {
+        if (idx < variant.size) {
             val note: String = tok.metax(s"${tok.getId}:note")
 
-            val link = variant(idx)
+            val link = variant.get(idx)
 
             if (link.getId != note)
                 throw new NCException(s"Unexpected token with index: $idx, type: $note")
