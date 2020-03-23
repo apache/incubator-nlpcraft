@@ -25,7 +25,7 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.fliptables.FlipTable
-import org.apache.nlpcraft.model.tools.sqlgen.NCSqlException
+import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 
@@ -139,7 +139,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
         if (errs.nonEmpty) {
             errs.foreach { case (txt, err) ⇒ println(s"Text: $txt\nError: $err\n")}
 
-            throw new NCSqlException(s"Test finished with errors [passed=${cases.size - errs.size}, failed=${errs.size}]")
+            throw new Exception(s"Test finished with errors [passed=${cases.size - errs.size}, failed=${errs.size}]")
         }
         else
             println("Passed")

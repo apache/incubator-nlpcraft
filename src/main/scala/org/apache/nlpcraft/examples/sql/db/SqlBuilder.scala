@@ -89,13 +89,13 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
     private def sql(clause: NCSqlSimpleCondition): String = s"${sql(clause.getColumn)} ${clause.getOperation} ?"
 
-    @throws[NCSqlException]
+    @throws[RuntimeException]
     private def sql(clause: NCSqlCondition): String =
         clause match {
             case x: NCSqlSimpleCondition ⇒ sql(x)
             case x: NCSqlInCondition ⇒ sql(x)
 
-            case _ ⇒ throw new NCSqlException("Unexpected condition")
+            case _ ⇒ throw new RuntimeException("Unexpected condition")
         }
 
     private def isDate(col: NCSqlColumn): Boolean = col.getDataType == Types.DATE
@@ -137,13 +137,13 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             case _ ⇒ sorts.distinct
         }
 
-    @throws[NCSqlException]
+    @throws[RuntimeException]
     private def extendTables(tabs: Seq[NCSqlTable]): Seq[NCSqlTable] = {
         val ext =
             (tabs ++ schemaTabs.filter(tabs.contains).flatMap(_.getExtraTables.asScala.map(schemaTabsByNames))).distinct
 
         ext.size match {
-            case 0 ⇒ throw new NCSqlException("Tables cannot be empty")
+            case 0 ⇒ throw new RuntimeException("Tables cannot be empty.")
             case 1 ⇒ ext
             case _ ⇒
                 // Simple algorithm which takes into account only FKs between tables.
@@ -156,7 +156,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                     ).toSeq.distinct
 
                 if (ext.exists(t ⇒ !extra.contains(t.getTable)))
-                    throw new NCSqlException(s"Select clause cannot be prepared with given tables set: ${ext.mkString(", ")}")
+                    throw new RuntimeException(s"Select clause cannot be prepared with given tables set: ${ext.mkString(", ")}")
 
                 extra.map(schemaTabsByNames)
         }
@@ -271,13 +271,13 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         this
     }
 
-    @throws[NCSqlException]
+    @throws[RuntimeException]
     def build(): SqlQuery = {
         // Collects data.
         if (freeDateRangeOpt.isDefined &&
             this.conds.exists(cond ⇒ isDate(schemaCols(Key(cond.getColumn.getTable, cond.getColumn.getColumn))))
         )
-            throw new NCSqlException("Too many date conditions")
+            throw new RuntimeException("Too many date conditions.")
 
         var tabsNorm = mutable.ArrayBuffer.empty[NCSqlTable] ++ this.tabs
         var colsNorm = mutable.ArrayBuffer.empty[NCSqlColumn] ++ this.cols

@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.model;
 
+import org.apache.nlpcraft.common.*;
+
 /**
  * Exception to indicate that user input cannot be processed as is. This exception can be thrown from
  * intent callbacks.
@@ -25,7 +27,7 @@ package org.apache.nlpcraft.model;
  * to have it processed automatically. In most cases this means that the user's input is either too short
  * or too simple, too long or too complex, missing required context, or unrelated to requested data model.
  */
-public class NCRejection extends RuntimeException {
+public class NCRejection extends NCException {
     /**
      * Creates new rejection exception with given message.
      *

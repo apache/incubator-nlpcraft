@@ -18,11 +18,16 @@
 package org.apache.nlpcraft.model.tools.sqlgen;
 
 import org.apache.nlpcraft.model.*;
+import org.apache.nlpcraft.common.NCException;
 import java.util.*;
 
 /**
  * Utility methods for extracting various SQL components from {@link NCToken} tokens. Instances
  * of this interface are created using {@link NCSqlExtractorBuilder} builder.
+ * <p>
+ * Note that {@link NCSqlExtractorBuilder} builder requires {@link NCSqlSchema} and {@link NCVariant}
+ * objects when creating an instance of SQL extractor. Many methods in this interface will search
+ * that parsing variant ans schema to find necessary referenced tokens.
  *
  * @see NCSqlExtractorBuilder
  */
@@ -32,7 +37,7 @@ public interface NCSqlExtractor {
      *
      * @param limitTok Limit token with ID <code>nlpcraft:limit</code>.
      * @return SQL limit object extracted from given token.
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     NCSqlLimit extractLimit(NCToken limitTok);
 
@@ -43,7 +48,7 @@ public interface NCSqlExtractor {
      *      to <code>column</code> group).
      * @param dateTok Date range token with ID <code>nlpcraft:date</code>.
      * @return List of date range conditions extracted from given parameters.
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     List<NCSqlSimpleCondition> extractDateRangeConditions(NCToken colTok, NCToken dateTok);
 
@@ -52,7 +57,7 @@ public interface NCSqlExtractor {
      * @param colTok
      * @param numTok
      * @return
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     List<NCSqlSimpleCondition> extractNumConditions(NCToken colTok, NCToken numTok);
 
@@ -60,7 +65,7 @@ public interface NCSqlExtractor {
      *
      * @param valToks
      * @return
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     List<NCSqlInCondition> extractInConditions(NCToken... valToks);
 
@@ -68,7 +73,7 @@ public interface NCSqlExtractor {
      *
      * @param sortTok
      * @return
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     NCSqlSort extractSort(NCToken sortTok);
 
@@ -77,7 +82,7 @@ public interface NCSqlExtractor {
      * @param aggrFunTok
      * @param aggrGrpTok
      * @return
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     NCSqlAggregate extractAggregate(NCToken aggrFunTok, NCToken aggrGrpTok);
 
@@ -85,7 +90,7 @@ public interface NCSqlExtractor {
      *
      * @param tblTok
      * @return
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     NCSqlTable extractTable(NCToken tblTok);
 
@@ -93,7 +98,7 @@ public interface NCSqlExtractor {
      *
      * @param colTok
      * @return
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     NCSqlColumn extractColumn(NCToken colTok);
 
@@ -101,7 +106,7 @@ public interface NCSqlExtractor {
      * 
      * @param dateTok
      * @return
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     NCSqlDateRange extractDateRange(NCToken dateTok);
 }

@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model;
 
+import org.apache.nlpcraft.common.*;
 import java.util.*;
 
 /**
@@ -59,11 +60,35 @@ public interface NCMetadata {
      *
      * @param prop Metadata property name.
      * @param <T> Type of the metadata property.
-     * @return Metadata property value.
+     * @return Metadata property value or {@code null} if given metadata property not found.
      */
     @SuppressWarnings("unchecked")
     default <T> T meta(String prop) {
         return (T)getMetadata().get(prop);
+    }
+
+    /**
+     * Shortcut method to get given mandatory metadata property. Equivalent to:
+     * <pre class="brush: java">
+     *     T t = (T)getMetadata().get(prop);
+     *     if (t == null)
+     *         throw new NCException("Mandatory metadata property not found: " + prop);
+     *     else
+     *         return t;
+     * </pre>
+     *
+     * @param prop Metadata property name.
+     * @param <T> Type of the metadata property.
+     * @return Metadata property value or throws an exception if given metadata property not found.
+     * @throws NCException Thrown if given metadata property not found.
+     */
+    default <T> T metax(String prop) throws NCException {
+        T t = meta(prop);
+
+        if (t == null)
+            throw new NCException("Mandatory metadata property not found: " + prop);
+        else
+            return t;
     }
 
     /**

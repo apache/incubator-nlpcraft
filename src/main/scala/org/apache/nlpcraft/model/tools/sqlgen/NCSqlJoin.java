@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Object presentation of SQL join (foreign key).
  * <p>
- * In JSON/YAML generated model SQL joins are declared with the following model
+ * In JSON/YAML generated model SQL joins are declared with the following data model
  * metadata (example):
  * <pre class="brush: js">
  *   sql:joins:
@@ -37,6 +37,7 @@ import java.util.List;
  * </pre>
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlSchema#getJoins() 
  */
 public interface NCSqlJoin {
     /**

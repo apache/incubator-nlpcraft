@@ -21,7 +21,6 @@ import com.google.gson.Gson
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.examples.sql.db._
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.tools.sqlgen.NCSqlExtractors._
 import org.apache.nlpcraft.model.tools.sqlgen._
 
 import scala.collection.JavaConverters._
@@ -58,12 +57,11 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         
         cols.size match {
             case 1 ⇒ cols.head
-            case 0 ⇒ throw new NCSqlException(s"No columns found for token: $tok")
-            case _ ⇒ throw new NCSqlException("Too many columns found for token: $tok")
+            case 0 ⇒ throw new Exception(s"No columns found for token: $tok")
+            case _ ⇒ throw new Exception("Too many columns found for token: $tok")
         }
     }
     
-
     /**
       * Complex element contains 2 tokens: column + date ot numeric condition.
       *
@@ -109,35 +107,35 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         @NCIntentTerm("sort") sortTokOpt: Option[NCToken],
         @NCIntentTerm("limit") limitTokOpt: Option[NCToken]
     ): NCResult = {
-        val ns = ctx.getVariant
+        val ext = NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant)
 
         var query: SqlQuery = null
 
         try {
             query =
                 SqlBuilder(SCHEMA).
-                    withTables(tabs.map(t ⇒ extractTable(SCHEMA, t)): _*).
-                    withColumns(cols.map(col ⇒ extractColumn(SCHEMA, col)): _*).
-                    withAndConditions(extractValuesConditions(SCHEMA, condVals: _*).asScala: _*).
+                    withTables(tabs.map(t ⇒ ext.extractTable(t)): _*).
+                    withColumns(cols.map(col ⇒ ext.extractColumn(col)): _*).
+                    withAndConditions(ext.extractInConditions(condVals: _*).asScala: _*).
                     withAndConditions(
                         condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒
-                            extractDateRangeConditions(SCHEMA, h.column, h.condition).asScala
+                            ext.extractDateRangeConditions(h.column, h.condition).asScala
                         ): _*
                     ).
                     withAndConditions(
                         condNums.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:num")).flatMap(h ⇒
-                            extractNumConditions(SCHEMA, h.column, h.condition).asScala
+                            ext.extractNumConditions(h.column, h.condition).asScala
                         ): _*
                     ).
-                    withSorts(sortTokOpt.map(sortTok ⇒ extractSorts(SCHEMA, ns, sortTok)).toSeq: _*).
+                    withSorts(sortTokOpt.map(sortTok ⇒ ext.extractSort(sortTok)).toSeq: _*).
                     withAggregate(
                         if (aggrFuncOpt.isDefined || aggrGroupOpt.isDefined)
-                            extractAggregate(SCHEMA, ns, aggrFuncOpt.orNull, aggrGroupOpt.orNull)
+                            ext.extractAggregate(aggrFuncOpt.orNull, aggrGroupOpt.orNull)
                         else
                             null
                     ).
-                    withLimit(limitTokOpt.flatMap(limitTok ⇒ Some(extractLimit(SCHEMA, ns, limitTok))).orNull).
-                    withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(extractDateRange(freeDate))).orNull).
+                    withLimit(limitTokOpt.flatMap(limitTok ⇒ Some(ext.extractLimit(limitTok))).orNull).
+                    withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
                     build()
 
             NCResult.json(toJson(SqlAccess.select(query, true), query.getSql, query.getParameters))
