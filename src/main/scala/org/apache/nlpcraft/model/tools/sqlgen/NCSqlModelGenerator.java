@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.tools.sqlgen;
 
 import org.apache.nlpcraft.model.*;
+import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl;
 
 /**
@@ -44,13 +45,13 @@ import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl;
  *     <li>
  *         Use {@link NCSqlSchemaBuilder#makeSchema(NCModel)} method to get an object representation of the
  *         SQL data schema for the model. You can use this object representation along with many utility
- *         methods in {@link NCSqlExtractors} class to efficiently auto-generate SQL queries against the source RDBMS.
+ *         methods in {@link NCSqlExtractor} class to efficiently auto-generate SQL queries against the source RDBMS.
  *     </li>
  * </ul>
  *
  * @see NCModelFileAdapter
  * @see NCSqlSchemaBuilder
- * @see NCSqlExtractors
+ * @see NCSqlExtractor
  */
 public class NCSqlModelGenerator {
     /**
@@ -58,7 +59,7 @@ public class NCSqlModelGenerator {
      * 
      * @param args Command line parameters. Execute with <code>--help</code> parameter to get a full
      *      documentation.
-     * @throws NCSqlException Thrown in case of any errors.
+     * @throws NCException Thrown in case of any errors.
      */
     public static void main(String[] args) {
         // Calling out Scala engine.

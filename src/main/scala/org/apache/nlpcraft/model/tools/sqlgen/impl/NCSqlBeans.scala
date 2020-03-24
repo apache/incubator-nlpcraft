@@ -29,16 +29,6 @@ import scala.compat.java8.OptionConverters._
 
 /**
   *
-  * @param select
-  * @param groupBy
-  */
-case class NCSqlAggregateImpl(select: Seq[NCSqlFunction], groupBy: Seq[NCSqlColumn]) extends NCSqlAggregate {
-    override def getSelect: util.List[NCSqlFunction] = select.asJava
-    override def getGroupBy: util.List[NCSqlColumn] = groupBy.asJava
-}
-
-/**
-  *
   * @param table
   * @param column
   * @param dataType
@@ -53,44 +43,12 @@ case class NCSqlColumnImpl(table: String, column: String, dataType: Int, isPk: B
 
 /**
   *
-  * @param col
-  * @param op
-  * @param value
-  */
-case class NCSqlSimpleConditionImpl(col: NCSqlColumn, op: String, value: Object) extends NCSqlSimpleCondition {
-    override def getColumn: NCSqlColumn = col
-    override def getOperation: String = op
-    override def getValue: Object = value
-}
-
-/**
-  *
-  * @param col
-  * @param values
-  */
-case class NCSqlInConditionImpl(col: NCSqlColumn, values: Seq[Object]) extends NCSqlInCondition {
-    override def getColumn: NCSqlColumn = col
-    override def getValues: util.List[Object] = values.asJava
-}
-
-/**
-  *
   * @param from
   * @param to
   */
 case class NCSqlDateRangeImpl(from: Timestamp, to: Timestamp) extends NCSqlDateRange {
     override def getFrom: Timestamp = from
     override def getTo: Timestamp = to
-}
-
-/**
-  *
-  * @param column
-  * @param function
-  */
-case class NCSqlFunctionImpl(column: NCSqlColumn, function: String) extends NCSqlFunction {
-    override def getColumn: NCSqlColumn = column
-    override def getFunction: String = function
 }
 
 /**

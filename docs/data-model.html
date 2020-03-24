@@ -1863,25 +1863,6 @@ intents:
                     </td>
                 </tr>
                 <tr>
-                    <td><code>nlpcraft:aggregation</code></td>
-                    <td>
-                        This token denotes an aggregation function:
-                        <code>min</code>,
-                        <code>max</code>,
-                        <code>avg</code>,
-                        <code>sum</code>, or
-                        <code>group</code>.  Note this token always need another token that it references.
-                    </td>
-                    <td>
-                        <ul>
-                            <li>
-                                Show the <code><b>average</b></code> <code>price</code> (assuming that 'price' is also
-                                detected as a token).
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-                <tr>
                     <td><code>nlpcraft:relation</code></td>
                     <td>
                         This token denotes a relation function:
@@ -2015,7 +1996,6 @@ intents:
             <li><a href="#nlpcraft:coordinate">Token ID <code>nlpcraft:coordinate</code></a></li>
             <li><a href="#nlpcraft:sort">Token ID <code>nlpcraft:sort</code></a></li>
             <li><a href="#nlpcraft:limit">Token ID <code>nlpcraft:limit</code></a></li>
-            <li><a href="#nlpcraft:aggregation">Token ID <code>nlpcraft:aggregation</code></a></li>
             <li><a href="#nlpcraft:relation">Token ID <code>nlpcraft:relation</code></a></li>
             <li><a href="#stanford:xxx">Token ID <code>stanford:xxx</code></a></li>
             <li><a href="#spacy:xxx">Token ID <code>spacy:xxx</code></a></li>
@@ -2996,43 +2976,6 @@ intents:
                 <td><code><b>coordinate:longitude</b></code></td>
                 <td><code>java.lang.Double</code></td>
                 <td>Coordinate longitude.</td>
-            </tr>
-            </tbody>
-        </table>
-        <br/>
-        <span id="nlpcraft:aggregation" class="section-sub-title">Token ID <code>nlpcraft:aggregation</code></span>
-        <p>
-            This token denotes an aggregation function.
-            Additionally to <code><b>nlpcraft:nlp:xxx</b></code> properties this type of token will have the following
-            metadata properties all of which are <b>mandatory</b> unless otherwise noted.
-        </p>
-        <table class="gradient-table">
-            <thead>
-            <tr>
-                <th>Property</th>
-                <th>Java Type</th>
-                <th>Description</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><code><b>nlpcraft:aggregation:indexes</b></code></td>
-                <td><code>java.util.List&lt;Integer&gt;</code></td>
-                <td>Index (always only one) of the reference token (i.e. the token being aggregated on).</td>
-            </tr>
-            <tr>
-                <td><code><b>nlpcraft:aggregation:type</b></code></td>
-                <td><code>java.lang.String</code></td>
-                <td>
-                    Type of the aggregation. One of the following values:
-                    <ul>
-                        <li><code>sum</code></li>
-                        <li><code>min</code></li>
-                        <li><code>max</code></li>
-                        <li><code>avg</code></li>
-                        <li><code>group</code></li>
-                    </ul>
-                </td>
             </tr>
             </tbody>
         </table>

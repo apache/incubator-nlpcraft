@@ -219,26 +219,6 @@ case class NCTestRelationToken(text: String, `type`: String, indexes: Seq[Int], 
             s", note=$note>"
 }
 
-case class NCTestAggregationToken(text: String, `type`: String, indexes: Seq[Int], note: String) extends NCTestToken {
-    require(text != null)
-    require(`type` != null)
-    require(indexes != null)
-    require(indexes.nonEmpty)
-    require(note != null)
-
-    override def id: String = "nlpcraft:aggregation"
-    override def toString: String =
-        s"$text(aggregation)" +
-            s"<type=${`type`}" +
-            s", indexes=[${indexes.mkString(",")}]" +
-            s", note=$note>"
-}
-
-object NCTestAggregationToken {
-    def apply(text: String, `type`: String, index: Int, note: String): NCTestAggregationToken =
-        new NCTestAggregationToken(text, `type`, Seq(index), note)
-}
-
 case class NCTestLimitToken(
     text: String,
     limit: Double,
@@ -312,10 +292,8 @@ object NCTestToken {
             case "nlpcraft:city" ⇒ NCTestCityToken(txt, city = t.meta("nlpcraft:city:city"))
             case "nlpcraft:region" ⇒ NCTestRegionToken(txt, region = t.meta("nlpcraft:region:region"))
             case "nlpcraft:country" ⇒ NCTestCountryToken(txt, country = t.meta("nlpcraft:country:country"))
-            case "nlpcraft:subcontinent" ⇒
-                NCTestSubcontinentToken(txt, subcontinent = t.meta("nlpcraft:subcontinent:subcontinent"))
-            case "nlpcraft:continent" ⇒
-                NCTestContinentToken(txt, continent = t.meta("nlpcraft:continent:continent"))
+            case "nlpcraft:subcontinent" ⇒ NCTestSubcontinentToken(txt, subcontinent = t.meta("nlpcraft:subcontinent:subcontinent"))
+            case "nlpcraft:continent" ⇒ NCTestContinentToken(txt, continent = t.meta("nlpcraft:continent:continent"))
             case "nlpcraft:metro" ⇒ NCTestMetroToken(txt, metro = t.meta("nlpcraft:metro:metro"))
             case "nlpcraft:sort" ⇒
                 val subjNotes: java.util.List[String] = t.meta("nlpcraft:sort:subjnotes")
@@ -339,15 +317,6 @@ object NCTestToken {
                     `type` = t.meta("nlpcraft:relation:type"),
                     indexes = indexes.asScala,
                     note = t.meta("nlpcraft:relation:note")
-                )
-            case "nlpcraft:aggregation" ⇒
-                val indexes: java.util.List[Int] = t.meta("nlpcraft:aggregation:indexes")
-
-                NCTestAggregationToken(
-                    txt,
-                    `type` = t.meta("nlpcraft:aggregation:type"),
-                    indexes = indexes.asScala,
-                    note = t.meta("nlpcraft:aggregation:note")
                 )
 
             case "nlpcraft:limit" ⇒

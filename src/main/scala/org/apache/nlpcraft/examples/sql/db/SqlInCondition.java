@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.tools.sqlgen;
+package org.apache.nlpcraft.examples.sql.db;
 
 import org.apache.nlpcraft.model.*;
+import org.apache.nlpcraft.model.tools.sqlgen.*;
+import java.util.*;
 
 /**
- * Object presentation of the base SQL condition.
+ * Object presentation of SQL IN condition.
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
- * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
- * @see NCSqlInCondition
- * @see NCSqlSimpleCondition
  */
-public interface NCSqlCondition {
+public interface SqlInCondition extends SqlCondition {
     /**
-     * Gets the SQL column this condition is on.
+     * Gets the list of SQL IN values.
      *
-     * @return SQL column this condition is on.
+     * @return List of SQL IN values.
      */
-    NCSqlColumn getColumn();
+    List<Object> getValues();
 }

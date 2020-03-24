@@ -66,7 +66,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
     private var tabs: Seq[NCSqlTable] = Seq.empty
     private var cols: Seq[NCSqlColumn] = Seq.empty
-    private var conds: Seq[NCSqlCondition] = Seq.empty
+    private var conds: Seq[SqlCondition] = Seq.empty
     private var sorts: Seq[NCSqlSort] = Seq.empty
     private var freeDateRangeOpt: Option[NCSqlDateRange] = None
     private var aggregationOpt: Option[NCSqlAggregate] = None
@@ -75,7 +75,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private def sql(clause: NCSqlTable): String = clause.getTable
     private def sql(clause: NCSqlColumn): String = s"${clause.getTable}.${clause.getColumn}"
     private def sql(clause: NCSqlSort): String = s"${sql(clause.getColumn)} ${if (clause.isAscending) "ASC" else "DESC"}"
-    private def sql(clause: NCSqlFunction): String = s"${clause.getFunction.toLowerCase}(${sql(clause.getColumn)})"
+    private def sql(clause: SqlFunction): String = s"${clause.getFunction.toLowerCase}(${sql(clause.getColumn)})"
 
     // TODO: implement based on join type.
     private def sql(clause: NCSqlJoin): String =
@@ -84,16 +84,16 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             map { case (fromCol, toCol) ⇒ s"${ clause.getFromTable}.$fromCol = ${clause.getToTable}.$toCol" }.
             mkString(" AND ")
 
-    private def sql(clause: NCSqlInCondition): String =
+    private def sql(clause: SqlInCondition): String =
         s"${sql(clause.getColumn)} IN (${(0 until clause.getValues.size()).map(_ ⇒ "?").mkString(",")})"
 
-    private def sql(clause: NCSqlSimpleCondition): String = s"${sql(clause.getColumn)} ${clause.getOperation} ?"
+    private def sql(clause: SqlSimpleCondition): String = s"${sql(clause.getColumn)} ${clause.getOperation} ?"
 
     @throws[RuntimeException]
-    private def sql(clause: NCSqlCondition): String =
+    private def sql(clause: SqlCondition): String =
         clause match {
-            case x: NCSqlSimpleCondition ⇒ sql(x)
-            case x: NCSqlInCondition ⇒ sql(x)
+            case x: SqlSimpleCondition ⇒ sql(x)
+            case x: SqlInCondition ⇒ sql(x)
 
             case _ ⇒ throw new RuntimeException("Unexpected condition")
         }
@@ -197,12 +197,12 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         }
 
     private def extendConditions(
-        conds: Seq[NCSqlCondition],
+        conds: Seq[SqlCondition],
         extTabs: Seq[NCSqlTable],
         initTabs: Seq[NCSqlTable],
         freeDateColOpt: Option[NCSqlColumn]
     ): (Seq[String], Seq[Object]) = {
-        val (freeDateConds, freeDateParams): (Seq[NCSqlCondition], Seq[Object]) =
+        val (freeDateConds, freeDateParams): (Seq[SqlCondition], Seq[Object]) =
             freeDateColOpt match {
                 case Some(col) ⇒
                     val range = freeDateRangeOpt.getOrElse(throw new AssertionError("Missed date range"))
@@ -221,8 +221,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             etNames.flatMap(t ⇒ schemaJoins.filter(j ⇒ j.getFromTable == t && etNames.contains(j.getToTable))).map(sql),
             conds.flatMap(p ⇒
                 p match {
-                    case x: NCSqlSimpleCondition ⇒ Seq(x.getValue)
-                    case x: NCSqlInCondition ⇒ x.getValues.asScala
+                    case x: SqlSimpleCondition ⇒ Seq(x.getValue)
+                    case x: SqlInCondition ⇒ x.getValues.asScala
                     case _ ⇒ throw new AssertionError(s"Unexpected condition: $p")
                 }
             ) ++ freeDateParams
@@ -241,14 +241,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         this
     }
 
-    def withAndConditions(conds: NCSqlCondition*): SqlBuilder = {
+    def withAndConditions(conds: SqlCondition*): SqlBuilder = {
         this.conds ++= conds
-
-        this
-    }
-
-    def withAggregate(aggregation: NCSqlAggregate): SqlBuilder = {
-        this.aggregationOpt = Option(aggregation)
 
         this
     }
@@ -281,7 +275,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
         var tabsNorm = mutable.ArrayBuffer.empty[NCSqlTable] ++ this.tabs
         var colsNorm = mutable.ArrayBuffer.empty[NCSqlColumn] ++ this.cols
-        var condsNorm = mutable.ArrayBuffer.empty[NCSqlCondition] ++ this.conds
+        var condsNorm = mutable.ArrayBuffer.empty[SqlCondition] ++ this.conds
         var sortsNorm = mutable.ArrayBuffer.empty[NCSqlSort] ++ this.sorts
 
         colsNorm.foreach(col ⇒ tabsNorm += schemaTabsByNames(col.getTable))

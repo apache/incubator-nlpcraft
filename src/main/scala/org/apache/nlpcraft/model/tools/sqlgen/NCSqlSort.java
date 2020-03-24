@@ -18,13 +18,12 @@
 package org.apache.nlpcraft.model.tools.sqlgen;
 
 import org.apache.nlpcraft.model.*;
-import java.util.*;
 
 /**
  * Object presentation of SQL sorting.
  * 
  * @see NCSqlTable#getDefaultSort() 
- * @see NCSqlExtractors#extractSorts(NCSqlSchema, List, NCToken)
+ * @see NCSqlExtractor#extractSort(NCToken) 
  */
 public interface NCSqlSort {
     /**

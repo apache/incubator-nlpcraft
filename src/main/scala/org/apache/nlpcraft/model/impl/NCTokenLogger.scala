@@ -47,7 +47,6 @@ object NCTokenLogger extends LazyLogging {
         "nlpcraft:city",
         "nlpcraft:date",
         "nlpcraft:num",
-        "nlpcraft:aggregation",
         "nlpcraft:relation",
         "nlpcraft:sort",
         "nlpcraft:limit",
@@ -80,7 +79,6 @@ object NCTokenLogger extends LazyLogging {
             "nlpcraft:region" → Seq("region", "country", "subcontinent", "continent", "metro"),
             "nlpcraft:city" → Seq("city", "latitude", "longitude", "region", "country", "subcontinent", "continent"),
             "nlpcraft:date" → Seq("from", "to", "periods"),
-            "nlpcraft:aggregation" → Seq("type", "indexes", "note"),
             "nlpcraft:relation" → Seq("type", "indexes", "note"),
             "nlpcraft:sort" → Seq("asc", "indexes", "note"),
             "nlpcraft:limit" → Seq("limit", "indexes", "asc", "note")
@@ -204,12 +202,6 @@ object NCTokenLogger extends LazyLogging {
                     val r = s"$from:$to"
                 
                     s"range=$r, periods=$ps"
-
-                case "nlpcraft:aggregation" ⇒
-                    val t = mkString("type")
-                    val note = mkString("note")
-
-                    s"type=$t, indexes=[$getIndexes], note=$note"
 
                 case "nlpcraft:relation" ⇒
                     val t = mkString("type")
@@ -451,12 +443,6 @@ object NCTokenLogger extends LazyLogging {
                             val r = s"$from:$to"
 
                             s"range=$r, periods=${ps.asScala.mkString(",")}"
-
-                        case "nlpcraft:aggregation" ⇒
-                            val t = mkString("type")
-                            val note = mkString("note")
-
-                            s"type=$t, indexes=[${getIndexes("indexes")}], note=$note"
 
                         case "nlpcraft:relation" ⇒
                             val t = mkString("type")

@@ -89,8 +89,6 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         "term(condDates)={id == 'condition:date'}[0,7] " +
         "term(condFreeDate)={id == 'nlpcraft:date'}? " +
          // Simplified version of aggregation wih single function column and one optional group by column.
-        "term(aggrFunc)={id == 'nlpcraft:aggregation' && ~nlpcraft:aggregation:type != 'group'}? " +
-        "term(aggrGroup)={id == 'nlpcraft:aggregation' && ~nlpcraft:aggregation:type == 'group'}? " +
         "term(sort)={id == 'nlpcraft:sort'}? " +
         "term(limit)={id == 'nlpcraft:limit'}?"
     )
@@ -102,8 +100,6 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         @NCIntentTerm("condVals") condVals: Seq[NCToken],
         @NCIntentTerm("condDates") condDates: Seq[NCToken],
         @NCIntentTerm("condFreeDate") freeDateOpt: Option[NCToken],
-        @NCIntentTerm("aggrFunc") aggrFuncOpt: Option[NCToken],
-        @NCIntentTerm("aggrGroup") aggrGroupOpt: Option[NCToken],
         @NCIntentTerm("sort") sortTokOpt: Option[NCToken],
         @NCIntentTerm("limit") limitTokOpt: Option[NCToken]
     ): NCResult = {
@@ -128,12 +124,6 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                         ): _*
                     ).
                     withSorts(sortTokOpt.map(sortTok ⇒ ext.extractSort(sortTok)).toSeq: _*).
-                    withAggregate(
-                        if (aggrFuncOpt.isDefined || aggrGroupOpt.isDefined)
-                            ext.extractAggregate(aggrFuncOpt.orNull, aggrGroupOpt.orNull)
-                        else
-                            null
-                    ).
                     withLimit(limitTokOpt.flatMap(limitTok ⇒ Some(ext.extractLimit(limitTok))).orNull).
                     withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
                     build()

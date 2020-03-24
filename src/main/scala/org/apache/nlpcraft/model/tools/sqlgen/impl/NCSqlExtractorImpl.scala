@@ -72,19 +72,11 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     /**
       *
       * @param tok
-      * @return
-      */
-    private def tree(tok: NCToken): Seq[NCToken] =
-        Seq(tok) ++ tok.findPartTokens().asScala
-    
-    /**
-      *
-      * @param tok
       * @param grp
       * @return
       */
     private def getWithGroup(tok: NCToken, grp: String): Seq[NCToken] =
-        tree(tok).flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
+        Seq(tok) ++ tok.findPartTokens().asScala.flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
     
     /**
       *
@@ -138,14 +130,6 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     
     /**
       *
-      * @param tok
-      * @return
-      */
-    private def findAnyColumnToken(tok: NCToken): NCToken =
-        findAnyColumnTokenOpt(tok).getOrElse(throw new NCException(s"No columns found for token: $tok"))
-    
-    /**
-      *
       * @param limitTok
       * @return
       */
@@ -160,99 +144,6 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
             limit.intValue(),
             limitTok.metax("nlpcraft:limit:asc")
         )
-    }
-    
-    /**
-      *
-      * @param colTok
-      * @param dateTok
-      * @return
-      */
-    override def extractDateRangeConditions(colTok: NCToken, dateTok: NCToken): util.List[NCSqlSimpleCondition] = {
-        checkTokenId(dateTok, "nlpcraft:date")
-        checkGroup(colTok, "column")
-        
-        val col = extractColumn(colTok)
-        val range = extractDateRange(dateTok)
-        
-        Seq[NCSqlSimpleCondition](
-            NCSqlSimpleConditionImpl(col, ">=", range.getFrom),
-            NCSqlSimpleConditionImpl(col, "<=", range.getTo)
-        )
-        .asJava
-    }
-    
-    /**
-      *
-      * @param colTok
-      * @param numTok
-      * @return
-      */
-    override def extractNumConditions(colTok: NCToken, numTok: NCToken): util.List[NCSqlSimpleCondition] = {
-        checkTokenId(numTok, "nlpcraft:num")
-        checkGroup(colTok, "column")
-
-        val col = extractColumn(colTok)
-        
-        val from: java.lang.Double = numTok.metax("nlpcraft:num:from")
-        val fromIncl: Boolean = numTok.metax("nlpcraft:num:fromincl")
-        val to: java.lang.Double = numTok.metax("nlpcraft:num:to")
-        val toIncl: Boolean = numTok.metax("nlpcraft:num:toincl")
-        
-        val isRangeCondition: Boolean = numTok.metax("nlpcraft:num:israngecondition")
-        val isEqualCondition: Boolean = numTok.metax("nlpcraft:num:isequalcondition")
-        val isNotEqualCondition: Boolean = numTok.metax("nlpcraft:num:isnotequalcondition")
-        val isFromNegativeInfinity: Boolean = numTok.metax("nlpcraft:num:isfromnegativeinfinity")
-        val isToPositiveInfinity: Boolean = numTok.metax("nlpcraft:num:istopositiveinfinity")
-        
-        val seq: Seq[NCSqlSimpleCondition] =
-            if (isEqualCondition)
-                Seq(NCSqlSimpleConditionImpl(col, "=", from))
-            else if (isNotEqualCondition)
-                Seq(NCSqlSimpleConditionImpl(col, "<>", from))
-            else {
-                require(isRangeCondition)
-                
-                if (isFromNegativeInfinity)
-                    Seq(NCSqlSimpleConditionImpl(col, if (fromIncl) "<=" else "<", to))
-                else if (isToPositiveInfinity)
-                    Seq(NCSqlSimpleConditionImpl(col, if (fromIncl) ">=" else ">", from))
-                else
-                    Seq(
-                        NCSqlSimpleConditionImpl(col, if (fromIncl) ">=" else ">", from),
-                        NCSqlSimpleConditionImpl(col, if (toIncl) "<=" else "<", to)
-                    )
-            }
-        
-        seq.asJava
-    }
-    
-    /**
-      *
-      * @param allValsToks
-      * @return
-      */
-    override def extractInConditions(allValsToks: NCToken*): util.List[NCSqlInCondition] = {
-        allValsToks.map(tok ⇒ {
-            val valToks = tree(tok).filter(_.getValue != null)
-            
-            val valTok =
-                valToks.size match {
-                    case 1 ⇒ valToks.head
-                    
-                    case 0 ⇒ throw new NCException(s"Values column not found for: $tok")
-                    case _ ⇒ throw new NCException(s"Too many values columns found for: $tok")
-                }
-            
-            extractColumn(valTok) → valTok.getValue
-        })
-        .groupBy { case (col, _) ⇒ col }.map { case (col, seq) ⇒
-            NCSqlInConditionImpl(col, seq.map {
-                case (_, value) ⇒ value
-            }).asInstanceOf[NCSqlInCondition]
-        }
-        .toSeq
-        .asJava
     }
     
     /**

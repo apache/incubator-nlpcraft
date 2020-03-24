@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.tools.sqlgen;
+package org.apache.nlpcraft.examples.sql.db;
 
 import org.apache.nlpcraft.model.*;
+import org.apache.nlpcraft.model.tools.sqlgen.*;
 
 /**
  * Object presentation of SQL function.
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
-public interface NCSqlFunction {
+public interface SqlFunction {
     /**
      * Gets SQL column this function is referring to.
      *
