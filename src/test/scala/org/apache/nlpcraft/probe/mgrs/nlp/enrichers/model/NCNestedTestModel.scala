@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.models.nested
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import java.util
 import java.util.Collections
 
-import org.apache.nlpcraft.model.{NCIntentMatch, _}
+import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCDefaultTestModel
 
 import scala.collection.JavaConverters._
-import scala.language.implicitConversions
 
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel extends NCModelAdapter("nlpcraft.nested.test", "Nested Elements Test Model", "1.0") {
-    private implicit def convert(s: String): NCResult = NCResult.text(s)
-
+class NCNestedTestModel extends NCDefaultTestModel {
     override def getElements: util.Set[NCElement] =
         Set(
-            mkElement("x:nested", "{test|*} ^^id == 'nlpcraft:date'^^"),
-            mkElement("x:nested1", "{test1|*} ^^id == 'x:nested'^^"),
-            mkElement("x:nested2", "{test2|*} ^^id == 'x:nested1'^^")
+            mkElement("x1", "{test|*} ^^id == 'nlpcraft:date'^^"),
+            mkElement("x2", "{test1|*} ^^id == 'x1'^^"),
+            mkElement("x3", "{test2|*} ^^id == 'x2'^^"),
+            mkElement("y1", "y"),
+            mkElement("y2", "^^id == 'y1'^^"),
+            mkElement("y3", "^^id == 'y2'^^ ^^id == 'y2'^^")
         ).asJava
 
     private def mkElement(id: String, syn: String): NCElement =
@@ -43,13 +44,4 @@ class NCNestedTestModel extends NCModelAdapter("nlpcraft.nested.test", "Nested E
             override def getId: String = id
             override def getSynonyms: util.List[String] = Collections.singletonList(syn)
         }
-
-    @NCIntent("intent=nested term={id=='x:nested'}")
-    private def onNested(ctx: NCIntentMatch): NCResult = "nested"
-
-    @NCIntent("intent=nested1 term={id=='x:nested1'}")
-    private def onNested1(ctx: NCIntentMatch): NCResult = "nested1"
-
-    @NCIntent("intent=nested2 term={id=='x:nested2'}")
-    private def onNested2(ctx: NCIntentMatch): NCResult = "nested2"
 }

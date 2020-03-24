@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
-import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
 import org.junit.jupiter.api.Assertions.{assertTrue, fail}
@@ -30,25 +29,24 @@ import org.scalatest.Assertions
 class NCEnricherBaseSpec {
     private var client: NCTestClient = _
 
-    // TODO:
-    def getModelClass[T <: NCModel]: Option[Class[NCModel]] = Some(classOf[NCEnricherTestModel].asInstanceOf[Class[NCModel]])
+    def getModelClass: Option[Class[_ <: NCDefaultTestModel]] = Some(classOf[NCDefaultTestModel])
 
     @BeforeEach
     private[enrichers] def setUp(): Unit = {
+        val mdlId = NCDefaultTestModel.ID
+
         getModelClass match {
             case Some(claxx) ⇒
-                println(s"Embedded probe is going to start with model: $claxx")
+                println(s"Embedded probe is going to start with model: $mdlId")
 
                 NCEmbeddedProbe.start(claxx)
             case None ⇒
-                println("Embedded probe will not be started")
-
-                None
+                println(s"Probe should be already started as external process: $mdlId")
         }
 
         client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
 
-        client.open(NCEnricherTestModel.ID)
+        client.open(mdlId)
     }
 
     @AfterEach
