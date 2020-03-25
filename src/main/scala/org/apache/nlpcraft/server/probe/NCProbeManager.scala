@@ -150,7 +150,6 @@ object NCProbeManager extends NCService {
         val (dnHost, dnPort) = Config.getDnHostPort
         val (upHost, upPort) =  Config.getUpHostPort
 
-
         addTags(span,
             "uplink" → s"$upHost:$upPort",
             "downlink" → s"$dnHost:$dnPort"
