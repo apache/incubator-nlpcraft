@@ -17,8 +17,7 @@
 
 package org.apache.nlpcraft.examples.lightswitch
 
-import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.NCIntentTerm
+import org.apache.nlpcraft.model.{NCIntentTerm, _}
 
 /**
   * This example provides very simple implementation for NLI-powered light switch.

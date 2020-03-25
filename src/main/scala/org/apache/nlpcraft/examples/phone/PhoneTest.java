@@ -17,12 +17,14 @@
 
 package org.apache.nlpcraft.examples.phone;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -34,24 +36,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @see PhoneModel
  */
 class PhoneTest {
-    private NCTestClient client;
-    
+    private NCTestClient cli;
+
     @BeforeEach
     void setUp() throws NCException, IOException {
-        client = new NCTestClientBuilder().newBuilder().build();
-        
-        client.open("nlpcraft.phone.ex"); // See phone_model.json
+        NCEmbeddedProbe.start(PhoneModel.class);
+
+        cli = new NCTestClientBuilder().newBuilder().build();
+
+        cli.open("nlpcraft.phone.ex"); // See phone_model.json
     }
-    
+
     @AfterEach
     void tearDown() throws NCException, IOException {
-        client.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
-    
+
+    // Uncomment if this model is configured.
+    @Disabled
     @Test
     void test() throws NCException, IOException {
-        assertTrue(client.ask("Call to Apple office").isOk());
-        assertTrue(client.ask("Can you please ping John Smith?").isOk());
-        assertTrue(client.ask("Could you dial +7 (931) 188 34 58 and ask Mike?").isOk());
+        assertTrue(cli.ask("Call to Apple office").isOk());
+        assertTrue(cli.ask("Can you please ping John Smith?").isOk());
+        assertTrue(cli.ask("Could you dial +7 (931) 188 34 58 and ask Mike?").isOk());
     }
 }

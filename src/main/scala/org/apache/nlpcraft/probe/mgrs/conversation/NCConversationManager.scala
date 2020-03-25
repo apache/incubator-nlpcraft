@@ -36,12 +36,13 @@ object NCConversationManager extends NCService {
     private final val CHECK_PERIOD = 5.minutes.toMillis
     private final val TIMEOUT = 1.hour.toMillis
 
-    private final val convs = mutable.HashMap.empty[Key, Value]
+    @volatile private var convs: mutable.Map[Key, Value] = _
 
     @volatile private var gc: ScheduledExecutorService = _
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         gc = Executors.newSingleThreadScheduledExecutor
+        convs = mutable.HashMap.empty[Key, Value]
         
         gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), CHECK_PERIOD, CHECK_PERIOD, TimeUnit.MILLISECONDS)
         

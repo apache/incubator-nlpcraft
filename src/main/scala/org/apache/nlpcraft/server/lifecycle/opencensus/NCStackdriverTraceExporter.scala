@@ -30,7 +30,7 @@ class NCStackdriverTraceExporter extends NCBaseTraceExporter("Stackdriver") {
     private val pre = "nlpcraft.server.opencensus.stackdriver"
     
     private object Config extends NCConfigurable {
-        val gpi = getString(s"$pre.googleProjectId")
+        def gpi = getString(s"$pre.googleProjectId")
     }
     
     override def beforeStart(): Unit = {

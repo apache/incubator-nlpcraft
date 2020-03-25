@@ -21,10 +21,10 @@ import java.sql.Types
 import java.util
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.model.tools.sqlgen.impl.{NCSqlFunctionImpl, NCSqlSortImpl}
+import org.apache.nlpcraft.model.tools.sqlgen.{NCSqlAggregate, _}
 import org.jgrapht.alg.DijkstraShortestPath
 import org.jgrapht.graph.{DefaultEdge, SimpleGraph}
-import org.apache.nlpcraft.model.tools.sqlgen.{NCSqlAggregate, _}
-import org.apache.nlpcraft.model.tools.sqlgen.impl.{NCSqlFunctionImpl, NCSqlSortImpl}
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}

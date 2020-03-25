@@ -17,12 +17,13 @@
 
 package org.apache.nlpcraft.examples.helloworld;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -34,30 +35,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @see HelloWorldModel
  */
 class HelloWorldTest {
-    private NCTestClient client;
-    
+    private NCTestClient cli;
+
     @BeforeEach
     void setUp() throws NCException, IOException {
+        NCEmbeddedProbe.start(HelloWorldModel.class);
+
         // Use all defaults.
-        client = new NCTestClientBuilder().newBuilder().build();
-        
-        client.open("nlpcraft.helloworld.ex");
+        cli = new NCTestClientBuilder().newBuilder().build();
+
+        cli.open("nlpcraft.helloworld.ex");
     }
-    
+
     @AfterEach
     void tearDown() throws NCException, IOException {
-        client.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
-    
+
     @Test
     void test() throws NCException, IOException {
         // Empty parameter.
-        assertTrue(client.ask("").isFailed());
-    
+        assertTrue(cli.ask("").isFailed());
+
         // Only latin charset is supported.
-        assertTrue(client.ask("El tiempo en España").isFailed());
-    
+        assertTrue(cli.ask("El tiempo en España").isFailed());
+
         // Should be passed.
-        assertTrue(client.ask("Hi!").isOk());
+        assertTrue(cli.ask("Hi!").isOk());
     }
 }

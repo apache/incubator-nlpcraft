@@ -27,14 +27,15 @@ import com.google.gson.reflect.TypeToken
 import com.jakewharton.fliptables.FlipTable
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlException
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
 
 /**
-  *
-  */
+ *
+ */
 class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
     private val GSON = new Gson
     private val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
@@ -50,8 +51,8 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 override def apply(t: java.lang.Boolean): String = "**"
             }).
             build
-    
-    private var cli: NCTestClient = _
+
+    private var client: NCTestClient = _
 
     case class Case(texts: Seq[String], sql: String)
 
@@ -64,62 +65,67 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
             mkString(" ")
 
     private def toPretty(s: String): util.List[String] = SqlFormatter.format(s).split("\n").toSeq.asJava
-    
+
     override protected def beforeAll(): Unit = {
-        cli = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
-    
-        cli.open("sql.model.id")
-        
+        NCEmbeddedProbe.start(classOf[SqlModel])
+
+        client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
+
+        client.open("sql.model.id")
+
     }
-    
-    override protected def afterAll(): Unit =
-        if (cli != null)
-            cli.close()
-    
+
+    override protected def afterAll(): Unit = {
+        if (client != null)
+            client.close()
+
+        NCEmbeddedProbe.stop()
+    }
+
     private def check(multiLineOut: Boolean, cases: Case*): Unit = {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
-        
+
         cases.
             flatMap(c ⇒ {
                 val sql = normalize(c.sql)
-                
+
                 c.texts.map(t ⇒ t → sql)
             }).
             foreach {
                 case (txt, expSqlNorm) ⇒
-                    val res = cli.ask(txt)
-    
+                    val res = client.ask(txt)
+
                     if (res.isOk) {
                         require(res.getResult.asScala.isDefined)
-    
+
                         val m: util.Map[String, Object] = GSON.fromJson(res.getResult.get, TYPE_RESP)
-    
+
                         val err = m.get("error")
-    
+
                         if (err != null)
                             errs += txt → err.toString
                         else {
                             val resSqlNorm = normalize(m.asScala("sql").asInstanceOf[String])
-    
+
                             if (resSqlNorm != expSqlNorm) {
                                 if (multiLineOut) {
                                     val rows = DIFF.generateDiffRows(toPretty(expSqlNorm), toPretty(resSqlNorm)).asScala
-    
+
                                     val table =
                                         FlipTable.of(
                                             Array("Expected", "Real"),
                                             rows.map(p ⇒ Array(p.getOldLine, p.getNewLine)).toArray
                                         )
-    
+
                                     errs += txt → s"Unexpected SQL:\n$table"
                                 }
                                 else {
                                     val rows = DIFF.generateDiffRows(Seq(expSqlNorm).asJava, Seq(resSqlNorm).asJava).asScala
-    
+
                                     require(rows.size == 1)
-    
+
                                     val row = rows.head
-    
+
                                     errs += txt →
                                         s"""Unexpected SQL (expected vs real)
                                            |${row.getOldLine}
@@ -131,13 +137,13 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                     }
                     else {
                         require(res.getResultError.isPresent)
-    
+
                         errs += txt → res.getResultError.get
                     }
             }
 
         if (errs.nonEmpty) {
-            errs.foreach { case (txt, err) ⇒ println(s"Text: $txt\nError: $err\n")}
+            errs.foreach { case (txt, err) ⇒ println(s"Text: $txt\nError: $err\n") }
 
             throw new NCSqlException(s"Test finished with errors [passed=${cases.size - errs.size}, failed=${errs.size}]")
         }
@@ -566,7 +572,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                   |LIMIT
                   |  1000
                 """.stripMargin
-            ) ,
+            ),
             Case(
                 Seq(
                     "give me the orders sorted by ship date"

@@ -37,8 +37,8 @@ object NCGeoManager extends NCService {
     
     // Special file, the data of which are not filtered by common dictionary words.
     private final val SYNONYMS_MANUAL_FILES = Seq("manual.json", "states.json")
-    
-    private var model: NCGeoModel = _
+
+    @volatile private var model: NCGeoModel = _
     
     // Auxiliary words for GEO names. Example: CA state, Los Angeles city.
     private final val CITY_AUX = Seq("city", "town", "metropolis")

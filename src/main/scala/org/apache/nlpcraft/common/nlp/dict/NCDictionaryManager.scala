@@ -40,8 +40,8 @@ object NCDictionaryManager extends NCService {
     require(NCDictionaryType.values.forall(dictFiles.contains))
     
     // Summary dictionary for all types.
-    private var full: Set[String] = _
-    private var dicts: Map[NCDictionaryType, Set[String]] = _
+    @volatile private var full: Set[String] = _
+    @volatile private var dicts: Map[NCDictionaryType, Set[String]] = _
     
     override def start(parent: Span): NCService = startScopedSpan("start", parent, "dictionaries" → dictFiles.values.mkString(",")) { _ ⇒
         dicts = dictFiles.map(p ⇒ {

@@ -17,12 +17,13 @@
 
 package org.apache.nlpcraft.examples.time;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -34,33 +35,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @see TimeModel
  */
 class TimeTest {
-    private NCTestClient client;
-    
+    private NCTestClient cli;
+
     @BeforeEach
     void setUp() throws NCException, IOException {
-        client = new NCTestClientBuilder().newBuilder().build();
-        
-        client.open("nlpcraft.time.ex"); // See time_model.json
+        NCEmbeddedProbe.start(TimeModel.class);
+
+        cli = new NCTestClientBuilder().newBuilder().build();
+
+        cli.open("nlpcraft.time.ex"); // See time_model.json
     }
-    
+
     @AfterEach
     void tearDown() throws NCException, IOException {
-        client.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
-    
+
     @Test
     void test() throws NCException, IOException {
         // Empty parameter.
-        assertTrue(client.ask("").isFailed());
-    
+        assertTrue(cli.ask("").isFailed());
+
         // Only latin charset is supported.
-        assertTrue(client.ask("El tiempo en España").isFailed());
+        assertTrue(cli.ask("El tiempo en España").isFailed());
 
         // Should be passed.
-        assertTrue(client.ask("What time is it now in New York City?").isOk());
-        assertTrue(client.ask("What's the current time in Moscow?").isOk());
-        assertTrue(client.ask("Show me time of the day in London.").isOk());
-        assertTrue(client.ask("Can you please give me the San Francisco's current date and time.").isOk());
-        assertTrue(client.ask("What's the local time?").isOk());
+        assertTrue(cli.ask("What time is it now in New York City?").isOk());
+        assertTrue(cli.ask("What's the current time in Moscow?").isOk());
+        assertTrue(cli.ask("Show me time of the day in London.").isOk());
+        assertTrue(cli.ask("Can you please give me the San Francisco's current date and time.").isOk());
+        assertTrue(cli.ask("What's the local time?").isOk());
     }
 }

@@ -32,7 +32,7 @@ import scala.util.control.Exception.catching
   * Stanford core manager.
   */
 object NCStanfordCoreManager extends NCService with NCIgniteInstance {
-    private var stanford: StanfordCoreNLP = _
+    @volatile private var stanford: StanfordCoreNLP = _
     @volatile private var cache: IgniteCache[String, CoreDocument] = _
 
     /**

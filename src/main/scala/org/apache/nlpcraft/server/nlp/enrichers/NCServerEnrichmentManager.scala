@@ -43,7 +43,7 @@ import scala.util.control.Exception.catching
   */
 object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
     private object Config extends NCConfigurable {
-        val supportNlpCraft: Boolean = getStringList("nlpcraft.server.tokenProviders").contains("nlpcraft")
+        def supportNlpCraft: Boolean = getStringList("nlpcraft.server.tokenProviders").contains("nlpcraft")
     }
 
     private final val CUSTOM_PREFIXES = Set("google:", "opennlp:", "stanford:", "spacy:")

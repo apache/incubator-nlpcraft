@@ -49,30 +49,30 @@ object NCConnectionManager extends NCService {
     private final val PING_TIMEOUT = 5 * 1000
     
     // Internal probe GUID.
-    final val PROBE_GUID = U.genGuid()
+    @volatile private var probeGuid: String = _
     
     // Internal semaphores.
-    private val stopSem: AtomicInteger = new AtomicInteger(1)
+    @volatile private var stopSem: AtomicInteger = _
     
     private final val sysProps: Properties = System.getProperties
     private final val localHost: InetAddress = InetAddress.getLocalHost
-    private var hwAddrs: String = _
+    @volatile private var hwAddrs: String = _
     
     // Holding downlink queue.
-    private val dnLinkQueue = mutable.Queue.empty[Serializable]
+    @volatile private var dnLinkQueue: mutable.Queue[Serializable] = _
     
     // Control thread.
-    private var ctrlThread: Thread = _
-    
+    @volatile private var ctrlThread: Thread = _
+
     private object Config extends NCConfigurable {
         private final val pre = "nlpcraft.probe"
-        
-        val id: String = getString(s"$pre.id")
-        val token: String = getString(s"$pre.token")
-        val upLink: (String, Integer) = getHostPort(s"$pre.upLink")
-        val downLink: (String, Integer) = getHostPort(s"$pre.downLink")
-        val upLinkString = s"${upLink._1}:${upLink._2}"
-        val downLinkString = s"${downLink._1}:${downLink._2}"
+
+        def id: String = getString(s"$pre.id")
+        def token: String = getString(s"$pre.token")
+        def upLink: (String, Integer) = getHostPort(s"$pre.upLink")
+        def downLink: (String, Integer) = getHostPort(s"$pre.downLink")
+        def upLinkString = s"${upLink._1}:${upLink._2}"
+        def downLinkString = s"${downLink._1}:${downLink._2}"
     }
 
     /**
@@ -95,7 +95,7 @@ object NCConnectionManager extends NCService {
             span,
             "probeId" → Config.id,
             "token" → Config.token,
-            "probeGuid" → PROBE_GUID,
+            "probeGuid" → probeGuid,
             "msgType" → msg.getType,
             "msgGuid" → msg.getGuid
         )
@@ -103,7 +103,7 @@ object NCConnectionManager extends NCService {
         // Set probe identification for each message, if necessary.
         msg.setProbeToken(Config.token)
         msg.setProbeId(Config.id)
-        msg.setProbeGuid(PROBE_GUID)
+        msg.setProbeGuid(probeGuid)
     
         dnLinkQueue.synchronized {
             if (!isStopping) {
@@ -141,7 +141,7 @@ object NCConnectionManager extends NCService {
             // Probe identification.
             "PROBE_TOKEN" → Config.token,
             "PROBE_ID" → Config.id,
-            "PROBE_GUID" → PROBE_GUID
+            "PROBE_GUID" → probeGuid
         ), cryptoKey)
     
         val resp = sock.read[NCProbeMessage](cryptoKey) // Get handshake response.
@@ -210,7 +210,7 @@ object NCConnectionManager extends NCService {
                     // Probe identification.
                     "PROBE_TOKEN" → Config.token,
                     "PROBE_ID" → Config.id,
-                    "PROBE_GUID" → PROBE_GUID,
+                    "PROBE_GUID" → probeGuid,
         
                     // Handshake data,
                     "PROBE_API_DATE" → ver.date,
@@ -275,6 +275,10 @@ object NCConnectionManager extends NCService {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         require(NCCommandManager.isStarted)
         require(NCModelManager.isStarted)
+
+        probeGuid = U.genGuid()
+        dnLinkQueue = mutable.Queue.empty[Serializable]
+        stopSem = new AtomicInteger(1)
         
         val ctrlLatch = new CountDownLatch(1)
      
@@ -364,7 +368,7 @@ object NCConnectionManager extends NCService {
                     
                                             pingMsg.setProbeToken(Config.token)
                                             pingMsg.setProbeId(Config.id)
-                                            pingMsg.setProbeGuid(PROBE_GUID)
+                                            pingMsg.setProbeGuid(probeGuid)
                     
                                             dnSock.write(pingMsg, cryptoKey)
                                         }

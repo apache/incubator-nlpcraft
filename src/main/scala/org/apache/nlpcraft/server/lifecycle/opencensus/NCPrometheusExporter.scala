@@ -30,10 +30,10 @@ class NCPrometheusExporter extends NCServerLifecycle with LazyLogging {
     private object Config extends NCConfigurable {
         private val pre = "nlpcraft.server.opencensus.prometheus"
         private val hostPort = getHostPortOrElse(s"$pre.hostPort", "localhost", 8888)
-        
-        val namespace = getStringOrElse(s"$pre.namespace", "nlpcraft-server")
-        val host = hostPort._1
-        val port = hostPort._2
+
+        def namespace = getStringOrElse(s"$pre.namespace", "nlpcraft-server")
+        def host = hostPort._1
+        def port = hostPort._2
     }
     
     override def beforeStart(): Unit = {

@@ -22,8 +22,8 @@ import java.sql.{Connection, SQLException}
 import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.jakewharton.fliptables.FlipTable
 import com.typesafe.scalalogging.LazyLogging
-import org.h2.jdbcx.JdbcDataSource
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlQuery
+import org.h2.jdbcx.JdbcDataSource
 import resource.managed
 
 import scala.collection.JavaConverters._

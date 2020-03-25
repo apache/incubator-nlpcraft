@@ -46,11 +46,13 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
     @volatile private var cache: IgniteCache[String/*Server request ID*/, NCQueryStateMdo] = _
     
     // Promises cannot be used in cache.
-    private val asyncAsks = new ConcurrentHashMap[String/*Server request ID*/, Promise[NCQueryStateMdo]]()
+    @volatile private var asyncAsks: ConcurrentHashMap[String, Promise[NCQueryStateMdo]] = _
     
     private final val MAX_WORDS = 100
     
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        asyncAsks = new ConcurrentHashMap[String/*Server request ID*/, Promise[NCQueryStateMdo]]()
+
         catching(wrapIE) {
             cache = ignite.cache[String/*Server request ID*/, NCQueryStateMdo]("qry-state-cache")
     

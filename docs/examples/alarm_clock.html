@@ -361,25 +361,25 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AlarmTest {
-    private NCTestClient client;
+    private NCTestClient cli;
 
     @BeforeEach
     void setUp() throws NCException, IOException {
-        client = new NCTestClientBuilder().newBuilder().build();
+        cli = new NCTestClientBuilder().newBuilder().build();
 
-        client.open("nlpcraft.alarm.ex"); // See alarm_model.json
+        cli.open("nlpcraft.alarm.ex"); // See alarm_model.json
     }
 
     @AfterEach
     void tearDown() throws NCException, IOException {
-        client.close();
+        cli.close();
     }
 
     @Test
     void test() throws NCException, IOException {
-        assertTrue(client.ask("Ping me in 3 minutes").isOk());
-        assertTrue(client.ask("Buzz me in an hour and 15mins").isOk());
-        assertTrue(client.ask("Set my alarm for 30s").isOk());
+        assertTrue(cli.ask("Ping me in 3 minutes").isOk());
+        assertTrue(cli.ask("Buzz me in an hour and 15mins").isOk());
+        assertTrue(cli.ask("Set my alarm for 30s").isOk());
     }
 }        </pre>
         <p>

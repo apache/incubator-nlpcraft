@@ -58,16 +58,16 @@ object NCSql extends LazyLogging {
     // Type safe and eager settings container.
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.database"
-        
-        val url: String = getString(s"$pre.jdbc.url")
-        val driver: String = getString(s"$pre.jdbc.driver")
-        val username: Option[String] = getStringOpt(s"$pre.jdbc.username")
-        val passwd: Option[String] = getStringOpt(s"$pre.jdbc.password")
-        val maxStmt: Int = getInt(s"$pre.c3p0.maxStatements")
-        val initPoolSize: Int = getInt(s"$pre.c3p0.pool.initSize")
-        val minPoolSize: Int = getInt(s"$pre.c3p0.pool.minSize")
-        val maxPoolSize: Int = getInt(s"$pre.c3p0.pool.maxSize")
-        val acqInc: Int = getInt(s"$pre.c3p0.pool.acquireIncrement")
+
+        def url: String = getString(s"$pre.jdbc.url")
+        def driver: String = getString(s"$pre.jdbc.driver")
+        def username: Option[String] = getStringOpt(s"$pre.jdbc.username")
+        def passwd: Option[String] = getStringOpt(s"$pre.jdbc.password")
+        def maxStmt: Int = getInt(s"$pre.c3p0.maxStatements")
+        def initPoolSize: Int = getInt(s"$pre.c3p0.pool.initSize")
+        def minPoolSize: Int = getInt(s"$pre.c3p0.pool.minSize")
+        def maxPoolSize: Int = getInt(s"$pre.c3p0.pool.maxSize")
+        def acqInc: Int = getInt(s"$pre.c3p0.pool.acquireIncrement")
     
         /**
           *

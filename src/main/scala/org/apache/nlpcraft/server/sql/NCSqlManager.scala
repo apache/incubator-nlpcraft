@@ -46,7 +46,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
     )
     
     private object Config extends NCConfigurable {
-        val init: Boolean = getBoolOpt("nlpcraft.server.database.igniteDbInitialize").getOrElse(false)
+        def init: Boolean = getBoolOpt("nlpcraft.server.database.igniteDbInitialize").getOrElse(false)
     }
 
     @volatile private var usersPropsSeq: IgniteAtomicSequence = _

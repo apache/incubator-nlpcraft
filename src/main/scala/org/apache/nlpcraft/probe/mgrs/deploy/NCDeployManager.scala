@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.deploy
 
 import java.io._
-import java.util.jar.{JarInputStream ⇒ JIS}
+import java.util.jar.{JarInputStream => JIS}
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
@@ -39,20 +39,21 @@ import scala.util.control.Exception._
   * Model deployment manager.
   */
 object NCDeployManager extends NCService with DecorateAsScala {
-    private val models = ArrayBuffer.empty[NCModel]
-    private var modelFactory: NCModelFactory = new NCBasicModelFactory
+    @volatile private var models: ArrayBuffer[NCModel] = _
+    @volatile private var modelFactory: NCModelFactory = _
     
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:-_]*$"
-    
-    private object Config extends NCConfigurable {
+
+    object Config extends NCConfigurable {
         private final val pre = "nlpcraft.probe"
-        
-        val modelFactoryType: Option[String] = getStringOpt(s"$pre.modelFactory.type")
-        val modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
-        val models: Seq[String] = getStringList(s"$pre.models")
-        val jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
+
+        // It should reload config.
+        def modelFactoryType: Option[String] = getStringOpt(s"$pre.modelFactory.type")
+        def modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
+        def models: Seq[String] = getStringList(s"$pre.models")
+        def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
     }
-    
+
     /**
       * Gives a list of JAR files at given path.
       * 
@@ -194,6 +195,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
     
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        modelFactory = new NCBasicModelFactory
+        models = ArrayBuffer.empty[NCModel]
+
         // Initialize model factory (if configured).
         Config.modelFactoryType match {
             case Some(mft) ⇒

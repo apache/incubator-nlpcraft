@@ -33,8 +33,8 @@ import scala.concurrent.duration._
 object NCDialogFlowManager extends NCService {
     case class Key(usrId: Long, mdlId: String)
     case class Value(intent: String, tstamp: Long)
-    
-    private val flow = mutable.HashMap.empty[Key, ArrayBuffer[Value]]
+
+    @volatile private var flow: mutable.Map[Key, ArrayBuffer[Value]] = _
     
     // Check frequency and timeout.
     private final val CHECK_PERIOD = 5.minutes.toMillis
@@ -43,6 +43,7 @@ object NCDialogFlowManager extends NCService {
     @volatile private var gc: ScheduledExecutorService = _
     
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        flow = mutable.HashMap.empty[Key, ArrayBuffer[Value]]
         gc = Executors.newSingleThreadScheduledExecutor
     
         gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), CHECK_PERIOD, CHECK_PERIOD, TimeUnit.MILLISECONDS)

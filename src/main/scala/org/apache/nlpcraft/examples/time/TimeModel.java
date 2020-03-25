@@ -28,9 +28,6 @@ import org.apache.nlpcraft.examples.misc.geo.cities.CityData;
 import org.apache.nlpcraft.examples.misc.geo.keycdn.GeoManager;
 import org.apache.nlpcraft.examples.misc.geo.keycdn.beans.GeoDataBean;
 import org.apache.nlpcraft.model.*;
-import org.apache.nlpcraft.model.NCIntent;
-import org.apache.nlpcraft.model.NCIntentMatch;
-import org.apache.nlpcraft.model.NCIntentTerm;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

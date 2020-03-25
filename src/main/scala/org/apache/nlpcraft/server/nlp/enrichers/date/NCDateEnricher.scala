@@ -38,7 +38,7 @@ import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
   */
 object NCDateEnricher extends NCServerEnricher {
     private object Config extends NCConfigurable {
-        val style: NCDateFormatType = getObject("nlpcraft.server.datesFormatStyle", NCDateFormatType.withName)
+        def style: NCDateFormatType = getObject("nlpcraft.server.datesFormatStyle", NCDateFormatType.withName)
     }
 
     private type LHM_SS = LHM[String, String]

@@ -18,8 +18,9 @@
 package org.apache.nlpcraft.examples.phone;
 
 import org.apache.nlpcraft.model.*;
-import java.util.*;
-import java.util.stream.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
