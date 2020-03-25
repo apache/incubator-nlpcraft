@@ -17,21 +17,41 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.util.Collection;
+import java.util.stream.*;
 
 /**
- * TODO: add description.
+ * Object presentation of SQL schema. This representation gives object model for the SQL metadata
+ * that was extracted from RDBMS and added to the data model stub by {@link NCSqlModelGenerator} utility.
+ * 
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
 public interface NCSqlSchema {
     /**
+     * Gets collection of tables for this SQL schema.
      *
-     * @return
+     * @return Collection of tables for this SQL schema.
      */
     Collection<NCSqlTable> getTables();
 
     /**
-     *
-     * @return
+     * Gets collection of joins for this SQL schema.
+     * 
+     * @return Collection of joins for this SQL schema.
      */
     Collection<NCSqlJoin> getJoins();
+
+    /**
+     * Creates and returns collection of all SQL columns across all tables in given schema. It is
+     * equivalent to:
+     * <pre class="brush: java">
+     *     return getTables().stream().flatMap(t -> t.getColumns().stream()).collect(Collectors.toList());
+     * </pre>
+     *
+     * @return Collection of all SQL columns across all tables in given schema.
+     */
+    default Collection<NCSqlColumn> getAllColumns() {
+        return getTables().stream().flatMap(t -> t.getColumns().stream()).collect(Collectors.toList());
+    }
 }

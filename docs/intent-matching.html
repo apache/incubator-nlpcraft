@@ -23,7 +23,7 @@ id: intent_matching
 
 <div class="col-md-8 second-column">
     <section id="overview">
-        <span class="section-title">Overview</span>
+        <h2 class="section-title">Overview</h2>
         <p>
             As we discussed in <a href="/data-model.html#logic">Data Model</a> section the processing logic of the data model is
             encoded in intents and their callbacks. Sections below will explain how to declare an intent and how to develop
@@ -31,7 +31,7 @@ id: intent_matching
         </p>
     </section>
     <section id="matching">
-        <span class="section-title">Intent-Based Matching</span>
+        <h2 class="section-title">Intent-Based Matching</h2>
         <p>
             The intent matching is based on an idea of defining one or more templates for user input and let the
             algorithm choose the best matching one given the user input. Such template is called an <em>intent</em>.
@@ -220,7 +220,7 @@ id: intent_matching
         </ul>
     </section>
     <section id="syntax">
-        <span class="section-title">Intent DSL</span>
+        <h2 class="section-title">Intent DSL</h2>
         <p>
             Regardless of how intent is defined - directly in <code>@NCIntent</code> annotation or in external model
             declaration - it follow the exactly the same syntax (here's a full <a target=github href="https://github.com/apache/incubator-nlpcraft/blob/master/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4">ANTRL4 grammar</a>).
@@ -330,7 +330,7 @@ id: intent_matching
         </div>
     </section>
     <section id="callback">
-        <span class="section-title">Intent Callback</span>
+        <h2 class="section-title">Intent Callback</h2>
         <p>
             Whether the intent is defined directly in <code>@NCIntent</code> annotation or indirectly via <code>@NCIntentRef</code>
             annotation - it is always attached to a callback method:
@@ -422,7 +422,7 @@ id: intent_matching
                 parameter.
             </li>
         </ul>
-        <span class="section-sub-title"><code>NCRejection</code> and <code>NCIntentSkip</code> Exceptions</span>
+        <h3 class="section-title"><code>NCRejection</code> and <code>NCIntentSkip</code> Exceptions</h3>
         <p>
             There are two exceptions that can be used by intent callback logic to control intent matching process.
         </p>
@@ -472,7 +472,7 @@ id: intent_matching
                 that type of matching.
             </p>
         </div>
-        <span class="section-sub-title"><code>NCIntentMatch</code> Interface</span>
+        <h3 class="section-title"><code>NCIntentMatch</code> Interface</h3>
         <p>
             <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCIntentMatch.html">NCIntentMatch</a> interface
             can be passed into intent callback as its first parameter. This interface provide runtime information
@@ -481,7 +481,7 @@ id: intent_matching
         </p>
     </section>
     <section id="examples">
-        <span class="section-title">Intent Examples</span>
+        <h2 class="section-title">Intent Examples</h2>
         <p>
             Here's number of intent examples with explanations. These intents can be defined directly in <code>@NCIntent</code>
             annotation or in external JSON or YAML mode definition.

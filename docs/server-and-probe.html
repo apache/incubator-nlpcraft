@@ -23,7 +23,7 @@ id: server_and_probe
 
 <div id="server-and-probes" class="col-md-8 second-column">
     <section>
-        <span class="section-title">Overview</span>
+        <h2 class="section-title">Overview</h2>
         <p>
             As mentioned in <a href="/docs.html">overview</a> section the REST server and data probe are the two
             runtime components that you need to run when using NLPCraft.
@@ -76,7 +76,7 @@ id: server_and_probe
         </p>
     </section>
     <section id="server">
-        <span class="section-title">REST Server</span>
+        <h2 class="section-title">REST Server</h2>
         <p>
             As mentioned above REST server (or a cluster of servers) is used to accept client REST calls and
             route them to the data model via data probes. Note that both data probe and the REST server start the same way.
@@ -159,7 +159,7 @@ id: server_and_probe
                 insufficient JVM heap memory.
             </p>
         </div>
-        <span class="section-sub-title"><i class="fab fa-docker"></i> Docker</span>
+        <h3 class="section-title"><i class="fab fa-docker"></i> Docker</h3>
         <p>
             You can also run REST server inside of Docker container:
         </p>
@@ -197,7 +197,7 @@ id: server_and_probe
         </pre>
     </section>
     <section id="probe">
-        <span class="section-title">Data Probe</span>
+        <h2 class="section-title">Data Probe</h2>
         <p>
             Just like the REST server the data probe can be started in a <em>standard way</em> from either the
             command line or IDE such as Eclipse or IntelliJ IDEA:
@@ -344,7 +344,7 @@ id: server_and_probe
         </pre>
     </section>
     <section id="config">
-        <span class="section-title">Configuration</span>
+        <h2 class="section-title">Configuration</h2>
         <p>
             Both REST server and the data probe use <a target=_ href="https://github.com/lightbend/config/">Typesafe Config</a> for their configuration:
         </p>

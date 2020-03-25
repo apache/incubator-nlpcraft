@@ -23,7 +23,7 @@ id: first_example
 
 <div class="col-md-8 second-column">
     <section id="setup">
-        <span class="section-title">Project Setup</span>
+        <h2 class="section-title">Project Setup</h2>
         <p>
             Let's setup a project for our first example with the following assumptions:
         </p>
@@ -35,7 +35,7 @@ id: first_example
         </ul>
     </section>
     <section id="new_project">
-        <span class="section-sub-title">Create New Project</span>
+        <h3 class="section-title">Create New Project</h3>
         <p>
             You can create new Maven-based project in many different ways - we'll use maven archetype generation
             for that. In your home folder run the following command:
@@ -65,7 +65,7 @@ id: first_example
         </p>
     </section>
     <section id="add_nlpcraft">
-        <span class="section-sub-title">Add NLPCraft</span>
+        <h3 class="section-title">Add NLPCraft</h3>
         <p>
             We also need to add NLPCraft dependency to our new project. Open <code>pom.xml</code> file and replace
             <code>dependencies</code> section with the following code:
@@ -95,7 +95,7 @@ id: first_example
         </p>
     </section>
     <section id="data_model">
-        <span class="section-title">Data Model</span>
+        <h2 class="section-title">Data Model</h2>
         <p>
             For our example we'll develop a prototypical light switch that can be controlled through the natural language.
             We'll keep <a target=_ href="https://cloud.google.com/speech-to-text/">speech-to-text conversion</a> and integration
@@ -226,7 +226,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         </ul>
     </section>
     <section>
-        <span class="section-sub-title">Start Data Probe</span>
+        <h3 class="section-title">Start Data Probe</h3>
         <p>
             NLPCraft data models get deployed into data probe. Let's start data probe to deploy our newly
             created light switch data model. To start data probe we need to configure Run Configuration in IDEA with
@@ -258,7 +258,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         </p>
     </section>
     <section>
-        <span class="section-sub-title">Start REST Server</span>
+        <h3 class="section-title">Start REST Server</h3>
         <p>
             REST server listens for requests from client applications and routes them to the requested data models
             via connected data probes. REST server starts the same way as the data probe. Configure new
@@ -284,7 +284,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         </p>
     </section>
     <section>
-        <span class="section-sub-title">Testing</span>
+        <h3 class="section-title">Testing</h3>
         <p>
             NLPCraft comes with easy to use <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/test/package-summary.html">test framework</a> for data models that can be used with
             any unit testing framework like JUnit or ScalaTest. It is essentially a simplified
@@ -357,7 +357,7 @@ public class LightSwitchTest {
         </p>
     </section>
     <section>
-        <span class="section-title">Congratulation! 👌</span>
+        <h2 class="section-title">Congratulation! 👌</h2>
         <p>
             You've created your first data model, deployed it into the data probe, started the
             REST server and tested the model using JUnit 5 and the built-in test framework.

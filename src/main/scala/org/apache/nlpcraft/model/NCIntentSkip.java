@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.model;
 
+import org.apache.nlpcraft.common.*;
+
 /**
  * Control flow exception to skip current intent. This exception can be thrown by the intent
  * callback to indicate that current intent should be skipped (even though
@@ -37,12 +39,12 @@ package org.apache.nlpcraft.model;
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch)
  */
-public class NCIntentSkip extends RuntimeException {
+public class NCIntentSkip extends NCException {
     /**
      * Creates new intent skip exception.
      */
     public NCIntentSkip() {
-        // No-op.
+        super("Intent skipped.");
     }
 
     /**

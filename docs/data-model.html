@@ -23,7 +23,7 @@ id: data_model
 
 <div class="col-md-8 second-column">
     <section id="overview">
-        <span class="section-title">Model Overview</span>
+        <h2 class="section-title">Model Overview</h2>
         <p>
             Data model is a central concept in NLPCraft defining interface to your data sources
             like a database or a SaaS application.
@@ -47,7 +47,7 @@ id: data_model
         </p>
     </section>
     <section id="dataflow">
-        <span class="section-title">Model Dataflow</span>
+        <h2 class="section-title">Model Dataflow</h2>
         <figure>
             <img alt="data model dataflow" class="img-fluid" src="/images/homepage-fig1.1.png">
             <figcaption><b>Fig 1.</b> NLPCraft Architecture</figcaption>
@@ -83,7 +83,7 @@ id: data_model
         </div>
     </section>
     <section id="lifecycle">
-        <span class="section-title">Model Lifecycle</span>
+        <h2 class="section-title">Model Lifecycle</h2>
         <p>
             Data model is an implementation of <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModel.html">NCModel</a> interface.
             <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModel.html">NCModel</a> interface has
@@ -121,7 +121,7 @@ id: data_model
                 own data model in the most uses cases.
             </p>
         </div>
-        <span class="section-sub-title">Deployment</span>
+        <h3 class="section-title">Deployment</h3>
         <p>
             Data models get <a href="/server-and-probe.html">deployed</a> to and hosted by the data probes - a lightweight
             container whose job is to host data models and securely transfer requests between REST server and the data
@@ -133,7 +133,7 @@ id: data_model
             the data probe. Note also that data probe can be started in embedded mode, i.e. it can be started
             from within an existing JVM process like user application.
         </p>
-        <span class="section-sub-title">Callbacks</span>
+        <h3 class="section-title">Callbacks</h3>
         <p>
             There are two callbacks on
             <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModel.html">NCModel</a> interface
@@ -210,7 +210,7 @@ id: data_model
         </div>
     </section>
     <section id="config">
-        <span class="section-title">Model Configuration</span>
+        <h2 class="section-title">Model Configuration</h2>
         <p>
             Apart from mandatory model <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelView.html#getId--">ID</a>,
             <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelView.html#getName--">name</a> and
@@ -243,7 +243,7 @@ id: data_model
             <li><a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelView.html#isPermutateSynonyms--">isPermutateSynonyms</a></li>
             <li><a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelView.html#isSwearWordsAllowed--">isSwearWordsAllowed</a></li>
         </ul>
-        <span class="section-sub-title">External JSON/YAML Declaration</span>
+        <h3 class="section-title">External JSON/YAML Declaration</h3>
         <p>
             You can move out all the static model configuration into an external JSON or YAML file. To load that
             configuration you need to use <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelFileAdapter.html">NCModelFileAdapter</a>
@@ -317,7 +317,7 @@ intents:
         </div>
     </section>
     <section id="elements">
-        <span class="section-title">Model Elements</span>
+        <h2 class="section-title">Model Elements</h2>
         <p>
             Data model element defines a semantic entity that will be detected in the user input.
             A model element typically is one or more individual words that have a consistent semantic meaning and typically denote a
@@ -401,7 +401,7 @@ intents:
                 All properties of model elements (id, groups, parent & ancestors, values, and metadata) can be used in token and intent DSLs.
             </li>
         </ul>
-        <span class="section-sub-title">User vs. Built-In Elements</span>
+        <h3 class="section-title">User vs. Built-In Elements</h3>
         <p>
             Additionally to the model elements that are defined by the user in the data model (i.e. <em>user model elements</em>)
             NLPCraft provides <a href="#builtin">its own named entities</a> as well as the integration with number of <a href="integrations.html#nlp">3rd party projects</a>. You can think of these built-in elements as if they were implicitly defined in your model - you
@@ -820,7 +820,7 @@ intents:
         </pre>
     </section>
     <section id="dsl" >
-        <span class="section-title">Token DSL</span>
+        <h2 class="section-title">Token DSL</h2>
         <p>
             Any individual synonym word that that starts and ends with <code>^^</code> is a token DSL expression. A token
             DSL expression inside of <code>^^ ... ^^</code> markers allows you to define a predicate on already parsed and detected token. It is very important to
@@ -1578,7 +1578,7 @@ intents:
         </ul>
     </section>
     <section id="logic">
-        <span class="section-title">Model Logic</span>
+        <h2 class="section-title">Model Logic</h2>
         <p>
             When a user sends its request via REST API it is received by the REST server. Upon receipt,
             the REST server does the basic NLP processing and enriching. Once finished, the REST server
@@ -1599,13 +1599,13 @@ intents:
             <li>Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCToken.html">NCToken</a></li>
             <li>Class <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCResult.html">NCResult</a></li>
         </ul>
-        <span class="section-sub-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelView.html">NCModelView</a></span>
+        <h3 class="section-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelView.html">NCModelView</a></h3>
         <p>
             This interface provides read-only view on data model. Model view defines a declarative, or configurable, part of the model.
             All properties in this interface can be defined or overridden in JSON/YAML external
             presentation when used with <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCModelFileAdapter.html">NCModelFileAdapter</a> adapter.
         </p>
-        <span class="section-sub-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCIntentMatch.html">NCIntentMatch</a></span>
+        <h3 class="section-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCIntentMatch.html">NCIntentMatch</a></h3>
         <p>
             This interface defines a context of a particular intent match. It can be passed into the callback of the matched intent
             and provides the following:
@@ -1616,7 +1616,7 @@ intents:
             <li>Access to the original query context (<a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCContext.html">NCContext</a>).</li>
             <li>Various access APIs for intent tokens.</li>
         </ul>
-        <span class="section-sub-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCContext.html">NCContext</a></span>
+        <h3 class="section-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCContext.html">NCContext</a></h3>
         <p>
             This interface provides all available data about the parsed user input and all its
             supplemental information. It's accessible from <code>NCIntentMatch</code> interface and
@@ -1649,7 +1649,7 @@ intents:
                 returns list of all parsing variants for a given user input.
             </li>
         </ul>
-        <span class="section-sub-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCRequest.html">NCRequest</a></span>
+        <h3 class="section-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCRequest.html">NCRequest</a></h3>
         <p>
             <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCSentence.html">NCRequest</a> interface
             is one of the several important entities in Data Model API that you as a model developer will be working with. You
@@ -1667,7 +1667,7 @@ intents:
                 Original request text, timestamp of its receipt, and server request ID.
             </li>
         </ul>
-        <span class="section-sub-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCToken.html">NCToken</a></span>
+        <h3 class="section-title">Interface <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCToken.html">NCToken</a></h3>
         <p>
             <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCToken.html">NCToken</a> object is another
             key abstraction in Data Model API. A token is a detected model element and is a part of a fully parsed user input.
@@ -1680,7 +1680,7 @@ intents:
             Depending on the token ID each token will have different set of <a href="#meta">metadata properties</a>. Some common NLP properties
             are always present for tokens of all types.
         </p>
-        <span class="section-sub-title">Class <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCResult.html">NCResult</a></span>
+        <h3 class="section-title">Class <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/NCResult.html">NCResult</a></h3>
         <p>
             This class defines data model result returned from model's intent callbacks. Result consists of the
             text body and the type. The type is similar in notion to MIME types. Intent callbacks must use this class
@@ -1688,7 +1688,7 @@ intents:
         </p>
     </section>
     <section id="builtin">
-        <span class="section-title">Built-In Tokens</span>
+        <h2 class="section-title">Built-In Tokens</h2>
         <p>
             NLPCraft provides a number of built-in model elements (i.e. tokens) including the
             <a href="integrations.html">integration</a> with several popular 3rd party NER frameworks. Table
@@ -1863,25 +1863,6 @@ intents:
                     </td>
                 </tr>
                 <tr>
-                    <td><code>nlpcraft:aggregation</code></td>
-                    <td>
-                        This token denotes an aggregation function:
-                        <code>min</code>,
-                        <code>max</code>,
-                        <code>avg</code>,
-                        <code>sum</code>, or
-                        <code>group</code>.  Note this token always need another token that it references.
-                    </td>
-                    <td>
-                        <ul>
-                            <li>
-                                Show the <code><b>average</b></code> <code>price</code> (assuming that 'price' is also
-                                detected as a token).
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-                <tr>
                     <td><code>nlpcraft:relation</code></td>
                     <td>
                         This token denotes a relation function:
@@ -1997,7 +1978,7 @@ intents:
         </table>
     </section>
     <section id="meta">
-        <span class="section-title">Token Metadata</span>
+        <h2 class="section-title">Token Metadata</h2>
         <p>
             Each token has different set of metadata. Sections below describe metadata for each built-in token
             supported by NLPCraft:
@@ -2015,7 +1996,6 @@ intents:
             <li><a href="#nlpcraft:coordinate">Token ID <code>nlpcraft:coordinate</code></a></li>
             <li><a href="#nlpcraft:sort">Token ID <code>nlpcraft:sort</code></a></li>
             <li><a href="#nlpcraft:limit">Token ID <code>nlpcraft:limit</code></a></li>
-            <li><a href="#nlpcraft:aggregation">Token ID <code>nlpcraft:aggregation</code></a></li>
             <li><a href="#nlpcraft:relation">Token ID <code>nlpcraft:relation</code></a></li>
             <li><a href="#stanford:xxx">Token ID <code>stanford:xxx</code></a></li>
             <li><a href="#spacy:xxx">Token ID <code>spacy:xxx</code></a></li>
@@ -3000,43 +2980,6 @@ intents:
             </tbody>
         </table>
         <br/>
-        <span id="nlpcraft:aggregation" class="section-sub-title">Token ID <code>nlpcraft:aggregation</code></span>
-        <p>
-            This token denotes an aggregation function.
-            Additionally to <code><b>nlpcraft:nlp:xxx</b></code> properties this type of token will have the following
-            metadata properties all of which are <b>mandatory</b> unless otherwise noted.
-        </p>
-        <table class="gradient-table">
-            <thead>
-            <tr>
-                <th>Property</th>
-                <th>Java Type</th>
-                <th>Description</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><code><b>nlpcraft:aggregation:indexes</b></code></td>
-                <td><code>java.util.List&lt;Integer&gt;</code></td>
-                <td>Index (always only one) of the reference token (i.e. the token being aggregated on).</td>
-            </tr>
-            <tr>
-                <td><code><b>nlpcraft:aggregation:type</b></code></td>
-                <td><code>java.lang.String</code></td>
-                <td>
-                    Type of the aggregation. One of the following values:
-                    <ul>
-                        <li><code>sum</code></li>
-                        <li><code>min</code></li>
-                        <li><code>max</code></li>
-                        <li><code>avg</code></li>
-                        <li><code>group</code></li>
-                    </ul>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <br/>
         <span id="nlpcraft:sort" class="section-sub-title">Token ID <code>nlpcraft:sort</code></span>
         <p>
             This token denotes a sorting or ordering function.
@@ -3053,9 +2996,14 @@ intents:
             </thead>
             <tbody>
             <tr>
-                <td><code><b>nlpcraft:sort:indexes</b></code></td>
+                <td><code><b>nlpcraft:sort:subjindexes</b></code></td>
                 <td><code>java.util.List&lt;Integer&gt;</code></td>
-                <td>Index (always only one) of the reference token (i.e. the token being sorted on).</td>
+                <td>One of more indexes of the target tokens (i.e. the token that being sorted).</td>
+            </tr>
+            <tr>
+                <td><code><b>nlpcraft:sort:byindexes</b></code></td>
+                <td><code>java.util.List&lt;Integer&gt;</code></td>
+                <td>Zero or more (i.e. optional) indexes of the reference token (i.e. the token being sorted by).</td>
             </tr>
             <tr>
                 <td><code><b>nlpcraft:sort:asc</b></code></td>

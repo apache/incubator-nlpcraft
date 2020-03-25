@@ -23,7 +23,7 @@ id: light_switch
 
 <div class="col-md-8 second-column">
     <section id="overview">
-        <span class="section-title">Overview</span>
+        <h2 class="section-title">Overview</h2>
         <p>
             This example provides very simple implementation for NLI-powered light switch. You can say something like
             "Turn the lights off in the entire house" or "Switch on the illumination in the master bedroom closet".
@@ -36,7 +36,7 @@ id: light_switch
         </p>
     </section>
     <section id="new_project">
-        <span class="section-sub-title">Create New Project</span>
+        <h3 class="section-title">Create New Project</h3>
         <p>
             You can create new Java project in many different ways - we'll use Maven archetype generation
             for that. In your home folder run the following command:
@@ -73,7 +73,7 @@ id: light_switch
         </p>
     </section>
     <section id="add_nlpcraft">
-        <span class="section-sub-title">Add NLPCraft</span>
+        <h3 class="section-title">Add NLPCraft</h3>
         <p>
             Next we need to add NLPCraft dependency to our new project. Open <code>pom.xml</code> file and replace
             <code>dependencies</code> section with the following code:
@@ -103,7 +103,7 @@ id: light_switch
         </p>
     </section>
     <section id="model">
-        <span class="section-sub-title">Data Model</span>
+        <h3 class="section-title">Data Model</h3>
         <p>
             We are going to start with declaring our semantic model using YAML. Create new <code>lightswitch_model.yaml</code>
             file and add the following model declaration into it:
@@ -177,7 +177,7 @@ intents:
         </p>
     </section>
     <section id="code">
-        <span class="section-sub-title">Model Class</span>
+        <h3 class="section-title">Model Class</h3>
         <p>
             Let's create new Scala class in <code>LightSwitchModel.scala</code> with the following code:
         </p>
@@ -230,7 +230,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         </ul>
     </section>
     <section>
-        <span class="section-sub-title">Start Data Probe</span>
+        <h3 class="section-title">Start Data Probe</h3>
         <p>
             NLPCraft data models get deployed into data probe. Let's start data probe with our newly
             created data model. To start data probe we need to configure Run Configuration in IDEA with
@@ -262,7 +262,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         </p>
     </section>
     <section>
-        <span class="section-sub-title">Start REST Server</span>
+        <h3 class="section-title">Start REST Server</h3>
         <p>
             REST server listens for requests from client applications and routes them to the requested data models
             via connected data probes. REST server starts the same way as the data probe. Configure new
@@ -287,7 +287,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         </p>
     </section>
     <section>
-        <span class="section-sub-title">Testing</span>
+        <h3 class="section-title">Testing</h3>
         <p>
             NLPCraft comes with easy to use <a target="javadoc" href="/apis/latest/org/apache/nlpcraft/model/test/package-summary.html">test framework</a> for
             data models that can be used with
@@ -371,7 +371,7 @@ class LightSwitchTest {
         </p>
     </section>
     <section>
-        <span class="section-title">Done! 👌</span>
+        <h2 class="section-title">Done! 👌</h2>
         <p>
             You've created NLI-power light switch data model, deployed it into the data probe, started the
             REST server and tested this model using JUnit 5 and the built-in test framework.

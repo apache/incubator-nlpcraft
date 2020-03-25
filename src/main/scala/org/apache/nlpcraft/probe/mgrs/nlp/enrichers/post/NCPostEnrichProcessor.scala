@@ -112,14 +112,6 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                         p.get("from"),
                         p.get("to")
                     )
-                case "nlpcraft:aggregation" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("type"),
-                        p.get("indexes"),
-                        p.get("note")
-                    )
                 case "nlpcraft:relation" ⇒
                     (
                         p.wordIndexes,
@@ -132,10 +124,10 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     (
                         p.wordIndexes,
                         p.noteType,
-                        p.get("subjNotes"),
-                        p.get("subjIndexes"),
-                        p.getOrElse("byNotes", null),
-                        p.getOrElse("byIndexes", null),
+                        p.get("subjnotes"),
+                        p.get("subjindexes"),
+                        p.getOrElse("bynotes", null),
+                        p.getOrElse("byindexes", null),
                         p.getOrElse("asc", null)
                     )
                 case "nlpcraft:limit" ⇒
@@ -225,10 +217,9 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
         unionStops(ns, notNlpTypes, history)
 
         val res =
-            Seq("nlpcraft:aggregation", "nlpcraft:relation", "nlpcraft:limit").
-                forall(t ⇒ fixIndexesReferences(t, ns, history)) &&
-            fixIndexesReferencesList("nlpcraft:sort", "subjIndexes", "subjNotes", ns, history) &&
-            fixIndexesReferencesList("nlpcraft:sort", "byIndexes", "byNotes", ns, history)
+            Seq("nlpcraft:relation", "nlpcraft:limit").forall(t ⇒ fixIndexesReferences(t, ns, history)) &&
+            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
 
         if (res)
             // Validation (all indexes calculated well)

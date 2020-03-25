@@ -17,46 +17,140 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * TODO: add description.
+ * Object presentation of SQL table.
+ * <p>
+ * In JSON/YAML generated model the table is the model element (example):
+ * <pre class="brush: js">
+ *   elements:
+ *     - id: "tbl:orders"
+ *       groups:
+ *       - "table"
+ *       synonyms:
+ *       - "orders"
+ *       metadata:
+ *         sql:name: "orders"
+ *         sql:defaultselect:
+ *         - "order_id"
+ *         - "order_date"
+ *         - "required_date"
+ *         sql:defaultsort:
+ *         - "orders.order_id#desc"
+ *         sql:extratables:
+ *         - "customers"
+ *         - "shippers"
+ *         - "employees"
+ *         sql:defaultdate: "orders.order_date"
+ *       description: "Auto-generated from 'orders' table."
+ * </pre>
+ * Few notes:
+ * <ul>
+ *     <li>
+ *         All model elements representing SQL column have ID in a form of <code>tbl:sql_table_name</code>.
+ *     </li>
+ *     <li>
+ *         All model elements representing SQL column belong to <code>table</code> group.
+ *     </li>
+ *     <li>
+ *         These model elements have auto-generated synonyms and set of mandatory metadata.
+ *     </li>
+ *     <li>
+ *         User can freely add group membership, change synonyms, or add new metadata.
+ *     </li>
+ * </ul>
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
+ * @see NCSqlExtractor#extractTable(NCToken)
+ * @see NCSqlSchema#getTables() 
  */
 public interface NCSqlTable {
     /**
+     * Gets table name.
+     * <p>
+     * In JSON/YAML generated model the table name is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *      sql:name: "orders"
+     * </pre>
+     * Note also that all elements declaring SQL tables belong to <code>table</code> group.
      *
-     * @return
+     * @return table name.
      */
     String getTable();
 
     /**
+     * Gets collections of this table columns.
      *
-     * @return
+     * @return Collections of this table columns.
      */
     List<NCSqlColumn> getColumns();
 
     /**
+     * Gets default sort descriptor.
+     * <p>
+     * In JSON/YAML generated model the default sort list is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:defaultsort:
+     *     - "orders.order_id#desc"
+     * </pre>
+     * Note the <code>table.column#{asc|desc}</code> notation for identifying table name,
+     * column name and the sort order.
      *
-     * @return
+     * @return Default sort descriptor.
      */
     List<NCSqlSort> getDefaultSort();
 
     /**
-     * 
-     * @return
+     * Gets the list of the column names for the default select set.
+     * <p>
+     * In JSON/YAML generated model the default select list is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:defaultselect:
+     *     - "order_id"
+     *     - "order_date"
+     *     - "required_date"
+     * </pre>
+     *
+     * @return List of the column names for the default select set.
      */
     List<String> getDefaultSelect();
 
     /**
+     * Gets the list of extra tables this table is referencing. Extra tables are joined together with this table
+     * for default selection. Often, a single domain dataset if spread over multiple tables and this
+     * allows to have a meaningful default selection.
+     * <p>
+     * In JSON/YAML generated model the extra tables list is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:extratables:
+     *     - "other_part_table"
+     *     - "another_part_table"
+     * </pre>
      *
-     * @return
+     * @return List of extra tables this table's default selection.
      */
     List<String> getExtraTables();
 
     /**
-     * Note that this columns can contains to another table.
-     * @return
+     * Gets a column that defines a default date for this table. Note that this column
+     * can belong to another table.
+     * <p>
+     * In JSON/YAML generated model the default date column is declared with the following element
+     * metadata (example):
+     * <pre class="brush: js">
+     *     sql:defaultdate: "orders.order_date"
+     * </pre>
+     * Note <code>table.column</code> notation for the table and column names.
+     *
+     * @return Column that defines a default date for this table.
      */
     Optional<NCSqlColumn> getDefaultDate();
 }

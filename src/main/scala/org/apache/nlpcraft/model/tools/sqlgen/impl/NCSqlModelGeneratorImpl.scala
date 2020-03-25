@@ -31,6 +31,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.model.impl.json.{NCElementJson, NCMacroJson, NCModelJson}
+import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType
 import resource.managed
 
 import scala.collection.JavaConverters._
@@ -257,7 +258,7 @@ object NCSqlModelGeneratorImpl {
 
             add(meta, "sql:name", tbl.nameLc)
             add(meta, "sql:defaultselect", tbl.columns.take(3).map(_.nameLc).asJava) // First 3 columns by default.
-            add(meta, "sql:defaultsort", tbl.columns.filter(_.isPk).map(col ⇒ s"${col.nameLc}#desc").asJava)
+            add(meta, "sql:defaultsort", tbl.columns.filter(_.isPk).map(col ⇒ s"${tbl.nameLc}.${col.nameLc}#desc").asJava)
             add(meta, "sql:extratables", tbl.joins.map(_.toTable.toLowerCase).toSet.asJava)
 
             e.setMetadata(meta)
@@ -267,6 +268,8 @@ object NCSqlModelGeneratorImpl {
 
             elems += e
         }
+
+        val tablesMap = tables.map(t ⇒ t.name → t).toMap
 
         for (tbl ← tables; col ← tbl.columns) {
             val e = new NCElementJson
@@ -326,12 +329,38 @@ object NCSqlModelGeneratorImpl {
             "sql:cmdline" → params.cmdLine,
             "sql:joins" →
                 tables.flatMap(t ⇒ t.joins.map(j ⇒ {
+                    val fromTable = t.name.toLowerCase
+                    val toTable = j.toTable.toLowerCase
+                    val fromCols = j.fromColumns.map(_.toLowerCase)
+                    val toCols = j.toColumns.map(_.toLowerCase)
+
+                    def mkNullables(t: String, cols: Seq[String]): Seq[Boolean] = {
+                        val tabCols = tablesMap(t).columns
+
+                        cols.map(col ⇒ tabCols.find(_.name == col).get.isNull)
+                    }
+
+                    val fromColsNulls = mkNullables(fromTable, fromCols)
+                    val toColsNulls =mkNullables(toTable, toCols)
+
+                    def forall(seq: Seq[Boolean], v: Boolean): Boolean = seq.forall(_ == v)
+
+                    val typ =
+                        if (forall(fromColsNulls, true) && forall(toColsNulls, false))
+                            NCSqlJoinType.LEFT
+                        else if (forall(fromColsNulls, false) && forall(toColsNulls, true))
+                            NCSqlJoinType.RIGHT
+                        else
+                            // Default value.
+                            NCSqlJoinType.INNER
+
                     val m = new util.LinkedHashMap[String, Object]()
 
-                    m.put("fromtable", t.name.toLowerCase)
-                    m.put("fromcolumns", j.fromColumns.map(_.toLowerCase).asJava)
-                    m.put("totable", j.toTable.toLowerCase)
-                    m.put("tocolumns", j.toColumns.map(_.toLowerCase).asJava)
+                    m.put("fromtable", fromTable)
+                    m.put("fromcolumns", fromCols.asJava)
+                    m.put("totable", toTable)
+                    m.put("tocolumns", toCols.asJava)
+                    m.put("jointype", typ.toString.toLowerCase)
 
                     m
                 })).asJava
@@ -513,7 +542,11 @@ object NCSqlModelGeneratorImpl {
                                         fk.fromTableSchema == null && fk.toTableSchema == null ||
                                         fk.fromTableSchema == schNameOrigin && fk.toTableSchema == schNameOrigin
                                     ).groupBy(_.name).map { case (_, fksGrp) ⇒
-                                        Join(fksGrp.map(_.fromColumn), fksGrp.head.toTable, fksGrp.map(_.toColumn))
+                                        Join(
+                                            fromColumns = fksGrp.map(_.fromColumn),
+                                            toTable = fksGrp.head.toTable,
+                                            toColumns = fksGrp.map(_.toColumn)
+                                        )
                                     }
 
                                 val t = Table(
@@ -543,6 +576,7 @@ object NCSqlModelGeneratorImpl {
         }
         catch {
             case _: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: ${params.driver}")
+            case e: Exception ⇒ errorExit(s"Failed to generate model for '${params.url}': ${e.getMessage}")
             case e: Exception ⇒ errorExit(s"Failed to generate model for '${params.url}': ${e.getMessage}")
         }
         
@@ -777,9 +811,8 @@ object NCSqlModelGeneratorImpl {
       */
     def process(args: Array[String]): Unit = {
         val params = parseCmdParameters(args)
-        
-        val tables = readSqlMetadata(params)
+        val tbls = readSqlMetadata(params)
 
-        generateModel(tables, params)
+        generateModel(tbls, params)
     }
 }

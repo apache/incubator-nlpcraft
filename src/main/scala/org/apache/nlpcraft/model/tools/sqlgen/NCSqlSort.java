@@ -17,19 +17,26 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
+
 /**
- * TODO: add description.
+ * Object presentation of SQL sorting.
+ * 
+ * @see NCSqlTable#getDefaultSort() 
+ * @see NCSqlExtractor#extractSort(NCToken) 
  */
 public interface NCSqlSort {
     /**
+     * Gets SQL column by which to sort.
      *
-     * @return
+     * @return SQL column by which to sort.
      */
     NCSqlColumn getColumn();
 
     /**
-     * 
-     * @return
+     * Gets sorting direction.
+     *
+     * @return {@code True} for ascending sorting, {@code false} for descending.
      */
     boolean isAscending();
 }

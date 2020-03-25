@@ -17,12 +17,28 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
 import java.sql.Timestamp;
 
 /**
- * TODO: add description.
+ * Object presentation of SQL date range.
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
+ * @see NCSqlExtractor#extractDateRange(NCToken) 
  */
 public interface NCSqlDateRange {
+    /**
+     * Gets 'from' timestamp.
+     *
+     * @return The 'from' timestamp.
+     */
     Timestamp getFrom();
+
+    /**
+     * Gets 'to' timestamp.
+     *
+     * @return The 'to' timestamp.
+     */
     Timestamp getTo();
 }

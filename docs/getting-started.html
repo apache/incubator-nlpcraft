@@ -23,7 +23,7 @@ id: getting_started
 
 <div class="col-md-8 second-column">
     <section id="getting-started">
-        <span class="section-title">Getting Started</span>
+        <h2 class="section-title">Getting Started</h2>
         <p>
             In this section we'll take a quick 10 minutes look at running and
             testing <a href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples" target="github">examples</a>
@@ -37,7 +37,7 @@ id: getting_started
         </ul>
     </section>
     <section id="probe-server">
-        <span class="section-title">Data Probe <span class="amp">&amp;</span> REST Server</span>
+        <h2 class="section-title">Data Probe <span class="amp">&amp;</span> REST Server</h2>
         <p>
             Data probes are used to deploy and host data model, while REST server (or a
             cluster of servers) is used to accept client REST calls and route them to the data model deployed on data probes.
@@ -165,7 +165,7 @@ id: getting_started
         </p>
     </section>
     <section id="querying">
-        <span class="section-title">Weather Forecast</span>
+        <h2 class="section-title">Weather Forecast</h2>
         <p>
             We'll be testing <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/weather">Weather Example</a>
             to ask questions about weather forecast using REST APIs. This example returns a comprehensive JSON weather
@@ -180,7 +180,7 @@ id: getting_started
             command line of the standard <code>cURL</code>. Note also that we'll be using Python to pretty format
             cURL JSON responses.
         </p>
-        <span class="section-sub-title">Sign In</span>
+        <h3 class="section-title">Sign In</h3>
         <p>
             First, we need to sign in and obtain <b>access token</b>. We'll use <code>/signin</code>
             REST call for that. When REST server starts
@@ -198,7 +198,7 @@ id: getting_started
             Note the returned access token <code>KMGWMQJ44</code> which we'll use in subsequent operations. Keep in mind that you
             will get different access tokens and IDs when you are performing these steps by yourself.
         </p>
-        <span class="section-sub-title"><b>Query</b></span>
+        <h3 class="section-title"><b>Query</b></h3>
         <p>
             Now that we have signed in (access token <code>KMGWMQJ44</code>) we can go ahead and start asking natural language
             questions against our data model (<code>nlpcraft.weather.ex</code>). For this example we'll use
@@ -331,7 +331,7 @@ id: getting_started
                 "status": "API_OK"
             }
         </pre>
-        <span class="section-sub-title">Sign Out</span>
+        <h3 class="section-title">Sign Out</h3>
         <p>
             Once we enjoyed our conversation about the weather we sign out:
         </p>

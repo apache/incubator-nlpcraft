@@ -23,7 +23,7 @@ id: metrics
 
 <div id="metrics-and-tracing" class="col-md-8 second-column">
     <section id="overview">
-        <span class="section-title">Overview</span>
+        <h2 class="section-title">Overview</h2>
         <p>
             Both REST server and data probe come with <a target=_ href="https://opencensus.io">OpenCensus</a>
             instrumentation. NLPCraft bundles several built-in exporters for various OpenCensus trace and stats
@@ -130,7 +130,7 @@ id: metrics
         </p>
     </section>
     <section id="server">
-        <span class="section-title">Configuring Server</span>
+        <h2 class="section-title">Configuring Server</h2>
         <p>
             OpenCensus exporters for the REST server are lifecycle components. Server lifecycle components are the implementations
             of <code>NCServerLifecycle</code> trait. Lifecycle components get callbacks for various stages of the server
@@ -161,7 +161,7 @@ nlpcraft {
         </p>
     </section>
     <section id="probe">
-        <span class="section-title">Configuring Probe</span>
+        <h2 class="section-title">Configuring Probe</h2>
         <p>
             Just like on the REST server OpenCensus exporters for the data probe are lifecycle components. Probe lifecycle
             components are the implementations
@@ -199,7 +199,7 @@ nlpcraft {
         </ul>
     </section>
     <section id="traces">
-        <span class="section-title">Traces</span>
+        <h2 class="section-title">Traces</h2>
         <p>
             When traces are exporter, there are two service names used for NLPCraft traces that will appear on UI backends:
         </p>
@@ -214,7 +214,7 @@ nlpcraft {
         </p>
     </section>
     <section id="metrics">
-        <span class="section-title">Metrics</span>
+        <h2 class="section-title">Metrics</h2>
         <p>
             When it comes to metrics each exporter has different set of configuration for either a namespace or
             name prefix on how these metrics will be available on the UI backends:

@@ -17,29 +17,25 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
-/**
- * Exception thrown by various classes in model stub generator utility.
- *
- * @see NCSqlUtils
- * @see NCSqlSchemaBuilder
- */
-public class NCSqlException extends RuntimeException {
-    /**
-     * Creates new exception.
-     *
-     * @param message Error message.
-     */
-    public NCSqlException(String message) {
-        super(message);
-    }
+import org.apache.nlpcraft.model.*;
+import org.apache.nlpcraft.model.tools.sqlgen.impl.*;
 
+/**
+ * Builder for {@link NCSqlExtractor} instances.
+ *
+ * @see NCSqlModelGenerator
+ * @see NCSqlExtractor
+ */
+public class NCSqlExtractorBuilder {
     /**
-     * Creates new exception.
-     *
-     * @param message Error message.
-     * @param cause Optional cause of this exception.
+     * Builds and returns new SQL extractor for given SQL schema and parsing variant.
+     * 
+     * @param schema SQL schema object to create an extractor for.
+     * @param variant Parsing variant (i.e. list of all tokens) to act as a context for
+     *      the extraction wherever necessary.
+     * @return Newly created SQL extractor.
      */
-    public NCSqlException(String message, Throwable cause) {
-        super(message, cause);
+    public static NCSqlExtractor build(NCSqlSchema schema, NCVariant variant) {
+        return new NCSqlExtractorImpl(schema, variant);
     }
 }

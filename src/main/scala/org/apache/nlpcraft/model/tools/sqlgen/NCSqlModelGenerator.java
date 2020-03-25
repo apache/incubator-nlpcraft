@@ -17,19 +17,41 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
+import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl;
 
 /**
- * Command line utility to generate NLPCraft model stub from given SQL RDBMS.
+ * Command line utility to generate YAML/JSON NLPCraft model stub from given SQL RDBMS.
  * <p>
- * You need to provide JDBC URL and driver, database schema, as well as set of tables and columns for which you
- * want to generate NLPCraft model stub. After the model stub is generated you need to further configure and customize
- * it for your specific needs.
- * <p>
- * Run this class with <code>--help</code> parameter to get a full documentation:
+ * This command line utility take several parameters like JDBC URL and driver, database schema, and
+ * optional set of tables and columns for which it will generate YAML/JSON NLPCraft model stub. Run
+ * this class with <code>--help</code> parameter to get a full up-to-date documentation:
  * <pre class="brush:plain">
  * java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator --help
  * </pre>
+ * <p>
+ * After the model stub is generated:
+ * <ul>
+ *     <li>
+ *         Modify and extend generated model stub to your own needs. In most cases, you'll need
+ *         to add, remove or modify auto-generated synonyms, add intents, etc. Note, however, that generated model
+ *         is fully complete and can be used as is.
+ *     </li>
+ *     <li>
+ *         Use generated YAML/JSON-based model together with {@link NCModelFileAdapter}
+ *         class to instantiate model from this file.
+ *     </li>
+ *     <li>
+ *         Use {@link NCSqlSchemaBuilder#makeSchema(NCModel)} method to get an object representation of the
+ *         SQL data schema for the model. You can use this object representation along with many utility
+ *         methods in {@link NCSqlExtractor} class to efficiently auto-generate SQL queries against the source RDBMS.
+ *     </li>
+ * </ul>
+ *
+ * @see NCModelFileAdapter
+ * @see NCSqlSchemaBuilder
+ * @see NCSqlExtractor
  */
 public class NCSqlModelGenerator {
     /**
@@ -37,6 +59,7 @@ public class NCSqlModelGenerator {
      * 
      * @param args Command line parameters. Execute with <code>--help</code> parameter to get a full
      *      documentation.
+     * @throws NCException Thrown in case of any errors.
      */
     public static void main(String[] args) {
         // Calling out Scala engine.

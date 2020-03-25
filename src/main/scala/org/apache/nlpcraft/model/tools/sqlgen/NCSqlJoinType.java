@@ -17,8 +17,25 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
-import java.util.List;
-
-public interface NCSqlInCondition extends NCSqlCondition {
-    List<Object> getValues();
+/**
+ * Type of the SQL join.
+ * <p>
+ * In JSON/YAML generated model SQL join type is declared with the following data model
+ * metadata (example):
+ * <pre class="brush: js, highlight: [8]">
+ *   sql:joins:
+ *   - fromtable: "orders"
+ *     fromcolumns:
+ *     - "customer_id"
+ *     totable: "customers"
+ *     tocolumns:
+ *     - "customer_id"
+ *     jointype: "left"
+ * </pre>
+ */
+public enum NCSqlJoinType {
+    INNER,
+    LEFT,
+    RIGHT,
+    OUTER
 }

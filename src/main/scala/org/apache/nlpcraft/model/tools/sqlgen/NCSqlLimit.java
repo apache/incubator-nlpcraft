@@ -17,11 +17,32 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.model.*;
+
 /**
- * TODO: add description.
+ * Object presentation of SQL limit.
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  */
 public interface NCSqlLimit {
+    /**
+     * Gets SQL column this limit is applied.
+     *
+     * @return SQL column this limit is applied.
+     */
     NCSqlColumn getColumn();
+
+    /**
+     * Gets the numeric value of the limit.
+     *
+     * @return Numeric value of the limit.
+     */
     int getLimit();
+
+    /**
+     * Gets whether limit ascending or descending.
+     *
+     * @return Whether limit ascending or descending.
+     */
     boolean isAscending();
 }

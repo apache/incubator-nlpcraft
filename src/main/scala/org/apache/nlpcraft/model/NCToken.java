@@ -161,6 +161,19 @@ public interface NCToken extends NCMetadata {
     List<String> getAliases();
 
     /**
+     * Tests whether or not this token has given alias. It is equivalent to:
+     * <pre class="brush: java">
+     *      return getAliases().contains(alias);
+     * </pre>
+     *
+     * @param alias Alias to test.
+     * @return <code>True</code> if this token has alias <code>alias</code>, {@code false} otherwise.
+     */
+    default boolean isOfAlias(String alias) {
+        return getAliases().contains(alias);
+    }
+
+    /**
      * Gets the value if this token was detected via element's value (or its synonyms). Otherwise
      * returns {@code null}. Only applicable for user-defined model elements (built-in tokens
      * do not have values).
@@ -178,6 +191,19 @@ public interface NCToken extends NCMetadata {
      * @see NCElement#getGroups()
      */
     List<String> getGroups();
+
+    /**
+     * Tests whether or not this token belongs to the given group. It is equivalent to:
+     * <pre class="brush: java">
+     *      return getGroups().contains(grp);
+     * </pre>
+     *
+     * @param grp Group to test.
+     * @return <code>True</code> if this token belongs to the group <code>grp</code>, {@code false} otherwise.
+     */
+    default boolean isMemberOf(String grp) {
+        return getGroups().contains(grp);
+    }
 
     /**
      * Gets start character index of this token in the original text.

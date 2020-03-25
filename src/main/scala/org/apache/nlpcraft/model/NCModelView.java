@@ -134,7 +134,6 @@ public interface NCModelView extends NCMetadata {
      * <li><code>nlpcraft:city</code></li>
      * <li><code>nlpcraft:num</code></li>
      * <li><code>nlpcraft:coordinate</code></li>
-     * <li><code>nlpcraft:aggregation</code></li>
      * <li><code>nlpcraft:relation</code></li>
      * <li><code>nlpcraft:sort</code></li>
      * <li><code>nlpcraft:limit</code></li>
@@ -152,7 +151,6 @@ public interface NCModelView extends NCMetadata {
                 "nlpcraft:city",
                 "nlpcraft:num",
                 "nlpcraft:coordinate",
-                "nlpcraft:aggregation",
                 "nlpcraft:relation",
                 "nlpcraft:sort",
                 "nlpcraft:limit"
@@ -891,7 +889,6 @@ public interface NCModelView extends NCMetadata {
      * <li><code>nlpcraft:city</code></li>
      * <li><code>nlpcraft:num</code></li>
      * <li><code>nlpcraft:coordinate</code></li>
-     * <li><code>nlpcraft:aggregation</code></li>
      * <li><code>nlpcraft:relation</code></li>
      * <li><code>nlpcraft:sort</code></li>
      * <li><code>nlpcraft:limit</code></li>

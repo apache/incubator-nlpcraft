@@ -25,7 +25,7 @@ package org.apache.nlpcraft.common
   */
 class NCException(msg: String, cause: Throwable = null) extends RuntimeException(msg, U.getOriginCause(cause)) {
     /**
-      * Java-compatible ctor.
+      * Java-compatible constructor.
       *
       * @param msg Error message.
       */

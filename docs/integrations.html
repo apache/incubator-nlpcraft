@@ -94,7 +94,7 @@ id: integrations
         </table>
 
         <div class="bq warn">
-            <span class="section-sub-title">Configuring Token Providers</span>
+            <h3 class="section-title">Configuring Token Providers</h3>
             <p>
                 REST server configuration support zero or more token providers. Data models also have to specify
                 the specific tokens they are expecting the REST server and probe to detect. This is done to limit the
@@ -113,11 +113,11 @@ id: integrations
         <p>
             NLPCraft is an open source library for adding natural language Interface to any applications.
         </p>
-        <span class="section-sub-title">Base NLP Engine</span>
+        <h3 class="section-title">Base NLP Engine</h3>
         <p>
             N/A
         </p>
-        <span class="section-sub-title">Token Provider</span>
+        <h3 class="section-title">Token Provider</h3>
         <p>
             NLPCraft provides its own set of built-in elements. NLPCraft token IDs start with <code>nlpcraft</code>. Note
             also that all NLPCraft built-in tokens are normalized named entities (NNE), i.e. they provide normalized
@@ -284,25 +284,6 @@ id: integrations
                 </td>
             </tr>
             <tr>
-                <td><code>nlpcraft:aggregation</code></td>
-                <td>
-                    This token denotes an aggregation function:
-                    <code>min</code>,
-                    <code>max</code>,
-                    <code>avg</code>,
-                    <code>sum</code>, or
-                    <code>group</code>.  Note this token always need another token that it references.
-                </td>
-                <td>
-                    <ul>
-                        <li>
-                            Show the <code><b>average</b></code> <code>price</code> (assuming that 'price' is also
-                            detected as a token).
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-            <tr>
                 <td><code>nlpcraft:relation</code></td>
                 <td>
                     This token denotes a relation function:
@@ -342,12 +323,12 @@ id: integrations
             <a href="https://opennlp.apache.org">Apache OpenNLP</a> is an open-source library for a machine learning based
             processing of natural language text.
         </p>
-        <span class="section-sub-title">Base NLP Engine</span>
+        <h3 class="section-title">Base NLP Engine</h3>
         <p>
             <a href="https://opennlp.apache.org">Apache OpenNLP</a> is used by NLPCraft as a default base NLP engine. You can also set
             it explicitly on REST server and probe via configuration property: <code>nlpcraft.nlpEngine=opennlp</code>
         </p>
-        <span class="section-sub-title">Token Provider</span>
+        <h3 class="section-title">Token Provider</h3>
         <p>
             OpenNLP can be used independently as a token provider (even if other library is used as a base NLP engine).
             OpenNLP provides its own set of built-in tokens supported by NLPCraft.
@@ -430,11 +411,11 @@ id: integrations
             <a href="https://cloud.google.com/natural-language/">Google Natural Language</a> uses machine learning
             to reveal the structure and meaning of text.
         </p>
-        <span class="section-sub-title">Base NLP Engine</span>
+        <h3 class="section-title">Base NLP Engine</h3>
         <p>
             N/A
         </p>
-        <span class="section-sub-title">Token Provider</span>
+        <h3 class="section-title">Token Provider</h3>
         <p>
             Google Natural Language provides its own set of built-in elements.
             To use Google token provider the environment variable <code>GOOGLE_APPLICATION_CREDENTIALS</code>
@@ -469,7 +450,7 @@ id: integrations
         <p>
             <a href="https://stanfordnlp.github.io/CoreNLP">Stanford CoreNLP</a> is a set of human language technology tools.
         </p>
-        <span class="section-sub-title">Base NLP Engine</span>
+        <h3 class="section-title">Base NLP Engine</h3>
         <p>
             You can set Stanford CoreNLP as a base NLP engine. Note that due to licensing you need to add Stanford CoreNLP
             dependencies separately and make it available to NLPCraft:
@@ -534,7 +515,7 @@ id: integrations
                 project classpath if you are not using, or instead of, build tools.
             </li>
         </ul>
-        <span class="section-sub-title">Token Provider</span>
+        <h3 class="section-title">Token Provider</h3>
         <p>
             Stanford CoreNLP can be used as a token provider independently from base NLP engine.
             Due to licensing you need to add Stanford CoreNLP dependencies separately and make it available to NLPCraft:
@@ -628,11 +609,11 @@ id: integrations
         <p>
             <a href="https://spacy.io">spaCy</a> is a free open-source library for Natural Language Processing in Python.
         </p>
-        <span class="section-sub-title">Base NLP Engine</span>
+        <h3 class="section-title">Base NLP Engine</h3>
         <p>
             N/A
         </p>
-        <span class="section-sub-title">Token Provider</span>
+        <h3 class="section-title">Token Provider</h3>
         <p>
             spaCy provides its own set of built-in elements. NLPCraft integrates with spaCy via local Python-based
             REST server <code>/src/main/python/spacy_proxy.py</code>. It is a very simple Flask-based implementation

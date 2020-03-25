@@ -113,6 +113,19 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
+     * Shortcut method to test if this element is a member of given group. It is equivalent to:
+     * <pre class="brush: java">
+     *     return getGroups().contains(grp);
+     * </pre>
+     *
+     * @param grp Token group to test.
+     * @return {@code True} if this element belongs to the given group, {@code false} otherwise.
+     */
+    default boolean isMemberOf(String grp) {
+        return getGroups().contains(grp);
+    }
+
+    /**
      * Gets optional user-defined element's metadata. When a {@link NCToken token} for this element
      * is detected in the input this metadata is merged into {@link NCToken#getMetadata()} method returned metadata.
      * <p>
