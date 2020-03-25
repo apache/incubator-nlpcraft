@@ -124,19 +124,19 @@ object NCProbeManager extends NCService {
                 dnSocket.close()
         }
     }
-    
-    private var dnSrv: Thread = _
-    private var upSrv: Thread = _
-    private var pingSrv: Thread = _
+
+    @volatile private var dnSrv: Thread = _
+    @volatile private var upSrv: Thread = _
+    @volatile private var pingSrv: Thread = _
     
     // All known probes keyed by probe key.
-    private var probes: mutable.Map[ProbeKey, ProbeHolder] = _
-    private var mdls: mutable.Map[String, NCProbeModelMdo] = _
+    @volatile private var probes: mutable.Map[ProbeKey, ProbeHolder] = _
+    @volatile private var mdls: mutable.Map[String, NCProbeModelMdo] = _
     // All probes pending complete handshake keyed by probe key.
-    private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
-    
-    private var pool: ExecutorService = _
-    private var isStopping: AtomicBoolean = _
+    @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
+
+    @volatile private var pool: ExecutorService = _
+    @volatile private var isStopping: AtomicBoolean = _
     
     /**
       *
