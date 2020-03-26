@@ -198,7 +198,6 @@ object NCProbeManager extends NCService {
         super.stop()
     }
 
-
     /**
       *
       * @param tokHash
@@ -230,7 +229,7 @@ object NCProbeManager extends NCService {
                         logger.info(s"Probe removed: $probeKey")
 
                         // Clears unused models.
-                        mdls --= mdls.keys.filter(id ⇒ !probes.exists { case (_, p) ⇒ p.probe.models.exists(_.id == id)})
+                        mdls --= mdls.keys.filter(id ⇒ !probes.exists { case (_, p) ⇒ p.probe.models.exists(_.id == id) })
                 }
 
             case Some(hld) ⇒
