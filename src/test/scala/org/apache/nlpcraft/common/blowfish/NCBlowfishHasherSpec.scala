@@ -17,15 +17,15 @@
 
 package org.apache.nlpcraft.common.blowfish
 
-import org.scalatest.FlatSpec
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
   * Tests for Blowfish hasher.
   */
-class NCBlowfishHasherSpec extends FlatSpec {
-    behavior of "Blowfish hasher"
-    
-    it should "properly hash password" in {
+class NCBlowfishHasherSpec {
+    @Test
+    def testWithSequenceHeader() {
         val email = "dev@nlpcraft.org"
         val passwd = "test"
         
@@ -37,8 +37,8 @@ class NCBlowfishHasherSpec extends FlatSpec {
         
         val hash1 = NCBlowfishHasher.hash(passwd, salt1)
         val hash2 = NCBlowfishHasher.hash(passwd, salt1)
-    
-        assert(hash1 == hash2)
+
+        assertTrue(hash1 == hash2)
 
         println(s"Salt: $salt1")
         println(s"Hash: $hash1")

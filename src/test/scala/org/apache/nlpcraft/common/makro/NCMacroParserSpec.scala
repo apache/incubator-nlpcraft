@@ -18,7 +18,8 @@
 package org.apache.nlpcraft.common.makro
 
 import org.apache.nlpcraft.common._
-import org.scalatest.FlatSpec
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 import scala.compat.Platform._
 import scala.util.control.Exception._
@@ -26,9 +27,7 @@ import scala.util.control.Exception._
 /**
   * Tests for text parser.
   */
-class NCMacroParserSpec extends FlatSpec {
-    behavior of "Text parser"
-    
+class NCMacroParserSpec  {
     private val parser = NCMacroParser(
         "<A>" → "aaa",
         "<B>" → "<A> bbb",
@@ -65,8 +64,8 @@ class NCMacroParserSpec extends FlatSpec {
     def testToken(txt: String, tokHead: String, tokTail: String): Unit = {
         val tok = parser.nextToken(txt)
         
-        assert(tok.get.head == tokHead)
-        assert(tok.get.tail == tokTail)
+        assertTrue(tok.get.head == tokHead)
+        assertTrue(tok.get.tail == tokTail)
     }
     
     /**
@@ -75,7 +74,7 @@ class NCMacroParserSpec extends FlatSpec {
       * @param exp Expected expansion strings.
       */
     def testParser(txt: String, exp: Seq[String]): Unit =
-        assert(parser.expand(txt).sorted == exp.sorted)
+        assertTrue(parser.expand(txt).sorted == exp.sorted)
     
     /**
       *
@@ -85,10 +84,11 @@ class NCMacroParserSpec extends FlatSpec {
     def testGroup(txt: String, grps: Seq[String]): Unit = {
         val elms = parser.parseGroup(txt)
         
-        assert(grps == elms.map(_.head))
+        assertTrue(grps == elms.map(_.head))
     }
-    
-    it should "measure performance" in {
+
+    @Test
+    def testPerformance() {
         val start = currentTime
 
         val N = 50000
@@ -100,8 +100,9 @@ class NCMacroParserSpec extends FlatSpec {
 
         println(s"${N * 1000 / duration} ops/second.")
     }
-    
-    it should "expand string" in {
+
+    @Test
+    def testExpand() {
         // Make sure we can parse these.
         parser.expand("<OF>")
         parser.expand("<QTY>")
@@ -212,13 +213,14 @@ class NCMacroParserSpec extends FlatSpec {
             "a c"
         ))
 
-        ignoreNCE { testParser("a | b", Seq.empty); assert(false) }
-        ignoreNCE { testParser("a *", Seq.empty); assert(false) }
-        ignoreNCE { testParser("a}}", Seq.empty); assert(false) }
-        ignoreNCE { testParser("a {a|b} *", Seq.empty); assert(false) }
+        ignoreNCE { testParser("a | b", Seq.empty); assertTrue(false) }
+        ignoreNCE { testParser("a *", Seq.empty); assertTrue(false) }
+        ignoreNCE { testParser("a}}", Seq.empty); assertTrue(false) }
+        ignoreNCE { testParser("a {a|b} *", Seq.empty); assertTrue(false) }
     }
-    
-    it should "parse option group" in {
+
+    @Test
+    def testOptionGroup() {
         testGroup("{a {b|c} | d}", Seq("a {b|c} ", " d"))
         testGroup("{a|b}", Seq("a", "b"))
         testGroup("{a}", Seq("a"))
@@ -227,12 +229,13 @@ class NCMacroParserSpec extends FlatSpec {
         testGroup("{a {c}|b|*}", Seq("a {c}", "b", "*"))
         testGroup("""{/abc.\*/|\{\*\}}""", Seq("/abc.\\*/", "\\{\\*\\}"))
 
-        ignoreNCE { parser.parseGroup("a"); assert(false) }
-        ignoreNCE { parser.parseGroup("{a"); assert(false) }
-        ignoreNCE { parser.parseGroup("a}"); assert(false) }
+        ignoreNCE { parser.parseGroup("a"); assertTrue(false) }
+        ignoreNCE { parser.parseGroup("{a"); assertTrue(false) }
+        ignoreNCE { parser.parseGroup("a}"); assertTrue(false) }
     }
-    
-    it should "parse token" in {
+
+    @Test
+    def testParseTokens() {
         testToken("""a \* b""", """a \* b""", "")
         testToken("""a \\\* b""", """a \\\* b""", "")
         testToken("""a \{\*\*\*\} b""", """a \{\*\*\*\} b""", "")
@@ -244,20 +247,21 @@ class NCMacroParserSpec extends FlatSpec {
         testToken("c{a}     b", "c", "{a}     b")
         testToken("{{{a}}}", "{{{a}}}", "")
         
-        ignoreNCE { parser.nextToken("a } b"); assert(false) }
-        ignoreNCE { parser.nextToken("{c b"); assert(false) }
-        ignoreNCE { parser.nextToken("a | b"); assert(false) }
-        ignoreNCE { parser.nextToken("a |*"); assert(false) }
+        ignoreNCE { parser.nextToken("a } b"); assertTrue(false) }
+        ignoreNCE { parser.nextToken("{c b"); assertTrue(false) }
+        ignoreNCE { parser.nextToken("a | b"); assertTrue(false) }
+        ignoreNCE { parser.nextToken("a |*"); assertTrue(false) }
         
-        assert(parser.nextToken("").isEmpty)
-        assert(parser.nextToken("     ").isDefined)
+        assertTrue(parser.nextToken("").isEmpty)
+        assertTrue(parser.nextToken("     ").isDefined)
     }
-    
-    it should "obey max limit" in {
+
+    @Test
+    def testLimit() {
         ignoreNCE {
             parser.expand("<METRICS> <USER> <BY> <WEBSITE> <BY> <SES> <BY> <METRICS> <BY> <USER> <BY> <METRICS>")
 
-            assert(false)
+            assertTrue(false)
         }
     }
 }

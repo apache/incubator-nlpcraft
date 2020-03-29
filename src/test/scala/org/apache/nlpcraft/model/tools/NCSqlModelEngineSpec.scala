@@ -17,14 +17,13 @@
 
 package org.apache.nlpcraft.model.tools
 
-import org.scalatest.FlatSpec
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  * TODO: add description.
  */
-class NCSqlModelEngineSpec extends FlatSpec {
-    behavior of "SQL model engine"
-    
+class NCSqlModelEngineSpec {
     /**
      * Copy of the private method from 'NCSqlModelEngine'.
      *
@@ -74,44 +73,48 @@ class NCSqlModelEngineSpec extends FlatSpec {
             case Some(head) if head == w ⇒ list // Skip duplicate 'w'.
             case _ ⇒ w :: list
         }).mkString(" ")
-    
-    it should "correctly remove prefix" in {
+
+    @Test
+    def testRemovePrefix() {
         val fun1 = mkPrefixFun("tbl_, col_")
         val fun2 = mkPrefixFun("")
         val fun3 = mkPrefixFun("tbl_tbl_, col_")
         
-        assert(fun1("tbl_table") == "table")
-        assert(fun1("tbl_tbl_table") == "tbl_table")
-        assert(fun3("tbl_tbl_table") == "table")
-        assert(fun1("col_column") == "column")
-        assert(fun1("_col_column") == "_col_column")
-        assert(fun2("col_column") == "col_column")
+        assertTrue(fun1("tbl_table") == "table")
+        assertTrue(fun1("tbl_tbl_table") == "tbl_table")
+        assertTrue(fun3("tbl_tbl_table") == "table")
+        assertTrue(fun1("col_column") == "column")
+        assertTrue(fun1("_col_column") == "_col_column")
+        assertTrue(fun2("col_column") == "col_column")
     }
-    
-    it should "correctly remove suffix" in {
+
+    @Test
+    def testRemoveSuffix() {
         val fun1 = mkSuffixFun("_tmp, _old")
         val fun2 = mkSuffixFun("")
         val fun3 = mkSuffixFun("_tmp_tmp")
         
-        assert(fun1("table_old") == "table")
-        assert(fun1("table_old_old") == "table_old")
-        assert(fun3("table_tmp_tmp") == "table")
-        assert(fun1("column_old") == "column")
-        assert(fun1("column_old_") == "column_old_")
-        assert(fun2("column_old") == "column_old")
+        assertTrue(fun1("table_old") == "table")
+        assertTrue(fun1("table_old_old") == "table_old")
+        assertTrue(fun3("table_tmp_tmp") == "table")
+        assertTrue(fun1("column_old") == "column")
+        assertTrue(fun1("column_old_") == "column_old_")
+        assertTrue(fun2("column_old") == "column_old")
     }
 
-    it should "correctly substitute macros" in {
-        assert(substituteMacros("a id") == "a <ID>")
-        assert(substituteMacros("a     id   ") == "a <ID>")
-        assert(substituteMacros("id") == "<ID>")
+    @Test
+    def testSubstituteMacros() {
+        assertTrue(substituteMacros("a id") == "a <ID>")
+        assertTrue(substituteMacros("a     id   ") == "a <ID>")
+        assertTrue(substituteMacros("id") == "<ID>")
     }
-    
-    it should "correctly remove sequential dups" in {
-        assert(removeSeqDups("a a b b") == "a b")
-        assert(removeSeqDups("aa b b") == "aa b")
-        assert(removeSeqDups("aa     b    b") == "aa b")
-        assert(removeSeqDups("aa     b    bb") == "aa b bb")
-        assert(removeSeqDups("a a b b") != "a b c")
+
+    @Test
+    def testRemoveSequentialDups() {
+        assertTrue(removeSeqDups("a a b b") == "a b")
+        assertTrue(removeSeqDups("aa b b") == "aa b")
+        assertTrue(removeSeqDups("aa     b    b") == "aa b")
+        assertTrue(removeSeqDups("aa     b    bb") == "aa b bb")
+        assertTrue(removeSeqDups("a a b b") != "a b c")
     }
 }

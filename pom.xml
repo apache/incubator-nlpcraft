@@ -119,6 +119,7 @@
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
         <maven.gpg.plugin.ver>1.6</maven.gpg.plugin.ver>
         <maven.nexus.staging.plugin>1.6.7</maven.nexus.staging.plugin>
+        <maven.bazaarvoice.plugin>0.9</maven.bazaarvoice.plugin>
         <org.antlr4.ver>4.8</org.antlr4.ver>
         <akka.http.2.11.ver>10.1.9</akka.http.2.11.ver>
         <akka.stream.2.11.ver>2.5.23</akka.stream.2.11.ver>
@@ -499,13 +500,67 @@
             </plugin>
 
             <plugin>
+                <groupId>com.bazaarvoice.maven.plugins</groupId>
+                <artifactId>process-exec-maven-plugin</artifactId>
+                <version>${maven.bazaarvoice.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <name>server</name>
+                            <healthcheckUrl>http://localhost:8081/api/v1/health</healthcheckUrl>
+                            <waitAfterLaunch>180</waitAfterLaunch>
+                            <arguments>
+                                <argument>java</argument>
+                                <argument>-Xmx4G</argument>
+                                <argument>-Xms4G</argument>
+                                <argument>-jar</argument>
+                                <argument>${project.build.directory}/${project.artifactId}-${project.version}-all-deps.jar</argument>
+                                <argument>-server</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-all</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop-all</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin.ver}</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <!-- Skips all tests on phase `test`. -->
+                    <skip>true</skip>
                 </configuration>
+                <executions>
+                    <!-- All tests are defined as integration. -->
+                    <execution>
+                        <id>integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <!-- Mandatory part. -->
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>

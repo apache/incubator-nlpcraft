@@ -21,10 +21,10 @@ import java.util
 import java.util.Collections
 
 import org.apache.nlpcraft.model.{NCContext, NCElement, NCModelAdapter, NCResult, NCValue}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCDefaultTestModel._
 
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
-import NCDefaultTestModel._
 
 /**
   * Enrichers default test model.

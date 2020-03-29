@@ -18,14 +18,13 @@
 package org.apache.nlpcraft.model.intent.impl
 
 import org.apache.nlpcraft.model.intent.utils.NCDslFlowItem
-import org.scalatest.FlatSpec
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  * Unit tests for intent solver engine.
  */
-class NCIntentSolverEngineSpec extends FlatSpec {
-    behavior of "Intent solver engine"
-    
+class NCIntentSolverEngineSpec  {
     /**
      *
      * @param hist Matched intents.
@@ -34,20 +33,21 @@ class NCIntentSolverEngineSpec extends FlatSpec {
      */
     private def matchFlow(hist: String, flow: (String/*Intent ID*/, Int/*min*/, Int/*max*/)*): Boolean = {
         NCIntentSolverEngine.matchFlow(
-            flow.toArray.map(x ⇒ new NCDslFlowItem(x._1.split('|').map(_.trim), x._2, x._3)),
+            flow.toArray.map(x ⇒ NCDslFlowItem(x._1.split('|').map(_.trim), x._2, x._3)),
             hist.split(" ").map(_.trim)
         )
     }
-    
-    it should "match dialog flow" in {
-        assert(!matchFlow("", ("a", 1, 1)))
-        assert(matchFlow("a c", ("a", 1, 1), ("b", 0, 2), ("c", 1, 1)))
-        assert(matchFlow("a b c", ("a", 1, 1), ("b", 0, 2), ("c", 1, 1)))
-        assert(matchFlow("a b b c", ("a", 1, 1), ("b", 0, 2), ("c", 1, 1)))
-        assert(matchFlow("a b b c", ("a", 1, 1), ("b|c", 0, 2), ("c", 1, 1)))
-        assert(matchFlow("a a c c", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
-        assert(matchFlow("a a c c d", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
-        assert(matchFlow("a a c c e f g h", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
-        assert(!matchFlow("a a c c x", ("a", 2, 2), ("b|c", 1, 2), ("d", 1, 1)))
+
+    @Test
+    def testMatchDialogFlow() {
+        assertTrue(!matchFlow("", ("a", 1, 1)))
+        assertTrue(matchFlow("a c", ("a", 1, 1), ("b", 0, 2), ("c", 1, 1)))
+        assertTrue(matchFlow("a b c", ("a", 1, 1), ("b", 0, 2), ("c", 1, 1)))
+        assertTrue(matchFlow("a b b c", ("a", 1, 1), ("b", 0, 2), ("c", 1, 1)))
+        assertTrue(matchFlow("a b b c", ("a", 1, 1), ("b|c", 0, 2), ("c", 1, 1)))
+        assertTrue(matchFlow("a a c c", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
+        assertTrue(matchFlow("a a c c d", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
+        assertTrue(matchFlow("a a c c e f g h", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
+        assertTrue(!matchFlow("a a c c x", ("a", 2, 2), ("b|c", 1, 2), ("d", 1, 1)))
     }
 }
