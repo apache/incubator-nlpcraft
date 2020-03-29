@@ -22,8 +22,8 @@ if [[ $1 = "" ]] ; then
 fi
 
 zipDir=zips
-tmpDir=nlpcraft
-zipFile=nlpcraft-$1.zip
+tmpDir=apache-nlpcraft
+zipFile=apache-nlpcraft-$1.zip
 
 curDir=$(pwd)
 
@@ -43,6 +43,7 @@ rsync -avzq src ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp LICENSE ${zipDir}/${tmpDir}
+cp NOTICE ${zipDir}/${tmpDir}
 cp src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
 cp src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
 cp src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
