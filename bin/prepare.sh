@@ -23,7 +23,8 @@ fi
 
 zipDir=zips
 tmpDir=apache-nlpcraft
-zipFile=apache-nlpcraft-$1.zip
+zipFileBin=apache-nlpcraft-bin-$1.zip
+zipFileSrc=apache-nlpcraft-src-$1.zip
 
 curDir=$(pwd)
 
@@ -51,15 +52,35 @@ cp src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
 cp target/*all-deps.jar ${zipDir}/${tmpDir}/build
 rsync -avzq target/apidocs/** ${zipDir}/${tmpDir}/javadoc --exclude '**/.DS_Store'
 
+# Prepares bin zip.
 cd ${zipDir}
-zip -rq ${zipFile} ${tmpDir} 2> /dev/null
+zip -rq ${zipFileBin} ${tmpDir} 2> /dev/null
+
+# Deletes some data for src zip
+rm -R ${tmpDir}/build 2> /dev/null
+rm -R ${tmpDir}/javadoc 2> /dev/null
+
+# Adds some data for src zip
+cd ../
+cp pom.xml ${zipDir}/${tmpDir}
+cp assembly.xml ${zipDir}/${tmpDir}
+cp README.md ${zipDir}/${tmpDir}
+
+# Prepares src zip.
+cd ${zipDir}
+zip -rq ${zipFileSrc} ${tmpDir} 2> /dev/null
 
 rm -R ${tmpDir} 2> /dev/null
 
-shasum -a 1 ${zipFile} > ${zipFile}.sha1
-shasum -a 256 ${zipFile} > ${zipFile}.sha256
-md5 ${zipFile} > ${zipFile}.md5
-gpg --detach-sign ${zipFile}
+function sign() {
+  shasum -a 1 $1 > $1.sha1
+  shasum -a 256 $1 > $1.sha256
+  md5 $1 > $1.md5
+  gpg --detach-sign $1
+}
+
+sign "${zipFileBin}"
+sign "${zipFileSrc}"
 
 cd ${curDir}
 
