@@ -60,7 +60,7 @@ zip -rq ${zipFileBin} ${tmpDir} 2> /dev/null
 rm -R ${tmpDir}/build 2> /dev/null
 rm -R ${tmpDir}/javadoc 2> /dev/null
 
-# Adds some data for src zip
+# Adds some data for src zip.
 cd ../
 cp pom.xml ${zipDir}/${tmpDir}
 cp assembly.xml ${zipDir}/${tmpDir}
