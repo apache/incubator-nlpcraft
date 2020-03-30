@@ -40,7 +40,7 @@ mkdir ${zipDir}/${tmpDir}/build
 
 rsync -avzq bin ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude bin/prepare.sh
 rsync -avzq openapi ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
-rsync -avzq src ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
+rsync -avzq src ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude '**/*.iml'
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp LICENSE ${zipDir}/${tmpDir}
@@ -58,7 +58,6 @@ zip -rq ${zipFileBin} ${tmpDir} 2> /dev/null
 
 # Deletes some data for src zip
 rm -R ${tmpDir}/build 2> /dev/null
-rm -R ${tmpDir}/javadoc 2> /dev/null
 
 # Adds some data for src zip.
 cd ../
