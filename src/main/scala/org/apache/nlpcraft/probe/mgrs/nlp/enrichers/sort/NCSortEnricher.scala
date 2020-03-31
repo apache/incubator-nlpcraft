@@ -333,7 +333,7 @@ object NCSortEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        //for (subj ← m.subjSeq if !hasReferences(TOK_ID, "subjNotes", subj.map(_.note), m.main)) {
+                        //for (subj ← m.subjSeq if !hasReferences(TOK_ID, "subjnotes", subj.map(_.note), m.main)) {
                         for (subj ← m.subjSeq) {
                             def addNotes(
                                 params: ArrayBuffer[(String, Any)],
@@ -353,7 +353,7 @@ object NCSortEnricher extends NCProbeEnricher {
                                 if (m.asc.isDefined)
                                     params += "asc" → m.asc.get
 
-                                addNotes(params, subj, "subjNotes", "subjIndexes")
+                                addNotes(params, subj, "subjnotes", "subjindexes")
                             }
 
                             def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
@@ -367,7 +367,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
                             if (m.bySeq.nonEmpty)
                                 for (by ← m.bySeq)
-                                    mkNote(addNotes(mkParams(), by, "byNotes", "byIndexes"))
+                                    mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
                             else
                                 mkNote(mkParams())
                         }

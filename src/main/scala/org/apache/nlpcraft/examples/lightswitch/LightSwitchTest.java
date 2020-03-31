@@ -17,12 +17,17 @@
 
 package org.apache.nlpcraft.examples.lightswitch;
 
-import org.junit.jupiter.api.*;
-import org.apache.nlpcraft.common.*;
-import org.apache.nlpcraft.model.tools.test.*;
-import java.io.*;
+import org.apache.nlpcraft.common.NCException;
+import org.apache.nlpcraft.model.tools.test.NCTestClient;
+import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Lightswitch model test.
@@ -34,6 +39,8 @@ class LightSwitchTest {
 
     @BeforeEach
     void setUp() throws NCException, IOException {
+        NCEmbeddedProbe.start(LightSwitchModel.class);
+
         cli = new NCTestClientBuilder().newBuilder().build();
 
         cli.open("nlpcraft.lightswitch.ex");
@@ -41,7 +48,10 @@ class LightSwitchTest {
 
     @AfterEach
     void tearDown() throws NCException, IOException {
-        cli.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
 
     @Test

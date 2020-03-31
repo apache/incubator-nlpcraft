@@ -67,22 +67,24 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     // Embedded probe Java callback function.
     private type EMBEDDED_CB = java.util.function.Consumer[NCEmbeddedResult]
 
-    private val embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
+    @volatile private var embeddedCbs: mutable.Set[EMBEDDED_CB] = _
 
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.probe"
 
-        val id: String = getString(s"$pre.id")
-        val resultMaxSize: Int = getInt(s"$pre.resultMaxSizeBytes")
-    
+        def id: String = getString(s"$pre.id")
+        def resultMaxSize: Int = getInt(s"$pre.resultMaxSizeBytes")
+
         def check(): Unit =
             if (resultMaxSize <= 0)
                 abortWith(s"Value of '$pre.resultMaxSizeBytes' must be positive")
     }
-    
+
     Config.check()
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
+
         super.start()
     }
     

@@ -43,7 +43,7 @@ object NCModelManager extends NCService with DecorateAsScala {
     private final val TOKENS_PROVIDERS_PREFIXES = Set("nlpcraft:", "google:", "stanford:", "opennlp:", "spacy:")
     
     // Deployed models keyed by their IDs.
-    private val models = mutable.HashMap.empty[String, NCModelDecorator]
+    @volatile private var models: mutable.Map[String, NCModelDecorator] = _
 
     // Access mutex.
     private final val mux = new Object()
@@ -81,6 +81,8 @@ object NCModelManager extends NCService with DecorateAsScala {
 
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        models = mutable.HashMap.empty[String, NCModelDecorator]
+
         mux.synchronized {
             NCDeployManager.getModels.foreach(addNewModel)
 

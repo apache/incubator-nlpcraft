@@ -17,10 +17,13 @@
 
 package org.apache.nlpcraft.examples.alarm;
 
-import org.junit.jupiter.api.*;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -32,24 +35,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @see AlarmModel
  */
 class AlarmTest {
-    static private NCTestClient client;
+    static private NCTestClient cli;
     
     @BeforeAll
     static void setUp() throws NCException, IOException {
-        client = new NCTestClientBuilder().newBuilder().build();
+        NCEmbeddedProbe.start(AlarmModel.class);
+
+        cli = new NCTestClientBuilder().newBuilder().build();
         
-        client.open("nlpcraft.alarm.ex"); // See alarm_model.json
+        cli.open("nlpcraft.alarm.ex"); // See alarm_model.json
     }
     
     @AfterAll
     static void tearDown() throws NCException, IOException {
-        client.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
     
     @Test
     void test() throws NCException, IOException {
-        assertTrue(client.ask("Ping me in 3 minutes").isOk());
-        assertTrue(client.ask("Buzz me in an hour and 15mins").isOk());
-        assertTrue(client.ask("Set my alarm for 30s").isOk());
+        assertTrue(cli.ask("Ping me in 3 minutes").isOk());
+        assertTrue(cli.ask("Buzz me in an hour and 15mins").isOk());
+        assertTrue(cli.ask("Set my alarm for 30s").isOk());
     }
 }

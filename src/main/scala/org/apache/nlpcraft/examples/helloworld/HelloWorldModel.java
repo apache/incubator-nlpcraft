@@ -17,8 +17,10 @@
 
 package org.apache.nlpcraft.examples.helloworld;
 
-import org.apache.nlpcraft.common.*;
-import org.apache.nlpcraft.model.*;
+import org.apache.nlpcraft.common.NCException;
+import org.apache.nlpcraft.model.NCContext;
+import org.apache.nlpcraft.model.NCModelAdapter;
+import org.apache.nlpcraft.model.NCResult;
 
 /**
  * Hello World example data model.

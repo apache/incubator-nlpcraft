@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.aggregation
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestAggregationToken ⇒ agg, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestUserToken ⇒ usr}
 import org.junit.jupiter.api.Test
 
 /**
-  * Aggregation enricher test.
-  */
-class NCEnricherAggregationSpec extends NCEnricherBaseSpec {
-    /**
-      *
-      * @throws Exception
-      */
+ * Nested elements model enricher test.
+ */
+class NCEnricherNestedModelSpec extends NCEnricherBaseSpec {
+    override def getModelClass: Option[Class[_ <: NCDefaultTestModel]] = Some(classOf[NCNestedTestModel])
+
     @Test
     def test(): Unit = {
         runBatch(
             _ ⇒ checkExists(
-                "max A",
-                agg(text = "max", `type` = "max", index = 1, note = "A"),
-                usr(text = "A", id = "A")
+                "tomorrow",
+                usr(text = "tomorrow", id = "x3")
+            ),
+            _ ⇒ checkExists(
+                "tomorrow yesterday",
+                usr(text = "tomorrow", id = "x3"),
+                usr(text = "yesterday", id = "x3")
+            ),
+            _ ⇒ checkExists(
+                "y y",
+                usr(text = "y y", id = "y3")
             )
         )
     }

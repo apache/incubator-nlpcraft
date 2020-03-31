@@ -26,9 +26,9 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 class NCJaegerExporter extends NCBaseTraceExporter("Jaeger") {
     private object Config extends NCConfigurable {
         private val pre = "nlpcraft.server.opencensus.jaeger"
-        
-        val url = getStringOrElse(s"$pre.thriftUrl", "http://127.0.0.1:14268/api/traces")
-        val svcName = getStringOrElse(s"$pre.serviceName", "nlpcraft-server")
+
+        def url = getStringOrElse(s"$pre.thriftUrl", "http://127.0.0.1:14268/api/traces")
+        def svcName = getStringOrElse(s"$pre.serviceName", "nlpcraft-server")
     }
     
     override def beforeStart(): Unit = {

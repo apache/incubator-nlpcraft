@@ -21,15 +21,15 @@ import java.util
 import java.util.Collections
 
 import org.apache.nlpcraft.model.{NCContext, NCElement, NCModelAdapter, NCResult, NCValue}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCDefaultTestModel._
 
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
-import NCEnricherTestModel._
 
 /**
-  * Enrichers test model.
+  * Enrichers default test model.
   */
-class NCEnricherTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0") {
+class NCDefaultTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0") {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
     override def getElements: util.Set[NCElement] =
@@ -49,29 +49,24 @@ class NCEnricherTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.
         new NCElement {
             override def getId: String = id
             override def getSynonyms: util.List[String] = syns.asJava
-            override def getGroups: util.List[String] = Collections.singletonList(GROUP)
         }
 
     private def mkValueElement(id: String, vals: String*): NCElement =
         new NCElement {
             override def getId: String = id
             override def getSynonyms: util.List[String] = Collections.singletonList(id)
-            override def getGroups: util.List[String] = Collections.singletonList(GROUP)
             override def getValues: util.List[NCValue] = vals.map(v ⇒ new NCValue {
                 override def getName: String = v
                 override def getSynonyms: util.List[String] = Collections.singletonList(v)
             }).asJava
         }
 
-
-    override def onContext(ctx: NCContext): NCResult =
+    override final def onContext(ctx: NCContext): NCResult =
         NCResult.text(
             NCTestSentence.serialize(ctx.getVariants.asScala.map(v ⇒ NCTestSentence(v.asScala.map(NCTestToken(_)))))
         )
 }
 
-object NCEnricherTestModel {
-    final val ID = "test.enricher"
-
-    private final val GROUP = "test-enricher-group"
+object NCDefaultTestModel {
+    final val ID = "dflt.enricher.test.model"
 }

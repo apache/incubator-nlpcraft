@@ -20,7 +20,7 @@ package org.apache.nlpcraft.server.nlp.core
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
-import org.apache.nlpcraft.common.{NCE, NCService, _}
+import org.apache.nlpcraft.common.{NCService, _}
 
 import scala.collection.Seq
 
@@ -34,8 +34,8 @@ object NCNlpServerManager extends NCService {
     private object Config extends NCConfigurable {
         private final val TOKEN_PROVIDERS = Set("nlpcraft", "google", "stanford", "opennlp", "spacy")
         private final val prop = "nlpcraft.server.tokenProviders"
-        
-        val tokenProviders: Seq[String] = getStringList(prop)
+
+        def tokenProviders: Seq[String] = getStringList(prop)
 
         def support(name: String): Boolean = tokenProviders.contains(name)
     

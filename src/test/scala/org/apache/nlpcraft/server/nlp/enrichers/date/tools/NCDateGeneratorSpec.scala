@@ -21,22 +21,24 @@ import java.text.SimpleDateFormat
 import java.util.{Calendar, Date, Locale}
 
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
+import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
+import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 import org.apache.nlpcraft.server.nlp.enrichers.date.tools.NCDateGenerator.LHM_SS
 import org.apache.nlpcraft.server.nlp.enrichers.date.{NCDateParser, NCDateRange}
-import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
-
-import org.scalatest.FunSuite
+import org.junit.jupiter.api.Assertions.{assertTrue, fail}
+import org.junit.jupiter.api.{Disabled, Test}
 
 import scala.collection.JavaConverters._
 import scala.collection._
 import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
-import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import scala.language.implicitConversions
 
 /**
-  * Tests for dates templates generators.
-  */
-class NCDateGeneratorSpec extends FunSuite {
+ * Tests for dates templates generators.
+ * Excluded from suite because added for manual testing.
+ */
+@Disabled
+class NCDateGeneratorSpec  {
     private def print(
         f: LHM[String, String] ⇒ Unit, cnt: Int = 500, asc: Boolean = true, keys2Check: Option[Seq[String]] = None
     ) {
@@ -62,7 +64,7 @@ class NCDateGeneratorSpec extends FunSuite {
             case Some(keys) ⇒
                 val missed = keys.filter(k ⇒ !map.contains(k))
 
-                assert(missed.isEmpty, s"Missed keys: ${missed.mkString(", ")}")
+                assertTrue(missed.isEmpty, s"Missed keys: ${missed.mkString(", ")}")
             case None ⇒ // No-op.
         }
     }
@@ -84,7 +86,8 @@ class NCDateGeneratorSpec extends FunSuite {
             fail(s"Duplicated data expected.")
     }
 
-    test("formatters") {
+    @Test
+    def testFormatters(): Unit = {
         val f = new SimpleDateFormat("MM.dd.yyyy")
 
         // M.D
@@ -113,129 +116,159 @@ class NCDateGeneratorSpec extends FunSuite {
         checkFormatters(d4, NCDateGenerator.FMT_DAYS_YEAR_COMMON, NCDateGenerator.FMT_DAYS_YEAR_DIGITS, withDup = true)
     }
 
-    test("relativeDays") {
+    @Test
+    def testRelativeDays(): Unit = {
         print(NCDateGenerator.relativeDays)
     }
 
-    test("periods") {
+    @Test
+    def testPeriods(): Unit = {
         print(NCDateGenerator.periods)
     }
 
-    test("years") {
+    @Test
+    def testYears(): Unit = {
         print(NCDateGenerator.years)
     }
 
-    test("months") {
+    @Test
+    def testMonths(): Unit = {
         print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COMMON.map(new SimpleDateFormat(_))))
     }
 
-    test("months.dmy") {
+    @Test
+    def testMonthsDmy(): Unit = {
         print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(DMY).map(new SimpleDateFormat(_))))
     }
 
-    test("months.mdy") {
+    @Test
+    def testMonthsMdy(): Unit = {
         print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(MDY).map(new SimpleDateFormat(_))))
     }
 
-    test("months.ymd") {
+    @Test
+    def testMonthsYmd(): Unit = {
         print((df: LHM_SS) ⇒ NCDateGenerator.months(df, MONTH_YEAR_COUNTRY(YMD).map(new SimpleDateFormat(_))))
     }
 
-    test("seasons") {
+    @Test
+    def testSeasons(): Unit = {
         print(NCDateGenerator.seasons)
     }
 
-    test("days") {
+    @Test
+    def testDays(): Unit = {
         print((df: LHM_SS) ⇒ NCDateGenerator.days(df, NCDateGenerator.FMT_DAYS_YEAR_COMMON), cnt = 5000)
     }
 
-    test("dates") {
+    @Test
+    def testDates(): Unit = {
         print((df: LHM_SS) ⇒ NCDateGenerator.dates(df, NCDateGenerator.FMT_DATES_COMMON), cnt = 2000)
         print((df: LHM_SS) ⇒ NCDateGenerator.days(df, NCDateGenerator.FMT_DAYS_YEAR_COMMON), cnt = 2000, asc = false)
     }
 
-    test("simpleYears") {
+    @Test
+    def testSimpleYears(): Unit = {
         print(NCDateGenerator.simpleYears)
     }
 
-    test("simpleQuarters") {
+    @Test
+    def tesSimpleQuarters(): Unit = {
         print(NCDateGenerator.simpleQuarters, cnt = 5000)
     }
 
-    test("durationDays") {
+    @Test
+    def testDurationDays(): Unit = {
         print(NCDateGenerator.durationDays, cnt = 1000, keys2Check = Some(Seq("next couple of days", "few next days", "few last days")))
         print(NCDateGenerator.durationDays, cnt = 5000, asc = false)
     }
 
-    test("durationWeeks") {
+    @Test
+    def testDurationWeeks(): Unit = {
         print(NCDateGenerator.durationWeeks)
         print(NCDateGenerator.durationWeeks, asc = false)
     }
 
-    test("durationMonths") {
+    @Test
+    def testDurationMonths(): Unit = {
         print(NCDateGenerator.durationMonths)
         print(NCDateGenerator.durationMonths, cnt = 5000, asc = false)
     }
 
-    test("durationYears") {
+    @Test
+    def testDurationYears(): Unit = {
         print(NCDateGenerator.durationYears)
         print(NCDateGenerator.durationYears, asc = false)
     }
 
-    test("durationDecades") {
+    @Test
+    def testDurationDecades(): Unit = {
         print(NCDateGenerator.durationDecades, cnt = 5000)
     }
 
-    test("durationQuarters") {
+    @Test
+    def testDurationQuarters(): Unit = {
         print(NCDateGenerator.durationQuarters, cnt = 5000)
     }
 
-    test("durationCenturies") {
+    @Test
+    def testDurationCenturies(): Unit = {
         print(NCDateGenerator.durationCenturies, cnt = 5000)
     }
 
-    test("relativeDaysOfWeekByNum") {
+    @Test
+    def testRelativeDaysOfWeekByNum(): Unit = {
         print(NCDateGenerator.relativeDaysOfWeekByNum, cnt = 5000)
     }
 
-    test("relativeDaysOfWeekByName") {
+    @Test
+    def testRelativeDaysOfWeekByName(): Unit = {
         print(NCDateGenerator.relativeDaysOfWeekByName)
     }
 
-    test("relativeDaysOfMonth") {
+    @Test
+    def testRelativeDaysOfMonth(): Unit = {
         print(NCDateGenerator.relativeDaysOfMonth, cnt = 5000)
     }
 
-    test("relativeWeeksOfMonth") {
+    @Test
+    def testRelativeWeeksOfMonth(): Unit = {
         print(NCDateGenerator.relativeWeeksOfMonth)
     }
 
-    test("relativeWeeksOfQuarter") {
+    @Test
+    def testRelativeWeeksOfQuarter(): Unit = {
         print(NCDateGenerator.relativeWeeksOfQuarter, cnt = 5000)
     }
 
-    test("relativeWeeksOfYear") {
+    @Test
+    def testRelativeWeeksOfYear(): Unit = {
         print(NCDateGenerator.relativeWeeksOfYear, cnt = 5000)
     }
 
-    test("relativeMonthsOfYear") {
+    @Test
+    def testRelativeMonthsOfYear(): Unit = {
         print(NCDateGenerator.relativeMonthsOfYear, cnt = 5000)
     }
 
-    test("relativeQuartersOfYear") {
+    @Test
+    def testRelativeQuartersOfYear(): Unit = {
         print(NCDateGenerator.relativeQuartersOfYear)
     }
 
-    test("relativeYearOfDecade") {
+    @Test
+    def testelativeYearOfDecade(): Unit = {
         print(NCDateGenerator.relativeYearOfDecade)
     }
 
-    test("relativeFromYear") {
+    @Test
+    def testRelativeFromYear(): Unit = {
         print(NCDateGenerator.relativeFromYear, cnt = 5000)
         print(NCDateGenerator.relativeFromYear, cnt = 5000, asc = false)
     }
 
-    test("calendar.behaviour") {
+    @Test
+    def testCalendar(): Unit = {
         Locale.setDefault(Locale.forLanguageTag("EN"))
 
         // Sunday.
@@ -253,17 +286,19 @@ class NCDateGeneratorSpec extends FunSuite {
 
             println(s"$s, Sunday for this day: ${c.getTime}")
 
-            assert(c.getTime == sunday)
+            assertTrue(c.getTime == sunday)
         })
     }
 
-    test("all") {
+    @Test
+    def testAll(): Unit = {
         val n = (NCDateGenerator.generateFull() ++ NCDateGenerator.generateParts()).size
 
         println(s"Summary generated $n templates.")
     }
 
-    test("last day of month command") {
+    @Test
+    def testLastDayOfMonth(): Unit = {
         def test(base: String, exp: String): Unit = {
             val date = new SimpleDateFormat("MM.dd.yyyy").parse(base)
 
@@ -276,14 +311,15 @@ class NCDateGeneratorSpec extends FunSuite {
             println(s"Result: $res")
             println(s"Range: $range")
 
-            assert(range.toString == exp)
+            assertTrue(range.toString == exp)
         }
 
         test("06.10.2018", "[06-24-2018:07-01-2018]")
         test("11.20.2017", "[11-26-2017:12-03-2017]")
     }
 
-    test("last day function") {
+    @Test
+    def testLastDay(): Unit = {
         val date = scala.compat.Platform.currentTime
 
         def print(f: String): Unit = {
@@ -306,7 +342,8 @@ class NCDateGeneratorSpec extends FunSuite {
         print("$ds")
     }
 
-    test("parse") {
+    @Test
+    def testParse(): Unit = {
         val date = scala.compat.Platform.currentTime
 
         val f = "m, $dm, 1dw, w1"

@@ -26,25 +26,29 @@ import org.apache.nlpcraft.model.*;
  * <pre class="brush: js">
  *   elements:
  *     - id: "col:orders_customer_id"
- *     groups:
- *     - "column"
- *     synonyms:
- *     - "{customer_id|customer &lt;ID&gt;}"
- *     - "orders {customer_id|customer &lt;ID&gt;}"
- *     - "{customer_id|customer &lt;ID&gt;} &lt;OF&gt; orders"
- *     metadata:
- *       sql:name: "customer_id"
- *       sql:tablename: "orders"
- *       sql:datatype: 12
- *       sql:isnullable: true
- *       sql:ispk: false
- *     description: "Auto-generated from 'orders.customer_id' column."
- *     valueLoader: "org.apache.nlpcraft.examples.sql.db.SqlValueLoader"
+ *       groups:
+ *       - "column"
+ *       synonyms:
+ *       - "{customer_id|customer &lt;ID&gt;}"
+ *       - "orders {customer_id|customer &lt;ID&gt;}"
+ *       - "{customer_id|customer &lt;ID&gt;} &lt;OF&gt; orders"
+ *       metadata:
+ *         sql:name: "customer_id"
+ *         sql:tablename: "orders"
+ *         sql:datatype: 12
+ *         sql:isnullable: true
+ *         sql:ispk: false
+ *       description: "Auto-generated from 'orders.customer_id' column."
+ *       valueLoader: "org.apache.nlpcraft.examples.sql.db.SqlValueLoader"
  * </pre>
  * Few notes:
  * <ul>
- *     <li>All model elements representing SQL column have ID in a form of <code>col:sql_table_name</code>.</li>
- *     <li>All model elements representing SQL column belong to <code>column</code> group.</li>
+ *     <li>
+ *         All model elements representing SQL column have ID in a form of <code>col:sql_table_name</code>.
+ *     </li>
+ *     <li>
+ *         All model elements representing SQL column belong to <code>column</code> group.
+ *     </li>
  *     <li>
  *         These model elements have auto-generated synonyms and set of mandatory metadata.
  *     </li>
@@ -56,7 +60,8 @@ import org.apache.nlpcraft.model.*;
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant) 
  * @see NCSqlExtractor#extractColumn(NCToken)
- * @see NCSqlTable#getColumns() 
+ * @see NCSqlTable#getColumns()
+ * @see NCSqlSchema#getAllColumns() 
  */
 public interface NCSqlColumn {
     /**

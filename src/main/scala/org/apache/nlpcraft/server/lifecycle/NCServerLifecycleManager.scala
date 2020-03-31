@@ -28,8 +28,8 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 object NCServerLifecycleManager extends NCService {
     private object Config extends NCConfigurable {
         private final val prop = "nlpcraft.server.lifecycle"
-        
-        val classes: Seq[String] = getStringList(prop)
+
+        def classes: Seq[String] = getStringList(prop)
         var objects = Seq.empty[NCServerLifecycle]
     
         /**

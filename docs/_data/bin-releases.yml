@@ -19,8 +19,6 @@
   date: Apr 16, 2020
   zip_name: apache-nlpcraft-0.5.0.zip
   zip_url: https://github.com/apache/incubator-nlpcraft/releases/download/0.5.0/apache-nlpcraft-0.5.0.zip
-  md5_url: https://github.com/apache/incubator-nlpcraft/releases/download/0.5.0/apache-nlpcraft-0.5.0.zip.md5
-  sha1_url: https://github.com/apache/incubator-nlpcraft/releases/download/0.5.0/apache-nlpcraft-0.5.0.zip.sha1
   sha256_url: https://github.com/apache/incubator-nlpcraft/releases/download/0.5.0/apache-nlpcraft-0.5.0.zip.sha256
   pgp_url: https://github.com/apache/incubator-nlpcraft/releases/download/0.5.0/apache-nlpcraft-0.5.0.zip.sig
   github_link: https://github.com/apache/incubator-nlpcraft/tree/0.5.0

@@ -17,12 +17,13 @@
 
 package org.apache.nlpcraft.examples.echo;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -34,23 +35,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @see EchoModel
  */
 class EchoTest {
-    private NCTestClient client;
+    private NCTestClient cli;
     
     @BeforeEach
     void setUp() throws NCException, IOException {
-        client = new NCTestClientBuilder().newBuilder().build();
+        NCEmbeddedProbe.start(EchoModel.class);
+
+        cli = new NCTestClientBuilder().newBuilder().build();
     
-        client.open("nlpcraft.echo.ex");
+        cli.open("nlpcraft.echo.ex");
     }
     
     @AfterEach
     void tearDown() throws NCException, IOException {
-        client.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
     
     @Test
     void test() throws NCException, IOException {
-        assertTrue(client.ask("LA weather last Friday").isOk());
-        assertTrue(client.ask("Just about any sentence you can imagine!").isOk());
+        assertTrue(cli.ask("LA weather last Friday").isOk());
+        assertTrue(cli.ask("Just about any sentence you can imagine!").isOk());
     }
 }

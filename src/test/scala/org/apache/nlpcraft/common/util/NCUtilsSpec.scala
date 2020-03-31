@@ -18,13 +18,15 @@
 package org.apache.nlpcraft.common.util
 
 import org.apache.nlpcraft.common._
-import org.scalatest.FlatSpec
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  * Utilities tests.
  */
-class NCUtilsSpec extends FlatSpec {
-    "inflate() and deflate() methods" should "work" in {
+class NCUtilsSpec  {
+    @Test
+    def testInflateDeflate() {
         val rawStr = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. " +
             "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when " +
             "an unknown printer took a galley of type and scrambled it to make a type specimen book. " +
@@ -40,22 +42,25 @@ class NCUtilsSpec extends FlatSpec {
         
         println(s"Compressed length: " + zipStr.length())
         
-        assert(rawStr == rawStr2)
-    }
-    
-    "getDups() method" should "properly work" in {
-        assert(U.getDups(Seq("a", "b", "a")) == Set("a"))
-        assert(U.getDups(Seq("a", "a", "a", "b", "a")) == Set("a"))
-        assert(U.getDups(Seq("a", "d", "c", "b", "e")) == Set())
-    }
-    
-    "toFirstLastName() method" should "properly work" in {
-        assert(U.toFirstLastName("A BbbBB") == ("A", "Bbbbb"))
-        assert(U.toFirstLastName("aBC BbbBB CCC") == ("Abc", "Bbbbb ccc"))
-        assert(U.toFirstLastName("abc b C C C") == ("Abc", "B c c c"))
+        assertTrue(rawStr == rawStr2)
     }
 
-    "sleep method" should "work without unnecessary logging" in {
+    @Test
+    def testGetDups() {
+        assertTrue(U.getDups(Seq("a", "b", "a")) == Set("a"))
+        assertTrue(U.getDups(Seq("a", "a", "a", "b", "a")) == Set("a"))
+        assertTrue(U.getDups(Seq("a", "d", "c", "b", "e")) == Set())
+    }
+
+    @Test
+    def testToFirstLastName() {
+        assertTrue(U.toFirstLastName("A BbbBB") == ("A", "Bbbbb"))
+        assertTrue(U.toFirstLastName("aBC BbbBB CCC") == ("Abc", "Bbbbb ccc"))
+        assertTrue(U.toFirstLastName("abc b C C C") == ("Abc", "B c c c"))
+    }
+
+    @Test
+    def testWorkWithoutUnnecessaryLogging() {
         val t = new Thread() {
             override def run(): Unit = {
                 while (!isInterrupted) {

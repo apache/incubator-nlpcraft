@@ -17,13 +17,17 @@
 
 package org.apache.nlpcraft.model.intent.dsl;
 
-import org.junit.jupiter.api.*;
-import org.apache.nlpcraft.common.*;
-import org.apache.nlpcraft.model.tools.test.*;
-import org.apache.nlpcraft.probe.embedded.*;
-import java.io.*;
+import org.apache.nlpcraft.common.NCException;
+import org.apache.nlpcraft.model.tools.test.NCTestClient;
+import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * DSL test model test. Make sure to start up the NLPCraft server before running this test.
@@ -43,7 +47,8 @@ class NCDslTest {
 
     @AfterEach
     void tearDown() throws NCException, IOException {
-        cli.close();
+        if (cli != null)
+            cli.close();
     
         NCEmbeddedProbe.stop();
     }

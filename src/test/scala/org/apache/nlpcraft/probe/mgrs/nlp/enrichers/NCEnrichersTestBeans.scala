@@ -24,8 +24,8 @@ import java.util.{Base64, Optional}
 import org.apache.nlpcraft.model.NCToken
 import resource.managed
 
-import scala.compat.java8.OptionConverters._
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 
 /**
   * Tests infrastructure beans.

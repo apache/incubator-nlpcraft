@@ -24,11 +24,49 @@ import java.util.Optional;
 /**
  * Object presentation of SQL table.
  * <p>
- * In JSON/YAML generated model the table is the model element that belongs to <code>table</code>
- * group and
- * metadata (example):
+ * In JSON/YAML generated model the table is the model element (example):
+ * <pre class="brush: js">
+ *   elements:
+ *     - id: "tbl:orders"
+ *       groups:
+ *       - "table"
+ *       synonyms:
+ *       - "orders"
+ *       metadata:
+ *         sql:name: "orders"
+ *         sql:defaultselect:
+ *         - "order_id"
+ *         - "order_date"
+ *         - "required_date"
+ *         sql:defaultsort:
+ *         - "orders.order_id#desc"
+ *         sql:extratables:
+ *         - "customers"
+ *         - "shippers"
+ *         - "employees"
+ *         sql:defaultdate: "orders.order_date"
+ *       description: "Auto-generated from 'orders' table."
+ * </pre>
+ * Few notes:
+ * <ul>
+ *     <li>
+ *         All model elements representing SQL column have ID in a form of <code>tbl:sql_table_name</code>.
+ *     </li>
+ *     <li>
+ *         All model elements representing SQL column belong to <code>table</code> group.
+ *     </li>
+ *     <li>
+ *         These model elements have auto-generated synonyms and set of mandatory metadata.
+ *     </li>
+ *     <li>
+ *         User can freely add group membership, change synonyms, or add new metadata.
+ *     </li>
+ * </ul>
  *
- * @see NCSqlSchemaBuilder#makeSchema(NCModel) 
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
+ * @see NCSqlExtractor#extractTable(NCToken)
+ * @see NCSqlSchema#getTables() 
  */
 public interface NCSqlTable {
     /**
@@ -59,9 +97,10 @@ public interface NCSqlTable {
      * metadata (example):
      * <pre class="brush: js">
      *     sql:defaultsort:
-     *     - "order_id#desc"
+     *     - "orders.order_id#desc"
      * </pre>
-     * Note the <code>table#{asc|desc}</code> notation for identifying column name and sort order.
+     * Note the <code>table.column#{asc|desc}</code> notation for identifying table name,
+     * column name and the sort order.
      *
      * @return Default sort descriptor.
      */

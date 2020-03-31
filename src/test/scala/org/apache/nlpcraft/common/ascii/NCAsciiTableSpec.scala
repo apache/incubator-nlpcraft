@@ -17,15 +17,14 @@
 
 package org.apache.nlpcraft.common.ascii
 
-import org.scalatest.FlatSpec
+import org.junit.jupiter.api.Test
 
 /**
  * Test for ASCII text table.
  */
-class NCAsciiTableSpec extends FlatSpec {
-    behavior of "ASCII table"
-
-    it should "render" in {
+class NCAsciiTableSpec {
+    @Test
+    def test() {
         val t = NCAsciiTable()
         
         t.headerStyle = "leftPad: 10, rightPad: 5"
@@ -42,7 +41,8 @@ class NCAsciiTableSpec extends FlatSpec {
         t.render()
     }
 
-    it should "render with sequence header" in {
+    @Test
+    def testWithSequenceHeader() {
         val t = NCAsciiTable()
         
         t.headerStyle = "leftPad: 10, rightPad: 5"
@@ -57,7 +57,8 @@ class NCAsciiTableSpec extends FlatSpec {
         t.render()
     }
 
-    it should "render a very big table" in {
+    @Test
+    def testWithVeryBigTable() {
         val NUM = 1000
 
         val start = System.currentTimeMillis()

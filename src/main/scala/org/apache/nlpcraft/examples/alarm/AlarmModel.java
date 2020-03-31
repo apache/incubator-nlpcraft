@@ -17,13 +17,7 @@
 
 package org.apache.nlpcraft.examples.alarm;
 
-import org.apache.nlpcraft.model.NCModelFileAdapter;
-import org.apache.nlpcraft.model.NCResult;
-import org.apache.nlpcraft.model.NCRejection;
-import org.apache.nlpcraft.model.NCToken;
-import org.apache.nlpcraft.model.NCIntentRef;
-import org.apache.nlpcraft.model.NCIntentMatch;
-import org.apache.nlpcraft.model.NCIntentTerm;
+import org.apache.nlpcraft.model.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

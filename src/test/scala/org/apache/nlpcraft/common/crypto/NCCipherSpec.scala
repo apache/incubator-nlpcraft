@@ -20,41 +20,42 @@ package org.apache.nlpcraft.common.crypto
 import java.util.Base64
 
 import org.apache.nlpcraft.common._
-import org.scalatest.{BeforeAndAfter, FlatSpec}
-
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.junit.jupiter.api.Test
 /**
  * Tests for crypto and PKI support.
  */
-class NCCipherSpec extends FlatSpec with BeforeAndAfter {
-    behavior of "Cipher"
-
+class NCCipherSpec  {
     private final val IN = "abcdefghijklmnopqrstuvwxyz0123456789"
 
-    it should "properly encrypt and decrypt" in {
+    @Test
+    def testEncryptDecrypt() {
         val s1 = NCCipher.encrypt(IN)
         val s2 = NCCipher.decrypt(s1)
 
-        assertResult(IN)(s2)
+        assertEquals(IN, s2)
     }
 
-    it should "produce different encrypted string for the same input" in {
+    @Test
+    def testDifference() {
         val s1 = NCCipher.encrypt(IN)
         val s2 = NCCipher.encrypt(IN)
         val s3 = NCCipher.encrypt(IN)
 
-        assert(s1 != s2)
-        assert(s2 != s3)
+        assertTrue(s1 != s2)
+        assertTrue(s2 != s3)
 
         val r1 = NCCipher.decrypt(s1)
         val r2 = NCCipher.decrypt(s2)
         val r3 = NCCipher.decrypt(s3)
 
-        assertResult(r1)(IN)
-        assertResult(r2)(IN)
-        assertResult(r3)(IN)
+        assertEquals(IN, r1)
+        assertEquals(IN, r2)
+        assertEquals(IN, r3)
     }
-    
-    it should "properly encrypt" in {
+
+    @Test
+    def testCorrectness() {
         val buf = new StringBuilder
         
         // Max long string.

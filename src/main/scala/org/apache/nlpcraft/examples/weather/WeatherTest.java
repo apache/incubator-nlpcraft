@@ -19,13 +19,14 @@ package org.apache.nlpcraft.examples.weather;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
 import org.apache.nlpcraft.model.tools.test.NCTestResult;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -43,9 +44,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class WeatherTest {
     private static final Gson GSON = new Gson();
     private static final Type TYPE_MAP_RESP = new TypeToken<HashMap<String, Object>>() {}.getType();
-    
+
     private NCTestClient cli;
-    
+
     /**
      * Checks given intent.
      *
@@ -55,48 +56,53 @@ class WeatherTest {
      */
     private void checkIntent(String txt, String intentId, boolean shouldBeSame) throws NCException, IOException {
         NCTestResult res = cli.ask(txt);
-        
+
         assertTrue(res.isOk(), () -> res.getResultError().get());
 
         assert res.getResult().isPresent();
-        
+
         Map<String, Object> map = GSON.fromJson(res.getResult().get(), TYPE_MAP_RESP);
-        
+
         if (shouldBeSame)
             assertEquals(intentId, map.get("intentId"));
         else
             assertNotEquals(intentId, map.get("intentId"));
     }
-    
+
     @BeforeEach
     void setUp() throws NCException, IOException {
+        NCEmbeddedProbe.start(WeatherModel.class);
+
         cli = new NCTestClientBuilder().newBuilder().build();
-        
+
         cli.open("nlpcraft.weather.ex");  // See weather_model.json
     }
-    
+
     @AfterEach
     void tearDown() throws NCException, IOException {
-        cli.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
-    
+
     @Test
     void test() throws NCException, IOException {
         // Empty parameter.
         assertTrue(cli.ask("").isFailed());
-    
+
         // Only latin charset is supported.
         assertTrue(cli.ask("El tiempo en España").isFailed());
-    
+
         // Should be passed.
         checkIntent("What's the local weather forecast?", "fcast", true);
         checkIntent("What's the weather in Moscow?", "curr", true);
         // Can be answered with conversation.
         checkIntent("Chance of snow?", "curr", true);
         checkIntent("Moscow", "curr", true);
-        
+
         cli.clearConversation();
-    
+
         // Cannot be answered without conversation.
         assertTrue(cli.ask("Moscow").isFailed());
     }

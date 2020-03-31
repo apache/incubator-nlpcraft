@@ -32,8 +32,8 @@ class NCStackdriverStatsExporter extends NCServerLifecycle with LazyLogging {
     private val pre = "nlpcraft.server.opencensus.stackdriver"
     
     private object Config extends NCConfigurable {
-        val gpi = getString(s"$pre.googleProjectId")
-        val prefix = getStringOrElse(s"$pre.metricsPrefix", "custom.googleapis.com/nlpcraft/server")
+        def gpi = getString(s"$pre.googleProjectId")
+        def prefix = getStringOrElse(s"$pre.metricsPrefix", "custom.googleapis.com/nlpcraft/server")
     }
     
     override def beforeStart(): Unit = {

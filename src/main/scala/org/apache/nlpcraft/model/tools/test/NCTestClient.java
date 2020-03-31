@@ -29,26 +29,31 @@ import java.io.IOException;
  * the usage of test framework together with JUnit 5:
  * <pre class="brush: java, highlight: [6, 8, 13, 19, 22, 25, 26, 27]">
  * public class AlarmTest {
- *     private NCTestClient client;
+ *     private NCTestClient cli;
  *
  *     &#64;BeforeEach
  *     void setUp() throws NCException, IOException {
- *         client = new NCTestClientBuilder().newBuilder().build();
+ *         NCEmbeddedProbe.start(AlarmModel.class);
  *
- *         client.open("nlpcraft.alarm.ex");
+ *         cli = new NCTestClientBuilder().newBuilder().build();
+ *
+ *         cli.open("nlpcraft.alarm.ex");
  *     }
  *
  *     &#64;AfterEach
  *     void tearDown() throws NCException, IOException {
- *         client.close();
+ *         if (cli != null)
+ *             cli.close();
+ *
+ *         NCEmbeddedProbe.stop();
  *     }
  *
  *     &#64;Test
  *     public void test() throws NCException, IOException {
  *         // Should be passed.
- *         assertTrue(client.ask("Ping me in 3 minutes").isOk());
- *         assertTrue(client.ask("Buzz me in an hour and 15mins").isOk());
- *         assertTrue(client.ask("Set my alarm for 30s").isOk());
+ *         assertTrue(cli.ask("Ping me in 3 minutes").isOk());
+ *         assertTrue(cli.ask("Buzz me in an hour and 15mins").isOk());
+ *         assertTrue(cli.ask("Set my alarm for 30s").isOk());
  *     }
  * }
  * </pre>

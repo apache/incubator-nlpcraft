@@ -63,12 +63,12 @@ object NCUserManager extends NCService with NCIgniteInstance {
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.user"
 
-        val pwdPoolBlowup: Int = getInt(s"$pre.pwdPoolBlowup")
-        val timeoutScannerFreqMins: Int = getInt(s"$pre.timeoutScannerFreqMins")
-        val accessTokenExpireTimeoutMins: Int = getInt(s"$pre.accessTokenExpireTimeoutMins")
+        def pwdPoolBlowup: Int = getInt(s"$pre.pwdPoolBlowup")
+        def timeoutScannerFreqMins: Int = getInt(s"$pre.timeoutScannerFreqMins")
+        def accessTokenExpireTimeoutMins: Int = getInt(s"$pre.accessTokenExpireTimeoutMins")
 
-        lazy val scannerMs: Int = timeoutScannerFreqMins * 60 * 1000
-        lazy val expireMs: Int = accessTokenExpireTimeoutMins * 60 * 1000
+        def scannerMs: Int = timeoutScannerFreqMins * 60 * 1000
+        def expireMs: Int = accessTokenExpireTimeoutMins * 60 * 1000
 
         /**
           *

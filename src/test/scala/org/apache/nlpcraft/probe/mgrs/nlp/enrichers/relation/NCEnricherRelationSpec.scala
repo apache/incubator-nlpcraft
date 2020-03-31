@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation
 
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestRelationToken ⇒ rel, NCTestUserToken ⇒ usr, NCTestNlpToken ⇒ nlp}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestNlpToken ⇒ nlp, NCTestRelationToken ⇒ rel, NCTestUserToken ⇒ usr}
 import org.junit.jupiter.api.Test
 
 /**

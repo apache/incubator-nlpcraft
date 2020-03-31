@@ -26,12 +26,12 @@ import org.apache.nlpcraft.model._
   * Lifecycle component manager.
   */
 object NCLifecycleManager extends NCService {
-    private var beans = Seq.empty[NCLifecycle]
-    
-    private object Config extends NCConfigurable {
-        val lifecycle: Seq[String] = getStringList("nlpcraft.probe.lifecycle")
+    @volatile private var beans: Seq[NCLifecycle] = _
+
+    object Config extends NCConfigurable {
+        def lifecycle: Seq[String] = getStringList("nlpcraft.probe.lifecycle")
     }
-    
+
     @throws[NCE]
     override def start(parent: Span = null): NCService = {
         beans = Config.lifecycle.map(U.mkObject(_).asInstanceOf[NCLifecycle])

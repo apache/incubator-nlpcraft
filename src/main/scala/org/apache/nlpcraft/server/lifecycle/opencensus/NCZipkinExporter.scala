@@ -26,11 +26,11 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 class NCZipkinExporter extends NCBaseTraceExporter("Zipkin") {
     private object Config extends NCConfigurable {
         private val pre = "nlpcraft.server.opencensus.zipkin"
-        
-        val url = getStringOrElse(s"$pre.v2Url", "http://127.0.0.1:9411/api/v2/spans")
-        val svcName = getStringOrElse(s"$pre.serviceName", "nlpcraft-server")
+
+        def url = getStringOrElse(s"$pre.v2Url", "http://127.0.0.1:9411/api/v2/spans")
+        def svcName = getStringOrElse(s"$pre.serviceName", "nlpcraft-server")
     }
-    
+
     override def beforeStart(): Unit = {
         ZipkinTraceExporter.createAndRegister(ZipkinExporterConfiguration.
             builder().

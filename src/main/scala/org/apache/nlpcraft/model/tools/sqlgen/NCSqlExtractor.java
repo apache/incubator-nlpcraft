@@ -25,8 +25,8 @@ import org.apache.nlpcraft.model.*;
  * of this interface are created using {@link NCSqlExtractorBuilder} builder.
  * <p>
  * Note that {@link NCSqlExtractorBuilder} builder requires {@link NCSqlSchema} and {@link NCVariant}
- * objects when creating an instance of SQL extractor. Many methods in this interface will search
- * that parsing variant and schema to find necessary referenced tokens.
+ * objects when creating an instance of SQL extractor. Methods in this interface will search
+ * these parsing variant and schema to find necessary referenced tokens.
  * <p>
  * Note also that wherever necessary the implementation will scan part (constituent) tokens as well
  * (see {@link NCToken#findPartTokens(String...)} for more information).
@@ -35,7 +35,7 @@ import org.apache.nlpcraft.model.*;
  */
 public interface NCSqlExtractor {
     /**
-     * Extracts limit object from the token.
+     * Extracts limit object from given <code>nlpcraft:limit</code> token.
      *
      * @param limitTok Limit token with ID <code>nlpcraft:limit</code>.
      * @return SQL limit object extracted from given token.
@@ -44,33 +44,36 @@ public interface NCSqlExtractor {
     NCSqlLimit extractLimit(NCToken limitTok);
 
     /**
+     * Extracts sort object from given <code>nlpcraft:sort</code> token.
      *
-     * @param sortTok
-     * @return
+     * @param sortTok Sort token with ID <code>nlpcraft:sort</code>.
+     * @return SQL sort object extracted from given token.
      * @throws NCException Thrown in case of any errors.
      */
     NCSqlSort extractSort(NCToken sortTok);
 
     /**
+     * Extract table object from the token.
      *
-     * @param tblTok
-     * @return
+     * @param tblTok A token that belongs to a <code>table</code> group.
+     * @return SQL table object extracted from the given token.
      * @throws NCException Thrown in case of any errors.
      */
     NCSqlTable extractTable(NCToken tblTok);
 
     /**
+     * Extract column object from the token.
      *
-     * @param colTok
-     * @return
+     * @param colTok A token that belongs to a <code>column</code> group.
+     * @return SQL column object extracted from the given token.
      * @throws NCException Thrown in case of any errors.
      */
     NCSqlColumn extractColumn(NCToken colTok);
 
     /**
-     * 
-     * @param dateTok
-     * @return
+     * Extract date range object from given <code>nlpcraft:date</code> token.
+     * @param dateTok Date token with ID <code>nlpcraft:date</code>.
+     * @return A data range object extracted from given token.
      * @throws NCException Thrown in case of any errors.
      */
     NCSqlDateRange extractDateRange(NCToken dateTok);

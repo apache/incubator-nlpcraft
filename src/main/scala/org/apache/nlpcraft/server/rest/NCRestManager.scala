@@ -43,9 +43,9 @@ object NCRestManager extends NCService {
     private final object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.rest"
 
-        val host: String = getString(s"$pre.host")
-        val port: Int = getInt(s"$pre.port")
-        val apiImpl: String = getString(s"$pre.apiImpl")
+        def host: String = getString(s"$pre.host")
+        def port: Int = getInt(s"$pre.port")
+        def apiImpl: String = getString(s"$pre.apiImpl")
     
         /**
           *

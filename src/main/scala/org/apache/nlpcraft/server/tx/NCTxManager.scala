@@ -37,8 +37,8 @@ import scala.util.control.Exception.catching
 object NCTxManager extends NCService with NCIgniteInstance {
     // Internal log switch.
     private final val LOG_TX = false
-    
-    private val cons = mutable.HashMap.empty[IgniteUuid, Connection]
+
+    @volatile private var cons: mutable.Map[IgniteUuid, Connection] = _
     
     /**
       * 
@@ -61,6 +61,7 @@ object NCTxManager extends NCService with NCIgniteInstance {
       * Starts this component.
       */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        cons = mutable.HashMap.empty[IgniteUuid, Connection]
         itx = ignite.transactions()
 
         super.start()

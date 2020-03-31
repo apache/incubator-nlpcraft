@@ -31,7 +31,7 @@
             <directory>${project.build.directory}</directory>
             <outputDirectory/>
             <includes>
-                <include>${project.name}-${project.version}-all-deps.jar</include>
+                <include>apache-${project.name}-${project.version}-all-deps.jar</include>
             </includes>
         </fileSet>
         <fileSet>

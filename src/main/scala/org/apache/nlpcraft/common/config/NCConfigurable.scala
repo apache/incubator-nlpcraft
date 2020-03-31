@@ -29,8 +29,8 @@ import scala.collection.JavaConverters._
 trait NCConfigurable extends LazyLogging {
     import NCConfigurable._
     
-    // Accessor to the loaded config.
-    private val hocon: Config = cfg
+    // Accessor to the loaded config. It should reload config.
+    private def hocon: Config = cfg
     
     /**
       *

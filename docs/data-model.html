@@ -2996,9 +2996,14 @@ intents:
             </thead>
             <tbody>
             <tr>
-                <td><code><b>nlpcraft:sort:indexes</b></code></td>
+                <td><code><b>nlpcraft:sort:subjindexes</b></code></td>
                 <td><code>java.util.List&lt;Integer&gt;</code></td>
-                <td>Index (always only one) of the reference token (i.e. the token being sorted on).</td>
+                <td>One of more indexes of the target tokens (i.e. the token that being sorted).</td>
+            </tr>
+            <tr>
+                <td><code><b>nlpcraft:sort:byindexes</b></code></td>
+                <td><code>java.util.List&lt;Integer&gt;</code></td>
+                <td>Zero or more (i.e. optional) indexes of the reference token (i.e. the token being sorted by).</td>
             </tr>
             <tr>
                 <td><code><b>nlpcraft:sort:asc</b></code></td>

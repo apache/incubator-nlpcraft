@@ -29,7 +29,7 @@ object NCNlpCoreManager extends NCService {
     private final val SUPPORTED_NLP_ENGINES = Seq("opennlp", "stanford")
     
     private object Config extends NCConfigurable {
-        val engine: String = getString("nlpcraft.nlpEngine")
+        def engine: String = getString("nlpcraft.nlpEngine")
     }
     
     @volatile private var tokenizer: NCNlpTokenizer = _

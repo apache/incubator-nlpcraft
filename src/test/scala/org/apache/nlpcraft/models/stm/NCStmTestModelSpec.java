@@ -17,13 +17,14 @@
 
 package org.apache.nlpcraft.models.stm;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
 import org.apache.nlpcraft.model.tools.test.NCTestResult;
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -34,18 +35,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Server and probe with deployed org.apache.nlpcraft.models.stm.NCStmTestModel should be started before.
  */
 class NCStmTestModelSpec {
-    private NCTestClient client;
+    private NCTestClient cli;
     
     @BeforeEach
     void setUp() throws NCException, IOException {
-        client = new NCTestClientBuilder().newBuilder().build();
+        NCEmbeddedProbe.start(NCStmTestModel.class);
+
+        cli = new NCTestClientBuilder().newBuilder().build();
         
-        client.open("nlpcraft.stm.test"); // See phone_model.json
+        cli.open("nlpcraft.stm.test"); // See phone_model.json
     }
     
     @AfterEach
     void tearDown() throws NCException, IOException {
-        client.close();
+        if (cli != null)
+            cli.close();
+
+        NCEmbeddedProbe.stop();
     }
     
     /**
@@ -54,7 +60,7 @@ class NCStmTestModelSpec {
      * @throws IOException
      */
     private void check(String req, String expResp) throws IOException {
-        NCTestResult res = client.ask(req);
+        NCTestResult res = cli.ask(req);
     
         assertTrue(res.isOk());
         assertTrue(res.getResult().isPresent());

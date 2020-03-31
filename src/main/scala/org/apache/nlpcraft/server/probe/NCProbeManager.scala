@@ -54,19 +54,22 @@ object NCProbeManager extends NCService {
     // Type safe and eager configuration container.
     private[probe] object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.probe"
-        
-        val (dnHost, dnPort) = getHostPort(s"$pre.links.downLink")
-        val (upHost, upPort) = getHostPort(s"$pre.links.upLink")
-        
-        val poolSize: Int = getInt(s"$pre.poolSize")
-        val reconnectTimeoutMs: Long = getLong(s"$pre.reconnectTimeoutMs")
-        val pingTimeoutMs: Long = getLong(s"$pre.pingTimeoutMs")
-        val soTimeoutMs: Int = getInt(s"$pre.soTimeoutMs")
+
+        def getDnHostPort = getHostPort(s"$pre.links.downLink")
+        def getUpHostPort = getHostPort(s"$pre.links.upLink")
+
+        def poolSize: Int = getInt(s"$pre.poolSize")
+        def reconnectTimeoutMs: Long = getLong(s"$pre.reconnectTimeoutMs")
+        def pingTimeoutMs: Long = getLong(s"$pre.pingTimeoutMs")
+        def soTimeoutMs: Int = getInt(s"$pre.soTimeoutMs")
     
         /**
           *
           */
         def check(): Unit = {
+            val (_, dnPort) =  getDnHostPort
+            val (_, upPort) =  getUpHostPort
+
             if (!(dnPort >= 0 && dnPort <= 65535))
                 abortWith(s"Configuration property '$pre.links.upLink' must be >= 0 and <= 65535: $dnPort")
             if (!(upPort >= 0 && upPort <= 65535))
@@ -121,36 +124,43 @@ object NCProbeManager extends NCService {
                 dnSocket.close()
         }
     }
-    
-    private var dnSrv: Thread = _
-    private var upSrv: Thread = _
-    private var pingSrv: Thread = _
+
+    @volatile private var dnSrv: Thread = _
+    @volatile private var upSrv: Thread = _
+    @volatile private var pingSrv: Thread = _
     
     // All known probes keyed by probe key.
-    private val probes = mutable.HashMap.empty[ProbeKey, ProbeHolder]
-    private val mdls = mutable.HashMap.empty[String, NCProbeModelMdo]
+    @volatile private var probes: mutable.Map[ProbeKey, ProbeHolder] = _
+    @volatile private var mdls: mutable.Map[String, NCProbeModelMdo] = _
     // All probes pending complete handshake keyed by probe key.
-    private val pending = mutable.HashMap.empty[ProbeKey, ProbeHolder]
-    
-    private var pool: ExecutorService = _
-    private var isStopping: AtomicBoolean = _
+    @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
+
+    @volatile private var pool: ExecutorService = _
+    @volatile private var isStopping: AtomicBoolean = _
     
     /**
       *
       * @return
       */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        probes = mutable.HashMap.empty[ProbeKey, ProbeHolder]
+        mdls = mutable.HashMap.empty[String, NCProbeModelMdo]
+        pending = mutable.HashMap.empty[ProbeKey, ProbeHolder]
+
+        val (dnHost, dnPort) = Config.getDnHostPort
+        val (upHost, upPort) =  Config.getUpHostPort
+
         addTags(span,
-            "uplink" → s"${Config.upHost}:${Config.upPort}",
-            "downlink" → s"${Config.dnHost}:${Config.dnPort}"
+            "uplink" → s"$upHost:$upPort",
+            "downlink" → s"$dnHost:$dnPort"
         )
     
         isStopping = new AtomicBoolean(false)
         
         pool = Executors.newFixedThreadPool(Config.poolSize)
         
-        dnSrv = startServer("Downlink", Config.dnHost, Config.dnPort, downLinkHandler)
-        upSrv = startServer("Uplink", Config.upHost, Config.upPort, upLinkHandler)
+        dnSrv = startServer("Downlink", dnHost, dnPort, downLinkHandler)
+        upSrv = startServer("Uplink", upHost, upPort, upLinkHandler)
         
         dnSrv.start()
         upSrv.start()
@@ -188,7 +198,6 @@ object NCProbeManager extends NCService {
         super.stop()
     }
 
-
     /**
       *
       * @param tokHash
@@ -220,7 +229,7 @@ object NCProbeManager extends NCService {
                         logger.info(s"Probe removed: $probeKey")
 
                         // Clears unused models.
-                        mdls --= mdls.keys.filter(id ⇒ !probes.exists { case (_, p) ⇒ p.probe.models.exists(_.id == id)})
+                        mdls --= mdls.keys.filter(id ⇒ !probes.exists { case (_, p) ⇒ p.probe.models.exists(_.id == id) })
                 }
 
             case Some(hld) ⇒
