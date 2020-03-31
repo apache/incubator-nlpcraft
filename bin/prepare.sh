@@ -45,6 +45,7 @@ rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp LICENSE ${zipDir}/${tmpDir}
 cp NOTICE ${zipDir}/${tmpDir}
+cp DISCLAIMER ${zipDir}/${tmpDir}
 cp src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
 cp src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
 cp src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
@@ -72,9 +73,7 @@ zip -rq ${zipFileSrc} ${tmpDir} 2> /dev/null
 rm -R ${tmpDir} 2> /dev/null
 
 function sign() {
-  shasum -a 1 $1 > $1.sha1
   shasum -a 256 $1 > $1.sha256
-  md5 $1 > $1.md5
   gpg --detach-sign $1
 }
 
