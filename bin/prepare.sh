@@ -23,8 +23,8 @@ fi
 
 zipDir=zips
 tmpDir=apache-nlpcraft
-zipFileBin=apache-nlpcraft-bin-$1.zip
-zipFileSrc=apache-nlpcraft-src-$1.zip
+zipFileBin=apache-nlpcraft-incubating-bin-$1.zip
+zipFileSrc=apache-nlpcraft-incubating-$1.zip
 
 curDir=$(pwd)
 
@@ -46,6 +46,7 @@ rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 cp LICENSE ${zipDir}/${tmpDir}
 cp NOTICE ${zipDir}/${tmpDir}
 cp DISCLAIMER ${zipDir}/${tmpDir}
+cp KEYS ${zipDir}/${tmpDir}
 cp src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
 cp src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
 cp src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
