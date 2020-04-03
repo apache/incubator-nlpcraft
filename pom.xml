@@ -452,6 +452,11 @@
 
         <plugins>
             <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.13</version>
+            </plugin>
+            <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>${scala.plugin.ver}</version>
@@ -802,19 +807,14 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${maven.gpg.plugin.ver}</version>
-                        <configuration>
-                            <keyname>${gpg.keyname}</keyname>
-                            <passphrase>${gpg.passphrase}</passphrase>
-                        </configuration>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <version>0.13</version>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
                                 <phase>verify</phase>
                                 <goals>
-                                    <goal>sign</goal>
+                                    <goal>check</goal>
                                 </goals>
                             </execution>
                         </executions>

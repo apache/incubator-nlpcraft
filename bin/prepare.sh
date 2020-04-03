@@ -35,7 +35,7 @@ curDir=$(pwd)
 
 cd ../
 
-mvn clean package -P release
+mvn clean package -Prelease
 
 rm -R ${zipDir} 2> /dev/null
 
