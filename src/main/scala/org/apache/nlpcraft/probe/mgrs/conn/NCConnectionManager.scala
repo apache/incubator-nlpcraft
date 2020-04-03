@@ -52,7 +52,7 @@ object NCConnectionManager extends NCService {
     @volatile private var probeGuid: String = _
     
     // Internal semaphores.
-    @volatile private var stopSem: AtomicInteger = _
+    private val stopSem = new AtomicInteger(1)
     
     private final val sysProps: Properties = System.getProperties
     private final val localHost: InetAddress = InetAddress.getLocalHost
@@ -278,8 +278,8 @@ object NCConnectionManager extends NCService {
 
         probeGuid = U.genGuid()
         dnLinkQueue = mutable.Queue.empty[Serializable]
-        stopSem = new AtomicInteger(1)
-        
+        stopSem.set(1)
+
         val ctrlLatch = new CountDownLatch(1)
      
         ctrlThread = U.mkThread("probe-ctrl-thread") { t ⇒

@@ -69,6 +69,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
     @volatile private var embeddedCbs: mutable.Set[EMBEDDED_CB] = _
 
+    private final val mux = new Object()
+
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.probe"
 
@@ -89,8 +91,9 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     }
     
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        embeddedCbs.synchronized {
-            embeddedCbs.clear()
+        mux.synchronized {
+            if (embeddedCbs != null)
+                embeddedCbs.clear()
         }
 
         super.stop()
@@ -101,7 +104,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
       * @param cb Callback.
       */
     private [probe] def addEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
-        embeddedCbs.synchronized {
+        mux.synchronized {
             embeddedCbs.add(cb)
         }
     }
@@ -111,7 +114,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
       * @param cb Callback.
       */
     private [probe] def removeEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
-        embeddedCbs.synchronized {
+        mux.synchronized {
             embeddedCbs.remove(cb)
         }
     }

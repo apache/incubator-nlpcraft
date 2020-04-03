@@ -266,10 +266,11 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     @throws[NCE]
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        if (isStarted)
+        if (modelFactory != null)
             modelFactory.terminate()    
-        
-        models.clear()
+
+        if (models != null)
+            models.clear()
         
         super.stop()
     }
