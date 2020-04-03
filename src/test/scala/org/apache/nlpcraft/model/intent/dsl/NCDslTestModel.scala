@@ -22,7 +22,7 @@ import org.apache.nlpcraft.model._
 /**
  * Test model for intent DSL.
  */
-class NCDslTestModel extends NCModelFileAdapter("org/apache/nlpcraft/model/intent/dsl/dsl_test_model.yaml") {
+class NCDslTestModel extends NCModelFileAdapter("src/test/scala/org/apache/nlpcraft/model/intent/dsl/dsl_test_model.yaml") {
     @NCIntentRef("i1")
     private def callback$i4(ctx: NCIntentMatch): NCResult = NCResult.text("callback$i1")
 }
