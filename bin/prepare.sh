@@ -21,10 +21,15 @@ if [[ $1 = "" ]] ; then
     exit -1
 fi
 
+#
+# Change this for your local GPG fingerprint:
+# ===========================================
+localUser=223A2AADD175994F4450467491D161EDD8405C82
+
 zipDir=zips
 tmpDir=apache-nlpcraft
-zipFileBin=apache-nlpcraft-incubating-bin-$1.zip
-zipFileSrc=apache-nlpcraft-incubating-$1.zip
+zipFileBin=apache-nlpcraft-incubating-bin-$1.zip # NOT an officual ASF release.
+zipFileSrc=apache-nlpcraft-incubating-$1.zip # An OFFICIAL ASF release.
 
 curDir=$(pwd)
 
@@ -75,7 +80,7 @@ rm -R ${tmpDir} 2> /dev/null
 
 function sign() {
   shasum -a 256 $1 > $1.sha256
-  gpg --detach-sign $1
+  gpg --local-user ${localUser} --sign --armor --output $1.asc --detach-sign $1
 }
 
 sign "${zipFileBin}"
