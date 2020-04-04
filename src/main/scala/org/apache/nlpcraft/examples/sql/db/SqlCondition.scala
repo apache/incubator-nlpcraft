@@ -19,7 +19,7 @@ package org.apache.nlpcraft.examples.sql.db
 
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlColumn
 
-trait SqlCondition {
+sealed trait SqlCondition {
     def column: NCSqlColumn
 }
 

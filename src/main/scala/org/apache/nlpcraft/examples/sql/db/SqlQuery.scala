@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.sql.db;;
+package org.apache.nlpcraft.examples.sql.db
 
 case class SqlQuery(sql: String, parameters: Seq[Any])

@@ -24,6 +24,7 @@ import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.sqlgen._
 
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 
 /**
   * 
@@ -76,7 +77,7 @@ object NCSqlSchemaBuilderImpl {
                     val dfltSelect = x(p.metax("sql:defaultselect"))
                     val dfltSort = x(p.metax("sql:defaultsort"))
                     val extra = x(p.meta("sql:extratables"))
-                    val defDate: String = p.meta("sql:defaultdate")
+                    val defDateOpt: Option[String] = p.metaOpt("sql:defaultdate").asScala
 
                     val cols = tabCols(tab).toSeq.sortBy(p ⇒ (if (p.isPk) 0 else 1, p.getColumn)).asJava
                     
@@ -89,7 +90,7 @@ object NCSqlSchemaBuilderImpl {
                             map(s ⇒ {
                                 def error() = throw new NCException(s"Invalid default sort declaration in: $s")
                                 
-                                var pair = defDate.split("\\.")
+                                var pair = s.split("\\.")
                                 
                                 val t =
                                     pair.length match {
@@ -122,24 +123,21 @@ object NCSqlSchemaBuilderImpl {
                             }),
                         dfltSelect,
                         extra,
-                        if (defDate != null) {
-                            def error() = throw new NCException(s"Invalid default date declaration in: $defDate")
-                            
-                            val pair = defDate.split("\\.")
-                            
-                            if (pair.length != 2)
-                                error()
-                            
-                            val tab = pair.head
-                            val col = pair.last.toLowerCase
-                            
-                            tabCols.
-                                getOrElse(tab, error()).
-                                find(_.getColumn == col).
-                                getOrElse(error())
+                        defDateOpt match {
+                            case Some(defDate) ⇒
+                                def error() = throw new NCException(s"Invalid default date declaration in: $defDate")
+
+                                val pair = defDate.split("\\.")
+
+                                if (pair.length != 2)
+                                    error()
+
+                                val tab = pair.head
+                                val col = pair.last.toLowerCase
+
+                                Some(tabCols.getOrElse(tab, error()).find(_.getColumn == col).getOrElse(error()))
+                            case None ⇒ None
                         }
-                        else
-                            null
                     )
                     
                     table

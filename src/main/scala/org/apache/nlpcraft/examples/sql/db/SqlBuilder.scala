@@ -288,45 +288,26 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         condsNorm = condsNorm.distinct
         sortsNorm = sortsNorm.distinct
 
-        // Extends data.
-        case class Ext(
-            tables: Seq[NCSqlTable],
-            columns: Seq[String],
-            groupBy: Seq[NCSqlColumn],
-            distinct: Boolean,
-            sorts: Seq[NCSqlSort],
-            conditions: Seq[String],
-            parameters: Seq[Any]
-        )
-
         val extTabs = extendTables(tabsNorm)
         val extCols = extendColumns(colsNorm, extTabs, freeDateColOpt)
         val (extConds, extParams) = extendConditions(condsNorm, extTabs, tabsNorm, freeDateColOpt)
 
-        val ext =
-            Ext(
-                tables = extTabs,
-                columns = sort(extCols, colsNorm, tabsNorm).map(sql),
-                groupBy = Seq.empty,
-                distinct = extCols.forall(col ⇒ isString(schemaCols(Key(col.getTable, col.getColumn)))),
-                sorts = extendSort(sortsNorm, tabsNorm, extCols),
-                conditions = extConds,
-                parameters = extParams
-            )
+        val extSortCols = sort(extCols, colsNorm, tabsNorm).map(sql)
+        val distinct = extCols.forall(col ⇒ isString(schemaCols(Key(col.getTable, col.getColumn))))
+        val extSorts = extendSort(sortsNorm, tabsNorm, extCols)
 
         SqlQuery(
             sql =
                 s"""
                    |SELECT
-                   |  ${if (ext.distinct) "DISTINCT" else ""}
-                   |  ${ext.columns.mkString(", ")}
-                   |  FROM ${ext.tables.map(sql).mkString(", ")}
-                   |  ${if (ext.conditions.isEmpty) "" else s"WHERE ${ext.conditions.mkString(" AND ")}"}
-                   |  ${if (ext.groupBy.isEmpty) "" else s"GROUP BY ${ext.groupBy.map(sql).mkString(", ")}"}
-                   |  ${if (ext.sorts.isEmpty) "" else s"ORDER BY ${ext.sorts.map(sql).mkString(", ")}"}
+                   |  ${if (distinct) "DISTINCT" else ""}
+                   |  ${extSortCols.mkString(", ")}
+                   |  FROM ${extTabs.map(sql).mkString(", ")}
+                   |  ${if (extConds.isEmpty) "" else s"WHERE ${extConds.mkString(" AND ")}"}
+                   |  ${if (extSorts.isEmpty) "" else s"ORDER BY ${extSorts.map(sql).mkString(", ")}"}
                    |  LIMIT ${limit.flatMap(p ⇒ Some(p.getLimit)).getOrElse(DFLT_LIMIT)}
                    |""".stripMargin.split(" ").map(_.trim).filter(_.nonEmpty).mkString(" "),
-            parameters = ext.parameters
+            parameters = extParams
         )
     }
 }

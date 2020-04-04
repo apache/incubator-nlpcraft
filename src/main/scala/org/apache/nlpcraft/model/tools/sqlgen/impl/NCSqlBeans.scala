@@ -86,13 +86,13 @@ case class NCSqlSortImpl(column: NCSqlColumn, asc: Boolean) extends NCSqlSort {
   * @param extraTables
   * @param defaultDate
   */
-case class NCSqlTableImpl(table: String, columns: Seq[NCSqlColumn], sort: Seq[NCSqlSort], select: Seq[String], extraTables: Seq[String], defaultDate: NCSqlColumn) extends NCSqlTable {
+case class NCSqlTableImpl(table: String, columns: Seq[NCSqlColumn], sort: Seq[NCSqlSort], select: Seq[String], extraTables: Seq[String], defaultDate: Option[NCSqlColumn]) extends NCSqlTable {
     override def getTable: String = table
     override def getColumns: util.List[NCSqlColumn] = columns.asJava
     override def getDefaultSort: util.List[NCSqlSort] = sort.asJava
     override def getDefaultSelect: util.List[String] = select.asJava
     override def getExtraTables: util.List[String] = extraTables.asJava
-    override def getDefaultDate: Optional[NCSqlColumn] = Option(defaultDate).asJava
+    override def getDefaultDate: Optional[NCSqlColumn] = defaultDate.asJava
 }
 
 /**

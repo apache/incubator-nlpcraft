@@ -22,7 +22,6 @@ import java.sql.{Connection, SQLException}
 import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.jakewharton.fliptables.FlipTable
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.examples.sql.SqlResult
 import org.h2.jdbcx.JdbcDataSource
 import resource.managed
 
