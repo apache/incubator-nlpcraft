@@ -452,11 +452,6 @@
 
         <plugins>
             <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <version>0.13</version>
-            </plugin>
-            <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>${scala.plugin.ver}</version>
@@ -816,6 +811,12 @@
                                 <goals>
                                     <goal>check</goal>
                                 </goals>
+                                <configuration>
+                                    <excludes>
+                                        <excludesFile>${project.basedir}/.rat-excludes</excludesFile>
+                                    </excludes>
+                                    <numUnapprovedLicenses>1000000</numUnapprovedLicenses>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
