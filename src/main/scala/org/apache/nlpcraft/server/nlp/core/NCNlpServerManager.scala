@@ -113,7 +113,8 @@ object NCNlpServerManager extends NCService {
     }
 
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ners.values.foreach(_.stop())
+        if (ners != null)
+            ners.values.foreach(_.stop())
 
         if (parser != null && parser.isStarted)
             parser.stop()

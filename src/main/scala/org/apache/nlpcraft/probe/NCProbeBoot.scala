@@ -171,7 +171,13 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         catching(classOf[Throwable]) either startManagers(cfg) match {
             case Left(e) ⇒ // Exception.
                 e match {
-                    case x: NCException ⇒ logger.error(s"Failed to start probe.", x)
+                    case x: NCException ⇒
+                        logger.error(s"Failed to start probe.", x)
+
+                        stopManagers()
+
+                        logger.info("Managers stopped.")
+
                     case x: Throwable ⇒ logger.error("Failed to start probe due to unexpected error.", x)
                 }
                 

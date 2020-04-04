@@ -134,7 +134,8 @@ object NCModelManager extends NCService with DecorateAsScala {
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         mux.synchronized {
-            models.values.foreach(m ⇒ discardModel(m.model))
+            if (models != null)
+                models.values.foreach(m ⇒ discardModel(m.model))
         }
 
         super.stop()

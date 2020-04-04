@@ -51,7 +51,8 @@ object NCTxManager extends NCService with NCIgniteInstance {
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         // Close all still attached JDBC connections on stop.
-        cons.values.foreach(U.close)
+        if (cons != null)
+            cons.values.foreach(U.close)
         
         super.stop()
     }
