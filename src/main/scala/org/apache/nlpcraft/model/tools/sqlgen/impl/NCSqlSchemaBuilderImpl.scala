@@ -71,13 +71,13 @@ object NCSqlSchemaBuilderImpl {
             elems.filter(_.getGroups.contains("table")).
                 map(p ⇒ {
                     def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala
-                    
+
                     val tab: String = p.metax("sql:name")
                     val dfltSelect = x(p.metax("sql:defaultselect"))
                     val dfltSort = x(p.metax("sql:defaultsort"))
-                    val extra = x(p.metax("sql:extratables"))
-                    val defDate: String = p.metax("sql:defaultdate")
-                    
+                    val extra = x(p.meta("sql:extratables"))
+                    val defDate: String = p.meta("sql:defaultdate")
+
                     val cols = tabCols(tab).toSeq.sortBy(p ⇒ (if (p.isPk) 0 else 1, p.getColumn)).asJava
                     
                     val table: NCSqlTable = NCSqlTableImpl(

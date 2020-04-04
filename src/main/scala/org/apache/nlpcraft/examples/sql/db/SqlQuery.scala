@@ -15,24 +15,6 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.sql.db;
+package org.apache.nlpcraft.examples.sql.db;;
 
-import org.apache.nlpcraft.model.*;
-import org.apache.nlpcraft.model.tools.sqlgen.*;
-
-/**
- * Object presentation of the base SQL condition.
- *
- * @see NCSqlSchemaBuilder#makeSchema(NCModel)
- * @see NCSqlExtractorBuilder#build(NCSqlSchema, NCVariant)
- * @see SqlInCondition
- * @see SqlSimpleCondition
- */
-public interface SqlCondition {
-    /**
-     * Gets the SQL column this condition is on.
-     *
-     * @return SQL column this condition is on.
-     */
-    NCSqlColumn getColumn();
-}
+case class SqlQuery(sql: String, parameters: Seq[Any])

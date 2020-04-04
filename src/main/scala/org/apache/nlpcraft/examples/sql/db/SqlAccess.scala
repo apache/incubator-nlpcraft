@@ -22,10 +22,9 @@ import java.sql.{Connection, SQLException}
 import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.jakewharton.fliptables.FlipTable
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.examples.sql.SqlResult
 import org.h2.jdbcx.JdbcDataSource
 import resource.managed
-
-import scala.collection.JavaConverters._
 
 /**
   * Database access service, single thread implementation.
@@ -46,8 +45,8 @@ object SqlAccess extends LazyLogging {
             }
 
         try {
-            managed { conn.prepareStatement(qry.getSql) } acquireAndGet { ps ⇒
-                qry.getParameters.asScala.zipWithIndex.foreach { case (p, idx) ⇒ ps.setObject(idx + 1, p) }
+            managed { conn.prepareStatement(qry.sql) } acquireAndGet { ps ⇒
+                qry.parameters.zipWithIndex.foreach { case (p, idx) ⇒ ps.setObject(idx + 1, p) }
 
                 managed { ps.executeQuery() } acquireAndGet { rs ⇒
                     val md = rs.getMetaData
@@ -66,8 +65,8 @@ object SqlAccess extends LazyLogging {
                     if (logResult) {
                         logger.info(
                             s"Query executed successful" +
-                                s" [\nsql=\n${SqlFormatter.format(qry.getSql)}" +
-                                s", \nparameters=${qry.getParameters.asScala.mkString(",")}" +
+                                s" [\nsql=\n${SqlFormatter.format(qry.sql)}" +
+                                s", \nparameters=${qry.parameters.mkString(",")}" +
                                 s", \nrows=${rows.size}" +
                                 s"]"
                         )
@@ -92,8 +91,8 @@ object SqlAccess extends LazyLogging {
 
                 logger.warn(
                     s"Query executed unsuccessful [sql=" +
-                    s"\n${SqlFormatter.format(qry.getSql)}" +
-                    s"\nparameters=${qry.getParameters.asScala.mkString(", ")}" +
+                    s"\n${SqlFormatter.format(qry.sql)}" +
+                    s"\nparameters=${qry.parameters.mkString(", ")}" +
                     s"\n]"
                 )
 

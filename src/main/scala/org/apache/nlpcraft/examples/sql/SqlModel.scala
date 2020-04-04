@@ -32,14 +32,14 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
     case class Condition(column: NCToken, condition: NCToken)
 
-    private def toJson(res: SqlResult, sql: String, params: java.util.List[Object]): String = {
+    private def toJson(res: SqlResult, sql: String, params: Seq[Any]): String = {
         val m = new java.util.HashMap[String, Any]()
 
         m.put("columns", res.columns.asJava)
         m.put("rows", res.rows.map(_.asJava).asJava)
         // Added to result for debug reasons.
         m.put("sql", sql)
-        m.put("parameters", params)
+        m.put("parameters", params.asJava)
 
         GSON.toJson(m)
     }
@@ -80,6 +80,63 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         Condition(colTok, condTok)
     }
 
+    def extractNumConditions(ext: NCSqlExtractor, colTok: NCToken, numTok: NCToken): Seq[SqlSimpleCondition] = {
+        val col = ext.extractColumn(colTok)
+
+        val from: java.lang.Double = numTok.meta("nlpcraft:num:from")
+        val fromIncl: Boolean = numTok.meta("nlpcraft:num:fromincl")
+        val to: java.lang.Double = numTok.meta("nlpcraft:num:to")
+        val toIncl: Boolean = numTok.meta("nlpcraft:num:toincl")
+
+        val isRangeCondition: Boolean = numTok.meta("nlpcraft:num:israngecondition")
+        val isEqualCondition: Boolean = numTok.meta("nlpcraft:num:isequalcondition")
+        val isNotEqualCondition: Boolean = numTok.meta("nlpcraft:num:isnotequalcondition")
+        val isFromNegativeInfinity: Boolean = numTok.meta("nlpcraft:num:isfromnegativeinfinity")
+        val isToPositiveInfinity: Boolean = numTok.meta("nlpcraft:num:istopositiveinfinity")
+
+        if (isEqualCondition)
+            Seq(SqlSimpleCondition(col, "=", from))
+        else if (isNotEqualCondition)
+            Seq(SqlSimpleCondition(col, "<>", from))
+        else {
+            require(isRangeCondition)
+
+            if (isFromNegativeInfinity)
+                Seq(SqlSimpleCondition(col, if (fromIncl) "<=" else "<", to))
+            else if (isToPositiveInfinity)
+                Seq(SqlSimpleCondition(col, if (fromIncl) ">=" else ">", from))
+            else
+                Seq(
+                    SqlSimpleCondition(col, if (fromIncl) ">=" else ">", from),
+                    SqlSimpleCondition(col, if (toIncl) "<=" else "<", to)
+                )
+        }
+    }
+
+    def extractDateRangeConditions(ext: NCSqlExtractor, colTok: NCToken, dateTok: NCToken): Seq[SqlSimpleCondition] = {
+        val col = ext.extractColumn(colTok)
+        val range = ext.extractDateRange(dateTok)
+
+        Seq(SqlSimpleCondition(col, ">=", range.getFrom), SqlSimpleCondition(col, "<=", range.getTo))
+    }
+
+    def extractValuesConditions(ext: NCSqlExtractor, allValsToks: Seq[NCToken]): Seq[SqlInCondition] =
+        allValsToks.map(tok ⇒ {
+            val valToks = (Seq(tok) ++ tok.findPartTokens().asScala).filter(_.getValue != null)
+
+            val valTok =
+                valToks.size match {
+                    case 1 ⇒ valToks.head
+
+                    case 0 ⇒ throw new IllegalStateException(s"Values column not found for token: $tok")
+                    case _ ⇒ throw new IllegalStateException(s"Too many values columns found token: $tok")
+                }
+
+            ext.extractColumn(valTok) → valTok.getValue
+        }).
+            groupBy { case (col, _) ⇒ col }.
+            map { case (col, seq) ⇒ SqlInCondition(col, seq.map { case (_, value) ⇒ value})}.toSeq
+
     @NCIntent(
         "intent=commonReport conv=true " +
         "term(tabs)={groups @@ 'table'}[0,7] " +
@@ -103,7 +160,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         @NCIntentTerm("sort") sortTokOpt: Option[NCToken],
         @NCIntentTerm("limit") limitTokOpt: Option[NCToken]
     ): NCResult = {
-        val ext = NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant)
+        val ext: NCSqlExtractor = NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant)
 
         var query: SqlQuery = null
 
@@ -112,15 +169,15 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                 SqlBuilder(SCHEMA).
                     withTables(tabs.map(ext.extractTable): _*).
                     withColumns(cols.map(ext.extractColumn): _*).
-                    withAndConditions(ext.extractInConditions(condVals: _*).asScala: _*).
+                    withAndConditions(extractValuesConditions(ext, condVals): _*).
                     withAndConditions(
                         condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒
-                            ext.extractDateRangeConditions(h.column, h.condition).asScala
+                            extractDateRangeConditions(ext, h.column, h.condition)
                         ): _*
                     ).
                     withAndConditions(
                         condNums.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:num")).flatMap(h ⇒
-                            ext.extractNumConditions(h.column, h.condition).asScala
+                            extractNumConditions(ext, h.column, h.condition)
                         ): _*
                     ).
                     withSorts(sortTokOpt.map(sortTok ⇒ ext.extractSort(sortTok)).toSeq: _*).
@@ -128,7 +185,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                     withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
                     build()
 
-            NCResult.json(toJson(SqlAccess.select(query, true), query.getSql, query.getParameters))
+            NCResult.json(toJson(SqlAccess.select(query, true), query.sql, query.parameters))
         }
         catch {
             case e: Exception ⇒

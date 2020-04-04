@@ -15,28 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.sql.db;
+package org.apache.nlpcraft.examples.sql.db
 
-import org.apache.nlpcraft.model.*;
-import org.apache.nlpcraft.model.tools.sqlgen.*;
+import org.apache.nlpcraft.model.tools.sqlgen.NCSqlColumn
 
-/**
- * Object presentation of SQL function.
- *
- * @see NCSqlSchemaBuilder#makeSchema(NCModel)
- */
-public interface SqlFunction {
-    /**
-     * Gets SQL column this function is referring to.
-     *
-     * @return SQL column this function is referring to.
-     */
-    NCSqlColumn getColumn();
-
-    /**
-     * Gets name of this function.
-     *
-     * @return Name of this function.
-     */
-    String getFunction();
+trait SqlCondition {
+    def column: NCSqlColumn
 }
+
+case class SqlSimpleCondition(column: NCSqlColumn, operation: String, value: Any) extends SqlCondition
+case class SqlInCondition(column: NCSqlColumn, values: Seq[Any]) extends SqlCondition

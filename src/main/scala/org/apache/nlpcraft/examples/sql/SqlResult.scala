@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.sql.db;
+package org.apache.nlpcraft.examples.sql
 
-public interface SqlSimpleCondition extends SqlCondition {
-    String getOperation();
-    Object getValue();
-}
+case class SqlResult(columns: Seq[String], rows: Seq[Seq[String]])

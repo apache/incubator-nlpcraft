@@ -25,7 +25,6 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.fliptables.FlipTable
-import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 
@@ -51,7 +50,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
             }).
             build
     
-    private var cli: NCTestClient = _
+    private var client: NCTestClient = _
 
     case class Case(texts: Seq[String], sql: String)
 
@@ -66,15 +65,14 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
     private def toPretty(s: String): util.List[String] = SqlFormatter.format(s).split("\n").toSeq.asJava
     
     override protected def beforeAll(): Unit = {
-        cli = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
+        client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
     
-        cli.open("sql.model.id")
-        
+        client.open("sql.model.id")
     }
     
     override protected def afterAll(): Unit =
-        if (cli != null)
-            cli.close()
+        if (client != null)
+            client.close()
     
     private def check(multiLineOut: Boolean, cases: Case*): Unit = {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
@@ -87,7 +85,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
             }).
             foreach {
                 case (txt, expSqlNorm) ⇒
-                    val res = cli.ask(txt)
+                    val res = client.ask(txt)
     
                     if (res.isOk) {
                         require(res.getResult.asScala.isDefined)
