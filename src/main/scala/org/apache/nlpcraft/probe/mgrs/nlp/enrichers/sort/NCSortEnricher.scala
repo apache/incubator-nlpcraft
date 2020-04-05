@@ -143,63 +143,75 @@ object NCSortEnricher extends NCProbeEnricher {
         })
     }
 
-    /**
-      * [Token] -> [NoteData]
-      * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
-      * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
-      *
-      * @param toks
-      */
-    private def split(toks: Seq[NCNlpSentenceToken]): Seq[Seq[NoteData]] = {
+    private def toNoteData(toks: Seq[NCNlpSentenceToken]): Seq[NoteData] = {
         require(toks.nonEmpty)
 
         val min = toks.head.index
         val max = toks.last.index
 
-        val all =
-            toks.flatten.
-                filter(!_.isNlp).
-                filter(n ⇒ n.tokenIndexes.head >= min && n.tokenIndexes.last <= max).
-                map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
-                sortBy(_.indexes.head).distinct
+        toks.flatten.
+            filter(!_.isNlp).
+            filter(n ⇒ n.tokenIndexes.head >= min && n.tokenIndexes.last <= max).
+            map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
+            sortBy(_.indexes.head).distinct
+    }
 
-        if (all.nonEmpty) {
-            val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
+    /**
+      * [Token] -> [NoteData]
+      * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
+      * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
+      *
+      * @param toksNoteData
+      */
+    private def split(toks: Seq[NCNlpSentenceToken], toksNoteData: Seq[NoteData], nullable: Boolean): Seq[Seq[NoteData]] = {
+        val res =
+            if (toksNoteData.nonEmpty) {
+                val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
-            /**
-              * Returns flag which indicates are token contiguous or not.
-              *
-              * @param tok1Idx First token index.
-              * @param tok2Idx Second token index.
-              */
-            def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
-                val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
+                /**
+                  * Returns flag which indicates are token contiguous or not.
+                  *
+                  * @param tok1Idx First token index.
+                  * @param tok2Idx Second token index.
+                  */
+                def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
+                    val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
 
-                between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
+                    between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
+                }
+
+                val minIdx = toks.dropWhile(_.isNlp).head.index
+                val maxIdx = toks.reverse.dropWhile(_.isNlp).head.index
+
+                require(minIdx <= maxIdx)
+
+                def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
+                    seq += nd
+
+                    toksNoteData.
+                        filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
+                        foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
+
+                    if (seq.nonEmpty && seq.head.indexes.head == minIdx && seq.last.indexes.last == maxIdx)
+                        res += seq
+                }
+
+                toksNoteData.filter(_.indexes.head == minIdx).foreach(p ⇒ fill(p))
+
+                res
             }
+            else
+                Seq.empty
 
-            val minIdx = toks.dropWhile(_.isNlp).head.index
-            val maxIdx = toks.reverse.dropWhile(_.isNlp).head.index
+        if (res.isEmpty && !nullable)
+            throw new AssertionError(s"Invalid null result " +
+                s"[tokensTexts=[${toks.map(_.origText).mkString(", ")}]" +
+                s", tokensIndexes=[${toks.map(_.index).mkString(", ")}]" +
+                s", allData=[${toksNoteData.mkString(", ")}]" +
+                s"]"
+            )
 
-            require(minIdx <= maxIdx)
-
-            def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
-                seq += nd
-
-                all.
-                    filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
-                    foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
-
-                if (seq.nonEmpty && seq.head.indexes.head == minIdx && seq.last.indexes.last == maxIdx)
-                    res += seq
-            }
-
-            all.filter(_.indexes.head == minIdx).foreach(p ⇒ fill(p))
-
-            res
-        }
-        else
-            Seq.empty
+        res
     }
 
     /**
@@ -302,14 +314,13 @@ object NCSortEnricher extends NCProbeEnricher {
                             else
                                 (others.filter(_.index < sepIdxs.head), others.filter(_.index > sepIdxs.last))
 
-                        val notes = subj.flatten
-
                         require(subj.nonEmpty)
 
-                        val subjSeq = split(subj)
+                        val subjNoteData = toNoteData(subj)
 
-                        if (subjSeq.nonEmpty) {
-                            val bySeq = if (by.isEmpty) Seq.empty else split(by)
+                        if (subjNoteData.nonEmpty) {
+                            val subjSeq = split(subj, subjNoteData, nullable = false)
+                            val bySeq = if (by.isEmpty) Seq.empty else split(by, toNoteData(by), nullable = true)
                             val asc = h.order.flatMap(order ⇒ Some(ORDER(order.synonymIndex)._2))
 
                             Some(Match(asc, main = h.sort.tokens, stop = h.byTokens ++ h.orderTokens, subjSeq, bySeq))
