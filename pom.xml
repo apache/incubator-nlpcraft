@@ -805,18 +805,38 @@
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
                         <version>0.13</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>docs/**/*</exclude>
+                                <exclude>LICENSE</exclude>
+                                <exclude>KEYS</exclude>
+                                <exclude>DISCLAIMER</exclude>
+                                <exclude>NOTICE</exclude>
+                                <exclude>.gitignore</exclude>
+                                <exclude>.travis.yml</exclude>
+                                <exclude>build</exclude>
+                                <exclude>.idea</exclude>
+                                <exclude>venv</exclude>
+                                <exclude>*.iml</exclude>
+                                <exclude>**/*.html</exclude>
+                                <exclude>**/*.txt</exclude>
+                                <exclude>**/*.json</exclude>
+                                <exclude>docs/**/*</exclude>
+                                <exclude>idea/**/*</exclude>
+                                <exclude>javadoc/**/*</exclude>
+                                <exclude>src/main/resources/moby/*</exclude>
+                                <exclude>src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/*</exclude>
+                                <exclude>src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4/*</exclude>
+                                <exclude>src/main/resources/opennlp/en-lemmatizer.dict</exclude>
+                            </excludes>
+                            <numUnapprovedLicenses>1000000</numUnapprovedLicenses>
+                        </configuration>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>check</goal>
                                 </goals>
-                                <configuration>
-                                    <excludes>
-                                        <excludesFile>${project.basedir}/.rat-excludes</excludesFile>
-                                    </excludes>
-                                    <numUnapprovedLicenses>1000000</numUnapprovedLicenses>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
