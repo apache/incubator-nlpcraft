@@ -82,7 +82,6 @@
         <commons-lang3.ver>3.9</commons-lang3.ver>
         <commons.validator.ver>1.6</commons.validator.ver>
         <apache.commons.text.ver>1.7</apache.commons.text.ver>
-        <jgrapht.ver>0.7.3</jgrapht.ver>
         <jsoup.ver>1.12.1</jsoup.ver>
         <slf4j.ver>1.7.26</slf4j.ver>
         <scala.logging.ver>3.9.2</scala.logging.ver>
@@ -118,8 +117,9 @@
         <maven.shade.plugin.ver>3.2.1</maven.shade.plugin.ver>
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
         <maven.gpg.plugin.ver>1.6</maven.gpg.plugin.ver>
-        <maven.nexus.staging.plugin>1.6.7</maven.nexus.staging.plugin>
-        <maven.bazaarvoice.plugin>0.9</maven.bazaarvoice.plugin>
+        <maven.nexus.staging.plugin.ver>1.6.7</maven.nexus.staging.plugin.ver>
+        <maven.bazaarvoice.plugin.ver>0.9</maven.bazaarvoice.plugin.ver>
+        <apache.rat.plugin.ver>0.13</apache.rat.plugin.ver>
         <org.antlr4.ver>4.8</org.antlr4.ver>
         <akka.http.2.11.ver>10.1.9</akka.http.2.11.ver>
         <akka.stream.2.11.ver>2.5.23</akka.stream.2.11.ver>
@@ -210,11 +210,6 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
             <version>${org.antlr4.ver}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-jdk1.5</artifactId>
-            <version>${jgrapht.ver}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -502,7 +497,7 @@
             <plugin>
                 <groupId>com.bazaarvoice.maven.plugins</groupId>
                 <artifactId>process-exec-maven-plugin</artifactId>
-                <version>${maven.bazaarvoice.plugin}</version>
+                <version>${maven.bazaarvoice.plugin.ver}</version>
                 <executions>
                     <execution>
                         <id>pre-integration-test</id>
@@ -755,7 +750,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${maven.nexus.staging.plugin}</version>
+                <version>${maven.nexus.staging.plugin.ver}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -804,7 +799,7 @@
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
-                        <version>0.13</version>
+                        <version>${apache.rat.plugin.ver}</version>
                         <configuration>
                             <excludes>
                                 <exclude>docs/**/*</exclude>
