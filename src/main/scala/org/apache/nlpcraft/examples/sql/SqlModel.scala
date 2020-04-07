@@ -80,6 +80,40 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         Condition(colTok, condTok)
     }
 
+//    private def findSchemaColumn(cols: Seq[NCSqlColumn], tab: String, col: String): NCSqlColumn =
+//        cols.find(_.getColumn == col).getOrElse(throw new IllegalArgumentException(s"Table not found: $tab.$col"))
+//
+//    private def getWithGroup(tok: NCToken, group: String): Seq[NCToken] =
+//        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(group)) Some(p) else None)
+
+//    private def findAnyTableTokenOpt(schema: NCSqlSchema, tok: NCToken): Option[NCSqlTable] = {
+//        val tabs = getWithGroup(tok, "table")
+//
+//        tabs.size match {
+//            case 1 ⇒ Some(findSchemaTable(schema, tabs.head.meta("sql:name")))
+//
+//            case 0 ⇒ None
+//            case _ ⇒ throw new IllegalArgumentException("Too many tables found")
+//        }
+//    }
+
+    private def getWithGroup(tok: NCToken, group: String): Seq[NCToken] =
+        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(group)) Some(p) else None)
+
+    private def findAnyColumnTokenOpt(tok: NCToken): Option[NCToken] = {
+        val cols = getWithGroup(tok, "column")
+
+        cols.size match {
+            case 1 ⇒ Some(cols.head)
+
+            case 0 ⇒ None
+            case _ ⇒ throw new IllegalArgumentException(s"Too many columns found for token: $tok")
+        }
+    }
+
+    private def findAnyColumnToken(tok: NCToken): NCToken =
+        findAnyColumnTokenOpt(tok).getOrElse(throw new IllegalArgumentException(s"No columns found for token: $tok"))
+
     def extractNumConditions(ext: NCSqlExtractor, colTok: NCToken, numTok: NCToken): Seq[SqlSimpleCondition] = {
         val col = ext.extractColumn(colTok)
 
@@ -168,7 +202,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             query =
                 SqlBuilder(SCHEMA).
                     withTables(tabs.map(ext.extractTable): _*).
-                    withColumns(cols.map(ext.extractColumn): _*).
+                    withColumns(cols.map(col ⇒ (ext.extractColumn(findAnyColumnToken(col)))): _*).
                     withAndConditions(extractValuesConditions(ext, condVals): _*).
                     withAndConditions(
                         condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒

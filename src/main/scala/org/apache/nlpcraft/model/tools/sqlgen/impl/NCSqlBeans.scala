@@ -68,12 +68,14 @@ case class NCSqlJoinImpl(fromTable: String, toTable: String, fromColumns: Seq[St
 }
 
 /**
-  *
-  * @param column
-  * @param asc
-  */
-case class NCSqlSortImpl(column: NCSqlColumn, asc: Boolean) extends NCSqlSort {
-    override def getColumn: NCSqlColumn = column
+ *
+ * @param subj
+ * @param by
+ * @param asc
+ */
+case class NCSqlSortImpl(subj: Seq[NCSqlColumn], by: Seq[NCSqlColumn], asc: Boolean) extends NCSqlSort {
+    override def getSubj: util.List[NCSqlColumn] = subj.asJava
+    override def getBy: util.List[NCSqlColumn] = by.asJava
     override def isAscending: Boolean = asc
 }
 

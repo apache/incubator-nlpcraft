@@ -25,6 +25,7 @@ import org.apache.nlpcraft.model.tools.sqlgen._
 import org.apache.nlpcraft.model._
 
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 
 /**
   *
@@ -114,20 +115,29 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @return
       */
     private def getReference(refTok: NCToken): Option[NCSqlColumn] = {
-        val tok = getLinkBySingleIndex(variant, refTok)
-        
+        val tok = getLinks(variant, refTok)
+
         findAnyColumnTokenOpt(tok) match {
             // If reference is column - sort by column.
             case Some(t) ⇒ Some(extractColumn(t))
             case None ⇒
-                // If reference is table -  sort by any PK column of table.
+                // If reference is table - sort by any PK column of table.
                 findAnyTableTokenOpt(tok) match {
                     case Some(tab) ⇒ Some(tab.getColumns.asScala.minBy(col ⇒ if (col.isPk) 0 else 1))
                     case None ⇒ None
                 }
         }
     }
-    
+
+    /**
+     *
+     * @param refToks
+     * @return
+     */
+    private def getReferences(refToks: Seq[NCToken]): Seq[NCSqlColumn] = {
+        refToks
+    }
+
     /**
       *
       * @param limitTok
@@ -138,12 +148,33 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         
         // Skips indexes to simplify.
         val limit: Double = limitTok.metax("nlpcraft:limit:limit")
-        
-        NCSqlLimitImpl(
-            getReference(limitTok).getOrElse(throw new NCException(s"Limit not found for: $limitTok")),
-            limit.intValue(),
-            limitTok.metax("nlpcraft:limit:asc")
-        )
+
+        val links = getLinks(variant, limitTok, "indexes", "note", false)
+
+        val size = links.size
+
+        size match {
+            case 1 ⇒
+                val link = links.head
+
+                val res = findAnyColumnTokenOpt(link) match {
+                    // If reference is column - sort by column.
+                    case Some(t) ⇒ extractColumn(t)
+                    case None ⇒
+                        // If reference is table - sort by any PK column of table.
+                        findAnyTableTokenOpt(link) match {
+                            case Some(tab) ⇒ tab.getColumns.asScala.minBy(col ⇒ if (col.isPk) 0 else 1)
+                            case None ⇒ throw new NCException("TODO:")
+                        }
+                }
+
+                NCSqlLimitImpl(
+                    res,
+                    limit.intValue(),
+                    limitTok.metax("nlpcraft:limit:asc")
+                )
+            case  _ ⇒ throw new NCException(s"Unexpected LIMIT links count: $size")
+        }
     }
     
     /**
@@ -205,25 +236,26 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @param tok
       * @return
       */
-    private def getLinkBySingleIndex(variant: NCVariant, tok: NCToken): NCToken = {
-        val idxs: util.List[Integer] = tok.metax(s"${tok.getId}:indexes")
+    private def getLinks(variant: NCVariant, tok: NCToken, idxField: String, noteField: String, canBeEmpty: Boolean): Seq[NCToken] = {
+        val idxsOpt: Option[util.List[Integer]] = tok.metaOpt(s"${tok.getId}:$idxField").asScala
         
-        if (idxs.isEmpty)
+        if (idxsOpt.isEmpty && !canBeEmpty)
             throw new NCException(s"Empty indexes for: $tok")
 
-        val idx = idxs.get(0)
+        idxsOpt.get.asScala.map(idx ⇒ {
+            if (idx < variant.size) {
+                val note: String = tok.metax(s"${tok.getId}:$noteField")
 
-        if (idx < variant.size) {
-            val note: String = tok.metax(s"${tok.getId}:note")
+                val link = variant.get(idx)
 
-            val link = variant.get(idx)
+                if (link.getId != note)
+                    throw new NCException(s"Unexpected token with index: $idx, type: $note")
 
-            if (link.getId != note)
-                throw new NCException(s"Unexpected token with index: $idx, type: $note")
+                link
+            }
+            else
+                throw new NCException(s"Token not found with index: $idx")
+        })
 
-            link
-        }
-        else
-            throw new NCException(s"Token not found with index: $idx")
     }
 }
