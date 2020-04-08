@@ -31,7 +31,7 @@ public interface NCSqlSort {
     /**
      * TODO:
      */
-    List<NCSqlColumn> getSubj();
+    List<NCSqlTable> getSubj();
 
     /**
      * TODO:

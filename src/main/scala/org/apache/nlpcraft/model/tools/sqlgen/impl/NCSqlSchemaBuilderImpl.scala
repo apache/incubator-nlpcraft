@@ -81,49 +81,14 @@ object NCSqlSchemaBuilderImpl {
 
                     val cols = tabCols(tab).toSeq.sortBy(p ⇒ (if (p.isPk) 0 else 1, p.getColumn)).asJava
                     
-                    val table: NCSqlTable = NCSqlTableImpl(
-                        tab,
+                    val table: NCSqlTableImpl = NCSqlTableImpl(
+                        table = tab,
                         // TODO: columns should be list, but elements are set. How should we order them?
                         // TODO: Seems elements should be seq too in model.
-                        cols.asScala,
-                        dfltSort.
-                            map(s ⇒ {
-                                def error() = throw new NCException(s"Invalid default sort declaration in: $s")
-                                
-                                var pair = s.split("\\.")
-                                
-                                val t =
-                                    pair.length match {
-                                        case 1 ⇒
-                                            pair = s.split("#")
-                                            
-                                            // By default, same table name.
-                                            tab
-                                        case 2 ⇒
-                                            val t = pair.head
-                                            
-                                            pair = pair.last.split("#")
-                                            
-                                            t
-                                        case  _ ⇒ error()
-                                    }
-                                
-                                if (pair.length != 2)
-                                    error()
-                                
-                                val col = pair.head
-                                val asc = pair.last.toLowerCase
-                                
-                                if (asc != "asc" && asc != "desc")
-                                    error()
-                                
-                                val sort: NCSqlSort = NCSqlSortImpl(findSchemaColumn(cols, t, col), asc == "asc")
-                                
-                                sort
-                            }),
-                        dfltSelect,
-                        extra,
-                        defDateOpt match {
+                        columns = cols.asScala,
+                        select = dfltSelect,
+                        extraTables = extra,
+                        defaultDate = defDateOpt match {
                             case Some(defDate) ⇒
                                 def error() = throw new NCException(s"Invalid default date declaration in: $defDate")
 
@@ -139,7 +104,45 @@ object NCSqlSchemaBuilderImpl {
                             case None ⇒ None
                         }
                     )
-                    
+
+                    dfltSort.
+                        foreach(s ⇒ {
+                            def error() = throw new NCException(s"Invalid default sort declaration in: $s")
+
+                            var pair = s.split("\\.")
+
+                            val t =
+                                pair.length match {
+                                    case 1 ⇒
+                                        pair = s.split("#")
+
+                                        // By default, same table name.
+                                        tab
+                                    case 2 ⇒
+                                        val t = pair.head
+
+                                        pair = pair.last.split("#")
+
+                                        t
+                                    case  _ ⇒ error()
+                                }
+
+                            if (pair.length != 2)
+                                error()
+
+                            val col = pair.head
+                            val asc = pair.last.toLowerCase
+
+                            if (asc != "asc" && asc != "desc")
+                                error()
+
+                            table.addSort(NCSqlSortImpl(
+                                Seq(table),
+                                Seq(findSchemaColumn(cols, t, col)),
+                                asc == "asc"
+                            ))
+                        })
+
                     table
                 }).toSeq
     
