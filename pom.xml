@@ -112,7 +112,6 @@
         <apache.common.lang.ver>3.8.1</apache.common.lang.ver>
         <apache.httpcomponents.ver>4.5.7</apache.httpcomponents.ver>
         <apache.opennlp.ver>1.9.1</apache.opennlp.ver>
-        <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
         <maven.javadoc.plugin.ver>3.0.0-M1</maven.javadoc.plugin.ver>
         <maven.shade.plugin.ver>3.2.1</maven.shade.plugin.ver>
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
@@ -147,6 +146,13 @@
 
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--
+            NOTE: this library is NOT included in binary build and is optional
+            for NLPCraft. It is licensed under GPLv3 and has to be downloaded separately by
+            the end user, when required.
+        -->
+        <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
     </properties>
 
     <dependencyManagement>

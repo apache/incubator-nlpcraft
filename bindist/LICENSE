@@ -265,21 +265,5 @@
    Maven dependency: com.github.vertical-blank:sql-formatter
    Licensed under MIT license: https://github.com/vertical-blank/sql-formatter/blob/master/LICENSE
 
-   Stanford CoreNLP
-   ----------------
-   Stanford CoreNLP provides a set of human language technology tools. It can give the base forms
-   of words, their parts of speech, whether they are names of companies, people, etc., normalize
-   dates, times, and numeric quantities, mark up the structure of sentences in terms of phrases
-   and syntactic dependencies, indicate which noun phrases refer to the same entities,
-   indicate sentiment, extract particular or open-class relations between entity mentions,
-   get the quotes people said, etc.
-                                                                                                       
-   NOTE:
-      Stanford CoreNLP is an optional runtime library and NOT REQUIRED for building or using
-      NLPCraft. NLPCraft, however, provides runtime integration with this popular library in
-      case when  the end-user can accept its license and decides to use it.
-                                                                                                       
-   Maven dependency: edu.stanford.nlp:stanford-corenlp
-   Licensed under GPLv3 license: https://stanfordnlp.github.io/CoreNLP/#license
  
 
