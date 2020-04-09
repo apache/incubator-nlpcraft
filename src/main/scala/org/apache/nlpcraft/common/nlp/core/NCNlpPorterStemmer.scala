@@ -25,7 +25,7 @@ import scala.language.{implicitConversions, postfixOps}
  * See http://snowball.tartarus.org/algorithms/porter/stemmer.html
  * for description of the algorithm itself.
  *
- * Implementation is based on work by Evgeny Kotelnikov 'evgeny.kotelnikov@gmail.com'
+ * Implementation is loosely based on work by Evgeny Kotelnikov 'evgeny.kotelnikov@gmail.com'
  */
 object NCNlpPorterStemmer  {
     /**
