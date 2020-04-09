@@ -201,3 +201,85 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
+   Binary Distribution 
+   ===================
+   This NLPCraft distribution bundles 3rd party binary dependencies that are        
+   licensed as outlined below. See the following link on ASF 3rd party license      
+   compatibility: https://www.apache.org/legal/resolved.html
+
+   Google Protobuf
+   ---------------
+   Protocol buffers are a language-neutral, platform-neutral extensible mechanism for
+   serializing structured data.
+                                                                                                       
+   Maven dependency: com.google.protobuf:protobuf-java
+   BSD License: https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
+
+   ANTLR
+   -----
+   ANTLR (ANother Tool for Language Recognition) is a powerful parser generator for
+   reading, processing, executing, or translating structured text or binary files.
+   It's widely used to build languages, tools, and frameworks. From a grammar,
+   ANTLR generates a parser that can build and walk parse trees.
+                                                                                                       
+   Maven dependency: org.antlr:antlr4-runtime
+   Licensed under BSD license: https://www.antlr.org/license.html
+
+   jsoup
+   -----
+   jsoup is a Java library for working with real-world HTML. It provides a very convenient API for
+   fetching URLs and extracting and manipulating data, using the best of HTML5 DOM methods
+   and CSS selectors.
+
+   Maven dependency: org.jsoup:jsoup
+   Licensed under MIT license: https://jsoup.org/license
+
+   Scala ARM
+   ---------
+   This project is an attempt to provide an Automatic-Resource-Management library for the scala
+   distribution. It is based off of code contributed to the Scalax project.
+                                                                                                       
+   Maven dependency: com.jsuereth:scala-arm_2.11
+   Licensed under MIT license: https://github.com/jsuereth/scala-arm
+
+   MChange c3p0
+   ------------
+   c3p0 is an easy-to-use library for making traditional JDBC drivers "enterprise-ready" by
+   augmenting them with functionality defined by the jdbc3 spec and the optional extensions to jdbc2.
+                                                                                                       
+   Maven dependency: com.mchange:c3p0
+   Licensed under EPL license: http://www.eclipse.org/legal/epl-v10.html
+
+   extJWNL
+   -------
+   extJWNL (Extended Java WordNet Library) is a Java API for creating, reading and updating
+   dictionaries in WordNet format.
+                                                                                                       
+   Maven dependency: net.sf.extjwnl
+   Licensed under BSD license: http://extjwnl.sourceforge.net/license.txt
+
+   SQL Formatter
+   -------------
+   Java port of great SQL formatter https://github.com/zeroturnaround/sql-formatter.
+                                                                                                       
+   Maven dependency: com.github.vertical-blank:sql-formatter
+   Licensed under MIT license: https://github.com/vertical-blank/sql-formatter/blob/master/LICENSE
+
+   Stanford CoreNLP
+   ----------------
+   Stanford CoreNLP provides a set of human language technology tools. It can give the base forms
+   of words, their parts of speech, whether they are names of companies, people, etc., normalize
+   dates, times, and numeric quantities, mark up the structure of sentences in terms of phrases
+   and syntactic dependencies, indicate which noun phrases refer to the same entities,
+   indicate sentiment, extract particular or open-class relations between entity mentions,
+   get the quotes people said, etc.
+                                                                                                       
+   NOTE:
+      Stanford CoreNLP is an optional runtime library and NOT REQUIRED for building or using
+      NLPCraft. NLPCraft, however, provides runtime integration with this popular library in
+      case when  the end-user can accept its license and decides to use it.
+                                                                                                       
+   Maven dependency: edu.stanford.nlp:stanford-corenlp
+   Licensed under GPLv3 license: https://stanfordnlp.github.io/CoreNLP/#license
+ 
+
