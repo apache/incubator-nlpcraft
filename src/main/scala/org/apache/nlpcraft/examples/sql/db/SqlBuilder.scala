@@ -20,10 +20,11 @@ package org.apache.nlpcraft.examples.sql.db
 import java.sql.Types
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.commons.graph.algorithm.path.AllPairsShortestPath
+import org.apache.commons.graph.domain.basic.DirectedGraphImpl
+import org.apache.commons.graph.exception.GraphException
 import org.apache.nlpcraft.model.tools.sqlgen._
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlSortImpl
-import org.jgrapht.alg.DijkstraShortestPath
-import org.jgrapht.graph.{DefaultEdge, SimpleGraph}
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
@@ -45,7 +46,8 @@ import scala.compat.java8.OptionConverters._
 case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private final val DFLT_LIMIT = 1000
 
-    private case class Edge(from: String, to: String) extends DefaultEdge
+    private case class Edge(from: String, to: String) extends org.apache.commons.graph.Edge
+    private case class Vertex(name: String) extends org.apache.commons.graph.Vertex
     private case class Key(table: String, column: String)
 
     private val schemaTabs = schema.getTables.asScala.toSeq.sortBy(_.getTable)
@@ -54,13 +56,13 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         schemaTabs.flatMap(p ⇒ p.getColumns.asScala.map(col ⇒ Key(col.getTable, col.getColumn) → col)).toMap
     private val schemaJoins = schema.getJoins.asScala
 
-    private val graph = {
-        val g = new SimpleGraph[String, Edge](classOf[Edge])
+    private val PATHS = {
+        val g = new DirectedGraphImpl()
 
-        schemaTabs.foreach(t ⇒ g.addVertex(t.getTable))
-        schemaJoins.foreach(j ⇒ g.addEdge(j.getFromTable, j.getToTable, Edge(j.getFromTable, j.getToTable)))
+        schemaTabs.foreach(t ⇒ g.addVertex(Vertex(t.getTable)))
+        schemaJoins.foreach(j ⇒ g.addEdge(Edge(j.getFromTable, j.getToTable), Vertex(j.getFromTable), Vertex(j.getToTable)))
 
-        g
+        new AllPairsShortestPath(g)
     }
 
     private var tabs: Seq[NCSqlTable] = Seq.empty
@@ -167,12 +169,16 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             case 0 ⇒ throw new RuntimeException("Tables cannot be empty.")
             case 1 ⇒ ext
             case _ ⇒
-                // Simple algorithm which takes into account only FKs between tables.
+                // Simple algorithm, which takes into account only FKs between tables.
                 val extra =
                     ext.sliding(2).flatMap(pair ⇒
-                        new DijkstraShortestPath(graph, pair.head.getTable, pair.last.getTable).getPathEdgeList match {
-                            case null ⇒ Seq.empty
-                            case list ⇒ list.asScala.flatMap(e ⇒ Seq(e.from, e.to))
+                        try {
+                            val path = PATHS.getShortestPath(Vertex(pair.head.getTable), Vertex(pair.last.getTable))
+
+                            Seq(path.getStart.asInstanceOf[Vertex].name, path.getEnd.asInstanceOf[Vertex].name)
+                        }
+                        catch {
+                            case _ : GraphException ⇒ Seq.empty
                         }
                     ).toSeq.distinct
 

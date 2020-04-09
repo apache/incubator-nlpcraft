@@ -110,6 +110,7 @@
         <jackson.yaml.ver>2.10.1</jackson.yaml.ver>
         <apache.math.ver>3.6.1</apache.math.ver>
         <apache.common.lang.ver>3.8.1</apache.common.lang.ver>
+        <apache.common.graph.ver>0.8.1</apache.common.graph.ver>
         <apache.httpcomponents.ver>4.5.7</apache.httpcomponents.ver>
         <apache.opennlp.ver>1.9.1</apache.opennlp.ver>
         <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
@@ -241,6 +242,12 @@
             <artifactId>opennlp-tools</artifactId>
             <version>${apache.opennlp.ver}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-graph</groupId>
+            <artifactId>commons-graph</artifactId>
+            <version>${apache.common.graph.ver}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
