@@ -74,23 +74,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
     private def sql(clause: NCSqlTable): String = clause.getTable
     private def sql(clause: NCSqlColumn): String = s"${clause.getTable}.${clause.getColumn}"
-    private def sql(clause: NCSqlSort): String = {
-        val cols: Seq[NCSqlColumn] =
-            if (clause.getBy.isEmpty) {
-                require(!clause.getSubj.isEmpty)
-
-                clause.getSubj.asScala.flatMap(tab ⇒ {
-                    val cols = tab.getColumns.asScala
-                    val pkCols = cols.filter(_.isPk)
-
-                    if (pkCols.nonEmpty) pkCols else cols.take(1)
-                })
-            }
-            else
-                clause.getBy.asScala
-
-        cols.map(col ⇒ s"${sql(col)} ${if (clause.isAscending) "ASC" else "DESC"}").mkString(", ")
-    }
+    private def sql(clause: NCSqlSort): String = s"${sql(clause.getColumn)} ${if (clause.isAscending) "ASC" else "DESC"}"
 
     // TODO: implement based on join type.
     private def sql(clause: NCSqlJoin): String =
@@ -146,15 +130,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                     getOrElse(
                         tables.flatMap(_.getDefaultSort.asScala.
                             // 'Sort' can contain columns from select list only (some databases restriction)
-                            flatMap(sort ⇒
-                                if (
-                                    sort.getSubj.asScala.toSet.subsetOf(tables.toSet) &&
-                                    (sort.getBy.isEmpty || sort.getBy.asScala.toSet.subsetOf(cols.toSet))
-                                )
-                                    Some(sort)
-                                else
-                                    None
-                            )
+                            flatMap(sort ⇒ if (cols.contains(sort.getColumn)) Some(sort) else None)
                         )
                     ).distinct
             case _ ⇒ sorts.distinct
@@ -189,11 +165,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         }
     }
 
-    private def limit2Sort(l: NCSqlLimit): NCSqlSort = NCSqlSortImpl(
-        Seq(schemaTabsByNames(l.getColumn.getTable)),
-        Seq(l.getColumn),
-        l.isAscending
-    )
+    private def limit2Sort(l: NCSqlLimit): NCSqlSort = NCSqlSortImpl(l.getColumn, l.isAscending)
 
     private def sort(cols2Sort: Seq[NCSqlColumn], cols: Seq[NCSqlColumn], tabs: Seq[NCSqlTable]): Seq[NCSqlColumn] =
         cols2Sort.sortBy(col ⇒
@@ -311,10 +283,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
         colsNorm.foreach(col ⇒ tabsNorm += schemaTabsByNames(col.getTable))
         condsNorm.foreach(cond ⇒ { tabsNorm += schemaTabsByNames(cond.column.getTable); colsNorm += cond.column })
-        sortsNorm.foreach(sort ⇒ {
-            tabsNorm ++= sort.getSubj.asScala ++ sort.getBy.asScala.map(col ⇒ schemaTabsByNames(col.getTable))
-            colsNorm ++= sort.getBy.asScala
-        })
+        sortsNorm.foreach(sort ⇒ {tabsNorm += schemaTabsByNames(sort.getColumn.getTable);colsNorm += sort.getColumn })
 
         val freeDateColOpt = findDateColumn(tabsNorm)
 

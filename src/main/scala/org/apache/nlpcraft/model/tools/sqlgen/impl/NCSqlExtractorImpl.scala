@@ -214,16 +214,36 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @param sortTok
       * @return
       */
-    override def extractSort(sortTok: NCToken): NCSqlSort = {
+    override def extractSort(sortTok: NCToken): util.List[NCSqlSort] = {
         checkTokenId(sortTok, "nlpcraft:sort")
 
-        NCSqlSortImpl(
-            getLinks(variant, sortTok, "subjindexes", "subjnotes", false).
-                map(link ⇒ findTable(link, "SORT")),
-            getLinks(variant, sortTok, "byindexes", "bynotes", true).
-                map(link ⇒ findColumn(link, "SORT BY")),
-            getAsc(sortTok, "nlpcraft:sort:asc", true)
-        )
+        val tables = getLinks(variant, sortTok, "subjindexes", "subjnotes", false).
+            map(link ⇒ findTable(link, "SORT"))
+
+        val cols = getLinks(variant, sortTok, "byindexes", "bynotes", true).
+            map(link ⇒ findColumn(link, "SORT BY"))
+
+        val asc = getAsc(sortTok, "nlpcraft:sort:asc", true)
+
+        require(tables.nonEmpty)
+
+        tables.flatMap(t ⇒ {
+            var colTabs = cols.filter(_.getTable == t.getTable)
+
+            if (colTabs.isEmpty)
+                colTabs = t.getColumns.asScala.filter(_.isPk)
+
+            if (colTabs.isEmpty)
+                colTabs = t.getColumns.asScala.take(1)
+
+            require(colTabs.nonEmpty)
+
+            colTabs.map(col ⇒ {
+                val sort: NCSqlSort = NCSqlSortImpl(col, asc)
+
+                sort
+            })
+        }).asJava
     }
     
     /**

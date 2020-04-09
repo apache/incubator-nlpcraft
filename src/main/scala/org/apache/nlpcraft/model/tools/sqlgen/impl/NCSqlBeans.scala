@@ -81,13 +81,11 @@ case class NCSqlJoinImpl(
 
 /**
  *
- * @param subj
- * @param by
+ * @param column
  * @param asc
  */
-case class NCSqlSortImpl(subj: Seq[NCSqlTable], by: Seq[NCSqlColumn], asc: Boolean) extends NCSqlSort {
-    override def getSubj: util.List[NCSqlTable] = subj.asJava
-    override def getBy: util.List[NCSqlColumn] = by.asJava
+case class NCSqlSortImpl(column: NCSqlColumn, asc: Boolean) extends NCSqlSort {
+    override def getColumn: NCSqlColumn = column
     override def isAscending: Boolean = asc
 }
 
@@ -95,28 +93,25 @@ case class NCSqlSortImpl(subj: Seq[NCSqlTable], by: Seq[NCSqlColumn], asc: Boole
   *
   * @param table
   * @param columns
-  * @param sort
-  * @param select
+  * @param sorts
+  * @param selects
   * @param extraTables
   * @param defaultDate
   */
 case class NCSqlTableImpl(
     table: String,
     columns: Seq[NCSqlColumn],
-    sort: mutable.ArrayBuffer[NCSqlSort] = mutable.ArrayBuffer.empty,
-    select: Seq[String],
+    sorts: Seq[NCSqlSort],
+    selects: Seq[String],
     extraTables: Seq[String],
     defaultDate: Option[NCSqlColumn]
 ) extends NCSqlTable {
     override def getTable: String = table
     override def getColumns: util.List[NCSqlColumn] = columns.asJava
-    override def getDefaultSort: util.List[NCSqlSort] = sort.asJava
-    override def getDefaultSelect: util.List[String] = select.asJava
+    override def getDefaultSort: util.List[NCSqlSort] = sorts.asJava
+    override def getDefaultSelect: util.List[String] = selects.asJava
     override def getExtraTables: util.List[String] = extraTables.asJava
     override def getDefaultDate: Optional[NCSqlColumn] = defaultDate.asJava
-
-    // TODO: what about another fields for symmetry.
-    def addSort(sort: NCSqlSort): Unit = this.sort += sort
 }
 
 /**

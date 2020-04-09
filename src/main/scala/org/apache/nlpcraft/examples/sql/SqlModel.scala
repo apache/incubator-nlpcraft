@@ -202,7 +202,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             query =
                 SqlBuilder(SCHEMA).
                     withTables(tabs.map(ext.extractTable): _*).
-                    withColumns(cols.map(col ⇒ (ext.extractColumn(findAnyColumnToken(col)))): _*).
+                    withColumns(cols.map(col ⇒ ext.extractColumn(findAnyColumnToken(col))): _*).
                     withAndConditions(extractValuesConditions(ext, condVals): _*).
                     withAndConditions(
                         condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒
@@ -214,7 +214,12 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                             extractNumConditions(ext, h.column, h.condition)
                         ): _*
                     ).
-                    withSorts(sortTokOpt.map(sortTok ⇒ ext.extractSort(sortTok)).toSeq: _*).
+                    withSorts((
+                        sortTokOpt match {
+                            case Some(sortTok) ⇒ ext.extractSort(sortTok).asScala
+                            case None ⇒ Seq.empty
+                        }
+                    ): _*).
                     withLimit(limitTokOpt.flatMap(limitTok ⇒ Some(ext.extractLimit(limitTok))).orNull).
                     withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
                     build()

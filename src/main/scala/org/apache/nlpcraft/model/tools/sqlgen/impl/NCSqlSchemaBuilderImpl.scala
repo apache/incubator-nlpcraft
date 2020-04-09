@@ -24,6 +24,7 @@ import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.sqlgen._
 
 import scala.collection.JavaConverters._
+import scala.collection.Seq
 import scala.compat.java8.OptionConverters._
 
 /**
@@ -67,8 +68,10 @@ object NCSqlSchemaBuilderImpl {
                 
                 col
             }).groupBy(_.getTable).map { case (tab, cols) ⇒ tab → cols }
-        
-        val tables =
+
+        val defSorts = collection.mutable.HashMap.empty[NCSqlSort, String]
+
+        var tables =
             elems.filter(_.getGroups.contains("table")).
                 map(p ⇒ {
                     def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala
@@ -86,7 +89,8 @@ object NCSqlSchemaBuilderImpl {
                         // TODO: columns should be list, but elements are set. How should we order them?
                         // TODO: Seems elements should be seq too in model.
                         columns = cols.asScala,
-                        select = dfltSelect,
+                        sorts = Seq.empty,
+                        selects = dfltSelect,
                         extraTables = extra,
                         defaultDate = defDateOpt match {
                             case Some(defDate) ⇒
@@ -136,25 +140,36 @@ object NCSqlSchemaBuilderImpl {
                             if (asc != "asc" && asc != "desc")
                                 error()
 
-                            table.addSort(NCSqlSortImpl(
-                                Seq(table),
-                                Seq(findSchemaColumn(cols, t, col)),
-                                asc == "asc"
-                            ))
+                            defSorts += NCSqlSortImpl(findSchemaColumn(cols, t, col), asc == "asc") → t
                         })
 
                     table
                 }).toSeq
-    
+
+        val defSortsByTab =
+            defSorts.
+                groupBy { case (_, table) ⇒ table }.
+                map { case (table, seq) ⇒ table → seq.map { case (sort, _) ⇒ sort}.toSeq }
+
+        tables = tables.map(t ⇒
+            NCSqlTableImpl(
+                table = t.table,
+                columns = t.columns,
+                sorts = defSortsByTab.getOrElse(t.table, Seq.empty),
+                selects = t.selects,
+                extraTables = t.extraTables,
+                defaultDate = t.defaultDate
+            )
+        )
+
         val joinsMap = mdl.metax("sql:joins").asInstanceOf[util.List[util.Map[String, Object]]]
     
         val joins = joinsMap.asScala.map(_.asScala).map(m ⇒ {
-            def mget[T](prop: String): T = {
+            def mget[T](prop: String): T =
                 m.get(prop) match {
                     case Some(v) ⇒ v.asInstanceOf[T]
                     case None ⇒ throw new NCException(s"Metadata property not found: $prop")
                 }
-            }
             
             val join: NCSqlJoin = NCSqlJoinImpl(
                 mget("fromtable").asInstanceOf[String],

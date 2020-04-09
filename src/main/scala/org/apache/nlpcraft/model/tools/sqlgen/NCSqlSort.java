@@ -17,9 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
-import org.apache.nlpcraft.model.*;
-
-import java.util.List;
+import org.apache.nlpcraft.model.NCToken;
 
 /**
  * Object presentation of SQL sorting.
@@ -31,12 +29,7 @@ public interface NCSqlSort {
     /**
      * TODO:
      */
-    List<NCSqlTable> getSubj();
-
-    /**
-     * TODO:
-     */
-    List<NCSqlColumn> getBy();
+    NCSqlColumn getColumn();
 
     /**
      * Gets sorting direction.
