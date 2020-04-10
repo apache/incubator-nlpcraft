@@ -809,6 +809,7 @@
                         <configuration>
                             <excludes>
                                 <exclude>docs/**/*</exclude>
+                                <exclude>zips/**/*</exclude>
                                 <exclude>LICENSE</exclude>
                                 <exclude>KEYS</exclude>
                                 <exclude>DISCLAIMER</exclude>
