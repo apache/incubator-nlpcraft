@@ -48,7 +48,7 @@ rsync -avzq openapi ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 rsync -avzq src ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude '**/*.iml'
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
-cp LICENSE ${zipDir}/${tmpDir}
+cp bindist/LICENSE ${zipDir}/${tmpDir}
 cp NOTICE ${zipDir}/${tmpDir}
 cp DISCLAIMER ${zipDir}/${tmpDir}
 cp KEYS ${zipDir}/${tmpDir}
@@ -68,6 +68,7 @@ rm -R ${tmpDir}/build 2> /dev/null
 
 # Adds some data for src zip.
 cd ../
+cp LICENSE ${zipDir}/${tmpDir}
 cp pom.xml ${zipDir}/${tmpDir}
 cp assembly.xml ${zipDir}/${tmpDir}
 cp README.md ${zipDir}/${tmpDir}
