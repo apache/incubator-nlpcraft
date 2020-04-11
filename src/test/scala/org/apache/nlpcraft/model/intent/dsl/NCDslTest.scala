@@ -15,46 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.dsl;
+package org.apache.nlpcraft.model.intent.dsl
 
-import org.apache.nlpcraft.common.NCException;
-import org.apache.nlpcraft.model.tools.test.NCTestClient;
-import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import java.io.IOException
 
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.apache.nlpcraft.common.NCException
+import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 /**
  * DSL test model test. Make sure to start up the NLPCraft server before running this test.
  */
 class NCDslTest {
-    private NCTestClient cli;
+    private var cli: NCTestClient = _
 
     @BeforeEach
-    void setUp() throws NCException, IOException {
+    @throws[NCException]
+    @throws[IOException]
+    private[dsl] def setUp(): Unit = {
         // Start embedded probe with the test model.
-        NCEmbeddedProbe.start(NCDslTestModel.class);
+        NCEmbeddedProbe.start(classOf[NCDslTestModel])
 
-        cli = new NCTestClientBuilder().newBuilder().build();
+        cli = new NCTestClientBuilder().newBuilder.build
 
-        cli.open("nlpcraft.dsl.test");
+        cli.open("nlpcraft.dsl.test")
     }
 
     @AfterEach
-    void tearDown() throws NCException, IOException {
+    @throws[NCException]
+    @throws[IOException]
+    private[dsl] def tearDown(): Unit = {
         if (cli != null)
-            cli.close();
-    
-        NCEmbeddedProbe.stop();
+            cli.close()
+
+        NCEmbeddedProbe.stop()
     }
 
     @Test
-    void test() throws NCException, IOException {
-        assertTrue(cli.ask("aa").isOk());
-    }
+    @throws[NCException]
+    @throws[IOException]
+    private[dsl] def test(): Unit = assertTrue(cli.ask("aa").isOk)
 }
