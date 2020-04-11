@@ -19,6 +19,7 @@
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
+[![Jenkins](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fbuilds.apache.org%2Fview%2FIncubator%2520Projects%2Fjob%2Fincubator-nlpcraft%2F)](https://builds.apache.org/view/Incubator%20Projects/job/incubator-nlpcraft/)
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
