@@ -145,21 +145,38 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             case 0 ⇒ throw new RuntimeException("Tables cannot be empty.")
             case 1 ⇒ ext
             case _ ⇒
-                // Simple algorithm, which takes into account only FKs between tables.
+                // The simple algorithm, which takes into account only FKs between tables.
+                @throws[GraphException]
+                def getPath(t1: NCSqlTable, t2: NCSqlTable): Seq[String] = {
+                    val path = PATHS.getShortestPath(Vertex(t1.getTable), Vertex(t2.getTable))
+
+                    Seq(path.getStart.asInstanceOf[Vertex].name, path.getEnd.asInstanceOf[Vertex].name)
+                }
+
                 val extra =
                     ext.sliding(2).flatMap(pair ⇒
-                        try {
-                            val path = PATHS.getShortestPath(Vertex(pair.head.getTable), Vertex(pair.last.getTable))
-
-                            Seq(path.getStart.asInstanceOf[Vertex].name, path.getEnd.asInstanceOf[Vertex].name)
-                        }
+                        try
+                            getPath(pair.head, pair.last)
                         catch {
-                            case _ : GraphException ⇒ Seq.empty
+                            case e1 : GraphException ⇒
+                                println("e1="+e1)
+
+                                try
+                                    getPath(pair.last, pair.head)
+                                catch {
+                                    case e2 : GraphException ⇒
+                                        println("e2="+e2)
+                                        Seq.empty
+                                }
                         }
                     ).toSeq.distinct
 
+                println("tabs="+tabs.map(_.getTable))
+                println("ext="+ext.map(_.getTable))
+                println("extra="+extra)
+
                 if (ext.exists(t ⇒ !extra.contains(t.getTable)))
-                    throw new RuntimeException(s"Select clause cannot be prepared with given tables set: ${ext.mkString(", ")}")
+                    throw new RuntimeException(s"Select clause cannot be prepared with given tables set: ${ext.map(_.getTable).mkString(", ")}")
 
                 extra.map(schemaTabsByNames)
         }
