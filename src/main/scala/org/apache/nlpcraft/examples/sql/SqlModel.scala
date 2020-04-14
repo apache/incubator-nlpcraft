@@ -80,23 +80,6 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         Condition(colTok, condTok)
     }
 
-//    private def findSchemaColumn(cols: Seq[NCSqlColumn], tab: String, col: String): NCSqlColumn =
-//        cols.find(_.getColumn == col).getOrElse(throw new IllegalArgumentException(s"Table not found: $tab.$col"))
-//
-//    private def getWithGroup(tok: NCToken, group: String): Seq[NCToken] =
-//        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(group)) Some(p) else None)
-
-//    private def findAnyTableTokenOpt(schema: NCSqlSchema, tok: NCToken): Option[NCSqlTable] = {
-//        val tabs = getWithGroup(tok, "table")
-//
-//        tabs.size match {
-//            case 1 ⇒ Some(findSchemaTable(schema, tabs.head.meta("sql:name")))
-//
-//            case 0 ⇒ None
-//            case _ ⇒ throw new IllegalArgumentException("Too many tables found")
-//        }
-//    }
-
     private def getWithGroup(tok: NCToken, group: String): Seq[NCToken] =
         (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(group)) Some(p) else None)
 
@@ -235,4 +218,12 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                 NCResult.json(toJson("Question cannot be answered, reformulate it"))
         }
     }
+
+    // TODO: it is not started.
+//    override def onMatchedIntent(m: NCIntentMatch): Boolean = {
+//        val convToks = m.getContext.getConversation.getTokens.asScala
+//        val varToks = m.getVariant.getMatchedTokens.asScala
+//
+//        super.onMatchedIntent(m)
+//    }
 }
