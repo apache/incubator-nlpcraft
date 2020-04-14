@@ -190,21 +190,18 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                     Seq(path.getStart.asInstanceOf[Vertex].name, path.getEnd.asInstanceOf[Vertex].name)
                 }
 
-                    ext.combinations(2).flatMap(pair ⇒
-                        try
-                            getPath(pair.head, pair.last)
-                        catch {
-                            case _ : GraphException ⇒
-                                try
-                                    getPath(pair.last, pair.head)
-                                catch {
-                                    case _ : GraphException ⇒ Seq.empty
-                                }
-                        }
-                    ).
-                        toSeq.
-                        distinct.
-                        map(schemaTabsByNames)
+                ext.combinations(2).flatMap(pair ⇒
+                    try
+                        getPath(pair.head, pair.last)
+                    catch {
+                        case _ : GraphException ⇒
+                            try
+                                getPath(pair.last, pair.head)
+                            catch {
+                                case _ : GraphException ⇒ Seq.empty
+                            }
+                    }
+                ).toSeq.distinct.map(schemaTabsByNames)
         }
     }
 
