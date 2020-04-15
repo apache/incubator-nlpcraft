@@ -53,7 +53,8 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     private def findColumnToken(tok: NCToken): NCToken = {
-        val cols = (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains("column")) Some(p) else None)
+        val cols = (Seq(tok) ++ tok.findPartTokens().asScala).
+            flatMap(p ⇒ if (p.getGroups.contains("column")) Some(p) else None)
         
         cols.size match {
             case 1 ⇒ cols.head
@@ -97,7 +98,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     private def findAnyColumnToken(tok: NCToken): NCToken =
         findAnyColumnTokenOpt(tok).getOrElse(throw new IllegalArgumentException(s"No columns found for token: $tok"))
 
-    def extractNumConditions(ext: NCSqlExtractor, colTok: NCToken, numTok: NCToken): Seq[SqlSimpleCondition] = {
+    private def extractNumConditions(ext: NCSqlExtractor, colTok: NCToken, numTok: NCToken): Seq[SqlSimpleCondition] = {
         val col = ext.extractColumn(colTok)
 
         val from: java.lang.Double = numTok.meta("nlpcraft:num:from")
@@ -219,11 +220,46 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         }
     }
 
-    // TODO: it is not started.
-//    override def onMatchedIntent(m: NCIntentMatch): Boolean = {
-//        val convToks = m.getContext.getConversation.getTokens.asScala
-//        val varToks = m.getVariant.getMatchedTokens.asScala
-//
-//        super.onMatchedIntent(m)
-//    }
+    override def onMatchedIntent(m: NCIntentMatch): Boolean = {
+        val toks = m.getVariant.getMatchedTokens.asScala
+        val newToks = toks -- m.getContext.getConversation.getTokens.asScala
+
+        println("toks=" + toks.map(_.origText))
+        println("conv=" + m.getContext.getConversation.getTokens.asScala.map(_.origText))
+        println("newToks=" + newToks.map(_.origText))
+
+        // Variant doesn't use conversation tokens.
+        if (newToks.length == toks.length)
+            true
+        else {
+            def isValue(t: NCToken): Boolean = findAnyColumnTokenOpt(t) match {
+                case Some(col) ⇒ col.getValue != null
+                case None ⇒ false
+            }
+            def isColumn(t: NCToken): Boolean = findAnyColumnTokenOpt(t).isDefined
+            def isDate(t: NCToken): Boolean = t.getId == "nlpcraft:date"
+
+            // Conversation supported if
+            // - all new tokens are values,
+            // - all new tokens are columns,
+            // - new single token is date.
+            // So, this example supports conversation for simple qualifying questions.
+            val suitable =
+                newToks.forall(isValue) ||
+                newToks.forall(isColumn) ||
+                newToks.size == 1 && isDate(toks.head)
+
+            if (!suitable) {
+                // TODO: drop it.
+                if (m.getContext.getVariants.size() == 1)
+                    throw new NCRejection("Question cannot be answered")
+
+                logger.info("Conversation reset")
+
+                m.getContext.getConversation.clearAllStm()
+            }
+
+            suitable
+        }
+    }
 }

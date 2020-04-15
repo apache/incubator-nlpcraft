@@ -52,7 +52,7 @@ object SqlServer extends App with LazyLogging {
 
     lazy final val H2_URL: String = s"jdbc:h2:tcp://localhost:$H2_PORT/nlp2sql"
 
-    private def go(): Unit = {
+    private def process(): Unit = {
         val srv = Server.createTcpServer(SRV_PARAMS:_*).start
 
         logger.info(s"H2 server start parameters: ${SRV_PARAMS.mkString(" ")}")
@@ -83,5 +83,5 @@ object SqlServer extends App with LazyLogging {
         Thread.currentThread().join()
     }
 
-    go()
+    process()
 }
