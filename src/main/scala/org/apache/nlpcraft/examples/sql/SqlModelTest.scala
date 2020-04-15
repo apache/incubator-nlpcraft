@@ -166,19 +166,15 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                   |  shippers.company_name,
                   |  shippers.phone
                   |FROM
-                  |  orders,
-                  |  customers,
-                  |  shippers,
-                  |  employees
-                  |WHERE
-                  |  orders.customer_id = customers.customer_id
-                  |  AND orders.ship_via = shippers.shipper_id
-                  |  AND orders.employee_id = employees.employee_id
+                  |  orders
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
                   |ORDER BY
                   |  orders.order_id DESC
                   |LIMIT
                   |  1000
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
@@ -236,64 +232,33 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 ),
                 """SELECT
                   |  orders.freight,
+                  |  orders.order_date,
+                  |  customers.customer_id,
+                  |  customers.company_name,
+                  |  customers.contact_name,
+                  |  employees.employee_id,
+                  |  employees.last_name,
+                  |  employees.first_name,
                   |  orders.order_id,
-                  |  orders.order_date
+                  |  orders.required_date,
+                  |  shippers.shipper_id,
+                  |  shippers.company_name,
+                  |  shippers.phone
                   |FROM
-                  |  orders,
-                  |  customers,
-                  |  shippers,
-                  |  employees
+                  |  orders
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
                   |WHERE
                   |  orders.freight > ?
                   |  AND orders.order_date >= ?
                   |  AND orders.order_date <= ?
-                  |  AND orders.customer_id = customers.customer_id
-                  |  AND orders.ship_via = shippers.shipper_id
-                  |  AND orders.employee_id = employees.employee_id
                   |ORDER BY
-                  |  orders.order_id ASC
+                  |  orders.order_id DESC
                   |LIMIT
                   |  1000
                 """.stripMargin
             ),
-            Case(
-                Seq("show me orders with max quantity group by product name"
-                ),
-                """SELECT
-                  |  products.product_name,
-                  |  max(order_details.quantity)
-                  |FROM
-                  |  orders,
-                  |  order_details,
-                  |  products
-                  |WHERE
-                  |  order_details.order_id = orders.order_id
-                  |  AND order_details.product_id = products.product_id
-                  |GROUP BY
-                  |  products.product_name
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "show me orders with max quantity group by product"
-                ),
-                """SELECT
-                  |  products.product_id,
-                  |  max(order_details.quantity)
-                  |FROM
-                  |  orders,
-                  |  products,
-                  |  order_details
-                  |WHERE
-                  |  order_details.order_id = orders.order_id
-                  |  AND order_details.product_id = products.product_id
-                  |GROUP BY
-                  |  products.product_id
-                  |LIMIT
-                  |  1000
-                """.stripMargin),
             Case(
                 Seq(
                     "territories data"
@@ -305,10 +270,8 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                   |  territories.territory_description,
                   |  territories.region_id
                   |FROM
-                  |  territories,
-                  |  region
-                  |WHERE
-                  |  territories.region_id = region.region_id
+                  |  territories
+                  |  INNER JOIN region ON territories.region_id = region.region_id
                   |ORDER BY
                   |  territories.territory_id DESC
                   |LIMIT
@@ -316,6 +279,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 """.stripMargin
             ),
             Case(
+                // TODO:
                 Seq(
                     "employees territories"
                 ),
@@ -347,6 +311,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 """.stripMargin
             ),
             Case(
+                // TODO:
                 Seq(
                     "10 suppliers"
                 ),
@@ -363,104 +328,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 """.stripMargin
             ),
             Case(
-                Seq(
-                    "orders group by employees")
-                ,
-                """SELECT
-                  |  employees.employee_id,
-                  |  count(orders.order_id)
-                  |FROM
-                  |  orders,
-                  |  employees
-                  |WHERE
-                  |  orders.employee_id = employees.employee_id
-                  |GROUP BY
-                  |  employees.employee_id
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "orders group by products"
-                ),
-                """SELECT
-                  |  products.product_id,
-                  |  count(orders.order_id)
-                  |FROM
-                  |  orders,
-                  |  products
-                  |GROUP BY
-                  |  products.product_id
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "show me orders count group by shipper company for last 3 months"
-                ),
-                """SELECT
-                  |  shippers.shipper_id,
-                  |  count(orders.order_id),
-                  |  count(orders.order_date)
-                  |FROM
-                  |  orders,
-                  |  shippers
-                  |WHERE
-                  |  orders.order_date >= ?
-                  |  AND orders.order_date <= ?
-                  |  AND orders.ship_via = shippers.shipper_id
-                  |GROUP BY
-                  |  shippers.shipper_id
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "give me average order freight"
-                ),
-                """SELECT
-                  |  avg(orders.freight)
-                  |FROM
-                  |  orders
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "give me average order freight, ship name"
-                ),
-                """SELECT
-                  |  orders.ship_name,
-                  |  avg(orders.freight)
-                  |FROM
-                  |  orders
-                  |GROUP BY
-                  |  orders.ship_name
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "give me average order freight group by ship region"
-                )
-                ,
-                """SELECT
-                  |  orders.ship_region,
-                  |  avg(orders.freight)
-                  |FROM
-                  |  orders
-                  |GROUP BY
-                  |  orders.ship_region
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
+                // TODO:
                 Seq(
                     "last year Exotic Liquids orders"
                 ),
@@ -513,64 +381,9 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
             ),
             Case(
                 Seq(
-                    "products grouped by categories"
-                ),
-                """SELECT
-                  |  categories.category_id,
-                  |  count(products.product_id)
-                  |FROM
-                  |  products,
-                  |  categories
-                  |WHERE
-                  |  products.category_id = categories.category_id
-                  |GROUP BY
-                  |  categories.category_id
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "products names grouped by categories"
-                ),
-                """SELECT
-                  |  categories.category_id,
-                  |  count(products.product_name)
-                  |FROM
-                  |  categories,
-                  |  products
-                  |WHERE
-                  |  products.category_id = categories.category_id
-                  |GROUP BY
-                  |  categories.category_id
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ),
-            Case(
-                Seq(
-                    "max orders discount grouped by product"
-                ),
-                """SELECT
-                  |  products.product_id,
-                  |  max(order_details.discount)
-                  |FROM
-                  |  products,
-                  |  order_details
-                  |WHERE
-                  |  order_details.product_id = products.product_id
-                  |GROUP BY
-                  |  products.product_id
-                  |LIMIT
-                  |  1000
-                """.stripMargin
-            ) ,
-            Case(
-                Seq(
                     "give me the orders sorted by ship date"
                 ),
-                """
-                  |SELECT
+                """SELECT
                   |  orders.shipped_date,
                   |  customers.customer_id,
                   |  customers.company_name,
@@ -585,16 +398,12 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                   |  shippers.company_name,
                   |  shippers.phone
                   |FROM
-                  |  orders,
-                  |  customers,
-                  |  shippers,
-                  |  employees
-                  |WHERE
-                  |  orders.customer_id = customers.customer_id
-                  |  AND orders.ship_via = shippers.shipper_id
-                  |  AND orders.employee_id = employees.employee_id
+                  |  orders
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
                   |ORDER BY
-                  |  orders.shipped_date ASC
+                  |  orders.order_id DESC
                   |LIMIT
                   |  1000
                   |""".stripMargin
