@@ -77,7 +77,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @return
       */
     private def getWithGroup(tok: NCToken, grp: String): Seq[NCToken] =
-        Seq(tok) ++ tok.findPartTokens().asScala.flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
+        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
     
     /**
       *
@@ -181,7 +181,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
      * @return
      */
     private def getAsc(tok: NCToken, metaName: String, dflt: Boolean): Boolean = {
-        val ascOpt: Option[Boolean] = tok.meta(metaName)
+        val ascOpt: Option[Boolean] = tok.metaOpt(metaName).asScala
 
         ascOpt.getOrElse(dflt)
     }

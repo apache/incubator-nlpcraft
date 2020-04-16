@@ -311,7 +311,6 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 """.stripMargin
             ),
             Case(
-                // TODO:
                 Seq(
                     "10 suppliers"
                 ),

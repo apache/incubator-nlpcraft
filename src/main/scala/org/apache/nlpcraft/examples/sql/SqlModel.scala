@@ -89,8 +89,8 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
         cols.size match {
             case 1 ⇒ Some(cols.head)
-
             case 0 ⇒ None
+
             case _ ⇒ throw new IllegalArgumentException(s"Too many columns found for token: $tok")
         }
     }
@@ -222,14 +222,10 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
     override def onMatchedIntent(m: NCIntentMatch): Boolean = {
         val toks = m.getVariant.getMatchedTokens.asScala
-        val newToks = toks -- m.getContext.getConversation.getTokens.asScala
-
-        println("toks=" + toks.map(_.origText))
-        println("conv=" + m.getContext.getConversation.getTokens.asScala.map(_.origText))
-        println("newToks=" + newToks.map(_.origText))
+        val intentConvToks = m.getIntentTokens.asScala.flatMap(_.asScala) -- toks
 
         // Variant doesn't use conversation tokens.
-        if (newToks.length == toks.length)
+        if (intentConvToks.isEmpty)
             true
         else {
             def isValue(t: NCToken): Boolean = findAnyColumnTokenOpt(t) match {
@@ -244,22 +240,15 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             // - all new tokens are columns,
             // - new single token is date.
             // So, this example supports conversation for simple qualifying questions.
-            val suitable =
-                newToks.forall(isValue) ||
-                newToks.forall(isColumn) ||
-                newToks.size == 1 && isDate(toks.head)
+            val ok = toks.forall(isValue) || toks.forall(isColumn) || toks.size == 1 && isDate(toks.head)
 
-            if (!suitable) {
-                // TODO: drop it.
-                if (m.getContext.getVariants.size() == 1)
-                    throw new NCRejection("Question cannot be answered")
-
-                logger.info("Conversation reset")
-
+            if (!ok) {
                 m.getContext.getConversation.clearAllStm()
+
+                logger.info("Conversation reset, try without conversation.")
             }
 
-            suitable
+            ok
         }
     }
 }
