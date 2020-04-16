@@ -236,7 +236,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             if (!ok) {
                 m.getContext.getConversation.clearAllStm()
 
-                logger.info("Conversation reset, try without conversation.")
+                logger.info("Conversation reset, trying without conversation.")
             }
 
             ok
