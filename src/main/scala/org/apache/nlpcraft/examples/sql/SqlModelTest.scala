@@ -26,7 +26,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.fliptables.FlipTable
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
-import org.scalatest.{BeforeAndAfterAll, FlatSpec}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
@@ -34,7 +34,7 @@ import scala.compat.java8.OptionConverters._
 /**
   *
   */
-class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
+class SqlModelTest {
     private val GSON = new Gson
     private val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
     private val NORM = Seq("\n", "\r", "\t")
@@ -54,6 +54,18 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
 
     case class Case(texts: Seq[String], sql: String)
 
+    @BeforeEach
+    def setUp(): Unit = {
+        client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
+    
+        client.open("sql.model.id")
+    }
+
+    @AfterEach
+    def tearDown(): Unit =
+        if (client != null)
+            client.close()
+
     private def normalize(s: String): String =
         NORM.
             foldLeft(s) { (res, s) ⇒ res.replaceAll(s, " ") }.
@@ -63,17 +75,7 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
             mkString(" ")
 
     private def toPretty(s: String): util.List[String] = SqlFormatter.format(s).split("\n").toSeq.asJava
-    
-    override protected def beforeAll(): Unit = {
-        client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
-    
-        client.open("sql.model.id")
-    }
-    
-    override protected def afterAll(): Unit =
-        if (client != null)
-            client.close()
-    
+
     private def check(multiLineOut: Boolean, cases: Case*): Unit = {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
         
@@ -143,7 +145,8 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
             println("Passed")
     }
 
-    it should "work fine" in {
+    @Test
+    def test() {
         check(
             true,
             Case(
@@ -279,30 +282,25 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 """.stripMargin
             ),
             Case(
-                // TODO:
                 Seq(
                     "employees territories"
                 ),
                 """SELECT
-                  |  employee_territories.employee_id,
-                  |  employee_territories.territory_id,
                   |  employees.employee_id,
                   |  employees.last_name,
                   |  employees.first_name,
-                  |  region.region_id,
-                  |  region.region_description,
                   |  territories.territory_id,
                   |  territories.territory_description,
-                  |  territories.region_id
+                  |  territories.region_id,
+                  |  employee_territories.employee_id,
+                  |  employee_territories.territory_id,
+                  |  region.region_id,
+                  |  region.region_description
                   |FROM
-                  |  employee_territories,
-                  |  employees,
-                  |  territories,
-                  |  region
-                  |WHERE
-                  |  employee_territories.employee_id = employees.employee_id
-                  |  AND employee_territories.territory_id = territories.territory_id
-                  |  AND territories.region_id = region.region_id
+                  |  employee_territories
+                  |  INNER JOIN employees ON employee_territories.employee_id = employees.employee_id
+                  |  INNER JOIN territories ON employee_territories.territory_id = territories.territory_id
+                  |  INNER JOIN region ON territories.region_id = region.region_id
                   |ORDER BY
                   |  employees.employee_id DESC,
                   |  territories.territory_id DESC
@@ -327,13 +325,16 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                 """.stripMargin
             ),
             Case(
-                // TODO:
                 Seq(
                     "last year Exotic Liquids orders"
                 ),
                 """SELECT
                   |  suppliers.company_name,
                   |  orders.order_date,
+                  |  orders.order_id,
+                  |  orders.required_date,
+                  |  suppliers.supplier_id,
+                  |  suppliers.contact_name,
                   |  customers.customer_id,
                   |  customers.company_name,
                   |  customers.contact_name,
@@ -343,34 +344,24 @@ class SqlModelTest extends FlatSpec with BeforeAndAfterAll {
                   |  order_details.unit_price,
                   |  order_details.quantity,
                   |  order_details.discount,
-                  |  orders.order_id,
-                  |  orders.required_date,
                   |  products.product_id,
                   |  products.product_name,
                   |  products.quantity_per_unit,
                   |  shippers.shipper_id,
                   |  shippers.company_name,
-                  |  shippers.phone,
-                  |  suppliers.supplier_id,
-                  |  suppliers.contact_name
+                  |  shippers.phone
                   |FROM
-                  |  order_details,
-                  |  orders,
-                  |  products,
-                  |  suppliers,
-                  |  customers,
-                  |  shippers,
-                  |  employees
+                  |  order_details
+                  |  INNER JOIN orders ON order_details.order_id = orders.order_id
+                  |  INNER JOIN products ON order_details.product_id = products.product_id
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |  LEFT JOIN suppliers ON products.supplier_id = suppliers.supplier_id
                   |WHERE
                   |  suppliers.company_name IN (?)
                   |  AND orders.order_date >= ?
                   |  AND orders.order_date <= ?
-                  |  AND order_details.order_id = orders.order_id
-                  |  AND order_details.product_id = products.product_id
-                  |  AND orders.customer_id = customers.customer_id
-                  |  AND orders.ship_via = shippers.shipper_id
-                  |  AND orders.employee_id = employees.employee_id
-                  |  AND products.supplier_id = suppliers.supplier_id
                   |ORDER BY
                   |  orders.order_id DESC,
                   |  suppliers.supplier_id DESC

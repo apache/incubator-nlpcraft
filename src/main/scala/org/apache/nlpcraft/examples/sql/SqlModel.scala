@@ -52,17 +52,9 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         GSON.toJson(m)
     }
     
-    private def findColumnToken(tok: NCToken): NCToken = {
-        val cols = (Seq(tok) ++ tok.findPartTokens().asScala).
-            flatMap(p ⇒ if (p.getGroups.contains("column")) Some(p) else None)
-        
-        cols.size match {
-            case 1 ⇒ cols.head
-            case 0 ⇒ throw new Exception(s"No columns found for token: $tok")
-            case _ ⇒ throw new Exception("Too many columns found for token: $tok")
-        }
-    }
-    
+    private def findColumnToken(tok: NCToken): NCToken =
+        findAnyColumnTokenOpt(tok).getOrElse(throw new RuntimeException(s"No columns found for token: $tok"))
+
     /**
       * Complex element contains 2 tokens: column + date ot numeric condition.
       *
@@ -81,22 +73,21 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         Condition(colTok, condTok)
     }
 
-    private def getWithGroup(tok: NCToken, group: String): Seq[NCToken] =
-        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(group)) Some(p) else None)
-
     private def findAnyColumnTokenOpt(tok: NCToken): Option[NCToken] = {
-        val cols = getWithGroup(tok, "column")
+        val cols =
+            (Seq(tok) ++ tok.findPartTokens().asScala).
+                flatMap(p ⇒ if (p.getGroups.contains("column")) Some(p) else None)
 
         cols.size match {
             case 1 ⇒ Some(cols.head)
             case 0 ⇒ None
 
-            case _ ⇒ throw new IllegalArgumentException(s"Too many columns found for token: $tok")
+            case _ ⇒ throw new RuntimeException(s"Too many columns found for token: $tok")
         }
     }
 
     private def findAnyColumnToken(tok: NCToken): NCToken =
-        findAnyColumnTokenOpt(tok).getOrElse(throw new IllegalArgumentException(s"No columns found for token: $tok"))
+        findAnyColumnTokenOpt(tok).getOrElse(throw new RuntimeException(s"No columns found for token: $tok"))
 
     private def extractNumConditions(ext: NCSqlExtractor, colTok: NCToken, numTok: NCToken): Seq[SqlSimpleCondition] = {
         val col = ext.extractColumn(colTok)
@@ -146,8 +137,8 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                 valToks.size match {
                     case 1 ⇒ valToks.head
 
-                    case 0 ⇒ throw new IllegalStateException(s"Values column not found for token: $tok")
-                    case _ ⇒ throw new IllegalStateException(s"Too many values columns found token: $tok")
+                    case 0 ⇒ throw new RuntimeException(s"Values column not found for token: $tok")
+                    case _ ⇒ throw new RuntimeException(s"Too many values columns found token: $tok")
                 }
 
             ext.extractColumn(valTok) → valTok.getValue
@@ -208,7 +199,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                     withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
                     build()
 
-            NCResult.json(toJson(SqlAccess.select(query, true), query.sql, query.parameters))
+            NCResult.json(toJson(SqlAccess.select(query, logResult = true), query.sql, query.parameters))
         }
         catch {
             case e: Exception ⇒

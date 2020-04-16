@@ -82,6 +82,7 @@
         <commons-lang3.ver>3.9</commons-lang3.ver>
         <commons.validator.ver>1.6</commons.validator.ver>
         <apache.commons.text.ver>1.7</apache.commons.text.ver>
+        <jgrapht.ver>1.4.0</jgrapht.ver>
         <jsoup.ver>1.12.1</jsoup.ver>
         <slf4j.ver>1.7.26</slf4j.ver>
         <scala.logging.ver>3.9.2</scala.logging.ver>
@@ -110,7 +111,6 @@
         <jackson.yaml.ver>2.10.1</jackson.yaml.ver>
         <apache.math.ver>3.6.1</apache.math.ver>
         <apache.common.lang.ver>3.8.1</apache.common.lang.ver>
-        <apache.common.graph.ver>0.8.1</apache.common.graph.ver>
         <apache.httpcomponents.ver>4.5.7</apache.httpcomponents.ver>
         <apache.opennlp.ver>1.9.1</apache.opennlp.ver>
         <maven.javadoc.plugin.ver>3.0.0-M1</maven.javadoc.plugin.ver>
@@ -218,6 +218,12 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>${org.antlr4.ver}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>${jgrapht.ver}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
@@ -248,12 +254,6 @@
             <artifactId>opennlp-tools</artifactId>
             <version>${apache.opennlp.ver}</version>
         </dependency>
-        <dependency>
-            <groupId>commons-graph</groupId>
-            <artifactId>commons-graph</artifactId>
-            <version>${apache.common.graph.ver}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
