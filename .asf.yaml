@@ -19,6 +19,8 @@
 github:
   description: "Apache NLPCraft - API to convert natural language into actions."
   homepage: https://nlpcraft.apache.org/
+  ghp_branch: master
+  ghp_path: /docs
   enabled_merge_buttons:
     squash: true
     merge: true
@@ -45,8 +47,3 @@ staging:
 
 publish:
   whoami: web-site
-  
-jekyll:
-  whoami: web-staging
-  target: web-staging
-  outputdir: content
