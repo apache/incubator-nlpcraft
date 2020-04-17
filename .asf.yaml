@@ -31,3 +31,6 @@ github:
     - "scala"
     - "nlp"
     - "apache"
+staging:
+  profile: ~
+  whoami:  web-staging
