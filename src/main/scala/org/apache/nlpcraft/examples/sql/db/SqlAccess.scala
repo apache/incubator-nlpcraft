@@ -75,7 +75,7 @@ object SqlAccess extends LazyLogging {
                         var data = rows.take(LOG_ROWS).toArray.map(_.toArray)
 
                         if (rows.nonEmpty && rows.size > LOG_ROWS)
-                            data = data ++  Array(cols.indices.map(_ ⇒ "...").toArray)
+                            data = data ++ Array(cols.indices.map(_ ⇒ "...").toArray)
 
                         logger.info(s"\n${FlipTable.of(cols.toArray, data)}")
                     }
@@ -90,9 +90,9 @@ object SqlAccess extends LazyLogging {
 
                 logger.warn(
                     s"Query executed unsuccessful [sql=" +
-                    s"\n${SqlFormatter.format(qry.sql)}" +
-                    s"\nparameters=${qry.parameters.mkString(", ")}" +
-                    s"\n]"
+                        s"\n${SqlFormatter.format(qry.sql)}" +
+                        s"\nparameters=${qry.parameters.mkString(", ")}" +
+                        s"\n]"
                 )
 
                 throw e

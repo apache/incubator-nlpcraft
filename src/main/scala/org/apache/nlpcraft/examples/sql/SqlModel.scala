@@ -154,7 +154,6 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         "term(condVals)={id == 'condition:value'}[0,7] " +
         "term(condDates)={id == 'condition:date'}[0,7] " +
         "term(condFreeDate)={id == 'nlpcraft:date'}? " +
-         // The simplified version of aggregation wih single function column and one optional group by column.
         "term(sort)={id == 'nlpcraft:sort'}? " +
         "term(limit)={id == 'nlpcraft:limit'}?"
     )

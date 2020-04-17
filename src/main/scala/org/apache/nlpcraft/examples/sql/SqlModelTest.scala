@@ -146,6 +146,63 @@ class SqlModelTest {
     }
 
     @Test
+    def testConversation(): Unit = {
+        check(
+            true,
+            Case(
+                Seq(
+                    "last year Exotic Liquids orders",
+                    // Second and third sentences are the qualifying questions for first.
+                    // Second by date, third by value.
+                    // See logic implemented in org.apache.nlpcraft.examples.sql.SqlModel.onMatchedIntent
+                    "last month",
+                    "Norske Meierier"
+                ),
+                """SELECT
+                  |  suppliers.company_name,
+                  |  orders.order_date,
+                  |  orders.order_id,
+                  |  orders.required_date,
+                  |  suppliers.supplier_id,
+                  |  suppliers.contact_name,
+                  |  customers.customer_id,
+                  |  customers.company_name,
+                  |  customers.contact_name,
+                  |  employees.employee_id,
+                  |  employees.last_name,
+                  |  employees.first_name,
+                  |  order_details.unit_price,
+                  |  order_details.quantity,
+                  |  order_details.discount,
+                  |  products.product_id,
+                  |  products.product_name,
+                  |  products.quantity_per_unit,
+                  |  shippers.shipper_id,
+                  |  shippers.company_name,
+                  |  shippers.phone
+                  |FROM
+                  |  order_details
+                  |  INNER JOIN orders ON order_details.order_id = orders.order_id
+                  |  INNER JOIN products ON order_details.product_id = products.product_id
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |  LEFT JOIN suppliers ON products.supplier_id = suppliers.supplier_id
+                  |WHERE
+                  |  suppliers.company_name IN (?)
+                  |  AND orders.order_date >= ?
+                  |  AND orders.order_date <= ?
+                  |ORDER BY
+                  |  orders.order_id DESC,
+                  |  suppliers.supplier_id DESC
+                  |LIMIT
+                  |  1000
+                      """.stripMargin
+            )
+        )
+    }
+
+    @Test
     def test() {
         check(
             true,

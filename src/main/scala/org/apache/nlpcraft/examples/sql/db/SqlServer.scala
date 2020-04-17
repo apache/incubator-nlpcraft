@@ -39,7 +39,7 @@ import org.h2.tools.Server
  *  This utility added just for convenience. You can start via h2 jars files - http://www.h2database.com/html/main.html
  * and install data with northwind.sql before using this example.
  */
-object SqlServer extends App with LazyLogging {
+object SqlServer extends LazyLogging {
     private lazy final val H2_PORT: Int = 9092
     private lazy final val H2_BASEDIR = "~/nlpcraft-examples/h2"
 
@@ -52,36 +52,63 @@ object SqlServer extends App with LazyLogging {
 
     lazy final val H2_URL: String = s"jdbc:h2:tcp://localhost:$H2_PORT/nlp2sql"
 
-    private def process(): Unit = {
-        val srv = Server.createTcpServer(SRV_PARAMS:_*).start
+    private final val mux = new Object()
 
-        logger.info(s"H2 server start parameters: ${SRV_PARAMS.mkString(" ")}")
-        logger.info(s"H2 server status: ${srv.getStatus}")
+    @volatile private var srv: Server = _
+    @volatile private var started: Boolean = false
 
-        val ds = new JdbcDataSource()
+    def start(): Unit =
+        mux.synchronized {
+            if (started)
+                throw new IllegalStateException("Server already started")
 
-        ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '${new File(INIT_FILE).getAbsolutePath}'")
+            srv = Server.createTcpServer(SRV_PARAMS:_*).start
 
-        try {
-            ds.getConnection
+            logger.info(s"H2 server start parameters: ${SRV_PARAMS.mkString(" ")}")
+            logger.info(s"H2 server status: ${srv.getStatus}")
 
-            logger.info(s"Database schema initialized for: $H2_URL")
-        }
-        catch {
-            case e: SQLException ⇒
-                // https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
-                if (e.getErrorCode == 42101)
+            val ds = new JdbcDataSource()
+
+            ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '${new File(INIT_FILE).getAbsolutePath}'")
+
+            try {
+                ds.getConnection
+
+                logger.info(s"Database schema initialized for: $H2_URL")
+            }
+            catch {
+                case e: SQLException ⇒
+                    // https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
+                    if (e.getErrorCode != 42101)
+                        throw e
+
                     logger.info(
                         s"Database '$H2_URL' is NOT initialized because data already exists. " +
-                            s"To re-initialize - delete files in '$H2_BASEDIR' folder and start again. "
+                        s"To re-initialize - delete files in '$H2_BASEDIR' folder and start again. "
                     )
-                else
-                    throw e
+            }
+
+            started = true
+
+            while (started) {
+                mux.wait()
+            }
         }
 
-        // Wait indefinitely.
-        Thread.currentThread().join()
-    }
+    def stop(): Unit =
+        mux.synchronized {
+            if (!started)
+                throw new IllegalStateException("Server already stopped")
 
-    process()
+            started = false
+
+            mux.notifyAll()
+        }
+}
+
+/**
+  * TODO:
+  */
+object SqlServerRunner extends App {
+    SqlServer.start()
 }

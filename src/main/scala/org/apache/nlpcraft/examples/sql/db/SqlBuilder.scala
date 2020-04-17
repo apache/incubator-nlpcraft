@@ -55,7 +55,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         schemaTabs.flatMap(p ⇒ p.getColumns.asScala.map(col ⇒ Key(col.getTable, col.getColumn) → col)).toMap
     private val schemaJoins = schema.getJoins.asScala
 
-    private val PATH = {
+    private val schemaPaths = {
         val g = new SimpleGraph[String, Edge](classOf[Edge])
 
         schemaTabs.foreach(t ⇒ g.addVertex(t.getTable))
@@ -174,7 +174,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                 // The simple algorithm, which takes into account only FKs between tables.
                 val extra =
                     ext.combinations(2).flatMap(pair ⇒
-                        PATH.getPath(pair.head.getTable, pair.last.getTable) match {
+                        schemaPaths.getPath(pair.head.getTable, pair.last.getTable) match {
                             case null ⇒ Seq.empty
                             case list ⇒ list.getEdgeList.asScala.flatMap(e ⇒ Seq(e.from, e.to))
                         }
@@ -304,7 +304,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
         colsNorm.foreach(col ⇒ tabsNorm += schemaTabsByNames(col.getTable))
         condsNorm.foreach(cond ⇒ { tabsNorm += schemaTabsByNames(cond.column.getTable); colsNorm += cond.column })
-        sortsNorm.foreach(sort ⇒ {tabsNorm += schemaTabsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
+        sortsNorm.foreach(sort ⇒ { tabsNorm += schemaTabsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
 
         val freeDateColOpt = findDateColumn(tabsNorm)
 

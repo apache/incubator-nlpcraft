@@ -194,7 +194,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     override def extractLimit(limitTok: NCToken): NCSqlLimit = {
         checkTokenId(limitTok, "nlpcraft:limit")
         
-        val links = getLinks(variant, limitTok, "indexes", "note", false)
+        val links = getLinks(variant, limitTok, "indexes", "note", canBeEmpty = false)
 
         links.size match {
             case 1 ⇒
@@ -203,7 +203,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                 NCSqlLimitImpl(
                     findColumn(links.head, "LIMIT"),
                     limit.intValue(),
-                    getAsc(limitTok, "nlpcraft:limit:asc", false)
+                    getAsc(limitTok, "nlpcraft:limit:asc", dflt = false)
                 )
             case n ⇒ throw new NCException(s"Unexpected LIMIT links count: $n")
         }
@@ -217,13 +217,13 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     override def extractSort(sortTok: NCToken): util.List[NCSqlSort] = {
         checkTokenId(sortTok, "nlpcraft:sort")
 
-        val tables = getLinks(variant, sortTok, "subjindexes", "subjnotes", false).
+        val tables = getLinks(variant, sortTok, "subjindexes", "subjnotes", canBeEmpty = false).
             map(link ⇒ findTable(link, "SORT"))
 
-        val cols = getLinks(variant, sortTok, "byindexes", "bynotes", true).
+        val cols = getLinks(variant, sortTok, "byindexes", "bynotes", canBeEmpty = true).
             map(link ⇒ findColumn(link, "SORT BY"))
 
-        val asc = getAsc(sortTok, "nlpcraft:sort:asc", false)
+        val asc = getAsc(sortTok, "nlpcraft:sort:asc", dflt = false)
 
         require(tables.nonEmpty)
 

@@ -37,7 +37,7 @@ class SqlValueLoader extends NCValueLoader with LazyLogging {
         val tab: String = e.metax("sql:tablename")
         val col: String = e.metax("sql:name")
 
-        SqlAccess.select(SqlQuery(s"SELECT $col FROM $tab WHERE $col IS NOT NULL", Seq.empty), false).
+        SqlAccess.select(SqlQuery(s"SELECT $col FROM $tab WHERE $col IS NOT NULL", Seq.empty), logResult = false).
             rows.
             map(_.head).
             map(_.toString.trim).
