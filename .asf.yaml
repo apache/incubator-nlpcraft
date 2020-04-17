@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# Metadata.
 github:
   description: "Apache NLPCraft - API to convert natural language into actions."
   homepage: https://nlpcraft.apache.org/
@@ -32,7 +33,20 @@ github:
     - "nlp"
     - "apache"
 
+# PR whitelist.
+jenkins:
+  github_whitelist:
+    - aradzinski
+
 # Website staging and publishing.
 staging:
   profile: ~
-  whoami:  web-staging
+  whoami: web-staging
+
+publish:
+  whoami: web-site
+  
+jekyll:
+  whoami: web-staging
+  target: web-site
+  outputdir: content
