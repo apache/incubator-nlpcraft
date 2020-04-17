@@ -570,12 +570,15 @@
                     <rules>
                         <requireJavaVersion>
                             <message>
-                                [INFO] ------------------------------------------------------------------------
-                                [ERROR] You are trying to compile NLPCraft with inappropriate JDK version!
-                                [ERROR] Detected JDK Version: ${java.runtime.version}
-                                [ERROR] JDK version should be &gt;= 1.8.0_1.
+
+------------------------------------------------------------------------
+You are trying to compile NLPCraft with inappropriate JDK version!
+Detected JDK Version: ${java.runtime.version}
+JDK version should be 1.8
+------------------------------------------------------------------------
+
                             </message>
-                            <version>[1.8.0,)</version>
+                            <version>[1.8,1.9)</version>
                         </requireJavaVersion>
                     </rules>
                 </configuration>
@@ -808,24 +811,24 @@
                         <version>${apache.rat.plugin.ver}</version>
                         <configuration>
                             <excludes>
-                                <exclude>docs/**/*</exclude>
-                                <exclude>zips/**/*</exclude>
-                                <exclude>LICENSE</exclude>
-                                <exclude>KEYS</exclude>
-                                <exclude>DISCLAIMER</exclude>
-                                <exclude>NOTICE</exclude>
                                 <exclude>.gitignore</exclude>
                                 <exclude>.travis.yml</exclude>
                                 <exclude>build</exclude>
                                 <exclude>.idea</exclude>
                                 <exclude>venv</exclude>
                                 <exclude>*.iml</exclude>
-                                <exclude>**/*.html</exclude>
                                 <exclude>**/*.txt</exclude>
-                                <exclude>**/*.json</exclude>
-                                <exclude>docs/**/*</exclude>
+                                <exclude>src/main/resources/geo/countries/*.json</exclude>
                                 <exclude>idea/**/*</exclude>
+                                <exclude>docs/_site/**/*</exclude>
+                                <exclude>docs/ext/**/*</exclude>
+                                <exclude>docs/images/**/*</exclude>
+                                <exclude>docs/.sass-cache/**/*</exclude>
+                                <exclude>docs/apis/**/*</exclude>
+                                <exclude>zips/**/*</exclude>
+                                <exclude>docs/fonts/**/*</exclude>
                                 <exclude>javadoc/**/*</exclude>
+                                <exclude>src/main/resources/**/*.json</exclude>
                                 <exclude>src/main/resources/moby/*</exclude>
                                 <exclude>src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/*</exclude>
                                 <exclude>src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4/*</exclude>

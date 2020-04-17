@@ -28,7 +28,7 @@ localUser=223A2AADD175994F4450467491D161EDD8405C82
 
 zipDir=zips
 tmpDir=apache-nlpcraft
-zipFileBin=apache-nlpcraft-incubating-bin-$1.zip # NOT an officual ASF release.
+zipFileBin=apache-nlpcraft-incubating-bin-$1.zip # NOT an official ASF release.
 zipFileSrc=apache-nlpcraft-incubating-$1.zip # An OFFICIAL ASF release.
 
 curDir=$(pwd)
@@ -51,7 +51,6 @@ rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 cp bindist/LICENSE ${zipDir}/${tmpDir}
 cp NOTICE ${zipDir}/${tmpDir}
 cp DISCLAIMER ${zipDir}/${tmpDir}
-cp KEYS ${zipDir}/${tmpDir}
 cp src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
 cp src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
 cp src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
@@ -65,6 +64,7 @@ zip -rq ${zipFileBin} ${tmpDir} 2> /dev/null
 
 # Deletes some data for src zip
 rm -R ${tmpDir}/build 2> /dev/null
+rm -R ${tmpDir}/javadoc 2> /dev/null
 
 # Adds some data for src zip.
 cd ../
