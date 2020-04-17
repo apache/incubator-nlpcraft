@@ -31,6 +31,8 @@ github:
     - "scala"
     - "nlp"
     - "apache"
+
+# Website staging and publishing.
 staging:
   profile: ~
   whoami:  web-staging
