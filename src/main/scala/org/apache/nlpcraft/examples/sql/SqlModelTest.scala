@@ -49,7 +49,7 @@ class SqlModelTest {
                 override def apply(t: java.lang.Boolean): String = "**"
             }).
             build
-    
+
     private var client: NCTestClient = _
 
     case class Case(texts: Seq[String], sql: String)
@@ -57,7 +57,7 @@ class SqlModelTest {
     @BeforeEach
     def setUp(): Unit = {
         client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
-    
+
         client.open("sql.model.id")
     }
 
@@ -78,48 +78,48 @@ class SqlModelTest {
 
     private def check(multiLineOut: Boolean, cases: Case*): Unit = {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
-        
+
         cases.
             flatMap(c ⇒ {
                 val sql = normalize(c.sql)
-                
+
                 c.texts.map(t ⇒ t → sql)
             }).
             foreach {
                 case (txt, expSqlNorm) ⇒
                     val res = client.ask(txt)
-    
+
                     if (res.isOk) {
                         require(res.getResult.asScala.isDefined)
-    
+
                         val m: util.Map[String, Object] = GSON.fromJson(res.getResult.get, TYPE_RESP)
-    
+
                         val err = m.get("error")
-    
+
                         if (err != null)
                             errs += txt → err.toString
                         else {
                             val resSqlNorm = normalize(m.asScala("sql").asInstanceOf[String])
-    
+
                             if (resSqlNorm != expSqlNorm) {
                                 if (multiLineOut) {
                                     val rows = DIFF.generateDiffRows(toPretty(expSqlNorm), toPretty(resSqlNorm)).asScala
-    
+
                                     val table =
                                         FlipTable.of(
                                             Array("Expected", "Real"),
                                             rows.map(p ⇒ Array(p.getOldLine, p.getNewLine)).toArray
                                         )
-    
+
                                     errs += txt → s"Unexpected SQL:\n$table"
                                 }
                                 else {
                                     val rows = DIFF.generateDiffRows(Seq(expSqlNorm).asJava, Seq(resSqlNorm).asJava).asScala
-    
+
                                     require(rows.size == 1)
-    
+
                                     val row = rows.head
-    
+
                                     errs += txt →
                                         s"""Unexpected SQL (expected vs real)
                                            |${row.getOldLine}
@@ -131,13 +131,13 @@ class SqlModelTest {
                     }
                     else {
                         require(res.getResultError.isPresent)
-    
+
                         errs += txt → res.getResultError.get
                     }
             }
 
         if (errs.nonEmpty) {
-            errs.foreach { case (txt, err) ⇒ println(s"Text: $txt\nError: $err\n")}
+            errs.foreach { case (txt, err) ⇒ println(s"Text: $txt\nError: $err\n") }
 
             throw new Exception(s"Test finished with errors [passed=${cases.size - errs.size}, failed=${errs.size}]")
         }
@@ -157,14 +157,14 @@ class SqlModelTest {
                 ),
                 """SELECT
                   |  orders.order_date,
+                  |  orders.order_id,
+                  |  orders.required_date,
                   |  customers.customer_id,
                   |  customers.company_name,
                   |  customers.contact_name,
                   |  employees.employee_id,
                   |  employees.last_name,
                   |  employees.first_name,
-                  |  orders.order_id,
-                  |  orders.required_date,
                   |  shippers.shipper_id,
                   |  shippers.company_name,
                   |  shippers.phone
@@ -185,33 +185,30 @@ class SqlModelTest {
                 ),
                 """SELECT
                   |  orders.order_date,
+                  |  orders.order_id,
+                  |  orders.required_date,
                   |  customers.customer_id,
                   |  customers.company_name,
                   |  customers.contact_name,
                   |  employees.employee_id,
                   |  employees.last_name,
                   |  employees.first_name,
-                  |  orders.order_id,
-                  |  orders.required_date,
                   |  shippers.shipper_id,
                   |  shippers.company_name,
                   |  shippers.phone
                   |FROM
-                  |  orders,
-                  |  customers,
-                  |  shippers,
-                  |  employees
+                  |  orders
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
                   |WHERE
                   |  orders.order_date >= ?
                   |  AND orders.order_date <= ?
-                  |  AND orders.customer_id = customers.customer_id
-                  |  AND orders.ship_via = shippers.shipper_id
-                  |  AND orders.employee_id = employees.employee_id
                   |ORDER BY
                   |  orders.order_id DESC
                   |LIMIT
                   |  1000
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
@@ -227,7 +224,7 @@ class SqlModelTest {
                   |  shippers.shipper_id DESC
                   |LIMIT
                   |  1000
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
@@ -236,14 +233,14 @@ class SqlModelTest {
                 """SELECT
                   |  orders.freight,
                   |  orders.order_date,
+                  |  orders.order_id,
+                  |  orders.required_date,
                   |  customers.customer_id,
                   |  customers.company_name,
                   |  customers.contact_name,
                   |  employees.employee_id,
                   |  employees.last_name,
                   |  employees.first_name,
-                  |  orders.order_id,
-                  |  orders.required_date,
                   |  shippers.shipper_id,
                   |  shippers.company_name,
                   |  shippers.phone
@@ -260,18 +257,18 @@ class SqlModelTest {
                   |  orders.order_id DESC
                   |LIMIT
                   |  1000
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
                     "territories data"
                 ),
                 """SELECT
-                  |  region.region_id,
-                  |  region.region_description,
                   |  territories.territory_id,
                   |  territories.territory_description,
-                  |  territories.region_id
+                  |  territories.region_id,
+                  |  region.region_id,
+                  |  region.region_description
                   |FROM
                   |  territories
                   |  INNER JOIN region ON territories.region_id = region.region_id
@@ -279,7 +276,7 @@ class SqlModelTest {
                   |  territories.territory_id DESC
                   |LIMIT
                   |  1000
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
@@ -306,7 +303,7 @@ class SqlModelTest {
                   |  territories.territory_id DESC
                   |LIMIT
                   |  1000
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
@@ -322,7 +319,7 @@ class SqlModelTest {
                   |  suppliers.supplier_id DESC
                   |LIMIT
                   |  10
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
@@ -367,7 +364,7 @@ class SqlModelTest {
                   |  suppliers.supplier_id DESC
                   |LIMIT
                   |  1000
-                """.stripMargin
+                  """.stripMargin
             ),
             Case(
                 Seq(
@@ -375,15 +372,15 @@ class SqlModelTest {
                 ),
                 """SELECT
                   |  orders.shipped_date,
+                  |  orders.order_id,
+                  |  orders.order_date,
+                  |  orders.required_date,
                   |  customers.customer_id,
                   |  customers.company_name,
                   |  customers.contact_name,
                   |  employees.employee_id,
                   |  employees.last_name,
                   |  employees.first_name,
-                  |  orders.order_id,
-                  |  orders.order_date,
-                  |  orders.required_date,
                   |  shippers.shipper_id,
                   |  shippers.company_name,
                   |  shippers.phone
@@ -396,7 +393,7 @@ class SqlModelTest {
                   |  orders.order_id DESC
                   |LIMIT
                   |  1000
-                  |""".stripMargin
+                  """.stripMargin
             )
         )
     }

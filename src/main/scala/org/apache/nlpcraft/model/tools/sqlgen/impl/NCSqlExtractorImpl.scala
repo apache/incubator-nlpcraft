@@ -203,7 +203,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
                 NCSqlLimitImpl(
                     findColumn(links.head, "LIMIT"),
                     limit.intValue(),
-                    getAsc(limitTok, "nlpcraft:limit:asc", true)
+                    getAsc(limitTok, "nlpcraft:limit:asc", false)
                 )
             case n ⇒ throw new NCException(s"Unexpected LIMIT links count: $n")
         }
@@ -223,7 +223,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         val cols = getLinks(variant, sortTok, "byindexes", "bynotes", true).
             map(link ⇒ findColumn(link, "SORT BY"))
 
-        val asc = getAsc(sortTok, "nlpcraft:sort:asc", true)
+        val asc = getAsc(sortTok, "nlpcraft:sort:asc", false)
 
         require(tables.nonEmpty)
 
