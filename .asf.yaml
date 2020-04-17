@@ -48,5 +48,5 @@ publish:
   
 jekyll:
   whoami: web-staging
-  target: web-site
+  target: web-staging
   outputdir: content
