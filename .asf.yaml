@@ -38,11 +38,3 @@ jenkins:
   github_whitelist:
     - aradzinski
 
-# Website staging and publishing.
-staging:
-  profile: ~
-  whoami: web-staging
-
-publish:
-  whoami: web-site
-
