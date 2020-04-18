@@ -46,6 +46,3 @@ staging:
 publish:
   whoami: web-site
 
-jekyll:
-  whoami: web-staging
-  target: web-staging
