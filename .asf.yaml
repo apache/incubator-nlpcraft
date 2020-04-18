@@ -15,11 +15,10 @@
 # limitations under the License.
 #
 
+# Metadata.
 github:
   description: "Apache NLPCraft - API to convert natural language into actions."
-  homepage: https://nlpcraft.org/
-  ghp_branch: master
-  ghp_path: /docs
+  homepage: https://nlpcraft.apache.org/
   enabled_merge_buttons:
     squash: true
     merge: true
@@ -33,4 +32,9 @@ github:
     - "scala"
     - "nlp"
     - "apache"
-    -
+
+# PR whitelist.
+jenkins:
+  github_whitelist:
+    - aradzinski
+

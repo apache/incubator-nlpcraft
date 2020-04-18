@@ -1,7 +1,0 @@
-org.apache.nlpcraft.model
-org.apache.nlpcraft.model.factories.basic
-org.apache.nlpcraft.model.factories.spring
-org.apache.nlpcraft.model.opencensus
-org.apache.nlpcraft.model.tools.sqlgen
-org.apache.nlpcraft.model.tools.test
-org.apache.nlpcraft.probe.embedded
