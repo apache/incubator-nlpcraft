@@ -105,7 +105,8 @@ public interface NCModel extends NCModelView, NCLifecycle {
      *      the model (like soft-reset conversation or change metadata) and force the re-evaluation of the parsing
      *      variants against all declared intents. Note that user logic should be careful not to induce infinite loop in
      *      this behavior.
-     * @throws NCRejection This callback can throw this rejection exception to abort user request processing.
+     * @throws NCRejection This callback can throw the rejection exception to abort user request processing. In this
+     *      case the {@link #onRejection(NCIntentMatch, NCRejection)} callback will be called next.
      */
     default boolean onMatchedIntent(NCIntentMatch ctx) throws NCRejection {
         return true;
