@@ -61,7 +61,10 @@ object NCSortEnricher extends NCProbeEnricher {
         ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
     }
 
-    private val STEM_AND = NCNlpCoreManager.stem("and")
+    private final val STEM_AND = NCNlpCoreManager.stem("and")
+
+    private final val MASK_WORDS =
+        (SORT ++ BY ++ ORDER.map(_._1)).flatMap(_.split(" ")).map(_.trim).filter(_.nonEmpty).distinct
 
     private final val TOK_ID = "nlpcraft:sort"
 
@@ -140,6 +143,9 @@ object NCSortEnricher extends NCProbeEnricher {
         require(SORT.intersect(BY).isEmpty)
         require(SORT.intersect(ORDER.map(_._1)).isEmpty)
         require(BY.intersect(ORDER.map(_._1)).isEmpty)
+
+        // `Sort by` as one element.
+        require(MASKS.filter(_._2 == TYPE_BY).keys.forall(_.contains("SORT BY")))
 
         val ordersSeq: Seq[Seq[String]] = ORDER.map(_._1).map(_.split(" ").toSeq)
 
@@ -239,9 +245,6 @@ object NCSortEnricher extends NCProbeEnricher {
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
         case class KeyWord(tokens: Seq[NCNlpSentenceToken], synonymIndex: Int) {
             require(tokens.nonEmpty)
-
-            // Added for debug reasons.
-            override def toString = s"${tokens.map(_.origText).mkString(" ")} [${tokens.map(_.index).mkString(",")}]"
         }
 
         def extract(
@@ -266,21 +269,21 @@ object NCSortEnricher extends NCProbeEnricher {
 
         var res: Option[Match] = None
 
-        // SORT and ORDER don't have same words (validated.)
-        val subjOpt = extract(SORT, toks)
+        // Order is important.
+        // SORT and ORDER don't have same words (validated)
         val orderOpt = extract(ORDER.map(_._1), toks)
+        val byOpt = extract(BY, toks, used = orderOpt.toSeq.flatMap(_.tokens))
+        val sortOpt = extract(SORT, toks, used = orderOpt.toSeq.flatMap(_.tokens) ++ byOpt.toSeq.flatMap(_.tokens))
 
-        if (subjOpt.nonEmpty || orderOpt.nonEmpty) {
-            val byOpt = extract(BY, toks, used = subjOpt.toSeq.flatMap(_.tokens) ++ orderOpt.toSeq.flatMap(_.tokens))
-
-            val subjToks = subjOpt.toSeq.flatMap(_.tokens)
+        if (sortOpt.nonEmpty || orderOpt.nonEmpty) {
+            val sortToks = sortOpt.toSeq.flatMap(_.tokens)
             val byToks = byOpt.toSeq.flatMap(_.tokens)
             val orderToks = orderOpt.toSeq.flatMap(_.tokens)
 
-            val all = subjToks ++ byToks ++ orderToks
+            val all = sortToks ++ byToks ++ orderToks
 
             def getKeyWordType(t: NCNlpSentenceToken): Option[String] =
-                if (subjToks.contains(t))
+                if (sortToks.contains(t))
                     Some("SORT")
                 else if (byToks.contains(t))
                     Some("BY")
@@ -296,7 +299,8 @@ object NCSortEnricher extends NCProbeEnricher {
 
                 if (
                     othersRefs.nonEmpty &&
-                    others.filter(p ⇒ !othersRefs.contains(p)).forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
+                    others.filter(p ⇒ !othersRefs.contains(p)).
+                        forall(p ⇒ (p.isStopWord || p.stem == STEM_AND) && !MASK_WORDS.contains(p.stem))
                 ) {
                     // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
                     val mask = toks.map(t ⇒
@@ -319,19 +323,19 @@ object NCSortEnricher extends NCProbeEnricher {
 
                             require(part1.nonEmpty)
 
-                            val noteData1 = toNoteData(part1)
-                            val noteData2 = if (part2.isEmpty) Seq.empty else toNoteData(part2)
+                            val data1 = toNoteData(part1)
+                            val data2 = if (part2.isEmpty) Seq.empty else toNoteData(part2)
 
-                            if (noteData1.nonEmpty || noteData2.nonEmpty) {
-                                val seq1 = split(part1, noteData1, nullable = false)
-                                val seq2 = if (part2.isEmpty) Seq.empty else split(part2, noteData2, nullable = true)
+                            if (data1.nonEmpty || data2.nonEmpty) {
+                                val seq1 = split(part1, data1, nullable = false)
+                                val seq2 = if (data2.isEmpty) Seq.empty else split(part2, data2, nullable = true)
                                 val asc = orderOpt.flatMap(order ⇒ Some(ORDER(order.synonymIndex)._2))
 
                                 typ match {
                                     case TYPE_SUBJ ⇒
                                         require(seq1.nonEmpty)
                                         require(seq2.isEmpty)
-                                        require(subjToks.nonEmpty)
+                                        require(sortToks.nonEmpty)
 
                                         // Ignores invalid cases.
                                         if (byToks.isEmpty)
@@ -339,7 +343,7 @@ object NCSortEnricher extends NCProbeEnricher {
                                                 Some(
                                                     Match(
                                                         asc = asc,
-                                                        main = subjToks,
+                                                        main = sortToks,
                                                         stop = orderToks,
                                                         subjSeq = seq1,
                                                         bySeq = Seq.empty
@@ -349,33 +353,35 @@ object NCSortEnricher extends NCProbeEnricher {
                                     case TYPE_SUBJ_BY ⇒
                                         require(seq1.nonEmpty)
                                         require(seq2.nonEmpty)
-                                        require(subjToks.nonEmpty)
+                                        require(sortToks.nonEmpty)
                                         require(byToks.nonEmpty)
 
-                                        Match(
-                                            asc = asc,
-                                            main = subjToks,
-                                            stop = byToks ++ orderToks,
-                                            subjSeq = seq1,
-                                            bySeq = seq2
+                                        res = Some(
+                                            Match(
+                                                asc = asc,
+                                                main = sortToks,
+                                                stop = byToks ++ orderToks,
+                                                subjSeq = seq1,
+                                                bySeq = seq2
+                                            )
                                         )
 
                                     case TYPE_BY ⇒
                                         require(seq1.nonEmpty)
                                         require(seq2.isEmpty)
+                                        require(sortToks.nonEmpty)
                                         require(byToks.nonEmpty)
 
-                                        // Ignores invalid cases.
-                                        if (subjToks.isEmpty)
-                                            res = Some(
-                                                Match(
-                                                    asc = asc,
-                                                    main = byToks,
-                                                    stop = byToks ++ orderToks,
-                                                    subjSeq = Seq.empty,
-                                                    bySeq = seq1
-                                                )
+                                        // `Sort by` as one element, see validation.
+                                        res = Some(
+                                            Match(
+                                                asc = asc,
+                                                main = sortToks ++ byToks,
+                                                stop = orderToks,
+                                                subjSeq = Seq.empty,
+                                                bySeq = seq1
                                             )
+                                        )
 
                                     case _ ⇒ throw new AssertionError(s"Unexpected type: $typ")
                                 }

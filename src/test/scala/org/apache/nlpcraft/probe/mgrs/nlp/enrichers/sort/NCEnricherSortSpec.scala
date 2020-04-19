@@ -98,18 +98,37 @@ class NCEnricherSortSpec extends NCEnricherBaseSpec {
                 nlp(text = "by top down", isStop = true)
             ),
             _ ⇒ checkExists(
-                "segment A by in bottom up order",
+                "segment A in bottom up order",
                 srt(text = "segment", subjNote = "A", subjIndex = 1, asc = true),
                 usr(text = "A", id = "A"),
-                nlp(text = "by in bottom up order", isStop = true)
+                nlp(text = "in bottom up order", isStop = true)
+            ),
+            // `by` is redundant word here
+            _ ⇒ checkExists(
+                "segment A by in bottom up order",
+                srt(text = "segment", subjNote = "A", subjIndex = 1),
+                usr(text = "A", id = "A"),
+                nlp(text = "by"),
+                nlp(text = "in"),
+                nlp(text = "bottom"),
+                nlp(text = "up"),
+                nlp(text = "order")
             ),
             _ ⇒ checkExists(
-                "the segment the A the by in bottom up the order the",
+                "the segment the A the in bottom up the order the",
                 nlp(text = "the", isStop = true),
                 srt(text = "segment", subjNote = "A", subjIndex = 3, asc = true),
                 nlp(text = "the", isStop = true),
                 usr(text = "A", id = "A"),
-                nlp(text = "the by in bottom up the order the", isStop = true)
+                nlp(text = "the in bottom up the order the", isStop = true)
+            ),
+            _ ⇒ checkExists(
+                "the segment the A the by bottom up the order the",
+                nlp(text = "the", isStop = true),
+                srt(text = "segment", subjNote = "A", subjIndex = 3, asc = true),
+                nlp(text = "the", isStop = true),
+                usr(text = "A", id = "A"),
+                nlp(text = "the by bottom up the order the", isStop = true)
             ),
             _ ⇒ checkExists(
                 "A classify",
