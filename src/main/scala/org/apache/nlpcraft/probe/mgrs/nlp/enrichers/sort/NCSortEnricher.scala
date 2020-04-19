@@ -405,43 +405,54 @@ object NCSortEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (subj ← m.subjSeq) {
-                            def addNotes(
-                                params: ArrayBuffer[(String, Any)],
-                                seq: Seq[NoteData],
-                                notesName: String,
-                                idxsName: String
-                            ): ArrayBuffer[(String, Any)] = {
-                                params += notesName → seq.map(_.note).asJava
-                                params += idxsName → seq.map(_.indexes.asJava).asJava
+                        def addNotes(
+                            params: ArrayBuffer[(String, Any)],
+                            seq: Seq[NoteData],
+                            notesName: String,
+                            idxsName: String
+                        ): ArrayBuffer[(String, Any)] = {
+                            params += notesName → seq.map(_.note).asJava
+                            params += idxsName → seq.map(_.indexes.asJava).asJava
 
-                                params
-                            }
-
-                            def mkParams(): ArrayBuffer[(String, Any)] = {
-                                val params = mutable.ArrayBuffer.empty[(String, Any)]
-
-                                if (m.asc.isDefined)
-                                    params += "asc" → m.asc.get
-
-                                addNotes(params, subj, "subjnotes", "subjindexes")
-                            }
-
-                            def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
-                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
-
-                                m.main.foreach(_.add(note))
-                                m.stop.foreach(_.addStopReason(note))
-
-                                buf += toks.toSet
-                            }
-
-                            if (m.bySeq.nonEmpty)
-                                for (by ← m.bySeq)
-                                    mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
-                            else
-                                mkNote(mkParams())
+                            params
                         }
+
+                        def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
+                            val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
+
+                            m.main.foreach(_.add(note))
+                            m.stop.foreach(_.addStopReason(note))
+
+                            buf += toks.toSet
+                        }
+
+                        def mkParams(): mutable.ArrayBuffer[(String, Any)] = {
+                            val params = mutable.ArrayBuffer.empty[(String, Any)]
+
+                            if (m.asc.isDefined)
+                                params += "asc" → m.asc.get
+
+                            params
+                        }
+
+                        if (m.subjSeq.nonEmpty)
+                            for (subj ← m.subjSeq) {
+                                def addSubj(): ArrayBuffer[(String, Any)] =
+                                    addNotes(mkParams(), subj, "subjnotes", "subjindexes")
+
+                                if (m.bySeq.nonEmpty)
+                                    for (by ← m.bySeq)
+                                        mkNote(addNotes(addSubj(), by, "bynotes", "byindexes"))
+                                else
+                                    mkNote(addSubj())
+                            }
+                        else {
+                            require(m.bySeq.nonEmpty)
+
+                            for (by ← m.bySeq)
+                                mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
+                        }
+
                     case None ⇒ // No-op.
                 }
         }

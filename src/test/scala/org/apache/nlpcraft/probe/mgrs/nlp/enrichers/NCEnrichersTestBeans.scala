@@ -120,17 +120,16 @@ case class NCTestMetroToken(text: String, metro: String) extends NCTestToken {
 // Probe enrichers.
 case class NCTestSortToken(
     text: String,
-    subjNotes: Seq[String],
-    subjIndexes: Seq[Int],
+    subjNotes: Option[Seq[String]] = None,
+    subjIndexes: Option[Seq[Int]] = None,
     byNotes: Option[Seq[String]] = None,
     byIndexes: Option[Seq[Int]] = None,
     asc: Option[Boolean] = None
 ) extends NCTestToken {
     require(text != null)
     require(subjNotes != null)
-    require(subjNotes.nonEmpty)
-    require(subjIndexes != null)
-    require(subjIndexes.nonEmpty)
+    require(subjNotes.nonEmpty || byNotes.nonEmpty)
+    require(subjIndexes.nonEmpty || byIndexes.nonEmpty)
     require(byNotes != null)
     require(byNotes.isEmpty || byNotes.get.nonEmpty)
     require(byIndexes != null)
@@ -139,14 +138,20 @@ case class NCTestSortToken(
 
     override def id: String = "nlpcraft:sort"
     override def toString: String = {
-        var s = s"$text(sort)" +
-            s"<subjNotes=[${subjNotes.mkString(",")}]" +
-            s", subjIndexes=[${subjIndexes.mkString(",")}]"
+        var s = ""
 
-        if (byNotes.isDefined)
+        if (subjNotes.isDefined)
             s = s"$s" +
+                s", subjNotes=[${subjNotes.get.mkString(",")}]" +
+                s", subjIndexes=[${subjIndexes.get.mkString(",")}]"
+
+        if (byNotes.isDefined) {
+            val sBy = s"$s" +
                 s", byNotes=[${byNotes.get.mkString(",")}]" +
                 s", byIndexes=[${byIndexes.get.mkString(",")}]"
+
+            s = if (s.nonEmpty) s"$s, $sBy" else sBy
+        }
 
         if (asc.isDefined)
             s = s"$s, asc=${asc.get}"
@@ -158,41 +163,64 @@ case class NCTestSortToken(
 }
 
 object NCTestSortToken {
-    def apply(
-        text: String,
-        subjNotes: Seq[String],
-        subjIndexes: Seq[Int],
-        asc: Boolean
-    ): NCTestSortToken = new NCTestSortToken(text, subjNotes, subjIndexes, None, None, Some(asc))
+    private def cStr(seq: Seq[String]): Option[Seq[String]] = if (seq.isEmpty) None else Some(seq)
+    private def cInt(seq: Seq[Int]): Option[Seq[Int]] = if (seq.isEmpty) None else Some(seq)
 
-    def apply(
-        text: String,
-        subjNote: String,
-        subjIndex: Int,
-        asc: Boolean
-    ): NCTestSortToken = new NCTestSortToken(text, Seq(subjNote), Seq(subjIndex), None, None, Some(asc))
+//    def apply(
+//        text: String,
+//        subjNotes: Seq[String] = Seq.empty,
+//        subjIndexes: Seq[Int] = Seq.empty,
+//        byNotes: Seq[String] = Seq.empty,
+//        byIndexes: Seq[Int] = Seq.empty,
+//        asc: Boolean
+//    ): NCTestSortToken =
+//        new NCTestSortToken(text, cStr(subjNotes), cInt(subjIndexes), cStr(byNotes), cInt(byIndexes), Some(asc))
+//
+//    def apply(
+//        text: String,
+//        subjNotes: Seq[String] = Seq.empty,
+//        subjIndexes: Seq[Int] = Seq.empty,
+//        byNotes: Seq[String] = Seq.empty,
+//        byIndexes: Seq[Int] = Seq.empty,
+//        asc: Option[Boolean] = None
+//    ): NCTestSortToken =
+//        new NCTestSortToken(text, cStr(subjNotes), cInt(subjIndexes), cStr(byNotes), cInt(byIndexes), asc)
 
-    def apply(
-        text: String,
-        subjNote: String,
-        subjIndex: Int
-    ): NCTestSortToken = new NCTestSortToken(text, Seq(subjNote), Seq(subjIndex), None, None, None)
+//    def apply(
+//        text: String,
+//        subjNotes: Option[Seq[String]] = None,
+//        subjIndexes: Option[Seq[Int]] = None,
+//        byNotes: Option[Seq[String]] = None,
+//        byIndexes: Option[Seq[Int]] = None,
+//        asc: Boolean
+//    ): NCTestSortToken = new NCTestSortToken(text, subjNotes, subjIndexes, byNotes, byIndexes, Some(asc))
 
-    def apply(
-        text: String,
-        subjNotes: Seq[String],
-        subjIndexes: Seq[Int],
-        byNotes: Seq[String],
-        byIndexes: Seq[Int]
-    ): NCTestSortToken = new NCTestSortToken(text, subjNotes, subjIndexes, Some(byNotes), Some(byIndexes), None)
+//    def apply(
+//        text: String,
+//        subjNote: String,
+//        subjIndex: Int,
+//        byNotes: Option[Seq[String]] = None,
+//        byIndexes: Option[Seq[Int]] = None,
+//        asc: Boolean
+//    ): NCTestSortToken = new NCTestSortToken(text, Some(Seq(subjNote)), Some(Seq(subjIndex)), byNotes, byIndexes, Some(asc))
+
+//    def apply(
+//        text: String,
+//        subjNote: String,
+//        subjIndex: Int,
+//        byNotes: Option[Seq[String]] = None,
+//        byIndexes: Option[Seq[Int]] = None,
+//        asc: Option[Boolean] = None
+//    ): NCTestSortToken = new NCTestSortToken(text, Some(Seq(subjNote)), Some(Seq(subjIndex)), byNotes, byIndexes, asc)
 
     def apply(
         text: String,
         subjNote: String,
         subjIndex: Int,
         byNote: String,
-        byIndex: Int): NCTestSortToken =
-        new NCTestSortToken(text, Seq(subjNote), Seq(subjIndex), Some(Seq(byNote)), Some(Seq(byIndex)), None)
+        byIndex: Int
+    ): NCTestSortToken =
+        new NCTestSortToken(text, Some(Seq(subjNote)), Some(Seq(subjIndex)), Some(Seq(byNote)), Some(Seq(byIndex)), None)
 
     def apply(
         text: String,
@@ -200,8 +228,9 @@ object NCTestSortToken {
         subjIndex: Int,
         byNote: String,
         byIndex: Int,
-        asc: Boolean): NCTestSortToken =
-        new NCTestSortToken(text, Seq(subjNote), Seq(subjIndex), Some(Seq(byNote)), Some(Seq(byIndex)), Some(asc))
+        asc: Boolean
+    ): NCTestSortToken =
+        new NCTestSortToken(text, Some(Seq(subjNote)), Some(Seq(subjIndex)), Some(Seq(byNote)), Some(Seq(byIndex)), Some(asc))
 }
 
 case class NCTestRelationToken(text: String, `type`: String, indexes: Seq[Int], note: String) extends NCTestToken {
@@ -296,8 +325,8 @@ object NCTestToken {
             case "nlpcraft:continent" ⇒ NCTestContinentToken(txt, continent = t.meta("nlpcraft:continent:continent"))
             case "nlpcraft:metro" ⇒ NCTestMetroToken(txt, metro = t.meta("nlpcraft:metro:metro"))
             case "nlpcraft:sort" ⇒
-                val subjNotes: java.util.List[String] = t.meta("nlpcraft:sort:subjnotes")
-                val subjIndexes: java.util.List[Int] = t.meta("nlpcraft:sort:subjindexes")
+                val subjNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:subjnotes")
+                val subjIndexes: Optional[java.util.List[Int]] = t.metaOpt("nlpcraft:sort:subjindexes")
                 val byNotes: Optional[java.util.List[String]] = t.metaOpt("nlpcraft:sort:bynotes")
                 val byIndexes: Optional[java.util.List[Int]] = t.metaOpt("nlpcraft:sort:byindexes")
                 val asc: Optional[Boolean] = t.metaOpt("nlpcraft:sort:asc")
@@ -308,7 +337,7 @@ object NCTestToken {
                         case None ⇒ None
                     }
 
-                NCTestSortToken(txt, subjNotes.asScala, subjIndexes.asScala, toOpt(byNotes), toOpt(byIndexes), asc.asScala)
+                NCTestSortToken(txt, toOpt(subjNotes), toOpt(subjIndexes), toOpt(byNotes), toOpt(byIndexes), asc.asScala)
             case "nlpcraft:relation" ⇒
                 val indexes: java.util.List[Int] = t.meta("nlpcraft:relation:indexes")
 
