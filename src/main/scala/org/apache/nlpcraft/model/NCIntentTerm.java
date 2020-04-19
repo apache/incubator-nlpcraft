@@ -30,7 +30,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * method parameters to get the tokens associated with that term (if and when the intent was matched and that
  * callback was invoked).
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.org/intent-matching.html">Intent Matching</a> section and review
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCIntent

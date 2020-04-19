@@ -21,7 +21,7 @@ package org.apache.nlpcraft.model;
  * Adapter for data models. In most cases new data models should extend either this adapter or
  * {@link NCModelFileAdapter}.
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.org/data-model.html">Data Model</a> section and review
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCModelFileAdapter

@@ -218,7 +218,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                     Some(fileName)
                     
                 case None ⇒
-                    Some("nlpcraft.conf") // Default to 'nlpcraft.org'.
+                    Some("nlpcraft.conf") // Default to 'nlpcraft.conf'.
             },
             None, // No defaults.
             (cfg: Config) ⇒ cfg.hasPath("nlpcraft.server")

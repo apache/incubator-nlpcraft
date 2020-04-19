@@ -25,14 +25,14 @@ import java.util.*;
  * token corresponds to a one or more words, sequential or not, in the user sentence.
  * <p>
  * <b>Configuring Token Providers</b><br>
- * Token providers (built-in or 3rd party) have to be enabled in the REST server <a href="https://nlpcraft.org/server-and-probe.html">configuration</a>.
+ * Token providers (built-in or 3rd party) have to be enabled in the REST server <a href="https://nlpcraft.apache.org/server-and-probe.html">configuration</a>.
  * Data models also have to specify tokens they are expecting the REST server and probe to detect. This is done to
  * limit the unnecessary processing since implicit enabling of all token providers and all tokens can lead to a
- * significant slow down of processing. REST server <a href="https://nlpcraft.org/server-and-probe.html">configuration</a>
+ * significant slow down of processing. REST server <a href="https://nlpcraft.apache.org/server-and-probe.html">configuration</a>
  * property <code>nlpcraft.server.tokenProvides</code> provides the list of enabled token providers.
  * Data models provide their required tokens in {@link NCModel#getEnabledBuiltInTokens()} method.
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.org/data-model.html">Data Model</a> section and review
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCElement

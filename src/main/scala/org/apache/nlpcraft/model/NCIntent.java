@@ -26,7 +26,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  * Annotation to define an intent on the method serving as its callback. This annotation takes a string value
  * that defines an intent via intent DSL.
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.org/intent-matching.html">Intent Matching</a> section and review
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCIntentRef

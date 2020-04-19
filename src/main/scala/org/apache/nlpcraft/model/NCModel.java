@@ -37,7 +37,7 @@ package org.apache.nlpcraft.model;
  * build tools, CI/SCM tools, IDEs, etc. You don't have to resort to additional web-based tools to manage some aspects of
  * your data models - your entire model and all of its components are part of your project's source code.
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.org/data-model.html">Data Model</a> section and review
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCModelAdapter

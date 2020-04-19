@@ -36,7 +36,7 @@ import java.util.stream.*;
  * To support this usage all getters return internal mutable sets or maps, i.e. you can modify them in your sub-class
  * constructors and those modifications will alter the model's configuration.
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.org/data-model.html">Data Model</a> section and review
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCModelAdapter

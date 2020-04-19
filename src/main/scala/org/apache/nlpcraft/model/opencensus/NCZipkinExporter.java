@@ -30,7 +30,7 @@ import org.apache.nlpcraft.model.*;
  * for demo and development purposes. For production use you need to override {@link NCBaseTraceExporter#setSampling()}
  * method to provide a more efficient sampling strategy.
  * <p>
- * See <a target=_ href="https://nlpcraft.org/server-and-probe.html">documentation</a> on how to configure probe life cycle
+ * See <a target=_ href="https://nlpcraft.apache.org/server-and-probe.html">documentation</a> on how to configure probe life cycle
  * components, default values, etc.
  */
 public class NCZipkinExporter extends NCBaseTraceExporter {

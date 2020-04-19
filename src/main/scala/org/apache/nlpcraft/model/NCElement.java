@@ -28,7 +28,7 @@ import java.util.*;
  * a real-world object, such as persons, locations, number, date and time, organizations, products, etc.
  * Such object can be abstract or have a physical existence.
  * <p>
- * Read full documentation in <a target=_ href="https://nlpcraft.org/data-model.html">Data Model</a> section and review
+ * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCCustomParser
@@ -269,7 +269,7 @@ public interface NCElement extends NCMetadata, Serializable {
 
     /**
      * Gets the list of synonyms by which this semantic element will be recognized by. Read more about
-     * many different forms of synonyms in <a target=_ href="https://nlpcraft.org/data-model.html">Data Model</a> section
+     * many different forms of synonyms in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section
      * and review <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
      * <p>
      * <b>JSON</b>

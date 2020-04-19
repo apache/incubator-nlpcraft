@@ -31,7 +31,7 @@
         <developer>
             <id>aradzinski</id>
             <name>Aaron Radzinski</name>
-            <email>aradzinski@nlpcraft.org</email>
+            <email>aradzinski@apache.org</email>
             <organization>apache</organization>
             <organizationUrl>http://apache.org</organizationUrl>
             <roles>
@@ -681,7 +681,7 @@ JDK version should be 1.8
                     </footer>
                     <doctitle>
                         <![CDATA[
-                            <img style="margin-top: 15px" src="https://nlpcraft.org/images/nlpcraft_logo_darkblue.png" height="54px">
+                            <img style="margin-top: 15px" src="https://nlpcraft.apache.org/images/nlpcraft_logo_darkblue.png" height="54px">
                         ]]>
                     </doctitle>
                     <windowtitle>Apache NLPCraft ${project.version}</windowtitle>
