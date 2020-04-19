@@ -30,7 +30,7 @@ package org.apache.nlpcraft.model;
  * Generally, a data model defines:
  * <ul>
  *     <li>Set of model {@link NCElement elements} (a.k.a. named entities) to be detected in the user input.</li>
- *     <li>Zero or more intent callbacks.</li>
+ *     <li>Zero or more <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">intent</a> callbacks.</li>
  *     <li>Common model configuration and life-cycle callbacks.</li>
  * </ul>
  * Note that model-as-a-code approach natively supports any software life cycle tools and frameworks like various
