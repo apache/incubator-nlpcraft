@@ -283,15 +283,17 @@ object NCSortEnricher extends NCProbeEnricher {
 
             val all = sortToks ++ byToks ++ orderToks
 
-            def getKeyWordType(t: NCNlpSentenceToken): Option[String] =
+            def getKeyWordType(t: NCNlpSentenceToken): String =
                 if (sortToks.contains(t))
-                    Some("SORT")
+                    "SORT"
                 else if (byToks.contains(t))
-                    Some("BY")
+                    "BY"
                 else if (orderToks.contains(t))
-                    Some("ORDER")
+                    "ORDER"
+                else if (t.isUser)
+                    "x"
                 else
-                    None
+                    "-"
 
             val others = toks.filter(t ⇒ !all.contains(t))
 
@@ -304,8 +306,7 @@ object NCSortEnricher extends NCProbeEnricher {
                         forall(p ⇒ (p.isStopWord || p.stem == STEM_AND) && !MASK_WORDS.contains(p.stem))
                 ) {
                     // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
-                    val mask = toks.map(t ⇒
-                        getKeyWordType(t).getOrElse("x")).
+                    val mask = toks.map(getKeyWordType).
                         foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
 
                     MASKS.get(mask) match {
@@ -328,8 +329,16 @@ object NCSortEnricher extends NCProbeEnricher {
                             val data2 = if (part2.isEmpty) Seq.empty else toNoteData(part2)
 
                             if (data1.nonEmpty || data2.nonEmpty) {
-                                val seq1 = split(part1, data1, nullable = false)
-                                val seq2 = if (data2.isEmpty) Seq.empty else split(part2, data2, nullable = true)
+                                val seq1 =
+                                    if (data1.nonEmpty)
+                                        split(part1, data1, nullable = false)
+                                    else
+                                        split(part2, data2, nullable = false)
+                                val seq2 =
+                                    if (data1.nonEmpty && data2.nonEmpty)
+                                        split(part2, data2, nullable = true)
+                                    else
+                                        Seq.empty
                                 val asc = orderOpt.flatMap(order ⇒ Some(ORDER(order.synonymIndex)._2))
 
                                 typ match {

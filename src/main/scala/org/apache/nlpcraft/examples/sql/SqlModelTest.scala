@@ -25,7 +25,9 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.fliptables.FlipTable
+import org.apache.nlpcraft.examples.sql.db.SqlServer
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 import scala.collection.JavaConverters._
@@ -56,15 +58,24 @@ class SqlModelTest {
 
     @BeforeEach
     def setUp(): Unit = {
+        SqlServer.start()
+
+        NCEmbeddedProbe.start(classOf[SqlModel])
+
         client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
 
         client.open("sql.model.id")
     }
 
     @AfterEach
-    def tearDown(): Unit =
+    def tearDown(): Unit = {
         if (client != null)
             client.close()
+
+        NCEmbeddedProbe.stop()
+
+        SqlServer.stop()
+    }
 
     private def normalize(s: String): String =
         NORM.

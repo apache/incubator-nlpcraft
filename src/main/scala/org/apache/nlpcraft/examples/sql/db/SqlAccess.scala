@@ -17,16 +17,17 @@
 
 package org.apache.nlpcraft.examples.sql.db
 
-import java.sql.{Connection, SQLException}
+import java.sql.{Connection, PreparedStatement, SQLException}
 
 import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.jakewharton.fliptables.FlipTable
 import com.typesafe.scalalogging.LazyLogging
+import org.h2.jdbc.JdbcSQLException
 import org.h2.jdbcx.JdbcDataSource
 import resource.managed
 
 /**
-  * Database access service, single thread implementation.
+  * H2 Database access service, single thread implementation.
   */
 object SqlAccess extends LazyLogging {
     private final val LOG_ROWS = 10
@@ -34,17 +35,35 @@ object SqlAccess extends LazyLogging {
     private var conn: Connection = _
 
     def select(qry: SqlQuery, logResult: Boolean): SqlResult = {
-        if (conn == null)
-            conn = {
-                val ds = new JdbcDataSource
+        def getConnection: Connection = {
+            val ds = new JdbcDataSource
 
-                ds.setUrl(SqlServer.H2_URL)
+            ds.setUrl(SqlServer.H2_URL)
 
-                ds.getConnection("", "")
+            ds.getConnection("", "")
+        }
+
+        def getPs: PreparedStatement = {
+            if (conn == null)
+                conn = getConnection
+
+            try
+                conn.prepareStatement(qry.sql)
+            catch {
+                case e: JdbcSQLException ⇒
+                    // Connection broken. https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
+                    if (e.getErrorCode != 90067)
+                        throw e
+
+                    // Connection recreated.
+                    conn = getConnection
+
+                    conn.prepareStatement(qry.sql)
             }
+        }
 
         try {
-            managed { conn.prepareStatement(qry.sql) } acquireAndGet { ps ⇒
+            managed { getPs } acquireAndGet { ps ⇒
                 qry.parameters.zipWithIndex.foreach { case (p, idx) ⇒ ps.setObject(idx + 1, p) }
 
                 managed { ps.executeQuery() } acquireAndGet { rs ⇒

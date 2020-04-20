@@ -57,53 +57,50 @@ object SqlServer extends LazyLogging {
     @volatile private var srv: Server = _
     @volatile private var started: Boolean = false
 
-    def start(): Unit =
-        mux.synchronized {
-            if (started)
-                throw new IllegalStateException("Server already started")
+    def start(): Unit = {
+        if (started)
+            throw new IllegalStateException("Server already started")
 
-            srv = Server.createTcpServer(SRV_PARAMS:_*).start
+        srv = Server.createTcpServer(SRV_PARAMS:_*).start
 
-            logger.info(s"H2 server start parameters: ${SRV_PARAMS.mkString(" ")}")
-            logger.info(s"H2 server status: ${srv.getStatus}")
+        logger.info(s"H2 server start parameters: ${SRV_PARAMS.mkString(" ")}")
+        logger.info(s"H2 server status: ${srv.getStatus}")
 
-            val ds = new JdbcDataSource()
+        val ds = new JdbcDataSource()
 
-            ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '${new File(INIT_FILE).getAbsolutePath}'")
+        ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '${new File(INIT_FILE).getAbsolutePath}'")
 
-            try {
-                ds.getConnection
+        try {
+            ds.getConnection
 
-                logger.info(s"Database schema initialized for: $H2_URL")
-            }
-            catch {
-                case e: SQLException ⇒
-                    // https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
-                    if (e.getErrorCode != 42101)
-                        throw e
+            logger.info(s"Database schema initialized for: $H2_URL")
+        }
+        catch {
+            case e: SQLException ⇒
+                // Table or view already exists. https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
+                if (e.getErrorCode != 42101)
+                    throw e
 
-                    logger.info(
-                        s"Database '$H2_URL' is NOT initialized because data already exists. " +
-                        s"To re-initialize - delete files in '$H2_BASEDIR' folder and start again. "
-                    )
-            }
-
-            started = true
-
-            while (started) {
-                mux.wait()
-            }
+                logger.info(
+                    s"Database '$H2_URL' is NOT initialized because data already exists. " +
+                    s"To re-initialize - delete files in '$H2_BASEDIR' folder and start again. "
+                )
         }
 
-    def stop(): Unit =
-        mux.synchronized {
-            if (!started)
-                throw new IllegalStateException("Server already stopped")
+        started = true
+    }
 
-            started = false
+    def stop(): Unit = {
+        if (!started)
+            throw new IllegalStateException("Server already stopped")
 
-            mux.notifyAll()
-        }
+        if (srv != null)
+            srv.stop()
+
+        started = false
+
+        logger.info(s"H2 server stopped.")
+    }
 }
 
 /**
