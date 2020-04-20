@@ -71,11 +71,11 @@ class NCEnricherBaseSpec {
 
         assertTrue(res.getResult.isPresent, s"Missed result data")
 
-        val sens = NCTestSentence.deserialize(res.getResult.get())
+        val sens = NCTestSentence.deserialize(res.getResult.get()).toSeq
         val expSen = NCTestSentence(expToks)
 
         assertTrue(
-            sens.exists(_ == expSen),
+            sens.contains(expSen),
             s"Required sentence not found [request=$txt, \nexpected=\n$expSen, \nfound=\n${sens.mkString("\n")}\n]"
         )
     }
@@ -95,7 +95,7 @@ class NCEnricherBaseSpec {
         assertTrue(res.getResult.isPresent, s"Missed result data")
 
         val expSens = expToks.map(NCTestSentence(_))
-        val sens = NCTestSentence.deserialize(res.getResult.get())
+        val sens = NCTestSentence.deserialize(res.getResult.get()).toSeq
 
         require(
             expSens.size == sens.size,
@@ -104,7 +104,7 @@ class NCEnricherBaseSpec {
 
         for (expSen ← expSens)
             require(
-                sens.exists(_ == expSen),
+                sens.contains(expSen),
                 s"Required sentence not found [request=$txt, \nexpected=\n$expSen, \nfound=\n${sens.mkString("\n")}\n]"
             )
     }
@@ -132,7 +132,7 @@ class NCEnricherBaseSpec {
                 err.printStackTrace(System.out)
             }
 
-            Assertions.fail(s"Failed ${errs.size} tests. See errors list above.")
+            Assertions.fail(s"Failed ${errs.size} from ${tests.size} tests. See errors list above.")
         }
         else
             println(s"All tests passed: ${tests.size}")
