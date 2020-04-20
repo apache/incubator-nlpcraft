@@ -181,6 +181,14 @@ class NCEnricherSortSpec extends NCEnricherBaseSpec {
                 nlp(text = ",", isStop = true),
                 usr(text = "B", id = "B"),
                 nlp(text = "from bottom up order", isStop = true)
+            ),
+            _ ⇒ checkExists(
+                "organize by A, B the descending",
+                srt(text = "organize by", byNotes = Seq("A", "B"), byIndexes = Seq(1, 3), asc = Some(false)),
+                usr(text = "A", id = "A"),
+                nlp(text = ",", isStop = true),
+                usr(text = "B", id = "B"),
+                nlp(text = "the descending", isStop = true)
             )
         )
 }

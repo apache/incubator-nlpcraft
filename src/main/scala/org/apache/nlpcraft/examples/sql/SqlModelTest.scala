@@ -447,6 +447,64 @@ class SqlModelTest {
                   |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
                   |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
                   |ORDER BY
+                  |  orders.shipped_date DESC
+                  |LIMIT
+                  |  1000
+                  """.stripMargin
+            ),
+            Case(
+                Seq(
+                    "give me the orders sorted by ship date asc"
+                ),
+                """SELECT
+                  |  orders.shipped_date,
+                  |  orders.order_id,
+                  |  orders.order_date,
+                  |  orders.required_date,
+                  |  customers.customer_id,
+                  |  customers.company_name,
+                  |  customers.contact_name,
+                  |  employees.employee_id,
+                  |  employees.last_name,
+                  |  employees.first_name,
+                  |  shippers.shipper_id,
+                  |  shippers.company_name,
+                  |  shippers.phone
+                  |FROM
+                  |  orders
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |ORDER BY
+                  |  orders.shipped_date ASC
+                  |LIMIT
+                  |  1000
+                  """.stripMargin
+            ),
+            Case(
+                // Default sort (nlpcraft:sort shouldn't be found)
+                Seq(
+                    "give me the orders sorted by date"
+                ),
+                """SELECT
+                  |  orders.order_date,
+                  |  orders.order_id,
+                  |  orders.required_date,
+                  |  customers.customer_id,
+                  |  customers.company_name,
+                  |  customers.contact_name,
+                  |  employees.employee_id,
+                  |  employees.last_name,
+                  |  employees.first_name,
+                  |  shippers.shipper_id,
+                  |  shippers.company_name,
+                  |  shippers.phone
+                  |FROM
+                  |  orders
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |ORDER BY
                   |  orders.order_id DESC
                   |LIMIT
                   |  1000

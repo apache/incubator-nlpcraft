@@ -204,8 +204,8 @@ object NCSortEnricher extends NCProbeEnricher {
                     between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
                 }
 
-                val minIdx = toks.dropWhile(_.isNlp).head.index
-                val maxIdx = toks.reverse.dropWhile(_.isNlp).head.index
+                val minIdx = toks.dropWhile(!_.isUser).head.index
+                val maxIdx = toks.reverse.dropWhile(!_.isUser).head.index
 
                 require(minIdx <= maxIdx)
 
@@ -229,9 +229,10 @@ object NCSortEnricher extends NCProbeEnricher {
 
         if (res.isEmpty && !nullable)
             throw new AssertionError(s"Invalid null result " +
-                s"[tokensTexts=[${toks.map(_.origText).mkString(", ")}]" +
-                s", tokensIndexes=[${toks.map(_.index).mkString(", ")}]" +
-                s", allData=[${toksNoteData.mkString(", ")}]" +
+                s"[tokensTexts=[${toks.map(_.origText).mkString("|")}]" +
+                s", notes=[${toks.flatten.map(n ⇒ s"${n.noteType}:[${n.tokenIndexes.mkString(",")}]").mkString("|")}]" +
+                s", tokensIndexes=[${toks.map(_.index).mkString("|")}]" +
+                s", allData=[${toksNoteData.mkString("|")}]" +
                 s"]"
             )
 
