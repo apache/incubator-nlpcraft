@@ -29,7 +29,7 @@ import java.io.*;
  * <a target=_ href="https://opencensus.io/exporters/supported-exporters/java/stackdriver-stats/">https://opencensus.io/exporters/supported-exporters/java/stackdriver-stats/</a>
  * for more details. This is a probe lifecycle component - see {@link NCLifecycle} for usage information.
  * <p>
- * See <a target=_ href="https://nlpcraft.org/server-and-probe.html">documentation</a> on how to configure probe life cycle
+ * See <a target=_ href="https://nlpcraft.apache.org/server-and-probe.html">documentation</a> on how to configure probe life cycle
  * components, default values, etc.
  */
 public class NCStackdriverStatsExporter implements NCLifecycle {

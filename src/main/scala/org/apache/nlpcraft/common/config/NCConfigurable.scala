@@ -322,7 +322,7 @@ object NCConfigurable extends LazyLogging {
         // Validate.
         if (!valFun(tmpCfg)) {
             logger.error(s"Invalid configuration.")
-            logger.error(s"Note that you can use environment variable to provide configuration properties - see https://nlpcraft.org/server-and-probe.html.")
+            logger.error(s"Note that you can use environment variable to provide configuration properties - see https://nlpcraft.apache.org/server-and-probe.html.")
     
             throw new NCE(s"No valid configuration found in: ${tmpCfg.origin().description()}")
         }

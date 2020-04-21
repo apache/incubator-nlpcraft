@@ -15,22 +15,22 @@
  limitations under the License.
 -->
 
-<img src="https://nlpcraft.org/images/nlpcraft_logo_black.gif" height="80px">
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![Jenkins](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fbuilds.apache.org%2Fview%2FIncubator%2520Projects%2Fjob%2Fincubator-nlpcraft%2F)](https://builds.apache.org/view/Incubator%20Projects/job/incubator-nlpcraft/)
-[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.org/docs.html)
+[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ## What is Apache NLPCraft?
-[Apache NLPCraft](https://nlpcraft.org/) is an open source library for adding a natural language interface to any applications. 
+[Apache NLPCraft](https://nlpcraft.apache.org/) is an open source library for adding a natural language interface to any applications. 
 NLPCraft is free and easy to use, it securely works with any private data source, and has no hardware or software 
 lock-in:
 
  * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
- * Latest [Javadoc](https://github.com/apache/incubator-nlpcraft/apis/latest/index.html) and [REST APIs](https://nlpcraft.org/using-rest.html)
- * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.org/download.html)
+ * Latest [Javadoc](https://github.com/apache/incubator-nlpcraft/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
+ * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.

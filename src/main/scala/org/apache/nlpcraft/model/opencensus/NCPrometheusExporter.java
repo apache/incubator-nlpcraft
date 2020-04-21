@@ -54,7 +54,7 @@ import java.io.*;
  *     static_configs:
  *       - targets: ['localhost:8889']
  * </pre>
- * See <a target=_ href="https://nlpcraft.org/server-and-probe.html">documentation</a> on how to configure probe life cycle
+ * See <a target=_ href="https://nlpcraft.apache.org/server-and-probe.html">documentation</a> on how to configure probe life cycle
  * components, default values, etc.
  * <p>
  */

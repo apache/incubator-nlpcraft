@@ -15,11 +15,11 @@
  limitations under the License.
 -->
 
-<img src="https://nlpcraft.org/images/nlpcraft_logo_black.gif" height="80px">
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
-[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.org/docs.html)
+[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ### Docker
@@ -33,7 +33,7 @@ also prepare your own images following the instructions below.
  3. Run image: ```docker run -m 8G -p 8081:8081 -p 8201:8201 -p 8202:8202 nlpcraftserver/server:0.7.3```
 
 **NOTE**:
- Default docker image run REST server with default configuration (see file `build/nlpcraft.conf`). See [configuration](https://nlpcraft.org/server-and-probe.html)
+ Default docker image run REST server with default configuration (see file `build/nlpcraft.conf`). See [configuration](https://nlpcraft.apache.org/server-and-probe.html)
  documentation on how to override default configuration using environment variables. 
 
 #### Your Own Server Image

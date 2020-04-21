@@ -15,12 +15,12 @@
  limitations under the License.
 -->
 
-<img src="https://nlpcraft.org/images/nlpcraft_logo_black.gif" height="80px">
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
 [![Jenkins](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fbuilds.apache.org%2Fview%2FIncubator%2520Projects%2Fjob%2Fincubator-nlpcraft%2F)](https://builds.apache.org/view/Incubator%20Projects/job/incubator-nlpcraft/)
-[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.org/docs.html)
+[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ### HelloWorld Example
@@ -39,16 +39,16 @@ You can run this example from command line or IDE in a similar way:
     * **Program arguments:** `-probe`
  2. Run test:
     * **JUnit 5 test:** `org.apache.nlpcraft.examples.helloworld.HelloWorldTest`
-    * or use NLPCraft [REST APIs](https://nlpcraft.org/using-rest.html) with your favorite REST client
+    * or use NLPCraft [REST APIs](https://nlpcraft.apache.org/using-rest.html) with your favorite REST client
 
 ### Documentation
-See [Getting Started](https://nlpcraft.org/getting-started.html) guide for more instructions on how to run these examples.
+See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
 
 For any questions, feedback or suggestions:
 
  * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
- * Latest [Javadoc](https://github.com/apache/incubator-nlpcraft/apis/latest/index.html) and [REST APIs](https://nlpcraft.org/using-rest.html)
- * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.org/download.html)
+ * Latest [Javadoc](https://github.com/apache/incubator-nlpcraft/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
+ * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.

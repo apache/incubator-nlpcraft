@@ -27,7 +27,7 @@ package org.apache.nlpcraft.model;
  * <p>
  * Note that probe lifecycle components are configured via <code>nlpcraft.probe.lifecycle </code> probe
  * configuration property that accept list of fully qualified class names where each class should implement this
- * interface. See <a target=_ href="https://nlpcraft.org/server-and-probe.html">documentation</a> on how to configure
+ * interface. See <a target=_ href="https://nlpcraft.apache.org/server-and-probe.html">documentation</a> on how to configure
  * a data probe.
  */
 public interface NCLifecycle {
