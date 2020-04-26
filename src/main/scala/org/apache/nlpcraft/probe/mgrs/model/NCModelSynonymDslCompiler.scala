@@ -36,32 +36,30 @@ import scala.collection.mutable.ArrayBuffer
 object NCModelSynonymDslCompiler extends LazyLogging {
     private type Predicate = java.util.function.Function[NCToken, java.lang.Boolean]
     
-    def toJavaFunc(alias: String, func: NCToken ⇒ Boolean): Predicate = new Predicate() {
-        override def apply(tok: NCToken): java.lang.Boolean = {
-            val res = func(tok)
+    def toJavaFunc(alias: String, func: NCToken ⇒ Boolean): Predicate = (tok: NCToken) => {
+        val res = func(tok)
+    
+        // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.
+        // NOTE: token can have multiple aliases associated with it.
+        if (res && alias != null) {
+            val meta = tok.getMetadata
             
-            // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.
-            // NOTE: token can have multiple aliases associated with it.
-            if (res && alias != null) {
-                val meta = tok.getMetadata
-                
-                if (!meta.containsKey(TOK_META_ALIASES_KEY))
-                    meta.put(TOK_META_ALIASES_KEY, new java.util.HashSet[String]())
-                
-                val aliases = meta.get(TOK_META_ALIASES_KEY).asInstanceOf[java.util.Set[String]]
-                
-                aliases.add(alias)
-            }
+            if (!meta.containsKey(TOK_META_ALIASES_KEY))
+                meta.put(TOK_META_ALIASES_KEY, new java.util.HashSet[String]())
             
-            res
+            val aliases = meta.get(TOK_META_ALIASES_KEY).asInstanceOf[java.util.Set[String]]
+            
+            aliases.add(alias)
         }
+        
+        res
     }
     
     /**
      *
      */
     class FiniteStateMachine extends NCSynonymDslBaseListener {
-        private val predStack = new mutable.Stack[NCToken ⇒ Boolean] // Stack of predicates.
+        private val predStack = new mutable.ArrayStack[NCToken ⇒ Boolean] // Stack of predicates.
         private val lvalParts = ArrayBuffer.empty[String] // lval parts collector.
         private val rvalList = ArrayBuffer.empty[String] // rval list collector.
         private var alias: String = _

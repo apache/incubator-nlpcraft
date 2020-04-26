@@ -79,7 +79,7 @@ object NCGeoStateNamesGenerator extends App {
 
     // Burn it.
     managed(new PrintStream(new File(out))) acquireAndGet { ps ⇒
-        ps.println(pretty(render(decompose(syns))))
+        ps.println(prettyRender(decompose(syns)))
     }
 
     println(s"Files generated OK: $out")

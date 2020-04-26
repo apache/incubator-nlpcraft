@@ -109,6 +109,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private def makeModelFactory(clsName: String): NCModelFactory =
         catching(classOf[Throwable]) either Thread.currentThread().getContextClassLoader.
             loadClass(clsName).
+            getDeclaredConstructor().
             newInstance().
             asInstanceOf[NCModelFactory]
         match {

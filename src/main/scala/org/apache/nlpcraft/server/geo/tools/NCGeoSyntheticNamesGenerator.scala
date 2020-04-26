@@ -129,7 +129,7 @@ object NCGeoSyntheticNamesGenerator extends App {
 
                             // Short representation (without subcontinent and continent.)
                             case e: NCGeoRegion ⇒
-                                NCGeoSynonym(None, Some(e.name), Some(e.country.name),None, None, None, List(s))
+                                NCGeoSynonym(None, Some(e.name), Some(e.country.name), None, None, None, List(s))
 
                             // Short representation (without subcontinent and continent.)
                             case e: NCGeoCity ⇒
@@ -157,7 +157,7 @@ object NCGeoSyntheticNamesGenerator extends App {
         val data = (syns.values ++ exists).toSet
 
         managed(new PrintStream(new File(outFile))) acquireAndGet { ps ⇒
-            ps.println(pretty(render(decompose(data))))
+            ps.println(prettyRender(decompose(data)))
         }
     }
 

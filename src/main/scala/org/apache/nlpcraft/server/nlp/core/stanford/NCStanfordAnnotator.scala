@@ -26,7 +26,7 @@ import edu.stanford.nlp.process.AbstractTokenizer
 import edu.stanford.nlp.util.TypesafeMap
 
 import scala.language.implicitConversions
-import scala.collection.JavaConversions._
+import collection.convert.ImplicitConversions._
 
 /**
   * Custom annotator.

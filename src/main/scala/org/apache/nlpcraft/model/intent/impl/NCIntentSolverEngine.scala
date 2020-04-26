@@ -29,8 +29,7 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
-import scala.collection.JavaConversions._
-import scala.collection.JavaConverters._
+import collection.convert.ImplicitConversions._
 import scala.collection.mutable
 
 /**
@@ -194,7 +193,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                     // history and processed sentence.
                                     conv.
                                         filter(t ⇒ {
-                                            val convTokGroups = t.getGroups.asScala.sorted
+                                            val convTokGroups = t.getGroups.sorted
 
                                             !senTokGroups.exists(convTokGroups.containsSlice)
                                         }).
@@ -435,7 +434,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 NCTokenLogger.prepareTable(senToks.filter(tok ⇒ !tok.used && tok.token.isUserDefined).map(_.token)).
                     info(
                         logger,
-                        Some(s"Unused user tokens for intent '$intentId' ${varStr}:")
+                        Some(s"Unused user tokens for intent '$intentId' $varStr:")
                     )
                 
                 None

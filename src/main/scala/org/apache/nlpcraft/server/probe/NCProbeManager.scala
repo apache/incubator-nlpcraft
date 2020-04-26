@@ -46,6 +46,7 @@ import scala.collection.JavaConverters._
 import scala.collection.{Map, mutable}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 /**
   * Probe manager.
@@ -356,11 +357,13 @@ object NCProbeManager extends NCService {
                                 val fut = Future {
                                     fn(NCSocket(sock, sock.getRemoteSocketAddress.toString))
                                 }
-                                
-                                fut.onFailure {
-                                    case e: NCE ⇒ logger.warn(e.getMessage, e)
-                                    case _: EOFException ⇒ () // Just ignoring.
-                                    case e: Throwable ⇒ logger.warn(s"Ignoring socket error: ${e.getLocalizedMessage}")
+
+                                fut.onComplete {
+                                    case Success(_) ⇒ // No-op.
+
+                                    case Failure(e: NCE) ⇒ logger.warn(e.getMessage, e)
+                                    case Failure(_: EOFException) ⇒ () // Just ignoring.
+                                    case Failure(e: Throwable) ⇒ logger.warn(s"Ignoring socket error: ${e.getLocalizedMessage}")
                                 }
                             }
                         }

@@ -228,7 +228,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                     def add(m: mutable.HashMap[String, mutable.HashSet[T]], incl: Boolean): Unit =
                         poses.filter { case (_, isIncl) ⇒ isIncl == incl }.keys.foreach(pos ⇒
                             m.get(pos) match {
-                                case Some(set) ⇒ set += cond
+                                case Some(set) ⇒ set.add(cond)
                                 case _ ⇒
                                     val set = mutable.HashSet.empty[T]
 

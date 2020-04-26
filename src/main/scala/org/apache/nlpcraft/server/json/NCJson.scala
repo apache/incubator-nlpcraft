@@ -21,7 +21,7 @@ import java.io.{IOException, _}
 import java.util.zip._
 
 import com.typesafe.scalalogging.LazyLogging
-import net.liftweb.json.{compact ⇒ liftCompact, pretty ⇒ liftPretty, render ⇒ liftRender, _}
+import net.liftweb.json.{compactRender ⇒ liftCompact, prettyRender ⇒ liftPretty, _}
 import org.apache.nlpcraft.common._
 
 import scala.annotation.tailrec
@@ -90,14 +90,14 @@ class NCJson(val json: JValue) {
      *
      * @return String presentation of this JSON object.
      */
-    def pretty: String = liftPretty(liftRender(json))
+    def pretty: String = liftPretty(json)
 
     /**
      * Renders this JSON in a compact form (suitable for exchange).
      *
      * @return String presentation of this JSON object.
      */
-    def compact: String = liftCompact(liftRender(json))
+    def compact: String = liftCompact(json)
 
     /**
      * Zips this JSON object into array of bytes using GZIP.
@@ -269,7 +269,7 @@ object NCJson {
      *
      * @param json JSON text.
      */
-    private def removeComments(json: String): String = json.replaceAll("""\/\*(\*(?!\/)|[^*])*\*\/""", "")
+    private def removeComments(json: String): String = json.replaceAll("""/\*(\*(?!/)|[^*])*\*/""", "")
 
     /**
      * Extracts type `T` from given JSON `file`.
