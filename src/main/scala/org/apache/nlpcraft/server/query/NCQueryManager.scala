@@ -37,6 +37,7 @@ import org.apache.nlpcraft.server.user.NCUserManager
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
+import scala.util.{Failure, Success}
 import scala.util.control.Exception._
 
 /**
@@ -277,19 +278,21 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     span
                 )
             }
-        } onFailure {
-            case e: NCE ⇒
+        } onComplete {
+            case Success(_) ⇒ // No-op.
+
+            case Failure(e: NCE) ⇒
                 logger.error(s"Query processing failed due to: ${e.getLocalizedMessage}")
-            
+
                 setError(
                     srvReqId,
                     e.getLocalizedMessage,
                     NCErrorCodes.SYSTEM_ERROR
                 )
-        
-            case e: Throwable ⇒
+
+            case Failure(e: Throwable) ⇒
                 logger.error(s"System error processing query: ${e.getLocalizedMessage}", e)
-            
+
                 setError(
                     srvReqId,
                     "Processing failed due to a system error.",

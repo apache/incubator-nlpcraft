@@ -30,7 +30,7 @@ import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind._
 import org.apache.nlpcraft.probe.mgrs.deploy._
 import org.apache.nlpcraft.probe.mgrs.{NCModelDecorator, NCSynonym, NCSynonymChunk}
 
-import scala.collection.JavaConversions._
+import collection.convert.ImplicitConversions._
 import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

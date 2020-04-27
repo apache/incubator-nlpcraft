@@ -361,7 +361,7 @@ object NCGeoNamesGenerator extends App {
 
         for (country ← countries)
             managed(new PrintStream(new File(s"$outDir/countries/${country.iso}.json"))) acquireAndGet { ps ⇒
-                ps.println(pretty(render(decompose(country))))
+                ps.println(prettyRender(decompose(country)))
             }
     }
 
@@ -443,7 +443,7 @@ object NCGeoNamesGenerator extends App {
 
         // Burn it.
         managed(new PrintStream(new File(outSynonyms))) acquireAndGet { ps ⇒
-            ps.println(pretty(render(decompose(hs))))
+            ps.println(prettyRender(decompose(hs)))
         }
     }
 
@@ -482,7 +482,7 @@ object NCGeoNamesGenerator extends App {
                 ).sortBy(p ⇒ (p.country, p.name))
 
             managed(new PrintStream(new File(file))) acquireAndGet { ps ⇒
-                ps.println(pretty(render(decompose(sorder))))
+                ps.println(prettyRender(decompose(sorder)))
             }
         }
 
@@ -508,7 +508,7 @@ object NCGeoNamesGenerator extends App {
         ).toMap
 
         managed(new PrintStream(new File(outContinents))) acquireAndGet { ps ⇒
-            ps.println(pretty(render(decompose(hs))))
+            ps.println(prettyRender(decompose(hs)))
         }
     }
 

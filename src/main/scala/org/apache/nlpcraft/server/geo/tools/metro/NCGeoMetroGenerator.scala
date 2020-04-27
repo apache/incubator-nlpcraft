@@ -58,7 +58,7 @@ object NCGeoMetroGenerator extends App {
         implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
 
         managed(new PrintStream(new File(out_vals))) acquireAndGet { ps ⇒
-            ps.println(pretty(render(decompose(metro))))
+            ps.println(prettyRender(decompose(metro)))
         }
 
         println(s"File created: $out_vals")
@@ -81,7 +81,7 @@ object NCGeoMetroGenerator extends App {
         })
 
         managed(new PrintStream(new File(out_syns))) acquireAndGet { ps ⇒
-            ps.println(pretty(render(decompose(sync))))
+            ps.println(prettyRender(decompose(sync)))
         }
 
         println(s"Synonyms file created: $out_syns")

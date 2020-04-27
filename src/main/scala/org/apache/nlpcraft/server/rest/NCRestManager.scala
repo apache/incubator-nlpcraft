@@ -26,6 +26,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCService, _}
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.util.{Failure, Success}
 
 /**
   * REST manager.
@@ -78,13 +79,10 @@ object NCRestManager extends NCService {
         handleRejections = api.getRejectionHandler
 
         bindFut = Http().bindAndHandleAsync(Route.asyncHandler(api.getRoute), Config.host, Config.port)
-        
-        bindFut.onFailure {
-            case _ ⇒ logger.info(s"REST server failed to start on '$url'.")
-        }
-    
-        bindFut.onSuccess {
-            case _ ⇒ logger.info(s"REST server is listening on '$url'.")
+
+        bindFut.onComplete {
+            case Success(_) ⇒ logger.info(s"REST server is listening on '$url'.")
+            case Failure(_) ⇒ logger.info(s"REST server failed to start on '$url'.")
         }
 
         super.start()

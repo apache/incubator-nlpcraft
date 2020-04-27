@@ -57,7 +57,7 @@ object NCIntentDslCompiler extends LazyLogging {
         private var min = 1
         private var max = 1
     
-        private val predStack = new mutable.Stack[NCToken ⇒ Boolean] // Stack of predicates.
+        private val predStack = new mutable.ArrayStack[NCToken ⇒ Boolean] // Stack of predicates.
         private val lvalParts = ArrayBuffer.empty[String] // lval parts collector.
         private val rvalList = ArrayBuffer.empty[String] // rval list collector.
         private var rval: String = _

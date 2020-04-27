@@ -51,6 +51,7 @@ import scala.io.Source
 import scala.language.{implicitConversions, postfixOps}
 import scala.reflect.runtime.universe._
 import scala.sys.SystemProperties
+import scala.util.{Failure, Success}
 import scala.util.control.Exception.ignoring
 
 /**
@@ -928,15 +929,13 @@ object NCUtils extends LazyLogging {
         body: Unit ⇒ T,
         onFailure: Throwable ⇒ Unit = _ ⇒ Unit,
         onSuccess: T ⇒ Unit = (_: T) ⇒ ())(implicit ec: ExecutionContext = global): Future[T] = {
-        val fut = Future { body(()) }
-        
-        fut.onFailure {
-            case e: Throwable ⇒ onFailure(e)
-        }
-        fut.onSuccess {
-            case t ⇒ onSuccess(t)
-        }
-        
+        val fut = Future { body(()) }(ec)
+
+        fut.onComplete {
+            case Success(ok) ⇒ onSuccess(ok)
+            case Failure(err) ⇒ onFailure(err)
+        }(ec)
+
         fut
     }
     
@@ -1577,7 +1576,7 @@ object NCUtils extends LazyLogging {
       * @param ec
       */
     def executeParallel(bodies: (() ⇒ Any)*)(implicit ec: ExecutionContext = global): Unit =
-        bodies.map(body ⇒ { Future { body() } } ).foreach(f ⇒ Await.result(f, Duration.Inf))
+        bodies.map(body ⇒ { Future { body() }(ec) } ).foreach(f ⇒ Await.result(f, Duration.Inf))
     
     /**
       *
@@ -1588,7 +1587,7 @@ object NCUtils extends LazyLogging {
     def mkObject[T](clsName: String): T = {
         try
             // Try Java reflection first.
-            Class.forName(clsName).newInstance().asInstanceOf[T]
+            Class.forName(clsName).getDeclaredConstructor().newInstance().asInstanceOf[T]
         catch {
             case _: Throwable ⇒
                 // Try Scala reflection second.
