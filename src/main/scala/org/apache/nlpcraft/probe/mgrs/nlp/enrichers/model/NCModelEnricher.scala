@@ -298,6 +298,9 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
+    def isComplex(mdl: NCModelDecorator): Boolean =
+        mdl.synonymsDsl.nonEmpty || (mdl.model.getParsers != null && !mdl.model.getParsers.isEmpty)
+
     @throws[NCE]
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
