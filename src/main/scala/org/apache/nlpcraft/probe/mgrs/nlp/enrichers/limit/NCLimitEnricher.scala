@@ -191,14 +191,11 @@ object NCLimitEnricher extends NCProbeEnricher {
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
 
-            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
-
             // Tries to grab tokens reverse way.
             // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
-            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)) if areSuitableTokens(buf, toks))
+            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)))
                 tryToMatch(numsMap, groupsMap, toks) match {
                     case Some(m) ⇒
-                        //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, m.matched)) {
                         for (refNote ← m.refNotes) {
                             val params = mutable.ArrayBuffer.empty[(String, Any)]
 
@@ -212,8 +209,6 @@ object NCLimitEnricher extends NCProbeEnricher {
                             val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, params: _*)
 
                             m.matched.foreach(_.add(note))
-
-                            buf += toks.toSet
                         }
                     case None ⇒ // No-op.
                 }

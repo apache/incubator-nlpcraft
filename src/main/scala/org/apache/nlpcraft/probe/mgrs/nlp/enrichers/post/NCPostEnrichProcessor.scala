@@ -51,141 +51,122 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
 
     /**
       *
-      * @param p
+      * @param note
+      * @param withIndexes
       * @return
       */
-    private def getParameters(p: NCNlpSentenceNote): Any =
-        if (p.isUser)
-            (p.wordIndexes, p.noteType)
-        else {
-            p.noteType match {
-                case "nlpcraft:continent" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("continent")
-                    )
-                case "nlpcraft:subcontinent" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("continent"),
-                        p.get("subcontinent")
-                    )
-                case "nlpcraft:country" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("continent"),
-                        p.get("subcontinent"),
-                        p.get("country")
-                    )
-                case "nlpcraft:region" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("continent"),
-                        p.get("subcontinent"),
-                        p.get("country"),
-                        p.get("region")
-                    )
-                case "nlpcraft:city" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("continent"),
-                        p.get("subcontinent"),
-                        p.get("country"),
-                        p.get("region"),
-                        p.get("city")
-                    )
-                case "nlpcraft:metro" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("metro")
-                    )
-                case "nlpcraft:date" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("from"),
-                        p.get("to")
-                    )
-                case "nlpcraft:relation" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("type"),
-                        p.get("indexes"),
-                        p.get("note")
-                    )
-                case "nlpcraft:sort" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("subjnotes"),
-                        p.get("subjindexes"),
-                        p.getOrElse("bynotes", null),
-                        p.getOrElse("byindexes", null),
-                        p.getOrElse("asc", null)
-                    )
-                case "nlpcraft:limit" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("limit"),
-                        p.getOrElse("asc", null),
-                        p.get("indexes"),
-                        p.get("note")
-                    )
-                case "nlpcraft:coordinate" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("latitude"),
-                        p.get("longitude")
-                    )
-                case "nlpcraft:num" ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("from"),
-                        p.get("to"),
-                        p.getOrElse("indexes", null),
-                        p.getOrElse("note", null)
+    private def getParameters(note: NCNlpSentenceNote, withIndexes: Boolean = true): Any = {
+        val seq1 = if (withIndexes) Seq(note.wordIndexes, note.noteType) else Seq(note.noteType)
 
-                    )
-                case x if x.startsWith("google:") ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("meta"),
-                        p.get("mentionsBeginOffsets"),
-                        p.get("mentionsContents"),
-                        p.get("mentionsTypes")
-                    )
-                case x if x.startsWith("stanford:") ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("nne")
-                    )
-                case x if x.startsWith("opennlp:") ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType
-                    )
-                case x if x.startsWith("spacy:") ⇒
-                    (
-                        p.wordIndexes,
-                        p.noteType,
-                        p.get("vector")
-                    )
+        val seq2: Seq[Any] =
+            if (note.isUser)
+                Seq.empty
+            else {
+                note.noteType match {
+                    case "nlpcraft:continent" ⇒
+                        Seq(
+                            note.get("continent")
+                        )
+                    case "nlpcraft:subcontinent" ⇒
+                        Seq(
+                            note.get("continent"),
+                            note.get("subcontinent")
+                        )
+                    case "nlpcraft:country" ⇒
+                        Seq(
+                            note.get("continent"),
+                            note.get("subcontinent"),
+                            note.get("country")
+                        )
+                    case "nlpcraft:region" ⇒
+                        Seq(
+                            note.wordIndexes,
+                            note.noteType,
+                            note.get("continent"),
+                            note.get("subcontinent"),
+                            note.get("country"),
+                            note.get("region")
+                        )
+                    case "nlpcraft:city" ⇒
+                        Seq(
+                            note.get("continent"),
+                            note.get("subcontinent"),
+                            note.get("country"),
+                            note.get("region"),
+                            note.get("city")
+                        )
+                    case "nlpcraft:metro" ⇒
+                        Seq(
+                            note.get("metro")
+                        )
+                    case "nlpcraft:date" ⇒
+                        Seq(
+                            note.get("from"),
+                            note.get("to")
+                        )
+                    case "nlpcraft:relation" ⇒
+                        Seq(
+                            note.get("type"),
+                            note.get("indexes"),
+                            note.get("note")
+                        )
+                    case "nlpcraft:sort" ⇒
+                        Seq(
+                            note.wordIndexes,
+                            note.noteType,
+                            note.get("subjnotes"),
+                            note.get("subjindexes"),
+                            note.getOrElse("bynotes", null),
+                            note.getOrElse("byindexes", null),
+                            note.getOrElse("asc", null)
+                        )
+                    case "nlpcraft:limit" ⇒
+                        Seq(
+                            note.get("limit"),
+                            note.getOrElse("asc", null),
+                            note.get("indexes"),
+                            note.get("note")
+                        )
+                    case "nlpcraft:coordinate" ⇒
+                        Seq(
+                            note.get("latitude"),
+                            note.get("longitude")
+                        )
+                    case "nlpcraft:num" ⇒
+                        Seq(
+                            note.get("from"),
+                            note.get("to"),
+                            note.getOrElse("indexes", null),
+                            note.getOrElse("note", null)
 
-                case _ ⇒ throw new AssertionError(s"Unexpected note type: ${p.noteType}")
-            }
+                        )
+                    case x if x.startsWith("google:") ⇒
+                        Seq(
+                            note.get("meta"),
+                            note.get("mentionsBeginOffsets"),
+                            note.get("mentionsContents"),
+                            note.get("mentionsTypes")
+                        )
+                    case x if x.startsWith("stanford:") ⇒
+                        Seq(
+                            note.get("nne")
+                        )
+                    case x if x.startsWith("opennlp:") ⇒
+                        Seq(
+                            note.wordIndexes,
+                            note.noteType
+                        )
+                    case x if x.startsWith("spacy:") ⇒
+                        Seq(
+                            note.get("vector")
+                        )
+
+                    case _ ⇒ throw new AssertionError(s"Unexpected note type: ${note.noteType}")
+                }
         }
+
+        seq1 ++ seq2
+    }
 
     /**
       * Fixes tokens positions.
@@ -622,10 +603,9 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             // Some words with same note type can be detected various ways.
             // We keep only one variant -  with `best` direct and sparsity parameters,
             // other variants for these words are redundant.
-
             val redundant: Seq[NCNlpSentenceNote] =
                 ns.flatten.filter(!_.isNlp).distinct.
-                    groupBy(getParameters).
+                    groupBy(p ⇒ getParameters(p)).
                     map(p ⇒ p._2.sortBy(p ⇒
                         (
                             // System notes don't have such flags.
@@ -689,7 +669,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                                     None
                             )
 
-                    // Removes sentences which have only one difference - 'direct' flag of their user tokens.
+                    // It removes sentences which have only one difference - 'direct' flag of their user tokens.
                     // `Direct` sentences have higher priority.
                     case class Key(
                         sysNotes: Seq[Map[String, java.io.Serializable]],
@@ -735,12 +715,16 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
                     tok.size match {
                         case 1 ⇒ require(tok.head.isNlp, s"Unexpected non-'nlpcraft:nlp' token: $tok")
                         case 2 ⇒ require(tok.head.isNlp ^ tok.last.isNlp, s"Unexpected token notes: $tok")
-                        case _ ⇒ require(false, s"Unexpected token notes count: $tok")
+                        case _ ⇒ require(requirement = false, s"Unexpected token notes count: $tok")
                     }
                 )
             )
 
-            sens
+            // Drops similar sentences (with same tokens structure).
+            // Among similar sentences we prefer one with minimal free words count.
+            sens.groupBy(_.flatten.filter(!_.isNlp).map(note ⇒ getParameters(note, withIndexes = false))).
+            map { case (_, seq) ⇒ seq.minBy(_.filter(p ⇒ p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
+            toSeq
         }
 
     /**

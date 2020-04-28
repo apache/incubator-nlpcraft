@@ -121,11 +121,9 @@ object NCRelationEnricher extends NCProbeEnricher {
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
-
             // Tries to grab tokens direct way.
             // Example: A, B, C ⇒ ABC, AB, BC .. (AB will be processed first)
-            for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
+            for (toks ← ns.tokenMixWithStopWords())
                 tryToMatch(toks) match {
                     case Some(m) ⇒
                         //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, Seq(m.matched.head))) {
@@ -141,8 +139,6 @@ object NCRelationEnricher extends NCProbeEnricher {
                             m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))
 
                             m.matchedHead.add(note)
-
-                            buf += toks.toSet
                         }
                     case None ⇒ // No-op.
                 }

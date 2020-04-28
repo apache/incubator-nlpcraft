@@ -34,14 +34,6 @@ import scala.language.implicitConversions
 abstract class NCProbeEnricher extends NCService with LazyLogging {
     /**
       *
-      * @param buf
-      * @param toks
-      */
-    protected def areSuitableTokens(buf: Seq[Set[NCNlpSentenceToken]], toks: Seq[NCNlpSentenceToken]): Boolean =
-        !buf.exists(_.exists(toks.contains)) && toks.forall(t ⇒ !t.isQuoted && !t.isBracketed)
-
-    /**
-      *
       * @param toks
       * @param pred
       */

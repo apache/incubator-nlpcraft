@@ -244,13 +244,13 @@ object NCSortEnricher extends NCProbeEnricher {
       * @param toks
       */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
+        require(toks.nonEmpty)
+
         case class KeyWord(tokens: Seq[NCNlpSentenceToken], synonymIndex: Int) {
             require(tokens.nonEmpty)
         }
 
-        def extract(
-            keyStems: Seq[String], toks: Seq[NCNlpSentenceToken], used: Seq[NCNlpSentenceToken] = Seq.empty
-        ): Option[KeyWord] = {
+        def extract(keyStems: Seq[String], used: Seq[NCNlpSentenceToken]): Option[KeyWord] = {
             require(keyStems.nonEmpty)
 
             if (toks.nonEmpty) {
@@ -272,9 +272,9 @@ object NCSortEnricher extends NCProbeEnricher {
 
         // Order is important.
         // SORT and ORDER don't have same words (validated)
-        val orderOpt = extract(ORDER.map(_._1), toks)
-        val byOpt = extract(BY, toks, used = orderOpt.toSeq.flatMap(_.tokens))
-        val sortOpt = extract(SORT, toks, used = orderOpt.toSeq.flatMap(_.tokens) ++ byOpt.toSeq.flatMap(_.tokens))
+        val orderOpt = extract(ORDER.map(_._1), used = Seq.empty)
+        val byOpt = extract(BY, used = orderOpt.toSeq.flatMap(_.tokens))
+        val sortOpt = extract(SORT, used = orderOpt.toSeq.flatMap(_.tokens) ++ byOpt.toSeq.flatMap(_.tokens))
 
         if (sortOpt.nonEmpty || orderOpt.nonEmpty) {
             val sortToks = sortOpt.toSeq.flatMap(_.tokens)
@@ -412,7 +412,7 @@ object NCSortEnricher extends NCProbeEnricher {
             "txt" → ns.text) { _ ⇒
             val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
 
-            for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
+            for (toks ← ns.tokenMixWithStopWords())
                 tryToMatch(toks) match {
                     case Some(m) ⇒
                         def addNotes(
