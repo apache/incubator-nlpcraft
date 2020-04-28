@@ -33,6 +33,27 @@ import scala.language.implicitConversions
  */
 abstract class NCProbeEnricher extends NCService with LazyLogging {
     /**
+      * Checks whether important tokens deleted as stopwords or not.
+      *
+      * @param ns Sentence.
+      * @param toks Tokens in which some stopwords can be deleted.
+      * @param isImportant Token important criteria.
+      */
+    protected def validImportant(
+        ns: NCNlpSentence,
+        toks: Seq[NCNlpSentenceToken],
+        isImportant: NCNlpSentenceToken ⇒ Boolean
+    ): Boolean = {
+        val idxs = toks.map(_.index)
+
+        require(idxs == idxs.sorted)
+
+        val toks2 = ns.slice(idxs.head, idxs.last + 1)
+
+        toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
+    }
+
+    /**
       *
       * @param toks
       * @param pred

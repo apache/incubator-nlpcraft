@@ -150,6 +150,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         s"$CD of",
         s"$CD <POST_WORDS>",
         s"<POST_WORDS> $CD"
+
     )
 
     private final val LIMITS: Seq[String] = {
@@ -163,6 +164,8 @@ object NCLimitEnricher extends NCProbeEnricher {
         // Duplicated elements is not a problem.
         SYNONYMS.flatMap(parser.expand).distinct
     }
+
+    private final val TECH_WORDS = (SORT_WORDS.keys ++ TOP_WORDS ++ POST_WORDS ++ FUZZY_NUMS.keySet).toSet
 
     /**
       * Stemmatizes map's keys.
@@ -190,10 +193,13 @@ object NCLimitEnricher extends NCProbeEnricher {
             "txt" → ns.text) { _ ⇒
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
+            def isImportant(t: NCNlpSentenceToken): Boolean = t.isUser || TECH_WORDS.contains(t.stem)
 
             // Tries to grab tokens reverse way.
             // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
-            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)))
+            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index))
+                 if validImportant(ns, toks, isImportant)
+            )
                 tryToMatch(numsMap, groupsMap, toks) match {
                     case Some(m) ⇒
                         for (refNote ← m.refNotes) {
@@ -224,7 +230,10 @@ object NCLimitEnricher extends NCProbeEnricher {
         groupsMap: Map[Seq[NCNlpSentenceToken], GroupsHolder],
         toks: Seq[NCNlpSentenceToken]
     ): Option[Match] = {
-        val refCands = toks.filter(_.exists(_.isUser))
+        val i1 = toks.head.index
+        val i2 = toks.last.index
+
+        val refCands = toks.filter(_.exists(n ⇒ n.isUser && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
         val commonNotes = getCommonNotes(refCands)
 
         if (commonNotes.nonEmpty) {

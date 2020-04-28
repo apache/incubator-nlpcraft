@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.examples.sql
 
 import java.util
-import java.util.function.Function
 
 import com.github.difflib.text.DiffRowGenerator
 import com.github.vertical_blank.sqlformatter.SqlFormatter
@@ -44,12 +43,8 @@ class SqlModelTest {
         DiffRowGenerator.create.
             showInlineDiffs(true).
             inlineDiffByWord(true).
-            oldTag(new Function[java.lang.Boolean, String]() {
-                override def apply(t: java.lang.Boolean): String = "~"
-            }).
-            newTag(new Function[java.lang.Boolean, String]() {
-                override def apply(t: java.lang.Boolean): String = "**"
-            }).
+            oldTag((_: java.lang.Boolean) ⇒ "~").
+            newTag((_: java.lang.Boolean) ⇒ "**").
             build
 
     private var client: NCTestClient = _
@@ -91,11 +86,7 @@ class SqlModelTest {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
 
         cases.
-            flatMap(c ⇒ {
-                val sql = normalize(c.sql)
-
-                c.texts.map(t ⇒ t → sql)
-            }).
+            flatMap(c ⇒ c.texts.map(t ⇒ t → normalize(c.sql))).
             foreach {
                 case (txt, expSqlNorm) ⇒
                     val res = client.ask(txt)
@@ -148,7 +139,7 @@ class SqlModelTest {
             }
 
         if (errs.nonEmpty) {
-            errs.foreach { case (txt, err) ⇒ println(s"Text: $txt\nError: $err\n") }
+            errs.foreach { case (txt, err) ⇒ System.err.println(s"Text: $txt\nError: $err\n") }
 
             throw new Exception(s"Test finished with errors [passed=${cases.size - errs.size}, failed=${errs.size}]")
         }

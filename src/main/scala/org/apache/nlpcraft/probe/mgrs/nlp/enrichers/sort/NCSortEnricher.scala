@@ -228,7 +228,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 Seq.empty
 
         if (res.isEmpty && !nullable)
-            throw new AssertionError(s"Invalid null result " +
+            throw new AssertionError(s"Invalid empty result " +
                 s"[tokensTexts=[${toks.map(_.origText).mkString("|")}]" +
                 s", notes=[${toks.flatten.map(n ⇒ s"${n.noteType}:[${n.tokenIndexes.mkString(",")}]").mkString("|")}]" +
                 s", tokensIndexes=[${toks.map(_.index).mkString("|")}]" +
@@ -253,19 +253,15 @@ object NCSortEnricher extends NCProbeEnricher {
         def extract(keyStems: Seq[String], used: Seq[NCNlpSentenceToken]): Option[KeyWord] = {
             require(keyStems.nonEmpty)
 
-            if (toks.nonEmpty) {
-                val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
+            val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
 
-                (1 to maxWords).reverse.flatMap(i ⇒
-                    toks.sliding(i).filter(toks ⇒ used.intersect(toks).isEmpty).
-                        map(toks ⇒ toks.map(_.stem).mkString(" ") → toks).toMap.
-                        flatMap { case (stem, stemToks) ⇒
-                            if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
-                        }.toStream.headOption
-                ).toStream.headOption
-            }
-            else
-                None
+            (1 to maxWords).reverse.flatMap(i ⇒
+                toks.sliding(i).filter(toks ⇒ used.intersect(toks).isEmpty).
+                    map(toks ⇒ toks.map(_.stem).mkString(" ") → toks).toMap.
+                    flatMap { case (stem, stemToks) ⇒
+                        if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
+                    }.toStream.headOption
+            ).toStream.headOption
         }
 
         var res: Option[Match] = None
@@ -298,7 +294,12 @@ object NCSortEnricher extends NCProbeEnricher {
             val others = toks.filter(t ⇒ !all.contains(t))
 
             if (others.nonEmpty) {
-                val othersRefs = others.filter(_.exists(_.isUser))
+                val i1 = others.head.index
+                val i2 = others.last.index
+
+                val othersRefs = others.filter(
+                    t ⇒ t.exists(n ⇒ n.isUser && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2)
+                )
 
                 if (
                     othersRefs.nonEmpty &&
@@ -410,9 +411,9 @@ object NCSortEnricher extends NCProbeEnricher {
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
+            def isImportant(t: NCNlpSentenceToken): Boolean = t.isUser || MASK_WORDS.contains(t.stem)
 
-            for (toks ← ns.tokenMixWithStopWords())
+            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks, isImportant)) {
                 tryToMatch(toks) match {
                     case Some(m) ⇒
                         def addNotes(
@@ -432,8 +433,6 @@ object NCSortEnricher extends NCProbeEnricher {
 
                             m.main.foreach(_.add(note))
                             m.stop.foreach(_.addStopReason(note))
-
-                            buf += toks.toSet
                         }
 
                         def mkParams(): mutable.ArrayBuffer[(String, Any)] = {
@@ -465,6 +464,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
                     case None ⇒ // No-op.
                 }
+            }
         }
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒

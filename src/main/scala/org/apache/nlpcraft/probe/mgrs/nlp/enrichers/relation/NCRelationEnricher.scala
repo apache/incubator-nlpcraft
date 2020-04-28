@@ -60,6 +60,7 @@ object NCRelationEnricher extends NCProbeEnricher {
     )
 
     private var FUNCS: Seq[Holder] = _
+    private var ALL_FUNC_STEMS: Set[String] = _
 
     /**
       * Starts this component.
@@ -108,6 +109,8 @@ object NCRelationEnricher extends NCProbeEnricher {
             seq.sortBy(-_.allStems.size)
         }
 
+        ALL_FUNC_STEMS = FUNCS.flatMap(_.allStems).toSet
+
         super.start()
     }
 
@@ -123,10 +126,13 @@ object NCRelationEnricher extends NCProbeEnricher {
             "txt" → ns.text) { _ ⇒
             // Tries to grab tokens direct way.
             // Example: A, B, C ⇒ ABC, AB, BC .. (AB will be processed first)
-            for (toks ← ns.tokenMixWithStopWords())
+
+            def isImportant(t: NCNlpSentenceToken): Boolean =
+                t.exists(n ⇒ n.isUser || REL_TYPES.contains(n.noteType)) || ALL_FUNC_STEMS.contains(t.stem)
+
+            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks, isImportant))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, Seq(m.matched.head))) {
                         for (refNote ← m.refNotes) {
                             val note = NCNlpSentenceNote(
                                 Seq(m.matchedHead.index),
@@ -186,7 +192,17 @@ object NCRelationEnricher extends NCProbeEnricher {
       * @param toks
       */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
-        var refOpts = toks.filter(t ⇒ t.exists(n ⇒ n.isUser || REL_TYPES.contains(n.noteType)))
+        val i1 = toks.head.index
+        val i2 = toks.last.index
+
+        var refOpts = toks.
+            filter(t ⇒
+                t.exists(n ⇒ (
+                    n.isUser || REL_TYPES.contains(n.noteType)) &&
+                    n.tokenIndexes.head >= i1 &&
+                    n.tokenIndexes.last <= i2
+                )
+            )
         val matchOpts = toks.diff(refOpts)
 
         if (refOpts.nonEmpty && matchOpts.nonEmpty)
