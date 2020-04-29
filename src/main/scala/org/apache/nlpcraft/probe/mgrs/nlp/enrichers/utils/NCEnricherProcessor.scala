@@ -33,6 +33,7 @@ import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import scala.collection.JavaConverters._
 import scala.collection._
 
+
 /**
   *
   */
@@ -336,10 +337,6 @@ object NCEnricherProcessor extends NCService with LazyLogging {
     ): Unit = {
         // Java collection used because using scala collections (mutable.Buffer.empty[mutable.Buffer[Token]]) is reason
         // Of compilation errors which seems as scala compiler internal error.
-        import java.util
-
-        import scala.collection.JavaConverters._
-
         val bufs = new util.ArrayList[mutable.Buffer[NCNlpSentenceToken]]()
 
         def last[T](l: util.List[T]): T = l.get(l.size() - 1)
@@ -765,7 +762,8 @@ object NCEnricherProcessor extends NCService with LazyLogging {
             }
 
         def extract(n: NCNlpSentenceNote, refIdxName: String): Set[NCNlpSentenceToken] =
-            n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[java.util.List[Int]].asScala.map(sen(_)).toSet
+            n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[java.util.List[java.util.List[Int]]].asScala.
+                flatMap(_.asScala.map(sen(_))).toSet
 
         def referencesEqualOrNearly(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean =
             refIdxNames.isEmpty || refIdxNames.forall(refIdxName ⇒ {
