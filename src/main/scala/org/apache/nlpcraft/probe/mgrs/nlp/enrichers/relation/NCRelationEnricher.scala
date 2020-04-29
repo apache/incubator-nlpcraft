@@ -26,6 +26,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils.NCEnricherProcessor
 
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, mutable}
@@ -126,11 +127,12 @@ object NCRelationEnricher extends NCProbeEnricher {
             "txt" → ns.text) { _ ⇒
             // Tries to grab tokens direct way.
             // Example: A, B, C ⇒ ABC, AB, BC .. (AB will be processed first)
+            val notes = mutable.HashSet.empty[NCNlpSentenceNote]
 
             def isImportant(t: NCNlpSentenceToken): Boolean =
                 t.exists(n ⇒ n.isUser || REL_TYPES.contains(n.noteType)) || ALL_FUNC_STEMS.contains(t.stem)
 
-            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks, isImportant))
+            for (toks ← ns.tokenMixWithStopWords() if NCEnricherProcessor.validImportant(ns, toks, isImportant))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
                         for (refNote ← m.refNotes) {
@@ -142,9 +144,13 @@ object NCRelationEnricher extends NCProbeEnricher {
                                 "note" → refNote
                             )
 
-                            m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))
+                            if (!notes.exists(n ⇒ NCEnricherProcessor.sameForSentence(note, n, ns))) {
+                                notes += note
 
-                            m.matchedHead.add(note)
+                                m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))
+
+                                m.matchedHead.add(note)
+                            }
                         }
                     case None ⇒ // No-op.
                 }

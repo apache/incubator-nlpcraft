@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.post
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils
 
 import java.io.Serializable
 import java.util
+import java.util.Collections
 
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.pos._
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence, _}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, _}
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenImpl
@@ -33,14 +34,9 @@ import scala.collection.JavaConverters._
 import scala.collection._
 
 /**
-  * This collapser handles several tasks:
-  * - "overall" collapsing after all other individual collapsers had their turn.
-  * - Special further enrichment of tokens like linking, etc.
   *
-  * In all cases of overlap (full or partial) - the "longest" note wins. In case of overlap and equal
-  * lengths - the winning note is chosen based on this priority.
   */
-object NCPostEnrichProcessor extends NCService with LazyLogging {
+object NCEnricherProcessor extends NCService with LazyLogging {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         super.start()
     }
@@ -53,117 +49,39 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
       *
       * @param note
       * @param withIndexes
+      * @param withReferences
       * @return
       */
-    def getUniqueKey(note: NCNlpSentenceNote, withIndexes: Boolean = true): Any = {
-        val seq1 = if (withIndexes) Seq(note.wordIndexes, note.noteType) else Seq(note.noteType)
+    def getKey(note: NCNlpSentenceNote, withIndexes: Boolean = true, withReferences: Boolean = true): Seq[Any] = {
+        def addRefs(names: String*): Seq[String] = if (withReferences) names else Seq.empty
 
-        val seq2: Seq[Any] =
+        val names: Seq[String] =
             if (note.isUser)
                 Seq.empty
-            else {
+            else
                 note.noteType match {
-                    case "nlpcraft:continent" ⇒
-                        Seq(
-                            note.get("continent")
-                        )
-                    case "nlpcraft:subcontinent" ⇒
-                        Seq(
-                            note.get("continent"),
-                            note.get("subcontinent")
-                        )
-                    case "nlpcraft:country" ⇒
-                        Seq(
-                            note.get("continent"),
-                            note.get("subcontinent"),
-                            note.get("country")
-                        )
-                    case "nlpcraft:region" ⇒
-                        Seq(
-                            note.wordIndexes,
-                            note.noteType,
-                            note.get("continent"),
-                            note.get("subcontinent"),
-                            note.get("country"),
-                            note.get("region")
-                        )
-                    case "nlpcraft:city" ⇒
-                        Seq(
-                            note.get("continent"),
-                            note.get("subcontinent"),
-                            note.get("country"),
-                            note.get("region"),
-                            note.get("city")
-                        )
-                    case "nlpcraft:metro" ⇒
-                        Seq(
-                            note.get("metro")
-                        )
-                    case "nlpcraft:date" ⇒
-                        Seq(
-                            note.get("from"),
-                            note.get("to")
-                        )
-                    case "nlpcraft:relation" ⇒
-                        Seq(
-                            note.get("type"),
-                            note.get("indexes"),
-                            note.get("note")
-                        )
-                    case "nlpcraft:sort" ⇒
-                        Seq(
-                            note.wordIndexes,
-                            note.noteType,
-                            note.get("subjnotes"),
-                            note.get("subjindexes"),
-                            note.getOrElse("bynotes", null),
-                            note.getOrElse("byindexes", null),
-                            note.getOrElse("asc", null)
-                        )
-                    case "nlpcraft:limit" ⇒
-                        Seq(
-                            note.get("limit"),
-                            note.getOrElse("asc", null),
-                            note.get("indexes"),
-                            note.get("note")
-                        )
-                    case "nlpcraft:coordinate" ⇒
-                        Seq(
-                            note.get("latitude"),
-                            note.get("longitude")
-                        )
-                    case "nlpcraft:num" ⇒
-                        Seq(
-                            note.get("from"),
-                            note.get("to"),
-                            note.getOrElse("indexes", null),
-                            note.getOrElse("note", null)
-
-                        )
-                    case x if x.startsWith("google:") ⇒
-                        Seq(
-                            note.get("meta"),
-                            note.get("mentionsBeginOffsets"),
-                            note.get("mentionsContents"),
-                            note.get("mentionsTypes")
-                        )
-                    case x if x.startsWith("stanford:") ⇒
-                        Seq(
-                            note.get("nne")
-                        )
-                    case x if x.startsWith("opennlp:") ⇒
-                        Seq(
-                            note.wordIndexes,
-                            note.noteType
-                        )
-                    case x if x.startsWith("spacy:") ⇒
-                        Seq(
-                            note.get("vector")
-                        )
+                    case "nlpcraft:continent" ⇒ Seq("continent")
+                    case "nlpcraft:subcontinent" ⇒ Seq("continent", "subcontinent")
+                    case "nlpcraft:country" ⇒ Seq("continent", "subcontinent", "country")
+                    case "nlpcraft:region" ⇒ Seq("continent", "subcontinent", "country", "region")
+                    case "nlpcraft:city" ⇒ Seq("continent", "subcontinent", "country", "region", "city")
+                    case "nlpcraft:metro" ⇒ Seq("metro")
+                    case "nlpcraft:date" ⇒ Seq("from", "to")
+                    case "nlpcraft:relation" ⇒ Seq("type", "note") ++ addRefs("indexes")
+                    case "nlpcraft:sort" ⇒ Seq("asc", "subjnotes", "bynotes") ++ addRefs("subjindexes", "byindexes")
+                    case "nlpcraft:limit" ⇒ Seq("limit", "asc", "note") ++ addRefs("indexes")
+                    case "nlpcraft:coordinate" ⇒ Seq("latitude", "longitude")
+                    case "nlpcraft:num" ⇒ Seq("from", "to", "unit", "unitType")
+                    case x if x.startsWith("google:") ⇒ Seq("meta", "mentionsBeginOffsets", "mentionsContents", "mentionsTypes")
+                    case x if x.startsWith("stanford:") ⇒ Seq("nne")
+                    case x if x.startsWith("opennlp:") ⇒ Seq.empty
+                    case x if x.startsWith("spacy:") ⇒ Seq("vector")
 
                     case _ ⇒ throw new AssertionError(s"Unexpected note type: ${note.noteType}")
                 }
-        }
+
+        val seq1 = if (withIndexes) Seq(note.wordIndexes, note.noteType) else Seq(note.noteType)
+        val seq2 = names.map(name ⇒ note.getOrElse(name, null))
 
         seq1 ++ seq2
     }
@@ -587,6 +505,12 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
     }
 
     /**
+      * This collapser handles several tasks:
+      * - "overall" collapsing after all other individual collapsers had their turn.
+      * - Special further enrichment of tokens like linking, etc.
+      *
+      * In all cases of overlap (full or partial) - the "longest" note wins. In case of overlap and equal
+      * lengths - the winning note is chosen based on this priority.
       *
       * @param mdl
       * @param ns
@@ -605,7 +529,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             // other variants for these words are redundant.
             val redundant: Seq[NCNlpSentenceNote] =
                 ns.flatten.filter(!_.isNlp).distinct.
-                    groupBy(p ⇒ getUniqueKey(p)).
+                    groupBy(p ⇒ getKey(p)).
                     map(p ⇒ p._2.sortBy(p ⇒
                         (
                             // System notes don't have such flags.
@@ -722,7 +646,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
 
             // Drops similar sentences (with same tokens structure).
             // Among similar sentences we prefer one with minimal free words count.
-            sens.groupBy(_.flatten.filter(!_.isNlp).map(note ⇒ getUniqueKey(note, withIndexes = false))).
+            sens.groupBy(_.flatten.filter(!_.isNlp).map(note ⇒ getKey(note, withIndexes = false))).
             map { case (_, seq) ⇒ seq.minBy(_.filter(p ⇒ p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
             toSeq
         }
@@ -786,4 +710,76 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             )
         )
     }
+
+    /**
+      * Checks whether important tokens deleted as stopwords or not.
+      *
+      * @param ns Sentence.
+      * @param toks Tokens in which some stopwords can be deleted.
+      * @param isImportant Token important criteria.
+      */
+    def validImportant(
+        ns: NCNlpSentence,
+        toks: Seq[NCNlpSentenceToken],
+        isImportant: NCNlpSentenceToken ⇒ Boolean
+    ): Boolean = {
+        val idxs = toks.map(_.index)
+
+        require(idxs == idxs.sorted)
+
+        val toks2 = ns.slice(idxs.head, idxs.last + 1)
+
+        toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
+    }
+
+    /**
+      *
+      * @param n1
+      * @param n2
+      * @param sen
+      * @return
+      */
+    def sameForSentence(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote, sen: NCNlpSentence): Boolean = {
+        require(n1.noteType == n2.noteType)
+
+        val stopIdxs = sen.filter(_.isStopWord).map(_.index)
+
+        // One possible difference - stopwords indexes.
+        def wordsEqualOrSimilar(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean = {
+            val set1 = n1.wordIndexes.toSet
+            val set2 = n2.wordIndexes.toSet
+
+            set1 == set2 || set1.subsetOf(set2) && set2.diff(set1).forall(stopIdxs.contains)
+        }
+
+        def tokensEqualOrSimilar(set1: Set[NCNlpSentenceToken], set2: Set[NCNlpSentenceToken]): Boolean =
+            set1 == set2 || set1.subsetOf(set2) && set2.diff(set1).forall(_.isStopWord)
+
+        val refIdxNames =
+            n1.noteType match {
+                case "nlpcraft:sort" ⇒ Seq("subjindexes", "byindexes")
+                case "nlpcraft:limit" ⇒ Seq("indexes")
+                case "nlpcraft:reference" ⇒ Seq("indexes")
+
+                case _ ⇒ Seq.empty
+            }
+
+        def extract(n: NCNlpSentenceNote, refIdxName: String): Set[NCNlpSentenceToken] =
+            n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[java.util.List[Int]].asScala.map(sen(_)).toSet
+
+        def referencesEqualOrNearly(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean =
+            refIdxNames.isEmpty || refIdxNames.forall(refIdxName ⇒ {
+                val refs1 = extract(n1, refIdxName)
+                val refs2 = extract(n2, refIdxName)
+
+                tokensEqualOrSimilar(refs1, refs2) || tokensEqualOrSimilar(refs2, refs1)
+            })
+
+        def getUniqueKey0(n: NCNlpSentenceNote): Seq[Any] = getKey(n, withIndexes = false, withReferences = false)
+
+        getUniqueKey0(n1) == getUniqueKey0(n2) &&
+            (wordsEqualOrSimilar(n2, n1) || wordsEqualOrSimilar(n1, n2)) &&
+            (referencesEqualOrNearly(n2, n1) || referencesEqualOrNearly(n1, n2))
+    }
+
 }

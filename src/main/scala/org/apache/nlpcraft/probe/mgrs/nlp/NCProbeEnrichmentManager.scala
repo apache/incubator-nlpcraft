@@ -42,11 +42,11 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.dictionary.NCDictionaryEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit.NCLimitEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model.NCModelEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.post._
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils._
 import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 
@@ -179,52 +179,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 finally
                     span.end()
         }
-    }
-
-    /**
-      *
-      * @param nlpSen
-      * @param notes1
-      * @param notes2
-      * @param stopIdxs
-      * @param typ
-      */
-    private def squeeze(
-        nlpSen: NCNlpSentence,
-        notes1: Seq[NCNlpSentenceNote],
-        notes2: Seq[NCNlpSentenceNote],
-        stopIdxs: Seq[Int],
-        typ: String
-    ): Boolean = {
-        // Filters notes and adds unique key.
-        def toMap(notes: Seq[NCNlpSentenceNote], filter: NCNlpSentenceNote ⇒ Boolean):
-        Map[NCNlpSentenceNote, Any] =
-            notes.
-                filter(filter).
-                map(p ⇒ p → NCPostEnrichProcessor.getUniqueKey(p, withIndexes = false)).
-                toMap
-
-        // One possible difference - stopwords indexes.
-        def equalOrNearly(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean = {
-            val set1 = n1.wordIndexes.toSet
-            val set2 = n2.wordIndexes.toSet
-
-            set1 == set2 || set1.subsetOf(set2) && set2.diff(set1).forall(stopIdxs.contains)
-        }
-
-        val notesTyp1 = toMap(notes1, (n: NCNlpSentenceNote) ⇒ n.noteType == typ)
-        val diff = toMap(notes2, (n: NCNlpSentenceNote) ⇒ n.noteType == typ && !notesTyp1.contains(n))
-
-        // New notes are same as already prepared with one difference -
-        // their tokens contain or not stopwords.
-        // Such "new" tokens can be deleted.
-        val diffRedundant = diff.filter { case (n1, key1) ⇒
-            notesTyp1.exists { case (n2, key2) ⇒ key1 == key2 && (equalOrNearly(n2, n1) || equalOrNearly(n1, n2)) }
-        }.map { case (n, _) ⇒ n }
-
-        diffRedundant.foreach(nlpSen.removeNote)
-
-        diffRedundant.size == diff.size
     }
 
     /**
@@ -438,14 +392,35 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                     var same = notes1 == notes2
 
-                    if (!same)
+                    if (!same) {
+                        def squeeze(typ: String): Boolean = {
+                            val diff = notes2.filter(n ⇒ !notes1.contains(n))
+
+                            val diffRedundant = diff.flatMap(n2 ⇒
+                                notes1.find(n1 ⇒ NCEnricherProcessor.sameForSentence(n1, n2, nlpSen)) match {
+                                    case Some(similar) ⇒ Some(n2 → similar)
+                                    case None ⇒ None
+                                }
+                            )
+
+                            diffRedundant.foreach { case (del, similar) ⇒
+                                // TODO: log level
+                                logger.info(s"Redundant note removed: $del, because similar exists: $similar")
+
+                                nlpSen.removeNote(del)
+                            }
+
+                            diffRedundant.size == diff.size
+                        }
+
                         h.enricher match {
-                            case NCSortEnricher ⇒ same = squeeze(nlpSen, notes1, notes2, stopIdxs,"nlpcraft:sort")
-                            case NCLimitEnricher ⇒ same = squeeze(nlpSen, notes1, notes2, stopIdxs,"nlpcraft:limit")
-                            case NCRelationEnricher ⇒ same = squeeze(nlpSen, notes1, notes2, stopIdxs,"nlpcraft:relation")
+                            case NCSortEnricher ⇒ same = squeeze("nlpcraft:sort")
+                            case NCLimitEnricher ⇒ same = squeeze("nlpcraft:limit")
+                            case NCRelationEnricher ⇒ same = squeeze("nlpcraft:relation")
 
                             case _ ⇒ // No-op.
                         }
+                    }
 
                     h.enricher → same
                 }).toMap
@@ -462,7 +437,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         logger.info(s"Enrichment finished [step=$step]")
             }
 
-            NCPostEnrichProcessor.collapse(mdlDec, nlpSen.clone(), span).
+            NCEnricherProcessor.collapse(mdlDec, nlpSen.clone(), span).
                 // Sorted to support deterministic logs.
                 sortBy(p ⇒
                 p.map(p ⇒ {
@@ -503,7 +478,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val varsNlp = sensSeq.map(_.toSeq)
         val req = NCRequestImpl(meta, srvReqId)
 
-        var senVars = NCPostEnrichProcessor.convert(mdlDec, srvReqId, varsNlp)
+        var senVars = NCEnricherProcessor.convert(mdlDec, srvReqId, varsNlp)
 
         // Sentence variants can be filtered by model.
         val fltSenVars: Seq[(Seq[NCToken], Int)] =

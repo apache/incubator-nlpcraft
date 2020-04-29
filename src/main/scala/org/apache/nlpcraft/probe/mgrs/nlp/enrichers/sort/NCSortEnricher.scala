@@ -26,6 +26,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils.NCEnricherProcessor
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
@@ -411,10 +412,10 @@ object NCSortEnricher extends NCProbeEnricher {
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
+            val notes = mutable.HashSet.empty[NCNlpSentenceNote]
             def isImportant(t: NCNlpSentenceToken): Boolean = t.isUser || MASK_WORDS.contains(t.stem)
 
-            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks, isImportant)) {
+            for (toks ← ns.tokenMixWithStopWords() if NCEnricherProcessor.validImportant(ns, toks, isImportant)) {
                 tryToMatch(toks) match {
                     case Some(m) ⇒
                         def addNotes(
@@ -432,8 +433,12 @@ object NCSortEnricher extends NCProbeEnricher {
                         def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
                             val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
-                            m.main.foreach(_.add(note))
-                            m.stop.foreach(_.addStopReason(note))
+                            if (!notes.exists(n ⇒ NCEnricherProcessor.sameForSentence(note, n, ns))) {
+                                notes += note
+
+                                m.main.foreach(_.add(note))
+                                m.stop.foreach(_.addStopReason(note))
+                            }
                         }
 
                         def mkParams(): mutable.ArrayBuffer[(String, Any)] = {

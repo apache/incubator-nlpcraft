@@ -27,6 +27,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils.NCEnricherProcessor
 
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, mutable}
@@ -150,7 +151,6 @@ object NCLimitEnricher extends NCProbeEnricher {
         s"$CD of",
         s"$CD <POST_WORDS>",
         s"<POST_WORDS> $CD"
-
     )
 
     private final val LIMITS: Seq[String] = {
@@ -191,14 +191,16 @@ object NCLimitEnricher extends NCProbeEnricher {
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
+            val notes = mutable.HashSet.empty[NCNlpSentenceNote]
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
+
             def isImportant(t: NCNlpSentenceToken): Boolean = t.isUser || TECH_WORDS.contains(t.stem)
 
             // Tries to grab tokens reverse way.
             // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
             for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index))
-                 if validImportant(ns, toks, isImportant)
+                 if NCEnricherProcessor.validImportant(ns, toks, isImportant)
             )
                 tryToMatch(numsMap, groupsMap, toks) match {
                     case Some(m) ⇒
@@ -214,11 +216,47 @@ object NCLimitEnricher extends NCProbeEnricher {
 
                             val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, params: _*)
 
-                            m.matched.foreach(_.add(note))
+                            if (!notes.exists(n ⇒ NCEnricherProcessor.sameForSentence(note, n, ns))) {
+                                notes += note
+
+                                m.matched.foreach(_.add(note))
+                            }
                         }
                     case None ⇒ // No-op.
                 }
         }
+
+    /**
+      *
+      * @param toks
+      */
+    private def getCommonNotes(toks: Seq[NCNlpSentenceToken]): Set[String] =
+        if (toks.isEmpty)
+            Set.empty
+        else {
+            def getCommon(sortedToks: Seq[NCNlpSentenceToken]): Set[String] = {
+                require(sortedToks.nonEmpty)
+
+                val h = sortedToks.head
+                val l = sortedToks.last
+
+                h.filter(!_.isNlp).filter(n ⇒ h.index == n.tokenFrom && l.index == n.tokenTo).map(_.noteType).toSet
+            }
+
+            var sortedToks = toks.sortBy(_.index)
+
+            var res = getCommon(sortedToks)
+
+            if (res.isEmpty) {
+                sortedToks = sortedToks.filter(!_.isStopWord)
+
+                if (sortedToks.nonEmpty)
+                    res = getCommon(sortedToks)
+            }
+
+            if (res.isEmpty) Set.empty else res
+        }
+
     /**
       *
       * @param numsMap
