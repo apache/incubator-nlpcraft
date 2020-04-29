@@ -234,25 +234,30 @@ object NCLimitEnricher extends NCProbeEnricher {
         val i2 = toks.last.index
 
         val refCands = toks.filter(_.exists(n ⇒ n.isUser && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
-        val commonNotes = getCommonNotes(refCands)
+        val commonRefNotes = getCommonNotes(refCands)
 
-        if (commonNotes.nonEmpty) {
+        if (commonRefNotes.nonEmpty) {
             val matchCands = toks.diff(refCands)
+            val idxs = refCands.map(_.index)
+
+            val minRefIdx = idxs.min
 
             def try0(group: Seq[NCNlpSentenceToken]): Option[Match] =
-                groupsMap.get(group) match {
-                    case Some(h) ⇒
-                        val idxs = refCands.map(_.index).asJava
-
-                        if (LIMITS.contains(h.value) || h.isFuzzyNum)
-                            Some(Match(h.limit, Some(h.asc), matchCands, commonNotes, idxs))
-                        else
-                            numsMap.get(group) match {
-                                case Some(num) ⇒ Some(Match(num.value, None, matchCands, commonNotes, idxs))
-                                case None ⇒ None
-                            }
-                    case None ⇒ None
-                }
+                // All references must be after token for limits.
+                if (group.forall(_.index < minRefIdx))
+                    groupsMap.get(group) match {
+                        case Some(h) ⇒
+                            if (LIMITS.contains(h.value) || h.isFuzzyNum)
+                                Some(Match(h.limit, Some(h.asc), matchCands, commonRefNotes, idxs.asJava))
+                            else
+                                numsMap.get(group) match {
+                                    case Some(num) ⇒ Some(Match(num.value, None, matchCands, commonRefNotes, idxs.asJava))
+                                    case None ⇒ None
+                                }
+                        case None ⇒ None
+                    }
+                else
+                    None
 
             try0(matchCands) match {
                 case Some(m) ⇒ Some(m)
