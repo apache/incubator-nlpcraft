@@ -51,7 +51,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 
 import scala.collection.JavaConverters._
-import scala.collection._
+import scala.collection.{Seq, _}
 import scala.concurrent.ExecutionContext
 
 /**
@@ -179,6 +179,52 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 finally
                     span.end()
         }
+    }
+
+    /**
+      *
+      * @param nlpSen
+      * @param notes1
+      * @param notes2
+      * @param stopIdxs
+      * @param typ
+      */
+    private def squeeze(
+        nlpSen: NCNlpSentence,
+        notes1: Seq[NCNlpSentenceNote],
+        notes2: Seq[NCNlpSentenceNote],
+        stopIdxs: Seq[Int],
+        typ: String
+    ): Boolean = {
+        // Filters notes and adds unique key.
+        def toMap(notes: Seq[NCNlpSentenceNote], filter: NCNlpSentenceNote ⇒ Boolean):
+        Map[NCNlpSentenceNote, Any] =
+            notes.
+                filter(filter).
+                map(p ⇒ p → NCPostEnrichProcessor.getUniqueKey(p, withIndexes = false)).
+                toMap
+
+        // One possible difference - stopwords indexes.
+        def equalOrNearly(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean = {
+            val set1 = n1.wordIndexes.toSet
+            val set2 = n2.wordIndexes.toSet
+
+            set1 == set2 || set1.subsetOf(set2) && set2.diff(set1).forall(stopIdxs.contains)
+        }
+
+        val notesTyp1 = toMap(notes1, (n: NCNlpSentenceNote) ⇒ n.noteType == typ)
+        val diff = toMap(notes2, (n: NCNlpSentenceNote) ⇒ n.noteType == typ && !notesTyp1.contains(n))
+
+        // New notes are same as already prepared with one difference -
+        // their tokens contain or not stopwords.
+        // Such "new" tokens can be deleted.
+        val diffRedundant = diff.filter { case (n1, key1) ⇒
+            notesTyp1.exists { case (n2, key2) ⇒ key1 == key2 && (equalOrNearly(n2, n1) || equalOrNearly(n1, n2)) }
+        }.map { case (n, _) ⇒ n }
+
+        diffRedundant.foreach(nlpSen.removeNote)
+
+        diffRedundant.size == diff.size
     }
 
     /**
@@ -374,6 +420,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             var step = 0
             var continue = true
 
+            val stopIdxs = nlpSen.filter(_.isStopWord).map(_.index)
+
             while (continue) {
                 step = step + 1
 
@@ -382,22 +430,34 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                 val res = loopEnrichers.map(h ⇒ {
                     def get(): Seq[NCNlpSentenceNote] = h.getNotes().sortBy(p ⇒ (p.tokenIndexes.head, p.noteType))
-
                     val notes1 = get()
 
                     h → h.enricher.enrich(mdlDec, nlpSen, senMeta, span)
 
                     val notes2 = get()
 
-                    h.enricher → (notes1 == notes2)
+                    var same = notes1 == notes2
+
+                    if (!same)
+                        h.enricher match {
+                            case NCSortEnricher ⇒ same = squeeze(nlpSen, notes1, notes2, stopIdxs,"nlpcraft:sort")
+                            case NCLimitEnricher ⇒ same = squeeze(nlpSen, notes1, notes2, stopIdxs,"nlpcraft:limit")
+                            case NCRelationEnricher ⇒ same = squeeze(nlpSen, notes1, notes2, stopIdxs,"nlpcraft:relation")
+
+                            case _ ⇒ // No-op.
+                        }
+
+                    h.enricher → same
                 }).toMap
 
                 // Loop has sense if model is complex (has user defined parsers or DSL based synonyms)
                 continue = NCModelEnricher.isComplex(mdlDec) && res.exists { case (_, same) ⇒ !same }
 
-                if (DEEP_DEBUG)
-                    if (continue)
-                        logger.info(s"Enrichment iteration finished - more needed [step=$step, changed=${res.keys.mkString(", ")}]")
+                    if (continue) {
+                        val changed = res.filter(!_._2).keys.map(_.getClass.getSimpleName).mkString(", ")
+
+                        logger.info(s"Enrichment iteration finished - more needed [step=$step, changed=$changed]")
+                    }
                     else
                         logger.info(s"Enrichment finished [step=$step]")
             }

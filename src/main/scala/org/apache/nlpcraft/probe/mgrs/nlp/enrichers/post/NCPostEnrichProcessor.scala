@@ -55,7 +55,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
       * @param withIndexes
       * @return
       */
-    private def getParameters(note: NCNlpSentenceNote, withIndexes: Boolean = true): Any = {
+    def getUniqueKey(note: NCNlpSentenceNote, withIndexes: Boolean = true): Any = {
         val seq1 = if (withIndexes) Seq(note.wordIndexes, note.noteType) else Seq(note.noteType)
 
         val seq2: Seq[Any] =
@@ -605,7 +605,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
             // other variants for these words are redundant.
             val redundant: Seq[NCNlpSentenceNote] =
                 ns.flatten.filter(!_.isNlp).distinct.
-                    groupBy(p ⇒ getParameters(p)).
+                    groupBy(p ⇒ getUniqueKey(p)).
                     map(p ⇒ p._2.sortBy(p ⇒
                         (
                             // System notes don't have such flags.
@@ -722,7 +722,7 @@ object NCPostEnrichProcessor extends NCService with LazyLogging {
 
             // Drops similar sentences (with same tokens structure).
             // Among similar sentences we prefer one with minimal free words count.
-            sens.groupBy(_.flatten.filter(!_.isNlp).map(note ⇒ getParameters(note, withIndexes = false))).
+            sens.groupBy(_.flatten.filter(!_.isNlp).map(note ⇒ getUniqueKey(note, withIndexes = false))).
             map { case (_, seq) ⇒ seq.minBy(_.filter(p ⇒ p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
             toSeq
         }

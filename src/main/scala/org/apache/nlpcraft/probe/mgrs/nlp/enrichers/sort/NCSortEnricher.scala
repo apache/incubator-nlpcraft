@@ -411,6 +411,7 @@ object NCSortEnricher extends NCProbeEnricher {
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
+            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
             def isImportant(t: NCNlpSentenceToken): Boolean = t.isUser || MASK_WORDS.contains(t.stem)
 
             for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks, isImportant)) {
