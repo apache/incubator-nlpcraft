@@ -216,7 +216,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
                             val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, params: _*)
 
-                            if (!notes.exists(n ⇒ NCEnricherProcessor.sameForSentence(note, n, ns))) {
+                            if (!notes.exists(n ⇒ NCEnricherProcessor.equalOrSimilar(note, n, ns))) {
                                 notes += note
 
                                 m.matched.foreach(_.add(note))

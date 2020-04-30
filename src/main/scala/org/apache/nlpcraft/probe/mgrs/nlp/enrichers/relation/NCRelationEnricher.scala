@@ -144,7 +144,7 @@ object NCRelationEnricher extends NCProbeEnricher {
                                 "note" → refNote
                             )
 
-                            if (!notes.exists(n ⇒ NCEnricherProcessor.sameForSentence(note, n, ns))) {
+                            if (!notes.exists(n ⇒ NCEnricherProcessor.equalOrSimilar(note, n, ns))) {
                                 notes += note
 
                                 m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))

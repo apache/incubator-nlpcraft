@@ -433,7 +433,7 @@ object NCSortEnricher extends NCProbeEnricher {
                         def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
                             val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
-                            if (!notes.exists(n ⇒ NCEnricherProcessor.sameForSentence(note, n, ns))) {
+                            if (!notes.exists(n ⇒ NCEnricherProcessor.equalOrSimilar(note, n, ns))) {
                                 notes += note
 
                                 m.main.foreach(_.add(note))

@@ -397,7 +397,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             val diff = notes2.filter(n ⇒ !notes1.contains(n))
 
                             val diffRedundant = diff.flatMap(n2 ⇒
-                                notes1.find(n1 ⇒ NCEnricherProcessor.sameForSentence(n1, n2, nlpSen)) match {
+                                notes1.find(n1 ⇒ NCEnricherProcessor.equalOrSimilar(n1, n2, nlpSen)) match {
                                     case Some(similar) ⇒ Some(n2 → similar)
                                     case None ⇒ None
                                 }
