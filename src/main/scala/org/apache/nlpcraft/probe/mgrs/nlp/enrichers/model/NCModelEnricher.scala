@@ -348,7 +348,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 permCnt += 1
 
                 for (toks ← combos(perm)) {
-                    val key = toks.map(_.index)
+                    val key = toks.map(_.index).sorted
 
                     if (!cache.contains(key)) {
                         var seq: Seq[Seq[Complex]] = null
@@ -366,8 +366,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                     matches += ElementMatch(elm, toks, syn, parts)
                                 }
 
-                            // Check synonym matches.
-                            if (mdl.synonyms.nonEmpty)
+                            // Optimization - plain synonyms can be used only on first iteration
+                            if (mdl.synonyms.nonEmpty && !ns.exists(_.isUser))
                                 for (syn ← fastAccess(mdl.synonyms, elm.getId, toks.length) if !found)
                                     if (syn.isMatch(toks))
                                         addMatch(elm, toks, syn, Seq.empty)

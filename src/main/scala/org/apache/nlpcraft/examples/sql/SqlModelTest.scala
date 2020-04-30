@@ -511,6 +511,45 @@ class SqlModelTest {
                   |LIMIT
                   |  1000
                   """.stripMargin
+            ),
+            Case(
+                Seq(
+                    "What are the top orders for the last 2 weeks sorted by order quantity?"
+                ),
+                """SELECT
+                  |  order_details.quantity,
+                  |  orders.order_date,
+                  |  order_details.unit_price,
+                  |  order_details.discount,
+                  |  orders.order_id,
+                  |  orders.required_date,
+                  |  customers.customer_id,
+                  |  customers.company_name,
+                  |  customers.contact_name,
+                  |  employees.employee_id,
+                  |  employees.last_name,
+                  |  employees.first_name,
+                  |  products.product_id,
+                  |  products.product_name,
+                  |  products.quantity_per_unit,
+                  |  shippers.shipper_id,
+                  |  shippers.company_name,
+                  |  shippers.phone
+                  |FROM
+                  |  order_details
+                  |  INNER JOIN orders ON order_details.order_id = orders.order_id
+                  |  INNER JOIN products ON order_details.product_id = products.product_id
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |WHERE
+                  |  orders.order_date >= ?
+                  |  AND orders.order_date <= ?
+                  |ORDER BY
+                  |  order_details.quantity DESC
+                  |LIMIT
+                  |  10
+                  """.stripMargin
             )
         )
     }
