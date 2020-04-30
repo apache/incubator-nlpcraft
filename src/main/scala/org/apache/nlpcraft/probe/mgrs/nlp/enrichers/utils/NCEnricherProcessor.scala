@@ -752,26 +752,37 @@ object NCEnricherProcessor extends NCService with LazyLogging {
         def tokensEqualOrSimilar(set1: Set[NCNlpSentenceToken], set2: Set[NCNlpSentenceToken]): Boolean =
             set1 == set2 || set1.subsetOf(set2) && set2.diff(set1).forall(_.isStopWord)
 
-        val refIdxNames =
-            n1.noteType match {
-                case "nlpcraft:sort" ⇒ Seq("subjindexes", "byindexes")
-                case "nlpcraft:limit" ⇒ Seq("indexes")
-                case "nlpcraft:reference" ⇒ Seq("indexes")
+        def extractList(n: NCNlpSentenceNote, refIdxName: String): Set[NCNlpSentenceToken] =
+            n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[java.util.List[Int]].asScala.
+                map(sen(_)).toSet
 
-                case _ ⇒ Seq.empty
-            }
-
-        def extract(n: NCNlpSentenceNote, refIdxName: String): Set[NCNlpSentenceToken] =
+        def extractListList(n: NCNlpSentenceNote, refIdxName: String): Set[NCNlpSentenceToken] =
             n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[java.util.List[java.util.List[Int]]].asScala.
                 flatMap(_.asScala.map(sen(_))).toSet
 
-        def referencesEqualOrNearly(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean =
-            refIdxNames.isEmpty || refIdxNames.forall(refIdxName ⇒ {
-                val refs1 = extract(n1, refIdxName)
-                val refs2 = extract(n2, refIdxName)
+        def referencesEqualOrNearly(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean = {
+            require(n1.noteType == n2.noteType)
 
-                tokensEqualOrSimilar(refs1, refs2) || tokensEqualOrSimilar(refs2, refs1)
-            })
+            n1.noteType match {
+                case "nlpcraft:sort" ⇒
+                    val refs11 = extractListList(n1, "subjindexes")
+                    val refs12 = extractListList(n2, "subjindexes")
+
+                    val refs21 = extractListList(n1, "byindexes")
+                    val refs22 = extractListList(n2, "byindexes")
+
+                    (tokensEqualOrSimilar(refs11, refs12) || tokensEqualOrSimilar(refs12, refs11)) &&
+                    (tokensEqualOrSimilar(refs21, refs22) || tokensEqualOrSimilar(refs22, refs21))
+
+                case "nlpcraft:limit" | "nlpcraft:reference" ⇒
+                    val refs1 = extractList(n1, "indexes")
+                    val refs2 = extractList(n2, "indexes")
+
+                    tokensEqualOrSimilar(refs1, refs2) || tokensEqualOrSimilar(refs2, refs1)
+
+                case _ ⇒ true
+            }
+        }
 
         def getUniqueKey0(n: NCNlpSentenceNote): Seq[Any] = getKey(n, withIndexes = false, withReferences = false)
 
@@ -779,5 +790,4 @@ object NCEnricherProcessor extends NCService with LazyLogging {
             (wordsEqualOrSimilar(n2, n1) || wordsEqualOrSimilar(n1, n2)) &&
             (referencesEqualOrNearly(n2, n1) || referencesEqualOrNearly(n1, n2))
     }
-
 }
