@@ -272,17 +272,16 @@ object NCLimitEnricher extends NCProbeEnricher {
         val i2 = toks.last.index
 
         val refCands = toks.filter(_.exists(n ⇒ n.isUser && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
-        val commonRefNotes = getCommonNotes(refCands)
 
-        if (commonRefNotes.nonEmpty) {
-            val matchCands = toks.diff(refCands)
-            val idxs = refCands.map(_.index)
+        // Reference should be last.
+        if (refCands.nonEmpty && refCands.last.index == toks.last.index) {
+            val commonRefNotes = getCommonNotes(refCands)
 
-            val minRefIdx = idxs.min
+            if (commonRefNotes.nonEmpty) {
+                val matchCands = toks.diff(refCands)
+                val idxs = refCands.map(_.index)
 
-            def try0(group: Seq[NCNlpSentenceToken]): Option[Match] =
-                // All references must be after token for limits.
-                if (group.forall(_.index < minRefIdx))
+                def try0(group: Seq[NCNlpSentenceToken]): Option[Match] =
                     groupsMap.get(group) match {
                         case Some(h) ⇒
                             if (LIMITS.contains(h.value) || h.isFuzzyNum)
@@ -294,13 +293,14 @@ object NCLimitEnricher extends NCProbeEnricher {
                                 }
                         case None ⇒ None
                     }
-                else
-                    None
 
-            try0(matchCands) match {
-                case Some(m) ⇒ Some(m)
-                case None ⇒ try0(matchCands.filter(!_.isStopWord))
+                try0(matchCands) match {
+                    case Some(m) ⇒ Some(m)
+                    case None ⇒ try0(matchCands.filter(!_.isStopWord))
+                }
             }
+            else
+                None
         }
         else
             None
