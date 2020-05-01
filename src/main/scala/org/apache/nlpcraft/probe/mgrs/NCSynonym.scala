@@ -85,9 +85,7 @@ class NCSynonym(
                 }
 
         // Should be called only for valid tokens count (validation optimized for performance reasons)
-        require(!ok || toks.length == length)
-
-        ok
+        ok && toks.length == length
     }
 
     /**
@@ -121,9 +119,7 @@ class NCSynonym(
                     }
             }
         // Should be called only for valid tokens count (validation optimized for performance reasons)
-        require(!ok || tows.length == length)
-
-        ok
+        ok && tows.length == length
     }
     
     override def toString(): String = mkString(" ")
