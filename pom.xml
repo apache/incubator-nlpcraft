@@ -629,7 +629,7 @@ JDK version should be 8 or 11
                         org.apache.nlpcraft.model:org.apache.nlpcraft.probe.embedded
                     </subpackages>
                     <excludePackageNames>
-                        org.apache.nlpcraft.model.intent.utils:org.apache.nlpcraft.model.impl:org.apache.nlpcraft.model.builder.parsing:org.apache.nlpcraft.model.builder.impl:org.apache.nlpcraft.model.intent.impl
+                        org.apache.nlpcraft.model.intent.utils:org.apache.nlpcraft.model.impl:org.apache.nlpcraft.model.builder.parsing:org.apache.nlpcraft.model.builder.impl:org.apache.nlpcraft.model.intent.impl:org.apache.nlpcraft.model.intent.impl.antlr4
                     </excludePackageNames>
                     <groups>
                         <group>
