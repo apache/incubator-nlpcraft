@@ -46,7 +46,6 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils._
 import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 

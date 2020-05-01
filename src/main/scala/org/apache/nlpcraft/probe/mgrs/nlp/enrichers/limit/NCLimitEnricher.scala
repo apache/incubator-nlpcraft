@@ -27,7 +27,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils.NCEnricherProcessor
+import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCEnricherProcessor
 
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, mutable}

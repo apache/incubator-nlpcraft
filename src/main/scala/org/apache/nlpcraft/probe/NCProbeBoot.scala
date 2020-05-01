@@ -41,11 +41,11 @@ import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.dictionary.NCDictionaryEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit.NCLimitEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model.NCModelEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils.NCEnricherProcessor
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCEnricherProcessor
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 
 import scala.collection.JavaConverters._

@@ -338,6 +338,8 @@ object NCGeoManager extends NCService {
                 // City (short representation).
                 case NCGeoSynonym(Some(city), Some(reg), Some(cntr), None, None, None, syns) ⇒
                     add(syns, citiesMap(CityKey(city, reg, cntr)))
+
+                case _ ⇒ throw new AssertionError(s"Unexpected synonym: $s")
             }
         
         for (file ← readJss(SYNONYMS_DIR_PATH); synonym ← extract(file, ignoreCase = true))

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.utils
+package org.apache.nlpcraft.probe.mgrs.nlp.impl
 
 import java.io.Serializable
 import java.util
@@ -23,16 +23,15 @@ import java.util.Collections
 
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.nlp.pos._
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, _}
-import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
+import org.apache.nlpcraft.common.{NCE, NCService, TOK_META_ALIASES_KEY}
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenImpl
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
-
 import scala.collection.JavaConverters._
-import scala.collection._
 
+import scala.collection.{Map, Seq, Set, mutable}
 
 /**
   *
