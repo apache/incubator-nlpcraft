@@ -4,5 +4,7 @@ Copyright (C) 2020 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
-File org.apache.nlpcraft.common.util.NCIdGenerator.java is licensed under MIT license
+File org.apache.nlpcraft.common.util.NCIdGenerator.java.
+Based on https://github.com/peet/hashids.java
+Licensed under MIT license.
 Copyright (C) 2012 Ivan Akimov
