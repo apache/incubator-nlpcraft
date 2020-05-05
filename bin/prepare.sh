@@ -49,7 +49,7 @@ rsync -avzq src ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude '**/*.iml
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp bindist/LICENSE ${zipDir}/${tmpDir}
-cp NOTICE ${zipDir}/${tmpDir}
+cp bindist/NOTICE ${zipDir}/${tmpDir}
 cp DISCLAIMER ${zipDir}/${tmpDir}
 cp src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
 cp src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
@@ -69,6 +69,7 @@ rm -R ${tmpDir}/javadoc 2> /dev/null
 # Adds some data for src zip.
 cd ../
 cp LICENSE ${zipDir}/${tmpDir}
+cp NOTICE ${zipDir}/${tmpDir}
 cp pom.xml ${zipDir}/${tmpDir}
 cp assembly.xml ${zipDir}/${tmpDir}
 cp README.md ${zipDir}/${tmpDir}
