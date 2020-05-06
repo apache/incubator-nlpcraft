@@ -27,6 +27,12 @@
     <url>https://nlpcraft.apache.org</url>
     <description>An open source API to convert natural language into actions.</description>
 
+    <parent>
+        <groupId>org.apache</groupId>
+        <artifactId>apache</artifactId>
+        <version>10</version>
+    </parent>
+
     <developers>
         <developer>
             <id>aradzinski</id>
@@ -49,21 +55,11 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
     <scm>
         <url>https://github.com/apache/incubator-nlpcraft.git</url>
         <connection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</developerConnection>
+        <!-- Set actual tag name here -->
         <tag>HEAD</tag>
     </scm>
 
@@ -833,6 +829,24 @@ JDK version should be 8 or 11
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.ver}</version>
+                        <configuration>
+                            <keyname>${gpg.keyname}</keyname>
+                            <passphrase>${gpg.passphrase}</passphrase>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>
