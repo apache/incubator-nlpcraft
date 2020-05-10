@@ -22,16 +22,14 @@ import java.util
 import org.apache.nlpcraft.examples.sql.db.SqlServer
 import org.apache.nlpcraft.model.NCElement
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCTestSortTokenType._
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestDateToken => dte, NCTestLimitToken => lim, NCTestNlpToken => nlp, NCTestSortToken => srt, NCTestUserToken => usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestDateToken ⇒ dte, NCTestLimitToken ⇒ lim, NCTestNlpToken ⇒ nlp, NCTestSortToken ⇒ srt, NCTestUserToken ⇒ usr}
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 class NCSqlModelWrapper extends NCDefaultTestModel {
     private val delegate = new SqlModel()
 
     override def getElements: util.Set[NCElement] = delegate.getElements
-
     override def getMacros: util.Map[String, String] = delegate.getMacros
-
     override def getExamples: util.Set[String] = delegate.getExamples
 }
 
@@ -40,6 +38,8 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
 
     @BeforeEach
     override def setUp(): Unit = {
+        // org.apache.nlpcraft.examples.sql.SqlModel.SqlModel initialized via DB.
+        // (org.apache.nlpcraft.examples.sql.db.SqlValueLoader configured in its model yaml file.)
         SqlServer.start()
 
         super.setUp()
@@ -105,7 +105,7 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 lim(text = "10", limit=10, index =1, note="tbl:suppliers"),
                 usr(text = "suppliers", id = "tbl:suppliers")
             ),
-            // TODO: ? best ?variant
+            // TODO: the suspicious winner.
             _ ⇒ checkExists(
                 txt = "last year Exotic Liquids orders",
                 dte(text="last year"),
@@ -141,7 +141,7 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 nlp(text = "sorted"),
                 nlp(text = "by")
             ),
-            // TODO: winner?
+            // TODO: the suspicious winner.
             _ ⇒ checkExists(
                 txt = "What are the top orders for the last 2 weeks sorted by order quantity?",
                 lim(text = "What are the top", limit = 10, index = 1, note = "tbl:orders", asc = false),
@@ -153,7 +153,7 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 nlp(text = "quantity"),
                 nlp(text = "?", isStop = true)
             ),
-            // TODO: limit top
+            // TODO: limit word top should be inside nlpcraft:limit
             _ ⇒ checkExists(
                 txt = "What are the top 25 orders for the last 2 weeks sorted by order quantity?",
                 nlp(text = "What are the", isStop = true),
@@ -166,7 +166,7 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 usr(text = "order quantity", id = "col:num"),
                 nlp(text = "?", isStop = true)
             ),
-            // TODO: add.
+            // TODO: add following sentences.
 //            What are the best performing products for the last quarter?
 //            What are the best performing categories for the last quarter?
 //            What are the best performing employee for the last quarter?
