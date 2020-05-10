@@ -85,6 +85,16 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private def sql(tabs: Seq[NCSqlTable]): String = {
         val names = tabs.map(_.getTable)
 
+        println("names-" + names.mkString("|"))
+        println("joins=\n" + schemaJoins.map(p ⇒ s"${p.getFromTable} - ${p.getToTable}").mkString("\n"))
+        println()
+
+        val refs = names.
+            flatMap(t ⇒ schemaJoins.filter(j ⇒ j.getFromTable == t && names.contains(j.getToTable))).
+            sortBy(_.getFromTable).
+            zipWithIndex.map { case (join, idx) ⇒
+        }
+
         names.size match {
             case 0 ⇒ throw new AssertionError(s"Unexpected empty tables")
             case 1 ⇒ names.head
@@ -102,6 +112,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
                         val fromTab = join.getFromTable
                         val toTab = join.getToTable
+
+                        println(s"fromTab=$fromTab, toTab=$toTab")
 
                         val onCondition = fromCols.zip(toCols).
                             map { case (fromCol, toCol) ⇒ s"$fromTab.$fromCol = $toTab.$toCol" }.mkString(" AND ")
@@ -315,7 +327,12 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         condsNorm = condsNorm.distinct
         sortsNorm = sortsNorm.distinct
 
+        println("tabsNorm="+tabsNorm.map(_.getTable).mkString("|"))
+
         val extTabs = extendTables(tabsNorm)
+
+        println("extTabs="+extTabs.map(_.getTable).mkString("|"))
+
         val extCols = extendColumns(colsNorm, extTabs, freeDateColOpt)
         val (extConds, extParams) = extendConditions(condsNorm, extTabs, tabsNorm, freeDateColOpt)
 

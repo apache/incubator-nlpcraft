@@ -1463,22 +1463,16 @@ elements:
     - "condition"
   synonyms:
     - "^^id == 'col:date'^^ ^^id == 'nlpcraft:date'^^ "
-- id: "desc:best"
+- id: "sort:best"
   groups:
-    - "description"
+    - "Sort criteria"
   synonyms:
     - "best {performing|*}"
-- id: "desc:worst"
+- id: "sort:worst"
   groups:
-    - "description"
+    - "Sort criteria"
   synonyms:
     - "worst {performing|*}"
-- id: "desc:busiest"
-  groups:
-    - "description"
-  synonyms:
-    - "{busiest|busiest}"
-
 enabledBuiltInTokens:
   - "nlpcraft:date"
   - "nlpcraft:num"

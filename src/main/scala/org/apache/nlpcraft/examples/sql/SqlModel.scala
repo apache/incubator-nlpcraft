@@ -52,9 +52,6 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         GSON.toJson(m)
     }
     
-    private def findColumnToken(tok: NCToken): NCToken =
-        findAnyColumnTokenOpt(tok).getOrElse(throw new RuntimeException(s"No columns found for token: $tok"))
-
     /**
       * Complex element contains 2 tokens: column + date ot numeric condition.
       *
@@ -68,7 +65,9 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         require(parts.size == 2)
 
         val condTok = parts.find(_.getId == condTokId).get
-        val colTok = findColumnToken(parts.filter(_ != condTok).head)
+
+        val pt = parts.filter(_ != condTok).head
+        val colTok = findAnyColumnTokenOpt(pt).getOrElse(throw new RuntimeException(s"No columns found for token: $pt"))
 
         Condition(colTok, condTok)
     }
@@ -146,6 +145,53 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             groupBy { case (col, _) ⇒ col }.
             map { case (col, seq) ⇒ SqlInCondition(col, seq.map { case (_, value) ⇒ value})}.toSeq
 
+    private def select0(
+        ext: NCSqlExtractor,
+        tabs: Seq[NCToken],
+        cols: Seq[NCToken],
+        condNums: Seq[NCToken],
+        condVals: Seq[NCToken],
+        condDates: Seq[NCToken],
+        freeDateOpt: Option[NCToken],
+        limitTokOpt: Option[NCToken],
+        sorts: Seq[NCSqlSort]
+    ): NCResult = {
+        var query: SqlQuery = null
+
+        try {
+            query =
+                SqlBuilder(SCHEMA).
+                    withTables(tabs.map(ext.extractTable): _*).
+                    withColumns(cols.map(col ⇒ ext.extractColumn(findAnyColumnToken(col))): _*).
+                    withAndConditions(extractValuesConditions(ext, condVals): _*).
+                    withAndConditions(
+                        condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒
+                            extractDateRangeConditions(ext, h.column, h.condition)
+                        ): _*
+                    ).
+                    withAndConditions(
+                        condNums.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:num")).flatMap(h ⇒
+                            extractNumConditions(ext, h.column, h.condition)
+                        ): _*
+                    ).
+                    withSorts(sorts: _*).
+                    withLimit(limitTokOpt.flatMap(limitTok ⇒ Some(ext.extractLimit(limitTok))).orNull).
+                    withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
+                    build()
+
+            NCResult.json(toJson(SqlAccess.select(query, logResult = true), query.sql, query.parameters))
+        }
+        catch {
+            case e: Exception ⇒
+                System.err.println(if (query == null) "Query cannot be prepared" else "Query execution error")
+
+                e.printStackTrace()
+
+                NCResult.json(toJson("Question cannot be answered, reformulate it"))
+        }
+    }
+
+
     @NCIntent(
         "intent=commonReport conv=true " +
         "term(tabs)={groups @@ 'table'}[0,7] " +
@@ -170,44 +216,72 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     ): NCResult = {
         val ext: NCSqlExtractor = NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant)
 
-        var query: SqlQuery = null
+        select0(
+            NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant),
+            tabs,
+            cols,
+            condNums,
+            condVals,
+            condDates,
+            freeDateOpt,
+            limitTokOpt,
+            sortTokOpt match {
+                case Some(sortTok) ⇒ ext.extractSort(sortTok).asScala
+                case None ⇒ Seq.empty
+            }
+        )
+    }
 
-        try {
-            query =
-                SqlBuilder(SCHEMA).
-                    withTables(tabs.map(ext.extractTable): _*).
-                    withColumns(cols.map(col ⇒ ext.extractColumn(findAnyColumnToken(col))): _*).
-                    withAndConditions(extractValuesConditions(ext, condVals): _*).
-                    withAndConditions(
-                        condDates.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:date")).flatMap(h ⇒
-                            extractDateRangeConditions(ext, h.column, h.condition)
-                        ): _*
-                    ).
-                    withAndConditions(
-                        condNums.map(t ⇒ extractColumnAndCondition(t, "nlpcraft:num")).flatMap(h ⇒
-                            extractNumConditions(ext, h.column, h.condition)
-                        ): _*
-                    ).
-                    withSorts((
-                        sortTokOpt match {
-                            case Some(sortTok) ⇒ ext.extractSort(sortTok).asScala
-                            case None ⇒ Seq.empty
-                        }
-                    ): _*).
-                    withLimit(limitTokOpt.flatMap(limitTok ⇒ Some(ext.extractLimit(limitTok))).orNull).
-                    withFreeDateRange(freeDateOpt.flatMap(freeDate ⇒ Some(ext.extractDateRange(freeDate))).orNull).
-                    build()
+    @NCIntent(
+        "intent=customSortReport conv=true " +
+        "term(sort)={id == 'sort:best' || id == 'sort:worst'} " +
+        "term(tabs)={groups @@ 'table'}[0,7] " +
+        "term(cols)={id == 'col:date' || id == 'col:num' || id == 'col:varchar'}[0,7] " +
+        "term(condNums)={id == 'condition:num'}[0,7] " +
+        "term(condVals)={id == 'condition:value'}[0,7] " +
+        "term(condDates)={id == 'condition:date'}[0,7] " +
+        "term(condFreeDate)={id == 'nlpcraft:date'}? " +
+        "term(limit)={id == 'nlpcraft:limit'}?"
+    )
+    def onCustomSortReport(
+        ctx: NCIntentMatch,
+        @NCIntentTerm("sort") sortTok: NCToken,
+        @NCIntentTerm("tabs") tabs: Seq[NCToken],
+        @NCIntentTerm("cols") cols: Seq[NCToken],
+        @NCIntentTerm("condNums") condNums: Seq[NCToken],
+        @NCIntentTerm("condVals") condVals: Seq[NCToken],
+        @NCIntentTerm("condDates") condDates: Seq[NCToken],
+        @NCIntentTerm("condFreeDate") freeDateOpt: Option[NCToken],
+        @NCIntentTerm("limit") limitTokOpt: Option[NCToken]
+    ): NCResult = {
+        val ordersFreightColSort: NCSqlSort =
+            new NCSqlSort {
+                override def getColumn: NCSqlColumn = SCHEMA.getTables.asScala.find(_.getTable == "orders").
+                    getOrElse(throw new RuntimeException(s"Table `orders` not found")).
+                    getColumns.asScala.find(_.getColumn == "freight").
+                    getOrElse(throw new RuntimeException(s"Column `orders.freight` not found"))
+                override def isAscending: Boolean =
+                    sortTok.getId match {
+                        case "sort:best" ⇒ false
+                        case "sort:worst" ⇒ true
 
-            NCResult.json(toJson(SqlAccess.select(query, logResult = true), query.sql, query.parameters))
-        }
-        catch {
-            case e: Exception ⇒
-                 System.err.println(if (query == null) "Query cannot be prepared" else "Query execution error")
+                        case  _ ⇒ throw new AssertionError(s"Unexpected ID: ${sortTok.getId}")
+                    }
 
-                e.printStackTrace()
+                    if (sortTok.getId == "sort:best") false else true
+            }
 
-                NCResult.json(toJson("Question cannot be answered, reformulate it"))
-        }
+        select0(
+            NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant),
+            tabs,
+            cols,
+            condNums,
+            condVals,
+            condDates,
+            freeDateOpt,
+            limitTokOpt,
+            Seq(ordersFreightColSort)
+        )
     }
 
     override def onMatchedIntent(m: NCIntentMatch): Boolean = {
