@@ -145,7 +145,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             groupBy { case (col, _) ⇒ col }.
             map { case (col, seq) ⇒ SqlInCondition(col, seq.map { case (_, value) ⇒ value})}.toSeq
 
-    private def select0(
+    protected def select0(
         ext: NCSqlExtractor,
         tabs: Seq[NCToken],
         cols: Seq[NCToken],
@@ -191,7 +191,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         }
     }
 
-
+    // General case.
     @NCIntent(
         "intent=commonReport conv=true " +
         "term(tabs)={groups @@ 'table'}[0,7] " +
@@ -232,6 +232,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         )
     }
 
+    // Case with implicit sort.
     @NCIntent(
         "intent=customSortReport conv=true " +
         "term(sort)={id == 'sort:best' || id == 'sort:worst'} " +

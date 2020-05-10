@@ -1472,7 +1472,7 @@ elements:
   groups:
     - "Sort criteria"
   synonyms:
-    - "worst {performing|*}"
+    - "{worst|least} {performing|*}"
 enabledBuiltInTokens:
   - "nlpcraft:date"
   - "nlpcraft:num"

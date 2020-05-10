@@ -85,23 +85,15 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private def sql(tabs: Seq[NCSqlTable]): String = {
         val names = tabs.map(_.getTable)
 
-        println("names-" + names.mkString("|"))
-        println("joins=\n" + schemaJoins.map(p ⇒ s"${p.getFromTable} - ${p.getToTable}").mkString("\n"))
-        println()
-
-        val refs = names.
-            flatMap(t ⇒ schemaJoins.filter(j ⇒ j.getFromTable == t && names.contains(j.getToTable))).
-            sortBy(_.getFromTable).
-            zipWithIndex.map { case (join, idx) ⇒
-        }
-
         names.size match {
             case 0 ⇒ throw new AssertionError(s"Unexpected empty tables")
             case 1 ⇒ names.head
             case _ ⇒
+                val used = mutable.HashSet.empty[String]
+
                 val refs = names.
                     flatMap(t ⇒ schemaJoins.filter(j ⇒ j.getFromTable == t && names.contains(j.getToTable))).
-                    sortBy(_.getFromTable).
+                    sortBy(j ⇒ Math.min(names.indexOf(j.getFromTable), names.indexOf(j.getToTable))).
                     zipWithIndex.
                     map { case (join, idx) ⇒
                         val fromCols = join.getFromColumns.asScala
@@ -113,14 +105,33 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                         val fromTab = join.getFromTable
                         val toTab = join.getToTable
 
-                        println(s"fromTab=$fromTab, toTab=$toTab")
-
                         val onCondition = fromCols.zip(toCols).
                             map { case (fromCol, toCol) ⇒ s"$fromTab.$fromCol = $toTab.$toCol" }.mkString(" AND ")
 
-                        val from = if (idx == 0) fromTab else ""
+                        if (idx == 0) {
+                            used += fromTab
+                            used += toTab
 
-                        s"$from ${sql(join.getType)} $toTab ON $onCondition"
+                            s"$fromTab ${sql(join.getType)} $toTab ON $onCondition"
+                        }
+                        else {
+                            val fromAdded = used.add(fromTab)
+                            val toAdded = used.add(toTab)
+
+                            if (fromAdded) {
+                                val reverseType =
+                                    join.getType match {
+                                        case LEFT ⇒ RIGHT
+                                        case RIGHT ⇒ LEFT
+                                        case _ ⇒ join.getType
+                                    }
+                                s"${sql(reverseType)} $fromTab ON $onCondition"
+                            }
+                            else if (toAdded)
+                                s"${sql(join.getType)} $toTab ON $onCondition"
+                            else
+                                ""
+                        }
                     }
 
                 if (refs.length != names.length - 1)
@@ -215,25 +226,21 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         )
 
     private def findDateColumn(initTabs: Seq[NCSqlTable]): Option[NCSqlColumn] =
-        freeDateRangeOpt match {
-            case Some(_) ⇒
-                schemaTabs.sortBy(t ⇒ {
-                    // The simple algorithm, which tries to find most suitable date type column for free date condition.
-                    // Higher priority for tables which were detected initially.
-                    val weight1 = if (initTabs.contains(t)) 0 else 1
-                    // Higher priority for tables don't have references from another.
-                    // Probably these tables can have more specific records.
-                    val weight2 = if (!schemaJoins.exists(_.getToTable == t.getTable)) 0 else 1
+        schemaTabs.sortBy(t ⇒ {
+            // The simple algorithm, which tries to find most suitable date type column for free date condition.
+            // Higher priority for tables which were detected initially.
+            val weight1 = if (initTabs.contains(t)) 0 else 1
+            // Higher priority for tables which don't have references from another.
+            // Probably these tables can have more specific records.
+            val weight2 = if (!schemaJoins.exists(_.getToTable == t.getTable)) 0 else 1
 
-                    (weight1, weight2)
-                }).flatMap(_.getDefaultDate.asScala).toStream.headOption match {
-                    case Some(col) ⇒ Some(col)
-                    case None ⇒
-                        logger.warn("Free date condition ignored without throwing exceptions.")
+            (weight1, weight2)
+        }).flatMap(_.getDefaultDate.asScala).toStream.headOption match {
+            case Some(col) ⇒ Some(col)
+            case None ⇒
+                logger.warn("Free date condition ignored without throwing exceptions.")
 
-                        None
-                }
-            case None ⇒ None
+                None
         }
 
     private def extendConditions(
@@ -318,20 +325,24 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         condsNorm.foreach(cond ⇒ { tabsNorm += schemaTabsByNames(cond.column.getTable); colsNorm += cond.column })
         sortsNorm.foreach(sort ⇒ { tabsNorm += schemaTabsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
 
-        val freeDateColOpt = findDateColumn(tabsNorm)
-
-        freeDateColOpt.toSeq.foreach(col ⇒ { tabsNorm += schemaTabsByNames(col.getTable); colsNorm += col })
+        var freeDateColOpt =
+            if (freeDateRangeOpt.isDefined) tabsNorm.flatMap(_.getDefaultDate.asScala).toStream.headOption else None
 
         tabsNorm = tabsNorm.distinct
-        colsNorm = colsNorm.distinct
-        condsNorm = condsNorm.distinct
-        sortsNorm = sortsNorm.distinct
-
-        println("tabsNorm="+tabsNorm.map(_.getTable).mkString("|"))
 
         val extTabs = extendTables(tabsNorm)
 
-        println("extTabs="+extTabs.map(_.getTable).mkString("|"))
+        if (freeDateColOpt.isEmpty && freeDateRangeOpt.isDefined) {
+            freeDateColOpt = findDateColumn(tabsNorm)
+
+            freeDateColOpt.toSeq.foreach(col ⇒ { tabsNorm += schemaTabsByNames(col.getTable); colsNorm += col })
+
+            tabsNorm = tabsNorm.distinct
+        }
+
+        colsNorm = colsNorm.distinct
+        condsNorm = condsNorm.distinct
+        sortsNorm = sortsNorm.distinct
 
         val extCols = extendColumns(colsNorm, extTabs, freeDateColOpt)
         val (extConds, extParams) = extendConditions(condsNorm, extTabs, tabsNorm, freeDateColOpt)

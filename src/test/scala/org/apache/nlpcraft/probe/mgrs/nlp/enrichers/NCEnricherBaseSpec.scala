@@ -32,7 +32,7 @@ class NCEnricherBaseSpec {
     def getModelClass: Option[Class[_ <: NCDefaultTestModel]] = Some(classOf[NCDefaultTestModel])
 
     @BeforeEach
-    private[enrichers] def setUp(): Unit = {
+    protected def setUp(): Unit = {
         val mdlId = NCDefaultTestModel.ID
 
         getModelClass match {
@@ -50,7 +50,7 @@ class NCEnricherBaseSpec {
     }
 
     @AfterEach
-    private[enrichers] def tearDown(): Unit = {
+    protected def tearDown(): Unit = {
         if (client != null)
             client.close()
 
@@ -63,7 +63,7 @@ class NCEnricherBaseSpec {
       * @param txt
       * @param expToks
       */
-    private[enrichers] def checkExists(txt: String, expToks: NCTestToken*): Unit = {
+    protected def checkExists(txt: String, expToks: NCTestToken*): Unit = {
         val res = client.ask(txt)
 
         if (res.isFailed)
@@ -86,7 +86,7 @@ class NCEnricherBaseSpec {
       * @param txt
       * @param expToks
       */
-    private[enrichers] def checkAll(txt: String, expToks: Seq[NCTestToken]*): Unit = {
+    protected def checkAll(txt: String, expToks: Seq[NCTestToken]*): Unit = {
         val res = client.ask(txt)
 
         if (res.isFailed)
@@ -113,7 +113,7 @@ class NCEnricherBaseSpec {
       *
       * @param tests
       */
-    private[enrichers] def runBatch(tests: Unit ⇒ Unit*): Unit = {
+    protected def runBatch(tests: Unit ⇒ Unit*): Unit = {
         val errs = tests.zipWithIndex.flatMap { case (test, i) ⇒
             try {
                 test.apply(())

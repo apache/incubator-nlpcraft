@@ -589,6 +589,98 @@ class SqlModelTest {
                   |LIMIT
                   |  25
                   """.stripMargin
+            ),
+            Case(
+                Seq(
+                    "What are the best performing products for the last quarter?"
+                ),
+                """SELECT
+                  |  orders.freight,
+                  |  orders.order_date,
+                  |  orders.order_id,
+                  |  orders.required_date,
+                  |  products.product_id,
+                  |  products.product_name,
+                  |  products.quantity_per_unit,
+                  |  categories.category_id,
+                  |  categories.category_name,
+                  |  categories.description,
+                  |  customers.customer_id,
+                  |  customers.company_name,
+                  |  customers.contact_name,
+                  |  employees.employee_id,
+                  |  employees.last_name,
+                  |  employees.first_name,
+                  |  order_details.unit_price,
+                  |  order_details.quantity,
+                  |  order_details.discount,
+                  |  shippers.shipper_id,
+                  |  shippers.company_name,
+                  |  shippers.phone,
+                  |  suppliers.supplier_id,
+                  |  suppliers.company_name,
+                  |  suppliers.contact_name
+                  |FROM
+                  |  order_details
+                  |  INNER JOIN orders ON order_details.order_id = orders.order_id
+                  |  INNER JOIN products ON order_details.product_id = products.product_id
+                  |  LEFT JOIN suppliers ON products.supplier_id = suppliers.supplier_id
+                  |  LEFT JOIN categories ON products.category_id = categories.category_id
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |WHERE
+                  |  orders.order_date >= ?
+                  |  AND orders.order_date <= ?
+                  |ORDER BY
+                  |  orders.freight DESC
+                  |LIMIT
+                  |  1000
+                  """.stripMargin
+            ),
+            Case(
+                Seq(
+                    "What are the least performing categories for the last quarter?"
+                ),
+                """SELECT
+                  |  orders.freight,
+                  |  orders.order_date,
+                  |  categories.category_id,
+                  |  categories.category_name,
+                  |  categories.description,
+                  |  orders.order_id,
+                  |  orders.required_date,
+                  |  customers.customer_id,
+                  |  customers.company_name,
+                  |  customers.contact_name,
+                  |  employees.employee_id,
+                  |  employees.last_name,
+                  |  employees.first_name,
+                  |  order_details.unit_price,
+                  |  order_details.quantity,
+                  |  order_details.discount,
+                  |  products.product_id,
+                  |  products.product_name,
+                  |  products.quantity_per_unit,
+                  |  shippers.shipper_id,
+                  |  shippers.company_name,
+                  |  shippers.phone
+                  |FROM
+                  |  products
+                  |  LEFT JOIN categories ON products.category_id = categories.category_id
+                  |  INNER JOIN order_details ON order_details.product_id = products.product_id
+                  |  INNER JOIN orders ON order_details.order_id = orders.order_id
+                  |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
+                  |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
+                  |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |WHERE
+                  |  orders.order_date >= ?
+                  |  AND orders.order_date <= ?
+                  |ORDER BY
+                  |  orders.freight ASC
+                  |LIMIT
+                  |  1000
+                  """.stripMargin
             )
         )
     }
