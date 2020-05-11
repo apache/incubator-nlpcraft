@@ -153,16 +153,13 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 nlp(text = "quantity"),
                 nlp(text = "?", isStop = true)
             ),
-            // TODO: limit word top should be inside nlpcraft:limit
             _ ⇒ checkExists(
                 txt = "What are the top 25 orders for the last 2 weeks sorted by order quantity?",
-                nlp(text = "What are the", isStop = true),
-                nlp(text = "top"),
-                lim(text = "25", limit = 25, index = 3, note = "tbl:orders"),
+                lim(text = "What are the top 25", limit = 25, index = 1, note = "tbl:orders", asc = false),
                 usr(text = "orders", id = "tbl:orders"),
                 dte(text = "for last 2 weeks"),
                 nlp(text = "the", isStop = true),
-                srt(text = "sorted by", typ = BY_ONLY, note = "col:num", index = 7),
+                srt(text = "sorted by", typ = BY_ONLY, note = "col:num", index = 5),
                 usr(text = "order quantity", id = "col:num"),
                 nlp(text = "?", isStop = true)
             ),
@@ -194,7 +191,6 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 dte(text = "for last quarter"),
                 nlp(text = "the ?", isStop = true)
             )
-
         )
     }
 }

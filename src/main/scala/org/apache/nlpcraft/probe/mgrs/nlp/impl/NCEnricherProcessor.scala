@@ -69,7 +69,7 @@ object NCEnricherProcessor extends NCService with LazyLogging {
                     case "nlpcraft:date" ⇒ Seq("from", "to")
                     case "nlpcraft:relation" ⇒ Seq("type", "note") ++ addRefs("indexes")
                     case "nlpcraft:sort" ⇒ Seq("asc", "subjnotes", "bynotes") ++ addRefs("subjindexes", "byindexes")
-                    case "nlpcraft:limit" ⇒ Seq("limit", "asc", "note") ++ addRefs("indexes")
+                    case "nlpcraft:limit" ⇒ Seq("limit", "note") ++ addRefs("indexes", "asc") // Asc flag has sense only with references for limit.
                     case "nlpcraft:coordinate" ⇒ Seq("latitude", "longitude")
                     case "nlpcraft:num" ⇒ Seq("from", "to", "unit", "unitType")
                     case x if x.startsWith("google:") ⇒ Seq("meta", "mentionsBeginOffsets", "mentionsContents", "mentionsTypes")
@@ -772,7 +772,9 @@ object NCEnricherProcessor extends NCService with LazyLogging {
                 case "nlpcraft:sort" ⇒
                     tokensEqualOrSimilar(getListList(n1, "subjindexes"), getListList(n2, "subjindexes")) &&
                     tokensEqualOrSimilar(getListList(n1, "byindexes"), getListList(n2, "byindexes"))
-                case "nlpcraft:limit" | "nlpcraft:reference" ⇒
+                case "nlpcraft:limit"  ⇒
+                    tokensEqualOrSimilar(getList(n1, "indexes"), getList(n2, "indexes"))
+                case "nlpcraft:reference"  ⇒
                     tokensEqualOrSimilar(getList(n1, "indexes"), getList(n2, "indexes"))
 
                 case _ ⇒ true
