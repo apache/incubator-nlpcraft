@@ -27,7 +27,7 @@ import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**
- * TODO
+ * TODO add description.
  */
 class SqlValueLoader extends NCValueLoader with LazyLogging {
     override def load(e: NCElement): java.util.Set[NCValue] = {

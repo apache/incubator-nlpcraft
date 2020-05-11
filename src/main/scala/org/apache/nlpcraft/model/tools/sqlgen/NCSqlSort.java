@@ -27,7 +27,7 @@ import org.apache.nlpcraft.model.NCToken;
  */
 public interface NCSqlSort {
     /**
-     * TODO:
+     * TODO: add description.
      */
     NCSqlColumn getColumn();
 

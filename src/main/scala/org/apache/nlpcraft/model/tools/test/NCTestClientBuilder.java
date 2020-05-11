@@ -153,7 +153,7 @@ public class NCTestClientBuilder {
         return this;
     }
 
-    // TODO:
+    // TODO: add description.
     public NCTestClientBuilder setResponseLog(boolean respLog) {
         impl.setResponseLog(respLog);
 

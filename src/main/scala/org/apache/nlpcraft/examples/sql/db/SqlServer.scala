@@ -25,7 +25,7 @@ import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 
 /**
- * TODO
+ * TODO add description.
  *
  * H2 database should be started before probe is started.
  * Usually H2 started in memory mode for such examples,
@@ -104,7 +104,7 @@ object SqlServer extends LazyLogging {
 }
 
 /**
-  * TODO:
+  * TODO: add description.
   */
 object SqlServerRunner extends App {
     SqlServer.start()

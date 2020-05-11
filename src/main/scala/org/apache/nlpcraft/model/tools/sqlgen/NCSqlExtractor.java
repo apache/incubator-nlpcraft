@@ -46,7 +46,7 @@ public interface NCSqlExtractor {
     NCSqlLimit extractLimit(NCToken limitTok);
 
     /**
-     * TODO:
+     * TODO: fix description.
      * Extracts sort object from given <code>nlpcraft:sort</code> token.
      *
      * @param sortTok Sort token with ID <code>nlpcraft:sort</code>.

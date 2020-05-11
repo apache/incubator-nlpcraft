@@ -403,8 +403,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             )
 
                             diffRedundant.foreach { case (del, similar) ⇒
-                                // TODO: log level
-                                logger.info(s"Redundant note removed: $del, because similar exists: $similar")
+                                if (DEEP_DEBUG)
+                                    logger.trace(s"Redundant note removed: $del, because similar exists: $similar")
 
                                 nlpSen.removeNote(del)
                             }
@@ -427,6 +427,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 // Loop has sense if model is complex (has user defined parsers or DSL based synonyms)
                 continue = NCModelEnricher.isComplex(mdlDec) && res.exists { case (_, same) ⇒ !same }
 
+                if (DEEP_DEBUG)
                     if (continue) {
                         val changed = res.filter(!_._2).keys.map(_.getClass.getSimpleName).mkString(", ")
 
