@@ -642,7 +642,7 @@ class SqlModelTest {
                 Seq(
                     "What are the least performing categories for the last quarter?"
                 ),
-                """SELECT
+                 """SELECT
                   |  orders.freight,
                   |  orders.order_date,
                   |  categories.category_id,

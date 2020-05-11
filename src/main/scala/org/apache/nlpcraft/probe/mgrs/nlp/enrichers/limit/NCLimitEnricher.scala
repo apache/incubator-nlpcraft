@@ -175,6 +175,22 @@ object NCLimitEnricher extends NCProbeEnricher {
     private def stemmatizeWords[T](m: Map[String, T]): Map[String, T] = m.map(p ⇒ NCNlpCoreManager.stem(p._1) → p._2)
 
     /**
+      *
+      * @param t
+      */
+    private def isUserNotValue(t: NCNlpSentenceToken): Boolean =
+        t.find(_.isUser) match {
+            case Some(n) ⇒ !n.contains("value")
+            case None ⇒ false
+        }
+
+    /**
+      *
+      * @param n
+      */
+    private def isUserNotValue(n: NCNlpSentenceNote): Boolean = n.isUser && !n.contains("value")
+
+    /**
       * Starts this component.
       */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
@@ -195,7 +211,7 @@ object NCLimitEnricher extends NCProbeEnricher {
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
 
-            def isImportant(t: NCNlpSentenceToken): Boolean = t.isUser || TECH_WORDS.contains(t.stem)
+            def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || TECH_WORDS.contains(t.stem)
 
             // Tries to grab tokens reverse way.
             // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
@@ -271,7 +287,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         val i1 = toks.head.index
         val i2 = toks.last.index
 
-        val refCands = toks.filter(_.exists(n ⇒ n.isUser && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
+        val refCands = toks.filter(_.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
 
         // Reference should be last.
         if (refCands.nonEmpty && refCands.last.index == toks.last.index) {

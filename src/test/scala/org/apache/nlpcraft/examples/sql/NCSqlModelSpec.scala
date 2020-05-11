@@ -105,12 +105,11 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 lim(text = "10", limit=10, index =1, note="tbl:suppliers"),
                 usr(text = "suppliers", id = "tbl:suppliers")
             ),
-            // TODO: the suspicious winner.
             _ ⇒ checkExists(
                 txt = "last year Exotic Liquids orders",
                 dte(text="last year"),
                 usr(text = "Exotic Liquids", id = "condition:value"),
-                srt(text = "orders", typ = SUBJ_ONLY, note = "condition:value", index = 1)
+                usr(text = "orders", id = "tbl:orders")
             ),
             _ ⇒ checkExists(
                 txt = "give me the orders sorted by ship date",
@@ -141,16 +140,14 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 nlp(text = "sorted"),
                 nlp(text = "by")
             ),
-            // TODO: the suspicious winner.
             _ ⇒ checkExists(
                 txt = "What are the top orders for the last 2 weeks sorted by order quantity?",
                 lim(text = "What are the top", limit = 10, index = 1, note = "tbl:orders", asc = false),
                 usr(text = "orders", id = "tbl:orders"),
                 dte(text = "for last 2 weeks"),
                 nlp(text = "the", isStop = true),
-                srt(text = "sorted by", typ = BY_ONLY, note = "tbl:orders", index = 5),
-                usr(text = "order", id = "tbl:orders"),
-                nlp(text = "quantity"),
+                srt(text = "sorted by", typ = BY_ONLY, note = "col:num", index = 5),
+                usr(text = "order quantity", id = "col:num"),
                 nlp(text = "?", isStop = true)
             ),
             _ ⇒ checkExists(
@@ -163,18 +160,6 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 usr(text = "order quantity", id = "col:num"),
                 nlp(text = "?", isStop = true)
             ),
-            // TODO: add following sentences.
-//            What are the best performing products for the last quarter?
-//            What are the best performing categories for the last quarter?
-//            What are the best performing employee for the last quarter?
-//            What are the best performing territory for the last quarter?
-//            What are the best performing region for the last quarter?
-//
-//            What are the least performing products for the last quarter?
-//            What are the least performing categories for the last quarter?
-//            What are the least performing employee for the last quarter?
-//            What are the least performing territory for the last quarter?
-//            What are the least performing region for the last quarter?
             _ ⇒ checkExists(
                 txt = "What are the best performing products for the last quarter?",
                 nlp(text = "What are the", isStop = true),

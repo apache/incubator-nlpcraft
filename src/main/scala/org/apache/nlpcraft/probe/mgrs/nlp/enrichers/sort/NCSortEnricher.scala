@@ -205,8 +205,8 @@ object NCSortEnricher extends NCProbeEnricher {
                     between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
                 }
 
-                val minIdx = toks.dropWhile(!_.isUser).head.index
-                val maxIdx = toks.reverse.dropWhile(!_.isUser).head.index
+                val minIdx = toks.dropWhile(t ⇒ !isUserNotValue(t)).head.index
+                val maxIdx = toks.reverse.dropWhile(t ⇒ !isUserNotValue(t)).head.index
 
                 require(minIdx <= maxIdx)
 
@@ -239,6 +239,22 @@ object NCSortEnricher extends NCProbeEnricher {
 
         res
     }
+
+    /**
+      *
+      * @param t
+      */
+    private def isUserNotValue(t: NCNlpSentenceToken): Boolean =
+        t.find(_.isUser) match {
+            case Some(n) ⇒ !n.contains("value")
+            case None ⇒ false
+        }
+
+    /**
+      *
+      * @param n
+      */
+    private def isUserNotValue(n: NCNlpSentenceNote): Boolean = n.isUser && !n.contains("value")
 
     /**
       *
@@ -287,7 +303,7 @@ object NCSortEnricher extends NCProbeEnricher {
                     "BY"
                 else if (orderToks.contains(t))
                     "ORDER"
-                else if (t.isUser)
+                else if (isUserNotValue(t))
                     "x"
                 else
                     "-"
@@ -299,7 +315,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 val i2 = others.last.index
 
                 val othersRefs = others.filter(
-                    t ⇒ t.exists(n ⇒ n.isUser && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2)
+                    t ⇒ t.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2)
                 )
 
                 if (
@@ -413,7 +429,7 @@ object NCSortEnricher extends NCProbeEnricher {
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
-            def isImportant(t: NCNlpSentenceToken): Boolean = t.isUser || MASK_WORDS.contains(t.stem)
+            def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || MASK_WORDS.contains(t.stem)
 
             for (toks ← ns.tokenMixWithStopWords() if NCEnricherProcessor.validImportant(ns, toks, isImportant)) {
                 tryToMatch(toks) match {
