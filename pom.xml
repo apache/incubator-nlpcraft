@@ -21,8 +21,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>NLPCraft</name>
-    <artifactId>nlpcraft</artifactId>
     <groupId>org.apache.nlpcraft</groupId>
+    <artifactId>nlpcraft</artifactId>
     <version>0.5.0</version>
     <url>https://nlpcraft.apache.org</url>
     <description>An open source API to convert natural language into actions.</description>
@@ -806,7 +806,6 @@ JDK version should be 8 or 11
                         <configuration>
                             <excludes>
                                 <exclude>.gitignore</exclude>
-                                <exclude>.travis.yml</exclude>
                                 <exclude>build</exclude>
                                 <exclude>.idea</exclude>
                                 <exclude>venv</exclude>
