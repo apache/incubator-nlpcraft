@@ -24,7 +24,7 @@
 
     1.2 Maven release:
     - Prepare maven passwords encryption (master and apache passwords) - https://maven.apache.org/guides/mini/guide-encryption.html
-    - Encode gpg.passphrase for user aradzinski@datalingvo.com Aaron Radzinski https://superuser.com/questions/972204/how-to-use-gnupg-with-passphrase 
+    - Encode gpg.passphrase for user account aradzinski@datalingvo.com Aaron Radzinski https://central.sonatype.org/pages/working-with-pgp-signatures.html 
  
     As result, you should have in the folder {USER_HOME}/.m2 two following files:
     
