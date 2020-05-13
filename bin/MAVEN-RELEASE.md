@@ -20,31 +20,31 @@
 ## 1. Configure Release Environment
 
 ### Apache release
-- Configure file `prepare.sh`, set your local GPG fingerprint `localUser={YOUR_VALUE}`
+- Configure file `prepare.sh` by setting your local GPG fingerprint `localUser={YOUR_VALUE}`
 
 ### Maven release
 - Prepare maven passwords encryption (master and apache passwords) - https://maven.apache.org/guides/mini/guide-encryption.html
-- Encode gpg.passphrase for desired user - https://central.sonatype.org/pages/working-with-pgp-signatures.html 
+- Encode **gpg.passphrase** for desired user - https://central.sonatype.org/pages/working-with-pgp-signatures.html 
  
 As result, you should have the following files in the folder `{USER_HOME}/.m2`:
-- `settings-security.xml` file should contain following content:
+- `settings-security.xml` file should contain the following content:
     ```xml
     <settingsSecurity>
-        <master>{YOUR_MASTER_PASSWORD_CODE}</master>
+        <master>{YOUR_MASTER_PASSWORD}</master>
     </settingsSecurity>
     ```
-- `settings.xml` file should contain following content:
+- `settings.xml` file should contain the following content:
     ```xml  
     <server>
       <id>apache.snapshots.https</id>
       <username>YOUR_APACHE_USERNAME</username>
-      <password>{YOUR_APACHE_PASSWORD_CODE}</password>
+      <password>YOUR_APACHE_PASSWORD</password>
     </server>
     
     <server>
       <id>apache.releases.https</id>
       <username>YOUR_APACHE_USERNAME</username>
-      <password>{YOUR_APACHE_PASSWORD_CODE}</password>
+      <password>YOUR_APACHE_PASSWORD</password>
     </server>
     
     <profiles>
@@ -63,7 +63,7 @@ As result, you should have the following files in the folder `{USER_HOME}/.m2`:
     ```
       
 ## 2. Make Apache Release 
-Note that pom.xml scm tag should contain actual tag name.
+Note that `pom.xml` scm tag should contain actual tag name.
 For example, if version is `0.5.0` and tag name is `v0.5.0` following pom `scm` section should be:
 ```xml   
 <scm>
