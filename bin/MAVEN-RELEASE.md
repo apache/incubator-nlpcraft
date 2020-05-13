@@ -17,71 +17,69 @@
 
 <img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px" alt="">
 
-1. Release computer environment configuration.
+## 1. Configure Release Environment
 
-    1.1 Apache release:
-    - configure file prepare.sh, set your local GPG fingerprint localUser={YOUR_VALUE}
+### Apache release
+- Configure file `prepare.sh`, set your local GPG fingerprint `localUser={YOUR_VALUE}`
 
-    1.2 Maven release:
-    - Prepare maven passwords encryption (master and apache passwords) - https://maven.apache.org/guides/mini/guide-encryption.html
-    - Encode gpg.passphrase for user account aradzinski@datalingvo.com Aaron Radzinski https://central.sonatype.org/pages/working-with-pgp-signatures.html 
+### Maven release
+- Prepare maven passwords encryption (master and apache passwords) - https://maven.apache.org/guides/mini/guide-encryption.html
+- Encode gpg.passphrase for desired user - https://central.sonatype.org/pages/working-with-pgp-signatures.html 
  
-    As result, you should have in the folder {USER_HOME}/.m2 two following files with similar content:
+As result, you should have the following files in the folder `{USER_HOME}/.m2`:
+- `settings-security.xml` file should contain following content:
+    ```xml
+    <settingsSecurity>
+        <master>{YOUR_MASTER_PASSWORD_CODE}</master>
+    </settingsSecurity>
+    ```
+- `settings.xml` file should contain following content:
+    ```xml  
+    <server>
+      <id>apache.snapshots.https</id>
+      <username>YOUR_APACHE_USERNAME</username>
+      <password>{YOUR_APACHE_PASSWORD_CODE}</password>
+    </server>
     
-    - settings-security.xml file should contain following content:
-  
-            <settingsSecurity>
-                <master>{YOUR_MASTER_PASSWORD_CODE}</master>
-            </settingsSecurity>
-  
-    - settings.xml file should contain following content:
-  
-            ...
-            <server>
-              <id>apache.snapshots.https</id>
-              <username>YOUR_APACHE_USERNAME</username>
-              <password>{YOUR_APACHE_PASSWORD_CODE}</password>
-            </server>
-            
-            <server>
-              <id>apache.releases.https</id>
-              <username>YOUR_APACHE_USERNAME</username>
-              <password>{YOUR_APACHE_PASSWORD_CODE}</password>
-            </server>
-            ...
-            <profiles>
-                ...
-                <profile>
-                    <id>gpg</id>
-                    <activation>
-                        <activeByDefault>true</activeByDefault>
-                    </activation>
-                    <properties>
-                        <gpg.executable>gpg2</gpg.executable>
-                        <gpg.passphrase>YOUR_GPG2_PASSPHRASE</gpg.passphrase>
-                        <gpg.keyname>YOUR_GPG2_KEY_ID</gpg.keyname>
-                    </properties>
-                </profile>
-            </profiles>
-            ...
-    Note, please, there are different ways to pass these parameters to maven command, there is only one of them.        
-            
-2. Make Apache release. Note that pom.xml scm tag should contain actual tag name.
+    <server>
+      <id>apache.releases.https</id>
+      <username>YOUR_APACHE_USERNAME</username>
+      <password>{YOUR_APACHE_PASSWORD_CODE}</password>
+    </server>
+    
+    <profiles>
+        <profile>
+            <id>gpg</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <gpg.executable>gpg2</gpg.executable>
+                <gpg.passphrase>YOUR_GPG2_PASSPHRASE</gpg.passphrase>
+                <gpg.keyname>YOUR_GPG2_KEY_ID</gpg.keyname>
+            </properties>
+        </profile>
+    </profiles>
+    ```
+      
+## 2. Make Apache Release 
+Note that pom.xml scm tag should contain actual tag name.
+For example, if version is `0.5.0` and tag name is `v0.5.0` following pom `scm` section should be:
+```xml   
+<scm>
+    <url>https://github.com/apache/incubator-nlpcraft.git</url>
+    <connection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</developerConnection>
+    <!-- Set actual tag name here -->
+    <tag>v0.5.0</tag>
+</scm>
+```
 
-    Example. If version is `0.5.0` and tag name is `v0.5.0` following pom `scm` chapter should be:
-    
-        <scm>
-            <url>https://github.com/apache/incubator-nlpcraft.git</url>
-            <connection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</connection>
-            <developerConnection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</developerConnection>
-            <!-- Set actual tag name here -->
-            <tag>v0.5.0</tag>
-        </scm
-3. Make Maven release
-  - cd <PROJECT_FOLDER>
-  - mvn -DskipTests=true clean deploy -P release
-  - login https://repository.apache.org
-  - look at staging repositories (order by date desc) https://repository.apache.org/#stagingRepositories
-  - find and close nlpcraft release, check its state.   
+## 3. Make Maven Release
+  - `cd <PROJECT_FOLDER>`
+  - `mvn -DskipTests=true clean deploy -P release`
+  - Login into https://repository.apache.org
+  - Look at staging repositories https://repository.apache.org/#stagingRepositories
+  - Find and close `nlpcraft` release, then check its state.   
   
   
