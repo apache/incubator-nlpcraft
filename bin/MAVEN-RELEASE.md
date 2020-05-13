@@ -52,7 +52,7 @@
             <profiles>
                 ...
                 <profile>
-                    <id>ossrh</id>
+                    <id>gpg</id>
                     <activation>
                         <activeByDefault>true</activeByDefault>
                     </activation>
