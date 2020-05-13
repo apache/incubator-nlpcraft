@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px" alt="">
 
 1. Release computer environment configuration.
 
@@ -26,7 +26,7 @@
     - Prepare maven passwords encryption (master and apache passwords) - https://maven.apache.org/guides/mini/guide-encryption.html
     - Encode gpg.passphrase for user account aradzinski@datalingvo.com Aaron Radzinski https://central.sonatype.org/pages/working-with-pgp-signatures.html 
  
-    As result, you should have in the folder {USER_HOME}/.m2 two following files:
+    As result, you should have in the folder {USER_HOME}/.m2 two following files with similar content:
     
     - settings-security.xml file should contain following content:
   
@@ -64,10 +64,11 @@
                 </profile>
             </profiles>
             ...
+    Note, please, there are different ways to pass these parameters to maven command, there is only one of them.        
             
 2. Make Apache release. Note that pom.xml scm tag should contain actual tag name.
 
-    Example:
+    Example. If version is `0.5.0` and tag name is `v0.5.0` following pom `scm` chapter should be:
     
         <scm>
             <url>https://github.com/apache/incubator-nlpcraft.git</url>
