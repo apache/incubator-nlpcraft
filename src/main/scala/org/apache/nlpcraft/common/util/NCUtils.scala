@@ -952,9 +952,9 @@ object NCUtils extends LazyLogging {
             override def isInterrupted: Boolean = super.isInterrupted || stopped
             
             override def interrupt(): Unit = {
-                super.interrupt()
-                
                 stopped = true
+
+                super.interrupt()
             }
             
             override def run(): Unit = {
