@@ -38,13 +38,13 @@ As result, you should have the following files in the folder `{USER_HOME}/.m2`:
     <server>
       <id>apache.snapshots.https</id>
       <username>YOUR_APACHE_USERNAME</username>
-      <password>YOUR_APACHE_PASSWORD</password>
+      <password>{YOUR_APACHE_PASSWORD}</password>
     </server>
     
     <server>
       <id>apache.releases.https</id>
       <username>YOUR_APACHE_USERNAME</username>
-      <password>YOUR_APACHE_PASSWORD</password>
+      <password>{YOUR_APACHE_PASSWORD}</password>
     </server>
     
     <profiles>
@@ -61,7 +61,7 @@ As result, you should have the following files in the folder `{USER_HOME}/.m2`:
         </profile>
     </profiles>
     ```
-      
+    Note that encrypted passwords are in brackets.      
 ## 2. Make Apache Release 
 Note that `pom.xml` scm tag should contain actual tag name.
 For example, if version is `0.5.0` and tag name is `v0.5.0` following pom `scm` section should be:
