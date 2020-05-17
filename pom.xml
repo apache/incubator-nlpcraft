@@ -21,8 +21,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>NLPCraft</name>
-    <artifactId>nlpcraft</artifactId>
     <groupId>org.apache.nlpcraft</groupId>
+    <artifactId>nlpcraft</artifactId>
     <version>0.5.0</version>
     <url>https://nlpcraft.apache.org</url>
     <description>An open source API to convert natural language into actions.</description>
@@ -813,16 +813,16 @@ JDK version should be 8 or 11
                         <configuration>
                             <excludes>
                                 <exclude>.gitignore</exclude>
-                                <exclude>.travis.yml</exclude>
                                 <exclude>build</exclude>
-                                <exclude>.idea</exclude>
+                                <exclude>.idea/**/*</exclude>
+                                <exclude>javadoc/**/*</exclude>
+                                <exclude>.git/**/*</exclude>
                                 <exclude>venv</exclude>
                                 <exclude>*.iml</exclude>
                                 <exclude>**/*.txt</exclude>
                                 <exclude>src/main/resources/geo/countries/*.json</exclude>
                                 <exclude>idea/**/*</exclude>
                                 <exclude>zips/**/*</exclude>
-                                <exclude>javadoc/**/*</exclude>
                                 <exclude>src/main/resources/**/*.json</exclude>
                                 <exclude>src/main/resources/moby/*</exclude>
                                 <exclude>src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/*</exclude>
