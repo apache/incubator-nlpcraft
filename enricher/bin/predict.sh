@@ -16,4 +16,4 @@
 # limitations under the License.
 #
 
-curl -d "{\"sentence\": \"$1\",\"simple\": true}" -H 'Content-Type: application/json' http://localhost:5000
+curl -d "{\"sentence\": \"$1\",\"simple\": true, \"lower\": $2, \"upper\": $2, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/synonyms
