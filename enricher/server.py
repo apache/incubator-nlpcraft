@@ -17,8 +17,6 @@
 import logging
 from flask import Flask
 from flask import request
-from flask import abort
-from flask import Response
 from bertft import Pipeline
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
@@ -28,17 +26,43 @@ app = Flask(__name__)
 pipeline = Pipeline()
 
 
-@app.route('/', methods=['POST'])
+class ValidationException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
+@app.errorhandler(ValidationException)
+def handle_bad_request(e):
+    return str(e), 400
+
+
+def check_condition(condition, supplier, message):
+    if condition:
+        return supplier()
+    else:
+        raise ValidationException(message)
+
+
+def present(json, name):
+    return check_condition(name in json, lambda: json[name],
+                           "Required '" + name + "' argument is not present")
+
+
+@app.route('/synonyms', methods=['POST'])
 def main():
     if not request.is_json:
-        abort(Response("Json expected"))
+        raise ValidationException("Json expected")
 
     json = request.json
-    sentence = json['sentence']
-    upper = None if 'upper' not in json else json['upper']
-    lower = None if 'lower' not in json else json['lower']
-    positions = None if upper is None or lower is None else [lower, upper]
-    data = pipeline.do_find(sentence, positions)
+
+    sentence = present(json, 'sentence')
+    upper = present(json, 'upper')
+    lower = present(json, 'lower')
+    positions = check_condition(lower <= upper, lambda: [lower, upper],
+                                "Lower bound must be less or equal upper bound")
+    limit = present(json, 'limit')
+
+    data = pipeline.do_find(sentence, positions, limit)
     if 'simple' not in json or not json['simple']:
         json_data = data.to_json(orient='table', index=False)
     else:
