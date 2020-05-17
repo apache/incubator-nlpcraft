@@ -61,7 +61,7 @@ As result, you should have the following files in the folder `{USER_HOME}/.m2`:
         </profile>
     </profiles>
     ```
-    Note that encrypted passwords are in brackets.      
+    **Note:** encrypted passwords must be in curly brackets.      
 ## 2. Make Apache Release 
 Note that `pom.xml` scm tag should contain actual tag name.
 For example, if version is `0.5.0` and tag name is `v0.5.0` following pom `scm` section should be:
