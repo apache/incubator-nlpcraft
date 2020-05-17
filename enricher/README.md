@@ -21,10 +21,12 @@ To start server:
 `$ bin/start_server.sh`  
 
 Server has single route in root which accepts POST json requests with parameters: 
-* "sentence": Target sentence. Word to find synonyms for must be marked with `#`
-* "lower", "upper" (Optional, substitute marking with `#`): Positions in the sentence of start and end of collocation to find synonyms for.  
+* "sentence": Target sentence. Number of word to find synonyms for must be passed as argument
+* "lower", "upper": Positions in the sentence of start and end of collocation to find synonyms for.  
 Note: sentence is split via whitespaces, upper bound is inclusive. 
 * "simple" (Optional): If set to true omits verbose data.  
+* "limit": Sets limit of result words number.  
 
 Simple request could be made with a script, e.g.  
-`$ bin/predict.sh "what is the chance of rain# tomorrow?"`
+`$ bin/predict.sh "what is the chance of rain tomorrow?" 5`  
+Would find synonym for word "rain" in this sentence.

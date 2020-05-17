@@ -81,7 +81,6 @@ class Pipeline:
 
         self.log.info("Server started in %s seconds", ('{0:.4f}'.format(time.time() - start_time)))
 
-    # TODO(?): remove split by #
     def find_top(self, sentence, positions, k, top_bert, bert_norm, min_ftext, weights):
         tokenizer = self.tokenizer
         model = self.model
@@ -89,36 +88,29 @@ class Pipeline:
 
         self.log.debug("Input: %s", sentence)
         start_time = time.time()
-        sentence_match = re.search("(\w+)#(\w+)?", sentence)
-        target = None
 
-        if sentence_match:
-            target = re.sub("#", "", sentence_match.group(1))
-            target = target.strip()
-            sequence = re.sub("(\w+)?#(\w+)?", tokenizer.mask_token, sentence)
+        lst = sentence.split()
+        lower = positions[0]
+        upper = positions[1] + 1
+        target = "-".join(lst[lower:upper])
+        if lower == positions[1] or target in self.ft_dict:
+            seqlst = lst[:lower]
+            seqlst.append(tokenizer.mask_token)
+            seqlst.extend(lst[upper:])
+            sequence = " ".join(seqlst)
         else:
-            lst = sentence.split()
-            lower = positions[0]
-            upper = positions[1] + 1
-            target = "-".join(lst[lower:upper])
-            if lower == positions[1] or target in self.ft_dict:
+            rec = list()
+
+            for i in range(lower, upper):
                 seqlst = lst[:lower]
-                seqlst.append(tokenizer.mask_token)
+                seqlst.append(lst[i])
                 seqlst.extend(lst[upper:])
-                sequence = " ".join(seqlst)
-            else:
-                rec = list()
+                rec.append(
+                    self.find_top(" ".join(seqlst), [lower, lower], k, top_bert, bert_norm, min_ftext, weights))
 
-                for i in range(lower, upper):
-                    seqlst = lst[:lower]
-                    seqlst.append(lst[i])
-                    seqlst.extend(lst[upper:])
-                    rec.append(
-                        self.find_top(" ".join(seqlst), [lower, lower], k, top_bert, bert_norm, min_ftext, weights))
+            rec = sorted(rec, key=lambda x: x.score.mean(), reverse=True)
 
-                rec = sorted(rec, key=lambda x: x.score.mean(), reverse=True)
-
-                return rec[0]
+            return rec[0]
 
         self.log.debug("Target word: %s; sequence: %s", target, sequence)
 
@@ -149,7 +141,7 @@ class Pipeline:
             sim = cosine_similarity(ft[target].reshape(1, -1), ft[word].reshape(1, -1))[0][0]
 
             sentence_sim = cosine_similarity(
-                ft.get_sentence_vector(re.sub("#", "", sentence)).reshape(1, -1),
+                ft.get_sentence_vector(sentence).reshape(1, -1),
                 ft.get_sentence_vector(re.sub(tokenizer.mask_token, word, sequence)).reshape(1, -1)
             )[0][0]
 
@@ -186,8 +178,8 @@ class Pipeline:
 
         return filtered_top
 
-    def do_find(self, s, positions):
-        return self.find_top(s, positions, 10, 200, 200, 0.25, [1, 1])
+    def do_find(self, s, positions, limit):
+        return self.find_top(s, positions, limit, 200, 200, 0.25, [1, 1])
 
     def dget(self, lst, pos):
         return list(map(lambda x: '{0:.2f}'.format(x[pos]), lst)) if self.on_run is not None else lget(lst, pos)
