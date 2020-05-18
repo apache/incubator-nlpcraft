@@ -61,13 +61,16 @@ class NCEnricherBaseSpec {
       * Checks single variant.
       *
       * @param txt
-      * @param expToks
+      * @param expToks Expected tokens.
       */
     protected def checkExists(txt: String, expToks: NCTestToken*): Unit = {
         val res = client.ask(txt)
 
         if (res.isFailed)
-            fail(s"Result failed [text=$txt, error=${res.getResultError.get()}]")
+            fail(s"Result failed [" +
+                s"text=$txt, " +
+                s"error=${res.getResultError.get()}" +
+            s"]")
 
         assertTrue(res.getResult.isPresent, s"Missed result data")
 
@@ -76,7 +79,11 @@ class NCEnricherBaseSpec {
 
         assertTrue(
             sens.contains(expSen),
-            s"Required sentence not found [request=$txt, \nexpected=\n$expSen, \nfound=\n${sens.mkString("\n")}\n]"
+            s"Required token sequence not found [" +
+                s"request=$txt, " +
+                s"\nexpected=\n$expSen, " +
+                s"\nfound=\n${sens.mkString("\n")}" +
+            "\n]"
         )
     }
 
@@ -90,7 +97,10 @@ class NCEnricherBaseSpec {
         val res = client.ask(txt)
 
         if (res.isFailed)
-            fail(s"Result failed [text=$txt, error=${res.getResultError.get()}]")
+            fail(s"Result failed [" +
+                s"text=$txt, " +
+                s"error=${res.getResultError.get()}" +
+            s"]")
 
         assertTrue(res.getResult.isPresent, s"Missed result data")
 
@@ -99,13 +109,21 @@ class NCEnricherBaseSpec {
 
         require(
             expSens.size == sens.size,
-            s"Unexpected response size [request=$txt, expected=${expSens.size}, received=${sens.size}]"
+            s"Unexpected response size [" +
+                s"request=$txt, " +
+                s"expected=${expSens.size}, " +
+                s"received=${sens.size}" +
+            s"]"
         )
 
         for (expSen ← expSens)
             require(
                 sens.contains(expSen),
-                s"Required sentence not found [request=$txt, \nexpected=\n$expSen, \nfound=\n${sens.mkString("\n")}\n]"
+                s"Required token sequence not found [" +
+                    s"request=$txt, " +
+                    s"\nexpected=\n$expSen, " +
+                    s"\nfound=\n${sens.mkString("\n")}" +
+                "\n]"
             )
     }
 
@@ -132,9 +150,9 @@ class NCEnricherBaseSpec {
                 err.printStackTrace(System.out)
             }
 
-            Assertions.fail(s"Failed ${errs.size} from ${tests.size} tests. See errors list above.")
+            Assertions.fail(s"\n!!! Failed ${errs.size} from ${tests.size} tests. See errors list above. !!!\n")
         }
         else
-            println(s"All tests passed: ${tests.size}")
+            println(s"\n>>> All ${tests.size} tests passed. <<<\n")
     }
 }

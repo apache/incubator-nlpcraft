@@ -18,7 +18,12 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort
 
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCTestSortTokenType._
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestNlpToken ⇒ nlp, NCTestSortToken ⇒ srt, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{
+    NCEnricherBaseSpec,
+    NCTestNlpToken ⇒ nlp,
+    NCTestSortToken ⇒ srt,
+    NCTestUserToken ⇒ usr
+}
 import org.junit.jupiter.api.Test
 
 /**

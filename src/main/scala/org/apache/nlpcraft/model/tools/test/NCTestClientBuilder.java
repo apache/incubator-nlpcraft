@@ -153,7 +153,12 @@ public class NCTestClientBuilder {
         return this;
     }
 
-    // TODO: add description.
+    /**
+     * Sets whether or not to log responses from the probe.
+     *
+     * @param respLog {@code True} to log responses, {@code false} otherwise.
+     * @return Builder instance for chaining calls.
+     */
     public NCTestClientBuilder setResponseLog(boolean respLog) {
         impl.setResponseLog(respLog);
 
@@ -361,7 +366,7 @@ public class NCTestClientBuilder {
     /**
      * Client implementation.
      */
-    private class NCTestClientImpl implements NCTestClient {
+    private static class NCTestClientImpl implements NCTestClient {
         private static final String STATUS_API_OK = "API_OK";
 
         private final Type TYPE_RESP = new TypeToken<HashMap<String, Object>>() {}.getType();
@@ -384,7 +389,7 @@ public class NCTestClientBuilder {
         private volatile boolean opened = false;
         private volatile boolean closed = false;
 
-        private Map<String, NCEmbeddedResult> embeddedResMap = new ConcurrentHashMap<>();
+        private final Map<String, NCEmbeddedResult> embeddedResMap = new ConcurrentHashMap<>();
 
         private Consumer<NCEmbeddedResult> embeddedCb;
 
@@ -807,7 +812,7 @@ public class NCTestClientBuilder {
                 post.setHeader("Content-Type", "application/json");
                 post.setEntity(entity);
 
-                ResponseHandler<String> respHdlr = resp -> {
+                ResponseHandler<String> respHdl = resp -> {
                     int code = resp.getStatusLine().getStatusCode();
 
                     HttpEntity e = resp.getEntity();
@@ -827,7 +832,7 @@ public class NCTestClientBuilder {
                     }
                 };
 
-                return httpCli.execute(post, respHdlr);
+                return httpCli.execute(post, respHdl);
             }
             finally {
                 post.releaseConnection();

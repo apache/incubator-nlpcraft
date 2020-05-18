@@ -34,7 +34,7 @@ import scala.compat.java8.OptionConverters._
 
 sealed trait NCTestToken {
     def id: String
-    def text: String
+    def text: String // Case-sensitive
     def isStop: Boolean = false
 }
 
@@ -48,7 +48,7 @@ case class NCTestNlpToken(text: String, override val isStop: Boolean = false) ex
     override def toString: String = s"$text(nlp)<isStop=$isStop>"
 }
 
-// Skip non-deteministric properties verification.
+// Skip non-deterministic properties verification.
 case class NCTestDateToken(text: String) extends NCTestToken {
     require(text != null)
 
