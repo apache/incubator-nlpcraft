@@ -111,7 +111,6 @@
         <maven.shade.plugin.ver>3.2.1</maven.shade.plugin.ver>
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
         <maven.gpg.plugin.ver>1.6</maven.gpg.plugin.ver>
-        <maven.nexus.staging.plugin.ver>1.6.7</maven.nexus.staging.plugin.ver>
         <maven.bazaarvoice.plugin.ver>0.9</maven.bazaarvoice.plugin.ver>
         <apache.rat.plugin.ver>0.13</apache.rat.plugin.ver>
         <org.antlr4.ver>4.8</org.antlr4.ver>
@@ -749,18 +748,6 @@ JDK version should be 8 or 11
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${maven.nexus.staging.plugin.ver}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                    <skipLocalStaging>true</skipLocalStaging>
-                </configuration>
             </plugin>
         </plugins>
     </build>
