@@ -16,4 +16,4 @@
 # limitations under the License.
 #
 
-FLASK_APP=server.py python -m flask run
+FLASK_APP=server.py python3 -m flask run

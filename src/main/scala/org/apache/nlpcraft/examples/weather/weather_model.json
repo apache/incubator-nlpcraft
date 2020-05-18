@@ -22,7 +22,19 @@
     "description": "Weather example model.",
     "examples": [
         "What's the local weather forecast?",
-        "What's the weather in Moscow?"
+        "What's the weather in Moscow?",
+        "What is the weather like outside?",
+        "How's the weather?",
+        "What's the weather forecast for the rest of the week?",
+        "What's the weather forecast this week?",
+        "What's the weather out there?",
+        "Is it cold outside?",
+        "Is it hot outside?",
+        "Will it rain today?",
+        "When it will rain in Delhi?",
+        "Is there any possibility of rain in Delhi?",
+        "Is it raining now?",
+        "Is there any chance of rain today?"
     ],
     "macros": [
         {
