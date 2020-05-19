@@ -35,10 +35,11 @@ object SqlAccess extends LazyLogging {
     private var conn: Connection = _
     
     /**
+      * Selects given query and return result.
+      * Also it keeps all routines by creating and recreating connections to database.
       *
-      * @param qry
-      * @param logResult
-      * @return
+      * @param qry SQl query.
+      * @param logResult Log printing flag. Useful for debugging.
       */
     def select(qry: SqlQuery, logResult: Boolean): SqlResult = {
         def getConnection: Connection = {
@@ -57,6 +58,8 @@ object SqlAccess extends LazyLogging {
                 conn.prepareStatement(qry.sql)
             catch {
                 case e: JdbcSQLException ⇒
+                    close()
+
                     // Connection broken. https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
                     if (e.getErrorCode != 90067)
                         throw e
@@ -111,6 +114,8 @@ object SqlAccess extends LazyLogging {
         }
         catch {
             case e: SQLException ⇒
+                close()
+
                 conn = null
 
                 logger.warn(
@@ -123,4 +128,15 @@ object SqlAccess extends LazyLogging {
                 throw e
         }
     }
+
+    /**
+      * Closes database connection. It is uses when application support related lifecycle methods.
+      */
+    def close(): Unit =
+        if (conn != null)
+            try
+                conn.close()
+            catch {
+                case _: Exception ⇒ logger.warn("Error closing connection")
+            }
 }

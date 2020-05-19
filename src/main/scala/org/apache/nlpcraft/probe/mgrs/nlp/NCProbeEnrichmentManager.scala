@@ -374,8 +374,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             var step = 0
             var continue = true
 
-            val stopIdxs = nlpSen.filter(_.isStopWord).map(_.index)
-
             while (continue) {
                 step = step + 1
 

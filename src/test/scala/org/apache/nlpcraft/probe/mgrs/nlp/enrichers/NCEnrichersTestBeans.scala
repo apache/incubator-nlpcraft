@@ -285,7 +285,8 @@ case class NCTestUserToken(text: String, id: String) extends NCTestToken {
     require(text != null)
     require(id != null)
 
-    override def toString: String = s"$text(user)<id=$id>"}
+    override def toString: String = s"$text(user)<id=$id>"
+}
 
 // Token and sentence beans and utilities.
 

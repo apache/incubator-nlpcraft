@@ -20,37 +20,43 @@ package org.apache.nlpcraft.examples.sql.db
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlColumn
 
 /**
-  *
+  * SQL condition trait.
   */
 sealed trait SqlCondition {
+    /**
+      * Gets condition column.
+      */
     def column: NCSqlColumn
 }
 
 /**
+  * SQL simple condition data holder.
   *
-  * @param column
-  * @param operation
-  * @param value
+  * @param column Condition column.
+  * @param operation Operation between column and it's value.
+  * @param value Condition value.
   */
 case class SqlSimpleCondition(column: NCSqlColumn, operation: String, value: Any) extends SqlCondition
 
 /**
+  * SQL IN condition data holder. It can be changed by list of simple conditions united with OR
   *
-  * @param column
-  * @param values
+  * @param column Condition column.
+  * @param values Condition values.
   */
 case class SqlInCondition(column: NCSqlColumn, values: Seq[Any]) extends SqlCondition
 
 /**
+  * SQL query data holder.
   *
-  * @param sql
-  * @param parameters
+  * @param sql SQL query text with place holders `?` for its parameters.
+  * @param parameters SQL query parameters.
   */
 case class SqlQuery(sql: String, parameters: Seq[Any])
 
 /**
-  *
-  * @param columns
-  * @param rows
+  * SQL execution result data holder.
+  * @param columns Columns names.
+  * @param rows Table of results in string representation, row by row.
   */
 case class SqlResult(columns: Seq[String], rows: Seq[Seq[String]])

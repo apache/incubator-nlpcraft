@@ -104,7 +104,7 @@ object SqlServer extends LazyLogging {
 }
 
 /**
-  * TODO: add description.
+  * H2 SQL Server Runner.
   */
 object SqlServerRunner extends App {
     SqlServer.start()
