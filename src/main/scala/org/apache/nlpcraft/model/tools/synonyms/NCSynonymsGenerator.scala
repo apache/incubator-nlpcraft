@@ -37,12 +37,19 @@ import scala.collection.JavaConverters._
 import scala.collection._
 
 case class NCSynonymsGeneratorData(
-      url: String = "http://localhost:5000",
+      url: String = "http://localhost:5000/synonyms",
       modelPath: String,
+      responseLimit: Int = 10, // TODO: add scoreLimit
       minScore: Double = 0,
-      supportMultiple: Boolean = false,
+      supportedSynonymsWords: Int = 1,
       debugRequests: Boolean = false
-)
+) {
+    require(url != null, "URL cannot be null")
+    require(modelPath != null, "Model path cannot be null")
+    require(responseLimit > 0, "Response limit value must be positive")
+    require(minScore >= 0, "Minimal score value cannot be negative")
+    require(supportedSynonymsWords > 0, "Supported synonyms words count value must be positive")
+}
 
 object NCSynonymsGenerator {
     /**
@@ -58,8 +65,8 @@ object NCSynonymsGenerator {
     case class Suggestion(
         word: String, bert: Double, normalized: Double, ftext: Double, `ftext-sentence`: Double, score: Double
     )
-    case class RequestData(sentence: String, example: String, elementId: String, lower: Int, upper: Int)
-    case class RestRequest(sentence: String, simple: Boolean, lower: Int, upper: Int)
+    case class RequestData(sentence: String, example: String, elementId: String, lower: Int, upper: Int, limit: Int)
+    case class RestRequest(sentence: String, simple: Boolean, lower: Int, upper: Int, limit: Int)
     case class RestResponse(data: java.util.ArrayList[Suggestion])
 
     private final val GSON = new Gson
@@ -143,8 +150,7 @@ object NCSynonymsGenerator {
         val allReqs =
             elemSyns.map {
                 case (elemId, syns) ⇒
-                    val normSyns: Seq[Seq[Word]] =
-                        if (data.supportMultiple) syns.filter(_.size <= 2) else syns.filter(_.size == 1)
+                    val normSyns: Seq[Seq[Word]] = syns.filter(_.size <= data.supportedSynonymsWords)
                     val synsStems = normSyns.map(_.map(_.stem))
                     val synsWords = normSyns.map(_.map(_.word))
 
@@ -168,7 +174,8 @@ object NCSynonymsGenerator {
                                     example = exampleWords.mkString(" "),
                                     elementId = elemId,
                                     lower = idx,
-                                    upper = idx + synStems.length - 1
+                                    upper = idx + synStems.length - 1,
+                                    limit = data.responseLimit
                                 )
                             }
 
@@ -201,7 +208,8 @@ object NCSynonymsGenerator {
                                     sentence = req.sentence,
                                     simple = false,
                                     lower = req.lower,
-                                    upper = req.upper
+                                    upper = req.upper,
+                                    limit = req.limit
                                 )
                             ),
                             "UTF-8"
@@ -251,9 +259,17 @@ object NCSynonymsGenerator {
 
         val tbl = NCAsciiTable()
 
-        val headers = Seq("Element", "Suggestion", "Summary factor", "Count", "Bert/Ftext score", "Bert", "Bert norm", "Ftext")
-
-        tbl #= ((if (data.supportMultiple) headers ++ Seq("Ftext-Sentence") else headers) :_*)
+        tbl #= (
+            "Element",
+            "Suggestion",
+            "Summary factor",
+            "Count",
+            "Bert/Ftext score",
+            "Bert",
+            "Bert norm",
+            "Ftext",
+            "Ftext-Sentence"
+        )
 
         filteredSuggs.
             foreach { case (elemId, elemSuggs) ⇒
@@ -278,7 +294,7 @@ object NCSynonymsGenerator {
                     foreach { case ((sugg, cnt, cumFactor), sugIdx) ⇒
                         def f(d: Double): String = "%1.3f" format d
 
-                        val vals = Seq(
+                        tbl += (
                             if (sugIdx == 0) elemId else " ",
                             sugg.word,
                             f(cumFactor),
@@ -286,10 +302,9 @@ object NCSynonymsGenerator {
                             f(sugg.score),
                             f(sugg.bert),
                             f(sugg.normalized),
-                            f(sugg.ftext)
+                            f(sugg.ftext),
+                            f(sugg.`ftext-sentence`)
                         )
-
-                        tbl += ((if (data.supportMultiple) vals ++ Seq(f(sugg.`ftext-sentence`)) else vals)  :_*)
                     }
             }
 
@@ -329,10 +344,11 @@ object NCSynonymsGenerator {
 object NCSynonymsGeneratorRunner extends App {
     NCSynonymsGenerator.process(
         NCSynonymsGeneratorData(
-            url = "http://localhost:5000",
+            url = "http://localhost:5000/synonyms",
             modelPath = "src/main/scala/org/apache/nlpcraft/examples/weather/weather_model.json",
             minScore = 0,
-            supportMultiple = false, // TODO: change it to words count.
+            responseLimit = 10,
+            supportedSynonymsWords = 1,
             debugRequests = true
         )
     )
