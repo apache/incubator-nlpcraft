@@ -27,7 +27,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCEnricherProcessor
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCEnricherUtils
 
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, mutable}
@@ -216,7 +216,7 @@ object NCLimitEnricher extends NCProbeEnricher {
             // Tries to grab tokens reverse way.
             // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
             for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index))
-                 if NCEnricherProcessor.validImportant(ns, toks, isImportant)
+                 if NCEnricherUtils.validImportant(ns, toks, isImportant)
             )
                 tryToMatch(numsMap, groupsMap, toks) match {
                     case Some(m) ⇒
@@ -232,7 +232,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
                             val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, params: _*)
 
-                            if (!notes.exists(n ⇒ NCEnricherProcessor.equalOrSimilar(note, n, ns))) {
+                            if (!notes.exists(n ⇒ NCEnricherUtils.equalOrSimilar(note, n, ns))) {
                                 notes += note
 
                                 m.matched.foreach(_.add(note))

@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCEnricherProcessor
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCEnricherUtils
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
@@ -431,7 +431,7 @@ object NCSortEnricher extends NCProbeEnricher {
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
             def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || MASK_WORDS.contains(t.stem)
 
-            for (toks ← ns.tokenMixWithStopWords() if NCEnricherProcessor.validImportant(ns, toks, isImportant)) {
+            for (toks ← ns.tokenMixWithStopWords() if NCEnricherUtils.validImportant(ns, toks, isImportant)) {
                 tryToMatch(toks) match {
                     case Some(m) ⇒
                         def addNotes(
@@ -449,7 +449,7 @@ object NCSortEnricher extends NCProbeEnricher {
                         def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
                             val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
-                            if (!notes.exists(n ⇒ NCEnricherProcessor.equalOrSimilar(note, n, ns))) {
+                            if (!notes.exists(n ⇒ NCEnricherUtils.equalOrSimilar(note, n, ns))) {
                                 notes += note
 
                                 m.main.foreach(_.add(note))

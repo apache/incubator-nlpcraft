@@ -45,7 +45,6 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCEnricherProcessor
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 
 import scala.collection.JavaConverters._
@@ -425,7 +424,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             NCModelManager.start(span)
             NCCommandManager.start(span)
             NCDictionaryManager.start(span)
-            NCEnricherProcessor.start(span)
             NCStopWordEnricher.start(span)
             NCModelEnricher.start(span)
             NCLimitEnricher.start(span)
@@ -451,7 +449,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             NCConnectionManager.stop(span)
             NCProbeEnrichmentManager.stop(span)
             NCConversationManager.stop(span)
-            NCEnricherProcessor.stop(span)
             NCDictionaryEnricher.stop(span)
             NCValidateManager.stop(span)
             NCSuspiciousNounsEnricher.stop(span)

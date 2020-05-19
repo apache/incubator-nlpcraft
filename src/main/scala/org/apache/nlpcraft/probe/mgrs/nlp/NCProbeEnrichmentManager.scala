@@ -39,6 +39,7 @@ import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCEnricherUtils
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.dictionary.NCDictionaryEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit.NCLimitEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model.NCModelEnricher
@@ -396,7 +397,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             val diff = notes2.filter(n ⇒ !notes1.contains(n))
 
                             val diffRedundant = diff.flatMap(n2 ⇒
-                                notes1.find(n1 ⇒ NCEnricherProcessor.equalOrSimilar(n1, n2, nlpSen)) match {
+                                notes1.find(n1 ⇒ NCEnricherUtils.equalOrSimilar(n1, n2, nlpSen)) match {
                                     case Some(similar) ⇒ Some(n2 → similar)
                                     case None ⇒ None
                                 }
@@ -437,7 +438,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         logger.info(s"Enrichment finished [step=$step]")
             }
 
-            NCEnricherProcessor.collapse(mdlDec, nlpSen.clone(), span).
+            NCEnricherUtils.collapse(mdlDec, nlpSen.clone(), span).
                 // Sorted to support deterministic logs.
                 sortBy(p ⇒
                 p.map(p ⇒ {
@@ -478,7 +479,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val varsNlp = sensSeq.map(_.toSeq)
         val req = NCRequestImpl(meta, srvReqId)
 
-        var senVars = NCEnricherProcessor.convert(mdlDec, srvReqId, varsNlp)
+        var senVars = NCEnricherUtils.convert(mdlDec, srvReqId, varsNlp)
 
         // Sentence variants can be filtered by model.
         val fltSenVars: Seq[(Seq[NCToken], Int)] =

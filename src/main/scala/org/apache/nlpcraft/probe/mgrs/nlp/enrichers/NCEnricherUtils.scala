@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.nlp.impl
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
 import java.io.Serializable
 import java.util
@@ -25,26 +25,18 @@ import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
-import org.apache.nlpcraft.common.{NCE, NCService, TOK_META_ALIASES_KEY}
+import org.apache.nlpcraft.common.{NCE, TOK_META_ALIASES_KEY}
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenImpl
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
-import scala.collection.JavaConverters._
 
+import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, Set, mutable}
 
 /**
   *
   */
-object NCEnricherProcessor extends NCService with LazyLogging {
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        super.start()
-    }
-
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-    }
-
+object NCEnricherUtils extends LazyLogging {
     /**
       *
       * @param note
@@ -252,7 +244,7 @@ object NCEnricherProcessor extends NCService with LazyLogging {
 
                     if (fixed.forall(_.size == 1)) {
                         // Fix double dimension array to one dimension,
-                        // so it should be called always inspite of fixIndexesReferences method.
+                        // so it should be called always in spite of 'fixIndexesReferences' method.
                         ns.fixNote(n, idxsField → fixed.map(_.head).asJava.asInstanceOf[java.io.Serializable])
 
                         def x(seq: Seq[Seq[Int]]): String = s"[${seq.map(p ⇒ s"[${p.mkString(",")}]").mkString(", ")}]"
@@ -514,138 +506,134 @@ object NCEnricherProcessor extends NCService with LazyLogging {
       * @return
       */
     @throws[NCE]
-    def collapse(mdl: NCModelDecorator, ns: NCNlpSentence, parent: Span = null): Seq[NCNlpSentence] =
-        startScopedSpan("collapse", parent,
-            "srvReqId" → ns.srvReqId,
-            "txt" → ns.text,
-            "modelId" → mdl.model.getId) { _ ⇒
-            // Always deletes `similar` notes.
-            // Some words with same note type can be detected various ways.
-            // We keep only one variant -  with `best` direct and sparsity parameters,
-            // other variants for these words are redundant.
-            val redundant: Seq[NCNlpSentenceNote] =
-                ns.flatten.filter(!_.isNlp).distinct.
-                    groupBy(p ⇒ getKey(p)).
-                    map(p ⇒ p._2.sortBy(p ⇒
-                        (
-                            // System notes don't have such flags.
-                            if (p.isUser) {
-                                if (p.isDirect) 0 else 1
+    def collapse(mdl: NCModelDecorator, ns: NCNlpSentence, parent: Span = null): Seq[NCNlpSentence] = {
+        // Always deletes `similar` notes.
+        // Some words with same note type can be detected various ways.
+        // We keep only one variant -  with `best` direct and sparsity parameters,
+        // other variants for these words are redundant.
+        val redundant: Seq[NCNlpSentenceNote] =
+            ns.flatten.filter(!_.isNlp).distinct.
+                groupBy(p ⇒ getKey(p)).
+                map(p ⇒ p._2.sortBy(p ⇒
+                    (
+                        // System notes don't have such flags.
+                        if (p.isUser) {
+                            if (p.isDirect) 0 else 1
+                        }
+                        else
+                            0,
+                        if (p.isUser) p.sparsity else 0
+                    )
+                )).
+                flatMap(_.drop(1)).
+                toSeq
+
+        redundant.foreach(ns.removeNote)
+
+        def getNotNlpNotes(toks: Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceNote] =
+            toks.flatten.filter(!_.isNlp).distinct
+
+        val delCombs: Seq[NCNlpSentenceNote] =
+            getNotNlpNotes(ns).
+                flatMap(note ⇒ getNotNlpNotes(ns.slice(note.tokenFrom, note.tokenTo + 1)).filter(_ != note)).
+                distinct
+
+        val toksByIdx: Seq[Seq[NCNlpSentenceNote]] =
+            delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
+                groupBy { case (idx, _) ⇒ idx }.
+                map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note } }.
+                toSeq.sortBy(-_.size)
+
+        val minDelSize = if (toksByIdx.isEmpty) 1 else toksByIdx.map(_.size).max - 1
+
+        val sens =
+            if (delCombs.nonEmpty) {
+                val deleted = mutable.ArrayBuffer.empty[Seq[NCNlpSentenceNote]]
+
+                val sens =
+                    (minDelSize to delCombs.size).
+                        flatMap(i ⇒
+                            delCombs.combinations(i).
+                                filter(delComb ⇒ !toksByIdx.exists(_.count(note ⇒ !delComb.contains(note)) > 1))
+                        ).
+                        sortBy(_.size).
+                        flatMap(delComb ⇒
+                            // Already processed with less subset of same deleted tokens.
+                            if (!deleted.exists(_.forall(delComb.contains))) {
+                                val nsClone = ns.clone()
+
+                                delComb.foreach(nsClone.removeNote)
+
+                                // Has overlapped notes for some tokens.
+                                require(!nsClone.exists(_.count(!_.isNlp) > 1))
+
+                                deleted += delComb
+
+                                val notNlpTypes = getNotNlpNotes(nsClone).map(_.noteType).distinct
+
+                                if (collapse(nsClone, notNlpTypes)) Some(nsClone) else None
                             }
                             else
-                                0,
-                            if (p.isUser) p.sparsity else 0
+                                None
                         )
-                    )).
-                    flatMap(_.drop(1)).
-                    toSeq
 
-            redundant.foreach(ns.removeNote)
-
-            def getNotNlpNotes(toks: Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceNote] =
-                toks.flatten.filter(!_.isNlp).distinct
-
-            val delCombs: Seq[NCNlpSentenceNote] =
-                getNotNlpNotes(ns).
-                    flatMap(note ⇒ getNotNlpNotes(ns.slice(note.tokenFrom, note.tokenTo + 1)).filter(_ != note)).
-                    distinct
-
-            val toksByIdx: Seq[Seq[NCNlpSentenceNote]] =
-                delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
-                    groupBy { case (idx, _) ⇒ idx }.
-                    map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note } }.
-                    toSeq.sortBy(-_.size)
-
-            val minDelSize = if (toksByIdx.isEmpty) 1 else toksByIdx.map(_.size).max - 1
-
-            val sens =
-                if (delCombs.nonEmpty) {
-                    val deleted = mutable.ArrayBuffer.empty[Seq[NCNlpSentenceNote]]
-
-                    val sens =
-                        (minDelSize to delCombs.size).
-                            flatMap(i ⇒
-                                delCombs.combinations(i).
-                                    filter(delComb ⇒ !toksByIdx.exists(_.count(note ⇒ !delComb.contains(note)) > 1))
-                            ).
-                            sortBy(_.size).
-                            flatMap(delComb ⇒
-                                // Already processed with less subset of same deleted tokens.
-                                if (!deleted.exists(_.forall(delComb.contains))) {
-                                    val nsClone = ns.clone()
-
-                                    delComb.foreach(nsClone.removeNote)
-
-                                    // Has overlapped notes for some tokens.
-                                    require(!nsClone.exists(_.count(!_.isNlp) > 1))
-
-                                    deleted += delComb
-
-                                    val notNlpTypes = getNotNlpNotes(nsClone).map(_.noteType).distinct
-
-                                    if (collapse(nsClone, notNlpTypes)) Some(nsClone) else None
-                                }
-                                else
-                                    None
-                            )
-
-                    // It removes sentences which have only one difference - 'direct' flag of their user tokens.
-                    // `Direct` sentences have higher priority.
-                    case class Key(
-                        sysNotes: Seq[Map[String, java.io.Serializable]],
-                        userNotes: Seq[Map[String, java.io.Serializable]]
-                    )
-                    case class Value(sentence: NCNlpSentence, directCount: Int)
-
-                    val m = mutable.HashMap.empty[Key, Value]
-
-                    sens.map(sen ⇒ {
-                        val notes = sen.flatten
-
-                        val sysNotes = notes.filter(_.isSystem)
-                        val nlpNotes = notes.filter(_.isNlp)
-                        val userNotes = notes.filter(_.isUser)
-
-                        def get(seq: Seq[NCNlpSentenceNote], keys2Skip: String*): Seq[Map[String, java.io.Serializable]] =
-                            seq.map(p ⇒
-                                // We have to delete some keys to have possibility to compare sentences.
-                                p.clone().filter(_._1 != "direct")
-                            )
-
-                        (Key(get(sysNotes), get(userNotes)), sen, nlpNotes.map(p ⇒ if (p.isDirect) 0 else 1).sum)
-                    }).
-                        foreach { case (key, sen, directCnt) ⇒
-                            m.get(key) match {
-                                case Some(v) ⇒
-                                    // Best sentence is sentence with `direct` synonyms.
-                                    if (v.directCount > directCnt)
-                                        m += key → Value(sen, directCnt)
-                                case None ⇒ m += key → Value(sen, directCnt)
-                            }
-                        }
-
-                    m.values.map(_.sentence).toSeq
-                }
-                else {
-                    if (collapse(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Seq(ns) else Seq.empty
-                }.distinct
-
-            sens.foreach(sen ⇒
-                sen.foreach(tok ⇒
-                    tok.size match {
-                        case 1 ⇒ require(tok.head.isNlp, s"Unexpected non-'nlpcraft:nlp' token: $tok")
-                        case 2 ⇒ require(tok.head.isNlp ^ tok.last.isNlp, s"Unexpected token notes: $tok")
-                        case _ ⇒ require(requirement = false, s"Unexpected token notes count: $tok")
-                    }
+                // It removes sentences which have only one difference - 'direct' flag of their user tokens.
+                // `Direct` sentences have higher priority.
+                case class Key(
+                    sysNotes: Seq[Map[String, java.io.Serializable]],
+                    userNotes: Seq[Map[String, java.io.Serializable]]
                 )
-            )
+                case class Value(sentence: NCNlpSentence, directCount: Int)
 
-            // Drops similar sentences (with same tokens structure).
-            // Among similar sentences we prefer one with minimal free words count.
-            sens.groupBy(_.flatten.filter(!_.isNlp).map(note ⇒ getKey(note, withIndexes = false))).
-            map { case (_, seq) ⇒ seq.minBy(_.filter(p ⇒ p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
-            toSeq
-        }
+                val m = mutable.HashMap.empty[Key, Value]
+
+                sens.map(sen ⇒ {
+                    val notes = sen.flatten
+
+                    val sysNotes = notes.filter(_.isSystem)
+                    val nlpNotes = notes.filter(_.isNlp)
+                    val userNotes = notes.filter(_.isUser)
+
+                    def get(seq: Seq[NCNlpSentenceNote], keys2Skip: String*): Seq[Map[String, java.io.Serializable]] =
+                        seq.map(p ⇒
+                            // We have to delete some keys to have possibility to compare sentences.
+                            p.clone().filter(_._1 != "direct")
+                        )
+
+                    (Key(get(sysNotes), get(userNotes)), sen, nlpNotes.map(p ⇒ if (p.isDirect) 0 else 1).sum)
+                }).
+                    foreach { case (key, sen, directCnt) ⇒
+                        m.get(key) match {
+                            case Some(v) ⇒
+                                // Best sentence is sentence with `direct` synonyms.
+                                if (v.directCount > directCnt)
+                                    m += key → Value(sen, directCnt)
+                            case None ⇒ m += key → Value(sen, directCnt)
+                        }
+                    }
+
+                m.values.map(_.sentence).toSeq
+            }
+            else {
+                if (collapse(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Seq(ns) else Seq.empty
+            }.distinct
+
+        sens.foreach(sen ⇒
+            sen.foreach(tok ⇒
+                tok.size match {
+                    case 1 ⇒ require(tok.head.isNlp, s"Unexpected non-'nlpcraft:nlp' token: $tok")
+                    case 2 ⇒ require(tok.head.isNlp ^ tok.last.isNlp, s"Unexpected token notes: $tok")
+                    case _ ⇒ require(requirement = false, s"Unexpected token notes count: $tok")
+                }
+            )
+        )
+
+        // Drops similar sentences (with same tokens structure).
+        // Among similar sentences we prefer one with minimal free words count.
+        sens.groupBy(_.flatten.filter(!_.isNlp).map(note ⇒ getKey(note, withIndexes = false))).
+        map { case (_, seq) ⇒ seq.minBy(_.filter(p ⇒ p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
+        toSeq
+    }
 
     /**
       *
