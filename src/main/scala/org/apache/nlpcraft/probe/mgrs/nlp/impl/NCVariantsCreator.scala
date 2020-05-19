@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.nlpcraft.probe.mgrs.nlp.impl
 
 import java.io.Serializable
@@ -14,15 +31,15 @@ import scala.collection.{Seq, mutable}
 import scala.language.implicitConversions
 
 /**
-  *
+  * Utility class prepare list of variants based on list of sentences.
   */
 private[nlp] object NCVariantsCreator {
     /**
+      * Makes variants for given sentences.
       *
-      * @param mdl
-      * @param srvReqId
-      * @param sens
-      * @return
+      * @param mdl Model.
+      * @param srvReqId Server request ID.
+      * @param sens Sentences.
       */
     def makeVariants(mdl: NCModelDecorator, srvReqId: String, sens: Seq[NCNlpSentence]): Seq[NCVariant] = {
         val seq = sens.map(_.toSeq.map(nlpTok ⇒ NCTokenImpl(mdl, srvReqId, nlpTok) → nlpTok))
