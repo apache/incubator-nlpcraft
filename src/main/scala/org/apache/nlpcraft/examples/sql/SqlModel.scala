@@ -31,7 +31,14 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     private final val SCHEMA = NCSqlSchemaBuilder.makeSchema(this)
 
     case class Condition(column: NCToken, condition: NCToken)
-
+    
+    /**
+      *
+      * @param res
+      * @param sql
+      * @param params
+      * @return
+      */
     private def toJson(res: SqlResult, sql: String, params: Seq[Any]): String = {
         val m = new java.util.HashMap[String, Any]()
 
@@ -43,7 +50,12 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
         GSON.toJson(m)
     }
-
+    
+    /**
+      * 
+      * @param error
+      * @return
+      */
     private def toJson(error: String): String = {
         val m = new java.util.HashMap[String, Any]()
 
@@ -71,7 +83,12 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
         Condition(colTok, condTok)
     }
-
+    
+    /**
+      *
+      * @param tok
+      * @return
+      */
     private def findAnyColumnTokenOpt(tok: NCToken): Option[NCToken] = {
         val cols =
             (Seq(tok) ++ tok.findPartTokens().asScala).
@@ -84,10 +101,22 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             case _ ⇒ throw new RuntimeException(s"Too many columns found for token: $tok")
         }
     }
-
+    
+    /**
+      *
+      * @param tok
+      * @return
+      */
     private def findAnyColumnToken(tok: NCToken): NCToken =
         findAnyColumnTokenOpt(tok).getOrElse(throw new RuntimeException(s"No columns found for token: $tok"))
-
+    
+    /**
+      *
+      * @param ext
+      * @param colTok
+      * @param numTok
+      * @return
+      */
     private def extractNumConditions(ext: NCSqlExtractor, colTok: NCToken, numTok: NCToken): Seq[SqlSimpleCondition] = {
         val col = ext.extractColumn(colTok)
 
@@ -120,14 +149,27 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
                 )
         }
     }
-
+    
+    /**
+      *
+      * @param ext
+      * @param colTok
+      * @param dateTok
+      * @return
+      */
     def extractDateRangeConditions(ext: NCSqlExtractor, colTok: NCToken, dateTok: NCToken): Seq[SqlSimpleCondition] = {
         val col = ext.extractColumn(colTok)
         val range = ext.extractDateRange(dateTok)
 
         Seq(SqlSimpleCondition(col, ">=", range.getFrom), SqlSimpleCondition(col, "<=", range.getTo))
     }
-
+    
+    /**
+      *
+      * @param ext
+      * @param allValsToks
+      * @return
+      */
     def extractValuesConditions(ext: NCSqlExtractor, allValsToks: Seq[NCToken]): Seq[SqlInCondition] =
         allValsToks.map(tok ⇒ {
             val valToks = (Seq(tok) ++ tok.findPartTokens().asScala).filter(_.getValue != null)
@@ -144,7 +186,20 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         }).
             groupBy { case (col, _) ⇒ col }.
             map { case (col, seq) ⇒ SqlInCondition(col, seq.map { case (_, value) ⇒ value})}.toSeq
-
+    
+    /**
+      *
+      * @param ext
+      * @param tabs
+      * @param cols
+      * @param condNums
+      * @param condVals
+      * @param condDates
+      * @param freeDateOpt
+      * @param limitTokOpt
+      * @param sorts
+      * @return
+      */
     protected def select0(
         ext: NCSqlExtractor,
         tabs: Seq[NCToken],
@@ -192,6 +247,19 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
 
     // General case.
+    /**
+      *
+      * @param ctx
+      * @param tabs
+      * @param cols
+      * @param condNums
+      * @param condVals
+      * @param condDates
+      * @param freeDateOpt
+      * @param sortTokOpt
+      * @param limitTokOpt
+      * @return
+      */
     @NCIntent(
         "intent=commonReport conv=true " +
         "term(tabs)={groups @@ 'table'}[0,7] " +
@@ -231,7 +299,20 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             }
         )
     }
-
+    
+    /**
+      *
+      * @param ctx
+      * @param sortTok
+      * @param tabs
+      * @param cols
+      * @param condNums
+      * @param condVals
+      * @param condDates
+      * @param freeDateOpt
+      * @param limitTokOpt
+      * @return
+      */
     // Case with implicit sort.
     @NCIntent(
         "intent=customSortReport conv=true " +
@@ -284,7 +365,10 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             Seq(ordersFreightColSort)
         )
     }
-
+    
+    /**
+      *
+      */
     override def onMatchedIntent(m: NCIntentMatch): Boolean = {
         val toks = m.getVariant.getMatchedTokens.asScala
         val intentConvToks = m.getIntentTokens.asScala.flatMap(_.asScala) -- toks
@@ -300,7 +384,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             def isColumn(t: NCToken): Boolean = findAnyColumnTokenOpt(t).isDefined
             def isDate(t: NCToken): Boolean = t.getId == "nlpcraft:date"
 
-            // Conversation supported if
+            // Conversation supported if:
             // - all new tokens are values,
             // - all new tokens are columns,
             // - new single token is date.

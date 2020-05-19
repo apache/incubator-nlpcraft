@@ -76,7 +76,7 @@ metadata:
     tocolumns:
     - "territory_id"
     jointype: "inner"
-  sql:output: "/Users/sergeykhisamov/apache/incubator-nlpcraft/src/main/scala/org/apache/nlpcraft/examples/sql/sql_model.yaml"
+  sql:output: "/Users/xxx/apache/incubator-nlpcraft/src/main/scala/org/apache/nlpcraft/examples/sql/sql_model.yaml"
   sql:timestamp: "2020-03-21T11:50:54.433Z"
   sql:schema: "PUBLIC"
 macros:

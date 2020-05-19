@@ -19,9 +19,38 @@ package org.apache.nlpcraft.examples.sql.db
 
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlColumn
 
+/**
+  *
+  */
 sealed trait SqlCondition {
     def column: NCSqlColumn
 }
 
+/**
+  *
+  * @param column
+  * @param operation
+  * @param value
+  */
 case class SqlSimpleCondition(column: NCSqlColumn, operation: String, value: Any) extends SqlCondition
+
+/**
+  *
+  * @param column
+  * @param values
+  */
 case class SqlInCondition(column: NCSqlColumn, values: Seq[Any]) extends SqlCondition
+
+/**
+  *
+  * @param sql
+  * @param parameters
+  */
+case class SqlQuery(sql: String, parameters: Seq[Any])
+
+/**
+  *
+  * @param columns
+  * @param rows
+  */
+case class SqlResult(columns: Seq[String], rows: Seq[Seq[String]])

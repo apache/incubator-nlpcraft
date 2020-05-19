@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.8
+// Generated from /Users/xxx/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.8
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 

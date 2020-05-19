@@ -210,7 +210,7 @@ class SqlModelTest {
             true,
             Case(
                 Seq(
-                    "order date",
+                    "order date, please!",
                     "show me the order dates",
                     "list dates of orders"
                 ),
@@ -240,7 +240,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "orders for last month"
+                    "give me orders for the last month"
                 ),
                 """SELECT
                   |  orders.order_date,
@@ -271,7 +271,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "shippers data"
+                    "list shippers data"
                 ),
                 """SELECT
                   |  shippers.shipper_id,
@@ -287,7 +287,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "show me orders with freight more than 10 for last year"
+                    "show me orders with freight more than 10 for the last year"
                 ),
                 """SELECT
                   |  orders.freight,
@@ -320,7 +320,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "territories data"
+                    "show territories data"
                 ),
                 """SELECT
                   |  territories.territory_id,
@@ -339,7 +339,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "employees territories"
+                    "display employees territories"
                 ),
                 """SELECT
                   |  employees.employee_id,
@@ -366,7 +366,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "10 suppliers"
+                    "get me 10 suppliers"
                 ),
                 """SELECT
                   |  suppliers.supplier_id,
@@ -427,7 +427,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "give me the orders sorted by ship date"
+                    "give me the orders sorted by the ship date"
                 ),
                 """SELECT
                   |  orders.shipped_date,
@@ -456,7 +456,7 @@ class SqlModelTest {
             ),
             Case(
                 Seq(
-                    "give me the orders sorted by ship date asc"
+                    "give me the orders sorted by the ship date in ascending order"
                 ),
                 """SELECT
                   |  orders.shipped_date,

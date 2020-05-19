@@ -33,7 +33,13 @@ object SqlAccess extends LazyLogging {
     private final val LOG_ROWS = 10
 
     private var conn: Connection = _
-
+    
+    /**
+      *
+      * @param qry
+      * @param logResult
+      * @return
+      */
     def select(qry: SqlQuery, logResult: Boolean): SqlResult = {
         def getConnection: Connection = {
             val ds = new JdbcDataSource

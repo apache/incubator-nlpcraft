@@ -70,7 +70,12 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private var sorts: Seq[NCSqlSort] = Seq.empty
     private var freeDateRangeOpt: Option[NCSqlDateRange] = None
     private var limit: Option[NCSqlLimit] = None
-
+    
+    /**
+      *
+      * @param clause
+      * @return
+      */
     private def sql(clause: NCSqlJoinType): String =
         clause match {
             case INNER ⇒ "INNER JOIN"
@@ -81,7 +86,12 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
             case _ ⇒ throw new AssertionError(s"Unexpected join type: $clause")
         }
-
+    
+    /**
+      *
+      * @param tabs
+      * @return
+      */
     private def sql(tabs: Seq[NCSqlTable]): String = {
         val names = tabs.map(_.getTable)
 
@@ -142,12 +152,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     }
     private def sql(clause: NCSqlColumn): String = s"${clause.getTable}.${clause.getColumn}"
     private def sql(clause: NCSqlSort): String = s"${sql(clause.getColumn)} ${if (clause.isAscending) "ASC" else "DESC"}"
-
-    private def sql(clause: SqlInCondition): String =
-        s"${sql(clause.column)} IN (${clause.values.indices.map(_ ⇒ "?").mkString(",")})"
-
+    private def sql(clause: SqlInCondition): String = s"${sql(clause.column)} IN (${clause.values.indices.map(_ ⇒ "?").mkString(",")})"
     private def sql(clause: SqlSimpleCondition): String = s"${sql(clause.column)} ${clause.operation} ?"
-
     private def sql(clause: SqlCondition): String =
         clause match {
             case x: SqlSimpleCondition ⇒ sql(x)
@@ -158,7 +164,14 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
     private def isDate(col: NCSqlColumn): Boolean = col.getDataType == Types.DATE
     private def isString(col: NCSqlColumn): Boolean = col.getDataType == Types.VARCHAR
-
+    
+    /**
+      *
+      * @param cols
+      * @param extTabs
+      * @param freeDateColOpt
+      * @return
+      */
     private def extendColumns(
         cols: Seq[NCSqlColumn], extTabs: Seq[NCSqlTable], freeDateColOpt: Option[NCSqlColumn]
     ): Seq[NCSqlColumn] = {
@@ -171,7 +184,14 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
         res
     }
-
+    
+    /**
+      *
+      * @param sorts
+      * @param tables
+      * @param cols
+      * @return
+      */
     private def extendSort(sorts: Seq[NCSqlSort], tables: Seq[NCSqlTable], cols: Seq[NCSqlColumn]): Seq[NCSqlSort] =
         sorts.size match {
             case 0 ⇒
@@ -184,7 +204,13 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                     ).distinct
             case _ ⇒ sorts.distinct
         }
-
+    
+    /**
+      *
+      * @param tabs
+      * @throws
+      * @return
+      */
     @throws[RuntimeException]
     private def extendTables(tabs: Seq[NCSqlTable]): Seq[NCSqlTable] = {
         val ext =
@@ -212,9 +238,21 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                 extra
         }
     }
-
+    
+    /**
+      *
+      * @param l
+      * @return
+      */
     private def limit2Sort(l: NCSqlLimit): NCSqlSort = NCSqlSortImpl(l.getColumn, l.isAscending)
-
+    
+    /**
+      *
+      * @param cols2Sort
+      * @param cols
+      * @param tabs
+      * @return
+      */
     private def sort(cols2Sort: Seq[NCSqlColumn], cols: Seq[NCSqlColumn], tabs: Seq[NCSqlTable]): Seq[NCSqlColumn] =
         cols2Sort.sortBy(col ⇒
             if (cols.contains(col))
@@ -224,7 +262,12 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             else
                 2
         )
-
+    
+    /**
+      *
+      * @param initTabs
+      * @return
+      */
     private def findDateColumn(initTabs: Seq[NCSqlTable]): Option[NCSqlColumn] =
         schemaTabs.sortBy(t ⇒ {
             // The simple algorithm, which tries to find most suitable date type column for free date condition.
@@ -242,7 +285,15 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
                 None
         }
-
+    
+    /**
+      *
+      * @param conds
+      * @param extTabs
+      * @param initTabs
+      * @param freeDateColOpt
+      * @return
+      */
     private def extendConditions(
         conds: Seq[SqlCondition],
         extTabs: Seq[NCSqlTable],
@@ -272,42 +323,18 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         )
     }
 
-    def withTables(tables: NCSqlTable*): SqlBuilder = {
-        this.tabs ++= tables
-
-        this
-    }
-
-    def withColumns(cols: NCSqlColumn*): SqlBuilder = {
-        this.cols ++=  cols
-
-        this
-    }
-
-    def withAndConditions(conds: SqlCondition*): SqlBuilder = {
-        this.conds ++= conds
-
-        this
-    }
-
-    def withFreeDateRange(freeDateRange: NCSqlDateRange): SqlBuilder = {
-        this.freeDateRangeOpt = Option(freeDateRange)
-
-        this
-    }
-
-    def withSorts(sorts: NCSqlSort*): SqlBuilder = {
-        this.sorts ++= sorts
-
-        this
-    }
-
-    def withLimit(limit: NCSqlLimit): SqlBuilder = {
-        this.limit = Option(limit)
-
-        this
-    }
-
+    def withTables(tables: NCSqlTable*): SqlBuilder = { this.tabs ++= tables; this }
+    def withColumns(cols: NCSqlColumn*): SqlBuilder = { this.cols ++=  cols; this }
+    def withAndConditions(conds: SqlCondition*): SqlBuilder = { this.conds ++= conds; this }
+    def withFreeDateRange(freeDateRange: NCSqlDateRange): SqlBuilder = { this.freeDateRangeOpt = Option(freeDateRange); this }
+    def withSorts(sorts: NCSqlSort*): SqlBuilder = { this.sorts ++= sorts; this }
+    def withLimit(limit: NCSqlLimit): SqlBuilder = { this.limit = Option(limit); this }
+    
+    /**
+      * 
+      * @throws
+      * @return
+      */
     @throws[RuntimeException]
     def build(): SqlQuery = {
         // Collects data.
