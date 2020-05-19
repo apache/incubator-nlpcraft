@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCEnricherUtils
+import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCVariantsCreator
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
@@ -423,15 +423,32 @@ object NCSortEnricher extends NCProbeEnricher {
         res
     }
 
+    /**
+      * Checks whether important tokens deleted as stopwords or not.
+      *
+      * @param ns Sentence.
+      * @param toks Tokens in which some stopwords can be deleted.
+      */
+    private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
+        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || MASK_WORDS.contains(t.stem)
+
+        val idxs = toks.map(_.index)
+
+        require(idxs == idxs.sorted)
+
+        val toks2 = ns.slice(idxs.head, idxs.last + 1)
+
+        toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
+    }
+
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
-            def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || MASK_WORDS.contains(t.stem)
 
-            for (toks ← ns.tokenMixWithStopWords() if NCEnricherUtils.validImportant(ns, toks, isImportant)) {
+            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks)) {
                 tryToMatch(toks) match {
                     case Some(m) ⇒
                         def addNotes(
@@ -449,7 +466,7 @@ object NCSortEnricher extends NCProbeEnricher {
                         def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
                             val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
-                            if (!notes.exists(n ⇒ NCEnricherUtils.equalOrSimilar(note, n, ns))) {
+                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
                                 notes += note
 
                                 m.main.foreach(_.add(note))

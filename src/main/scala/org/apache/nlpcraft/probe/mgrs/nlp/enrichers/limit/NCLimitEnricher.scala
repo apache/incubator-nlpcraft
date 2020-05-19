@@ -27,7 +27,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCEnricherUtils
+import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCVariantsCreator
 
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, mutable}
@@ -201,6 +201,24 @@ object NCLimitEnricher extends NCProbeEnricher {
         super.stop()
     }
 
+    /**
+      * Checks whether important tokens deleted as stopwords or not.
+      *
+      * @param ns Sentence.
+      * @param toks Tokens in which some stopwords can be deleted.
+      */
+    private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
+        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || TECH_WORDS.contains(t.stem)
+
+        val idxs = toks.map(_.index)
+
+        require(idxs == idxs.sorted)
+
+        val toks2 = ns.slice(idxs.head, idxs.last + 1)
+
+        toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
+    }
+
     @throws[NCE]
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
@@ -211,13 +229,9 @@ object NCLimitEnricher extends NCProbeEnricher {
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
 
-            def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || TECH_WORDS.contains(t.stem)
-
             // Tries to grab tokens reverse way.
             // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
-            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index))
-                 if NCEnricherUtils.validImportant(ns, toks, isImportant)
-            )
+            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)) if validImportant(ns, toks))
                 tryToMatch(numsMap, groupsMap, toks) match {
                     case Some(m) ⇒
                         for (refNote ← m.refNotes) {
@@ -232,7 +246,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
                             val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, params: _*)
 
-                            if (!notes.exists(n ⇒ NCEnricherUtils.equalOrSimilar(note, n, ns))) {
+                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
                                 notes += note
 
                                 m.matched.foreach(_.add(note))

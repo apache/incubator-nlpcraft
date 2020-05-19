@@ -17,11 +17,13 @@
 
 package org.apache.nlpcraft.common.nlp
 
+import java.util.Collections
+
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii._
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
+import scala.collection.{Seq, Set, mutable}
 import scala.language.implicitConversions
 
 /**
@@ -124,6 +126,47 @@ class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) e
 
         new NCNlpSentenceNote(m.toMap)
     }
+
+    /**
+      *
+      * @param withIndexes
+      * @param withReferences
+      * @return
+      */
+    def getKey(withIndexes: Boolean = true, withReferences: Boolean = true): Seq[Any] = {
+        def addRefs(names: String*): Seq[String] = if (withReferences) names else Seq.empty
+
+        val names: Seq[String] =
+            if (isUser)
+                Seq.empty
+            else
+                noteType match {
+                    case "nlpcraft:continent" ⇒ Seq("continent")
+                    case "nlpcraft:subcontinent" ⇒ Seq("continent", "subcontinent")
+                    case "nlpcraft:country" ⇒ Seq("continent", "subcontinent", "country")
+                    case "nlpcraft:region" ⇒ Seq("continent", "subcontinent", "country", "region")
+                    case "nlpcraft:city" ⇒ Seq("continent", "subcontinent", "country", "region", "city")
+                    case "nlpcraft:metro" ⇒ Seq("metro")
+                    case "nlpcraft:date" ⇒ Seq("from", "to")
+                    case "nlpcraft:relation" ⇒ Seq("type", "note") ++ addRefs("indexes")
+                    case "nlpcraft:sort" ⇒ Seq("asc", "subjnotes", "bynotes") ++ addRefs("subjindexes", "byindexes")
+                    case "nlpcraft:limit" ⇒ Seq("limit", "note") ++ addRefs("indexes", "asc") // Asc flag has sense only with references for limit.
+                    case "nlpcraft:coordinate" ⇒ Seq("latitude", "longitude")
+                    case "nlpcraft:num" ⇒ Seq("from", "to", "unit", "unitType")
+                    case x if x.startsWith("google:") ⇒ Seq("meta", "mentionsBeginOffsets", "mentionsContents", "mentionsTypes")
+                    case x if x.startsWith("stanford:") ⇒ Seq("nne")
+                    case x if x.startsWith("opennlp:") ⇒ Seq.empty
+                    case x if x.startsWith("spacy:") ⇒ Seq("vector")
+
+                    case _ ⇒ throw new AssertionError(s"Unexpected note type: $noteType")
+                }
+
+        val seq1 = if (withIndexes) Seq(wordIndexes, noteType) else Seq(noteType)
+        val seq2 = names.map(name ⇒ this.getOrElse(name, null))
+
+        seq1 ++ seq2
+    }
+
 
     /**
       *
