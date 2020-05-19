@@ -17,17 +17,20 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
-import org.apache.nlpcraft.model.NCToken;
+import org.apache.nlpcraft.model.*;
 
 /**
  * Object presentation of SQL sorting.
- * 
+ *
+ * @see NCSqlSchemaBuilder#makeSchema(NCModel)
  * @see NCSqlTable#getDefaultSort() 
  * @see NCSqlExtractor#extractSort(NCToken) 
  */
 public interface NCSqlSort {
     /**
-     * TODO: add description.
+     * Gets SQL column this sort is applied to.
+     *
+     * @return SQL column this sort is applied to.
      */
     NCSqlColumn getColumn();
 

@@ -62,6 +62,8 @@ public class NCTestClientBuilder {
     public static final String DFLT_PASSWORD = "admin";
     /** Default embedded mode flag. */
     public static final boolean DFLT_EMBEDDED = false;
+    /** Default response log flag. */
+    public static final boolean DFLT_RESP_LOG = true;
     /** Maximum test time. */
     public static final long DFLT_MAX_WAIT_TIME = 60000;
 
@@ -154,9 +156,9 @@ public class NCTestClientBuilder {
     }
 
     /**
-     * Sets whether or not to log responses from the probe.
+     * Sets whether or not to log responses from the probe. Default value is {@link #DFLT_RESP_LOG}.
      *
-     * @param respLog {@code True} to log responses, {@code false} otherwise.
+     * @param respLog {@code true} to log responses, {@code false} otherwise.
      * @return Builder instance for chaining calls.
      */
     public NCTestClientBuilder setResponseLog(boolean respLog) {
@@ -378,13 +380,13 @@ public class NCTestClientBuilder {
         private String email = DFLT_EMAIL;
         private String pswd = DFLT_PASSWORD;
         private boolean embedded = DFLT_EMBEDDED;
+        private boolean respLog = DFLT_RESP_LOG;
 
         private CloseableHttpClient httpCli;
         private RequestConfig reqCfg;
         private Supplier<CloseableHttpClient> cliSup;
         private String acsTok;
         private String mdlId;
-        private boolean respLog = true;
 
         private volatile boolean opened = false;
         private volatile boolean closed = false;

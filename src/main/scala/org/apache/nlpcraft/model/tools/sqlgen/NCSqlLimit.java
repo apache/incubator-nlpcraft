@@ -23,12 +23,13 @@ import org.apache.nlpcraft.model.*;
  * Object presentation of SQL limit.
  *
  * @see NCSqlSchemaBuilder#makeSchema(NCModel)
+ * @see NCSqlExtractor#extractLimit(NCToken) 
  */
 public interface NCSqlLimit {
     /**
-     * Gets SQL column this limit is applied.
+     * Gets SQL column this limit is applied to.
      *
-     * @return SQL column this limit is applied.
+     * @return SQL column this limit is applied to.
      */
     NCSqlColumn getColumn();
 

@@ -199,7 +199,6 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
         )
     }
 
-
     /**
      *
      * @param tok
