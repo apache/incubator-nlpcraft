@@ -46,7 +46,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.impl.{NCVariantsCreator, _}
+import org.apache.nlpcraft.probe.mgrs.nlp.impl.{_}
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 
 import scala.collection.JavaConverters._
@@ -475,7 +475,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val meta = mutable.HashMap.empty[String, Any] ++ senMeta
         val req = NCRequestImpl(meta, srvReqId)
 
-        var senVars = NCVariantsCreator.makeVariants(mdlDec, srvReqId, sensSeq)
+        var senVars = mdlDec.makeVariants(srvReqId, sensSeq)
 
         // Sentence variants can be filtered by model.
         val fltSenVars: Seq[(NCVariant, Int)] =

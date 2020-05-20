@@ -53,18 +53,17 @@ object NCNlpSentence {
 
         /**
           * Example:
-          *1. Sentence 'maximum x' (single element related function)
-          *- maximum is aggregate function linked to date element.
-          *- x defined as 2 elements: date and num.
+          * 1. Sentence 'maximum x' (single element related function)
+          * - maximum is aggregate function linked to date element.
+          * - x defined as 2 elements: date and num.
           * So, the variant 'maximum x (as num)' should be excluded.
           * *
-          *2. Sentence 'compare x and y' (multiple elements related function)
-          *- compare is relation function linked to date element.
-          *- x an y defined as 2 elements: date and num.
+          * 2. Sentence 'compare x and y' (multiple elements related function)
+          * - compare is relation function linked to date element.
+          * - x an y defined as 2 elements: date and num.
           * So, variants 'x (as num) and x (as date)'  and 'x (as date) and x (as num)'
           * should't be excluded, but invalid relation should be deleted for these combinations.
           */
-
         types.size match {
             case 0 ⇒ throw new AssertionError(s"Unexpected empty types [notesType=$notesType]")
             case 1 ⇒ types.head == notesType
@@ -85,8 +84,8 @@ object NCNlpSentence {
       * Note that 'idxsField' is 'indexes' and 'noteField' is 'note' for all kind of references.
       *
       * @param noteType Note type.
-      * @param ns       Sentence.
-      * @param history  Indexes transformation history.
+      * @param ns Sentence.
+      * @param history Indexes transformation history.
       * @return Valid flag.
       */
     private def fixIndexesReferences(noteType: String, ns: NCNlpSentence, history: Seq[(Int, Int)]): Boolean = {
@@ -114,10 +113,10 @@ object NCNlpSentence {
     /**
       * Copies token.
       *
-      * @param ns       Sentence.
-      * @param history  Indexes transformation history.
+      * @param ns Sentence.
+      * @param history Indexes transformation history.
       * @param toksCopy Copied tokens.
-      * @param i        Index.
+      * @param i Index.
       */
     private def simpleCopy(
         ns: NCNlpSentence,
@@ -134,9 +133,9 @@ object NCNlpSentence {
     /**
       * Glues stop words.
       *
-      * @param ns            Sentence.
+      * @param ns Sentence.
       * @param userNoteTypes Notes types.
-      * @param history       Indexes transformation history.
+      * @param history Indexes transformation history.
       */
     private def unionStops(
         ns: NCNlpSentence,
@@ -182,7 +181,7 @@ object NCNlpSentence {
     /**
       * Fixes indexes for all notes after recreating tokens.
       *
-      * @param ns            Sentence.
+      * @param ns Sentence.
       * @param userNoteTypes Notes types.
       */
     private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]) {
@@ -205,10 +204,10 @@ object NCNlpSentence {
     /**
       * Zip notes with same type.
       *
-      * @param ns             Sentence.
-      * @param nType          Notes type.
+      * @param ns Sentence.
+      * @param nType Notes type.
       * @param userNotesTypes Notes types.
-      * @param history        Indexes transformation history.
+      * @param history Indexes transformation history.
       */
     private def zipNotes(
         ns: NCNlpSentence,
@@ -247,13 +246,13 @@ object NCNlpSentence {
     /**
       * Makes compound note.
       *
-      * @param ns         Sentence.
+      * @param ns Sentence.
       * @param nsCopyToks Tokens.
-      * @param indexes    Indexes.
-      * @param stop       Flag.
-      * @param idx        Index.
+      * @param indexes Indexes.
+      * @param stop Flag.
+      * @param idx Index.
       * @param commonNote Common note.
-      * @param history    Indexes transformation history.
+      * @param history Indexes transformation history.
       */
     private def mkCompound(
         ns: NCNlpSentence,
@@ -339,11 +338,11 @@ object NCNlpSentence {
     /**
       * Fixes notes with references list to other notes indexes.
       *
-      * @param noteType  Note type.
+      * @param noteType Note type.
       * @param idxsField Indexes field.
       * @param noteField Note field.
-      * @param ns        Sentence.
-      * @param history   Indexes transformation history.
+      * @param ns Sentence.
+      * @param history Indexes transformation history.
       * @return Valid flag.
       */
     private def fixIndexesReferencesList(
@@ -391,7 +390,7 @@ object NCNlpSentence {
     /**
       * Fixes tokens positions.
       *
-      * @param ns          Sentence.
+      * @param ns Sentence.
       * @param notNlpTypes Token types.
       */
     private def collapseSentence(ns: NCNlpSentence, notNlpTypes: Seq[String]): Boolean = {
@@ -444,11 +443,11 @@ import org.apache.nlpcraft.common.nlp.NCNlpSentence._
   * Parsed NLP sentence is a collection of tokens. Each token is a collection of notes and
   * each note is a collection of KV pairs.
   *
-  * @param srvReqId           Server request ID.
-  * @param text               Normalized text.
-  * @param weight             Weight.
+  * @param srvReqId Server request ID.
+  * @param text Normalized text.
+  * @param weight Weight.
   * @param enabledBuiltInToks Enabled built-in tokens.
-  * @param tokens             Initial buffer.
+  * @param tokens Initial buffer.
   */
 class NCNlpSentence(
     val srvReqId: String,
@@ -704,9 +703,9 @@ class NCNlpSentence(
     override def equals(obj: Any): Boolean = obj match {
         case x: NCNlpSentence ⇒
             tokens == x.tokens &&
-            srvReqId == x.srvReqId &&
-            text == x.text &&
-            enabledBuiltInToks == x.enabledBuiltInToks
+                srvReqId == x.srvReqId &&
+                text == x.text &&
+                enabledBuiltInToks == x.enabledBuiltInToks
         case _ ⇒ false
     }
 }
