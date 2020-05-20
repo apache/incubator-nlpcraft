@@ -481,7 +481,6 @@ class NCNlpSentence(
       */
     def removeNote(note: NCNlpSentenceNote): Unit = this.foreach(_.remove(note))
 
-    //noinspection HashCodeUsesVar
     override def hashCode(): Int = {
         if (hash == null)
             hash = calcHash()
@@ -640,10 +639,10 @@ class NCNlpSentence(
     }
 
     /**
+      * Returns flag are note notes equal (or similar) or not. Reason of ignored difference can be stopwords tokens.
       *
-      * @param n1
-      * @param n2
-      * @return
+      * @param n1 First note.
+      * @param n2 Second note.
       */
     def notesEqualOrSimilar(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean =
         if (n1.noteType != n2.noteType)
