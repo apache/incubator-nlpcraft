@@ -27,8 +27,7 @@ import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**
- * Values loader implementation.
-  * This implementation allows to read values for column elements from database.
+  * Loads model element values from DB based on `sql:tablename` and `sql:name` metadata properties.
  */
 class SqlValueLoader extends NCValueLoader with LazyLogging {
     override def load(e: NCElement): java.util.Set[NCValue] = {

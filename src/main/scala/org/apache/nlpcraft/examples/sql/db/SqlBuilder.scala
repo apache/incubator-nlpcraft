@@ -31,17 +31,15 @@ import scala.collection.{Seq, mutable}
 import scala.compat.java8.OptionConverters._
 
 /**
-  *
-  * Simple SQL Builder based on following detected database elements: table and column names, conditions, sorts etc
-  * This simplified version doesn't take into account some common SQL stuff like
+  * SQL builder that takes parsed SQL schema and creates SQL query based on configured parameters.
+  * Note that this is a *very simple* example implementation and it lacks several important capabilities:
   *  - OR logic conditions
   *  - negation (SQL <> condition),
-  *  - LIKE and another widespread  functions.
-  *  - etc
-  *  Development of Universal SQL Builder (which can cover most of use cases) is big and non trivial task
-  *  and it's  development is out of current example.
+  *  - LIKE and another functions.
   *
-  * @param schema
+  *  However, these capabilities can be added relatively easy to this extendable implementation.
+  *
+  * @param schema Parsed DB schema to initialize with.
   */
 case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private final val DFLT_LIMIT = 1000
@@ -49,22 +47,21 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private case class Edge(from: String, to: String) extends DefaultEdge
     private case class Key(table: String, column: String)
 
-    private val schemaTabs = schema.getTables.asScala.toSeq.sortBy(_.getTable)
-    private val schemaTabsByNames = schemaTabs.map(p ⇒ p.getTable → p).toMap
-    private val schemaCols =
-        schemaTabs.flatMap(p ⇒ p.getColumns.asScala.map(col ⇒ Key(col.getTable, col.getColumn) → col)).toMap
+    private val schemaTbls = schema.getTables.asScala.toSeq.sortBy(_.getTable)
+    private val schemaTblsByNames = schemaTbls.map(p ⇒ p.getTable → p).toMap
+    private val schemaCols = schemaTbls.flatMap(p ⇒ p.getColumns.asScala.map(col ⇒ Key(col.getTable, col.getColumn) → col)).toMap
     private val schemaJoins = schema.getJoins.asScala
 
     private val schemaPaths = {
         val g = new SimpleGraph[String, Edge](classOf[Edge])
 
-        schemaTabs.foreach(t ⇒ g.addVertex(t.getTable))
+        schemaTbls.foreach(t ⇒ g.addVertex(t.getTable))
         schemaJoins.foreach(j ⇒ g.addEdge(j.getFromTable, j.getToTable, Edge(j.getFromTable, j.getToTable)))
 
         new DijkstraShortestPath(g)
     }
 
-    private var tabs: Seq[NCSqlTable] = Seq.empty
+    private var tbls: Seq[NCSqlTable] = Seq.empty
     private var cols: Seq[NCSqlColumn] = Seq.empty
     private var conds: Seq[SqlCondition] = Seq.empty
     private var sorts: Seq[NCSqlSort] = Seq.empty
@@ -88,14 +85,13 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         }
     
     /**
+      * Makes SQL join fragment for given tables. It uses tables parameters and information about relations between
+      * tables based on schema information.
       *
-      * Makes SQL join fragment for given tables.
-      * It uses tables argument and information about relations between givem tables based on schema information.
-      *
-      * @param tabs Tables.
+      * @param tbls Tables.
       */
-    private def sql(tabs: Seq[NCSqlTable]): String = {
-        val names = tabs.map(_.getTable)
+    private def sql(tbls: Seq[NCSqlTable]): String = {
+        val names = tbls.map(_.getTable)
 
         names.size match {
             case 0 ⇒ throw new AssertionError(s"Unexpected empty tables")
@@ -195,35 +191,37 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         }
 
     /**
-      * Defines, is given column element is DATE or not.
+      * Is given column element is DATE or not?
       *
       * @param col Column element.
       */
     private def isDate(col: NCSqlColumn): Boolean = col.getDataType == Types.DATE
 
     /**
-      * Defines, is given column element is VARCHAR or not.
+      * Is given column element is VARCHAR or not?
       *
       * @param col Column element.
       */
     private def isString(col: NCSqlColumn): Boolean = col.getDataType == Types.VARCHAR
     
     /**
-      * Extends given columns list if necessary by some additional columns, based on schema model configuration and free date column.
-      * It can be useful if column list is poor.
+      * Extends given columns list, if necessary, by some additional columns, based on schema model
+      * configuration and free date column. It can be useful if column list is poor.
       *
       * @param initCols Initially detected columns.
-      * @param extTabs Extra tables list,
+      * @param extTabs Extra tables list.
       * @param freeDateColOpt Free date column. Optional.
       */
     private def extendColumns(
-        initCols: Seq[NCSqlColumn], extTabs: Seq[NCSqlTable], freeDateColOpt: Option[NCSqlColumn]
+        initCols: Seq[NCSqlColumn],
+        extTabs: Seq[NCSqlTable],
+        freeDateColOpt: Option[NCSqlColumn]
     ): Seq[NCSqlColumn] = {
         var res = (initCols ++ freeDateColOpt.toSeq).distinct
 
         if (res.size < 3)
             res = (res ++
-                schemaTabs.filter(extTabs.contains).
+                schemaTbls.filter(extTabs.contains).
                     flatMap(t ⇒ t.getDefaultSelect.asScala.map(col ⇒ schemaCols(Key(t.getTable, col))))).distinct
 
         res
@@ -231,19 +229,19 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     
     /**
       * Tries to find sort elements if they are not detected explicitly.
-      * It tries to use sort information from limit element if it is defined, or from model configuration
-      * (default sort columns)
+      * It attempts to use sort information from limit element if it is defined, or from model configuration
+      * (default sort columns).
       *
       * @param sorts Sort elements.
-      * @param initTables Initially detected tables.
+      * @param initTbls Initially detected tables.
       * @param extCols Extended columns list.
       */
-    private def extendSort(sorts: Seq[NCSqlSort], initTables: Seq[NCSqlTable], extCols: Seq[NCSqlColumn]): Seq[NCSqlSort] =
+    private def extendSort(sorts: Seq[NCSqlSort], initTbls: Seq[NCSqlTable], extCols: Seq[NCSqlColumn]): Seq[NCSqlSort] =
         sorts.size match {
             case 0 ⇒
                 limit.flatMap(l ⇒ if (extCols.contains(l.getColumn)) Some(Seq(limit2Sort(l))) else None).
                     getOrElse(
-                        initTables.flatMap(_.getDefaultSort.asScala.
+                        initTbls.flatMap(_.getDefaultSort.asScala.
                             // 'Sort' can contain columns from select list only (some databases restriction)
                             flatMap(sort ⇒ if (extCols.contains(sort.getColumn)) Some(sort) else None)
                         )
@@ -252,14 +250,14 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         }
     
     /**
-      * Extends given tables list if necessary by some additional tables,
+      * Extends given table list, if necessary, by some additional tables,
       * based on information about relations between model tables.
       *
-      * @param initTables Initially detected tables.
+      * @param initTbls Initially detected tables.
       */
-    private def extendTables(initTables: Seq[NCSqlTable]): Seq[NCSqlTable] = {
+    private def extendTables(initTbls: Seq[NCSqlTable]): Seq[NCSqlTable] = {
         val ext =
-            (initTables ++ schemaTabs.filter(initTables.contains).flatMap(_.getExtraTables.asScala.map(schemaTabsByNames))).distinct
+            (initTbls ++ schemaTbls.filter(initTbls.contains).flatMap(_.getExtraTables.asScala.map(schemaTblsByNames))).distinct
 
         ext.size match {
             case 0 ⇒ throw new RuntimeException("Tables cannot be empty.")
@@ -272,7 +270,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                             case null ⇒ Seq.empty
                             case list ⇒ list.getEdgeList.asScala.flatMap(e ⇒ Seq(e.from, e.to))
                         }
-                    ).toSeq.distinct.map(schemaTabsByNames)
+                    ).toSeq.distinct.map(schemaTblsByNames)
 
                 if (ext.exists(t ⇒ !extra.contains(t)))
                     throw new RuntimeException(
@@ -292,38 +290,37 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private def limit2Sort(l: NCSqlLimit): NCSqlSort = NCSqlSortImpl(l.getColumn, l.isAscending)
     
     /**
-      * Sorts given extra columns for select list.
-      * Used following criteria:
-      *  - most important initially detected columns.
+      * Sorts given extra columns for select list, using the following criteria:
+      *  - initially detected columns are more important.
       *  - next, columns from initially detected tables.
       *  - other extra columns.
       *
       * @param extraCols Extra columns for sorting.
       * @param initCols Initially detected columns.
-      * @param initTabs Initially detected tables.
+      * @param initTbls Initially detected tables.
       */
-    private def sort(extraCols: Seq[NCSqlColumn], initCols: Seq[NCSqlColumn], initTabs: Seq[NCSqlTable]): Seq[NCSqlColumn] =
+    private def sort(extraCols: Seq[NCSqlColumn], initCols: Seq[NCSqlColumn], initTbls: Seq[NCSqlTable]): Seq[NCSqlColumn] =
         extraCols.sortBy(col ⇒
             if (initCols.contains(col))
                 0
-            else if (initTabs.contains(schemaTabsByNames(col.getTable)))
+            else if (initTbls.contains(schemaTblsByNames(col.getTable)))
                 1
             else
                 2
         )
     
     /**
-      * Tries to find date sql column by list of tables based model configuration (Default date fields.)
+      * Tries to find date sql column.
       *
-      * @param initTabs Initially detected tables.
+      * @param initTbls Initially detected tables.
       */
-    private def findDateColumn(initTabs: Seq[NCSqlTable]): Option[NCSqlColumn] =
-        schemaTabs.sortBy(t ⇒ {
+    private def findDateColumn(initTbls: Seq[NCSqlTable]): Option[NCSqlColumn] =
+        schemaTbls.sortBy(t ⇒ {
             // The simple algorithm, which tries to find most suitable date type column for free date condition.
             // Higher priority for tables which were detected initially.
-            val weight1 = if (initTabs.contains(t)) 0 else 1
+            val weight1 = if (initTbls.contains(t)) 0 else 1
             // Higher priority for tables which don't have references from another.
-            // Probably these tables can have more specific records.
+            // Hopefully, these tables would have more specific records.
             val weight2 = if (!schemaJoins.exists(_.getToTable == t.getTable)) 0 else 1
 
             (weight1, weight2)
@@ -336,16 +333,16 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         }
     
     /**
-      * Extends conditions list by given free data (if it is defined) and
-      * converts conditions to SQL text and parameters list.
+      * Extends conditions list by given free data (if defined) and converts conditions to
+      * SQL text and parameters list.
       *
       * @param conds Conditions.
-      * @param initTabs Initially detected tables.
+      * @param initTbls Initially detected tables.
       * @param freeDateColOpt Free date column. Optional.
       */
     private def extendConditions(
         conds: Seq[SqlCondition],
-        initTabs: Seq[NCSqlTable],
+        initTbls: Seq[NCSqlTable],
         freeDateColOpt: Option[NCSqlColumn]
     ): (Seq[String], Seq[Any]) = {
         val (freeDateConds, freeDateParams): (Seq[SqlCondition], Seq[Object]) =
@@ -372,49 +369,49 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     }
 
     /**
-      * Builder method, which set given argument and returns builder's instance.
+      * Sets given argument and returns builder's instance.
       *
       * @param tables Tables.
       */
-    def withTables(tables: NCSqlTable*): SqlBuilder = { this.tabs ++= tables; this }
+    def withTables(tables: NCSqlTable*): SqlBuilder = { this.tbls ++= tables; this }
 
     /**
-      * Builder method, which set given argument and returns builder's instance.
+      * Sets given argument and returns builder's instance.
       *
       * @param cols Columns.
       */
     def withColumns(cols: NCSqlColumn*): SqlBuilder = { this.cols ++=  cols; this }
 
     /**
-      * Builder method, which set given argument and returns builder's instance.
+      * Sets given argument and returns builder's instance.
       *
-      * @param conds Condutions.
+      * @param conds Conditions.
       */
     def withAndConditions(conds: SqlCondition*): SqlBuilder = { this.conds ++= conds; this }
 
     /**
-      * Builder method, which set given argument and returns builder's instance.
+      * Sets given argument and returns builder's instance.
       *
       * @param freeDateRange Free date.
       */
     def withFreeDateRange(freeDateRange: NCSqlDateRange): SqlBuilder = { this.freeDateRangeOpt = Option(freeDateRange); this }
 
     /**
-      * Builder method, which set given argument and returns builder's instance.
+      * Sets given argument and returns builder's instance.
       *
       * @param sorts Sort elements.
       */
     def withSorts(sorts: NCSqlSort*): SqlBuilder = { this.sorts ++= sorts; this }
 
     /**
-      * Builder method, which set given argument and returns builder's instance.
+      * Set given argument and returns builder's instance.
       *
       * @param limit Limit element.
       */
     def withLimit(limit: NCSqlLimit): SqlBuilder = { this.limit = Option(limit); this }
     
     /**
-      * Main build method.
+      * Main build method. Builds and returns newly constructed SQL query object.
       */
     @throws[RuntimeException]
     def build(): SqlQuery = {
@@ -424,40 +421,40 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         )
             throw new RuntimeException("Too many date conditions.")
 
-        var tabsNorm = mutable.ArrayBuffer.empty[NCSqlTable] ++ this.tabs
+        var tblsNorm = mutable.ArrayBuffer.empty[NCSqlTable] ++ this.tbls
         var colsNorm = mutable.ArrayBuffer.empty[NCSqlColumn] ++ this.cols
         var condsNorm = mutable.ArrayBuffer.empty[SqlCondition] ++ this.conds
         var sortsNorm = mutable.ArrayBuffer.empty[NCSqlSort] ++ this.sorts
 
-        colsNorm.foreach(col ⇒ tabsNorm += schemaTabsByNames(col.getTable))
-        condsNorm.foreach(cond ⇒ { tabsNorm += schemaTabsByNames(cond.column.getTable); colsNorm += cond.column })
-        sortsNorm.foreach(sort ⇒ { tabsNorm += schemaTabsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
+        colsNorm.foreach(col ⇒ tblsNorm += schemaTblsByNames(col.getTable))
+        condsNorm.foreach(cond ⇒ { tblsNorm += schemaTblsByNames(cond.column.getTable); colsNorm += cond.column })
+        sortsNorm.foreach(sort ⇒ { tblsNorm += schemaTblsByNames(sort.getColumn.getTable); colsNorm += sort.getColumn })
 
         var freeDateColOpt =
-            if (freeDateRangeOpt.isDefined) tabsNorm.flatMap(_.getDefaultDate.asScala).toStream.headOption else None
+            if (freeDateRangeOpt.isDefined) tblsNorm.flatMap(_.getDefaultDate.asScala).toStream.headOption else None
 
-        tabsNorm = tabsNorm.distinct
+        tblsNorm = tblsNorm.distinct
 
-        val extTabs = extendTables(tabsNorm)
+        val extTbls = extendTables(tblsNorm)
 
         if (freeDateColOpt.isEmpty && freeDateRangeOpt.isDefined) {
-            freeDateColOpt = findDateColumn(tabsNorm)
+            freeDateColOpt = findDateColumn(tblsNorm)
 
-            freeDateColOpt.toSeq.foreach(col ⇒ { tabsNorm += schemaTabsByNames(col.getTable); colsNorm += col })
+            freeDateColOpt.toSeq.foreach(col ⇒ { tblsNorm += schemaTblsByNames(col.getTable); colsNorm += col })
 
-            tabsNorm = tabsNorm.distinct
+            tblsNorm = tblsNorm.distinct
         }
 
         colsNorm = colsNorm.distinct
         condsNorm = condsNorm.distinct
         sortsNorm = sortsNorm.distinct
 
-        val extCols = extendColumns(colsNorm, extTabs, freeDateColOpt)
-        val (extConds, extParams) = extendConditions(condsNorm, tabsNorm, freeDateColOpt)
+        val extCols = extendColumns(colsNorm, extTbls, freeDateColOpt)
+        val (extConds, extParams) = extendConditions(condsNorm, tblsNorm, freeDateColOpt)
 
-        val extSortCols = sort(extCols, colsNorm, tabsNorm).map(sql)
+        val extSortCols = sort(extCols, colsNorm, tblsNorm).map(sql)
         val distinct = extCols.forall(col ⇒ isString(schemaCols(Key(col.getTable, col.getColumn))))
-        val extSorts = extendSort(sortsNorm, tabsNorm, extCols)
+        val extSorts = extendSort(sortsNorm, tblsNorm, extCols)
 
         SqlQuery(
             sql =
@@ -465,7 +462,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                    |SELECT
                    |  ${if (distinct) "DISTINCT" else ""}
                    |  ${extSortCols.mkString(", ")}
-                   |  FROM ${sql(extTabs)}
+                   |  FROM ${sql(extTbls)}
                    |  ${if (extConds.isEmpty) "" else s"WHERE ${extConds.mkString(" AND ")}"}
                    |  ${if (extSorts.isEmpty) "" else s"ORDER BY ${extSorts.map(sql).mkString(", ")}"}
                    |  LIMIT ${limit.flatMap(p ⇒ Some(p.getLimit)).getOrElse(DFLT_LIMIT)}

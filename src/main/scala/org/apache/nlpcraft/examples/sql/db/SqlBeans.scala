@@ -39,7 +39,7 @@ sealed trait SqlCondition {
 case class SqlSimpleCondition(column: NCSqlColumn, operation: String, value: Any) extends SqlCondition
 
 /**
-  * SQL IN condition data holder. It can be changed by list of simple conditions united with OR
+  * SQL IN condition data holder.
   *
   * @param column Condition column.
   * @param values Condition values.
@@ -49,13 +49,14 @@ case class SqlInCondition(column: NCSqlColumn, values: Seq[Any]) extends SqlCond
 /**
   * SQL query data holder.
   *
-  * @param sql SQL query text with place holders `?` for its parameters.
+  * @param sql SQL query text with placeholders `?` for its parameters.
   * @param parameters SQL query parameters.
   */
 case class SqlQuery(sql: String, parameters: Seq[Any])
 
 /**
   * SQL execution result data holder.
+  *
   * @param columns Columns names.
   * @param rows Table of results in string representation, row by row.
   */

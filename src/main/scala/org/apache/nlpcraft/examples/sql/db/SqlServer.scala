@@ -25,21 +25,9 @@ import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 
 /**
- * TODO add description.
- *
- * H2 database should be started before probe is started.
- * Usually H2 started in memory mode for such examples,
- * but we need to start it as separated service to have possibility to connect to this server from generator application
- * and prepare JSON model stub based on it.
- *
- * Start H2 server this helper allows to
- *  - start TCP server and
- *  - creates demo database schema, fill it with data.
- *
- *  This utility added just for convenience. You can start via h2 jars files - http://www.h2database.com/html/main.html
- * and install data with northwind.sql before using this example.
+ * H2 database server. Starts standalone H2 TCP instance and loads up demo database from northwind.sql.
  */
-object SqlServer extends LazyLogging {
+object SqlServer extends App with LazyLogging {
     private lazy final val H2_PORT: Int = 9092
     private lazy final val H2_BASEDIR = "~/nlpcraft-examples/h2"
 
@@ -77,7 +65,7 @@ object SqlServer extends LazyLogging {
         }
         catch {
             case e: SQLException ⇒
-                // Table or view already exists. https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
+                // Table or view already exists - https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
                 if (e.getErrorCode != 42101)
                     throw e
 
@@ -101,11 +89,6 @@ object SqlServer extends LazyLogging {
 
         logger.info(s"H2 server stopped.")
     }
-}
 
-/**
-  * H2 SQL Server Runner.
-  */
-object SqlServerRunner extends App {
-    SqlServer.start()
+    start()
 }

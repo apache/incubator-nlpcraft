@@ -27,7 +27,7 @@ import org.h2.jdbcx.JdbcDataSource
 import resource.managed
 
 /**
-  * H2 Database access service, single thread implementation.
+  * Ad-hoc querying for H2 Database. This is a simple, single thread implementation.
   */
 object SqlAccess extends LazyLogging {
     private final val LOG_ROWS = 10
@@ -35,8 +35,7 @@ object SqlAccess extends LazyLogging {
     private var conn: Connection = _
     
     /**
-      * Selects given query and return result.
-      * Also it keeps all routines by creating and recreating connections to database.
+      * Runs given query and return result. It also manages connections to database.
       *
       * @param qry SQl query.
       * @param logResult Log printing flag. Useful for debugging.
@@ -60,7 +59,7 @@ object SqlAccess extends LazyLogging {
                 case e: JdbcSQLException ⇒
                     close()
 
-                    // Connection broken. https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
+                    // H2 specific - connection broken: https://www.h2database.com/javadoc/org/h2/api/ErrorCode.html
                     if (e.getErrorCode != 90067)
                         throw e
 
@@ -130,13 +129,13 @@ object SqlAccess extends LazyLogging {
     }
 
     /**
-      * Closes database connection. It is uses when application support related lifecycle methods.
+      * Closes this service by closing database connection. 
       */
     def close(): Unit =
         if (conn != null)
             try
                 conn.close()
             catch {
-                case _: Exception ⇒ logger.warn("Error closing connection")
+                case _: Exception ⇒ logger.warn("Error closing DB connection.")
             }
 }

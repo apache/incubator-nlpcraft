@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.common.nlp
 
-import java.util.Collections
-
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii._
 
