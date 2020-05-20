@@ -25,7 +25,6 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, _}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCEnricherUtils
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.{NCModelDecorator, NCSynonym}
 
@@ -376,12 +375,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 found = false
 
                                 if (collapsedSens == null)
-                                    collapsedSens =
-                                        NCEnricherUtils.convert(
-                                            mdl,
-                                            ns.srvReqId,
-                                            NCEnricherUtils.collapse(mdl, ns.clone(), span).map(_.tokens)
-                                        )
+                                    collapsedSens = mdl.makeVariants(ns.srvReqId, ns.clone().collapse()).map(_.asScala)
 
                                 if (seq == null)
                                     seq = convert(ns, collapsedSens, toks)
