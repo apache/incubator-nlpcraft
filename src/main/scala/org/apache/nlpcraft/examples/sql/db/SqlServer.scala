@@ -27,9 +27,9 @@ import org.h2.tools.Server
 /**
  * H2 database server. Starts standalone H2 TCP instance and loads up demo database from `northwind.sql`.
  */
-object SqlServer extends App with LazyLogging {
-    private lazy final val H2_PORT: Int = 9092
-    private lazy final val H2_BASEDIR = "~/nlpcraft-examples/h2"
+object SqlServer extends LazyLogging {
+    private final val H2_PORT: Int = 9092
+    private final val H2_BASEDIR = "~/nlpcraft-examples/h2"
 
     private final val SRV_PARAMS = Seq(
         "-baseDir", H2_BASEDIR,
@@ -38,9 +38,7 @@ object SqlServer extends App with LazyLogging {
     )
     private final val INIT_FILE = "src/main/scala/org/apache/nlpcraft/examples/sql/db/northwind.sql"
 
-    lazy final val H2_URL: String = s"jdbc:h2:tcp://localhost:$H2_PORT/nlp2sql"
-
-    private final val mux = new Object()
+    final val H2_URL: String = s"jdbc:h2:tcp://localhost:$H2_PORT/nlp2sql"
 
     @volatile private var srv: Server = _
     @volatile private var started: Boolean = false
@@ -89,6 +87,14 @@ object SqlServer extends App with LazyLogging {
 
         logger.info(s"H2 server stopped.")
     }
+}
 
-    start()
+/**
+  * H2 database Server runner.
+  *
+  * It is used together with Probe or SQL generator.
+  * For tests more convenient to call Sql Server object's methods directly.
+  */
+object SqlServerRunner extends App {
+    SqlServer.start()
 }
