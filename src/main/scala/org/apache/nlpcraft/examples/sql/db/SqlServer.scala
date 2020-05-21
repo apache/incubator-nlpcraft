@@ -25,7 +25,7 @@ import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 
 /**
- * H2 database server. Starts standalone H2 TCP instance and loads up demo database from northwind.sql.
+ * H2 database server. Starts standalone H2 TCP instance and loads up demo database from `northwind.sql`.
  */
 object SqlServer extends App with LazyLogging {
     private lazy final val H2_PORT: Int = 9092

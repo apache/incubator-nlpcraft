@@ -33,7 +33,9 @@ import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
 
 /**
+  * SQL model test.
   *
+  * @see SqlModel
   */
 class SqlModelTest {
     private val GSON = new Gson

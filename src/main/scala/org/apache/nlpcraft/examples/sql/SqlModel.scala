@@ -27,7 +27,10 @@ import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**
-  * SQL model.
+  * Implementation for the SQL model from `northwind.sql`.
+  *
+  *
+  *
   *
   * Simple version of SQL access model which supports two intents.
   * First - generic intent which allows to process set of common questions.
@@ -92,8 +95,8 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     /**
-      * Tries to find column definition for given token. It can be token itself or any part of given token.
-      * Returns empty result if column definition not found.
+      * Tries to find a column definition for given token. It can be token itself or any constituent token of
+      * the given token. Returns empty result if column definition not found.
       * Throws exception if found many column definitions in its parts.
       *
       * @param tok Token.
@@ -112,16 +115,17 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     /**
+      * Find any first column token in the given token or its constittuent tokens.
       *
-      * @param tok
-      * @return
+      * @param tok Token.
+      * @return Column token or throws exception.
       */
     private def findAnyColumnToken(tok: NCToken): NCToken =
         findAnyColumnTokenOpt(tok).getOrElse(throw new RuntimeException(s"No columns found for token: $tok"))
     
     /**
       * Extracts numeric conditions. It creates conditions based on relations between column and numeric value.
-      * Single value conditions list returned for single relation like 'col > 2', 'col <= 3'.
+      * Single value conditions list returned for single relation like 'col > 2' or 'col <= 3'.
       * Double values conditions list returned for range relation like 'col > 2 AND col <= 3'.
       *
       * @param ext SQL extractor.
@@ -163,7 +167,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     
     /**
       * Extracts date range conditions. It creates conditions based on relations between column and date value.
-      * It always returns double values conditions list because date condition processed as range.
+      * It always returns double values conditions list because date condition processed as a range.
       *
       * @param ext SQL extractor.
       * @param colTok Column token.
@@ -177,9 +181,8 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     /**
-      * Extracts 'values' conditions.
-      * It creates conditions based on relations between token values which extracted from given tokens and their column.
-      * These conditions grouped by columns.
+      * Extracts 'values' conditions. It creates conditions based on relations between token values which
+      * extracted from given tokens and their column. These conditions grouped by columns.
       *
       * @param ext SQL extractor.
       * @param allValsToks Values tokens.
@@ -202,9 +205,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             map { case (col, seq) ⇒ SqlInCondition(col, seq.map { case (_, value) ⇒ value})}.toSeq
     
     /**
-      * Select utility method.
-      * It creates and executes SQL request by given parameters.
-      * Parameters are token which contain information by tables, columns etc.
+      * Creates and executes SQL request by given parameters.
       *
       * @param ext SQL extractor.
       * @param tabs Tables tokens.
@@ -267,7 +268,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
       * It processes questions which contains tables and column names, column values and some conditions for table columns.
       *
       * @param ctx Intent matching context.
-      * @param tabs Tables tokens. Can be empty.
+      * @param tbls Tables tokens. Can be empty.
       * @param cols Columns tokens. Can be empty.
       * @param condNums Numeric condition tokens. Can be empty.
       * @param condVals Values conditions tokens. Can be empty.
@@ -277,11 +278,10 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
       *    based on model configuration.
       * @param sortTokOpt Sort token. Optional.
       * @param limitTokOpt Limit token. Optional.
-      * @return
       */
     @NCIntent(
         "intent=commonReport conv=true " +
-        "term(tabs)={groups @@ 'table'}[0,7] " +
+        "term(tbls)={groups @@ 'table'}[0,7] " +
         "term(cols)={id == 'col:date' || id == 'col:num' || id == 'col:varchar'}[0,7] " +
         "term(condNums)={id == 'condition:num'}[0,7] " +
         "term(condVals)={id == 'condition:value'}[0,7] " +
@@ -292,7 +292,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     )
     def onCommonReport(
         ctx: NCIntentMatch,
-        @NCIntentTerm("tabs") tabs: Seq[NCToken],
+        @NCIntentTerm("tbls") tbls: Seq[NCToken],
         @NCIntentTerm("cols") cols: Seq[NCToken],
         @NCIntentTerm("condNums") condNums: Seq[NCToken],
         @NCIntentTerm("condVals") condVals: Seq[NCToken],
@@ -305,7 +305,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
         select0(
             NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant),
-            tabs,
+            tbls,
             cols,
             condNums,
             condVals,
@@ -320,12 +320,13 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     /**
-      * Second - modified version of main generic intent, which uses implicit sort element definition.
-      * It is developed as an example of way by which this model can be extended to support more complicated questions comparing to generic case.
+      * Modified version of main generic intent, which uses implicit sort element definition.
+      * It is developed as an example of way by which this model can be extended to support more
+      * complicated questions comparing to a generic case.
       *
       * @param ctx Intent matching context.
       * @param sortTok Sort token. Mandatory. it is defined via user elements 'sort:best' or 'sort:worst'.
-      * @param tabs Tables tokens. Can be empty.
+      * @param tbls Tables tokens. Can be empty.
       * @param cols Columns tokens. Can be empty.
       * @param condNums Numeric condition tokens. Can be empty.
       * @param condVals Values conditions tokens. Can be empty.
@@ -338,7 +339,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     @NCIntent(
         "intent=customSortReport conv=true " +
         "term(sort)={id == 'sort:best' || id == 'sort:worst'} " +
-        "term(tabs)={groups @@ 'table'}[0,7] " +
+        "term(tbls)={groups @@ 'table'}[0,7] " +
         "term(cols)={id == 'col:date' || id == 'col:num' || id == 'col:varchar'}[0,7] " +
         "term(condNums)={id == 'condition:num'}[0,7] " +
         "term(condVals)={id == 'condition:value'}[0,7] " +
@@ -349,7 +350,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     def onCustomSortReport(
         ctx: NCIntentMatch,
         @NCIntentTerm("sort") sortTok: NCToken,
-        @NCIntentTerm("tabs") tabs: Seq[NCToken],
+        @NCIntentTerm("tbls") tbls: Seq[NCToken],
         @NCIntentTerm("cols") cols: Seq[NCToken],
         @NCIntentTerm("condNums") condNums: Seq[NCToken],
         @NCIntentTerm("condVals") condVals: Seq[NCToken],
@@ -376,7 +377,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
 
         select0(
             NCSqlExtractorBuilder.build(SCHEMA, ctx.getVariant),
-            tabs,
+            tbls,
             cols,
             condNums,
             condVals,
@@ -388,20 +389,17 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     /**
-      * Custom implementation NCModel#onMatchedIntent method.
-      *
-      * It is developed for clear conversation context by some conditions.
-      * In current implementation conversation context is always cleared between user questions,
-      * beside cases of evident clarifying questions.
-      * We suppose that question is clarified if their tokens satisfied one of criteria
+      * Custom callback implementation.
+      * <p>
+      * It is developed to clear conversation context. In this implementation the conversation context is always
+      * cleared between user questions, except for the obvious clarifying questions. We assume that question is being
+      * clarified if its tokens satisfy one of criteria
       *  - all these tokens are values (What about 'Exotic Liquids')
       *  - all these tokens are columns (Give me 'last name')
       *  - new token is single date token (What about 'tomorrow')
-      *
+      *  <p>
       *  If new sentence tokens satisfied any of these criteria,
       *  conversation context between this and previous questions will not be cleared.
-      *
-      *  Note please that selected conversation context clearing behaviour can be modified when new intents added.
       */
     override def onMatchedIntent(m: NCIntentMatch): Boolean = {
         val toks = m.getVariant.getMatchedTokens.asScala
