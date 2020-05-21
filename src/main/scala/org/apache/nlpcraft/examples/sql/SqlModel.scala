@@ -28,14 +28,11 @@ import scala.language.implicitConversions
 
 /**
   * Implementation for the SQL model from `northwind.sql`.
-  *
-  *
-  *
-  *
-  * Simple version of SQL access model which supports two intents.
-  * First - generic intent which allows to process set of common questions.
-  * Second - modified version of first intent, which uses implicit sort element definition.
-  * Second is developed as an example of way by which this model can be extended to support more complicated questions comparing to generic case.
+  * <p>
+  *  - File `sql_model_init.yaml` was generated from `northwind.sql` (see `model.png` for the visual
+  *    representation of this SQL schema) using `NCSqlModelGenerator.scala` utility.
+  *  - File `sql_model.yaml` is modified version of the `sql_model_init.yaml` file with additional model elements,
+  *    metadata, etc. You can run a diff between these two files to see what changes were made.
   */
 class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_model.yaml") with LazyLogging {
     private final val GSON = new Gson()
