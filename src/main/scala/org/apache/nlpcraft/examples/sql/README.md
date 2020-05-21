@@ -23,13 +23,37 @@
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
-### SQL model example.
+### SQL Model Example.
+This example demonstrates the relatively complex case of taking an existing SQL schema and developing
+a natural language interface to it. Although it does not support many standard SQL capabilities (to limit the size of the 
+example itself) - it is designed in a such a way that it can be easily extended and developed further.  
 
-SQL model example can be used as all other examples with one difference, is needs started H2 database server.
-   - When you start Probe with deployed SQL model, you have to run org.apache.nlpcraft.examples.sql.db.SqlServerRunner before to start database instance.
-   - You also have to run org.apache.nlpcraft.examples.sql.db.SqlServerRunner when you use org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator.
-   - You don't need to run org.apache.nlpcraft.examples.sql.db.SqlServerRunner when run org.apache.nlpcraft.examples.sql.SqlModelTest because it is already started H2 database server during tests initialization inside.       
+### Running
+This example can be run the same way as other examples with one exception - it needs to run H2 database server. 
+The unit test for this example runs H2 database server automatically (which can be run manually, if necessary).
+You need to start H2 database server standalone when you are using `NCSqlModelGenerator` model generation utility.
+Note that you don't need to start Data Probe manually as unit test uses embedded probe and starts it automatically.
+You can run this example from command line or IDE in a similar way:
+ 1. Run REST server:
+    * **Main class:** `org.apache.nlpcraft.NCStart`
+    * **Program arguments:** `-server`
+ 2. Run test:
+    * **JUnit 5 test:** `org.apache.nlpcraft.examples.sql.SqlTest`
+    * or use NLPCraft [REST APIs](https://nlpcraft.apache.org/using-rest.html) with your favorite REST client
 
+### Documentation  
+See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
+
+For any questions, feedback or suggestions:
+
+ * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
+ * Latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
+ * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
+ * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
+ * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
+ * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
+ * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
+ 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 

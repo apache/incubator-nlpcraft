@@ -42,10 +42,13 @@ object SqlServer extends LazyLogging {
 
     @volatile private var srv: Server = _
     @volatile private var started: Boolean = false
-
+    
+    /**
+      * Starts the H2 server.
+      */
     def start(): Unit = {
         if (started)
-            throw new IllegalStateException("Server already started")
+            throw new IllegalStateException("Server already started.")
 
         srv = Server.createTcpServer(SRV_PARAMS:_*).start
 
@@ -75,10 +78,13 @@ object SqlServer extends LazyLogging {
 
         started = true
     }
-
+    
+    /**
+      * Stops H2 server.
+      */
     def stop(): Unit = {
         if (!started)
-            throw new IllegalStateException("Server already stopped")
+            throw new IllegalStateException("Server already stopped.")
 
         if (srv != null)
             srv.stop()
@@ -90,10 +96,7 @@ object SqlServer extends LazyLogging {
 }
 
 /**
-  * H2 database Server runner.
-  *
-  * It is used together with Probe or SQL generator.
-  * For tests more convenient to call Sql Server object's methods directly.
+  * H2 database server runner for command line tooling.
   */
 object SqlServerRunner extends App {
     SqlServer.start()

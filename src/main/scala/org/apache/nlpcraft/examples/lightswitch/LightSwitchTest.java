@@ -30,7 +30,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Lightswitch model test.
+ * Light switch model test.
  *
  * @see LightSwitchModel
  */

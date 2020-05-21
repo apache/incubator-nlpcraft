@@ -37,17 +37,16 @@ import scala.compat.java8.OptionConverters._
   *
   * @see SqlModel
   */
-class SqlModelTest {
+class SqlTest {
     private val GSON = new Gson
     private val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
     private val NORM = Seq("\n", "\r", "\t")
-    private val DIFF =
-        DiffRowGenerator.create.
-            showInlineDiffs(true).
-            inlineDiffByWord(true).
-            oldTag((_: java.lang.Boolean) ⇒ "~").
-            newTag((_: java.lang.Boolean) ⇒ "**").
-            build
+    private val DIFF = DiffRowGenerator.create.
+        showInlineDiffs(true).
+        inlineDiffByWord(true).
+        oldTag((_: java.lang.Boolean) ⇒ "~").
+        newTag((_: java.lang.Boolean) ⇒ "**").
+        build
 
     private var client: NCTestClient = _
 
