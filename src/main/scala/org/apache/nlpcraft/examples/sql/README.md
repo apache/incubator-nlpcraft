@@ -23,21 +23,25 @@
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
-### HelloWorld Example
-This trivial example simply responds with 'Hello World!' on any user input.
-This is the simplest and shortest user model that can be defined.
+### SQL Model Example.
+This example demonstrates the relatively complex case of taking an existing SQL schema and developing
+a natural language interface to it. Although it does not support many standard SQL capabilities (to limit the size of the 
+example itself) - it is designed in a such a way that it can be easily extended and developed further.  
 
 ### Running
-You can run this example from command line or IDE in a similar way.
-Note that you don't need to start Data Probe manually as unit test uses embedded probe and starts it automatically:
+This example can be run the same way as other examples with one exception - it needs to run H2 database server. 
+The unit test for this example runs H2 database server automatically (which can be run manually, if necessary).
+You need to start H2 database server standalone when you are using `NCSqlModelGenerator` model generation utility.
+Note that you don't need to start Data Probe manually as unit test uses embedded probe and starts it automatically.
+You can run this example from command line or IDE in a similar way:
  1. Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **Program arguments:** `-server`
  2. Run test:
-    * **JUnit 5 test:** `org.apache.nlpcraft.examples.helloworld.HelloWorldTest`
+    * **JUnit 5 test:** `org.apache.nlpcraft.examples.sql.SqlTest`
     * or use NLPCraft [REST APIs](https://nlpcraft.apache.org/using-rest.html) with your favorite REST client
 
-### Documentation
+### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
 
 For any questions, feedback or suggestions:
@@ -49,7 +53,7 @@ For any questions, feedback or suggestions:
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
-
+ 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 

@@ -80,7 +80,7 @@ object NCTokenLogger extends LazyLogging {
             "nlpcraft:city" → Seq("city", "latitude", "longitude", "region", "country", "subcontinent", "continent"),
             "nlpcraft:date" → Seq("from", "to", "periods"),
             "nlpcraft:relation" → Seq("type", "indexes", "note"),
-            "nlpcraft:sort" → Seq("asc", "indexes", "note"),
+            "nlpcraft:sort" → Seq("asc", "subjnotes", "subjindexes", "bynotes", "byindexes"),
             "nlpcraft:limit" → Seq("limit", "indexes", "asc", "note")
         ).map(p ⇒ p._1 → p._2.zipWithIndex.map(p ⇒ p._1 → p._2).toMap)
 
@@ -183,7 +183,13 @@ object NCTokenLogger extends LazyLogging {
 
             def mkDouble3(name: String): Double = (getValue(name).asInstanceOf[Double] * 1000).intValue / 1000.0
 
-            def getIndexes: String = getValue("indexes").asInstanceOf[util.List[Int]].asScala.mkString(",")
+            def indexes2String(v: java.io.Serializable): String = v.asInstanceOf[util.List[Int]].asScala.mkString(",")
+            def mkIndexes(name: String): String = indexes2String(getValue(name))
+            def mkIndexesOpt(name: String): Option[String] =
+                getValueOpt(name) match {
+                    case Some(indexes) ⇒ Some(indexes2String(indexes))
+                    case None ⇒ None
+                }
 
             def getSeq(names: String*): String = names.flatMap(name ⇒ mkStringOpt(name)).mkString("|")
 
@@ -207,20 +213,38 @@ object NCTokenLogger extends LazyLogging {
                     val t = mkString("type")
                     val note = mkString("note")
 
-                    s"type=$t, indexes=[$getIndexes], note=$note"
+                    s"type=$t, indexes=[${mkIndexes("indexes")}], note=$note"
 
                 case "nlpcraft:sort" ⇒
-                    val asc = mkBool("asc")
-                    val note = mkString("note")
+                    var s =
+                        mkStringOpt("subjnotes") match {
+                            case Some(subjnotes) ⇒ s"subjnotes=$subjnotes, subjindexes=${mkIndexes("subjindexes")}"
+                            case None ⇒ ""
+                        }
 
-                    s"asc=$asc, indexes=[$getIndexes], note=$note"
+                    mkStringOpt("bynotes") match {
+                        case Some(bynotes) ⇒
+                            val sBy = s"bynotes=$bynotes, byindexes=${mkIndexes("byindexes")}"
+
+                            s = if (s.nonEmpty) s"$s, $sBy" else sBy
+                        case None ⇒ // No-op.
+                    }
+
+                    val ascOpt = mkBoolOpt("asc")
+
+                    ascOpt match {
+                        case Some(asc) ⇒ s = s"$s, asc=$asc"
+                        case None ⇒ // No-op.
+                    }
+
+                    s
 
                 case "nlpcraft:limit" ⇒
                     val limit = mkDouble3("limit")
                     val ascOpt = mkBoolOpt("asc")
                     val note = mkString("note")
 
-                    var s = s"limit=$limit, indexes=[$getIndexes], note=$note"
+                    var s = s"limit=$limit, indexes=[${mkIndexes("indexes")}], note=$note"
 
                     ascOpt match {
                         case Some(asc) ⇒ s = s"$s, asc=$asc"
@@ -453,18 +477,26 @@ object NCTokenLogger extends LazyLogging {
                         case "nlpcraft:sort" ⇒
                             def x(l: java.util.List[String]): String = l.asScala.mkString(", ")
 
-                            var s = s"subjNotes=${x(get("subjnotes"))}, subjIndexes=[${getIndexes("subjindexes")}]"
+                            def getList(notesName: String, indexesName: String): String = {
+                                val notesOpt: Option[java.util.List[String]] = getOpt(notesName)
+
+                                notesOpt match {
+                                    case Some(notes) ⇒
+                                        s"$notesName=${x(notes)}, $indexesName=[${getIndexes(indexesName)}]"
+                                    case None ⇒ ""
+                                }
+                            }
+
+                            var s = getList("subjnotes", "subjindexes")
+                            val by = getList("bynotes", "byindexes")
+
+                            if (by.nonEmpty)
+                                s = if (s.nonEmpty) s"$s, $by" else by
+
+                            require(s.nonEmpty)
 
                             if (has("asc"))
                                 s = s"$s, asc=${get("asc")}"
-
-                            val byNotesOpt: Option[java.util.List[String]] = getOpt("bynotes")
-
-                            byNotesOpt match {
-                                case Some(byNotes) ⇒
-                                    s = s"$s, byNotes=${x(byNotes)}, byIndexes=[${getIndexes("byindexes")}]"
-                                case None ⇒ // No-op.
-                            }
 
                             s
                         case "nlpcraft:limit" ⇒

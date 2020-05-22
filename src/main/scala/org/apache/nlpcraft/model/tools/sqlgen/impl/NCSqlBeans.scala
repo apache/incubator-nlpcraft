@@ -35,7 +35,13 @@ import scala.compat.java8.OptionConverters._
   * @param isPk
   * @param isNullable
   */
-case class NCSqlColumnImpl(table: String, column: String, dataType: Int, isPk: Boolean, isNullable: Boolean) extends NCSqlColumn {
+case class NCSqlColumnImpl(
+    table: String,
+    column: String,
+    dataType: Int,
+    isPk: Boolean,
+    isNullable: Boolean
+) extends NCSqlColumn {
     override def getTable: String = table
     override def getColumn: String = column
     override def getDataType: Int = dataType
@@ -59,7 +65,13 @@ case class NCSqlDateRangeImpl(from: Timestamp, to: Timestamp) extends NCSqlDateR
   * @param toColumns
   * @param typ
   */
-case class NCSqlJoinImpl(fromTable: String, toTable: String, fromColumns: Seq[String], toColumns: Seq[String], typ: NCSqlJoinType) extends NCSqlJoin {
+case class NCSqlJoinImpl(
+    fromTable: String,
+    toTable: String,
+    fromColumns: Seq[String],
+    toColumns: Seq[String],
+    typ: NCSqlJoinType
+) extends NCSqlJoin {
     override def getFromTable: String = fromTable
     override def getToTable: String = toTable
     override def getFromColumns: util.List[String] = fromColumns.asJava
@@ -68,10 +80,10 @@ case class NCSqlJoinImpl(fromTable: String, toTable: String, fromColumns: Seq[St
 }
 
 /**
-  *
-  * @param column
-  * @param asc
-  */
+ *
+ * @param column
+ * @param asc
+ */
 case class NCSqlSortImpl(column: NCSqlColumn, asc: Boolean) extends NCSqlSort {
     override def getColumn: NCSqlColumn = column
     override def isAscending: Boolean = asc
@@ -81,18 +93,25 @@ case class NCSqlSortImpl(column: NCSqlColumn, asc: Boolean) extends NCSqlSort {
   *
   * @param table
   * @param columns
-  * @param sort
-  * @param select
+  * @param sorts
+  * @param selects
   * @param extraTables
   * @param defaultDate
   */
-case class NCSqlTableImpl(table: String, columns: Seq[NCSqlColumn], sort: Seq[NCSqlSort], select: Seq[String], extraTables: Seq[String], defaultDate: NCSqlColumn) extends NCSqlTable {
+case class NCSqlTableImpl(
+    table: String,
+    columns: Seq[NCSqlColumn],
+    sorts: Seq[NCSqlSort],
+    selects: Seq[String],
+    extraTables: Seq[String],
+    defaultDate: Option[NCSqlColumn]
+) extends NCSqlTable {
     override def getTable: String = table
     override def getColumns: util.List[NCSqlColumn] = columns.asJava
-    override def getDefaultSort: util.List[NCSqlSort] = sort.asJava
-    override def getDefaultSelect: util.List[String] = select.asJava
+    override def getDefaultSort: util.List[NCSqlSort] = sorts.asJava
+    override def getDefaultSelect: util.List[String] = selects.asJava
     override def getExtraTables: util.List[String] = extraTables.asJava
-    override def getDefaultDate: Optional[NCSqlColumn] = Option(defaultDate).asJava
+    override def getDefaultDate: Optional[NCSqlColumn] = defaultDate.asJava
 }
 
 /**

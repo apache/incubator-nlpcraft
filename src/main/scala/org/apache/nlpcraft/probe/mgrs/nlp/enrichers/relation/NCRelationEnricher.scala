@@ -60,6 +60,7 @@ object NCRelationEnricher extends NCProbeEnricher {
     )
 
     private var FUNCS: Seq[Holder] = _
+    private var ALL_FUNC_STEMS: Set[String] = _
 
     /**
       * Starts this component.
@@ -108,11 +109,32 @@ object NCRelationEnricher extends NCProbeEnricher {
             seq.sortBy(-_.allStems.size)
         }
 
+        ALL_FUNC_STEMS = FUNCS.flatMap(_.allStems).toSet
+
         super.start()
     }
 
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
+    }
+
+    /**
+      * Checks whether important tokens deleted as stopwords or not.
+      *
+      * @param ns Sentence.
+      * @param toks Tokens in which some stopwords can be deleted.
+      */
+    private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
+        def isImportant(t: NCNlpSentenceToken): Boolean =
+            t.exists(n ⇒ n.isUser || REL_TYPES.contains(n.noteType)) || ALL_FUNC_STEMS.contains(t.stem)
+
+        val idxs = toks.map(_.index)
+
+        require(idxs == idxs.sorted)
+
+        val toks2 = ns.slice(idxs.head, idxs.last + 1)
+
+        toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
     }
 
     @throws[NCE]
@@ -121,14 +143,13 @@ object NCRelationEnricher extends NCProbeEnricher {
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
-
             // Tries to grab tokens direct way.
             // Example: A, B, C ⇒ ABC, AB, BC .. (AB will be processed first)
-            for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
+            val notes = mutable.HashSet.empty[NCNlpSentenceNote]
+
+            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, Seq(m.matched.head))) {
                         for (refNote ← m.refNotes) {
                             val note = NCNlpSentenceNote(
                                 Seq(m.matchedHead.index),
@@ -138,11 +159,13 @@ object NCRelationEnricher extends NCProbeEnricher {
                                 "note" → refNote
                             )
 
-                            m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))
+                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
+                                notes += note
 
-                            m.matchedHead.add(note)
+                                m.matched.filter(_ != m.matchedHead).foreach(_.addStopReason(note))
 
-                            buf += toks.toSet
+                                m.matchedHead.add(note)
+                            }
                         }
                     case None ⇒ // No-op.
                 }
@@ -190,7 +213,17 @@ object NCRelationEnricher extends NCProbeEnricher {
       * @param toks
       */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
-        var refOpts = toks.filter(t ⇒ t.exists(n ⇒ n.isUser || REL_TYPES.contains(n.noteType)))
+        val i1 = toks.head.index
+        val i2 = toks.last.index
+
+        var refOpts = toks.
+            filter(t ⇒
+                t.exists(n ⇒ (
+                    n.isUser || REL_TYPES.contains(n.noteType)) &&
+                    n.tokenIndexes.head >= i1 &&
+                    n.tokenIndexes.last <= i2
+                )
+            )
         val matchOpts = toks.diff(refOpts)
 
         if (refOpts.nonEmpty && matchOpts.nonEmpty)

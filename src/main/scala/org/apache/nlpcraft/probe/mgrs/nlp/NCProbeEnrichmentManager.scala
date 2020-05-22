@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.impl.{NCModelImpl, NCTokenLogger, NCVariantImpl}
+import org.apache.nlpcraft.model.impl.{NCModelImpl, NCTokenLogger}
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
 import org.apache.nlpcraft.probe.embedded.NCEmbeddedResult
@@ -42,16 +42,15 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.dictionary.NCDictionaryEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit.NCLimitEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model.NCModelEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.post._
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.impl._
+import org.apache.nlpcraft.probe.mgrs.nlp.impl.{_}
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 
 import scala.collection.JavaConverters._
-import scala.collection._
+import scala.collection.{Seq, _}
 import scala.concurrent.ExecutionContext
 
 /**
@@ -382,26 +381,61 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                 val res = loopEnrichers.map(h ⇒ {
                     def get(): Seq[NCNlpSentenceNote] = h.getNotes().sortBy(p ⇒ (p.tokenIndexes.head, p.noteType))
-
                     val notes1 = get()
 
                     h → h.enricher.enrich(mdlDec, nlpSen, senMeta, span)
 
                     val notes2 = get()
 
-                    h.enricher → (notes1 == notes2)
+                    var same = notes1 == notes2
+
+                    if (!same) {
+                        def squeeze(typ: String): Boolean = {
+                            val diff = notes2.filter(n ⇒ !notes1.contains(n))
+
+                            val diffRedundant = diff.flatMap(n2 ⇒
+                                notes1.find(n1 ⇒ nlpSen.notesEqualOrSimilar(n1, n2)) match {
+                                    case Some(similar) ⇒ Some(n2 → similar)
+                                    case None ⇒ None
+                                }
+                            )
+
+                            diffRedundant.foreach { case (del, similar) ⇒
+                                if (DEEP_DEBUG)
+                                    logger.trace(s"Redundant note removed: $del, because similar exists: $similar")
+
+                                nlpSen.removeNote(del)
+                            }
+
+                            diffRedundant.size == diff.size
+                        }
+
+                        h.enricher match {
+                            case NCSortEnricher ⇒ same = squeeze("nlpcraft:sort")
+                            case NCLimitEnricher ⇒ same = squeeze("nlpcraft:limit")
+                            case NCRelationEnricher ⇒ same = squeeze("nlpcraft:relation")
+
+                            case _ ⇒ // No-op.
+                        }
+                    }
+
+                    h.enricher → same
                 }).toMap
 
-                continue = res.exists { case (_, same) ⇒ !same }
+                // Loop has sense if model is complex (has user defined parsers or DSL based synonyms)
+                continue = NCModelEnricher.isComplex(mdlDec) && res.exists { case (_, same) ⇒ !same }
 
                 if (DEEP_DEBUG)
-                    if (continue)
-                        logger.info(s"Enrichment iteration finished - more needed [step=$step, changed=${res.keys.mkString(", ")}]")
+                    if (continue) {
+                        val changed = res.filter(!_._2).keys.map(_.getClass.getSimpleName).mkString(", ")
+
+                        logger.info(s"Enrichment iteration finished - more needed [step=$step, changed=$changed]")
+                    }
                     else
                         logger.info(s"Enrichment finished [step=$step]")
             }
 
-            NCPostEnrichProcessor.collapse(mdlDec, nlpSen.clone(), span).
+            nlpSen.clone().collapse().
                 // Sorted to support deterministic logs.
                 sortBy(p ⇒
                 p.map(p ⇒ {
@@ -439,19 +473,18 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         }
 
         val meta = mutable.HashMap.empty[String, Any] ++ senMeta
-        val varsNlp = sensSeq.map(_.toSeq)
         val req = NCRequestImpl(meta, srvReqId)
 
-        var senVars = NCPostEnrichProcessor.convert(mdlDec, srvReqId, varsNlp)
+        var senVars = mdlDec.makeVariants(srvReqId, sensSeq)
 
         // Sentence variants can be filtered by model.
-        val fltSenVars: Seq[(Seq[NCToken], Int)] =
+        val fltSenVars: Seq[(NCVariant, Int)] =
             senVars.
             zipWithIndex.
-            flatMap { case (variant, i) ⇒ if (mdlDec.model.onParsedVariant(new NCVariantImpl(variant.asJava))) Some(variant, i) else None }
+            flatMap { case (variant, i) ⇒ if (mdlDec.model.onParsedVariant(variant)) Some(variant, i) else None }
 
         senVars = fltSenVars.map(_._1)
-        val allVars = senVars.flatten
+        val allVars = senVars.flatMap(_.asScala)
 
         // Prints here only filtered variants.
         val fltIdxs = fltSenVars.map { case (_, i) ⇒ i }
@@ -464,7 +497,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 zipWithIndex.
                 flatMap { case (sen, i) ⇒ if (fltIdxs.contains(i)) Some(sen) else None }.
                 zipWithIndex.foreach { case (sen, i) ⇒
-                NCTokenLogger.prepareTable(sen).
+                NCTokenLogger.prepareTable(sen.asScala).
                     info(
                         logger,
                         Some(s"Parsing variant #${i + 1} for: $txt")
@@ -493,7 +526,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             }
 
             override def isOwnerOf(tok: NCToken): Boolean = allVars.contains(tok)
-            override def getVariants: util.Collection[_ <: NCVariant] = senVars.map(s ⇒ new NCVariantImpl(s.asJava)).asJava
+            override def getVariants: util.Collection[_ <: NCVariant] = senVars.asJava
         }
     
         if (logHldr != null) {

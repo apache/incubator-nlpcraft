@@ -164,12 +164,30 @@ object NCLimitEnricher extends NCProbeEnricher {
         SYNONYMS.flatMap(parser.expand).distinct
     }
 
+    private final val TECH_WORDS = (SORT_WORDS.keys ++ TOP_WORDS ++ POST_WORDS ++ FUZZY_NUMS.keySet).toSet
+
     /**
       * Stemmatizes map's keys.
       *
       * @param m Map.
       */
     private def stemmatizeWords[T](m: Map[String, T]): Map[String, T] = m.map(p ⇒ NCNlpCoreManager.stem(p._1) → p._2)
+
+    /**
+      *
+      * @param t
+      */
+    private def isUserNotValue(t: NCNlpSentenceToken): Boolean =
+        t.find(_.isUser) match {
+            case Some(n) ⇒ !n.contains("value")
+            case None ⇒ false
+        }
+
+    /**
+      *
+      * @param n
+      */
+    private def isUserNotValue(n: NCNlpSentenceNote): Boolean = n.isUser && !n.contains("value")
 
     /**
       * Starts this component.
@@ -182,23 +200,39 @@ object NCLimitEnricher extends NCProbeEnricher {
         super.stop()
     }
 
+    /**
+      * Checks whether important tokens deleted as stopwords or not.
+      *
+      * @param ns Sentence.
+      * @param toks Tokens in which some stopwords can be deleted.
+      */
+    private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
+        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || TECH_WORDS.contains(t.stem)
+
+        val idxs = toks.map(_.index)
+
+        require(idxs == idxs.sorted)
+
+        val toks2 = ns.slice(idxs.head, idxs.last + 1)
+
+        toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
+    }
+
     @throws[NCE]
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
+            val notes = mutable.HashSet.empty[NCNlpSentenceNote]
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
 
-            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
-
             // Tries to grab tokens reverse way.
             // Example: A, B, C ⇒ ABC, BC, AB .. (BC will be processed first)
-            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)) if areSuitableTokens(buf, toks))
+            for (toks ← ns.tokenMixWithStopWords().sortBy(p ⇒ (-p.size, -p.head.index)) if validImportant(ns, toks))
                 tryToMatch(numsMap, groupsMap, toks) match {
                     case Some(m) ⇒
-                        //for (refNote ← m.refNotes if !hasReference(TOK_ID, "note", refNote, m.matched)) {
                         for (refNote ← m.refNotes) {
                             val params = mutable.ArrayBuffer.empty[(String, Any)]
 
@@ -211,13 +245,47 @@ object NCLimitEnricher extends NCProbeEnricher {
 
                             val note = NCNlpSentenceNote(m.matched.map(_.index), TOK_ID, params: _*)
 
-                            m.matched.foreach(_.add(note))
+                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
+                                notes += note
 
-                            buf += toks.toSet
+                                m.matched.foreach(_.add(note))
+                            }
                         }
                     case None ⇒ // No-op.
                 }
         }
+
+    /**
+      *
+      * @param toks
+      */
+    private def getCommonNotes(toks: Seq[NCNlpSentenceToken]): Set[String] =
+        if (toks.isEmpty)
+            Set.empty
+        else {
+            def getCommon(sortedToks: Seq[NCNlpSentenceToken]): Set[String] = {
+                require(sortedToks.nonEmpty)
+
+                val h = sortedToks.head
+                val l = sortedToks.last
+
+                h.filter(!_.isNlp).filter(n ⇒ h.index == n.tokenFrom && l.index == n.tokenTo).map(_.noteType).toSet
+            }
+
+            var sortedToks = toks.sortBy(_.index)
+
+            var res = getCommon(sortedToks)
+
+            if (res.isEmpty) {
+                sortedToks = sortedToks.filter(!_.isStopWord)
+
+                if (sortedToks.nonEmpty)
+                    res = getCommon(sortedToks)
+            }
+
+            if (res.isEmpty) Set.empty else res
+        }
+
     /**
       *
       * @param numsMap
@@ -229,31 +297,39 @@ object NCLimitEnricher extends NCProbeEnricher {
         groupsMap: Map[Seq[NCNlpSentenceToken], GroupsHolder],
         toks: Seq[NCNlpSentenceToken]
     ): Option[Match] = {
-        val refCands = toks.filter(_.exists(_.isUser))
-        val commonNotes = getCommonNotes(refCands)
+        val i1 = toks.head.index
+        val i2 = toks.last.index
 
-        if (commonNotes.nonEmpty) {
-            val matchCands = toks.diff(refCands)
+        val refCands = toks.filter(_.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2))
 
-            def try0(group: Seq[NCNlpSentenceToken]): Option[Match] =
-                groupsMap.get(group) match {
-                    case Some(h) ⇒
-                        val idxs = refCands.map(_.index).asJava
+        // Reference should be last.
+        if (refCands.nonEmpty && refCands.last.index == toks.last.index) {
+            val commonRefNotes = getCommonNotes(refCands)
 
-                        if (LIMITS.contains(h.value) || h.isFuzzyNum)
-                            Some(Match(h.limit, Some(h.asc), matchCands, commonNotes, idxs))
-                        else
-                            numsMap.get(group) match {
-                                case Some(num) ⇒ Some(Match(num.value, None, matchCands, commonNotes, idxs))
-                                case None ⇒ None
-                            }
-                    case None ⇒ None
+            if (commonRefNotes.nonEmpty) {
+                val matchCands = toks.diff(refCands)
+                val idxs = refCands.map(_.index)
+
+                def try0(group: Seq[NCNlpSentenceToken]): Option[Match] =
+                    groupsMap.get(group) match {
+                        case Some(h) ⇒
+                            if (LIMITS.contains(h.value) || h.isFuzzyNum)
+                                Some(Match(h.limit, Some(h.asc), matchCands, commonRefNotes, idxs.asJava))
+                            else
+                                numsMap.get(group) match {
+                                    case Some(num) ⇒ Some(Match(num.value, None, matchCands, commonRefNotes, idxs.asJava))
+                                    case None ⇒ None
+                                }
+                        case None ⇒ None
+                    }
+
+                try0(matchCands) match {
+                    case Some(m) ⇒ Some(m)
+                    case None ⇒ try0(matchCands.filter(!_.isStopWord))
                 }
-
-            try0(matchCands) match {
-                case Some(m) ⇒ Some(m)
-                case None ⇒ try0(matchCands.filter(!_.isStopWord))
             }
+            else
+                None
         }
         else
             None

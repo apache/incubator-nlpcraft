@@ -20,6 +20,8 @@ package org.apache.nlpcraft.model.tools.sqlgen;
 import org.apache.nlpcraft.common.*;
 import org.apache.nlpcraft.model.*;
 
+import java.util.List;
+
 /**
  * Utility methods for extracting various SQL components from {@link NCToken} tokens. Instances
  * of this interface are created using {@link NCSqlExtractorBuilder} builder.
@@ -50,7 +52,7 @@ public interface NCSqlExtractor {
      * @return SQL sort object extracted from given token.
      * @throws NCException Thrown in case of any errors.
      */
-    NCSqlSort extractSort(NCToken sortTok);
+    List<NCSqlSort> extractSort(NCToken sortTok);
 
     /**
      * Extract table object from the token.
