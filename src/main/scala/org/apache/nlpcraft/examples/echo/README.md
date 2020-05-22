@@ -33,15 +33,11 @@ can operate on. This example can be useful during the development to see what
 object properties are available.
 
 ### Running
-You can run this example from command line or IDE in a similar way:
+You can run this example from command line or IDE in a similar way.
+Note that you don't need to start Data Probe manually as unit test uses embedded probe and starts it automatically:
  1. Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **Program arguments:** `-server`
- 2. Run data probe:
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **VM arguments:** `-Dconfig.override_with_env_vars=true`
-    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.echo.EchoModel`
-    * **Program arguments:** `-probe`
  2. Run test:
     * **JUnit 5 test:** `org.apache.nlpcraft.examples.echo.EchoTest`
     * or use NLPCraft [REST APIs](https://nlpcraft.apache.org/using-rest.html) with your favorite REST client

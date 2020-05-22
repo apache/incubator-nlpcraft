@@ -60,9 +60,9 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
     private val stm = mutable.ArrayBuffer.empty[ConversationItem]
     private val lastToks = mutable.ArrayBuffer.empty[Iterable[NCToken]]
 
-    private var ctx = new util.ArrayList[NCToken]()
-    private var lastUpdateTstamp = U.nowUtcMs()
-    private var attempt = 0
+    @volatile private var ctx: util.List[NCToken] = new util.ArrayList[NCToken]()
+    @volatile private var lastUpdateTstamp = U.nowUtcMs()
+    @volatile private var attempt = 0
 
     /**
       *
@@ -145,6 +145,8 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
                 item.holders --= item.holders.filter(h ⇒ p.test(h.token))
 
             squeezeTokens()
+
+            ctx = ctx.asScala.filter(tok ⇒ !p.test(tok)).asJava
         }
 
         logger.info(s"Manually cleared conversation using token predicate.")

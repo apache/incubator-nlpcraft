@@ -25,7 +25,6 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, _}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.post.NCPostEnrichProcessor
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.{NCModelDecorator, NCSynonym}
 
@@ -298,6 +297,9 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
+    def isComplex(mdl: NCModelDecorator): Boolean =
+        mdl.synonymsDsl.nonEmpty || (mdl.model.getParsers != null && !mdl.model.getParsers.isEmpty)
+
     @throws[NCE]
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
@@ -345,7 +347,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 permCnt += 1
 
                 for (toks ← combos(perm)) {
-                    val key = toks.map(_.index)
+                    val key = toks.map(_.index).sorted
 
                     if (!cache.contains(key)) {
                         var seq: Seq[Seq[Complex]] = null
@@ -363,8 +365,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                     matches += ElementMatch(elm, toks, syn, parts)
                                 }
 
-                            // Check synonym matches.
-                            if (mdl.synonyms.nonEmpty)
+                            // Optimization - plain synonyms can be used only on first iteration
+                            if (mdl.synonyms.nonEmpty && !ns.exists(_.isUser))
                                 for (syn ← fastAccess(mdl.synonyms, elm.getId, toks.length) if !found)
                                     if (syn.isMatch(toks))
                                         addMatch(elm, toks, syn, Seq.empty)
@@ -373,12 +375,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 found = false
 
                                 if (collapsedSens == null)
-                                    collapsedSens =
-                                        NCPostEnrichProcessor.convert(
-                                            mdl,
-                                            ns.srvReqId,
-                                            NCPostEnrichProcessor.collapse(mdl, ns.clone(), span).map(_.tokens)
-                                        )
+                                    collapsedSens = mdl.makeVariants(ns.srvReqId, ns.clone().collapse()).map(_.asScala)
 
                                 if (seq == null)
                                     seq = convert(ns, collapsedSens, toks)

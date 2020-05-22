@@ -68,22 +68,24 @@ class NCSynonym(
       */
     def isMatch(toks: NCNlpSentenceTokenBuffer): Boolean = {
         require(toks != null)
-        
-        if (toks.isEmpty || size != toks.size || isTextOnly && toks.stemsHash != stemsHash)
-            false
-        else if (isTextOnly)
-            toks.stemsHash == stemsHash && toks.stems == stems
-        else
-            // Same length.
-            toks.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall {
-                case (tok, chunk) ⇒
-                    chunk.kind match {
-                        case TEXT ⇒ chunk.wordStem == tok.stem
-                        case REGEX ⇒ chunk.regex.matcher(tok.origText).matches() || chunk.regex.matcher(tok.normText).matches()
-                        case DSL ⇒ throw new AssertionError()
-                        case _ ⇒ throw new AssertionError()
-                    }
-            }
+
+        val ok =
+            if (isTextOnly)
+                toks.stemsHash == stemsHash && toks.stems == stems
+            else
+                // Same length.
+                toks.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall {
+                    case (tok, chunk) ⇒
+                        chunk.kind match {
+                            case TEXT ⇒ chunk.wordStem == tok.stem
+                            case REGEX ⇒ chunk.regex.matcher(tok.origText).matches() || chunk.regex.matcher(tok.normText).matches()
+                            case DSL ⇒ throw new AssertionError()
+                            case _ ⇒ throw new AssertionError()
+                        }
+                }
+
+        // Should be called only for valid tokens count (validation optimized for performance reasons)
+        ok && toks.length == length
     }
 
     /**
@@ -98,9 +100,7 @@ class NCSynonym(
         type Word = NCNlpSentenceToken
         type TokenOrWord = Either[Token, Word]
 
-        if (tows.isEmpty || size != tows.size)
-            false
-        else
+        val ok =
             // Same length.
             tows.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall {
                 case (tow, chunk) ⇒
@@ -118,6 +118,8 @@ class NCSynonym(
                         case _ ⇒ throw new AssertionError()
                     }
             }
+        // Should be called only for valid tokens count (validation optimized for performance reasons)
+        ok && tows.length == length
     }
     
     override def toString(): String = mkString(" ")

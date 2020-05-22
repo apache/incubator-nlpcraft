@@ -25,60 +25,13 @@ import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
 
-import scala.collection.{Map, Seq}
+import scala.collection.Map
 import scala.language.implicitConversions
 
 /**
  * Base class for NLP enricher.
  */
 abstract class NCProbeEnricher extends NCService with LazyLogging {
-    /**
-      *
-      * @param buf
-      * @param toks
-      */
-    protected def areSuitableTokens(buf: Seq[Set[NCNlpSentenceToken]], toks: Seq[NCNlpSentenceToken]): Boolean =
-        !buf.exists(_.exists(toks.contains)) && toks.forall(t ⇒ !t.isQuoted && !t.isBracketed)
-
-    /**
-      *
-      * @param toks
-      * @param pred
-      */
-    protected def getCommonNotes(
-        toks: Seq[NCNlpSentenceToken], pred: Option[NCNlpSentenceNote ⇒ Boolean] = None
-    ): Set[String] =
-        if (toks.isEmpty)
-            Set.empty
-        else {
-            def getCommon(sortedToks: Seq[NCNlpSentenceToken]): Set[String] = {
-                require(sortedToks.nonEmpty)
-
-                val h = sortedToks.head
-                val l = sortedToks.last
-
-                val notes = pred match {
-                    case Some(p) ⇒ h.filter(p)
-                    case None ⇒ h.map(p ⇒ p)
-                }
-
-                notes.filter(!_.isNlp).filter(n ⇒ h.index == n.tokenFrom && l.index == n.tokenTo).map(_.noteType).toSet
-            }
-
-            var sortedToks = toks.sortBy(_.index)
-
-            var res = getCommon(sortedToks)
-
-            if (res.isEmpty) {
-                sortedToks = sortedToks.filter(!_.isStopWord)
-
-                if (sortedToks.nonEmpty)
-                    res = getCommon(sortedToks)
-            }
-
-            if (res.isEmpty) Set.empty else res
-        }
-
     /**
       *
       * Processes this NLP sentence.

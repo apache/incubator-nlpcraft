@@ -65,6 +65,8 @@ class NCDefaultTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0
         NCResult.text(
             NCTestSentence.serialize(ctx.getVariants.asScala.map(v ⇒ NCTestSentence(v.asScala.map(NCTestToken(_)))))
         )
+
+    final override def getId: String = ID
 }
 
 object NCDefaultTestModel {

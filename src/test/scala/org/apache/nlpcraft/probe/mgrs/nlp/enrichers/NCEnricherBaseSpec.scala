@@ -32,12 +32,12 @@ class NCEnricherBaseSpec {
     def getModelClass: Option[Class[_ <: NCDefaultTestModel]] = Some(classOf[NCDefaultTestModel])
 
     @BeforeEach
-    private[enrichers] def setUp(): Unit = {
+    protected def setUp(): Unit = {
         val mdlId = NCDefaultTestModel.ID
 
         getModelClass match {
             case Some(claxx) ⇒
-                println(s"Embedded probe is going to start with model: $mdlId")
+                println(s"Embedded probe is going to start with model [id=$mdlId, claxx=${claxx.getName}]")
 
                 NCEmbeddedProbe.start(claxx)
             case None ⇒
@@ -50,7 +50,7 @@ class NCEnricherBaseSpec {
     }
 
     @AfterEach
-    private[enrichers] def tearDown(): Unit = {
+    protected def tearDown(): Unit = {
         if (client != null)
             client.close()
 
@@ -61,22 +61,29 @@ class NCEnricherBaseSpec {
       * Checks single variant.
       *
       * @param txt
-      * @param expToks
+      * @param expToks Expected tokens.
       */
-    private[enrichers] def checkExists(txt: String, expToks: NCTestToken*): Unit = {
+    protected def checkExists(txt: String, expToks: NCTestToken*): Unit = {
         val res = client.ask(txt)
 
         if (res.isFailed)
-            fail(s"Result failed [text=$txt, error=${res.getResultError.get()}]")
+            fail(s"Result failed [" +
+                s"text=$txt, " +
+                s"error=${res.getResultError.get()}" +
+            s"]")
 
         assertTrue(res.getResult.isPresent, s"Missed result data")
 
-        val sens = NCTestSentence.deserialize(res.getResult.get())
+        val sens = NCTestSentence.deserialize(res.getResult.get()).toSeq
         val expSen = NCTestSentence(expToks)
 
         assertTrue(
-            sens.exists(_ == expSen),
-            s"Required sentence not found [request=$txt, \nexpected=\n$expSen, \nfound=\n${sens.mkString("\n")}\n]"
+            sens.contains(expSen),
+            s"Required token sequence not found [" +
+                s"request=$txt, " +
+                s"\nexpected=\n$expSen, " +
+                s"\nfound=\n${sens.mkString("\n")}" +
+            "\n]"
         )
     }
 
@@ -86,26 +93,37 @@ class NCEnricherBaseSpec {
       * @param txt
       * @param expToks
       */
-    private[enrichers] def checkAll(txt: String, expToks: Seq[NCTestToken]*): Unit = {
+    protected def checkAll(txt: String, expToks: Seq[NCTestToken]*): Unit = {
         val res = client.ask(txt)
 
         if (res.isFailed)
-            fail(s"Result failed [text=$txt, error=${res.getResultError.get()}]")
+            fail(s"Result failed [" +
+                s"text=$txt, " +
+                s"error=${res.getResultError.get()}" +
+            s"]")
 
         assertTrue(res.getResult.isPresent, s"Missed result data")
 
         val expSens = expToks.map(NCTestSentence(_))
-        val sens = NCTestSentence.deserialize(res.getResult.get())
+        val sens = NCTestSentence.deserialize(res.getResult.get()).toSeq
 
         require(
             expSens.size == sens.size,
-            s"Unexpected response size [request=$txt, expected=${expSens.size}, received=${sens.size}]"
+            s"Unexpected response size [" +
+                s"request=$txt, " +
+                s"expected=${expSens.size}, " +
+                s"received=${sens.size}" +
+            s"]"
         )
 
         for (expSen ← expSens)
             require(
-                sens.exists(_ == expSen),
-                s"Required sentence not found [request=$txt, \nexpected=\n$expSen, \nfound=\n${sens.mkString("\n")}\n]"
+                sens.contains(expSen),
+                s"Required token sequence not found [" +
+                    s"request=$txt, " +
+                    s"\nexpected=\n$expSen, " +
+                    s"\nfound=\n${sens.mkString("\n")}" +
+                "\n]"
             )
     }
 
@@ -113,7 +131,7 @@ class NCEnricherBaseSpec {
       *
       * @param tests
       */
-    private[enrichers] def runBatch(tests: Unit ⇒ Unit*): Unit = {
+    protected def runBatch(tests: Unit ⇒ Unit*): Unit = {
         val errs = tests.zipWithIndex.flatMap { case (test, i) ⇒
             try {
                 test.apply(())
@@ -132,9 +150,9 @@ class NCEnricherBaseSpec {
                 err.printStackTrace(System.out)
             }
 
-            Assertions.fail(s"Failed ${errs.size} tests. See errors list above.")
+            Assertions.fail(s"\n!!! Failed ${errs.size} from ${tests.size} tests. See errors list above. !!!\n")
         }
         else
-            println(s"All tests passed: ${tests.size}")
+            println(s"\n>>> All ${tests.size} tests passed. <<<\n")
     }
 }

@@ -21,10 +21,11 @@ import java.sql.Timestamp
 import java.util
 
 import org.apache.nlpcraft.common.NCException
-import org.apache.nlpcraft.model.tools.sqlgen._
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.tools.sqlgen._
 
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 
 /**
   *
@@ -76,7 +77,7 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @return
       */
     private def getWithGroup(tok: NCToken, grp: String): Seq[NCToken] =
-        Seq(tok) ++ tok.findPartTokens().asScala.flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
+        (Seq(tok) ++ tok.findPartTokens().asScala).flatMap(p ⇒ if (p.getGroups.contains(grp)) Some(p) else None)
     
     /**
       *
@@ -109,25 +110,108 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     }
 
     /**
-      *
-      * @param refTok
-      * @return
-      */
-    private def getReference(refTok: NCToken): Option[NCSqlColumn] = {
-        val tok = getLinkBySingleIndex(variant, refTok)
-        
-        findAnyColumnTokenOpt(tok) match {
+     *
+     * @param link
+     * @param element
+     * @return
+     */
+    private def findColumn(link: NCToken, element: String): NCSqlColumn =
+        findAnyColumnTokenOpt(link) match {
             // If reference is column - sort by column.
-            case Some(t) ⇒ Some(extractColumn(t))
+            case Some(t) ⇒ extractColumn(t)
             case None ⇒
-                // If reference is table -  sort by any PK column of table.
-                findAnyTableTokenOpt(tok) match {
-                    case Some(tab) ⇒ Some(tab.getColumns.asScala.minBy(col ⇒ if (col.isPk) 0 else 1))
-                    case None ⇒ None
+                // If reference is table - sort by any PK column of table.
+                findAnyTableTokenOpt(link) match {
+                    case Some(tab) ⇒ tab.getColumns.asScala.minBy(col ⇒ if (col.isPk) 0 else 1)
+                    case None ⇒ throw new NCException(s"Unexpected $element link: $link")
                 }
         }
+
+    /**
+     *
+     * @param link
+     * @param typ
+     * @return
+     */
+    private def findTable(link: NCToken, typ: String): NCSqlTable =
+        findAnyTableTokenOpt(link) match {
+            case Some(t) ⇒ t
+            case None ⇒
+                findAnyColumnTokenOpt(link) match {
+                    case Some(col) ⇒ findSchemaTable(extractColumn(col).getTable)
+                    case None ⇒ throw new NCException(s"Unexpected $typ link: $link")
+                }
+        }
+
+    /**
+     *
+     * @param variant
+     * @param tok
+     * @return
+     */
+    private def getOptionalLinks(variant: NCVariant, tok: NCToken, idxsField: String, notesField: String): Seq[NCToken] = {
+        val idxsOpt: Option[util.List[Integer]] = tok.metaOpt(s"${tok.getId}:$idxsField").asScala
+
+        idxsOpt match {
+            case Some(idxs) ⇒
+                val notes: util.List[String] = tok.metax(s"${tok.getId}:$notesField")
+
+                idxs.asScala.map(idx ⇒ {
+                    if (idx < variant.size) {
+                        val link = variant.get(idx)
+
+                        if (!notes.contains(link.getId))
+                            throw new NCException(s"Unexpected token with index: $idx, type: ${link.getId}")
+
+                        link
+                    }
+                    else
+                        throw new NCException(s"Token not found with index: $idx")
+                })
+            case None ⇒ Seq.empty
+        }
     }
-    
+
+    /**
+      *
+      * @param variant
+      * @param tok
+      * @return
+      */
+    private def getSingleMandatoryLinks(
+        variant: NCVariant, tok: NCToken, idxField: String, noteField: String
+    ): Seq[NCToken] = {
+        val idxs: util.List[Integer] = tok.metaOpt(s"${tok.getId}:$idxField").asScala.getOrElse(throw new NCException(s"Empty indexes for: $tok"))
+
+        val note: String = tok.metax(s"${tok.getId}:$noteField")
+
+        idxs.asScala.map(idx ⇒
+            if (idx < variant.size) {
+                val link = variant.get(idx)
+
+                if (link.getId != note)
+                    throw new NCException(s"Unexpected token with index: $idx, type: $note")
+
+                link
+            }
+            else
+                throw new NCException(s"Token not found with index: $idx")
+        )
+    }
+
+    /**
+     *
+     * @param tok
+     * @param metaName
+     * @param dflt
+     * @return
+     */
+    private def getAsc(tok: NCToken, metaName: String, dflt: Boolean): Boolean = {
+        val ascOpt: Option[Boolean] = tok.metaOpt(metaName).asScala
+
+        ascOpt.getOrElse(dflt)
+    }
+
     /**
       *
       * @param limitTok
@@ -136,14 +220,19 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
     override def extractLimit(limitTok: NCToken): NCSqlLimit = {
         checkTokenId(limitTok, "nlpcraft:limit")
         
-        // Skips indexes to simplify.
-        val limit: Double = limitTok.metax("nlpcraft:limit:limit")
-        
-        NCSqlLimitImpl(
-            getReference(limitTok).getOrElse(throw new NCException(s"Limit not found for: $limitTok")),
-            limit.intValue(),
-            limitTok.metax("nlpcraft:limit:asc")
-        )
+        val links = getSingleMandatoryLinks(variant, limitTok, "indexes", "note")
+
+        links.size match {
+            case 1 ⇒
+                val limit: Double = limitTok.metax("nlpcraft:limit:limit")
+
+                NCSqlLimitImpl(
+                    findColumn(links.head, "LIMIT"),
+                    limit.intValue(),
+                    getAsc(limitTok, "nlpcraft:limit:asc", dflt = false)
+                )
+            case n ⇒ throw new NCException(s"Unexpected LIMIT links count: $n")
+        }
     }
     
     /**
@@ -151,13 +240,37 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
       * @param sortTok
       * @return
       */
-    override def extractSort(sortTok: NCToken): NCSqlSort = {
+    override def extractSort(sortTok: NCToken): util.List[NCSqlSort] = {
         checkTokenId(sortTok, "nlpcraft:sort")
-        
-        NCSqlSortImpl(
-            getReference(sortTok).getOrElse(throw new NCException(s"Sort not found for: $sortTok")),
-            sortTok.metax("nlpcraft:sort:asc")
-        )
+
+        val tables = getOptionalLinks(variant, sortTok, "subjindexes", "subjnotes").
+            map(link ⇒ findTable(link, "SORT"))
+
+        val cols = getOptionalLinks(variant, sortTok, "byindexes", "bynotes").
+            map(link ⇒ findColumn(link, "SORT BY"))
+
+        val asc = getAsc(sortTok, "nlpcraft:sort:asc", dflt = false)
+
+        require(tables.nonEmpty || cols.nonEmpty)
+
+        def getSorts(cols: Seq[NCSqlColumn]): Seq[NCSqlSort] = cols.map(col ⇒ NCSqlSortImpl(col, asc))
+
+        if (tables.nonEmpty)
+            tables.flatMap(t ⇒ {
+                var colTabs = cols.filter(_.getTable == t.getTable)
+
+                if (colTabs.isEmpty)
+                    colTabs = t.getColumns.asScala.filter(_.isPk)
+
+                if (colTabs.isEmpty)
+                    colTabs = t.getColumns.asScala.take(1)
+
+                require(colTabs.nonEmpty)
+
+                getSorts(colTabs)
+            }).asJava
+        else
+            getSorts(cols).asJava
     }
     
     /**
@@ -197,33 +310,5 @@ class NCSqlExtractorImpl(schema: NCSqlSchema, variant: NCVariant) extends NCSqlE
             new Timestamp(tok.metax("nlpcraft:date:from")),
             new Timestamp(tok.metax("nlpcraft:date:to"))
         )
-    }
-    
-    /**
-      * 
-      * @param variant
-      * @param tok
-      * @return
-      */
-    private def getLinkBySingleIndex(variant: NCVariant, tok: NCToken): NCToken = {
-        val idxs: util.List[Integer] = tok.metax(s"${tok.getId}:indexes")
-        
-        if (idxs.isEmpty)
-            throw new NCException(s"Empty indexes for: $tok")
-
-        val idx = idxs.get(0)
-
-        if (idx < variant.size) {
-            val note: String = tok.metax(s"${tok.getId}:note")
-
-            val link = variant.get(idx)
-
-            if (link.getId != note)
-                throw new NCException(s"Unexpected token with index: $idx, type: $note")
-
-            link
-        }
-        else
-            throw new NCException(s"Token not found with index: $idx")
     }
 }

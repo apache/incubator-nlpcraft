@@ -25,11 +25,12 @@
 
 ### Phone Service Example
 This example simulates voice phone dialing a-la Siri or Google Assistant.
-It doesn't actually do a phone dialing but it recognizes the recipient and returns it back. You
-can easily add access to the a contact database and issue the call via many existing REST services.
+It doesn't actually do a phone dialing, but it recognizes the recipient and returns it back. You
+can easily add access to the contact database and issue the call via many existing REST services.
 
 ### Running
-You can run this example from command line or IDE in a similar way:
+You can run this example from command line or IDE in a similar way.
+Note that you don't need to start Data Probe manually as unit test uses embedded probe and starts it automatically:
  1. Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
@@ -37,11 +38,6 @@ You can run this example from command line or IDE in a similar way:
       * `CONFIG_FORCE_nlpcraft_server_tokenProviders.0=nlpcraft`
       * `CONFIG_FORCE_nlpcraft_server_tokenProviders.1=google`
     * **Program arguments:** `-server`
- 2. Run data probe:
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **VM arguments:** `-Dconfig.override_with_env_vars=true`
-    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.phone.PhoneModel`
-    * **Program arguments:** `-probe`
  2. Run test:
     * **JUnit 5 test:** `org.apache.nlpcraft.examples.phone.PhoneTest`
     * or use NLPCraft [REST APIs](https://nlpcraft.apache.org/using-rest.html) with your favorite REST client

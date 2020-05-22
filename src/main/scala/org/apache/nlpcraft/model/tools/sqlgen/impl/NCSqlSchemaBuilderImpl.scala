@@ -24,6 +24,8 @@ import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.sqlgen._
 
 import scala.collection.JavaConverters._
+import scala.collection.Seq
+import scala.compat.java8.OptionConverters._
 
 /**
   * 
@@ -66,94 +68,108 @@ object NCSqlSchemaBuilderImpl {
                 
                 col
             }).groupBy(_.getTable).map { case (tab, cols) ⇒ tab → cols }
-        
-        val tables =
+
+        val defSorts = collection.mutable.HashMap.empty[NCSqlSort, String]
+
+        var tables =
             elems.filter(_.getGroups.contains("table")).
                 map(p ⇒ {
                     def x(l: util.List[String]): Seq[String] = if (l == null) Seq.empty else l.asScala
-                    
+
                     val tab: String = p.metax("sql:name")
                     val dfltSelect = x(p.metax("sql:defaultselect"))
                     val dfltSort = x(p.metax("sql:defaultsort"))
-                    val extra = x(p.metax("sql:extratables"))
-                    val defDate: String = p.metax("sql:defaultdate")
-                    
+                    val extra = x(p.meta("sql:extratables"))
+                    val defDateOpt: Option[String] = p.metaOpt("sql:defaultdate").asScala
+
                     val cols = tabCols(tab).toSeq.sortBy(p ⇒ (if (p.isPk) 0 else 1, p.getColumn)).asJava
                     
-                    val table: NCSqlTable = NCSqlTableImpl(
-                        tab,
+                    val table: NCSqlTableImpl = NCSqlTableImpl(
+                        table = tab,
                         // TODO: columns should be list, but elements are set. How should we order them?
                         // TODO: Seems elements should be seq too in model.
-                        cols.asScala,
-                        dfltSort.
-                            map(s ⇒ {
-                                def error() = throw new NCException(s"Invalid default sort declaration in: $s")
-                                
-                                var pair = defDate.split("\\.")
-                                
-                                val t =
-                                    pair.length match {
-                                        case 1 ⇒
-                                            pair = s.split("#")
-                                            
-                                            // By default, same table name.
-                                            tab
-                                        case 2 ⇒
-                                            val t = pair.head
-                                            
-                                            pair = pair.last.split("#")
-                                            
-                                            t
-                                        case  _ ⇒ error()
-                                    }
-                                
+                        columns = cols.asScala,
+                        sorts = Seq.empty,
+                        selects = dfltSelect,
+                        extraTables = extra,
+                        defaultDate = defDateOpt match {
+                            case Some(defDate) ⇒
+                                def error() = throw new NCException(s"Invalid default date declaration in: $defDate")
+
+                                val pair = defDate.split("\\.")
+
                                 if (pair.length != 2)
                                     error()
-                                
-                                val col = pair.head
-                                val asc = pair.last.toLowerCase
-                                
-                                if (asc != "asc" && asc != "desc")
-                                    error()
-                                
-                                val sort: NCSqlSort = NCSqlSortImpl(findSchemaColumn(cols, t, col), asc == "asc")
-                                
-                                sort
-                            }),
-                        dfltSelect,
-                        extra,
-                        if (defDate != null) {
-                            def error() = throw new NCException(s"Invalid default date declaration in: $defDate")
-                            
-                            val pair = defDate.split("\\.")
-                            
+
+                                val tab = pair.head
+                                val col = pair.last.toLowerCase
+
+                                Some(tabCols.getOrElse(tab, error()).find(_.getColumn == col).getOrElse(error()))
+                            case None ⇒ None
+                        }
+                    )
+
+                    dfltSort.
+                        foreach(s ⇒ {
+                            def error() = throw new NCException(s"Invalid default sort declaration in: $s")
+
+                            var pair = s.split("\\.")
+
+                            val t =
+                                pair.length match {
+                                    case 1 ⇒
+                                        pair = s.split("#")
+
+                                        // By default, same table name.
+                                        tab
+                                    case 2 ⇒
+                                        val t = pair.head
+
+                                        pair = pair.last.split("#")
+
+                                        t
+                                    case  _ ⇒ error()
+                                }
+
                             if (pair.length != 2)
                                 error()
-                            
-                            val tab = pair.head
-                            val col = pair.last.toLowerCase
-                            
-                            tabCols.
-                                getOrElse(tab, error()).
-                                find(_.getColumn == col).
-                                getOrElse(error())
-                        }
-                        else
-                            null
-                    )
-                    
+
+                            val col = pair.head
+                            val asc = pair.last.toLowerCase
+
+                            if (asc != "asc" && asc != "desc")
+                                error()
+
+                            defSorts += NCSqlSortImpl(findSchemaColumn(cols, t, col), asc == "asc") → t
+                        })
+
                     table
                 }).toSeq
-    
+
+        val defSortsByTab =
+            defSorts.
+                groupBy { case (_, table) ⇒ table }.
+                map { case (table, seq) ⇒ table → seq.map { case (sort, _) ⇒ sort}.toSeq }
+
+        tables = tables.map(t ⇒
+            NCSqlTableImpl(
+                table = t.table,
+                columns = t.columns,
+                sorts = defSortsByTab.getOrElse(t.table, Seq.empty),
+                selects = t.selects,
+                extraTables = t.extraTables,
+                defaultDate = t.defaultDate
+            )
+        )
+
         val joinsMap = mdl.metax("sql:joins").asInstanceOf[util.List[util.Map[String, Object]]]
     
         val joins = joinsMap.asScala.map(_.asScala).map(m ⇒ {
-            def mget[T](prop: String): T = {
+            def mget[T](prop: String): T =
                 m.get(prop) match {
                     case Some(v) ⇒ v.asInstanceOf[T]
                     case None ⇒ throw new NCException(s"Metadata property not found: $prop")
                 }
-            }
             
             val join: NCSqlJoin = NCSqlJoinImpl(
                 mget("fromtable").asInstanceOf[String],

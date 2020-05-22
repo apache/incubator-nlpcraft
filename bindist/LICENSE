@@ -291,5 +291,11 @@
    Maven dependency: com.github.vertical-blank:sql-formatter
    Licensed under MIT license: https://github.com/vertical-blank/sql-formatter/blob/master/LICENSE
 
+   Jgrapht
+   -------------
+   a Java library of graph theory data structures and algorithms https://jgrapht.org/
+
+   Maven dependency: org.jgrapht:jgrapht-core
+   Licensed under EPL 2.0 License: https://github.com/jgrapht/jgrapht/wiki/Users%3A-Relicensing
  
 

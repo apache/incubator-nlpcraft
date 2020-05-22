@@ -41,7 +41,6 @@ import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.dictionary.NCDictionaryEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit.NCLimitEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model.NCModelEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.post.NCPostEnrichProcessor
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
@@ -432,7 +431,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             NCRelationEnricher.start(span)
             NCSuspiciousNounsEnricher.start(span)
             NCValidateManager.start(span)
-            NCPostEnrichProcessor.start(span)
             NCDictionaryEnricher.start(span)
             NCConversationManager.start(span)
             NCProbeEnrichmentManager.start(span)
@@ -452,7 +450,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             NCProbeEnrichmentManager.stop(span)
             NCConversationManager.stop(span)
             NCDictionaryEnricher.stop(span)
-            NCPostEnrichProcessor.stop(span)
             NCValidateManager.stop(span)
             NCSuspiciousNounsEnricher.stop(span)
             NCRelationEnricher.stop(span)

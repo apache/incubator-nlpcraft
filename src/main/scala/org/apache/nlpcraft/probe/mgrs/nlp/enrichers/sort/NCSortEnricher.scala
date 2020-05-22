@@ -61,24 +61,45 @@ object NCSortEnricher extends NCProbeEnricher {
         ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
     }
 
-    private val STEM_AND = NCNlpCoreManager.stem("and")
+    private final val STEM_AND = NCNlpCoreManager.stem("and")
+
+    private final val MASK_WORDS =
+        (SORT ++ BY ++ ORDER.map(_._1)).flatMap(_.split(" ")).map(_.trim).filter(_.nonEmpty).distinct
 
     private final val TOK_ID = "nlpcraft:sort"
+
+    object Type extends Enumeration {
+        type Type = Value
+        val TYPE_SUBJ_BY, TYPE_SUBJ, TYPE_BY = Value
+    }
+
+    import Type._
 
     // Elements: SORT, BY, ORDER, x.
     // Note that SORT, BY, ORDER - are sets of words (not single words)
     // x - means one or multiple words. x must be at least one for each line, maximum two.
-    private final val SEQS =
-        Seq(
-            "x SORT BY x ORDER",
-            "x SORT BY x",
-            "SORT x BY x",
-            "x SORT",
-            "SORT x ORDER BY x",
-            "SORT x",
-            "ORDER SORT x BY x",
-            "ORDER SORT x",
-            "SORT x BY ORDER"
+    private final val MASKS: Map[String, Type] =
+        Map(
+            "x SORT BY x" → TYPE_SUBJ_BY,
+            "x SORT BY x ORDER" → TYPE_SUBJ_BY,
+
+            "SORT x BY x" → TYPE_SUBJ_BY,
+            "SORT x BY x ORDER" → TYPE_SUBJ_BY,
+
+            "SORT x ORDER BY x" → TYPE_SUBJ_BY,
+            "x SORT ORDER BY x" → TYPE_SUBJ_BY,
+
+            "ORDER SORT x BY x" → TYPE_SUBJ_BY,
+
+            "SORT x ORDER" → TYPE_SUBJ,
+            "SORT x BY ORDER" → TYPE_SUBJ,
+            "ORDER SORT x" → TYPE_SUBJ,
+            "SORT x" → TYPE_SUBJ,
+            "x SORT" → TYPE_SUBJ,
+
+            "SORT BY x ORDER" → TYPE_BY,
+            "SORT BY x" → TYPE_BY,
+            "ORDER SORT BY x" → TYPE_BY
         )
 
     case class NoteData(note: String, indexes: Seq[Int]) {
@@ -94,9 +115,7 @@ object NCSortEnricher extends NCProbeEnricher {
         bySeq: Seq[Seq[NoteData]]
     ) {
         require(main.nonEmpty)
-        require(subjSeq.nonEmpty)
-
-        lazy val all: Seq[NCNlpSentenceToken] = main ++ stop
+        require(subjSeq.nonEmpty || bySeq.nonEmpty)
 
         // Added for debug reasons.
         override def toString: String = {
@@ -125,22 +144,40 @@ object NCSortEnricher extends NCProbeEnricher {
         require(SORT.intersect(ORDER.map(_._1)).isEmpty)
         require(BY.intersect(ORDER.map(_._1)).isEmpty)
 
+        // `Sort by` as one element.
+        require(MASKS.filter(_._2 == TYPE_BY).keys.forall(_.contains("SORT BY")))
+
         val ordersSeq: Seq[Seq[String]] = ORDER.map(_._1).map(_.split(" ").toSeq)
 
-        // ORDER doesn't contains words from BY (it can contains words from SORT).
-        require(!BY.exists(p ⇒ ordersSeq.contains(p)))
+        // ORDER doesn't contain words from BY (it can contain words from SORT).
+        require(!BY.exists(ordersSeq.contains))
 
         // Right order of keywords and references.
-        SEQS.map(_.split(" ")).foreach(seq ⇒ {
+        MASKS.keys.map(_.split(" ")).foreach(seq ⇒ {
             require(seq.forall(p ⇒ p == "SORT" || p == "ORDER" || p == "BY" || p == "x"))
 
             seq.groupBy(p ⇒ p).foreach { case (key, group) ⇒
+                val n = group.length
+
                 key match {
-                    case "x" ⇒ require(group.length <= 2)
-                    case _ ⇒ require(group.length == 1)
+                    case "x" ⇒ require(n == 1 || n == 2)
+                    case _ ⇒ require(n == 1)
                 }
             }
         })
+    }
+
+    private def toNoteData(toks: Seq[NCNlpSentenceToken]): Seq[NoteData] = {
+        require(toks.nonEmpty)
+
+        val min = toks.head.index
+        val max = toks.last.index
+
+        toks.flatten.
+            filter(!_.isNlp).
+            filter(n ⇒ n.tokenIndexes.head >= min && n.tokenIndexes.last <= max).
+            map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
+            sortBy(_.indexes.head).distinct
     }
 
     /**
@@ -148,16 +185,11 @@ object NCSortEnricher extends NCProbeEnricher {
       * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
       * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
       *
-      * @param toks
+      * @param toksNoteData
       */
-    private def split(toks: Seq[NCNlpSentenceToken], nullable: Boolean): Seq[Seq[NoteData]] = {
-        val all =
-            toks.flatten.
-                filter(!_.isNlp).map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
-                sortBy(_.indexes.head).distinct
-
+    private def split(toks: Seq[NCNlpSentenceToken], toksNoteData: Seq[NoteData], nullable: Boolean): Seq[Seq[NoteData]] = {
         val res =
-            if (all.nonEmpty) {
+            if (toksNoteData.nonEmpty) {
                 val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
 
                 /**
@@ -172,23 +204,23 @@ object NCSortEnricher extends NCProbeEnricher {
                     between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
                 }
 
-                val min = toks.dropWhile(_.isNlp).head.index
-                val max = toks.reverse.dropWhile(_.isNlp).head.index
+                val minIdx = toks.dropWhile(t ⇒ !isUserNotValue(t)).head.index
+                val maxIdx = toks.reverse.dropWhile(t ⇒ !isUserNotValue(t)).head.index
 
-                require(min <= max)
+                require(minIdx <= maxIdx)
 
                 def fill(nd: NoteData, seq: mutable.ArrayBuffer[NoteData] = mutable.ArrayBuffer.empty[NoteData]): Unit = {
                     seq += nd
 
-                    all.
+                    toksNoteData.
                         filter(p ⇒ nd.indexes.last < p.indexes.head && contiguous(nd.indexes.last, p.indexes.head)).
                         foreach(fill(_, mutable.ArrayBuffer.empty[NoteData] ++ seq.clone()))
 
-                    if (seq.nonEmpty && seq.head.indexes.head == min && seq.last.indexes.last == max)
+                    if (seq.nonEmpty && seq.head.indexes.head == minIdx && seq.last.indexes.last == maxIdx)
                         res += seq
                 }
 
-                all.filter(_.indexes.head == min).foreach(p ⇒ fill(p))
+                toksNoteData.filter(_.indexes.head == minIdx).foreach(p ⇒ fill(p))
 
                 res
             }
@@ -196,10 +228,11 @@ object NCSortEnricher extends NCProbeEnricher {
                 Seq.empty
 
         if (res.isEmpty && !nullable)
-            throw new AssertionError(s"Invalid null result " +
-                s"[tokens=[${toks.map(_.origText).mkString(", ")}]" +
-                s", tokensIndexes=[${toks.map(_.index).mkString(", ")}]" +
-                s", allData=[${all.mkString(", ")}]" +
+            throw new AssertionError(s"Invalid empty result " +
+                s"[tokensTexts=[${toks.map(_.origText).mkString("|")}]" +
+                s", notes=[${toks.flatten.map(n ⇒ s"${n.noteType}:[${n.tokenIndexes.mkString(",")}]").mkString("|")}]" +
+                s", tokensIndexes=[${toks.map(_.index).mkString("|")}]" +
+                s", allData=[${toksNoteData.mkString("|")}]" +
                 s"]"
             )
 
@@ -208,119 +241,203 @@ object NCSortEnricher extends NCProbeEnricher {
 
     /**
       *
+      * @param t
+      */
+    private def isUserNotValue(t: NCNlpSentenceToken): Boolean =
+        t.find(_.isUser) match {
+            case Some(n) ⇒ !n.contains("value")
+            case None ⇒ false
+        }
+
+    /**
+      *
+      * @param n
+      */
+    private def isUserNotValue(n: NCNlpSentenceNote): Boolean = n.isUser && !n.contains("value")
+
+    /**
+      *
       * @param toks
       */
     private def tryToMatch(toks: Seq[NCNlpSentenceToken]): Option[Match] = {
+        require(toks.nonEmpty)
+
         case class KeyWord(tokens: Seq[NCNlpSentenceToken], synonymIndex: Int) {
             require(tokens.nonEmpty)
-
-            // Added for debug reasons.
-            override def toString = s"${tokens.map(_.origText).mkString(" ")} [${tokens.map(_.index).mkString(",")}]"
         }
 
-        def get0(keyStems: Seq[String], toks: Seq[NCNlpSentenceToken]): Option[KeyWord] =
-            if (toks.nonEmpty) {
-                require(keyStems.nonEmpty)
+        def extract(keyStems: Seq[String], used: Seq[NCNlpSentenceToken]): Option[KeyWord] = {
+            require(keyStems.nonEmpty)
 
-                val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
+            val maxWords = keyStems.map(_.count(_ == ' ')).max + 1
 
-                (1 to maxWords).reverse.flatMap(i ⇒
-                    toks.sliding(i).
-                        map(toks ⇒ toks.map(_.stem).mkString(" ") → toks).toMap.
-                        flatMap { case (stem, stemToks) ⇒
-                            if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
-                        }.toStream.headOption
-                ).toStream.headOption
-            }
-            else
-                None
+            (1 to maxWords).reverse.flatMap(i ⇒
+                toks.sliding(i).filter(toks ⇒ used.intersect(toks).isEmpty).
+                    map(toks ⇒ toks.map(_.stem).mkString(" ") → toks).toMap.
+                    flatMap { case (stem, stemToks) ⇒
+                        if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
+                    }.toStream.headOption
+            ).toStream.headOption
+        }
 
-        case class KeyWordsHolder(sort: KeyWord, by: Option[KeyWord], order: Option[KeyWord]) {
-            lazy val byTokens = by.toSeq.flatMap(_.tokens)
-            lazy val orderTokens = order.toSeq.flatMap(_.tokens)
-            lazy val all = sort.tokens ++ byTokens ++ orderTokens
+        var res: Option[Match] = None
 
-            def getKeyWordType(t: NCNlpSentenceToken): Option[String] =
-                if (sort.tokens.contains(t))
-                    Some("SORT")
-                else if (byTokens.contains(t))
-                    Some("BY")
-                else if (orderTokens.contains(t))
-                    Some("ORDER")
+        // Order is important.
+        // SORT and ORDER don't have same words (validated)
+        val orderOpt = extract(ORDER.map(_._1), used = Seq.empty)
+        val byOpt = extract(BY, used = orderOpt.toSeq.flatMap(_.tokens))
+        val sortOpt = extract(SORT, used = orderOpt.toSeq.flatMap(_.tokens) ++ byOpt.toSeq.flatMap(_.tokens))
+
+        if (sortOpt.nonEmpty || orderOpt.nonEmpty) {
+            val sortToks = sortOpt.toSeq.flatMap(_.tokens)
+            val byToks = byOpt.toSeq.flatMap(_.tokens)
+            val orderToks = orderOpt.toSeq.flatMap(_.tokens)
+
+            val all = sortToks ++ byToks ++ orderToks
+
+            def getKeyWordType(t: NCNlpSentenceToken): String =
+                if (sortToks.contains(t))
+                    "SORT"
+                else if (byToks.contains(t))
+                    "BY"
+                else if (orderToks.contains(t))
+                    "ORDER"
+                else if (isUserNotValue(t))
+                    "x"
                 else
-                    None
+                    "-"
 
-            // Added for debug reasons.
-            override def toString = s"Sort: [$sort], by: [${by.toSeq.mkString(",")}], order: [${order.toSeq.mkString(",")}]"
-        }
+            val others = toks.filter(t ⇒ !all.contains(t))
 
-        val hOpt: Option[KeyWordsHolder] =
-            get0(SORT, toks) match {
-                case Some(sort) ⇒
-                    val orderOpt = get0(ORDER.map(_._1), toks)
+            if (others.nonEmpty) {
+                val i1 = others.head.index
+                val i2 = others.last.index
 
-                    def mkHolder(sort: KeyWord): Option[KeyWordsHolder] = Some(KeyWordsHolder(sort, get0(BY, toks), orderOpt))
+                val othersRefs = others.filter(
+                    t ⇒ t.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2)
+                )
 
-                    orderOpt match {
-                        case Some(order) ⇒
-                            // ORDER and SORT can contains same words (See validation method.)
-                            if (order.tokens.intersect(sort.tokens).isEmpty)
-                                mkHolder(sort)
-                            else {
-                                get0(SORT, toks.filter(t ⇒ !order.tokens.contains(t))) match {
-                                    case Some(newSort) ⇒ mkHolder(newSort)
-                                    case None ⇒ None
+                if (
+                    othersRefs.nonEmpty &&
+                    others.filter(p ⇒ !othersRefs.contains(p)).
+                        forall(p ⇒ (p.isStopWord || p.stem == STEM_AND) && !MASK_WORDS.contains(p.stem))
+                ) {
+                    // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
+                    val mask = toks.map(getKeyWordType).
+                        foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
+
+                    MASKS.get(mask) match {
+                        case Some(typ) ⇒
+                            val sepIdxs = all.
+                                map(_.index).
+                                filter(i ⇒ others.exists(_.index > i) && others.exists(_.index < i)).
+                                sorted
+
+                            // Divides separated by keywords.
+                            val (part1, part2) =
+                                if (sepIdxs.isEmpty)
+                                    (others, Seq.empty)
+                                else
+                                    (others.filter(_.index < sepIdxs.head), others.filter(_.index > sepIdxs.last))
+
+                            require(part1.nonEmpty)
+
+                            val data1 = toNoteData(part1)
+                            val data2 = if (part2.isEmpty) Seq.empty else toNoteData(part2)
+
+                            if (data1.nonEmpty || data2.nonEmpty) {
+                                val seq1 =
+                                    if (data1.nonEmpty)
+                                        split(part1, data1, nullable = false)
+                                    else
+                                        split(part2, data2, nullable = false)
+                                val seq2 =
+                                    if (data1.nonEmpty && data2.nonEmpty)
+                                        split(part2, data2, nullable = true)
+                                    else
+                                        Seq.empty
+                                val asc = orderOpt.flatMap(order ⇒ Some(ORDER(order.synonymIndex)._2))
+
+                                typ match {
+                                    case TYPE_SUBJ ⇒
+                                        require(seq1.nonEmpty)
+                                        require(seq2.isEmpty)
+                                        require(sortToks.nonEmpty)
+
+                                        // Ignores invalid cases.
+                                        if (byToks.isEmpty)
+                                            res =
+                                                Some(
+                                                    Match(
+                                                        asc = asc,
+                                                        main = sortToks,
+                                                        stop = orderToks,
+                                                        subjSeq = seq1,
+                                                        bySeq = Seq.empty
+                                                    )
+                                                )
+
+                                    case TYPE_SUBJ_BY ⇒
+                                        require(seq1.nonEmpty)
+                                        require(seq2.nonEmpty)
+                                        require(sortToks.nonEmpty)
+                                        require(byToks.nonEmpty)
+
+                                        res = Some(
+                                            Match(
+                                                asc = asc,
+                                                main = sortToks,
+                                                stop = byToks ++ orderToks,
+                                                subjSeq = seq1,
+                                                bySeq = seq2
+                                            )
+                                        )
+
+                                    case TYPE_BY ⇒
+                                        require(seq1.nonEmpty)
+                                        require(seq2.isEmpty)
+                                        require(sortToks.nonEmpty)
+                                        require(byToks.nonEmpty)
+
+                                        // `Sort by` as one element, see validation.
+                                        res = Some(
+                                            Match(
+                                                asc = asc,
+                                                main = sortToks ++ byToks,
+                                                stop = orderToks,
+                                                subjSeq = Seq.empty,
+                                                bySeq = seq1
+                                            )
+                                        )
+
+                                    case _ ⇒ throw new AssertionError(s"Unexpected type: $typ")
                                 }
                             }
-                        case None ⇒ mkHolder(sort)
+                        case None ⇒ // No-op.
                     }
-                case None ⇒ None
-            }
-
-        hOpt match {
-            case Some(h) ⇒
-                val others = toks.filter(t ⇒ !h.all.contains(t))
-
-                if (others.nonEmpty) {
-                    val othersRefs = others.filter(_.exists(_.isUser))
-
-                    if (
-                        othersRefs.nonEmpty &&
-                        others.filter(p ⇒ !othersRefs.contains(p)).forall(p ⇒ p.isStopWord || p.stem == STEM_AND) &&
-                        SEQS.contains(
-                            // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
-                            toks.map(t ⇒
-                                h.getKeyWordType(t).getOrElse("x")).
-                                foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
-                        )
-                    ) {
-                        val sepIdxs = h.all.
-                            map(_.index).
-                            filter(i ⇒ others.exists(_.index > i) && others.exists(_.index < i)).
-                            sorted
-
-                        // Devides separated by keywords.
-                        val (subj, by) =
-                            if (sepIdxs.isEmpty)
-                                (others, Seq.empty)
-                            else
-                                (others.filter(_.index < sepIdxs.head), others.filter(_.index > sepIdxs.last))
-
-                        require(subj.nonEmpty)
-
-                        val subjSeq = split(subj, nullable = false)
-                        val bySeq = split(by, nullable = true)
-                        val asc = h.order.flatMap(order ⇒ Some(ORDER(order.synonymIndex)._2))
-
-                        Some(Match(asc, main = h.sort.tokens, stop = h.byTokens ++ h.orderTokens, subjSeq, bySeq))
-                    }
-                    else
-                        None
                 }
-                else
-                    None
-            case None ⇒ None
+            }
         }
+
+        res
+    }
+
+    /**
+      * Checks whether important tokens deleted as stopwords or not.
+      *
+      * @param ns Sentence.
+      * @param toks Tokens in which some stopwords can be deleted.
+      */
+    private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
+        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || MASK_WORDS.contains(t.stem)
+
+        val idxs = toks.map(_.index)
+
+        require(idxs == idxs.sorted)
+
+        val toks2 = ns.slice(idxs.head, idxs.last + 1)
+
+        toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
     }
 
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
@@ -328,51 +445,64 @@ object NCSortEnricher extends NCProbeEnricher {
             "srvReqId" → ns.srvReqId,
             "modelId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
+            val notes = mutable.HashSet.empty[NCNlpSentenceNote]
 
-            for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(buf, toks))
+            for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks)) {
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        //for (subj ← m.subjSeq if !hasReferences(TOK_ID, "subjnotes", subj.map(_.note), m.main)) {
-                        for (subj ← m.subjSeq) {
-                            def addNotes(
-                                params: ArrayBuffer[(String, Any)],
-                                seq: Seq[NoteData],
-                                notesName: String,
-                                idxsName: String
-                            ): ArrayBuffer[(String, Any)] = {
-                                params += notesName → seq.map(_.note).asJava
-                                params += idxsName → seq.map(_.indexes.asJava).asJava
+                        def addNotes(
+                            params: ArrayBuffer[(String, Any)],
+                            seq: Seq[NoteData],
+                            notesName: String,
+                            idxsName: String
+                        ): ArrayBuffer[(String, Any)] = {
+                            params += notesName → seq.map(_.note).asJava
+                            params += idxsName → seq.map(_.indexes.asJava).asJava
 
-                                params
-                            }
+                            params
+                        }
 
-                            def mkParams(): ArrayBuffer[(String, Any)] = {
-                                val params = mutable.ArrayBuffer.empty[(String, Any)]
+                        def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
+                            val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
-                                if (m.asc.isDefined)
-                                    params += "asc" → m.asc.get
-
-                                addNotes(params, subj, "subjnotes", "subjindexes")
-                            }
-
-                            def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
-                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
+                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
+                                notes += note
 
                                 m.main.foreach(_.add(note))
                                 m.stop.foreach(_.addStopReason(note))
-
-                                buf += toks.toSet
                             }
-
-                            if (m.bySeq.nonEmpty)
-                                for (by ← m.bySeq)
-                                    mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
-                            else
-                                mkNote(mkParams())
                         }
+
+                        def mkParams(): mutable.ArrayBuffer[(String, Any)] = {
+                            val params = mutable.ArrayBuffer.empty[(String, Any)]
+
+                            if (m.asc.isDefined)
+                                params += "asc" → m.asc.get
+
+                            params
+                        }
+
+                        if (m.subjSeq.nonEmpty)
+                            for (subj ← m.subjSeq) {
+                                def addSubj(): ArrayBuffer[(String, Any)] =
+                                    addNotes(mkParams(), subj, "subjnotes", "subjindexes")
+
+                                if (m.bySeq.nonEmpty)
+                                    for (by ← m.bySeq)
+                                        mkNote(addNotes(addSubj(), by, "bynotes", "byindexes"))
+                                else
+                                    mkNote(addSubj())
+                            }
+                        else {
+                            require(m.bySeq.nonEmpty)
+
+                            for (by ← m.bySeq)
+                                mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
+                        }
+
                     case None ⇒ // No-op.
                 }
+            }
         }
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
