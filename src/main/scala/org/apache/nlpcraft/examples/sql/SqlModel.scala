@@ -386,11 +386,11 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     /**
-      * Custom callback implementation.
+      * Custom callback implementation. See `NCModel.onMatchedIntent` method documentation for more details.
       * <p>
-      * It is developed to clear conversation context. In this implementation the conversation context is always
+      * This callback allows to clear conversation context. In this implementation the conversation context is always
       * cleared between user questions, except for the obvious clarifying questions. We assume that question is being
-      * clarified if its tokens satisfy one of criteria
+      * clarified if its tokens satisfy one of criteria:
       *  - all these tokens are values (What about 'Exotic Liquids')
       *  - all these tokens are columns (Give me 'last name')
       *  - new token is single date token (What about 'tomorrow')
@@ -402,7 +402,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         val toks = m.getVariant.getMatchedTokens.asScala
         val intentConvToks = m.getIntentTokens.asScala.flatMap(_.asScala) -- toks
 
-        // Variant doesn't use conversation tokens.
+        // Variant doesn't use tokens from the conversation context (STM).
         if (intentConvToks.isEmpty)
             true
         else {
