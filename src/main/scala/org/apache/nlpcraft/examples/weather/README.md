@@ -29,14 +29,19 @@ intent matching logic. It uses https://www.apixu.com REST service for the actual
 weather information.
 
 ### Running
-You can run this example from command line or IDE in a similar way.
-Note that you don't need to start Data Probe manually as unit test uses embedded probe and starts it automatically:
- 1. Run REST server:
+You can run necessary JVMs for this example similarly from command line or IDE.
+NOTE: that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
+embedded probe and starts it automatically:
+ *  Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **Program arguments:** `-server`
- 2. Run test:
+ * To run unit test with embedded probe:
     * **JUnit 5 test:** `org.apache.nlpcraft.examples.weather.WeatherTest`
-    * or use NLPCraft [REST APIs](https://nlpcraft.apache.org/using-rest.html) with your favorite REST client
+ * To run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
+    * **Main class:** `org.apache.nlpcraft.NCStart`
+    * **VM arguments:** `-Dconfig.override_with_env_vars=true`
+    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.weather.WeatherModel`
+    * **Program arguments:** `-probe`
 
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
