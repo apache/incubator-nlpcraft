@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.nlpcraft.model.tools.synonyms
+
+package org.apache.nlpcraft.model.tools.suggestions
 
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CopyOnWriteArrayList, CountDownLatch, TimeUnit}
@@ -31,27 +32,22 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.NCModelFileAdapter
 
 import scala.collection.JavaConverters._
 import scala.collection._
 
-case class NCSynonymsGeneratorData(
-      url: String = "http://localhost:5000/synonyms",
-      modelPath: String,
-      responseLimit: Int = 10, // TODO: add scoreLimit
-      minScore: Double = 0,
-      supportedSynonymsWords: Int = 1,
-      debugRequests: Boolean = false
-) {
-    require(url != null, "URL cannot be null")
-    require(modelPath != null, "Model path cannot be null")
-    require(responseLimit > 0, "Response limit value must be positive")
-    require(minScore >= 0, "Minimal score value cannot be negative")
-    require(supportedSynonymsWords > 0, "Supported synonyms words count value must be positive")
-}
+case class ParametersHolder(
+    modelPath: String,
+    url: String,
+    limit: Int,
+    minScore: Double,
+    synonymsWords: Int,
+    debug: Boolean
+)
 
-object NCSynonymsGenerator {
+object NCSuggestionsGeneratorImpl {
     /**
       * Suggestion data holder.
       *
@@ -65,6 +61,7 @@ object NCSynonymsGenerator {
     case class Suggestion(
         word: String, bert: Double, normalized: Double, ftext: Double, `ftext-sentence`: Double, score: Double
     )
+
     case class RequestData(sentence: String, example: String, elementId: String, lower: Int, upper: Int, limit: Int)
     case class RestRequest(sentence: String, simple: Boolean, lower: Int, upper: Int, limit: Int)
     case class RestResponse(data: java.util.ArrayList[Suggestion])
@@ -97,6 +94,7 @@ object NCSynonymsGenerator {
     private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
+
     private def getAllSlices(seq1: Seq[String], seq2: Seq[String]): Seq[Int] = {
         val seq = mutable.Buffer.empty[Int]
 
@@ -111,7 +109,7 @@ object NCSynonymsGenerator {
         seq
     }
 
-    def process(data: NCSynonymsGeneratorData): Unit = {
+    def process(data: ParametersHolder): Unit = {
         val mdl = new NCModelFileAdapter(data.modelPath) {}
 
         val parser = new NCMacroParser()
@@ -126,8 +124,8 @@ object NCSynonymsGenerator {
             require(
                 word.forall(ch ⇒
                     ch.isLetterOrDigit ||
-                    ch == '\'' ||
-                    SEPARATORS.contains(ch)
+                        ch == '\'' ||
+                        SEPARATORS.contains(ch)
                 ),
                 s"Unsupported symbols: $word"
             )
@@ -145,12 +143,12 @@ object NCSynonymsGenerator {
 
         val elemSyns =
             mdl.getElements.asScala.map(e ⇒ e.getId → e.getSynonyms.asScala.flatMap(parser.expand)).
-                map { case (id, seq) ⇒ id → seq.map(txt ⇒ split(txt).map(p ⇒ Word(p, toStemWord(p))))}.toMap
+                map { case (id, seq) ⇒ id → seq.map(txt ⇒ split(txt).map(p ⇒ Word(p, toStemWord(p)))) }.toMap
 
         val allReqs =
             elemSyns.map {
                 case (elemId, syns) ⇒
-                    val normSyns: Seq[Seq[Word]] = syns.filter(_.size <= data.supportedSynonymsWords)
+                    val normSyns: Seq[Seq[Word]] = syns.filter(_.size <= data.synonymsWords)
                     val synsStems = normSyns.map(_.map(_.stem))
                     val synsWords = normSyns.map(_.map(_.word))
 
@@ -175,13 +173,13 @@ object NCSynonymsGenerator {
                                     elementId = elemId,
                                     lower = idx,
                                     upper = idx + synStems.length - 1,
-                                    limit = data.responseLimit
+                                    limit = data.limit
                                 )
                             }
 
-                        (for (idx ← exampleIdxs; (synStems, i) ← synsStems.zipWithIndex) yield mkRequestData(idx, synStems, i)).
-                            distinct
-                    }
+                            (for (idx ← exampleIdxs; (synStems, i) ← synsStems.zipWithIndex) yield mkRequestData(idx, synStems, i)).
+                                distinct
+                        }
 
                     elemId → reqs.toSet
             }.filter(_._2.nonEmpty)
@@ -190,7 +188,7 @@ object NCSynonymsGenerator {
         println(s"Synonyms count: ${elemSyns.map(_._2.size).sum}")
         println(s"Request prepared: ${allReqs.map(_._2.size).sum}")
 
-        val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, java.util.List[Suggestion]] ()
+        val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, java.util.List[Suggestion]]()
         val cdl = new CountDownLatch(allReqs.map { case (_, seq) ⇒ seq.size }.sum)
         val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
         val cnt = new AtomicInteger(0)
@@ -222,7 +220,7 @@ object NCSynonymsGenerator {
                         finally
                             post.releaseConnection()
 
-                    if (data.debugRequests)
+                    if (data.debug)
                         debugs += req → resp
 
                     val i = cnt.incrementAndGet()
@@ -285,11 +283,11 @@ object NCSynonymsGenerator {
                     }.
                     toSeq
 
-                val normFactor = seq.map(_._2).sum.toDouble / seq.size  / avgScores(elemId)
+                val normFactor = seq.map(_._2).sum.toDouble / seq.size / avgScores(elemId)
 
                 seq.
                     map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * normFactor * cnt.toDouble / counts(elemId)) }.
-                    sortBy { case (_, _, cumFactor) ⇒  -cumFactor }.
+                    sortBy { case (_, _, cumFactor) ⇒ -cumFactor }.
                     zipWithIndex.
                     foreach { case ((sugg, cnt, cumFactor), sugIdx) ⇒
                         def f(d: Double): String = "%1.3f" format d
@@ -308,7 +306,7 @@ object NCSynonymsGenerator {
                     }
             }
 
-        if (data.debugRequests) {
+        if (data.debug) {
             var i = 1
 
             debugs.groupBy(_._1.example).foreach { case (_, m) ⇒
@@ -341,15 +339,173 @@ object NCSynonymsGenerator {
     }
 }
 
-object NCSynonymsGeneratorRunner extends App {
-    NCSynonymsGenerator.process(
-        NCSynonymsGeneratorData(
-            url = "http://localhost:5000/synonyms",
-            modelPath = "src/main/scala/org/apache/nlpcraft/examples/weather/weather_model.json",
-            minScore = 0,
-            responseLimit = 10,
-            supportedSynonymsWords = 1,
-            debugRequests = true
+object NCSuggestionsGenerator extends App {
+    private lazy val DFLT_URL: String = "http://localhost:5000/synonyms"
+    private lazy val DFLT_LIMIT: Int = 10 // TODO: add scoreLimit
+    private lazy val DFLT_MIN_SCORE: Double = 0
+    private lazy val DFLT_SYNONYMNS_WORDS: Int = 1
+    private lazy val DFLT_DEBUG: Boolean = false
+
+    /**
+      *
+      * @param msg Optional error message.
+      */
+    private def errorExit(msg: String = null): Unit = {
+        if (msg != null)
+            System.err.println(
+                s"""
+                   |ERROR:
+                   |    $msg""".stripMargin
+            )
+
+        if (msg == null)
+            System.err.println(
+                s"""
+                   |NAME:
+                   |    NCSuggestionsGenerator -- NLPCraft synonyms suggestions generator for given model.
+                   |
+                   |SYNOPSIS:
+                   |    java -cp apache-nlpcraft-incubating-${NCVersion.getCurrent}-all-deps.jar org.apache.nlpcraft.model.tools.suggestions.NCSuggestionsGenerator [PARAMETERS]
+                   |
+                   |DESCRIPTION:
+                   |    This utility generates synonyms suggestions for given NLPCraft model.
+                   |    Note that Python NLP server should be started and accessible parameter URL.
+                   |
+                   |    This Java class can be run from the command line or from an IDE like any other
+                   |    Java application.""".stripMargin
+            )
+
+        System.err.println(
+            s"""
+               |PARAMETERS:
+               |    [--model|-m] model path
+               |        Mandatory file model path.
+               |        It should have one of the following extensions: .js, .json, .yml, or .yaml
+               |
+               |    [--url|-u] url
+               |        Optional Python NLP server URL.
+               |        Default is $DFLT_URL.
+               |
+               |    [--limit|-l] limit
+               |        Optional maximum suggestions per synonyms count value.
+               |        Default is $DFLT_LIMIT.
+               |
+               |    [--score|-c] score
+               |        Optional minimal suggestion score value.
+               |        Default is $DFLT_MIN_SCORE.
+               |
+               |    [--syns|-s] synonyms count
+               |        Optional words count which defined which synonyms words count supported.
+               |        Default is $DFLT_SYNONYMNS_WORDS.
+               |
+               |    [--debug|-d] [true|false]
+               |        Optional flag on whether or not to debug output.
+               |        Default is $DFLT_DEBUG.
+               |
+               |    [--help|-h|-?]
+               |        Prints this usage information.
+               |
+               |EXAMPLES:
+               |    java -cp apache-nlpcraft-incubating-${NCVersion.getCurrent}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
+               |        -m src/main/scala/org/apache/nlpcraft/examples/weather/weather_model.json
+               |        -u $DFLT_URL
+            """.stripMargin
         )
-    )
+
+        System.exit(1)
+    }
+
+    /**
+      *
+      * @param v
+      * @param name
+      */
+    private def mandatoryParam(v: String, name: String): Unit =
+        if (v == null)
+            throw new IllegalArgumentException(s"Parameter is mandatory and must be set: $name")
+
+    /**
+      *
+      * @param v
+      * @param name
+      * @return
+      */
+    private def parseNum[T](v: String, name: String, extract: String ⇒ T, fromIncl: T, toIncl: T)(implicit e: T ⇒ Number): T = {
+        val t =
+            try
+                extract(v.toLowerCase)
+            catch {
+                case _: NumberFormatException ⇒ throw new IllegalArgumentException(s"Invalid numeric: $name")
+            }
+
+        val td = t.doubleValue()
+
+        if (td < fromIncl.doubleValue() || td > toIncl.doubleValue())
+            throw new IllegalArgumentException(s"Invalid `$name` range. Must be between: $fromIncl and $toIncl")
+
+        t
+    }
+
+    /**
+      *
+      * @param v
+      * @param name
+      * @return
+      */
+    private def parseBoolean(v: String, name: String): Boolean =
+        v.toLowerCase match {
+            case "true" ⇒ true
+            case "false" ⇒ false
+
+            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value in: $name $v")
+        }
+
+    /**
+      *
+      * @param cmdArgs
+      * @return
+      */
+    private def parseCmdParameters(cmdArgs: Array[String]): ParametersHolder = {
+        if (cmdArgs.isEmpty || !cmdArgs.intersect(Seq("--help", "-h", "-help", "--?", "-?", "/?", "/help")).isEmpty)
+            errorExit()
+
+        var mdlPath: String = null
+
+        var url = DFLT_URL
+        var limit = DFLT_LIMIT
+        var minScore = DFLT_MIN_SCORE
+        var synsWords = DFLT_SYNONYMNS_WORDS
+        var debug = DFLT_DEBUG
+
+        var i = 0
+
+        try {
+            while (i < cmdArgs.length - 1) {
+                val k = cmdArgs(i).toLowerCase
+                val v = cmdArgs(i + 1)
+
+                k match {
+                    case "--model" | "-m" ⇒ mdlPath = v
+                    case "--url" | "-u" ⇒ url = v
+                    case "--limit" | "-l" ⇒ limit = parseNum(v, k, (s: String) ⇒ s.toInt, 1, Integer.MAX_VALUE)
+                    case "--score" | "-c" ⇒ minScore = parseNum(v, k, (s: String) ⇒ s.toDouble, 0, Integer.MAX_VALUE)
+                    case "--syns" | "-s" ⇒ synsWords = parseNum(v, k, (s: String) ⇒ s.toInt, 1, Integer.MAX_VALUE)
+                    case "--debug" | "-d" ⇒ debug = parseBoolean(v, k)
+
+                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: ${cmdArgs(i)}")
+                }
+
+                i = i + 2
+            }
+
+            mandatoryParam(mdlPath, "--model")
+        }
+        catch {
+            case e: Exception ⇒ errorExit(e.getMessage)
+        }
+
+        ParametersHolder(mdlPath, url, limit, minScore, synsWords, debug)
+    }
+
+    NCSuggestionsGeneratorImpl.process(parseCmdParameters(args))
 }
