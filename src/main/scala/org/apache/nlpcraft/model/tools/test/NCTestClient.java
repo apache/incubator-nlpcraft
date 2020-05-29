@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.tools.test;
 import java.io.IOException;
 
 /**
- * Model testing client. This client can be used for convienient unit testing of the models together
+ * Model testing client. This client can be used for convenient unit testing of the models together
  * with any popular unit testing framework such as <a href="http://www.testng.org">TestNG</a> or
  * <a href="https://junit.org">JUnit</a>. The instance of test client should be obtained
  * via {@link NCTestClientBuilder}.

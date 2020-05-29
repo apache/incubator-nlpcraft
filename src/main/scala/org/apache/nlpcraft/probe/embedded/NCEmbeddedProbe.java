@@ -62,7 +62,7 @@ import java.util.function.*;
  *     <li>
  *         Even though the caller can register local-JVM listener for the query results, these results
  *         will still be asynchronously delivered to the REST server in the usual manner so that other clients
- *         could fetch these results and to maintain internal logging, tracing and metrics. If the client
+ *         could fetch these results to maintain internal logging, tracing and metrics. If the client
  *         application hosting data model and its probe <i>is the only client</i> for that model it needs to cancel the
  *         request on the REST server after receiving a local-JVM callback to release associated
  *         resources on the REST server.

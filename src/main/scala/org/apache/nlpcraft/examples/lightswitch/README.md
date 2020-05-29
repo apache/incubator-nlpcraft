@@ -30,14 +30,19 @@ You can easily modify intent callbacks to perform the actual light switching usi
 controllers.
 
 ### Running
-You can run this example from command line or IDE in a similar way.
-Note that you don't need to start Data Probe manually as unit test uses embedded probe and starts it automatically:
- 1. Run REST server:
+You can run necessary JVMs for this example similarly from command line or IDE.
+NOTE: that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
+embedded probe and starts it automatically:
+ *  Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **Program arguments:** `-server`
- 2. Run test:
+ * To run unit test with embedded probe:
     * **JUnit 5 test:** `org.apache.nlpcraft.examples.lightswitch.LightSwitchTest`
-    * or use NLPCraft [REST APIs](https://nlpcraft.apache.org/using-rest.html) with your favorite REST client
+ * To run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
+    * **Main class:** `org.apache.nlpcraft.NCStart`
+    * **VM arguments:** `-Dconfig.override_with_env_vars=true`
+    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.lightswitch.LightSwitchModel`
+    * **Program arguments:** `-probe`
 
 ### Blog
 Read the [blog post](https://nlpcraft.apache.org/blogs/lightswitch_with_natural_language_interface.html) explaining this example in greater details. 

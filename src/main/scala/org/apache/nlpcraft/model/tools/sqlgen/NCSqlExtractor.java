@@ -28,7 +28,7 @@ import java.util.List;
  * <p>
  * Note that {@link NCSqlExtractorBuilder} builder requires {@link NCSqlSchema} and {@link NCVariant}
  * objects when creating an instance of SQL extractor. Methods in this interface will search
- * these parsing variant and schema to find necessary referenced tokens.
+ * the parsing variant and schema to find necessary referenced tokens.
  * <p>
  * Note also that wherever necessary the implementation will scan part (constituent) tokens as well
  * (see {@link NCToken#findPartTokens(String...)} for more information).

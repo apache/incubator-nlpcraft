@@ -30,6 +30,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
+import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.impl.json.{NCElementJson, NCMacroJson, NCModelJson}
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType
 import resource.managed
@@ -85,7 +86,7 @@ object NCSqlModelGeneratorImpl {
             else
                 s"{${substituteMacros(elmNameLc)}|${substituteMacros(removeSeqDups(nameWs))}}"
     }
-
+    
     case class ParametersHolder(
         var cmdLine: String = null,
         var url: String = null,
@@ -117,6 +118,8 @@ object NCSqlModelGeneratorImpl {
             lc.endsWith(".js") || lc.endsWith(".json")
         }
     }
+    
+    final private val ver = NCVersion.getCurrent
     
     /**
      *
@@ -602,7 +605,7 @@ object NCSqlModelGeneratorImpl {
                    |    NCSqlModelGenerator -- NLPCraft model generator for SQL databases.
                    |
                    |SYNOPSIS:
-                   |    java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
+                   |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
                    |
                    |DESCRIPTION:
                    |    This utility generates NLPCraft model stub for a given SQL database schema. You
@@ -706,7 +709,7 @@ object NCSqlModelGeneratorImpl {
                |                             do not start with '_'.
                |
                |EXAMPLES:
-               |    java -cp apache-nlpcraft-x.x.x-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
+               |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
                |        -r jdbc:postgresql://localhost:5432/mydb
                |        -d org.postgresql.Driver
                |        -f "tbl_, col_"

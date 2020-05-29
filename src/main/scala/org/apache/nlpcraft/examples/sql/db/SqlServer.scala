@@ -18,9 +18,11 @@
 package org.apache.nlpcraft.examples.sql.db
 
 import java.io.File
+import java.nio.file.Paths
 import java.sql.SQLException
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.commons.io.FilenameUtils
 import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 
@@ -29,13 +31,14 @@ import org.h2.tools.Server
  */
 object SqlServer extends LazyLogging {
     private final val H2_PORT: Int = 9092
-    private final val H2_BASEDIR = "~/nlpcraft-examples/h2"
+    private final val H2_BASEDIR = new File(System.getProperty("user.home"), "nlpcraft-examples/h2").getAbsolutePath
 
     private final val SRV_PARAMS = Seq(
         "-baseDir", H2_BASEDIR,
         "-tcpPort", H2_PORT.toString,
         "-tcpAllowOthers"
     )
+
     private final val INIT_FILE = "src/main/scala/org/apache/nlpcraft/examples/sql/db/northwind.sql"
 
     final val H2_URL: String = s"jdbc:h2:tcp://localhost:$H2_PORT/nlp2sql"
@@ -57,7 +60,8 @@ object SqlServer extends LazyLogging {
 
         val ds = new JdbcDataSource()
 
-        ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '${new File(INIT_FILE).getAbsolutePath}'")
+        // Unix format used to avoid escape files separator for windows.
+        ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '${FilenameUtils.separatorsToUnix(new File(INIT_FILE).getAbsolutePath)}'")
 
         try {
             ds.getConnection
