@@ -142,6 +142,9 @@
         <!-- Force specific encoding on text resources. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <!-- Jar with all dependencies. -->
+        <nlpcraft.all.deps.jar>apache-${project.artifactId}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
+
         <!--
             NOTE: this library is NOT included in binary build and is optional
             for NLPCraft. It is licensed under GPLv3 and has to be downloaded separately by
@@ -521,7 +524,7 @@
                                 <argument>-Xmx4G</argument>
                                 <argument>-Xms4G</argument>
                                 <argument>-jar</argument>
-                                <argument>${project.build.directory}/${project.artifactId}-${project.version}-all-deps.jar</argument>
+                                <argument>${project.build.directory}/${nlpcraft.all.deps.jar}</argument>
                                 <argument>-server</argument>
                             </arguments>
                         </configuration>
@@ -722,7 +725,7 @@ JDK version should be 8 or 11
                         </goals>
                         <configuration>
                             <outputFile>
-                                ${project.build.directory}/${project.artifactId}-${project.version}-all-deps.jar
+                                ${project.build.directory}/${nlpcraft.all.deps.jar}
                             </outputFile>
                             <transformers>
                                 <!--reference.conf - akka configuration file.-->
