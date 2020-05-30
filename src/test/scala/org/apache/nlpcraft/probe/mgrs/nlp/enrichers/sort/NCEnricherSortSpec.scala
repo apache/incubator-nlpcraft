@@ -27,13 +27,13 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{
 import org.junit.jupiter.api.Test
 
 /**
-  * Sort enricher test.
-  */
+ * Sort enricher test.
+ */
 class NCEnricherSortSpec extends NCEnricherBaseSpec {
     /**
-      *
-      * @throws Exception
-      */
+     *
+     * @throws Exception
+     */
     @Test
     def test(): Unit =
         runBatch(
@@ -199,6 +199,14 @@ class NCEnricherSortSpec extends NCEnricherBaseSpec {
                 nlp(text = ",", isStop = true),
                 usr(text = "B", id = "B"),
                 nlp(text = "the descending", isStop = true)
+            ),
+            _ ⇒ checkExists(
+                "organize by A, B, asc",
+                srt(text = "organize by", byNotes = Seq("A", "B"), byIndexes = Seq(1, 3), asc = Some(true)),
+                usr(text = "A", id = "A"),
+                nlp(text = ",", isStop = true),
+                usr(text = "B", id = "B"),
+                nlp(text = ", asc", isStop = true)
             )
         )
 }

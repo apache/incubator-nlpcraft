@@ -45,6 +45,11 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
                 "top 10 D1",
                 lim(text = "top 10", limit = 10, index = 1, note = "D1", asc = false),
                 usr(text = "D1", id = "D1")
+            ),
+            _ ⇒ checkExists(
+                "handful of A B",
+                lim(text = "handful of", limit = 5, index = 1, note = "AB", asc = false),
+                usr(text = "A B", id = "AB")
             )
         )
     }
