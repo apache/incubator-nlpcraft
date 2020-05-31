@@ -19,7 +19,6 @@ package org.apache.nlpcraft.examples.weather;
 
 /**
  * Weather result wrapper for JSON formatting.
- *
  */
 public class WeatherResultWrapper {
     private final String intentId;

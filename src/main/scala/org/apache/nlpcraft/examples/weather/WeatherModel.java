@@ -43,7 +43,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
  *
  * @see WeatherTest
  */
-@SuppressWarnings("Duplicates")
 public class WeatherModel extends NCModelFileAdapter {
     // Please register your own account at https://darksky.net/dev/docs/libraries and
     // replace this demo token with your own.
@@ -57,9 +56,12 @@ public class WeatherModel extends NCModelFileAdapter {
     // Keywords for 'local' weather.
     private static final Set<String> LOCAL_WORDS = new HashSet<>(Arrays.asList("my", "local", "hometown"));
 
+    /**
+     * Date range holder.
+     */
     private static class DateRange {
-        private Instant from;
-        private Instant to;
+        private final Instant from;
+        private final Instant to;
 
         DateRange(Instant from, Instant to) {
             this.from = from;
@@ -67,9 +69,12 @@ public class WeatherModel extends NCModelFileAdapter {
         }
     }
 
+    /**
+     * Coordinates holder.
+     */
     private static class Coordinate {
-        private double latitude;
-        private double longitude;
+        private final double latitude;
+        private final double longitude;
 
         Coordinate(double latitude, double longitude) {
             this.latitude = latitude;
