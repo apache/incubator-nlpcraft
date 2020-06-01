@@ -241,7 +241,7 @@ public class WeatherModel extends NCModelFileAdapter {
         @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
         @NCIntentTerm("date") Optional<NCToken> dateTokOpt
     ) {
-        return onPeriodMatch(ctx, cityTokOpt, dateTokOpt,-5);
+        return onPeriodMatch(ctx, cityTokOpt, dateTokOpt, -5);
     }
 
     /**
