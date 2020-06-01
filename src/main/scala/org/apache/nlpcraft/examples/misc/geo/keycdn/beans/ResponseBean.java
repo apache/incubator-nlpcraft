@@ -24,27 +24,57 @@ public class ResponseBean {
     private String status;
     private String description;
     private ResponseDataBean data;
-    
+
+    /**
+     * Gets response status.
+     *
+     * @return Response status.
+     */
     public String getStatus() {
         return status;
     }
-    
+
+    /**
+     * Sets response status.
+     *
+     * @param status Response status to set.
+     */
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
+    /**
+     * Gets response data.
+     *
+     * @return Response data.
+     */
     public ResponseDataBean getData() {
         return data;
     }
-    
+
+    /**
+     * Sets response data.
+     *
+     * @param data Response data to set.
+     */
     public void setData(ResponseDataBean data) {
         this.data = data;
     }
-    
+
+    /**
+     * Gets response description.
+     *
+     * @return Response description.
+     */
     public String getDescription() {
         return description;
     }
-    
+
+    /**
+     * Sets response description.
+     *
+     * @param description Response description to set.
+     */
     public void setDescription(String description) {
         this.description = description;
     }

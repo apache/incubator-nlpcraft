@@ -119,7 +119,7 @@ public class GeoManager {
         catch (Exception e) {
             System.err.println(
                 MessageFormat.format(
-                    "Unable to answer due to IP Location Finder (keycdn) error for host: {0}",
+                    "Unable to answer due to IP location finder (keycdn) error for host: {0}",
                     host
                 )
             );

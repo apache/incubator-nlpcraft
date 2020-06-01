@@ -22,11 +22,21 @@ package org.apache.nlpcraft.examples.misc.geo.keycdn.beans;
  */
 public class ResponseDataBean {
     private GeoDataBean geo;
-    
+
+    /**
+     * Gets geo data holder.
+     *
+     * @return Geo data holder.
+     */
     public GeoDataBean getGeo() {
         return geo;
     }
-    
+
+    /**
+     * Sets get data holder.
+     *
+     * @param geo Geo data holder to set.
+     */
     public void setGeo(GeoDataBean geo) {
         this.geo = geo;
     }

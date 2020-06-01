@@ -28,43 +28,93 @@ public class GeoDataBean {
     @SerializedName("latitude") private double latitude;
     @SerializedName("longitude") private double longitude;
     @SerializedName("timezone") private String timezoneName;
-    
+
+    /**
+     * Gets country name.
+     *
+     * @return Country name.
+     */
     public String getCountryName() {
         return countryName;
     }
-    
+
+    /**
+     * Sets country name.
+     *
+     * @param countryName Country name to set.
+     */
     public void setCountryName(String countryName) {
         this.countryName = countryName;
     }
-    
+
+    /**
+     * Gets city name.
+     *
+     * @return City name.
+     */
     public String getCityName() {
         return cityName;
     }
-    
+
+    /**
+     * Set city name.
+     *
+     * @param cityName City name to set.
+     */
     public void setCityName(String cityName) {
         this.cityName = cityName;
     }
-    
+
+    /**
+     * Gets latitude.
+     *
+     * @return Latitude.
+     */
     public double getLatitude() {
         return latitude;
     }
-    
+
+    /**
+     * Sets latitude.
+     *
+     * @param latitude Latitude to set.
+     */
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-    
+
+    /**
+     * Gets longitude.
+     *
+     * @return Longitude.
+     */
     public double getLongitude() {
         return longitude;
     }
-    
+
+    /**
+     * Sets longitude.
+     *
+     * @param longitude Longitude to set.
+     */
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-    
+
+    /**
+     * Get timezone name.
+     *
+     * @return Timezone name.
+     */
     public String getTimezoneName() {
         return timezoneName;
     }
-    
+
+    /**
+     * Sets timezone name.
+     *
+     * @param timezoneName Timezone name to set.
+     */
     public void setTimezoneName(String timezoneName) {
         this.timezoneName = timezoneName;
     }

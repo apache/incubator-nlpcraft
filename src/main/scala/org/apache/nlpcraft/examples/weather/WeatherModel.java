@@ -167,7 +167,7 @@ public class WeatherModel extends NCModelFileAdapter {
      * @param ctx Solver context.
      */
     private void checkMatch(NCIntentMatch ctx) {
-        // Reject if intent match is not exact ("dangling" tokens remain).
+        // Reject if intent match is not exact (at least one "dangling" token remain).
         if (ctx.isAmbiguous())
             throw new NCRejection("Please clarify your request.");
     }
