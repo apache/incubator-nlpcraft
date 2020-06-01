@@ -33,7 +33,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * Weather example data model.
  * <p>
  * This is relatively complete weather service with JSON output and a non-trivial
- * intent matching logic. It uses Dark Sky API weather provider REST service for the actual
+ * intent matching logic. It uses Apple's Dark Sky API weather provider REST service for the actual
  * weather information (https://darksky.net/dev/docs#overview)
  * <p>
  * Note that this example uses class-based intent DSL to demonstrate its usage pattern.
