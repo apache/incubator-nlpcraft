@@ -52,9 +52,9 @@ jobs:
 
       - name: Build (Linux)
         if: ${{matrix.os == 'ubuntu-latest'}}
-        run: 'mvn -B clean verify'
+        run: 'mvn -B clean verify -P stanford-corenlp'
 
       - name: Build (Windows)
         if: ${{matrix.os == 'windows-latest'}}
         # Build only, no tests because of memory limits.
-        run: 'mvn -B clean package -DskipTests=true'
+        run: 'mvn -B clean package -DskipTests=true -P stanford-corenlp'
