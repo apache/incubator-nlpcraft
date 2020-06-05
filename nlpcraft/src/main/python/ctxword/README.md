@@ -20,13 +20,14 @@ To install dependencies:
 To start server:  
 `$ bin/start_server.sh`  
 
-Server has single route in root which accepts POST json requests with parameters: 
+### Routes
+##### /suggestions
+Returns word replacement suggestions for following word in the sentence  
 * "sentence": Target sentence. Number of word to find synonyms for must be passed as argument
-* "lower", "upper": Positions in the sentence of start and end of collocation to find synonyms for.  
-Note: sentence is split via whitespaces, upper bound is inclusive. 
+* "index": Position in the sentence of the word to generate suggestions for.  
 * "simple" (Optional): If set to true omits verbose data.  
 * "limit": Sets limit of result words number.  
 
 Simple request could be made with a script, e.g.  
 `$ bin/predict.sh "what is the chance of rain tomorrow?" 5`  
-Would find synonym for word "rain" in this sentence.
+Would find suggestions for word "rain" in this sentence.
