@@ -12,5 +12,5 @@ zips
 model.yaml
 model.json
 **/__pycache__
-**/enricher/data
+**/data
 **/.ipynb_checkpoints/
