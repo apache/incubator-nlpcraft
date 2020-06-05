@@ -81,36 +81,25 @@ class Pipeline:
 
         self.log.info("Server started in %s seconds", ('{0:.4f}'.format(time.time() - start_time)))
 
-    def find_top(self, sentence, positions, k, top_bert, bert_norm, min_ftext, weights):
+    def find_top(self, sentence, index, k, top_bert, bert_norm, min_ftext, weights, min_score):
         tokenizer = self.tokenizer
         model = self.model
         ft = self.ft
+
+        k = 10 if k is None else k
+        min_score = 0 if min_score is None else min_score
 
         self.log.debug("Input: %s", sentence)
         start_time = time.time()
 
         lst = sentence.split()
-        lower = positions[0]
-        upper = positions[1] + 1
-        target = "-".join(lst[lower:upper])
-        if lower == positions[1] or target in self.ft_dict:
-            seqlst = lst[:lower]
-            seqlst.append(tokenizer.mask_token)
-            seqlst.extend(lst[upper:])
-            sequence = " ".join(seqlst)
-        else:
-            rec = list()
 
-            for i in range(lower, upper):
-                seqlst = lst[:lower]
-                seqlst.append(lst[i])
-                seqlst.extend(lst[upper:])
-                rec.append(
-                    self.find_top(" ".join(seqlst), [lower, lower], k, top_bert, bert_norm, min_ftext, weights))
+        target = lst[index]
 
-            rec = sorted(rec, key=lambda x: x.score.mean(), reverse=True)
-
-            return rec[0]
+        seqlst = lst[:index]
+        seqlst.append(tokenizer.mask_token)
+        seqlst.extend(lst[(index + 1):])
+        sequence = " ".join(seqlst)
 
         self.log.debug("Target word: %s; sequence: %s", target, sequence)
 
@@ -149,10 +138,12 @@ class Pipeline:
             if self.on_run is None and word == target:
                 continue
 
-            if sim >= min_ftext:
-                filtered.append((word, value, norm_value, sim, sentence_sim, calc_w(norm_value, sim, weights)))
+            score = calc_w(norm_value, sim, weights)
 
-            unfiltered.append((word, value, norm_value, sim, sentence_sim, calc_w(norm_value, sim, weights)))
+            if sim >= min_ftext and score > min_score:
+                filtered.append((word, value, norm_value, sim, sentence_sim, score))
+
+            unfiltered.append((word, value, norm_value, sim, sentence_sim, score))
 
         done = (time.time() - start_time)
 
@@ -178,8 +169,8 @@ class Pipeline:
 
         return filtered_top
 
-    def do_find(self, s, positions, limit):
-        return self.find_top(s, positions, limit, 200, 200, 0.25, [1, 1])
+    def do_find(self, s, index, limit, min_score):
+        return self.find_top(s, index, limit, 200, 200, 0.25, [1, 1], min_score)
 
     def dget(self, lst, pos):
         return list(map(lambda x: '{0:.2f}'.format(x[pos]), lst)) if self.on_run is not None else lget(lst, pos)
