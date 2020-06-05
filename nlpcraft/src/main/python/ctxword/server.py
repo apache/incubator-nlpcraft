@@ -48,7 +48,7 @@ def present(json, name):
                            "Required '" + name + "' argument is not present")
 
 
-@app.route('/synonyms', methods=['POST'])
+@app.route('/suggestions', methods=['POST'])
 def main():
     if not request.is_json:
         raise ValidationException("Json expected")
@@ -56,13 +56,11 @@ def main():
     json = request.json
 
     sentence = present(json, 'sentence')
-    upper = present(json, 'upper')
-    lower = present(json, 'lower')
-    positions = check_condition(lower <= upper, lambda: [lower, upper],
-                                "Lower bound must be less or equal upper bound")
-    limit = present(json, 'limit')
+    index = present(json, 'index')
+    limit = json['limit'] if 'limit' in json else None
+    min_score = json['min_score'] if 'min_score' in json else None
 
-    data = pipeline.do_find(sentence, positions, limit)
+    data = pipeline.do_find(sentence, index, limit, min_score)
     if 'simple' not in json or not json['simple']:
         json_data = data.to_json(orient='table', index=False)
     else:
