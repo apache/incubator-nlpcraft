@@ -30,33 +30,38 @@ zipDir=zips
 tmpDir=apache-nlpcraft
 zipFileBin=apache-nlpcraft-incubating-bin-$1.zip # NOT an official ASF release.
 zipFileSrc=apache-nlpcraft-incubating-$1.zip # An OFFICIAL ASF release.
+coreModule=nlpcraft
+stanfordModule=nlpcraft-stanford
 
 curDir=$(pwd)
 
 cd ../
 
-mvn clean package -Prelease
+mvn clean package -P stanford-corenlp,release
 
 rm -R ${zipDir} 2> /dev/null
 
 mkdir ${zipDir}
 mkdir ${zipDir}/${tmpDir}
+mkdir ${zipDir}/${tmpDir}/${coreModule}
 mkdir ${zipDir}/${tmpDir}/build
 
-rsync -avzq bin ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude bin/prepare.sh
+rsync -avzq bin ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude bin/prepare.sh --exclude bin/MAVEN-RELEASE.md
 rsync -avzq openapi ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
-rsync -avzq src ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude '**/*.iml'
+rsync -avzq ${coreModule}/src ${zipDir}/${tmpDir}/${coreModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
+rsync -avzq ${stanfordModule}/src ${zipDir}/${tmpDir}/${stanfordModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp bindist/LICENSE ${zipDir}/${tmpDir}
 cp bindist/NOTICE ${zipDir}/${tmpDir}
 cp DISCLAIMER ${zipDir}/${tmpDir}
-cp src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
-cp src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
-cp src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
+cp ${coreModule}/src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
+cp ${coreModule}/src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
+cp ${coreModule}/src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
 
-cp target/*all-deps.jar ${zipDir}/${tmpDir}/build
-rsync -avzq target/apidocs/** ${zipDir}/${tmpDir}/javadoc --exclude '**/.DS_Store'
+rsync -avzq ${coreModule}/target/*all-deps.jar ${zipDir}/${tmpDir}/build
+rsync -avzq ${coreModule}/target/apidocs/** ${zipDir}/${tmpDir}/javadoc --exclude '**/.DS_Store'
+rsync -avzq ${stanfordModule}/target/*.jar ${zipDir}/${tmpDir}/build --exclude '*-sources.jar'
 
 # Prepares bin zip.
 cd ${zipDir}
@@ -68,9 +73,11 @@ rm -R ${tmpDir}/javadoc 2> /dev/null
 
 # Adds some data for src zip.
 cd ../
+cp ${coreModule}/pom.xml ${zipDir}/${tmpDir}/${coreModule}
+cp ${stanfordModule}/pom.xml ${zipDir}/${tmpDir}/${stanfordModule}
+cp pom.xml ${zipDir}/${tmpDir}
 cp LICENSE ${zipDir}/${tmpDir}
 cp NOTICE ${zipDir}/${tmpDir}
-cp pom.xml ${zipDir}/${tmpDir}
 cp assembly.xml ${zipDir}/${tmpDir}
 cp README.md ${zipDir}/${tmpDir}
 
