@@ -23,11 +23,12 @@ To start server:
 ### Routes
 ##### /suggestions
 Returns word replacement suggestions for following word in the sentence  
-* "sentence": Target sentence. Number of word to find synonyms for must be passed as argument
-* "index": Position in the sentence of the word to generate suggestions for.  
+* "sentences": List of sentences information. Each sentence encoded as list, first element of which is sentence itself,
+  second is position in the sentence of the word to generate suggestions for.  
+  Example: ``"sentences": [["foo bar baz", 2], ["sample second sentence", 0]]``
 * "simple" (Optional): If set to true omits verbose data.  
 * "limit": Sets limit of result words number.  
 
-Simple request could be made with a script, e.g.  
+Simple request with single sentence could be made with a script, e.g.  
 `$ bin/predict.sh "what is the chance of rain tomorrow?" 5`  
 Would find suggestions for word "rain" in this sentence.
