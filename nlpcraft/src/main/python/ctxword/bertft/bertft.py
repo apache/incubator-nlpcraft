@@ -33,10 +33,6 @@ def lget(lst, pos):
     return list(map(lambda x: x[pos], lst))
 
 
-def calc_w(x, y, w):
-    return x * w[0] + y * w[1]
-
-
 # TODO: make Model configurable
 # TODO: add type check
 class Pipeline:
@@ -77,11 +73,9 @@ class Pipeline:
         self.tokenizer = AutoTokenizer.from_pretrained("roberta-large")
         self.model = AutoModelWithLMHead.from_pretrained("roberta-large")
 
-        self.on_run = on_run
-
         self.log.info("Server started in %s seconds", ('{0:.4f}'.format(time.time() - start_time)))
 
-    def find_top(self, sentence, index, k, top_bert, bert_norm, min_ftext, weights, min_score):
+    def find_top(self, input_data, k, top_bert, min_ftext, weights, min_score):
         tokenizer = self.tokenizer
         model = self.model
         ft = self.ft
@@ -89,88 +83,93 @@ class Pipeline:
         k = 10 if k is None else k
         min_score = 0 if min_score is None else min_score
 
-        self.log.debug("Input: %s", sentence)
         start_time = time.time()
+        req_start_time = start_time
 
+        sentences = list(map(lambda x: self.replace_with_mask(x[0], x[1]), input_data))
+
+        encoded = tokenizer.batch_encode_plus(list(map(lambda x: x[1], sentences)), pad_to_max_length=True)
+        input_ids = torch.tensor(encoded['input_ids'])
+        attention_mask = torch.tensor(encoded['attention_mask'])
+
+        start_time = self.print_time(start_time, "Tokenizing finished")
+        forward = model(input_ids=input_ids, attention_mask=attention_mask)
+
+        start_time = self.print_time(start_time, "Batch finished (Bert)")
+
+        mask_token_index = torch.where(input_ids == tokenizer.mask_token_id)[1]
+        token_logits = forward[0]
+        mask_token_logits = token_logits[0, mask_token_index, :]
+
+        # Filter top <top_bert> results of bert output
+        topk = torch.topk(mask_token_logits, top_bert, dim=1)
+
+        nvl = []
+
+        for d in topk.values:
+            nmin = torch.min(d)
+            nmax = torch.max(d)
+            nvl.append((d - nmin) / (nmax - nmin))
+
+        start_time = self.print_time(start_time, "Bert post-processing")
+
+        suggestions = []
+        for index in topk.indices:
+            lst = list(index)
+            tmp = []
+            for single in lst:
+                tmp.append(tokenizer.decode([single]).strip())
+            suggestions.append(tuple(tmp))
+
+        start_time = self.print_time(start_time, "Bert decoding")
+
+        cos = torch.nn.CosineSimilarity()
+
+        result = []
+
+        for i in range(0, len(sentences)):
+            target = sentences[i][0]
+            suggest_embeddings = torch.tensor(list(map(lambda x: ft[x], suggestions[i])))
+            targ_tenzsor = torch.tensor(ft[target]).expand(suggest_embeddings.shape)
+            similarities = cos(targ_tenzsor, suggest_embeddings)
+
+            scores = nvl[i] * weights[0] + similarities * weights[1]
+
+            result.append(
+                sorted(
+                    filter(
+                        lambda x: x[0] > min_score and x[1] > min_ftext,
+                        zip(scores.tolist(), similarities.tolist(), suggestions[i], nvl[i].tolist())
+                    ),
+                    key=lambda x: x[0],
+                    reverse=True
+                )[:k]
+            )
+
+        self.print_time(start_time, "Fast text similarities found")
+
+        self.print_time(req_start_time, "Request processed")
+
+        return result
+
+    def replace_with_mask(self, sentence, index):
         lst = sentence.split()
 
         target = lst[index]
 
         seqlst = lst[:index]
-        seqlst.append(tokenizer.mask_token)
+        seqlst.append(self.tokenizer.mask_token)
         seqlst.extend(lst[(index + 1):])
-        sequence = " ".join(seqlst)
 
-        self.log.debug("Target word: %s; sequence: %s", target, sequence)
+        return (target, " ".join(seqlst))
 
-        input = tokenizer.encode(sequence, return_tensors="pt")
-        mask_token_index = torch.where(input == tokenizer.mask_token_id)[1]
+    def print_time(self, start, message):
+        current = time.time()
+        self.log.info(message + " in %s ms", '{0:.4f}'.format((current - start) * 1000))
+        return current
 
-        token_logits = model(input)[0]
-        mask_token_logits = token_logits[0, mask_token_index, :]
-
-        # Filter top <top_bert> results of bert output
-        topk = torch.topk(mask_token_logits, top_bert, dim=1)
-        top_tokens = list(zip(topk.indices[0].tolist(), topk.values[0].tolist()))
-
-        unfiltered = list()
-        filtered = list()
-
-        norm_d = top_tokens[bert_norm - 1][1]
-        norm_k = top_tokens[0][1] - norm_d
-
-        self.log.info("Bert finished in %s seconds", '{0:.4f}'.format(time.time() - start_time))
-
-        # Filter bert output by <min_ftext>
-        # TODO: calculate batch similarity
-        for token, value in top_tokens:
-            word = tokenizer.decode([token]).strip()
-            norm_value = (value - norm_d) / norm_k
-
-            sim = cosine_similarity(ft[target].reshape(1, -1), ft[word].reshape(1, -1))[0][0]
-
-            sentence_sim = cosine_similarity(
-                ft.get_sentence_vector(sentence).reshape(1, -1),
-                ft.get_sentence_vector(re.sub(tokenizer.mask_token, word, sequence)).reshape(1, -1)
-            )[0][0]
-
-            # Continue only for jupyter
-            if self.on_run is None and word == target:
-                continue
-
-            score = calc_w(norm_value, sim, weights)
-
-            if sim >= min_ftext and score > min_score:
-                filtered.append((word, value, norm_value, sim, sentence_sim, score))
-
-            unfiltered.append((word, value, norm_value, sim, sentence_sim, score))
-
-        done = (time.time() - start_time)
-
-        kfiltered = filtered[:k]
-        kunfiltered = unfiltered[:k]
-
-        kfiltered = sorted(kfiltered, key=lambda x: -x[len(x) - 1])
-        kunfiltered = sorted(kunfiltered, key=lambda x: -x[len(x) - 1])
-
-        filtered_top = pd.DataFrame({
-            'word': lget(kfiltered, 0),
-            'bert': self.dget(kfiltered, 1),
-            'normalized': self.dget(kfiltered, 2),
-            'ftext': self.dget(kfiltered, 3),
-            'ftext-sentence': self.dget(kfiltered, 4),
-            'score': lget(kfiltered, 5),
-        })
-
-        if self.on_run != None:
-            self.on_run(self, kunfiltered, unfiltered, filtered_top, target, tokenizer, top_tokens)
-
-        self.log.info("Processing finished in %s seconds", '{0:.4f}'.format(done))
-
-        return filtered_top
-
-    def do_find(self, s, index, limit, min_score):
-        return self.find_top(s, index, limit, 200, 200, 0.25, [1, 1], min_score)
+    def do_find(self, data, limit, min_score):
+        return self.find_top(data, limit, 100, 0.25, [1, 1], min_score)
 
     def dget(self, lst, pos):
         return list(map(lambda x: '{0:.2f}'.format(x[pos]), lst)) if self.on_run is not None else lget(lst, pos)
