@@ -17,6 +17,7 @@
 import logging
 from flask import Flask
 from flask import request
+from flask import jsonify
 from bertft import Pipeline
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
@@ -55,14 +56,12 @@ def main():
 
     json = request.json
 
-    sentence = present(json, 'sentence')
-    index = present(json, 'index')
+    sentences = present(json, 'sentences')
     limit = json['limit'] if 'limit' in json else None
     min_score = json['min_score'] if 'min_score' in json else None
 
-    data = pipeline.do_find(sentence, index, limit, min_score)
+    data = pipeline.do_find(sentences, limit, min_score)
     if 'simple' not in json or not json['simple']:
-        json_data = data.to_json(orient='table', index=False)
+        return jsonify(data)
     else:
-        json_data = data['word'].to_json(orient='values')
-    return app.response_class(response=json_data, status=200, mimetype='application/json')
+        return jsonify(list(map(lambda x: list(map(lambda y: y[2], x)), data)))
