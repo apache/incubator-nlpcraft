@@ -246,8 +246,6 @@ object NCSuggestionsGeneratorImpl {
 
         cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
 
-        println("All requests executed.")
-
         val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
         val filteredSuggs =
@@ -327,7 +325,7 @@ object NCSuggestionsGeneratorImpl {
             }
         }
 
-        println(s"Suggestions [calculated '${System.currentTimeMillis() - now}' ms.")
+        println(s"Suggestions calculated (${(System.currentTimeMillis() - now) / 1000} secs)")
 
         tbl.render()
     }
