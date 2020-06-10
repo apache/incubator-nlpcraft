@@ -38,20 +38,24 @@ import org.apache.nlpcraft.model.NCModelFileAdapter
 import scala.collection.JavaConverters._
 import scala.collection._
 
-case class ParametersHolder(
-    modelPath: String,
-    url: String,
-    limit: Int,
-    minScore: Double,
-    synonymsWords: Int,
-    debug: Boolean
-)
+case class ParametersHolder(modelPath: String, url: String, limit: Int, minScore: Double, debug: Boolean)
 
 object NCSuggestionsGeneratorImpl {
     case class Suggestion(word: String, index1: Double, index2: Double, index3: Double)
 
     case class RequestData(sentence: String, example: String, elementId: String, index: Int)
     case class RestRequest(sentences: java.util.List[java.util.List[Any]], limit: Int, simple: Boolean = false)
+    case class Word(word: String, stem: String) {
+        require(!word.contains(" "), s"Word cannot contains spaces: $word")
+        require(
+            word.forall(ch ⇒
+                ch.isLetterOrDigit ||
+                    ch == '\'' ||
+                    SEPARATORS.contains(ch)
+            ),
+            s"Unsupported symbols: $word"
+        )
+    }
 
     private final val GSON = new Gson
     private final val TYPE_RESP = new TypeToken[java.util.List[java.util.List[java.util.List[Any]]]]() {}.getType
@@ -119,20 +123,6 @@ object NCSuggestionsGeneratorImpl {
         if (mdl.getMacros != null)
             mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
 
-        val client = HttpClients.createDefault
-
-        case class Word(word: String, stem: String) {
-            require(!word.contains(" "), s"Word cannot contains spaces: $word")
-            require(
-                word.forall(ch ⇒
-                    ch.isLetterOrDigit ||
-                        ch == '\'' ||
-                        SEPARATORS.contains(ch)
-                ),
-                s"Unsupported symbols: $word"
-            )
-        }
-
         val examples =
             mdl.getExamples.asScala.
                 map(ex ⇒ SEPARATORS.foldLeft(ex)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
@@ -150,7 +140,7 @@ object NCSuggestionsGeneratorImpl {
         val allReqs =
             elemSyns.map {
                 case (elemId, syns) ⇒
-                    val normSyns: Seq[Seq[Word]] = syns.filter(_.size <= data.synonymsWords)
+                    val normSyns: Seq[Seq[Word]] = syns.filter(_.size == 1)
                     val synsStems = normSyns.map(_.map(_.stem))
                     val synsWords = normSyns.map(_.map(_.word))
 
@@ -177,8 +167,8 @@ object NCSuggestionsGeneratorImpl {
                                 )
                             }
 
-                            (for (idx ← exampleIdxs; (synStems, i) ← synsStems.zipWithIndex) yield mkRequestData(idx, synStems, i)).
-                                distinct
+                            (for (idx ← exampleIdxs; (synStems, i) ← synsStems.zipWithIndex)
+                                yield mkRequestData(idx, synStems, i)).distinct
                         }
 
                     elemId → reqs.toSet
@@ -194,6 +184,8 @@ object NCSuggestionsGeneratorImpl {
         val cdl = new CountDownLatch(1)
         val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
         val cnt = new AtomicInteger(0)
+
+        val client = HttpClients.createDefault
 
         for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
             NCUtils.asFuture(
@@ -335,7 +327,6 @@ object NCSuggestionsGenerator extends App {
     private lazy val DFLT_URL: String = "http://localhost:5000/suggestions"
     private lazy val DFLT_LIMIT: Int = 10 // TODO: add scoreLimit
     private lazy val DFLT_MIN_SCORE: Double = 0
-    private lazy val DFLT_SYNONYMNS_WORDS: Int = 1
     private lazy val DFLT_DEBUG: Boolean = false
 
     /**
@@ -385,10 +376,6 @@ object NCSuggestionsGenerator extends App {
                |    [--score|-c] score
                |        Optional minimal suggestion score value.
                |        Default is $DFLT_MIN_SCORE.
-               |
-               |    [--syns|-s] synonyms count
-               |        Optional words count which defined which synonyms words count supported.
-               |        Default is $DFLT_SYNONYMNS_WORDS.
                |
                |    [--debug|-d] [true|false]
                |        Optional flag on whether or not to debug output.
@@ -466,7 +453,6 @@ object NCSuggestionsGenerator extends App {
         var url = DFLT_URL
         var limit = DFLT_LIMIT
         var minScore = DFLT_MIN_SCORE
-        var synsWords = DFLT_SYNONYMNS_WORDS
         var debug = DFLT_DEBUG
 
         var i = 0
@@ -481,7 +467,6 @@ object NCSuggestionsGenerator extends App {
                     case "--url" | "-u" ⇒ url = v
                     case "--limit" | "-l" ⇒ limit = parseNum(v, k, (s: String) ⇒ s.toInt, 1, Integer.MAX_VALUE)
                     case "--score" | "-c" ⇒ minScore = parseNum(v, k, (s: String) ⇒ s.toDouble, 0, Integer.MAX_VALUE)
-                    case "--syns" | "-s" ⇒ synsWords = parseNum(v, k, (s: String) ⇒ s.toInt, 1, Integer.MAX_VALUE)
                     case "--debug" | "-d" ⇒ debug = parseBoolean(v, k)
 
                     case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: ${cmdArgs(i)}")
@@ -496,7 +481,7 @@ object NCSuggestionsGenerator extends App {
             case e: Exception ⇒ errorExit(e.getMessage)
         }
 
-        ParametersHolder(mdlPath, url, limit, minScore, synsWords, debug)
+        ParametersHolder(mdlPath, url, limit, minScore, debug)
     }
 
     NCSuggestionsGeneratorImpl.process(parseCmdParameters(args))
