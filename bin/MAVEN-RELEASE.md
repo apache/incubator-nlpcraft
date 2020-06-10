@@ -73,13 +73,16 @@ For example, if version is `0.5.0` and tag name is `v0.5.0` following pom `scm` 
     <!-- Set actual tag name here -->
     <tag>v0.5.0</tag>
 </scm>
-```
+```     
+
+The following `pom.xml` files should be updates:
+- nlpcraft/pom.xml
+- nlpcraft-stanford/pom.xml
+- pom.xml
 
 ## 3. Make Maven Release
   - `cd <PROJECT_FOLDER>`
-  - `mvn -DskipTests=true clean deploy -P release`
+  - `mvn -DskipTests=true clean deploy -P 'stanford-corenlp,release'`
   - Login into https://repository.apache.org
   - Look at staging repositories https://repository.apache.org/#stagingRepositories
   - Find and close `nlpcraft` release, then check its state.   
-  
-  
