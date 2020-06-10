@@ -48,29 +48,17 @@ case class ParametersHolder(
 )
 
 object NCSuggestionsGeneratorImpl {
-    /**
-      * Suggestion data holder.
-      *
-      * @param word Word
-      * @param bert Bert factor.
-      * @param normalized Normalized bert factor.
-      * @param ftext FText factor.
-      * @param `ftext-sentence` TODO:
-      * @param score Calculated summary factor: normalized * weight1 + ftext * weight2 (weights values are 1 currently)
-      */
-    case class Suggestion(
-        word: String, bert: Double, normalized: Double, ftext: Double, `ftext-sentence`: Double, score: Double
-    )
+    case class Suggestion(word: String, index1: Double, index2: Double, index3: Double)
 
-    case class RequestData(sentence: String, example: String, elementId: String, lower: Int, upper: Int, limit: Int)
-    case class RestRequest(sentence: String, simple: Boolean, lower: Int, upper: Int, limit: Int)
-    case class RestResponse(data: java.util.ArrayList[Suggestion])
+    case class RequestData(sentence: String, example: String, elementId: String, index: Int)
+    case class RestRequest(sentences: java.util.List[java.util.List[Any]], limit: Int, simple: Boolean = false)
 
     private final val GSON = new Gson
-    private final val TYPE_RESP = new TypeToken[RestResponse]() {}.getType
+    private final val TYPE_RESP = new TypeToken[java.util.List[java.util.List[java.util.List[Any]]]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
+    private final val BATCH_SIZE = 20
 
-    private def mkHandler(req: RequestData): ResponseHandler[Seq[Suggestion]] =
+    private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
         (resp: HttpResponse) ⇒ {
             val code = resp.getStatusLine.getStatusCode
             val e = resp.getEntity
@@ -78,16 +66,28 @@ object NCSuggestionsGeneratorImpl {
             val js = if (e != null) EntityUtils.toString(e) else null
 
             if (js == null)
-                throw new RuntimeException(s"Unexpected empty response [req=$req, code=$code]")
+                throw new RuntimeException(s"Unexpected empty response [code=$code]")
 
             code match {
                 case 200 ⇒
-                    val data: RestResponse = GSON.fromJson(js, TYPE_RESP)
+                    val data: java.util.List[java.util.List[java.util.List[Any]]] = GSON.fromJson(js, TYPE_RESP)
 
-                    data.data.asScala
+                    data.asScala.map(p ⇒
+                        if (p.isEmpty)
+                            Seq.empty
+                        else
+                            p.asScala.tail.map(p ⇒
+                                Suggestion(
+                                    word = p.get(2).asInstanceOf[String],
+                                    index1 = p.get(0).asInstanceOf[Double],
+                                    index2 = p.get(1).asInstanceOf[Double],
+                                    index3 = p.get(3).asInstanceOf[Double]
+                                ),
+                            )
+                    )
 
                 case 400 ⇒ throw new RuntimeException(js)
-                case _ ⇒ throw new RuntimeException(s"Unexpected response [req=$req, code=$code, response=$js]")
+                case _ ⇒ throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
             }
         }
 
@@ -110,6 +110,8 @@ object NCSuggestionsGeneratorImpl {
     }
 
     def process(data: ParametersHolder): Unit = {
+        val now = System.currentTimeMillis()
+
         val mdl = new NCModelFileAdapter(data.modelPath) {}
 
         val parser = new NCMacroParser()
@@ -171,9 +173,7 @@ object NCSuggestionsGeneratorImpl {
                                     }.mkString(" "),
                                     example = exampleWords.mkString(" "),
                                     elementId = elemId,
-                                    lower = idx,
-                                    upper = idx + synStems.length - 1,
-                                    limit = data.limit
+                                    index = idx
                                 )
                             }
 
@@ -184,16 +184,18 @@ object NCSuggestionsGeneratorImpl {
                     elemId → reqs.toSet
             }.filter(_._2.nonEmpty)
 
+        val allReqsCnt = allReqs.map(_._2.size).sum
+
         println(s"Examples count: ${examples.size}")
         println(s"Synonyms count: ${elemSyns.map(_._2.size).sum}")
-        println(s"Request prepared: ${allReqs.map(_._2.size).sum}")
+        println(s"Request prepared: $allReqsCnt")
 
         val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, java.util.List[Suggestion]]()
-        val cdl = new CountDownLatch(allReqs.map { case (_, seq) ⇒ seq.size }.sum)
+        val cdl = new CountDownLatch(1)
         val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
         val cnt = new AtomicInteger(0)
 
-        for ((elemId, reqs) ← allReqs; req ← reqs) {
+        for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
             NCUtils.asFuture(
                 _ ⇒ {
                     val post = new HttpPost(data.url)
@@ -203,41 +205,42 @@ object NCSuggestionsGeneratorImpl {
                         new StringEntity(
                             GSON.toJson(
                                 RestRequest(
-                                    sentence = req.sentence,
-                                    simple = false,
-                                    lower = req.lower,
-                                    upper = req.upper,
-                                    limit = req.limit
-                                )
+                                    sentences = batch.map(p ⇒ Seq(p.sentence, p.index).asJava).asJava,
+                                    limit = data.limit)
                             ),
                             "UTF-8"
                         )
                     )
 
-                    val resp: Seq[Suggestion] =
+                    val resps: Seq[Seq[Suggestion]] =
                         try
-                            client.execute(post, mkHandler(req))
+                            client.execute(post, HANDLER)
                         finally
                             post.releaseConnection()
 
-                    if (data.debug)
-                        debugs += req → resp
+                    if (data.debug) {
+                        require(reqs.size == resps.size)
 
-                    val i = cnt.incrementAndGet()
+                        reqs.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp}
+                    }
 
-                    if (i % 10 == 0)
-                        println(s"Executed: $i requests.")
+                    val i = cnt.addAndGet(batch.size)
+
+                    println(s"Executed: $i requests.")
 
                     allSuggs.
                         computeIfAbsent(elemId, (_: String) ⇒ new CopyOnWriteArrayList[Suggestion]()).
-                        addAll(resp.asJava)
+                        addAll(resps.flatten.asJava)
+
+                    if (i == allReqsCnt)
+                        cdl.countDown()
                 },
                 (e: Throwable) ⇒ {
                     e.printStackTrace()
 
                     cdl.countDown()
                 },
-                (_: Boolean) ⇒ cdl.countDown()
+                (_: Unit) ⇒ ()
             )
         }
 
@@ -249,10 +252,10 @@ object NCSuggestionsGeneratorImpl {
 
         val filteredSuggs =
             allSuggs.asScala.map {
-                case (elemId, elemSuggs) ⇒ elemId → elemSuggs.asScala.filter(_.score >= data.minScore)
+                case (elemId, elemSuggs) ⇒ elemId → elemSuggs.asScala.filter(_.index1 >= data.minScore)
             }.filter(_._2.nonEmpty)
 
-        val avgScores = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → (suggs.map(_.score).sum / suggs.size) }
+        val avgScores = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → (suggs.map(_.index1).sum / suggs.size) }
         val counts = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → suggs.size }
 
         val tbl = NCAsciiTable()
@@ -262,11 +265,9 @@ object NCSuggestionsGeneratorImpl {
             "Suggestion",
             "Summary factor",
             "Count",
-            "Bert/Ftext score",
-            "Bert",
-            "Bert norm",
-            "Ftext",
-            "Ftext-Sentence"
+            "F1",
+            "F2",
+            "F3"
         )
 
         filteredSuggs.
@@ -276,7 +277,7 @@ object NCSuggestionsGeneratorImpl {
                     groupBy { case (_, stem) ⇒ stem }.
                     filter { case (stem, _) ⇒ !allSynsStems.contains(stem) }.
                     map { case (_, group) ⇒
-                        val seq = group.map { case (sugg, _) ⇒ sugg }.sortBy(-_.score)
+                        val seq = group.map { case (sugg, _) ⇒ sugg }.sortBy(-_.index1)
 
                         // Drops repeated.
                         (seq.head, seq.length)
@@ -286,7 +287,7 @@ object NCSuggestionsGeneratorImpl {
                 val normFactor = seq.map(_._2).sum.toDouble / seq.size / avgScores(elemId)
 
                 seq.
-                    map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * normFactor * cnt.toDouble / counts(elemId)) }.
+                    map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.index1 * normFactor * cnt.toDouble / counts(elemId)) }.
                     sortBy { case (_, _, cumFactor) ⇒ -cumFactor }.
                     zipWithIndex.
                     foreach { case ((sugg, cnt, cumFactor), sugIdx) ⇒
@@ -297,11 +298,9 @@ object NCSuggestionsGeneratorImpl {
                             sugg.word,
                             f(cumFactor),
                             cnt,
-                            f(sugg.score),
-                            f(sugg.bert),
-                            f(sugg.normalized),
-                            f(sugg.ftext),
-                            f(sugg.`ftext-sentence`)
+                            f(sugg.index1),
+                            f(sugg.index2),
+                            f(sugg.index3)
                         )
                     }
             }
@@ -312,14 +311,9 @@ object NCSuggestionsGeneratorImpl {
             debugs.groupBy(_._1.example).foreach { case (_, m) ⇒
                 m.toSeq.sortBy(_._1.sentence).foreach { case (req, suggs) ⇒
                     val s =
-                        split(req.sentence).zipWithIndex.map { case (w, i) ⇒
-                            i match {
-                                case x if x == req.lower && x == req.upper ⇒ s"<<<$w>>>"
-                                case x if x == req.lower ⇒ s"<<<$w"
-                                case x if x == req.upper ⇒ s"$w>>>"
-                                case _ ⇒ w
-                            }
-                        }.mkString(" ")
+                        split(req.sentence).
+                            zipWithIndex.map { case (w, i) ⇒ if (i == req.index) s"<<<$w>>>" else w }.
+                            mkString(" ")
 
                     println(
                         s"$i. " +
@@ -333,14 +327,14 @@ object NCSuggestionsGeneratorImpl {
             }
         }
 
-        println("Suggestions:")
+        println(s"Suggestions [calculated '${System.currentTimeMillis() - now}' ms.")
 
         tbl.render()
     }
 }
 
 object NCSuggestionsGenerator extends App {
-    private lazy val DFLT_URL: String = "http://localhost:5000/synonyms"
+    private lazy val DFLT_URL: String = "http://localhost:5000/suggestions"
     private lazy val DFLT_LIMIT: Int = 10 // TODO: add scoreLimit
     private lazy val DFLT_MIN_SCORE: Double = 0
     private lazy val DFLT_SYNONYMNS_WORDS: Int = 1
@@ -369,7 +363,7 @@ object NCSuggestionsGenerator extends App {
                    |
                    |DESCRIPTION:
                    |    This utility generates synonyms suggestions for given NLPCraft model.
-                   |    Note that Python NLP server should be started and accessible parameter URL.
+                   |    Note that ContextWord NLP server should be started and accessible parameter URL.
                    |
                    |    This Java class can be run from the command line or from an IDE like any other
                    |    Java application.""".stripMargin
@@ -383,7 +377,7 @@ object NCSuggestionsGenerator extends App {
                |        It should have one of the following extensions: .js, .json, .yml, or .yaml
                |
                |    [--url|-u] url
-               |        Optional Python NLP server URL.
+               |        Optional ContextWord NLP server URL.
                |        Default is $DFLT_URL.
                |
                |    [--limit|-l] limit
