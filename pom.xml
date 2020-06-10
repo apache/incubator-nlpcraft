@@ -24,7 +24,7 @@
     <name>NLPCraft Parent</name>
     <groupId>org.apache.nlpcraft</groupId>
     <artifactId>nlpcraft-parent</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
     <packaging>pom</packaging>
 
     <url>https://nlpcraft.apache.org</url>
@@ -76,6 +76,7 @@
 
         <!-- Versions. -->
         <ignite.ver>2.8.1</ignite.ver>
+        <gridgain.agent.ver>2.8.1.0</gridgain.agent.ver>
         <scala.plugin.ver>4.3.1</scala.plugin.ver>
         <log4j.ver>2.12.0</log4j.ver>
         <scala.ver>${scala.base}.11</scala.ver>
@@ -581,6 +582,24 @@
             <modules>
                 <module>nlpcraft-stanford</module>
             </modules>
+        </profile>
+
+        <profile>
+            <id>gridgain-agent</id>
+            <repositories>
+                <repository>
+                    <id>GridGain External Repository</id>
+                    <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
+                </repository>
+            </repositories>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.gridgain</groupId>
+                    <artifactId>gridgain-control-center-agent</artifactId>
+                    <version>${gridgain.agent.ver}</version>
+                </dependency>
+            </dependencies>
         </profile>
 
         <profile>
