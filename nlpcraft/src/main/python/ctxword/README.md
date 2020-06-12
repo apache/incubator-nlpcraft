@@ -24,10 +24,13 @@ To start server:
 ##### /suggestions
 Returns word replacement suggestions for following word in the sentence  
 * "sentences": List of sentences information. Each sentence encoded as list, first element of which is sentence itself,
-  second is position in the sentence of the word to generate suggestions for.  
-  Example: ``"sentences": [["foo bar baz", 2], ["sample second sentence", 0]]``
+  second and next are positions in the sentence of the words to generate suggestions for.  
+  Example: ``"sentences": [["foo bar baz", 0, 2], ["sample second sentence", 1]]``
 * "simple" (Optional): If set to true omits verbose data.  
-* "limit": Sets limit of result words number.  
+* "limit" (Optional): Sets limit of result words number. 
+* "min_score" (Optional): Sets minimal requirement of total score.
+* "ftext_score" (Optional): Sets minimal requirement of FastText score.  
+Endpoint returns list with elements `[word, total score, FastText score, Bert score]`
 
 Simple request with single sentence could be made with a script, e.g.  
 `$ bin/predict.sh "what is the chance of rain tomorrow?" 5`  
