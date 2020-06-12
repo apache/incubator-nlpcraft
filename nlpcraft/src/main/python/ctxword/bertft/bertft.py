@@ -16,6 +16,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+import operator
 
 from transformers import AutoModelWithLMHead, AutoTokenizer
 import logging
@@ -27,6 +28,7 @@ import time
 from pathlib import Path
 import fasttext.util
 from .utils import ROOT_DIR
+import functools
 
 
 def lget(lst, pos):
@@ -60,7 +62,7 @@ class Pipeline:
 
         cur_path = get_ft_path(ft_size)
 
-        self.log.warning("Initializing fast text")
+        self.log.info("Initializing fast text")
 
         if Path(cur_path).exists():
             self.log.info("Found existing model, loading.")
@@ -93,13 +95,10 @@ class Pipeline:
             model = self.model
             ft = self.ft
 
-            k = 10 if k is None else k
-            min_score = 0 if min_score is None else min_score
-
             start_time = time.time()
             req_start_time = start_time
 
-            sentences = list(map(lambda x: self.replace_with_mask(x[0], x[1]), input_data))
+            sentences = functools.reduce(operator.concat, (map(lambda x: self.replace_with_mask(x[0], x[1:]), input_data)))
 
             encoded = tokenizer.batch_encode_plus(list(map(lambda x: x[1], sentences)), pad_to_max_length=True)
             input_ids = torch.tensor(encoded['input_ids'], device=self.device)
@@ -151,10 +150,10 @@ class Pipeline:
                 result.append(
                     sorted(
                         filter(
-                            lambda x: x[0] > min_score and x[1] > min_ftext,
-                            zip(scores.tolist(), similarities.tolist(), suggestions[i], nvl[i].tolist())
+                            lambda x: x[1] > min_score and x[2] > min_ftext,
+                            zip(suggestions[i], scores.tolist(), similarities.tolist(), nvl[i].tolist())
                         ),
-                        key=lambda x: x[0],
+                        key=lambda x: x[1],
                         reverse=True
                     )[:k]
                 )
@@ -168,24 +167,29 @@ class Pipeline:
 
             return result
 
-    def replace_with_mask(self, sentence, index):
+    def replace_with_mask(self, sentence, indexes):
         lst = sentence.split()
 
-        target = lst[index]
+        result = []
 
-        seqlst = lst[:index]
-        seqlst.append(self.tokenizer.mask_token)
-        seqlst.extend(lst[(index + 1):])
+        for index in indexes:
+            target = lst[index]
 
-        return (target, " ".join(seqlst))
+            seqlst = lst[:index]
+            seqlst.append(self.tokenizer.mask_token)
+            seqlst.extend(lst[(index + 1):])
+
+            result.append((target, " ".join(seqlst)))
+
+        return result
 
     def print_time(self, start, message):
         current = time.time()
         self.log.info(message + " in %s ms", '{0:.4f}'.format((current - start) * 1000))
         return current
 
-    def do_find(self, data, limit, min_score):
-        return self.find_top(data, limit, 100, 0.25, [1, 1], min_score)
+    def do_find(self, data, limit, min_score, min_ftext):
+        return self.find_top(data, limit, 50, min_ftext, [1, 1], min_score)
 
     def dget(self, lst, pos):
         return list(map(lambda x: '{0:.2f}'.format(x[pos]), lst)) if self.on_run is not None else lget(lst, pos)
