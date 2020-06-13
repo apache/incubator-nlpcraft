@@ -16,4 +16,4 @@
 # limitations under the License.
 #
 
-curl -d "{\"sentences\": [[\"$1\", $2]], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions
+curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions
