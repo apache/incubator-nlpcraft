@@ -52,7 +52,7 @@ See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide fo
 
 For any questions, feedback or suggestions:
 
- * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
+ * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples)
  * Latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
  * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
