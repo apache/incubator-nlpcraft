@@ -27,7 +27,7 @@ import java.util.*;
  * This factory doesn't have any configuration properties and uses {@link Class#newInstance()} to construct {@link NCModel}s.
  * </p>
  * Basic factory have to be specified in probe configuration. Here's
- * a <code>probe.conf</code> from <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/names">Names</a> example
+ * a <code>probe.conf</code> from <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/names">Names</a> example
  * using Spring-based factory:
  * <pre class="brush:js, highlight: [11, 12, 13, 14, 15, 16]">
  * nlpcraft {
