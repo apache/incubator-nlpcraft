@@ -34,7 +34,7 @@ import java.util.*;
  * <li>{@value #XML_CONFIG_PROP} - path to an XML files with Spring bean definitions</li>
  * </ul>
  * Spring factory have to be specified in probe configuration. Here's
- * a <code>probe.conf</code> from <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/names">Names</a> example
+ * a <code>probe.conf</code> from <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/names">Names</a> example
  * using Spring-based factory:
  * <pre class="brush:js, highlight: [11, 12, 13, 14, 15, 16]">
  * nlpcraft {

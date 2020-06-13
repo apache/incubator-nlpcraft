@@ -160,17 +160,16 @@ object NCIntentScanner {
         checkMinMax(m, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
-        new Callback() {
-            override def apply(ctx: NCIntentMatch): NCResult = {
-                invoke(
-                    m,
-                    obj,
-                    (
-                        (if (ctxFirstParam) Seq(ctx) else Seq.empty) ++
+        (ctx: NCIntentMatch) => {
+            invoke(
+                m,
+                obj,
+                (
+                    (if (ctxFirstParam) Seq(ctx)
+                    else Seq.empty) ++
                         prepareParams(m, tokParamTypes, termIds.map(ctx.getTermTokens), ctxFirstParam)
                     ).toArray
-                )
-            }
+            )
         }
     }
 
@@ -182,6 +181,7 @@ object NCIntentScanner {
       */
     @throws[NCE]
     private def invoke(m: Method, obj: Any, args: Array[AnyRef]): NCResult = {
+        // TODO: fix in Java 9+.
         var flag = m.isAccessible
 
         try {

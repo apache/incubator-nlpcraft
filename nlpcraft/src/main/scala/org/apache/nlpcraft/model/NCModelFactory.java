@@ -25,7 +25,7 @@ import java.util.*;
  * data model externally, e.g. <a target=_ href="https://spring.io/">Spring</a>-based factory and configuration.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
- * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
+ * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  */
 public interface NCModelFactory {
     /**
