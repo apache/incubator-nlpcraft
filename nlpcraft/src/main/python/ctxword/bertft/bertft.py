@@ -98,7 +98,10 @@ class Pipeline:
             start_time = time.time()
             req_start_time = start_time
 
-            sentences = functools.reduce(operator.concat, (map(lambda x: self.replace_with_mask(x[0], x[1:]), input_data)))
+            sentences = functools.reduce(
+                operator.concat,
+                (map(lambda x: self.replace_with_mask(x[0], x[1:]), input_data))
+            )
 
             encoded = tokenizer.batch_encode_plus(list(map(lambda x: x[1], sentences)), pad_to_max_length=True)
             input_ids = torch.tensor(encoded['input_ids'], device=self.device)

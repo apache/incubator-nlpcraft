@@ -56,7 +56,10 @@ def main():
 
     json = request.json
 
-    sentences = present(json, 'sentences')
+    sentences = list(map(
+        lambda x: [present(x, 'text'), *(present(x, 'indexes'))],
+        present(json, 'sentences'))
+    )
     limit = json['limit'] if 'limit' in json else 10
     min_score = json['min_score'] if 'min_score' in json else 0
     min_ftext = json['min_ftext'] if 'min_ftext' in json else 0.25
@@ -64,6 +67,10 @@ def main():
 
     data = pipeline.do_find(sentences, limit, min_score, min_ftext, min_bert)
     if 'simple' not in json or not json['simple']:
-        return jsonify(data)
+        return jsonify(list(map(lambda x: list(map(lambda y: to_dict(y), x)), data)))
     else:
         return jsonify(list(map(lambda x: list(map(lambda y: y[0], x)), data)))
+
+
+def to_dict(y):
+    return {'word': y[0], 'score': y[1], 'ftext_score': y[2], 'bert_score': y[3]}
