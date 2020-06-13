@@ -89,7 +89,7 @@ class Pipeline:
 
         self.log.info("Server started in %s seconds", ('{0:.4f}'.format(time.time() - start_time)))
 
-    def find_top(self, input_data, k, top_bert, min_ftext, weights, min_score):
+    def find_top(self, input_data, k, top_bert, min_ftext, weights, min_score, min_bert):
         with torch.no_grad():
             tokenizer = self.tokenizer
             model = self.model
@@ -111,7 +111,12 @@ class Pipeline:
 
             mask_token_index = torch.where(input_ids == tokenizer.mask_token_id)[1]
             token_logits = forward[0]
-            mask_token_logits = token_logits[0, mask_token_index, :]
+            tmp = []
+
+            for i in range(0, len(mask_token_index)):
+                tmp.append(token_logits[i][mask_token_index[i]])
+
+            mask_token_logits = torch.stack(tmp)
 
             # Filter top <top_bert> results of bert output
             topk = torch.topk(mask_token_logits, top_bert, dim=1)
@@ -150,7 +155,7 @@ class Pipeline:
                 result.append(
                     sorted(
                         filter(
-                            lambda x: x[1] > min_score and x[2] > min_ftext,
+                            lambda x: x[1] > min_score and x[2] > min_ftext and x[3] > min_bert,
                             zip(suggestions[i], scores.tolist(), similarities.tolist(), nvl[i].tolist())
                         ),
                         key=lambda x: x[1],
@@ -188,8 +193,8 @@ class Pipeline:
         self.log.info(message + " in %s ms", '{0:.4f}'.format((current - start) * 1000))
         return current
 
-    def do_find(self, data, limit, min_score, min_ftext):
-        return self.find_top(data, limit, 50, min_ftext, [1, 1], min_score)
+    def do_find(self, data, limit, min_score, min_ftext, min_bert):
+        return self.find_top(data, limit, 100, min_ftext, [1, 1], min_score, min_bert)
 
     def dget(self, lst, pos):
         return list(map(lambda x: '{0:.2f}'.format(x[pos]), lst)) if self.on_run is not None else lget(lst, pos)
