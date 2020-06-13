@@ -29,7 +29,8 @@ Returns word replacement suggestions for following word in the sentence
 * "simple" (Optional): If set to true omits verbose data.  
 * "limit" (Optional): Sets limit of result words number. 
 * "min_score" (Optional): Sets minimal requirement of total score.
-* "ftext_score" (Optional): Sets minimal requirement of FastText score.  
+* "min_ftext" (Optional): Sets minimal requirement of FastText score.  
+* "min_bert" (Optional): Sets minimal requirement of Bert score.  
 Endpoint returns list with elements `[word, total score, FastText score, Bert score]`
 
 Simple request with single sentence could be made with a script, e.g.  
