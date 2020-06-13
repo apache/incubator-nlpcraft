@@ -41,10 +41,11 @@ import scala.collection._
 case class ParametersHolder(modelPath: String, url: String, limit: Int, minScore: Double, debug: Boolean)
 
 object NCSuggestionsGeneratorImpl {
-    case class Suggestion(word: String, totalScore: Double, fastTextScore: Double, bertScore: Double)
+    // Bert score, FText score skipped here because user doesn't need it for analyze.
+    case class Suggestion(word: String, totalScore: Double)
 
     case class RequestData(sentence: String, example: String, elementId: String, index: Int)
-    case class RestRequest(sentences: java.util.List[java.util.List[Any]], limit: Int, min_score: Double, simple: Boolean = false)
+    case class RestRequest(sentences: java.util.List[java.util.List[Any]], limit: Int, min_score: Double)
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
         require(
@@ -60,7 +61,7 @@ object NCSuggestionsGeneratorImpl {
     private final val GSON = new Gson
     private final val TYPE_RESP = new TypeToken[java.util.List[java.util.List[java.util.List[Any]]]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
-    private final val BATCH_SIZE = 20
+    private final val BATCH_SIZE = 100
 
     private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
         (resp: HttpResponse) ⇒ {
@@ -82,10 +83,7 @@ object NCSuggestionsGeneratorImpl {
                         else
                             p.asScala.tail.map(p ⇒
                                 Suggestion(
-                                    word = p.get(0).asInstanceOf[String],
-                                    totalScore = p.get(1).asInstanceOf[Double],
-                                    fastTextScore = p.get(2).asInstanceOf[Double],
-                                    bertScore = p.get(3).asInstanceOf[Double]
+                                    word = p.get(0).asInstanceOf[String], totalScore = p.get(1).asInstanceOf[Double]
                                 )
                             )
                     )
@@ -252,15 +250,12 @@ object NCSuggestionsGeneratorImpl {
 
         val tbl = NCAsciiTable()
 
-        // TODO: which columns do we need?
         tbl #= (
             "Element",
             "Suggestion",
-            "Summary Score",
+            "ContextWord Server Score",
             "Count",
-            "ContextWord Score",
-            "FastText Score",
-            "Bert Score"
+            "Summary Score"
         )
 
         filteredSuggs.
@@ -289,11 +284,9 @@ object NCSuggestionsGeneratorImpl {
                         tbl += (
                             if (sugIdx == 0) elemId else " ",
                             sugg.word,
-                            f(cumFactor),
-                            cnt,
                             f(sugg.totalScore),
-                            f(sugg.fastTextScore),
-                            f(sugg.bertScore)
+                            cnt,
+                            f(cumFactor)
                         )
                     }
             }
