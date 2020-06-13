@@ -60,8 +60,9 @@ def main():
     limit = json['limit'] if 'limit' in json else 10
     min_score = json['min_score'] if 'min_score' in json else 0
     min_ftext = json['min_ftext'] if 'min_ftext' in json else 0.25
+    min_bert = json['min_bert'] if 'min_bert' in json else 0
 
-    data = pipeline.do_find(sentences, limit, min_score, min_ftext)
+    data = pipeline.do_find(sentences, limit, min_score, min_ftext, min_bert)
     if 'simple' not in json or not json['simple']:
         return jsonify(data)
     else:
