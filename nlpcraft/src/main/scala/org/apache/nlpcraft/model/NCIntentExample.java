@@ -17,22 +17,27 @@
 
 package org.apache.nlpcraft.model;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Annotations referencing an intent defined externally in JSON or YAML model declaration.
+ * Annotation to define one or more examples of the user input that should match a corresponding intent. This
+ * annotation can only be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
+ * methods.
+ * <p>
+ * Note that the examples provided by this annotation not only serve the documentation purpose but are also
+ * used internally by various parts of NLPCraft for uint testing, synonym detection, etc. It is highly
+ * advised to provide multiple examples per each intent either through this annotation of in external model
+ * declaration.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
  * @see NCIntent
+ * @see NCIntentRef
  * @see NCIntentTerm
- * @see NCIntentExample
  * @see NCIntentSkip
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch)
@@ -40,11 +45,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(value=RUNTIME)
 @Target(value=METHOD)
-public @interface NCIntentRef {
-    /**
-     * ID of the intent defined externally.
-     *
-     * @return ID of the intent defined externally.
-     */
-    String value() default "";
+public @interface NCIntentExample {
+    String[] value();
 }
