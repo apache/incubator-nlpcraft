@@ -234,9 +234,6 @@ object NCSuggestionsGeneratorImpl {
 
         val nonEmptySuggs = allSuggs.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
 
-        val avgScores = nonEmptySuggs.map { case (elemId, suggs) ⇒ elemId → (suggs.map(_.score).sum / suggs.size) }
-        val counts = nonEmptySuggs.map { case (elemId, suggs) ⇒ elemId → suggs.size }
-
         val tbl = NCAsciiTable()
 
         tbl #= (
@@ -249,7 +246,7 @@ object NCSuggestionsGeneratorImpl {
 
         nonEmptySuggs.
             foreach { case (elemId, elemSuggs) ⇒
-                val seq: Seq[(Suggestion, Int)] = elemSuggs.
+                elemSuggs.
                     map(sugg ⇒ (sugg, toStem(sugg.word))).
                     groupBy { case (_, stem) ⇒ stem }.
                     filter { case (stem, _) ⇒ !allSynsStems.contains(stem) }.
@@ -259,24 +256,14 @@ object NCSuggestionsGeneratorImpl {
                         // Drops repeated.
                         (seq.head, seq.length)
                     }.
-                    toSeq
-
-                val normFactor = seq.map(_._2).sum.toDouble / seq.size / avgScores(elemId)
-
-                seq.
-                    map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * normFactor * cnt.toDouble / counts(elemId)) }.
-                    sortBy { case (_, _, cumFactor) ⇒ -cumFactor }.
+                    toSeq.
+                    map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * cnt / elemSuggs.size) }.
+                    sortBy { case (_, _, sumFactor) ⇒ -sumFactor }.
                     zipWithIndex.
-                    foreach { case ((sugg, cnt, cumFactor), sugIdx) ⇒
-                        def f(d: Double): String = "%1.3f" format d
+                    foreach { case ((sugg, cnt, sumFactor), sugIdx) ⇒
+                        def f(d: Double): String = "%1.5f" format d
 
-                        tbl += (
-                            if (sugIdx == 0) elemId else " ",
-                            sugg.word,
-                            f(sugg.score),
-                            cnt,
-                            f(cumFactor)
-                        )
+                        tbl += (if (sugIdx == 0) elemId else "", sugg.word, f(sugg.score), cnt, f(sumFactor))
                     }
             }
 
@@ -310,7 +297,7 @@ object NCSuggestionsGeneratorImpl {
 
 object NCSuggestionsGenerator extends App {
     private lazy val DFLT_URL: String = "http://localhost:5000/suggestions"
-    private lazy val DFLT_LIMIT: Int = 10
+    private lazy val DFLT_LIMIT: Int = 20
     private lazy val DFLT_MIN_SCORE: Double = 0
     private lazy val DFLT_DEBUG: Boolean = false
 
