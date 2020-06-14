@@ -252,11 +252,11 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         }
         catch {
             case e: Exception ⇒
-                System.err.println(if (query == null) "Query cannot be prepared" else "Query execution error")
+                System.err.println(if (query == null) "Query cannot be prepared." else "Query execution error.")
 
                 e.printStackTrace()
 
-                NCResult.json(toJson("Question cannot be answered, reformulate it"))
+                NCResult.json(toJson("Question cannot be answered as is."))
         }
     }
 
@@ -287,6 +287,11 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         "term(sort)={id == 'nlpcraft:sort'}? " +
         "term(limit)={id == 'nlpcraft:limit'}?"
     )
+    @NCIntentExample(Array(
+        "order date, please!",
+        "show me the order dates",
+        "list dates of orders"
+    ))
     def onCommonReport(
         ctx: NCIntentMatch,
         @NCIntentTerm("tbls") tbls: Seq[NCToken],
@@ -344,6 +349,9 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         "term(condFreeDate)={id == 'nlpcraft:date'}? " +
         "term(limit)={id == 'nlpcraft:limit'}?"
     )
+    @NCIntentExample(Array(
+        "What are the least performing categories for the last quarter?"
+    ))
     def onCustomSortReport(
         ctx: NCIntentMatch,
         @NCIntentTerm("sort") sortTok: NCToken,
@@ -358,9 +366,9 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         val ordersFreightColSort: NCSqlSort =
             new NCSqlSort {
                 override def getColumn: NCSqlColumn = SCHEMA.getTables.asScala.find(_.getTable == "orders").
-                    getOrElse(throw new RuntimeException(s"Table `orders` not found")).
+                    getOrElse(throw new RuntimeException(s"Table `orders` not found.")).
                     getColumns.asScala.find(_.getColumn == "freight").
-                    getOrElse(throw new RuntimeException(s"Column `orders.freight` not found"))
+                    getOrElse(throw new RuntimeException(s"Column `orders.freight` not found."))
                 override def isAscending: Boolean =
                     sortTok.getId match {
                         case "sort:best" ⇒ false
