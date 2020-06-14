@@ -232,13 +232,10 @@ object NCSuggestionsGeneratorImpl {
 
         val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
-        val filteredSuggs =
-            allSuggs.asScala.map {
-                case (elemId, elemSuggs) ⇒ elemId → elemSuggs.asScala.filter(_.score >= data.minScore)
-            }.filter(_._2.nonEmpty)
+        val nonEmptySuggs = allSuggs.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
 
-        val avgScores = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → (suggs.map(_.score).sum / suggs.size) }
-        val counts = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → suggs.size }
+        val avgScores = nonEmptySuggs.map { case (elemId, suggs) ⇒ elemId → (suggs.map(_.score).sum / suggs.size) }
+        val counts = nonEmptySuggs.map { case (elemId, suggs) ⇒ elemId → suggs.size }
 
         val tbl = NCAsciiTable()
 
@@ -250,7 +247,7 @@ object NCSuggestionsGeneratorImpl {
             "Summary Score"
         )
 
-        filteredSuggs.
+        nonEmptySuggs.
             foreach { case (elemId, elemSuggs) ⇒
                 val seq: Seq[(Suggestion, Int)] = elemSuggs.
                     map(sugg ⇒ (sugg, toStem(sugg.word))).
