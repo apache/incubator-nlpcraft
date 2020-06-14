@@ -35,17 +35,18 @@ import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.NCModelFileAdapter
 
+import java.util.{List ⇒ JList}
+
 import scala.collection.JavaConverters._
 import scala.collection._
 
 case class ParametersHolder(modelPath: String, url: String, limit: Int, minScore: Double, debug: Boolean)
 
 object NCSuggestionsGeneratorImpl {
-    // Bert score, FText score skipped here because user doesn't need it for analyze.
-    case class Suggestion(word: String, totalScore: Double)
-
+    case class Suggestion(word: String, score: Double)
     case class RequestData(sentence: String, example: String, elementId: String, index: Int)
-    case class RestRequest(sentences: java.util.List[java.util.List[Any]], limit: Int, min_score: Double)
+    case class RestRequestSentence(text: String, indexes: JList[Int])
+    case class RestRequest(sentences: JList[RestRequestSentence], limit: Int, min_score: Double)
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
         require(
@@ -59,9 +60,9 @@ object NCSuggestionsGeneratorImpl {
     }
 
     private final val GSON = new Gson
-    private final val TYPE_RESP = new TypeToken[java.util.List[java.util.List[java.util.List[Any]]]]() {}.getType
+    private final val TYPE_RESP = new TypeToken[JList[JList[Suggestion]]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
-    private final val BATCH_SIZE = 100
+    private final val BATCH_SIZE = 20
 
     private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
         (resp: HttpResponse) ⇒ {
@@ -75,18 +76,9 @@ object NCSuggestionsGeneratorImpl {
 
             code match {
                 case 200 ⇒
-                    val data: java.util.List[java.util.List[java.util.List[Any]]] = GSON.fromJson(js, TYPE_RESP)
+                    val data: JList[JList[Suggestion]] = GSON.fromJson(js, TYPE_RESP)
 
-                    data.asScala.map(p ⇒
-                        if (p.isEmpty)
-                            Seq.empty
-                        else
-                            p.asScala.tail.map(p ⇒
-                                Suggestion(
-                                    word = p.get(0).asInstanceOf[String], totalScore = p.get(1).asInstanceOf[Double]
-                                )
-                            )
-                    )
+                    data.asScala.map(p ⇒ if (p.isEmpty) Seq.empty else p.asScala.tail)
 
                 case 400 ⇒ throw new RuntimeException(js)
                 case _ ⇒ throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
@@ -178,7 +170,7 @@ object NCSuggestionsGeneratorImpl {
         println(s"Synonyms count: ${elemSyns.map(_._2.size).sum}")
         println(s"Request prepared: $allReqsCnt")
 
-        val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, java.util.List[Suggestion]]()
+        val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, JList[Suggestion]]()
         val cdl = new CountDownLatch(1)
         val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
         val cnt = new AtomicInteger(0)
@@ -195,7 +187,7 @@ object NCSuggestionsGeneratorImpl {
                         new StringEntity(
                             GSON.toJson(
                                 RestRequest(
-                                    sentences = batch.map(p ⇒ Seq(p.sentence, p.index).asJava).asJava,
+                                    sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
                                     min_score = data.minScore,
                                     limit = data.limit
                                 )
@@ -242,10 +234,10 @@ object NCSuggestionsGeneratorImpl {
 
         val filteredSuggs =
             allSuggs.asScala.map {
-                case (elemId, elemSuggs) ⇒ elemId → elemSuggs.asScala.filter(_.totalScore >= data.minScore)
+                case (elemId, elemSuggs) ⇒ elemId → elemSuggs.asScala.filter(_.score >= data.minScore)
             }.filter(_._2.nonEmpty)
 
-        val avgScores = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → (suggs.map(_.totalScore).sum / suggs.size) }
+        val avgScores = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → (suggs.map(_.score).sum / suggs.size) }
         val counts = filteredSuggs.map { case (elemId, suggs) ⇒ elemId → suggs.size }
 
         val tbl = NCAsciiTable()
@@ -265,7 +257,7 @@ object NCSuggestionsGeneratorImpl {
                     groupBy { case (_, stem) ⇒ stem }.
                     filter { case (stem, _) ⇒ !allSynsStems.contains(stem) }.
                     map { case (_, group) ⇒
-                        val seq = group.map { case (sugg, _) ⇒ sugg }.sortBy(-_.totalScore)
+                        val seq = group.map { case (sugg, _) ⇒ sugg }.sortBy(-_.score)
 
                         // Drops repeated.
                         (seq.head, seq.length)
@@ -275,7 +267,7 @@ object NCSuggestionsGeneratorImpl {
                 val normFactor = seq.map(_._2).sum.toDouble / seq.size / avgScores(elemId)
 
                 seq.
-                    map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.totalScore * normFactor * cnt.toDouble / counts(elemId)) }.
+                    map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * normFactor * cnt.toDouble / counts(elemId)) }.
                     sortBy { case (_, _, cumFactor) ⇒ -cumFactor }.
                     zipWithIndex.
                     foreach { case ((sugg, cnt, cumFactor), sugIdx) ⇒
@@ -284,7 +276,7 @@ object NCSuggestionsGeneratorImpl {
                         tbl += (
                             if (sugIdx == 0) elemId else " ",
                             sugg.word,
-                            f(sugg.totalScore),
+                            f(sugg.score),
                             cnt,
                             f(cumFactor)
                         )
