@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 #  Licensed to the Apache Software Foundation (ASF) under one or more
 #  contributor license agreements.  See the NOTICE file distributed with
 #  this work for additional information regarding copyright ownership.
@@ -16,27 +13,20 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-import operator
 
-from transformers import AutoModelWithLMHead, AutoTokenizer
+import functools
 import logging
-import torch
-import re
-import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
+import operator
 import time
 from pathlib import Path
+
 import fasttext.util
+import torch
+from transformers import AutoModelWithLMHead, AutoTokenizer
+
 from .utils import ROOT_DIR
-import functools
 
 
-def lget(lst, pos):
-    return list(map(lambda x: x[pos], lst))
-
-
-# TODO: make Model configurable
-# TODO: add type check
 class Pipeline:
     def __init__(self, use_cuda=True):
         self.log = logging.getLogger("bertft")
@@ -170,7 +160,7 @@ class Pipeline:
 
             self.print_time(req_start_time, "Request processed")
 
-            if (self.use_cuda):
+            if self.use_cuda:
                 torch.cuda.empty_cache()
 
             return result
@@ -198,6 +188,3 @@ class Pipeline:
 
     def do_find(self, data, limit, min_score, min_ftext, min_bert):
         return self.find_top(data, limit, 100, min_ftext, [1, 1], min_score, min_bert)
-
-    def dget(self, lst, pos):
-        return list(map(lambda x: '{0:.2f}'.format(x[pos]), lst)) if self.on_run is not None else lget(lst, pos)

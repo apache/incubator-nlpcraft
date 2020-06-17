@@ -15,4 +15,3 @@
 #
 
 from .bertft import Pipeline
-from .bertft import lget

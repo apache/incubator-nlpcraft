@@ -15,10 +15,11 @@
 #
 
 import logging
-from flask import Flask
-from flask import request
-from flask import jsonify
+
 from bertft import Pipeline
+from flask import Flask
+from flask import jsonify
+from flask import request
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
