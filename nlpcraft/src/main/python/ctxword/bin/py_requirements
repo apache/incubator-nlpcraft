@@ -18,8 +18,6 @@
 Flask==1.1.2
 transformers==2.7.0
 torch==1.5.0
-pandas==1.0.3
-scikit-learn==0.22.2.post1
 
 # Dependencies required only for jupyter. Uncomment lines below to install them.
 #matplotlib==3.2.1
