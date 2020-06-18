@@ -239,7 +239,7 @@
    serializing structured data.
                                                                                                        
    Maven dependency: com.google.protobuf:protobuf-java
-   BSD License: https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
+   Licensed under BSD License: https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
 
    ANTLR
    -----
@@ -250,23 +250,6 @@
                                                                                                        
    Maven dependency: org.antlr:antlr4-runtime
    Licensed under BSD license: https://www.antlr.org/license.html
-
-   jsoup
-   -----
-   jsoup is a Java library for working with real-world HTML. It provides a very convenient API for
-   fetching URLs and extracting and manipulating data, using the best of HTML5 DOM methods
-   and CSS selectors.
-
-   Maven dependency: org.jsoup:jsoup
-   Licensed under MIT license: https://jsoup.org/license
-
-   Scala ARM
-   ---------
-   This project is an attempt to provide an Automatic-Resource-Management library for the scala
-   distribution. It is based off of code contributed to the Scalax project.
-                                                                                                       
-   Maven dependency: com.jsuereth:scala-arm_2.11
-   Licensed under MIT license: https://github.com/jsuereth/scala-arm
 
    MChange c3p0
    ------------
@@ -283,13 +266,6 @@
                                                                                                        
    Maven dependency: net.sf.extjwnl
    Licensed under BSD license: http://extjwnl.sourceforge.net/license.txt
-
-   SQL Formatter
-   -------------
-   Java port of great SQL formatter https://github.com/zeroturnaround/sql-formatter.
-                                                                                                       
-   Maven dependency: com.github.vertical-blank:sql-formatter
-   Licensed under MIT license: https://github.com/vertical-blank/sql-formatter/blob/master/LICENSE
 
    Jgrapht
    -------------

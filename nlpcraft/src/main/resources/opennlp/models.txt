@@ -1,2 +1,0 @@
-1. Tokenizer, location and pos tag models downloaded from http://opennlp.sourceforge.net/models-1.5/
-2. Lemma model downloaded from https://raw.githubusercontent.com/richardwilly98/elasticsearch-opennlp-auto-tagging/master/src/main/resources/models/en-lemmatizer.dict
