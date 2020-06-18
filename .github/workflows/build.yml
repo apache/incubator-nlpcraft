@@ -19,6 +19,7 @@ on:
   push:
     branches:
       - master
+      - NLPCRAFT-69 # TODO: Temporary added to investigate NLPCRAFT-69.
   pull_request:
     branches:
       - master
@@ -52,9 +53,8 @@ jobs:
 
       - name: Build (Linux)
         if: ${{matrix.os == 'ubuntu-latest'}}
-        run: 'mvn -B clean verify -P stanford-corenlp'
+        run: './mvnw -B clean verify -P stanford-corenlp'
 
       - name: Build (Windows)
         if: ${{matrix.os == 'windows-latest'}}
-        # Build only, no tests because of memory limits.
-        run: 'mvn -B clean package -DskipTests=true -P stanford-corenlp'
+        run: './mvnw.cmd -B clean verify -P stanford-corenlp'

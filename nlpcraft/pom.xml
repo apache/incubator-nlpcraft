@@ -276,8 +276,8 @@
                             <waitAfterLaunch>180</waitAfterLaunch>
                             <arguments>
                                 <argument>java</argument>
-                                <argument>-Xmx4G</argument>
-                                <argument>-Xms4G</argument>
+                                <argument>-Xmx3G</argument>
+                                <argument>-Xms3G</argument>
                                 <argument>-jar</argument>
                                 <argument>${project.build.directory}/${nlpcraft.all.deps.jar}</argument>
                                 <argument>-server</argument>
