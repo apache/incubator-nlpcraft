@@ -19,6 +19,7 @@ package org.apache.nlpcraft.server.nlp.spell
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
+import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.server.json.NCJson
 
 import scala.collection._
@@ -45,15 +46,14 @@ object NCSpellCheckManager extends NCService {
             s // Full lower case by default.
     
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        NCJson.extractResourceOpt[List[Record]](PATH, ignoreCase = true) match {
-            case Some(recs) ⇒
-                dict = (for (rec ← recs) yield { for (v ← rec.misspellings) yield v → rec.correct } ).flatten.toMap
-            case None ⇒
-                // TODO: warning text.
-                logger.warn(s"Data not found for some reasons: $PATH")
-
-                dict = Map.empty
-        }
+        if (NCUtils.hasResource(PATH))
+            dict =
+                (for (rec ← NCJson.extractResource[List[Record]](PATH, ignoreCase = true)) yield {
+                    for (v ← rec.misspellings) yield v → rec.correct
+                }).flatten.toMap
+        else
+            // TODO: warning text.
+            logger.warn(s"Data not found for some reasons: $PATH")
 
         super.start()
     }
@@ -73,15 +73,18 @@ object NCSpellCheckManager extends NCService {
       * @param in Word to check.
       */
     def check(in: String): String =
-        dict.get(in.toLowerCase) match {
-            case None ⇒ in
-            case Some(out) ⇒
-                val inSeq = split(in)
-                val outSeq = split(out)
+        if (dict == null)
+            in
+        else
+            dict.get(in.toLowerCase) match {
+                case None ⇒ in
+                case Some(out) ⇒
+                    val inSeq = split(in)
+                    val outSeq = split(out)
 
-                if (inSeq.lengthCompare(outSeq.size) == 0)
-                    outSeq.zip(inSeq).map(p ⇒ processCase(p._1, p._2)).mkString(" ")
-                else
-                    processCase(out, in)
-        }
+                    if (inSeq.lengthCompare(outSeq.size) == 0)
+                        outSeq.zip(inSeq).map(p ⇒ processCase(p._1, p._2)).mkString(" ")
+                    else
+                        processCase(out, in)
+            }
 }
