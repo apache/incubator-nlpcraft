@@ -300,6 +300,17 @@ object NCJson {
             case e: Throwable ⇒ throw new NCE(s"Failed to parse: $res", e)
         }
 
+    /**
+      * Extracts type optional `T` from given JSON `file`.
+      *
+      * @param res Resource to extract from.
+      * @param ignoreCase Whether or not to ignore case.
+      * @tparam T Type of the object to extract.
+      */
+    @throws[NCE]
+    def extractResourceOpt[T: Manifest](res: String, ignoreCase: Boolean): Option[T] =
+        if (U.hasResource(res)) Some(extractResource(res, ignoreCase)) else None
+
     // Gets string with removed symbol + from exponent part of numbers.
     // It is developed to avoid Lift parsing errors during processing numbers like '2E+2'.
     @tailrec

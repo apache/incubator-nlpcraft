@@ -28,12 +28,10 @@ import scala.collection._
   */
 object NCSpellCheckManager extends NCService {
     case class Record(correct: String, misspellings: Seq[String])
+
+    private final val PATH = "spell/dictionary.json"
     
-    private val dict: Map[String, String] = (
-        for (rec ← NCJson.extractResource[List[Record]]("spell/dictionary.json", ignoreCase = true)) yield {
-            for (v ← rec.misspellings) yield v → rec.correct
-        })
-        .flatten.toMap
+    @volatile private var dict: Map[String, String] = _
     
     private def isWordUpper(s: String): Boolean = s.forall(_.isUpper)
     private def isHeadUpper(s: String): Boolean = s.head.isUpper
@@ -47,10 +45,22 @@ object NCSpellCheckManager extends NCService {
             s // Full lower case by default.
     
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        NCJson.extractResourceOpt[List[Record]](PATH, ignoreCase = true) match {
+            case Some(recs) ⇒
+                dict = (for (rec ← recs) yield { for (v ← rec.misspellings) yield v → rec.correct } ).flatten.toMap
+            case None ⇒
+                // TODO: warning text.
+                logger.warn(s"Data not found for some reasons: $PATH")
+
+                dict = Map.empty
+        }
+
         super.start()
     }
     
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+        dict = null
+
         super.stop()
     }
     
@@ -62,15 +72,16 @@ object NCSpellCheckManager extends NCService {
       *
       * @param in Word to check.
       */
-    def check(in: String): String = dict.get(in.toLowerCase) match {
-        case None ⇒ in
-        case Some(out) ⇒
-            val inSeq = split(in)
-            val outSeq = split(out)
-            
-            if (inSeq.lengthCompare(outSeq.size) == 0)
-                outSeq.zip(inSeq).map(p ⇒ processCase(p._1, p._2)).mkString(" ")
-            else
-                processCase(out, in)
-    }
+    def check(in: String): String =
+        dict.get(in.toLowerCase) match {
+            case None ⇒ in
+            case Some(out) ⇒
+                val inSeq = split(in)
+                val outSeq = split(out)
+
+                if (inSeq.lengthCompare(outSeq.size) == 0)
+                    outSeq.zip(inSeq).map(p ⇒ processCase(p._1, p._2)).mkString(" ")
+                else
+                    processCase(out, in)
+        }
 }

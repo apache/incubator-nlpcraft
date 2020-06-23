@@ -19,6 +19,7 @@ package org.apache.nlpcraft.server.geo
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.dict.{NCDictionaryManager, NCDictionaryType}
+import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.json.NCJson
 
@@ -82,7 +83,20 @@ object NCGeoManager extends NCService {
       */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        model = readAndConstructModel(true)
+        val ok =
+            Seq(
+                COUNTRY_DIR ,
+                CONT_PATH,
+                METRO_PATH,
+                SYNONYMS_DIR_PATH,
+                CASE_SENSITIVE_DIR_PATH
+            ).forall(NCUtils.hasResource)
+
+        if (ok)
+            model = readAndConstructModel(true)
+        else
+            // TODO: warning text.
+            logger.warn(s"Some GEO Data not found for some reasons")
         
         super.start()
     }
