@@ -24,7 +24,7 @@
     <name>NLPCraft Parent</name>
     <groupId>org.apache.nlpcraft</groupId>
     <artifactId>nlpcraft-parent</artifactId>
-    <version>0.6.1</version>
+    <version>0.6.2</version>
     <packaging>pom</packaging>
 
     <url>https://nlpcraft.apache.org</url>
