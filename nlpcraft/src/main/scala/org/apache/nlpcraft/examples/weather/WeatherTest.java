@@ -19,6 +19,7 @@ package org.apache.nlpcraft.examples.weather;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
@@ -86,7 +87,9 @@ class WeatherTest {
         NCEmbeddedProbe.stop();
     }
 
+    // TODO: Uncomment and run with profile ``. Disabled by default for profile apache.
     @Test
+    @Ignore
     void test() throws NCException, IOException {
         // Empty parameter.
         assertTrue(cli.ask("").isFailed());
