@@ -584,6 +584,22 @@
             </modules>
         </profile>
 
+        <!-- Spell resources are not included by default due to Creative Commons-licensed files. -->
+        <profile>
+            <id>spell</id>
+            <modules>
+                <module>nlpcraft-spell</module>
+            </modules>
+        </profile>
+
+        <!-- Geo resources are not included by default due to Creative Commons-licensed files. -->
+        <profile>
+            <id>geo</id>
+            <modules>
+                <module>nlpcraft-geo</module>
+            </modules>
+        </profile>
+
         <profile>
             <id>gridgain-agent</id>
             <repositories>

@@ -32,12 +32,14 @@ zipFileBin=apache-nlpcraft-incubating-bin-$1.zip # NOT an official ASF release.
 zipFileSrc=apache-nlpcraft-incubating-$1.zip # An OFFICIAL ASF release.
 coreModule=nlpcraft
 stanfordModule=nlpcraft-stanford
+geoModule=nlpcraft-geo
+spellModule=nlpcraft-spell
 
 curDir=$(pwd)
 
 cd ../
 
-mvn clean package -P stanford-corenlp,release
+mvn clean package -P 'stanford-corenlp,release,spell,geo'
 
 rm -R ${zipDir} 2> /dev/null
 
@@ -50,6 +52,8 @@ rsync -avzq bin ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude bin/prepa
 rsync -avzq openapi ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 rsync -avzq ${coreModule}/src ${zipDir}/${tmpDir}/${coreModule} --exclude '**/.DS_Store' --exclude '**/*.iml' --exclude '**/python/ctxword/data' --exclude '**/server/geo/tools/**/*.txt'
 rsync -avzq ${stanfordModule}/src ${zipDir}/${tmpDir}/${stanfordModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
+rsync -avzq ${geoModule}/src ${zipDir}/${tmpDir}/${geoModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
+rsync -avzq ${spellModule}/src ${zipDir}/${tmpDir}/${spellModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp bindist/LICENSE ${zipDir}/${tmpDir}
@@ -75,6 +79,8 @@ rm -R ${tmpDir}/javadoc 2> /dev/null
 cd ../
 cp ${coreModule}/pom.xml ${zipDir}/${tmpDir}/${coreModule}
 cp ${stanfordModule}/pom.xml ${zipDir}/${tmpDir}/${stanfordModule}
+cp ${geoModule}/pom.xml ${zipDir}/${tmpDir}/${geoModule}
+cp ${spellModule}/pom.xml ${zipDir}/${tmpDir}/${spellModule}
 cp pom.xml ${zipDir}/${tmpDir}
 cp LICENSE ${zipDir}/${tmpDir}
 cp NOTICE ${zipDir}/${tmpDir}

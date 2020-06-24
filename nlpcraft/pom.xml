@@ -31,6 +31,32 @@
         <relativePath>../</relativePath>
     </parent>
 
+    <profiles>
+        <!-- Spell resources are not included by default due to Creative Commons-licensed files. -->
+        <profile>
+            <id>spell</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>nlpcraft-spell</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- Geo resources are not included by default due to Creative Commons-licensed files. -->
+        <profile>
+            <id>geo</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>nlpcraft-geo</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -326,6 +352,9 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven.javadoc.plugin.ver}</version>
                 <configuration>
+                    <!-- See https://issues.apache.org/jira/browse/MJAVADOC-523 -->
+                    <detectOfflineLinks>false</detectOfflineLinks>
+
                     <!-- Required as of JDK 8u121 -->
                     <additionalOptions>--allow-script-in-comments, -Xdoclint:none</additionalOptions>
                     <javadocDirectory>${project.basedir}/../javadoc</javadocDirectory>
