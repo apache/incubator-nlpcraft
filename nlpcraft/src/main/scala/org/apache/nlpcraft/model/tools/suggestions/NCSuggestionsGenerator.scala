@@ -387,7 +387,7 @@ object NCSuggestionsGenerator extends App {
         val td = t.doubleValue()
 
         if (td < fromIncl.doubleValue() || td > toIncl.doubleValue())
-            throw new IllegalArgumentException(s"Invalid `$name` range. Must be between: $fromIncl and $toIncl")
+            throw new IllegalArgumentException(s"Invalid '$name' range. Must be between: $fromIncl and $toIncl")
 
         t
     }
