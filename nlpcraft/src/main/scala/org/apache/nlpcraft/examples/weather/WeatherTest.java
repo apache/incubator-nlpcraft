@@ -19,13 +19,14 @@ package org.apache.nlpcraft.examples.weather;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
 import org.apache.nlpcraft.model.tools.test.NCTestResult;
 import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,9 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Weather model test. Note that this example demonstrates the testing of the proper
@@ -89,7 +92,6 @@ class WeatherTest {
 
     // TODO: Uncomment and run with profile ``. Disabled by default for profile apache.
     @Test
-    @Ignore
     void test() throws NCException, IOException {
         // Empty parameter.
         assertTrue(cli.ask("").isFailed());
@@ -108,5 +110,11 @@ class WeatherTest {
 
         // Cannot be answered without conversation.
         assertTrue(cli.ask("Moscow").isFailed());
+    }
+
+    @BeforeAll
+    public static void checkOs() {
+        // Works with 'geo' profile.
+        Assumptions.assumeTrue(WeatherTest.class.getClassLoader().getResourceAsStream("geo/synonyms") != null);
     }
 }
