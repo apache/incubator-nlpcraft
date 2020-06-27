@@ -51,10 +51,12 @@ object NCSpellCheckManager extends NCService {
                 (for (rec ← NCJson.extractResource[List[Record]](PATH, ignoreCase = true)) yield {
                     for (v ← rec.misspellings) yield v → rec.correct
                 }).flatten.toMap
-        else
-            // TODO: warning text.
-            logger.warn(s"Data not found for some reasons: $PATH")
-
+        else {
+            logger.warn(s"Spell-checking configuration '$PATH' not found (ignoring but spell-checking is unavailable):")
+            logger.warn("  +--> configuration is CC BY-SA 3.0 US licensed and NOT compatible with Apache 2.0 license.")
+            logger.warn("  +--> you need to manually enable 'nlpcraft-spell' maven profile to include this configuration.")
+        }
+        
         super.start()
     }
     

@@ -21,11 +21,11 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * TODO: add description.
+ * Unit tests for `NCSqlModelGenerator` implementation.
  */
 class NCSqlModelEngineSpec {
     /**
-     * Copy of the private method from 'NCSqlModelEngine'.
+     * Copy of the private method from 'NCSqlModelGenerator'.
      *
      * @param s
      * @return

@@ -87,15 +87,15 @@ object NCGeoEnricher extends NCServerEnricher {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
          NCGeoManager.getModel match {
             case null ⇒
-                // TODO: warning text.
-                logger.warn(s"Some GEO Data not found for some reasons")
+                logger.warn("GEO configuration not found (ignoring but geo-enrichment is unavailable):")
+                logger.warn("  +--> configuration is CC BY 4.0 licensed and NOT compatible with Apache 2.0 license.")
+                logger.warn("  +--> you need to manually enable 'nlpcraft-geo' maven profile to include this configuration.")
 
             case mdl ⇒
                 locations = mdl.synonyms
 
                 // TODO: refactor... incomprehensible!
                 // GEO names matched with common english words and user defined exception GEO names.
-                // Note that 'ignore case' parameter set as false because DLGeoLocationKind definition (CITY ect)
                 commons =
                     U.getFilesResources(EXCEPTIONS_PATH).
                         flatMap(f ⇒

@@ -94,9 +94,6 @@ object NCGeoManager extends NCService {
 
         if (ok)
             model = readAndConstructModel(true)
-        else
-            // TODO: warning text.
-            logger.warn(s"Some GEO Data not found for some reasons")
         
         super.start()
     }

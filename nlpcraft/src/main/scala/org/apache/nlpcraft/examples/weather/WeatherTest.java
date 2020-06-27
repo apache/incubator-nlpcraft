@@ -17,27 +17,17 @@
 
 package org.apache.nlpcraft.examples.weather;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import org.apache.nlpcraft.common.NCException;
-import org.apache.nlpcraft.model.tools.test.NCTestClient;
-import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
-import org.apache.nlpcraft.model.tools.test.NCTestResult;
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.google.gson.*;
+import com.google.gson.reflect.*;
+import org.apache.nlpcraft.common.*;
+import org.apache.nlpcraft.model.tools.test.*;
+import org.apache.nlpcraft.probe.embedded.*;
+import org.junit.jupiter.api.*;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Weather model test. Note that this example demonstrates the testing of the proper
@@ -90,8 +80,10 @@ class WeatherTest {
         NCEmbeddedProbe.stop();
     }
 
-    // TODO: Uncomment and run with profile ``. Disabled by default for profile apache.
-    @Test
+    // @Test
+    // Uncomment and run with 'nlpcraft-geo' profile. Note that this profile contains
+    // files derived from CC-BY licensed resources that are not Apache 2.0 license compatible.
+    // See https://www.apache.org/legal/resolved.html#cc-by for more information.
     void test() throws NCException, IOException {
         // Empty parameter.
         assertTrue(cli.ask("").isFailed());
@@ -110,11 +102,5 @@ class WeatherTest {
 
         // Cannot be answered without conversation.
         assertTrue(cli.ask("Moscow").isFailed());
-    }
-
-    @BeforeAll
-    public static void checkOs() {
-        // Works with 'geo' profile.
-        Assumptions.assumeTrue(WeatherTest.class.getClassLoader().getResourceAsStream("geo/synonyms") != null);
     }
 }
