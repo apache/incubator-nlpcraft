@@ -21,18 +21,19 @@ To start server:
 `$ bin/start_server.sh`  
 
 ### Routes
-##### /suggestions
-Returns word replacement suggestions for following word in the sentence  
+##### /suggestions (POST)
+Returns word replacement suggestions for following word in the sentence.  
+Accepts JSON object with fields:
 * "sentences": List of sentences information. Each sentence encoded as object, argument `"text"` of which is sentence itself,
   `"indexes"` are positions in the sentence of the words to generate suggestions for.  
   Example: ``"sentences": [{"text": "foo bar baz", "indexes": [0, 2]}, {"text": "sample second sentence", indexes:[1]}]``
-* "simple" (Optional): If set to true omits verbose data.  
-* "limit" (Optional): Sets limit of result words number. 
-* "min_score" (Optional): Sets minimal requirement of total score.
-* "min_ftext" (Optional): Sets minimal requirement of FastText score.  
-* "min_bert" (Optional): Sets minimal requirement of Bert score.  
+* "simple" (Optional, default to false): If set to true omits verbose data.  
+* "limit" (Optional, default to 10): Sets limit of result words number. 
+* "min_score" (Optional, default to 0): Sets minimal requirement of total score.
+* "min_ftext" (Optional, default to 0.25): Sets minimal requirement of FastText score.  
+* "min_bert" (Optional, default to 0): Sets minimal requirement of Bert score.  
 Endpoint returns object with elements `[word, total score, FastText score, Bert score]`
 
 Simple request with single sentence could be made with a script, e.g.  
-`$ bin/predict.sh "what is the chance of rain tomorrow?" 5`  
+`$ bin/suggest.sh "what is the chance of rain tomorrow?" 5`  
 Would find suggestions for word "rain" in this sentence.
