@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.examples.sql.db
 
 import java.io.File
-import java.nio.file.Paths
 import java.sql.SQLException
 
 import com.typesafe.scalalogging.LazyLogging
