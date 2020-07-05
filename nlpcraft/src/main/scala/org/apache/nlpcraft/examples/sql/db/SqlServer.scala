@@ -38,7 +38,7 @@ object SqlServer extends LazyLogging {
         "-tcpAllowOthers"
     )
 
-    private final val INIT_FILE = "src/main/scala/org/apache/nlpcraft/examples/sql/db/northwind.sql"
+    private final val INIT_FILE = "nlpcraft/src/main/scala/org/apache/nlpcraft/examples/sql/db/northwind.sql"
 
     final val H2_URL: String = s"jdbc:h2:tcp://localhost:$H2_PORT/nlp2sql"
 
