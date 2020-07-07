@@ -23,7 +23,7 @@
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
-### SQL Model Example.
+### SQL Model Example
 This example demonstrates the relatively complex case of taking an existing SQL schema and developing
 a natural language interface to it. Although it does not support many standard SQL capabilities (to limit the size of the 
 example itself) - it is designed in a such a way that it can be easily extended and developed further.  

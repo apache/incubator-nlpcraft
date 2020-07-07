@@ -48,7 +48,7 @@ mkdir ${zipDir}/${tmpDir}/build
 
 rsync -avzq bin ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude bin/prepare.sh --exclude bin/MAVEN-RELEASE.md
 rsync -avzq openapi ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
-rsync -avzq ${coreModule}/src ${zipDir}/${tmpDir}/${coreModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
+rsync -avzq ${coreModule}/src ${zipDir}/${tmpDir}/${coreModule} --exclude '**/.DS_Store' --exclude '**/*.iml' --exclude '**/python/ctxword/data' --exclude '**/server/geo/tools/**/*.txt'
 rsync -avzq ${stanfordModule}/src ${zipDir}/${tmpDir}/${stanfordModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
