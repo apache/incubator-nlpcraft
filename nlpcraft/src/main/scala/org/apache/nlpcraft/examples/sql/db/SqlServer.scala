@@ -21,7 +21,6 @@ import java.io.File
 import java.sql.SQLException
 
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.commons.io.FilenameUtils
 import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
 
@@ -38,7 +37,7 @@ object SqlServer extends LazyLogging {
         "-tcpAllowOthers"
     )
 
-    private final val INIT_FILE = "src/main/scala/org/apache/nlpcraft/examples/sql/db/northwind.sql"
+    private final val INIT_FILE = "classpath:org/apache/nlpcraft/examples/sql/db/northwind.sql"
 
     final val H2_URL: String = s"jdbc:h2:tcp://localhost:$H2_PORT/nlp2sql"
 
@@ -60,7 +59,7 @@ object SqlServer extends LazyLogging {
         val ds = new JdbcDataSource()
 
         // Unix format used to avoid escape files separator for windows.
-        ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '${FilenameUtils.separatorsToUnix(new File(INIT_FILE).getAbsolutePath)}'")
+        ds.setUrl(s"$H2_URL;INIT=RUNSCRIPT FROM '$INIT_FILE'")
 
         try {
             ds.getConnection
