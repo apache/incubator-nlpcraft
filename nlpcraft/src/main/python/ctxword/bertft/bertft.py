@@ -26,10 +26,16 @@ from transformers import AutoModelWithLMHead, AutoTokenizer
 
 from .utils import ROOT_DIR
 
+"""
+Main class for processing sentences and predicting words 
+"""
 
-# TODO: make Model configurable
-# TODO: add type check
+
 class Pipeline:
+    """
+    :param use_cuda: specifies if CUDA should be used (if available) or not.
+    """
+
     def __init__(self, use_cuda=True):
         self.log = logging.getLogger("bertft")
 
@@ -80,6 +86,18 @@ class Pipeline:
             self.model.cuda()
 
         self.log.info("Server started in %s seconds", ('{0:.4f}'.format(time.time() - start_time)))
+
+    """
+    Finds top words suggestions for provided data with given parameters
+    :param: input_data list of lists, first element of which is sentence and elements from second to last are indexes 
+    in the sentence of words to find synonyms for
+    :param k limits number of top words
+    :param top_bert limits number of Bert suggestions
+    :param min_ftext minimal FastText score is required for word to get 
+    :param weights array of Bert and FastText score multipliers
+    :param min_score minimal FastText score is required for word to get 
+    :param min_bert minimal Bert score is required for word to get 
+    """
 
     def find_top(self, input_data, k, top_bert, min_ftext, weights, min_score, min_bert):
         with torch.no_grad():
@@ -166,6 +184,12 @@ class Pipeline:
                 torch.cuda.empty_cache()
 
             return result
+
+    """
+    Replaces words in sentence with mask
+    :param sentence target
+    :param indexes of words to replace 
+    """
 
     def replace_with_mask(self, sentence, indexes):
         lst = sentence.split()
