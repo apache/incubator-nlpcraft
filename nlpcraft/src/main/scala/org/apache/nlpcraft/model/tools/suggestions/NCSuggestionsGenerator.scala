@@ -240,8 +240,8 @@ object NCSuggestionsGeneratorImpl {
             "Element",
             "Suggestion",
             "ContextWord Server Score",
-            "Count",
-            "Summary Score"
+            "Suggested times",
+            "Totla Score",
         )
 
         nonEmptySuggs.
