@@ -17,26 +17,21 @@
 
 package org.apache.nlpcraft.server.geo.tools
 
-import java.io.{File, PrintStream}
+import java.io.File
 
-import net.liftweb.json.Extraction._
-import net.liftweb.json._
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.server.geo.tools.unstats.{NCUnsdStatsContinent, NCUnsdStatsService}
-import resource._
 
 import scala.collection._
 
 /**
- * Geo data json creator based on GeoNames project (http://download.geonames.org/export/dump),
+ * Geo data creator based on GeoNames project (http://download.geonames.org/export/dump),
  * mixed with the United Nations Statistics Division project data.
  *
  * Note, that GeoNames data should download on local PC and is not added into control version repository.
  */
 object NCGeoNamesGenerator extends App {
-    // Required for Lift JSON processing.
-    implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
-
     // There are no continents and subcontinents.
     object LocationType extends Enumeration {
         type LocationType = Value
@@ -346,8 +341,8 @@ object NCGeoNamesGenerator extends App {
         set
     }
 
-    // Go over all countries and serialize to JSON files.
-    private def writeCountries(countries: Set[Country]) {
+    // Go over all countries and serialize to files.
+    private def writeCountries(mapper: ObjectMapper, countries: Set[Country]) {
         val dirPath = s"$outDir/countries"
 
         val dir = new File(dirPath)
@@ -360,9 +355,7 @@ object NCGeoNamesGenerator extends App {
         }
 
         for (country ← countries)
-            managed(new PrintStream(new File(s"$outDir/countries/${country.iso}.json"))) acquireAndGet { ps ⇒
-                ps.println(prettyRender(decompose(country)))
-            }
+            mapper.writeValue(new File(s"$outDir/countries/${country.iso}.yaml"), country)
     }
 
     // Process synonyms for countries, regions and cities.
@@ -412,8 +405,9 @@ object NCGeoNamesGenerator extends App {
 
     def isAscii(str: String) = str.matches("\\A\\p{ASCII}*\\z")
 
-    // Go over all synonyms and serialize to JSON file.
+    // Go over all synonyms and serialize to file.
     private def writeSynonyms(
+        mapper: ObjectMapper,
         synonyms: Map[Location, Set[String]],
         cntrCodes: Map[String, String], // Country code → Country name.
         regsCodes: Map[String, String]): Unit = {
@@ -441,13 +435,11 @@ object NCGeoNamesGenerator extends App {
             }
         }).toSeq.sortBy(p ⇒ (p.region.isDefined, p.city.isDefined, p.country, p.region, p.city))
 
-        // Burn it.
-        managed(new PrintStream(new File(outSynonyms))) acquireAndGet { ps ⇒
-            ps.println(prettyRender(decompose(hs)))
-        }
+        mapper.writeValue(new File(outSynonyms), hs)
     }
 
     private def writeTopCities(
+        mapper: ObjectMapper,
         countries: Map[String, Map[String, Region]],
         isoToNames: Map[String, String],
         regCodes: Map[String, String],
@@ -469,7 +461,6 @@ object NCGeoNamesGenerator extends App {
                 CityInfo(cityName, p.countryRegion, p.countryCode, p.population)
             }).toSeq.sortBy(-_.population).take(qty)
 
-            // JSON serializer.
             case class Holder(name: String, country: String, region: String)
 
             val sorder =
@@ -481,9 +472,7 @@ object NCGeoNamesGenerator extends App {
                     )
                 ).sortBy(p ⇒ (p.country, p.name))
 
-            managed(new PrintStream(new File(file))) acquireAndGet { ps ⇒
-                ps.println(prettyRender(decompose(sorder)))
-            }
+            mapper.writeValue(new File(file), sorder)
         }
 
         write(worldTop, outWorldTop, 200)
@@ -491,6 +480,7 @@ object NCGeoNamesGenerator extends App {
     }
 
     private def writeContinents(
+        mapper: ObjectMapper,
         continents: Seq[NCUnsdStatsContinent],
         isoToNames: Map[String, String],
         iso3ToIso: Map[String, String]
@@ -507,12 +497,12 @@ object NCGeoNamesGenerator extends App {
             ).toMap
         ).toMap
 
-        managed(new PrintStream(new File(outContinents))) acquireAndGet { ps ⇒
-            ps.println(prettyRender(decompose(hs)))
-        }
+        mapper.writeValue(new File(outContinents), hs)
     }
 
     private def generate() {
+        val mapper = U.getYamlMapper
+
         val continents = NCUnsdStatsService.mkContinents()
         val countries = processCountries(continents)
 
@@ -531,10 +521,11 @@ object NCGeoNamesGenerator extends App {
         // Go over alternative names and create synonyms.
         val syns = processSynonyms()
 
-        writeContinents(continents, isoToNames, iso3ToIso)
-        writeCountries(countriesFixes)
-        writeSynonyms(syns, isoToNames, regCodes)
+        writeContinents(mapper, continents, isoToNames, iso3ToIso)
+        writeCountries(mapper, countriesFixes)
+        writeSynonyms(mapper, syns, isoToNames, regCodes)
         writeTopCities(
+            mapper,
             countriesFixes.map(h ⇒ h.iso → h.regions.map(p ⇒ p.name → p).toMap).toMap,
             isoToNames,
             regCodes,
@@ -554,11 +545,11 @@ object NCGeoNamesGenerator extends App {
     private val pathAlternateNames = s"$GEO_NAMES_DIR/alternateNames.txt"
 
     // Output files.
-    private val outDir = U.mkPath(s"src/main/resources/geo")
-    private val outContinents = s"$outDir/continents.json"
-    private val outWorldTop = s"$outDir/world_top.json"
-    private val outUsTop = s"$outDir/us_top.json"
-    private val outSynonyms = s"$outDir/synonyms/geonames.json"
+    private val outDir = U.mkPath(s"nlpcraft/src/main/resources/geo")
+    private val outContinents = s"$outDir/continents.yaml"
+    private val outWorldTop = s"$outDir/world_top.yaml"
+    private val outUsTop = s"$outDir/us_top.yaml"
+    private val outSynonyms = s"$outDir/synonyms/geonames.yaml"
 
     generate()
 }

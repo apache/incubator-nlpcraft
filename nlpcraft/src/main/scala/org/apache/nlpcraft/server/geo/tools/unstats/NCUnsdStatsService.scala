@@ -67,7 +67,7 @@ object NCUnsdStatsService {
         "039" → Seq(NCUnsdStatsCountry("XKX", "Kosovo"))
     )
 
-    private val dir = s"${U.mkPath("src/main/scala")}/${U.toPath(this)}"
+    private val dir = s"${U.mkPath("nlpcraft/src/main/scala")}/${U.toPath(this)}"
     private val subContsPath = s"$dir/subcontinents.txt"
     private val codesPath = s"$dir/codes.txt"
 

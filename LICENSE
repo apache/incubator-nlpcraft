@@ -209,17 +209,5 @@
    ----------------------
 
    Files under 'nlpcraft/src/main/resources/opennlp' folder are from
-   Apache OpenNLP project (https://opennlp.apache.org/) licensed
+   Apache OpenNLP project (https://opennlp.apache.org/) and licensed
    under ASL 2.0.
-
-   ----------------------
-
-   Files under 'nlpcraft/src/main/resources/geo' and its sub-folders were
-   generated based on the data from https://www.geonames.org/ whose content
-   is licensed under CC BY 4.0.
-
-   ----------------------
-
-   Files under 'nlpcraft/src/main/resources/spell' were generated from
-   https://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings/S
-   whose content is licensed under CC BY-SA 3.0 US.
