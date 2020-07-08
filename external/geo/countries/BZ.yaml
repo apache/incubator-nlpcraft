@@ -1,0 +1,81 @@
+---
+name: "Belize"
+iso: "BZ"
+iso3: "BLZ"
+code: "084"
+capital: "Belmopan"
+area: 22966.0
+population: 314522
+continent: "NA"
+currencyCode: "BZD"
+currencyName: "Dollar"
+phone: "501"
+languages: "en-BZ,es"
+neighbours: "GT,MX"
+regions:
+- name: "Cayo District"
+  cities:
+  - name: "San Ignacio"
+    latitude: 17.1588
+    longitude: -89.0696
+    population: 16812
+    dem: 60
+    timezone: "America/Belize"
+  - name: "Benque Viejo el Carmen"
+    latitude: 17.075
+    longitude: -89.13917
+    population: 7092
+    dem: 89
+    timezone: "America/Belize"
+  - name: "Belmopan"
+    latitude: 17.25
+    longitude: -88.76667
+    population: 13381
+    dem: 71
+    timezone: "America/Belize"
+- name: "Stann Creek District"
+  cities:
+  - name: "Dangriga"
+    latitude: 16.9697
+    longitude: -88.23313
+    population: 10750
+    dem: 7
+    timezone: "America/Belize"
+- name: "Belize District"
+  cities:
+  - name: "San Pedro"
+    latitude: 17.91598
+    longitude: -87.9659
+    population: 8418
+    dem: 4
+    timezone: "America/Belize"
+  - name: "Belize City"
+    latitude: 17.49952
+    longitude: -88.19756
+    population: 61461
+    dem: 6
+    timezone: "America/Belize"
+- name: "Orange Walk District"
+  cities:
+  - name: "Orange Walk"
+    latitude: 18.08124
+    longitude: -88.56328
+    population: 15298
+    dem: 16
+    timezone: "America/Belize"
+- name: "Corozal District"
+  cities:
+  - name: "Corozal"
+    latitude: 18.39375
+    longitude: -88.38849
+    population: 9871
+    dem: 5
+    timezone: "America/Belize"
+- name: "Toledo District"
+  cities:
+  - name: "Punta Gorda"
+    latitude: 16.09835
+    longitude: -88.8097
+    population: 5205
+    dem: 8
+    timezone: "America/Belize"

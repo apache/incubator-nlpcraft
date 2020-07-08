@@ -1,0 +1,189 @@
+---
+name: "Isle of Man"
+iso: "IM"
+iso3: "IMN"
+code: "833"
+capital: "Douglas"
+area: 572.0
+population: 75049
+continent: "EU"
+currencyCode: "GBP"
+currencyName: "Pound"
+phone: "+44-1624"
+postalCodeFormat: "@# #@@|@## #@@|@@# #@@|@@## #@@|@#@ #@@|@@#@ #@@|GIR0AA"
+postalCodeRegex: "^((?:(?:[A-PR-UWYZ][A-HK-Y]\\d[ABEHMNPRV-Y0-9]|[A-PR-UWYZ]\\d[A-HJKPS-UW0-9])\\\
+  s\\d[ABD-HJLNP-UW-Z]{2})|GIR\\s?0AA)$"
+languages: "en,gv"
+regions:
+- name: "Laxey"
+  cities:
+  - name: "Laxey"
+    latitude: 54.23017
+    longitude: -4.39985
+    population: 1768
+    dem: 47
+    timezone: "Europe/Isle_of_Man"
+- name: "Peel"
+  cities:
+  - name: "Peel"
+    latitude: 54.22209
+    longitude: -4.69099
+    population: 3781
+    dem: 22
+    timezone: "Europe/Isle_of_Man"
+- name: "Braddan"
+  cities:
+  - name: "Kirk Braddan"
+    latitude: 54.16667
+    longitude: -4.51667
+    population: 0
+    dem: 35
+    timezone: "Europe/Isle_of_Man"
+- name: "Lezayre"
+  cities:
+  - name: "Lezayre"
+    latitude: 54.31667
+    longitude: -4.41667
+    population: 0
+    dem: 137
+    timezone: "Europe/Isle_of_Man"
+- name: "Santon"
+  cities:
+  - name: "Santon"
+    latitude: 54.11667
+    longitude: -4.58333
+    population: 0
+    dem: 71
+    timezone: "Europe/Isle_of_Man"
+- name: "Port St Mary"
+  cities:
+  - name: "Port Saint Mary"
+    latitude: 54.07405
+    longitude: -4.73858
+    population: 0
+    elevation: 10
+    dem: 15
+    timezone: "Europe/Isle_of_Man"
+- name: "Maughold"
+  cities:
+  - name: "Maughold"
+    latitude: 54.29877
+    longitude: -4.31844
+    population: 0
+    dem: 70
+    timezone: "Europe/Isle_of_Man"
+- name: "Jurby"
+  cities:
+  - name: "Jurby"
+    latitude: 54.35941
+    longitude: -4.52199
+    population: 0
+    dem: 26
+    timezone: "Europe/Isle_of_Man"
+- name: "Patrick"
+  cities:
+  - name: "Patrick"
+    latitude: 54.20447
+    longitude: -4.69417
+    population: 0
+    dem: 32
+    timezone: "Europe/Isle_of_Man"
+- name: "Ballaugh"
+  cities:
+  - name: "Ballaugh"
+    latitude: 54.31193
+    longitude: -4.54456
+    population: 0
+    dem: 30
+    timezone: "Europe/Isle_of_Man"
+- name: "Castletown"
+  cities:
+  - name: "Castletown"
+    latitude: 54.07445
+    longitude: -4.65365
+    population: 3100
+    dem: 13
+    timezone: "Europe/Isle_of_Man"
+- name: "Onchan"
+  cities:
+  - name: "Onchan"
+    latitude: 54.17329
+    longitude: -4.45324
+    population: 0
+    dem: 58
+    timezone: "Europe/Isle_of_Man"
+- name: "Rushen"
+- name: "Port Erin"
+  cities:
+  - name: "Port Erin"
+    latitude: 54.08487
+    longitude: -4.75099
+    population: 3530
+    dem: 24
+    timezone: "Europe/Isle_of_Man"
+- name: "Bride"
+  cities:
+  - name: "Bride"
+    latitude: 54.38256
+    longitude: -4.38921
+    population: 0
+    dem: 62
+    timezone: "Europe/Isle_of_Man"
+- name: "Lonan"
+- name: "Marown"
+  cities:
+  - name: "Crosby"
+    latitude: 54.18333
+    longitude: -4.56667
+    population: 0
+    dem: 47
+    timezone: "Europe/Isle_of_Man"
+- name: "Arbory"
+  cities:
+  - name: "Ballabeg"
+    latitude: 54.1
+    longitude: -4.68333
+    population: 0
+    dem: 35
+    timezone: "Europe/Isle_of_Man"
+- name: "German"
+- name: "Malew"
+  cities:
+  - name: "Ballasalla"
+    latitude: 54.0959
+    longitude: -4.62962
+    population: 0
+    dem: 26
+    timezone: "Europe/Isle_of_Man"
+- name: "Andreas"
+  cities:
+  - name: "Andreas"
+    latitude: 54.36667
+    longitude: -4.43333
+    population: 0
+    dem: 26
+    timezone: "Europe/Isle_of_Man"
+- name: "Ramsey"
+  cities:
+  - name: "Ramsey"
+    latitude: 54.32273
+    longitude: -4.38526
+    population: 7309
+    dem: 7
+    timezone: "Europe/Isle_of_Man"
+- name: "Michael"
+  cities:
+  - name: "Kirkmichael"
+    latitude: 54.28562
+    longitude: -4.58748
+    population: 0
+    dem: 32
+    timezone: "Europe/Isle_of_Man"
+- name: "Douglas"
+  cities:
+  - name: "Douglas"
+    latitude: 54.15
+    longitude: -4.48333
+    population: 26218
+    dem: 31
+    timezone: "Europe/Isle_of_Man"

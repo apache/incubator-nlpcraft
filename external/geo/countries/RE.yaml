@@ -1,0 +1,157 @@
+---
+name: "Reunion"
+iso: "RE"
+iso3: "REU"
+code: "638"
+capital: "Saint-Denis"
+area: 2517.0
+population: 776948
+continent: "AF"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "262"
+postalCodeFormat: "#####"
+postalCodeRegex: "^((97|98)(4|7|8)\\d{2})$"
+languages: "fr-RE"
+regions:
+- name: "Reunion"
+  cities:
+  - name: "Les Trois-Bassins"
+    latitude: -21.1
+    longitude: 55.3
+    population: 7114
+    dem: 801
+    timezone: "Indian/Reunion"
+  - name: "Salazie"
+    latitude: -21.0271
+    longitude: 55.5395
+    population: 7696
+    dem: 452
+    timezone: "Indian/Reunion"
+  - name: "Saint-Pierre"
+    latitude: -21.3393
+    longitude: 55.47811
+    population: 76655
+    dem: 36
+    timezone: "Indian/Reunion"
+  - name: "Saint-Philippe"
+    latitude: -21.36086
+    longitude: 55.7679
+    population: 5441
+    dem: -9999
+    timezone: "Indian/Reunion"
+  - name: "Saint-Paul"
+    latitude: -21.00961
+    longitude: 55.27134
+    population: 99307
+    dem: 12
+    timezone: "Indian/Reunion"
+  - name: "Saint-Louis"
+    latitude: -21.28585
+    longitude: 55.41124
+    population: 47881
+    dem: 40
+    timezone: "Indian/Reunion"
+  - name: "Saint-Leu"
+    latitude: -21.17059
+    longitude: 55.28824
+    population: 28278
+    dem: 10
+    timezone: "Indian/Reunion"
+  - name: "Saint-Joseph"
+    latitude: -21.3777
+    longitude: 55.61691
+    population: 33694
+    dem: -9999
+    timezone: "Indian/Reunion"
+  - name: "Sainte-Suzanne"
+    latitude: -20.90616
+    longitude: 55.60788
+    population: 20530
+    dem: 130
+    timezone: "Indian/Reunion"
+  - name: "Sainte-Rose"
+    latitude: -21.12858
+    longitude: 55.79616
+    population: 7035
+    dem: 184
+    timezone: "Indian/Reunion"
+  - name: "Sainte-Marie"
+    latitude: -20.89686
+    longitude: 55.55056
+    population: 31636
+    dem: 8
+    timezone: "Indian/Reunion"
+  - name: "Saint-Denis"
+    latitude: -20.88231
+    longitude: 55.4504
+    population: 137195
+    dem: 44
+    timezone: "Indian/Reunion"
+  - name: "Saint-Benoit"
+    latitude: -21.03795
+    longitude: 55.71546
+    population: 35310
+    dem: 78
+    timezone: "Indian/Reunion"
+  - name: "Saint-Andre"
+    latitude: -20.96333
+    longitude: 55.65031
+    population: 48674
+    dem: 103
+    timezone: "Indian/Reunion"
+  - name: "Petite-Ile"
+    latitude: -21.35327
+    longitude: 55.56427
+    population: 10961
+    dem: 156
+    timezone: "Indian/Reunion"
+  - name: "Le Tampon"
+    latitude: -21.2766
+    longitude: 55.51766
+    population: 69986
+    dem: 425
+    timezone: "Indian/Reunion"
+  - name: "Les Avirons"
+    latitude: -21.24063
+    longitude: 55.33685
+    population: 8006
+    dem: 138
+    timezone: "Indian/Reunion"
+  - name: "Le Port"
+    latitude: -20.93752
+    longitude: 55.29415
+    population: 40771
+    dem: 1
+    timezone: "Indian/Reunion"
+  - name: "La Possession"
+    latitude: -20.92909
+    longitude: 55.3348
+    population: 26865
+    dem: 24
+    timezone: "Indian/Reunion"
+  - name: "Entre-Deux"
+    latitude: -21.23333
+    longitude: 55.46667
+    population: 5788
+    dem: 445
+    timezone: "Indian/Reunion"
+  - name: "Cilaos"
+    latitude: -21.13641
+    longitude: 55.47187
+    population: 6225
+    dem: 887
+    timezone: "Indian/Reunion"
+  - name: "Bras-Panon"
+    latitude: -20.99667
+    longitude: 55.67823
+    population: 10444
+    dem: 49
+    timezone: "Indian/Reunion"
+  - name: "Piton Saint-Leu"
+    latitude: -21.21962
+    longitude: 55.31513
+    population: 29278
+    elevation: 350
+    dem: 294
+    timezone: "Indian/Reunion"

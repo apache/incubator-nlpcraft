@@ -1,0 +1,427 @@
+---
+name: "Sri Lanka"
+iso: "LK"
+iso3: "LKA"
+code: "144"
+capital: "Colombo"
+area: 65610.0
+population: 21513990
+continent: "AS"
+currencyCode: "LKR"
+currencyName: "Rupee"
+phone: "94"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "si,ta,en"
+regions:
+- name: "Sabaragamuwa Province"
+  cities:
+  - name: "Ratnapura"
+    latitude: 6.6858
+    longitude: 80.4036
+    population: 47832
+    dem: 149
+    timezone: "Asia/Colombo"
+  - name: "Kegalle"
+    latitude: 7.2523
+    longitude: 80.3436
+    population: 17962
+    dem: 176
+    timezone: "Asia/Colombo"
+- name: "North Western Province"
+  cities:
+  - name: "Puttalam"
+    latitude: 8.0362
+    longitude: 79.8283
+    population: 45661
+    dem: 8
+    timezone: "Asia/Colombo"
+  - name: "Kurunegala"
+    latitude: 7.4839
+    longitude: 80.3683
+    population: 28571
+    dem: 186
+    timezone: "Asia/Colombo"
+  - name: "Kuliyapitiya"
+    latitude: 7.4688
+    longitude: 80.0401
+    population: 6877
+    dem: 33
+    timezone: "Asia/Colombo"
+  - name: "Chilaw"
+    latitude: 7.57583
+    longitude: 79.79528
+    population: 24712
+    dem: 8
+    timezone: "Asia/Colombo"
+- name: "Central Province"
+  cities:
+  - name: "Nuwara Eliya"
+    latitude: 6.97078
+    longitude: 80.78286
+    population: 25775
+    elevation: 1868
+    dem: 1868
+    timezone: "Asia/Colombo"
+  - name: "Matale"
+    latitude: 7.4698
+    longitude: 80.6217
+    population: 36462
+    dem: 366
+    timezone: "Asia/Colombo"
+  - name: "Kandy"
+    latitude: 7.2906
+    longitude: 80.6336
+    population: 111701
+    dem: 514
+    timezone: "Asia/Colombo"
+  - name: "Hatton"
+    latitude: 6.8916
+    longitude: 80.5955
+    population: 15073
+    elevation: 1271
+    dem: 1309
+    timezone: "Asia/Colombo"
+  - name: "Gampola"
+    latitude: 7.1643
+    longitude: 80.5696
+    population: 24730
+    dem: 492
+    timezone: "Asia/Colombo"
+  - name: "Dambulla"
+    latitude: 7.86
+    longitude: 80.65167
+    population: 66716
+    dem: 168
+    timezone: "Asia/Colombo"
+- name: "Province of Uva"
+  cities:
+  - name: "Wattegama"
+    latitude: 6.7989
+    longitude: 81.4808
+    population: 8000
+    dem: 105
+    timezone: "Asia/Colombo"
+  - name: "Monaragala"
+    latitude: 6.8714
+    longitude: 81.3487
+    population: 10236
+    dem: 151
+    timezone: "Asia/Colombo"
+  - name: "Kataragama"
+    latitude: 6.4134
+    longitude: 81.3346
+    population: 20935
+    dem: 48
+    timezone: "Asia/Colombo"
+  - name: "Badulla"
+    latitude: 6.9802
+    longitude: 81.0577
+    population: 47587
+    dem: 774
+    timezone: "Asia/Colombo"
+  - name: "Wellawaya"
+    latitude: 6.73694
+    longitude: 81.10279
+    population: 10000
+    dem: 188
+    timezone: "Asia/Colombo"
+- name: "Northern Province"
+  cities:
+  - name: "Vavuniya"
+    latitude: 8.7514
+    longitude: 80.4971
+    population: 60176
+    dem: 104
+    timezone: "Asia/Colombo"
+  - name: "Valvedditturai"
+    latitude: 9.81667
+    longitude: 80.16667
+    population: 78205
+    dem: 10
+    timezone: "Asia/Colombo"
+  - name: "Point Pedro"
+    latitude: 9.81667
+    longitude: 80.23333
+    population: 89810
+    dem: 12
+    timezone: "Asia/Colombo"
+  - name: "Kilinochchi"
+    latitude: 9.3961
+    longitude: 80.3982
+    population: 13006
+    dem: 24
+    timezone: "Asia/Colombo"
+  - name: "Jaffna"
+    latitude: 9.66845
+    longitude: 80.00742
+    population: 169102
+    dem: 7
+    timezone: "Asia/Colombo"
+- name: "Eastern Province"
+  cities:
+  - name: "Vakarai"
+    latitude: 8.13333
+    longitude: 81.43333
+    population: 21000
+    dem: 9
+    timezone: "Asia/Colombo"
+  - name: "Trincomalee"
+    latitude: 8.5778
+    longitude: 81.2289
+    population: 108420
+    dem: 4
+    timezone: "Asia/Colombo"
+  - name: "Kalmunai"
+    latitude: 7.40902
+    longitude: 81.83472
+    population: 100171
+    dem: 10
+    timezone: "Asia/Colombo"
+  - name: "Eravur Town"
+    latitude: 7.7782
+    longitude: 81.6038
+    population: 22982
+    dem: 10
+    timezone: "Asia/Colombo"
+  - name: "Batticaloa"
+    latitude: 7.7102
+    longitude: 81.6924
+    population: 86742
+    dem: 17
+    timezone: "Asia/Colombo"
+  - name: "Ampara"
+    latitude: 7.29754
+    longitude: 81.68202
+    population: 18348
+    dem: 37
+    timezone: "Asia/Colombo"
+- name: "Southern Province"
+  cities:
+  - name: "Weligama"
+    latitude: 5.97501
+    longitude: 80.42968
+    population: 22179
+    dem: 8
+    timezone: "Asia/Colombo"
+  - name: "Tangalle"
+    latitude: 6.02338
+    longitude: 80.79738
+    population: 10497
+    dem: 22
+    timezone: "Asia/Colombo"
+  - name: "Matara"
+    latitude: 5.94851
+    longitude: 80.53528
+    population: 76254
+    dem: 9
+    timezone: "Asia/Colombo"
+  - name: "Galle"
+    latitude: 6.0461
+    longitude: 80.2103
+    population: 93118
+    dem: 4
+    timezone: "Asia/Colombo"
+  - name: "Devinuwara"
+    latitude: 5.92825
+    longitude: 80.5888
+    population: 45000
+    dem: 6
+    timezone: "Asia/Colombo"
+  - name: "Bentota"
+    latitude: 6.42598
+    longitude: 79.99575
+    population: 37000
+    dem: 8
+    timezone: "Asia/Colombo"
+  - name: "Ambalangoda"
+    latitude: 6.2355
+    longitude: 80.0538
+    population: 20133
+    dem: 13
+    timezone: "Asia/Colombo"
+- name: "Western Province"
+  cities:
+  - name: "Welisara"
+    latitude: 7.0281
+    longitude: 79.9014
+    population: 41306
+    dem: 11
+    timezone: "Asia/Colombo"
+  - name: "Wattala"
+    latitude: 6.98918
+    longitude: 79.89167
+    population: 30725
+    dem: 2
+    timezone: "Asia/Colombo"
+  - name: "Pita Kotte"
+    latitude: 6.8905
+    longitude: 79.9015
+    population: 118179
+    dem: 20
+    timezone: "Asia/Colombo"
+  - name: "Peliyagoda"
+    latitude: 6.9685
+    longitude: 79.8836
+    population: 30717
+    dem: 7
+    timezone: "Asia/Colombo"
+  - name: "Panadura"
+    latitude: 6.7132
+    longitude: 79.9026
+    population: 33735
+    dem: 10
+    timezone: "Asia/Colombo"
+  - name: "Negombo"
+    latitude: 7.2083
+    longitude: 79.8358
+    population: 137223
+    dem: 8
+    timezone: "Asia/Colombo"
+  - name: "Mulleriyawa"
+    latitude: 6.933
+    longitude: 79.9297
+    population: 33540
+    dem: 8
+    timezone: "Asia/Colombo"
+  - name: "Dehiwala-Mount Lavinia"
+    latitude: 6.84019
+    longitude: 79.87116
+    population: 219827
+    dem: 16
+    timezone: "Asia/Colombo"
+  - name: "Moratuwa"
+    latitude: 6.773
+    longitude: 79.8816
+    population: 185031
+    dem: 10
+    timezone: "Asia/Colombo"
+  - name: "Minuwangoda"
+    latitude: 7.1663
+    longitude: 79.9533
+    population: 7772
+    dem: 18
+    timezone: "Asia/Colombo"
+  - name: "Maharagama"
+    latitude: 6.848
+    longitude: 79.9265
+    population: 66576
+    dem: 26
+    timezone: "Asia/Colombo"
+  - name: "Sri Jayewardenepura Kotte"
+    latitude: 6.88297
+    longitude: 79.90708
+    population: 115826
+    dem: 27
+    timezone: "Asia/Colombo"
+  - name: "Kotikawatta"
+    latitude: 6.9269
+    longitude: 79.9095
+    population: 64565
+    dem: 16
+    timezone: "Asia/Colombo"
+  - name: "Kolonnawa"
+    latitude: 6.9329
+    longitude: 79.8848
+    population: 58076
+    dem: 20
+    timezone: "Asia/Colombo"
+  - name: "Kelaniya"
+    latitude: 6.9553
+    longitude: 79.922
+    population: 28846
+    dem: 10
+    timezone: "Asia/Colombo"
+  - name: "Katunayaka"
+    latitude: 7.16992
+    longitude: 79.88837
+    population: 84643
+    dem: 13
+    timezone: "Asia/Colombo"
+  - name: "Kandana"
+    latitude: 7.048
+    longitude: 79.8937
+    population: 33424
+    dem: 9
+    timezone: "Asia/Colombo"
+  - name: "Kalutara"
+    latitude: 6.5831
+    longitude: 79.9593
+    population: 38000
+    dem: 7
+    timezone: "Asia/Colombo"
+  - name: "Ja Ela"
+    latitude: 7.0744
+    longitude: 79.8919
+    population: 32175
+    dem: 13
+    timezone: "Asia/Colombo"
+  - name: "Horana South"
+    latitude: 6.7159
+    longitude: 80.0626
+    population: 8982
+    dem: 23
+    timezone: "Asia/Colombo"
+  - name: "Homagama"
+    latitude: 6.844
+    longitude: 80.0024
+    population: 34664
+    dem: 37
+    timezone: "Asia/Colombo"
+  - name: "Hendala"
+    latitude: 6.9909
+    longitude: 79.883
+    population: 56978
+    dem: 18
+    timezone: "Asia/Colombo"
+  - name: "Hanwella Ihala"
+    latitude: 6.9012
+    longitude: 80.0852
+    population: 22918
+    dem: 14
+    timezone: "Asia/Colombo"
+  - name: "Gampaha"
+    latitude: 7.0897
+    longitude: 79.9925
+    population: 9350
+    dem: 21
+    timezone: "Asia/Colombo"
+  - name: "Colombo"
+    latitude: 6.93548
+    longitude: 79.84868
+    population: 648034
+    dem: 1
+    timezone: "Asia/Colombo"
+  - name: "Beruwala"
+    latitude: 6.4788
+    longitude: 79.9828
+    population: 34250
+    dem: -9999
+    timezone: "Asia/Colombo"
+  - name: "Battaramulla South"
+    latitude: 6.8964
+    longitude: 79.9181
+    population: 75633
+    dem: 11
+    timezone: "Asia/Colombo"
+  - name: "Horawala Junction"
+    latitude: 6.48088
+    longitude: 80.12708
+    population: 7500
+    elevation: 100
+    dem: 15
+    timezone: "Asia/Colombo"
+- name: "North Central Province"
+  cities:
+  - name: "Polonnaruwa"
+    latitude: 7.93965
+    longitude: 81.00274
+    population: 13900
+    dem: 60
+    timezone: "Asia/Colombo"
+  - name: "Anuradhapura"
+    latitude: 8.31223
+    longitude: 80.41306
+    population: 60943
+    dem: 100
+    timezone: "Asia/Colombo"

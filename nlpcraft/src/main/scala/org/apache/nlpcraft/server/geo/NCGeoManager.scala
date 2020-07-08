@@ -139,6 +139,8 @@ object NCGeoManager extends NCService {
         val extOpt = U.sysEnv("NLPCRAFT_RESOURCE_EXT")
 
         if (extOpt.isDefined) {
+            logger.info(s"Using external GEO configuration from: ${extOpt.get}")
+            
             val dir = new File(extOpt.get)
 
             if (!dir.exists() || !dir.isDirectory)
@@ -450,9 +452,9 @@ object NCGeoManager extends NCService {
         val topWorld = mkTopCities("geo/world_top.yaml")
         val topUsa = mkTopCities("geo/us_top.yaml")
 
-        logger.info(s"Geo data loaded [" +
+        logger.info(s"GEO data loaded [" +
             s"continents=${conts.size}, " +
-            s"subContinents=${subs.size}, " +
+            s"subcontinents=${subs.size}, " +
             s"countries=${cntrs.size}, " +
             s"regions=${regions.size}, " +
             s"cities=${cities.size}, " +

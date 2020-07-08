@@ -1,0 +1,546 @@
+---
+name: "Malta"
+iso: "MT"
+iso3: "MLT"
+code: "470"
+capital: "Valletta"
+area: 316.0
+population: 403000
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "356"
+postalCodeFormat: "@@@ ####"
+postalCodeRegex: "^[A-Z]{3}\\s?\\d{4}$"
+languages: "mt,en-MT"
+regions:
+- name: "Marsaskala"
+  cities:
+  - name: "Marsaskala"
+    latitude: 35.8622
+    longitude: 14.56701
+    population: 10024
+    dem: 30
+    timezone: "Europe/Malta"
+- name: "Safi"
+  cities:
+  - name: "Safi"
+    latitude: 35.83306
+    longitude: 14.48472
+    population: 1863
+    dem: 106
+    timezone: "Europe/Malta"
+- name: "Birzebbuga"
+  cities:
+  - name: "Birzebbuga"
+    latitude: 35.82583
+    longitude: 14.52694
+    population: 8668
+    dem: 20
+    timezone: "Europe/Malta"
+- name: "Ghajnsielem"
+  cities:
+  - name: "Ghajnsielem"
+    latitude: 36.02639
+    longitude: 14.285
+    population: 3260
+    dem: 78
+    timezone: "Europe/Malta"
+- name: "Il-Kalkara"
+  cities:
+  - name: "Kalkara"
+    latitude: 35.88917
+    longitude: 14.53278
+    population: 2982
+    dem: 34
+    timezone: "Europe/Malta"
+- name: "L-Imdina"
+  cities:
+  - name: "Imdina"
+    latitude: 35.88694
+    longitude: 14.4025
+    population: 360
+    dem: 198
+    timezone: "Europe/Malta"
+- name: "L-Ghasri"
+- name: "Lija"
+  cities:
+  - name: "Lija"
+    latitude: 35.90056
+    longitude: 14.44639
+    population: 2471
+    dem: 69
+    timezone: "Europe/Malta"
+- name: "Il-Fgura"
+  cities:
+  - name: "Fgura"
+    latitude: 35.87028
+    longitude: 14.51333
+    population: 11676
+    dem: 64
+    timezone: "Europe/Malta"
+- name: "Haz-Zabbar"
+  cities:
+  - name: "Zabbar"
+    latitude: 35.87611
+    longitude: 14.535
+    population: 15030
+    dem: 47
+    timezone: "Europe/Malta"
+- name: "Balzan"
+  cities:
+  - name: "Balzan"
+    latitude: 35.90028
+    longitude: 14.455
+    population: 3240
+    dem: 51
+    timezone: "Europe/Malta"
+- name: "Iz-Zejtun"
+  cities:
+  - name: "Zejtun"
+    latitude: 35.85583
+    longitude: 14.53306
+    population: 11549
+    dem: 56
+    timezone: "Europe/Malta"
+- name: "Saint Pauls Bay"
+  cities:
+  - name: "San Pawl il-Bahar"
+    latitude: 35.95064
+    longitude: 14.41561
+    population: 14057
+    dem: 22
+    timezone: "Europe/Malta"
+- name: "Victoria"
+  cities:
+  - name: "Victoria"
+    latitude: 36.04444
+    longitude: 14.23972
+    population: 6596
+    dem: 104
+    timezone: "Europe/Malta"
+- name: "Kirkop"
+  cities:
+  - name: "Kirkop"
+    latitude: 35.84222
+    longitude: 14.48528
+    population: 2137
+    dem: 82
+    timezone: "Europe/Malta"
+- name: "Is-Siggiewi"
+  cities:
+  - name: "Siggiewi"
+    latitude: 35.85556
+    longitude: 14.43639
+    population: 7676
+    dem: 126
+    timezone: "Europe/Malta"
+- name: "Saint Julians"
+  cities:
+  - name: "San Giljan"
+    latitude: 35.91839
+    longitude: 14.48977
+    population: 6799
+    dem: 19
+    timezone: "Europe/Malta"
+- name: "Ix-Xaghra"
+  cities:
+  - name: "Xaghra"
+    latitude: 36.05
+    longitude: 14.26444
+    population: 3680
+    dem: 144
+    timezone: "Europe/Malta"
+- name: "Il-Mellieha"
+  cities:
+  - name: "Mellieha"
+    latitude: 35.95639
+    longitude: 14.36222
+    population: 5976
+    dem: 121
+    timezone: "Europe/Malta"
+- name: "Pembroke"
+  cities:
+  - name: "Pembroke"
+    latitude: 35.93056
+    longitude: 14.47639
+    population: 3038
+    dem: 41
+    timezone: "Europe/Malta"
+- name: "Il-Gudja"
+  cities:
+  - name: "Gudja"
+    latitude: 35.84917
+    longitude: 14.50306
+    population: 3023
+    dem: 79
+    timezone: "Europe/Malta"
+- name: "L-Imqabba"
+  cities:
+  - name: "Mqabba"
+    latitude: 35.84763
+    longitude: 14.46824
+    population: 2891
+    dem: 95
+    timezone: "Europe/Malta"
+- name: "Qormi"
+  cities:
+  - name: "Qormi"
+    latitude: 35.87601
+    longitude: 14.472
+    population: 18230
+    dem: 41
+    timezone: "Europe/Malta"
+- name: "Attard"
+  cities:
+  - name: "Attard"
+    latitude: 35.88972
+    longitude: 14.4425
+    population: 9510
+    dem: 69
+    timezone: "Europe/Malta"
+- name: "Tarxien"
+  cities:
+  - name: "Tarxien"
+    latitude: 35.86583
+    longitude: 14.515
+    population: 7761
+    dem: 62
+    timezone: "Europe/Malta"
+- name: "In-Nadur"
+  cities:
+  - name: "Nadur"
+    latitude: 36.03778
+    longitude: 14.29417
+    population: 3933
+    dem: 161
+    timezone: "Europe/Malta"
+- name: "L-Isla"
+  cities:
+  - name: "Senglea"
+    latitude: 35.8875
+    longitude: 14.51694
+    population: 2964
+    dem: 18
+    timezone: "Europe/Malta"
+- name: "Il-Marsa"
+  cities:
+  - name: "Marsa"
+    latitude: 35.87917
+    longitude: 14.49528
+    population: 5116
+    dem: 8
+    timezone: "Europe/Malta"
+- name: "L-Iklin"
+  cities:
+  - name: "L-Iklin"
+    latitude: 35.90414
+    longitude: 14.45415
+    population: 3360
+    dem: 62
+    timezone: "Europe/Malta"
+- name: "Il-Fontana"
+  cities:
+  - name: "Fontana"
+    latitude: 36.0375
+    longitude: 14.23611
+    population: 1011
+    dem: 71
+    timezone: "Europe/Malta"
+- name: "Birkirkara"
+  cities:
+  - name: "Birkirkara"
+    latitude: 35.89722
+    longitude: 14.46111
+    population: 21676
+    dem: 41
+    timezone: "Europe/Malta"
+- name: "Hal Gharghur"
+  cities:
+  - name: "Hal Gharghur"
+    latitude: 35.92409
+    longitude: 14.45118
+    population: 2025
+    dem: 132
+    timezone: "Europe/Malta"
+- name: "Dingli"
+  cities:
+  - name: "Dingli"
+    latitude: 35.86139
+    longitude: 14.38222
+    population: 3009
+    dem: 231
+    timezone: "Europe/Malta"
+- name: "Il-Belt Valletta"
+  cities:
+  - name: "Valletta"
+    latitude: 35.89972
+    longitude: 14.51472
+    population: 6794
+    dem: 44
+    timezone: "Europe/Malta"
+- name: "Il-Qala"
+- name: "Ix-Xghajra"
+  cities:
+  - name: "Xghajra"
+    latitude: 35.88556
+    longitude: 14.5475
+    population: 837
+    dem: 31
+    timezone: "Europe/Malta"
+- name: "Is-Swieqi"
+  cities:
+  - name: "Swieqi"
+    latitude: 35.9225
+    longitude: 14.48
+    population: 5973
+    dem: 46
+    timezone: "Europe/Malta"
+- name: "L-Imtarfa"
+  cities:
+  - name: "Imtarfa"
+    latitude: 35.89333
+    longitude: 14.39889
+    population: 2430
+    dem: 195
+    timezone: "Europe/Malta"
+- name: "Saint Lucia"
+  cities:
+  - name: "Saint Lucia"
+    latitude: 36.04306
+    longitude: 14.21722
+    population: 3186
+    dem: 126
+    timezone: "Europe/Malta"
+- name: "Ir-Rabat"
+  cities:
+  - name: "Rabat"
+    latitude: 35.88152
+    longitude: 14.39872
+    population: 7064
+    dem: 205
+    timezone: "Europe/Malta"
+- name: "Luqa"
+  cities:
+  - name: "Luqa"
+    latitude: 35.85889
+    longitude: 14.48861
+    population: 5053
+    dem: 79
+    timezone: "Europe/Malta"
+- name: "Paola"
+  cities:
+  - name: "Paola"
+    latitude: 35.87306
+    longitude: 14.49889
+    population: 9257
+    dem: 9
+    timezone: "Europe/Malta"
+- name: "Iz-Zebbug"
+  cities:
+  - name: "Zebbug"
+    latitude: 36.07222
+    longitude: 14.23583
+    population: 1770
+    dem: 138
+    timezone: "Europe/Malta"
+- name: "Marsaxlokk"
+  cities:
+  - name: "Marsaxlokk"
+    latitude: 35.84194
+    longitude: 14.54306
+    population: 3026
+    dem: 17
+    timezone: "Europe/Malta"
+- name: "Ta Kercem"
+  cities:
+  - name: "Kercem"
+    latitude: 36.04194
+    longitude: 14.22667
+    population: 1627
+    dem: 111
+    timezone: "Europe/Malta"
+- name: "Sannat"
+  cities:
+  - name: "Sannat"
+    latitude: 36.02444
+    longitude: 14.24278
+    population: 1681
+    dem: 119
+    timezone: "Europe/Malta"
+- name: "Saint John"
+  cities:
+  - name: "Saint John"
+    latitude: 35.90556
+    longitude: 14.47611
+    population: 12346
+    dem: 67
+    timezone: "Europe/Malta"
+- name: "L-Gharb"
+  cities:
+  - name: "Gharb"
+    latitude: 36.06
+    longitude: 14.20889
+    population: 971
+    dem: 121
+    timezone: "Europe/Malta"
+- name: "Bormla"
+  cities:
+  - name: "Cospicua"
+    latitude: 35.88556
+    longitude: 14.5275
+    population: 6096
+    dem: 39
+    timezone: "Europe/Malta"
+- name: "L-Imgarr"
+  cities:
+  - name: "Imgarr"
+    latitude: 35.92056
+    longitude: 14.36639
+    population: 3000
+    dem: 110
+    timezone: "Europe/Malta"
+- name: "Il-Furjana"
+  cities:
+  - name: "Floriana"
+    latitude: 35.89583
+    longitude: 14.50833
+    population: 2516
+    dem: 47
+    timezone: "Europe/Malta"
+- name: "Il-Munxar"
+  cities:
+  - name: "Munxar"
+    latitude: 36.03
+    longitude: 14.23333
+    population: 840
+    dem: 80
+    timezone: "Europe/Malta"
+- name: "Hal Ghaxaq"
+  cities:
+  - name: "Ghaxaq"
+    latitude: 35.84889
+    longitude: 14.51667
+    population: 4375
+    dem: 73
+    timezone: "Europe/Malta"
+- name: "Il-Hamrun"
+  cities:
+  - name: "Hamrun"
+    latitude: 35.88472
+    longitude: 14.48444
+    population: 10680
+    dem: 44
+    timezone: "Europe/Malta"
+- name: "Il-Birgu"
+  cities:
+  - name: "Vittoriosa"
+    latitude: 35.89222
+    longitude: 14.51833
+    population: 2936
+    dem: -9999
+    timezone: "Europe/Malta"
+- name: "Saint Venera"
+  cities:
+  - name: "Santa Venera"
+    latitude: 35.89083
+    longitude: 14.47417
+    population: 6264
+    dem: 52
+    timezone: "Europe/Malta"
+- name: "Iz-Zurrieq"
+  cities:
+  - name: "Zurrieq"
+    latitude: 35.83111
+    longitude: 14.47417
+    population: 9149
+    dem: 111
+    timezone: "Europe/Malta"
+- name: "Ix-Xewkija"
+  cities:
+  - name: "Xewkija"
+    latitude: 36.03278
+    longitude: 14.25806
+    population: 3303
+    dem: 99
+    timezone: "Europe/Malta"
+- name: "Tas-Sliema"
+  cities:
+  - name: "Sliema"
+    latitude: 35.9125
+    longitude: 14.50194
+    population: 11318
+    dem: 40
+    timezone: "Europe/Malta"
+- name: "Il-Mosta"
+  cities:
+  - name: "Mosta"
+    latitude: 35.90917
+    longitude: 14.42556
+    population: 17789
+    dem: 80
+    timezone: "Europe/Malta"
+- name: "Tal-Pieta"
+  cities:
+  - name: "Pieta"
+    latitude: 35.89472
+    longitude: 14.495
+    population: 3846
+    dem: 30
+    timezone: "Europe/Malta"
+- name: "Saint Lawrence"
+  cities:
+  - name: "San Lawrenz"
+    latitude: 36.05556
+    longitude: 14.20361
+    population: 530
+    dem: 131
+    timezone: "Europe/Malta"
+- name: "In-Naxxar"
+  cities:
+  - name: "Naxxar"
+    latitude: 35.91361
+    longitude: 14.44361
+    population: 10378
+    dem: 121
+    timezone: "Europe/Malta"
+- name: "Haz-Zebbug"
+  cities:
+  - name: "Haz-Zebbug"
+    latitude: 35.87194
+    longitude: 14.44111
+    population: 11063
+    dem: 100
+    timezone: "Europe/Malta"
+- name: "L-Imsida"
+  cities:
+  - name: "Imsida"
+    latitude: 35.8925
+    longitude: 14.48278
+    population: 6920
+    dem: 39
+    timezone: "Europe/Malta"
+- name: "Ta Xbiex"
+  cities:
+  - name: "Ta Xbiex"
+    latitude: 35.89917
+    longitude: 14.49444
+    population: 1642
+    dem: 21
+    timezone: "Europe/Malta"
+- name: "Il-Gzira"
+  cities:
+  - name: "Gzira"
+    latitude: 35.90583
+    longitude: 14.48806
+    population: 7513
+    dem: 31
+    timezone: "Europe/Malta"
+- name: "Il-Qrendi"
+  cities:
+  - name: "Qrendi"
+    latitude: 35.83472
+    longitude: 14.45833
+    population: 2493
+    dem: 110
+    timezone: "Europe/Malta"

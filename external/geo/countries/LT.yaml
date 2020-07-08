@@ -1,0 +1,466 @@
+---
+name: "Lithuania"
+iso: "LT"
+iso3: "LTU"
+code: "440"
+capital: "Vilnius"
+area: 65200.0
+population: 2944459
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "370"
+postalCodeFormat: "LT-#####"
+postalCodeRegex: "^(?:LT)*(\\d{5})$"
+languages: "lt,ru,pl"
+neighbours: "PL,BY,RU,LV"
+regions:
+- name: "Klaipeda County"
+  cities:
+  - name: "Skuodas"
+    latitude: 56.27057
+    longitude: 21.53208
+    population: 7726
+    dem: 25
+    timezone: "Europe/Vilnius"
+  - name: "Silute"
+    latitude: 55.34889
+    longitude: 21.48306
+    population: 21760
+    dem: 8
+    timezone: "Europe/Vilnius"
+  - name: "Palanga"
+    latitude: 55.9175
+    longitude: 21.06861
+    population: 17796
+    dem: 5
+    timezone: "Europe/Vilnius"
+  - name: "Kretinga"
+    latitude: 55.8888
+    longitude: 21.24448
+    population: 22236
+    dem: 25
+    timezone: "Europe/Vilnius"
+  - name: "Klaipeda"
+    latitude: 55.70888
+    longitude: 21.14312
+    population: 192307
+    dem: 8
+    timezone: "Europe/Vilnius"
+  - name: "Gargzdai"
+    latitude: 55.70951
+    longitude: 21.39441
+    population: 16433
+    dem: 27
+    timezone: "Europe/Vilnius"
+- name: "Utena County"
+  cities:
+  - name: "Zarasai"
+    latitude: 55.73225
+    longitude: 26.25115
+    population: 8095
+    dem: 154
+    timezone: "Europe/Vilnius"
+  - name: "Visaginas"
+    latitude: 55.59678
+    longitude: 26.43984
+    population: 28348
+    dem: 158
+    timezone: "Europe/Vilnius"
+  - name: "Utena"
+    latitude: 55.49764
+    longitude: 25.59918
+    population: 33240
+    dem: 104
+    timezone: "Europe/Vilnius"
+  - name: "Moletai"
+    latitude: 55.22469
+    longitude: 25.41688
+    population: 7243
+    dem: 164
+    timezone: "Europe/Vilnius"
+  - name: "Ignalina"
+    latitude: 55.34063
+    longitude: 26.16049
+    population: 6421
+    dem: 166
+    timezone: "Europe/Vilnius"
+  - name: "Anyksciai"
+    latitude: 55.52557
+    longitude: 25.10264
+    population: 11958
+    dem: 74
+    timezone: "Europe/Vilnius"
+- name: "Telsiu apskritis"
+  cities:
+  - name: "Telsiai"
+    latitude: 55.98139
+    longitude: 22.24722
+    population: 30098
+    dem: 135
+    timezone: "Europe/Vilnius"
+  - name: "Plunge"
+    latitude: 55.91139
+    longitude: 21.84417
+    population: 23381
+    dem: 106
+    timezone: "Europe/Vilnius"
+  - name: "Mazeikiai"
+    latitude: 56.31667
+    longitude: 22.33333
+    population: 41309
+    dem: 70
+    timezone: "Europe/Vilnius"
+- name: "Panevezys"
+  cities:
+  - name: "Rokiskis"
+    latitude: 55.95867
+    longitude: 25.59466
+    population: 16255
+    dem: 137
+    timezone: "Europe/Vilnius"
+  - name: "Pasvalys"
+    latitude: 56.05944
+    longitude: 24.40361
+    population: 8510
+    dem: 35
+    timezone: "Europe/Vilnius"
+  - name: "Panevezys"
+    latitude: 55.73333
+    longitude: 24.35
+    population: 117395
+    dem: 52
+    timezone: "Europe/Vilnius"
+  - name: "Kupiskis"
+    latitude: 55.84027
+    longitude: 24.97976
+    population: 8263
+    dem: 97
+    timezone: "Europe/Vilnius"
+  - name: "Birzai"
+    latitude: 56.2
+    longitude: 24.75
+    population: 14911
+    dem: 53
+    timezone: "Europe/Vilnius"
+- name: "Kaunas County"
+  cities:
+  - name: "Raseiniai"
+    latitude: 55.37973
+    longitude: 23.12386
+    population: 12523
+    dem: 93
+    timezone: "Europe/Vilnius"
+  - name: "Prienai"
+    latitude: 54.636
+    longitude: 23.94585
+    population: 11352
+    dem: 59
+    timezone: "Europe/Vilnius"
+  - name: "Kedainiai"
+    latitude: 55.28782
+    longitude: 23.97275
+    population: 31980
+    dem: 39
+    timezone: "Europe/Vilnius"
+  - name: "Kaunas"
+    latitude: 54.90272
+    longitude: 23.90961
+    population: 374643
+    dem: 74
+    timezone: "Europe/Vilnius"
+  - name: "Kaisiadorys"
+    latitude: 54.86528
+    longitude: 24.46815
+    population: 9867
+    dem: 82
+    timezone: "Europe/Vilnius"
+  - name: "Jonava"
+    latitude: 55.08333
+    longitude: 24.28333
+    population: 34993
+    dem: 70
+    timezone: "Europe/Vilnius"
+  - name: "Garliava"
+    latitude: 54.82139
+    longitude: 23.8713
+    population: 13809
+    dem: 72
+    timezone: "Europe/Vilnius"
+  - name: "Aleksotas"
+    latitude: 54.88037
+    longitude: 23.90842
+    population: 24270
+    dem: 73
+    timezone: "Europe/Vilnius"
+  - name: "Dainava"
+    latitude: 54.91525
+    longitude: 23.96831
+    population: 70000
+    elevation: 100
+    dem: 70
+    timezone: "Europe/Vilnius"
+  - name: "Silainiai"
+    latitude: 54.92911
+    longitude: 23.88599
+    population: 40600
+    dem: 68
+    timezone: "Europe/Vilnius"
+  - name: "Eiguliai"
+    latitude: 54.93133
+    longitude: 23.93243
+    population: 61700
+    dem: 69
+    timezone: "Europe/Vilnius"
+- name: "Taurage County"
+  cities:
+  - name: "Taurage"
+    latitude: 55.25222
+    longitude: 22.28972
+    population: 27662
+    dem: 36
+    timezone: "Europe/Vilnius"
+  - name: "Silale"
+    latitude: 55.4898
+    longitude: 22.18692
+    population: 6026
+    dem: 98
+    timezone: "Europe/Vilnius"
+  - name: "Jurbarkas"
+    latitude: 55.07556
+    longitude: 22.76416
+    population: 13102
+    dem: 18
+    timezone: "Europe/Vilnius"
+- name: "Alytus County"
+  cities:
+  - name: "Varena"
+    latitude: 54.21546
+    longitude: 24.57538
+    population: 10304
+    dem: 128
+    timezone: "Europe/Vilnius"
+  - name: "Druskininkai"
+    latitude: 54.01573
+    longitude: 23.98703
+    population: 17791
+    dem: 97
+    timezone: "Europe/Vilnius"
+  - name: "Alytus"
+    latitude: 54.39635
+    longitude: 24.04142
+    population: 70747
+    dem: 89
+    timezone: "Europe/Vilnius"
+- name: "Lithuania"
+  cities:
+  - name: "Trakai"
+    latitude: 54.63783
+    longitude: 24.93433
+    population: 5530
+    dem: 152
+    timezone: "Europe/Vilnius"
+- name: "Marijampole County"
+  cities:
+  - name: "Vilkaviskis"
+    latitude: 54.65167
+    longitude: 23.03222
+    population: 13011
+    dem: 55
+    timezone: "Europe/Vilnius"
+  - name: "Sakiai"
+    latitude: 54.95339
+    longitude: 23.04779
+    population: 6613
+    dem: 50
+    timezone: "Europe/Vilnius"
+  - name: "Marijampole"
+    latitude: 54.55991
+    longitude: 23.35412
+    population: 47613
+    dem: 69
+    timezone: "Europe/Vilnius"
+  - name: "Kybartai"
+    latitude: 54.63858
+    longitude: 22.76316
+    population: 6355
+    dem: 56
+    timezone: "Europe/Vilnius"
+  - name: "Kazlu Ruda"
+    latitude: 54.749
+    longitude: 23.49
+    population: 7247
+    dem: 69
+    timezone: "Europe/Vilnius"
+- name: "Vilniaus apskritis"
+  cities:
+  - name: "Vilnius"
+    latitude: 54.68916
+    longitude: 25.2798
+    population: 542366
+    dem: 98
+    timezone: "Europe/Vilnius"
+  - name: "Vievis"
+    latitude: 54.76667
+    longitude: 24.8
+    population: 5269
+    dem: 134
+    timezone: "Europe/Vilnius"
+  - name: "Ukmerge"
+    latitude: 55.25
+    longitude: 24.75
+    population: 25886
+    dem: 72
+    timezone: "Europe/Vilnius"
+  - name: "Svencionys"
+    latitude: 55.135
+    longitude: 26.159
+    population: 5538
+    dem: 200
+    timezone: "Europe/Vilnius"
+  - name: "Svencioneliai"
+    latitude: 55.16163
+    longitude: 26.00177
+    population: 6790
+    dem: 160
+    timezone: "Europe/Vilnius"
+  - name: "Sirvintos"
+    latitude: 55.044
+    longitude: 24.95446
+    population: 7321
+    dem: 115
+    timezone: "Europe/Vilnius"
+  - name: "Salcininkai"
+    latitude: 54.30864
+    longitude: 25.38677
+    population: 6891
+    dem: 176
+    timezone: "Europe/Vilnius"
+  - name: "Pabrade"
+    latitude: 54.981
+    longitude: 25.761
+    population: 6375
+    dem: 128
+    timezone: "Europe/Vilnius"
+  - name: "Fabijoniskes"
+    latitude: 54.73333
+    longitude: 25.24167
+    population: 39759
+    dem: 184
+    timezone: "Europe/Vilnius"
+  - name: "Nemencine"
+    latitude: 54.84776
+    longitude: 25.46992
+    population: 6062
+    dem: 116
+    timezone: "Europe/Vilnius"
+  - name: "Lentvaris"
+    latitude: 54.64364
+    longitude: 25.05162
+    population: 11588
+    dem: 166
+    timezone: "Europe/Vilnius"
+  - name: "Grigiskes"
+    latitude: 54.68333
+    longitude: 25.08333
+    population: 11555
+    dem: 85
+    timezone: "Europe/Vilnius"
+  - name: "Elektrenai"
+    latitude: 54.78544
+    longitude: 24.66302
+    population: 13721
+    dem: 114
+    timezone: "Europe/Vilnius"
+  - name: "Pasilaiciai"
+    latitude: 54.73429
+    longitude: 25.21912
+    population: 33056
+    dem: 173
+    timezone: "Europe/Vilnius"
+  - name: "Pilaite"
+    latitude: 54.69981
+    longitude: 25.18393
+    population: 20320
+    dem: 158
+    timezone: "Europe/Vilnius"
+  - name: "Justiniskes"
+    latitude: 54.71664
+    longitude: 25.2174
+    population: 27462
+    dem: 181
+    timezone: "Europe/Vilnius"
+  - name: "Seskine"
+    latitude: 54.70972
+    longitude: 25.25053
+    population: 31333
+    dem: 165
+    timezone: "Europe/Vilnius"
+  - name: "Lazdynai"
+    latitude: 54.66815
+    longitude: 25.20684
+    population: 31097
+    dem: 117
+    timezone: "Europe/Vilnius"
+  - name: "Vilkpede"
+    latitude: 54.66969
+    longitude: 25.2477
+    population: 21346
+    dem: 132
+    timezone: "Europe/Vilnius"
+  - name: "Naujamiestis"
+    latitude: 54.67951
+    longitude: 25.26855
+    population: 23232
+    dem: 144
+    timezone: "Europe/Vilnius"
+  - name: "Rasos"
+    latitude: 54.67877
+    longitude: 25.31173
+    population: 10597
+    dem: 102
+    timezone: "Europe/Vilnius"
+- name: "Siauliai County"
+  cities:
+  - name: "Siauliai"
+    latitude: 55.93333
+    longitude: 23.31667
+    population: 130587
+    dem: 129
+    timezone: "Europe/Vilnius"
+  - name: "Radviliskis"
+    latitude: 55.81667
+    longitude: 23.53333
+    population: 20339
+    dem: 124
+    timezone: "Europe/Vilnius"
+  - name: "Pakruojis"
+    latitude: 55.97889
+    longitude: 23.85508
+    population: 5964
+    dem: 61
+    timezone: "Europe/Vilnius"
+  - name: "Naujoji Akmene"
+    latitude: 56.31667
+    longitude: 22.9
+    population: 11922
+    dem: 79
+    timezone: "Europe/Vilnius"
+  - name: "Kursenai"
+    latitude: 56.00318
+    longitude: 22.93662
+    population: 13914
+    dem: 104
+    timezone: "Europe/Vilnius"
+  - name: "Kelme"
+    latitude: 55.63009
+    longitude: 22.9349
+    population: 10626
+    dem: 131
+    timezone: "Europe/Vilnius"
+  - name: "Joniskis"
+    latitude: 56.23939
+    longitude: 23.61541
+    population: 11113
+    dem: 50
+    timezone: "Europe/Vilnius"

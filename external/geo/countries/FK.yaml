@@ -1,0 +1,22 @@
+---
+name: "Falkland Islands"
+iso: "FK"
+iso3: "FLK"
+code: "238"
+capital: "Stanley"
+area: 12173.0
+population: 2638
+continent: "SA"
+currencyCode: "FKP"
+currencyName: "Pound"
+phone: "500"
+languages: "en-FK"
+regions:
+- name: "Falkland Islands"
+  cities:
+  - name: "Stanley"
+    latitude: -51.69382
+    longitude: -57.85701
+    population: 2213
+    dem: 1
+    timezone: "Atlantic/Stanley"

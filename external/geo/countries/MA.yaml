@@ -1,0 +1,612 @@
+---
+name: "Morocco"
+iso: "MA"
+iso3: "MAR"
+code: "504"
+capital: "Rabat"
+area: 446550.0
+population: 33848242
+continent: "AF"
+currencyCode: "MAD"
+currencyName: "Dirham"
+phone: "212"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ar-MA,ber,fr"
+neighbours: "DZ,EH,ES"
+regions:
+- name: "Tanger-Tetouan-Al Hoceima"
+  cities:
+  - name: "Tirhanimine"
+    latitude: 35.23619
+    longitude: -3.95453
+    population: 55827
+    dem: 209
+    timezone: "Africa/Casablanca"
+  - name: "Tetouan"
+    latitude: 35.57845
+    longitude: -5.36837
+    population: 326261
+    dem: 121
+    timezone: "Africa/Casablanca"
+  - name: "Targuist"
+    latitude: 34.93769
+    longitude: -4.31856
+    population: 11560
+    dem: 1029
+    timezone: "Africa/Casablanca"
+  - name: "Tangier"
+    latitude: 35.76727
+    longitude: -5.79975
+    population: 688356
+    dem: 20
+    timezone: "Africa/Casablanca"
+  - name: "Ouezzane"
+    latitude: 34.79584
+    longitude: -5.57849
+    population: 58684
+    dem: 306
+    timezone: "Africa/Casablanca"
+  - name: "Martil"
+    latitude: 35.61662
+    longitude: -5.27522
+    population: 39738
+    dem: 5
+    timezone: "Africa/Casablanca"
+  - name: "Larache"
+    latitude: 35.19321
+    longitude: -6.15572
+    population: 109294
+    dem: 38
+    timezone: "Africa/Casablanca"
+  - name: "Ksar El Kebir"
+    latitude: 35.00044
+    longitude: -5.90378
+    population: 108753
+    dem: 18
+    timezone: "Africa/Casablanca"
+  - name: "Fnidek"
+    latitude: 35.84906
+    longitude: -5.35747
+    population: 53559
+    dem: 21
+    timezone: "Africa/Casablanca"
+  - name: "Imzouren"
+    latitude: 35.14637
+    longitude: -3.85063
+    population: 40000
+    dem: 77
+    timezone: "Africa/Casablanca"
+  - name: "Chefchaouene"
+    latitude: 35.16878
+    longitude: -5.2636
+    population: 36280
+    dem: 607
+    timezone: "Africa/Casablanca"
+  - name: "Asilah"
+    latitude: 35.46522
+    longitude: -6.03415
+    population: 28861
+    dem: 17
+    timezone: "Africa/Casablanca"
+  - name: "Al Hoceima"
+    latitude: 35.25165
+    longitude: -3.93723
+    population: 395644
+    dem: 74
+    timezone: "Africa/Casablanca"
+  - name: "Cap Negro II"
+    latitude: 35.6597
+    longitude: -5.28525
+    population: 10000
+    dem: 7
+    timezone: "Africa/Casablanca"
+  - name: "Bni Bouayach"
+    latitude: 35.10506
+    longitude: -3.84028
+    population: 18271
+    dem: 118
+    timezone: "Africa/Casablanca"
+- name: "Guelmim-Oued Noun"
+  cities:
+  - name: "Tan-Tan"
+    latitude: 28.43799
+    longitude: -11.10321
+    population: 61924
+    dem: 45
+    timezone: "Africa/Casablanca"
+  - name: "Guelmim"
+    latitude: 28.98696
+    longitude: -10.05738
+    population: 98229
+    dem: 301
+    timezone: "Africa/Casablanca"
+- name: "Rabat-Sale-Kenitra"
+  cities:
+  - name: "Tiflet"
+    latitude: 33.89469
+    longitude: -6.30649
+    population: 70010
+    dem: 340
+    timezone: "Africa/Casablanca"
+  - name: "Temara"
+    latitude: 33.92866
+    longitude: -6.90656
+    population: 313510
+    dem: 73
+    timezone: "Africa/Casablanca"
+  - name: "Souq Larba al Gharb"
+    latitude: 34.68664
+    longitude: -6.00272
+    population: 44059
+    dem: 37
+    timezone: "Africa/Casablanca"
+  - name: "Sidi Yahia El Gharb"
+    latitude: 34.30494
+    longitude: -6.30404
+    population: 32202
+    dem: 18
+    timezone: "Africa/Casablanca"
+  - name: "Sidi Slimane"
+    latitude: 34.26479
+    longitude: -5.92598
+    population: 79437
+    dem: 37
+    timezone: "Africa/Casablanca"
+  - name: "Sidi Qacem"
+    latitude: 34.22149
+    longitude: -5.70775
+    population: 74755
+    dem: 83
+    timezone: "Africa/Casablanca"
+  - name: "Sale"
+    latitude: 34.0531
+    longitude: -6.79846
+    population: 903485
+    dem: 34
+    timezone: "Africa/Casablanca"
+  - name: "Rabat"
+    latitude: 34.01325
+    longitude: -6.83255
+    population: 1655753
+    dem: 46
+    timezone: "Africa/Casablanca"
+  - name: "Oulmes"
+    latitude: 33.42585
+    longitude: -6.00137
+    population: 19014
+    dem: 1175
+    timezone: "Africa/Casablanca"
+  - name: "Mechraa Bel Ksiri"
+    latitude: 34.57373
+    longitude: -5.95585
+    population: 27802
+    dem: 20
+    timezone: "Africa/Casablanca"
+  - name: "Kenitra"
+    latitude: 34.26101
+    longitude: -6.5802
+    population: 366570
+    dem: 13
+    timezone: "Africa/Casablanca"
+  - name: "Khemisset"
+    latitude: 33.82404
+    longitude: -6.06627
+    population: 106991
+    dem: 451
+    timezone: "Africa/Casablanca"
+  - name: "Skhirate"
+    latitude: 33.8527
+    longitude: -7.03171
+    population: 44850
+    dem: 51
+    timezone: "Africa/Casablanca"
+- name: "Morocco"
+  cities:
+  - name: "Figuig"
+    latitude: 32.10891
+    longitude: -1.22855
+    population: 12516
+    dem: 898
+    timezone: "Africa/Casablanca"
+  - name: "Dakhla"
+    latitude: 30.41071
+    longitude: -9.55572
+    population: 55618
+    dem: 83
+    timezone: "Africa/Casablanca"
+- name: "Dakhla-Oued Ed-Dahab"
+- name: "Casablanca-Settat"
+  cities:
+  - name: "Sidi Bennour"
+    latitude: 32.65236
+    longitude: -8.42769
+    population: 40044
+    dem: 182
+    timezone: "Africa/Casablanca"
+  - name: "Settat"
+    latitude: 33.00103
+    longitude: -7.61662
+    population: 119082
+    dem: 365
+    timezone: "Africa/Casablanca"
+  - name: "Oualidia"
+    latitude: 32.73372
+    longitude: -9.03059
+    population: 5826
+    dem: 51
+    timezone: "Africa/Casablanca"
+  - name: "Zawyat an Nwacer"
+    latitude: 33.37981
+    longitude: -7.61932
+    population: 12696
+    dem: 195
+    timezone: "Africa/Casablanca"
+  - name: "Mohammedia"
+    latitude: 33.68607
+    longitude: -7.38298
+    population: 187708
+    dem: 29
+    timezone: "Africa/Casablanca"
+  - name: "El Jadid"
+    latitude: 33.25682
+    longitude: -8.50882
+    population: 147549
+    dem: 10
+    timezone: "Africa/Casablanca"
+  - name: "Casablanca"
+    latitude: 33.58831
+    longitude: -7.61138
+    population: 3144909
+    dem: 27
+    timezone: "Africa/Casablanca"
+  - name: "Bouznika"
+    latitude: 33.78942
+    longitude: -7.15968
+    population: 27283
+    dem: 43
+    timezone: "Africa/Casablanca"
+  - name: "Berrechid"
+    latitude: 33.26553
+    longitude: -7.58754
+    population: 93954
+    dem: 220
+    timezone: "Africa/Casablanca"
+  - name: "Azemmour"
+    latitude: 33.28952
+    longitude: -8.3425
+    population: 37140
+    dem: 28
+    timezone: "Africa/Casablanca"
+- name: "Souss-Massa"
+  cities:
+  - name: "Tiznit"
+    latitude: 29.69742
+    longitude: -9.73162
+    population: 55092
+    dem: 240
+    timezone: "Africa/Casablanca"
+  - name: "Taroudant"
+    latitude: 30.47028
+    longitude: -8.87695
+    population: 71133
+    dem: 237
+    timezone: "Africa/Casablanca"
+  - name: "Sidi Ifni"
+    latitude: 29.37975
+    longitude: -10.17299
+    population: 20000
+    dem: 44
+    timezone: "Africa/Casablanca"
+  - name: "Oulad Teima"
+    latitude: 30.39467
+    longitude: -9.20897
+    population: 66832
+    dem: 129
+    timezone: "Africa/Casablanca"
+  - name: "Agadir"
+    latitude: 30.42018
+    longitude: -9.59815
+    population: 698310
+    dem: 31
+    timezone: "Africa/Casablanca"
+- name: "Fes-Meknes"
+  cities:
+  - name: "Taza"
+    latitude: 34.21
+    longitude: -4.01
+    population: 141890
+    dem: 530
+    timezone: "Africa/Casablanca"
+  - name: "Taounate"
+    latitude: 34.53661
+    longitude: -4.64009
+    population: 32802
+    dem: 600
+    timezone: "Africa/Casablanca"
+  - name: "Tahla"
+    latitude: 34.04965
+    longitude: -4.42162
+    population: 25761
+    dem: 606
+    timezone: "Africa/Casablanca"
+  - name: "Sefrou"
+    latitude: 33.83186
+    longitude: -4.828
+    population: 65150
+    dem: 809
+    timezone: "Africa/Casablanca"
+  - name: "Meknes"
+    latitude: 33.89352
+    longitude: -5.54727
+    population: 545705
+    dem: 531
+    timezone: "Africa/Casablanca"
+  - name: "Ifrane"
+    latitude: 33.52666
+    longitude: -5.11019
+    population: 73782
+    dem: 1648
+    timezone: "Africa/Casablanca"
+  - name: "Guercif"
+    latitude: 34.22568
+    longitude: -3.35361
+    population: 57544
+    dem: 367
+    timezone: "Africa/Casablanca"
+  - name: "Fes al Bali"
+    latitude: 34.0701
+    longitude: -4.95473
+    population: 156000
+    dem: 237
+    timezone: "Africa/Casablanca"
+  - name: "Fes"
+    latitude: 34.03313
+    longitude: -5.00028
+    population: 964891
+    dem: 406
+    timezone: "Africa/Casablanca"
+  - name: "El Hajeb"
+    latitude: 33.68786
+    longitude: -5.371
+    population: 28126
+    dem: 1023
+    timezone: "Africa/Casablanca"
+  - name: "Azrou"
+    latitude: 33.43443
+    longitude: -5.22126
+    population: 48249
+    dem: 1277
+    timezone: "Africa/Casablanca"
+  - name: "Ain Leuh"
+    latitude: 33.28984
+    longitude: -5.33863
+    population: 5278
+    dem: 1424
+    timezone: "Africa/Casablanca"
+- name: "Oriental"
+  cities:
+  - name: "Zaio"
+    latitude: 34.94282
+    longitude: -2.7329
+    population: 30008
+    dem: 198
+    timezone: "Africa/Casablanca"
+  - name: "Taourirt"
+    latitude: 34.40731
+    longitude: -2.89732
+    population: 82518
+    dem: 394
+    timezone: "Africa/Casablanca"
+  - name: "Oujda-Angad"
+    latitude: 34.68139
+    longitude: -1.90858
+    population: 405253
+    dem: 549
+    timezone: "Africa/Casablanca"
+  - name: "Nador"
+    latitude: 35.16813
+    longitude: -2.93352
+    population: 129260
+    dem: 19
+    timezone: "Africa/Casablanca"
+  - name: "Al Aaroui"
+    latitude: 35.0109
+    longitude: -3.00938
+    population: 36021
+    dem: 177
+    timezone: "Africa/Casablanca"
+  - name: "Midar"
+    latitude: 34.94025
+    longitude: -3.53311
+    population: 10229
+    dem: 388
+    timezone: "Africa/Casablanca"
+  - name: "Jerada"
+    latitude: 34.31
+    longitude: -2.16
+    population: 43696
+    dem: 1045
+    timezone: "Africa/Casablanca"
+  - name: "El Aioun"
+    latitude: 34.58319
+    longitude: -2.50612
+    population: 35196
+    dem: 604
+    timezone: "Africa/Casablanca"
+  - name: "Berkane"
+    latitude: 34.92
+    longitude: -2.32
+    population: 80721
+    dem: 173
+    timezone: "Africa/Casablanca"
+  - name: "Ain Beni Mathar"
+    latitude: 34.0097
+    longitude: -2.03238
+    population: 16289
+    dem: 917
+    timezone: "Africa/Casablanca"
+  - name: "Ahfir"
+    latitude: 34.95368
+    longitude: -2.10027
+    population: 19611
+    dem: 252
+    timezone: "Africa/Casablanca"
+- name: "Laayoune-Sakia El Hamra"
+  cities:
+  - name: "Smara"
+    latitude: 26.73841
+    longitude: -11.67194
+    population: 42056
+    dem: 188
+    timezone: "Africa/Casablanca"
+  - name: "Tarfaya"
+    latitude: 27.9392
+    longitude: -12.92604
+    population: 5615
+    dem: 5
+    timezone: "Africa/Casablanca"
+  - name: "Gueltat Zemmour"
+    latitude: 25.14276
+    longitude: -12.37168
+    population: 6740
+    dem: 419
+    timezone: "Africa/Casablanca"
+- name: "Beni Mellal-Khenifra"
+  cities:
+  - name: "Oued Zem"
+    latitude: 32.8627
+    longitude: -6.57359
+    population: 84910
+    dem: 783
+    timezone: "Africa/Casablanca"
+  - name: "Midelt"
+    latitude: 32.6852
+    longitude: -4.74512
+    population: 45159
+    dem: 1462
+    timezone: "Africa/Casablanca"
+  - name: "Ifrane"
+    latitude: 31.70217
+    longitude: -6.3494
+    population: 13000
+    dem: 2019
+    timezone: "Africa/Casablanca"
+  - name: "Khouribga"
+    latitude: 32.88108
+    longitude: -6.9063
+    population: 167673
+    dem: 804
+    timezone: "Africa/Casablanca"
+  - name: "Khenifra"
+    latitude: 32.93492
+    longitude: -5.66167
+    population: 73906
+    dem: 868
+    timezone: "Africa/Casablanca"
+  - name: "Kasba Tadla"
+    latitude: 32.5977
+    longitude: -6.26844
+    population: 41199
+    dem: 499
+    timezone: "Africa/Casablanca"
+  - name: "Al Fqih Ben Calah"
+    latitude: 32.50213
+    longitude: -6.68771
+    population: 84072
+    dem: 444
+    timezone: "Africa/Casablanca"
+  - name: "Beni Mellal"
+    latitude: 32.33725
+    longitude: -6.34983
+    population: 166399
+    dem: 538
+    timezone: "Africa/Casablanca"
+  - name: "Boujniba"
+    latitude: 32.90046
+    longitude: -6.77464
+    population: 15041
+    dem: 847
+    timezone: "Africa/Casablanca"
+- name: "Draa-Tafilalet"
+  cities:
+  - name: "Zagora"
+    latitude: 30.33241
+    longitude: -5.8384
+    population: 35154
+    dem: 733
+    timezone: "Africa/Casablanca"
+  - name: "Tinghir"
+    latitude: 31.51472
+    longitude: -5.53278
+    population: 36795
+    dem: 1281
+    timezone: "Africa/Casablanca"
+  - name: "Recani"
+    latitude: 31.28318
+    longitude: -4.26565
+    population: 20469
+    dem: 761
+    timezone: "Africa/Casablanca"
+  - name: "Ouarzazat"
+    latitude: 30.91894
+    longitude: -6.89341
+    population: 57245
+    dem: 1113
+    timezone: "Africa/Casablanca"
+  - name: "Arfoud"
+    latitude: 31.4353
+    longitude: -4.23258
+    population: 23637
+    dem: 809
+    timezone: "Africa/Casablanca"
+  - name: "Kelaat Mgouna"
+    latitude: 31.24573
+    longitude: -6.1326
+    population: 14190
+    dem: 1431
+    timezone: "Africa/Casablanca"
+  - name: "Mhamid"
+    latitude: 29.82
+    longitude: -5.72
+    population: 10000
+    dem: 550
+    timezone: "Africa/Casablanca"
+  - name: "Errachidia"
+    latitude: 31.9314
+    longitude: -4.42663
+    population: 92374
+    dem: 1039
+    timezone: "Africa/Casablanca"
+- name: "Marrakesh-Safi"
+  cities:
+  - name: "Setti Fatma"
+    latitude: 31.22508
+    longitude: -7.67751
+    population: 22283
+    dem: 1434
+    timezone: "Africa/Casablanca"
+  - name: "Youssoufia"
+    latitude: 32.24634
+    longitude: -8.52941
+    population: 64910
+    dem: 302
+    timezone: "Africa/Casablanca"
+  - name: "Safi"
+    latitude: 32.29939
+    longitude: -9.23718
+    population: 288163
+    dem: 45
+    timezone: "Africa/Casablanca"
+  - name: "Marrakesh"
+    latitude: 31.63416
+    longitude: -7.99994
+    population: 839296
+    dem: 457
+    timezone: "Africa/Casablanca"
+  - name: "Essaouira"
+    latitude: 31.5125
+    longitude: -9.77
+    population: 70634
+    dem: 7
+    timezone: "Africa/Casablanca"

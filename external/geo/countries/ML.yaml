@@ -1,0 +1,245 @@
+---
+name: "Mali"
+iso: "ML"
+iso3: "MLI"
+code: "466"
+capital: "Bamako"
+area: 1240000.0
+population: 13796354
+continent: "AF"
+currencyCode: "XOF"
+currencyName: "Franc"
+phone: "223"
+languages: "fr-ML,bm"
+neighbours: "SN,NE,DZ,CI,GN,MR,BF"
+regions:
+- name: "Tombouctou Region"
+  cities:
+  - name: "Timbuktu"
+    latitude: 16.77348
+    longitude: -3.00742
+    population: 32460
+    dem: 274
+    timezone: "Africa/Bamako"
+  - name: "Niafunke"
+    latitude: 15.9322
+    longitude: -3.9906
+    population: 6901
+    dem: 269
+    timezone: "Africa/Bamako"
+  - name: "Goundam"
+    latitude: 16.41453
+    longitude: -3.67075
+    population: 8456
+    dem: 259
+    timezone: "Africa/Bamako"
+- name: "Mali"
+  cities:
+  - name: "Dire"
+    latitude: 12.28333
+    longitude: -10.96667
+    population: 10943
+    dem: 208
+    timezone: "Africa/Bamako"
+- name: "Segou Region"
+  cities:
+  - name: "Segou"
+    latitude: 13.4317
+    longitude: -6.2157
+    population: 92552
+    dem: 288
+    timezone: "Africa/Bamako"
+  - name: "San"
+    latitude: 13.30335
+    longitude: -4.89562
+    population: 24811
+    dem: 285
+    timezone: "Africa/Bamako"
+  - name: "Markala"
+    latitude: 13.7021
+    longitude: -6.0659
+    population: 53738
+    dem: 292
+    timezone: "Africa/Bamako"
+  - name: "Kinmparana"
+    latitude: 12.84217
+    longitude: -4.9245
+    population: 6014
+    dem: 306
+    timezone: "Africa/Bamako"
+  - name: "Ke-Macina"
+    latitude: 13.9641
+    longitude: -5.35791
+    population: 9848
+    dem: 283
+    timezone: "Africa/Bamako"
+- name: "Kidal Region"
+  cities:
+  - name: "Kidal"
+    latitude: 18.44111
+    longitude: 1.40778
+    population: 11643
+    dem: 460
+    timezone: "Africa/Bamako"
+- name: "Mopti Region"
+  cities:
+  - name: "Tenenkou"
+    latitude: 14.45722
+    longitude: -4.9169
+    population: 7471
+    dem: 273
+    timezone: "Africa/Bamako"
+  - name: "Mopti"
+    latitude: 14.4843
+    longitude: -4.18296
+    population: 108456
+    dem: 268
+    timezone: "Africa/Bamako"
+  - name: "Douentza"
+    latitude: 15.00155
+    longitude: -2.94978
+    population: 8054
+    dem: 303
+    timezone: "Africa/Bamako"
+  - name: "Djenne"
+    latitude: 13.90608
+    longitude: -4.55332
+    population: 22382
+    dem: 278
+    timezone: "Africa/Bamako"
+  - name: "Bandiagara"
+    latitude: 14.35005
+    longitude: -3.61038
+    population: 6853
+    dem: 388
+    timezone: "Africa/Bamako"
+- name: "Koulikoro Region"
+  cities:
+  - name: "Koulikoro"
+    latitude: 12.86273
+    longitude: -7.55985
+    population: 23919
+    dem: 320
+    timezone: "Africa/Bamako"
+  - name: "Kolokani"
+    latitude: 13.5728
+    longitude: -8.0339
+    population: 48774
+    dem: 406
+    timezone: "Africa/Bamako"
+  - name: "Kati"
+    latitude: 12.74409
+    longitude: -8.07257
+    population: 42922
+    dem: 423
+    timezone: "Africa/Bamako"
+  - name: "Kangaba"
+    latitude: 11.93333
+    longitude: -8.41667
+    population: 17232
+    dem: 343
+    timezone: "Africa/Bamako"
+  - name: "Banamba"
+    latitude: 13.54773
+    longitude: -7.44808
+    population: 30591
+    dem: 378
+    timezone: "Africa/Bamako"
+- name: "Bamako Region"
+  cities:
+  - name: "Bamako"
+    latitude: 12.65
+    longitude: -8.0
+    population: 1297281
+    dem: 338
+    timezone: "Africa/Bamako"
+- name: "Gao Region"
+  cities:
+  - name: "Menaka"
+    latitude: 15.9182
+    longitude: 2.4022
+    population: 9110
+    dem: 276
+    timezone: "Africa/Bamako"
+  - name: "Gao"
+    latitude: 16.27167
+    longitude: -0.04472
+    population: 87000
+    dem: 257
+    timezone: "Africa/Bamako"
+  - name: "Inekar"
+    latitude: 15.95944
+    longitude: 3.14111
+    population: 8714
+    dem: 310
+    timezone: "Africa/Bamako"
+- name: "Kayes Region"
+  cities:
+  - name: "Sagalo"
+    latitude: 12.2
+    longitude: -10.7
+    population: 15830
+    dem: 540
+    timezone: "Africa/Bamako"
+  - name: "Kokofata"
+    latitude: 12.88333
+    longitude: -9.95
+    population: 12985
+    dem: 295
+    timezone: "Africa/Bamako"
+  - name: "Kita"
+    latitude: 13.0349
+    longitude: -9.4895
+    population: 5769
+    dem: 329
+    timezone: "Africa/Bamako"
+  - name: "Kayes"
+    latitude: 14.44693
+    longitude: -11.44448
+    population: 78406
+    dem: 39
+    timezone: "Africa/Bamako"
+  - name: "Bafoulabe"
+    latitude: 13.8065
+    longitude: -10.8321
+    population: 26823
+    dem: 103
+    timezone: "Africa/Bamako"
+- name: "Sikasso Region"
+  cities:
+  - name: "Yorosso"
+    latitude: 12.35811
+    longitude: -4.77688
+    population: 17447
+    dem: 418
+    timezone: "Africa/Bamako"
+  - name: "Sikasso"
+    latitude: 11.31755
+    longitude: -5.66654
+    population: 144786
+    dem: 368
+    timezone: "Africa/Bamako"
+  - name: "Ntossoni"
+    latitude: 12.5304
+    longitude: -5.77003
+    population: 8700
+    dem: 325
+    timezone: "Africa/Bamako"
+  - name: "Koutiala"
+    latitude: 12.39173
+    longitude: -5.46421
+    population: 99353
+    dem: 351
+    timezone: "Africa/Bamako"
+  - name: "Kolondieba"
+    latitude: 11.08943
+    longitude: -6.8929
+    population: 10041
+    dem: 332
+    timezone: "Africa/Bamako"
+  - name: "Bougouni"
+    latitude: 11.41769
+    longitude: -7.48323
+    population: 35450
+    dem: 349
+    timezone: "Africa/Bamako"

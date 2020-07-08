@@ -1,0 +1,152 @@
+---
+name: "Mayotte"
+iso: "YT"
+iso3: "MYT"
+code: "175"
+capital: "Mamoudzou"
+area: 374.0
+population: 159042
+continent: "AF"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "262"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "fr-YT"
+regions:
+- name: "MTsangamouji"
+  cities:
+  - name: "MTsangamouji"
+    latitude: -12.75944
+    longitude: 45.08361
+    population: 5028
+    dem: 57
+    timezone: "Indian/Mayotte"
+- name: "Dembeni"
+  cities:
+  - name: "Dembeni"
+    latitude: -12.8436
+    longitude: 45.18436
+    population: 10141
+    dem: 15
+    timezone: "Indian/Mayotte"
+- name: "Sada"
+  cities:
+  - name: "Sada"
+    latitude: -12.85055
+    longitude: 45.10205
+    population: 9832
+    dem: 82
+    timezone: "Indian/Mayotte"
+- name: "Acoua"
+  cities:
+  - name: "Acoua"
+    latitude: -12.72391
+    longitude: 45.05819
+    population: 4622
+    dem: 10
+    timezone: "Indian/Mayotte"
+- name: "Boueni"
+  cities:
+  - name: "Boueni"
+    latitude: -12.9025
+    longitude: 45.07611
+    population: 5334
+    dem: 40
+    timezone: "Indian/Mayotte"
+- name: "Pamandzi"
+  cities:
+  - name: "Pamandzi"
+    latitude: -12.79674
+    longitude: 45.27938
+    population: 9077
+    dem: 23
+    timezone: "Indian/Mayotte"
+- name: "Bandrele"
+  cities:
+  - name: "Bandrele"
+    latitude: -12.91276
+    longitude: 45.19256
+    population: 6350
+    dem: 14
+    timezone: "Indian/Mayotte"
+- name: "Chirongui"
+  cities:
+  - name: "Chirongui"
+    latitude: -12.93194
+    longitude: 45.14833
+    population: 6173
+    dem: 13
+    timezone: "Indian/Mayotte"
+- name: "Mtsamboro"
+  cities:
+  - name: "Mtsamboro"
+    latitude: -12.69982
+    longitude: 45.06894
+    population: 7724
+    dem: 26
+    timezone: "Indian/Mayotte"
+- name: "Kani-Keli"
+  cities:
+  - name: "Kani Keli"
+    latitude: -12.95361
+    longitude: 45.10333
+    population: 4854
+    dem: 95
+    timezone: "Indian/Mayotte"
+- name: "Ouangani"
+  cities:
+  - name: "Ouangani"
+    latitude: -12.84639
+    longitude: 45.13611
+    population: 7272
+    dem: 100
+    timezone: "Indian/Mayotte"
+- name: "Dzaoudzi"
+  cities:
+  - name: "Dzaoudzi"
+    latitude: -12.78339
+    longitude: 45.25693
+    population: 15339
+    dem: 26
+    timezone: "Indian/Mayotte"
+- name: "Bandraboua"
+  cities:
+  - name: "Bandraboua"
+    latitude: -12.7044
+    longitude: 45.12231
+    population: 7880
+    dem: 17
+    timezone: "Indian/Mayotte"
+- name: "Tsingoni"
+  cities:
+  - name: "Tsingoni"
+    latitude: -12.78722
+    longitude: 45.10278
+    population: 7602
+    dem: 56
+    timezone: "Indian/Mayotte"
+- name: "Mamoudzou"
+  cities:
+  - name: "Mamoudzou"
+    latitude: -12.78234
+    longitude: 45.22878
+    population: 54831
+    dem: 23
+    timezone: "Indian/Mayotte"
+- name: "Chiconi"
+  cities:
+  - name: "Chiconi"
+    latitude: -12.83333
+    longitude: 45.11056
+    population: 7204
+    dem: 109
+    timezone: "Indian/Mayotte"
+- name: "Koungou"
+  cities:
+  - name: "Koungou"
+    latitude: -12.73361
+    longitude: 45.20417
+    population: 18118
+    dem: 40
+    timezone: "Indian/Mayotte"

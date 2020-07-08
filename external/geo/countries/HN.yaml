@@ -1,0 +1,449 @@
+---
+name: "Honduras"
+iso: "HN"
+iso3: "HND"
+code: "340"
+capital: "Tegucigalpa"
+area: 112090.0
+population: 7989415
+continent: "NA"
+currencyCode: "HNL"
+currencyName: "Lempira"
+phone: "504"
+postalCodeFormat: "@@####"
+postalCodeRegex: "^([A-Z]{2}\\d{4})$"
+languages: "es-HN,cab,miq"
+neighbours: "GT,NI,SV"
+regions:
+- name: "Departamento de Intibuca"
+  cities:
+  - name: "La Esperanza"
+    latitude: 14.31111
+    longitude: -88.18056
+    population: 5318
+    dem: 1697
+    timezone: "America/Tegucigalpa"
+  - name: "Jesus de Otoro"
+    latitude: 14.48333
+    longitude: -87.98333
+    population: 6988
+    dem: 612
+    timezone: "America/Tegucigalpa"
+  - name: "Intibuca"
+    latitude: 14.31667
+    longitude: -88.16667
+    population: 13741
+    dem: 1692
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de El Paraiso"
+  cities:
+  - name: "Yuscaran"
+    latitude: 13.94389
+    longitude: -86.85278
+    population: 2371
+    dem: 958
+    timezone: "America/Tegucigalpa"
+  - name: "Las Trojes"
+    latitude: 14.06667
+    longitude: -85.98333
+    population: 6253
+    dem: 755
+    timezone: "America/Tegucigalpa"
+  - name: "El Paraiso"
+    latitude: 13.86667
+    longitude: -86.55
+    population: 18779
+    dem: 804
+    timezone: "America/Tegucigalpa"
+  - name: "Danli"
+    latitude: 14.03333
+    longitude: -86.58333
+    population: 44799
+    dem: 763
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Lempira"
+  cities:
+  - name: "Gracias"
+    latitude: 14.59028
+    longitude: -88.58194
+    population: 7909
+    dem: 798
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Santa Barbara"
+  cities:
+  - name: "Santa Barbara"
+    latitude: 14.91944
+    longitude: -88.23611
+    population: 15119
+    dem: 256
+    timezone: "America/Tegucigalpa"
+  - name: "San Luis"
+    latitude: 15.08333
+    longitude: -88.38333
+    population: 5733
+    dem: 1137
+    timezone: "America/Tegucigalpa"
+  - name: "Las Vegas, Santa Barbara"
+    latitude: 14.87649
+    longitude: -88.07473
+    population: 7487
+    dem: 892
+    timezone: "America/Tegucigalpa"
+  - name: "Azacualpa"
+    latitude: 15.34333
+    longitude: -88.55139
+    population: 5949
+    dem: 278
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Atlantida"
+  cities:
+  - name: "Tela"
+    latitude: 15.77425
+    longitude: -87.46731
+    population: 29325
+    dem: 9
+    timezone: "America/Tegucigalpa"
+  - name: "San Juan Pueblo"
+    latitude: 15.58333
+    longitude: -87.23333
+    population: 5735
+    dem: 171
+    timezone: "America/Tegucigalpa"
+  - name: "Mezapa"
+    latitude: 15.58333
+    longitude: -87.65
+    population: 6324
+    dem: 154
+    timezone: "America/Tegucigalpa"
+  - name: "La Ceiba"
+    latitude: 15.75971
+    longitude: -86.78221
+    population: 130218
+    dem: 14
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Comayagua"
+  cities:
+  - name: "Villa de San Antonio"
+    latitude: 14.31667
+    longitude: -87.61667
+    population: 5390
+    dem: 596
+    timezone: "America/Tegucigalpa"
+  - name: "Siguatepeque"
+    latitude: 14.6
+    longitude: -87.83333
+    population: 43141
+    dem: 1079
+    timezone: "America/Tegucigalpa"
+  - name: "Comayagua"
+    latitude: 14.45139
+    longitude: -87.6375
+    population: 58784
+    dem: 593
+    timezone: "America/Tegucigalpa"
+  - name: "Ajuterique"
+    latitude: 14.38333
+    longitude: -87.7
+    population: 5354
+    dem: 647
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Yoro"
+  cities:
+  - name: "Yoro"
+    latitude: 15.1375
+    longitude: -87.12778
+    population: 15774
+    dem: 648
+    timezone: "America/Tegucigalpa"
+  - name: "Santa Rita"
+    latitude: 15.16667
+    longitude: -87.28333
+    population: 12869
+    dem: 885
+    timezone: "America/Tegucigalpa"
+  - name: "Olanchito"
+    latitude: 15.48131
+    longitude: -86.57415
+    population: 25969
+    dem: 158
+    timezone: "America/Tegucigalpa"
+  - name: "Morazan"
+    latitude: 15.31667
+    longitude: -87.6
+    population: 11076
+    dem: 211
+    timezone: "America/Tegucigalpa"
+  - name: "El Progreso"
+    latitude: 15.4
+    longitude: -87.8
+    population: 100810
+    dem: 48
+    timezone: "America/Tegucigalpa"
+  - name: "El Negrito"
+    latitude: 15.31667
+    longitude: -87.7
+    population: 9303
+    dem: 231
+    timezone: "America/Tegucigalpa"
+  - name: "Agua Blanca Sur"
+    latitude: 15.25
+    longitude: -87.88333
+    population: 7592
+    dem: 49
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Colon"
+  cities:
+  - name: "Trujillo"
+    latitude: 15.91667
+    longitude: -85.95417
+    population: 9646
+    dem: 35
+    timezone: "America/Tegucigalpa"
+  - name: "Tocoa"
+    latitude: 15.68333
+    longitude: -86.0
+    population: 30785
+    dem: 37
+    timezone: "America/Tegucigalpa"
+  - name: "Saba"
+    latitude: 15.46667
+    longitude: -86.25
+    population: 9666
+    dem: 390
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Cortes"
+  cities:
+  - name: "Puerto Cortez"
+    latitude: 15.82562
+    longitude: -87.92968
+    population: 48013
+    dem: 10
+    timezone: "America/Tegucigalpa"
+  - name: "Villanueva"
+    latitude: 15.31667
+    longitude: -88.0
+    population: 31571
+    dem: 151
+    timezone: "America/Tegucigalpa"
+  - name: "Santa Cruz de Yojoa"
+    latitude: 14.98333
+    longitude: -87.9
+    population: 10230
+    dem: 493
+    timezone: "America/Tegucigalpa"
+  - name: "San Pedro Sula"
+    latitude: 15.50417
+    longitude: -88.025
+    population: 489466
+    dem: 92
+    timezone: "America/Tegucigalpa"
+  - name: "San Manuel"
+    latitude: 15.33333
+    longitude: -87.91667
+    population: 6389
+    dem: 44
+    timezone: "America/Tegucigalpa"
+  - name: "Potrerillos"
+    latitude: 15.23333
+    longitude: -87.96667
+    population: 15707
+    dem: 92
+    timezone: "America/Tegucigalpa"
+  - name: "Pimienta Vieja"
+    latitude: 15.23333
+    longitude: -87.96667
+    population: 8761
+    dem: 92
+    timezone: "America/Tegucigalpa"
+  - name: "La Lima"
+    latitude: 15.43333
+    longitude: -87.91667
+    population: 45955
+    dem: 33
+    timezone: "America/Tegucigalpa"
+  - name: "Cuyamel"
+    latitude: 15.66667
+    longitude: -88.2
+    population: 5022
+    dem: 17
+    timezone: "America/Tegucigalpa"
+  - name: "Cofradia"
+    latitude: 15.4
+    longitude: -88.15
+    population: 20353
+    dem: 111
+    timezone: "America/Tegucigalpa"
+  - name: "Choloma"
+    latitude: 15.61444
+    longitude: -87.95302
+    population: 139100
+    dem: 41
+    timezone: "America/Tegucigalpa"
+  - name: "Baracoa"
+    latitude: 15.76667
+    longitude: -87.85
+    population: 9202
+    dem: 9
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de La Paz"
+  cities:
+  - name: "Marcala"
+    latitude: 14.15
+    longitude: -88.03333
+    population: 10054
+    dem: 1248
+    timezone: "America/Tegucigalpa"
+  - name: "La Paz"
+    latitude: 14.31944
+    longitude: -87.67917
+    population: 17555
+    dem: 688
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Gracias a Dios"
+  cities:
+  - name: "Puerto Lempira"
+    latitude: 15.26667
+    longitude: -83.77222
+    population: 4856
+    dem: 10
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Olancho"
+  cities:
+  - name: "San Francisco de la Paz"
+    latitude: 14.9
+    longitude: -86.2
+    population: 5411
+    dem: 667
+    timezone: "America/Tegucigalpa"
+  - name: "Juticalpa"
+    latitude: 14.66667
+    longitude: -86.21944
+    population: 33686
+    dem: 391
+    timezone: "America/Tegucigalpa"
+  - name: "Campamento"
+    latitude: 14.55
+    longitude: -86.65
+    population: 6560
+    dem: 713
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Ocotepeque"
+  cities:
+  - name: "San Marcos"
+    latitude: 14.4
+    longitude: -88.95
+    population: 5346
+    dem: 991
+    timezone: "America/Tegucigalpa"
+  - name: "Nueva Ocotepeque"
+    latitude: 14.43333
+    longitude: -89.18333
+    population: 8780
+    dem: 808
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Francisco Morazan"
+  cities:
+  - name: "Villa de San Francisco"
+    latitude: 14.16667
+    longitude: -86.96667
+    population: 5914
+    dem: 777
+    timezone: "America/Tegucigalpa"
+  - name: "Tegucigalpa"
+    latitude: 14.0818
+    longitude: -87.20681
+    population: 850848
+    dem: 944
+    timezone: "America/Tegucigalpa"
+  - name: "Talanga"
+    latitude: 14.4
+    longitude: -87.08333
+    population: 13492
+    dem: 810
+    timezone: "America/Tegucigalpa"
+  - name: "Guaimaca"
+    latitude: 14.53333
+    longitude: -86.81667
+    population: 12899
+    dem: 884
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Choluteca"
+  cities:
+  - name: "San Marcos de Colon"
+    latitude: 13.43333
+    longitude: -86.8
+    population: 8821
+    dem: 997
+    timezone: "America/Tegucigalpa"
+  - name: "Monjaras"
+    latitude: 13.20056
+    longitude: -87.37417
+    population: 6772
+    dem: 14
+    timezone: "America/Tegucigalpa"
+  - name: "El Triunfo"
+    latitude: 13.11667
+    longitude: -87.0
+    population: 7182
+    dem: 89
+    timezone: "America/Tegucigalpa"
+  - name: "Ciudad Choluteca"
+    latitude: 13.30028
+    longitude: -87.19083
+    population: 75872
+    dem: 53
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Valle"
+  cities:
+  - name: "San Lorenzo"
+    latitude: 13.42417
+    longitude: -87.44722
+    population: 22289
+    dem: 16
+    timezone: "America/Tegucigalpa"
+  - name: "Nacaome"
+    latitude: 13.53611
+    longitude: -87.4875
+    population: 13929
+    dem: 36
+    timezone: "America/Tegucigalpa"
+  - name: "La Alianza"
+    latitude: 13.51222
+    longitude: -87.72444
+    population: 6923
+    dem: 26
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Islas de la Bahia"
+  cities:
+  - name: "Coxen Hole"
+    latitude: 16.31759
+    longitude: -86.53793
+    population: 7514
+    dem: 8
+    timezone: "America/Tegucigalpa"
+- name: "Departamento de Copan"
+  cities:
+  - name: "Santa Rosa de Copan"
+    latitude: 14.76667
+    longitude: -88.77917
+    population: 27753
+    dem: 1146
+    timezone: "America/Tegucigalpa"
+  - name: "La Entrada"
+    latitude: 15.05
+    longitude: -88.73333
+    population: 14705
+    dem: 509
+    timezone: "America/Tegucigalpa"
+  - name: "Florida"
+    latitude: 15.03333
+    longitude: -88.83333
+    population: 5340
+    dem: 486
+    timezone: "America/Tegucigalpa"
+  - name: "Copan"
+    latitude: 14.83333
+    longitude: -89.15
+    population: 6336
+    dem: 583
+    timezone: "America/Tegucigalpa"

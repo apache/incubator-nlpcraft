@@ -1,0 +1,41 @@
+---
+name: "Sint Maarten"
+iso: "SX"
+iso3: "SXM"
+code: "534"
+capital: "Philipsburg"
+area: 21.0
+population: 37429
+continent: "NA"
+currencyCode: "ANG"
+currencyName: "Guilder"
+phone: "599"
+languages: "nl,en"
+neighbours: "MF"
+regions:
+- name: "Sint Maarten"
+  cities:
+  - name: "Philipsburg"
+    latitude: 18.026
+    longitude: -63.04582
+    population: 1400
+    dem: 0
+    timezone: "America/Lower_Princes"
+  - name: "Lower Princes Quarter"
+    latitude: 18.04987
+    longitude: -63.03789
+    population: 8000
+    dem: 40
+    timezone: "America/Lower_Princes"
+  - name: "Cul de Sac"
+    latitude: 18.04852
+    longitude: -63.06513
+    population: 8467
+    dem: 24
+    timezone: "America/Lower_Princes"
+  - name: "Koolbaai"
+    latitude: 18.04048
+    longitude: -63.08397
+    population: 6000
+    dem: 16
+    timezone: "America/Lower_Princes"

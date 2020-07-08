@@ -1,0 +1,847 @@
+---
+name: "Ireland"
+iso: "IE"
+iso3: "IRL"
+code: "372"
+capital: "Dublin"
+area: 70280.0
+population: 4622917
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "353"
+postalCodeFormat: "@@@ @@@@"
+postalCodeRegex: "^[A-Z]\\d{2}$|^[A-Z]{3}[A-Z]{4}$"
+languages: "en-IE,ga-IE"
+neighbours: "GB"
+regions:
+- name: "Connaught"
+  cities:
+  - name: "Westport"
+    latitude: 53.8
+    longitude: -9.51667
+    population: 6200
+    dem: 19
+    timezone: "Europe/Dublin"
+  - name: "Tuam"
+    latitude: 53.51667
+    longitude: -8.85
+    population: 6130
+    dem: 38
+    timezone: "Europe/Dublin"
+  - name: "Sligo"
+    latitude: 54.26969
+    longitude: -8.46943
+    population: 20228
+    elevation: 13
+    dem: 10
+    timezone: "Europe/Dublin"
+  - name: "Roscommon"
+    latitude: 53.63333
+    longitude: -8.18333
+    population: 5693
+    dem: 51
+    timezone: "Europe/Dublin"
+  - name: "Loughrea"
+    latitude: 53.19694
+    longitude: -8.56694
+    population: 5062
+    dem: 84
+    timezone: "Europe/Dublin"
+  - name: "Gaillimh"
+    latitude: 53.27194
+    longitude: -9.04889
+    population: 70686
+    dem: 6
+    timezone: "Europe/Dublin"
+  - name: "Castlebar"
+    latitude: 53.85
+    longitude: -9.3
+    population: 12874
+    elevation: 48
+    dem: 40
+    timezone: "Europe/Dublin"
+  - name: "Ballinasloe"
+    latitude: 53.3275
+    longitude: -8.21944
+    population: 6388
+    dem: 39
+    timezone: "Europe/Dublin"
+  - name: "Ballina"
+    latitude: 54.11667
+    longitude: -9.16667
+    population: 10087
+    dem: 32
+    timezone: "Europe/Dublin"
+- name: "Leinster"
+  cities:
+  - name: "Wicklow"
+    latitude: 52.975
+    longitude: -6.04944
+    population: 14048
+    dem: 53
+    timezone: "Europe/Dublin"
+  - name: "Loch Garman"
+    latitude: 52.33417
+    longitude: -6.4575
+    population: 19913
+    dem: 5
+    timezone: "Europe/Dublin"
+  - name: "Tullamore"
+    latitude: 53.27389
+    longitude: -7.48889
+    population: 11575
+    dem: 60
+    timezone: "Europe/Dublin"
+  - name: "Terenure"
+    latitude: 53.30972
+    longitude: -6.28528
+    population: 7674
+    dem: 44
+    timezone: "Europe/Dublin"
+  - name: "Tallaght"
+    latitude: 53.2859
+    longitude: -6.37344
+    population: 64282
+    dem: 103
+    timezone: "Europe/Dublin"
+  - name: "Swords"
+    latitude: 53.45972
+    longitude: -6.21806
+    population: 36924
+    dem: 17
+    timezone: "Europe/Dublin"
+  - name: "Skerries"
+    latitude: 53.58278
+    longitude: -6.10833
+    population: 9671
+    dem: -9999
+    timezone: "Europe/Dublin"
+  - name: "Shankill"
+    latitude: 53.22611
+    longitude: -6.12444
+    population: 10102
+    dem: 33
+    timezone: "Europe/Dublin"
+  - name: "Sandymount"
+    latitude: 53.32815
+    longitude: -6.22224
+    population: 8967
+    dem: 1
+    timezone: "Europe/Dublin"
+  - name: "Sallins"
+    latitude: 53.24889
+    longitude: -6.66611
+    population: 5283
+    dem: 77
+    timezone: "Europe/Dublin"
+  - name: "An Ros"
+    latitude: 53.52424
+    longitude: -6.10497
+    population: 9231
+    dem: 19
+    timezone: "Europe/Dublin"
+  - name: "Ringsend"
+    latitude: 53.34194
+    longitude: -6.22639
+    population: 8202
+    dem: 4
+    timezone: "Europe/Dublin"
+  - name: "Ratoath"
+    latitude: 53.50806
+    longitude: -6.4625
+    population: 9043
+    dem: 92
+    timezone: "Europe/Dublin"
+  - name: "Rathmines"
+    latitude: 53.32028
+    longitude: -6.26333
+    population: 11044
+    dem: 27
+    timezone: "Europe/Dublin"
+  - name: "Raheny"
+    latitude: 53.38681
+    longitude: -6.18067
+    population: 7197
+    dem: 28
+    timezone: "Europe/Dublin"
+  - name: "Portmarnock"
+    latitude: 53.42306
+    longitude: -6.1375
+    population: 9285
+    dem: 4
+    timezone: "Europe/Dublin"
+  - name: "Portlaoise"
+    latitude: 53.03441
+    longitude: -7.29979
+    population: 13622
+    dem: 101
+    timezone: "Europe/Dublin"
+  - name: "Portarlington"
+    latitude: 53.16222
+    longitude: -7.19111
+    population: 7788
+    dem: 67
+    timezone: "Europe/Dublin"
+  - name: "Newtown Trim"
+    latitude: 53.55611
+    longitude: -6.77
+    population: 6781
+    dem: 53
+    timezone: "Europe/Dublin"
+  - name: "New Ross"
+    latitude: 52.39667
+    longitude: -6.93667
+    population: 6695
+    dem: 53
+    timezone: "Europe/Dublin"
+  - name: "Droichead Nua"
+    latitude: 53.18194
+    longitude: -6.79667
+    population: 18860
+    dem: 92
+    timezone: "Europe/Dublin"
+  - name: "Navan"
+    latitude: 53.65278
+    longitude: -6.68139
+    population: 24545
+    dem: 35
+    timezone: "Europe/Dublin"
+  - name: "Naas"
+    latitude: 53.21583
+    longitude: -6.66694
+    population: 20713
+    dem: 93
+    timezone: "Europe/Dublin"
+  - name: "An Muileann gCearr"
+    latitude: 53.53333
+    longitude: -7.35
+    population: 17262
+    elevation: 101
+    dem: 96
+    timezone: "Europe/Dublin"
+  - name: "Monkstown"
+    latitude: 53.29308
+    longitude: -6.15312
+    population: 5555
+    dem: 15
+    timezone: "Europe/Dublin"
+  - name: "Mount Merrion"
+    latitude: 53.30008
+    longitude: -6.21504
+    population: 7846
+    dem: 44
+    timezone: "Europe/Dublin"
+  - name: "Maynooth"
+    latitude: 53.385
+    longitude: -6.59361
+    population: 12510
+    dem: 56
+    timezone: "Europe/Dublin"
+  - name: "Marino"
+    latitude: 53.37022
+    longitude: -6.23646
+    population: 11023
+    dem: 12
+    timezone: "Europe/Dublin"
+  - name: "Malahide"
+    latitude: 53.45083
+    longitude: -6.15444
+    population: 15846
+    dem: 11
+    timezone: "Europe/Dublin"
+  - name: "Lusk"
+    latitude: 53.52743
+    longitude: -6.16423
+    population: 7022
+    dem: 27
+    timezone: "Europe/Dublin"
+  - name: "Lucan"
+    latitude: 53.35736
+    longitude: -6.44859
+    population: 15269
+    dem: 25
+    timezone: "Europe/Dublin"
+  - name: "Longford"
+    latitude: 53.72536
+    longitude: -7.79823
+    population: 7787
+    dem: 53
+    timezone: "Europe/Dublin"
+  - name: "Leixlip"
+    latitude: 53.36583
+    longitude: -6.49556
+    population: 15452
+    dem: 48
+    timezone: "Europe/Dublin"
+  - name: "Laytown"
+    latitude: 53.68194
+    longitude: -6.23917
+    population: 10889
+    dem: 7
+    timezone: "Europe/Dublin"
+  - name: "Kilkenny"
+    latitude: 52.65417
+    longitude: -7.25222
+    population: 21589
+    dem: 48
+    timezone: "Europe/Dublin"
+  - name: "Kildare"
+    latitude: 53.15611
+    longitude: -6.91444
+    population: 8142
+    dem: 100
+    timezone: "Europe/Dublin"
+  - name: "Kilcock"
+    latitude: 53.40222
+    longitude: -6.67083
+    population: 5533
+    dem: 68
+    timezone: "Europe/Dublin"
+  - name: "Greystones"
+    latitude: 53.14083
+    longitude: -6.06306
+    population: 13492
+    elevation: 80
+    dem: 19
+    timezone: "Europe/Dublin"
+  - name: "Gorey"
+    latitude: 52.67472
+    longitude: -6.2925
+    population: 6040
+    dem: 46
+    timezone: "Europe/Dublin"
+  - name: "Finglas"
+    latitude: 53.38917
+    longitude: -6.29694
+    population: 19768
+    dem: 59
+    timezone: "Europe/Dublin"
+  - name: "Enniscorthy"
+    latitude: 52.50083
+    longitude: -6.55778
+    population: 9709
+    dem: 52
+    timezone: "Europe/Dublin"
+  - name: "Dun Laoghaire"
+    latitude: 53.29395
+    longitude: -6.13586
+    population: 185400
+    dem: 16
+    timezone: "Europe/Dublin"
+  - name: "Dundrum"
+    latitude: 53.29067
+    longitude: -6.25714
+    population: 12152
+    dem: 60
+    timezone: "Europe/Dublin"
+  - name: "Dundalk"
+    latitude: 54.0
+    longitude: -6.41667
+    population: 33428
+    dem: 18
+    timezone: "Europe/Dublin"
+  - name: "Dunboyne"
+    latitude: 53.41901
+    longitude: -6.47375
+    population: 6959
+    dem: 69
+    timezone: "Europe/Dublin"
+  - name: "Dublin"
+    latitude: 53.33306
+    longitude: -6.24889
+    population: 1024027
+    dem: 17
+    timezone: "Europe/Dublin"
+  - name: "Drogheda"
+    latitude: 53.71889
+    longitude: -6.34778
+    population: 33441
+    dem: 28
+    timezone: "Europe/Dublin"
+  - name: "Donnybrook"
+    latitude: 53.31375
+    longitude: -6.22274
+    population: 10645
+    dem: 17
+    timezone: "Europe/Dublin"
+  - name: "Donabate"
+    latitude: 53.48722
+    longitude: -6.15194
+    population: 6778
+    dem: 7
+    timezone: "Europe/Dublin"
+  - name: "Dollymount"
+    latitude: 53.36489
+    longitude: -6.18032
+    population: 5070
+    dem: 11
+    timezone: "Europe/Dublin"
+  - name: "Dalkey"
+    latitude: 53.27833
+    longitude: -6.10028
+    population: 6622
+    dem: 19
+    timezone: "Europe/Dublin"
+  - name: "Crumlin"
+    latitude: 53.32154
+    longitude: -6.31439
+    population: 11294
+    dem: 49
+    timezone: "Europe/Dublin"
+  - name: "Clondalkin"
+    latitude: 53.32444
+    longitude: -6.39722
+    population: 14508
+    dem: 60
+    timezone: "Europe/Dublin"
+  - name: "Clane"
+    latitude: 53.29139
+    longitude: -6.68917
+    population: 6702
+    dem: 68
+    timezone: "Europe/Dublin"
+  - name: "Cherryville"
+    latitude: 53.15694
+    longitude: -6.96667
+    population: 6380
+    dem: 99
+    timezone: "Europe/Dublin"
+  - name: "Chapelizod"
+    latitude: 53.34846
+    longitude: -6.34301
+    population: 5296
+    dem: 16
+    timezone: "Europe/Dublin"
+  - name: "Celbridge"
+    latitude: 53.34165
+    longitude: -6.54419
+    population: 19537
+    dem: 54
+    timezone: "Europe/Dublin"
+  - name: "Castleknock"
+    latitude: 53.37483
+    longitude: -6.36336
+    population: 8301
+    dem: 61
+    timezone: "Europe/Dublin"
+  - name: "Carlow"
+    latitude: 52.84083
+    longitude: -6.92611
+    population: 20055
+    dem: 55
+    timezone: "Europe/Dublin"
+  - name: "Cabinteely"
+    latitude: 53.26973
+    longitude: -6.16058
+    population: 10038
+    dem: 41
+    timezone: "Europe/Dublin"
+  - name: "Bray"
+    latitude: 53.20278
+    longitude: -6.09833
+    population: 6477
+    dem: 7
+    timezone: "Europe/Dublin"
+  - name: "Blessington"
+    latitude: 53.17
+    longitude: -6.5325
+    population: 5010
+    dem: 207
+    timezone: "Europe/Dublin"
+  - name: "Blanchardstown"
+    latitude: 53.38806
+    longitude: -6.37556
+    population: 16511
+    dem: 49
+    timezone: "Europe/Dublin"
+  - name: "Blackrock"
+    latitude: 53.3015
+    longitude: -6.1778
+    population: 8821
+    dem: 15
+    timezone: "Europe/Dublin"
+  - name: "Ballyboden"
+    latitude: 53.28056
+    longitude: -6.31639
+    population: 9611
+    dem: 89
+    timezone: "Europe/Dublin"
+  - name: "Baldoyle"
+    latitude: 53.39972
+    longitude: -6.12583
+    population: 8043
+    dem: 1
+    timezone: "Europe/Dublin"
+  - name: "Balbriggan"
+    latitude: 53.60846
+    longitude: -6.1831
+    population: 23364
+    dem: -9999
+    timezone: "Europe/Dublin"
+  - name: "Athy"
+    latitude: 52.99139
+    longitude: -6.98028
+    population: 12855
+    dem: 62
+    timezone: "Europe/Dublin"
+  - name: "Athlone"
+    latitude: 53.43333
+    longitude: -7.95
+    population: 15951
+    dem: 36
+    timezone: "Europe/Dublin"
+  - name: "Ashbourne"
+    latitude: 53.51163
+    longitude: -6.39821
+    population: 11355
+    dem: 68
+    timezone: "Europe/Dublin"
+  - name: "Arklow"
+    latitude: 52.79306
+    longitude: -6.14139
+    population: 11761
+    dem: 0
+    timezone: "Europe/Dublin"
+  - name: "Eadestown"
+    latitude: 53.20278
+    longitude: -6.57806
+    population: 5346
+    dem: 175
+    timezone: "Europe/Dublin"
+  - name: "Little Bray"
+    latitude: 53.20444
+    longitude: -6.12083
+    population: 8015
+    dem: 11
+    timezone: "Europe/Dublin"
+  - name: "Firhouse"
+    latitude: 53.28167
+    longitude: -6.33917
+    population: 6859
+    dem: 84
+    timezone: "Europe/Dublin"
+  - name: "Sandyford"
+    latitude: 53.2747
+    longitude: -6.2253
+    population: 22288
+    dem: 100
+    timezone: "Europe/Dublin"
+  - name: "Foxrock"
+    latitude: 53.26667
+    longitude: -6.17417
+    population: 12870
+    dem: 71
+    timezone: "Europe/Dublin"
+  - name: "Sallynoggin"
+    latitude: 53.27917
+    longitude: -6.14058
+    population: 6916
+    dem: 42
+    timezone: "Europe/Dublin"
+  - name: "Rathgar"
+    latitude: 53.31457
+    longitude: -6.275
+    population: 8394
+    dem: 39
+    timezone: "Europe/Dublin"
+  - name: "Artane"
+    latitude: 53.38712
+    longitude: -6.2138
+    population: 5328
+    dem: 39
+    timezone: "Europe/Dublin"
+  - name: "Beaumont"
+    latitude: 53.38721
+    longitude: -6.22713
+    population: 8609
+    dem: 6
+    timezone: "Europe/Dublin"
+  - name: "Ballymun"
+    latitude: 53.39807
+    longitude: -6.26693
+    population: 6262
+    dem: 62
+    timezone: "Europe/Dublin"
+  - name: "Hartstown"
+    latitude: 53.39306
+    longitude: -6.42694
+    population: 5882
+    dem: 61
+    timezone: "Europe/Dublin"
+  - name: "Ballyfermot"
+    latitude: 53.34283
+    longitude: -6.3548
+    population: 8558
+    dem: 17
+    timezone: "Europe/Dublin"
+  - name: "Templeogue"
+    latitude: 53.29528
+    longitude: -6.30889
+    population: 7023
+    dem: 57
+    timezone: "Europe/Dublin"
+  - name: "Oldbawn"
+    latitude: 53.27556
+    longitude: -6.3675
+    population: 9784
+    dem: 104
+    timezone: "Europe/Dublin"
+  - name: "Cherry Orchard"
+    latitude: 53.33605
+    longitude: -6.37799
+    population: 7924
+    dem: 54
+    timezone: "Europe/Dublin"
+  - name: "Booterstown"
+    latitude: 53.30447
+    longitude: -6.19985
+    population: 7142
+    dem: 26
+    timezone: "Europe/Dublin"
+  - name: "Ballinteer"
+    latitude: 53.27409
+    longitude: -6.25397
+    population: 8547
+    dem: 98
+    timezone: "Europe/Dublin"
+  - name: "Greenhills"
+    latitude: 53.33467
+    longitude: -6.30302
+    population: 6876
+    dem: 23
+    timezone: "Europe/Dublin"
+  - name: "Donaghmede"
+    latitude: 53.39845
+    longitude: -6.16179
+    population: 15299
+    dem: 18
+    timezone: "Europe/Dublin"
+  - name: "Darndale"
+    latitude: 53.39948
+    longitude: -6.18886
+    population: 5667
+    dem: 32
+    timezone: "Europe/Dublin"
+  - name: "Donnycarney"
+    latitude: 53.3735
+    longitude: -6.20976
+    population: 7660
+    dem: 25
+    timezone: "Europe/Dublin"
+  - name: "Knocklyon"
+    latitude: 53.2803
+    longitude: -6.3313
+    population: 14628
+    dem: 87
+    timezone: "Europe/Dublin"
+  - name: "Palmerstown"
+    latitude: 53.35019
+    longitude: -6.37778
+    population: 7197
+    dem: 51
+    timezone: "Europe/Dublin"
+  - name: "Jobstown"
+    latitude: 53.27866
+    longitude: -6.40803
+    population: 10825
+    dem: 116
+    timezone: "Europe/Dublin"
+  - name: "Killester"
+    latitude: 53.37322
+    longitude: -6.20431
+    population: 5099
+    dem: 24
+    timezone: "Europe/Dublin"
+  - name: "Confey"
+    latitude: 53.37923
+    longitude: -6.49052
+    population: 5389
+    dem: 60
+    timezone: "Europe/Dublin"
+  - name: "Kilquade"
+    latitude: 53.09743
+    longitude: -6.08411
+    population: 14886
+    dem: 57
+    timezone: "Europe/Dublin"
+  - name: "Balally"
+    latitude: 53.27504
+    longitude: -6.23594
+    population: 9051
+    dem: 96
+    timezone: "Europe/Dublin"
+  - name: "Kinsealy-Drinan"
+    latitude: 53.44395
+    longitude: -6.20334
+    population: 5814
+    dem: 25
+    timezone: "Europe/Dublin"
+- name: "Ulster"
+  cities:
+  - name: "Buncrana"
+    latitude: 55.13333
+    longitude: -7.45
+    population: 5546
+    dem: 20
+    timezone: "Europe/Dublin"
+  - name: "Monaghan"
+    latitude: 54.25
+    longitude: -6.96667
+    population: 5937
+    dem: 75
+    timezone: "Europe/Dublin"
+  - name: "Letterkenny"
+    latitude: 54.95
+    longitude: -7.73333
+    population: 16901
+    dem: 8
+    timezone: "Europe/Dublin"
+  - name: "Cavan"
+    latitude: 53.99083
+    longitude: -7.36056
+    population: 6388
+    dem: 65
+    timezone: "Europe/Dublin"
+- name: "Munster"
+  cities:
+  - name: "Youghal"
+    latitude: 51.95
+    longitude: -7.85056
+    population: 6868
+    dem: 60
+    timezone: "Europe/Dublin"
+  - name: "Waterford"
+    latitude: 52.25833
+    longitude: -7.11194
+    population: 47904
+    dem: 10
+    timezone: "Europe/Dublin"
+  - name: "Tra Mhor"
+    latitude: 52.16235
+    longitude: -7.15244
+    population: 9164
+    dem: 43
+    timezone: "Europe/Dublin"
+  - name: "Tralee"
+    latitude: 52.27042
+    longitude: -9.70264
+    population: 22941
+    elevation: 10
+    dem: 8
+    timezone: "Europe/Dublin"
+  - name: "Thurles"
+    latitude: 52.68194
+    longitude: -7.80222
+    population: 7588
+    dem: 102
+    timezone: "Europe/Dublin"
+  - name: "Roscrea"
+    latitude: 52.95111
+    longitude: -7.80167
+    population: 5403
+    dem: 113
+    timezone: "Europe/Dublin"
+  - name: "Newcastle West"
+    latitude: 52.44917
+    longitude: -9.06111
+    population: 6327
+    dem: 59
+    timezone: "Europe/Dublin"
+  - name: "Nenagh"
+    latitude: 52.86194
+    longitude: -8.19667
+    population: 5500
+    dem: 52
+    timezone: "Europe/Dublin"
+  - name: "Midleton"
+    latitude: 51.91526
+    longitude: -8.18052
+    population: 8891
+    dem: 10
+    timezone: "Europe/Dublin"
+  - name: "Mallow"
+    latitude: 52.13333
+    longitude: -8.63333
+    population: 9495
+    dem: 58
+    timezone: "Europe/Dublin"
+  - name: "Luimneach"
+    latitude: 52.66472
+    longitude: -8.62306
+    population: 90054
+    dem: 7
+    timezone: "Europe/Dublin"
+  - name: "Cill Airne"
+    latitude: 52.0598
+    longitude: -9.50858
+    population: 7300
+    dem: 69
+    timezone: "Europe/Dublin"
+  - name: "Ennis"
+    latitude: 52.84361
+    longitude: -8.98639
+    population: 24427
+    elevation: 3
+    dem: 5
+    timezone: "Europe/Dublin"
+  - name: "Dungarvan"
+    latitude: 52.08806
+    longitude: -7.62528
+    population: 7551
+    dem: 12
+    timezone: "Europe/Dublin"
+  - name: "Derry"
+    latitude: 51.58666
+    longitude: -9.05026
+    population: 10000
+    dem: 54
+    timezone: "Europe/Dublin"
+  - name: "Cork"
+    latitude: 51.89797
+    longitude: -8.47061
+    population: 190384
+    dem: 10
+    timezone: "Europe/Dublin"
+  - name: "Cobh"
+    latitude: 51.85046
+    longitude: -8.2948
+    population: 10501
+    dem: 47
+    timezone: "Europe/Dublin"
+  - name: "Cluain Meala"
+    latitude: 52.355
+    longitude: -7.70389
+    population: 17394
+    dem: 24
+    timezone: "Europe/Dublin"
+  - name: "Carrigaline"
+    latitude: 51.81167
+    longitude: -8.39861
+    population: 14775
+    dem: 14
+    timezone: "Europe/Dublin"
+  - name: "Carrick-on-Suir"
+    latitude: 52.34917
+    longitude: -7.41306
+    population: 5710
+    dem: 7
+    timezone: "Europe/Dublin"
+  - name: "Bandon"
+    latitude: 51.74694
+    longitude: -8.7425
+    population: 5492
+    dem: 28
+    timezone: "Europe/Dublin"
+  - name: "Nenagh Bridge"
+    latitude: 52.88167
+    longitude: -8.19583
+    population: 6672
+    dem: 52
+    timezone: "Europe/Dublin"
+  - name: "Shannon"
+    latitude: 52.70389
+    longitude: -8.86417
+    population: 9673
+    dem: 2
+    timezone: "Europe/Dublin"

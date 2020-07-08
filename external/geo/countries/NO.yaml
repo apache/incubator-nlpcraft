@@ -1,0 +1,607 @@
+---
+name: "Norway"
+iso: "NO"
+iso3: "NOR"
+code: "578"
+capital: "Oslo"
+area: 324220.0
+population: 5009150
+continent: "EU"
+currencyCode: "NOK"
+currencyName: "Krone"
+phone: "47"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "no,nb,nn,se,fi"
+neighbours: "FI,RU,SE"
+regions:
+- name: "Akershus fylke"
+  cities:
+  - name: "Vestby"
+    latitude: 59.60511
+    longitude: 10.75233
+    population: 5330
+    dem: 63
+    timezone: "Europe/Oslo"
+  - name: "Ski"
+    latitude: 59.71949
+    longitude: 10.83576
+    population: 12513
+    dem: 133
+    timezone: "Europe/Oslo"
+  - name: "Raholt"
+    latitude: 60.27513
+    longitude: 11.17901
+    population: 8593
+    dem: 174
+    timezone: "Europe/Oslo"
+  - name: "Lillestrom"
+    latitude: 59.95597
+    longitude: 11.04918
+    population: 14000
+    dem: 116
+    timezone: "Europe/Oslo"
+  - name: "Klofta"
+    latitude: 60.07407
+    longitude: 11.13805
+    population: 5942
+    dem: 160
+    timezone: "Europe/Oslo"
+  - name: "Jessheim"
+    latitude: 60.14151
+    longitude: 11.17515
+    population: 12365
+    dem: 212
+    timezone: "Europe/Oslo"
+  - name: "Fetsund"
+    latitude: 59.92463
+    longitude: 11.15711
+    population: 6441
+    dem: 128
+    timezone: "Europe/Oslo"
+  - name: "Drobak"
+    latitude: 59.66333
+    longitude: 10.62975
+    population: 11363
+    dem: 19
+    timezone: "Europe/Oslo"
+  - name: "As"
+    latitude: 59.66472
+    longitude: 10.79465
+    population: 7961
+    dem: 98
+    timezone: "Europe/Oslo"
+  - name: "Nesoddtangen"
+    latitude: 59.86244
+    longitude: 10.66308
+    population: 10911
+    dem: 60
+    timezone: "Europe/Oslo"
+- name: "Vest-Agder Fylke"
+  cities:
+  - name: "Vennesla"
+    latitude: 58.26856
+    longitude: 7.97314
+    population: 10931
+    dem: 53
+    timezone: "Europe/Oslo"
+  - name: "Sogne"
+    latitude: 58.09328
+    longitude: 7.78294
+    population: 9000
+    elevation: 10
+    dem: 8
+    timezone: "Europe/Oslo"
+  - name: "Mandal"
+    latitude: 58.0274
+    longitude: 7.45342
+    population: 10143
+    dem: 11
+    timezone: "Europe/Oslo"
+  - name: "Kristiansand"
+    latitude: 58.14671
+    longitude: 7.9956
+    population: 63814
+    dem: 12
+    timezone: "Europe/Oslo"
+  - name: "Flekkefjord"
+    latitude: 58.29705
+    longitude: 6.66069
+    population: 5615
+    dem: 7
+    timezone: "Europe/Oslo"
+- name: "Buskerud fylke"
+  cities:
+  - name: "Tranby"
+    latitude: 59.8085
+    longitude: 10.26114
+    population: 5552
+    dem: 201
+    timezone: "Europe/Oslo"
+  - name: "Kongsberg"
+    latitude: 59.66858
+    longitude: 9.65017
+    population: 17667
+    dem: 161
+    timezone: "Europe/Oslo"
+  - name: "Honefoss"
+    latitude: 60.16804
+    longitude: 10.25647
+    population: 13678
+    dem: 70
+    timezone: "Europe/Oslo"
+  - name: "Drammen"
+    latitude: 59.74389
+    longitude: 10.20449
+    population: 90722
+    dem: 11
+    timezone: "Europe/Oslo"
+- name: "Hordaland Fylke"
+  cities:
+  - name: "Voss"
+    latitude: 60.62869
+    longitude: 6.41474
+    population: 5571
+    dem: 60
+    timezone: "Europe/Oslo"
+  - name: "Odda"
+    latitude: 60.06912
+    longitude: 6.54565
+    population: 5359
+    dem: 53
+    timezone: "Europe/Oslo"
+  - name: "Leirvik"
+    latitude: 59.77977
+    longitude: 5.50051
+    population: 11028
+    dem: 8
+    timezone: "Europe/Oslo"
+  - name: "Bergen"
+    latitude: 60.39299
+    longitude: 5.32415
+    population: 213585
+    dem: 20
+    timezone: "Europe/Oslo"
+  - name: "Indre Arna"
+    latitude: 60.41768
+    longitude: 5.47087
+    population: 6117
+    dem: 234
+    timezone: "Europe/Oslo"
+  - name: "Askoy"
+    latitude: 60.4
+    longitude: 5.18333
+    population: 17224
+    dem: 1
+    timezone: "Europe/Oslo"
+  - name: "Ytrebygda"
+    latitude: 60.30504
+    longitude: 5.28236
+    population: 24044
+    dem: 60
+    timezone: "Europe/Oslo"
+- name: "Ostfold fylke"
+  cities:
+  - name: "Sarpsborg"
+    latitude: 59.28391
+    longitude: 11.10962
+    population: 52159
+    dem: 54
+    timezone: "Europe/Oslo"
+  - name: "Mysen"
+    latitude: 59.55354
+    longitude: 11.32578
+    population: 5516
+    dem: 114
+    timezone: "Europe/Oslo"
+  - name: "Moss"
+    latitude: 59.43403
+    longitude: 10.65771
+    population: 34492
+    dem: 17
+    timezone: "Europe/Oslo"
+  - name: "Halden"
+    latitude: 59.12478
+    longitude: 11.38754
+    population: 21970
+    dem: 15
+    timezone: "Europe/Oslo"
+  - name: "Fredrikstad"
+    latitude: 59.2181
+    longitude: 10.9298
+    population: 72760
+    dem: 6
+    timezone: "Europe/Oslo"
+  - name: "Askim"
+    latitude: 59.58326
+    longitude: 11.16286
+    population: 12482
+    dem: 136
+    timezone: "Europe/Oslo"
+- name: "Hedmark fylke"
+  cities:
+  - name: "Kongsvinger"
+    latitude: 60.19049
+    longitude: 11.99772
+    population: 11181
+    dem: 157
+    timezone: "Europe/Oslo"
+  - name: "Hamar"
+    latitude: 60.7945
+    longitude: 11.06798
+    population: 29479
+    dem: 137
+    timezone: "Europe/Oslo"
+  - name: "Elverum"
+    latitude: 60.88191
+    longitude: 11.56231
+    population: 12490
+    dem: 197
+    timezone: "Europe/Oslo"
+  - name: "Brumunddal"
+    latitude: 60.88095
+    longitude: 10.93948
+    population: 8441
+    dem: 143
+    timezone: "Europe/Oslo"
+- name: "Oslo County"
+  cities:
+  - name: "Oslo"
+    latitude: 59.91273
+    longitude: 10.74609
+    population: 580000
+    dem: 26
+    timezone: "Europe/Oslo"
+- name: "Sogn og Fjordane Fylke"
+  cities:
+  - name: "Hermansverk"
+    latitude: 61.18461
+    longitude: 6.85016
+    population: 2000
+    dem: 60
+    timezone: "Europe/Oslo"
+  - name: "Forde"
+    latitude: 61.45217
+    longitude: 5.85717
+    population: 8510
+    dem: 27
+    timezone: "Europe/Oslo"
+  - name: "Floro"
+    latitude: 61.59957
+    longitude: 5.0328
+    population: 8230
+    dem: 10
+    timezone: "Europe/Oslo"
+  - name: "Sogndal"
+    latitude: 61.22908
+    longitude: 7.09674
+    population: 6700
+    dem: 1
+    timezone: "Europe/Oslo"
+- name: "Nordland Fylke"
+  cities:
+  - name: "Sandnessjoen"
+    latitude: 66.02166
+    longitude: 12.63158
+    population: 5778
+    dem: 10
+    timezone: "Europe/Oslo"
+  - name: "Narvik"
+    latitude: 68.43838
+    longitude: 17.4272
+    population: 14114
+    dem: 100
+    timezone: "Europe/Oslo"
+  - name: "Mosjoen"
+    latitude: 65.83599
+    longitude: 13.19076
+    population: 9636
+    dem: -9999
+    timezone: "Europe/Oslo"
+  - name: "Mo i Rana"
+    latitude: 66.31278
+    longitude: 14.14278
+    population: 17853
+    dem: 40
+    timezone: "Europe/Oslo"
+  - name: "Fauske"
+    latitude: 67.25883
+    longitude: 15.39181
+    population: 5953
+    dem: 40
+    timezone: "Europe/Oslo"
+  - name: "Bodo"
+    latitude: 67.28
+    longitude: 14.40501
+    population: 34073
+    dem: 22
+    timezone: "Europe/Oslo"
+- name: "Trondelag"
+  cities:
+  - name: "Verdal"
+    latitude: 63.79332
+    longitude: 11.4817
+    population: 7154
+    dem: 11
+    timezone: "Europe/Oslo"
+  - name: "Trondheim"
+    latitude: 63.43049
+    longitude: 10.39506
+    population: 147139
+    dem: 18
+    timezone: "Europe/Oslo"
+  - name: "Stjordalshalsen"
+    latitude: 63.4681
+    longitude: 10.92618
+    population: 11416
+    dem: 15
+    timezone: "Europe/Oslo"
+  - name: "Steinkjer"
+    latitude: 64.01487
+    longitude: 11.49537
+    population: 20000
+    dem: 20
+    timezone: "Europe/Oslo"
+  - name: "Namsos"
+    latitude: 64.46624
+    longitude: 11.49572
+    population: 9035
+    dem: -9999
+    timezone: "Europe/Oslo"
+  - name: "Malvik"
+    latitude: 63.43333
+    longitude: 10.68333
+    population: 6419
+    dem: 84
+    timezone: "Europe/Oslo"
+  - name: "Levanger"
+    latitude: 63.74644
+    longitude: 11.29963
+    population: 8411
+    dem: 15
+    timezone: "Europe/Oslo"
+- name: "Troms Fylke"
+  cities:
+  - name: "Tromso"
+    latitude: 69.6489
+    longitude: 18.95508
+    population: 52436
+    dem: -9999
+    timezone: "Europe/Oslo"
+  - name: "Harstad"
+    latitude: 68.79833
+    longitude: 16.54165
+    population: 19433
+    dem: 1
+    timezone: "Europe/Oslo"
+- name: "Telemark fylke"
+  cities:
+  - name: "Skien"
+    latitude: 59.20962
+    longitude: 9.60897
+    population: 50595
+    dem: 27
+    timezone: "Europe/Oslo"
+  - name: "Porsgrunn"
+    latitude: 59.14054
+    longitude: 9.6561
+    population: 34377
+    dem: 9
+    timezone: "Europe/Oslo"
+  - name: "Notodden"
+    latitude: 59.55936
+    longitude: 9.25853
+    population: 8306
+    dem: 38
+    timezone: "Europe/Oslo"
+  - name: "Kragero"
+    latitude: 58.8693
+    longitude: 9.41494
+    population: 5158
+    dem: 6
+    timezone: "Europe/Oslo"
+- name: "Oppland fylke"
+  cities:
+  - name: "Raufoss"
+    latitude: 60.72604
+    longitude: 10.6133
+    population: 6052
+    dem: 324
+    timezone: "Europe/Oslo"
+  - name: "Lillehammer"
+    latitude: 61.11514
+    longitude: 10.46628
+    population: 19096
+    dem: 210
+    timezone: "Europe/Oslo"
+  - name: "Gjovik"
+    latitude: 60.79574
+    longitude: 10.69155
+    population: 17596
+    dem: 127
+    timezone: "Europe/Oslo"
+- name: "Finnmark Fylke"
+  cities:
+  - name: "Vadso"
+    latitude: 70.07348
+    longitude: 29.74943
+    population: 5139
+    dem: -9999
+    timezone: "Europe/Oslo"
+  - name: "Hammerfest"
+    latitude: 70.66336
+    longitude: 23.68209
+    population: 6788
+    dem: 40
+    timezone: "Europe/Oslo"
+  - name: "Alta"
+    latitude: 69.96887
+    longitude: 23.27165
+    population: 12077
+    dem: 65
+    timezone: "Europe/Oslo"
+- name: "Vestfold fylke"
+  cities:
+  - name: "Tonsberg"
+    latitude: 59.26754
+    longitude: 10.40762
+    population: 38914
+    dem: 16
+    timezone: "Europe/Oslo"
+  - name: "Stavern"
+    latitude: 59.0
+    longitude: 10.03333
+    population: 5593
+    dem: 22
+    timezone: "Europe/Oslo"
+  - name: "Sandefjord"
+    latitude: 59.13118
+    longitude: 10.21665
+    population: 42654
+    dem: 11
+    timezone: "Europe/Oslo"
+  - name: "Larvik"
+    latitude: 59.05328
+    longitude: 10.03517
+    population: 23113
+    dem: 49
+    timezone: "Europe/Oslo"
+  - name: "Horten"
+    latitude: 59.41721
+    longitude: 10.48343
+    population: 17660
+    dem: 16
+    timezone: "Europe/Oslo"
+  - name: "Holmestrand"
+    latitude: 59.48761
+    longitude: 10.31761
+    population: 6135
+    dem: 14
+    timezone: "Europe/Oslo"
+- name: "Rogaland Fylke"
+  cities:
+  - name: "Tananger"
+    latitude: 58.93618
+    longitude: 5.5741
+    population: 5817
+    dem: 19
+    timezone: "Europe/Oslo"
+  - name: "Stavanger"
+    latitude: 58.97005
+    longitude: 5.73332
+    population: 121610
+    dem: 15
+    timezone: "Europe/Oslo"
+  - name: "Sandnes"
+    latitude: 58.85244
+    longitude: 5.73521
+    population: 63032
+    dem: 8
+    timezone: "Europe/Oslo"
+  - name: "Saeveland"
+    latitude: 59.26667
+    longitude: 5.2
+    population: 7736
+    elevation: 6
+    dem: 2
+    timezone: "Europe/Oslo"
+  - name: "Kopervik"
+    latitude: 59.28354
+    longitude: 5.30669
+    population: 6507
+    dem: 10
+    timezone: "Europe/Oslo"
+  - name: "Jorpeland"
+    latitude: 59.02251
+    longitude: 6.04078
+    population: 5537
+    dem: 24
+    timezone: "Europe/Oslo"
+  - name: "Haugesund"
+    latitude: 59.41378
+    longitude: 5.268
+    population: 40321
+    dem: 17
+    timezone: "Europe/Oslo"
+  - name: "Egersund"
+    latitude: 58.45133
+    longitude: 5.9997
+    population: 9502
+    dem: 4
+    timezone: "Europe/Oslo"
+  - name: "Bryne"
+    latitude: 58.73536
+    longitude: 5.64766
+    population: 8006
+    dem: 33
+    timezone: "Europe/Oslo"
+  - name: "Akrehamn"
+    latitude: 59.26053
+    longitude: 5.18689
+    population: 5018
+    dem: 4
+    timezone: "Europe/Oslo"
+  - name: "Hommersak"
+    latitude: 58.92556
+    longitude: 5.85104
+    population: 5692
+    dem: 19
+    timezone: "Europe/Oslo"
+- name: "More og Romsdal fylke"
+  cities:
+  - name: "Volda"
+    latitude: 62.146
+    longitude: 6.07108
+    population: 5376
+    dem: 33
+    timezone: "Europe/Oslo"
+  - name: "Ulsteinvik"
+    latitude: 62.34317
+    longitude: 5.84869
+    population: 5103
+    dem: 60
+    timezone: "Europe/Oslo"
+  - name: "Molde"
+    latitude: 62.73752
+    longitude: 7.15912
+    population: 18594
+    dem: 3
+    timezone: "Europe/Oslo"
+  - name: "Kristiansund"
+    latitude: 63.11045
+    longitude: 7.72795
+    population: 16785
+    dem: 1
+    timezone: "Europe/Oslo"
+  - name: "Alesund"
+    latitude: 62.47225
+    longitude: 6.15492
+    population: 44096
+    dem: 3
+    timezone: "Europe/Oslo"
+  - name: "Orsta"
+    latitude: 62.19983
+    longitude: 6.12904
+    population: 6337
+    dem: 13
+    timezone: "Europe/Oslo"
+- name: "Aust-Agder fylke"
+  cities:
+  - name: "Lillesand"
+    latitude: 58.24879
+    longitude: 8.3778
+    population: 6081
+    dem: 7
+    timezone: "Europe/Oslo"
+  - name: "Grimstad"
+    latitude: 58.3405
+    longitude: 8.59343
+    population: 9561
+    dem: 9
+    timezone: "Europe/Oslo"
+  - name: "Arendal"
+    latitude: 58.46151
+    longitude: 8.77253
+    population: 30916
+    dem: 19
+    timezone: "Europe/Oslo"

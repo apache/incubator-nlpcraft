@@ -1,0 +1,1302 @@
+---
+name: "Finland"
+iso: "FI"
+iso3: "FIN"
+code: "246"
+capital: "Helsinki"
+area: 337030.0
+population: 5244000
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "358"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(?:FI)*(\\d{5})$"
+languages: "fi-FI,sv-FI,smn"
+neighbours: "NO,RU,SE"
+regions:
+- name: "Keski-Pohjanmaa"
+  cities:
+  - name: "Kokkola"
+    latitude: 63.83847
+    longitude: 23.13066
+    population: 35586
+    dem: 9
+    timezone: "Europe/Helsinki"
+  - name: "Kannus"
+    latitude: 63.9
+    longitude: 23.9
+    population: 5968
+    dem: 62
+    timezone: "Europe/Helsinki"
+- name: "Satakunta"
+  cities:
+  - name: "Ulvila"
+    latitude: 61.42844
+    longitude: 21.87103
+    population: 12314
+    dem: 5
+    timezone: "Europe/Helsinki"
+  - name: "Rauma"
+    latitude: 61.12724
+    longitude: 21.51127
+    population: 36550
+    dem: 14
+    timezone: "Europe/Helsinki"
+  - name: "Pori"
+    latitude: 61.48333
+    longitude: 21.78333
+    population: 76772
+    dem: 19
+    timezone: "Europe/Helsinki"
+  - name: "Noormarkku"
+    latitude: 61.59274
+    longitude: 21.86846
+    population: 6076
+    dem: 44
+    timezone: "Europe/Helsinki"
+  - name: "Nakkila"
+    latitude: 61.36667
+    longitude: 22.0
+    population: 5792
+    dem: 18
+    timezone: "Europe/Helsinki"
+  - name: "Kokemaeki"
+    latitude: 61.25647
+    longitude: 22.35643
+    population: 8390
+    dem: 42
+    timezone: "Europe/Helsinki"
+  - name: "Kankaanpaeae"
+    latitude: 61.8
+    longitude: 22.41667
+    population: 12381
+    dem: 105
+    timezone: "Europe/Helsinki"
+  - name: "Huittinen"
+    latitude: 61.18333
+    longitude: 22.7
+    population: 8952
+    dem: 52
+    timezone: "Europe/Helsinki"
+  - name: "Harjavalta"
+    latitude: 61.31667
+    longitude: 22.13333
+    population: 7572
+    dem: 37
+    timezone: "Europe/Helsinki"
+  - name: "Eurajoki"
+    latitude: 61.2
+    longitude: 21.73333
+    population: 5656
+    dem: 21
+    timezone: "Europe/Helsinki"
+  - name: "Eura"
+    latitude: 61.13333
+    longitude: 22.13333
+    population: 9338
+    dem: 41
+    timezone: "Europe/Helsinki"
+- name: "Lapland"
+  cities:
+  - name: "Ylitornio"
+    latitude: 66.30893
+    longitude: 23.67734
+    population: 5104
+    dem: 143
+    timezone: "Europe/Helsinki"
+  - name: "Tornio"
+    latitude: 65.84811
+    longitude: 24.14662
+    population: 21236
+    dem: 6
+    timezone: "Europe/Helsinki"
+  - name: "Sodankylae"
+    latitude: 67.41667
+    longitude: 26.6
+    population: 8942
+    dem: 191
+    timezone: "Europe/Helsinki"
+  - name: "Rovaniemi"
+    latitude: 66.5
+    longitude: 25.71667
+    population: 34781
+    dem: 92
+    timezone: "Europe/Helsinki"
+  - name: "Pyhaejaervi"
+    latitude: 67.0701
+    longitude: 27.21763
+    population: 6094
+    dem: 182
+    timezone: "Europe/Helsinki"
+  - name: "Kittilae"
+    latitude: 67.66474
+    longitude: 24.89356
+    population: 5713
+    dem: 179
+    timezone: "Europe/Helsinki"
+  - name: "Kemijaervi"
+    latitude: 66.71309
+    longitude: 27.43056
+    population: 8883
+    dem: 173
+    timezone: "Europe/Helsinki"
+  - name: "Keminmaa"
+    latitude: 65.80158
+    longitude: 24.54483
+    population: 8980
+    dem: 13
+    timezone: "Europe/Helsinki"
+  - name: "Kemi"
+    latitude: 65.73641
+    longitude: 24.56371
+    population: 22641
+    dem: 16
+    timezone: "Europe/Helsinki"
+  - name: "Inari"
+    latitude: 68.90596
+    longitude: 27.02881
+    population: 7049
+    dem: 122
+    timezone: "Europe/Helsinki"
+- name: "Southern Savonia"
+  cities:
+  - name: "Savonlinna"
+    latitude: 61.8699
+    longitude: 28.87999
+    population: 27353
+    dem: 75
+    timezone: "Europe/Helsinki"
+  - name: "Ristiina"
+    latitude: 61.50579
+    longitude: 27.24643
+    population: 5171
+    dem: 68
+    timezone: "Europe/Helsinki"
+  - name: "Pieksaemaeki"
+    latitude: 62.3
+    longitude: 27.13333
+    population: 12167
+    dem: 119
+    timezone: "Europe/Helsinki"
+  - name: "Mikkeli"
+    latitude: 61.68857
+    longitude: 27.27227
+    population: 46550
+    dem: 85
+    timezone: "Europe/Helsinki"
+  - name: "Maentyharju"
+    latitude: 61.41667
+    longitude: 26.88333
+    population: 6871
+    dem: 86
+    timezone: "Europe/Helsinki"
+  - name: "Kerimaeki"
+    latitude: 61.91069
+    longitude: 29.28228
+    population: 5841
+    dem: 86
+    timezone: "Europe/Helsinki"
+  - name: "Kangasniemi"
+    latitude: 61.99357
+    longitude: 26.64785
+    population: 6211
+    dem: 102
+    timezone: "Europe/Helsinki"
+  - name: "Juva"
+    latitude: 61.9
+    longitude: 27.85
+    population: 7165
+    dem: 98
+    timezone: "Europe/Helsinki"
+  - name: "Joroinen"
+    latitude: 62.17823
+    longitude: 27.83165
+    population: 5536
+    dem: 96
+    timezone: "Europe/Helsinki"
+- name: "Keski-Suomi"
+  cities:
+  - name: "Viitasaari"
+    latitude: 63.06667
+    longitude: 25.86667
+    population: 7511
+    dem: 142
+    timezone: "Europe/Helsinki"
+  - name: "Suolahti"
+    latitude: 62.56421
+    longitude: 25.85363
+    population: 5399
+    dem: 123
+    timezone: "Europe/Helsinki"
+  - name: "Saarijaervi"
+    latitude: 62.70486
+    longitude: 25.25396
+    population: 10011
+    dem: 140
+    timezone: "Europe/Helsinki"
+  - name: "Muurame"
+    latitude: 62.13333
+    longitude: 25.66667
+    population: 8826
+    dem: 81
+    timezone: "Europe/Helsinki"
+  - name: "Laukaa"
+    latitude: 62.41407
+    longitude: 25.95194
+    population: 17093
+    dem: 89
+    timezone: "Europe/Helsinki"
+  - name: "Korpilahti"
+    latitude: 62.01667
+    longitude: 25.55
+    population: 5050
+    dem: 109
+    timezone: "Europe/Helsinki"
+  - name: "Keuruu"
+    latitude: 62.26667
+    longitude: 24.7
+    population: 10942
+    dem: 118
+    timezone: "Europe/Helsinki"
+  - name: "Jyvaeskylae"
+    latitude: 62.24147
+    longitude: 25.72088
+    population: 85026
+    dem: 109
+    timezone: "Europe/Helsinki"
+  - name: "Jaemsaenkoski"
+    latitude: 61.919
+    longitude: 25.17011
+    population: 7442
+    dem: 97
+    timezone: "Europe/Helsinki"
+  - name: "Jaemsae"
+    latitude: 61.8642
+    longitude: 25.19002
+    population: 15261
+    dem: 83
+    timezone: "Europe/Helsinki"
+  - name: "Hankasalmi"
+    latitude: 62.38333
+    longitude: 26.43333
+    population: 5372
+    dem: 116
+    timezone: "Europe/Helsinki"
+  - name: "AEaenekoski"
+    latitude: 62.6
+    longitude: 25.73333
+    population: 13406
+    dem: 102
+    timezone: "Europe/Helsinki"
+- name: "Paijanne-Tavastland"
+  cities:
+  - name: "Orimattila"
+    latitude: 60.80487
+    longitude: 25.72964
+    population: 14603
+    dem: 76
+    timezone: "Europe/Helsinki"
+  - name: "Nastola"
+    latitude: 60.95
+    longitude: 25.93333
+    population: 14911
+    dem: 112
+    timezone: "Europe/Helsinki"
+  - name: "Lahti"
+    latitude: 60.98267
+    longitude: 25.66151
+    population: 98826
+    dem: 105
+    timezone: "Europe/Helsinki"
+  - name: "Hollola"
+    latitude: 61.05
+    longitude: 25.43333
+    population: 20405
+    dem: 104
+    timezone: "Europe/Helsinki"
+  - name: "Heinola"
+    latitude: 61.20564
+    longitude: 26.03811
+    population: 20849
+    dem: 104
+    timezone: "Europe/Helsinki"
+  - name: "Asikkala"
+    latitude: 61.21667
+    longitude: 25.5
+    population: 8540
+    dem: 74
+    timezone: "Europe/Helsinki"
+- name: "Uusimaa"
+  cities:
+  - name: "Vuosaari"
+    latitude: 60.20963
+    longitude: 25.14195
+    population: 35826
+    dem: 6
+    timezone: "Europe/Helsinki"
+  - name: "Vihti"
+    latitude: 60.41699
+    longitude: 24.31965
+    population: 26280
+    dem: 39
+    timezone: "Europe/Helsinki"
+  - name: "Vantaa"
+    latitude: 60.29414
+    longitude: 25.04099
+    population: 190058
+    dem: 18
+    timezone: "Europe/Helsinki"
+  - name: "Tuusula"
+    latitude: 60.40368
+    longitude: 25.02638
+    population: 34725
+    dem: 58
+    timezone: "Europe/Helsinki"
+  - name: "Siuntio"
+    latitude: 60.13862
+    longitude: 24.22715
+    population: 5229
+    dem: 40
+    timezone: "Europe/Helsinki"
+  - name: "Sibbo"
+    latitude: 60.37752
+    longitude: 25.26906
+    population: 19430
+    dem: 27
+    timezone: "Europe/Helsinki"
+  - name: "Pohja"
+    latitude: 60.09626
+    longitude: 23.52757
+    population: 5257
+    dem: 7
+    timezone: "Europe/Helsinki"
+  - name: "Nurmijaervi"
+    latitude: 60.46407
+    longitude: 24.8073
+    population: 37073
+    dem: 78
+    timezone: "Europe/Helsinki"
+  - name: "Munkkiniemi"
+    latitude: 60.19861
+    longitude: 24.87772
+    population: 17334
+    dem: -9999
+    timezone: "Europe/Helsinki"
+  - name: "Mellunkylae"
+    latitude: 60.23355
+    longitude: 25.09947
+    population: 36360
+    dem: 19
+    timezone: "Europe/Helsinki"
+  - name: "Maentsaelae"
+    latitude: 60.63333
+    longitude: 25.31667
+    population: 18074
+    dem: 59
+    timezone: "Europe/Helsinki"
+  - name: "Lovisa"
+    latitude: 60.45659
+    longitude: 26.22505
+    population: 15466
+    dem: 1
+    timezone: "Europe/Helsinki"
+  - name: "Lohja"
+    latitude: 60.24859
+    longitude: 24.06534
+    population: 35960
+    dem: 82
+    timezone: "Europe/Helsinki"
+  - name: "Lauttasaari"
+    latitude: 60.15896
+    longitude: 24.86797
+    population: 20000
+    dem: 16
+    timezone: "Europe/Helsinki"
+  - name: "Kirkkonummi"
+    latitude: 60.12381
+    longitude: 24.43853
+    population: 32920
+    dem: 17
+    timezone: "Europe/Helsinki"
+  - name: "Kerava"
+    latitude: 60.40338
+    longitude: 25.105
+    population: 31347
+    dem: 54
+    timezone: "Europe/Helsinki"
+  - name: "Kauniainen"
+    latitude: 60.21209
+    longitude: 24.72756
+    population: 8688
+    dem: 41
+    timezone: "Europe/Helsinki"
+  - name: "Karkkila"
+    latitude: 60.53418
+    longitude: 24.20977
+    population: 8811
+    dem: 74
+    timezone: "Europe/Helsinki"
+  - name: "Karis"
+    latitude: 60.07178
+    longitude: 23.66163
+    population: 8853
+    dem: 34
+    timezone: "Europe/Helsinki"
+  - name: "Kallio"
+    latitude: 60.18427
+    longitude: 24.95034
+    population: 27051
+    dem: 30
+    timezone: "Europe/Helsinki"
+  - name: "Kaarela"
+    latitude: 60.25174
+    longitude: 24.88111
+    population: 26414
+    dem: 35
+    timezone: "Europe/Helsinki"
+  - name: "Jaervenpaeae"
+    latitude: 60.47369
+    longitude: 25.08992
+    population: 38148
+    dem: 51
+    timezone: "Europe/Helsinki"
+  - name: "Inga"
+    latitude: 60.04587
+    longitude: 24.00459
+    population: 5205
+    dem: 1
+    timezone: "Europe/Helsinki"
+  - name: "Hyvinge"
+    latitude: 60.63333
+    longitude: 24.86667
+    population: 43515
+    dem: 113
+    timezone: "Europe/Helsinki"
+  - name: "Helsinki"
+    latitude: 60.16952
+    longitude: 24.93545
+    population: 558457
+    dem: 26
+    timezone: "Europe/Helsinki"
+  - name: "Hanko"
+    latitude: 59.83333
+    longitude: 22.95
+    population: 9962
+    dem: 14
+    timezone: "Europe/Helsinki"
+  - name: "Espoo"
+    latitude: 60.2052
+    longitude: 24.6522
+    population: 256760
+    dem: 16
+    timezone: "Europe/Helsinki"
+  - name: "Ekenaes"
+    latitude: 59.97359
+    longitude: 23.43389
+    population: 14377
+    dem: 8
+    timezone: "Europe/Helsinki"
+  - name: "Porvoo"
+    latitude: 60.39233
+    longitude: 25.66507
+    population: 47192
+    dem: 29
+    timezone: "Europe/Helsinki"
+- name: "Etelae-Karjala"
+  cities:
+  - name: "Ruokolahti"
+    latitude: 61.28333
+    longitude: 28.83333
+    population: 5780
+    dem: 68
+    timezone: "Europe/Helsinki"
+  - name: "Luumaeki"
+    latitude: 60.92618
+    longitude: 27.58135
+    population: 5305
+    dem: 105
+    timezone: "Europe/Helsinki"
+  - name: "Lappeenranta"
+    latitude: 61.05871
+    longitude: 28.18871
+    population: 59276
+    dem: 104
+    timezone: "Europe/Helsinki"
+  - name: "Joutseno"
+    latitude: 61.11796
+    longitude: 28.50763
+    population: 10603
+    dem: 80
+    timezone: "Europe/Helsinki"
+  - name: "Imatra"
+    latitude: 61.17185
+    longitude: 28.75242
+    population: 29615
+    dem: 68
+    timezone: "Europe/Helsinki"
+- name: "Pohjanmaa"
+  cities:
+  - name: "Vaasa"
+    latitude: 63.096
+    longitude: 21.61577
+    population: 57014
+    dem: 7
+    timezone: "Europe/Helsinki"
+  - name: "Pedersoere"
+    latitude: 63.65
+    longitude: 22.68333
+    population: 10436
+    dem: 18
+    timezone: "Europe/Helsinki"
+  - name: "Nykarleby"
+    latitude: 63.52277
+    longitude: 22.53073
+    population: 7338
+    dem: 20
+    timezone: "Europe/Helsinki"
+  - name: "Malax"
+    latitude: 62.94225
+    longitude: 21.57311
+    population: 5517
+    dem: 25
+    timezone: "Europe/Helsinki"
+  - name: "Laihia"
+    latitude: 62.97609
+    longitude: 22.01143
+    population: 7782
+    dem: 26
+    timezone: "Europe/Helsinki"
+  - name: "Kronoby"
+    latitude: 63.72859
+    longitude: 23.03387
+    population: 6813
+    dem: 12
+    timezone: "Europe/Helsinki"
+  - name: "Kristinestad"
+    latitude: 62.27429
+    longitude: 21.37596
+    population: 7712
+    dem: 11
+    timezone: "Europe/Helsinki"
+  - name: "Korsholm"
+    latitude: 63.11418
+    longitude: 21.68216
+    population: 17176
+    dem: 15
+    timezone: "Europe/Helsinki"
+  - name: "Jakobstad"
+    latitude: 63.67486
+    longitude: 22.70256
+    population: 19238
+    dem: 15
+    timezone: "Europe/Helsinki"
+  - name: "Isokyroe"
+    latitude: 63.01172
+    longitude: 22.33332
+    population: 5040
+    dem: 30
+    timezone: "Europe/Helsinki"
+- name: "Kainuu"
+  cities:
+  - name: "Vuokatti"
+    latitude: 64.14466
+    longitude: 28.28196
+    population: 6183
+    dem: 168
+    timezone: "Europe/Helsinki"
+  - name: "Suomussalmi"
+    latitude: 64.88685
+    longitude: 28.90778
+    population: 9974
+    dem: 193
+    timezone: "Europe/Helsinki"
+  - name: "Sotkamo"
+    latitude: 64.13333
+    longitude: 28.41667
+    population: 10368
+    dem: 134
+    timezone: "Europe/Helsinki"
+  - name: "Kuhmo"
+    latitude: 64.13333
+    longitude: 29.51667
+    population: 10214
+    dem: 166
+    timezone: "Europe/Helsinki"
+  - name: "Kajaani"
+    latitude: 64.22728
+    longitude: 27.72846
+    population: 35375
+    dem: 145
+    timezone: "Europe/Helsinki"
+- name: "Pirkanmaa"
+  cities:
+  - name: "Yloejaervi"
+    latitude: 61.55632
+    longitude: 23.59606
+    population: 22140
+    dem: 107
+    timezone: "Europe/Helsinki"
+  - name: "Virrat"
+    latitude: 62.24759
+    longitude: 23.78004
+    population: 7707
+    dem: 127
+    timezone: "Europe/Helsinki"
+  - name: "Vilppula"
+    latitude: 62.02121
+    longitude: 24.50483
+    population: 5422
+    dem: 113
+    timezone: "Europe/Helsinki"
+  - name: "Viiala"
+    latitude: 61.21023
+    longitude: 23.76738
+    population: 5472
+    dem: 78
+    timezone: "Europe/Helsinki"
+  - name: "Vammala"
+    latitude: 61.33333
+    longitude: 22.9
+    population: 14982
+    dem: 68
+    timezone: "Europe/Helsinki"
+  - name: "Valkeakoski"
+    latitude: 61.26421
+    longitude: 24.03122
+    population: 20376
+    dem: 98
+    timezone: "Europe/Helsinki"
+  - name: "Urjala"
+    latitude: 61.08333
+    longitude: 23.53333
+    population: 5542
+    dem: 111
+    timezone: "Europe/Helsinki"
+  - name: "Akaa"
+    latitude: 61.16667
+    longitude: 23.86667
+    population: 8258
+    dem: 84
+    timezone: "Europe/Helsinki"
+  - name: "Tampere"
+    latitude: 61.49911
+    longitude: 23.78712
+    population: 202687
+    dem: 114
+    timezone: "Europe/Helsinki"
+  - name: "Ruovesi"
+    latitude: 61.98575
+    longitude: 24.05714
+    population: 5314
+    dem: 134
+    timezone: "Europe/Helsinki"
+  - name: "Pirkkala"
+    latitude: 61.46125
+    longitude: 23.63228
+    population: 15615
+    dem: 101
+    timezone: "Europe/Helsinki"
+  - name: "Parkano"
+    latitude: 62.01667
+    longitude: 23.01667
+    population: 7213
+    dem: 114
+    timezone: "Europe/Helsinki"
+  - name: "Orivesi"
+    latitude: 61.67766
+    longitude: 24.3572
+    population: 8846
+    dem: 118
+    timezone: "Europe/Helsinki"
+  - name: "Nokia"
+    latitude: 61.46667
+    longitude: 23.5
+    population: 28676
+    dem: 89
+    timezone: "Europe/Helsinki"
+  - name: "Maenttae"
+    latitude: 62.03014
+    longitude: 24.62791
+    population: 6459
+    dem: 104
+    timezone: "Europe/Helsinki"
+  - name: "Lempaeaelae"
+    latitude: 61.31667
+    longitude: 23.75
+    population: 18096
+    dem: 85
+    timezone: "Europe/Helsinki"
+  - name: "Kangasala"
+    latitude: 61.46383
+    longitude: 24.07602
+    population: 24291
+    dem: 100
+    timezone: "Europe/Helsinki"
+  - name: "Ikaalinen"
+    latitude: 61.76951
+    longitude: 23.0658
+    population: 7309
+    dem: 101
+    timezone: "Europe/Helsinki"
+  - name: "Haemeenkyroe"
+    latitude: 61.63913
+    longitude: 23.19531
+    population: 9996
+    dem: 65
+    timezone: "Europe/Helsinki"
+  - name: "Toijala"
+    latitude: 61.1678
+    longitude: 23.83819
+    population: 8300
+    dem: 103
+    timezone: "Europe/Helsinki"
+- name: "Pohjois-Karjala"
+  cities:
+  - name: "Pyhaeselkae"
+    latitude: 62.43333
+    longitude: 29.96667
+    population: 7210
+    dem: 95
+    timezone: "Europe/Helsinki"
+  - name: "Outokumpu"
+    latitude: 62.72685
+    longitude: 29.01592
+    population: 7738
+    dem: 116
+    timezone: "Europe/Helsinki"
+  - name: "Nurmes"
+    latitude: 63.54205
+    longitude: 29.13965
+    population: 8804
+    dem: 91
+    timezone: "Europe/Helsinki"
+  - name: "Liperi"
+    latitude: 62.53333
+    longitude: 29.36667
+    population: 11386
+    dem: 80
+    timezone: "Europe/Helsinki"
+  - name: "Lieksa"
+    latitude: 63.31667
+    longitude: 30.01667
+    population: 13703
+    dem: 95
+    timezone: "Europe/Helsinki"
+  - name: "Kontiolahti"
+    latitude: 62.76023
+    longitude: 29.84711
+    population: 12411
+    dem: 138
+    timezone: "Europe/Helsinki"
+  - name: "Kitee"
+    latitude: 62.1
+    longitude: 30.15
+    population: 9777
+    dem: 66
+    timezone: "Europe/Helsinki"
+  - name: "Juuka"
+    latitude: 63.23333
+    longitude: 29.25
+    population: 6035
+    dem: 115
+    timezone: "Europe/Helsinki"
+  - name: "Joensuu"
+    latitude: 62.60118
+    longitude: 29.76316
+    population: 53388
+    dem: 72
+    timezone: "Europe/Helsinki"
+  - name: "Ilomantsi"
+    latitude: 62.67162
+    longitude: 30.93276
+    population: 6408
+    dem: 149
+    timezone: "Europe/Helsinki"
+  - name: "Eno"
+    latitude: 62.80511
+    longitude: 30.15422
+    population: 6891
+    dem: 90
+    timezone: "Europe/Helsinki"
+- name: "Pohjois-Savo"
+  cities:
+  - name: "Varkaus"
+    latitude: 62.31533
+    longitude: 27.873
+    population: 22365
+    dem: 76
+    timezone: "Europe/Helsinki"
+  - name: "Suonenjoki"
+    latitude: 62.61667
+    longitude: 27.13333
+    population: 7568
+    dem: 104
+    timezone: "Europe/Helsinki"
+  - name: "Siilinjaervi"
+    latitude: 63.08333
+    longitude: 27.66667
+    population: 20209
+    dem: 83
+    timezone: "Europe/Helsinki"
+  - name: "Pielavesi"
+    latitude: 63.23333
+    longitude: 26.75
+    population: 5521
+    dem: 108
+    timezone: "Europe/Helsinki"
+  - name: "Nilsiae"
+    latitude: 63.20746
+    longitude: 28.08222
+    population: 6474
+    dem: 110
+    timezone: "Europe/Helsinki"
+  - name: "Leppaevirta"
+    latitude: 62.49009
+    longitude: 27.78262
+    population: 10936
+    dem: 114
+    timezone: "Europe/Helsinki"
+  - name: "Lapinlahti"
+    latitude: 63.36667
+    longitude: 27.4
+    population: 7350
+    dem: 121
+    timezone: "Europe/Helsinki"
+  - name: "Kuopio"
+    latitude: 62.89238
+    longitude: 27.67703
+    population: 89104
+    dem: 90
+    timezone: "Europe/Helsinki"
+  - name: "Kiuruvesi"
+    latitude: 63.65
+    longitude: 26.61667
+    population: 9730
+    dem: 103
+    timezone: "Europe/Helsinki"
+  - name: "Juankoski"
+    latitude: 63.06667
+    longitude: 28.35
+    population: 5514
+    dem: 98
+    timezone: "Europe/Helsinki"
+  - name: "Iisalmi"
+    latitude: 63.55915
+    longitude: 27.19067
+    population: 22588
+    dem: 108
+    timezone: "Europe/Helsinki"
+- name: "Kymenlaakso"
+  cities:
+  - name: "Kouvola"
+    latitude: 60.86667
+    longitude: 26.7
+    population: 31133
+    dem: 81
+    timezone: "Europe/Helsinki"
+  - name: "Kotka"
+    latitude: 60.4664
+    longitude: 26.94582
+    population: 54616
+    dem: 1
+    timezone: "Europe/Helsinki"
+  - name: "Karhula"
+    latitude: 60.52156
+    longitude: 26.93125
+    population: 22867
+    dem: 4
+    timezone: "Europe/Helsinki"
+  - name: "Iitti"
+    latitude: 60.89488
+    longitude: 26.33869
+    population: 7246
+    dem: 80
+    timezone: "Europe/Helsinki"
+  - name: "Hamina"
+    latitude: 60.56974
+    longitude: 27.19794
+    population: 21712
+    dem: 3
+    timezone: "Europe/Helsinki"
+  - name: "Elimaeki"
+    latitude: 60.71667
+    longitude: 26.46667
+    population: 8751
+    dem: 34
+    timezone: "Europe/Helsinki"
+  - name: "Anjala"
+    latitude: 60.68333
+    longitude: 26.83333
+    population: 16779
+    dem: 18
+    timezone: "Europe/Helsinki"
+- name: "Etela-Pohjanmaa"
+  cities:
+  - name: "Ylistaro"
+    latitude: 62.93958
+    longitude: 22.51306
+    population: 5580
+    dem: 36
+    timezone: "Europe/Helsinki"
+  - name: "Teuva"
+    latitude: 62.4819
+    longitude: 21.74156
+    population: 6092
+    dem: 63
+    timezone: "Europe/Helsinki"
+  - name: "Seinaejoki"
+    latitude: 62.79446
+    longitude: 22.82822
+    population: 32149
+    dem: 50
+    timezone: "Europe/Helsinki"
+  - name: "Nurmo"
+    latitude: 62.8287
+    longitude: 22.9099
+    population: 11908
+    dem: 47
+    timezone: "Europe/Helsinki"
+  - name: "Lapua"
+    latitude: 62.96927
+    longitude: 23.0088
+    population: 14091
+    dem: 39
+    timezone: "Europe/Helsinki"
+  - name: "Kurikka"
+    latitude: 62.61667
+    longitude: 22.41667
+    population: 10628
+    dem: 62
+    timezone: "Europe/Helsinki"
+  - name: "Kauhava"
+    latitude: 63.10299
+    longitude: 23.07129
+    population: 7896
+    dem: 41
+    timezone: "Europe/Helsinki"
+  - name: "Kauhajoki"
+    latitude: 62.43333
+    longitude: 22.18333
+    population: 14526
+    dem: 101
+    timezone: "Europe/Helsinki"
+  - name: "Jalasjaervi"
+    latitude: 62.5
+    longitude: 22.75
+    population: 8662
+    dem: 94
+    timezone: "Europe/Helsinki"
+  - name: "Ilmajoki"
+    latitude: 62.73333
+    longitude: 22.56667
+    population: 11693
+    dem: 41
+    timezone: "Europe/Helsinki"
+  - name: "Alavus"
+    latitude: 62.58333
+    longitude: 23.61667
+    population: 9422
+    dem: 107
+    timezone: "Europe/Helsinki"
+  - name: "Alajaervi"
+    latitude: 63.0
+    longitude: 23.81667
+    population: 8793
+    dem: 113
+    timezone: "Europe/Helsinki"
+  - name: "AEhtaeri"
+    latitude: 62.55403
+    longitude: 24.06186
+    population: 6835
+    dem: 175
+    timezone: "Europe/Helsinki"
+  - name: "AElajaervi"
+    latitude: 63.00027
+    longitude: 23.81586
+    population: 10308
+    elevation: 69
+    dem: 107
+    timezone: "Europe/Helsinki"
+- name: "Pohjois-Pohjanmaa"
+  cities:
+  - name: "Ylivieska"
+    latitude: 64.08333
+    longitude: 24.55
+    population: 13159
+    dem: 57
+    timezone: "Europe/Helsinki"
+  - name: "Tyrnaevae"
+    latitude: 64.76469
+    longitude: 25.6523
+    population: 5636
+    dem: 20
+    timezone: "Europe/Helsinki"
+  - name: "Sievi"
+    latitude: 63.9
+    longitude: 24.5
+    population: 5281
+    dem: 98
+    timezone: "Europe/Helsinki"
+  - name: "Raahe"
+    latitude: 64.68333
+    longitude: 24.48333
+    population: 22217
+    dem: 5
+    timezone: "Europe/Helsinki"
+  - name: "Pyhaejaervi"
+    latitude: 63.66667
+    longitude: 25.9
+    population: 6138
+    dem: 149
+    timezone: "Europe/Helsinki"
+  - name: "Pudasjaervi"
+    latitude: 65.38333
+    longitude: 26.91667
+    population: 9459
+    dem: 115
+    timezone: "Europe/Helsinki"
+  - name: "Oulunsalo"
+    latitude: 64.93456
+    longitude: 25.41121
+    population: 9556
+    dem: 8
+    timezone: "Europe/Helsinki"
+  - name: "Oulu"
+    latitude: 65.01236
+    longitude: 25.46816
+    population: 128618
+    dem: 15
+    timezone: "Europe/Helsinki"
+  - name: "Oulainen"
+    latitude: 64.26667
+    longitude: 24.8
+    population: 8300
+    dem: 72
+    timezone: "Europe/Helsinki"
+  - name: "Nivala"
+    latitude: 63.91667
+    longitude: 24.96667
+    population: 10610
+    dem: 91
+    timezone: "Europe/Helsinki"
+  - name: "Muhos"
+    latitude: 64.80798
+    longitude: 25.99314
+    population: 8232
+    dem: 30
+    timezone: "Europe/Helsinki"
+  - name: "Liminka"
+    latitude: 64.80985
+    longitude: 25.41545
+    population: 7058
+    dem: 8
+    timezone: "Europe/Helsinki"
+  - name: "Kuusamo"
+    latitude: 65.96667
+    longitude: 29.18333
+    population: 17400
+    dem: 262
+    timezone: "Europe/Helsinki"
+  - name: "Kiiminki"
+    latitude: 65.13139
+    longitude: 25.79744
+    population: 12069
+    dem: 49
+    timezone: "Europe/Helsinki"
+  - name: "Kempele"
+    latitude: 64.91314
+    longitude: 25.50339
+    population: 14293
+    dem: 15
+    timezone: "Europe/Helsinki"
+  - name: "Kalajoki"
+    latitude: 64.25
+    longitude: 23.95
+    population: 8869
+    dem: 16
+    timezone: "Europe/Helsinki"
+  - name: "Ii"
+    latitude: 65.31735
+    longitude: 25.3731
+    population: 6546
+    dem: 12
+    timezone: "Europe/Helsinki"
+  - name: "Haukipudas"
+    latitude: 65.17654
+    longitude: 25.35233
+    population: 17298
+    dem: 12
+    timezone: "Europe/Helsinki"
+  - name: "Haapavesi"
+    latitude: 64.13333
+    longitude: 25.36667
+    population: 7717
+    dem: 84
+    timezone: "Europe/Helsinki"
+  - name: "Haapajaervi"
+    latitude: 63.75
+    longitude: 25.33333
+    population: 7627
+    dem: 102
+    timezone: "Europe/Helsinki"
+- name: "Varsinais-Suomi"
+  cities:
+  - name: "Uusikaupunki"
+    latitude: 60.80043
+    longitude: 21.40841
+    population: 16226
+    dem: 16
+    timezone: "Europe/Helsinki"
+  - name: "Turku"
+    latitude: 60.45148
+    longitude: 22.26869
+    population: 175945
+    dem: 22
+    timezone: "Europe/Helsinki"
+  - name: "Somero"
+    latitude: 60.61667
+    longitude: 23.53333
+    population: 9840
+    dem: 93
+    timezone: "Europe/Helsinki"
+  - name: "Salo"
+    latitude: 60.38333
+    longitude: 23.13333
+    population: 24900
+    dem: 20
+    timezone: "Europe/Helsinki"
+  - name: "Raisio"
+    latitude: 60.48592
+    longitude: 22.16895
+    population: 23597
+    dem: 11
+    timezone: "Europe/Helsinki"
+  - name: "Piikkioe"
+    latitude: 60.42481
+    longitude: 22.51601
+    population: 6553
+    dem: 11
+    timezone: "Europe/Helsinki"
+  - name: "Pernioe"
+    latitude: 60.2
+    longitude: 23.13333
+    population: 5809
+    dem: 58
+    timezone: "Europe/Helsinki"
+  - name: "Pargas"
+    latitude: 60.30672
+    longitude: 22.30097
+    population: 11962
+    dem: 23
+    timezone: "Europe/Helsinki"
+  - name: "Paimio"
+    latitude: 60.45671
+    longitude: 22.68694
+    population: 10126
+    dem: 43
+    timezone: "Europe/Helsinki"
+  - name: "Naantali"
+    latitude: 60.46744
+    longitude: 22.02428
+    population: 13607
+    dem: 9
+    timezone: "Europe/Helsinki"
+  - name: "Mynaemaeki"
+    latitude: 60.67915
+    longitude: 21.99274
+    population: 6271
+    dem: 19
+    timezone: "Europe/Helsinki"
+  - name: "Masku"
+    latitude: 60.57082
+    longitude: 22.09883
+    population: 5974
+    dem: 27
+    timezone: "Europe/Helsinki"
+  - name: "Lieto"
+    latitude: 60.51032
+    longitude: 22.46176
+    population: 15258
+    dem: 15
+    timezone: "Europe/Helsinki"
+  - name: "Laitila"
+    latitude: 60.87575
+    longitude: 21.69765
+    population: 8403
+    dem: 18
+    timezone: "Europe/Helsinki"
+  - name: "Kaarina"
+    latitude: 60.40724
+    longitude: 22.36904
+    population: 21684
+    dem: 31
+    timezone: "Europe/Helsinki"
+  - name: "Halikko"
+    latitude: 60.4
+    longitude: 23.08333
+    population: 9344
+    dem: 13
+    timezone: "Europe/Helsinki"
+  - name: "Laensi-Turunmaa"
+    latitude: 60.29972
+    longitude: 22.3004
+    population: 15498
+    dem: -9999
+    timezone: "Europe/Helsinki"
+- name: "Kanta-Haeme"
+  cities:
+  - name: "Tammela"
+    latitude: 60.81035
+    longitude: 23.76823
+    population: 6519
+    dem: 119
+    timezone: "Europe/Helsinki"
+  - name: "Riihimaeki"
+    latitude: 60.73769
+    longitude: 24.77726
+    population: 26451
+    dem: 106
+    timezone: "Europe/Helsinki"
+  - name: "Loppi"
+    latitude: 60.71667
+    longitude: 24.45
+    population: 7768
+    dem: 122
+    timezone: "Europe/Helsinki"
+  - name: "Lammi"
+    latitude: 61.08333
+    longitude: 25.01667
+    population: 5634
+    dem: 129
+    timezone: "Europe/Helsinki"
+  - name: "Jokioinen"
+    latitude: 60.80162
+    longitude: 23.48004
+    population: 5568
+    dem: 122
+    timezone: "Europe/Helsinki"
+  - name: "Janakkala"
+    latitude: 60.9
+    longitude: 24.6
+    population: 15698
+    dem: 118
+    timezone: "Europe/Helsinki"
+  - name: "Hausjaervi"
+    latitude: 60.78333
+    longitude: 24.93333
+    population: 8151
+    dem: 105
+    timezone: "Europe/Helsinki"
+  - name: "Haemeenlinna"
+    latitude: 60.99596
+    longitude: 24.46434
+    population: 47261
+    dem: 83
+    timezone: "Europe/Helsinki"
+  - name: "Forssa"
+    latitude: 60.81462
+    longitude: 23.62146
+    population: 17852
+    dem: 133
+    timezone: "Europe/Helsinki"

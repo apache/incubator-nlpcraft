@@ -1,0 +1,241 @@
+---
+name: "Yemen"
+iso: "YE"
+iso3: "YEM"
+code: "887"
+capital: "Sanaa"
+area: 527970.0
+population: 23495361
+continent: "AS"
+currencyCode: "YER"
+currencyName: "Rial"
+phone: "967"
+languages: "ar-YE"
+neighbours: "SA,OM"
+regions:
+- name: "Muhafazat Ta`izz"
+  cities:
+  - name: "Ta`izz"
+    latitude: 13.57952
+    longitude: 44.02091
+    population: 615222
+    elevation: 1400
+    dem: 1316
+    timezone: "Asia/Aden"
+- name: "Al Mahwit"
+  cities:
+  - name: "Al Mahwit"
+    latitude: 15.47007
+    longitude: 43.54481
+    population: 10593
+    dem: 2124
+    timezone: "Asia/Aden"
+- name: "Muhafazat `Amran"
+  cities:
+  - name: "Amran"
+    latitude: 15.6594
+    longitude: 43.94385
+    population: 90792
+    dem: 2239
+    timezone: "Asia/Aden"
+- name: "Socotra"
+  cities:
+  - name: "Hadibu"
+    latitude: 12.64881
+    longitude: 54.01895
+    population: 8545
+    dem: 13
+    timezone: "Asia/Aden"
+- name: "Muhafazat Abyan"
+  cities:
+  - name: "Zinjibar"
+    latitude: 13.12871
+    longitude: 45.38073
+    population: 19879
+    dem: 20
+    timezone: "Asia/Aden"
+  - name: "Jawf al Maqbabah"
+    latitude: 13.83783
+    longitude: 45.83488
+    population: 14175
+    dem: 919
+    timezone: "Asia/Aden"
+- name: "Sanaa"
+  cities:
+  - name: "Sayyan"
+    latitude: 15.17177
+    longitude: 44.32442
+    population: 69404
+    dem: 2482
+    timezone: "Asia/Aden"
+  - name: "Sanaa"
+    latitude: 15.35472
+    longitude: 44.20667
+    population: 1937451
+    dem: 2253
+    timezone: "Asia/Aden"
+  - name: "Sahar"
+    latitude: 15.31637
+    longitude: 44.3088
+    population: 31859
+    dem: 2372
+    timezone: "Asia/Aden"
+- name: "Muhafazat Hajjah"
+  cities:
+  - name: "Hajjah"
+    latitude: 15.69425
+    longitude: 43.60582
+    population: 43549
+    dem: 1795
+    timezone: "Asia/Aden"
+- name: "Muhafazat Hadramawt"
+  cities:
+  - name: "Mukalla"
+    latitude: 14.54248
+    longitude: 49.12424
+    population: 258132
+    dem: 39
+    timezone: "Asia/Aden"
+- name: "Muhafazat al Jawf"
+  cities:
+  - name: "Al Hazm"
+    latitude: 16.16406
+    longitude: 44.77692
+    population: 18241
+    dem: 1116
+    timezone: "Asia/Aden"
+- name: "Muhafazat Sadah"
+  cities:
+  - name: "Sadah"
+    latitude: 16.94021
+    longitude: 43.76393
+    population: 51870
+    dem: 1876
+    timezone: "Asia/Aden"
+- name: "Muhafazat ad Dali"
+  cities:
+  - name: "Dhalie"
+    latitude: 13.69572
+    longitude: 44.73137
+    population: 14760
+    dem: 1517
+    timezone: "Asia/Aden"
+- name: "Al Mahrah"
+  cities:
+  - name: "Al Ghayzah"
+    latitude: 16.20787
+    longitude: 52.17605
+    population: 10948
+    dem: 17
+    timezone: "Asia/Aden"
+- name: "Muhafazat Lahij"
+  cities:
+  - name: "Lahij"
+    latitude: 13.05667
+    longitude: 44.88194
+    population: 23375
+    dem: 136
+    timezone: "Asia/Aden"
+- name: "Muhafazat Raymah"
+  cities:
+  - name: "Al Jabin"
+    latitude: 14.70389
+    longitude: 43.59917
+    population: 0
+    dem: 2427
+    timezone: "Asia/Aden"
+- name: "Amanat Al Asimah"
+  cities:
+  - name: "Jadder Cemetery"
+    latitude: 15.467
+    longitude: 44.17787
+    population: 10000
+    elevation: 1750
+    dem: 2201
+    timezone: "Asia/Riyadh"
+- name: "Al Bayda Governorate"
+  cities:
+  - name: "Al Bayda"
+    latitude: 13.98523
+    longitude: 45.57272
+    population: 37821
+    dem: 2005
+    timezone: "Asia/Aden"
+- name: "Muhafazat Marib"
+  cities:
+  - name: "Marib"
+    latitude: 15.46253
+    longitude: 45.32581
+    population: 16794
+    dem: 1095
+    timezone: "Asia/Aden"
+- name: "Muhafazat al Hudaydah"
+  cities:
+  - name: "Zabid"
+    latitude: 14.1951
+    longitude: 43.31518
+    population: 52590
+    dem: 114
+    timezone: "Asia/Aden"
+  - name: "Bayt al Faqih"
+    latitude: 14.51635
+    longitude: 43.32446
+    population: 34204
+    dem: 151
+    timezone: "Asia/Aden"
+  - name: "Bajil"
+    latitude: 15.05898
+    longitude: 43.28731
+    population: 48218
+    dem: 191
+    timezone: "Asia/Aden"
+  - name: "Al Hudaydah"
+    latitude: 14.79781
+    longitude: 42.95452
+    population: 617871
+    dem: 10
+    timezone: "Asia/Aden"
+- name: "Muhafazat Adan"
+  cities:
+  - name: "Aden"
+    latitude: 12.77944
+    longitude: 45.03667
+    population: 550602
+    dem: 16
+    timezone: "Asia/Aden"
+- name: "Ibb"
+  cities:
+  - name: "Yarim"
+    latitude: 14.29804
+    longitude: 44.37795
+    population: 33050
+    dem: 2626
+    timezone: "Asia/Aden"
+  - name: "Ibb"
+    latitude: 13.96667
+    longitude: 44.18333
+    population: 234837
+    dem: 1931
+    timezone: "Asia/Aden"
+  - name: "Dhi as Sufal"
+    latitude: 13.83446
+    longitude: 44.11469
+    population: 37997
+    dem: 1857
+    timezone: "Asia/Aden"
+- name: "Muhafazat Dhamar"
+  cities:
+  - name: "Dhamar"
+    latitude: 14.54274
+    longitude: 44.40514
+    population: 160114
+    dem: 2421
+    timezone: "Asia/Aden"
+- name: "Shabwah"
+  cities:
+  - name: "Ataq"
+    latitude: 14.53767
+    longitude: 46.83187
+    population: 37315
+    dem: 1148
+    timezone: "Asia/Aden"

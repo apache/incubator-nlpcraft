@@ -1,0 +1,89 @@
+---
+name: "San Marino"
+iso: "SM"
+iso3: "SMR"
+code: "674"
+capital: "San Marino"
+area: 61.2
+population: 31477
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "378"
+postalCodeFormat: "4789#"
+postalCodeRegex: "^(4789\\d)$"
+languages: "it-SM"
+neighbours: "IT"
+regions:
+- name: "Chiesanuova"
+  cities:
+  - name: "Poggio di Chiesanuova"
+    latitude: 43.90451
+    longitude: 12.42142
+    population: 951
+    dem: 475
+    timezone: "Europe/San_Marino"
+- name: "Castello di Fiorentino"
+  cities:
+  - name: "Fiorentino"
+    latitude: 43.91001
+    longitude: 12.45738
+    population: 2510
+    dem: 468
+    timezone: "Europe/San_Marino"
+- name: "Castello di Montegiardino"
+  cities:
+  - name: "Monte Giardino"
+    latitude: 43.90878
+    longitude: 12.48201
+    population: 910
+    dem: 372
+    timezone: "Europe/San_Marino"
+- name: "Castello di San Marino Citta"
+  cities:
+  - name: "San Marino"
+    latitude: 43.93667
+    longitude: 12.44639
+    population: 4500
+    dem: 683
+    timezone: "Europe/San_Marino"
+- name: "Castello di Acquaviva"
+  cities:
+  - name: "Acquaviva"
+    latitude: 43.94593
+    longitude: 12.4185
+    population: 1530
+    dem: 289
+    timezone: "Europe/San_Marino"
+- name: "Castello di Faetano"
+  cities:
+  - name: "Faetano"
+    latitude: 43.92831
+    longitude: 12.49798
+    population: 1177
+    dem: 254
+    timezone: "Europe/San_Marino"
+- name: "Castello di Borgo Maggiore"
+  cities:
+  - name: "Borgo Maggiore"
+    latitude: 43.94193
+    longitude: 12.44738
+    population: 6424
+    dem: 481
+    timezone: "Europe/San_Marino"
+- name: "Serravalle"
+  cities:
+  - name: "Serravalle"
+    latitude: 43.96897
+    longitude: 12.48167
+    population: 9258
+    dem: 119
+    timezone: "Europe/San_Marino"
+- name: "Castello di Domagnano"
+  cities:
+  - name: "Domagnano"
+    latitude: 43.94961
+    longitude: 12.46828
+    population: 3161
+    dem: 341
+    timezone: "Europe/San_Marino"

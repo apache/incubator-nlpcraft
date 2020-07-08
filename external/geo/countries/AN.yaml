@@ -1,0 +1,14 @@
+---
+name: "Netherlands Antilles"
+iso: "AN"
+iso3: "ANT"
+code: "530"
+capital: "Willemstad"
+area: 960.0
+population: 300000
+continent: "NA"
+currencyCode: "ANG"
+currencyName: "Guilder"
+phone: "599"
+languages: "nl-AN,en,es"
+neighbours: "GP"

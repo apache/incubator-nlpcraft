@@ -1,0 +1,71 @@
+---
+name: "Grenada"
+iso: "GD"
+iso3: "GRD"
+code: "308"
+capital: "St. George's"
+area: 344.0
+population: 107818
+continent: "NA"
+currencyCode: "XCD"
+currencyName: "Dollar"
+phone: "+1-473"
+languages: "en-GD"
+regions:
+- name: "Saint Andrew"
+  cities:
+  - name: "Grenville"
+    latitude: 12.12278
+    longitude: -61.62498
+    population: 2476
+    dem: 15
+    timezone: "America/Grenada"
+- name: "Saint George"
+  cities:
+  - name: "Saint Georges"
+    latitude: 12.05288
+    longitude: -61.75226
+    population: 7500
+    elevation: 6
+    dem: 26
+    timezone: "America/Grenada"
+- name: "Saint Patrick"
+  cities:
+  - name: "Sauteurs"
+    latitude: 12.21833
+    longitude: -61.63917
+    population: 1320
+    dem: 46
+    timezone: "America/Grenada"
+- name: "Saint Mark"
+  cities:
+  - name: "Victoria"
+    latitude: 12.19021
+    longitude: -61.70677
+    population: 2256
+    dem: 70
+    timezone: "America/Grenada"
+- name: "Saint David"
+  cities:
+  - name: "Saint Davids"
+    latitude: 12.04903
+    longitude: -61.66875
+    population: 1321
+    dem: 179
+    timezone: "America/Grenada"
+- name: "Saint John"
+  cities:
+  - name: "Gouyave"
+    latitude: 12.16462
+    longitude: -61.72965
+    population: 3378
+    dem: 19
+    timezone: "America/Grenada"
+- name: "Carriacou and Petite Martinique"
+  cities:
+  - name: "Hillsborough"
+    latitude: 12.48292
+    longitude: -61.45597
+    population: 1000
+    dem: 8
+    timezone: "America/Grenada"

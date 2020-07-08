@@ -1,0 +1,24 @@
+---
+name: "Singapore"
+iso: "SG"
+iso3: "SGP"
+code: "702"
+capital: "Singapore"
+area: 692.7
+population: 4701069
+continent: "AS"
+currencyCode: "SGD"
+currencyName: "Dollar"
+phone: "65"
+postalCodeFormat: "######"
+postalCodeRegex: "^(\\d{6})$"
+languages: "cmn,en-SG,ms-SG,ta-SG,zh-SG"
+regions:
+- name: "Singapore"
+  cities:
+  - name: "Singapore"
+    latitude: 1.28967
+    longitude: 103.85007
+    population: 3547809
+    dem: 23
+    timezone: "Asia/Singapore"

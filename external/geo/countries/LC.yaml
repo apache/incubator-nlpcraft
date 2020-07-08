@@ -1,0 +1,93 @@
+---
+name: "Saint Lucia"
+iso: "LC"
+iso3: "LCA"
+code: "662"
+capital: "Castries"
+area: 616.0
+population: 160922
+continent: "NA"
+currencyCode: "XCD"
+currencyName: "Dollar"
+phone: "+1-758"
+languages: "en-LC"
+regions:
+- name: "Canaries"
+- name: "Gros-Islet"
+  cities:
+  - name: "Gros Islet"
+    latitude: 14.06667
+    longitude: -60.95
+    population: 2362
+    dem: 58
+    timezone: "America/St_Lucia"
+- name: "Soufriere"
+  cities:
+  - name: "Soufriere"
+    latitude: 13.85616
+    longitude: -61.0566
+    population: 2918
+    dem: 12
+    timezone: "America/St_Lucia"
+- name: "Castries"
+  cities:
+  - name: "Castries"
+    latitude: 13.9957
+    longitude: -61.00614
+    population: 20000
+    dem: 119
+    timezone: "America/St_Lucia"
+  - name: "Bisee"
+    latitude: 14.02429
+    longitude: -60.97445
+    population: 12980
+    dem: 48
+    timezone: "America/St_Lucia"
+- name: "Dennery"
+  cities:
+  - name: "Dennery"
+    latitude: 13.89958
+    longitude: -60.88786
+    population: 2870
+    dem: 45
+    timezone: "America/St_Lucia"
+- name: "Micoud"
+  cities:
+  - name: "Micoud"
+    latitude: 13.81667
+    longitude: -60.9
+    population: 3406
+    dem: 11
+    timezone: "America/St_Lucia"
+- name: "Anse-la-Raye"
+  cities:
+  - name: "Anse La Raye"
+    latitude: 13.94619
+    longitude: -61.03879
+    population: 1256
+    dem: 99
+    timezone: "America/St_Lucia"
+- name: "Choiseul"
+  cities:
+  - name: "Choiseul"
+    latitude: 13.77273
+    longitude: -61.04931
+    population: 346
+    dem: 21
+    timezone: "America/St_Lucia"
+- name: "Vieux-Fort"
+  cities:
+  - name: "Vieux Fort"
+    latitude: 13.71667
+    longitude: -60.95
+    population: 4574
+    dem: 76
+    timezone: "America/St_Lucia"
+- name: "Laborie"
+  cities:
+  - name: "Laborie"
+    latitude: 13.75
+    longitude: -60.98333
+    population: 1131
+    dem: 20
+    timezone: "America/St_Lucia"

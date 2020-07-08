@@ -1,0 +1,657 @@
+---
+name: "Kenya"
+iso: "KE"
+iso3: "KEN"
+code: "404"
+capital: "Nairobi"
+area: 582650.0
+population: 40046566
+continent: "AF"
+currencyCode: "KES"
+currencyName: "Shilling"
+phone: "254"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "en-KE,sw-KE"
+neighbours: "ET,TZ,SS,SO,UG"
+regions:
+- name: "Nyeri District"
+  cities:
+  - name: "Nyeri"
+    latitude: -0.42013
+    longitude: 36.94759
+    population: 51084
+    dem: 1812
+    timezone: "Africa/Nairobi"
+  - name: "Naro Moru"
+    latitude: -0.16357
+    longitude: 37.01773
+    population: 9018
+    dem: 2024
+    timezone: "Africa/Nairobi"
+- name: "Muranga District"
+  cities:
+  - name: "Muranga"
+    latitude: -0.72104
+    longitude: 37.15259
+    population: 11987
+    dem: 1318
+    timezone: "Africa/Nairobi"
+  - name: "Karuri"
+    latitude: -0.7
+    longitude: 37.18333
+    population: 21476
+    dem: 1211
+    timezone: "Africa/Nairobi"
+- name: "Kilifi District"
+  cities:
+  - name: "Takaungu"
+    latitude: -3.6835
+    longitude: 39.85687
+    population: 10760
+    dem: 16
+    timezone: "Africa/Nairobi"
+  - name: "Mariakani"
+    latitude: -3.86261
+    longitude: 39.47458
+    population: 12786
+    dem: 187
+    timezone: "Africa/Nairobi"
+  - name: "Malindi"
+    latitude: -3.21799
+    longitude: 40.11692
+    population: 118265
+    dem: 7
+    timezone: "Africa/Nairobi"
+  - name: "Kilifi"
+    latitude: -3.63045
+    longitude: 39.84992
+    population: 46118
+    dem: 24
+    timezone: "Africa/Nairobi"
+- name: "Trans Nzoia District"
+  cities:
+  - name: "Kitale"
+    latitude: 1.01572
+    longitude: 35.00622
+    population: 75123
+    dem: 1900
+    timezone: "Africa/Nairobi"
+- name: "Bomet District"
+  cities:
+  - name: "Sotik Post"
+    latitude: -0.78129
+    longitude: 35.34156
+    population: 5270
+    dem: 1959
+    timezone: "Africa/Nairobi"
+- name: "Makueni District"
+  cities:
+  - name: "Wote"
+    latitude: -1.78079
+    longitude: 37.62882
+    population: 6133
+    dem: 1128
+    timezone: "Africa/Nairobi"
+  - name: "Makueni Boma"
+    latitude: -1.80388
+    longitude: 37.62405
+    population: 20681
+    dem: 1219
+    timezone: "Africa/Nairobi"
+- name: "Nairobi Province"
+  cities:
+  - name: "Thika"
+    latitude: -1.03326
+    longitude: 37.06933
+    population: 200000
+    dem: 1506
+    timezone: "Africa/Nairobi"
+  - name: "Pumwani"
+    latitude: -1.28333
+    longitude: 36.85
+    population: 29616
+    dem: 1645
+    timezone: "Africa/Nairobi"
+  - name: "Nairobi"
+    latitude: -1.28333
+    longitude: 36.81667
+    population: 2750547
+    dem: 1684
+    timezone: "Africa/Nairobi"
+- name: "Taita Taveta District"
+  cities:
+  - name: "Wundanyi"
+    latitude: -3.39642
+    longitude: 38.35729
+    population: 12501
+    dem: 1488
+    timezone: "Africa/Nairobi"
+  - name: "Voi"
+    latitude: -3.39605
+    longitude: 38.55609
+    population: 45483
+    dem: 580
+    timezone: "Africa/Nairobi"
+  - name: "Taveta"
+    latitude: -3.39879
+    longitude: 37.68336
+    population: 13377
+    dem: 753
+    timezone: "Africa/Nairobi"
+  - name: "Mwatate"
+    latitude: -3.505
+    longitude: 38.37722
+    population: 0
+    dem: 860
+    timezone: "Africa/Nairobi"
+- name: "Vihiga District"
+  cities:
+  - name: "Mbale"
+    latitude: 0.08213
+    longitude: 34.72139
+    population: 0
+    dem: 1628
+    timezone: "Africa/Nairobi"
+- name: "Kisumu"
+  cities:
+  - name: "Muhoroni"
+    latitude: -0.15816
+    longitude: 35.19645
+    population: 15217
+    dem: 1462
+    timezone: "Africa/Nairobi"
+  - name: "Kisumu"
+    latitude: -0.10221
+    longitude: 34.76171
+    population: 216479
+    dem: 1174
+    timezone: "Africa/Nairobi"
+  - name: "Ahero"
+    latitude: -0.17359
+    longitude: 34.9189
+    population: 8788
+    dem: 1153
+    timezone: "Africa/Nairobi"
+- name: "Kakamega District"
+  cities:
+  - name: "Mumias"
+    latitude: 0.33474
+    longitude: 34.48796
+    population: 45485
+    dem: 1258
+    timezone: "Africa/Nairobi"
+  - name: "Kakamega"
+    latitude: 0.28422
+    longitude: 34.75229
+    population: 63426
+    dem: 1563
+    timezone: "Africa/Nairobi"
+  - name: "Butere"
+    latitude: 0.20694
+    longitude: 34.49006
+    population: 11205
+    dem: 1316
+    timezone: "Africa/Nairobi"
+- name: "Laikipia District"
+  cities:
+  - name: "Rumuruti"
+    latitude: 0.2725
+    longitude: 36.53806
+    population: 4501
+    dem: 1846
+    timezone: "Africa/Nairobi"
+  - name: "Nyahururu"
+    latitude: 0.03813
+    longitude: 36.36339
+    population: 31978
+    dem: 2335
+    timezone: "Africa/Nairobi"
+  - name: "Nanyuki"
+    latitude: 0.00624
+    longitude: 37.07398
+    population: 36142
+    dem: 2001
+    timezone: "Africa/Nairobi"
+- name: "Marakwet District"
+  cities:
+  - name: "Kapsowar"
+    latitude: 0.9789
+    longitude: 35.55854
+    population: 9152
+    dem: 2058
+    timezone: "Africa/Nairobi"
+  - name: "Iten"
+    latitude: 0.67028
+    longitude: 35.50806
+    population: 42000
+    dem: 2355
+    timezone: "Africa/Nairobi"
+- name: "Meru"
+  cities:
+  - name: "Meru"
+    latitude: 0.04626
+    longitude: 37.65587
+    population: 47226
+    dem: 1579
+    timezone: "Africa/Nairobi"
+  - name: "Maua"
+    latitude: 0.2332
+    longitude: 37.94086
+    population: 10804
+    dem: 1655
+    timezone: "Africa/Nairobi"
+- name: "Homa Bay District"
+  cities:
+  - name: "Oyugis"
+    latitude: -0.50974
+    longitude: 34.73067
+    population: 10116
+    dem: 1437
+    timezone: "Africa/Nairobi"
+  - name: "Homa Bay"
+    latitude: -0.52731
+    longitude: 34.45714
+    population: 40319
+    dem: 1165
+    timezone: "Africa/Nairobi"
+- name: "Siaya District"
+  cities:
+  - name: "Bondo"
+    latitude: 0.23522
+    longitude: 34.28086
+    population: 8683
+    dem: 1223
+    timezone: "Africa/Nairobi"
+  - name: "Siaya"
+    latitude: 0.0607
+    longitude: 34.28806
+    population: 15354
+    dem: 1321
+    timezone: "Africa/Nairobi"
+- name: "Uasin Gishu"
+  cities:
+  - name: "Eldoret"
+    latitude: 0.52036
+    longitude: 35.26993
+    population: 218446
+    dem: 2095
+    timezone: "Africa/Nairobi"
+- name: "Nandi South District"
+  cities:
+  - name: "Kapsabet"
+    latitude: 0.20387
+    longitude: 35.105
+    population: 3758
+    dem: 1998
+    timezone: "Africa/Nairobi"
+- name: "Tharaka District"
+  cities:
+  - name: "Chuka"
+    latitude: -0.33316
+    longitude: 37.64587
+    population: 9347
+    dem: 1452
+    timezone: "Africa/Nairobi"
+  - name: "Kathwana"
+    latitude: -0.33139
+    longitude: 37.86861
+    population: 0
+    dem: 722
+    timezone: "Africa/Nairobi"
+- name: "Marsabit District"
+  cities:
+  - name: "Moyale"
+    latitude: 3.52661
+    longitude: 39.0561
+    population: 34314
+    dem: 974
+    timezone: "Africa/Nairobi"
+  - name: "Marsabit"
+    latitude: 2.33468
+    longitude: 37.99086
+    population: 15361
+    dem: 1364
+    timezone: "Africa/Nairobi"
+- name: "Kwale District"
+  cities:
+  - name: "Sawa Sawa"
+    latitude: -4.47166
+    longitude: 39.48463
+    population: 12975
+    dem: 15
+    timezone: "Africa/Nairobi"
+  - name: "Kwale"
+    latitude: -4.17375
+    longitude: 39.45206
+    population: 4883
+    dem: 403
+    timezone: "Africa/Nairobi"
+  - name: "Kinango"
+    latitude: -4.13723
+    longitude: 39.31528
+    population: 8070
+    dem: 206
+    timezone: "Africa/Nairobi"
+  - name: "Gazi"
+    latitude: -4.42402
+    longitude: 39.50588
+    population: 5222
+    dem: 15
+    timezone: "Africa/Nairobi"
+- name: "West Pokot District"
+  cities:
+  - name: "Kapenguria"
+    latitude: 1.23889
+    longitude: 35.11194
+    population: 56000
+    dem: 2020
+    timezone: "Africa/Nairobi"
+- name: "Nyandarua District"
+  cities:
+  - name: "Ol Kalou"
+    latitude: -0.27088
+    longitude: 36.37917
+    population: 47795
+    dem: 2348
+    timezone: "Africa/Nairobi"
+- name: "Garissa District"
+  cities:
+  - name: "Garissa"
+    latitude: -0.45275
+    longitude: 39.64601
+    population: 67861
+    dem: 147
+    timezone: "Africa/Nairobi"
+- name: "Kiambu District"
+  cities:
+  - name: "Limuru"
+    latitude: -1.1136
+    longitude: 36.64205
+    population: 6317
+    dem: 2248
+    timezone: "Africa/Nairobi"
+  - name: "Kiambu"
+    latitude: -1.17139
+    longitude: 36.83556
+    population: 21234
+    dem: 1683
+    timezone: "Africa/Nairobi"
+- name: "Mombasa District"
+  cities:
+  - name: "Mombasa"
+    latitude: -4.05466
+    longitude: 39.66359
+    population: 799668
+    dem: 20
+    timezone: "Africa/Nairobi"
+- name: "Machakos District"
+  cities:
+  - name: "Machakos"
+    latitude: -1.52233
+    longitude: 37.26521
+    population: 31971
+    dem: 1619
+    timezone: "Africa/Nairobi"
+  - name: "Kangundo"
+    latitude: -1.30342
+    longitude: 37.34813
+    population: 10094
+    dem: 1546
+    timezone: "Africa/Nairobi"
+  - name: "Athi River"
+    latitude: -1.4563
+    longitude: 36.97826
+    population: 24530
+    dem: 1505
+    timezone: "Africa/Nairobi"
+- name: "Kajiado District"
+  cities:
+  - name: "Ngong"
+    latitude: -1.3527
+    longitude: 36.6699
+    population: 9519
+    dem: 1930
+    timezone: "Africa/Nairobi"
+  - name: "Magadi"
+    latitude: -1.90122
+    longitude: 36.287
+    population: 14529
+    dem: 617
+    timezone: "Africa/Nairobi"
+  - name: "Kajiado"
+    latitude: -1.85238
+    longitude: 36.77683
+    population: 11198
+    dem: 1725
+    timezone: "Africa/Nairobi"
+- name: "Kisii District"
+  cities:
+  - name: "Kisii"
+    latitude: -0.68174
+    longitude: 34.76666
+    population: 28547
+    dem: 1686
+    timezone: "Africa/Nairobi"
+- name: "Baringo District"
+  cities:
+  - name: "Kabarnet"
+    latitude: 0.49194
+    longitude: 35.74303
+    population: 24661
+    dem: 2048
+    timezone: "Africa/Nairobi"
+  - name: "Eldama Ravine"
+    latitude: 0.05196
+    longitude: 35.72734
+    population: 12524
+    dem: 2047
+    timezone: "Africa/Nairobi"
+  - name: "Baringo"
+    latitude: 0.46667
+    longitude: 35.96667
+    population: 7656
+    dem: 1090
+    timezone: "Africa/Nairobi"
+- name: "Busia District"
+  cities:
+  - name: "Malaba"
+    latitude: 0.63513
+    longitude: 34.28165
+    population: 8383
+    dem: 1193
+    timezone: "Africa/Nairobi"
+  - name: "Lugulu"
+    latitude: 0.39337
+    longitude: 34.30399
+    population: 40894
+    dem: 1220
+    timezone: "Africa/Nairobi"
+  - name: "Luanda"
+    latitude: 0.31354
+    longitude: 34.07146
+    population: 10053
+    dem: 1158
+    timezone: "Africa/Nairobi"
+  - name: "Busia"
+    latitude: 0.46005
+    longitude: 34.11169
+    population: 51981
+    dem: 1222
+    timezone: "Africa/Nairobi"
+  - name: "Port Victoria"
+    latitude: 0.09809
+    longitude: 33.97248
+    population: 6793
+    dem: 1260
+    timezone: "Africa/Nairobi"
+- name: "Lamu"
+  cities:
+  - name: "Witu"
+    latitude: -2.38892
+    longitude: 40.43827
+    population: 5380
+    dem: 16
+    timezone: "Africa/Nairobi"
+  - name: "Lamu"
+    latitude: -2.27169
+    longitude: 40.90201
+    population: 24525
+    dem: 14
+    timezone: "Africa/Nairobi"
+- name: "Nakuru District"
+  cities:
+  - name: "Rongai"
+    latitude: -0.17344
+    longitude: 35.86313
+    population: 30471
+    dem: 1874
+    timezone: "Africa/Nairobi"
+  - name: "Nakuru"
+    latitude: -0.30719
+    longitude: 36.07225
+    population: 259903
+    dem: 1857
+    timezone: "Africa/Nairobi"
+  - name: "Naivasha"
+    latitude: -0.71383
+    longitude: 36.43261
+    population: 38366
+    dem: 2084
+    timezone: "Africa/Nairobi"
+  - name: "Molo"
+    latitude: -0.24849
+    longitude: 35.73194
+    population: 27896
+    dem: 2514
+    timezone: "Africa/Nairobi"
+- name: "Samburu District"
+  cities:
+  - name: "Maralal"
+    latitude: 1.09667
+    longitude: 36.69806
+    population: 20841
+    dem: 1941
+    timezone: "Africa/Nairobi"
+- name: "Turkana District"
+  cities:
+  - name: "Lodwar"
+    latitude: 3.11988
+    longitude: 35.59642
+    population: 20219
+    dem: 500
+    timezone: "Africa/Nairobi"
+- name: "Mandera District"
+  cities:
+  - name: "Mandera"
+    latitude: 3.93726
+    longitude: 41.85688
+    population: 36076
+    dem: 217
+    timezone: "Africa/Nairobi"
+- name: "Wajir District"
+  cities:
+  - name: "Wajir"
+    latitude: 1.7471
+    longitude: 40.05732
+    population: 45771
+    dem: 258
+    timezone: "Africa/Nairobi"
+- name: "Tana River District"
+  cities:
+  - name: "Hola"
+    latitude: -1.48256
+    longitude: 40.03341
+    population: 6932
+    dem: 65
+    timezone: "Africa/Nairobi"
+- name: "Bungoma District"
+  cities:
+  - name: "Webuye"
+    latitude: 0.6004
+    longitude: 34.77119
+    population: 22507
+    dem: 1502
+    timezone: "Africa/Nairobi"
+  - name: "Bungoma"
+    latitude: 0.5635
+    longitude: 34.56055
+    population: 55962
+    dem: 1427
+    timezone: "Africa/Nairobi"
+- name: "Kitui District"
+  cities:
+  - name: "Mwingi"
+    latitude: -0.93605
+    longitude: 38.05955
+    population: 11219
+    dem: 947
+    timezone: "Africa/Nairobi"
+  - name: "Kitui"
+    latitude: -1.36696
+    longitude: 38.01055
+    population: 15954
+    dem: 1154
+    timezone: "Africa/Nairobi"
+- name: "Migori District"
+  cities:
+  - name: "Migori"
+    latitude: -1.06343
+    longitude: 34.47313
+    population: 35240
+    dem: 1382
+    timezone: "Africa/Nairobi"
+  - name: "Kihancha"
+    latitude: -1.19347
+    longitude: 34.61967
+    population: 13162
+    dem: 1496
+    timezone: "Africa/Nairobi"
+- name: "Nyamira District"
+  cities:
+  - name: "Nyamira"
+    latitude: -0.56333
+    longitude: 34.93583
+    population: 10000
+    dem: 2000
+    timezone: "Africa/Nairobi"
+- name: "Kericho District"
+  cities:
+  - name: "Kericho"
+    latitude: -0.36774
+    longitude: 35.28314
+    population: 35748
+    dem: 2002
+    timezone: "Africa/Nairobi"
+- name: "Embu District"
+  cities:
+  - name: "Embu"
+    latitude: -0.53987
+    longitude: 37.45743
+    population: 34922
+    dem: 1294
+    timezone: "Africa/Nairobi"
+- name: "Kirinyaga District"
+  cities:
+  - name: "Kerugoya"
+    latitude: -0.49887
+    longitude: 37.28031
+    population: 15287
+    dem: 1548
+    timezone: "Africa/Nairobi"
+- name: "Isiolo District"
+  cities:
+  - name: "Isiolo"
+    latitude: 0.35462
+    longitude: 37.58218
+    population: 33207
+    dem: 1095
+    timezone: "Africa/Nairobi"
+- name: "Narok District"
+  cities:
+  - name: "Narok"
+    latitude: -1.08083
+    longitude: 35.87111
+    population: 36061
+    dem: 1881
+    timezone: "Africa/Nairobi"

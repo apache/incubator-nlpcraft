@@ -1,0 +1,589 @@
+---
+name: "Saudi Arabia"
+iso: "SA"
+iso3: "SAU"
+code: "682"
+capital: "Riyadh"
+area: 1960582.0
+population: 25731776
+continent: "AS"
+currencyCode: "SAR"
+currencyName: "Rial"
+phone: "966"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ar-SA"
+neighbours: "QA,OM,IQ,YE,JO,AE,KW"
+regions:
+- name: "Al Mintaqah ash Sharqiyah"
+  cities:
+  - name: "Umm as Sahik"
+    latitude: 26.65361
+    longitude: 49.91639
+    population: 11813
+    dem: 9
+    timezone: "Asia/Riyadh"
+  - name: "At Tubi"
+    latitude: 26.55778
+    longitude: 49.99167
+    population: 7740
+    dem: 11
+    timezone: "Asia/Riyadh"
+  - name: "Tarut"
+    latitude: 26.5733
+    longitude: 50.04028
+    population: 85371
+    dem: 4
+    timezone: "Asia/Riyadh"
+  - name: "Sayhat"
+    latitude: 26.48345
+    longitude: 50.04849
+    population: 66702
+    dem: 3
+    timezone: "Asia/Riyadh"
+  - name: "Safwa"
+    latitude: 26.6497
+    longitude: 49.95522
+    population: 45876
+    dem: 18
+    timezone: "Asia/Riyadh"
+  - name: "Rahimah"
+    latitude: 26.70791
+    longitude: 50.06194
+    population: 41188
+    dem: 7
+    timezone: "Asia/Riyadh"
+  - name: "Mulayjah"
+    latitude: 27.27103
+    longitude: 48.42419
+    population: 5247
+    dem: 72
+    timezone: "Asia/Riyadh"
+  - name: "Julayjilah"
+    latitude: 25.5
+    longitude: 49.6
+    population: 5359
+    dem: 139
+    timezone: "Asia/Riyadh"
+  - name: "Hafar Al-Batin"
+    latitude: 28.43279
+    longitude: 45.97077
+    population: 271642
+    dem: 310
+    timezone: "Asia/Riyadh"
+  - name: "Abqaiq"
+    latitude: 25.93402
+    longitude: 49.6688
+    population: 29474
+    dem: 103
+    timezone: "Asia/Riyadh"
+  - name: "Dhahran"
+    latitude: 26.28864
+    longitude: 50.11396
+    population: 99540
+    dem: 44
+    timezone: "Asia/Riyadh"
+  - name: "At Taraf"
+    latitude: 25.36232
+    longitude: 49.72757
+    population: 21386
+    dem: 133
+    timezone: "Asia/Riyadh"
+  - name: "As Saffaniyah"
+    latitude: 27.97083
+    longitude: 48.73
+    population: 7014
+    dem: 14
+    timezone: "Asia/Riyadh"
+  - name: "Al Qurayn"
+    latitude: 25.48333
+    longitude: 49.6
+    population: 12013
+    dem: 140
+    timezone: "Asia/Riyadh"
+  - name: "Qaisumah"
+    latitude: 28.31117
+    longitude: 46.12729
+    population: 20685
+    dem: 363
+    timezone: "Asia/Riyadh"
+  - name: "Al Qatif"
+    latitude: 26.56542
+    longitude: 50.0089
+    population: 98259
+    dem: 3
+    timezone: "Asia/Riyadh"
+  - name: "Al Qarah"
+    latitude: 25.41667
+    longitude: 49.66667
+    population: 9106
+    dem: 137
+    timezone: "Asia/Riyadh"
+  - name: "Al Mutayrifi"
+    latitude: 25.47878
+    longitude: 49.55824
+    population: 5962
+    dem: 153
+    timezone: "Asia/Riyadh"
+  - name: "Al Munayzilah"
+    latitude: 25.38333
+    longitude: 49.66667
+    population: 16296
+    dem: 148
+    timezone: "Asia/Riyadh"
+  - name: "Al Mubarraz"
+    latitude: 25.40768
+    longitude: 49.59028
+    population: 290802
+    dem: 148
+    timezone: "Asia/Riyadh"
+  - name: "Al Markaz"
+    latitude: 25.4
+    longitude: 49.73333
+    population: 6464
+    dem: 128
+    timezone: "Asia/Riyadh"
+  - name: "Khobar"
+    latitude: 26.27944
+    longitude: 50.20833
+    population: 165799
+    dem: 8
+    timezone: "Asia/Riyadh"
+  - name: "Al Khafji"
+    latitude: 28.43905
+    longitude: 48.49132
+    population: 54857
+    dem: 3
+    timezone: "Asia/Riyadh"
+  - name: "Al Jubayl"
+    latitude: 27.0174
+    longitude: 49.62251
+    population: 237274
+    dem: 5
+    timezone: "Asia/Riyadh"
+  - name: "Al Jubayl"
+    latitude: 25.4
+    longitude: 49.65
+    population: 9108
+    dem: 140
+    timezone: "Asia/Riyadh"
+  - name: "Al Jafr"
+    latitude: 25.37736
+    longitude: 49.72154
+    population: 8715
+    dem: 135
+    timezone: "Asia/Riyadh"
+  - name: "Al Hufuf"
+    latitude: 25.36467
+    longitude: 49.58764
+    population: 293179
+    dem: 159
+    timezone: "Asia/Riyadh"
+  - name: "Al Battaliyah"
+    latitude: 25.43333
+    longitude: 49.63333
+    population: 16606
+    dem: 143
+    timezone: "Asia/Riyadh"
+  - name: "Al Awjam"
+    latitude: 26.56324
+    longitude: 49.94331
+    population: 11460
+    dem: 14
+    timezone: "Asia/Riyadh"
+  - name: "Dammam"
+    latitude: 26.43442
+    longitude: 50.10326
+    population: 768602
+    dem: 10
+    timezone: "Asia/Riyadh"
+- name: "Mintaqat Asir"
+  cities:
+  - name: "Tabalah"
+    latitude: 19.95
+    longitude: 42.4
+    population: 5151
+    dem: 1233
+    timezone: "Asia/Riyadh"
+  - name: "Qal`at Bishah"
+    latitude: 20.00054
+    longitude: 42.6052
+    population: 81828
+    dem: 1168
+    timezone: "Asia/Riyadh"
+  - name: "Khamis Mushait"
+    latitude: 18.3
+    longitude: 42.73333
+    population: 387553
+    dem: 1998
+    timezone: "Asia/Riyadh"
+  - name: "An Nimas"
+    latitude: 19.14547
+    longitude: 42.12009
+    population: 24153
+    dem: 2385
+    timezone: "Asia/Riyadh"
+  - name: "Abha"
+    latitude: 18.21639
+    longitude: 42.50528
+    population: 210886
+    dem: 2228
+    timezone: "Asia/Riyadh"
+  - name: "Al Majaridah"
+    latitude: 19.12361
+    longitude: 41.91111
+    population: 14830
+    dem: 429
+    timezone: "Asia/Riyadh"
+- name: "Al Madinah al Munawwarah"
+  cities:
+  - name: "Yanbu"
+    latitude: 24.08954
+    longitude: 38.0618
+    population: 200161
+    dem: 6
+    timezone: "Asia/Riyadh"
+  - name: "Sultanah"
+    latitude: 24.49258
+    longitude: 39.58572
+    population: 946697
+    dem: 597
+    timezone: "Asia/Riyadh"
+  - name: "Badr Hunayn"
+    latitude: 23.78292
+    longitude: 38.79047
+    population: 27257
+    dem: 116
+    timezone: "Asia/Riyadh"
+  - name: "Al-`Ula"
+    latitude: 26.60853
+    longitude: 37.92316
+    population: 32413
+    dem: 692
+    timezone: "Asia/Riyadh"
+  - name: "Medina"
+    latitude: 24.46861
+    longitude: 39.61417
+    population: 1300000
+    dem: 603
+    timezone: "Asia/Riyadh"
+- name: "Al Jawf"
+  cities:
+  - name: "Tubarjal"
+    latitude: 30.49987
+    longitude: 38.21603
+    population: 40019
+    dem: 546
+    timezone: "Asia/Riyadh"
+  - name: "Sakakah"
+    latitude: 29.96974
+    longitude: 40.20641
+    population: 128332
+    dem: 555
+    timezone: "Asia/Riyadh"
+  - name: "Qurayyat"
+    latitude: 31.33176
+    longitude: 37.34282
+    population: 102903
+    dem: 498
+    timezone: "Asia/Riyadh"
+  - name: "Suwayr"
+    latitude: 30.11713
+    longitude: 40.38925
+    population: 8515
+    dem: 592
+    timezone: "Asia/Riyadh"
+- name: "Makkah Province"
+  cities:
+  - name: "Turabah"
+    latitude: 21.21406
+    longitude: 41.6331
+    population: 23235
+    dem: 1164
+    timezone: "Asia/Riyadh"
+  - name: "Rabigh"
+    latitude: 22.79856
+    longitude: 39.03493
+    population: 41759
+    dem: 7
+    timezone: "Asia/Riyadh"
+  - name: "Mecca"
+    latitude: 21.42664
+    longitude: 39.82563
+    population: 1323624
+    dem: 333
+    timezone: "Asia/Riyadh"
+  - name: "Jeddah"
+    latitude: 21.54238
+    longitude: 39.19797
+    population: 2867446
+    dem: 21
+    timezone: "Asia/Riyadh"
+  - name: "Taif"
+    latitude: 21.27028
+    longitude: 40.41583
+    population: 530848
+    dem: 1672
+    timezone: "Asia/Riyadh"
+  - name: "Al Jumum"
+    latitude: 21.61694
+    longitude: 39.69806
+    population: 22207
+    dem: 204
+    timezone: "Asia/Riyadh"
+  - name: "Al Muwayh"
+    latitude: 22.43333
+    longitude: 41.75829
+    population: 7364
+    dem: 975
+    timezone: "Asia/Riyadh"
+  - name: "Al Hada"
+    latitude: 21.36753
+    longitude: 40.28694
+    population: 6885
+    dem: 1977
+    timezone: "Asia/Riyadh"
+  - name: "Ash Shafa"
+    latitude: 21.0721
+    longitude: 40.31185
+    population: 72190
+    dem: 2238
+    timezone: "Asia/Riyadh"
+- name: "Al-Qassim Province"
+  cities:
+  - name: "Tanumah"
+    latitude: 27.1
+    longitude: 44.13333
+    population: 13594
+    dem: 587
+    timezone: "Asia/Riyadh"
+  - name: "Buraydah"
+    latitude: 26.32599
+    longitude: 43.97497
+    population: 391336
+    dem: 606
+    timezone: "Asia/Riyadh"
+  - name: "Ar Rass"
+    latitude: 25.86944
+    longitude: 43.4973
+    population: 81728
+    dem: 691
+    timezone: "Asia/Riyadh"
+  - name: "Al Mithnab"
+    latitude: 25.86012
+    longitude: 44.22228
+    population: 60870
+    dem: 632
+    timezone: "Asia/Riyadh"
+  - name: "Al Bukayriyah"
+    latitude: 26.13915
+    longitude: 43.65782
+    population: 25153
+    dem: 668
+    timezone: "Asia/Riyadh"
+  - name: "Adh Dhibiyah"
+    latitude: 26.027
+    longitude: 43.157
+    population: 15000
+    dem: 740
+    timezone: "Asia/Riyadh"
+  - name: "Al Fuwayliq"
+    latitude: 26.4436
+    longitude: 43.25164
+    population: 5205
+    dem: 755
+    timezone: "Asia/Riyadh"
+- name: "Jizan Region"
+  cities:
+  - name: "Samitah"
+    latitude: 16.59601
+    longitude: 42.94435
+    population: 26945
+    dem: 62
+    timezone: "Asia/Riyadh"
+  - name: "Sabya"
+    latitude: 17.1495
+    longitude: 42.62537
+    population: 54108
+    dem: 36
+    timezone: "Asia/Riyadh"
+  - name: "Misliyah"
+    latitude: 17.45988
+    longitude: 42.5572
+    population: 6117
+    dem: 127
+    timezone: "Asia/Riyadh"
+  - name: "Jizan"
+    latitude: 16.88917
+    longitude: 42.55111
+    population: 105198
+    dem: 19
+    timezone: "Asia/Riyadh"
+  - name: "Farasan"
+    latitude: 16.70222
+    longitude: 42.11833
+    population: 10527
+    dem: 22
+    timezone: "Asia/Riyadh"
+  - name: "Al Jaradiyah"
+    latitude: 16.57946
+    longitude: 42.9124
+    population: 7396
+    dem: 49
+    timezone: "Asia/Riyadh"
+  - name: "Ad Darb"
+    latitude: 17.72285
+    longitude: 42.25261
+    population: 5378
+    dem: 73
+    timezone: "Asia/Riyadh"
+  - name: "Abu `Arish"
+    latitude: 16.96887
+    longitude: 42.83251
+    population: 49171
+    dem: 69
+    timezone: "Asia/Riyadh"
+  - name: "Mizhirah"
+    latitude: 16.82611
+    longitude: 42.73333
+    population: 5529
+    dem: 21
+    timezone: "Asia/Riyadh"
+- name: "Mintaqat al Bahah"
+  cities:
+  - name: "Al Mindak"
+    latitude: 20.1588
+    longitude: 41.28337
+    population: 9218
+    dem: 2006
+    timezone: "Asia/Riyadh"
+  - name: "Al Bahah"
+    latitude: 20.01288
+    longitude: 41.46767
+    population: 88419
+    dem: 2176
+    timezone: "Asia/Riyadh"
+- name: "Mintaqat Najran"
+  cities:
+  - name: "Najran"
+    latitude: 17.49326
+    longitude: 44.12766
+    population: 258573
+    dem: 1310
+    timezone: "Asia/Riyadh"
+- name: "Mintaqat ar Riyad"
+  cities:
+  - name: "Marat"
+    latitude: 25.07064
+    longitude: 45.45775
+    population: 8885
+    dem: 692
+    timezone: "Asia/Riyadh"
+  - name: "Az Zulfi"
+    latitude: 26.29945
+    longitude: 44.81542
+    population: 53144
+    dem: 620
+    timezone: "Asia/Riyadh"
+  - name: "As Sulayyil"
+    latitude: 20.46067
+    longitude: 45.57792
+    population: 24097
+    dem: 606
+    timezone: "Asia/Riyadh"
+  - name: "Sajir"
+    latitude: 25.18251
+    longitude: 44.59964
+    population: 11717
+    dem: 732
+    timezone: "Asia/Riyadh"
+  - name: "Riyadh"
+    latitude: 24.68773
+    longitude: 46.72185
+    population: 4205961
+    dem: 612
+    timezone: "Asia/Riyadh"
+  - name: "Al Kharj"
+    latitude: 24.15541
+    longitude: 47.33457
+    population: 425300
+    dem: 438
+    timezone: "Asia/Riyadh"
+  - name: "Al Artawiyah"
+    latitude: 26.50387
+    longitude: 45.34813
+    population: 9152
+    dem: 614
+    timezone: "Asia/Riyadh"
+  - name: "Afif"
+    latitude: 23.9065
+    longitude: 42.91724
+    population: 45525
+    dem: 1045
+    timezone: "Asia/Riyadh"
+  - name: "Ad Dilam"
+    latitude: 23.99104
+    longitude: 47.16181
+    population: 35371
+    dem: 453
+    timezone: "Asia/Riyadh"
+  - name: "Ad Dawadimi"
+    latitude: 24.50772
+    longitude: 44.39237
+    population: 54474
+    dem: 975
+    timezone: "Asia/Riyadh"
+  - name: "Tumayr"
+    latitude: 25.70347
+    longitude: 45.86835
+    population: 8246
+    dem: 648
+    timezone: "Asia/Riyadh"
+- name: "Mintaqat Tabuk"
+  cities:
+  - name: "Umm Lajj"
+    latitude: 25.02126
+    longitude: 37.2685
+    population: 33874
+    dem: 4
+    timezone: "Asia/Riyadh"
+  - name: "Tabuk"
+    latitude: 28.3998
+    longitude: 36.57151
+    population: 455450
+    dem: 768
+    timezone: "Asia/Riyadh"
+  - name: "Duba"
+    latitude: 27.35134
+    longitude: 35.69014
+    population: 22000
+    dem: 13
+    timezone: "Asia/Riyadh"
+  - name: "Al Wajh"
+    latitude: 26.24551
+    longitude: 36.45249
+    population: 26636
+    dem: 20
+    timezone: "Asia/Riyadh"
+- name: "Hail Region"
+  cities:
+  - name: "Hail"
+    latitude: 27.52188
+    longitude: 41.69073
+    population: 267005
+    dem: 1002
+    timezone: "Asia/Riyadh"
+- name: "Mintaqat al Hudud ash Shamaliyah"
+  cities:
+  - name: "Turaif"
+    latitude: 31.67252
+    longitude: 38.66374
+    population: 40819
+    dem: 827
+    timezone: "Asia/Riyadh"
+  - name: "Arar"
+    latitude: 30.97531
+    longitude: 41.03808
+    population: 148540
+    dem: 555
+    timezone: "Asia/Riyadh"

@@ -1,0 +1,507 @@
+---
+name: "North Korea"
+iso: "KP"
+iso3: "PRK"
+code: "408"
+capital: "Pyongyang"
+area: 120540.0
+population: 22912177
+continent: "AS"
+currencyCode: "KPW"
+currencyName: "Won"
+phone: "850"
+postalCodeFormat: "###-###"
+postalCodeRegex: "^(\\d{6})$"
+languages: "ko-KP"
+neighbours: "CN,KR,RU"
+regions:
+- name: "Rason"
+  cities:
+  - name: "Ungsang-nodongjagu"
+    latitude: 42.35778
+    longitude: 130.46222
+    population: 8410
+    dem: 40
+    timezone: "Asia/Pyongyang"
+  - name: "Sonbong"
+    latitude: 42.34161
+    longitude: 130.39445
+    population: 27331
+    dem: 7
+    timezone: "Asia/Pyongyang"
+  - name: "Rajin"
+    latitude: 42.24889
+    longitude: 130.30028
+    population: 66224
+    dem: 9
+    timezone: "Asia/Pyongyang"
+- name: "Pyongyang"
+  cities:
+  - name: "Sungho 1-tong"
+    latitude: 38.99139
+    longitude: 125.97778
+    population: 39841
+    dem: 38
+    timezone: "Asia/Pyongyang"
+  - name: "Sunan"
+    latitude: 39.19833
+    longitude: 125.69
+    population: 36671
+    dem: 34
+    timezone: "Asia/Pyongyang"
+  - name: "Pyongyang"
+    latitude: 39.03385
+    longitude: 125.75432
+    population: 3222000
+    dem: 43
+    timezone: "Asia/Pyongyang"
+  - name: "Kangdong-up"
+    latitude: 39.1425
+    longitude: 126.09611
+    population: 28922
+    dem: 43
+    timezone: "Asia/Pyongyang"
+  - name: "Chunghwa"
+    latitude: 38.86389
+    longitude: 125.8
+    population: 19346
+    dem: 40
+    timezone: "Asia/Pyongyang"
+- name: "Hwanghae-namdo"
+  cities:
+  - name: "Yonan-up"
+    latitude: 37.90889
+    longitude: 126.16111
+    population: 22665
+    dem: 43
+    timezone: "Asia/Pyongyang"
+  - name: "Pyoksong-up"
+    latitude: 38.0475
+    longitude: 125.55667
+    population: 12937
+    dem: 12
+    timezone: "Asia/Pyongyang"
+  - name: "Ongjin"
+    latitude: 37.93472
+    longitude: 125.36194
+    population: 64247
+    dem: 19
+    timezone: "Asia/Pyongyang"
+  - name: "Kaesong"
+    latitude: 37.97083
+    longitude: 126.55444
+    population: 338155
+    dem: 42
+    timezone: "Asia/Pyongyang"
+  - name: "Haeju"
+    latitude: 38.04056
+    longitude: 125.71472
+    population: 222396
+    dem: 57
+    timezone: "Asia/Pyongyang"
+  - name: "Changyon"
+    latitude: 38.25083
+    longitude: 125.09611
+    population: 39368
+    dem: 21
+    timezone: "Asia/Pyongyang"
+  - name: "Chaeryong-up"
+    latitude: 38.39917
+    longitude: 125.61556
+    population: 53330
+    dem: 17
+    timezone: "Asia/Pyongyang"
+  - name: "Ayang-ni"
+    latitude: 38.24306
+    longitude: 125.78
+    population: 16104
+    dem: 107
+    timezone: "Asia/Pyongyang"
+- name: "Pyongan-namdo"
+  cities:
+  - name: "Yonggang-up"
+    latitude: 38.85611
+    longitude: 125.42444
+    population: 13440
+    dem: 23
+    timezone: "Asia/Pyongyang"
+  - name: "Sunchon"
+    latitude: 39.43167
+    longitude: 125.93278
+    population: 437000
+    dem: 72
+    timezone: "Asia/Pyongyang"
+  - name: "Sil-li"
+    latitude: 39.49472
+    longitude: 125.47361
+    population: 19463
+    dem: 9
+    timezone: "Asia/Pyongyang"
+  - name: "Sinanju"
+    latitude: 39.59806
+    longitude: 125.60972
+    population: 15693
+    dem: 15
+    timezone: "Asia/Pyongyang"
+  - name: "Sangsong-ni"
+    latitude: 39.16944
+    longitude: 126.88556
+    population: 9888
+    dem: 263
+    timezone: "Asia/Pyongyang"
+  - name: "Pyongsong"
+    latitude: 39.24639
+    longitude: 125.87194
+    population: 100000
+    dem: 53
+    timezone: "Asia/Pyongyang"
+  - name: "Nampo"
+    latitude: 38.7375
+    longitude: 125.40778
+    population: 455000
+    dem: 9
+    timezone: "Asia/Pyongyang"
+  - name: "Anju"
+    latitude: 39.61778
+    longitude: 125.66472
+    population: 50196
+    dem: 16
+    timezone: "Asia/Pyongyang"
+- name: "Kangwon-do"
+  cities:
+  - name: "Wonsan"
+    latitude: 39.15278
+    longitude: 127.44361
+    population: 329207
+    dem: 7
+    timezone: "Asia/Pyongyang"
+  - name: "Tongchon-up"
+    latitude: 38.95389
+    longitude: 127.89167
+    population: 20575
+    dem: 6
+    timezone: "Asia/Pyongyang"
+  - name: "Kosan"
+    latitude: 38.85583
+    longitude: 127.41806
+    population: 24822
+    dem: 195
+    timezone: "Asia/Pyongyang"
+  - name: "Hoeyang"
+    latitude: 38.71028
+    longitude: 127.59833
+    population: 21111
+    dem: 354
+    timezone: "Asia/Pyongyang"
+  - name: "Anbyon-up"
+    latitude: 39.0425
+    longitude: 127.52389
+    population: 31845
+    dem: 17
+    timezone: "Asia/Pyongyang"
+- name: "Hamnam"
+  cities:
+  - name: "Samho-rodongjagu"
+    latitude: 39.9475
+    longitude: 127.87111
+    population: 19025
+    dem: 4
+    timezone: "Asia/Pyongyang"
+  - name: "Kowon-up"
+    latitude: 39.43806
+    longitude: 127.24306
+    population: 21490
+    dem: 9
+    timezone: "Asia/Pyongyang"
+  - name: "Hungnam"
+    latitude: 39.83167
+    longitude: 127.61861
+    population: 346082
+    dem: 2
+    timezone: "Asia/Pyongyang"
+  - name: "Hamhung"
+    latitude: 39.91833
+    longitude: 127.53639
+    population: 559056
+    dem: 16
+    timezone: "Asia/Pyongyang"
+  - name: "Sinsang-ni"
+    latitude: 39.65028
+    longitude: 127.40583
+    population: 14960
+    dem: 12
+    timezone: "Asia/Pyongyang"
+  - name: "Yuktae-dong"
+    latitude: 40.02472
+    longitude: 128.15972
+    population: 76427
+    dem: 1
+    timezone: "Asia/Pyongyang"
+  - name: "Yonggwang-up"
+    latitude: 40.01833
+    longitude: 127.45472
+    population: 21882
+    dem: 35
+    timezone: "Asia/Pyongyang"
+  - name: "Iwon-up"
+    latitude: 40.32306
+    longitude: 128.65528
+    population: 26364
+    dem: 2
+    timezone: "Asia/Pyongyang"
+  - name: "Hongwon"
+    latitude: 40.02528
+    longitude: 127.95583
+    population: 70923
+    dem: 29
+    timezone: "Asia/Pyongyang"
+- name: "Hambuk"
+  cities:
+  - name: "Sungam-nodongjagu"
+    latitude: 41.66972
+    longitude: 129.66889
+    population: 11406
+    dem: 12
+    timezone: "Asia/Pyongyang"
+  - name: "Puryong"
+    latitude: 42.06056
+    longitude: 129.71167
+    population: 12267
+    dem: 168
+    timezone: "Asia/Pyongyang"
+  - name: "Onsong"
+    latitude: 42.95722
+    longitude: 129.99333
+    population: 19806
+    dem: 83
+    timezone: "Asia/Pyongyang"
+  - name: "Nanam"
+    latitude: 41.71361
+    longitude: 129.68444
+    population: 34055
+    dem: 24
+    timezone: "Asia/Pyongyang"
+  - name: "Namyang-dong"
+    latitude: 42.95
+    longitude: 129.86667
+    population: 22218
+    dem: 281
+    timezone: "Asia/Pyongyang"
+  - name: "Musan-up"
+    latitude: 42.22609
+    longitude: 129.20776
+    population: 21739
+    dem: 478
+    timezone: "Asia/Pyongyang"
+  - name: "Kyongwon"
+    latitude: 42.81361
+    longitude: 130.15278
+    population: 12650
+    dem: 83
+    timezone: "Asia/Pyongyang"
+  - name: "Kyongsong"
+    latitude: 41.58778
+    longitude: 129.60611
+    population: 35604
+    dem: 18
+    timezone: "Asia/Pyongyang"
+  - name: "Kilju"
+    latitude: 40.96417
+    longitude: 129.32778
+    population: 63652
+    dem: 129
+    timezone: "Asia/Pyongyang"
+  - name: "Hoeryong"
+    latitude: 42.44278
+    longitude: 129.75083
+    population: 43831
+    dem: 253
+    timezone: "Asia/Pyongyang"
+  - name: "Hoemul-li"
+    latitude: 41.43389
+    longitude: 129.67
+    population: 11681
+    dem: 3
+    timezone: "Asia/Pyongyang"
+  - name: "Hau-ri"
+    latitude: 41.20056
+    longitude: 129.47028
+    population: 13581
+    dem: 124
+    timezone: "Asia/Pyongyang"
+  - name: "Chongjin"
+    latitude: 41.79556
+    longitude: 129.77583
+    population: 327000
+    dem: 5
+    timezone: "Asia/Pyongyang"
+  - name: "Aoji-ri"
+    latitude: 42.52056
+    longitude: 130.39528
+    population: 34248
+    dem: 31
+    timezone: "Asia/Pyongyang"
+  - name: "Komusan 1-tong"
+    latitude: 42.10917
+    longitude: 129.7
+    population: 12242
+    dem: 221
+    timezone: "Asia/Pyongyang"
+- name: "Pyongan-bukto"
+  cities:
+  - name: "Yongbyon"
+    latitude: 39.81333
+    longitude: 125.80417
+    population: 9584
+    dem: 140
+    timezone: "Asia/Pyongyang"
+  - name: "Yomju-up"
+    latitude: 39.89333
+    longitude: 124.59806
+    population: 9437
+    dem: 15
+    timezone: "Asia/Pyongyang"
+  - name: "Panghyon-dong"
+    latitude: 39.88722
+    longitude: 125.24139
+    population: 11026
+    dem: 81
+    timezone: "Asia/Pyongyang"
+  - name: "Kwaksan"
+    latitude: 39.6875
+    longitude: 125.08278
+    population: 10478
+    dem: 14
+    timezone: "Asia/Pyongyang"
+  - name: "Kusong"
+    latitude: 39.98111
+    longitude: 125.24472
+    population: 30902
+    dem: 104
+    timezone: "Asia/Pyongyang"
+  - name: "Kujang-up"
+    latitude: 39.86722
+    longitude: 126.03028
+    population: 19522
+    dem: 66
+    timezone: "Asia/Pyongyang"
+  - name: "Chongju"
+    latitude: 39.69333
+    longitude: 125.21028
+    population: 29065
+    dem: 18
+    timezone: "Asia/Pyongyang"
+  - name: "Uiju"
+    latitude: 40.19944
+    longitude: 124.53167
+    population: 50081
+    dem: 26
+    timezone: "Asia/Pyongyang"
+  - name: "Sinuiju"
+    latitude: 40.10056
+    longitude: 124.39806
+    population: 288112
+    dem: 6
+    timezone: "Asia/Pyongyang"
+  - name: "Sakchu-up"
+    latitude: 40.38944
+    longitude: 125.04667
+    population: 18001
+    dem: 138
+    timezone: "Asia/Pyongyang"
+  - name: "Pukchil-lodongjagu"
+    latitude: 40.20194
+    longitude: 125.74833
+    population: 14129
+    dem: 210
+    timezone: "Asia/Pyongyang"
+- name: "Ryanggang"
+  cities:
+  - name: "Kapsan-up"
+    latitude: 41.09028
+    longitude: 128.29333
+    population: 20406
+    dem: 813
+    timezone: "Asia/Pyongyang"
+  - name: "Hyesan-dong"
+    latitude: 41.39756
+    longitude: 128.17873
+    population: 97794
+    dem: 736
+    timezone: "Asia/Pyongyang"
+  - name: "Hyesan"
+    latitude: 41.40167
+    longitude: 128.17778
+    population: 192680
+    dem: 709
+    timezone: "Asia/Pyongyang"
+  - name: "Sungjibaegam"
+    latitude: 41.24278
+    longitude: 128.79889
+    population: 11786
+    dem: 1466
+    timezone: "Asia/Pyongyang"
+- name: "Hwanghae-bukto"
+  cities:
+  - name: "Songnim"
+    latitude: 38.75417
+    longitude: 125.645
+    population: 152425
+    dem: 21
+    timezone: "Asia/Pyongyang"
+  - name: "Sinmak"
+    latitude: 38.41667
+    longitude: 126.23333
+    population: 18669
+    dem: 110
+    timezone: "Asia/Pyongyang"
+  - name: "Sariwon"
+    latitude: 38.50722
+    longitude: 125.75583
+    population: 310100
+    dem: 20
+    timezone: "Asia/Pyongyang"
+  - name: "Koksan"
+    latitude: 38.78194
+    longitude: 126.66639
+    population: 12923
+    dem: 165
+    timezone: "Asia/Pyongyang"
+  - name: "Hwangju-up"
+    latitude: 38.67028
+    longitude: 125.77611
+    population: 35641
+    dem: 23
+    timezone: "Asia/Pyongyang"
+  - name: "Hukkyo-ri"
+    latitude: 38.79861
+    longitude: 125.79194
+    population: 25437
+    dem: 18
+    timezone: "Asia/Pyongyang"
+  - name: "Anak"
+    latitude: 38.51083
+    longitude: 125.49417
+    population: 19995
+    dem: 28
+    timezone: "Asia/Pyongyang"
+- name: "Chagang-do"
+  cities:
+  - name: "Manpo"
+    latitude: 41.15472
+    longitude: 126.28944
+    population: 116760
+    dem: 206
+    timezone: "Asia/Pyongyang"
+  - name: "Kanggye"
+    latitude: 40.96946
+    longitude: 126.58523
+    population: 209530
+    dem: 288
+    timezone: "Asia/Pyongyang"
+  - name: "Chasong"
+    latitude: 41.46083
+    longitude: 126.64139
+    population: 12736
+    dem: 328
+    timezone: "Asia/Pyongyang"

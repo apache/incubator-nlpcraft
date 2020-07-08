@@ -1,0 +1,324 @@
+---
+name: "Chad"
+iso: "TD"
+iso3: "TCD"
+code: "148"
+capital: "N'Djamena"
+area: 1284000.0
+population: 10543464
+continent: "AF"
+currencyCode: "XAF"
+currencyName: "Franc"
+phone: "235"
+languages: "fr-TD,ar-TD,sre"
+neighbours: "NE,LY,CF,SD,CM,NG"
+regions:
+- name: "Guera Region"
+  cities:
+  - name: "Mongo"
+    latitude: 12.18441
+    longitude: 18.69303
+    population: 27763
+    dem: 424
+    timezone: "Africa/Ndjamena"
+  - name: "Melfi"
+    latitude: 11.0598
+    longitude: 17.9355
+    population: 5784
+    dem: 399
+    timezone: "Africa/Ndjamena"
+  - name: "Bitkine"
+    latitude: 11.9801
+    longitude: 18.2138
+    population: 18495
+    dem: 468
+    timezone: "Africa/Ndjamena"
+- name: "Tibesti Region"
+  cities:
+  - name: "Bardai"
+    latitude: 21.35494
+    longitude: 17.00121
+    population: 0
+    dem: 1017
+    timezone: "Africa/Ndjamena"
+- name: "Tandjile Region"
+  cities:
+  - name: "Lai"
+    latitude: 9.3972
+    longitude: 16.30066
+    population: 19382
+    dem: 363
+    timezone: "Africa/Ndjamena"
+  - name: "Kelo"
+    latitude: 9.30859
+    longitude: 15.80658
+    population: 42533
+    dem: 375
+    timezone: "Africa/Ndjamena"
+  - name: "Bere"
+    latitude: 9.3202
+    longitude: 16.1552
+    population: 14666
+    dem: 361
+    timezone: "Africa/Ndjamena"
+- name: "Logone Occidental Region"
+  cities:
+  - name: "Moundou"
+    latitude: 8.56667
+    longitude: 16.08333
+    population: 135167
+    dem: 401
+    timezone: "Africa/Ndjamena"
+  - name: "Benoy"
+    latitude: 8.98327
+    longitude: 16.31991
+    population: 15717
+    dem: 417
+    timezone: "Africa/Ndjamena"
+  - name: "Beinamar"
+    latitude: 8.6698
+    longitude: 15.3813
+    population: 7445
+    dem: 450
+    timezone: "Africa/Ndjamena"
+- name: "Salamat Region"
+  cities:
+  - name: "Am Timan"
+    latitude: 11.0297
+    longitude: 20.2827
+    population: 28885
+    dem: 439
+    timezone: "Africa/Ndjamena"
+- name: "Ennedi-Ouest"
+  cities:
+  - name: "Fada"
+    latitude: 17.18535
+    longitude: 21.58114
+    population: 23786
+    dem: 567
+    timezone: "Africa/Ndjamena"
+- name: "Batha Region"
+  cities:
+  - name: "Oum Hadjer"
+    latitude: 13.2954
+    longitude: 19.6966
+    population: 19271
+    dem: 397
+    timezone: "Africa/Ndjamena"
+  - name: "Ati"
+    latitude: 13.2154
+    longitude: 18.3353
+    population: 24074
+    dem: 336
+    timezone: "Africa/Ndjamena"
+- name: "Mayo-Kebbi East Region"
+  cities:
+  - name: "Guelendeng"
+    latitude: 10.91762
+    longitude: 15.55011
+    population: 11379
+    dem: 321
+    timezone: "Africa/Ndjamena"
+  - name: "Gounou Gaya"
+    latitude: 9.6294
+    longitude: 15.5132
+    population: 9521
+    dem: 345
+    timezone: "Africa/Ndjamena"
+  - name: "Bongor"
+    latitude: 10.28056
+    longitude: 15.37222
+    population: 27770
+    dem: 334
+    timezone: "Africa/Ndjamena"
+- name: "Barh el Gazel"
+  cities:
+  - name: "Moussoro"
+    latitude: 13.64143
+    longitude: 16.48941
+    population: 15190
+    dem: 304
+    timezone: "Africa/Ndjamena"
+- name: "Mandoul"
+  cities:
+  - name: "Moissala"
+    latitude: 8.3404
+    longitude: 17.7663
+    population: 11264
+    dem: 385
+    timezone: "Africa/Ndjamena"
+  - name: "Koumra"
+    latitude: 8.91256
+    longitude: 17.55392
+    population: 36263
+    dem: 399
+    timezone: "Africa/Ndjamena"
+  - name: "Goundi"
+    latitude: 9.36267
+    longitude: 17.36597
+    population: 10052
+    dem: 377
+    timezone: "Africa/Ndjamena"
+- name: "Sila"
+  cities:
+  - name: "Goz Beida"
+    latitude: 12.22484
+    longitude: 21.41034
+    population: 1000
+    dem: 568
+    timezone: "Africa/Ndjamena"
+- name: "Lac Region"
+  cities:
+  - name: "Bol"
+    latitude: 13.46706
+    longitude: 14.71363
+    population: 11700
+    dem: 293
+    timezone: "Africa/Ndjamena"
+- name: "Hadjer-Lamis"
+  cities:
+  - name: "Massakory"
+    latitude: 12.996
+    longitude: 15.72927
+    population: 15406
+    dem: 287
+    timezone: "Africa/Ndjamena"
+  - name: "Massaguet"
+    latitude: 12.47554
+    longitude: 15.43647
+    population: 17906
+    dem: 292
+    timezone: "Africa/Ndjamena"
+  - name: "Bokoro"
+    latitude: 12.37813
+    longitude: 17.05876
+    population: 14723
+    dem: 300
+    timezone: "Africa/Ndjamena"
+- name: "Kanem Region"
+  cities:
+  - name: "Mao"
+    latitude: 14.12116
+    longitude: 15.3103
+    population: 18031
+    dem: 339
+    timezone: "Africa/Ndjamena"
+- name: "Ouaddai Region"
+  cities:
+  - name: "Adre"
+    latitude: 13.46648
+    longitude: 22.19875
+    population: 11928
+    dem: 797
+    timezone: "Africa/Ndjamena"
+  - name: "Abeche"
+    latitude: 13.82916
+    longitude: 20.8324
+    population: 74188
+    dem: 545
+    timezone: "Africa/Ndjamena"
+- name: "Ennedi-Est"
+  cities:
+  - name: "Am Djarass"
+    latitude: 16.06589
+    longitude: 22.84308
+    population: 0
+    dem: 899
+    timezone: "Africa/Ndjamena"
+- name: "Chari-Baguirmi Region"
+  cities:
+  - name: "Ngama"
+    latitude: 11.78333
+    longitude: 17.16667
+    population: 12438
+    dem: 326
+    timezone: "Africa/Ndjamena"
+  - name: "NDjamena"
+    latitude: 12.10672
+    longitude: 15.0444
+    population: 721081
+    dem: 299
+    timezone: "Africa/Ndjamena"
+  - name: "Massenya"
+    latitude: 11.4039
+    longitude: 16.1705
+    population: 3680
+    dem: 327
+    timezone: "Africa/Ndjamena"
+  - name: "Dourbali"
+    latitude: 11.80909
+    longitude: 15.86323
+    population: 17682
+    dem: 321
+    timezone: "Africa/Ndjamena"
+  - name: "Bousso"
+    latitude: 10.48473
+    longitude: 16.71076
+    population: 13555
+    dem: 337
+    timezone: "Africa/Ndjamena"
+- name: "Logone Oriental Region"
+  cities:
+  - name: "Doba"
+    latitude: 8.65
+    longitude: 16.85
+    population: 24336
+    dem: 379
+    timezone: "Africa/Ndjamena"
+  - name: "Beboto"
+    latitude: 8.26681
+    longitude: 16.93898
+    population: 5432
+    dem: 437
+    timezone: "Africa/Ndjamena"
+  - name: "Bebedja"
+    latitude: 8.6761
+    longitude: 16.566
+    population: 12671
+    dem: 395
+    timezone: "Africa/Ndjamena"
+- name: "Region de la Ville de NDjamena"
+- name: "Mayo-Kebbi West Region"
+  cities:
+  - name: "Pala"
+    latitude: 9.3642
+    longitude: 14.9046
+    population: 35466
+    dem: 433
+    timezone: "Africa/Ndjamena"
+  - name: "Mboursou Lere"
+    latitude: 9.7639
+    longitude: 14.1539
+    population: 17132
+    dem: 287
+    timezone: "Africa/Ndjamena"
+- name: "Moyen-Chari Region"
+  cities:
+  - name: "Sarh"
+    latitude: 9.1429
+    longitude: 18.3923
+    population: 102528
+    dem: 369
+    timezone: "Africa/Ndjamena"
+  - name: "Kyabe"
+    latitude: 9.45149
+    longitude: 18.94493
+    population: 16177
+    dem: 390
+    timezone: "Africa/Ndjamena"
+- name: "Wadi Fira Region"
+  cities:
+  - name: "Biltine"
+    latitude: 14.52791
+    longitude: 20.92749
+    population: 11000
+    dem: 517
+    timezone: "Africa/Ndjamena"
+- name: "Borkou Region"
+  cities:
+  - name: "Faya-Largeau"
+    latitude: 17.9257
+    longitude: 19.10428
+    population: 13400
+    dem: 242
+    timezone: "Africa/Ndjamena"

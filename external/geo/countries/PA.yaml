@@ -1,0 +1,455 @@
+---
+name: "Panama"
+iso: "PA"
+iso3: "PAN"
+code: "591"
+capital: "Panama City"
+area: 78200.0
+population: 3410676
+continent: "NA"
+currencyCode: "PAB"
+currencyName: "Balboa"
+phone: "507"
+languages: "es-PA,en"
+neighbours: "CR,CO"
+regions:
+- name: "Provincia de Herrera"
+  cities:
+  - name: "Monagrillo"
+    latitude: 7.98179
+    longitude: -80.43764
+    population: 10821
+    dem: 29
+    timezone: "America/Panama"
+  - name: "Llano Bonito"
+    latitude: 7.97637
+    longitude: -80.41646
+    population: 9716
+    dem: 16
+    timezone: "America/Panama"
+  - name: "La Arena"
+    latitude: 7.96766
+    longitude: -80.46523
+    population: 7175
+    dem: 40
+    timezone: "America/Panama"
+  - name: "Chitre"
+    latitude: 7.96082
+    longitude: -80.42944
+    population: 8969
+    dem: 34
+    timezone: "America/Panama"
+  - name: "San Juan Bautista"
+    latitude: 7.96099
+    longitude: -80.41283
+    population: 11798
+    dem: 19
+    timezone: "America/Panama"
+- name: "Ngoebe-Bugle"
+  cities:
+  - name: "Buabidi"
+    latitude: 8.47457
+    longitude: -81.69827
+    population: 0
+    dem: 1162
+    timezone: "America/Panama"
+- name: "Guna Yala"
+  cities:
+  - name: "El Porvenir"
+    latitude: 9.55276
+    longitude: -78.9523
+    population: 10
+    dem: -9999
+    timezone: "America/Panama"
+- name: "Provincia de Cocle"
+  cities:
+  - name: "Rio Hato"
+    latitude: 8.3794
+    longitude: -80.16621
+    population: 5615
+    dem: 37
+    timezone: "America/Panama"
+  - name: "Pocri"
+    latitude: 8.25814
+    longitude: -80.55
+    population: 12304
+    dem: 29
+    timezone: "America/Panama"
+  - name: "Penonome"
+    latitude: 8.51889
+    longitude: -80.35727
+    population: 16250
+    dem: 90
+    timezone: "America/Panama"
+  - name: "Nata"
+    latitude: 8.33209
+    longitude: -80.51969
+    population: 5470
+    dem: 17
+    timezone: "America/Panama"
+  - name: "Anton"
+    latitude: 8.39733
+    longitude: -80.26063
+    population: 6851
+    dem: 24
+    timezone: "America/Panama"
+  - name: "Aguadulce"
+    latitude: 8.24183
+    longitude: -80.54609
+    population: 8501
+    dem: 28
+    timezone: "America/Panama"
+- name: "Embera-Wounaan"
+  cities:
+  - name: "Union Choco"
+    latitude: 8.08404
+    longitude: -77.53507
+    population: 9497
+    dem: 61
+    timezone: "America/Panama"
+- name: "Provincia del Darien"
+  cities:
+  - name: "La Palma"
+    latitude: 8.40608
+    longitude: -78.13964
+    population: 1728
+    dem: 52
+    timezone: "America/Panama"
+- name: "Provincia de Panama"
+  cities:
+  - name: "Tocumen"
+    latitude: 9.08939
+    longitude: -79.3831
+    population: 50844
+    dem: 35
+    timezone: "America/Panama"
+  - name: "San Vicente"
+    latitude: 9.11445
+    longitude: -79.59755
+    population: 14109
+    dem: 120
+    timezone: "America/Panama"
+  - name: "San Miguelito"
+    latitude: 9.05032
+    longitude: -79.47068
+    population: 321501
+    dem: 57
+    timezone: "America/Panama"
+  - name: "Rio Abajo"
+    latitude: 9.01667
+    longitude: -79.5
+    population: 26607
+    dem: 15
+    timezone: "America/Panama"
+  - name: "Pedregal"
+    latitude: 9.06667
+    longitude: -79.43333
+    population: 51641
+    dem: 34
+    timezone: "America/Panama"
+  - name: "Parque Lefevre"
+    latitude: 9.01667
+    longitude: -79.48333
+    population: 36997
+    dem: 8
+    timezone: "America/Panama"
+  - name: "Panama"
+    latitude: 8.9936
+    longitude: -79.51973
+    population: 408168
+    dem: 17
+    timezone: "America/Panama"
+  - name: "Pacora"
+    latitude: 9.07937
+    longitude: -79.28997
+    population: 6856
+    dem: 11
+    timezone: "America/Panama"
+  - name: "Las Cumbres"
+    latitude: 9.08916
+    longitude: -79.52809
+    population: 69102
+    dem: 87
+    timezone: "America/Panama"
+  - name: "La Cabima"
+    latitude: 9.11865
+    longitude: -79.5366
+    population: 17975
+    dem: 156
+    timezone: "America/Panama"
+  - name: "Juan Diaz"
+    latitude: 9.05
+    longitude: -79.45
+    population: 100636
+    dem: 12
+    timezone: "America/Panama"
+  - name: "El Chorrillo"
+    latitude: 8.94964
+    longitude: -79.54715
+    population: 18302
+    dem: 10
+    timezone: "America/Panama"
+  - name: "Curundu"
+    latitude: 8.97092
+    longitude: -79.54612
+    population: 16361
+    dem: 7
+    timezone: "America/Panama"
+  - name: "Chilibre"
+    latitude: 9.15093
+    longitude: -79.62098
+    population: 33536
+    dem: 50
+    timezone: "America/Panama"
+  - name: "Chepo"
+    latitude: 9.17019
+    longitude: -79.10083
+    population: 12912
+    dem: 19
+    timezone: "America/Panama"
+  - name: "Ancon"
+    latitude: 8.96015
+    longitude: -79.5514
+    population: 20706
+    dem: 67
+    timezone: "America/Panama"
+  - name: "Alcalde Diaz"
+    latitude: 9.12016
+    longitude: -79.55641
+    population: 20285
+    dem: 201
+    timezone: "America/Panama"
+  - name: "Villa Unida"
+    latitude: 9.18908
+    longitude: -79.62452
+    population: 14854
+    dem: 83
+    timezone: "America/Panama"
+  - name: "Gonzalillo"
+    latitude: 9.09183
+    longitude: -79.51928
+    population: 7793
+    dem: 70
+    timezone: "America/Panama"
+  - name: "Nuevo Belen"
+    latitude: 9.07939
+    longitude: -79.39556
+    population: 24056
+    dem: 19
+    timezone: "America/Panama"
+  - name: "Nueva Esperanza"
+    latitude: 9.1021
+    longitude: -79.33414
+    population: 9342
+    dem: 24
+    timezone: "America/Panama"
+- name: "Provincia de Chiriqui"
+  cities:
+  - name: "Volcan"
+    latitude: 8.77291
+    longitude: -82.63823
+    population: 10286
+    dem: 1394
+    timezone: "America/Panama"
+  - name: "San Pablo Viejo Abajo"
+    latitude: 8.45339
+    longitude: -82.50179
+    population: 5992
+    dem: 75
+    timezone: "America/Panama"
+  - name: "Puerto Armuelles"
+    latitude: 8.27775
+    longitude: -82.86206
+    population: 11743
+    dem: 11
+    timezone: "America/Panama"
+  - name: "Pedregal"
+    latitude: 8.36586
+    longitude: -82.43524
+    population: 17427
+    dem: 4
+    timezone: "America/Panama"
+  - name: "Las Lomas"
+    latitude: 8.42927
+    longitude: -82.38743
+    population: 11726
+    dem: 68
+    timezone: "America/Panama"
+  - name: "La Concepcion"
+    latitude: 8.51212
+    longitude: -82.61858
+    population: 17698
+    dem: 214
+    timezone: "America/Panama"
+  - name: "David"
+    latitude: 8.42729
+    longitude: -82.43085
+    population: 81957
+    dem: 47
+    timezone: "America/Panama"
+  - name: "Boquete"
+    latitude: 8.78024
+    longitude: -82.44136
+    population: 6123
+    dem: 1131
+    timezone: "America/Panama"
+- name: "Provincia de Bocas del Toro"
+  cities:
+  - name: "El Empalme"
+    latitude: 9.41667
+    longitude: -82.51667
+    population: 11035
+    dem: 15
+    timezone: "America/Panama"
+  - name: "Changuinola"
+    latitude: 9.43
+    longitude: -82.52
+    population: 17997
+    dem: 12
+    timezone: "America/Panama"
+  - name: "Bocas del Toro"
+    latitude: 9.34031
+    longitude: -82.24204
+    population: 5380
+    dem: 3
+    timezone: "America/Panama"
+  - name: "Almirante"
+    latitude: 9.30091
+    longitude: -82.4018
+    population: 8744
+    dem: 9
+    timezone: "America/Panama"
+- name: "Provincia de Colon"
+  cities:
+  - name: "Sabanitas"
+    latitude: 9.34269
+    longitude: -79.80961
+    population: 15577
+    dem: 36
+    timezone: "America/Panama"
+  - name: "Puerto Pilon"
+    latitude: 9.36316
+    longitude: -79.79333
+    population: 8754
+    dem: 22
+    timezone: "America/Panama"
+  - name: "Puerto Escondido"
+    latitude: 9.19333
+    longitude: -80.08833
+    population: 12371
+    dem: 23
+    timezone: "America/Panama"
+  - name: "Colon"
+    latitude: 9.35451
+    longitude: -79.90011
+    population: 76643
+    dem: 8
+    timezone: "America/Panama"
+  - name: "Cativa"
+    latitude: 9.36218
+    longitude: -79.83232
+    population: 29607
+    dem: 12
+    timezone: "America/Panama"
+- name: "Provincia de Veraguas"
+  cities:
+  - name: "Sona"
+    latitude: 8.01223
+    longitude: -81.32163
+    population: 7669
+    dem: 13
+    timezone: "America/Panama"
+  - name: "Santiago de Veraguas"
+    latitude: 8.1
+    longitude: -80.98333
+    population: 45355
+    dem: 100
+    timezone: "America/Panama"
+  - name: "Canto del Llano"
+    latitude: 8.12472
+    longitude: -80.96374
+    population: 7854
+    dem: 111
+    timezone: "America/Panama"
+- name: "Panama Oeste"
+  cities:
+  - name: "Vista Alegre"
+    latitude: 8.92772
+    longitude: -79.7028
+    population: 8673
+    dem: 33
+    timezone: "America/Panama"
+  - name: "Veracruz"
+    latitude: 8.88988
+    longitude: -79.62603
+    population: 17144
+    dem: 12
+    timezone: "America/Panama"
+  - name: "Nuevo Arraijan"
+    latitude: 8.92453
+    longitude: -79.72004
+    population: 14920
+    dem: 16
+    timezone: "America/Panama"
+  - name: "Altos de San Francisco"
+    latitude: 8.86167
+    longitude: -79.79
+    population: 8189
+    dem: 84
+    timezone: "America/Panama"
+  - name: "La Mitra"
+    latitude: 8.84091
+    longitude: -79.78648
+    population: 5699
+    dem: 91
+    timezone: "America/Panama"
+  - name: "La Herradura"
+    latitude: 8.84848
+    longitude: -79.80404
+    population: 6271
+    dem: 68
+    timezone: "America/Panama"
+  - name: "La Chorrera"
+    latitude: 8.88028
+    longitude: -79.78333
+    population: 61232
+    dem: 81
+    timezone: "America/Panama"
+  - name: "Guadalupe"
+    latitude: 8.85452
+    longitude: -79.81408
+    population: 6561
+    dem: 92
+    timezone: "America/Panama"
+  - name: "El Coco"
+    latitude: 8.87009
+    longitude: -79.80415
+    population: 11935
+    dem: 93
+    timezone: "America/Panama"
+  - name: "Arraijan"
+    latitude: 8.95187
+    longitude: -79.66011
+    population: 76815
+    dem: 98
+    timezone: "America/Panama"
+  - name: "La Pesa"
+    latitude: 8.85073
+    longitude: -79.82374
+    population: 7773
+    dem: 90
+    timezone: "America/Panama"
+- name: "Provincia de Los Santos"
+  cities:
+  - name: "Los Santos"
+    latitude: 7.93333
+    longitude: -80.41667
+    population: 5970
+    dem: 17
+    timezone: "America/Panama"
+  - name: "Las Tablas"
+    latitude: 7.76472
+    longitude: -80.27483
+    population: 8939
+    dem: 42
+    timezone: "America/Panama"

@@ -1,0 +1,225 @@
+---
+name: "Botswana"
+iso: "BW"
+iso3: "BWA"
+code: "072"
+capital: "Gaborone"
+area: 600370.0
+population: 2029307
+continent: "AF"
+currencyCode: "BWP"
+currencyName: "Pula"
+phone: "267"
+languages: "en-BW,tn-BW"
+neighbours: "ZW,ZA,NA"
+regions:
+- name: "Southern District"
+  cities:
+  - name: "Mosopa"
+    latitude: -24.7718
+    longitude: 25.42156
+    population: 19561
+    dem: 1136
+    timezone: "Africa/Gaborone"
+  - name: "Kanye"
+    latitude: -24.96675
+    longitude: 25.33273
+    population: 44716
+    dem: 1406
+    timezone: "Africa/Gaborone"
+- name: "Kgalagadi District"
+  cities:
+  - name: "Tshabong"
+    latitude: -26.05
+    longitude: 22.45
+    population: 6591
+    dem: 976
+    timezone: "Africa/Gaborone"
+- name: "Sowa Town"
+- name: "Chobe District"
+  cities:
+  - name: "Kasane"
+    latitude: -17.80165
+    longitude: 25.16024
+    population: 9250
+    dem: 684
+    timezone: "Africa/Gaborone"
+- name: "Kweneng District"
+  cities:
+  - name: "Thamaga"
+    latitude: -24.67014
+    longitude: 25.53975
+    population: 20756
+    dem: 1073
+    timezone: "Africa/Gaborone"
+  - name: "Molepolole"
+    latitude: -24.40659
+    longitude: 25.49508
+    population: 63248
+    dem: 1146
+    timezone: "Africa/Gaborone"
+  - name: "Mogoditshane"
+    latitude: -24.62694
+    longitude: 25.86556
+    population: 43394
+    dem: 1026
+    timezone: "Africa/Gaborone"
+  - name: "Letlhakeng"
+    latitude: -24.09442
+    longitude: 25.02977
+    population: 6781
+    dem: 1075
+    timezone: "Africa/Gaborone"
+  - name: "Gabane"
+    latitude: -24.66667
+    longitude: 25.78222
+    population: 12884
+    dem: 1090
+    timezone: "Africa/Gaborone"
+  - name: "Metsemotlhaba"
+    latitude: -24.55139
+    longitude: 25.80306
+    population: 5544
+    dem: 996
+    timezone: "Africa/Gaborone"
+- name: "Jwaneng"
+  cities:
+  - name: "Jwaneng"
+    latitude: -24.60167
+    longitude: 24.72806
+    population: 0
+    dem: 1198
+    timezone: "Africa/Gaborone"
+- name: "South East District"
+  cities:
+  - name: "Ramotswa"
+    latitude: -24.87158
+    longitude: 25.86989
+    population: 21450
+    dem: 1039
+    timezone: "Africa/Gaborone"
+  - name: "Otse"
+    latitude: -25.01667
+    longitude: 25.73333
+    population: 6275
+    dem: 1361
+    timezone: "Africa/Gaborone"
+  - name: "Kopong"
+    latitude: -24.48333
+    longitude: 25.88333
+    population: 6895
+    dem: 984
+    timezone: "Africa/Gaborone"
+  - name: "Janeng"
+    latitude: -25.41667
+    longitude: 25.55
+    population: 16853
+    dem: 1311
+    timezone: "Africa/Gaborone"
+- name: "Ghanzi District"
+  cities:
+  - name: "Ghanzi"
+    latitude: -21.69785
+    longitude: 21.64581
+    population: 9934
+    dem: 1144
+    timezone: "Africa/Gaborone"
+- name: "Selibe Phikwe"
+  cities:
+  - name: "Selebi-Phikwe"
+    latitude: -21.97895
+    longitude: 27.84296
+    population: 53727
+    dem: 870
+    timezone: "Africa/Gaborone"
+- name: "Kgatleng District"
+  cities:
+  - name: "Mochudi"
+    latitude: -24.41667
+    longitude: 26.15
+    population: 36962
+    dem: 952
+    timezone: "Africa/Gaborone"
+- name: "North West District"
+  cities:
+  - name: "Shakawe"
+    latitude: -18.36536
+    longitude: 21.84219
+    population: 5651
+    dem: 1000
+    timezone: "Africa/Gaborone"
+  - name: "Maun"
+    latitude: -19.98333
+    longitude: 23.41667
+    population: 49945
+    dem: 947
+    timezone: "Africa/Gaborone"
+- name: "North East District"
+- name: "Gaborone"
+  cities:
+  - name: "Gaborone"
+    latitude: -24.65451
+    longitude: 25.90859
+    population: 208411
+    dem: 1011
+    timezone: "Africa/Gaborone"
+- name: "City of Francistown"
+  cities:
+  - name: "Francistown"
+    latitude: -21.17
+    longitude: 27.50778
+    population: 89979
+    dem: 989
+    timezone: "Africa/Gaborone"
+- name: "Lobatse"
+  cities:
+  - name: "Lobatse"
+    latitude: -25.22435
+    longitude: 25.67728
+    population: 30883
+    dem: 1191
+    timezone: "Africa/Gaborone"
+- name: "Central District"
+  cities:
+  - name: "Tonota"
+    latitude: -21.44236
+    longitude: 27.46153
+    population: 17759
+    dem: 959
+    timezone: "Africa/Gaborone"
+  - name: "Serowe"
+    latitude: -22.38754
+    longitude: 26.71077
+    population: 47419
+    dem: 1147
+    timezone: "Africa/Gaborone"
+  - name: "Rakops"
+    latitude: -21.02257
+    longitude: 24.36052
+    population: 5222
+    dem: 918
+    timezone: "Africa/Gaborone"
+  - name: "Palapye"
+    latitude: -22.54605
+    longitude: 27.12507
+    population: 30650
+    dem: 926
+    timezone: "Africa/Gaborone"
+  - name: "Orapa"
+    latitude: -21.3115
+    longitude: 25.37642
+    population: 9189
+    dem: 965
+    timezone: "Africa/Gaborone"
+  - name: "Mahalapye"
+    latitude: -23.10407
+    longitude: 26.81421
+    population: 44471
+    dem: 1025
+    timezone: "Africa/Gaborone"
+  - name: "Letlhakane"
+    latitude: -21.41494
+    longitude: 25.59263
+    population: 18136
+    dem: 984
+    timezone: "Africa/Gaborone"

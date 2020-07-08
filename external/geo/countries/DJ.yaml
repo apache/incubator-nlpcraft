@@ -1,0 +1,63 @@
+---
+name: "Djibouti"
+iso: "DJ"
+iso3: "DJI"
+code: "262"
+capital: "Djibouti"
+area: 23000.0
+population: 740528
+continent: "AF"
+currencyCode: "DJF"
+currencyName: "Franc"
+phone: "253"
+languages: "fr-DJ,ar,so-DJ,aa"
+neighbours: "ER,ET,SO"
+regions:
+- name: "Djibouti Region"
+  cities:
+  - name: "Djibouti"
+    latitude: 11.58901
+    longitude: 43.14503
+    population: 623891
+    dem: 6
+    timezone: "Africa/Djibouti"
+- name: "Ali Sabieh Region"
+  cities:
+  - name: "Ali Sabieh"
+    latitude: 11.15583
+    longitude: 42.7125
+    population: 55000
+    dem: 699
+    timezone: "Africa/Djibouti"
+- name: "Obock"
+  cities:
+  - name: "Obock"
+    latitude: 11.96693
+    longitude: 43.28835
+    population: 17776
+    dem: 24
+    timezone: "Africa/Djibouti"
+- name: "Dikhil"
+  cities:
+  - name: "Dikhil"
+    latitude: 11.10454
+    longitude: 42.36971
+    population: 12043
+    dem: 471
+    timezone: "Africa/Djibouti"
+- name: "Tadjourah"
+  cities:
+  - name: "Tadjourah"
+    latitude: 11.78778
+    longitude: 42.88222
+    population: 22193
+    dem: 21
+    timezone: "Africa/Djibouti"
+- name: "Arta Region"
+  cities:
+  - name: "Arta"
+    latitude: 11.52639
+    longitude: 42.85194
+    population: 6025
+    dem: 706
+    timezone: "Africa/Djibouti"

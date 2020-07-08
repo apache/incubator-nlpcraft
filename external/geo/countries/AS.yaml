@@ -1,0 +1,52 @@
+---
+name: "American Samoa"
+iso: "AS"
+iso3: "ASM"
+code: "016"
+capital: "Pago Pago"
+area: 199.0
+population: 57881
+continent: "OC"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "+1-684"
+postalCodeFormat: "#####-####"
+postalCodeRegex: "96799"
+languages: "en-AS,sm,to"
+regions:
+- name: "Swains Island"
+  cities:
+  - name: "Taulaga"
+    latitude: -11.05528
+    longitude: -171.08833
+    population: 37
+    dem: 8
+    timezone: "Pacific/Pago_Pago"
+- name: "Eastern District"
+  cities:
+  - name: "Pago Pago"
+    latitude: -14.27806
+    longitude: -170.7025
+    population: 11500
+    elevation: 2
+    dem: 144
+    timezone: "Pacific/Pago_Pago"
+- name: "Rose Atoll"
+- name: "Manua District"
+  cities:
+  - name: "Ta`u"
+    latitude: -14.23361
+    longitude: -169.51444
+    population: 873
+    elevation: 6
+    dem: 12
+    timezone: "Pacific/Pago_Pago"
+- name: "Western District"
+  cities:
+  - name: "Tafuna"
+    latitude: -14.33583
+    longitude: -170.72
+    population: 11017
+    elevation: 12
+    dem: 13
+    timezone: "Pacific/Pago_Pago"

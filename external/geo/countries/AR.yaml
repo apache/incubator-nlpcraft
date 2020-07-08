@@ -1,0 +1,2660 @@
+---
+name: "Argentina"
+iso: "AR"
+iso3: "ARG"
+code: "032"
+capital: "Buenos Aires"
+area: 2766890.0
+population: 41343201
+continent: "SA"
+currencyCode: "ARS"
+currencyName: "Peso"
+phone: "54"
+postalCodeFormat: "@####@@@"
+postalCodeRegex: "^[A-Z]?\\d{4}[A-Z]{0,3}$"
+languages: "es-AR,en,it,de,fr,gn"
+neighbours: "CL,BO,UY,PY,BR"
+regions:
+- name: "Santiago del Estero Province"
+  cities:
+  - name: "Villa Ojo de Agua"
+    latitude: -29.50003
+    longitude: -63.69377
+    population: 5832
+    dem: 531
+    timezone: "America/Argentina/Cordoba"
+  - name: "Termas de Rio Hondo"
+    latitude: -27.49362
+    longitude: -64.85972
+    population: 27838
+    dem: 260
+    timezone: "America/Argentina/Cordoba"
+  - name: "Suncho Corral"
+    latitude: -27.93357
+    longitude: -63.42938
+    population: 6087
+    dem: 135
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santiago del Estero"
+    latitude: -27.79511
+    longitude: -64.26149
+    population: 354692
+    dem: 188
+    timezone: "America/Argentina/Cordoba"
+  - name: "Quimili"
+    latitude: -27.64615
+    longitude: -62.41655
+    population: 10959
+    dem: 135
+    timezone: "America/Argentina/Cordoba"
+  - name: "Clodomira"
+    latitude: -27.5744
+    longitude: -64.13108
+    population: 9043
+    dem: 180
+    timezone: "America/Argentina/Cordoba"
+  - name: "Campo Gallo"
+    latitude: -26.58333
+    longitude: -62.85
+    population: 5455
+    dem: 194
+    timezone: "America/Argentina/Cordoba"
+  - name: "Beltran"
+    latitude: -27.82913
+    longitude: -64.06098
+    population: 5321
+    dem: 172
+    timezone: "America/Argentina/Cordoba"
+  - name: "Anatuya"
+    latitude: -28.46064
+    longitude: -62.83472
+    population: 20261
+    dem: 111
+    timezone: "America/Argentina/Cordoba"
+- name: "Rio Negro Province"
+  cities:
+  - name: "Villa Regina"
+    latitude: -39.1
+    longitude: -67.06667
+    population: 31209
+    dem: 201
+    timezone: "America/Argentina/Salta"
+  - name: "Viedma"
+    latitude: -40.81345
+    longitude: -62.99668
+    population: 48940
+    dem: 8
+    timezone: "America/Argentina/Salta"
+  - name: "Sierra Grande"
+    latitude: -41.60603
+    longitude: -65.35574
+    population: 6978
+    dem: 245
+    timezone: "America/Argentina/Salta"
+  - name: "San Antonio Oeste"
+    latitude: -40.73193
+    longitude: -64.94769
+    population: 16966
+    dem: 12
+    timezone: "America/Argentina/Salta"
+  - name: "Lamarque"
+    latitude: -39.42304
+    longitude: -65.70208
+    population: 7819
+    dem: 128
+    timezone: "America/Argentina/Salta"
+  - name: "Ingeniero Luis A. Huergo"
+    latitude: -39.07146
+    longitude: -67.2379
+    population: 6483
+    dem: 215
+    timezone: "America/Argentina/Salta"
+  - name: "Ingeniero Jacobacci"
+    latitude: -41.3292
+    longitude: -69.55015
+    population: 5785
+    dem: 872
+    timezone: "America/Argentina/Salta"
+  - name: "General Roca"
+    latitude: -39.03333
+    longitude: -67.58333
+    population: 73212
+    dem: 237
+    timezone: "America/Argentina/Salta"
+  - name: "General Fernandez Oro"
+    latitude: -38.95297
+    longitude: -67.92489
+    population: 6813
+    dem: 258
+    timezone: "America/Argentina/Salta"
+  - name: "General Conesa"
+    latitude: -40.10408
+    longitude: -64.45592
+    population: 5595
+    dem: 58
+    timezone: "America/Argentina/Salta"
+  - name: "Fray Luis Beltran"
+    latitude: -39.31369
+    longitude: -65.76002
+    population: 6401
+    dem: 135
+    timezone: "America/Argentina/Salta"
+  - name: "El Bolson"
+    latitude: -41.96051
+    longitude: -71.53336
+    population: 15537
+    dem: 320
+    timezone: "America/Argentina/Salta"
+  - name: "Cipolletti"
+    latitude: -38.93392
+    longitude: -67.99032
+    population: 75078
+    dem: 267
+    timezone: "America/Argentina/Salta"
+  - name: "Cinco Saltos"
+    latitude: -38.82225
+    longitude: -68.06293
+    population: 19819
+    dem: 288
+    timezone: "America/Argentina/Salta"
+  - name: "Choele Choel"
+    latitude: -39.28941
+    longitude: -65.6606
+    population: 9791
+    dem: 131
+    timezone: "America/Argentina/Salta"
+  - name: "Cervantes"
+    latitude: -39.05444
+    longitude: -67.39426
+    population: 5173
+    dem: 222
+    timezone: "America/Argentina/Salta"
+  - name: "Catriel"
+    latitude: -37.87907
+    longitude: -67.7956
+    population: 15169
+    dem: 323
+    timezone: "America/Argentina/Salta"
+  - name: "Allen"
+    latitude: -38.97736
+    longitude: -67.82714
+    population: 26083
+    dem: 258
+    timezone: "America/Argentina/Salta"
+  - name: "San Carlos de Bariloche"
+    latitude: -41.14557
+    longitude: -71.30822
+    population: 95394
+    dem: 839
+    timezone: "America/Argentina/Salta"
+- name: "Jujuy Province"
+  cities:
+  - name: "Yuto"
+    latitude: -23.64342
+    longitude: -64.47194
+    population: 7732
+    dem: 355
+    timezone: "America/Argentina/Jujuy"
+  - name: "Tilcara"
+    latitude: -23.57817
+    longitude: -65.39516
+    population: 5640
+    dem: 3180
+    timezone: "America/Argentina/Jujuy"
+  - name: "San Salvador de Jujuy"
+    latitude: -24.19457
+    longitude: -65.29712
+    population: 305891
+    dem: 1260
+    timezone: "America/Argentina/Jujuy"
+  - name: "San Pedro de Jujuy"
+    latitude: -24.23127
+    longitude: -64.86614
+    population: 58430
+    dem: 587
+    timezone: "America/Argentina/Jujuy"
+  - name: "Palpala"
+    latitude: -24.25647
+    longitude: -65.21163
+    population: 48199
+    dem: 1126
+    timezone: "America/Argentina/Jujuy"
+  - name: "Palma Sola"
+    latitude: -23.97771
+    longitude: -64.30311
+    population: 5318
+    dem: 664
+    timezone: "America/Argentina/Jujuy"
+  - name: "Libertador General San Martin"
+    latitude: -23.80644
+    longitude: -64.78757
+    population: 49267
+    dem: 485
+    timezone: "America/Argentina/Jujuy"
+  - name: "La Quiaca"
+    latitude: -22.10236
+    longitude: -65.59299
+    population: 14751
+    dem: 3451
+    timezone: "America/Argentina/Jujuy"
+  - name: "Ingenio La Esperanza"
+    latitude: -24.22554
+    longitude: -64.83896
+    population: 5002
+    dem: 557
+    timezone: "America/Argentina/Jujuy"
+  - name: "Humahuaca"
+    latitude: -23.20544
+    longitude: -65.35048
+    population: 11369
+    dem: 2970
+    timezone: "America/Argentina/Jujuy"
+  - name: "Fraile Pintado"
+    latitude: -23.94079
+    longitude: -64.79943
+    population: 13682
+    dem: 463
+    timezone: "America/Argentina/Jujuy"
+  - name: "Calilegua"
+    latitude: -23.77368
+    longitude: -64.77002
+    population: 5174
+    dem: 468
+    timezone: "America/Argentina/Jujuy"
+  - name: "Caimancito"
+    latitude: -23.74069
+    longitude: -64.5937
+    population: 5403
+    dem: 375
+    timezone: "America/Argentina/Jujuy"
+  - name: "Abra Pampa"
+    latitude: -22.72049
+    longitude: -65.69697
+    population: 9425
+    dem: 3487
+    timezone: "America/Argentina/Jujuy"
+- name: "San Luis Province"
+  cities:
+  - name: "Tilisarao"
+    latitude: -32.73292
+    longitude: -65.29109
+    population: 5478
+    dem: 752
+    timezone: "America/Argentina/San_Luis"
+  - name: "San Luis"
+    latitude: -33.29501
+    longitude: -66.33563
+    population: 183982
+    dem: 729
+    timezone: "America/Argentina/San_Luis"
+  - name: "Merlo"
+    latitude: -32.34288
+    longitude: -65.01396
+    population: 11159
+    dem: 863
+    timezone: "America/Argentina/San_Luis"
+  - name: "La Toma"
+    latitude: -33.05258
+    longitude: -65.62385
+    population: 6663
+    dem: 897
+    timezone: "America/Argentina/San_Luis"
+  - name: "Justo Daract"
+    latitude: -33.8594
+    longitude: -65.18277
+    population: 9680
+    dem: 421
+    timezone: "America/Argentina/San_Luis"
+  - name: "Villa Mercedes"
+    latitude: -33.67571
+    longitude: -65.45783
+    population: 96781
+    dem: 516
+    timezone: "America/Argentina/San_Luis"
+  - name: "La Punta"
+    latitude: -33.18368
+    longitude: -66.3127
+    population: 15000
+    elevation: 700
+    dem: 814
+    timezone: "America/Argentina/San_Luis"
+- name: "Chubut Province"
+  cities:
+  - name: "Trevelin"
+    latitude: -43.0858
+    longitude: -71.46386
+    population: 6395
+    dem: 380
+    timezone: "America/Argentina/Catamarca"
+  - name: "Trelew"
+    latitude: -43.24895
+    longitude: -65.30505
+    population: 93442
+    dem: 14
+    timezone: "America/Argentina/Catamarca"
+  - name: "Sarmiento"
+    latitude: -45.58815
+    longitude: -69.06996
+    population: 8292
+    dem: 274
+    timezone: "America/Argentina/Catamarca"
+  - name: "Rawson"
+    latitude: -43.30016
+    longitude: -65.10228
+    population: 26335
+    dem: 13
+    timezone: "America/Argentina/Catamarca"
+  - name: "Rada Tilly"
+    latitude: -45.92462
+    longitude: -67.55424
+    population: 6208
+    dem: 9
+    timezone: "America/Argentina/Catamarca"
+  - name: "Puerto Madryn"
+    latitude: -42.7692
+    longitude: -65.03851
+    population: 64555
+    dem: 11
+    timezone: "America/Argentina/Catamarca"
+  - name: "Gaiman"
+    latitude: -43.2897
+    longitude: -65.4929
+    population: 5753
+    dem: 21
+    timezone: "America/Argentina/Catamarca"
+  - name: "Esquel"
+    latitude: -42.91147
+    longitude: -71.31947
+    population: 28486
+    dem: 577
+    timezone: "America/Argentina/Catamarca"
+  - name: "Comodoro Rivadavia"
+    latitude: -45.86413
+    longitude: -67.49656
+    population: 140850
+    dem: 65
+    timezone: "America/Argentina/Catamarca"
+- name: "Ciudad Autonoma de Buenos Aires"
+  cities:
+  - name: "Villa Ortuzar"
+    latitude: -34.57973
+    longitude: -58.46829
+    population: 22500
+    dem: 26
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Villa Lugano"
+    latitude: -34.67907
+    longitude: -58.47263
+    population: 114000
+    dem: 19
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Retiro"
+    latitude: -34.58333
+    longitude: -58.38333
+    population: 38635
+    dem: 7
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Colegiales"
+    latitude: -34.57365
+    longitude: -58.44924
+    population: 57000
+    dem: 27
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Buenos Aires"
+    latitude: -34.61315
+    longitude: -58.37723
+    population: 13076300
+    dem: 31
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Boedo"
+    latitude: -34.63333
+    longitude: -58.41667
+    population: 48231
+    dem: 19
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Belgrano"
+    latitude: -34.5627
+    longitude: -58.45829
+    population: 138942
+    dem: 18
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Barracas"
+    latitude: -34.64966
+    longitude: -58.38341
+    population: 77474
+    dem: 10
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Balvanera"
+    latitude: -34.61032
+    longitude: -58.39766
+    population: 152198
+    dem: 35
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Villa Santa Rita"
+    latitude: -34.61082
+    longitude: -58.481
+    population: 34000
+    dem: 25
+    timezone: "America/Argentina/Buenos_Aires"
+- name: "Mendoza Province"
+  cities:
+  - name: "San Rafael"
+    latitude: -34.61772
+    longitude: -68.33007
+    population: 109163
+    dem: 702
+    timezone: "America/Argentina/Mendoza"
+  - name: "San Martin"
+    latitude: -33.08103
+    longitude: -68.46814
+    population: 82549
+    dem: 661
+    timezone: "America/Argentina/Mendoza"
+  - name: "Mendoza"
+    latitude: -32.89084
+    longitude: -68.82717
+    population: 876884
+    dem: 746
+    timezone: "America/Argentina/Mendoza"
+- name: "Provincia de Buenos Aires"
+  cities:
+  - name: "Zarate"
+    latitude: -34.09814
+    longitude: -59.02858
+    population: 88781
+    dem: 28
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Villa Gesell"
+    latitude: -37.26394
+    longitude: -56.97304
+    population: 23257
+    dem: 9
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Tigre"
+    latitude: -34.42603
+    longitude: -58.57962
+    population: 31106
+    elevation: 2
+    dem: 8
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Tandil"
+    latitude: -37.32167
+    longitude: -59.13316
+    population: 104325
+    dem: 192
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "San Pedro"
+    latitude: -33.67918
+    longitude: -59.66633
+    population: 47452
+    dem: 30
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "San Isidro"
+    latitude: -34.4721
+    longitude: -58.52708
+    population: 45190
+    dem: 20
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "San Clemente del Tuyu"
+    latitude: -36.35694
+    longitude: -56.72351
+    population: 11174
+    dem: 6
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Quilmes"
+    latitude: -34.72904
+    longitude: -58.26374
+    population: 230000
+    dem: 18
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Pontevedra"
+    latitude: -34.74785
+    longitude: -58.70072
+    population: 33515
+    dem: 24
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Pilar"
+    latitude: -34.45866
+    longitude: -58.9142
+    population: 226517
+    dem: 27
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Necochea"
+    latitude: -38.5545
+    longitude: -58.73961
+    population: 80478
+    dem: 19
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Moron"
+    latitude: -34.6509
+    longitude: -58.61956
+    population: 319934
+    dem: 29
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Mercedes"
+    latitude: -34.65145
+    longitude: -59.43068
+    population: 52949
+    dem: 43
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Mar del Plata"
+    latitude: -38.00042
+    longitude: -57.5562
+    population: 553935
+    dem: 24
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Lujan"
+    latitude: -34.57028
+    longitude: -59.105
+    population: 81749
+    dem: 27
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "La Plata"
+    latitude: -34.92145
+    longitude: -57.95453
+    population: 694167
+    dem: 27
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Dolores"
+    latitude: -36.31321
+    longitude: -57.67918
+    population: 25190
+    dem: 14
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Campana"
+    latitude: -34.16327
+    longitude: -58.95919
+    population: 81612
+    dem: 16
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Berazategui"
+    latitude: -34.76531
+    longitude: -58.21278
+    population: 167498
+    dem: 20
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Azul"
+    latitude: -36.77698
+    longitude: -59.85854
+    population: 53941
+    dem: 141
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Veinticinco de Mayo"
+    latitude: -35.4323
+    longitude: -60.17271
+    population: 24668
+    dem: 57
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Tres Arroyos"
+    latitude: -38.37394
+    longitude: -60.27978
+    population: 47136
+    dem: 113
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "San Nicolas de los Arroyos"
+    latitude: -33.33425
+    longitude: -60.2108
+    population: 127742
+    dem: 28
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Punta Alta"
+    latitude: -38.87588
+    longitude: -62.07359
+    population: 57209
+    dem: 8
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Pergamino"
+    latitude: -33.88995
+    longitude: -60.57357
+    population: 87652
+    dem: 69
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Olavarria"
+    latitude: -36.89272
+    longitude: -60.32254
+    population: 86320
+    dem: 170
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Nueve de Julio"
+    latitude: -35.44437
+    longitude: -60.88313
+    population: 34718
+    dem: 80
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Lincoln"
+    latitude: -34.86649
+    longitude: -61.5302
+    population: 41808
+    elevation: 76
+    dem: 92
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Junin"
+    latitude: -34.58382
+    longitude: -60.94332
+    population: 85007
+    dem: 83
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "General Villegas"
+    latitude: -35.03285
+    longitude: -63.01252
+    population: 16270
+    dem: 112
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Coronel Suarez"
+    latitude: -37.45467
+    longitude: -61.93343
+    population: 27000
+    dem: 239
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Coronel Dorrego"
+    latitude: -38.71867
+    longitude: -61.28733
+    population: 11644
+    dem: 112
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Chivilcoy"
+    latitude: -34.89566
+    longitude: -60.01667
+    population: 54514
+    dem: 60
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Chacabuco"
+    latitude: -34.64167
+    longitude: -60.47389
+    population: 34587
+    dem: 73
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Bahia Blanca"
+    latitude: -38.71959
+    longitude: -62.27243
+    population: 276546
+    dem: 24
+    timezone: "America/Argentina/Buenos_Aires"
+  - name: "Adrogue"
+    latitude: -34.80041
+    longitude: -58.38384
+    population: 28265
+    elevation: 24
+    dem: 28
+    timezone: "America/Argentina/Buenos_Aires"
+- name: "Santa Fe Province"
+  cities:
+  - name: "Villa Ocampo"
+    latitude: -28.48752
+    longitude: -59.35515
+    population: 19101
+    dem: 54
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Javier"
+    latitude: -30.57781
+    longitude: -59.9317
+    population: 15606
+    dem: 27
+    timezone: "America/Argentina/Cordoba"
+  - name: "Reconquista"
+    latitude: -29.15
+    longitude: -59.65
+    population: 90184
+    dem: 50
+    timezone: "America/Argentina/Cordoba"
+  - name: "Malabrigo"
+    latitude: -29.34636
+    longitude: -59.96957
+    population: 7026
+    dem: 59
+    timezone: "America/Argentina/Cordoba"
+  - name: "Las Toscas"
+    latitude: -28.3529
+    longitude: -59.25795
+    population: 11811
+    dem: 53
+    timezone: "America/Argentina/Cordoba"
+  - name: "Avellaneda"
+    latitude: -29.11761
+    longitude: -59.65834
+    population: 23077
+    dem: 52
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Constitucion"
+    latitude: -33.22778
+    longitude: -60.3297
+    population: 44271
+    dem: 32
+    timezone: "America/Argentina/Cordoba"
+  - name: "Chanar Ladeado"
+    latitude: -33.32524
+    longitude: -62.03831
+    population: 5639
+    elevation: 108
+    dem: 116
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Canas"
+    latitude: -34.00565
+    longitude: -61.60757
+    population: 9328
+    dem: 104
+    timezone: "America/Argentina/Cordoba"
+  - name: "Vera"
+    latitude: -29.4593
+    longitude: -60.21261
+    population: 19797
+    dem: 64
+    timezone: "America/Argentina/Cordoba"
+  - name: "Venado Tuerto"
+    latitude: -33.74556
+    longitude: -61.96885
+    population: 72340
+    dem: 117
+    timezone: "America/Argentina/Cordoba"
+  - name: "Totoras"
+    latitude: -32.5844
+    longitude: -61.16852
+    population: 9587
+    dem: 56
+    timezone: "America/Argentina/Cordoba"
+  - name: "Tostado"
+    latitude: -29.23202
+    longitude: -61.76917
+    population: 14000
+    dem: 77
+    timezone: "America/Argentina/Cordoba"
+  - name: "Sunchales"
+    latitude: -30.94404
+    longitude: -61.56148
+    population: 18757
+    dem: 98
+    timezone: "America/Argentina/Cordoba"
+  - name: "Sastre"
+    latitude: -31.76762
+    longitude: -61.82887
+    population: 5521
+    dem: 109
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santo Tome"
+    latitude: -31.66274
+    longitude: -60.7653
+    population: 59072
+    dem: 19
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santa Fe"
+    latitude: -31.64881
+    longitude: -60.70868
+    population: 489505
+    dem: 20
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Justo"
+    latitude: -30.78913
+    longitude: -60.59189
+    population: 21809
+    dem: 59
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Jorge"
+    latitude: -31.89618
+    longitude: -61.85984
+    population: 16873
+    dem: 109
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Cristobal"
+    latitude: -30.31053
+    longitude: -61.23724
+    population: 14286
+    dem: 79
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Carlos Centro"
+    latitude: -31.72864
+    longitude: -61.09192
+    population: 10465
+    dem: 44
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rufino"
+    latitude: -34.26827
+    longitude: -62.71262
+    population: 18361
+    dem: 118
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rosario"
+    latitude: -32.94682
+    longitude: -60.63932
+    population: 1173533
+    dem: 38
+    timezone: "America/Argentina/Cordoba"
+  - name: "Roldan"
+    latitude: -32.89846
+    longitude: -60.90681
+    population: 12468
+    dem: 43
+    timezone: "America/Argentina/Cordoba"
+  - name: "Recreo"
+    latitude: -31.49076
+    longitude: -60.73299
+    population: 12798
+    dem: 23
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rafaela"
+    latitude: -31.25033
+    longitude: -61.4867
+    population: 88713
+    dem: 103
+    timezone: "America/Argentina/Cordoba"
+  - name: "Perez"
+    latitude: -32.99835
+    longitude: -60.76791
+    population: 24436
+    dem: 37
+    timezone: "America/Argentina/Cordoba"
+  - name: "Las Rosas"
+    latitude: -32.47661
+    longitude: -61.58041
+    population: 12793
+    dem: 107
+    timezone: "America/Argentina/Cordoba"
+  - name: "Las Parejas"
+    latitude: -32.68478
+    longitude: -61.51637
+    population: 11317
+    dem: 104
+    timezone: "America/Argentina/Cordoba"
+  - name: "Laguna Paiva"
+    latitude: -31.30391
+    longitude: -60.65894
+    population: 12250
+    dem: 24
+    timezone: "America/Argentina/Cordoba"
+  - name: "Granadero Baigorria"
+    latitude: -32.85683
+    longitude: -60.71754
+    population: 32427
+    dem: 32
+    timezone: "America/Argentina/Cordoba"
+  - name: "Gobernador Galvez"
+    latitude: -33.03016
+    longitude: -60.64045
+    population: 74650
+    dem: 28
+    timezone: "America/Argentina/Cordoba"
+  - name: "Galvez"
+    latitude: -32.02927
+    longitude: -61.22103
+    population: 18374
+    dem: 57
+    timezone: "America/Argentina/Cordoba"
+  - name: "Funes"
+    latitude: -32.91568
+    longitude: -60.80995
+    population: 14750
+    dem: 36
+    timezone: "America/Argentina/Cordoba"
+  - name: "Fray Luis A. Beltran"
+    latitude: -32.79122
+    longitude: -60.72819
+    population: 14390
+    dem: 30
+    timezone: "America/Argentina/Cordoba"
+  - name: "Firmat"
+    latitude: -33.45937
+    longitude: -61.4832
+    population: 18294
+    dem: 109
+    timezone: "America/Argentina/Cordoba"
+  - name: "Esperanza"
+    latitude: -31.4488
+    longitude: -60.93173
+    population: 35885
+    dem: 40
+    timezone: "America/Argentina/Cordoba"
+  - name: "El Trebol"
+    latitude: -32.2008
+    longitude: -61.7014
+    population: 10871
+    dem: 96
+    timezone: "America/Argentina/Cordoba"
+  - name: "Coronda"
+    latitude: -31.97263
+    longitude: -60.91983
+    population: 16975
+    dem: 19
+    timezone: "America/Argentina/Cordoba"
+  - name: "Ceres"
+    latitude: -29.881
+    longitude: -61.94504
+    population: 13063
+    dem: 90
+    timezone: "America/Argentina/Cordoba"
+  - name: "Casilda"
+    latitude: -33.04417
+    longitude: -61.16806
+    population: 32002
+    dem: 79
+    timezone: "America/Argentina/Cordoba"
+  - name: "Carcarana"
+    latitude: -32.85679
+    longitude: -61.15331
+    population: 15619
+    dem: 59
+    timezone: "America/Argentina/Cordoba"
+  - name: "Capitan Bermudez"
+    latitude: -32.82262
+    longitude: -60.71852
+    population: 27060
+    dem: 35
+    timezone: "America/Argentina/Cordoba"
+  - name: "Canada de Gomez"
+    latitude: -32.81636
+    longitude: -61.39493
+    population: 36000
+    dem: 93
+    timezone: "America/Argentina/Cordoba"
+  - name: "Calchaqui"
+    latitude: -29.88767
+    longitude: -60.28697
+    population: 10221
+    dem: 59
+    timezone: "America/Argentina/Cordoba"
+  - name: "Arroyo Seco"
+    latitude: -33.15489
+    longitude: -60.50863
+    population: 20008
+    dem: 29
+    timezone: "America/Argentina/Cordoba"
+  - name: "Armstrong"
+    latitude: -32.78215
+    longitude: -61.60222
+    population: 10388
+    dem: 122
+    timezone: "America/Argentina/Cordoba"
+- name: "Neuquen Province"
+  cities:
+  - name: "Zapala"
+    latitude: -38.89916
+    longitude: -70.05442
+    population: 31534
+    dem: 1015
+    timezone: "America/Argentina/Salta"
+  - name: "Villa La Angostura"
+    latitude: -40.76173
+    longitude: -71.64631
+    population: 7526
+    dem: 796
+    timezone: "America/Argentina/Salta"
+  - name: "Senillosa"
+    latitude: -39.01412
+    longitude: -68.43281
+    population: 6394
+    dem: 294
+    timezone: "America/Argentina/Salta"
+  - name: "San Martin de los Andes"
+    latitude: -40.15789
+    longitude: -71.35337
+    population: 23519
+    dem: 651
+    timezone: "America/Argentina/Salta"
+  - name: "Plottier"
+    latitude: -38.96667
+    longitude: -68.23333
+    population: 25186
+    dem: 279
+    timezone: "America/Argentina/Salta"
+  - name: "Plaza Huincul"
+    latitude: -38.92598
+    longitude: -69.20863
+    population: 12273
+    dem: 600
+    timezone: "America/Argentina/Salta"
+  - name: "Neuquen"
+    latitude: -38.95161
+    longitude: -68.0591
+    population: 242092
+    dem: 281
+    timezone: "America/Argentina/Salta"
+  - name: "Junin de los Andes"
+    latitude: -39.95043
+    longitude: -71.06936
+    population: 10592
+    dem: 779
+    timezone: "America/Argentina/Salta"
+  - name: "Cutral-Co"
+    latitude: -38.93424
+    longitude: -69.23052
+    population: 47380
+    dem: 613
+    timezone: "America/Argentina/Salta"
+  - name: "Chos Malal"
+    latitude: -37.37809
+    longitude: -70.27085
+    population: 11721
+    dem: 858
+    timezone: "America/Argentina/Salta"
+  - name: "Centenario"
+    latitude: -38.82955
+    longitude: -68.1318
+    population: 28956
+    dem: 292
+    timezone: "America/Argentina/Salta"
+- name: "Formosa Province"
+  cities:
+  - name: "Pirane"
+    latitude: -25.73239
+    longitude: -59.10879
+    population: 19124
+    dem: 86
+    timezone: "America/Argentina/Cordoba"
+  - name: "Palo Santo"
+    latitude: -25.56332
+    longitude: -59.33781
+    population: 5324
+    dem: 90
+    timezone: "America/Argentina/Cordoba"
+  - name: "Ibarreta"
+    latitude: -25.21438
+    longitude: -59.85851
+    population: 8687
+    dem: 107
+    timezone: "America/Argentina/Cordoba"
+  - name: "Formosa"
+    latitude: -26.18489
+    longitude: -58.17313
+    population: 221383
+    dem: 62
+    timezone: "America/Argentina/Cordoba"
+  - name: "El Colorado"
+    latitude: -26.30808
+    longitude: -59.37291
+    population: 12780
+    dem: 86
+    timezone: "America/Argentina/Cordoba"
+  - name: "Comandante Fontana"
+    latitude: -25.33453
+    longitude: -59.68212
+    population: 5655
+    dem: 103
+    timezone: "America/Argentina/Cordoba"
+  - name: "Clorinda"
+    latitude: -25.28481
+    longitude: -57.71851
+    population: 15000
+    dem: 66
+    timezone: "America/Argentina/Cordoba"
+  - name: "Las Lomitas"
+    latitude: -24.70955
+    longitude: -60.59303
+    population: 10354
+    dem: 134
+    timezone: "America/Argentina/Cordoba"
+  - name: "Ingeniero Guillermo N. Juarez"
+    latitude: -23.9
+    longitude: -61.85
+    population: 10357
+    dem: 185
+    timezone: "America/Argentina/Cordoba"
+- name: "Tucuman Province"
+  cities:
+  - name: "Yerba Buena"
+    latitude: -26.81667
+    longitude: -65.31667
+    population: 50783
+    dem: 515
+    timezone: "America/Argentina/Tucuman"
+  - name: "Trancas"
+    latitude: -26.23136
+    longitude: -65.28093
+    population: 6658
+    dem: 780
+    timezone: "America/Argentina/Tucuman"
+  - name: "Tafi Viejo"
+    latitude: -26.73201
+    longitude: -65.25921
+    population: 48459
+    dem: 629
+    timezone: "America/Argentina/Tucuman"
+  - name: "Simoca"
+    latitude: -27.26272
+    longitude: -65.35647
+    population: 7939
+    dem: 325
+    timezone: "America/Argentina/Tucuman"
+  - name: "San Miguel de Tucuman"
+    latitude: -26.82414
+    longitude: -65.2226
+    population: 781023
+    dem: 452
+    timezone: "America/Argentina/Tucuman"
+  - name: "Monteros"
+    latitude: -27.16741
+    longitude: -65.49832
+    population: 23771
+    dem: 360
+    timezone: "America/Argentina/Tucuman"
+  - name: "La Cocha"
+    latitude: -27.76927
+    longitude: -65.58711
+    population: 7066
+    dem: 445
+    timezone: "America/Argentina/Tucuman"
+  - name: "Graneros"
+    latitude: -27.64934
+    longitude: -65.4383
+    population: 5263
+    dem: 326
+    timezone: "America/Argentina/Tucuman"
+  - name: "Famailla"
+    latitude: -27.05413
+    longitude: -65.40329
+    population: 30951
+    dem: 368
+    timezone: "America/Argentina/Tucuman"
+  - name: "Bella Vista"
+    latitude: -27.03424
+    longitude: -65.30196
+    population: 15126
+    dem: 366
+    timezone: "America/Argentina/Tucuman"
+  - name: "Alderetes"
+    latitude: -26.81667
+    longitude: -65.13333
+    population: 38466
+    dem: 454
+    timezone: "America/Argentina/Tucuman"
+  - name: "Aguilares"
+    latitude: -27.4338
+    longitude: -65.61427
+    population: 32494
+    dem: 375
+    timezone: "America/Argentina/Tucuman"
+- name: "San Juan Province"
+  cities:
+  - name: "Villa Paula de Sarmiento"
+    latitude: -31.4933
+    longitude: -68.53838
+    population: 19092
+    dem: 646
+    timezone: "America/Argentina/San_Juan"
+  - name: "Santa Lucia"
+    latitude: -31.53987
+    longitude: -68.49503
+    population: 43565
+    dem: 620
+    timezone: "America/Argentina/San_Juan"
+  - name: "San Martin"
+    latitude: -31.42957
+    longitude: -68.50065
+    population: 10140
+    dem: 625
+    timezone: "America/Argentina/San_Juan"
+  - name: "San Juan"
+    latitude: -31.5375
+    longitude: -68.53639
+    population: 447048
+    dem: 649
+    timezone: "America/Argentina/San_Juan"
+  - name: "San Jose de Jachal"
+    latitude: -30.24057
+    longitude: -68.74693
+    population: 21018
+    dem: 1176
+    timezone: "America/Argentina/San_Juan"
+  - name: "San Agustin de Valle Fertil"
+    latitude: -30.63353
+    longitude: -67.46821
+    population: 6864
+    dem: 856
+    timezone: "America/Argentina/San_Juan"
+  - name: "Pocito"
+    latitude: -31.68333
+    longitude: -68.58333
+    population: 40969
+    dem: 608
+    timezone: "America/Argentina/San_Juan"
+  - name: "Nueve de Julio"
+    latitude: -31.66914
+    longitude: -68.39023
+    population: 7652
+    dem: 578
+    timezone: "America/Argentina/San_Juan"
+  - name: "Chimbas"
+    latitude: -31.48333
+    longitude: -68.53333
+    population: 73829
+    dem: 642
+    timezone: "America/Argentina/San_Juan"
+  - name: "Caucete"
+    latitude: -31.65179
+    longitude: -68.28105
+    population: 33609
+    dem: 578
+    timezone: "America/Argentina/San_Juan"
+  - name: "Calingasta"
+    latitude: -31.33394
+    longitude: -69.4208
+    population: 8176
+    dem: 1369
+    timezone: "America/Argentina/San_Juan"
+  - name: "Albardon"
+    latitude: -31.43722
+    longitude: -68.52556
+    population: 20413
+    dem: 641
+    timezone: "America/Argentina/San_Juan"
+- name: "Chaco Province"
+  cities:
+  - name: "Resistencia"
+    latitude: -27.46056
+    longitude: -58.98389
+    population: 387158
+    dem: 56
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Vilelas"
+    latitude: -27.51414
+    longitude: -58.93906
+    population: 8455
+    dem: 52
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Tirol"
+    latitude: -27.37218
+    longitude: -59.08206
+    population: 9767
+    dem: 54
+    timezone: "America/Argentina/Cordoba"
+  - name: "Presidencia de la Plaza"
+    latitude: -27.00147
+    longitude: -59.84243
+    population: 12231
+    dem: 76
+    timezone: "America/Argentina/Cordoba"
+  - name: "Pampa del Indio"
+    latitude: -26.04982
+    longitude: -59.93728
+    population: 11588
+    dem: 96
+    timezone: "America/Argentina/Cordoba"
+  - name: "Margarita Belen"
+    latitude: -27.2616
+    longitude: -58.97219
+    population: 5547
+    dem: 58
+    timezone: "America/Argentina/Cordoba"
+  - name: "La Leonesa"
+    latitude: -27.03786
+    longitude: -58.70347
+    population: 10067
+    dem: 60
+    timezone: "America/Argentina/Cordoba"
+  - name: "General Jose de San Martin"
+    latitude: -26.53743
+    longitude: -59.34158
+    population: 31758
+    dem: 81
+    timezone: "America/Argentina/Cordoba"
+  - name: "Fontana"
+    latitude: -27.41813
+    longitude: -59.02392
+    population: 26745
+    dem: 54
+    timezone: "America/Argentina/Cordoba"
+  - name: "Barranqueras"
+    latitude: -27.48132
+    longitude: -58.93925
+    population: 50823
+    dem: 52
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Berthet"
+    latitude: -27.29174
+    longitude: -60.41263
+    population: 12029
+    dem: 83
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Angela"
+    latitude: -27.57383
+    longitude: -60.71526
+    population: 43511
+    dem: 79
+    timezone: "America/Argentina/Cordoba"
+  - name: "Tres Isletas"
+    latitude: -26.34067
+    longitude: -60.43207
+    population: 24747
+    dem: 102
+    timezone: "America/Argentina/Cordoba"
+  - name: "Taco Pozo"
+    latitude: -25.61557
+    longitude: -63.26708
+    population: 8470
+    dem: 261
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santa Sylvina"
+    latitude: -27.83261
+    longitude: -61.13747
+    population: 9040
+    dem: 77
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Bernardo"
+    latitude: -27.28782
+    longitude: -60.71252
+    population: 11101
+    dem: 88
+    timezone: "America/Argentina/Cordoba"
+  - name: "Quitilipi"
+    latitude: -26.86913
+    longitude: -60.21683
+    population: 32083
+    dem: 88
+    timezone: "America/Argentina/Cordoba"
+  - name: "Presidencia Roque Saenz Pena"
+    latitude: -26.78522
+    longitude: -60.43876
+    population: 81879
+    dem: 97
+    timezone: "America/Argentina/Cordoba"
+  - name: "Pampa del Infierno"
+    latitude: -26.50517
+    longitude: -61.17436
+    population: 8176
+    dem: 126
+    timezone: "America/Argentina/Cordoba"
+  - name: "Machagai"
+    latitude: -26.92614
+    longitude: -60.04955
+    population: 28070
+    dem: 90
+    timezone: "America/Argentina/Cordoba"
+  - name: "Los Frentones"
+    latitude: -26.4077
+    longitude: -61.41367
+    population: 6610
+    dem: 136
+    timezone: "America/Argentina/Cordoba"
+  - name: "Las Brenas"
+    latitude: -27.08966
+    longitude: -61.08161
+    population: 26955
+    dem: 104
+    timezone: "America/Argentina/Cordoba"
+  - name: "Hermoso Campo"
+    latitude: -27.60816
+    longitude: -61.34441
+    population: 7435
+    dem: 86
+    timezone: "America/Argentina/Cordoba"
+  - name: "General Pinedo"
+    latitude: -27.31667
+    longitude: -61.28333
+    population: 15741
+    dem: 95
+    timezone: "America/Argentina/Cordoba"
+  - name: "Corzuela"
+    latitude: -26.95374
+    longitude: -60.96928
+    population: 10470
+    dem: 106
+    timezone: "America/Argentina/Cordoba"
+  - name: "Coronel Du Graty"
+    latitude: -27.68038
+    longitude: -60.91462
+    population: 9140
+    dem: 82
+    timezone: "America/Argentina/Cordoba"
+  - name: "Concepcion del Bermejo"
+    latitude: -26.59926
+    longitude: -60.94617
+    population: 5830
+    dem: 113
+    timezone: "America/Argentina/Cordoba"
+  - name: "Charata"
+    latitude: -27.21438
+    longitude: -61.18795
+    population: 27813
+    dem: 98
+    timezone: "America/Argentina/Cordoba"
+  - name: "Castelli"
+    latitude: -25.94679
+    longitude: -60.61947
+    population: 36588
+    dem: 113
+    timezone: "America/Argentina/Cordoba"
+  - name: "Campo Largo"
+    latitude: -26.80077
+    longitude: -60.84215
+    population: 10743
+    dem: 106
+    timezone: "America/Argentina/Cordoba"
+  - name: "Avia Terai"
+    latitude: -26.68532
+    longitude: -60.7292
+    population: 6821
+    dem: 103
+    timezone: "America/Argentina/Cordoba"
+- name: "Corrientes Province"
+  cities:
+  - name: "Santo Tome"
+    latitude: -28.54939
+    longitude: -56.04077
+    population: 22634
+    dem: 81
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santa Rosa"
+    latitude: -28.26318
+    longitude: -58.11891
+    population: 8330
+    dem: 79
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santa Lucia"
+    latitude: -28.98746
+    longitude: -59.10287
+    population: 14056
+    dem: 54
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Miguel"
+    latitude: -27.99585
+    longitude: -57.58964
+    population: 7396
+    dem: 80
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Luis del Palmar"
+    latitude: -27.5079
+    longitude: -58.55454
+    population: 15347
+    dem: 62
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Lorenzo"
+    latitude: -28.13306
+    longitude: -58.76733
+    population: 47626
+    dem: 64
+    timezone: "America/Argentina/Cordoba"
+  - name: "Saladas"
+    latitude: -28.25384
+    longitude: -58.62591
+    population: 18349
+    dem: 75
+    timezone: "America/Argentina/Cordoba"
+  - name: "Perugorria"
+    latitude: -29.34132
+    longitude: -58.61059
+    population: 5685
+    dem: 64
+    timezone: "America/Argentina/Cordoba"
+  - name: "Paso de los Libres"
+    latitude: -29.71251
+    longitude: -57.08771
+    population: 43805
+    dem: 73
+    timezone: "America/Argentina/Cordoba"
+  - name: "Paso de la Patria"
+    latitude: -27.31676
+    longitude: -58.57197
+    population: 5818
+    dem: 56
+    timezone: "America/Argentina/Cordoba"
+  - name: "Nuestra Senora del Rosario de Caa Cati"
+    latitude: -27.75072
+    longitude: -57.62073
+    population: 7573
+    dem: 77
+    timezone: "America/Argentina/Cordoba"
+  - name: "Monte Caseros"
+    latitude: -30.25359
+    longitude: -57.63626
+    population: 24671
+    dem: 53
+    timezone: "America/Argentina/Cordoba"
+  - name: "Mocoreta"
+    latitude: -30.61891
+    longitude: -57.96344
+    population: 6088
+    dem: 52
+    timezone: "America/Argentina/Cordoba"
+  - name: "Mercedes"
+    latitude: -29.18416
+    longitude: -58.07519
+    population: 30649
+    dem: 96
+    timezone: "America/Argentina/Cordoba"
+  - name: "Mburucuya"
+    latitude: -28.04532
+    longitude: -58.22835
+    population: 9012
+    dem: 79
+    timezone: "America/Argentina/Cordoba"
+  - name: "La Cruz"
+    latitude: -29.17443
+    longitude: -56.64326
+    population: 8591
+    dem: 69
+    timezone: "America/Argentina/Cordoba"
+  - name: "Itati"
+    latitude: -27.27043
+    longitude: -58.24458
+    population: 7902
+    dem: 65
+    timezone: "America/Argentina/Cordoba"
+  - name: "Goya"
+    latitude: -29.13995
+    longitude: -59.26343
+    population: 70245
+    dem: 25
+    timezone: "America/Argentina/Cordoba"
+  - name: "Gobernador Virasora"
+    latitude: -28.05
+    longitude: -56.03333
+    population: 28756
+    dem: 133
+    timezone: "America/Argentina/Cordoba"
+  - name: "Esquina"
+    latitude: -30.01476
+    longitude: -59.5289
+    population: 26399
+    dem: 39
+    timezone: "America/Argentina/Cordoba"
+  - name: "Curuzu Cuatia"
+    latitude: -29.79171
+    longitude: -58.0546
+    population: 36390
+    dem: 79
+    timezone: "America/Argentina/Cordoba"
+  - name: "Corrientes"
+    latitude: -27.46784
+    longitude: -58.8344
+    population: 339067
+    dem: 53
+    timezone: "America/Argentina/Cordoba"
+  - name: "Alvear"
+    latitude: -29.09683
+    longitude: -56.55043
+    population: 7917
+    dem: 65
+    timezone: "America/Argentina/Cordoba"
+- name: "La Rioja Province"
+  cities:
+  - name: "La Rioja"
+    latitude: -29.41105
+    longitude: -66.85067
+    population: 162620
+    dem: 502
+    timezone: "America/Argentina/La_Rioja"
+  - name: "Chilecito"
+    latitude: -29.16195
+    longitude: -67.4974
+    population: 42248
+    dem: 1125
+    timezone: "America/Argentina/La_Rioja"
+  - name: "Chamical"
+    latitude: -30.36002
+    longitude: -66.31399
+    population: 13383
+    dem: 473
+    timezone: "America/Argentina/La_Rioja"
+  - name: "Arauco"
+    latitude: -28.58071
+    longitude: -66.7925
+    population: 13720
+    dem: 820
+    timezone: "America/Argentina/La_Rioja"
+- name: "Tierra del Fuego Province"
+  cities:
+  - name: "Ushuaia"
+    latitude: -54.81084
+    longitude: -68.31591
+    population: 58028
+    dem: 52
+    timezone: "America/Argentina/Ushuaia"
+  - name: "Rio Grande"
+    latitude: -53.78769
+    longitude: -67.70946
+    population: 52681
+    dem: 9
+    timezone: "America/Argentina/Ushuaia"
+- name: "La Pampa Province"
+  cities:
+  - name: "Victorica"
+    latitude: -36.21505
+    longitude: -65.43586
+    population: 6565
+    dem: 314
+    timezone: "America/Argentina/Salta"
+  - name: "Veinticinco de Mayo"
+    latitude: -37.7741
+    longitude: -67.71638
+    population: 6962
+    dem: 348
+    timezone: "America/Argentina/Salta"
+  - name: "Santa Rosa"
+    latitude: -36.61667
+    longitude: -64.28333
+    population: 111424
+    dem: 179
+    timezone: "America/Argentina/Salta"
+  - name: "Realico"
+    latitude: -35.03658
+    longitude: -64.2447
+    population: 7151
+    dem: 167
+    timezone: "America/Argentina/Salta"
+  - name: "Intendente Alvear"
+    latitude: -35.23383
+    longitude: -63.59205
+    population: 6990
+    dem: 129
+    timezone: "America/Argentina/Salta"
+  - name: "Guatrache"
+    latitude: -37.66776
+    longitude: -63.53021
+    population: 5271
+    dem: 174
+    timezone: "America/Argentina/Salta"
+  - name: "General Pico"
+    latitude: -35.65662
+    longitude: -63.75682
+    population: 57029
+    dem: 143
+    timezone: "America/Argentina/Salta"
+  - name: "General Acha"
+    latitude: -37.37698
+    longitude: -64.60431
+    population: 12536
+    dem: 230
+    timezone: "America/Argentina/Salta"
+  - name: "Eduardo Castex"
+    latitude: -35.91501
+    longitude: -64.29448
+    population: 9861
+    dem: 193
+    timezone: "America/Argentina/Salta"
+- name: "Cordoba Province"
+  cities:
+  - name: "Villa Nueva"
+    latitude: -32.43293
+    longitude: -63.24763
+    population: 16841
+    dem: 204
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Maria"
+    latitude: -32.40751
+    longitude: -63.24016
+    population: 92453
+    dem: 202
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Huidobro"
+    latitude: -34.83826
+    longitude: -64.58686
+    population: 5155
+    dem: 219
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa General Belgrano"
+    latitude: -31.97828
+    longitude: -64.55627
+    population: 5888
+    elevation: 709
+    dem: 742
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Dolores"
+    latitude: -31.94585
+    longitude: -65.18958
+    population: 28009
+    dem: 523
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa de Soto"
+    latitude: -30.85523
+    longitude: -64.99947
+    population: 7303
+    dem: 538
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa del Totoral"
+    latitude: -30.81667
+    longitude: -63.71667
+    population: 7110
+    dem: 233
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Carlos Paz"
+    latitude: -31.42414
+    longitude: -64.49778
+    population: 69451
+    dem: 666
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Allende"
+    latitude: -31.29458
+    longitude: -64.29538
+    population: 21683
+    dem: 505
+    timezone: "America/Argentina/Cordoba"
+  - name: "Vicuna Mackenna"
+    latitude: -33.91965
+    longitude: -64.39215
+    population: 8994
+    dem: 243
+    timezone: "America/Argentina/Cordoba"
+  - name: "Valle Hermoso"
+    latitude: -31.11732
+    longitude: -64.48084
+    population: 5486
+    dem: 907
+    timezone: "America/Argentina/Cordoba"
+  - name: "Unquillo"
+    latitude: -31.23073
+    longitude: -64.31615
+    population: 15369
+    dem: 633
+    timezone: "America/Argentina/Cordoba"
+  - name: "Tancacha"
+    latitude: -32.24309
+    longitude: -63.9807
+    population: 5184
+    dem: 354
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santa Rosa de Rio Primero"
+    latitude: -31.15231
+    longitude: -63.40191
+    population: 6788
+    dem: 171
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santa Rosa de Calamuchita"
+    latitude: -32.06905
+    longitude: -64.53631
+    population: 9504
+    elevation: 583
+    dem: 598
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Francisco"
+    latitude: -31.42797
+    longitude: -62.08266
+    population: 59062
+    dem: 118
+    timezone: "America/Argentina/Cordoba"
+  - name: "Sampacho"
+    latitude: -33.3839
+    longitude: -64.72211
+    population: 7238
+    dem: 513
+    timezone: "America/Argentina/Cordoba"
+  - name: "Salsipuedes"
+    latitude: -31.13725
+    longitude: -64.29589
+    population: 6411
+    dem: 739
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rio Tercero"
+    latitude: -32.17301
+    longitude: -64.11405
+    population: 53389
+    dem: 387
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rio Segundo"
+    latitude: -31.6526
+    longitude: -63.9099
+    population: 18155
+    dem: 341
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rio Cuarto"
+    latitude: -33.13067
+    longitude: -64.34992
+    population: 153757
+    dem: 441
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rio Ceballos"
+    latitude: -31.16486
+    longitude: -64.32241
+    population: 16632
+    dem: 705
+    timezone: "America/Argentina/Cordoba"
+  - name: "Pozo del Molle"
+    latitude: -32.0186
+    longitude: -62.91984
+    population: 5429
+    dem: 160
+    timezone: "America/Argentina/Cordoba"
+  - name: "Pilar"
+    latitude: -31.6789
+    longitude: -63.87964
+    population: 12488
+    dem: 334
+    timezone: "America/Argentina/Cordoba"
+  - name: "Oncativo"
+    latitude: -31.91353
+    longitude: -63.68201
+    population: 12660
+    dem: 283
+    timezone: "America/Argentina/Cordoba"
+  - name: "Oliva"
+    latitude: -32.04158
+    longitude: -63.56978
+    population: 11629
+    dem: 267
+    timezone: "America/Argentina/Cordoba"
+  - name: "Morteros"
+    latitude: -30.71164
+    longitude: -61.99862
+    population: 15129
+    dem: 99
+    timezone: "America/Argentina/Cordoba"
+  - name: "Monte Maiz"
+    latitude: -33.20462
+    longitude: -62.60085
+    population: 6920
+    dem: 119
+    timezone: "America/Argentina/Cordoba"
+  - name: "Monte Cristo"
+    latitude: -31.34312
+    longitude: -63.94437
+    population: 6914
+    dem: 350
+    timezone: "America/Argentina/Cordoba"
+  - name: "Monte Buey"
+    latitude: -32.91642
+    longitude: -62.45669
+    population: 5497
+    dem: 113
+    timezone: "America/Argentina/Cordoba"
+  - name: "Mina Clavero"
+    latitude: -31.72101
+    longitude: -65.00619
+    population: 6855
+    dem: 895
+    timezone: "America/Argentina/Cordoba"
+  - name: "Marcos Juarez"
+    latitude: -32.6978
+    longitude: -62.10672
+    population: 24226
+    dem: 117
+    timezone: "America/Argentina/Cordoba"
+  - name: "Malvinas Argentinas"
+    latitude: -31.38194
+    longitude: -64.05545
+    population: 8628
+    dem: 397
+    timezone: "America/Argentina/Cordoba"
+  - name: "Malagueno"
+    latitude: -31.46467
+    longitude: -64.3584
+    population: 9364
+    dem: 568
+    timezone: "America/Argentina/Cordoba"
+  - name: "Leones"
+    latitude: -32.66174
+    longitude: -62.29678
+    population: 9971
+    dem: 120
+    timezone: "America/Argentina/Cordoba"
+  - name: "Las Varillas"
+    latitude: -31.87208
+    longitude: -62.71946
+    population: 14649
+    dem: 138
+    timezone: "America/Argentina/Cordoba"
+  - name: "Las Higueras"
+    latitude: -33.09231
+    longitude: -64.28899
+    population: 5282
+    dem: 432
+    timezone: "America/Argentina/Cordoba"
+  - name: "Laguna Larga"
+    latitude: -31.77652
+    longitude: -63.80104
+    population: 7137
+    dem: 308
+    timezone: "America/Argentina/Cordoba"
+  - name: "La Falda"
+    latitude: -31.08841
+    longitude: -64.48987
+    population: 15112
+    dem: 947
+    timezone: "America/Argentina/Cordoba"
+  - name: "La Cumbre"
+    latitude: -30.98201
+    longitude: -64.49139
+    population: 7235
+    dem: 1146
+    timezone: "America/Argentina/Cordoba"
+  - name: "La Carlota"
+    latitude: -33.41993
+    longitude: -63.29769
+    population: 11490
+    dem: 147
+    timezone: "America/Argentina/Cordoba"
+  - name: "La Calera"
+    latitude: -31.34377
+    longitude: -64.33529
+    population: 24796
+    dem: 495
+    timezone: "America/Argentina/Cordoba"
+  - name: "Laboulaye"
+    latitude: -34.12662
+    longitude: -63.39119
+    population: 19908
+    dem: 143
+    timezone: "America/Argentina/Cordoba"
+  - name: "Laborde"
+    latitude: -33.15319
+    longitude: -62.85661
+    population: 5492
+    dem: 127
+    timezone: "America/Argentina/Cordoba"
+  - name: "Justiniano Posse"
+    latitude: -32.88411
+    longitude: -62.67788
+    population: 7406
+    dem: 120
+    timezone: "America/Argentina/Cordoba"
+  - name: "Jesus Maria"
+    latitude: -30.98153
+    longitude: -64.09424
+    population: 26825
+    dem: 533
+    timezone: "America/Argentina/Cordoba"
+  - name: "Huinca Renanco"
+    latitude: -34.84038
+    longitude: -64.3758
+    population: 8637
+    dem: 186
+    timezone: "America/Argentina/Cordoba"
+  - name: "Huerta Grande"
+    latitude: -31.07524
+    longitude: -64.49063
+    population: 5630
+    dem: 997
+    timezone: "America/Argentina/Cordoba"
+  - name: "Hernando"
+    latitude: -32.42657
+    longitude: -63.73333
+    population: 10486
+    dem: 279
+    timezone: "America/Argentina/Cordoba"
+  - name: "General Levalle"
+    latitude: -34.01472
+    longitude: -63.92413
+    population: 5492
+    dem: 180
+    timezone: "America/Argentina/Cordoba"
+  - name: "General Cabrera"
+    latitude: -32.81313
+    longitude: -63.87243
+    population: 10351
+    dem: 298
+    timezone: "America/Argentina/Cordoba"
+  - name: "Embalse"
+    latitude: -32.18
+    longitude: -64.41809
+    population: 15900
+    elevation: 623
+    dem: 561
+    timezone: "America/Argentina/Cordoba"
+  - name: "Devoto"
+    latitude: -31.40431
+    longitude: -62.30634
+    population: 5597
+    dem: 112
+    timezone: "America/Argentina/Cordoba"
+  - name: "Despenaderos"
+    latitude: -31.81626
+    longitude: -64.28989
+    population: 5645
+    dem: 451
+    timezone: "America/Argentina/Cordoba"
+  - name: "Dean Funes"
+    latitude: -30.42036
+    longitude: -64.34984
+    population: 20164
+    dem: 691
+    timezone: "America/Argentina/Cordoba"
+  - name: "Cruz del Eje"
+    latitude: -30.72644
+    longitude: -64.80387
+    population: 28166
+    dem: 465
+    timezone: "America/Argentina/Cordoba"
+  - name: "Cruz Alta"
+    latitude: -33.00887
+    longitude: -61.80746
+    population: 6862
+    dem: 78
+    timezone: "America/Argentina/Cordoba"
+  - name: "Cosquin"
+    latitude: -31.24508
+    longitude: -64.46563
+    population: 19070
+    dem: 707
+    timezone: "America/Argentina/Cordoba"
+  - name: "Corral de Bustos"
+    latitude: -33.28205
+    longitude: -62.18463
+    population: 9882
+    dem: 118
+    timezone: "America/Argentina/Cordoba"
+  - name: "Coronel Moldes"
+    latitude: -33.6227
+    longitude: -64.59711
+    population: 8104
+    dem: 365
+    timezone: "America/Argentina/Cordoba"
+  - name: "Cordoba"
+    latitude: -31.4135
+    longitude: -64.18105
+    population: 1428214
+    dem: 395
+    timezone: "America/Argentina/Cordoba"
+  - name: "Capilla del Monte"
+    latitude: -30.86088
+    longitude: -64.52515
+    population: 9085
+    dem: 984
+    timezone: "America/Argentina/Cordoba"
+  - name: "Canals"
+    latitude: -33.56542
+    longitude: -62.88927
+    population: 8343
+    dem: 127
+    timezone: "America/Argentina/Cordoba"
+  - name: "Brinkmann"
+    latitude: -30.86589
+    longitude: -62.03742
+    population: 8237
+    dem: 105
+    timezone: "America/Argentina/Cordoba"
+  - name: "Berrotaran"
+    latitude: -32.451
+    longitude: -64.38867
+    population: 6446
+    dem: 631
+    timezone: "America/Argentina/Cordoba"
+  - name: "Bell Ville"
+    latitude: -32.62591
+    longitude: -62.68873
+    population: 35105
+    dem: 132
+    timezone: "America/Argentina/Cordoba"
+  - name: "Balnearia"
+    latitude: -31.0088
+    longitude: -62.66733
+    population: 5585
+    dem: 86
+    timezone: "America/Argentina/Cordoba"
+  - name: "Arroyito"
+    latitude: -31.42022
+    longitude: -63.05002
+    population: 19577
+    dem: 154
+    timezone: "America/Argentina/Cordoba"
+  - name: "Arias"
+    latitude: -33.64411
+    longitude: -62.40272
+    population: 6928
+    dem: 127
+    timezone: "America/Argentina/Cordoba"
+  - name: "Alta Gracia"
+    latitude: -31.65292
+    longitude: -64.42826
+    population: 40384
+    dem: 556
+    timezone: "America/Argentina/Cordoba"
+  - name: "Almafuerte"
+    latitude: -32.19296
+    longitude: -64.25559
+    population: 10534
+    dem: 430
+    timezone: "America/Argentina/Cordoba"
+  - name: "Adelia Maria"
+    latitude: -33.63152
+    longitude: -64.02097
+    population: 6434
+    dem: 266
+    timezone: "America/Argentina/Cordoba"
+- name: "Misiones Province"
+  cities:
+  - name: "Wanda"
+    latitude: -25.96879
+    longitude: -54.56285
+    population: 15529
+    dem: 206
+    timezone: "America/Argentina/Cordoba"
+  - name: "Veinticinco de Mayo"
+    latitude: -27.37679
+    longitude: -54.74312
+    population: 11928
+    dem: 396
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Vicente"
+    latitude: -26.61667
+    longitude: -54.13333
+    population: 38247
+    dem: 603
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santo Pipo"
+    latitude: -27.14132
+    longitude: -55.40867
+    population: 5447
+    dem: 174
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Pedro"
+    latitude: -26.62207
+    longitude: -54.10842
+    population: 23736
+    dem: 554
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Jose"
+    latitude: -27.76979
+    longitude: -55.7826
+    population: 6452
+    dem: 169
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Rico"
+    latitude: -26.79598
+    longitude: -55.02402
+    population: 17491
+    dem: 147
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Piray"
+    latitude: -26.46937
+    longitude: -54.70736
+    population: 8557
+    dem: 137
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Libertad"
+    latitude: -25.91958
+    longitude: -54.58229
+    population: 6143
+    dem: 101
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Iguazu"
+    latitude: -25.59912
+    longitude: -54.57355
+    population: 32038
+    dem: 177
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Esperanza"
+    latitude: -26.02267
+    longitude: -54.61356
+    population: 15579
+    dem: 152
+    timezone: "America/Argentina/Cordoba"
+  - name: "Puerto Eldorado"
+    latitude: -26.40843
+    longitude: -54.69463
+    population: 54189
+    dem: 102
+    timezone: "America/Argentina/Cordoba"
+  - name: "Posadas"
+    latitude: -27.36708
+    longitude: -55.89608
+    population: 323739
+    elevation: 83
+    dem: 127
+    timezone: "America/Argentina/Cordoba"
+  - name: "Panambi"
+    latitude: -27.72369
+    longitude: -54.91515
+    population: 5970
+    dem: 121
+    timezone: "America/Argentina/Cordoba"
+  - name: "Obera"
+    latitude: -27.48706
+    longitude: -55.11994
+    population: 56528
+    dem: 345
+    timezone: "America/Argentina/Cordoba"
+  - name: "Montecarlo"
+    latitude: -26.5662
+    longitude: -54.757
+    population: 22229
+    dem: 205
+    timezone: "America/Argentina/Cordoba"
+  - name: "Jardin America"
+    latitude: -27.04346
+    longitude: -55.22698
+    population: 24905
+    dem: 227
+    timezone: "America/Argentina/Cordoba"
+  - name: "Gobernador Roca"
+    latitude: -27.18636
+    longitude: -55.46433
+    population: 6315
+    dem: 185
+    timezone: "America/Argentina/Cordoba"
+  - name: "Garupa"
+    latitude: -27.48171
+    longitude: -55.82921
+    population: 28814
+    dem: 108
+    timezone: "America/Argentina/Cordoba"
+  - name: "Garuhape"
+    latitude: -26.81768
+    longitude: -54.95665
+    population: 8259
+    dem: 177
+    timezone: "America/Argentina/Cordoba"
+  - name: "El Soberbio"
+    latitude: -27.29847
+    longitude: -54.19877
+    population: 19571
+    dem: 156
+    timezone: "America/Argentina/Cordoba"
+  - name: "El Alcazar"
+    latitude: -26.71459
+    longitude: -54.81523
+    population: 5127
+    dem: 210
+    timezone: "America/Argentina/Cordoba"
+  - name: "Dos de Mayo"
+    latitude: -27.02277
+    longitude: -54.68669
+    population: 14544
+    dem: 561
+    timezone: "America/Argentina/Cordoba"
+  - name: "Concepcion de la Sierra"
+    latitude: -27.98311
+    longitude: -55.52031
+    population: 7398
+    dem: 167
+    timezone: "America/Argentina/Cordoba"
+  - name: "Colonia Aurora"
+    latitude: -27.47428
+    longitude: -54.52498
+    population: 8407
+    dem: 178
+    timezone: "America/Argentina/Cordoba"
+  - name: "Cerro Azul"
+    latitude: -27.6331
+    longitude: -55.4962
+    population: 5323
+    dem: 263
+    timezone: "America/Argentina/Cordoba"
+  - name: "Capiovi"
+    latitude: -26.92998
+    longitude: -55.06084
+    population: 5860
+    dem: 184
+    timezone: "America/Argentina/Cordoba"
+  - name: "Candelaria"
+    latitude: -27.4595
+    longitude: -55.74536
+    population: 11039
+    dem: 119
+    timezone: "America/Argentina/Cordoba"
+  - name: "Campo Viera"
+    latitude: -27.33271
+    longitude: -55.05651
+    population: 9228
+    dem: 342
+    timezone: "America/Argentina/Cordoba"
+  - name: "Campo Ramon"
+    latitude: -27.4549
+    longitude: -55.02122
+    population: 10088
+    dem: 364
+    timezone: "America/Argentina/Cordoba"
+  - name: "Campo Grande"
+    latitude: -27.2077
+    longitude: -54.97977
+    population: 12040
+    dem: 454
+    timezone: "America/Argentina/Cordoba"
+  - name: "Bernardo de Irigoyen"
+    latitude: -26.2552
+    longitude: -53.64581
+    population: 10889
+    dem: 815
+    timezone: "America/Argentina/Cordoba"
+  - name: "Aristobulo del Valle"
+    latitude: -27.09625
+    longitude: -54.89626
+    population: 20683
+    dem: 494
+    timezone: "America/Argentina/Cordoba"
+  - name: "Alba Posse"
+    latitude: -27.56978
+    longitude: -54.68262
+    population: 6652
+    dem: 125
+    timezone: "America/Argentina/Cordoba"
+- name: "Entre Rios Province"
+  cities:
+  - name: "Villa Maria Grande"
+    latitude: -31.66565
+    longitude: -59.90182
+    population: 7101
+    dem: 94
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Hernandarias"
+    latitude: -31.23097
+    longitude: -59.98464
+    population: 5375
+    dem: 52
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villaguay"
+    latitude: -31.8653
+    longitude: -59.02689
+    population: 32027
+    dem: 50
+    timezone: "America/Argentina/Cordoba"
+  - name: "Villa Elisa"
+    latitude: -32.1632
+    longitude: -58.40082
+    population: 9334
+    dem: 57
+    timezone: "America/Argentina/Cordoba"
+  - name: "Urdinarrain"
+    latitude: -32.68573
+    longitude: -58.89323
+    population: 7992
+    dem: 68
+    timezone: "America/Argentina/Cordoba"
+  - name: "Santa Elena"
+    latitude: -30.94432
+    longitude: -59.78832
+    population: 18410
+    dem: 74
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Salvador"
+    latitude: -31.62487
+    longitude: -58.50524
+    population: 11626
+    dem: 75
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Jose de Feliciano"
+    latitude: -30.38452
+    longitude: -58.75167
+    population: 11137
+    dem: 68
+    timezone: "America/Argentina/Cordoba"
+  - name: "Rosario del Tala"
+    latitude: -32.30286
+    longitude: -59.14545
+    population: 13807
+    dem: 39
+    timezone: "America/Argentina/Cordoba"
+  - name: "Macia"
+    latitude: -32.1722
+    longitude: -59.39947
+    population: 5806
+    dem: 76
+    timezone: "America/Argentina/Cordoba"
+  - name: "Larroque"
+    latitude: -33.03595
+    longitude: -59.00125
+    population: 6200
+    dem: 54
+    timezone: "America/Argentina/Cordoba"
+  - name: "La Paz"
+    latitude: -30.74179
+    longitude: -59.64517
+    population: 24716
+    dem: 53
+    timezone: "America/Argentina/Cordoba"
+  - name: "Gualeguaychu"
+    latitude: -33.00937
+    longitude: -58.51722
+    population: 78676
+    dem: 14
+    timezone: "America/Argentina/Cordoba"
+  - name: "Gualeguay"
+    latitude: -33.14156
+    longitude: -59.30966
+    population: 33120
+    dem: 14
+    timezone: "America/Argentina/Cordoba"
+  - name: "Federal"
+    latitude: -30.95465
+    longitude: -58.78326
+    population: 16333
+    dem: 67
+    timezone: "America/Argentina/Cordoba"
+  - name: "Federacion"
+    latitude: -31.00621
+    longitude: -57.89962
+    population: 13789
+    dem: 46
+    timezone: "America/Argentina/Cordoba"
+  - name: "Concordia"
+    latitude: -31.39296
+    longitude: -58.02089
+    population: 145210
+    dem: 30
+    timezone: "America/Argentina/Cordoba"
+  - name: "Concepcion del Uruguay"
+    latitude: -32.48463
+    longitude: -58.23217
+    population: 67895
+    dem: 9
+    timezone: "America/Argentina/Cordoba"
+  - name: "Chajari"
+    latitude: -30.75048
+    longitude: -57.97962
+    population: 30655
+    dem: 58
+    timezone: "America/Argentina/Cordoba"
+  - name: "Bovril"
+    latitude: -31.34311
+    longitude: -59.44512
+    population: 7977
+    dem: 81
+    timezone: "America/Argentina/Cordoba"
+  - name: "Victoria"
+    latitude: -32.61841
+    longitude: -60.15478
+    population: 25139
+    dem: 52
+    timezone: "America/Argentina/Cordoba"
+  - name: "Viale"
+    latitude: -31.86782
+    longitude: -60.00722
+    population: 8939
+    dem: 71
+    timezone: "America/Argentina/Cordoba"
+  - name: "San Benito"
+    latitude: -31.78371
+    longitude: -60.44156
+    population: 6771
+    dem: 61
+    timezone: "America/Argentina/Cordoba"
+  - name: "Parana"
+    latitude: -31.73271
+    longitude: -60.52897
+    population: 262295
+    dem: 68
+    timezone: "America/Argentina/Cordoba"
+  - name: "General Ramirez"
+    latitude: -32.17601
+    longitude: -60.20079
+    population: 8614
+    dem: 117
+    timezone: "America/Argentina/Cordoba"
+  - name: "Diamante"
+    latitude: -32.06641
+    longitude: -60.63837
+    population: 19545
+    dem: 71
+    timezone: "America/Argentina/Cordoba"
+  - name: "Crespo"
+    latitude: -32.02873
+    longitude: -60.30658
+    population: 18296
+    dem: 109
+    timezone: "America/Argentina/Cordoba"
+- name: "Santa Cruz Province"
+  cities:
+  - name: "Yacimiento Rio Turbio"
+    latitude: -51.57321
+    longitude: -72.3508
+    population: 6650
+    dem: 573
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "Rio Gallegos"
+    latitude: -51.62261
+    longitude: -69.21813
+    population: 85700
+    dem: 15
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "San Julian"
+    latitude: -49.30554
+    longitude: -67.72743
+    population: 6143
+    dem: 20
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "Puerto Deseado"
+    latitude: -47.75034
+    longitude: -65.89382
+    population: 10237
+    dem: 31
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "Pico Truncado"
+    latitude: -46.7949
+    longitude: -67.95731
+    population: 14985
+    dem: 286
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "Las Heras"
+    latitude: -46.54186
+    longitude: -68.93593
+    population: 9303
+    dem: 336
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "El Calafate"
+    latitude: -50.34075
+    longitude: -72.27682
+    population: 8000
+    dem: 205
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "Caleta Olivia"
+    latitude: -46.43929
+    longitude: -67.52814
+    population: 36077
+    dem: 17
+    timezone: "America/Argentina/Rio_Gallegos"
+  - name: "Rio Turbio"
+    latitude: -51.53587
+    longitude: -72.33673
+    population: 6650
+    dem: 324
+    timezone: "America/Argentina/Rio_Gallegos"
+- name: "Catamarca Province"
+  cities:
+  - name: "Tinogasta"
+    latitude: -28.06319
+    longitude: -67.56488
+    population: 14509
+    dem: 1212
+    timezone: "America/Argentina/Catamarca"
+  - name: "San Fernando del Valle de Catamarca"
+    latitude: -28.46957
+    longitude: -65.78524
+    population: 188812
+    dem: 545
+    timezone: "America/Argentina/Catamarca"
+  - name: "Recreo"
+    latitude: -29.28184
+    longitude: -65.06096
+    population: 14204
+    dem: 216
+    timezone: "America/Argentina/Catamarca"
+  - name: "Los Altos"
+    latitude: -28.04845
+    longitude: -65.49945
+    population: 6421
+    dem: 499
+    timezone: "America/Argentina/Catamarca"
+  - name: "Icano"
+    latitude: -28.91934
+    longitude: -65.32817
+    population: 6857
+    dem: 358
+    timezone: "America/Argentina/Catamarca"
+  - name: "Huillapima"
+    latitude: -28.72533
+    longitude: -65.9787
+    population: 7779
+    dem: 467
+    timezone: "America/Argentina/Catamarca"
+  - name: "Fiambala"
+    latitude: -27.67225
+    longitude: -67.6187
+    population: 8061
+    dem: 1521
+    timezone: "America/Argentina/Catamarca"
+  - name: "Capayan"
+    latitude: -28.77436
+    longitude: -66.04749
+    population: 6358
+    dem: 445
+    timezone: "America/Argentina/Catamarca"
+  - name: "Andalgala"
+    latitude: -27.58185
+    longitude: -66.31626
+    population: 14068
+    dem: 1020
+    timezone: "America/Argentina/Catamarca"
+- name: "Salta Province"
+  cities:
+  - name: "Tartagal"
+    latitude: -22.51637
+    longitude: -63.80131
+    population: 60819
+    dem: 499
+    timezone: "America/Argentina/Salta"
+  - name: "San Ramon de la Nueva Oran"
+    latitude: -23.13705
+    longitude: -64.32426
+    population: 74059
+    dem: 358
+    timezone: "America/Argentina/Salta"
+  - name: "Salta"
+    latitude: -24.7859
+    longitude: -65.41166
+    population: 512686
+    dem: 1183
+    timezone: "America/Argentina/Salta"
+  - name: "Las Lajitas"
+    latitude: -24.72762
+    longitude: -64.19335
+    population: 9151
+    dem: 440
+    timezone: "America/Argentina/Salta"
+  - name: "Joaquin V. Gonzalez"
+    latitude: -25.11364
+    longitude: -64.12628
+    population: 19185
+    dem: 362
+    timezone: "America/Argentina/Salta"
+  - name: "General Enrique Mosconi"
+    latitude: -22.59588
+    longitude: -63.81255
+    population: 19811
+    dem: 481
+    timezone: "America/Argentina/Salta"
+  - name: "Embarcacion"
+    latitude: -23.21003
+    longitude: -64.09965
+    population: 23961
+    dem: 292
+    timezone: "America/Argentina/Salta"
+  - name: "El Quebrachal"
+    latitude: -25.28333
+    longitude: -64.06667
+    population: 10243
+    dem: 355
+    timezone: "America/Argentina/Salta"
+  - name: "El Galpon"
+    latitude: -25.38069
+    longitude: -64.65259
+    population: 8357
+    dem: 527
+    timezone: "America/Argentina/Salta"
+  - name: "El Carril"
+    latitude: -25.0741
+    longitude: -65.49174
+    population: 9780
+    dem: 1168
+    timezone: "America/Argentina/Salta"
+  - name: "Chicoana"
+    latitude: -25.10502
+    longitude: -65.53473
+    population: 8468
+    dem: 1238
+    timezone: "America/Argentina/Salta"
+  - name: "Cafayate"
+    latitude: -26.07286
+    longitude: -65.97766
+    population: 11785
+    dem: 1625
+    timezone: "America/Argentina/Salta"
+  - name: "Apolinario Saravia"
+    latitude: -24.43276
+    longitude: -63.99535
+    population: 8595
+    dem: 361
+    timezone: "America/Argentina/Salta"

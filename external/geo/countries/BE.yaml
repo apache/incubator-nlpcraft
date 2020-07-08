@@ -1,0 +1,2766 @@
+---
+name: "Belgium"
+iso: "BE"
+iso3: "BEL"
+code: "056"
+capital: "Brussels"
+area: 30510.0
+population: 10403000
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "32"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "nl-BE,fr-BE,de-BE"
+neighbours: "DE,NL,LU,FR"
+regions:
+- name: "Bruxelles-Capitale"
+  cities:
+  - name: "Brussels"
+    latitude: 50.85045
+    longitude: 4.34878
+    population: 1019022
+    dem: 28
+    timezone: "Europe/Brussels"
+- name: "Wallonia"
+  cities:
+  - name: "Yvoir"
+    latitude: 50.3279
+    longitude: 4.88059
+    population: 8169
+    dem: 96
+    timezone: "Europe/Brussels"
+  - name: "Welkenraedt"
+    latitude: 50.6605
+    longitude: 5.97034
+    population: 9006
+    dem: 256
+    timezone: "Europe/Brussels"
+  - name: "Wavre"
+    latitude: 50.71717
+    longitude: 4.60138
+    population: 32112
+    dem: 72
+    timezone: "Europe/Brussels"
+  - name: "Waterloo"
+    latitude: 50.71469
+    longitude: 4.3991
+    population: 29778
+    dem: 119
+    timezone: "Europe/Brussels"
+  - name: "Waremme"
+    latitude: 50.6976
+    longitude: 5.25524
+    population: 13737
+    dem: 117
+    timezone: "Europe/Brussels"
+  - name: "Wanze"
+    latitude: 50.53907
+    longitude: 5.20846
+    population: 12918
+    dem: 96
+    timezone: "Europe/Brussels"
+  - name: "Walhain-Saint-Paul"
+    latitude: 50.62627
+    longitude: 4.69837
+    population: 5992
+    dem: 147
+    timezone: "Europe/Brussels"
+  - name: "Walcourt"
+    latitude: 50.25401
+    longitude: 4.43796
+    population: 17501
+    dem: 187
+    timezone: "Europe/Brussels"
+  - name: "Waimes"
+    latitude: 50.41488
+    longitude: 6.11207
+    population: 6661
+    dem: 492
+    timezone: "Europe/Brussels"
+  - name: "Vise"
+    latitude: 50.7376
+    longitude: 5.69907
+    population: 17054
+    dem: 86
+    timezone: "Europe/Brussels"
+  - name: "Virton"
+    latitude: 49.56824
+    longitude: 5.53259
+    population: 11259
+    dem: 226
+    timezone: "Europe/Brussels"
+  - name: "Villers-le-Bouillet"
+    latitude: 50.57708
+    longitude: 5.25945
+    population: 6059
+    dem: 194
+    timezone: "Europe/Brussels"
+  - name: "Villers-la-Ville"
+    latitude: 50.56667
+    longitude: 4.51667
+    population: 9592
+    dem: 137
+    timezone: "Europe/Brussels"
+  - name: "Vielsalm"
+    latitude: 50.28407
+    longitude: 5.91502
+    population: 7291
+    dem: 367
+    timezone: "Europe/Brussels"
+  - name: "Verviers"
+    latitude: 50.58907
+    longitude: 5.86241
+    population: 52824
+    dem: 201
+    timezone: "Europe/Brussels"
+  - name: "Tubize"
+    latitude: 50.69059
+    longitude: 4.2009
+    population: 21859
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Trooz"
+    latitude: 50.57026
+    longitude: 5.69521
+    population: 7559
+    dem: 98
+    timezone: "Europe/Brussels"
+  - name: "Tournai"
+    latitude: 50.60715
+    longitude: 3.38932
+    population: 67721
+    dem: 24
+    timezone: "Europe/Brussels"
+  - name: "Thuin"
+    latitude: 50.33933
+    longitude: 4.28604
+    population: 14682
+    dem: 156
+    timezone: "Europe/Brussels"
+  - name: "Theux"
+    latitude: 50.53323
+    longitude: 5.81245
+    population: 11587
+    dem: 168
+    timezone: "Europe/Brussels"
+  - name: "Stavelot"
+    latitude: 50.395
+    longitude: 5.93124
+    population: 6646
+    dem: 297
+    timezone: "Europe/Brussels"
+  - name: "Sprimont"
+    latitude: 50.50922
+    longitude: 5.6595
+    population: 12945
+    dem: 224
+    timezone: "Europe/Brussels"
+  - name: "Spa"
+    latitude: 50.48375
+    longitude: 5.86674
+    population: 10756
+    dem: 312
+    timezone: "Europe/Brussels"
+  - name: "Soumagne"
+    latitude: 50.61385
+    longitude: 5.74679
+    population: 15237
+    dem: 200
+    timezone: "Europe/Brussels"
+  - name: "Sombreffe"
+    latitude: 50.52865
+    longitude: 4.60087
+    population: 7452
+    dem: 146
+    timezone: "Europe/Brussels"
+  - name: "Soignies"
+    latitude: 50.57904
+    longitude: 4.07129
+    population: 24869
+    dem: 89
+    timezone: "Europe/Brussels"
+  - name: "Silly"
+    latitude: 50.64877
+    longitude: 3.92363
+    population: 7887
+    dem: 59
+    timezone: "Europe/Brussels"
+  - name: "Seraing"
+    latitude: 50.58362
+    longitude: 5.50115
+    population: 60737
+    dem: 185
+    timezone: "Europe/Brussels"
+  - name: "Seneffe"
+    latitude: 50.53135
+    longitude: 4.26301
+    population: 11025
+    dem: 112
+    timezone: "Europe/Brussels"
+  - name: "Saint-Vith"
+    latitude: 50.28146
+    longitude: 6.12724
+    population: 9135
+    dem: 474
+    timezone: "Europe/Brussels"
+  - name: "Saint-Nicolas"
+    latitude: 50.62837
+    longitude: 5.53243
+    population: 22586
+    dem: 96
+    timezone: "Europe/Brussels"
+  - name: "Saint-Hubert"
+    latitude: 50.02668
+    longitude: 5.37401
+    population: 5538
+    dem: 432
+    timezone: "Europe/Brussels"
+  - name: "Saint-Ghislain"
+    latitude: 50.44816
+    longitude: 3.81886
+    population: 22500
+    dem: 27
+    timezone: "Europe/Brussels"
+  - name: "Roeulx"
+    latitude: 50.50365
+    longitude: 4.11163
+    population: 7968
+    dem: 132
+    timezone: "Europe/Brussels"
+  - name: "Rochefort"
+    latitude: 50.1631
+    longitude: 5.2216
+    population: 11978
+    dem: 170
+    timezone: "Europe/Brussels"
+  - name: "Rixensart"
+    latitude: 50.71229
+    longitude: 4.52529
+    population: 21616
+    dem: 101
+    timezone: "Europe/Brussels"
+  - name: "Remicourt"
+    latitude: 50.68069
+    longitude: 5.32785
+    population: 5050
+    dem: 126
+    timezone: "Europe/Brussels"
+  - name: "Rebecq-Rognon"
+    latitude: 50.65147
+    longitude: 4.10683
+    population: 10049
+    dem: 65
+    timezone: "Europe/Brussels"
+  - name: "Ramillies"
+    latitude: 50.63395
+    longitude: 4.90119
+    population: 5749
+    dem: 150
+    timezone: "Europe/Brussels"
+  - name: "Raeren"
+    latitude: 50.6672
+    longitude: 6.11535
+    population: 9925
+    dem: 318
+    timezone: "Europe/Brussels"
+  - name: "Quievrain"
+    latitude: 50.40737
+    longitude: 3.68351
+    population: 6560
+    dem: 35
+    timezone: "Europe/Brussels"
+  - name: "Quevy-le-Petit"
+    latitude: 50.36879
+    longitude: 3.93602
+    population: 7689
+    dem: 98
+    timezone: "Europe/Brussels"
+  - name: "Quaregnon"
+    latitude: 50.44067
+    longitude: 3.8653
+    population: 18491
+    dem: 35
+    timezone: "Europe/Brussels"
+  - name: "Profondeville"
+    latitude: 50.37581
+    longitude: 4.86506
+    population: 11401
+    dem: 93
+    timezone: "Europe/Brussels"
+  - name: "Pont-a-Celles"
+    latitude: 50.50518
+    longitude: 4.36887
+    population: 15909
+    dem: 137
+    timezone: "Europe/Brussels"
+  - name: "Plombieres"
+    latitude: 50.73656
+    longitude: 5.95922
+    population: 9596
+    dem: 167
+    timezone: "Europe/Brussels"
+  - name: "Philippeville"
+    latitude: 50.19612
+    longitude: 4.54374
+    population: 8051
+    dem: 290
+    timezone: "Europe/Brussels"
+  - name: "Perwez"
+    latitude: 50.62426
+    longitude: 4.81354
+    population: 7340
+    dem: 147
+    timezone: "Europe/Brussels"
+  - name: "Peruwelz"
+    latitude: 50.50819
+    longitude: 3.59373
+    population: 16647
+    dem: 34
+    timezone: "Europe/Brussels"
+  - name: "Pepinster"
+    latitude: 50.57375
+    longitude: 5.8049
+    population: 9530
+    dem: 193
+    timezone: "Europe/Brussels"
+  - name: "Pecq"
+    latitude: 50.68619
+    longitude: 3.33789
+    population: 5301
+    dem: 23
+    timezone: "Europe/Brussels"
+  - name: "Paliseul"
+    latitude: 49.90395
+    longitude: 5.13537
+    population: 5037
+    dem: 409
+    timezone: "Europe/Brussels"
+  - name: "Oupeye"
+    latitude: 50.71184
+    longitude: 5.6468
+    population: 23594
+    dem: 125
+    timezone: "Europe/Brussels"
+  - name: "Ottignies"
+    latitude: 50.66535
+    longitude: 4.56679
+    population: 9557
+    dem: 65
+    timezone: "Europe/Brussels"
+  - name: "Nivelles"
+    latitude: 50.59833
+    longitude: 4.32848
+    population: 24149
+    dem: 101
+    timezone: "Europe/Brussels"
+  - name: "Neufchateau"
+    latitude: 49.84074
+    longitude: 5.43535
+    population: 6416
+    dem: 424
+    timezone: "Europe/Brussels"
+  - name: "Nassogne"
+    latitude: 50.12849
+    longitude: 5.34274
+    population: 5081
+    dem: 385
+    timezone: "Europe/Brussels"
+  - name: "Nandrin"
+    latitude: 50.50675
+    longitude: 5.41905
+    population: 5480
+    dem: 218
+    timezone: "Europe/Brussels"
+  - name: "Namur"
+    latitude: 50.4669
+    longitude: 4.86746
+    population: 106284
+    dem: 88
+    timezone: "Europe/Brussels"
+  - name: "Mouscron"
+    latitude: 50.74497
+    longitude: 3.20639
+    population: 52069
+    dem: 53
+    timezone: "Europe/Brussels"
+  - name: "Morlanwelz-Mariemont"
+    latitude: 50.45502
+    longitude: 4.24519
+    population: 18233
+    dem: 106
+    timezone: "Europe/Brussels"
+  - name: "Mont-Saint-Guibert"
+    latitude: 50.63427
+    longitude: 4.61061
+    population: 6557
+    dem: 85
+    timezone: "Europe/Brussels"
+  - name: "Mons"
+    latitude: 50.45413
+    longitude: 3.95229
+    population: 91277
+    dem: 56
+    timezone: "Europe/Brussels"
+  - name: "Momignies"
+    latitude: 50.0271
+    longitude: 4.16519
+    population: 5183
+    dem: 262
+    timezone: "Europe/Brussels"
+  - name: "Mettet"
+    latitude: 50.32119
+    longitude: 4.66232
+    population: 12014
+    dem: 241
+    timezone: "Europe/Brussels"
+  - name: "Messancy"
+    latitude: 49.59201
+    longitude: 5.81879
+    population: 7144
+    dem: 277
+    timezone: "Europe/Brussels"
+  - name: "Marchin"
+    latitude: 50.46707
+    longitude: 5.2428
+    population: 5063
+    dem: 264
+    timezone: "Europe/Brussels"
+  - name: "Marche-en-Famenne"
+    latitude: 50.22678
+    longitude: 5.34416
+    population: 16856
+    dem: 214
+    timezone: "Europe/Brussels"
+  - name: "Manage"
+    latitude: 50.50312
+    longitude: 4.23589
+    population: 22196
+    dem: 134
+    timezone: "Europe/Brussels"
+  - name: "Malmedy"
+    latitude: 50.42686
+    longitude: 6.02794
+    population: 11514
+    dem: 344
+    timezone: "Europe/Brussels"
+  - name: "Louvain-la-Neuve"
+    latitude: 50.66829
+    longitude: 4.61443
+    population: 29521
+    dem: 117
+    timezone: "Europe/Brussels"
+  - name: "Lobbes"
+    latitude: 50.35258
+    longitude: 4.26716
+    population: 5467
+    dem: 170
+    timezone: "Europe/Brussels"
+  - name: "Limbourg"
+    latitude: 50.61222
+    longitude: 5.9412
+    population: 5612
+    dem: 262
+    timezone: "Europe/Brussels"
+  - name: "Liege"
+    latitude: 50.63373
+    longitude: 5.56749
+    population: 182597
+    dem: 66
+    timezone: "Europe/Brussels"
+  - name: "Lessines"
+    latitude: 50.71104
+    longitude: 3.83579
+    population: 17687
+    dem: 23
+    timezone: "Europe/Brussels"
+  - name: "La Louviere"
+    latitude: 50.48657
+    longitude: 4.18785
+    population: 76668
+    dem: 133
+    timezone: "Europe/Brussels"
+  - name: "La Hulpe"
+    latitude: 50.73091
+    longitude: 4.48577
+    population: 7415
+    dem: 86
+    timezone: "Europe/Brussels"
+  - name: "La Calamine"
+    latitude: 50.71809
+    longitude: 6.01107
+    population: 10232
+    dem: 220
+    timezone: "Europe/Brussels"
+  - name: "La Bruyere"
+    latitude: 50.39478
+    longitude: 4.61444
+    population: 8194
+    dem: 194
+    timezone: "Europe/Brussels"
+  - name: "Jurbise"
+    latitude: 50.531
+    longitude: 3.90942
+    population: 9483
+    dem: 70
+    timezone: "Europe/Brussels"
+  - name: "Juprelle"
+    latitude: 50.7076
+    longitude: 5.53127
+    population: 8354
+    dem: 147
+    timezone: "Europe/Brussels"
+  - name: "Jodoigne"
+    latitude: 50.72357
+    longitude: 4.86914
+    population: 11930
+    dem: 74
+    timezone: "Europe/Brussels"
+  - name: "Jalhay"
+    latitude: 50.55876
+    longitude: 5.96764
+    population: 7688
+    dem: 386
+    timezone: "Europe/Brussels"
+  - name: "Ittre"
+    latitude: 50.64396
+    longitude: 4.26476
+    population: 6014
+    dem: 111
+    timezone: "Europe/Brussels"
+  - name: "Huy"
+    latitude: 50.51894
+    longitude: 5.23284
+    population: 19973
+    dem: 75
+    timezone: "Europe/Brussels"
+  - name: "Herve"
+    latitude: 50.64083
+    longitude: 5.79353
+    population: 16544
+    dem: 300
+    timezone: "Europe/Brussels"
+  - name: "Herstal"
+    latitude: 50.66415
+    longitude: 5.62346
+    population: 36503
+    dem: 81
+    timezone: "Europe/Brussels"
+  - name: "Hensies"
+    latitude: 50.43263
+    longitude: 3.68411
+    population: 6390
+    dem: 19
+    timezone: "Europe/Brussels"
+  - name: "Hastiere-Lavaux"
+    latitude: 50.21849
+    longitude: 4.82446
+    population: 5147
+    dem: 129
+    timezone: "Europe/Brussels"
+  - name: "Hannut"
+    latitude: 50.67142
+    longitude: 5.07898
+    population: 14129
+    dem: 140
+    timezone: "Europe/Brussels"
+  - name: "Hamois"
+    latitude: 50.3402
+    longitude: 5.15619
+    population: 6662
+    dem: 250
+    timezone: "Europe/Brussels"
+  - name: "Habay-la-Vieille"
+    latitude: 49.72329
+    longitude: 5.61999
+    population: 7704
+    dem: 370
+    timezone: "Europe/Brussels"
+  - name: "Grez-Doiceau"
+    latitude: 50.73901
+    longitude: 4.69829
+    population: 12367
+    dem: 46
+    timezone: "Europe/Brussels"
+  - name: "Gesves"
+    latitude: 50.40146
+    longitude: 5.07457
+    population: 6150
+    dem: 246
+    timezone: "Europe/Brussels"
+  - name: "Gerpinnes"
+    latitude: 50.33789
+    longitude: 4.52731
+    population: 11977
+    dem: 185
+    timezone: "Europe/Brussels"
+  - name: "Genappe"
+    latitude: 50.61173
+    longitude: 4.45152
+    population: 14266
+    dem: 112
+    timezone: "Europe/Brussels"
+  - name: "Gembloux"
+    latitude: 50.56149
+    longitude: 4.69889
+    population: 21676
+    dem: 158
+    timezone: "Europe/Brussels"
+  - name: "Frasnes-lez-Buissenal"
+    latitude: 50.66783
+    longitude: 3.62047
+    population: 10936
+    dem: 38
+    timezone: "Europe/Brussels"
+  - name: "Frameries"
+    latitude: 50.40578
+    longitude: 3.89603
+    population: 20598
+    dem: 113
+    timezone: "Europe/Brussels"
+  - name: "Fosses-la-Ville"
+    latitude: 50.39517
+    longitude: 4.69623
+    population: 9062
+    dem: 176
+    timezone: "Europe/Brussels"
+  - name: "Florenville"
+    latitude: 49.69983
+    longitude: 5.3074
+    population: 5464
+    dem: 342
+    timezone: "Europe/Brussels"
+  - name: "Florennes"
+    latitude: 50.25127
+    longitude: 4.60636
+    population: 10723
+    dem: 262
+    timezone: "Europe/Brussels"
+  - name: "Floreffe"
+    latitude: 50.43452
+    longitude: 4.7596
+    population: 7480
+    dem: 92
+    timezone: "Europe/Brussels"
+  - name: "Fleurus"
+    latitude: 50.48351
+    longitude: 4.55006
+    population: 22080
+    dem: 158
+    timezone: "Europe/Brussels"
+  - name: "Fleron"
+    latitude: 50.61516
+    longitude: 5.68062
+    population: 15994
+    dem: 258
+    timezone: "Europe/Brussels"
+  - name: "Flemalle-Haute"
+    latitude: 50.59994
+    longitude: 5.44471
+    population: 25144
+    dem: 175
+    timezone: "Europe/Brussels"
+  - name: "Farciennes"
+    latitude: 50.43006
+    longitude: 4.54152
+    population: 11488
+    dem: 128
+    timezone: "Europe/Brussels"
+  - name: "Eupen"
+    latitude: 50.6279
+    longitude: 6.03647
+    population: 18029
+    dem: 298
+    timezone: "Europe/Brussels"
+  - name: "Etalle"
+    latitude: 49.67385
+    longitude: 5.60019
+    population: 5228
+    dem: 334
+    timezone: "Europe/Brussels"
+  - name: "Estinnes-au-Val"
+    latitude: 50.41016
+    longitude: 4.10477
+    population: 7573
+    dem: 60
+    timezone: "Europe/Brussels"
+  - name: "Estaimpuis"
+    latitude: 50.70485
+    longitude: 3.26785
+    population: 9340
+    dem: 27
+    timezone: "Europe/Brussels"
+  - name: "Esneux"
+    latitude: 50.53596
+    longitude: 5.56775
+    population: 13497
+    dem: 115
+    timezone: "Europe/Brussels"
+  - name: "Erquelinnes"
+    latitude: 50.30688
+    longitude: 4.11129
+    population: 9396
+    dem: 137
+    timezone: "Europe/Brussels"
+  - name: "Engis"
+    latitude: 50.58156
+    longitude: 5.39916
+    population: 5737
+    dem: 80
+    timezone: "Europe/Brussels"
+  - name: "Enghien"
+    latitude: 50.68373
+    longitude: 4.03284
+    population: 11367
+    dem: 58
+    timezone: "Europe/Brussels"
+  - name: "Ellezelles"
+    latitude: 50.73512
+    longitude: 3.67985
+    population: 5566
+    dem: 56
+    timezone: "Europe/Brussels"
+  - name: "Eghezee"
+    latitude: 50.59076
+    longitude: 4.91175
+    population: 14352
+    dem: 147
+    timezone: "Europe/Brussels"
+  - name: "Ecaussinnes-dEnghien"
+    latitude: 50.56822
+    longitude: 4.1658
+    population: 9802
+    dem: 104
+    timezone: "Europe/Brussels"
+  - name: "Durbuy"
+    latitude: 50.35291
+    longitude: 5.45631
+    population: 10251
+    dem: 152
+    timezone: "Europe/Brussels"
+  - name: "Dour"
+    latitude: 50.39583
+    longitude: 3.77792
+    population: 16861
+    dem: 93
+    timezone: "Europe/Brussels"
+  - name: "Dison"
+    latitude: 50.61004
+    longitude: 5.8534
+    population: 13642
+    dem: 197
+    timezone: "Europe/Brussels"
+  - name: "Dinant"
+    latitude: 50.25807
+    longitude: 4.91166
+    population: 12875
+    dem: 96
+    timezone: "Europe/Brussels"
+  - name: "Dalhem"
+    latitude: 50.71315
+    longitude: 5.72774
+    population: 6391
+    dem: 98
+    timezone: "Europe/Brussels"
+  - name: "Couvin"
+    latitude: 50.05284
+    longitude: 4.49495
+    population: 13518
+    dem: 185
+    timezone: "Europe/Brussels"
+  - name: "Court-Saint-Etienne"
+    latitude: 50.63378
+    longitude: 4.56851
+    population: 9353
+    dem: 85
+    timezone: "Europe/Brussels"
+  - name: "Courcelles"
+    latitude: 50.46379
+    longitude: 4.3747
+    population: 29473
+    dem: 160
+    timezone: "Europe/Brussels"
+  - name: "Comblain-au-Pont"
+    latitude: 50.47488
+    longitude: 5.57711
+    population: 5308
+    dem: 103
+    timezone: "Europe/Brussels"
+  - name: "Colfontaine"
+    latitude: 50.4141
+    longitude: 3.85569
+    population: 19964
+    dem: 79
+    timezone: "Europe/Brussels"
+  - name: "Ciney"
+    latitude: 50.29449
+    longitude: 5.10015
+    population: 14830
+    dem: 261
+    timezone: "Europe/Brussels"
+  - name: "Chimay"
+    latitude: 50.04856
+    longitude: 4.31712
+    population: 9720
+    dem: 240
+    timezone: "Europe/Brussels"
+  - name: "Chievres"
+    latitude: 50.58787
+    longitude: 3.80711
+    population: 6045
+    dem: 52
+    timezone: "Europe/Brussels"
+  - name: "Chaumont-Gistoux"
+    latitude: 50.67753
+    longitude: 4.7212
+    population: 10943
+    dem: 121
+    timezone: "Europe/Brussels"
+  - name: "Chaudfontaine"
+    latitude: 50.5828
+    longitude: 5.6341
+    population: 20960
+    dem: 218
+    timezone: "Europe/Brussels"
+  - name: "Chatelet"
+    latitude: 50.40338
+    longitude: 4.52826
+    population: 35238
+    dem: 118
+    timezone: "Europe/Brussels"
+  - name: "Chastre-Villeroux-Blanmont"
+    latitude: 50.60857
+    longitude: 4.64198
+    population: 6243
+    dem: 133
+    timezone: "Europe/Brussels"
+  - name: "Chasse Royale"
+    latitude: 50.42842
+    longitude: 3.95001
+    population: 0
+    dem: 42
+    timezone: "Europe/Brussels"
+  - name: "Charleroi"
+    latitude: 50.41136
+    longitude: 4.44448
+    population: 200132
+    dem: 136
+    timezone: "Europe/Brussels"
+  - name: "Chapelle-lez-Herlaimont"
+    latitude: 50.4713
+    longitude: 4.28227
+    population: 14353
+    dem: 165
+    timezone: "Europe/Brussels"
+  - name: "Celles"
+    latitude: 50.71229
+    longitude: 3.45733
+    population: 5471
+    dem: 19
+    timezone: "Europe/Brussels"
+  - name: "Butgenbach"
+    latitude: 50.42689
+    longitude: 6.20504
+    population: 5516
+    dem: 579
+    timezone: "Europe/Brussels"
+  - name: "Bullange"
+    latitude: 50.40731
+    longitude: 6.25749
+    population: 5340
+    dem: 582
+    timezone: "Europe/Brussels"
+  - name: "Brunehault"
+    latitude: 50.50524
+    longitude: 4.43209
+    population: 7592
+    dem: 147
+    timezone: "Europe/Brussels"
+  - name: "Braives"
+    latitude: 50.61745
+    longitude: 5.13302
+    population: 5672
+    dem: 123
+    timezone: "Europe/Brussels"
+  - name: "Braine-le-Comte"
+    latitude: 50.60979
+    longitude: 4.14658
+    population: 20133
+    dem: 96
+    timezone: "Europe/Brussels"
+  - name: "Braine-le-Chateau"
+    latitude: 50.6799
+    longitude: 4.27385
+    population: 9627
+    dem: 78
+    timezone: "Europe/Brussels"
+  - name: "Braine-lAlleud"
+    latitude: 50.68363
+    longitude: 4.36784
+    population: 37512
+    dem: 93
+    timezone: "Europe/Brussels"
+  - name: "Boussu"
+    latitude: 50.43417
+    longitude: 3.7944
+    population: 20058
+    dem: 32
+    timezone: "Europe/Brussels"
+  - name: "Bouillon"
+    latitude: 49.79324
+    longitude: 5.06703
+    population: 5347
+    dem: 226
+    timezone: "Europe/Brussels"
+  - name: "Blegny"
+    latitude: 50.67255
+    longitude: 5.72508
+    population: 12745
+    dem: 218
+    timezone: "Europe/Brussels"
+  - name: "Binche"
+    latitude: 50.41155
+    longitude: 4.16469
+    population: 32030
+    dem: 92
+    timezone: "Europe/Brussels"
+  - name: "Beyne-Heusay"
+    latitude: 50.62251
+    longitude: 5.66508
+    population: 11608
+    dem: 231
+    timezone: "Europe/Brussels"
+  - name: "Bertrix"
+    latitude: 49.85596
+    longitude: 5.25539
+    population: 8063
+    dem: 438
+    timezone: "Europe/Brussels"
+  - name: "Bernissart"
+    latitude: 50.4746
+    longitude: 3.64961
+    population: 11588
+    dem: 20
+    timezone: "Europe/Brussels"
+  - name: "Beloeil"
+    latitude: 50.55047
+    longitude: 3.73484
+    population: 13405
+    dem: 59
+    timezone: "Europe/Brussels"
+  - name: "Beauvechain"
+    latitude: 50.78195
+    longitude: 4.7718
+    population: 6334
+    dem: 86
+    timezone: "Europe/Brussels"
+  - name: "Beauraing"
+    latitude: 50.11042
+    longitude: 4.95554
+    population: 8242
+    dem: 184
+    timezone: "Europe/Brussels"
+  - name: "Beaumont"
+    latitude: 50.23699
+    longitude: 4.23926
+    population: 6645
+    dem: 222
+    timezone: "Europe/Brussels"
+  - name: "Bastogne"
+    latitude: 50.00347
+    longitude: 5.71844
+    population: 14395
+    dem: 502
+    timezone: "Europe/Brussels"
+  - name: "Bassenge"
+    latitude: 50.75883
+    longitude: 5.60989
+    population: 8151
+    dem: 75
+    timezone: "Europe/Brussels"
+  - name: "Basse Lasne"
+    latitude: 50.69503
+    longitude: 4.49218
+    population: 13861
+    dem: 65
+    timezone: "Europe/Brussels"
+  - name: "Aywaille"
+    latitude: 50.47411
+    longitude: 5.67684
+    population: 10636
+    dem: 124
+    timezone: "Europe/Brussels"
+  - name: "Awans"
+    latitude: 50.66774
+    longitude: 5.46329
+    population: 8612
+    dem: 152
+    timezone: "Europe/Brussels"
+  - name: "Aubange"
+    latitude: 49.56652
+    longitude: 5.80492
+    population: 14932
+    dem: 278
+    timezone: "Europe/Brussels"
+  - name: "Ath"
+    latitude: 50.62937
+    longitude: 3.77801
+    population: 26681
+    dem: 32
+    timezone: "Europe/Brussels"
+  - name: "Assesse"
+    latitude: 50.36934
+    longitude: 5.02204
+    population: 6279
+    dem: 247
+    timezone: "Europe/Brussels"
+  - name: "Arlon"
+    latitude: 49.68333
+    longitude: 5.81667
+    population: 26179
+    dem: 421
+    timezone: "Europe/Brussels"
+  - name: "Antoing"
+    latitude: 50.56765
+    longitude: 3.4492
+    population: 7507
+    dem: 31
+    timezone: "Europe/Brussels"
+  - name: "Ans"
+    latitude: 50.6623
+    longitude: 5.52029
+    population: 27297
+    dem: 181
+    timezone: "Europe/Brussels"
+  - name: "Anhee"
+    latitude: 50.31039
+    longitude: 4.87827
+    population: 7125
+    dem: 91
+    timezone: "Europe/Brussels"
+  - name: "Anderlues"
+    latitude: 50.40704
+    longitude: 4.27136
+    population: 11597
+    dem: 181
+    timezone: "Europe/Brussels"
+  - name: "Andenne"
+    latitude: 50.48941
+    longitude: 5.09513
+    population: 24055
+    dem: 78
+    timezone: "Europe/Brussels"
+  - name: "Ambleve"
+    latitude: 50.35357
+    longitude: 6.17002
+    population: 5221
+    dem: 467
+    timezone: "Europe/Brussels"
+  - name: "Amay"
+    latitude: 50.54829
+    longitude: 5.30974
+    population: 13307
+    dem: 131
+    timezone: "Europe/Brussels"
+  - name: "Aiseau"
+    latitude: 50.41158
+    longitude: 4.58671
+    population: 10906
+    dem: 117
+    timezone: "Europe/Brussels"
+- name: "Flanders"
+  cities:
+  - name: "Zwijndrecht"
+    latitude: 51.21979
+    longitude: 4.32664
+    population: 18249
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Zwevegem"
+    latitude: 50.81268
+    longitude: 3.33848
+    population: 23358
+    dem: 30
+    timezone: "Europe/Brussels"
+  - name: "Zutendaal"
+    latitude: 50.93306
+    longitude: 5.5753
+    population: 6962
+    dem: 84
+    timezone: "Europe/Brussels"
+  - name: "Zulte"
+    latitude: 50.91954
+    longitude: 3.44859
+    population: 14670
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Zoutleeuw"
+    latitude: 50.83316
+    longitude: 5.10376
+    population: 7897
+    dem: 30
+    timezone: "Europe/Brussels"
+  - name: "Zottegem"
+    latitude: 50.86955
+    longitude: 3.81052
+    population: 24434
+    dem: 63
+    timezone: "Europe/Brussels"
+  - name: "Zonnebeke"
+    latitude: 50.8726
+    longitude: 2.98725
+    population: 11581
+    elevation: 54
+    dem: 34
+    timezone: "Europe/Brussels"
+  - name: "Zonhoven"
+    latitude: 50.99064
+    longitude: 5.36819
+    population: 19922
+    dem: 44
+    timezone: "Europe/Brussels"
+  - name: "Zomergem"
+    latitude: 51.11994
+    longitude: 3.56496
+    population: 8158
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Zoersel"
+    latitude: 51.26825
+    longitude: 4.71296
+    population: 20642
+    dem: 17
+    timezone: "Europe/Brussels"
+  - name: "Zingem"
+    latitude: 50.90409
+    longitude: 3.65305
+    population: 6588
+    dem: 16
+    timezone: "Europe/Brussels"
+  - name: "Zemst"
+    latitude: 50.98318
+    longitude: 4.46079
+    population: 21096
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Zelzate"
+    latitude: 51.18963
+    longitude: 3.80777
+    population: 11901
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Zele"
+    latitude: 51.06566
+    longitude: 4.0403
+    population: 20236
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Zedelgem"
+    latitude: 51.14236
+    longitude: 3.1368
+    population: 21968
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Zaventem"
+    latitude: 50.88365
+    longitude: 4.47298
+    population: 28188
+    dem: 46
+    timezone: "Europe/Brussels"
+  - name: "Zandhoven"
+    latitude: 51.21488
+    longitude: 4.66164
+    population: 12306
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Wuustwezel"
+    latitude: 51.39214
+    longitude: 4.59546
+    population: 18117
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Wommelgem"
+    latitude: 51.20452
+    longitude: 4.5225
+    population: 11917
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Wingene"
+    latitude: 51.05782
+    longitude: 3.27359
+    population: 12887
+    dem: 26
+    timezone: "Europe/Brussels"
+  - name: "Willebroek"
+    latitude: 51.06041
+    longitude: 4.36019
+    population: 22808
+    dem: 4
+    timezone: "Europe/Brussels"
+  - name: "Wijnegem"
+    latitude: 51.22787
+    longitude: 4.51895
+    population: 8932
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Wielsbeke"
+    latitude: 50.9
+    longitude: 3.36667
+    population: 8828
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Wichelen"
+    latitude: 51.00526
+    longitude: 3.97683
+    population: 11014
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Wezembeek-Oppem"
+    latitude: 50.8395
+    longitude: 4.49427
+    population: 13245
+    dem: 67
+    timezone: "Europe/Brussels"
+  - name: "Wevelgem"
+    latitude: 50.8
+    longitude: 3.16667
+    population: 30954
+    dem: 15
+    timezone: "Europe/Brussels"
+  - name: "Wetteren"
+    latitude: 51.00526
+    longitude: 3.88341
+    population: 22930
+    dem: 16
+    timezone: "Europe/Brussels"
+  - name: "Westerlo"
+    latitude: 51.09049
+    longitude: 4.91544
+    population: 22579
+    dem: 14
+    timezone: "Europe/Brussels"
+  - name: "Wervik"
+    latitude: 50.78069
+    longitude: 3.03854
+    population: 17340
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Wemmel"
+    latitude: 50.90812
+    longitude: 4.30613
+    population: 14406
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Wellen"
+    latitude: 50.84096
+    longitude: 5.33867
+    population: 6804
+    dem: 47
+    timezone: "Europe/Brussels"
+  - name: "Waregem"
+    latitude: 50.88898
+    longitude: 3.42756
+    population: 35896
+    dem: 13
+    timezone: "Europe/Brussels"
+  - name: "Wachtebeke"
+    latitude: 51.16852
+    longitude: 3.87183
+    population: 6911
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Waasmunster"
+    latitude: 51.10572
+    longitude: 4.08573
+    population: 10460
+    dem: 5
+    timezone: "Europe/Brussels"
+  - name: "Waarschoot"
+    latitude: 51.1525
+    longitude: 3.605
+    population: 7762
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Vosselaar"
+    latitude: 51.30856
+    longitude: 4.8896
+    population: 10317
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Vorselaar"
+    latitude: 51.20243
+    longitude: 4.77259
+    population: 7238
+    dem: 14
+    timezone: "Europe/Brussels"
+  - name: "Vilvoorde"
+    latitude: 50.92814
+    longitude: 4.42938
+    population: 36955
+    dem: 19
+    timezone: "Europe/Brussels"
+  - name: "Veurne"
+    latitude: 51.07316
+    longitude: 2.66803
+    population: 11983
+    dem: 3
+    timezone: "Europe/Brussels"
+  - name: "Turnhout"
+    latitude: 51.32254
+    longitude: 4.94471
+    population: 39654
+    dem: 29
+    timezone: "Europe/Brussels"
+  - name: "Tremelo"
+    latitude: 50.99231
+    longitude: 4.70807
+    population: 13721
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Torhout"
+    latitude: 51.0656
+    longitude: 3.10085
+    population: 18933
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Tongeren"
+    latitude: 50.78054
+    longitude: 5.46484
+    population: 29816
+    dem: 107
+    timezone: "Europe/Brussels"
+  - name: "Tienen"
+    latitude: 50.80745
+    longitude: 4.9378
+    population: 31743
+    dem: 46
+    timezone: "Europe/Brussels"
+  - name: "Tielt"
+    latitude: 50.99931
+    longitude: 3.32707
+    population: 19299
+    dem: 46
+    timezone: "Europe/Brussels"
+  - name: "Tessenderlo"
+    latitude: 51.06513
+    longitude: 5.08856
+    population: 16574
+    dem: 27
+    timezone: "Europe/Brussels"
+  - name: "Tervuren"
+    latitude: 50.82372
+    longitude: 4.51418
+    population: 20623
+    dem: 79
+    timezone: "Europe/Brussels"
+  - name: "Ternat"
+    latitude: 50.86654
+    longitude: 4.16682
+    population: 14569
+    dem: 21
+    timezone: "Europe/Brussels"
+  - name: "Temse"
+    latitude: 51.12794
+    longitude: 4.21372
+    population: 26054
+    dem: 15
+    timezone: "Europe/Brussels"
+  - name: "Stekene"
+    latitude: 51.2099
+    longitude: 4.03651
+    population: 16989
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Steenokkerzeel"
+    latitude: 50.91851
+    longitude: 4.50989
+    population: 10566
+    dem: 23
+    timezone: "Europe/Brussels"
+  - name: "Staden"
+    latitude: 50.97456
+    longitude: 3.01469
+    population: 10786
+    dem: 21
+    timezone: "Europe/Brussels"
+  - name: "Stabroek"
+    latitude: 51.33189
+    longitude: 4.37127
+    population: 17294
+    dem: 3
+    timezone: "Europe/Brussels"
+  - name: "Sint-Truiden"
+    latitude: 50.81679
+    longitude: 5.18647
+    population: 37859
+    dem: 54
+    timezone: "Europe/Brussels"
+  - name: "Sint-Pieters-Leeuw"
+    latitude: 50.77926
+    longitude: 4.24355
+    population: 30446
+    dem: 45
+    timezone: "Europe/Brussels"
+  - name: "Sint-Niklaas"
+    latitude: 51.16509
+    longitude: 4.1437
+    population: 69010
+    dem: 21
+    timezone: "Europe/Brussels"
+  - name: "Sint-Martens-Lennik"
+    latitude: 50.81158
+    longitude: 4.16965
+    population: 8818
+    dem: 57
+    timezone: "Europe/Brussels"
+  - name: "Sint-Martens-Latem"
+    latitude: 51.01459
+    longitude: 3.63779
+    population: 8303
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Sint-Maria-Lierde"
+    latitude: 50.82172
+    longitude: 3.84814
+    population: 6449
+    dem: 50
+    timezone: "Europe/Brussels"
+  - name: "Sint-Lievens-Houtem"
+    latitude: 50.9197
+    longitude: 3.86225
+    population: 9146
+    dem: 38
+    timezone: "Europe/Brussels"
+  - name: "Sint-Laureins"
+    latitude: 51.24202
+    longitude: 3.52441
+    population: 6657
+    dem: 2
+    timezone: "Europe/Brussels"
+  - name: "Sint-Kruis"
+    latitude: 51.21399
+    longitude: 3.24949
+    population: 16000
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Sint-Katelijne-Waver"
+    latitude: 51.06691
+    longitude: 4.53469
+    population: 19487
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Sint-Gillis-Waas"
+    latitude: 51.21914
+    longitude: 4.12374
+    population: 17658
+    dem: 5
+    timezone: "Europe/Brussels"
+  - name: "Sint-Genesius-Rode"
+    latitude: 50.74645
+    longitude: 4.35754
+    population: 17990
+    dem: 83
+    timezone: "Europe/Brussels"
+  - name: "Sint-Amands"
+    latitude: 51.05645
+    longitude: 4.20957
+    population: 7653
+    dem: 5
+    timezone: "Europe/Brussels"
+  - name: "Schoten"
+    latitude: 51.25251
+    longitude: 4.50268
+    population: 33622
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Schilde"
+    latitude: 51.24107
+    longitude: 4.58336
+    population: 20373
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Schelle"
+    latitude: 51.12615
+    longitude: 4.34114
+    population: 7675
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Rumst"
+    latitude: 51.08153
+    longitude: 4.42217
+    population: 14521
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Ruiselede"
+    latitude: 51.04039
+    longitude: 3.39416
+    population: 5129
+    dem: 15
+    timezone: "Europe/Brussels"
+  - name: "Rotselaar"
+    latitude: 50.95302
+    longitude: 4.71665
+    population: 15007
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Ronse"
+    latitude: 50.74574
+    longitude: 3.6005
+    population: 24204
+    dem: 42
+    timezone: "Europe/Brussels"
+  - name: "Roeselare"
+    latitude: 50.94653
+    longitude: 3.12269
+    population: 56016
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Rijkevorsel"
+    latitude: 51.34795
+    longitude: 4.76053
+    population: 10606
+    dem: 24
+    timezone: "Europe/Brussels"
+  - name: "Riemst"
+    latitude: 50.80995
+    longitude: 5.60131
+    population: 15809
+    dem: 105
+    timezone: "Europe/Brussels"
+  - name: "Retie"
+    latitude: 51.26652
+    longitude: 5.08242
+    population: 10069
+    dem: 24
+    timezone: "Europe/Brussels"
+  - name: "Ravels"
+    latitude: 51.37274
+    longitude: 4.9921
+    population: 13560
+    dem: 32
+    timezone: "Europe/Brussels"
+  - name: "Ranst"
+    latitude: 51.18983
+    longitude: 4.56533
+    population: 17405
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Puurs"
+    latitude: 51.07409
+    longitude: 4.28844
+    population: 15944
+    dem: 4
+    timezone: "Europe/Brussels"
+  - name: "Putte"
+    latitude: 51.05337
+    longitude: 4.63263
+    population: 15276
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Poperinge"
+    latitude: 50.85386
+    longitude: 2.72659
+    population: 19537
+    dem: 19
+    timezone: "Europe/Brussels"
+  - name: "Pittem"
+    latitude: 50.99279
+    longitude: 3.26317
+    population: 6589
+    dem: 32
+    timezone: "Europe/Brussels"
+  - name: "Peer"
+    latitude: 51.1303
+    longitude: 5.45952
+    population: 15551
+    dem: 64
+    timezone: "Europe/Brussels"
+  - name: "Overpelt"
+    latitude: 51.21038
+    longitude: 5.41557
+    population: 13344
+    dem: 44
+    timezone: "Europe/Brussels"
+  - name: "Overijse"
+    latitude: 50.77436
+    longitude: 4.53461
+    population: 23486
+    dem: 88
+    timezone: "Europe/Brussels"
+  - name: "Oud-Turnhout"
+    latitude: 51.31978
+    longitude: 4.9841
+    population: 12354
+    dem: 25
+    timezone: "Europe/Brussels"
+  - name: "Oud-Heverlee"
+    latitude: 50.83522
+    longitude: 4.66421
+    population: 10533
+    dem: 56
+    timezone: "Europe/Brussels"
+  - name: "Oudenburg"
+    latitude: 51.18489
+    longitude: 3.00035
+    population: 8752
+    dem: 3
+    timezone: "Europe/Brussels"
+  - name: "Oudenaarde"
+    latitude: 50.85168
+    longitude: 3.60891
+    population: 27935
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Opwijk"
+    latitude: 50.96724
+    longitude: 4.18442
+    population: 12045
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Opglabbeek"
+    latitude: 51.04258
+    longitude: 5.58346
+    population: 9452
+    dem: 72
+    timezone: "Europe/Brussels"
+  - name: "Oostrozebeke"
+    latitude: 50.92093
+    longitude: 3.33799
+    population: 7489
+    dem: 14
+    timezone: "Europe/Brussels"
+  - name: "Oostmalle"
+    latitude: 51.3
+    longitude: 4.73333
+    population: 7034
+    dem: 23
+    timezone: "Europe/Brussels"
+  - name: "Oostkamp"
+    latitude: 51.15432
+    longitude: 3.23128
+    population: 21489
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Oosterzele"
+    latitude: 50.95261
+    longitude: 3.79826
+    population: 13151
+    dem: 45
+    timezone: "Europe/Brussels"
+  - name: "Ostend"
+    latitude: 51.21551
+    longitude: 2.927
+    population: 69011
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Oostduinkerke"
+    latitude: 51.11565
+    longitude: 2.68217
+    population: 8534
+    dem: 5
+    timezone: "Europe/Brussels"
+  - name: "Olen"
+    latitude: 51.14391
+    longitude: 4.8598
+    population: 11070
+    dem: 25
+    timezone: "Europe/Brussels"
+  - name: "Ninove"
+    latitude: 50.82776
+    longitude: 4.02657
+    population: 34795
+    dem: 17
+    timezone: "Europe/Brussels"
+  - name: "Nijlen"
+    latitude: 51.16096
+    longitude: 4.67008
+    population: 20792
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Nieuwpoort"
+    latitude: 51.13008
+    longitude: 2.75135
+    population: 10845
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Nieuwerkerken"
+    latitude: 50.8638
+    longitude: 5.19467
+    population: 6466
+    dem: 44
+    timezone: "Europe/Brussels"
+  - name: "Niel"
+    latitude: 51.11096
+    longitude: 4.33428
+    population: 8656
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Nevele"
+    latitude: 51.03531
+    longitude: 3.54574
+    population: 11153
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Neerpelt"
+    latitude: 51.22807
+    longitude: 5.4427
+    population: 16122
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Nazareth"
+    latitude: 50.95686
+    longitude: 3.59425
+    population: 10890
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Mortsel"
+    latitude: 51.16697
+    longitude: 4.45127
+    population: 24525
+    dem: 19
+    timezone: "Europe/Brussels"
+  - name: "Moorslede"
+    latitude: 50.8919
+    longitude: 3.06117
+    population: 10720
+    dem: 43
+    timezone: "Europe/Brussels"
+  - name: "Mol"
+    latitude: 51.19188
+    longitude: 5.11662
+    population: 32659
+    dem: 27
+    timezone: "Europe/Brussels"
+  - name: "Moerbeke"
+    latitude: 51.17409
+    longitude: 3.93001
+    population: 5855
+    dem: 1
+    timezone: "Europe/Brussels"
+  - name: "Middelkerke"
+    latitude: 51.18532
+    longitude: 2.82077
+    population: 17789
+    dem: 4
+    timezone: "Europe/Brussels"
+  - name: "Meulebeke"
+    latitude: 50.95136
+    longitude: 3.28804
+    population: 10948
+    dem: 19
+    timezone: "Europe/Brussels"
+  - name: "Merksplas"
+    latitude: 51.35851
+    longitude: 4.86513
+    population: 7963
+    dem: 26
+    timezone: "Europe/Brussels"
+  - name: "Merelbeke"
+    latitude: 50.99447
+    longitude: 3.74621
+    population: 22047
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Merchtem"
+    latitude: 50.95129
+    longitude: 4.23197
+    population: 14660
+    dem: 25
+    timezone: "Europe/Brussels"
+  - name: "Menen"
+    latitude: 50.79722
+    longitude: 3.12245
+    population: 31916
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Melle"
+    latitude: 51.00232
+    longitude: 3.80526
+    population: 10687
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Meise"
+    latitude: 50.93934
+    longitude: 4.32655
+    population: 18497
+    dem: 58
+    timezone: "Europe/Brussels"
+  - name: "Meerhout"
+    latitude: 51.1321
+    longitude: 5.07842
+    population: 9346
+    dem: 30
+    timezone: "Europe/Brussels"
+  - name: "Mechelen"
+    latitude: 51.02574
+    longitude: 4.47762
+    population: 77530
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Maldegem"
+    latitude: 51.20737
+    longitude: 3.44511
+    population: 22092
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Machelen"
+    latitude: 50.91061
+    longitude: 4.44174
+    population: 12252
+    dem: 30
+    timezone: "Europe/Brussels"
+  - name: "Maasmechelen"
+    latitude: 50.96545
+    longitude: 5.69452
+    population: 36251
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Maaseik"
+    latitude: 51.09802
+    longitude: 5.78379
+    population: 23684
+    dem: 30
+    timezone: "Europe/Brussels"
+  - name: "Lummen"
+    latitude: 50.98772
+    longitude: 5.19121
+    population: 13689
+    dem: 41
+    timezone: "Europe/Brussels"
+  - name: "Lubbeek"
+    latitude: 50.88278
+    longitude: 4.83896
+    population: 13574
+    dem: 59
+    timezone: "Europe/Brussels"
+  - name: "Lovendegem"
+    latitude: 51.10168
+    longitude: 3.61298
+    population: 9272
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Londerzeel"
+    latitude: 51.00468
+    longitude: 4.30304
+    population: 17274
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Lommel"
+    latitude: 51.23074
+    longitude: 5.31349
+    population: 31993
+    dem: 48
+    timezone: "Europe/Brussels"
+  - name: "Lokeren"
+    latitude: 51.10364
+    longitude: 3.99339
+    population: 37567
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Lochristi"
+    latitude: 51.09644
+    longitude: 3.83194
+    population: 19696
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Lint"
+    latitude: 51.12707
+    longitude: 4.49669
+    population: 7982
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Lille"
+    latitude: 51.24197
+    longitude: 4.82313
+    population: 15466
+    dem: 17
+    timezone: "Europe/Brussels"
+  - name: "Lier"
+    latitude: 51.13128
+    longitude: 4.57041
+    population: 33272
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Liedekerke"
+    latitude: 50.86892
+    longitude: 4.08743
+    population: 11980
+    dem: 24
+    timezone: "Europe/Brussels"
+  - name: "Lichtervelde"
+    latitude: 51.03333
+    longitude: 3.15
+    population: 8169
+    dem: 24
+    timezone: "Europe/Brussels"
+  - name: "Leuven"
+    latitude: 50.87959
+    longitude: 4.70093
+    population: 92892
+    dem: 28
+    timezone: "Europe/Brussels"
+  - name: "Leopoldsburg"
+    latitude: 51.11667
+    longitude: 5.25
+    population: 14149
+    dem: 48
+    timezone: "Europe/Brussels"
+  - name: "Lendelede"
+    latitude: 50.88626
+    longitude: 3.23747
+    population: 5393
+    dem: 38
+    timezone: "Europe/Brussels"
+  - name: "Ledegem"
+    latitude: 50.85785
+    longitude: 3.12409
+    population: 9102
+    dem: 20
+    timezone: "Europe/Brussels"
+  - name: "Ledeberg"
+    latitude: 51.03859
+    longitude: 3.74458
+    population: 8454
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Lede"
+    latitude: 50.96626
+    longitude: 3.98594
+    population: 16813
+    dem: 25
+    timezone: "Europe/Brussels"
+  - name: "Lebbeke"
+    latitude: 51.00464
+    longitude: 4.13457
+    population: 17372
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Landen"
+    latitude: 50.75267
+    longitude: 5.082
+    population: 14458
+    dem: 72
+    timezone: "Europe/Brussels"
+  - name: "Lanaken"
+    latitude: 50.89318
+    longitude: 5.6468
+    population: 24771
+    dem: 63
+    timezone: "Europe/Brussels"
+  - name: "Laarne"
+    latitude: 51.03078
+    longitude: 3.85077
+    population: 11600
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Kuurne"
+    latitude: 50.85143
+    longitude: 3.2824
+    population: 12638
+    dem: 16
+    timezone: "Europe/Brussels"
+  - name: "Kruishoutem"
+    latitude: 50.90168
+    longitude: 3.52588
+    population: 8179
+    dem: 45
+    timezone: "Europe/Brussels"
+  - name: "Kruibeke"
+    latitude: 51.17048
+    longitude: 4.31444
+    population: 14815
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Kraainem"
+    latitude: 50.86155
+    longitude: 4.46946
+    population: 12815
+    dem: 51
+    timezone: "Europe/Brussels"
+  - name: "Kortrijk"
+    latitude: 50.82803
+    longitude: 3.26487
+    population: 73879
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Kortessem"
+    latitude: 50.8589
+    longitude: 5.38974
+    population: 8042
+    dem: 55
+    timezone: "Europe/Brussels"
+  - name: "Kortenberg"
+    latitude: 50.88982
+    longitude: 4.54353
+    population: 17774
+    dem: 47
+    timezone: "Europe/Brussels"
+  - name: "Kortenaken"
+    latitude: 50.90862
+    longitude: 5.05968
+    population: 7374
+    dem: 35
+    timezone: "Europe/Brussels"
+  - name: "Kortemark"
+    latitude: 51.02951
+    longitude: 3.04112
+    population: 11937
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Kontich"
+    latitude: 51.13213
+    longitude: 4.44706
+    population: 20290
+    dem: 20
+    timezone: "Europe/Brussels"
+  - name: "Koksijde"
+    latitude: 51.11642
+    longitude: 2.63772
+    population: 21027
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Koekelare"
+    latitude: 51.09047
+    longitude: 2.9783
+    population: 8317
+    dem: 15
+    timezone: "Europe/Brussels"
+  - name: "Knokke-Heist"
+    latitude: 51.35
+    longitude: 3.26667
+    population: 33781
+    dem: 5
+    timezone: "Europe/Brussels"
+  - name: "Knesselare"
+    latitude: 51.13932
+    longitude: 3.41282
+    population: 7889
+    dem: 16
+    timezone: "Europe/Brussels"
+  - name: "Kinrooi"
+    latitude: 51.14543
+    longitude: 5.74207
+    population: 11946
+    dem: 33
+    timezone: "Europe/Brussels"
+  - name: "Keerbergen"
+    latitude: 51.00295
+    longitude: 4.63434
+    population: 12363
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Kasterlee"
+    latitude: 51.24118
+    longitude: 4.96651
+    population: 17765
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Kaprijke"
+    latitude: 51.2172
+    longitude: 3.61519
+    population: 6114
+    dem: 4
+    timezone: "Europe/Brussels"
+  - name: "Kapelle-op-den-Bos"
+    latitude: 51.0097
+    longitude: 4.36303
+    population: 8859
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Kapellen"
+    latitude: 51.31377
+    longitude: 4.43539
+    population: 26410
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Kampenhout"
+    latitude: 50.9421
+    longitude: 4.55103
+    population: 10784
+    dem: 14
+    timezone: "Europe/Brussels"
+  - name: "Kalmthout"
+    latitude: 51.38442
+    longitude: 4.47556
+    population: 17485
+    dem: 21
+    timezone: "Europe/Brussels"
+  - name: "Jabbeke"
+    latitude: 51.18185
+    longitude: 3.08935
+    population: 13488
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Izegem"
+    latitude: 50.91396
+    longitude: 3.21378
+    population: 26382
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Ingelmunster"
+    latitude: 50.92081
+    longitude: 3.25571
+    population: 10603
+    dem: 15
+    timezone: "Europe/Brussels"
+  - name: "Ieper"
+    latitude: 50.85114
+    longitude: 2.88569
+    population: 35089
+    dem: 24
+    timezone: "Europe/Brussels"
+  - name: "Ichtegem"
+    latitude: 51.09572
+    longitude: 3.01549
+    population: 13582
+    dem: 16
+    timezone: "Europe/Brussels"
+  - name: "Hulshout"
+    latitude: 51.07451
+    longitude: 4.79081
+    population: 9198
+    dem: 13
+    timezone: "Europe/Brussels"
+  - name: "Huldenberg"
+    latitude: 50.78939
+    longitude: 4.5831
+    population: 9137
+    dem: 48
+    timezone: "Europe/Brussels"
+  - name: "Hove"
+    latitude: 51.15446
+    longitude: 4.4707
+    population: 7968
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Houthulst"
+    latitude: 50.97824
+    longitude: 2.9505
+    population: 8951
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Houthalen"
+    latitude: 51.03427
+    longitude: 5.37429
+    population: 30050
+    dem: 64
+    timezone: "Europe/Brussels"
+  - name: "Hoogstraten"
+    latitude: 51.40029
+    longitude: 4.76034
+    population: 18524
+    dem: 21
+    timezone: "Europe/Brussels"
+  - name: "Hooglede"
+    latitude: 50.98333
+    longitude: 3.08333
+    population: 9900
+    dem: 41
+    timezone: "Europe/Brussels"
+  - name: "Holsbeek"
+    latitude: 50.92097
+    longitude: 4.75747
+    population: 9094
+    dem: 21
+    timezone: "Europe/Brussels"
+  - name: "Hoeselt"
+    latitude: 50.84714
+    longitude: 5.48767
+    population: 9265
+    dem: 77
+    timezone: "Europe/Brussels"
+  - name: "Hoeilaart"
+    latitude: 50.7673
+    longitude: 4.46835
+    population: 10272
+    dem: 84
+    timezone: "Europe/Brussels"
+  - name: "Hoegaarden"
+    latitude: 50.7756
+    longitude: 4.88952
+    population: 6110
+    dem: 54
+    timezone: "Europe/Brussels"
+  - name: "Hoboken"
+    latitude: 51.17611
+    longitude: 4.34844
+    population: 34443
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Heusden"
+    latitude: 51.03664
+    longitude: 5.28013
+    population: 31017
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Herzele"
+    latitude: 50.88681
+    longitude: 3.89014
+    population: 16523
+    dem: 58
+    timezone: "Europe/Brussels"
+  - name: "Herselt"
+    latitude: 51.05159
+    longitude: 4.88231
+    population: 13493
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Herne"
+    latitude: 50.72423
+    longitude: 4.03481
+    population: 6459
+    dem: 43
+    timezone: "Europe/Brussels"
+  - name: "Herk-de-Stad"
+    latitude: 50.94013
+    longitude: 5.16636
+    population: 11566
+    dem: 31
+    timezone: "Europe/Brussels"
+  - name: "Herenthout"
+    latitude: 51.1401
+    longitude: 4.75572
+    population: 8378
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Herentals"
+    latitude: 51.17655
+    longitude: 4.83248
+    population: 25912
+    dem: 16
+    timezone: "Europe/Brussels"
+  - name: "Herent"
+    latitude: 50.90861
+    longitude: 4.67056
+    population: 19218
+    dem: 27
+    timezone: "Europe/Brussels"
+  - name: "Hemiksem"
+    latitude: 51.14484
+    longitude: 4.33874
+    population: 9504
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Helchteren"
+    latitude: 51.05591
+    longitude: 5.38244
+    population: 30050
+    dem: 72
+    timezone: "Europe/Brussels"
+  - name: "Heist-op-den-Berg"
+    latitude: 51.07537
+    longitude: 4.72827
+    population: 37873
+    dem: 36
+    timezone: "Europe/Brussels"
+  - name: "Heers"
+    latitude: 50.75383
+    longitude: 5.3021
+    population: 6689
+    dem: 75
+    timezone: "Europe/Brussels"
+  - name: "Hasselt"
+    latitude: 50.93106
+    longitude: 5.33781
+    population: 69222
+    dem: 42
+    timezone: "Europe/Brussels"
+  - name: "Harelbeke"
+    latitude: 50.85343
+    longitude: 3.30935
+    population: 25978
+    dem: 16
+    timezone: "Europe/Brussels"
+  - name: "Hamme"
+    latitude: 51.09822
+    longitude: 4.13705
+    population: 22891
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Halle"
+    latitude: 50.73385
+    longitude: 4.23454
+    population: 34479
+    dem: 34
+    timezone: "Europe/Brussels"
+  - name: "Halen"
+    latitude: 50.94837
+    longitude: 5.11096
+    population: 8548
+    dem: 24
+    timezone: "Europe/Brussels"
+  - name: "Haaltert"
+    latitude: 50.90634
+    longitude: 4.00093
+    population: 17129
+    dem: 43
+    timezone: "Europe/Brussels"
+  - name: "Haacht"
+    latitude: 50.97737
+    longitude: 4.63777
+    population: 13541
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Grobbendonk"
+    latitude: 51.19043
+    longitude: 4.73562
+    population: 10724
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Grimbergen"
+    latitude: 50.93409
+    longitude: 4.37213
+    population: 33561
+    dem: 29
+    timezone: "Europe/Brussels"
+  - name: "Gooik"
+    latitude: 50.79443
+    longitude: 4.11378
+    population: 8957
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Glabbeek"
+    latitude: 50.87267
+    longitude: 4.95615
+    population: 5070
+    dem: 50
+    timezone: "Europe/Brussels"
+  - name: "Gistel"
+    latitude: 51.15612
+    longitude: 2.96387
+    population: 11084
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Gingelom"
+    latitude: 50.74792
+    longitude: 5.13422
+    population: 7930
+    dem: 83
+    timezone: "Europe/Brussels"
+  - name: "Geraardsbergen"
+    latitude: 50.77343
+    longitude: 3.88223
+    population: 30807
+    dem: 32
+    timezone: "Europe/Brussels"
+  - name: "Gent"
+    latitude: 51.05
+    longitude: 3.71667
+    population: 231493
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Genk"
+    latitude: 50.965
+    longitude: 5.50082
+    population: 63666
+    dem: 66
+    timezone: "Europe/Brussels"
+  - name: "Geetbets"
+    latitude: 50.89431
+    longitude: 5.11199
+    population: 5813
+    dem: 30
+    timezone: "Europe/Brussels"
+  - name: "Geel"
+    latitude: 51.16557
+    longitude: 4.98917
+    population: 34697
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Gavere"
+    latitude: 50.92917
+    longitude: 3.66184
+    population: 11888
+    dem: 25
+    timezone: "Europe/Brussels"
+  - name: "Galmaarden"
+    latitude: 50.75389
+    longitude: 3.97121
+    population: 7939
+    dem: 32
+    timezone: "Europe/Brussels"
+  - name: "Evergem"
+    latitude: 51.11306
+    longitude: 3.70976
+    population: 31615
+    dem: 3
+    timezone: "Europe/Brussels"
+  - name: "Essen"
+    latitude: 51.46791
+    longitude: 4.46901
+    population: 16754
+    dem: 13
+    timezone: "Europe/Brussels"
+  - name: "Eeklo"
+    latitude: 51.18703
+    longitude: 3.55654
+    population: 19116
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Edegem"
+    latitude: 51.15662
+    longitude: 4.44504
+    population: 21839
+    dem: 17
+    timezone: "Europe/Brussels"
+  - name: "Duffel"
+    latitude: 51.09554
+    longitude: 4.50903
+    population: 16011
+    dem: 5
+    timezone: "Europe/Brussels"
+  - name: "Dilbeek"
+    latitude: 50.84799
+    longitude: 4.25972
+    population: 39482
+    dem: 84
+    timezone: "Europe/Brussels"
+  - name: "Diksmuide"
+    latitude: 51.03248
+    longitude: 2.86384
+    population: 15515
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Diest"
+    latitude: 50.98923
+    longitude: 5.05062
+    population: 22516
+    dem: 22
+    timezone: "Europe/Brussels"
+  - name: "Diepenbeek"
+    latitude: 50.90769
+    longitude: 5.41875
+    population: 17699
+    dem: 50
+    timezone: "Europe/Brussels"
+  - name: "Diegem"
+    latitude: 50.89727
+    longitude: 4.43354
+    population: 5001
+    dem: 19
+    timezone: "Europe/Brussels"
+  - name: "Deurne"
+    latitude: 51.22134
+    longitude: 4.46595
+    population: 78747
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Destelbergen"
+    latitude: 51.05952
+    longitude: 3.79899
+    population: 16853
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Dessel"
+    latitude: 51.23855
+    longitude: 5.11448
+    population: 8707
+    dem: 25
+    timezone: "Europe/Brussels"
+  - name: "De Pinte"
+    latitude: 50.99339
+    longitude: 3.64747
+    population: 10020
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "De Panne"
+    latitude: 51.09793
+    longitude: 2.59368
+    population: 9799
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Dentergem"
+    latitude: 50.96429
+    longitude: 3.41617
+    population: 8038
+    dem: 11
+    timezone: "Europe/Brussels"
+  - name: "Dendermonde"
+    latitude: 51.02869
+    longitude: 4.10106
+    population: 43055
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Denderleeuw"
+    latitude: 50.88506
+    longitude: 4.07601
+    population: 16969
+    dem: 17
+    timezone: "Europe/Brussels"
+  - name: "Deinze"
+    latitude: 50.98175
+    longitude: 3.53096
+    population: 29815
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "De Haan"
+    latitude: 51.27261
+    longitude: 3.03446
+    population: 11766
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Deerlijk"
+    latitude: 50.85337
+    longitude: 3.35416
+    population: 11292
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Damme"
+    latitude: 51.25147
+    longitude: 3.28144
+    population: 10924
+    dem: 4
+    timezone: "Europe/Brussels"
+  - name: "Buggenhout"
+    latitude: 51.0159
+    longitude: 4.20173
+    population: 13510
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Brugge"
+    latitude: 51.20892
+    longitude: 3.22424
+    population: 116709
+    dem: 13
+    timezone: "Europe/Brussels"
+  - name: "Bree"
+    latitude: 51.14152
+    longitude: 5.5969
+    population: 14363
+    dem: 48
+    timezone: "Europe/Brussels"
+  - name: "Bredene"
+    latitude: 51.23489
+    longitude: 2.97559
+    population: 14862
+    dem: 3
+    timezone: "Europe/Brussels"
+  - name: "Brecht"
+    latitude: 51.35024
+    longitude: 4.63829
+    population: 25908
+    dem: 23
+    timezone: "Europe/Brussels"
+  - name: "Brasschaat"
+    latitude: 51.2912
+    longitude: 4.49182
+    population: 37040
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Boutersem"
+    latitude: 50.83511
+    longitude: 4.8345
+    population: 7702
+    dem: 58
+    timezone: "Europe/Brussels"
+  - name: "Borsbeek"
+    latitude: 51.19661
+    longitude: 4.48543
+    population: 10334
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Bornem"
+    latitude: 51.09716
+    longitude: 4.24364
+    population: 19997
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Borgloon"
+    latitude: 50.80505
+    longitude: 5.34366
+    population: 9955
+    dem: 98
+    timezone: "Europe/Brussels"
+  - name: "Boortmeerbeek"
+    latitude: 50.97929
+    longitude: 4.57443
+    population: 11570
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Boom"
+    latitude: 51.09242
+    longitude: 4.3717
+    population: 15810
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Bonheiden"
+    latitude: 51.02261
+    longitude: 4.54714
+    population: 14260
+    dem: 7
+    timezone: "Europe/Brussels"
+  - name: "Boechout"
+    latitude: 51.15959
+    longitude: 4.49195
+    population: 12145
+    dem: 18
+    timezone: "Europe/Brussels"
+  - name: "Bocholt"
+    latitude: 51.17337
+    longitude: 5.57994
+    population: 12346
+    dem: 42
+    timezone: "Europe/Brussels"
+  - name: "Blankenberge"
+    latitude: 51.31306
+    longitude: 3.13227
+    population: 18230
+    dem: 6
+    timezone: "Europe/Brussels"
+  - name: "Bilzen"
+    latitude: 50.87325
+    longitude: 5.5184
+    population: 29622
+    dem: 53
+    timezone: "Europe/Brussels"
+  - name: "Bierbeek"
+    latitude: 50.82876
+    longitude: 4.75949
+    population: 8994
+    dem: 59
+    timezone: "Europe/Brussels"
+  - name: "Beveren"
+    latitude: 51.21187
+    longitude: 4.25633
+    population: 45179
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Bertem"
+    latitude: 50.86403
+    longitude: 4.62918
+    population: 9215
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Berlare"
+    latitude: 51.03333
+    longitude: 4.0
+    population: 13853
+    dem: 9
+    timezone: "Europe/Brussels"
+  - name: "Berlaar"
+    latitude: 51.1176
+    longitude: 4.65835
+    population: 10370
+    dem: 8
+    timezone: "Europe/Brussels"
+  - name: "Beringen"
+    latitude: 51.04954
+    longitude: 5.22606
+    population: 40930
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Bekkevoort"
+    latitude: 50.94074
+    longitude: 4.969
+    population: 5714
+    dem: 44
+    timezone: "Europe/Brussels"
+  - name: "Begijnendijk"
+    latitude: 51.01942
+    longitude: 4.78377
+    population: 9178
+    dem: 13
+    timezone: "Europe/Brussels"
+  - name: "Beersel"
+    latitude: 50.76589
+    longitude: 4.3002
+    population: 23228
+    dem: 43
+    timezone: "Europe/Brussels"
+  - name: "Beerse"
+    latitude: 51.31927
+    longitude: 4.85304
+    population: 16208
+    dem: 27
+    timezone: "Europe/Brussels"
+  - name: "Beernem"
+    latitude: 51.13981
+    longitude: 3.33896
+    population: 14512
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Balen"
+    latitude: 51.16837
+    longitude: 5.17027
+    population: 19978
+    dem: 34
+    timezone: "Europe/Brussels"
+  - name: "Avelgem"
+    latitude: 50.77618
+    longitude: 3.44502
+    population: 9106
+    dem: 17
+    timezone: "Europe/Brussels"
+  - name: "Assenede"
+    latitude: 51.22598
+    longitude: 3.75085
+    population: 13495
+    dem: 3
+    timezone: "Europe/Brussels"
+  - name: "Asse"
+    latitude: 50.91011
+    longitude: 4.19836
+    population: 28985
+    dem: 81
+    timezone: "Europe/Brussels"
+  - name: "As"
+    latitude: 51.00755
+    longitude: 5.58453
+    population: 7250
+    dem: 81
+    timezone: "Europe/Brussels"
+  - name: "Arendonk"
+    latitude: 51.32267
+    longitude: 5.08289
+    population: 12247
+    dem: 25
+    timezone: "Europe/Brussels"
+  - name: "Ardooie"
+    latitude: 50.9757
+    longitude: 3.19736
+    population: 9161
+    dem: 21
+    timezone: "Europe/Brussels"
+  - name: "Anzegem"
+    latitude: 50.837
+    longitude: 3.47786
+    population: 13920
+    dem: 51
+    timezone: "Europe/Brussels"
+  - name: "Antwerpen"
+    latitude: 51.21989
+    longitude: 4.40346
+    population: 459805
+    dem: 10
+    timezone: "Europe/Brussels"
+  - name: "Alken"
+    latitude: 50.87553
+    longitude: 5.30558
+    population: 10933
+    dem: 39
+    timezone: "Europe/Brussels"
+  - name: "Aartselaar"
+    latitude: 51.13412
+    longitude: 4.38678
+    population: 14193
+    dem: 12
+    timezone: "Europe/Brussels"
+  - name: "Aarschot"
+    latitude: 50.98715
+    longitude: 4.83695
+    population: 27656
+    dem: 14
+    timezone: "Europe/Brussels"
+  - name: "Aalter"
+    latitude: 51.09017
+    longitude: 3.44693
+    population: 18802
+    dem: 17
+    timezone: "Europe/Brussels"
+  - name: "Aalst"
+    latitude: 50.93604
+    longitude: 4.0355
+    population: 77534
+    dem: 12
+    timezone: "Europe/Brussels"

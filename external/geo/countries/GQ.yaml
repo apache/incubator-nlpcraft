@@ -1,0 +1,95 @@
+---
+name: "Equatorial Guinea"
+iso: "GQ"
+iso3: "GNQ"
+code: "226"
+capital: "Malabo"
+area: 28051.0
+population: 1014999
+continent: "AF"
+currencyCode: "XAF"
+currencyName: "Franc"
+phone: "240"
+languages: "es-GQ,fr"
+neighbours: "GA,CM"
+regions:
+- name: "Provincia de Bioko Sur"
+  cities:
+  - name: "Luba"
+    latitude: 3.45683
+    longitude: 8.55465
+    population: 8655
+    dem: 72
+    timezone: "Africa/Malabo"
+- name: "Provincia de Litoral"
+  cities:
+  - name: "Bata"
+    latitude: 1.86391
+    longitude: 9.76582
+    population: 173046
+    dem: 13
+    timezone: "Africa/Malabo"
+- name: "Provincia de Kie-Ntem"
+  cities:
+  - name: "Mikomeseng"
+    latitude: 2.13609
+    longitude: 10.61322
+    population: 5813
+    dem: 542
+    timezone: "Africa/Malabo"
+  - name: "Ebebiyin"
+    latitude: 2.15106
+    longitude: 11.33528
+    population: 24831
+    dem: 561
+    timezone: "Africa/Malabo"
+- name: "Provincia de Bioko Norte"
+  cities:
+  - name: "Rebola"
+    latitude: 3.71667
+    longitude: 8.83333
+    population: 5450
+    dem: 394
+    timezone: "Africa/Malabo"
+  - name: "Malabo"
+    latitude: 3.75578
+    longitude: 8.78166
+    population: 155963
+    dem: 106
+    timezone: "Africa/Malabo"
+- name: "Provincia de Centro Sur"
+  cities:
+  - name: "Evinayong"
+    latitude: 1.43677
+    longitude: 10.55124
+    population: 8462
+    dem: 669
+    timezone: "Africa/Malabo"
+- name: "Provincia de Wele-Nzas"
+  cities:
+  - name: "Mongomo"
+    latitude: 1.62742
+    longitude: 11.31346
+    population: 6393
+    dem: 630
+    timezone: "Africa/Malabo"
+  - name: "Anisoc"
+    latitude: 1.8658
+    longitude: 10.76892
+    population: 10191
+    dem: 456
+    timezone: "Africa/Malabo"
+  - name: "Aconibe"
+    latitude: 1.29683
+    longitude: 10.93691
+    population: 11192
+    dem: 683
+    timezone: "Africa/Malabo"
+- name: "Provincia de Annobon"
+  cities:
+  - name: "San Antonio de Pale"
+    latitude: -1.4068
+    longitude: 5.63178
+    population: 4433
+    dem: 22
+    timezone: "Africa/Malabo"

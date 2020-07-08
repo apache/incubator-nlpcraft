@@ -1,0 +1,370 @@
+---
+name: "Mauritius"
+iso: "MU"
+iso3: "MUS"
+code: "480"
+capital: "Port Louis"
+area: 2040.0
+population: 1294104
+continent: "AF"
+currencyCode: "MUR"
+currencyName: "Rupee"
+phone: "230"
+languages: "en-MU,bho,fr"
+regions:
+- name: "Black River District"
+  cities:
+  - name: "Tamarin"
+    latitude: -20.32556
+    longitude: 57.37056
+    population: 3764
+    dem: -9999
+    timezone: "Indian/Mauritius"
+  - name: "Petite Riviere"
+    latitude: -20.19551
+    longitude: 57.44592
+    population: 5331
+    dem: 86
+    timezone: "Indian/Mauritius"
+  - name: "Bambous"
+    latitude: -20.25667
+    longitude: 57.40611
+    population: 15345
+    dem: 122
+    timezone: "Indian/Mauritius"
+- name: "Moka District"
+  cities:
+  - name: "Saint Pierre"
+    latitude: -20.2175
+    longitude: 57.52083
+    population: 16414
+    dem: 369
+    timezone: "Indian/Mauritius"
+  - name: "Quartier Militaire"
+    latitude: -20.2479
+    longitude: 57.59737
+    population: 6424
+    dem: 418
+    timezone: "Indian/Mauritius"
+  - name: "Pailles"
+    latitude: -20.19271
+    longitude: 57.48826
+    population: 10622
+    dem: 73
+    timezone: "Indian/Mauritius"
+  - name: "Moka"
+    latitude: -20.21889
+    longitude: 57.49583
+    population: 8842
+    dem: 322
+    timezone: "Indian/Mauritius"
+  - name: "Dagotiere"
+    latitude: -20.24476
+    longitude: 57.56188
+    population: 6915
+    dem: 446
+    timezone: "Indian/Mauritius"
+- name: "Agalega Islands"
+  cities:
+  - name: "Vingt Cinq"
+    latitude: -10.38803
+    longitude: 56.61795
+    population: 250
+    dem: -9999
+    timezone: "Indian/Mauritius"
+- name: "Port Louis District"
+  cities:
+  - name: "Port Louis"
+    latitude: -20.16194
+    longitude: 57.49889
+    population: 155226
+    dem: 3
+    timezone: "Indian/Mauritius"
+- name: "Plaines Wilhems District"
+  cities:
+  - name: "Vacoas"
+    latitude: -20.29806
+    longitude: 57.47833
+    population: 110000
+    dem: 390
+    timezone: "Indian/Mauritius"
+  - name: "Quatre Bornes"
+    latitude: -20.26381
+    longitude: 57.4791
+    population: 80961
+    dem: 335
+    timezone: "Indian/Mauritius"
+  - name: "Curepipe"
+    latitude: -20.31472
+    longitude: 57.52028
+    population: 84200
+    dem: 554
+    timezone: "Indian/Mauritius"
+  - name: "Beau Bassin-Rose Hill"
+    latitude: -20.23325
+    longitude: 57.46609
+    population: 111355
+    dem: 249
+    timezone: "Indian/Mauritius"
+- name: "Rodrigues"
+  cities:
+  - name: "Port Mathurin"
+    latitude: -19.68333
+    longitude: 63.41667
+    population: 6000
+    dem: 44
+    timezone: "Indian/Mauritius"
+- name: "Savanne District"
+  cities:
+  - name: "Surinam"
+    latitude: -20.50972
+    longitude: 57.50528
+    population: 10621
+    dem: 28
+    timezone: "Indian/Mauritius"
+  - name: "Souillac"
+    latitude: -20.51667
+    longitude: 57.51667
+    population: 4392
+    dem: 18
+    timezone: "Indian/Mauritius"
+  - name: "Riviere des Anguilles"
+    latitude: -20.48528
+    longitude: 57.55083
+    population: 9927
+    dem: 148
+    timezone: "Indian/Mauritius"
+  - name: "Grand Bois"
+    latitude: -20.41889
+    longitude: 57.54417
+    population: 7804
+    dem: 407
+    timezone: "Indian/Mauritius"
+  - name: "Chemin Grenier"
+    latitude: -20.48722
+    longitude: 57.46556
+    population: 12457
+    dem: 74
+    timezone: "Indian/Mauritius"
+  - name: "Camp Diable"
+    latitude: -20.46278
+    longitude: 57.57889
+    population: 5082
+    dem: 198
+    timezone: "Indian/Mauritius"
+- name: "Grand Port District"
+  cities:
+  - name: "Rose Belle"
+    latitude: -20.40028
+    longitude: 57.59667
+    population: 12619
+    dem: 286
+    timezone: "Indian/Mauritius"
+  - name: "Plaine Magnien"
+    latitude: -20.42967
+    longitude: 57.66968
+    population: 10778
+    dem: 67
+    timezone: "Indian/Mauritius"
+  - name: "Nouvelle France"
+    latitude: -20.37056
+    longitude: 57.56111
+    population: 7238
+    dem: 461
+    timezone: "Indian/Mauritius"
+  - name: "New Grove"
+    latitude: -20.40861
+    longitude: 57.61361
+    population: 9935
+    dem: 241
+    timezone: "Indian/Mauritius"
+  - name: "Mahebourg"
+    latitude: -20.40806
+    longitude: 57.7
+    population: 17042
+    dem: 26
+    timezone: "Indian/Mauritius"
+  - name: "Beau Vallon"
+    latitude: -20.41889
+    longitude: 57.69528
+    population: 7016
+    dem: 35
+    timezone: "Indian/Mauritius"
+- name: "Pamplemousses District"
+  cities:
+  - name: "Triolet"
+    latitude: -20.05472
+    longitude: 57.54528
+    population: 23269
+    dem: 23
+    timezone: "Indian/Mauritius"
+  - name: "Terre Rouge"
+    latitude: -20.12611
+    longitude: 57.52444
+    population: 9566
+    dem: 40
+    timezone: "Indian/Mauritius"
+  - name: "Morcellement Saint Andre"
+    latitude: -20.07306
+    longitude: 57.55806
+    population: 6150
+    dem: 51
+    timezone: "Indian/Mauritius"
+  - name: "Plaine des Papayes"
+    latitude: -20.065
+    longitude: 57.5725
+    population: 7617
+    dem: 68
+    timezone: "Indian/Mauritius"
+  - name: "Pamplemousses"
+    latitude: -20.10389
+    longitude: 57.57028
+    population: 8836
+    dem: 64
+    timezone: "Indian/Mauritius"
+  - name: "Long Mountain"
+    latitude: -20.14306
+    longitude: 57.56222
+    population: 7775
+    dem: 134
+    timezone: "Indian/Mauritius"
+  - name: "Fond du Sac"
+    latitude: -20.04306
+    longitude: 57.57861
+    population: 5796
+    dem: 50
+    timezone: "Indian/Mauritius"
+  - name: "Pointe aux Piments"
+    latitude: -20.06278
+    longitude: 57.51306
+    population: 7556
+    dem: -9999
+    timezone: "Indian/Mauritius"
+  - name: "Le Hochet"
+    latitude: -20.135
+    longitude: 57.52111
+    population: 15197
+    dem: 30
+    timezone: "Indian/Mauritius"
+- name: "Cargados Carajos"
+  cities:
+  - name: "Cargados Carajos"
+    latitude: -16.60329
+    longitude: 59.65851
+    population: 63
+    dem: -9999
+    timezone: "Indian/Mauritius"
+- name: "Riviere du Rempart District"
+  cities:
+  - name: "Roches Noire"
+    latitude: -20.11111
+    longitude: 57.71222
+    population: 5733
+    dem: 23
+    timezone: "Indian/Mauritius"
+  - name: "Riviere du Rempart"
+    latitude: -20.10306
+    longitude: 57.68472
+    population: 11675
+    dem: 53
+    timezone: "Indian/Mauritius"
+  - name: "Petit Raffray"
+    latitude: -20.01333
+    longitude: 57.61194
+    population: 9117
+    dem: 30
+    timezone: "Indian/Mauritius"
+  - name: "Piton"
+    latitude: -20.09028
+    longitude: 57.63028
+    population: 5909
+    dem: 96
+    timezone: "Indian/Mauritius"
+  - name: "Grand Gaube"
+    latitude: -20.00639
+    longitude: 57.66083
+    population: 7156
+    dem: 10
+    timezone: "Indian/Mauritius"
+  - name: "Grand Baie"
+    latitude: -20.01816
+    longitude: 57.58015
+    population: 11512
+    dem: 10
+    timezone: "Indian/Mauritius"
+  - name: "Goodlands"
+    latitude: -20.035
+    longitude: 57.64306
+    population: 20910
+    dem: 49
+    timezone: "Indian/Mauritius"
+- name: "Mauritius"
+  cities:
+  - name: "Montagne Blanche"
+    latitude: -20.28538
+    longitude: 57.65865
+    population: 8661
+    dem: 291
+    timezone: "Indian/Mauritius"
+- name: "Flacq District"
+  cities:
+  - name: "Sebastopol"
+    latitude: -20.2907
+    longitude: 57.68779
+    population: 5745
+    dem: 217
+    timezone: "Indian/Mauritius"
+  - name: "Poste de Flacq"
+    latitude: -20.16306
+    longitude: 57.73056
+    population: 7133
+    dem: 22
+    timezone: "Indian/Mauritius"
+  - name: "Lalmatie"
+    latitude: -20.18972
+    longitude: 57.66111
+    population: 10404
+    dem: 215
+    timezone: "Indian/Mauritius"
+  - name: "Centre de Flacq"
+    latitude: -20.18972
+    longitude: 57.71444
+    population: 17710
+    dem: 53
+    timezone: "Indian/Mauritius"
+  - name: "Brisee Verdiere"
+    latitude: -20.16389
+    longitude: 57.64667
+    population: 7374
+    dem: 183
+    timezone: "Indian/Mauritius"
+  - name: "Bon Accueil"
+    latitude: -20.17083
+    longitude: 57.65639
+    population: 6553
+    dem: 183
+    timezone: "Indian/Mauritius"
+  - name: "Bel Air Riviere Seche"
+    latitude: -20.25777
+    longitude: 57.74976
+    population: 17671
+    dem: 78
+    timezone: "Indian/Mauritius"
+  - name: "Laventure"
+    latitude: -20.14583
+    longitude: 57.67667
+    population: 6171
+    dem: 120
+    timezone: "Indian/Mauritius"
+  - name: "Quatre Cocos"
+    latitude: -20.20151
+    longitude: 57.77448
+    population: 5724
+    dem: 8
+    timezone: "Indian/Mauritius"
+  - name: "Ecroignard"
+    latitude: -20.22611
+    longitude: 57.73611
+    population: 5952
+    dem: 81
+    timezone: "Indian/Mauritius"

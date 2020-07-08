@@ -1,0 +1,1727 @@
+---
+name: "Tanzania"
+iso: "TZ"
+iso3: "TZA"
+code: "834"
+capital: "Dodoma"
+area: 945087.0
+population: 41892895
+continent: "AF"
+currencyCode: "TZS"
+currencyName: "Shilling"
+phone: "255"
+languages: "sw-TZ,en,ar"
+neighbours: "MZ,KE,CD,RW,ZM,BI,UG,MW"
+regions:
+- name: "Geita Region"
+  cities:
+  - name: "Uyovu"
+    latitude: -3.28333
+    longitude: 31.52583
+    population: 60849
+    dem: 1235
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ushirombo"
+    latitude: -3.49194
+    longitude: 31.96389
+    population: 95052
+    dem: 1186
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Masumbwe"
+    latitude: -3.63333
+    longitude: 32.18333
+    population: 34780
+    dem: 1191
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Katoro"
+    latitude: -3.02028
+    longitude: 31.89583
+    population: 49691
+    dem: 1297
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kasamwa"
+    latitude: -2.85
+    longitude: 32.43333
+    population: 27681
+    dem: 1199
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Geita"
+    latitude: -2.8725
+    longitude: 32.2325
+    population: 40000
+    dem: 1416
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Chato"
+    latitude: -2.63778
+    longitude: 31.76694
+    population: 27776
+    dem: 1150
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Buseresere"
+    latitude: -3.02361
+    longitude: 31.87472
+    population: 52870
+    dem: 1247
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Zanzibar North Region"
+  cities:
+  - name: "Mkokotoni"
+    latitude: -5.87506
+    longitude: 39.25523
+    population: 2572
+    dem: 5
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nungwi"
+    latitude: -5.72651
+    longitude: 39.2987
+    population: 8000
+    dem: 8
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Singida Region"
+  cities:
+  - name: "Singida"
+    latitude: -4.81629
+    longitude: 34.74358
+    population: 62432
+    dem: 1508
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Shelui"
+    latitude: -4.36667
+    longitude: 34.2
+    population: 24817
+    dem: 1091
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Sepuka"
+    latitude: -4.75
+    longitude: 34.53333
+    population: 25657
+    dem: 1484
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Puma"
+    latitude: -5.0
+    longitude: 34.73333
+    population: 17092
+    dem: 1588
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ndago"
+    latitude: -4.6
+    longitude: 34.35
+    population: 13012
+    dem: 1443
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mungaa"
+    latitude: -4.96667
+    longitude: 34.88333
+    population: 16715
+    dem: 1608
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mtinko"
+    latitude: -4.55
+    longitude: 34.85
+    population: 26725
+    dem: 1583
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mgandu"
+    latitude: -5.95
+    longitude: 34.13333
+    population: 23718
+    dem: 1486
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kiomboi"
+    latitude: -4.26667
+    longitude: 34.36667
+    population: 23519
+    dem: 1545
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kintinku"
+    latitude: -5.88333
+    longitude: 35.23333
+    population: 7906
+    dem: 848
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kilimatinde"
+    latitude: -5.85
+    longitude: 34.95
+    population: 5975
+    dem: 1085
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Itigi"
+    latitude: -5.7
+    longitude: 34.48333
+    population: 19711
+    dem: 1300
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ilongero"
+    latitude: -4.66667
+    longitude: 34.86667
+    population: 17342
+    dem: 1609
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ikungi"
+    latitude: -5.13333
+    longitude: 34.76667
+    population: 19692
+    dem: 1525
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Igugunu"
+    latitude: -4.56667
+    longitude: 34.63333
+    population: 22810
+    dem: 1376
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Simiyu Region"
+  cities:
+  - name: "Somanda"
+    latitude: -3.36667
+    longitude: 33.95
+    population: 33932
+    dem: 1208
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nyalikungu"
+    latitude: -3.18333
+    longitude: 33.78333
+    population: 24648
+    dem: 1354
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nyakabindi"
+    latitude: -2.63333
+    longitude: 33.98333
+    population: 18428
+    dem: 1295
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Matonga"
+    latitude: -2.38333
+    longitude: 34.08333
+    population: 11828
+    dem: 1281
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Maswa"
+    latitude: -2.68333
+    longitude: 33.98333
+    population: 22025
+    dem: 1310
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Malampaka"
+    latitude: -3.13333
+    longitude: 33.53333
+    population: 16916
+    dem: 1250
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lalago"
+    latitude: -3.45
+    longitude: 33.95
+    population: 22551
+    dem: 1176
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kisesa"
+    latitude: -3.08333
+    longitude: 34.15
+    population: 29804
+    dem: 1351
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bariadi"
+    latitude: -2.8
+    longitude: 33.98333
+    population: 33865
+    dem: 1282
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Zanzibar Urban/West Region"
+  cities:
+  - name: "Zanzibar"
+    latitude: -6.16394
+    longitude: 39.19793
+    population: 403658
+    dem: 14
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Morogoro Region"
+  cities:
+  - name: "Ngerengere"
+    latitude: -6.75
+    longitude: 38.11667
+    population: 17181
+    dem: 196
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mtimbira"
+    latitude: -8.78333
+    longitude: 36.35
+    population: 11122
+    dem: 302
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Msowero"
+    latitude: -6.53333
+    longitude: 37.2
+    population: 17861
+    dem: 462
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Morogoro"
+    latitude: -6.82102
+    longitude: 37.66122
+    population: 250902
+    dem: 504
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mlimba"
+    latitude: -8.8
+    longitude: 35.81667
+    population: 34970
+    dem: 306
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mikumi"
+    latitude: -7.40409
+    longitude: 36.98309
+    population: 16780
+    dem: 517
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Malinyi"
+    latitude: -8.93333
+    longitude: 36.13333
+    population: 27041
+    dem: 295
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mahenge"
+    latitude: -8.68333
+    longitude: 36.71667
+    population: 7768
+    dem: 1039
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Magole"
+    latitude: -6.37697
+    longitude: 37.37373
+    population: 18753
+    dem: 433
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lupiro"
+    latitude: -8.38333
+    longitude: 36.66667
+    population: 11430
+    dem: 299
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kisanga"
+    latitude: -7.43622
+    longitude: 37.70337
+    population: 10978
+    dem: 150
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kimamba"
+    latitude: -6.78333
+    longitude: 37.13333
+    population: 11235
+    dem: 441
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kilosa"
+    latitude: -6.83333
+    longitude: 36.98333
+    population: 91889
+    dem: 495
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kidodi"
+    latitude: -7.60361
+    longitude: 37.00438
+    population: 35953
+    dem: 301
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kidatu"
+    latitude: -7.69916
+    longitude: 36.95722
+    population: 37542
+    dem: 303
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ifakara"
+    latitude: -8.13333
+    longitude: 36.68333
+    population: 49528
+    dem: 259
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Geiro"
+    latitude: -6.15
+    longitude: 36.86667
+    population: 37909
+    dem: 1284
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Iringa Region"
+  cities:
+  - name: "Malangali"
+    latitude: -8.56667
+    longitude: 34.85
+    population: 7112
+    dem: 1388
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Makungu"
+    latitude: -8.73333
+    longitude: 35.28333
+    population: 10291
+    dem: 1251
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mafinga"
+    latitude: -7.25
+    longitude: 35.06667
+    population: 34958
+    dem: 1018
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Izazi"
+    latitude: -7.2
+    longitude: 35.73333
+    population: 18010
+    dem: 727
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Iringa"
+    latitude: -7.76667
+    longitude: 35.7
+    population: 111820
+    dem: 1625
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ilula"
+    latitude: -7.6766
+    longitude: 36.03658
+    population: 29193
+    dem: 1374
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Kagera Region"
+  cities:
+  - name: "Rulenge"
+    latitude: -2.7175
+    longitude: 30.6325
+    population: 22069
+    dem: 1422
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nyakahanga"
+    latitude: -1.60333
+    longitude: 31.14139
+    population: 14611
+    dem: 1662
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nsunga"
+    latitude: -1.14389
+    longitude: 31.39472
+    population: 20049
+    dem: 1202
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nshamba"
+    latitude: -1.79833
+    longitude: 31.55111
+    population: 19815
+    dem: 1540
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ngara"
+    latitude: -2.51222
+    longitude: 30.65583
+    population: 16890
+    dem: 1814
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Muleba"
+    latitude: -1.83972
+    longitude: 31.65444
+    population: 11555
+    dem: 1270
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kyaka"
+    latitude: -1.25222
+    longitude: 31.42028
+    population: 13810
+    dem: 1160
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Katoro"
+    latitude: -1.39972
+    longitude: 31.50028
+    population: 11925
+    dem: 1169
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Katerero"
+    latitude: -1.4
+    longitude: 31.73333
+    population: 18430
+    dem: 1164
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kamachumu"
+    latitude: -1.61861
+    longitude: 31.62
+    population: 15701
+    dem: 1496
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kabanga"
+    latitude: -2.63861
+    longitude: 30.46778
+    population: 19421
+    dem: 1608
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bukoba"
+    latitude: -1.33167
+    longitude: 31.81222
+    population: 70628
+    dem: 1149
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bugene"
+    latitude: -1.59111
+    longitude: 31.14028
+    population: 10609
+    dem: 1639
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bugarama"
+    latitude: -2.87056
+    longitude: 30.52806
+    population: 32494
+    dem: 1493
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Biharamulo"
+    latitude: -2.63194
+    longitude: 31.30889
+    population: 34038
+    dem: 1479
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Lindi Region"
+  cities:
+  - name: "Liwale"
+    latitude: -9.76667
+    longitude: 37.93333
+    population: 19296
+    dem: 495
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ruangwa"
+    latitude: -10.06667
+    longitude: 38.93333
+    population: 11095
+    dem: 348
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nyangao"
+    latitude: -10.33333
+    longitude: 39.28333
+    population: 16343
+    dem: 182
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nachingwea"
+    latitude: -10.3725
+    longitude: 38.76251
+    population: 18058
+    dem: 427
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mtama"
+    latitude: -10.3
+    longitude: 39.36667
+    population: 11928
+    dem: 136
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mingoyo"
+    latitude: -10.10526
+    longitude: 39.61859
+    population: 10480
+    dem: 43
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mbekenyera"
+    latitude: -10.0
+    longitude: 38.98333
+    population: 11794
+    dem: 339
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lindi"
+    latitude: -9.99709
+    longitude: 39.71649
+    population: 41912
+    dem: 12
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Pemba North Region"
+  cities:
+  - name: "Wete"
+    latitude: -5.05589
+    longitude: 39.72938
+    population: 26450
+    dem: 53
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Micheweni"
+    latitude: -4.96667
+    longitude: 39.83333
+    population: 9838
+    dem: 0
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Konde"
+    latitude: -4.95
+    longitude: 39.75
+    population: 9530
+    dem: 22
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Rukwa Region"
+  cities:
+  - name: "Sumbawanga"
+    latitude: -7.96667
+    longitude: 31.61667
+    population: 89161
+    dem: 1833
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nkove"
+    latitude: -7.95
+    longitude: 30.85
+    population: 5389
+    dem: 813
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Namanyere"
+    latitude: -7.51667
+    longitude: 31.05
+    population: 28218
+    dem: 1531
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Matai"
+    latitude: -8.3
+    longitude: 31.51667
+    population: 24070
+    dem: 1706
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Laela"
+    latitude: -8.56667
+    longitude: 32.05
+    population: 19185
+    dem: 1564
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kirando"
+    latitude: -7.41667
+    longitude: 30.6
+    population: 33111
+    dem: 773
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Chala"
+    latitude: -7.58333
+    longitude: 31.26667
+    population: 22624
+    dem: 1765
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Njombe Region"
+  cities:
+  - name: "Njombe"
+    latitude: -9.34917
+    longitude: 34.77167
+    population: 46724
+    dem: 1676
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mtwango"
+    latitude: -9.01667
+    longitude: 34.8
+    population: 19040
+    dem: 1767
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mlangali"
+    latitude: -9.78333
+    longitude: 34.51667
+    population: 15168
+    dem: 1739
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Matamba"
+    latitude: -8.98333
+    longitude: 33.96667
+    population: 10642
+    dem: 2088
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Makumbako"
+    latitude: -8.85
+    longitude: 34.83333
+    population: 53003
+    dem: 1651
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ilembula"
+    latitude: -8.9
+    longitude: 34.58333
+    population: 18870
+    dem: 1425
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Manda"
+    latitude: -10.46667
+    longitude: 34.58333
+    population: 8393
+    dem: 476
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Manyara Region"
+  cities:
+  - name: "Nangwa"
+    latitude: -4.46667
+    longitude: 35.45
+    population: 18595
+    dem: 1837
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Naberera"
+    latitude: -4.2
+    longitude: 36.93333
+    population: 13499
+    dem: 1430
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mbulu"
+    latitude: -3.85
+    longitude: 35.53333
+    population: 13430
+    dem: 1815
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Magugu"
+    latitude: -4.01667
+    longitude: 35.76667
+    population: 26131
+    dem: 1013
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kibaya"
+    latitude: -5.3
+    longitude: 36.56667
+    population: 5028
+    dem: 1579
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Galappo"
+    latitude: -4.26667
+    longitude: 35.85
+    population: 18528
+    dem: 1379
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Endasak"
+    latitude: -4.41667
+    longitude: 35.51667
+    population: 14576
+    dem: 1600
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Dongobesh"
+    latitude: -4.06667
+    longitude: 35.38333
+    population: 18864
+    dem: 1985
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Dareda"
+    latitude: -4.21667
+    longitude: 35.55
+    population: 19876
+    dem: 1618
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Basotu"
+    latitude: -4.36667
+    longitude: 35.08333
+    population: 20937
+    dem: 1609
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bashanet"
+    latitude: -4.23333
+    longitude: 35.41667
+    population: 19087
+    dem: 2044
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Babati"
+    latitude: -4.21667
+    longitude: 35.75
+    population: 34291
+    dem: 1351
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Kilimanjaro Region"
+  cities:
+  - name: "Same"
+    latitude: -4.06667
+    longitude: 37.73333
+    population: 17455
+    dem: 867
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ndungu"
+    latitude: -4.36667
+    longitude: 38.05
+    population: 14545
+    dem: 535
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mwembe"
+    latitude: -4.15
+    longitude: 37.85
+    population: 9032
+    dem: 1009
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Moshi"
+    latitude: -3.35
+    longitude: 37.33333
+    population: 156959
+    dem: 854
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Makanya"
+    latitude: -4.36667
+    longitude: 37.83333
+    population: 9505
+    dem: 681
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lembeni"
+    latitude: -3.78333
+    longitude: 37.61667
+    population: 16008
+    dem: 979
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kwakoa"
+    latitude: -3.76667
+    longitude: 37.71667
+    population: 7514
+    dem: 775
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kisiwani"
+    latitude: -4.13333
+    longitude: 37.95
+    population: 7126
+    dem: 677
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kihurio"
+    latitude: -4.46667
+    longitude: 38.06667
+    population: 8377
+    dem: 531
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Hedaru"
+    latitude: -4.5
+    longitude: 37.9
+    population: 20231
+    dem: 640
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Mwanza Region"
+  cities:
+  - name: "Usagara"
+    latitude: -2.68333
+    longitude: 33.0
+    population: 15514
+    dem: 1294
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nyanguge"
+    latitude: -2.55
+    longitude: 33.2
+    population: 10746
+    dem: 1177
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ngudu"
+    latitude: -2.96667
+    longitude: 33.33333
+    population: 22658
+    dem: 1246
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mwanza"
+    latitude: -2.51667
+    longitude: 32.9
+    population: 436801
+    dem: 1144
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Misungwi"
+    latitude: -2.85
+    longitude: 33.08333
+    population: 35530
+    dem: 1178
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Misasi"
+    latitude: -3.0
+    longitude: 33.08333
+    population: 14170
+    dem: 1151
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Malya"
+    latitude: -2.98333
+    longitude: 33.51667
+    population: 12627
+    dem: 1245
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kihangara"
+    latitude: -2.58333
+    longitude: 33.35
+    population: 19082
+    dem: 1186
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Mbeya Region"
+  cities:
+  - name: "Ulenje"
+    latitude: -8.93333
+    longitude: 33.68333
+    population: 12219
+    dem: 1929
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Tukuyu"
+    latitude: -9.25
+    longitude: 33.65
+    population: 28398
+    dem: 1431
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Rujewa"
+    latitude: -8.7
+    longitude: 34.38333
+    population: 29228
+    dem: 1078
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mwaya"
+    latitude: -9.55
+    longitude: 33.95
+    population: 7558
+    dem: 479
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mbeya"
+    latitude: -8.9
+    longitude: 33.45
+    population: 291649
+    dem: 1697
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Masoko"
+    latitude: -9.33333
+    longitude: 33.75
+    population: 12720
+    dem: 887
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kyela"
+    latitude: -9.58333
+    longitude: 33.85
+    population: 30684
+    dem: 498
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kiwira"
+    latitude: -9.17307
+    longitude: 33.54152
+    population: 21342
+    dem: 1360
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Katumba"
+    latitude: -9.23333
+    longitude: 33.61667
+    population: 108558
+    dem: 1387
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kandete"
+    latitude: -9.15
+    longitude: 33.8
+    population: 10318
+    dem: 1578
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ipinda"
+    latitude: -9.48333
+    longitude: 33.9
+    population: 17775
+    dem: 490
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Igurusi"
+    latitude: -8.85
+    longitude: 33.85
+    population: 24895
+    dem: 1258
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Dunda"
+    latitude: -8.11667
+    longitude: 34.25
+    population: 14080
+    dem: 1124
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Chimala"
+    latitude: -8.85637
+    longitude: 34.02393
+    population: 24817
+    dem: 1143
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Zanzibar Central/South Region"
+  cities:
+  - name: "Sokoni"
+    latitude: -6.43333
+    longitude: 39.55
+    population: 25821
+    dem: 24
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mahonda"
+    latitude: -6.45
+    longitude: 39.46667
+    population: 5569
+    dem: 5
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Koani"
+    latitude: -6.13333
+    longitude: 39.28333
+    population: 2211
+    dem: 44
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Shinyanga Region"
+  cities:
+  - name: "Tinde"
+    latitude: -3.88333
+    longitude: 33.2
+    population: 22082
+    dem: 1154
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Songwa"
+    latitude: -3.51667
+    longitude: 33.51667
+    population: 23618
+    dem: 1149
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Shinyanga"
+    latitude: -3.66393
+    longitude: 33.42118
+    population: 107362
+    dem: 1133
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Old Shinyanga"
+    latitude: -3.55
+    longitude: 33.4
+    population: 23747
+    dem: 1177
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mwadui"
+    latitude: -3.55
+    longitude: 33.6
+    population: 23296
+    dem: 1215
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mhango"
+    latitude: -3.28333
+    longitude: 32.85
+    population: 21553
+    dem: 1217
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kishapu"
+    latitude: -3.61667
+    longitude: 33.86667
+    population: 16371
+    dem: 1169
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kahama"
+    latitude: -3.83333
+    longitude: 32.6
+    population: 36014
+    dem: 1249
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Isaka"
+    latitude: -3.9
+    longitude: 32.93333
+    population: 21094
+    dem: 1201
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Dodoma Region"
+  cities:
+  - name: "Msanga"
+    latitude: -6.05
+    longitude: 36.03333
+    population: 5527
+    dem: 1012
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mpwapwa"
+    latitude: -6.35
+    longitude: 36.48333
+    population: 19806
+    dem: 998
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kongwa"
+    latitude: -6.2
+    longitude: 36.41667
+    population: 11840
+    dem: 1023
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kondoa"
+    latitude: -4.9
+    longitude: 35.78333
+    population: 23518
+    dem: 1378
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kibakwe"
+    latitude: -6.71667
+    longitude: 36.36667
+    population: 19526
+    dem: 1133
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Dodoma"
+    latitude: -6.17221
+    longitude: 35.73947
+    population: 180541
+    dem: 1125
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kisasa"
+    latitude: -6.17526
+    longitude: 35.79266
+    population: 10000
+    dem: 1117
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Tanga Region"
+  cities:
+  - name: "Tanga"
+    latitude: -5.06893
+    longitude: 39.09875
+    population: 224876
+    dem: 22
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Soni"
+    latitude: -4.85
+    longitude: 38.36667
+    population: 12402
+    dem: 1191
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Pangani"
+    latitude: -5.42526
+    longitude: 38.97473
+    population: 8343
+    dem: 9
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mwanga"
+    latitude: -4.8
+    longitude: 38.2
+    population: 12846
+    dem: 414
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Muheza"
+    latitude: -5.16667
+    longitude: 38.78333
+    population: 17000
+    dem: 183
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mlalo"
+    latitude: -4.93333
+    longitude: 38.93333
+    population: 15576
+    dem: 133
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mazinde"
+    latitude: -4.8
+    longitude: 38.21667
+    population: 20534
+    dem: 485
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Matui"
+    latitude: -4.8
+    longitude: 38.25
+    population: 20241
+    dem: 908
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Maramba"
+    latitude: -5.05
+    longitude: 38.61667
+    population: 26531
+    dem: 959
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Makuyuni"
+    latitude: -4.73333
+    longitude: 38.1
+    population: 15516
+    dem: 479
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Majengo"
+    latitude: -5.15
+    longitude: 38.98333
+    population: 9874
+    dem: 95
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Magomeni"
+    latitude: -5.23333
+    longitude: 38.11667
+    population: 8944
+    dem: 560
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lushoto"
+    latitude: -4.78333
+    longitude: 38.28333
+    population: 24197
+    dem: 1498
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Chanika"
+    latitude: -5.41667
+    longitude: 38.01667
+    population: 30905
+    dem: 673
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Dar es Salaam Region"
+  cities:
+  - name: "Magomeni"
+    latitude: -6.8
+    longitude: 39.25
+    population: 19086
+    dem: 21
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Dar es Salaam"
+    latitude: -6.82349
+    longitude: 39.26951
+    population: 2698652
+    dem: 24
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Tabora Region"
+  cities:
+  - name: "Usoke"
+    latitude: -5.16667
+    longitude: 32.35
+    population: 7295
+    dem: 1161
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Urambo"
+    latitude: -5.06667
+    longitude: 32.05
+    population: 23724
+    dem: 1104
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Tumbi"
+    latitude: -5.06667
+    longitude: 32.73333
+    population: 32900
+    dem: 1168
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Tabora"
+    latitude: -5.01622
+    longitude: 32.82663
+    population: 145292
+    dem: 1191
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Sikonge"
+    latitude: -5.63333
+    longitude: 32.76667
+    population: 27113
+    dem: 1177
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nzega"
+    latitude: -4.21667
+    longitude: 33.18333
+    population: 26584
+    dem: 1241
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mabama"
+    latitude: -5.13333
+    longitude: 32.53333
+    population: 15320
+    dem: 1142
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kaliua"
+    latitude: -5.06056
+    longitude: 31.79361
+    population: 12362
+    dem: 1087
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Igurubi"
+    latitude: -4.0
+    longitude: 33.7
+    population: 10083
+    dem: 1087
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Igunga"
+    latitude: -4.28333
+    longitude: 33.88333
+    population: 35644
+    dem: 1090
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bukene"
+    latitude: -4.23333
+    longitude: 32.88333
+    population: 7444
+    dem: 1200
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Arusha Region"
+  cities:
+  - name: "Usa River"
+    latitude: -3.36667
+    longitude: 36.85
+    population: 18726
+    dem: 1197
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Poli"
+    latitude: -3.33333
+    longitude: 36.8
+    population: 9568
+    dem: 1644
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nkoaranga"
+    latitude: -3.33333
+    longitude: 36.8
+    population: 14738
+    dem: 1644
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ngorongoro"
+    latitude: -3.23973
+    longitude: 35.48747
+    population: 10836
+    dem: 2377
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Namanga"
+    latitude: -2.55116
+    longitude: 36.78377
+    population: 12048
+    dem: 1311
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mto wa Mbu"
+    latitude: -3.35
+    longitude: 35.85
+    population: 17754
+    dem: 985
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Monduli"
+    latitude: -3.3
+    longitude: 36.45
+    population: 5694
+    dem: 1534
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mbuguni"
+    latitude: -3.56667
+    longitude: 36.95
+    population: 16442
+    dem: 921
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Longido"
+    latitude: -2.73319
+    longitude: 36.69773
+    population: 9403
+    dem: 1348
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kingori"
+    latitude: -3.28333
+    longitude: 36.98333
+    population: 22839
+    dem: 1165
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kiratu"
+    latitude: -3.33333
+    longitude: 35.66667
+    population: 19803
+    dem: 1541
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Arusha"
+    latitude: -3.36667
+    longitude: 36.68333
+    population: 341136
+    dem: 1415
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Merelani"
+    latitude: -3.56182
+    longitude: 36.97895
+    population: 50000
+    dem: 916
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Mtwara Region"
+  cities:
+  - name: "Tandahimba"
+    latitude: -10.75
+    longitude: 39.63333
+    population: 17041
+    dem: 284
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Newala Kisimani"
+    latitude: -10.95
+    longitude: 39.28333
+    population: 38099
+    dem: 687
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nanyamba"
+    latitude: -10.68333
+    longitude: 39.83333
+    population: 19555
+    dem: 243
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nanhyanga"
+    latitude: -10.8
+    longitude: 39.55
+    population: 13519
+    dem: 338
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nangomba"
+    latitude: -10.9
+    longitude: 38.5
+    population: 23028
+    dem: 293
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nanganga"
+    latitude: -10.38333
+    longitude: 39.15
+    population: 17468
+    dem: 214
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Namikupa"
+    latitude: -10.83333
+    longitude: 39.6
+    population: 11733
+    dem: 276
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Namalenga"
+    latitude: -10.95
+    longitude: 39.1
+    population: 11204
+    dem: 280
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mtwara"
+    latitude: -10.26667
+    longitude: 40.18333
+    population: 96602
+    dem: 21
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Masuguru"
+    latitude: -11.36667
+    longitude: 38.41667
+    population: 7946
+    dem: 172
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Masasi"
+    latitude: -10.71667
+    longitude: 38.8
+    population: 36032
+    dem: 449
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mahuta"
+    latitude: -10.86667
+    longitude: 39.45
+    population: 13548
+    dem: 478
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Madimba"
+    latitude: -10.4
+    longitude: 40.33333
+    population: 12507
+    dem: 22
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lulindi"
+    latitude: -10.81667
+    longitude: 39.13333
+    population: 7807
+    dem: 441
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lukuledi"
+    latitude: -10.56667
+    longitude: 38.8
+    population: 29699
+    dem: 339
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Luchingu"
+    latitude: -10.9
+    longitude: 39.33333
+    population: 25145
+    dem: 607
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kitangari"
+    latitude: -10.65
+    longitude: 39.33333
+    population: 10956
+    dem: 468
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kitama"
+    latitude: -10.71667
+    longitude: 39.73333
+    population: 16232
+    dem: 264
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Chiungutwa"
+    latitude: -10.88333
+    longitude: 38.98333
+    population: 12764
+    dem: 268
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Kigoma Region"
+  cities:
+  - name: "Uvinza"
+    latitude: -5.10361
+    longitude: 30.39111
+    population: 24650
+    dem: 996
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nguruka"
+    latitude: -5.10917
+    longitude: 31.04194
+    population: 39135
+    dem: 1081
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mwandiga"
+    latitude: -4.83
+    longitude: 29.65806
+    population: 16822
+    dem: 871
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mabamba"
+    latitude: -3.59833
+    longitude: 30.50194
+    population: 14140
+    dem: 1297
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kigoma"
+    latitude: -4.87694
+    longitude: 29.62667
+    population: 164268
+    dem: 769
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kibondo"
+    latitude: -3.58639
+    longitude: 30.72028
+    population: 28666
+    dem: 1505
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kasulu"
+    latitude: -4.57667
+    longitude: 30.1025
+    population: 37349
+    dem: 1310
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kakonko"
+    latitude: -3.28278
+    longitude: 30.96417
+    population: 24688
+    dem: 1245
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Songwe"
+  cities:
+  - name: "Vwawa"
+    latitude: -9.10806
+    longitude: 32.93472
+    population: 40145
+    dem: 1331
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Tunduma"
+    latitude: -9.3
+    longitude: 32.76667
+    population: 36556
+    dem: 1698
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mlowo"
+    latitude: -9.0
+    longitude: 32.98333
+    population: 18737
+    dem: 1591
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Itumba"
+    latitude: -9.4
+    longitude: 33.18333
+    population: 13438
+    dem: 1372
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Pemba South Region"
+  cities:
+  - name: "Mtambile"
+    latitude: -5.38333
+    longitude: 39.7
+    population: 6797
+    dem: 23
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Chake Chake"
+    latitude: -5.24586
+    longitude: 39.76659
+    population: 21686
+    dem: 19
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Ruvuma Region"
+  cities:
+  - name: "Mahanje"
+    latitude: -9.93333
+    longitude: 35.33333
+    population: 15009
+    dem: 991
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Tingi"
+    latitude: -11.3
+    longitude: 35.03333
+    population: 16315
+    dem: 1203
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Songea"
+    latitude: -10.68333
+    longitude: 35.65
+    population: 126449
+    dem: 1113
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mbinga"
+    latitude: -10.93333
+    longitude: 35.01667
+    population: 25192
+    dem: 1357
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mbamba Bay"
+    latitude: -11.28333
+    longitude: 34.76667
+    population: 8997
+    dem: 476
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Matiri"
+    latitude: -10.75
+    longitude: 34.9
+    population: 18830
+    dem: 1324
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Maposeni"
+    latitude: -10.58333
+    longitude: 35.4
+    population: 19472
+    dem: 978
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Liuli"
+    latitude: -11.08333
+    longitude: 34.63333
+    population: 13119
+    dem: 476
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kigonsera"
+    latitude: -10.8
+    longitude: 35.05
+    population: 22155
+    dem: 1327
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Mara Region"
+  cities:
+  - name: "Tarime"
+    latitude: -1.35
+    longitude: 34.36667
+    population: 33094
+    dem: 1398
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Sirari"
+    latitude: -1.25367
+    longitude: 34.47596
+    population: 24317
+    dem: 1679
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nyamuswa"
+    latitude: -1.9
+    longitude: 34.01667
+    population: 16507
+    dem: 1386
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nansio"
+    latitude: -2.13333
+    longitude: 33.05
+    population: 6437
+    dem: 1134
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Nakatunguru"
+    latitude: -2.11667
+    longitude: 33.06667
+    population: 6064
+    dem: 1151
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Musoma"
+    latitude: -1.5
+    longitude: 33.8
+    population: 121119
+    dem: 1148
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Muriti"
+    latitude: -1.98333
+    longitude: 32.91667
+    population: 20254
+    dem: 1141
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mugumu"
+    latitude: -1.85
+    longitude: 34.7
+    population: 18431
+    dem: 1551
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mugango"
+    latitude: -1.68333
+    longitude: 33.7
+    population: 10550
+    dem: 1134
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kibara"
+    latitude: -2.15
+    longitude: 33.45
+    population: 17211
+    dem: 1149
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Issenye"
+    latitude: -2.0
+    longitude: 34.33333
+    population: 7778
+    dem: 1258
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Butiama"
+    latitude: -1.76667
+    longitude: 33.96667
+    population: 16376
+    dem: 1500
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bunda"
+    latitude: -2.05
+    longitude: 33.86667
+    population: 50944
+    dem: 1174
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Katavi Region"
+  cities:
+  - name: "Usevia"
+    latitude: -7.1
+    longitude: 31.23333
+    population: 17742
+    dem: 928
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mpanda"
+    latitude: -6.34379
+    longitude: 31.06951
+    population: 73338
+    dem: 1100
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Karema"
+    latitude: -6.82052
+    longitude: 30.43887
+    population: 12630
+    dem: 777
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Inyonga"
+    latitude: -6.71667
+    longitude: 32.06667
+    population: 11790
+    dem: 1177
+    timezone: "Africa/Dar_es_Salaam"
+- name: "Coast Region"
+  cities:
+  - name: "Vikindu"
+    latitude: -7.00667
+    longitude: 39.29849
+    population: 23307
+    dem: 86
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Utete"
+    latitude: -7.98598
+    longitude: 38.75795
+    population: 11888
+    dem: 31
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mvomero"
+    latitude: -6.25
+    longitude: 38.66667
+    population: 31324
+    dem: 34
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mlandizi"
+    latitude: -6.7
+    longitude: 38.73333
+    population: 29394
+    dem: 26
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Mkuranga"
+    latitude: -7.11799
+    longitude: 39.20782
+    population: 28037
+    dem: 125
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Maneromango"
+    latitude: -7.1988
+    longitude: 38.78478
+    population: 9402
+    dem: 383
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Lugoba"
+    latitude: -6.45
+    longitude: 38.33333
+    population: 16902
+    dem: 250
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kisarawe"
+    latitude: -6.9
+    longitude: 39.06667
+    population: 12507
+    dem: 221
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kilindoni"
+    latitude: -7.91446
+    longitude: 39.66204
+    population: 12409
+    dem: 33
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kibiti"
+    latitude: -7.72178
+    longitude: 38.93749
+    population: 30163
+    dem: 173
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Kibaha"
+    latitude: -6.76667
+    longitude: 38.91667
+    population: 23651
+    dem: 154
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Ikwiriri"
+    latitude: -7.95618
+    longitude: 38.97164
+    population: 13071
+    dem: 30
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Chalinze"
+    latitude: -6.63784
+    longitude: 38.35396
+    population: 34335
+    dem: 212
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bungu"
+    latitude: -7.63369
+    longitude: 39.05818
+    population: 27873
+    dem: 163
+    timezone: "Africa/Dar_es_Salaam"
+  - name: "Bagamoyo"
+    latitude: -6.44222
+    longitude: 38.90422
+    population: 82426
+    dem: 13
+    timezone: "Africa/Dar_es_Salaam"

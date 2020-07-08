@@ -1,0 +1,814 @@
+---
+name: "Denmark"
+iso: "DK"
+iso3: "DNK"
+code: "208"
+capital: "Copenhagen"
+area: 43094.0
+population: 5484000
+continent: "EU"
+currencyCode: "DKK"
+currencyName: "Krone"
+phone: "45"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "da-DK,en,fo,de-DK"
+neighbours: "DE"
+regions:
+- name: "Region Sjaelland"
+  cities:
+  - name: "Vordingborg"
+    latitude: 55.00801
+    longitude: 11.91057
+    population: 12014
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Tune"
+    latitude: 55.59287
+    longitude: 12.16968
+    population: 5168
+    dem: 50
+    timezone: "Europe/Copenhagen"
+  - name: "Soro"
+    latitude: 55.43184
+    longitude: 11.55547
+    population: 7167
+    dem: 43
+    timezone: "Europe/Copenhagen"
+  - name: "Solrod Strand"
+    latitude: 55.53285
+    longitude: 12.22227
+    population: 14845
+    dem: 2
+    timezone: "Europe/Copenhagen"
+  - name: "Slagelse"
+    latitude: 55.40276
+    longitude: 11.35459
+    population: 31896
+    dem: 51
+    timezone: "Europe/Copenhagen"
+  - name: "Skaelskor"
+    latitude: 55.25058
+    longitude: 11.29352
+    population: 6455
+    dem: 4
+    timezone: "Europe/Copenhagen"
+  - name: "Roskilde"
+    latitude: 55.64152
+    longitude: 12.08035
+    population: 44285
+    dem: 41
+    timezone: "Europe/Copenhagen"
+  - name: "Ringsted"
+    latitude: 55.4426
+    longitude: 11.79011
+    population: 20188
+    dem: 54
+    timezone: "Europe/Copenhagen"
+  - name: "Nykobing Falster"
+    latitude: 54.76906
+    longitude: 11.87425
+    population: 16807
+    dem: 2
+    timezone: "Europe/Copenhagen"
+  - name: "Nykobing Sjaelland"
+    latitude: 55.92491
+    longitude: 11.67109
+    population: 5596
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Naestved"
+    latitude: 55.22992
+    longitude: 11.76092
+    population: 40660
+    dem: 16
+    timezone: "Europe/Copenhagen"
+  - name: "Nakskov"
+    latitude: 54.83038
+    longitude: 11.13567
+    population: 14081
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Maribo"
+    latitude: 54.77662
+    longitude: 11.50017
+    population: 5349
+    dem: 13
+    timezone: "Europe/Copenhagen"
+  - name: "Korsor"
+    latitude: 55.32993
+    longitude: 11.13857
+    population: 15029
+    dem: 2
+    timezone: "Europe/Copenhagen"
+  - name: "Koge"
+    latitude: 55.45802
+    longitude: 12.18214
+    population: 33885
+    dem: 4
+    timezone: "Europe/Copenhagen"
+  - name: "Kalundborg"
+    latitude: 55.67954
+    longitude: 11.08864
+    population: 15939
+    dem: 3
+    timezone: "Europe/Copenhagen"
+  - name: "Jyllinge"
+    latitude: 55.75295
+    longitude: 12.10315
+    population: 9981
+    dem: -9999
+    timezone: "Europe/Copenhagen"
+  - name: "Holbaek"
+    latitude: 55.7175
+    longitude: 11.71279
+    population: 24544
+    dem: 1
+    timezone: "Europe/Copenhagen"
+  - name: "Haslev"
+    latitude: 55.32346
+    longitude: 11.96389
+    population: 10588
+    dem: 51
+    timezone: "Europe/Copenhagen"
+  - name: "Greve"
+    latitude: 55.58333
+    longitude: 12.3
+    population: 47671
+    dem: 3
+    timezone: "Europe/Copenhagen"
+- name: "Region Hovedstaden"
+  cities:
+  - name: "Vanlose"
+    latitude: 55.68361
+    longitude: 12.48713
+    population: 37115
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Vallensbaek"
+    latitude: 55.62199
+    longitude: 12.38511
+    population: 13500
+    dem: 3
+    timezone: "Europe/Copenhagen"
+  - name: "Trorod"
+    latitude: 55.83946
+    longitude: 12.54432
+    population: 8576
+    dem: 21
+    timezone: "Europe/Copenhagen"
+  - name: "Taastrup"
+    latitude: 55.65006
+    longitude: 12.3016
+    population: 30977
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Tarnby"
+    latitude: 55.6303
+    longitude: 12.60035
+    population: 10000
+    dem: 2
+    timezone: "Europe/Copenhagen"
+  - name: "Stenlose"
+    latitude: 55.76828
+    longitude: 12.19723
+    population: 19998
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Stavnsholt"
+    latitude: 55.81479
+    longitude: 12.40545
+    population: 5658
+    dem: 35
+    timezone: "Europe/Copenhagen"
+  - name: "Smorumnedre"
+    latitude: 55.74232
+    longitude: 12.30276
+    population: 9507
+    dem: 31
+    timezone: "Europe/Copenhagen"
+  - name: "Slangerup"
+    latitude: 55.85
+    longitude: 12.18333
+    population: 6829
+    dem: 29
+    timezone: "Europe/Copenhagen"
+  - name: "Ronne"
+    latitude: 55.10091
+    longitude: 14.70664
+    population: 13890
+    dem: 22
+    timezone: "Europe/Copenhagen"
+  - name: "Rodovre"
+    latitude: 55.68062
+    longitude: 12.45373
+    population: 30000
+    dem: 20
+    timezone: "Europe/Copenhagen"
+  - name: "Olstykke"
+    latitude: 55.79567
+    longitude: 12.15509
+    population: 5348
+    dem: 22
+    timezone: "Europe/Copenhagen"
+  - name: "Niva"
+    latitude: 55.93405
+    longitude: 12.50485
+    population: 8035
+    dem: 8
+    timezone: "Europe/Copenhagen"
+  - name: "Malov"
+    latitude: 55.75528
+    longitude: 12.32327
+    population: 8513
+    dem: 36
+    timezone: "Europe/Copenhagen"
+  - name: "Vaerlose"
+    latitude: 55.78251
+    longitude: 12.36856
+    population: 13024
+    dem: 47
+    timezone: "Europe/Copenhagen"
+  - name: "Lillerod"
+    latitude: 55.87496
+    longitude: 12.34579
+    population: 15359
+    dem: 45
+    timezone: "Europe/Copenhagen"
+  - name: "Copenhagen"
+    latitude: 55.67594
+    longitude: 12.56553
+    population: 1153615
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Kongens Lyngby"
+    latitude: 55.77044
+    longitude: 12.50378
+    population: 10600
+    dem: 25
+    timezone: "Europe/Copenhagen"
+  - name: "Ishoj"
+    latitude: 55.61543
+    longitude: 12.35182
+    population: 19453
+    dem: 4
+    timezone: "Europe/Copenhagen"
+  - name: "Hvidovre"
+    latitude: 55.65719
+    longitude: 12.47364
+    population: 49380
+    dem: 9
+    timezone: "Europe/Copenhagen"
+  - name: "Hundested"
+    latitude: 55.96397
+    longitude: 11.85044
+    population: 8615
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Humlebaek"
+    latitude: 55.9618
+    longitude: 12.5341
+    population: 8965
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Horsholm"
+    latitude: 55.88098
+    longitude: 12.50111
+    population: 36670
+    dem: 29
+    timezone: "Europe/Copenhagen"
+  - name: "Hillerod"
+    latitude: 55.92791
+    longitude: 12.30081
+    population: 30853
+    dem: 29
+    timezone: "Europe/Copenhagen"
+  - name: "Helsingor"
+    latitude: 56.03606
+    longitude: 12.6136
+    population: 35048
+    dem: 8
+    timezone: "Europe/Copenhagen"
+  - name: "Helsinge"
+    latitude: 56.02283
+    longitude: 12.19752
+    population: 7354
+    dem: 31
+    timezone: "Europe/Copenhagen"
+  - name: "Hellebaek"
+    latitude: 56.06823
+    longitude: 12.55782
+    population: 5243
+    dem: 13
+    timezone: "Europe/Copenhagen"
+  - name: "Glostrup"
+    latitude: 55.6666
+    longitude: 12.40377
+    population: 20673
+    dem: 18
+    timezone: "Europe/Copenhagen"
+  - name: "Gilleleje"
+    latitude: 56.12196
+    longitude: 12.31056
+    population: 5799
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Frederiksvaerk"
+    latitude: 55.97073
+    longitude: 12.0225
+    population: 12176
+    dem: 10
+    timezone: "Europe/Copenhagen"
+  - name: "Frederikssund"
+    latitude: 55.83956
+    longitude: 12.06896
+    population: 14564
+    dem: 17
+    timezone: "Europe/Copenhagen"
+  - name: "Frederiksberg"
+    latitude: 55.67938
+    longitude: 12.53463
+    population: 95029
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Fredensborg"
+    latitude: 55.97558
+    longitude: 12.40314
+    population: 8249
+    dem: 31
+    timezone: "Europe/Copenhagen"
+  - name: "Flong"
+    latitude: 55.66212
+    longitude: 12.18698
+    population: 11108
+    dem: 27
+    timezone: "Europe/Copenhagen"
+  - name: "Farum"
+    latitude: 55.80858
+    longitude: 12.36066
+    population: 18376
+    dem: 33
+    timezone: "Europe/Copenhagen"
+  - name: "Espergaerde"
+    latitude: 55.99464
+    longitude: 12.54733
+    population: 11358
+    dem: 17
+    timezone: "Europe/Copenhagen"
+  - name: "Dragor"
+    latitude: 55.5928
+    longitude: 12.67221
+    population: 11045
+    dem: 4
+    timezone: "Europe/Copenhagen"
+  - name: "Christianshavn"
+    latitude: 55.67383
+    longitude: 12.59541
+    population: 10140
+    dem: 7
+    timezone: "Europe/Copenhagen"
+  - name: "Charlottenlund"
+    latitude: 55.75238
+    longitude: 12.5745
+    population: 40000
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Birkerod"
+    latitude: 55.84759
+    longitude: 12.42791
+    population: 18901
+    dem: 53
+    timezone: "Europe/Copenhagen"
+  - name: "Ballerup"
+    latitude: 55.73165
+    longitude: 12.36328
+    population: 40000
+    dem: 34
+    timezone: "Europe/Copenhagen"
+  - name: "Albertslund"
+    latitude: 55.65691
+    longitude: 12.36381
+    population: 30000
+    dem: 12
+    timezone: "Europe/Copenhagen"
+- name: "North Denmark Region"
+  cities:
+  - name: "Thisted"
+    latitude: 56.95523
+    longitude: 8.69491
+    population: 13020
+    dem: 4
+    timezone: "Europe/Copenhagen"
+  - name: "Stovring"
+    latitude: 56.88536
+    longitude: 9.83839
+    population: 6239
+    dem: 18
+    timezone: "Europe/Copenhagen"
+  - name: "Skagen"
+    latitude: 57.72093
+    longitude: 10.58394
+    population: 9747
+    dem: 3
+    timezone: "Europe/Copenhagen"
+  - name: "Saeby"
+    latitude: 57.33188
+    longitude: 10.52251
+    population: 8435
+    dem: 8
+    timezone: "Europe/Copenhagen"
+  - name: "Nykobing Mors"
+    latitude: 56.79334
+    longitude: 8.85282
+    population: 9326
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Norresundby"
+    latitude: 57.05877
+    longitude: 9.92284
+    population: 22083
+    dem: 10
+    timezone: "Europe/Copenhagen"
+  - name: "Lokken"
+    latitude: 57.37047
+    longitude: 9.71466
+    population: 8828
+    dem: 8
+    timezone: "Europe/Copenhagen"
+  - name: "Hobro"
+    latitude: 56.64306
+    longitude: 9.79029
+    population: 11064
+    dem: 12
+    timezone: "Europe/Copenhagen"
+  - name: "Hjorring"
+    latitude: 57.46417
+    longitude: 9.98229
+    population: 24634
+    dem: 51
+    timezone: "Europe/Copenhagen"
+  - name: "Hirtshals"
+    latitude: 57.58812
+    longitude: 9.95922
+    population: 6653
+    dem: 16
+    timezone: "Europe/Copenhagen"
+  - name: "Hadsund"
+    latitude: 56.71482
+    longitude: 10.11682
+    population: 5066
+    dem: 3
+    timezone: "Europe/Copenhagen"
+  - name: "Frederikshavn"
+    latitude: 57.44073
+    longitude: 10.53661
+    population: 24103
+    dem: 8
+    timezone: "Europe/Copenhagen"
+  - name: "Bronderslev"
+    latitude: 57.27021
+    longitude: 9.94102
+    population: 11671
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Aars"
+    latitude: 56.80399
+    longitude: 9.51441
+    population: 7771
+    dem: 36
+    timezone: "Europe/Copenhagen"
+  - name: "Aalborg"
+    latitude: 57.048
+    longitude: 9.9187
+    population: 122219
+    dem: 10
+    timezone: "Europe/Copenhagen"
+- name: "Region Midtjylland"
+  cities:
+  - name: "Viborg"
+    latitude: 56.45319
+    longitude: 9.40201
+    population: 34831
+    dem: 50
+    timezone: "Europe/Copenhagen"
+  - name: "Tranbjerg"
+    latitude: 56.09519
+    longitude: 10.13605
+    population: 7307
+    dem: 74
+    timezone: "Europe/Copenhagen"
+  - name: "Struer"
+    latitude: 56.49205
+    longitude: 8.59397
+    population: 11317
+    dem: 1
+    timezone: "Europe/Copenhagen"
+  - name: "Skjern"
+    latitude: 55.95
+    longitude: 8.5
+    population: 7145
+    dem: 9
+    timezone: "Europe/Copenhagen"
+  - name: "Skive"
+    latitude: 56.56699
+    longitude: 9.02707
+    population: 20815
+    dem: 24
+    timezone: "Europe/Copenhagen"
+  - name: "Skanderborg"
+    latitude: 56.03434
+    longitude: 9.93177
+    population: 13543
+    dem: 38
+    timezone: "Europe/Copenhagen"
+  - name: "Silkeborg"
+    latitude: 56.1697
+    longitude: 9.54508
+    population: 41674
+    dem: 19
+    timezone: "Europe/Copenhagen"
+  - name: "Ringkobing"
+    latitude: 56.09006
+    longitude: 8.24402
+    population: 9315
+    dem: 8
+    timezone: "Europe/Copenhagen"
+  - name: "Randers"
+    latitude: 56.4607
+    longitude: 10.03639
+    population: 55780
+    dem: 12
+    timezone: "Europe/Copenhagen"
+  - name: "Odder"
+    latitude: 55.97313
+    longitude: 10.153
+    population: 11009
+    dem: 11
+    timezone: "Europe/Copenhagen"
+  - name: "Lystrup"
+    latitude: 56.2375
+    longitude: 10.23778
+    population: 9107
+    dem: 48
+    timezone: "Europe/Copenhagen"
+  - name: "Logten"
+    latitude: 56.27459
+    longitude: 10.31181
+    population: 5048
+    dem: 69
+    timezone: "Europe/Copenhagen"
+  - name: "Lemvig"
+    latitude: 56.54856
+    longitude: 8.31019
+    population: 7330
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Kolt"
+    latitude: 56.10845
+    longitude: 10.06986
+    population: 5061
+    dem: 75
+    timezone: "Europe/Copenhagen"
+  - name: "Ikast"
+    latitude: 56.13883
+    longitude: 9.15768
+    population: 14692
+    dem: 81
+    timezone: "Europe/Copenhagen"
+  - name: "Horsens"
+    latitude: 55.86066
+    longitude: 9.85034
+    population: 58646
+    elevation: 4
+    dem: 4
+    timezone: "Europe/Copenhagen"
+  - name: "Horning"
+    latitude: 56.08701
+    longitude: 10.03716
+    population: 6085
+    dem: 68
+    timezone: "Europe/Copenhagen"
+  - name: "Holstebro"
+    latitude: 56.36009
+    longitude: 8.61607
+    population: 32072
+    dem: 16
+    timezone: "Europe/Copenhagen"
+  - name: "Hinnerup"
+    latitude: 56.26608
+    longitude: 10.06299
+    population: 7055
+    dem: 30
+    timezone: "Europe/Copenhagen"
+  - name: "Herning"
+    latitude: 56.13615
+    longitude: 8.97662
+    population: 44763
+    dem: 48
+    timezone: "Europe/Copenhagen"
+  - name: "Hedensted"
+    latitude: 55.77043
+    longitude: 9.7011
+    population: 10048
+    dem: 65
+    timezone: "Europe/Copenhagen"
+  - name: "Hammel"
+    latitude: 56.25762
+    longitude: 9.86316
+    population: 6138
+    dem: 66
+    timezone: "Europe/Copenhagen"
+  - name: "Hadsten"
+    latitude: 56.32819
+    longitude: 10.04931
+    population: 7020
+    dem: 30
+    timezone: "Europe/Copenhagen"
+  - name: "Grenaa"
+    latitude: 56.41578
+    longitude: 10.87825
+    population: 14317
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Ebeltoft"
+    latitude: 56.19442
+    longitude: 10.6821
+    population: 7501
+    dem: 28
+    timezone: "Europe/Copenhagen"
+  - name: "Brande"
+    latitude: 55.94316
+    longitude: 9.12798
+    population: 6357
+    dem: 50
+    timezone: "Europe/Copenhagen"
+  - name: "Bjerringbro"
+    latitude: 56.37797
+    longitude: 9.66065
+    population: 7390
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Arhus"
+    latitude: 56.15674
+    longitude: 10.21076
+    population: 237551
+    dem: 10
+    timezone: "Europe/Copenhagen"
+- name: "Region Syddanmark"
+  cities:
+  - name: "Vojens"
+    latitude: 55.24639
+    longitude: 9.30603
+    population: 8019
+    dem: 42
+    timezone: "Europe/Copenhagen"
+  - name: "Vejle"
+    latitude: 55.70927
+    longitude: 9.5357
+    population: 51177
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Vejen"
+    latitude: 55.48117
+    longitude: 9.13795
+    population: 8525
+    dem: 41
+    timezone: "Europe/Copenhagen"
+  - name: "Varde"
+    latitude: 55.62112
+    longitude: 8.48069
+    population: 12735
+    dem: 11
+    timezone: "Europe/Copenhagen"
+  - name: "Tonder"
+    latitude: 54.93306
+    longitude: 8.86674
+    population: 7841
+    dem: 3
+    timezone: "Europe/Copenhagen"
+  - name: "Svendborg"
+    latitude: 55.05982
+    longitude: 10.60677
+    population: 27553
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Sonderborg"
+    latitude: 54.90896
+    longitude: 9.78917
+    population: 27033
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Rodekro"
+    latitude: 55.07076
+    longitude: 9.33531
+    population: 5452
+    dem: 43
+    timezone: "Europe/Copenhagen"
+  - name: "Ribe"
+    latitude: 55.33051
+    longitude: 8.76966
+    population: 7983
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Odense"
+    latitude: 55.39594
+    longitude: 10.38831
+    population: 145931
+    dem: 17
+    timezone: "Europe/Copenhagen"
+  - name: "Nyborg"
+    latitude: 55.31274
+    longitude: 10.78964
+    population: 15826
+    dem: 7
+    timezone: "Europe/Copenhagen"
+  - name: "Nordborg"
+    latitude: 55.05732
+    longitude: 9.7408
+    population: 7406
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Neder Holluf"
+    latitude: 55.36451
+    longitude: 10.44824
+    population: 5612
+    dem: 17
+    timezone: "Europe/Copenhagen"
+  - name: "Munkebo"
+    latitude: 55.45553
+    longitude: 10.55433
+    population: 5225
+    dem: 1
+    timezone: "Europe/Copenhagen"
+  - name: "Middelfart"
+    latitude: 55.50591
+    longitude: 9.73054
+    population: 13596
+    dem: 4
+    timezone: "Europe/Copenhagen"
+  - name: "Kolding"
+    latitude: 55.4904
+    longitude: 9.47216
+    population: 55363
+    dem: 8
+    timezone: "Europe/Copenhagen"
+  - name: "Kerteminde"
+    latitude: 55.44903
+    longitude: 10.65769
+    population: 5748
+    dem: 5
+    timezone: "Europe/Copenhagen"
+  - name: "Haderslev"
+    latitude: 55.24943
+    longitude: 9.48771
+    population: 20825
+    dem: 13
+    timezone: "Europe/Copenhagen"
+  - name: "Grindsted"
+    latitude: 55.75726
+    longitude: 8.9275
+    population: 9414
+    dem: 42
+    timezone: "Europe/Copenhagen"
+  - name: "Fredericia"
+    latitude: 55.56568
+    longitude: 9.75257
+    population: 36946
+    dem: 16
+    timezone: "Europe/Copenhagen"
+  - name: "Faaborg"
+    latitude: 55.0951
+    longitude: 10.24226
+    population: 7239
+    dem: 7
+    timezone: "Europe/Copenhagen"
+  - name: "Esbjerg"
+    latitude: 55.47028
+    longitude: 8.45187
+    population: 72205
+    dem: 17
+    timezone: "Europe/Copenhagen"
+  - name: "Bramming"
+    latitude: 55.46946
+    longitude: 8.70007
+    population: 6726
+    dem: 15
+    timezone: "Europe/Copenhagen"
+  - name: "Billund"
+    latitude: 55.73349
+    longitude: 9.10785
+    population: 6160
+    dem: 58
+    timezone: "Europe/Copenhagen"
+  - name: "Assens"
+    latitude: 55.27023
+    longitude: 9.90081
+    population: 6053
+    dem: 14
+    timezone: "Europe/Copenhagen"
+  - name: "Aabenraa"
+    latitude: 55.04434
+    longitude: 9.41741
+    population: 16344
+    dem: 16
+    timezone: "Europe/Copenhagen"

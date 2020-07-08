@@ -1,0 +1,167 @@
+---
+name: "Palau"
+iso: "PW"
+iso3: "PLW"
+code: "585"
+capital: "Melekeok"
+area: 458.0
+population: 19907
+continent: "OC"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "680"
+postalCodeFormat: "96940"
+postalCodeRegex: "^(96940)$"
+languages: "pau,sov,en-PW,tox,ja,fil,zh"
+regions:
+- name: "State of Angaur"
+  cities:
+  - name: "Angaur State"
+    latitude: 6.90601
+    longitude: 134.12997
+    population: 188
+    elevation: 0
+    dem: 9
+    timezone: "Pacific/Palau"
+- name: "State of Koror"
+  cities:
+  - name: "Koror"
+    latitude: 7.33978
+    longitude: 134.47326
+    population: 14000
+    elevation: 20
+    dem: 34
+    timezone: "Pacific/Palau"
+  - name: "Koror Town"
+    latitude: 7.34257
+    longitude: 134.47888
+    population: 12676
+    dem: 29
+    timezone: "Pacific/Palau"
+- name: "State of Ngatpang"
+  cities:
+  - name: "Ngereklmadel"
+    latitude: 7.48826
+    longitude: 134.48562
+    population: 0
+    elevation: 15
+    dem: 40
+    timezone: "Pacific/Palau"
+- name: "State of Kayangel"
+  cities:
+  - name: "Kayangel"
+    latitude: 8.08228
+    longitude: 134.71725
+    population: 188
+    dem: 9
+    timezone: "Pacific/Palau"
+- name: "State of Ngaraard"
+  cities:
+  - name: "Ulimang"
+    latitude: 7.62416
+    longitude: 134.64208
+    population: 581
+    dem: 11
+    timezone: "Pacific/Palau"
+- name: "State of Ngiwal"
+  cities:
+  - name: "Ngerkeai"
+    latitude: 7.55456
+    longitude: 134.63612
+    population: 223
+    elevation: 3
+    dem: 17
+    timezone: "Pacific/Palau"
+- name: "State of Airai"
+  cities:
+  - name: "Ngetkib"
+    latitude: 7.36451
+    longitude: 134.51484
+    population: 62
+    dem: 23
+    timezone: "Pacific/Palau"
+- name: "State of Sonsorol"
+  cities:
+  - name: "Sonsorol Village"
+    latitude: 5.32608
+    longitude: 132.21943
+    population: 30
+    dem: 7
+    timezone: "Pacific/Palau"
+- name: "State of Ngardmau"
+  cities:
+  - name: "Ngardmau"
+    latitude: 7.60986
+    longitude: 134.5744
+    population: 221
+    elevation: 6
+    dem: 24
+    timezone: "Pacific/Palau"
+- name: "State of Hatohobei"
+  cities:
+  - name: "Tobi Village"
+    latitude: 3.00488
+    longitude: 131.12168
+    population: 44
+    dem: 21
+    timezone: "Pacific/Palau"
+- name: "State of Melekeok"
+  cities:
+  - name: "Melekeok Village"
+    latitude: 7.49567
+    longitude: 134.63671
+    population: 271
+    elevation: 3
+    dem: 16
+    timezone: "Pacific/Palau"
+  - name: "Ngerulmud"
+    latitude: 7.50077
+    longitude: 134.6238
+    population: 0
+    dem: 72
+    timezone: "Pacific/Palau"
+- name: "State of Ngeremlengui"
+  cities:
+  - name: "Imeong Hamlet"
+    latitude: 7.53134
+    longitude: 134.52713
+    population: 132
+    elevation: 3
+    dem: 26
+    timezone: "Pacific/Palau"
+- name: "State of Aimeliik"
+  cities:
+  - name: "Ngchemiangel"
+    latitude: 7.44613
+    longitude: 134.47678
+    population: 270
+    elevation: 10
+    dem: 20
+    timezone: "Pacific/Palau"
+- name: "State of Ngchesar"
+  cities:
+  - name: "Ngchesar Hamlet"
+    latitude: 7.46932
+    longitude: 134.60991
+    population: 300
+    elevation: 7
+    dem: 18
+    timezone: "Pacific/Palau"
+- name: "State of Peleliu"
+  cities:
+  - name: "Kloulklubed"
+    latitude: 7.04192
+    longitude: 134.25561
+    population: 702
+    elevation: 3
+    dem: 9
+    timezone: "Pacific/Palau"
+- name: "State of Ngarchelong"
+  cities:
+  - name: "Mengellang"
+    latitude: 7.6957
+    longitude: 134.63054
+    population: 488
+    elevation: 53
+    dem: 59
+    timezone: "Pacific/Palau"

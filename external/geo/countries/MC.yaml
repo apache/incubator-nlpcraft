@@ -1,0 +1,37 @@
+---
+name: "Monaco"
+iso: "MC"
+iso3: "MCO"
+code: "492"
+capital: "Monaco"
+area: 1.95
+population: 32965
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "377"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "fr-MC,en,it"
+neighbours: "FR"
+regions:
+- name: "Commune de Monaco"
+  cities:
+  - name: "Monte-Carlo"
+    latitude: 43.73976
+    longitude: 7.42732
+    population: 16012
+    dem: 45
+    timezone: "Europe/Monaco"
+  - name: "Monaco"
+    latitude: 43.73333
+    longitude: 7.41667
+    population: 32965
+    dem: 62
+    timezone: "Europe/Monaco"
+  - name: "La Condamine"
+    latitude: 43.73439
+    longitude: 7.42024
+    population: 12167
+    dem: 16
+    timezone: "Europe/Monaco"

@@ -1,0 +1,188 @@
+---
+name: "Bhutan"
+iso: "BT"
+iso3: "BTN"
+code: "064"
+capital: "Thimphu"
+area: 47000.0
+population: 699847
+continent: "AS"
+currencyCode: "BTN"
+currencyName: "Ngultrum"
+phone: "975"
+languages: "dz"
+neighbours: "CN,IN"
+regions:
+- name: "Thimphu Dzongkhag"
+  cities:
+  - name: "Thimphu"
+    latitude: 27.46609
+    longitude: 89.64191
+    population: 98676
+    elevation: 2320
+    dem: 2307
+    timezone: "Asia/Thimphu"
+  - name: "Lungtenzampa"
+    latitude: 27.46821
+    longitude: 89.64441
+    population: 0
+    dem: 2319
+    timezone: "Asia/Thimphu"
+- name: "Gasa"
+  cities:
+  - name: "Gasa"
+    latitude: 27.90372
+    longitude: 89.72689
+    population: 548
+    dem: 2761
+    timezone: "Asia/Thimphu"
+- name: "Samdrup Jongkhar Dzongkhag"
+  cities:
+  - name: "Samdrup Jongkhar"
+    latitude: 26.80069
+    longitude: 91.50519
+    population: 7507
+    dem: 173
+    timezone: "Asia/Thimphu"
+- name: "Lhuentse Dzongkhag"
+  cities:
+  - name: "Lhuentse"
+    latitude: 27.66787
+    longitude: 91.18393
+    population: 100
+    dem: 1403
+    timezone: "Asia/Thimphu"
+- name: "Bumthang Dzongkhag"
+  cities:
+  - name: "Jakar"
+    latitude: 27.54918
+    longitude: 90.7525
+    population: 4829
+    dem: 2587
+    timezone: "Asia/Thimphu"
+- name: "Pemagatshel Dzongkhag"
+  cities:
+  - name: "Pemagatshel"
+    latitude: 27.03795
+    longitude: 91.40305
+    population: 13864
+    dem: 1207
+    timezone: "Asia/Thimphu"
+- name: "Dagana Dzongkhag"
+  cities:
+  - name: "Daga"
+    latitude: 27.07529
+    longitude: 89.87688
+    population: 2243
+    dem: 1558
+    timezone: "Asia/Thimphu"
+- name: "Paro Dzongkhag"
+  cities:
+  - name: "Paro"
+    latitude: 27.4305
+    longitude: 89.41334
+    population: 2169
+    dem: 2266
+    timezone: "Asia/Thimphu"
+- name: "Wangdue Phodrang Dzongkhag"
+  cities:
+  - name: "Wangdue Phodrang"
+    latitude: 27.48615
+    longitude: 89.89915
+    population: 7507
+    dem: 1273
+    timezone: "Asia/Thimphu"
+- name: "Samtse Dzongkhag"
+  cities:
+  - name: "Samtse"
+    latitude: 26.89903
+    longitude: 89.09951
+    population: 5479
+    dem: 417
+    timezone: "Asia/Thimphu"
+- name: "Haa Dzongkhag"
+  cities:
+  - name: "Ha"
+    latitude: 27.38747
+    longitude: 89.28074
+    population: 1449
+    dem: 2718
+    timezone: "Asia/Thimphu"
+- name: "Trashigang Dzongkhag"
+  cities:
+  - name: "Trashigang"
+    latitude: 27.3331
+    longitude: 91.55424
+    population: 872
+    dem: 1174
+    timezone: "Asia/Thimphu"
+- name: "Tsirang Dzongkhag"
+  cities:
+  - name: "Tsirang"
+    latitude: 27.0219
+    longitude: 90.12291
+    population: 18667
+    dem: 1410
+    timezone: "Asia/Thimphu"
+- name: "Zhemgang Dzongkhag"
+  cities:
+  - name: "Shemgang"
+    latitude: 27.21689
+    longitude: 90.65793
+    population: 852
+    dem: 1900
+    timezone: "Asia/Thimphu"
+- name: "Trashi Yangste"
+  cities:
+  - name: "Trashi Yangtse"
+    latitude: 27.6116
+    longitude: 91.498
+    population: 3025
+    dem: 1788
+    timezone: "Asia/Thimphu"
+- name: "Mongar Dzongkhag"
+  cities:
+  - name: "Mongar"
+    latitude: 27.27471
+    longitude: 91.23963
+    population: 2969
+    dem: 1648
+    timezone: "Asia/Thimphu"
+- name: "Chhukha Dzongkhag"
+  cities:
+  - name: "Phuntsholing"
+    latitude: 26.85164
+    longitude: 89.38837
+    population: 17043
+    dem: 330
+    timezone: "Asia/Thimphu"
+  - name: "Tsimasham"
+    latitude: 27.0989
+    longitude: 89.53604
+    population: 2855
+    dem: 2245
+    timezone: "Asia/Thimphu"
+- name: "Punakha Dzongkhag"
+  cities:
+  - name: "Punakha"
+    latitude: 27.59137
+    longitude: 89.87743
+    population: 21500
+    dem: 1293
+    timezone: "Asia/Thimphu"
+- name: "Trongsa Dzongkhag"
+  cities:
+  - name: "Trongsa"
+    latitude: 27.5026
+    longitude: 90.50716
+    population: 2805
+    dem: 2108
+    timezone: "Asia/Thimphu"
+- name: "Sarpang Dzongkhag"
+  cities:
+  - name: "Sarpang"
+    latitude: 26.86395
+    longitude: 90.26745
+    population: 10416
+    dem: 344
+    timezone: "Asia/Thimphu"

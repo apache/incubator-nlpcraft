@@ -1,0 +1,162 @@
+---
+name: "Taiwan"
+iso: "TW"
+iso3: "TWN"
+code: "158"
+capital: "Taipei"
+area: 35980.0
+population: 22894384
+continent: "AS"
+currencyCode: "TWD"
+currencyName: "Dollar"
+phone: "886"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "zh-TW,zh,nan,hak"
+regions:
+- name: "Taipei"
+  cities:
+  - name: "Banqiao"
+    latitude: 25.01427
+    longitude: 121.46719
+    population: 543342
+    dem: 12
+    timezone: "Asia/Taipei"
+- name: "Kaohsiung"
+  cities:
+  - name: "Kaohsiung"
+    latitude: 22.61626
+    longitude: 120.31333
+    population: 1519711
+    dem: 9
+    timezone: "Asia/Taipei"
+- name: "Fukien"
+  cities:
+  - name: "Jincheng"
+    latitude: 24.43415
+    longitude: 118.31712
+    population: 37507
+    dem: 21
+    timezone: "Asia/Taipei"
+- name: "Taiwan"
+  cities:
+  - name: "Douliu"
+    latitude: 23.70944
+    longitude: 120.54333
+    population: 104723
+    dem: 57
+    timezone: "Asia/Taipei"
+  - name: "Yujing"
+    latitude: 23.12493
+    longitude: 120.46138
+    population: 16597
+    dem: 67
+    timezone: "Asia/Taipei"
+  - name: "Yuanlin"
+    latitude: 23.96113
+    longitude: 120.57209
+    population: 124725
+    dem: 32
+    timezone: "Asia/Taipei"
+  - name: "Donggang"
+    latitude: 22.46515
+    longitude: 120.44927
+    population: 48100
+    dem: 8
+    timezone: "Asia/Taipei"
+  - name: "Taipei"
+    latitude: 25.04776
+    longitude: 121.53185
+    population: 7871900
+    dem: 10
+    timezone: "Asia/Taipei"
+  - name: "Tainan"
+    latitude: 22.99083
+    longitude: 120.21333
+    population: 771235
+    dem: 26
+    timezone: "Asia/Taipei"
+  - name: "Taichung"
+    latitude: 24.1469
+    longitude: 120.6839
+    population: 1040725
+    dem: 91
+    timezone: "Asia/Taipei"
+  - name: "Daxi"
+    latitude: 24.88373
+    longitude: 121.29043
+    population: 84549
+    dem: 125
+    timezone: "Asia/Taipei"
+  - name: "Puli"
+    latitude: 23.96639
+    longitude: 120.96952
+    population: 86406
+    dem: 452
+    timezone: "Asia/Taipei"
+  - name: "Nantou"
+    latitude: 23.91566
+    longitude: 120.66387
+    population: 105682
+    dem: 196
+    timezone: "Asia/Taipei"
+  - name: "Magong"
+    latitude: 23.5654
+    longitude: 119.58627
+    population: 56435
+    dem: 14
+    timezone: "Asia/Taipei"
+  - name: "Lugu"
+    latitude: 23.74639
+    longitude: 120.7525
+    population: 19599
+    dem: 505
+    timezone: "Asia/Taipei"
+  - name: "Yilan"
+    latitude: 24.757
+    longitude: 121.753
+    population: 94188
+    dem: 15
+    timezone: "Asia/Taipei"
+  - name: "Hualien City"
+    latitude: 23.97694
+    longitude: 121.60444
+    population: 350468
+    dem: 13
+    timezone: "Asia/Taipei"
+  - name: "Hsinchu"
+    latitude: 24.80361
+    longitude: 120.96861
+    population: 404109
+    dem: 22
+    timezone: "Asia/Taipei"
+  - name: "Hengchun"
+    latitude: 22.00417
+    longitude: 120.74389
+    population: 31288
+    dem: 25
+    timezone: "Asia/Taipei"
+  - name: "Keelung"
+    latitude: 25.12825
+    longitude: 121.7419
+    population: 397515
+    dem: 17
+    timezone: "Asia/Taipei"
+  - name: "Taoyuan City"
+    latitude: 24.99368
+    longitude: 121.29696
+    population: 402014
+    dem: 103
+    timezone: "Asia/Taipei"
+  - name: "Taitung City"
+    latitude: 22.7583
+    longitude: 121.1444
+    population: 109584
+    dem: 19
+    timezone: "Asia/Taipei"
+  - name: "Zhongxing New Village"
+    latitude: 23.95908
+    longitude: 120.68516
+    population: 25549
+    dem: 106
+    timezone: "Asia/Taipei"

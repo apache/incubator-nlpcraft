@@ -1,0 +1,149 @@
+---
+name: "Mauritania"
+iso: "MR"
+iso3: "MRT"
+code: "478"
+capital: "Nouakchott"
+area: 1030700.0
+population: 3205060
+continent: "AF"
+currencyCode: "MRO"
+currencyName: "Ouguiya"
+phone: "222"
+languages: "ar-MR,fuc,snk,fr,mey,wo"
+neighbours: "SN,DZ,EH,ML"
+regions:
+- name: "Tiris Zemmour"
+  cities:
+  - name: "Zouerate"
+    latitude: 22.73542
+    longitude: -12.47134
+    population: 38000
+    dem: 352
+    timezone: "Africa/Nouakchott"
+- name: "Brakna"
+  cities:
+  - name: "Aleg"
+    latitude: 17.05314
+    longitude: -13.91312
+    population: 15211
+    dem: 40
+    timezone: "Africa/Nouakchott"
+- name: "Mauritania"
+  cities:
+  - name: "Nouakchott"
+    latitude: 18.08581
+    longitude: -15.9785
+    population: 661400
+    dem: 10
+    timezone: "Africa/Nouakchott"
+- name: "Dakhlet Nouadhibou"
+  cities:
+  - name: "Nouadhibou"
+    latitude: 20.94188
+    longitude: -17.03842
+    population: 72337
+    dem: 16
+    timezone: "Africa/Nouakchott"
+- name: "Nouakchott Nord"
+  cities:
+  - name: "Dar Naim"
+    latitude: 18.10808
+    longitude: -15.92666
+    population: 0
+    dem: 3
+    timezone: "Africa/Nouakchott"
+- name: "Hodh El Gharbi"
+  cities:
+  - name: "Aioun"
+    latitude: 16.6614
+    longitude: -9.6149
+    population: 12635
+    dem: 235
+    timezone: "Africa/Nouakchott"
+- name: "Hodh ech Chargui"
+  cities:
+  - name: "Nema"
+    latitude: 16.61702
+    longitude: -7.25649
+    population: 60000
+    dem: 266
+    timezone: "Africa/Nouakchott"
+- name: "Gorgol"
+  cities:
+  - name: "Kaedi"
+    latitude: 16.15027
+    longitude: -13.5037
+    population: 55374
+    dem: 25
+    timezone: "Africa/Nouakchott"
+- name: "Guidimaka"
+  cities:
+  - name: "Selibaby"
+    latitude: 15.15846
+    longitude: -12.1843
+    population: 18424
+    dem: 64
+    timezone: "Africa/Nouakchott"
+- name: "Nouakchott Ouest"
+  cities:
+  - name: "Tevragh Zeina"
+    latitude: 18.09894
+    longitude: -15.98848
+    population: 0
+    dem: 1
+    timezone: "Africa/Nouakchott"
+- name: "Adrar"
+  cities:
+  - name: "Atar"
+    latitude: 20.5177
+    longitude: -13.04857
+    population: 24021
+    dem: 224
+    timezone: "Africa/Nouakchott"
+- name: "Inchiri"
+  cities:
+  - name: "Akjoujt"
+    latitude: 19.74657
+    longitude: -14.38531
+    population: 11500
+    dem: 121
+    timezone: "Africa/Nouakchott"
+- name: "Nouakchott Sud"
+  cities:
+  - name: "Arafat"
+    latitude: 18.04639
+    longitude: -15.97194
+    population: 0
+    dem: 3
+    timezone: "Africa/Nouakchott"
+- name: "Tagant"
+  cities:
+  - name: "Tidjikja"
+    latitude: 18.55644
+    longitude: -11.42715
+    population: 6000
+    dem: 398
+    timezone: "Africa/Nouakchott"
+- name: "Assaba"
+  cities:
+  - name: "Kiffa"
+    latitude: 16.62073
+    longitude: -11.40208
+    population: 40281
+    dem: 127
+    timezone: "Africa/Nouakchott"
+- name: "Wilaya du Trarza"
+  cities:
+  - name: "Tekane"
+    latitude: 16.60175
+    longitude: -15.34866
+    population: 22041
+    dem: 11
+    timezone: "Africa/Nouakchott"
+  - name: "Rosso"
+    latitude: 16.51378
+    longitude: -15.80503
+    population: 48922
+    dem: 8
+    timezone: "Africa/Nouakchott"

@@ -1,0 +1,669 @@
+---
+name: "Bangladesh"
+iso: "BD"
+iso3: "BGD"
+code: "050"
+capital: "Dhaka"
+area: 144000.0
+population: 156118464
+continent: "AS"
+currencyCode: "BDT"
+currencyName: "Taka"
+phone: "880"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "bn-BD,en"
+neighbours: "MM,IN"
+regions:
+- name: "Rajshahi Division"
+  cities:
+  - name: "Shibganj"
+    latitude: 25.00146
+    longitude: 89.32266
+    population: 378701
+    dem: 26
+    timezone: "Asia/Dhaka"
+  - name: "Shibganj"
+    latitude: 24.68501
+    longitude: 88.15638
+    population: 35961
+    dem: 30
+    timezone: "Asia/Dhaka"
+  - name: "Sirajganj"
+    latitude: 24.45771
+    longitude: 89.70802
+    population: 127481
+    dem: 19
+    timezone: "Asia/Dhaka"
+  - name: "Shahzadpur"
+    latitude: 24.17687
+    longitude: 89.5988
+    population: 102420
+    dem: 16
+    timezone: "Asia/Dhaka"
+  - name: "Rajshahi"
+    latitude: 24.374
+    longitude: 88.60114
+    population: 700133
+    dem: 23
+    timezone: "Asia/Dhaka"
+  - name: "Joypur Hat"
+    latitude: 25.10147
+    longitude: 89.02734
+    population: 73068
+    dem: 24
+    timezone: "Asia/Dhaka"
+  - name: "Ishurdi"
+    latitude: 24.12858
+    longitude: 89.06573
+    population: 81995
+    dem: 19
+    timezone: "Asia/Dhaka"
+  - name: "Par Naogaon"
+    latitude: 24.80418
+    longitude: 88.94875
+    population: 192464
+    dem: 20
+    timezone: "Asia/Dhaka"
+  - name: "Bera"
+    latitude: 24.07821
+    longitude: 89.63262
+    population: 39604
+    dem: 14
+    timezone: "Asia/Dhaka"
+  - name: "Pabna"
+    latitude: 24.00644
+    longitude: 89.2372
+    population: 186781
+    dem: 19
+    timezone: "Asia/Dhaka"
+  - name: "Bogra"
+    latitude: 24.85098
+    longitude: 89.37108
+    population: 210000
+    dem: 26
+    timezone: "Asia/Dhaka"
+  - name: "Nawabganj"
+    latitude: 24.59025
+    longitude: 88.27444
+    population: 142361
+    dem: 28
+    timezone: "Asia/Dhaka"
+  - name: "Saidpur"
+    latitude: 25.77769
+    longitude: 88.89169
+    population: 199422
+    dem: 43
+    timezone: "Asia/Dhaka"
+  - name: "Puthia"
+    latitude: 24.36537
+    longitude: 88.83431
+    population: 159406
+    dem: 20
+    timezone: "Asia/Dhaka"
+  - name: "Natore"
+    latitude: 24.41112
+    longitude: 88.98673
+    population: 369138
+    dem: 22
+    timezone: "Asia/Dhaka"
+- name: "Sylhet Division"
+  cities:
+  - name: "Sylhet"
+    latitude: 24.89904
+    longitude: 91.87198
+    population: 237000
+    dem: 26
+    timezone: "Asia/Dhaka"
+  - name: "Maulavi Bazar"
+    latitude: 24.48888
+    longitude: 91.77075
+    population: 57441
+    dem: 19
+    timezone: "Asia/Dhaka"
+  - name: "Habiganj"
+    latitude: 24.38044
+    longitude: 91.41299
+    population: 88760
+    dem: 15
+    timezone: "Asia/Dhaka"
+  - name: "Chhatak"
+    latitude: 25.03852
+    longitude: 91.66958
+    population: 39218
+    dem: 17
+    timezone: "Asia/Dhaka"
+  - name: "Baniachang"
+    latitude: 24.51863
+    longitude: 91.35787
+    population: 37807
+    dem: 14
+    timezone: "Asia/Dhaka"
+- name: "Khulna Division"
+  cities:
+  - name: "Satkhira"
+    latitude: 22.70817
+    longitude: 89.07185
+    population: 128918
+    dem: 11
+    timezone: "Asia/Dhaka"
+  - name: "Morrelgonj"
+    latitude: 22.45566
+    longitude: 89.85584
+    population: 31647
+    dem: 8
+    timezone: "Asia/Dhaka"
+  - name: "Kushtia"
+    latitude: 23.9028
+    longitude: 89.11943
+    population: 135724
+    dem: 17
+    timezone: "Asia/Dhaka"
+  - name: "Kaliganj"
+    latitude: 23.40964
+    longitude: 89.13801
+    population: 45631
+    dem: 16
+    timezone: "Asia/Dhaka"
+  - name: "Jhingergacha"
+    latitude: 23.11134
+    longitude: 89.09061
+    population: 41957
+    dem: 15
+    timezone: "Asia/Dhaka"
+  - name: "Sarankhola"
+    latitude: 22.31006
+    longitude: 89.79113
+    population: 36470
+    dem: 9
+    timezone: "Asia/Dhaka"
+  - name: "Bhatpara Abhaynagar"
+    latitude: 23.01472
+    longitude: 89.43936
+    population: 42653
+    dem: 9
+    timezone: "Asia/Dhaka"
+  - name: "Bheramara"
+    latitude: 24.02452
+    longitude: 88.99234
+    population: 38159
+    dem: 19
+    timezone: "Asia/Dhaka"
+  - name: "Kalia"
+    latitude: 23.043
+    longitude: 89.63094
+    population: 40492
+    dem: 9
+    timezone: "Asia/Dhaka"
+  - name: "Bagerhat"
+    latitude: 22.65657
+    longitude: 89.79123
+    population: 266388
+    dem: 7
+    timezone: "Asia/Dhaka"
+  - name: "Narail"
+    latitude: 23.15509
+    longitude: 89.49515
+    population: 55112
+    dem: 11
+    timezone: "Asia/Dhaka"
+  - name: "Phultala"
+    latitude: 22.71673
+    longitude: 89.51194
+    population: 37985
+    dem: 7
+    timezone: "Asia/Dhaka"
+  - name: "Kesabpur"
+    latitude: 22.90725
+    longitude: 89.21954
+    population: 30926
+    dem: 7
+    timezone: "Asia/Dhaka"
+  - name: "Uttar Char Fasson"
+    latitude: 22.22647
+    longitude: 90.71275
+    population: 48305
+    dem: 7
+    timezone: "Asia/Dhaka"
+  - name: "Khulna"
+    latitude: 22.80979
+    longitude: 89.56439
+    population: 1342339
+    dem: 8
+    timezone: "Asia/Dhaka"
+  - name: "Jessore"
+    latitude: 23.16971
+    longitude: 89.21371
+    population: 243987
+    dem: 15
+    timezone: "Asia/Dhaka"
+- name: "Mymensingh Division"
+  cities:
+  - name: "Jamalpur"
+    latitude: 24.91965
+    longitude: 89.94812
+    population: 167900
+    dem: 23
+    timezone: "Asia/Dhaka"
+  - name: "Netrakona"
+    latitude: 24.88352
+    longitude: 90.72898
+    population: 79016
+    dem: 14
+    timezone: "Asia/Dhaka"
+  - name: "Mymensingh"
+    latitude: 24.75636
+    longitude: 90.40646
+    population: 225126
+    dem: 19
+    timezone: "Asia/Dhaka"
+  - name: "Muktagacha"
+    latitude: 24.76484
+    longitude: 90.25698
+    population: 24684
+    dem: 22
+    timezone: "Asia/Dhaka"
+  - name: "Gafargaon"
+    latitude: 24.432
+    longitude: 90.5585
+    population: 34177
+    dem: 16
+    timezone: "Asia/Dhaka"
+  - name: "Sarishabari"
+    latitude: 24.75127
+    longitude: 89.83126
+    population: 81325
+    dem: 22
+    timezone: "Asia/Dhaka"
+  - name: "Sherpur"
+    latitude: 25.01881
+    longitude: 90.01751
+    population: 107419
+    dem: 25
+    timezone: "Asia/Dhaka"
+- name: "Barisal Division"
+  cities:
+  - name: "Pirojpur"
+    latitude: 22.57965
+    longitude: 89.97521
+    population: 54418
+    dem: 10
+    timezone: "Asia/Dhaka"
+  - name: "Nalchiti"
+    latitude: 22.63696
+    longitude: 90.27195
+    population: 38703
+    dem: 8
+    timezone: "Asia/Dhaka"
+  - name: "Mehendiganj"
+    latitude: 22.82257
+    longitude: 90.52859
+    population: 39424
+    dem: 9
+    timezone: "Asia/Dhaka"
+  - name: "Mathba"
+    latitude: 22.28616
+    longitude: 89.95883
+    population: 29760
+    dem: 10
+    timezone: "Asia/Dhaka"
+  - name: "Gaurnadi"
+    latitude: 22.97372
+    longitude: 90.22376
+    population: 40519
+    dem: 12
+    timezone: "Asia/Dhaka"
+  - name: "Lalmohan"
+    latitude: 22.33774
+    longitude: 90.73708
+    population: 42220
+    dem: 10
+    timezone: "Asia/Dhaka"
+  - name: "Burhanuddin"
+    latitude: 22.49518
+    longitude: 90.72391
+    population: 45670
+    dem: 9
+    timezone: "Asia/Dhaka"
+  - name: "Bhola"
+    latitude: 22.68759
+    longitude: 90.64403
+    population: 99079
+    dem: 7
+    timezone: "Asia/Dhaka"
+  - name: "Barisal"
+    latitude: 22.70497
+    longitude: 90.37013
+    population: 202242
+    dem: 10
+    timezone: "Asia/Dhaka"
+  - name: "Bhandaria"
+    latitude: 22.48898
+    longitude: 90.06273
+    population: 30219
+    dem: 13
+    timezone: "Asia/Dhaka"
+- name: "Chittagong"
+  cities:
+  - name: "Teknaf"
+    latitude: 20.85829
+    longitude: 92.29773
+    population: 40557
+    dem: 7
+    timezone: "Asia/Dhaka"
+  - name: "Sandwip"
+    latitude: 22.51409
+    longitude: 91.45491
+    population: 52152
+    dem: 7
+    timezone: "Asia/Dhaka"
+  - name: "Ramganj"
+    latitude: 23.1006
+    longitude: 90.84989
+    population: 55241
+    dem: 14
+    timezone: "Asia/Dhaka"
+  - name: "Patiya"
+    latitude: 22.29543
+    longitude: 91.979
+    population: 51360
+    dem: 11
+    timezone: "Asia/Dhaka"
+  - name: "Laksham"
+    latitude: 23.24018
+    longitude: 91.12143
+    population: 82290
+    dem: 10
+    timezone: "Asia/Dhaka"
+  - name: "Comilla"
+    latitude: 23.46186
+    longitude: 91.18503
+    population: 389411
+    dem: 17
+    timezone: "Asia/Dhaka"
+  - name: "Feni"
+    latitude: 23.0144
+    longitude: 91.3966
+    population: 84028
+    dem: 12
+    timezone: "Asia/Dhaka"
+  - name: "Raipur"
+    latitude: 23.0391
+    longitude: 90.76808
+    population: 64652
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Chhagalnaiya"
+    latitude: 23.02475
+    longitude: 91.51091
+    population: 39335
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Khagrachhari"
+    latitude: 23.10787
+    longitude: 91.97007
+    population: 50364
+    dem: 47
+    timezone: "Asia/Dhaka"
+  - name: "Bandarban"
+    latitude: 22.19534
+    longitude: 92.21946
+    population: 32523
+    dem: 24
+    timezone: "Asia/Dhaka"
+  - name: "Raojan"
+    latitude: 22.53511
+    longitude: 91.91919
+    population: 25708
+    dem: 9
+    timezone: "Asia/Dhaka"
+  - name: "Nabinagar"
+    latitude: 23.88791
+    longitude: 90.96792
+    population: 31671
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Lakshmipur"
+    latitude: 22.9443
+    longitude: 90.83005
+    population: 61703
+    dem: 11
+    timezone: "Asia/Dhaka"
+  - name: "Hajiganj"
+    latitude: 23.25191
+    longitude: 90.85508
+    population: 44343
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Chittagong"
+    latitude: 22.3384
+    longitude: 91.83168
+    population: 3920222
+    dem: 15
+    timezone: "Asia/Dhaka"
+  - name: "Satkania"
+    latitude: 22.07639
+    longitude: 92.04955
+    population: 52005
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Coxs Bazar"
+    latitude: 21.43973
+    longitude: 92.00955
+    population: 253788
+    dem: 2
+    timezone: "Asia/Dhaka"
+  - name: "Manikchari"
+    latitude: 22.83957
+    longitude: 91.84128
+    population: 24813
+    dem: 33
+    timezone: "Asia/Dhaka"
+  - name: "Bibir Hat"
+    latitude: 22.68347
+    longitude: 91.79058
+    population: 89030
+    dem: 14
+    timezone: "Asia/Dhaka"
+- name: "Rangpur Division"
+  cities:
+  - name: "Thakurgaon"
+    latitude: 26.03097
+    longitude: 88.46989
+    population: 71096
+    dem: 57
+    timezone: "Asia/Dhaka"
+  - name: "Panchagarh"
+    latitude: 26.33338
+    longitude: 88.55777
+    population: 48531
+    dem: 79
+    timezone: "Asia/Dhaka"
+  - name: "Parbatipur"
+    latitude: 25.66369
+    longitude: 88.93093
+    population: 48020
+    dem: 39
+    timezone: "Asia/Dhaka"
+  - name: "Nageswari"
+    latitude: 25.96817
+    longitude: 89.69153
+    population: 49425
+    dem: 33
+    timezone: "Asia/Dhaka"
+  - name: "Lalmonirhat"
+    latitude: 25.91719
+    longitude: 89.44595
+    population: 65127
+    dem: 38
+    timezone: "Asia/Dhaka"
+  - name: "Rangpur"
+    latitude: 25.74664
+    longitude: 89.25166
+    population: 343122
+    dem: 36
+    timezone: "Asia/Dhaka"
+  - name: "Chilmari"
+    latitude: 25.55613
+    longitude: 89.67097
+    population: 49736
+    dem: 27
+    timezone: "Asia/Dhaka"
+  - name: "Badarganj"
+    latitude: 25.67419
+    longitude: 89.05377
+    population: 32600
+    dem: 40
+    timezone: "Asia/Dhaka"
+  - name: "Dinajpur"
+    latitude: 25.62745
+    longitude: 88.63779
+    population: 206234
+    dem: 42
+    timezone: "Asia/Dhaka"
+  - name: "Pirgaaj"
+    latitude: 25.85587
+    longitude: 88.35943
+    population: 34606
+    dem: 49
+    timezone: "Asia/Dhaka"
+- name: "Dhaka Division"
+  cities:
+  - name: "Tungi"
+    latitude: 23.89154
+    longitude: 90.40232
+    population: 337579
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Dohar"
+    latitude: 23.59311
+    longitude: 90.14251
+    population: 45543
+    dem: 14
+    timezone: "Asia/Dhaka"
+  - name: "Narsingdi"
+    latitude: 23.92298
+    longitude: 90.71768
+    population: 281080
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Narayanganj"
+    latitude: 23.61352
+    longitude: 90.50298
+    population: 223622
+    dem: 13
+    timezone: "Asia/Dhaka"
+  - name: "Nagarpur"
+    latitude: 24.05783
+    longitude: 89.87696
+    population: 238422
+    dem: 15
+    timezone: "Asia/Dhaka"
+  - name: "Mirzapur"
+    latitude: 24.10287
+    longitude: 90.09841
+    population: 41137
+    dem: 15
+    timezone: "Asia/Dhaka"
+  - name: "Dhaka"
+    latitude: 23.7104
+    longitude: 90.40744
+    population: 10356500
+    dem: 23
+    timezone: "Asia/Dhaka"
+  - name: "Bhairab Bazar"
+    latitude: 24.0524
+    longitude: 90.9764
+    population: 105457
+    dem: 12
+    timezone: "Asia/Dhaka"
+  - name: "Bajitpur"
+    latitude: 24.21623
+    longitude: 90.95002
+    population: 34560
+    dem: 14
+    timezone: "Asia/Dhaka"
+  - name: "Tungipara"
+    latitude: 22.89983
+    longitude: 89.90326
+    population: 62210
+    dem: 8
+    timezone: "Asia/Dhaka"
+  - name: "Sonargaon"
+    latitude: 23.65
+    longitude: 90.61667
+    population: 130000
+    dem: 9
+    timezone: "Asia/Dhaka"
+  - name: "Sakhipur"
+    latitude: 24.31988
+    longitude: 90.16943
+    population: 40869
+    dem: 25
+    timezone: "Asia/Dhaka"
+  - name: "Palang"
+    latitude: 23.21824
+    longitude: 90.35076
+    population: 67652
+    dem: 12
+    timezone: "Asia/Dhaka"
+  - name: "Faridpur"
+    latitude: 23.60612
+    longitude: 89.84064
+    population: 112187
+    dem: 15
+    timezone: "Asia/Dhaka"
+  - name: "Char Bhadrasan"
+    latitude: 23.30916
+    longitude: 90.22698
+    population: 34423
+    dem: 11
+    timezone: "Asia/Dhaka"
+  - name: "Tangail"
+    latitude: 24.24984
+    longitude: 89.91655
+    population: 180144
+    dem: 17
+    timezone: "Asia/Dhaka"
+  - name: "Madaripur"
+    latitude: 23.17097
+    longitude: 90.20935
+    population: 84789
+    dem: 10
+    timezone: "Asia/Dhaka"
+  - name: "Kishorganj"
+    latitude: 24.43944
+    longitude: 90.78291
+    population: 90690
+    dem: 16
+    timezone: "Asia/Dhaka"
+  - name: "Azimpur"
+    latitude: 23.7298
+    longitude: 90.3854
+    population: 96641
+    dem: 14
+    timezone: "Asia/Dhaka"
+  - name: "Paltan"
+    latitude: 23.73625
+    longitude: 90.41426
+    population: 184492
+    dem: 18
+    timezone: "Asia/Dhaka"
+  - name: "Parvez Ali Hossain"
+    latitude: 23.78758
+    longitude: 90.16487
+    population: 6000
+    dem: 12
+    timezone: "Asia/Dhaka"
+  - name: "Parvez Ali"
+    latitude: 23.81741
+    longitude: 90.11921
+    population: 6000
+    dem: 15
+    timezone: "Asia/Dhaka"
+  - name: "Joymontop"
+    latitude: 23.78789
+    longitude: 90.16472
+    population: 56000
+    dem: 12
+    timezone: "Asia/Dhaka"

@@ -1,0 +1,78 @@
+---
+name: "Bahrain"
+iso: "BH"
+iso3: "BHR"
+code: "048"
+capital: "Manama"
+area: 665.0
+population: 738004
+continent: "AS"
+currencyCode: "BHD"
+currencyName: "Dinar"
+phone: "973"
+postalCodeFormat: "####|###"
+postalCodeRegex: "^(\\d{3}\\d?)$"
+languages: "ar-BH,en,fa,ur"
+regions:
+- name: "Southern Governorate"
+  cities:
+  - name: "Madinat `Isa"
+    latitude: 26.17361
+    longitude: 50.54778
+    population: 38090
+    dem: 7
+    timezone: "Asia/Bahrain"
+  - name: "Dar Kulayb"
+    latitude: 26.06861
+    longitude: 50.50389
+    population: 65466
+    dem: 10
+    timezone: "Asia/Bahrain"
+  - name: "Ar Rifa"
+    latitude: 26.13
+    longitude: 50.555
+    population: 79550
+    dem: 43
+    timezone: "Asia/Bahrain"
+- name: "Northern Governorate"
+  cities:
+  - name: "Madinat Hamad"
+    latitude: 26.11528
+    longitude: 50.50694
+    population: 52718
+    dem: 35
+    timezone: "Asia/Bahrain"
+- name: "Capital Governorate"
+  cities:
+  - name: "Sitrah"
+    latitude: 26.15472
+    longitude: 50.62056
+    population: 37657
+    dem: 5
+    timezone: "Asia/Bahrain"
+  - name: "Jidd Hafs"
+    latitude: 26.21861
+    longitude: 50.54778
+    population: 31735
+    dem: 6
+    timezone: "Asia/Bahrain"
+  - name: "Manama"
+    latitude: 26.22787
+    longitude: 50.58565
+    population: 147074
+    dem: 12
+    timezone: "Asia/Bahrain"
+- name: "Muharraq Governorate"
+  cities:
+  - name: "Al Muharraq"
+    latitude: 26.25722
+    longitude: 50.61194
+    population: 97458
+    dem: 7
+    timezone: "Asia/Bahrain"
+  - name: "Al Hadd"
+    latitude: 26.24556
+    longitude: 50.65417
+    population: 12797
+    dem: 7
+    timezone: "Asia/Bahrain"

@@ -1,0 +1,151 @@
+---
+name: "Togo"
+iso: "TG"
+iso3: "TGO"
+code: "768"
+capital: "Lome"
+area: 56785.0
+population: 6587239
+continent: "AF"
+currencyCode: "XOF"
+currencyName: "Franc"
+phone: "228"
+languages: "fr-TG,ee,hna,kbp,dag,ha"
+neighbours: "BJ,GH,BF"
+regions:
+- name: "Maritime"
+  cities:
+  - name: "Vogan"
+    latitude: 6.33333
+    longitude: 1.53333
+    population: 20569
+    dem: 37
+    timezone: "Africa/Lome"
+  - name: "Tsevie"
+    latitude: 6.42611
+    longitude: 1.21333
+    population: 55775
+    dem: 97
+    timezone: "Africa/Lome"
+  - name: "Tabligbo"
+    latitude: 6.58333
+    longitude: 1.5
+    population: 13748
+    dem: 33
+    timezone: "Africa/Lome"
+  - name: "Lome"
+    latitude: 6.12874
+    longitude: 1.22154
+    population: 749700
+    dem: 64
+    timezone: "Africa/Lome"
+  - name: "Aneho"
+    latitude: 6.22798
+    longitude: 1.5919
+    population: 47579
+    dem: 5
+    timezone: "Africa/Lome"
+- name: "Kara"
+  cities:
+  - name: "Niamtougou"
+    latitude: 9.76806
+    longitude: 1.10528
+    population: 23261
+    dem: 469
+    timezone: "Africa/Lome"
+  - name: "Pagouda"
+    latitude: 9.7525
+    longitude: 1.32778
+    population: 7686
+    dem: 415
+    timezone: "Africa/Lome"
+  - name: "Kara"
+    latitude: 9.55111
+    longitude: 1.18611
+    population: 104207
+    dem: 291
+    timezone: "Africa/Lome"
+  - name: "Kande"
+    latitude: 9.95778
+    longitude: 1.04472
+    population: 11466
+    dem: 269
+    timezone: "Africa/Lome"
+  - name: "Bassar"
+    latitude: 9.25025
+    longitude: 0.78213
+    population: 61845
+    dem: 388
+    timezone: "Africa/Lome"
+  - name: "Bafilo"
+    latitude: 9.35
+    longitude: 1.26667
+    population: 22543
+    dem: 608
+    timezone: "Africa/Lome"
+- name: "Savanes"
+  cities:
+  - name: "Sansanne-Mango"
+    latitude: 10.35917
+    longitude: 0.47083
+    population: 37748
+    dem: 143
+    timezone: "Africa/Lome"
+  - name: "Dapaong"
+    latitude: 10.86225
+    longitude: 0.20762
+    population: 33324
+    dem: 323
+    timezone: "Africa/Lome"
+- name: "Plateaux"
+  cities:
+  - name: "Notse"
+    latitude: 6.95
+    longitude: 1.16667
+    population: 22017
+    dem: 142
+    timezone: "Africa/Lome"
+  - name: "Kpalime"
+    latitude: 6.9
+    longitude: 0.63333
+    population: 75084
+    dem: 225
+    timezone: "Africa/Lome"
+  - name: "Badou"
+    latitude: 7.58333
+    longitude: 0.6
+    population: 24000
+    dem: 278
+    timezone: "Africa/Lome"
+  - name: "Atakpame"
+    latitude: 7.53333
+    longitude: 1.13333
+    population: 80683
+    dem: 361
+    timezone: "Africa/Lome"
+  - name: "Amlame"
+    latitude: 7.46667
+    longitude: 0.9
+    population: 9870
+    dem: 324
+    timezone: "Africa/Lome"
+- name: "Centrale"
+  cities:
+  - name: "Tchamba"
+    latitude: 9.03333
+    longitude: 1.41667
+    population: 25668
+    dem: 356
+    timezone: "Africa/Lome"
+  - name: "Sotouboua"
+    latitude: 8.5634
+    longitude: 0.98399
+    population: 21054
+    dem: 380
+    timezone: "Africa/Lome"
+  - name: "Sokode"
+    latitude: 8.98333
+    longitude: 1.13333
+    population: 117811
+    dem: 402
+    timezone: "Africa/Lome"

@@ -1,0 +1,64 @@
+---
+name: "Antigua and Barbuda"
+iso: "AG"
+iso3: "ATG"
+code: "028"
+capital: "St. John's"
+area: 443.0
+population: 86754
+continent: "NA"
+currencyCode: "XCD"
+currencyName: "Dollar"
+phone: "+1-268"
+languages: "en-AG"
+regions:
+- name: "Parish of Saint George"
+  cities:
+  - name: "Piggotts"
+    latitude: 17.11667
+    longitude: -61.8
+    population: 1878
+    dem: 11
+    timezone: "America/Antigua"
+- name: "Parish of Saint Paul"
+  cities:
+  - name: "Falmouth"
+    latitude: 17.02741
+    longitude: -61.78136
+    population: 619
+    dem: 25
+    timezone: "America/Antigua"
+- name: "Redonda"
+- name: "Parish of Saint Mary"
+  cities:
+  - name: "Bolands"
+    latitude: 17.06565
+    longitude: -61.87466
+    population: 1657
+    dem: 9
+    timezone: "America/Antigua"
+- name: "Parish of Saint Philip"
+- name: "Parish of Saint Peter"
+  cities:
+  - name: "Parham"
+    latitude: 17.09682
+    longitude: -61.77046
+    population: 969
+    dem: 18
+    timezone: "America/Antigua"
+- name: "Barbuda"
+  cities:
+  - name: "Codrington"
+    latitude: 17.63333
+    longitude: -61.83333
+    population: 1325
+    dem: 6
+    timezone: "America/Antigua"
+- name: "Parish of Saint John"
+  cities:
+  - name: "Saint Johns"
+    latitude: 17.12096
+    longitude: -61.84329
+    population: 24226
+    dem: 12
+    timezone: "America/Antigua"

@@ -1,0 +1,445 @@
+---
+name: "Moldova"
+iso: "MD"
+iso3: "MDA"
+code: "498"
+capital: "Chisinau"
+area: 33843.0
+population: 4324000
+continent: "EU"
+currencyCode: "MDL"
+currencyName: "Leu"
+phone: "373"
+postalCodeFormat: "MD-####"
+postalCodeRegex: "^MD-\\d{4}$"
+languages: "ro,ru,gag,tr"
+neighbours: "RO,UA"
+regions:
+- name: "Cimislia"
+  cities:
+  - name: "Cimislia"
+    latitude: 46.52685
+    longitude: 28.76441
+    population: 12464
+    dem: 115
+    timezone: "Europe/Chisinau"
+- name: "Nisporeni"
+  cities:
+  - name: "Nisporeni"
+    latitude: 47.08159
+    longitude: 28.17138
+    population: 11718
+    dem: 120
+    timezone: "Europe/Chisinau"
+- name: "Raionul Straseni"
+  cities:
+  - name: "Straseni"
+    latitude: 47.14216
+    longitude: 28.60774
+    population: 19225
+    dem: 107
+    timezone: "Europe/Chisinau"
+- name: "Falesti"
+  cities:
+  - name: "Falesti"
+    latitude: 47.57667
+    longitude: 27.71264
+    population: 14377
+    dem: 120
+    timezone: "Europe/Chisinau"
+- name: "Municipiul Bender"
+  cities:
+  - name: "Bender"
+    latitude: 46.83156
+    longitude: 29.47769
+    population: 110175
+    dem: 33
+    timezone: "Europe/Chisinau"
+- name: "Raionul Stefan Voda"
+  cities:
+  - name: "Stefan Voda"
+    latitude: 46.51287
+    longitude: 29.66193
+    population: 7700
+    dem: 166
+    timezone: "Europe/Chisinau"
+- name: "Basarabeasca"
+  cities:
+  - name: "Basarabeasca"
+    latitude: 46.3317
+    longitude: 28.96365
+    population: 10809
+    dem: 60
+    timezone: "Europe/Chisinau"
+- name: "Glodeni"
+  cities:
+  - name: "Glodeni"
+    latitude: 47.77513
+    longitude: 27.51891
+    population: 10146
+    dem: 125
+    timezone: "Europe/Chisinau"
+- name: "Orhei"
+  cities:
+  - name: "Orhei"
+    latitude: 47.38494
+    longitude: 28.82446
+    population: 24918
+    dem: 86
+    timezone: "Europe/Chisinau"
+- name: "Donduseni"
+  cities:
+  - name: "Donduseni"
+    latitude: 48.24268
+    longitude: 27.6101
+    population: 9435
+    dem: 241
+    timezone: "Europe/Chisinau"
+  - name: "Briceni"
+    latitude: 48.35628
+    longitude: 27.70293
+    population: 14132
+    dem: 229
+    timezone: "Europe/Chisinau"
+- name: "Leova"
+  cities:
+  - name: "Leova"
+    latitude: 46.4823
+    longitude: 28.25301
+    population: 14301
+    dem: 37
+    timezone: "Europe/Chisinau"
+- name: "Raionul Cahul"
+  cities:
+  - name: "Cahul"
+    latitude: 45.90425
+    longitude: 28.19929
+    population: 34492
+    dem: 50
+    timezone: "Europe/Chisinau"
+- name: "Unitatea Teritoriala din Stinga Nistrului"
+  cities:
+  - name: "Tiraspol"
+    latitude: 46.84274
+    longitude: 29.62909
+    population: 157000
+    dem: 30
+    timezone: "Europe/Chisinau"
+  - name: "Slobozia"
+    latitude: 46.72927
+    longitude: 29.70446
+    population: 15356
+    dem: 24
+    timezone: "Europe/Chisinau"
+  - name: "Ribnita"
+    latitude: 47.76817
+    longitude: 29.01
+    population: 55455
+    dem: 96
+    timezone: "Europe/Chisinau"
+  - name: "Pervomaisc"
+    latitude: 46.73253
+    longitude: 29.9617
+    population: 7300
+    dem: 12
+    timezone: "Europe/Chisinau"
+  - name: "Hryhoriopol"
+    latitude: 47.15413
+    longitude: 29.30008
+    population: 9456
+    dem: 21
+    timezone: "Europe/Chisinau"
+  - name: "Dubasari"
+    latitude: 47.26562
+    longitude: 29.16667
+    population: 23254
+    dem: 39
+    timezone: "Europe/Chisinau"
+  - name: "Dnestrovsc"
+    latitude: 46.6164
+    longitude: 29.91926
+    population: 10426
+    dem: 16
+    timezone: "Europe/Chisinau"
+  - name: "Camenca"
+    latitude: 48.03233
+    longitude: 28.69899
+    population: 11072
+    dem: 36
+    timezone: "Europe/Chisinau"
+- name: "Singerei"
+  cities:
+  - name: "Bilicenii Vechi"
+    latitude: 47.6558
+    longitude: 28.04734
+    population: 15479
+    dem: 121
+    timezone: "Europe/Chisinau"
+  - name: "Singerei"
+    latitude: 47.63632
+    longitude: 28.14296
+    population: 14600
+    dem: 90
+    timezone: "Europe/Chisinau"
+- name: "Telenesti"
+  cities:
+  - name: "Telenesti"
+    latitude: 47.5011
+    longitude: 28.36536
+    population: 6633
+    dem: 69
+    timezone: "Europe/Chisinau"
+  - name: "Mindresti"
+    latitude: 47.50525
+    longitude: 28.27687
+    population: 9280
+    dem: 85
+    timezone: "Europe/Chisinau"
+- name: "Raionul Causeni"
+  cities:
+  - name: "Chitcani"
+    latitude: 46.78296
+    longitude: 29.61682
+    population: 9000
+    dem: 11
+    timezone: "Europe/Chisinau"
+  - name: "Causeni"
+    latitude: 46.63674
+    longitude: 29.41114
+    population: 21690
+    dem: 32
+    timezone: "Europe/Chisinau"
+- name: "Raionul Edinet"
+  cities:
+  - name: "Edinet"
+    latitude: 48.17215
+    longitude: 27.30337
+    population: 22872
+    dem: 219
+    timezone: "Europe/Chisinau"
+- name: "Taraclia"
+  cities:
+  - name: "Tvardita"
+    latitude: 46.14826
+    longitude: 28.96491
+    population: 5800
+    dem: 104
+    timezone: "Europe/Chisinau"
+  - name: "Taraclia"
+    latitude: 45.90273
+    longitude: 28.66816
+    population: 13512
+    dem: 65
+    timezone: "Europe/Chisinau"
+- name: "Riscani"
+  cities:
+  - name: "Riscani"
+    latitude: 47.94792
+    longitude: 27.56376
+    population: 12893
+    dem: 142
+    timezone: "Europe/Chisinau"
+- name: "Raionul Dubasari"
+  cities:
+  - name: "Cocieri"
+    latitude: 47.3017
+    longitude: 29.11755
+    population: 4151
+    dem: 89
+    timezone: "Europe/Chisinau"
+- name: "Raionul Calarasi"
+  cities:
+  - name: "Calarasi"
+    latitude: 47.2556
+    longitude: 28.30987
+    population: 14066
+    dem: 135
+    timezone: "Europe/Chisinau"
+- name: "Raionul Soroca"
+  cities:
+  - name: "Soroca"
+    latitude: 48.15659
+    longitude: 28.28489
+    population: 27423
+    dem: 191
+    timezone: "Europe/Chisinau"
+- name: "Raionul Ocnita"
+  cities:
+  - name: "Ocnita"
+    latitude: 48.38274
+    longitude: 27.43805
+    population: 9325
+    dem: 220
+    timezone: "Europe/Chisinau"
+  - name: "Otaci"
+    latitude: 48.43285
+    longitude: 27.79912
+    population: 8400
+    dem: 93
+    timezone: "Europe/Chisinau"
+- name: "Floresti"
+  cities:
+  - name: "Floresti"
+    latitude: 47.89137
+    longitude: 28.29312
+    population: 16759
+    dem: 120
+    timezone: "Europe/Chisinau"
+- name: "Municipiul Balti"
+  cities:
+  - name: "Balti"
+    latitude: 47.76314
+    longitude: 27.92932
+    population: 125000
+    dem: 110
+    timezone: "Europe/Chisinau"
+- name: "Criuleni"
+  cities:
+  - name: "Criuleni"
+    latitude: 47.21307
+    longitude: 29.15926
+    population: 6932
+    dem: 31
+    timezone: "Europe/Chisinau"
+- name: "Briceni"
+  cities:
+  - name: "Briceni"
+    latitude: 48.36289
+    longitude: 27.07787
+    population: 9900
+    dem: 234
+    timezone: "Europe/Kiev"
+- name: "Ialoveni"
+  cities:
+  - name: "Ialoveni"
+    latitude: 46.94346
+    longitude: 28.78233
+    population: 14915
+    dem: 97
+    timezone: "Europe/Chisinau"
+- name: "Municipiul Chisinau"
+  cities:
+  - name: "Vadul lui Voda"
+    latitude: 47.09009
+    longitude: 29.0757
+    population: 5300
+    dem: 47
+    timezone: "Europe/Chisinau"
+  - name: "Singera"
+    latitude: 46.91557
+    longitude: 28.96673
+    population: 7200
+    dem: 50
+    timezone: "Europe/Chisinau"
+  - name: "Stauceni"
+    latitude: 47.09643
+    longitude: 28.86791
+    population: 5700
+    dem: 188
+    timezone: "Europe/Chisinau"
+  - name: "Cricova"
+    latitude: 47.13835
+    longitude: 28.86156
+    population: 7400
+    dem: 134
+    timezone: "Europe/Chisinau"
+  - name: "Chisinau"
+    latitude: 47.00556
+    longitude: 28.8575
+    population: 635994
+    dem: 55
+    timezone: "Europe/Chisinau"
+  - name: "Ciorescu"
+    latitude: 47.13
+    longitude: 28.88937
+    population: 6870
+    dem: 105
+    timezone: "Europe/Chisinau"
+- name: "Gagauzia"
+  cities:
+  - name: "Vulcanesti"
+    latitude: 45.68492
+    longitude: 28.40613
+    population: 14352
+    dem: 31
+    timezone: "Europe/Chisinau"
+  - name: "Comrat"
+    latitude: 46.29456
+    longitude: 28.6565
+    population: 22911
+    dem: 62
+    timezone: "Europe/Chisinau"
+  - name: "Ceadir-Lunga"
+    latitude: 46.06169
+    longitude: 28.83078
+    population: 22700
+    dem: 45
+    timezone: "Europe/Chisinau"
+- name: "Hincesti"
+  cities:
+  - name: "Hincesti"
+    latitude: 46.83047
+    longitude: 28.59064
+    population: 16900
+    dem: 127
+    timezone: "Europe/Chisinau"
+  - name: "Dancu"
+    latitude: 46.75818
+    longitude: 28.20716
+    population: 10000
+    dem: 24
+    timezone: "Europe/Chisinau"
+- name: "Rezina"
+  cities:
+  - name: "Rezina"
+    latitude: 47.74928
+    longitude: 28.96583
+    population: 9806
+    dem: 138
+    timezone: "Europe/Chisinau"
+- name: "Cantemir"
+  cities:
+  - name: "Iargara"
+    latitude: 46.4252
+    longitude: 28.42676
+    population: 5600
+    dem: 125
+    timezone: "Europe/Chisinau"
+  - name: "Cantemir"
+    latitude: 46.27743
+    longitude: 28.2027
+    population: 3829
+    dem: 56
+    timezone: "Europe/Chisinau"
+- name: "Raionul Ungheni"
+  cities:
+  - name: "Ungheni"
+    latitude: 47.21079
+    longitude: 27.80047
+    population: 34422
+    dem: 66
+    timezone: "Europe/Chisinau"
+- name: "Anenii Noi"
+  cities:
+  - name: "Anenii Noi"
+    latitude: 46.87839
+    longitude: 29.23483
+    population: 8250
+    dem: 28
+    timezone: "Europe/Chisinau"
+- name: "Raionul Drochia"
+  cities:
+  - name: "Drochia"
+    latitude: 48.03555
+    longitude: 27.81293
+    population: 16080
+    dem: 225
+    timezone: "Europe/Chisinau"
+- name: "Soldanesti"
+  cities:
+  - name: "Soldanesti"
+    latitude: 47.81608
+    longitude: 28.79718
+    population: 6160
+    dem: 152
+    timezone: "Europe/Chisinau"

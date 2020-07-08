@@ -1,0 +1,195 @@
+---
+name: "Malawi"
+iso: "MW"
+iso3: "MWI"
+code: "454"
+capital: "Lilongwe"
+area: 118480.0
+population: 15447500
+continent: "AF"
+currencyCode: "MWK"
+currencyName: "Kwacha"
+phone: "265"
+languages: "ny,yao,tum,swk"
+neighbours: "TZ,MZ,ZM"
+regions:
+- name: "Central Region"
+  cities:
+  - name: "Salima"
+    latitude: -13.7804
+    longitude: 34.4587
+    population: 30052
+    dem: 512
+    timezone: "Africa/Blantyre"
+  - name: "Ntchisi"
+    latitude: -13.52775
+    longitude: 33.9149
+    population: 7918
+    dem: 1545
+    timezone: "Africa/Blantyre"
+  - name: "Ntcheu"
+    latitude: -14.82027
+    longitude: 34.63586
+    population: 10445
+    dem: 1132
+    timezone: "Africa/Blantyre"
+  - name: "Nkhotakota"
+    latitude: -12.92744
+    longitude: 34.29614
+    population: 24865
+    dem: 497
+    timezone: "Africa/Blantyre"
+  - name: "Mponela"
+    latitude: -13.53194
+    longitude: 33.74008
+    population: 11222
+    dem: 1216
+    timezone: "Africa/Blantyre"
+  - name: "Mchinji"
+    latitude: -13.79841
+    longitude: 32.88019
+    population: 18305
+    dem: 1186
+    timezone: "Africa/Blantyre"
+  - name: "Lilongwe"
+    latitude: -13.96692
+    longitude: 33.78725
+    population: 646750
+    dem: 1056
+    timezone: "Africa/Blantyre"
+  - name: "Kasungu"
+    latitude: -13.03333
+    longitude: 33.48333
+    population: 42555
+    dem: 1051
+    timezone: "Africa/Blantyre"
+  - name: "Dowa"
+    latitude: -13.65399
+    longitude: 33.93754
+    population: 5565
+    dem: 1361
+    timezone: "Africa/Blantyre"
+  - name: "Dedza"
+    latitude: -14.3779
+    longitude: 34.33322
+    population: 15608
+    dem: 1608
+    timezone: "Africa/Blantyre"
+- name: "Northern Region"
+  cities:
+  - name: "Karonga"
+    latitude: -9.93333
+    longitude: 33.93333
+    population: 34207
+    dem: 486
+    timezone: "Africa/Blantyre"
+  - name: "Chitipa"
+    latitude: -9.70237
+    longitude: 33.26969
+    population: 8824
+    dem: 1286
+    timezone: "Africa/Blantyre"
+  - name: "Rumphi"
+    latitude: -11.01863
+    longitude: 33.85746
+    population: 20727
+    dem: 1084
+    timezone: "Africa/Blantyre"
+  - name: "Nkhata Bay"
+    latitude: -11.60659
+    longitude: 34.29073
+    population: 11721
+    dem: 547
+    timezone: "Africa/Blantyre"
+  - name: "Mzuzu"
+    latitude: -11.46556
+    longitude: 34.02071
+    population: 175345
+    dem: 1275
+    timezone: "Africa/Blantyre"
+  - name: "Mzimba"
+    latitude: -11.9
+    longitude: 33.6
+    population: 19308
+    dem: 1339
+    timezone: "Africa/Blantyre"
+  - name: "Livingstonia"
+    latitude: -10.60602
+    longitude: 34.10628
+    population: 5552
+    dem: 1350
+    timezone: "Africa/Blantyre"
+- name: "Southern Region"
+  cities:
+  - name: "Zomba"
+    latitude: -15.38596
+    longitude: 35.3188
+    population: 80932
+    dem: 949
+    timezone: "Africa/Blantyre"
+  - name: "Thyolo"
+    latitude: -16.06775
+    longitude: 35.14046
+    population: 5775
+    dem: 912
+    timezone: "Africa/Blantyre"
+  - name: "Nsanje"
+    latitude: -16.91995
+    longitude: 35.26199
+    population: 21774
+    dem: 55
+    timezone: "Africa/Blantyre"
+  - name: "Mwanza"
+    latitude: -15.60262
+    longitude: 34.52479
+    population: 11379
+    dem: 654
+    timezone: "Africa/Blantyre"
+  - name: "Mulanje"
+    latitude: -16.03163
+    longitude: 35.5
+    population: 16483
+    dem: 609
+    timezone: "Africa/Blantyre"
+  - name: "Monkey Bay"
+    latitude: -14.08239
+    longitude: 34.91652
+    population: 11619
+    dem: 484
+    timezone: "Africa/Blantyre"
+  - name: "Mangochi"
+    latitude: -14.47815
+    longitude: 35.26448
+    population: 40236
+    dem: 484
+    timezone: "Africa/Blantyre"
+  - name: "Luchenza"
+    latitude: -16.00693
+    longitude: 35.30947
+    population: 11939
+    dem: 682
+    timezone: "Africa/Blantyre"
+  - name: "Liwonde"
+    latitude: -15.06665
+    longitude: 35.22543
+    population: 22469
+    dem: 499
+    timezone: "Africa/Blantyre"
+  - name: "Chikwawa"
+    latitude: -16.03352
+    longitude: 34.80091
+    population: 6987
+    dem: 106
+    timezone: "Africa/Blantyre"
+  - name: "Blantyre"
+    latitude: -15.78499
+    longitude: 35.00854
+    population: 584877
+    dem: 1041
+    timezone: "Africa/Blantyre"
+  - name: "Balaka"
+    latitude: -14.97928
+    longitude: 34.95575
+    population: 18902
+    dem: 633
+    timezone: "Africa/Blantyre"

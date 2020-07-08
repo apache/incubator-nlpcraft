@@ -1,0 +1,420 @@
+---
+name: "Ivory Coast"
+iso: "CI"
+iso3: "CIV"
+code: "384"
+capital: "Yamoussoukro"
+area: 322460.0
+population: 21058798
+continent: "AF"
+currencyCode: "XOF"
+currencyName: "Franc"
+phone: "225"
+languages: "fr-CI"
+neighbours: "LR,GH,GN,BF,ML"
+regions:
+- name: "Woroba"
+  cities:
+  - name: "Touba"
+    latitude: 8.28333
+    longitude: -7.68333
+    population: 27504
+    dem: 470
+    timezone: "Africa/Abidjan"
+  - name: "Mankono"
+    latitude: 8.05861
+    longitude: -6.18972
+    population: 19095
+    dem: 335
+    timezone: "Africa/Abidjan"
+  - name: "Seguela"
+    latitude: 7.96111
+    longitude: -6.67306
+    population: 51157
+    dem: 350
+    timezone: "Africa/Abidjan"
+- name: "Lagunes"
+  cities:
+  - name: "Tiassale"
+    latitude: 5.89839
+    longitude: -4.82293
+    population: 35090
+    dem: 29
+    timezone: "Africa/Abidjan"
+  - name: "Grand-Lahou"
+    latitude: 5.25068
+    longitude: -5.00333
+    population: 10273
+    dem: 77
+    timezone: "Africa/Abidjan"
+  - name: "Affery"
+    latitude: 6.32035
+    longitude: -3.95235
+    population: 29909
+    dem: 106
+    timezone: "Africa/Abidjan"
+  - name: "Dabou"
+    latitude: 5.32556
+    longitude: -4.37685
+    population: 69661
+    dem: 21
+    timezone: "Africa/Abidjan"
+  - name: "Akoupe"
+    latitude: 6.38423
+    longitude: -3.88759
+    population: 35970
+    dem: 142
+    timezone: "Africa/Abidjan"
+  - name: "Agboville"
+    latitude: 5.92801
+    longitude: -4.21319
+    population: 81770
+    dem: 35
+    timezone: "Africa/Abidjan"
+  - name: "Adzope"
+    latitude: 6.10694
+    longitude: -3.86194
+    population: 61884
+    dem: 109
+    timezone: "Africa/Abidjan"
+- name: "Comoe"
+  cities:
+  - name: "Grand-Bassam"
+    latitude: 5.2118
+    longitude: -3.73884
+    population: 73772
+    dem: 7
+    timezone: "Africa/Abidjan"
+  - name: "Bonoua"
+    latitude: 5.27247
+    longitude: -3.59625
+    population: 37312
+    dem: 30
+    timezone: "Africa/Abidjan"
+  - name: "Ayame"
+    latitude: 5.6052
+    longitude: -3.15709
+    population: 12315
+    dem: 82
+    timezone: "Africa/Abidjan"
+  - name: "Agnibilekrou"
+    latitude: 7.13113
+    longitude: -3.20415
+    population: 43061
+    dem: 236
+    timezone: "Africa/Abidjan"
+  - name: "Adiake"
+    latitude: 5.28634
+    longitude: -3.30403
+    population: 16531
+    dem: 40
+    timezone: "Africa/Abidjan"
+  - name: "Aboisso"
+    latitude: 5.46779
+    longitude: -3.20711
+    population: 37654
+    dem: 12
+    timezone: "Africa/Abidjan"
+  - name: "Abengourou"
+    latitude: 6.72972
+    longitude: -3.49639
+    population: 104020
+    dem: 197
+    timezone: "Africa/Abidjan"
+- name: "Bas-Sassandra"
+  cities:
+  - name: "Tabou"
+    latitude: 4.42295
+    longitude: -7.3528
+    population: 17134
+    dem: 9
+    timezone: "Africa/Abidjan"
+  - name: "Sassandra"
+    latitude: 4.95384
+    longitude: -6.08531
+    population: 23274
+    dem: 38
+    timezone: "Africa/Abidjan"
+  - name: "San-Pedro"
+    latitude: 4.74851
+    longitude: -6.6363
+    population: 196751
+    dem: 9
+    timezone: "Africa/Abidjan"
+- name: "Savanes"
+  cities:
+  - name: "Tengrela"
+    latitude: 10.48115
+    longitude: -6.40694
+    population: 39277
+    dem: 370
+    timezone: "Africa/Abidjan"
+  - name: "Korhogo"
+    latitude: 9.45803
+    longitude: -5.62961
+    population: 167359
+    dem: 360
+    timezone: "Africa/Abidjan"
+  - name: "Ferkessedougou"
+    latitude: 9.5928
+    longitude: -5.19449
+    population: 62008
+    dem: 334
+    timezone: "Africa/Abidjan"
+  - name: "Boundiali"
+    latitude: 9.52167
+    longitude: -6.48694
+    population: 38878
+    dem: 411
+    timezone: "Africa/Abidjan"
+- name: "Abidjan"
+  cities:
+  - name: "Bingerville"
+    latitude: 5.35581
+    longitude: -3.88537
+    population: 50694
+    dem: 59
+    timezone: "Africa/Abidjan"
+  - name: "Anyama"
+    latitude: 5.49462
+    longitude: -4.05183
+    population: 100653
+    dem: 95
+    timezone: "Africa/Abidjan"
+  - name: "Abobo"
+    latitude: 5.41613
+    longitude: -4.0159
+    population: 900000
+    dem: 105
+    timezone: "Africa/Abidjan"
+  - name: "Abidjan"
+    latitude: 5.30966
+    longitude: -4.01266
+    population: 3677115
+    dem: 10
+    timezone: "Africa/Abidjan"
+- name: "Sassandra-Marahoue"
+  cities:
+  - name: "Zuenoula"
+    latitude: 7.43027
+    longitude: -6.05054
+    population: 34435
+    dem: 207
+    timezone: "Africa/Abidjan"
+  - name: "Vavoua"
+    latitude: 7.38194
+    longitude: -6.47778
+    population: 31250
+    dem: 276
+    timezone: "Africa/Abidjan"
+  - name: "Issia"
+    latitude: 6.49224
+    longitude: -6.58558
+    population: 50313
+    dem: 211
+    timezone: "Africa/Abidjan"
+  - name: "Daloa"
+    latitude: 6.87735
+    longitude: -6.45022
+    population: 215652
+    dem: 262
+    timezone: "Africa/Abidjan"
+  - name: "Bouafle"
+    latitude: 6.99041
+    longitude: -5.7442
+    population: 60962
+    dem: 208
+    timezone: "Africa/Abidjan"
+- name: "Lacs"
+  cities:
+  - name: "Yamoussoukro"
+    latitude: 6.82055
+    longitude: -5.27674
+    population: 194530
+    dem: 214
+    timezone: "Africa/Abidjan"
+  - name: "Toumodi"
+    latitude: 6.55799
+    longitude: -5.01769
+    population: 39005
+    dem: 159
+    timezone: "Africa/Abidjan"
+  - name: "Dimbokro"
+    latitude: 6.64678
+    longitude: -4.70519
+    population: 67349
+    dem: 94
+    timezone: "Africa/Abidjan"
+  - name: "Daoukro"
+    latitude: 7.0591
+    longitude: -3.9631
+    population: 40175
+    dem: 188
+    timezone: "Africa/Abidjan"
+  - name: "Bongouanou"
+    latitude: 6.65175
+    longitude: -4.20406
+    population: 34405
+    dem: 213
+    timezone: "Africa/Abidjan"
+  - name: "Bocanda"
+    latitude: 7.06264
+    longitude: -4.49948
+    population: 13079
+    dem: 115
+    timezone: "Africa/Abidjan"
+  - name: "Arrah"
+    latitude: 6.67342
+    longitude: -3.96938
+    population: 37432
+    dem: 143
+    timezone: "Africa/Abidjan"
+- name: "Vallee du Bandama"
+  cities:
+  - name: "Sakassou"
+    latitude: 7.45462
+    longitude: -5.29263
+    population: 15068
+    dem: 231
+    timezone: "Africa/Abidjan"
+  - name: "Katiola"
+    latitude: 8.13728
+    longitude: -5.10095
+    population: 59641
+    dem: 326
+    timezone: "Africa/Abidjan"
+  - name: "Dabakala"
+    latitude: 8.36321
+    longitude: -4.42863
+    population: 13717
+    dem: 254
+    timezone: "Africa/Abidjan"
+  - name: "Bouake"
+    latitude: 7.69385
+    longitude: -5.03031
+    population: 567481
+    dem: 339
+    timezone: "Africa/Abidjan"
+  - name: "Botro"
+    latitude: 7.85249
+    longitude: -5.31063
+    population: 13375
+    dem: 261
+    timezone: "Africa/Abidjan"
+  - name: "Beoumi"
+    latitude: 7.67395
+    longitude: -5.58085
+    population: 23053
+    dem: 226
+    timezone: "Africa/Abidjan"
+- name: "Montagnes"
+  cities:
+  - name: "Toulepleu Guere"
+    latitude: 6.57395
+    longitude: -8.42592
+    population: 14098
+    dem: 269
+    timezone: "Africa/Abidjan"
+  - name: "Man"
+    latitude: 7.41251
+    longitude: -7.55383
+    population: 139341
+    dem: 329
+    timezone: "Africa/Abidjan"
+  - name: "Guiglo"
+    latitude: 6.54368
+    longitude: -7.4935
+    population: 39134
+    dem: 212
+    timezone: "Africa/Abidjan"
+  - name: "Duekoue"
+    latitude: 6.74202
+    longitude: -7.34918
+    population: 47198
+    dem: 231
+    timezone: "Africa/Abidjan"
+  - name: "Danane"
+    latitude: 7.25957
+    longitude: -8.15498
+    population: 53808
+    dem: 347
+    timezone: "Africa/Abidjan"
+  - name: "Biankouma"
+    latitude: 7.73909
+    longitude: -7.61377
+    population: 22868
+    dem: 538
+    timezone: "Africa/Abidjan"
+  - name: "Bangolo"
+    latitude: 7.01232
+    longitude: -7.48639
+    population: 17712
+    dem: 264
+    timezone: "Africa/Abidjan"
+- name: "Yamoussoukro Autonomous District"
+- name: "Zanzan"
+  cities:
+  - name: "Tanda"
+    latitude: 7.80335
+    longitude: -3.16832
+    population: 20161
+    dem: 274
+    timezone: "Africa/Abidjan"
+  - name: "Sinfra"
+    latitude: 6.62103
+    longitude: -5.91144
+    population: 59919
+    dem: 265
+    timezone: "Africa/Abidjan"
+  - name: "Bouna"
+    latitude: 9.26927
+    longitude: -2.9951
+    population: 23570
+    dem: 318
+    timezone: "Africa/Abidjan"
+  - name: "Bondoukou"
+    latitude: 8.0402
+    longitude: -2.80003
+    population: 58297
+    dem: 350
+    timezone: "Africa/Abidjan"
+- name: "Goh-Djiboua"
+  cities:
+  - name: "Oume"
+    latitude: 6.38309
+    longitude: -5.41759
+    population: 52070
+    dem: 211
+    timezone: "Africa/Abidjan"
+  - name: "Lakota"
+    latitude: 5.84752
+    longitude: -5.682
+    population: 38055
+    dem: 228
+    timezone: "Africa/Abidjan"
+  - name: "Guiberoua"
+    latitude: 6.23869
+    longitude: -6.17147
+    population: 13186
+    dem: 230
+    timezone: "Africa/Abidjan"
+  - name: "Gagnoa"
+    latitude: 6.13193
+    longitude: -5.9506
+    population: 123184
+    dem: 202
+    timezone: "Africa/Abidjan"
+  - name: "Divo"
+    latitude: 5.83739
+    longitude: -5.35723
+    population: 127867
+    dem: 147
+    timezone: "Africa/Abidjan"
+- name: "Denguele"
+  cities:
+  - name: "Odienne"
+    latitude: 9.50511
+    longitude: -7.56433
+    population: 49857
+    dem: 429
+    timezone: "Africa/Abidjan"

@@ -1,0 +1,5026 @@
+---
+name: "Australia"
+iso: "AU"
+iso3: "AUS"
+code: "036"
+capital: "Canberra"
+area: 7686850.0
+population: 21515754
+continent: "OC"
+currencyCode: "AUD"
+currencyName: "Dollar"
+phone: "61"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "en-AU"
+regions:
+- name: "Northern Territory"
+  cities:
+  - name: "McMinns Lagoon"
+    latitude: -12.54774
+    longitude: 131.07625
+    population: 5025
+    dem: 42
+    timezone: "Australia/Darwin"
+  - name: "Katherine"
+    latitude: -14.46517
+    longitude: 132.26347
+    population: 5849
+    dem: 110
+    timezone: "Australia/Darwin"
+  - name: "Darwin"
+    latitude: -12.46113
+    longitude: 130.84185
+    population: 129062
+    dem: 31
+    timezone: "Australia/Darwin"
+  - name: "Alice Springs"
+    latitude: -23.69748
+    longitude: 133.88362
+    population: 25186
+    dem: 583
+    timezone: "Australia/Darwin"
+  - name: "Palmerston"
+    latitude: -12.48602
+    longitude: 130.9833
+    population: 25000
+    dem: 36
+    timezone: "Australia/Darwin"
+- name: "State of Tasmania"
+  cities:
+  - name: "Wynyard"
+    latitude: -40.9897
+    longitude: 145.72617
+    population: 5706
+    dem: 17
+    timezone: "Australia/Hobart"
+  - name: "Ulverstone"
+    latitude: -41.16026
+    longitude: 146.18242
+    population: 9604
+    dem: 18
+    timezone: "Australia/Hobart"
+  - name: "New Norfolk"
+    latitude: -42.78261
+    longitude: 147.0587
+    population: 5526
+    dem: 40
+    timezone: "Australia/Hobart"
+  - name: "Newnham"
+    latitude: -41.38969
+    longitude: 147.11397
+    population: 5389
+    dem: 22
+    timezone: "Australia/Hobart"
+  - name: "Moonah"
+    latitude: -42.84617
+    longitude: 147.30228
+    population: 5084
+    dem: 32
+    timezone: "Australia/Hobart"
+  - name: "Lindisfarne"
+    latitude: -42.84837
+    longitude: 147.36192
+    population: 5678
+    dem: 17
+    timezone: "Australia/Hobart"
+  - name: "Launceston"
+    latitude: -41.43876
+    longitude: 147.13467
+    population: 106153
+    dem: 11
+    timezone: "Australia/Hobart"
+  - name: "Kingston"
+    latitude: -42.97638
+    longitude: 147.30351
+    population: 14371
+    dem: 50
+    timezone: "Australia/Hobart"
+  - name: "Hobart"
+    latitude: -42.87936
+    longitude: 147.32941
+    population: 216656
+    dem: 19
+    timezone: "Australia/Hobart"
+  - name: "Glenorchy"
+    latitude: -42.83343
+    longitude: 147.27593
+    population: 10062
+    dem: 22
+    timezone: "Australia/Hobart"
+  - name: "Devonport"
+    latitude: -41.17695
+    longitude: 146.35152
+    population: 19317
+    dem: 28
+    timezone: "Australia/Hobart"
+  - name: "Claremont"
+    latitude: -42.78333
+    longitude: 147.25
+    population: 7504
+    dem: 17
+    timezone: "Australia/Hobart"
+  - name: "Burnie"
+    latitude: -41.05584
+    longitude: 145.90375
+    population: 19972
+    dem: 29
+    timezone: "Australia/Hobart"
+  - name: "Bridgewater"
+    latitude: -42.73719
+    longitude: 147.22784
+    population: 7790
+    dem: 16
+    timezone: "Australia/Hobart"
+  - name: "Blackmans Bay"
+    latitude: -43.00311
+    longitude: 147.31694
+    population: 6341
+    dem: 54
+    timezone: "Australia/Hobart"
+  - name: "New Town"
+    latitude: -42.85758
+    longitude: 147.30869
+    population: 5870
+    dem: 44
+    timezone: "Australia/Hobart"
+  - name: "Sandy Bay"
+    latitude: -42.89449
+    longitude: 147.32439
+    population: 11334
+    dem: 27
+    timezone: "Australia/Hobart"
+  - name: "Howrah"
+    latitude: -42.88728
+    longitude: 147.40554
+    population: 7888
+    dem: 8
+    timezone: "Australia/Hobart"
+  - name: "West Moonah"
+    latitude: -42.84996
+    longitude: 147.28181
+    population: 5216
+    dem: 105
+    timezone: "Australia/Hobart"
+- name: "State of South Australia"
+  cities:
+  - name: "Whyalla"
+    latitude: -33.03268
+    longitude: 137.56483
+    population: 19645
+    dem: 20
+    timezone: "Australia/Adelaide"
+  - name: "Victor Harbor"
+    latitude: -35.55042
+    longitude: 138.62154
+    population: 7760
+    dem: 8
+    timezone: "Australia/Adelaide"
+  - name: "Seaton"
+    latitude: -34.9
+    longitude: 138.51667
+    population: 9704
+    dem: 7
+    timezone: "Australia/Adelaide"
+  - name: "Salisbury"
+    latitude: -34.76667
+    longitude: 138.63333
+    population: 6648
+    dem: 31
+    timezone: "Australia/Adelaide"
+  - name: "Prospect"
+    latitude: -34.88241
+    longitude: 138.5933
+    population: 20217
+    dem: 43
+    timezone: "Australia/Adelaide"
+  - name: "Port Pirie"
+    latitude: -33.19176
+    longitude: 138.01746
+    population: 13206
+    dem: 10
+    timezone: "Australia/Adelaide"
+  - name: "Port Lincoln"
+    latitude: -34.72625
+    longitude: 135.87442
+    population: 13044
+    dem: 32
+    timezone: "Australia/Adelaide"
+  - name: "Port Augusta West"
+    latitude: -32.48611
+    longitude: 137.75833
+    population: 12133
+    dem: 8
+    timezone: "Australia/Adelaide"
+  - name: "Port Augusta"
+    latitude: -32.49597
+    longitude: 137.77281
+    population: 13257
+    dem: 11
+    timezone: "Australia/Adelaide"
+  - name: "Nuriootpa"
+    latitude: -34.46825
+    longitude: 138.99767
+    population: 5031
+    dem: 278
+    timezone: "Australia/Adelaide"
+  - name: "Murray Bridge"
+    latitude: -35.11986
+    longitude: 139.27345
+    population: 19577
+    dem: 36
+    timezone: "Australia/Adelaide"
+  - name: "Mount Barker"
+    latitude: -35.06667
+    longitude: 138.86667
+    population: 8357
+    dem: 322
+    timezone: "Australia/Adelaide"
+  - name: "Morphett Vale"
+    latitude: -35.13333
+    longitude: 138.51667
+    population: 22602
+    dem: 92
+    timezone: "Australia/Adelaide"
+  - name: "Modbury"
+    latitude: -34.83333
+    longitude: 138.68333
+    population: 5570
+    dem: 109
+    timezone: "Australia/Adelaide"
+  - name: "Ingle Farm"
+    latitude: -34.83333
+    longitude: 138.63333
+    population: 8474
+    dem: 62
+    timezone: "Australia/Adelaide"
+  - name: "Hope Valley"
+    latitude: -34.83333
+    longitude: 138.7
+    population: 8223
+    dem: 132
+    timezone: "Australia/Adelaide"
+  - name: "Happy Valley"
+    latitude: -35.08333
+    longitude: 138.53333
+    population: 11531
+    dem: 120
+    timezone: "Australia/Adelaide"
+  - name: "Grange"
+    latitude: -34.90223
+    longitude: 138.49022
+    population: 5238
+    dem: 11
+    timezone: "Australia/Adelaide"
+  - name: "Golden Grove"
+    latitude: -34.78333
+    longitude: 138.73333
+    population: 8976
+    dem: 229
+    timezone: "Australia/Adelaide"
+  - name: "Gawler"
+    latitude: -34.60251
+    longitude: 138.74902
+    population: 20006
+    dem: 57
+    timezone: "Australia/Adelaide"
+  - name: "Findon"
+    latitude: -34.9
+    longitude: 138.53333
+    population: 5451
+    dem: 12
+    timezone: "Australia/Adelaide"
+  - name: "Campbelltown"
+    latitude: -34.88333
+    longitude: 138.66667
+    population: 7005
+    dem: 75
+    timezone: "Australia/Adelaide"
+  - name: "Aldinga"
+    latitude: -35.28333
+    longitude: 138.48333
+    population: 5984
+    dem: 24
+    timezone: "Australia/Adelaide"
+  - name: "Adelaide"
+    latitude: -34.92866
+    longitude: 138.59863
+    population: 1225235
+    dem: 59
+    timezone: "Australia/Adelaide"
+  - name: "Naracoorte"
+    latitude: -36.95785
+    longitude: 140.7383
+    population: 5674
+    dem: 57
+    timezone: "Australia/Adelaide"
+  - name: "Mount Gambier"
+    latitude: -37.8318
+    longitude: 140.77919
+    population: 23209
+    dem: 41
+    timezone: "Australia/Adelaide"
+  - name: "Millicent"
+    latitude: -37.59389
+    longitude: 140.34947
+    population: 5551
+    dem: 22
+    timezone: "Australia/Adelaide"
+  - name: "Klemzig"
+    latitude: -34.87928
+    longitude: 138.63562
+    population: 5087
+    dem: 52
+    timezone: "Australia/Adelaide"
+  - name: "Paradise"
+    latitude: -34.87361
+    longitude: 138.66896
+    population: 6327
+    dem: 72
+    timezone: "Australia/Adelaide"
+  - name: "Athelstone"
+    latitude: -34.87019
+    longitude: 138.6999
+    population: 9290
+    dem: 109
+    timezone: "Australia/Adelaide"
+  - name: "Adelaide Hills"
+    latitude: -34.91119
+    longitude: 138.70735
+    population: 60394
+    dem: 426
+    timezone: "Australia/Adelaide"
+  - name: "Paralowie"
+    latitude: -34.75705
+    longitude: 138.60819
+    population: 15872
+    dem: 21
+    timezone: "Australia/Adelaide"
+  - name: "Parafield Gardens"
+    latitude: -34.78254
+    longitude: 138.61077
+    population: 15317
+    dem: 18
+    timezone: "Australia/Adelaide"
+  - name: "North Adelaide"
+    latitude: -34.90733
+    longitude: 138.59141
+    population: 6678
+    dem: 50
+    timezone: "Australia/Adelaide"
+  - name: "Henley Beach"
+    latitude: -34.92029
+    longitude: 138.49442
+    population: 5405
+    dem: 12
+    timezone: "Australia/Adelaide"
+- name: "State of Western Australia"
+  cities:
+  - name: "Wembley"
+    latitude: -31.93308
+    longitude: 115.81783
+    population: 9614
+    dem: 20
+    timezone: "Australia/Perth"
+  - name: "Wanneroo"
+    latitude: -31.75
+    longitude: 115.8
+    population: 10931
+    dem: 43
+    timezone: "Australia/Perth"
+  - name: "Swan View"
+    latitude: -31.88333
+    longitude: 116.05
+    population: 7896
+    dem: 51
+    timezone: "Australia/Perth"
+  - name: "Subiaco"
+    latitude: -31.9485
+    longitude: 115.8268
+    population: 7627
+    dem: 30
+    timezone: "Australia/Perth"
+  - name: "Spearwood"
+    latitude: -32.10534
+    longitude: 115.77797
+    population: 8941
+    dem: 5
+    timezone: "Australia/Perth"
+  - name: "South Perth"
+    latitude: -31.98333
+    longitude: 115.86667
+    population: 11301
+    dem: 19
+    timezone: "Australia/Perth"
+  - name: "Scarborough"
+    latitude: -31.89578
+    longitude: 115.76431
+    population: 12593
+    dem: 9
+    timezone: "Australia/Perth"
+  - name: "Safety Bay"
+    latitude: -32.30463
+    longitude: 115.74213
+    population: 7303
+    dem: 8
+    timezone: "Australia/Perth"
+  - name: "Rockingham"
+    latitude: -32.27682
+    longitude: 115.72978
+    population: 108022
+    dem: 8
+    timezone: "Australia/Perth"
+  - name: "Port Hedland"
+    latitude: -20.31215
+    longitude: 118.61059
+    population: 15044
+    dem: 5
+    timezone: "Australia/Perth"
+  - name: "Perth"
+    latitude: -31.95224
+    longitude: 115.8614
+    population: 1896548
+    dem: 34
+    timezone: "Australia/Perth"
+  - name: "Northam"
+    latitude: -31.64932
+    longitude: 116.67423
+    population: 5855
+    dem: 155
+    timezone: "Australia/Perth"
+  - name: "Newman"
+    latitude: -23.35644
+    longitude: 119.73553
+    population: 5138
+    dem: 543
+    timezone: "Australia/Perth"
+  - name: "Nedlands"
+    latitude: -31.98184
+    longitude: 115.8073
+    population: 10020
+    dem: 34
+    timezone: "Australia/Perth"
+  - name: "Mosman Park"
+    latitude: -32.00538
+    longitude: 115.7638
+    population: 8251
+    dem: 24
+    timezone: "Australia/Perth"
+  - name: "Maylands"
+    latitude: -31.93097
+    longitude: 115.89486
+    population: 10447
+    dem: 21
+    timezone: "Australia/Perth"
+  - name: "Margaret River"
+    latitude: -33.95504
+    longitude: 115.07599
+    population: 5584
+    dem: 98
+    timezone: "Australia/Perth"
+  - name: "Mandurah"
+    latitude: -32.5269
+    longitude: 115.7217
+    population: 83294
+    dem: 4
+    timezone: "Australia/Perth"
+  - name: "Maddington"
+    latitude: -32.05
+    longitude: 115.98333
+    population: 9137
+    dem: 12
+    timezone: "Australia/Perth"
+  - name: "Kwinana"
+    latitude: -32.23013
+    longitude: 115.78128
+    population: 30433
+    dem: 7
+    timezone: "Australia/Perth"
+  - name: "Kununurra"
+    latitude: -15.77825
+    longitude: 128.74208
+    population: 5679
+    dem: 51
+    timezone: "Australia/Perth"
+  - name: "Kenwick"
+    latitude: -32.03333
+    longitude: 115.96667
+    population: 5150
+    dem: 11
+    timezone: "Australia/Perth"
+  - name: "Kelmscott"
+    latitude: -32.12434
+    longitude: 116.0259
+    population: 9419
+    dem: 48
+    timezone: "Australia/Perth"
+  - name: "Kalgoorlie"
+    latitude: -30.74614
+    longitude: 121.4742
+    population: 31107
+    dem: 387
+    timezone: "Australia/Perth"
+  - name: "Gosnells"
+    latitude: -32.081
+    longitude: 116.0054
+    population: 17277
+    dem: 23
+    timezone: "Australia/Perth"
+  - name: "Geraldton"
+    latitude: -28.77897
+    longitude: 114.61459
+    population: 26872
+    dem: 15
+    timezone: "Australia/Perth"
+  - name: "Fremantle"
+    latitude: -32.05632
+    longitude: 115.74557
+    population: 24835
+    dem: 7
+    timezone: "Australia/Perth"
+  - name: "Esperance"
+    latitude: -33.85919
+    longitude: 121.89164
+    population: 7888
+    dem: 10
+    timezone: "Australia/Perth"
+  - name: "Cottesloe"
+    latitude: -31.99426
+    longitude: 115.75816
+    population: 7065
+    dem: 24
+    timezone: "Australia/Perth"
+  - name: "Collie"
+    latitude: -33.36206
+    longitude: 116.15617
+    population: 6336
+    dem: 190
+    timezone: "Australia/Perth"
+  - name: "Carnarvon"
+    latitude: -24.88258
+    longitude: 113.65713
+    population: 7392
+    dem: 9
+    timezone: "Australia/Perth"
+  - name: "Busselton"
+    latitude: -33.65249
+    longitude: 115.3455
+    population: 21898
+    dem: 7
+    timezone: "Australia/Perth"
+  - name: "Bunbury"
+    latitude: -33.32711
+    longitude: 115.64137
+    population: 68248
+    dem: 5
+    timezone: "Australia/Perth"
+  - name: "Broome"
+    latitude: -17.95538
+    longitude: 122.23922
+    population: 12766
+    dem: 12
+    timezone: "Australia/Perth"
+  - name: "Boulder"
+    latitude: -30.78204
+    longitude: 121.4912
+    population: 5178
+    dem: 362
+    timezone: "Australia/Perth"
+  - name: "Bentley"
+    latitude: -32.00224
+    longitude: 115.92473
+    population: 8323
+    dem: 20
+    timezone: "Australia/Perth"
+  - name: "Bassendean"
+    latitude: -31.90906
+    longitude: 115.9437
+    population: 8776
+    dem: 19
+    timezone: "Australia/Perth"
+  - name: "Australind"
+    latitude: -33.2792
+    longitude: 115.71504
+    population: 8716
+    dem: 8
+    timezone: "Australia/Perth"
+  - name: "Armadale"
+    latitude: -32.14607
+    longitude: 116.0093
+    population: 62296
+    dem: 54
+    timezone: "Australia/Perth"
+  - name: "Applecross"
+    latitude: -32.01667
+    longitude: 115.83333
+    population: 6336
+    dem: 14
+    timezone: "Australia/Perth"
+  - name: "Albany"
+    latitude: -35.02692
+    longitude: 117.88369
+    population: 33650
+    dem: 14
+    timezone: "Australia/Perth"
+  - name: "Eaton"
+    latitude: -33.31664
+    longitude: 115.70503
+    population: 7481
+    dem: 9
+    timezone: "Australia/Perth"
+  - name: "Quinns Rocks"
+    latitude: -31.67379
+    longitude: 115.70372
+    population: 7991
+    dem: 45
+    timezone: "Australia/Perth"
+  - name: "East Fremantle"
+    latitude: -32.03823
+    longitude: 115.7676
+    population: 6698
+    dem: 40
+    timezone: "Australia/Perth"
+  - name: "Claremont"
+    latitude: -31.97961
+    longitude: 115.7823
+    population: 7152
+    dem: 20
+    timezone: "Australia/Perth"
+  - name: "Bicton"
+    latitude: -32.02778
+    longitude: 115.78333
+    population: 6017
+    dem: 27
+    timezone: "Australia/Perth"
+  - name: "Attadale"
+    latitude: -32.02489
+    longitude: 115.802
+    population: 5719
+    dem: 17
+    timezone: "Australia/Perth"
+  - name: "Warnbro"
+    latitude: -32.34017
+    longitude: 115.7473
+    population: 11421
+    dem: 9
+    timezone: "Australia/Perth"
+  - name: "Mullaloo"
+    latitude: -31.77896
+    longitude: 115.73676
+    population: 5869
+    dem: 16
+    timezone: "Australia/Perth"
+  - name: "Karratha"
+    latitude: -20.73765
+    longitude: 116.84629
+    population: 11728
+    dem: 20
+    timezone: "Australia/Perth"
+  - name: "Hillarys"
+    latitude: -31.80698
+    longitude: 115.74045
+    population: 10160
+    dem: 15
+    timezone: "Australia/Perth"
+  - name: "Joondalup"
+    latitude: -31.74445
+    longitude: 115.76835
+    population: 8420
+    dem: 49
+    timezone: "Australia/Perth"
+  - name: "Como"
+    latitude: -31.99119
+    longitude: 115.86336
+    population: 12425
+    dem: 27
+    timezone: "Australia/Perth"
+  - name: "Mindarie"
+    latitude: -31.68932
+    longitude: 115.70698
+    population: 6507
+    elevation: 25
+    dem: 27
+    timezone: "Australia/Perth"
+  - name: "Clarkson"
+    latitude: -31.68282
+    longitude: 115.7247
+    population: 7082
+    dem: 28
+    timezone: "Australia/Perth"
+  - name: "Kinross"
+    latitude: -31.71868
+    longitude: 115.73839
+    population: 7232
+    dem: 43
+    timezone: "Australia/Perth"
+  - name: "Currambine"
+    latitude: -31.73306
+    longitude: 115.74766
+    population: 5975
+    dem: 57
+    timezone: "Australia/Perth"
+  - name: "Heathridge"
+    latitude: -31.76244
+    longitude: 115.75895
+    population: 6882
+    dem: 49
+    timezone: "Australia/Perth"
+  - name: "Mount Lawley"
+    latitude: -31.93439
+    longitude: 115.8716
+    population: 10703
+    dem: 28
+    timezone: "Australia/Perth"
+  - name: "Stirling"
+    latitude: -31.88343
+    longitude: 115.8099
+    population: 9157
+    dem: 24
+    timezone: "Australia/Perth"
+  - name: "Canning Vale"
+    latitude: -32.05799
+    longitude: 115.91814
+    population: 23289
+    dem: 24
+    timezone: "Australia/Perth"
+  - name: "Balcatta"
+    latitude: -31.87501
+    longitude: 115.82839
+    population: 9495
+    dem: 29
+    timezone: "Australia/Perth"
+  - name: "Belmont"
+    latitude: -31.9435
+    longitude: 115.9255
+    population: 6104
+    dem: 11
+    timezone: "Australia/Perth"
+  - name: "East Perth"
+    latitude: -31.95872
+    longitude: 115.87109
+    population: 5753
+    dem: 22
+    timezone: "Australia/Perth"
+  - name: "Tapping"
+    latitude: -31.71947
+    longitude: 115.79559
+    population: 8946
+    dem: 58
+    timezone: "Australia/Perth"
+  - name: "Woodvale"
+    latitude: -31.78928
+    longitude: 115.79676
+    population: 9202
+    dem: 44
+    timezone: "Australia/Perth"
+  - name: "Beeliar"
+    latitude: -32.13339
+    longitude: 115.80637
+    population: 5869
+    dem: 47
+    timezone: "Australia/Perth"
+  - name: "Ballajura"
+    latitude: -31.84062
+    longitude: 115.89549
+    population: 18952
+    dem: 40
+    timezone: "Australia/Perth"
+  - name: "Willetton"
+    latitude: -32.05251
+    longitude: 115.88782
+    population: 17243
+    dem: 22
+    timezone: "Australia/Perth"
+  - name: "Carramar"
+    latitude: -31.69023
+    longitude: 115.77159
+    population: 6605
+    dem: 56
+    timezone: "Australia/Perth"
+  - name: "Alexander Heights"
+    latitude: -31.82758
+    longitude: 115.86501
+    population: 7695
+    dem: 74
+    timezone: "Australia/Perth"
+  - name: "Wilson"
+    latitude: -32.02058
+    longitude: 115.91181
+    population: 5188
+    dem: 4
+    timezone: "Australia/Perth"
+  - name: "Butler"
+    latitude: -31.64298
+    longitude: 115.70431
+    population: 9653
+    dem: 33
+    timezone: "Australia/Perth"
+  - name: "Darch"
+    latitude: -31.81255
+    longitude: 115.8458
+    population: 6118
+    dem: 50
+    timezone: "Australia/Perth"
+  - name: "Innaloo"
+    latitude: -31.89272
+    longitude: 115.79508
+    population: 7648
+    dem: 8
+    timezone: "Australia/Perth"
+  - name: "Booragoon"
+    latitude: -32.03945
+    longitude: 115.83369
+    population: 5315
+    dem: 23
+    timezone: "Australia/Perth"
+  - name: "Seville Grove"
+    latitude: -32.13645
+    longitude: 115.98905
+    population: 7065
+    dem: 36
+    timezone: "Australia/Perth"
+  - name: "Padbury"
+    latitude: -31.80645
+    longitude: 115.7688
+    population: 8113
+    dem: 45
+    timezone: "Australia/Perth"
+  - name: "East Victoria Park"
+    latitude: -31.98894
+    longitude: 115.90388
+    population: 8102
+    dem: 20
+    timezone: "Australia/Perth"
+  - name: "Palmyra"
+    latitude: -32.04502
+    longitude: 115.78589
+    population: 6247
+    dem: 35
+    timezone: "Australia/Perth"
+  - name: "Westminster"
+    latitude: -31.86744
+    longitude: 115.83919
+    population: 5175
+    dem: 47
+    timezone: "Australia/Perth"
+  - name: "Bibra Lake"
+    latitude: -32.09764
+    longitude: 115.81921
+    population: 5954
+    dem: 22
+    timezone: "Australia/Perth"
+  - name: "Dianella"
+    latitude: -31.88822
+    longitude: 115.87186
+    population: 22521
+    dem: 30
+    timezone: "Australia/Perth"
+  - name: "Duncraig"
+    latitude: -31.83291
+    longitude: 115.7759
+    population: 15026
+    dem: 50
+    timezone: "Australia/Perth"
+  - name: "Kardinya"
+    latitude: -32.06561
+    longitude: 115.81483
+    population: 8874
+    dem: 23
+    timezone: "Australia/Perth"
+  - name: "Karrinyup"
+    latitude: -31.87233
+    longitude: 115.77684
+    population: 8524
+    dem: 43
+    timezone: "Australia/Perth"
+  - name: "Kewdale"
+    latitude: -31.97886
+    longitude: 115.95159
+    population: 5439
+    dem: 20
+    timezone: "Australia/Perth"
+  - name: "Ocean Reef"
+    latitude: -31.75871
+    longitude: 115.73601
+    population: 8090
+    dem: 35
+    timezone: "Australia/Perth"
+  - name: "Port Kennedy"
+    latitude: -32.37342
+    longitude: 115.7515
+    population: 12816
+    dem: 9
+    timezone: "Australia/Perth"
+  - name: "Secret Harbour"
+    latitude: -32.40589
+    longitude: 115.75852
+    population: 5657
+    dem: 7
+    timezone: "Australia/Perth"
+  - name: "Tuart Hill"
+    latitude: -31.89808
+    longitude: 115.83495
+    population: 6706
+    dem: 47
+    timezone: "Australia/Perth"
+  - name: "Thornlie"
+    latitude: -32.06003
+    longitude: 115.955
+    population: 22265
+    dem: 19
+    timezone: "Australia/Perth"
+  - name: "Winthrop"
+    latitude: -32.05216
+    longitude: 115.82972
+    population: 6430
+    dem: 29
+    timezone: "Australia/Perth"
+  - name: "Yangebup"
+    latitude: -32.12065
+    longitude: 115.81623
+    population: 6089
+    dem: 37
+    timezone: "Australia/Perth"
+  - name: "Yokine"
+    latitude: -31.90113
+    longitude: 115.85319
+    population: 10613
+    dem: 39
+    timezone: "Australia/Perth"
+  - name: "Victoria Park"
+    latitude: -31.97619
+    longitude: 115.90525
+    population: 7174
+    dem: 22
+    timezone: "Australia/Perth"
+  - name: "City Beach"
+    latitude: -31.9344
+    longitude: 115.76174
+    population: 6354
+    dem: 37
+    timezone: "Australia/Perth"
+  - name: "Kallaroo"
+    latitude: -31.79098
+    longitude: 115.75298
+    population: 5119
+    dem: 42
+    timezone: "Australia/Perth"
+  - name: "Mount Pleasant"
+    latitude: -32.03974
+    longitude: 115.84993
+    population: 6423
+    dem: 18
+    timezone: "Australia/Perth"
+  - name: "Parmelia"
+    latitude: -32.25784
+    longitude: 115.82208
+    population: 5953
+    dem: 26
+    timezone: "Australia/Perth"
+  - name: "Rivervale"
+    latitude: -31.95546
+    longitude: 115.91306
+    population: 7070
+    dem: 16
+    timezone: "Australia/Perth"
+  - name: "South Lake"
+    latitude: -32.11125
+    longitude: 115.83873
+    population: 5659
+    dem: 20
+    timezone: "Australia/Perth"
+  - name: "Wembley Downs"
+    latitude: -31.91169
+    longitude: 115.77358
+    population: 5881
+    dem: 33
+    timezone: "Australia/Perth"
+  - name: "Marangaroo"
+    latitude: -31.82711
+    longitude: 115.83843
+    population: 10519
+    dem: 66
+    timezone: "Australia/Perth"
+- name: "State of New South Wales"
+  cities:
+  - name: "Young"
+    latitude: -34.3135
+    longitude: 148.30107
+    population: 7501
+    dem: 438
+    timezone: "Australia/Sydney"
+  - name: "Yass"
+    latitude: -34.84036
+    longitude: 148.90987
+    population: 5591
+    dem: 486
+    timezone: "Australia/Sydney"
+  - name: "Westmead"
+    latitude: -33.80383
+    longitude: 150.98768
+    population: 16309
+    dem: 36
+    timezone: "Australia/Sydney"
+  - name: "Wellington"
+    latitude: -32.55588
+    longitude: 148.94508
+    population: 5428
+    dem: 304
+    timezone: "Australia/Sydney"
+  - name: "Wahroonga"
+    latitude: -33.71816
+    longitude: 151.11561
+    population: 17371
+    dem: 206
+    timezone: "Australia/Sydney"
+  - name: "Wagga Wagga"
+    latitude: -35.12577
+    longitude: 147.35375
+    population: 46913
+    dem: 201
+    timezone: "Australia/Sydney"
+  - name: "Ulladulla"
+    latitude: -35.35906
+    longitude: 150.47247
+    population: 9250
+    dem: 32
+    timezone: "Australia/Sydney"
+  - name: "Tumut"
+    latitude: -35.30642
+    longitude: 148.21818
+    population: 6526
+    dem: 316
+    timezone: "Australia/Sydney"
+  - name: "Toongabbie"
+    latitude: -33.78333
+    longitude: 150.95
+    population: 13003
+    dem: 37
+    timezone: "Australia/Sydney"
+  - name: "Taree"
+    latitude: -31.91099
+    longitude: 152.45387
+    population: 16621
+    dem: 30
+    timezone: "Australia/Sydney"
+  - name: "Tamworth"
+    latitude: -31.09048
+    longitude: 150.92905
+    population: 47597
+    dem: 384
+    timezone: "Australia/Sydney"
+  - name: "Sydney"
+    latitude: -33.86785
+    longitude: 151.20732
+    population: 4627345
+    dem: 58
+    timezone: "Australia/Sydney"
+  - name: "Strathfield"
+    latitude: -33.88096
+    longitude: 151.07986
+    population: 25813
+    dem: 39
+    timezone: "Australia/Sydney"
+  - name: "Port Stephens"
+    latitude: -32.73705
+    longitude: 152.04877
+    population: 27531
+    dem: 16
+    timezone: "Australia/Sydney"
+  - name: "South Grafton"
+    latitude: -29.7076
+    longitude: 152.92627
+    population: 16399
+    dem: 2
+    timezone: "Australia/Sydney"
+  - name: "Singleton"
+    latitude: -32.56742
+    longitude: 151.16603
+    population: 13665
+    dem: 45
+    timezone: "Australia/Sydney"
+  - name: "Rutherford"
+    latitude: -32.71667
+    longitude: 151.53333
+    population: 10182
+    dem: 38
+    timezone: "Australia/Sydney"
+  - name: "Riverstone"
+    latitude: -33.68333
+    longitude: 150.86667
+    population: 6096
+    dem: 26
+    timezone: "Australia/Sydney"
+  - name: "Richmond"
+    latitude: -33.59956
+    longitude: 150.75142
+    population: 5560
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Redfern"
+    latitude: -33.89279
+    longitude: 151.20415
+    population: 11482
+    dem: 39
+    timezone: "Australia/Sydney"
+  - name: "Rathmines"
+    latitude: -33.03773
+    longitude: 151.58443
+    population: 8944
+    dem: 20
+    timezone: "Australia/Sydney"
+  - name: "Queanbeyan"
+    latitude: -35.35493
+    longitude: 149.232
+    population: 40661
+    dem: 581
+    timezone: "Australia/Sydney"
+  - name: "Quakers Hill"
+    latitude: -33.73333
+    longitude: 150.88333
+    population: 25017
+    dem: 39
+    timezone: "Australia/Sydney"
+  - name: "Pymble"
+    latitude: -33.74386
+    longitude: 151.14188
+    population: 9368
+    dem: 145
+    timezone: "Australia/Sydney"
+  - name: "Port Macquarie"
+    latitude: -31.43084
+    longitude: 152.90894
+    population: 41491
+    dem: 10
+    timezone: "Australia/Sydney"
+  - name: "Penshurst"
+    latitude: -33.96667
+    longitude: 151.08333
+    population: 11692
+    dem: 63
+    timezone: "Australia/Sydney"
+  - name: "Penrith"
+    latitude: -33.75
+    longitude: 150.7
+    population: 11813
+    dem: 31
+    timezone: "Australia/Sydney"
+  - name: "Pennant Hills"
+    latitude: -33.73783
+    longitude: 151.07216
+    population: 6830
+    dem: 172
+    timezone: "Australia/Sydney"
+  - name: "Parkes"
+    latitude: -33.1372
+    longitude: 148.1759
+    population: 10026
+    dem: 335
+    timezone: "Australia/Sydney"
+  - name: "Orange"
+    latitude: -33.28397
+    longitude: 149.10018
+    population: 39329
+    dem: 868
+    timezone: "Australia/Sydney"
+  - name: "Oatley"
+    latitude: -33.98004
+    longitude: 151.07201
+    population: 9531
+    dem: 42
+    timezone: "Australia/Sydney"
+  - name: "Nowra"
+    latitude: -34.88422
+    longitude: 150.60036
+    population: 34479
+    dem: 30
+    timezone: "Australia/Sydney"
+  - name: "North Sydney"
+    latitude: -33.839
+    longitude: 151.2072
+    population: 6060
+    dem: 84
+    timezone: "Australia/Sydney"
+  - name: "Northmead"
+    latitude: -33.78378
+    longitude: 150.99858
+    population: 6968
+    dem: 34
+    timezone: "Australia/Sydney"
+  - name: "Newtown"
+    latitude: -33.89835
+    longitude: 151.17754
+    population: 13552
+    dem: 37
+    timezone: "Australia/Sydney"
+  - name: "Newport"
+    latitude: -33.65639
+    longitude: 151.31401
+    population: 9227
+    dem: 19
+    timezone: "Australia/Sydney"
+  - name: "Newcastle"
+    latitude: -32.92953
+    longitude: 151.7801
+    population: 308308
+    dem: 1
+    timezone: "Australia/Sydney"
+  - name: "Nelson Bay"
+    latitude: -32.72043
+    longitude: 152.14398
+    population: 7726
+    dem: 13
+    timezone: "Australia/Sydney"
+  - name: "Narrabri"
+    latitude: -30.32488
+    longitude: 149.78266
+    population: 7082
+    dem: 214
+    timezone: "Australia/Sydney"
+  - name: "Narrabeen"
+    latitude: -33.71277
+    longitude: 151.29736
+    population: 6436
+    dem: 6
+    timezone: "Australia/Sydney"
+  - name: "Narellan"
+    latitude: -34.04338
+    longitude: 150.73236
+    population: 7350
+    dem: 83
+    timezone: "Australia/Sydney"
+  - name: "Narara"
+    latitude: -33.39593
+    longitude: 151.33527
+    population: 7792
+    dem: 30
+    timezone: "Australia/Sydney"
+  - name: "Nambucca Heads"
+    latitude: -30.64318
+    longitude: 153.00884
+    population: 6137
+    dem: 49
+    timezone: "Australia/Sydney"
+  - name: "Nambucca"
+    latitude: -30.63333
+    longitude: 152.98333
+    population: 6137
+    dem: 28
+    timezone: "Australia/Sydney"
+  - name: "Muswellbrook"
+    latitude: -32.26118
+    longitude: 150.89009
+    population: 11791
+    dem: 164
+    timezone: "Australia/Sydney"
+  - name: "Murwillumbah"
+    latitude: -28.32732
+    longitude: 153.39339
+    population: 6868
+    dem: 6
+    timezone: "Australia/Sydney"
+  - name: "Mudgee"
+    latitude: -32.59426
+    longitude: 149.5871
+    population: 8726
+    dem: 459
+    timezone: "Australia/Sydney"
+  - name: "Mount Druitt"
+    latitude: -33.76667
+    longitude: 150.81667
+    population: 13582
+    dem: 47
+    timezone: "Australia/Sydney"
+  - name: "Mount Colah"
+    latitude: -33.68333
+    longitude: 151.11667
+    population: 6974
+    dem: 164
+    timezone: "Australia/Sydney"
+  - name: "Moss Vale"
+    latitude: -34.55374
+    longitude: 150.37115
+    population: 6739
+    dem: 678
+    timezone: "Australia/Sydney"
+  - name: "Mosman"
+    latitude: -33.83902
+    longitude: 151.23956
+    population: 26236
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Mortdale"
+    latitude: -33.96897
+    longitude: 151.07231
+    population: 9640
+    dem: 63
+    timezone: "Australia/Sydney"
+  - name: "Moree"
+    latitude: -29.46278
+    longitude: 149.84157
+    population: 8203
+    dem: 212
+    timezone: "Australia/Sydney"
+  - name: "Mittagong"
+    latitude: -34.45002
+    longitude: 150.44572
+    population: 6717
+    dem: 635
+    timezone: "Australia/Sydney"
+  - name: "Miranda"
+    latitude: -34.03857
+    longitude: 151.10005
+    population: 12903
+    dem: 30
+    timezone: "Australia/Sydney"
+  - name: "Merrylands"
+    latitude: -33.83333
+    longitude: 150.98333
+    population: 5803
+    dem: 25
+    timezone: "Australia/Sydney"
+  - name: "Merimbula"
+    latitude: -36.88901
+    longitude: 149.90961
+    population: 6367
+    dem: 4
+    timezone: "Australia/Sydney"
+  - name: "Menai"
+    latitude: -34.01667
+    longitude: 151.01667
+    population: 10781
+    dem: 122
+    timezone: "Australia/Sydney"
+  - name: "Medowie"
+    latitude: -32.7415
+    longitude: 151.8676
+    population: 5841
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Matraville"
+    latitude: -33.96344
+    longitude: 151.23195
+    population: 8788
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Mascot"
+    latitude: -33.92598
+    longitude: 151.19347
+    population: 8518
+    dem: 11
+    timezone: "Australia/Sydney"
+  - name: "Marrickville"
+    latitude: -33.90741
+    longitude: 151.15546
+    population: 23161
+    dem: 1
+    timezone: "Australia/Sydney"
+  - name: "Maroubra"
+    latitude: -33.95
+    longitude: 151.23333
+    population: 26538
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Manly"
+    latitude: -33.79798
+    longitude: 151.28826
+    population: 13949
+    dem: 10
+    timezone: "Australia/Sydney"
+  - name: "Maitland"
+    latitude: -32.73308
+    longitude: 151.5574
+    population: 67132
+    dem: 16
+    timezone: "Australia/Sydney"
+  - name: "Long Jetty"
+    latitude: -33.35917
+    longitude: 151.48834
+    population: 5114
+    dem: 1
+    timezone: "Australia/Sydney"
+  - name: "Liverpool"
+    latitude: -33.91938
+    longitude: 150.92588
+    population: 21317
+    dem: 11
+    timezone: "Australia/Sydney"
+  - name: "Lithgow"
+    latitude: -33.4845
+    longitude: 150.14903
+    population: 11298
+    dem: 916
+    timezone: "Australia/Sydney"
+  - name: "Lismore"
+    latitude: -28.81354
+    longitude: 153.2773
+    population: 30086
+    dem: 11
+    timezone: "Australia/Sydney"
+  - name: "Lisarow"
+    latitude: -33.38333
+    longitude: 151.36667
+    population: 5285
+    dem: 26
+    timezone: "Australia/Sydney"
+  - name: "Lindfield"
+    latitude: -33.78333
+    longitude: 151.16667
+    population: 7351
+    dem: 84
+    timezone: "Australia/Sydney"
+  - name: "Lidcombe"
+    latitude: -33.86436
+    longitude: 151.0397
+    population: 14161
+    dem: 18
+    timezone: "Australia/Sydney"
+  - name: "Leumeah"
+    latitude: -34.05
+    longitude: 150.83333
+    population: 8662
+    dem: 59
+    timezone: "Australia/Sydney"
+  - name: "Leichhardt"
+    latitude: -33.88341
+    longitude: 151.15625
+    population: 12248
+    dem: 44
+    timezone: "Australia/Sydney"
+  - name: "Leeton"
+    latitude: -34.55105
+    longitude: 146.40483
+    population: 7299
+    dem: 148
+    timezone: "Australia/Sydney"
+  - name: "Lavington"
+    latitude: -36.03976
+    longitude: 146.93958
+    population: 12032
+    dem: 194
+    timezone: "Australia/Sydney"
+  - name: "Lakemba"
+    latitude: -33.91972
+    longitude: 151.07592
+    population: 14468
+    dem: 37
+    timezone: "Australia/Sydney"
+  - name: "Lake Albert"
+    latitude: -35.16667
+    longitude: 147.38333
+    population: 5851
+    dem: 204
+    timezone: "Australia/Sydney"
+  - name: "Kurri Kurri"
+    latitude: -32.81933
+    longitude: 151.47908
+    population: 5644
+    dem: 50
+    timezone: "Australia/Sydney"
+  - name: "Kingscliff"
+    latitude: -28.25983
+    longitude: 153.57816
+    population: 6017
+    dem: 31
+    timezone: "Australia/Sydney"
+  - name: "Kiama"
+    latitude: -34.66828
+    longitude: 150.85219
+    population: 12286
+    dem: 19
+    timezone: "Australia/Sydney"
+  - name: "Kenthurst"
+    latitude: -33.65527
+    longitude: 151.00503
+    population: 5250
+    dem: 136
+    timezone: "Australia/Sydney"
+  - name: "Kensington"
+    latitude: -33.92019
+    longitude: 151.22241
+    population: 10847
+    dem: 29
+    timezone: "Australia/Sydney"
+  - name: "Kempsey"
+    latitude: -31.07898
+    longitude: 152.83093
+    population: 9522
+    dem: 12
+    timezone: "Australia/Sydney"
+  - name: "Kelso"
+    latitude: -33.41667
+    longitude: 149.6
+    population: 6298
+    dem: 649
+    timezone: "Australia/Sydney"
+  - name: "Katoomba"
+    latitude: -33.71977
+    longitude: 150.30739
+    population: 18593
+    dem: 991
+    timezone: "Australia/Sydney"
+  - name: "Jannali"
+    latitude: -34.01643
+    longitude: 151.06065
+    population: 5556
+    dem: 92
+    timezone: "Australia/Sydney"
+  - name: "Inverell"
+    latitude: -29.77403
+    longitude: 151.11166
+    population: 8561
+    dem: 588
+    timezone: "Australia/Sydney"
+  - name: "Ingleburn"
+    latitude: -34.0
+    longitude: 150.86667
+    population: 13902
+    dem: 36
+    timezone: "Australia/Sydney"
+  - name: "Hornsby"
+    latitude: -33.70244
+    longitude: 151.09931
+    population: 19863
+    dem: 186
+    timezone: "Australia/Sydney"
+  - name: "Helensburgh"
+    latitude: -34.17836
+    longitude: 150.99522
+    population: 5504
+    dem: 167
+    timezone: "Australia/Sydney"
+  - name: "Heathcote"
+    latitude: -34.0841
+    longitude: 151.01305
+    population: 5851
+    dem: 194
+    timezone: "Australia/Sydney"
+  - name: "Haberfield"
+    latitude: -33.88296
+    longitude: 151.14389
+    population: 6587
+    dem: 6
+    timezone: "Australia/Sydney"
+  - name: "Gunnedah"
+    latitude: -30.98065
+    longitude: 150.25838
+    population: 7148
+    dem: 273
+    timezone: "Australia/Sydney"
+  - name: "Griffith"
+    latitude: -34.28853
+    longitude: 146.05093
+    population: 15455
+    dem: 128
+    timezone: "Australia/Sydney"
+  - name: "Granville"
+    latitude: -33.8406
+    longitude: 151.00748
+    population: 22889
+    dem: 7
+    timezone: "Australia/Sydney"
+  - name: "Grafton"
+    latitude: -29.68104
+    longitude: 152.93394
+    population: 9955
+    dem: 7
+    timezone: "Australia/Sydney"
+  - name: "Goulburn"
+    latitude: -34.75155
+    longitude: 149.72086
+    population: 20940
+    dem: 642
+    timezone: "Australia/Sydney"
+  - name: "Gorokan"
+    latitude: -33.25764
+    longitude: 151.5097
+    population: 7066
+    dem: 11
+    timezone: "Australia/Sydney"
+  - name: "Gordon"
+    latitude: -33.75535
+    longitude: 151.15115
+    population: 7668
+    dem: 121
+    timezone: "Australia/Sydney"
+  - name: "Goonellabah"
+    latitude: -28.81667
+    longitude: 153.31667
+    population: 12137
+    dem: 171
+    timezone: "Australia/Sydney"
+  - name: "Glen Innes"
+    latitude: -29.73485
+    longitude: 151.7385
+    population: 6283
+    dem: 1071
+    timezone: "Australia/Sydney"
+  - name: "Glenhaven"
+    latitude: -33.7
+    longitude: 151.0
+    population: 5620
+    dem: 137
+    timezone: "Australia/Sydney"
+  - name: "Glenfield"
+    latitude: -33.96667
+    longitude: 150.9
+    population: 6758
+    dem: 19
+    timezone: "Australia/Sydney"
+  - name: "Glenbrook"
+    latitude: -33.76667
+    longitude: 150.61667
+    population: 5138
+    dem: 187
+    timezone: "Australia/Sydney"
+  - name: "Forster"
+    latitude: -32.18136
+    longitude: 152.51715
+    population: 17591
+    dem: 7
+    timezone: "Australia/Sydney"
+  - name: "Fairfield"
+    latitude: -33.86667
+    longitude: 150.95
+    population: 18081
+    dem: 26
+    timezone: "Australia/Sydney"
+  - name: "Epping"
+    latitude: -33.77271
+    longitude: 151.08184
+    population: 18969
+    dem: 97
+    timezone: "Australia/Sydney"
+  - name: "Engadine"
+    latitude: -34.06564
+    longitude: 151.01266
+    population: 17937
+    dem: 191
+    timezone: "Australia/Sydney"
+  - name: "Eastwood"
+    latitude: -33.79176
+    longitude: 151.08057
+    population: 17865
+    dem: 74
+    timezone: "Australia/Sydney"
+  - name: "East Maitland"
+    latitude: -32.75
+    longitude: 151.58333
+    population: 11310
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "East Ballina"
+    latitude: -28.85709
+    longitude: 153.58736
+    population: 5474
+    dem: 1
+    timezone: "Australia/Sydney"
+  - name: "Earlwood"
+    latitude: -33.9209
+    longitude: 151.12506
+    population: 16564
+    dem: 1
+    timezone: "Australia/Sydney"
+  - name: "Dubbo"
+    latitude: -32.24295
+    longitude: 148.60484
+    population: 32327
+    dem: 264
+    timezone: "Australia/Sydney"
+  - name: "Doonside"
+    latitude: -33.76667
+    longitude: 150.86667
+    population: 13031
+    dem: 46
+    timezone: "Australia/Sydney"
+  - name: "Deniliquin"
+    latitude: -35.53245
+    longitude: 144.95364
+    population: 8024
+    dem: 93
+    timezone: "Australia/Sydney"
+  - name: "Darlinghurst"
+    latitude: -33.87939
+    longitude: 151.21925
+    population: 10128
+    dem: 53
+    timezone: "Australia/Sydney"
+  - name: "Dapto"
+    latitude: -34.50386
+    longitude: 150.79416
+    population: 10478
+    dem: 13
+    timezone: "Australia/Sydney"
+  - name: "Croydon"
+    latitude: -33.88333
+    longitude: 151.11667
+    population: 9645
+    dem: 22
+    timezone: "Australia/Sydney"
+  - name: "Cronulla"
+    latitude: -34.06251
+    longitude: 151.14961
+    population: 16754
+    dem: 29
+    timezone: "Australia/Sydney"
+  - name: "Cowra"
+    latitude: -33.83554
+    longitude: 148.69663
+    population: 6795
+    dem: 302
+    timezone: "Australia/Sydney"
+  - name: "Corrimal"
+    latitude: -34.37864
+    longitude: 150.90356
+    population: 6534
+    dem: 12
+    timezone: "Australia/Sydney"
+  - name: "Corowa"
+    latitude: -35.99704
+    longitude: 146.38552
+    population: 5178
+    dem: 154
+    timezone: "Australia/Sydney"
+  - name: "Cooma"
+    latitude: -36.23517
+    longitude: 149.12408
+    population: 6520
+    dem: 796
+    timezone: "Australia/Sydney"
+  - name: "Coogee"
+    latitude: -33.9205
+    longitude: 151.25522
+    population: 13179
+    dem: 18
+    timezone: "Australia/Sydney"
+  - name: "Concord"
+    latitude: -33.84722
+    longitude: 151.10381
+    population: 13008
+    dem: 20
+    timezone: "Australia/Sydney"
+  - name: "Coffs Harbour"
+    latitude: -30.29626
+    longitude: 153.11351
+    population: 26353
+    dem: 6
+    timezone: "Australia/Sydney"
+  - name: "Wollongong"
+    latitude: -34.424
+    longitude: 150.89345
+    population: 292190
+    dem: 29
+    timezone: "Australia/Sydney"
+  - name: "Chipping Norton"
+    latitude: -33.91801
+    longitude: 150.95927
+    population: 8579
+    dem: 15
+    timezone: "Australia/Sydney"
+  - name: "Chatswood"
+    latitude: -33.8
+    longitude: 151.18333
+    population: 7777
+    dem: 108
+    timezone: "Australia/Sydney"
+  - name: "Charlestown"
+    latitude: -32.96828
+    longitude: 151.69318
+    population: 11725
+    dem: 21
+    timezone: "Australia/Sydney"
+  - name: "Cessnock"
+    latitude: -32.83211
+    longitude: 151.35623
+    population: 16393
+    dem: 71
+    timezone: "Australia/Sydney"
+  - name: "Castle Hill"
+    latitude: -33.73333
+    longitude: 151.0
+    population: 35389
+    dem: 126
+    timezone: "Australia/Sydney"
+  - name: "Casino"
+    latitude: -28.85819
+    longitude: 153.04748
+    population: 9539
+    dem: 25
+    timezone: "Australia/Sydney"
+  - name: "Carlingford"
+    latitude: -33.78269
+    longitude: 151.04888
+    population: 21364
+    dem: 105
+    timezone: "Australia/Sydney"
+  - name: "Caringbah"
+    latitude: -34.03534
+    longitude: 151.12468
+    population: 21283
+    dem: 56
+    timezone: "Australia/Sydney"
+  - name: "Camperdown"
+    latitude: -33.88965
+    longitude: 151.17642
+    population: 6545
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Campbelltown"
+    latitude: -34.06667
+    longitude: 150.81667
+    population: 8013
+    dem: 84
+    timezone: "Australia/Sydney"
+  - name: "Byron Bay"
+    latitude: -28.64989
+    longitude: 153.61246
+    population: 6764
+    dem: 1
+    timezone: "Australia/Sydney"
+  - name: "Burwood"
+    latitude: -33.88333
+    longitude: 151.1
+    population: 16030
+    dem: 31
+    timezone: "Australia/Sydney"
+  - name: "Bulli"
+    latitude: -34.33834
+    longitude: 150.91347
+    population: 5455
+    dem: 21
+    timezone: "Australia/Sydney"
+  - name: "Broken Hill"
+    latitude: -31.9652
+    longitude: 141.4512
+    population: 18430
+    dem: 317
+    timezone: "Australia/Broken_Hill"
+  - name: "Bowral"
+    latitude: -34.4775
+    longitude: 150.4204
+    population: 9605
+    dem: 679
+    timezone: "Australia/Sydney"
+  - name: "Botany"
+    latitude: -33.94599
+    longitude: 151.19591
+    population: 7455
+    dem: 6
+    timezone: "Australia/Sydney"
+  - name: "Bomaderry"
+    latitude: -34.84967
+    longitude: 150.61093
+    population: 6600
+    dem: 21
+    timezone: "Australia/Sydney"
+  - name: "Blaxland"
+    latitude: -33.75
+    longitude: 150.6
+    population: 6953
+    dem: 120
+    timezone: "Australia/Sydney"
+  - name: "Blacktown"
+    latitude: -33.76667
+    longitude: 150.91667
+    population: 39000
+    dem: 67
+    timezone: "Australia/Sydney"
+  - name: "Berkeley Vale"
+    latitude: -33.35
+    longitude: 151.43333
+    population: 7980
+    dem: 39
+    timezone: "Australia/Sydney"
+  - name: "Berkeley"
+    latitude: -34.48333
+    longitude: 150.85
+    population: 7413
+    dem: 4
+    timezone: "Australia/Sydney"
+  - name: "Baulkham Hills"
+    latitude: -33.75881
+    longitude: 150.99292
+    population: 33945
+    dem: 103
+    timezone: "Australia/Sydney"
+  - name: "Bathurst"
+    latitude: -33.41665
+    longitude: 149.5806
+    population: 33110
+    dem: 670
+    timezone: "Australia/Sydney"
+  - name: "Batemans Bay"
+    latitude: -35.70658
+    longitude: 150.17541
+    population: 10557
+    dem: 7
+    timezone: "Australia/Sydney"
+  - name: "Banora Point"
+    latitude: -28.21298
+    longitude: 153.53634
+    population: 27368
+    dem: 4
+    timezone: "Australia/Sydney"
+  - name: "Bankstown"
+    latitude: -33.91667
+    longitude: 151.03333
+    population: 30572
+    dem: 32
+    timezone: "Australia/Sydney"
+  - name: "Balmain"
+    latitude: -33.85481
+    longitude: 151.1833
+    population: 9783
+    dem: 13
+    timezone: "Australia/Sydney"
+  - name: "Ballina"
+    latitude: -28.86414
+    longitude: 153.56541
+    population: 14242
+    dem: 7
+    timezone: "Australia/Sydney"
+  - name: "Balgowlah"
+    latitude: -33.79494
+    longitude: 151.2572
+    population: 7495
+    dem: 63
+    timezone: "Australia/Sydney"
+  - name: "Auburn"
+    latitude: -33.85
+    longitude: 151.03333
+    population: 33122
+    dem: 26
+    timezone: "Australia/Sydney"
+  - name: "Ashfield"
+    latitude: -33.88834
+    longitude: 151.12274
+    population: 22000
+    dem: 27
+    timezone: "Australia/Sydney"
+  - name: "Artarmon"
+    latitude: -33.81667
+    longitude: 151.18333
+    population: 8642
+    dem: 99
+    timezone: "Australia/Sydney"
+  - name: "Armidale"
+    latitude: -30.50123
+    longitude: 151.66553
+    population: 22673
+    dem: 1053
+    timezone: "Australia/Sydney"
+  - name: "Albury"
+    latitude: -36.07482
+    longitude: 146.92401
+    population: 45627
+    dem: 164
+    timezone: "Australia/Sydney"
+  - name: "Raymond Terrace"
+    latitude: -32.75
+    longitude: 151.75
+    population: 13606
+    dem: -1
+    timezone: "Australia/Sydney"
+  - name: "Gymea"
+    latitude: -34.03637
+    longitude: 151.08528
+    population: 7419
+    dem: 70
+    timezone: "Australia/Sydney"
+  - name: "Kirrawee"
+    latitude: -34.03831
+    longitude: 151.06903
+    population: 8945
+    dem: 92
+    timezone: "Australia/Sydney"
+  - name: "Gymea Bay"
+    latitude: -34.05209
+    longitude: 151.08795
+    population: 7419
+    dem: 66
+    timezone: "Australia/Sydney"
+  - name: "Brighton-Le-Sands"
+    latitude: -33.96009
+    longitude: 151.1511
+    population: 7193
+    dem: 6
+    timezone: "Australia/Sydney"
+  - name: "Blakehurst"
+    latitude: -33.99152
+    longitude: 151.10876
+    population: 5338
+    dem: 46
+    timezone: "Australia/Sydney"
+  - name: "Lugarno"
+    latitude: -33.98267
+    longitude: 151.04184
+    population: 5707
+    dem: 55
+    timezone: "Australia/Sydney"
+  - name: "Fairy Meadow"
+    latitude: -34.39303
+    longitude: 150.89275
+    population: 6424
+    dem: 13
+    timezone: "Australia/Sydney"
+  - name: "Bellevue Hill"
+    latitude: -33.87899
+    longitude: 151.25101
+    population: 9447
+    dem: 72
+    timezone: "Australia/Sydney"
+  - name: "Paddington"
+    latitude: -33.88419
+    longitude: 151.23151
+    population: 11661
+    dem: 51
+    timezone: "Australia/Sydney"
+  - name: "Lilyfield"
+    latitude: -33.87499
+    longitude: 151.1653
+    population: 6759
+    dem: 20
+    timezone: "Australia/Sydney"
+  - name: "Drummoyne"
+    latitude: -33.85237
+    longitude: 151.15491
+    population: 10385
+    dem: 27
+    timezone: "Australia/Sydney"
+  - name: "Greenwich"
+    latitude: -33.83954
+    longitude: 151.183
+    population: 5053
+    dem: 32
+    timezone: "Australia/Sydney"
+  - name: "Hunters Hill"
+    latitude: -33.83432
+    longitude: 151.1459
+    population: 9024
+    dem: 37
+    timezone: "Australia/Sydney"
+  - name: "Cammeray"
+    latitude: -33.82132
+    longitude: 151.21609
+    population: 6693
+    dem: 74
+    timezone: "Australia/Sydney"
+  - name: "Neutral Bay"
+    latitude: -33.83784
+    longitude: 151.2175
+    population: 10276
+    dem: 43
+    timezone: "Australia/Sydney"
+  - name: "Randwick"
+    latitude: -33.91439
+    longitude: 151.24895
+    population: 25819
+    dem: 40
+    timezone: "Australia/Sydney"
+  - name: "Bronte"
+    latitude: -33.90198
+    longitude: 151.26556
+    population: 6120
+    dem: 36
+    timezone: "Australia/Sydney"
+  - name: "Bondi"
+    latitude: -33.89429
+    longitude: 151.26444
+    population: 10373
+    dem: 76
+    timezone: "Australia/Sydney"
+  - name: "Gladesville"
+    latitude: -33.83333
+    longitude: 151.13333
+    population: 10835
+    dem: 28
+    timezone: "Australia/Sydney"
+  - name: "Forestville"
+    latitude: -33.76667
+    longitude: 151.20833
+    population: 7803
+    dem: 110
+    timezone: "Australia/Sydney"
+  - name: "Dee Why"
+    latitude: -33.7511
+    longitude: 151.28886
+    population: 17463
+    dem: -9999
+    timezone: "Australia/Sydney"
+  - name: "Umina"
+    latitude: -33.52314
+    longitude: 151.31325
+    population: 16059
+    dem: 10
+    timezone: "Australia/Sydney"
+  - name: "Kingsford"
+    latitude: -33.92399
+    longitude: 151.22749
+    population: 14232
+    dem: 29
+    timezone: "Australia/Sydney"
+  - name: "Woollahra"
+    latitude: -33.8878
+    longitude: 151.23681
+    population: 7300
+    dem: 67
+    timezone: "Australia/Sydney"
+  - name: "Corlette"
+    latitude: -32.72014
+    longitude: 152.10846
+    population: 5115
+    dem: 16
+    timezone: "Australia/Sydney"
+  - name: "North Narrabeen"
+    latitude: -33.70935
+    longitude: 151.29607
+    population: 5280
+    dem: 5
+    timezone: "Australia/Sydney"
+  - name: "Arncliffe"
+    latitude: -33.93627
+    longitude: 151.14819
+    population: 8420
+    dem: 19
+    timezone: "Australia/Sydney"
+  - name: "East Lismore"
+    latitude: -28.82591
+    longitude: 153.2888
+    population: 5209
+    dem: 29
+    timezone: "Australia/Sydney"
+  - name: "Freshwater"
+    latitude: -33.77867
+    longitude: 151.28569
+    population: 7872
+    elevation: 10
+    dem: 18
+    timezone: "Australia/Sydney"
+  - name: "Canterbury"
+    latitude: -33.91192
+    longitude: 151.11862
+    population: 5417
+    dem: 13
+    timezone: "Australia/Sydney"
+  - name: "North Ryde"
+    latitude: -33.79677
+    longitude: 151.12436
+    population: 17208
+    dem: 79
+    timezone: "Australia/Sydney"
+  - name: "Rouse Hill"
+    latitude: -33.68207
+    longitude: 150.9154
+    population: 6474
+    dem: 53
+    timezone: "Australia/Sydney"
+  - name: "Parramatta"
+    latitude: -33.8178
+    longitude: 151.00348
+    population: 18448
+    dem: 26
+    timezone: "Australia/Sydney"
+  - name: "Toormina"
+    latitude: -30.35384
+    longitude: 153.08843
+    population: 6551
+    dem: 16
+    timezone: "Australia/Sydney"
+  - name: "Glenmore Park"
+    latitude: -33.79068
+    longitude: 150.6693
+    population: 19200
+    dem: 48
+    timezone: "Australia/Sydney"
+  - name: "Eleebana"
+    latitude: -32.9896
+    longitude: 151.63642
+    population: 5859
+    dem: 11
+    timezone: "Australia/Sydney"
+  - name: "Summer Hill"
+    latitude: -33.89146
+    longitude: 151.13825
+    population: 6130
+    dem: 20
+    timezone: "Australia/Sydney"
+  - name: "Bateau Bay"
+    latitude: -33.38334
+    longitude: 151.46671
+    population: 11759
+    dem: 35
+    timezone: "Australia/Sydney"
+  - name: "Bossley Park"
+    latitude: -33.86184
+    longitude: 150.8841
+    population: 14585
+    dem: 55
+    timezone: "Australia/Sydney"
+  - name: "Kellyville"
+    latitude: -33.71028
+    longitude: 150.95095
+    population: 27971
+    dem: 67
+    timezone: "Australia/Sydney"
+  - name: "Cherrybrook"
+    latitude: -33.72197
+    longitude: 151.04607
+    population: 18778
+    dem: 157
+    timezone: "Australia/Sydney"
+  - name: "Prestons"
+    latitude: -33.94185
+    longitude: 150.8717
+    population: 15313
+    dem: 32
+    timezone: "Australia/Sydney"
+  - name: "Cabramatta"
+    latitude: -33.89743
+    longitude: 150.93446
+    population: 21783
+    dem: 18
+    timezone: "Australia/Sydney"
+  - name: "Campsie"
+    latitude: -33.9125
+    longitude: 151.10279
+    population: 24541
+    dem: 34
+    timezone: "Australia/Sydney"
+  - name: "Casula"
+    latitude: -33.95222
+    longitude: 150.89949
+    population: 14696
+    dem: 49
+    timezone: "Australia/Sydney"
+  - name: "Glendenning"
+    latitude: -33.7483
+    longitude: 150.85411
+    population: 5026
+    dem: 36
+    timezone: "Australia/Sydney"
+  - name: "Greystanes"
+    latitude: -33.82346
+    longitude: 150.94607
+    population: 21703
+    dem: 73
+    timezone: "Australia/Sydney"
+  - name: "Yagoona"
+    latitude: -33.9049
+    longitude: 151.01996
+    population: 16003
+    dem: 49
+    timezone: "Australia/Sydney"
+  - name: "Dulwich Hill"
+    latitude: -33.9041
+    longitude: 151.13945
+    population: 12981
+    dem: 31
+    timezone: "Australia/Sydney"
+  - name: "Punchbowl"
+    latitude: -33.92893
+    longitude: 151.05111
+    population: 20236
+    dem: 19
+    timezone: "Australia/Sydney"
+  - name: "St Clair"
+    latitude: -33.79728
+    longitude: 150.7847
+    population: 19837
+    dem: 49
+    timezone: "Australia/Sydney"
+  - name: "Beaumont Hills"
+    latitude: -33.69993
+    longitude: 150.9411
+    population: 5817
+    dem: 58
+    timezone: "Australia/Sydney"
+  - name: "Bondi Junction"
+    latitude: -33.89275
+    longitude: 151.24723
+    population: 8660
+    dem: 94
+    timezone: "Australia/Sydney"
+  - name: "Beecroft"
+    latitude: -33.74954
+    longitude: 151.0648
+    population: 8836
+    dem: 149
+    timezone: "Australia/Sydney"
+  - name: "Lane Cove North"
+    latitude: -33.80543
+    longitude: 151.16638
+    population: 9337
+    dem: 64
+    timezone: "Australia/Sydney"
+  - name: "Allambie Heights"
+    latitude: -33.76655
+    longitude: 151.24981
+    population: 6742
+    dem: 117
+    timezone: "Australia/Sydney"
+  - name: "Belfield"
+    latitude: -33.90354
+    longitude: 151.08467
+    population: 6043
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Berala"
+    latitude: -33.87197
+    longitude: 151.03386
+    population: 8799
+    dem: 24
+    timezone: "Australia/Sydney"
+  - name: "Berowra Heights"
+    latitude: -33.61211
+    longitude: 151.13754
+    population: 5104
+    dem: 218
+    timezone: "Australia/Sydney"
+  - name: "Bondi Beach"
+    latitude: -33.89079
+    longitude: 151.27852
+    population: 10748
+    dem: 9
+    timezone: "Australia/Sydney"
+  - name: "Cabramatta West"
+    latitude: -33.89303
+    longitude: 150.9119
+    population: 6767
+    dem: 46
+    timezone: "Australia/Sydney"
+  - name: "Cambridge Park"
+    latitude: -33.74784
+    longitude: 150.72208
+    population: 6160
+    dem: 55
+    timezone: "Australia/Sydney"
+  - name: "Caringbah South"
+    latitude: -34.05662
+    longitude: 151.12149
+    population: 11605
+    dem: 64
+    timezone: "Australia/Sydney"
+  - name: "Concord West"
+    latitude: -33.84809
+    longitude: 151.08609
+    population: 5850
+    dem: 16
+    timezone: "Australia/Sydney"
+  - name: "Ermington"
+    latitude: -33.81483
+    longitude: 151.05467
+    population: 9470
+    dem: 39
+    timezone: "Australia/Sydney"
+  - name: "Fairfield East"
+    latitude: -33.86938
+    longitude: 150.97129
+    population: 5074
+    dem: 17
+    timezone: "Australia/Sydney"
+  - name: "Fairfield Heights"
+    latitude: -33.86445
+    longitude: 150.93884
+    population: 6649
+    dem: 36
+    timezone: "Australia/Sydney"
+  - name: "Fairlight"
+    latitude: -33.79575
+    longitude: 151.27346
+    population: 5489
+    dem: 62
+    timezone: "Australia/Sydney"
+  - name: "Harris Park"
+    latitude: -33.82285
+    longitude: 151.00781
+    population: 5072
+    dem: 21
+    timezone: "Australia/Sydney"
+  - name: "Hornsby Heights"
+    latitude: -33.6713
+    longitude: 151.09428
+    population: 6192
+    dem: 185
+    timezone: "Australia/Sydney"
+  - name: "Hurstville"
+    latitude: -33.9677
+    longitude: 151.10149
+    population: 29822
+    dem: 80
+    timezone: "Australia/Sydney"
+  - name: "Killara"
+    latitude: -33.76604
+    longitude: 151.16213
+    population: 9284
+    dem: 116
+    timezone: "Australia/Sydney"
+  - name: "Kingswood Park"
+    latitude: -33.76651
+    longitude: 150.7144
+    population: 11813
+    dem: 54
+    timezone: "Australia/Sydney"
+  - name: "Macquarie Park"
+    latitude: -33.775
+    longitude: 151.11248
+    population: 6143
+    dem: 77
+    timezone: "Australia/Sydney"
+  - name: "Marsfield"
+    latitude: -33.77784
+    longitude: 151.10574
+    population: 12347
+    dem: 91
+    timezone: "Australia/Sydney"
+  - name: "Narellan Vale"
+    latitude: -34.04974
+    longitude: 150.74392
+    population: 6962
+    dem: 95
+    timezone: "Australia/Sydney"
+  - name: "Narraweena"
+    latitude: -33.75519
+    longitude: 151.27659
+    population: 5470
+    dem: 79
+    timezone: "Australia/Sydney"
+  - name: "North Bondi"
+    latitude: -33.88787
+    longitude: 151.28075
+    population: 8550
+    dem: 20
+    timezone: "Australia/Sydney"
+  - name: "South Coogee"
+    latitude: -33.93106
+    longitude: 151.25599
+    population: 5367
+    dem: 55
+    timezone: "Australia/Sydney"
+  - name: "South Windsor"
+    latitude: -33.61808
+    longitude: 150.80443
+    population: 5879
+    dem: 26
+    timezone: "Australia/Sydney"
+  - name: "Stanhope Gardens"
+    latitude: -33.72206
+    longitude: 150.92597
+    population: 7671
+    dem: 63
+    timezone: "Australia/Sydney"
+  - name: "Telopea"
+    latitude: -33.79279
+    longitude: 151.03858
+    population: 5177
+    dem: 59
+    timezone: "Australia/Sydney"
+  - name: "West Pennant Hills"
+    latitude: -33.7457
+    longitude: 151.04764
+    population: 15967
+    dem: 167
+    timezone: "Australia/Sydney"
+  - name: "West Ryde"
+    latitude: -33.80543
+    longitude: 151.07386
+    population: 11867
+    dem: 31
+    timezone: "Australia/Sydney"
+  - name: "Wollstonecraft"
+    latitude: -33.8328
+    longitude: 151.18981
+    population: 8012
+    dem: 46
+    timezone: "Australia/Sydney"
+  - name: "Elermore Vale"
+    latitude: -32.91621
+    longitude: 151.67665
+    population: 5186
+    dem: 33
+    timezone: "Australia/Sydney"
+  - name: "Mayfield"
+    latitude: -32.89793
+    longitude: 151.73613
+    population: 12248
+    dem: 10
+    timezone: "Australia/Sydney"
+  - name: "Belmont North"
+    latitude: -33.02081
+    longitude: 151.66849
+    population: 6481
+    dem: 27
+    timezone: "Australia/Sydney"
+  - name: "Toronto"
+    latitude: -33.01357
+    longitude: 151.59373
+    population: 5433
+    dem: 18
+    timezone: "Australia/Sydney"
+  - name: "Albion Park Rail"
+    latitude: -34.56634
+    longitude: 150.79177
+    population: 6937
+    dem: 14
+    timezone: "Australia/Sydney"
+  - name: "Barrack Heights"
+    latitude: -34.56464
+    longitude: 150.85692
+    population: 6160
+    dem: 16
+    timezone: "Australia/Sydney"
+  - name: "Cordeaux Heights"
+    latitude: -34.44043
+    longitude: 150.83748
+    population: 5067
+    dem: 31
+    timezone: "Australia/Sydney"
+  - name: "Tweed Heads West"
+    latitude: -28.18736
+    longitude: 153.52278
+    population: 5823
+    dem: 3
+    timezone: "Australia/Sydney"
+  - name: "South Tamworth"
+    latitude: -31.11
+    longitude: 150.92254
+    population: 6741
+    dem: 394
+    timezone: "Australia/Sydney"
+  - name: "East Albury"
+    latitude: -36.08144
+    longitude: 146.92991
+    population: 6247
+    dem: 179
+    timezone: "Australia/Sydney"
+  - name: "North Albury"
+    latitude: -36.05745
+    longitude: 146.92995
+    population: 6089
+    dem: 177
+    timezone: "Australia/Sydney"
+- name: "Australian Capital Territory"
+  cities:
+  - name: "Canberra"
+    latitude: -35.28346
+    longitude: 149.12807
+    population: 367752
+    dem: 571
+    timezone: "Australia/Sydney"
+  - name: "Kaleen"
+    latitude: -35.21814
+    longitude: 149.10516
+    population: 7586
+    dem: 599
+    timezone: "Australia/Sydney"
+- name: "State of Queensland"
+  cities:
+  - name: "Mount Isa"
+    latitude: -20.72523
+    longitude: 139.49727
+    population: 22785
+    dem: 363
+    timezone: "Australia/Brisbane"
+  - name: "Yeppoon"
+    latitude: -23.12683
+    longitude: 150.74406
+    population: 13285
+    dem: 30
+    timezone: "Australia/Brisbane"
+  - name: "Wynnum"
+    latitude: -27.44527
+    longitude: 153.15813
+    population: 11719
+    dem: 29
+    timezone: "Australia/Brisbane"
+  - name: "Woodridge"
+    latitude: -27.63333
+    longitude: 153.1
+    population: 20650
+    dem: 40
+    timezone: "Australia/Brisbane"
+  - name: "Wellington Point"
+    latitude: -27.48333
+    longitude: 153.25
+    population: 10713
+    dem: 2
+    timezone: "Australia/Brisbane"
+  - name: "Warwick"
+    latitude: -28.21901
+    longitude: 152.03438
+    population: 12562
+    dem: 462
+    timezone: "Australia/Brisbane"
+  - name: "Victoria Point"
+    latitude: -27.58329
+    longitude: 153.31172
+    population: 13755
+    dem: 7
+    timezone: "Australia/Brisbane"
+  - name: "Urangan"
+    latitude: -25.29214
+    longitude: 152.90535
+    population: 8007
+    dem: 11
+    timezone: "Australia/Brisbane"
+  - name: "Upper Coomera"
+    latitude: -27.87683
+    longitude: 153.28572
+    population: 6029
+    dem: 45
+    timezone: "Australia/Brisbane"
+  - name: "Townsville"
+    latitude: -19.26639
+    longitude: 146.80569
+    population: 196219
+    dem: 15
+    timezone: "Australia/Brisbane"
+  - name: "Torquay"
+    latitude: -25.28496
+    longitude: 152.87886
+    population: 5693
+    dem: 4
+    timezone: "Australia/Brisbane"
+  - name: "Toowoomba"
+    latitude: -27.56056
+    longitude: 151.95386
+    population: 131258
+    dem: 599
+    timezone: "Australia/Brisbane"
+  - name: "Tewantin"
+    latitude: -26.39104
+    longitude: 153.03432
+    population: 10660
+    dem: 15
+    timezone: "Australia/Brisbane"
+  - name: "Tarragindi"
+    latitude: -27.52713
+    longitude: 153.04556
+    population: 9439
+    dem: 49
+    timezone: "Australia/Brisbane"
+  - name: "Surfers Paradise"
+    latitude: -28.00274
+    longitude: 153.42999
+    population: 18501
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Sunnybank"
+    latitude: -27.58003
+    longitude: 153.06064
+    population: 16442
+    dem: 44
+    timezone: "Australia/Brisbane"
+  - name: "Strathpine"
+    latitude: -27.30414
+    longitude: 152.98977
+    population: 9532
+    dem: 8
+    timezone: "Australia/Brisbane"
+  - name: "Southport"
+    latitude: -27.96724
+    longitude: 153.39796
+    population: 28315
+    dem: 7
+    timezone: "Australia/Brisbane"
+  - name: "Slacks Creek"
+    latitude: -27.65
+    longitude: 153.15
+    population: 5965
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Roma"
+    latitude: -26.56741
+    longitude: 148.78751
+    population: 5496
+    dem: 301
+    timezone: "Australia/Brisbane"
+  - name: "Rockhampton"
+    latitude: -23.38032
+    longitude: 150.50595
+    population: 61724
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Redlynch"
+    latitude: -16.9254
+    longitude: 145.69559
+    population: 6069
+    dem: 6
+    timezone: "Australia/Brisbane"
+  - name: "Red Hill"
+    latitude: -20.31667
+    longitude: 148.5
+    population: 5406
+    dem: 32
+    timezone: "Australia/Brisbane"
+  - name: "Palm Beach"
+    latitude: -28.11694
+    longitude: 153.46584
+    population: 13494
+    dem: 0
+    timezone: "Australia/Brisbane"
+  - name: "Noosaville"
+    latitude: -26.4
+    longitude: 153.06667
+    population: 6528
+    dem: 6
+    timezone: "Australia/Brisbane"
+  - name: "Nerang"
+    latitude: -27.98941
+    longitude: 153.33633
+    population: 16256
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Narangba"
+    latitude: -27.20338
+    longitude: 152.95923
+    population: 16223
+    dem: 48
+    timezone: "Australia/Brisbane"
+  - name: "Nambour"
+    latitude: -26.62613
+    longitude: 152.95941
+    population: 10221
+    dem: 19
+    timezone: "Australia/Brisbane"
+  - name: "Morayfield"
+    latitude: -27.10876
+    longitude: 152.94907
+    population: 18020
+    dem: 8
+    timezone: "Australia/Brisbane"
+  - name: "Mooloolaba"
+    latitude: -26.68164
+    longitude: 153.11925
+    population: 7376
+    dem: 7
+    timezone: "Australia/Brisbane"
+  - name: "Maryborough"
+    latitude: -25.54073
+    longitude: 152.70493
+    population: 21501
+    dem: 11
+    timezone: "Australia/Brisbane"
+  - name: "Margate"
+    latitude: -27.24761
+    longitude: 153.09809
+    population: 6564
+    dem: 16
+    timezone: "Australia/Brisbane"
+  - name: "Mareeba"
+    latitude: -16.99096
+    longitude: 145.42306
+    population: 8403
+    dem: 408
+    timezone: "Australia/Brisbane"
+  - name: "Mackay"
+    latitude: -21.15345
+    longitude: 149.16554
+    population: 74219
+    dem: 11
+    timezone: "Australia/Brisbane"
+  - name: "Kingaroy"
+    latitude: -26.53994
+    longitude: 151.8373
+    population: 8573
+    dem: 433
+    timezone: "Australia/Brisbane"
+  - name: "Innisfail"
+    latitude: -17.52209
+    longitude: 146.03102
+    population: 8262
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Ingham"
+    latitude: -18.64552
+    longitude: 146.16248
+    population: 6127
+    dem: 16
+    timezone: "Australia/Brisbane"
+  - name: "Gympie"
+    latitude: -26.18979
+    longitude: 152.66499
+    population: 11027
+    dem: 69
+    timezone: "Australia/Brisbane"
+  - name: "Goondiwindi"
+    latitude: -28.54709
+    longitude: 150.30546
+    population: 5629
+    dem: 220
+    timezone: "Australia/Brisbane"
+  - name: "Goodna"
+    latitude: -27.61046
+    longitude: 152.89896
+    population: 7939
+    dem: 22
+    timezone: "Australia/Brisbane"
+  - name: "Gold Coast"
+    latitude: -28.00029
+    longitude: 153.43088
+    population: 591473
+    dem: 12
+    timezone: "Australia/Brisbane"
+  - name: "Gladstone"
+    latitude: -23.84852
+    longitude: 151.25775
+    population: 30489
+    dem: 21
+    timezone: "Australia/Brisbane"
+  - name: "Gatton"
+    latitude: -27.55873
+    longitude: 152.27618
+    population: 6513
+    dem: 110
+    timezone: "Australia/Brisbane"
+  - name: "Emerald"
+    latitude: -23.52296
+    longitude: 148.15784
+    population: 9398
+    dem: 180
+    timezone: "Australia/Brisbane"
+  - name: "Eight Mile Plains"
+    latitude: -27.58333
+    longitude: 153.1
+    population: 15322
+    dem: 35
+    timezone: "Australia/Brisbane"
+  - name: "Deception Bay"
+    latitude: -27.19354
+    longitude: 153.02631
+    population: 16090
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Dalby"
+    latitude: -27.18169
+    longitude: 151.26205
+    population: 9847
+    dem: 343
+    timezone: "Australia/Brisbane"
+  - name: "Coorparoo"
+    latitude: -27.49325
+    longitude: 153.05826
+    population: 14944
+    dem: 9
+    timezone: "Australia/Brisbane"
+  - name: "Coolum Beach"
+    latitude: -26.5283
+    longitude: 153.08809
+    population: 8555
+    dem: 8
+    timezone: "Australia/Brisbane"
+  - name: "Cleveland"
+    latitude: -27.52677
+    longitude: 153.26516
+    population: 13776
+    dem: 12
+    timezone: "Australia/Brisbane"
+  - name: "Charters Towers"
+    latitude: -20.07671
+    longitude: 146.26353
+    population: 9573
+    dem: 319
+    timezone: "Australia/Brisbane"
+  - name: "Caloundra"
+    latitude: -26.80346
+    longitude: 153.12195
+    population: 38706
+    dem: 8
+    timezone: "Australia/Brisbane"
+  - name: "Cairns"
+    latitude: -16.92366
+    longitude: 145.76613
+    population: 153075
+    dem: 1
+    timezone: "Australia/Brisbane"
+  - name: "Caboolture"
+    latitude: -27.08465
+    longitude: 152.9511
+    population: 21478
+    dem: 21
+    timezone: "Australia/Brisbane"
+  - name: "Burpengary"
+    latitude: -27.15746
+    longitude: 152.95758
+    population: 8280
+    dem: 18
+    timezone: "Australia/Brisbane"
+  - name: "Bundamba"
+    latitude: -27.60947
+    longitude: 152.81133
+    population: 5159
+    dem: 26
+    timezone: "Australia/Brisbane"
+  - name: "Bundaberg"
+    latitude: -24.86621
+    longitude: 152.3479
+    population: 70826
+    dem: 17
+    timezone: "Australia/Brisbane"
+  - name: "Buderim"
+    latitude: -26.68443
+    longitude: 153.05705
+    population: 15228
+    dem: 153
+    timezone: "Australia/Brisbane"
+  - name: "Brisbane"
+    latitude: -27.46794
+    longitude: 153.02809
+    population: 2189878
+    dem: 27
+    timezone: "Australia/Brisbane"
+  - name: "Brighton"
+    latitude: -27.29582
+    longitude: 153.05721
+    population: 8600
+    dem: 7
+    timezone: "Australia/Brisbane"
+  - name: "Bowen"
+    latitude: -20.01367
+    longitude: 148.24754
+    population: 10983
+    dem: 10
+    timezone: "Australia/Brisbane"
+  - name: "Bongaree"
+    latitude: -27.08367
+    longitude: 153.15942
+    population: 13649
+    dem: 6
+    timezone: "Australia/Brisbane"
+  - name: "Blackwater"
+    latitude: -23.58351
+    longitude: 148.87912
+    population: 7250
+    dem: 184
+    timezone: "Australia/Brisbane"
+  - name: "Biloela"
+    latitude: -24.39589
+    longitude: 150.51504
+    population: 6309
+    dem: 193
+    timezone: "Australia/Brisbane"
+  - name: "Beenleigh"
+    latitude: -27.71137
+    longitude: 153.2029
+    population: 8244
+    dem: 17
+    timezone: "Australia/Brisbane"
+  - name: "Ayr"
+    latitude: -19.57393
+    longitude: 147.40666
+    population: 9078
+    dem: 15
+    timezone: "Australia/Brisbane"
+  - name: "Atherton"
+    latitude: -17.26864
+    longitude: 145.47522
+    population: 6959
+    dem: 765
+    timezone: "Australia/Brisbane"
+  - name: "South Brisbane"
+    latitude: -27.48034
+    longitude: 153.02049
+    population: 60000
+    dem: 15
+    timezone: "Australia/Brisbane"
+  - name: "Scarborough"
+    latitude: -27.20118
+    longitude: 153.10939
+    population: 9837
+    dem: 14
+    timezone: "Australia/Brisbane"
+  - name: "Hervey Bay"
+    latitude: -25.28762
+    longitude: 152.76936
+    population: 52230
+    dem: 9
+    timezone: "Australia/Brisbane"
+  - name: "Moranbah"
+    latitude: -22.00163
+    longitude: 148.04661
+    population: 10000
+    dem: 257
+    timezone: "Australia/Brisbane"
+  - name: "Paradise Point"
+    latitude: -27.88663
+    longitude: 153.3933
+    population: 6000
+    dem: 4
+    timezone: "Australia/Brisbane"
+  - name: "Taringa"
+    latitude: -27.49061
+    longitude: 152.97861
+    population: 7490
+    dem: 36
+    timezone: "Australia/Brisbane"
+  - name: "Inala"
+    latitude: -27.59715
+    longitude: 152.97432
+    population: 12568
+    dem: 40
+    timezone: "Australia/Brisbane"
+  - name: "Wooloowin"
+    latitude: -27.42244
+    longitude: 153.04204
+    population: 5486
+    dem: 24
+    timezone: "Australia/Brisbane"
+  - name: "Zillmere"
+    latitude: -27.35591
+    longitude: 153.04453
+    population: 7467
+    dem: 26
+    timezone: "Australia/Brisbane"
+  - name: "Taigum"
+    latitude: -27.34265
+    longitude: 153.04444
+    population: 5164
+    dem: 21
+    timezone: "Australia/Brisbane"
+  - name: "Bracken Ridge"
+    latitude: -27.3171
+    longitude: 153.03097
+    population: 15355
+    dem: 27
+    timezone: "Australia/Brisbane"
+  - name: "Windsor"
+    latitude: -27.43631
+    longitude: 153.02882
+    population: 6164
+    dem: 29
+    timezone: "Australia/Brisbane"
+  - name: "Bridegman Downs"
+    latitude: -27.35538
+    longitude: 152.99432
+    population: 7455
+    dem: 46
+    timezone: "Australia/Brisbane"
+  - name: "Tamborine Mountain"
+    latitude: -27.96954
+    longitude: 153.19937
+    population: 6535
+    dem: 525
+    timezone: "Australia/Brisbane"
+  - name: "Logan City"
+    latitude: -27.63917
+    longitude: 153.10944
+    population: 282673
+    dem: 39
+    timezone: "Australia/Brisbane"
+  - name: "Carindale"
+    latitude: -27.50578
+    longitude: 153.10236
+    population: 15135
+    dem: 14
+    timezone: "Australia/Brisbane"
+  - name: "Springwood"
+    latitude: -27.61183
+    longitude: 153.12899
+    population: 8952
+    dem: 46
+    timezone: "Australia/Brisbane"
+  - name: "Varsity Lakes"
+    latitude: -28.0894
+    longitude: 153.4122
+    population: 11796
+    dem: 5
+    timezone: "Australia/Brisbane"
+  - name: "Oxenford"
+    latitude: -27.89033
+    longitude: 153.31309
+    population: 9007
+    dem: 8
+    timezone: "Australia/Brisbane"
+  - name: "Booval"
+    latitude: -27.61328
+    longitude: 152.78944
+    population: 20540
+    dem: 34
+    timezone: "Australia/Brisbane"
+  - name: "Brassall"
+    latitude: -27.59753
+    longitude: 152.74755
+    population: 8320
+    dem: 25
+    timezone: "Australia/Brisbane"
+  - name: "Raceview"
+    latitude: -27.63472
+    longitude: 152.77519
+    population: 6896
+    dem: 44
+    timezone: "Australia/Brisbane"
+  - name: "Flinders View"
+    latitude: -27.65046
+    longitude: 152.77451
+    population: 5005
+    dem: 56
+    timezone: "Australia/Brisbane"
+  - name: "Redbank Plains"
+    latitude: -27.64613
+    longitude: 152.85965
+    population: 9083
+    dem: 57
+    timezone: "Australia/Brisbane"
+  - name: "Collingwood Park"
+    latitude: -27.61282
+    longitude: 152.86008
+    population: 5305
+    dem: 31
+    timezone: "Australia/Brisbane"
+  - name: "Clontarf"
+    latitude: -27.25341
+    longitude: 153.07835
+    population: 7723
+    dem: 11
+    timezone: "Australia/Brisbane"
+  - name: "Murrumba Downs"
+    latitude: -27.26733
+    longitude: 153.01053
+    population: 9393
+    dem: 25
+    timezone: "Australia/Brisbane"
+  - name: "Little Mountain"
+    latitude: -26.78436
+    longitude: 153.09218
+    population: 9045
+    dem: 48
+    timezone: "Australia/Brisbane"
+  - name: "Annerley"
+    latitude: -27.51228
+    longitude: 153.03248
+    population: 10664
+    dem: 43
+    timezone: "Australia/Brisbane"
+  - name: "Wavell Heights"
+    latitude: -27.39385
+    longitude: 153.04698
+    population: 9435
+    dem: 41
+    timezone: "Australia/Brisbane"
+  - name: "Kirwan"
+    latitude: -19.30323
+    longitude: 146.72531
+    population: 21416
+    dem: 15
+    timezone: "Australia/Brisbane"
+  - name: "Bald Hills"
+    latitude: -27.32112
+    longitude: 153.00857
+    population: 5965
+    dem: 18
+    timezone: "Australia/Brisbane"
+  - name: "Ascot"
+    latitude: -27.43154
+    longitude: 153.058
+    population: 5730
+    dem: 30
+    timezone: "Australia/Brisbane"
+  - name: "Chermside West"
+    latitude: -27.38383
+    longitude: 153.01586
+    population: 6121
+    dem: 44
+    timezone: "Australia/Brisbane"
+  - name: "Everton Park"
+    latitude: -27.40732
+    longitude: 152.9884
+    population: 8325
+    dem: 45
+    timezone: "Australia/Brisbane"
+  - name: "Stafford"
+    latitude: -27.41044
+    longitude: 153.01105
+    population: 6041
+    dem: 24
+    timezone: "Australia/Brisbane"
+  - name: "Stafford Heights"
+    latitude: -27.39354
+    longitude: 153.0105
+    population: 6780
+    dem: 46
+    timezone: "Australia/Brisbane"
+  - name: "Forest Lake"
+    latitude: -27.62563
+    longitude: 152.96883
+    population: 22426
+    dem: 57
+    timezone: "Australia/Brisbane"
+  - name: "Greenslopes"
+    latitude: -27.50815
+    longitude: 153.04951
+    population: 8565
+    dem: 20
+    timezone: "Australia/Brisbane"
+  - name: "Mansfield"
+    latitude: -27.53929
+    longitude: 153.09895
+    population: 8473
+    dem: 40
+    timezone: "Australia/Brisbane"
+  - name: "Mount Gravatt East"
+    latitude: -27.5405
+    longitude: 153.08221
+    population: 10891
+    dem: 46
+    timezone: "Australia/Brisbane"
+  - name: "Sunnybank Hills"
+    latitude: -27.61025
+    longitude: 153.05388
+    population: 16830
+    dem: 85
+    timezone: "Australia/Brisbane"
+  - name: "Upper Mount Gravatt"
+    latitude: -27.56128
+    longitude: 153.08453
+    population: 8851
+    dem: 63
+    timezone: "Australia/Brisbane"
+  - name: "Yeronga"
+    latitude: -27.51571
+    longitude: 153.01642
+    population: 5540
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Camp Hill"
+    latitude: -27.49354
+    longitude: 153.07629
+    population: 10533
+    dem: 49
+    timezone: "Australia/Brisbane"
+  - name: "Manly West"
+    latitude: -27.47382
+    longitude: 153.16641
+    population: 11195
+    dem: 29
+    timezone: "Australia/Brisbane"
+  - name: "Morningside"
+    latitude: -27.46165
+    longitude: 153.07511
+    population: 9399
+    dem: 13
+    timezone: "Australia/Brisbane"
+  - name: "Wynnum West"
+    latitude: -27.45824
+    longitude: 153.15319
+    population: 11745
+    dem: 11
+    timezone: "Australia/Brisbane"
+  - name: "Springfield"
+    latitude: -27.65365
+    longitude: 152.91716
+    population: 6618
+    dem: 69
+    timezone: "Australia/Brisbane"
+  - name: "Rochedale South"
+    latitude: -27.59521
+    longitude: 153.12332
+    population: 14996
+    dem: 59
+    timezone: "Australia/Brisbane"
+  - name: "Waterford West"
+    latitude: -27.69056
+    longitude: 153.13319
+    population: 6160
+    dem: 18
+    timezone: "Australia/Brisbane"
+  - name: "Ferny Hills"
+    latitude: -27.39594
+    longitude: 152.93737
+    population: 8721
+    dem: 80
+    timezone: "Australia/Brisbane"
+  - name: "Samford Valley"
+    latitude: -27.3727
+    longitude: 152.86699
+    population: 10931
+    dem: 60
+    timezone: "Australia/Brisbane"
+  - name: "Burleigh Waters"
+    latitude: -28.09975
+    longitude: 153.42463
+    population: 13868
+    dem: 6
+    timezone: "Australia/Brisbane"
+  - name: "Rangeville"
+    latitude: -27.58318
+    longitude: 151.97997
+    population: 8217
+    dem: 657
+    timezone: "Australia/Brisbane"
+  - name: "Darling Heights"
+    latitude: -27.59659
+    longitude: 151.93045
+    population: 5035
+    dem: 691
+    timezone: "Australia/Brisbane"
+  - name: "East Toowoomba"
+    latitude: -27.57086
+    longitude: 151.97422
+    population: 5676
+    dem: 648
+    timezone: "Australia/Brisbane"
+- name: "State of Victoria"
+  cities:
+  - name: "Yarrawonga"
+    latitude: -36.01923
+    longitude: 145.99973
+    population: 5604
+    dem: 130
+    timezone: "Australia/Sydney"
+  - name: "Yarraville"
+    latitude: -37.81667
+    longitude: 144.9
+    population: 13747
+    dem: 15
+    timezone: "Australia/Melbourne"
+  - name: "Wodonga"
+    latitude: -36.12179
+    longitude: 146.88809
+    population: 31605
+    dem: 167
+    timezone: "Australia/Melbourne"
+  - name: "Windsor"
+    latitude: -37.85344
+    longitude: 144.99241
+    population: 7069
+    dem: 25
+    timezone: "Australia/Melbourne"
+  - name: "Williamstown"
+    latitude: -37.86349
+    longitude: 144.899
+    population: 13203
+    dem: 13
+    timezone: "Australia/Melbourne"
+  - name: "Wheelers Hill"
+    latitude: -37.9
+    longitude: 145.18333
+    population: 19753
+    dem: 120
+    timezone: "Australia/Melbourne"
+  - name: "Werribee"
+    latitude: -37.9
+    longitude: 144.66667
+    population: 37737
+    dem: 27
+    timezone: "Australia/Melbourne"
+  - name: "Watsonia"
+    latitude: -37.71667
+    longitude: 145.08333
+    population: 5146
+    dem: 91
+    timezone: "Australia/Melbourne"
+  - name: "Warrnambool"
+    latitude: -38.38176
+    longitude: 142.48799
+    population: 33982
+    dem: 24
+    timezone: "Australia/Melbourne"
+  - name: "Warrandyte"
+    latitude: -37.75
+    longitude: 145.23333
+    population: 5520
+    dem: 83
+    timezone: "Australia/Melbourne"
+  - name: "Warragul"
+    latitude: -38.15912
+    longitude: 145.93118
+    population: 9127
+    dem: 135
+    timezone: "Australia/Melbourne"
+  - name: "Wantirna South"
+    latitude: -37.88333
+    longitude: 145.21667
+    population: 17477
+    dem: 71
+    timezone: "Australia/Melbourne"
+  - name: "Wantirna"
+    latitude: -37.85
+    longitude: 145.21667
+    population: 13978
+    dem: 91
+    timezone: "Australia/Melbourne"
+  - name: "Wangaratta"
+    latitude: -36.35846
+    longitude: 146.32056
+    population: 16845
+    dem: 151
+    timezone: "Australia/Melbourne"
+  - name: "Vermont"
+    latitude: -37.83616
+    longitude: 145.19428
+    population: 9902
+    dem: 148
+    timezone: "Australia/Melbourne"
+  - name: "Upwey"
+    latitude: -37.9
+    longitude: 145.33333
+    population: 6760
+    dem: 219
+    timezone: "Australia/Melbourne"
+  - name: "Tullamarine"
+    latitude: -37.70128
+    longitude: 144.881
+    population: 6271
+    dem: 96
+    timezone: "Australia/Melbourne"
+  - name: "Truganina"
+    latitude: -37.81667
+    longitude: 144.75
+    population: 9138
+    dem: 41
+    timezone: "Australia/Melbourne"
+  - name: "Traralgon"
+    latitude: -38.19528
+    longitude: 146.5415
+    population: 21960
+    dem: 46
+    timezone: "Australia/Melbourne"
+  - name: "Toorak"
+    latitude: -37.84165
+    longitude: 145.01438
+    population: 12871
+    dem: 55
+    timezone: "Australia/Melbourne"
+  - name: "Thornbury"
+    latitude: -37.75819
+    longitude: 145.00583
+    population: 17434
+    dem: 63
+    timezone: "Australia/Melbourne"
+  - name: "Thomastown"
+    latitude: -37.68333
+    longitude: 145.01667
+    population: 20331
+    dem: 113
+    timezone: "Australia/Melbourne"
+  - name: "Templestowe Lower"
+    latitude: -37.76667
+    longitude: 145.11667
+    population: 13152
+    dem: 74
+    timezone: "Australia/Melbourne"
+  - name: "Tarneit"
+    latitude: -37.83634
+    longitude: 144.65952
+    population: 21690
+    dem: 33
+    timezone: "Australia/Melbourne"
+  - name: "Sydenham"
+    latitude: -37.7
+    longitude: 144.76667
+    population: 10323
+    dem: 115
+    timezone: "Australia/Melbourne"
+  - name: "Swan Hill"
+    latitude: -35.33781
+    longitude: 143.5544
+    population: 9276
+    dem: 75
+    timezone: "Australia/Melbourne"
+  - name: "Surrey Hills"
+    latitude: -37.81667
+    longitude: 145.1
+    population: 13133
+    dem: 108
+    timezone: "Australia/Melbourne"
+  - name: "Sunbury"
+    latitude: -37.57742
+    longitude: 144.72607
+    population: 29925
+    dem: 220
+    timezone: "Australia/Melbourne"
+  - name: "Stawell"
+    latitude: -37.05632
+    longitude: 142.78088
+    population: 5737
+    dem: 254
+    timezone: "Australia/Melbourne"
+  - name: "Springvale South"
+    latitude: -37.96667
+    longitude: 145.15
+    population: 12184
+    dem: 39
+    timezone: "Australia/Melbourne"
+  - name: "Springvale"
+    latitude: -37.94853
+    longitude: 145.15274
+    population: 19771
+    dem: 55
+    timezone: "Australia/Melbourne"
+  - name: "South Melbourne"
+    latitude: -37.83333
+    longitude: 144.96667
+    population: 8790
+    dem: 9
+    timezone: "Australia/Melbourne"
+  - name: "Somerville"
+    latitude: -38.21667
+    longitude: 145.16667
+    population: 7015
+    dem: 65
+    timezone: "Australia/Melbourne"
+  - name: "Shepparton"
+    latitude: -36.38047
+    longitude: 145.39867
+    population: 38773
+    dem: 115
+    timezone: "Australia/Melbourne"
+  - name: "Sebastopol"
+    latitude: -37.58532
+    longitude: 143.83953
+    population: 8045
+    dem: 425
+    timezone: "Australia/Melbourne"
+  - name: "Seaford"
+    latitude: -38.1
+    longitude: 145.13333
+    population: 16033
+    dem: 7
+    timezone: "Australia/Melbourne"
+  - name: "Scoresby"
+    latitude: -37.9
+    longitude: 145.23333
+    population: 5892
+    dem: 66
+    timezone: "Australia/Melbourne"
+  - name: "Sale"
+    latitude: -38.11095
+    longitude: 147.06802
+    population: 13186
+    dem: 12
+    timezone: "Australia/Melbourne"
+  - name: "Saint Kilda"
+    latitude: -37.8676
+    longitude: 144.98099
+    population: 17795
+    dem: 11
+    timezone: "Australia/Melbourne"
+  - name: "Saint Albans"
+    latitude: -37.73333
+    longitude: 144.8
+    population: 35091
+    dem: 81
+    timezone: "Australia/Melbourne"
+  - name: "Rye"
+    latitude: -38.38528
+    longitude: 144.81221
+    population: 8160
+    dem: 1
+    timezone: "Australia/Melbourne"
+  - name: "Rowville"
+    latitude: -37.93333
+    longitude: 145.23333
+    population: 34145
+    dem: 73
+    timezone: "Australia/Melbourne"
+  - name: "Rosebud"
+    latitude: -38.35542
+    longitude: 144.9068
+    population: 12501
+    dem: 9
+    timezone: "Australia/Melbourne"
+  - name: "Rosanna"
+    latitude: -37.75
+    longitude: 145.06667
+    population: 7697
+    dem: 39
+    timezone: "Australia/Melbourne"
+  - name: "Ringwood East"
+    latitude: -37.81667
+    longitude: 145.25
+    population: 9748
+    dem: 154
+    timezone: "Australia/Melbourne"
+  - name: "Richmond"
+    latitude: -37.81819
+    longitude: 145.00176
+    population: 26121
+    dem: 20
+    timezone: "Australia/Melbourne"
+  - name: "Reservoir"
+    latitude: -37.71667
+    longitude: 145.0
+    population: 47637
+    dem: 89
+    timezone: "Australia/Melbourne"
+  - name: "Preston"
+    latitude: -37.75
+    longitude: 145.01667
+    population: 29925
+    dem: 61
+    timezone: "Australia/Melbourne"
+  - name: "Port Melbourne"
+    latitude: -37.83961
+    longitude: 144.94228
+    population: 13293
+    dem: 7
+    timezone: "Australia/Melbourne"
+  - name: "Portland"
+    latitude: -38.3462
+    longitude: 141.60257
+    population: 8841
+    dem: 16
+    timezone: "Australia/Melbourne"
+  - name: "Point Cook"
+    latitude: -37.91482
+    longitude: 144.75088
+    population: 32413
+    dem: 10
+    timezone: "Australia/Melbourne"
+  - name: "Pascoe Vale"
+    latitude: -37.73333
+    longitude: 144.93333
+    population: 15000
+    dem: 74
+    timezone: "Australia/Melbourne"
+  - name: "Parkville"
+    latitude: -37.78333
+    longitude: 144.95
+    population: 6193
+    dem: 40
+    timezone: "Australia/Melbourne"
+  - name: "Parkdale"
+    latitude: -37.99187
+    longitude: 145.08128
+    population: 11185
+    dem: 24
+    timezone: "Australia/Melbourne"
+  - name: "Pakenham South"
+    latitude: -38.13333
+    longitude: 145.51667
+    population: 32911
+    dem: 11
+    timezone: "Australia/Melbourne"
+  - name: "Ormond"
+    latitude: -37.9
+    longitude: 145.03333
+    population: 7711
+    dem: 39
+    timezone: "Australia/Melbourne"
+  - name: "Nunawading"
+    latitude: -37.82043
+    longitude: 145.17308
+    population: 10947
+    dem: 123
+    timezone: "Australia/Melbourne"
+  - name: "North Wonthaggi"
+    latitude: -38.57769
+    longitude: 145.59302
+    population: 5985
+    dem: 38
+    timezone: "Australia/Melbourne"
+  - name: "North Melbourne"
+    latitude: -37.79798
+    longitude: 144.94512
+    population: 11755
+    dem: 18
+    timezone: "Australia/Melbourne"
+  - name: "North Fitzroy"
+    latitude: -37.78862
+    longitude: 144.97885
+    population: 11473
+    dem: 36
+    timezone: "Australia/Melbourne"
+  - name: "Northcote"
+    latitude: -37.76667
+    longitude: 145.0
+    population: 22920
+    dem: 52
+    timezone: "Australia/Melbourne"
+  - name: "Noble Park"
+    latitude: -37.96667
+    longitude: 145.16667
+    population: 28377
+    dem: 46
+    timezone: "Australia/Melbourne"
+  - name: "Newport"
+    latitude: -37.84427
+    longitude: 144.88483
+    population: 11987
+    dem: 17
+    timezone: "Australia/Melbourne"
+  - name: "Narre Warren North"
+    latitude: -37.98333
+    longitude: 145.31667
+    population: 6212
+    dem: 62
+    timezone: "Australia/Melbourne"
+  - name: "Narre Warren"
+    latitude: -38.03333
+    longitude: 145.3
+    population: 25882
+    dem: 19
+    timezone: "Australia/Melbourne"
+  - name: "Murrumbeena"
+    latitude: -37.9
+    longitude: 145.06667
+    population: 8592
+    dem: 49
+    timezone: "Australia/Melbourne"
+  - name: "Mulgrave"
+    latitude: -37.92845
+    longitude: 145.17708
+    population: 17647
+    dem: 128
+    timezone: "Australia/Melbourne"
+  - name: "Mount Waverley"
+    latitude: -37.87709
+    longitude: 145.12939
+    population: 33611
+    dem: 121
+    timezone: "Australia/Melbourne"
+  - name: "Mount Martha"
+    latitude: -38.26667
+    longitude: 145.01667
+    population: 17087
+    dem: 11
+    timezone: "Australia/Melbourne"
+  - name: "Mount Evelyn"
+    latitude: -37.78333
+    longitude: 145.38333
+    population: 9100
+    dem: 238
+    timezone: "Australia/Melbourne"
+  - name: "Mount Eliza"
+    latitude: -38.18333
+    longitude: 145.08333
+    population: 17248
+    dem: 55
+    timezone: "Australia/Melbourne"
+  - name: "Morwell"
+    latitude: -38.23476
+    longitude: 146.39499
+    population: 13399
+    dem: 85
+    timezone: "Australia/Melbourne"
+  - name: "Mornington"
+    latitude: -38.21792
+    longitude: 145.03876
+    population: 22421
+    dem: 25
+    timezone: "Australia/Melbourne"
+  - name: "Mordialloc"
+    latitude: -38.0
+    longitude: 145.08333
+    population: 7524
+    dem: 13
+    timezone: "Australia/Melbourne"
+  - name: "Moorabbin"
+    latitude: -37.94146
+    longitude: 145.05779
+    population: 5283
+    dem: 32
+    timezone: "Australia/Melbourne"
+  - name: "Moonee Ponds"
+    latitude: -37.76667
+    longitude: 144.91667
+    population: 13532
+    dem: 47
+    timezone: "Australia/Melbourne"
+  - name: "Montrose"
+    latitude: -37.81667
+    longitude: 145.35
+    population: 6465
+    dem: 233
+    timezone: "Australia/Melbourne"
+  - name: "Montmorency"
+    latitude: -37.71667
+    longitude: 145.11667
+    population: 8759
+    dem: 53
+    timezone: "Australia/Melbourne"
+  - name: "Moe"
+    latitude: -38.17828
+    longitude: 146.26099
+    population: 15582
+    dem: 76
+    timezone: "Australia/Melbourne"
+  - name: "Mitcham"
+    latitude: -37.81667
+    longitude: 145.2
+    population: 14811
+    dem: 142
+    timezone: "Australia/Melbourne"
+  - name: "Mill Park"
+    latitude: -37.66667
+    longitude: 145.06667
+    population: 30517
+    dem: 133
+    timezone: "Australia/Melbourne"
+  - name: "Mildura"
+    latitude: -34.18551
+    longitude: 142.16251
+    population: 30016
+    dem: 56
+    timezone: "Australia/Melbourne"
+  - name: "Mernda"
+    latitude: -37.60075
+    longitude: 145.09555
+    population: 6508
+    dem: 167
+    timezone: "Australia/Melbourne"
+  - name: "Mentone"
+    latitude: -37.98333
+    longitude: 145.06667
+    population: 11667
+    dem: 24
+    timezone: "Australia/Melbourne"
+  - name: "Melton South"
+    latitude: -37.70773
+    longitude: 144.57493
+    population: 8916
+    dem: 119
+    timezone: "Australia/Melbourne"
+  - name: "Melton"
+    latitude: -37.68339
+    longitude: 144.58543
+    population: 35490
+    dem: 138
+    timezone: "Australia/Melbourne"
+  - name: "Melbourne"
+    latitude: -37.814
+    longitude: 144.96332
+    population: 4246375
+    dem: 25
+    timezone: "Australia/Melbourne"
+  - name: "McKinnon"
+    latitude: -37.91667
+    longitude: 145.05
+    population: 5553
+    dem: 42
+    timezone: "Australia/Melbourne"
+  - name: "Maryborough"
+    latitude: -37.04562
+    longitude: 143.73923
+    population: 7046
+    dem: 241
+    timezone: "Australia/Melbourne"
+  - name: "Maribyrnong"
+    latitude: -37.77241
+    longitude: 144.88435
+    population: 10165
+    dem: 41
+    timezone: "Australia/Melbourne"
+  - name: "Macleod"
+    latitude: -37.73333
+    longitude: 145.06667
+    population: 9606
+    dem: 56
+    timezone: "Australia/Melbourne"
+  - name: "Lysterfield"
+    latitude: -37.93333
+    longitude: 145.3
+    population: 6551
+    dem: 140
+    timezone: "Australia/Melbourne"
+  - name: "Lilydale"
+    latitude: -37.75
+    longitude: 145.35
+    population: 15649
+    dem: 99
+    timezone: "Australia/Melbourne"
+  - name: "Leopold"
+    latitude: -38.19001
+    longitude: 144.46825
+    population: 6120
+    dem: 53
+    timezone: "Australia/Melbourne"
+  - name: "Lara"
+    latitude: -38.02388
+    longitude: 144.40617
+    population: 15520
+    dem: 13
+    timezone: "Australia/Melbourne"
+  - name: "Langwarrin"
+    latitude: -38.16667
+    longitude: 145.16667
+    population: 21371
+    dem: 109
+    timezone: "Australia/Melbourne"
+  - name: "Lalor"
+    latitude: -37.66667
+    longitude: 145.01667
+    population: 19873
+    dem: 123
+    timezone: "Australia/Melbourne"
+  - name: "Lakes Entrance"
+    latitude: -37.86679
+    longitude: 148.00159
+    population: 5849
+    dem: 30
+    timezone: "Australia/Melbourne"
+  - name: "Kyabram"
+    latitude: -36.31335
+    longitude: 145.05035
+    population: 6396
+    dem: 109
+    timezone: "Australia/Melbourne"
+  - name: "Kilsyth"
+    latitude: -37.8
+    longitude: 145.31667
+    population: 10043
+    dem: 113
+    timezone: "Australia/Melbourne"
+  - name: "Keysborough"
+    latitude: -37.99116
+    longitude: 145.17385
+    population: 22700
+    dem: 25
+    timezone: "Australia/Melbourne"
+  - name: "Kew"
+    latitude: -37.80639
+    longitude: 145.03086
+    population: 23876
+    dem: 64
+    timezone: "Australia/Melbourne"
+  - name: "Kensington"
+    latitude: -37.79188
+    longitude: 144.93114
+    population: 9719
+    dem: 41
+    timezone: "Australia/Melbourne"
+  - name: "Kennington"
+    latitude: -36.77128
+    longitude: 144.30298
+    population: 5830
+    dem: 270
+    timezone: "Australia/Melbourne"
+  - name: "Keilor"
+    latitude: -37.71667
+    longitude: 144.83333
+    population: 5759
+    dem: 38
+    timezone: "Australia/Melbourne"
+  - name: "Kangaroo Flat"
+    latitude: -36.8
+    longitude: 144.25
+    population: 9492
+    dem: 262
+    timezone: "Australia/Melbourne"
+  - name: "Hughesdale"
+    latitude: -37.9
+    longitude: 145.08333
+    population: 7055
+    dem: 59
+    timezone: "Australia/Melbourne"
+  - name: "Horsham"
+    latitude: -36.71131
+    longitude: 142.19981
+    population: 14285
+    dem: 133
+    timezone: "Australia/Melbourne"
+  - name: "Highett"
+    latitude: -37.95
+    longitude: 145.05
+    population: 10263
+    dem: 48
+    timezone: "Australia/Melbourne"
+  - name: "Heidelberg West"
+    latitude: -37.73922
+    longitude: 145.04034
+    population: 5327
+    dem: 63
+    timezone: "Australia/Melbourne"
+  - name: "Heidelberg"
+    latitude: -37.75
+    longitude: 145.06667
+    population: 5714
+    dem: 39
+    timezone: "Australia/Melbourne"
+  - name: "Heathmont"
+    latitude: -37.83333
+    longitude: 145.25
+    population: 9250
+    dem: 114
+    timezone: "Australia/Melbourne"
+  - name: "Healesville"
+    latitude: -37.65395
+    longitude: 145.51718
+    population: 7098
+    dem: 97
+    timezone: "Australia/Melbourne"
+  - name: "Hawthorn South"
+    latitude: -37.8329
+    longitude: 145.0367
+    population: 21177
+    dem: 48
+    timezone: "Australia/Melbourne"
+  - name: "Hawthorn"
+    latitude: -37.81992
+    longitude: 145.0358
+    population: 21177
+    dem: 30
+    timezone: "Australia/Melbourne"
+  - name: "Hastings"
+    latitude: -38.3
+    longitude: 145.18333
+    population: 6583
+    dem: 12
+    timezone: "Australia/Melbourne"
+  - name: "Hampton Park"
+    latitude: -38.03333
+    longitude: 145.25
+    population: 23767
+    dem: 27
+    timezone: "Australia/Melbourne"
+  - name: "Hampton"
+    latitude: -37.95
+    longitude: 145.0
+    population: 12482
+    dem: 3
+    timezone: "Australia/Melbourne"
+  - name: "Hamilton"
+    latitude: -37.74425
+    longitude: 142.02202
+    population: 10104
+    dem: 189
+    timezone: "Australia/Melbourne"
+  - name: "Hallam"
+    latitude: -38.01667
+    longitude: 145.26667
+    population: 10162
+    dem: 23
+    timezone: "Australia/Melbourne"
+  - name: "Grovedale"
+    latitude: -38.2
+    longitude: 144.35
+    population: 14308
+    dem: 10
+    timezone: "Australia/Melbourne"
+  - name: "Greenvale"
+    latitude: -37.63333
+    longitude: 144.86667
+    population: 11969
+    dem: 155
+    timezone: "Australia/Melbourne"
+  - name: "Greensborough"
+    latitude: -37.70462
+    longitude: 145.10302
+    population: 20214
+    dem: 75
+    timezone: "Australia/Melbourne"
+  - name: "Glenroy"
+    latitude: -37.7
+    longitude: 144.93333
+    population: 19644
+    dem: 102
+    timezone: "Australia/Melbourne"
+  - name: "Glenferrie"
+    latitude: -37.83333
+    longitude: 145.05
+    population: 21177
+    dem: 53
+    timezone: "Australia/Melbourne"
+  - name: "Geelong West"
+    latitude: -38.13888
+    longitude: 144.34842
+    population: 12121
+    dem: 26
+    timezone: "Australia/Melbourne"
+  - name: "Geelong"
+    latitude: -38.14711
+    longitude: 144.36069
+    population: 226034
+    dem: 23
+    timezone: "Australia/Melbourne"
+  - name: "Frankston East"
+    latitude: -38.13333
+    longitude: 145.13333
+    population: 34457
+    dem: 10
+    timezone: "Australia/Melbourne"
+  - name: "Frankston"
+    latitude: -38.14458
+    longitude: 145.12291
+    population: 34457
+    dem: 15
+    timezone: "Australia/Melbourne"
+  - name: "Forest Hill"
+    latitude: -37.83333
+    longitude: 145.18333
+    population: 10052
+    dem: 123
+    timezone: "Australia/Melbourne"
+  - name: "Footscray"
+    latitude: -37.8
+    longitude: 144.9
+    population: 13203
+    dem: 27
+    timezone: "Australia/Melbourne"
+  - name: "Fitzroy"
+    latitude: -37.79839
+    longitude: 144.97833
+    population: 9000
+    dem: 36
+    timezone: "Australia/Melbourne"
+  - name: "Fawkner"
+    latitude: -37.71667
+    longitude: 144.96667
+    population: 12596
+    dem: 77
+    timezone: "Australia/Melbourne"
+  - name: "Essendon"
+    latitude: -37.74981
+    longitude: 144.9109
+    population: 18852
+    dem: 47
+    timezone: "Australia/Melbourne"
+  - name: "Epping"
+    latitude: -37.65
+    longitude: 145.03333
+    population: 32200
+    dem: 131
+    timezone: "Australia/Melbourne"
+  - name: "Emerald"
+    latitude: -37.93167
+    longitude: 145.44093
+    population: 5813
+    dem: 321
+    timezone: "Australia/Melbourne"
+  - name: "Eltham North"
+    latitude: -37.7
+    longitude: 145.15
+    population: 6841
+    dem: 69
+    timezone: "Australia/Melbourne"
+  - name: "Eltham"
+    latitude: -37.73333
+    longitude: 145.15
+    population: 18162
+    dem: 66
+    timezone: "Australia/Melbourne"
+  - name: "Edithvale"
+    latitude: -38.03724
+    longitude: 145.10974
+    population: 5450
+    dem: 7
+    timezone: "Australia/Melbourne"
+  - name: "Echuca"
+    latitude: -36.14057
+    longitude: 144.75185
+    population: 19457
+    dem: 100
+    timezone: "Australia/Melbourne"
+  - name: "Dromana"
+    latitude: -38.33375
+    longitude: 144.96458
+    population: 5126
+    dem: 8
+    timezone: "Australia/Melbourne"
+  - name: "Doreen"
+    latitude: -37.6
+    longitude: 145.15
+    population: 12000
+    dem: 159
+    timezone: "Australia/Melbourne"
+  - name: "Donvale"
+    latitude: -37.7891
+    longitude: 145.17488
+    population: 11795
+    dem: 143
+    timezone: "Australia/Melbourne"
+  - name: "Doncaster East"
+    latitude: -37.78761
+    longitude: 145.14888
+    population: 27047
+    dem: 117
+    timezone: "Australia/Melbourne"
+  - name: "Doncaster"
+    latitude: -37.78828
+    longitude: 145.12373
+    population: 18359
+    dem: 108
+    timezone: "Australia/Melbourne"
+  - name: "Dingley Village"
+    latitude: -37.9827
+    longitude: 145.1342
+    population: 10072
+    dem: 27
+    timezone: "Australia/Melbourne"
+  - name: "Diamond Creek"
+    latitude: -37.66667
+    longitude: 145.15
+    population: 11504
+    dem: 91
+    timezone: "Australia/Melbourne"
+  - name: "Derrimut"
+    latitude: -37.79238
+    longitude: 144.76994
+    population: 5992
+    dem: 51
+    timezone: "Australia/Melbourne"
+  - name: "Deer Park"
+    latitude: -37.76722
+    longitude: 144.76657
+    population: 16204
+    dem: 52
+    timezone: "Australia/Melbourne"
+  - name: "Dandenong"
+    latitude: -37.98333
+    longitude: 145.2
+    population: 24919
+    dem: 34
+    timezone: "Australia/Melbourne"
+  - name: "Croydon North"
+    latitude: -37.76741
+    longitude: 145.29073
+    population: 7693
+    dem: 153
+    timezone: "Australia/Melbourne"
+  - name: "Croydon"
+    latitude: -37.8
+    longitude: 145.28333
+    population: 26946
+    dem: 109
+    timezone: "Australia/Melbourne"
+  - name: "Cranbourne"
+    latitude: -38.11342
+    longitude: 145.28326
+    population: 18622
+    dem: 67
+    timezone: "Australia/Melbourne"
+  - name: "Craigieburn"
+    latitude: -37.6
+    longitude: 144.95
+    population: 19728
+    dem: 186
+    timezone: "Australia/Melbourne"
+  - name: "Collingwood"
+    latitude: -37.80253
+    longitude: 144.98872
+    population: 5500
+    dem: 25
+    timezone: "Australia/Melbourne"
+  - name: "Colac"
+    latitude: -38.339
+    longitude: 143.58489
+    population: 9089
+    dem: 139
+    timezone: "Australia/Melbourne"
+  - name: "Coburg"
+    latitude: -37.75
+    longitude: 144.96667
+    population: 24977
+    dem: 61
+    timezone: "Australia/Melbourne"
+  - name: "Clifton Springs"
+    latitude: -38.1567
+    longitude: 144.5551
+    population: 7413
+    dem: 23
+    timezone: "Australia/Melbourne"
+  - name: "Clifton Hill"
+    latitude: -37.79798
+    longitude: 144.99533
+    population: 5790
+    dem: 24
+    timezone: "Australia/Melbourne"
+  - name: "Clayton South"
+    latitude: -37.93333
+    longitude: 145.11667
+    population: 11600
+    dem: 55
+    timezone: "Australia/Melbourne"
+  - name: "Clayton"
+    latitude: -37.91667
+    longitude: 145.11667
+    population: 15543
+    dem: 70
+    timezone: "Australia/Melbourne"
+  - name: "Clarinda"
+    latitude: -37.93333
+    longitude: 145.11667
+    population: 7461
+    dem: 55
+    timezone: "Australia/Melbourne"
+  - name: "Chelsea Heights"
+    latitude: -38.03333
+    longitude: 145.13333
+    population: 5186
+    dem: 7
+    timezone: "Australia/Melbourne"
+  - name: "Chelsea"
+    latitude: -38.05
+    longitude: 145.11667
+    population: 7223
+    dem: 9
+    timezone: "Australia/Melbourne"
+  - name: "Caulfield North"
+    latitude: -37.8739
+    longitude: 145.02485
+    population: 14554
+    dem: 47
+    timezone: "Australia/Melbourne"
+  - name: "Castlemaine"
+    latitude: -37.06709
+    longitude: 144.21684
+    population: 6604
+    dem: 281
+    timezone: "Australia/Melbourne"
+  - name: "Carrum Downs"
+    latitude: -38.09968
+    longitude: 145.17248
+    population: 17213
+    dem: 31
+    timezone: "Australia/Melbourne"
+  - name: "Carnegie"
+    latitude: -37.89359
+    longitude: 145.05534
+    population: 16299
+    dem: 53
+    timezone: "Australia/Melbourne"
+  - name: "Carlton North"
+    latitude: -37.78818
+    longitude: 144.97014
+    population: 6220
+    dem: 39
+    timezone: "Australia/Melbourne"
+  - name: "Carlton"
+    latitude: -37.8
+    longitude: 144.96667
+    population: 14104
+    dem: 53
+    timezone: "Australia/Melbourne"
+  - name: "Campbellfield"
+    latitude: -37.66386
+    longitude: 144.95953
+    population: 5467
+    dem: 117
+    timezone: "Australia/Melbourne"
+  - name: "Camberwell"
+    latitude: -37.84205
+    longitude: 145.0694
+    population: 19637
+    dem: 47
+    timezone: "Australia/Melbourne"
+  - name: "Burwood East"
+    latitude: -37.85
+    longitude: 145.15
+    population: 10141
+    dem: 115
+    timezone: "Australia/Melbourne"
+  - name: "Bulleen"
+    latitude: -37.76667
+    longitude: 145.08333
+    population: 10868
+    dem: 49
+    timezone: "Australia/Melbourne"
+  - name: "Brunswick West"
+    latitude: -37.76461
+    longitude: 144.94383
+    population: 13148
+    dem: 56
+    timezone: "Australia/Melbourne"
+  - name: "Brunswick East"
+    latitude: -37.77255
+    longitude: 144.97241
+    population: 8476
+    dem: 48
+    timezone: "Australia/Melbourne"
+  - name: "Brunswick"
+    latitude: -37.76667
+    longitude: 144.96667
+    population: 19867
+    dem: 51
+    timezone: "Australia/Melbourne"
+  - name: "Broadmeadows"
+    latitude: -37.68015
+    longitude: 144.91877
+    population: 9985
+    dem: 125
+    timezone: "Australia/Melbourne"
+  - name: "Brighton"
+    latitude: -37.90561
+    longitude: 145.00279
+    population: 21257
+    dem: 20
+    timezone: "Australia/Melbourne"
+  - name: "Box Hill"
+    latitude: -37.81887
+    longitude: 145.12545
+    population: 8616
+    dem: 103
+    timezone: "Australia/Melbourne"
+  - name: "Boronia"
+    latitude: -37.86667
+    longitude: 145.28333
+    population: 20825
+    dem: 109
+    timezone: "Australia/Melbourne"
+  - name: "Berwick"
+    latitude: -38.03333
+    longitude: 145.35
+    population: 44779
+    dem: 90
+    timezone: "Australia/Melbourne"
+  - name: "Bentleigh"
+    latitude: -37.91806
+    longitude: 145.03544
+    population: 14271
+    dem: 31
+    timezone: "Australia/Melbourne"
+  - name: "Bendigo"
+    latitude: -36.75818
+    longitude: 144.28024
+    population: 100617
+    dem: 221
+    timezone: "Australia/Melbourne"
+  - name: "Benalla"
+    latitude: -36.55113
+    longitude: 145.98425
+    population: 9020
+    dem: 173
+    timezone: "Australia/Melbourne"
+  - name: "Beaumaris"
+    latitude: -37.98534
+    longitude: 145.03361
+    population: 12829
+    dem: 17
+    timezone: "Australia/Melbourne"
+  - name: "Bayswater"
+    latitude: -37.85
+    longitude: 145.26667
+    population: 11240
+    dem: 108
+    timezone: "Australia/Melbourne"
+  - name: "Balwyn"
+    latitude: -37.81667
+    longitude: 145.06667
+    population: 12944
+    dem: 88
+    timezone: "Australia/Melbourne"
+  - name: "Ballarat"
+    latitude: -37.56622
+    longitude: 143.84957
+    population: 97937
+    dem: 445
+    timezone: "Australia/Melbourne"
+  - name: "Balaclava"
+    latitude: -37.86667
+    longitude: 145.0
+    population: 5383
+    dem: 21
+    timezone: "Australia/Melbourne"
+  - name: "Bairnsdale"
+    latitude: -37.82289
+    longitude: 147.61041
+    population: 11005
+    dem: 26
+    timezone: "Australia/Melbourne"
+  - name: "Bacchus Marsh"
+    latitude: -37.67268
+    longitude: 144.43829
+    population: 13575
+    dem: 111
+    timezone: "Australia/Melbourne"
+  - name: "Aspendale"
+    latitude: -38.02913
+    longitude: 145.10266
+    population: 6622
+    dem: 9
+    timezone: "Australia/Melbourne"
+  - name: "Ashburton"
+    latitude: -37.86667
+    longitude: 145.08333
+    population: 7586
+    dem: 68
+    timezone: "Australia/Melbourne"
+  - name: "Ascot Vale"
+    latitude: -37.77988
+    longitude: 144.92276
+    population: 13475
+    dem: 23
+    timezone: "Australia/Melbourne"
+  - name: "Ararat"
+    latitude: -37.28542
+    longitude: 142.92728
+    population: 8076
+    dem: 325
+    timezone: "Australia/Melbourne"
+  - name: "Altona"
+    latitude: -37.86964
+    longitude: 144.83036
+    population: 9918
+    dem: 9
+    timezone: "Australia/Melbourne"
+  - name: "Albert Park"
+    latitude: -37.83333
+    longitude: 145.0
+    population: 5955
+    dem: 12
+    timezone: "Australia/Melbourne"
+  - name: "Bonbeach"
+    latitude: -38.06528
+    longitude: 145.12278
+    population: 5773
+    dem: 8
+    timezone: "Australia/Melbourne"
+  - name: "Cheltenham"
+    latitude: -37.96944
+    longitude: 145.04806
+    population: 20292
+    dem: 41
+    timezone: "Australia/Melbourne"
+  - name: "Airport West"
+    latitude: -37.7247
+    longitude: 144.88126
+    population: 6959
+    dem: 77
+    timezone: "Australia/Melbourne"
+  - name: "Gladstone Park"
+    latitude: -37.68742
+    longitude: 144.88675
+    population: 8329
+    dem: 113
+    timezone: "Australia/Melbourne"
+  - name: "Maidstone"
+    latitude: -37.78035
+    longitude: 144.87353
+    population: 7750
+    dem: 38
+    timezone: "Australia/Melbourne"
+  - name: "Caroline Springs"
+    latitude: -37.74124
+    longitude: 144.73631
+    population: 10880
+    dem: 82
+    timezone: "Australia/Melbourne"
+  - name: "Hoppers Crossing"
+    latitude: -37.88264
+    longitude: 144.7003
+    population: 38108
+    dem: 30
+    timezone: "Australia/Melbourne"
+  - name: "Ferntree Gully"
+    latitude: -37.88461
+    longitude: 145.29539
+    population: 24724
+    dem: 125
+    timezone: "Australia/Melbourne"
+  - name: "Phillip Island"
+    latitude: -38.48349
+    longitude: 145.23102
+    population: 7071
+    dem: 48
+    timezone: "Australia/Melbourne"
+  - name: "Southbank"
+    latitude: -37.8228
+    longitude: 144.96434
+    population: 9364
+    dem: 15
+    timezone: "Australia/Melbourne"
+  - name: "St Kilda East"
+    latitude: -37.86594
+    longitude: 145.00018
+    population: 12576
+    dem: 21
+    timezone: "Australia/Melbourne"
+  - name: "Docklands"
+    latitude: -37.8149
+    longitude: 144.95052
+    population: 5791
+    dem: 12
+    timezone: "Australia/Melbourne"
+  - name: "Melton West"
+    latitude: -37.67852
+    longitude: 144.56883
+    population: 10381
+    dem: 140
+    timezone: "Australia/Melbourne"
+  - name: "Kurunjang"
+    latitude: -37.67587
+    longitude: 144.5969
+    population: 6728
+    dem: 142
+    timezone: "Australia/Melbourne"
+  - name: "Ashwood"
+    latitude: -37.86659
+    longitude: 145.10553
+    population: 12420
+    dem: 56
+    timezone: "Australia/Melbourne"
+  - name: "Glen Iris"
+    latitude: -37.85995
+    longitude: 145.05489
+    population: 23270
+    dem: 49
+    timezone: "Australia/Melbourne"
+  - name: "Elsternwick"
+    latitude: -37.88441
+    longitude: 145.00434
+    population: 9286
+    dem: 26
+    timezone: "Australia/Melbourne"
+  - name: "Elwood"
+    latitude: -37.88214
+    longitude: 144.98215
+    population: 13785
+    dem: 9
+    timezone: "Australia/Melbourne"
+  - name: "Burwood"
+    latitude: -37.84978
+    longitude: 145.11901
+    population: 11886
+    dem: 80
+    timezone: "Australia/Melbourne"
+  - name: "Box Hill South"
+    latitude: -37.83236
+    longitude: 145.12098
+    population: 7387
+    dem: 105
+    timezone: "Australia/Melbourne"
+  - name: "Blackburn"
+    latitude: -37.81901
+    longitude: 145.15326
+    population: 11958
+    dem: 104
+    timezone: "Australia/Melbourne"
+  - name: "Canterbury"
+    latitude: -37.8247
+    longitude: 145.08476
+    population: 7660
+    dem: 83
+    timezone: "Australia/Melbourne"
+  - name: "Hawthorn East"
+    latitude: -37.82484
+    longitude: 145.0464
+    population: 13133
+    dem: 49
+    timezone: "Australia/Melbourne"
+  - name: "Kew East"
+    latitude: -37.79758
+    longitude: 145.05378
+    population: 6140
+    dem: 46
+    timezone: "Australia/Melbourne"
+  - name: "Balwyn North"
+    latitude: -37.79086
+    longitude: 145.09386
+    population: 19968
+    dem: 59
+    timezone: "Australia/Melbourne"
+  - name: "Mont Albert North"
+    latitude: -37.80043
+    longitude: 145.10828
+    population: 5008
+    dem: 87
+    timezone: "Australia/Melbourne"
+  - name: "Box Hill North"
+    latitude: -37.80266
+    longitude: 145.12656
+    population: 10649
+    dem: 81
+    timezone: "Australia/Melbourne"
+  - name: "Blackburn North"
+    latitude: -37.80931
+    longitude: 145.1518
+    population: 6816
+    dem: 112
+    timezone: "Australia/Melbourne"
+  - name: "Blackburn South"
+    latitude: -37.83975
+    longitude: 145.15549
+    population: 10129
+    dem: 121
+    timezone: "Australia/Melbourne"
+  - name: "Chadstone"
+    latitude: -37.88766
+    longitude: 145.09519
+    population: 12357
+    dem: 60
+    timezone: "Australia/Melbourne"
+  - name: "Malvern East"
+    latitude: -37.87397
+    longitude: 145.04253
+    population: 19593
+    dem: 60
+    timezone: "Australia/Melbourne"
+  - name: "Oakleigh South"
+    latitude: -37.92416
+    longitude: 145.09146
+    population: 8933
+    dem: 62
+    timezone: "Australia/Melbourne"
+  - name: "Caulfield South"
+    latitude: -37.89562
+    longitude: 145.02597
+    population: 11113
+    dem: 28
+    timezone: "Australia/Melbourne"
+  - name: "Brighton East"
+    latitude: -37.90232
+    longitude: 145.01734
+    population: 15167
+    dem: 23
+    timezone: "Australia/Melbourne"
+  - name: "Black Rock"
+    latitude: -37.97357
+    longitude: 145.01636
+    population: 5796
+    dem: 20
+    timezone: "Australia/Melbourne"
+  - name: "Aspendale Gardens"
+    latitude: -38.02277
+    longitude: 145.11798
+    population: 7319
+    dem: 6
+    timezone: "Australia/Melbourne"
+  - name: "Ballarat Central"
+    latitude: -37.56206
+    longitude: 143.85082
+    population: 5645
+    dem: 450
+    timezone: "Australia/Melbourne"
+  - name: "St Albans"
+    latitude: -37.74496
+    longitude: 144.80049
+    population: 33511
+    dem: 70
+    timezone: "Australia/Melbourne"
+  - name: "Altona North"
+    latitude: -37.83487
+    longitude: 144.84735
+    population: 10886
+    dem: 18
+    timezone: "Australia/Melbourne"
+  - name: "Doveton"
+    latitude: -37.99346
+    longitude: 145.23891
+    population: 7600
+    dem: 45
+    timezone: "Australia/Melbourne"
+  - name: "Endeavour Hills"
+    latitude: -37.97695
+    longitude: 145.25866
+    population: 25000
+    dem: 92
+    timezone: "Australia/Melbourne"
+  - name: "Taylors Lakes"
+    latitude: -37.69863
+    longitude: 144.78631
+    population: 16095
+    dem: 99
+    timezone: "Australia/Melbourne"
+  - name: "Roxburgh Park"
+    latitude: -37.62581
+    longitude: 144.92555
+    population: 19235
+    dem: 188
+    timezone: "Australia/Melbourne"
+  - name: "Lynbrook"
+    latitude: -38.05588
+    longitude: 145.25615
+    population: 6772
+    dem: 27
+    timezone: "Australia/Melbourne"
+  - name: "Wyndham Vale"
+    latitude: -37.89138
+    longitude: 144.62368
+    population: 17304
+    dem: 32
+    timezone: "Australia/Melbourne"
+  - name: "Delahey"
+    latitude: -37.7198
+    longitude: 144.77732
+    population: 8443
+    dem: 95
+    timezone: "Australia/Melbourne"
+  - name: "Knoxfield"
+    latitude: -37.88978
+    longitude: 145.24962
+    population: 7140
+    dem: 90
+    timezone: "Australia/Melbourne"
+  - name: "Bell Park"
+    latitude: -38.10793
+    longitude: 144.33839
+    population: 5286
+    dem: 25
+    timezone: "Australia/Melbourne"
+  - name: "Golden Square"
+    latitude: -36.77265
+    longitude: 144.25271
+    population: 8170
+    dem: 235
+    timezone: "Australia/Melbourne"
+  - name: "Highton"
+    latitude: -38.17058
+    longitude: 144.3114
+    population: 17793
+    dem: 60
+    timezone: "Australia/Melbourne"
+  - name: "Viewbank"
+    latitude: -37.73991
+    longitude: 145.09323
+    population: 6731
+    dem: 48
+    timezone: "Australia/Melbourne"
+  - name: "Chirnside Park"
+    latitude: -37.7386
+    longitude: 145.31431
+    population: 9092
+    dem: 98
+    timezone: "Australia/Melbourne"
+  - name: "Meadow Heights"
+    latitude: -37.65117
+    longitude: 144.91855
+    population: 14843
+    dem: 137
+    timezone: "Australia/Melbourne"
+  - name: "Hillside"
+    latitude: -37.69047
+    longitude: 144.74172
+    population: 16326
+    dem: 136
+    timezone: "Australia/Melbourne"
+  - name: "Braybrook"
+    latitude: -37.78671
+    longitude: 144.85484
+    population: 8180
+    dem: 43
+    timezone: "Australia/Melbourne"
+  - name: "Cairnlea"
+    latitude: -37.75931
+    longitude: 144.78781
+    population: 8839
+    dem: 59
+    timezone: "Australia/Melbourne"
+  - name: "Bundoora"
+    latitude: -37.69825
+    longitude: 145.05967
+    population: 25709
+    dem: 101
+    timezone: "Australia/Melbourne"
+  - name: "Patterson Lakes"
+    latitude: -38.06934
+    longitude: 145.14327
+    population: 7582
+    dem: 6
+    timezone: "Australia/Melbourne"
+  - name: "Skye"
+    latitude: -38.10505
+    longitude: 145.2163
+    population: 7484
+    dem: 33
+    timezone: "Australia/Melbourne"
+  - name: "Flemington"
+    latitude: -37.78825
+    longitude: 144.93001
+    population: 7528
+    dem: 20
+    timezone: "Australia/Melbourne"
+  - name: "Fairfield"
+    latitude: -37.77977
+    longitude: 145.01764
+    population: 5946
+    dem: 39
+    timezone: "Australia/Melbourne"
+  - name: "Heidelberg Heights"
+    latitude: -37.74313
+    longitude: 145.05695
+    population: 6388
+    dem: 85
+    timezone: "Australia/Melbourne"
+  - name: "Westmeadows"
+    latitude: -37.67604
+    longitude: 144.88701
+    population: 5524
+    dem: 81
+    timezone: "Australia/Melbourne"
+  - name: "Keilor East"
+    latitude: -37.73261
+    longitude: 144.86504
+    population: 13259
+    dem: 68
+    timezone: "Australia/Melbourne"
+  - name: "Coburg North"
+    latitude: -37.72867
+    longitude: 144.96134
+    population: 6576
+    dem: 66
+    timezone: "Australia/Melbourne"
+  - name: "Hadfield"
+    latitude: -37.70728
+    longitude: 144.9416
+    population: 5366
+    dem: 85
+    timezone: "Australia/Melbourne"
+  - name: "Oak Park"
+    latitude: -37.71842
+    longitude: 144.91945
+    population: 5771
+    dem: 65
+    timezone: "Australia/Melbourne"
+  - name: "Pascoe Vale South"
+    latitude: -37.73973
+    longitude: 144.94615
+    population: 9553
+    dem: 70
+    timezone: "Australia/Melbourne"
+  - name: "Bayswater North"
+    latitude: -37.82612
+    longitude: 145.29831
+    population: 8424
+    dem: 129
+    timezone: "Australia/Melbourne"
+  - name: "Croydon Hills"
+    latitude: -37.77651
+    longitude: 145.26355
+    population: 5185
+    dem: 135
+    timezone: "Australia/Melbourne"
+  - name: "Vermont South"
+    latitude: -37.85747
+    longitude: 145.1827
+    population: 11416
+    dem: 114
+    timezone: "Australia/Melbourne"
+  - name: "Cranbourne East"
+    latitude: -38.11531
+    longitude: 145.29814
+    population: 8211
+    dem: 50
+    timezone: "Australia/Melbourne"
+  - name: "Cranbourne North"
+    latitude: -38.07758
+    longitude: 145.29871
+    population: 14570
+    dem: 41
+    timezone: "Australia/Melbourne"
+  - name: "Cranbourne West"
+    latitude: -38.0965
+    longitude: 145.26707
+    population: 8743
+    dem: 40
+    timezone: "Australia/Melbourne"
+  - name: "Narre Warren South"
+    latitude: -38.04369
+    longitude: 145.2923
+    population: 28594
+    dem: 48
+    timezone: "Australia/Melbourne"
+  - name: "Dandenong North"
+    latitude: -37.96649
+    longitude: 145.2081
+    population: 21910
+    dem: 53
+    timezone: "Australia/Melbourne"
+  - name: "Noble Park North"
+    latitude: -37.94978
+    longitude: 145.19257
+    population: 7390
+    dem: 58
+    timezone: "Australia/Melbourne"
+  - name: "Frankston North"
+    latitude: -38.12352
+    longitude: 145.14836
+    population: 5626
+    dem: 17
+    timezone: "Australia/Melbourne"
+  - name: "Frankston South"
+    latitude: -38.16604
+    longitude: 145.13643
+    population: 17360
+    dem: 88
+    timezone: "Australia/Melbourne"
+  - name: "Keilor Downs"
+    latitude: -37.72337
+    longitude: 144.80839
+    population: 10307
+    dem: 83
+    timezone: "Australia/Melbourne"
+  - name: "Sunshine North"
+    latitude: -37.76987
+    longitude: 144.82787
+    population: 10637
+    dem: 47
+    timezone: "Australia/Melbourne"
+  - name: "Sunshine West"
+    latitude: -37.79117
+    longitude: 144.81637
+    population: 16743
+    dem: 40
+    timezone: "Australia/Melbourne"
+  - name: "Altona Meadows"
+    latitude: -37.88413
+    longitude: 144.78367
+    population: 18746
+    dem: 9
+    timezone: "Australia/Melbourne"
+  - name: "West Footscray"
+    latitude: -37.79746
+    longitude: 144.87727
+    population: 10222
+    dem: 37
+    timezone: "Australia/Melbourne"
+  - name: "Taylors Hill"
+    latitude: -37.70988
+    longitude: 144.75483
+    population: 11785
+    dem: 117
+    timezone: "Australia/Melbourne"
+  - name: "Hamlyn Heights"
+    latitude: -38.12108
+    longitude: 144.32799
+    population: 6075
+    dem: 42
+    timezone: "Australia/Melbourne"

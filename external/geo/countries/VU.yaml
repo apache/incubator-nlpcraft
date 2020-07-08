@@ -1,0 +1,62 @@
+---
+name: "Vanuatu"
+iso: "VU"
+iso3: "VUT"
+code: "548"
+capital: "Port Vila"
+area: 12200.0
+population: 221552
+continent: "OC"
+currencyCode: "VUV"
+currencyName: "Vatu"
+phone: "678"
+languages: "bi,en-VU,fr-VU"
+regions:
+- name: "Sanma Province"
+  cities:
+  - name: "Luganville"
+    latitude: -15.51989
+    longitude: 167.16235
+    population: 13397
+    dem: 8
+    timezone: "Pacific/Efate"
+- name: "Torba Province"
+  cities:
+  - name: "Sola"
+    latitude: -13.87611
+    longitude: 167.55167
+    population: 1171
+    dem: 11
+    timezone: "Pacific/Efate"
+- name: "Malampa Province"
+  cities:
+  - name: "Lakatoro"
+    latitude: -16.09992
+    longitude: 167.41636
+    population: 705
+    dem: 10
+    timezone: "Pacific/Efate"
+- name: "Shefa Province"
+  cities:
+  - name: "Port-Vila"
+    latitude: -17.73648
+    longitude: 168.31366
+    population: 35901
+    dem: 1
+    timezone: "Pacific/Efate"
+- name: "Tafea Province"
+  cities:
+  - name: "Isangel"
+    latitude: -19.54167
+    longitude: 169.28167
+    population: 1437
+    dem: 106
+    timezone: "Pacific/Efate"
+- name: "Penama Province"
+  cities:
+  - name: "Saratamata"
+    latitude: -15.29031
+    longitude: 167.96679
+    population: 0
+    dem: 150
+    timezone: "Pacific/Efate"

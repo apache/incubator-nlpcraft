@@ -1,0 +1,139 @@
+---
+name: "Luxembourg"
+iso: "LU"
+iso3: "LUX"
+code: "442"
+capital: "Luxembourg"
+area: 2586.0
+population: 497538
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "352"
+postalCodeFormat: "L-####"
+postalCodeRegex: "^(?:L-)?\\d{4}$"
+languages: "lb,de-LU,fr-LU"
+neighbours: "DE,BE,FR"
+regions:
+- name: "Canton dEchternach"
+- name: "Grevenmacher"
+  cities:
+  - name: "Grevenmacher"
+    latitude: 49.67751
+    longitude: 6.44022
+    population: 3958
+    dem: 143
+    timezone: "Europe/Luxembourg"
+- name: "Diekirch"
+  cities:
+  - name: "Ettelbruck"
+    latitude: 49.8475
+    longitude: 6.10417
+    population: 6364
+    dem: 199
+    timezone: "Europe/Luxembourg"
+  - name: "Diekirch"
+    latitude: 49.86778
+    longitude: 6.15583
+    population: 6242
+    dem: 195
+    timezone: "Europe/Luxembourg"
+- name: "Luxembourg"
+  cities:
+  - name: "Strassen"
+    latitude: 49.62056
+    longitude: 6.07333
+    population: 6006
+    dem: 309
+    timezone: "Europe/Luxembourg"
+  - name: "Luxembourg"
+    latitude: 49.61167
+    longitude: 6.13
+    population: 76684
+    dem: 316
+    timezone: "Europe/Luxembourg"
+  - name: "Bertrange"
+    latitude: 49.61111
+    longitude: 6.05
+    population: 5615
+    dem: 287
+    timezone: "Europe/Luxembourg"
+- name: "Capellen"
+  cities:
+  - name: "Mamer"
+    latitude: 49.6275
+    longitude: 6.02333
+    population: 5017
+    dem: 294
+    timezone: "Europe/Luxembourg"
+- name: "Mersch"
+  cities:
+  - name: "Mersch"
+    latitude: 49.74889
+    longitude: 6.10611
+    population: 3464
+    dem: 219
+    timezone: "Europe/Luxembourg"
+- name: "Wiltz"
+  cities:
+  - name: "Wiltz"
+    latitude: 49.96547
+    longitude: 5.9339
+    population: 4816
+    dem: 382
+    timezone: "Europe/Luxembourg"
+- name: "Vianden"
+- name: "Canton dEsch-sur-Alzette"
+  cities:
+  - name: "Schifflange"
+    latitude: 49.50639
+    longitude: 6.01278
+    population: 8155
+    dem: 292
+    timezone: "Europe/Luxembourg"
+  - name: "Petange"
+    latitude: 49.55833
+    longitude: 5.88056
+    population: 7187
+    dem: 278
+    timezone: "Europe/Luxembourg"
+  - name: "Esch-sur-Alzette"
+    latitude: 49.49583
+    longitude: 5.98056
+    population: 28228
+    dem: 295
+    timezone: "Europe/Luxembourg"
+  - name: "Dudelange"
+    latitude: 49.48056
+    longitude: 6.0875
+    population: 18013
+    dem: 295
+    timezone: "Europe/Luxembourg"
+  - name: "Differdange"
+    latitude: 49.52417
+    longitude: 5.89139
+    population: 5296
+    dem: 304
+    timezone: "Europe/Luxembourg"
+  - name: "Bettembourg"
+    latitude: 49.51861
+    longitude: 6.10278
+    population: 7437
+    dem: 278
+    timezone: "Europe/Luxembourg"
+  - name: "Belvaux"
+    latitude: 49.51014
+    longitude: 5.92414
+    population: 5313
+    dem: 339
+    timezone: "Europe/Luxembourg"
+- name: "Clervaux"
+- name: "Redange"
+  cities:
+  - name: "Redange-sur-Attert"
+    latitude: 49.76437
+    longitude: 5.88997
+    population: 1164
+    dem: 283
+    timezone: "Europe/Luxembourg"
+- name: "Remich"

@@ -1,0 +1,32 @@
+---
+name: "Cook Islands"
+iso: "CK"
+iso3: "COK"
+code: "184"
+capital: "Avarua"
+area: 240.0
+population: 21388
+continent: "OC"
+currencyCode: "NZD"
+currencyName: "Dollar"
+phone: "682"
+languages: "en-CK,mi"
+regions:
+- name: "Mitiaro"
+- name: "Pukapuka"
+- name: "Rarotonga"
+  cities:
+  - name: "Avarua"
+    latitude: -21.2075
+    longitude: -159.77545
+    population: 13373
+    dem: 6
+    timezone: "Pacific/Rarotonga"
+- name: "Penrhyn"
+- name: "Mauke"
+- name: "Rakahanga"
+- name: "Aitutaki"
+- name: "Mangaia"
+- name: "Palmerston"
+- name: "Manihiki"
+- name: "Atiu"

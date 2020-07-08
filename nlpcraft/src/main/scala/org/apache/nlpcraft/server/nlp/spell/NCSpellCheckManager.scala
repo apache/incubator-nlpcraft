@@ -43,14 +43,19 @@ object NCSpellCheckManager extends NCService {
             s // Full lower case by default.
     
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        val extOpt = U.sysEnv("NLPCRAFT_RESOURCE_EXT")
+        
+        if (extOpt.isDefined)
+            logger.info(s"Using external spelling configuration from: ${extOpt.get}")
+        
         dict = U.extractYamlString(
-            U.getContent(PATH, U.sysEnv("NLPCRAFT_RESOURCE_EXT")),
+            U.getContent(PATH, extOpt),
             PATH,
             ignoreCase = true,
             new TypeReference[Map[String, String]] {}
         )
 
-        logger.info(s"Spell Checker Dictionary loaded: ${dict.size}")
+        logger.info(s"Spell checker dictionary loaded: ${dict.size} entries")
 
         super.start()
     }

@@ -1,0 +1,87 @@
+---
+name: "Eritrea"
+iso: "ER"
+iso3: "ERI"
+code: "232"
+capital: "Asmara"
+area: 121320.0
+population: 5792984
+continent: "AF"
+currencyCode: "ERN"
+currencyName: "Nakfa"
+phone: "291"
+languages: "aa-ER,ar,tig,kun,ti-ER"
+neighbours: "ET,SD,DJ"
+regions:
+- name: "Debub Region"
+  cities:
+  - name: "Dekemhare"
+    latitude: 15.07
+    longitude: 39.0475
+    population: 10959
+    dem: 2019
+    timezone: "Africa/Asmara"
+  - name: "Mendefera"
+    latitude: 14.88722
+    longitude: 38.81528
+    population: 17781
+    dem: 1977
+    timezone: "Africa/Asmara"
+  - name: "Adi Keyh"
+    latitude: 14.84444
+    longitude: 39.37722
+    population: 13061
+    dem: 2391
+    timezone: "Africa/Asmara"
+- name: "Gash-Barka Region"
+  cities:
+  - name: "Barentu"
+    latitude: 15.10582
+    longitude: 37.59067
+    population: 15891
+    dem: 1009
+    timezone: "Africa/Asmara"
+  - name: "Akordat"
+    latitude: 15.54798
+    longitude: 37.88291
+    population: 8857
+    dem: 612
+    timezone: "Africa/Asmara"
+- name: "Anseba Region"
+  cities:
+  - name: "Keren"
+    latitude: 15.77792
+    longitude: 38.45107
+    population: 74800
+    dem: 1399
+    timezone: "Africa/Asmara"
+- name: "Southern Red Sea Region"
+  cities:
+  - name: "Edd"
+    latitude: 13.93088
+    longitude: 41.6938
+    population: 11259
+    dem: 7
+    timezone: "Africa/Asmara"
+  - name: "Assab"
+    latitude: 13.00917
+    longitude: 42.73944
+    population: 21300
+    dem: 22
+    timezone: "Africa/Asmara"
+- name: "Northern Red Sea Region"
+  cities:
+  - name: "Massawa"
+    latitude: 15.60811
+    longitude: 39.47455
+    population: 23100
+    dem: 9
+    timezone: "Africa/Asmara"
+- name: "Maekel Region"
+  cities:
+  - name: "Asmara"
+    latitude: 15.33805
+    longitude: 38.93184
+    population: 563930
+    dem: 2334
+    timezone: "Africa/Asmara"

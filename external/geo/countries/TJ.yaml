@@ -1,0 +1,321 @@
+---
+name: "Tajikistan"
+iso: "TJ"
+iso3: "TJK"
+code: "762"
+capital: "Dushanbe"
+area: 143100.0
+population: 7487489
+continent: "AS"
+currencyCode: "TJS"
+currencyName: "Somoni"
+phone: "992"
+postalCodeFormat: "######"
+postalCodeRegex: "^(\\d{6})$"
+languages: "tg,ru"
+neighbours: "CN,AF,KG,UZ"
+regions:
+- name: "Viloyati Mukhtori Kuhistoni Badakhshon"
+  cities:
+  - name: "Murghob"
+    latitude: 38.17023
+    longitude: 73.96674
+    population: 10815
+    dem: 3607
+    timezone: "Asia/Dushanbe"
+  - name: "Khorugh"
+    latitude: 37.48974
+    longitude: 71.55304
+    population: 30000
+    dem: 2089
+    timezone: "Asia/Dushanbe"
+  - name: "Ishqoshim"
+    latitude: 36.72484
+    longitude: 71.61331
+    population: 26000
+    dem: 2535
+    timezone: "Asia/Dushanbe"
+- name: "Dushanbe"
+  cities:
+  - name: "Dushanbe"
+    latitude: 38.53575
+    longitude: 68.77905
+    population: 679400
+    dem: 767
+    timezone: "Asia/Dushanbe"
+  - name: "Boshkengash"
+    latitude: 38.46613
+    longitude: 68.80533
+    population: 23696
+    dem: 755
+    timezone: "Asia/Dushanbe"
+- name: "Viloyati Sughd"
+  cities:
+  - name: "Istaravshan"
+    latitude: 39.9142
+    longitude: 69.00328
+    population: 52851
+    dem: 979
+    timezone: "Asia/Dushanbe"
+  - name: "Panjakent"
+    latitude: 39.49524
+    longitude: 67.60931
+    population: 35085
+    dem: 998
+    timezone: "Asia/Dushanbe"
+  - name: "Taboshar"
+    latitude: 40.57017
+    longitude: 69.64175
+    population: 11578
+    dem: 1196
+    timezone: "Asia/Dushanbe"
+  - name: "Proletar"
+    latitude: 40.16713
+    longitude: 69.50163
+    population: 16441
+    dem: 382
+    timezone: "Asia/Dushanbe"
+  - name: "Pakhtakoron"
+    latitude: 40.15709
+    longitude: 68.74659
+    population: 8220
+    dem: 387
+    timezone: "Asia/Dushanbe"
+  - name: "Nov"
+    latitude: 40.1522
+    longitude: 69.37076
+    population: 13833
+    dem: 379
+    timezone: "Asia/Dushanbe"
+  - name: "Khujand"
+    latitude: 40.28256
+    longitude: 69.62216
+    population: 144865
+    dem: 340
+    timezone: "Asia/Dushanbe"
+  - name: "Konsoy"
+    latitude: 40.49155
+    longitude: 69.70245
+    population: 5042
+    dem: 891
+    timezone: "Asia/Dushanbe"
+  - name: "Konibodom"
+    latitude: 40.29414
+    longitude: 70.43122
+    population: 50359
+    dem: 409
+    timezone: "Asia/Dushanbe"
+  - name: "Isfara"
+    latitude: 40.12649
+    longitude: 70.62526
+    population: 37738
+    dem: 824
+    timezone: "Asia/Dushanbe"
+  - name: "Buston"
+    latitude: 40.52286
+    longitude: 69.33307
+    population: 13043
+    dem: 324
+    timezone: "Asia/Dushanbe"
+  - name: "Shaydon"
+    latitude: 40.66992
+    longitude: 70.3502
+    population: 11705
+    dem: 838
+    timezone: "Asia/Dushanbe"
+  - name: "Adrasmon"
+    latitude: 40.64928
+    longitude: 69.98472
+    population: 13372
+    dem: 1599
+    timezone: "Asia/Dushanbe"
+  - name: "Chkalov"
+    latitude: 40.23417
+    longitude: 69.69481
+    population: 21537
+    dem: 415
+    timezone: "Asia/Dushanbe"
+- name: "Districts of Republican Subordination"
+  cities:
+  - name: "Shahrinav"
+    latitude: 38.57085
+    longitude: 68.33498
+    population: 5385
+    dem: 850
+    timezone: "Asia/Dushanbe"
+  - name: "Roghun"
+    latitude: 38.78257
+    longitude: 69.87081
+    population: 7731
+    dem: 1251
+    timezone: "Asia/Dushanbe"
+  - name: "Vahdat"
+    latitude: 38.55632
+    longitude: 69.01354
+    population: 45693
+    dem: 872
+    timezone: "Asia/Dushanbe"
+  - name: "Obigarm"
+    latitude: 38.71731
+    longitude: 69.70885
+    population: 10035
+    dem: 1358
+    timezone: "Asia/Dushanbe"
+  - name: "Novobod"
+    latitude: 39.01084
+    longitude: 70.15082
+    population: 5352
+    dem: 1276
+    timezone: "Asia/Dushanbe"
+  - name: "Khodzha-Maston"
+    latitude: 38.74457
+    longitude: 68.62702
+    population: 9781
+    dem: 1565
+    timezone: "Asia/Dushanbe"
+  - name: "Hisor"
+    latitude: 38.52504
+    longitude: 68.55124
+    population: 23978
+    dem: 800
+    timezone: "Asia/Dushanbe"
+  - name: "Rasht"
+    latitude: 39.02871
+    longitude: 70.37446
+    population: 10771
+    dem: 1371
+    timezone: "Asia/Dushanbe"
+  - name: "Tursunzoda"
+    latitude: 38.51271
+    longitude: 68.23163
+    population: 37000
+    dem: 707
+    timezone: "Asia/Dushanbe"
+- name: "Viloyati Khatlon"
+  cities:
+  - name: "Yovon"
+    latitude: 38.31408
+    longitude: 69.03784
+    population: 17471
+    dem: 654
+    timezone: "Asia/Dushanbe"
+  - name: "Vose"
+    latitude: 37.80396
+    longitude: 69.64417
+    population: 21736
+    dem: 472
+    timezone: "Asia/Dushanbe"
+  - name: "Vakhsh"
+    latitude: 37.71485
+    longitude: 68.83456
+    population: 15215
+    dem: 431
+    timezone: "Asia/Dushanbe"
+  - name: "Sovet"
+    latitude: 38.0467
+    longitude: 69.58822
+    population: 8695
+    dem: 672
+    timezone: "Asia/Dushanbe"
+  - name: "Shahritus"
+    latitude: 37.26206
+    longitude: 68.13849
+    population: 13042
+    dem: 367
+    timezone: "Asia/Dushanbe"
+  - name: "Qurghonteppa"
+    latitude: 37.83399
+    longitude: 68.78186
+    population: 65000
+    dem: 430
+    timezone: "Asia/Dushanbe"
+  - name: "Panj"
+    latitude: 37.23634
+    longitude: 69.09911
+    population: 8019
+    dem: 368
+    timezone: "Asia/Dushanbe"
+  - name: "Farkhor"
+    latitude: 37.49219
+    longitude: 69.40356
+    population: 21736
+    dem: 444
+    timezone: "Asia/Dushanbe"
+  - name: "Orzu"
+    latitude: 37.5582
+    longitude: 68.81952
+    population: 5988
+    dem: 415
+    timezone: "Asia/Dushanbe"
+  - name: "Norak"
+    latitude: 38.38917
+    longitude: 69.32272
+    population: 18122
+    dem: 660
+    timezone: "Asia/Dushanbe"
+  - name: "Muminobod"
+    latitude: 38.10714
+    longitude: 70.03213
+    population: 11955
+    dem: 1247
+    timezone: "Asia/Dushanbe"
+  - name: "Abdurahmoni Jomi"
+    latitude: 37.94636
+    longitude: 68.80878
+    population: 9943
+    dem: 424
+    timezone: "Asia/Dushanbe"
+  - name: "Kulob"
+    latitude: 37.91459
+    longitude: 69.78454
+    population: 78786
+    dem: 609
+    timezone: "Asia/Dushanbe"
+  - name: "Kolkhozobod"
+    latitude: 37.58823
+    longitude: 68.65886
+    population: 18476
+    dem: 393
+    timezone: "Asia/Dushanbe"
+  - name: "Kirov"
+    latitude: 37.81908
+    longitude: 68.85905
+    population: 7696
+    dem: 445
+    timezone: "Asia/Dushanbe"
+  - name: "Gharavuti"
+    latitude: 37.56703
+    longitude: 68.44668
+    population: 8474
+    dem: 393
+    timezone: "Asia/Dushanbe"
+  - name: "Jilikul"
+    latitude: 37.49167
+    longitude: 68.53106
+    population: 5434
+    dem: 353
+    timezone: "Asia/Dushanbe"
+  - name: "Dusti"
+    latitude: 37.34812
+    longitude: 68.66398
+    population: 8700
+    dem: 387
+    timezone: "Asia/Dushanbe"
+  - name: "Danghara"
+    latitude: 38.09578
+    longitude: 69.33998
+    population: 22824
+    dem: 652
+    timezone: "Asia/Dushanbe"
+  - name: "Chubek"
+    latitude: 37.61453
+    longitude: 69.70525
+    population: 19563
+    dem: 514
+    timezone: "Asia/Dushanbe"
+  - name: "Moskovskiy"
+    latitude: 37.60931
+    longitude: 68.58094
+    population: 22100
+    dem: 368
+    timezone: "Asia/Dushanbe"

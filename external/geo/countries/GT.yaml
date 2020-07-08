@@ -1,0 +1,1279 @@
+---
+name: "Guatemala"
+iso: "GT"
+iso3: "GTM"
+code: "320"
+capital: "Guatemala City"
+area: 108890.0
+population: 13550440
+continent: "NA"
+currencyCode: "GTQ"
+currencyName: "Quetzal"
+phone: "502"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "es-GT"
+neighbours: "MX,HN,BZ,SV"
+regions:
+- name: "Departamento de Totonicapan"
+  cities:
+  - name: "Totonicapan"
+    latitude: 14.91167
+    longitude: -91.36111
+    population: 69734
+    dem: 2499
+    timezone: "America/Guatemala"
+  - name: "Santa Maria Chiquimula"
+    latitude: 15.02992
+    longitude: -91.3292
+    population: 6980
+    dem: 2085
+    timezone: "America/Guatemala"
+  - name: "San Francisco El Alto"
+    latitude: 14.9449
+    longitude: -91.4431
+    population: 54493
+    dem: 2582
+    timezone: "America/Guatemala"
+  - name: "San Andres Xecul"
+    latitude: 14.90482
+    longitude: -91.48307
+    population: 12133
+    dem: 2420
+    timezone: "America/Guatemala"
+  - name: "Momostenango"
+    latitude: 15.04437
+    longitude: -91.40864
+    population: 31739
+    dem: 2215
+    timezone: "America/Guatemala"
+- name: "Departamento de Chimaltenango"
+  cities:
+  - name: "Zaragoza"
+    latitude: 14.64968
+    longitude: -90.89034
+    population: 9361
+    dem: 2083
+    timezone: "America/Guatemala"
+  - name: "Yepocapa"
+    latitude: 14.50195
+    longitude: -90.95396
+    population: 8961
+    dem: 1404
+    timezone: "America/Guatemala"
+  - name: "Tecpan Guatemala"
+    latitude: 14.76181
+    longitude: -90.99247
+    population: 21978
+    dem: 2316
+    timezone: "America/Guatemala"
+  - name: "Santa Cruz Balanya"
+    latitude: 14.68522
+    longitude: -90.91906
+    population: 7825
+    dem: 2036
+    timezone: "America/Guatemala"
+  - name: "San Martin Jilotepeque"
+    latitude: 14.78008
+    longitude: -90.79259
+    population: 9846
+    dem: 1728
+    timezone: "America/Guatemala"
+  - name: "San Jose Poaquil"
+    latitude: 14.81808
+    longitude: -90.91248
+    population: 5987
+    dem: 1936
+    timezone: "America/Guatemala"
+  - name: "San Andres Itzapa"
+    latitude: 14.62222
+    longitude: -90.84314
+    population: 18647
+    dem: 1858
+    timezone: "America/Guatemala"
+  - name: "Patzun"
+    latitude: 14.68189
+    longitude: -91.01397
+    population: 18704
+    dem: 2222
+    timezone: "America/Guatemala"
+  - name: "Patzicia"
+    latitude: 14.63194
+    longitude: -90.92659
+    population: 16494
+    dem: 2129
+    timezone: "America/Guatemala"
+  - name: "Parramos"
+    latitude: 14.60891
+    longitude: -90.80303
+    population: 9613
+    dem: 1740
+    timezone: "America/Guatemala"
+  - name: "El Tejar"
+    latitude: 14.64683
+    longitude: -90.79122
+    population: 15770
+    dem: 1776
+    timezone: "America/Guatemala"
+  - name: "Comalapa"
+    latitude: 14.74086
+    longitude: -90.88761
+    population: 20738
+    dem: 2115
+    timezone: "America/Guatemala"
+  - name: "Chimaltenango"
+    latitude: 14.66111
+    longitude: -90.81944
+    population: 82370
+    dem: 1803
+    timezone: "America/Guatemala"
+  - name: "Acatenango"
+    latitude: 14.55451
+    longitude: -90.94368
+    population: 7050
+    dem: 1486
+    timezone: "America/Guatemala"
+- name: "Departamento de Santa Rosa"
+  cities:
+  - name: "Taxisco"
+    latitude: 14.06719
+    longitude: -90.46791
+    population: 6518
+    dem: 180
+    timezone: "America/Guatemala"
+  - name: "Santa Rosa de Lima"
+    latitude: 14.38806
+    longitude: -90.29556
+    population: 5984
+    dem: 948
+    timezone: "America/Guatemala"
+  - name: "Santa Cruz Naranjo"
+    latitude: 14.38806
+    longitude: -90.36972
+    population: 6254
+    dem: 1174
+    timezone: "America/Guatemala"
+  - name: "Oratorio"
+    latitude: 14.22806
+    longitude: -90.17583
+    population: 10155
+    dem: 1034
+    timezone: "America/Guatemala"
+  - name: "Nueva Santa Rosa"
+    latitude: 14.38111
+    longitude: -90.27611
+    population: 10130
+    dem: 1001
+    timezone: "America/Guatemala"
+  - name: "Guazacapan"
+    latitude: 14.07417
+    longitude: -90.41667
+    population: 7080
+    dem: 265
+    timezone: "America/Guatemala"
+  - name: "Cuilapa"
+    latitude: 14.27639
+    longitude: -90.29889
+    population: 16484
+    dem: 902
+    timezone: "America/Guatemala"
+  - name: "Chiquimulilla"
+    latitude: 14.0838
+    longitude: -90.38547
+    population: 12842
+    dem: 285
+    timezone: "America/Guatemala"
+  - name: "Casillas"
+    latitude: 14.42222
+    longitude: -90.24417
+    population: 8970
+    dem: 1080
+    timezone: "America/Guatemala"
+  - name: "Barberena"
+    latitude: 14.30944
+    longitude: -90.36111
+    population: 30539
+    dem: 1221
+    timezone: "America/Guatemala"
+- name: "Departamento del Peten"
+  cities:
+  - name: "Sayaxche"
+    latitude: 16.52446
+    longitude: -90.18801
+    population: 9100
+    dem: 134
+    timezone: "America/Guatemala"
+  - name: "Santa Ana"
+    latitude: 16.8
+    longitude: -89.83333
+    population: 9523
+    dem: 213
+    timezone: "America/Guatemala"
+  - name: "San Luis"
+    latitude: 16.19889
+    longitude: -89.44028
+    population: 6776
+    dem: 381
+    timezone: "America/Guatemala"
+  - name: "San Benito"
+    latitude: 16.91675
+    longitude: -89.91898
+    population: 30764
+    dem: 135
+    timezone: "America/Guatemala"
+  - name: "San Andres"
+    latitude: 16.96667
+    longitude: -89.91667
+    population: 7235
+    dem: 132
+    timezone: "America/Guatemala"
+  - name: "Poptun"
+    latitude: 16.33111
+    longitude: -89.41694
+    population: 17320
+    dem: 533
+    timezone: "America/Guatemala"
+  - name: "La Libertad"
+    latitude: 16.7885
+    longitude: -90.11698
+    population: 8646
+    dem: 186
+    timezone: "America/Guatemala"
+  - name: "Flores"
+    latitude: 16.92258
+    longitude: -89.89941
+    population: 20464
+    dem: 121
+    timezone: "America/Guatemala"
+  - name: "Dolores"
+    latitude: 16.51417
+    longitude: -89.41583
+    population: 10604
+    dem: 420
+    timezone: "America/Guatemala"
+  - name: "Melchor de Mencos"
+    latitude: 17.06606
+    longitude: -89.15229
+    population: 11457
+    dem: 113
+    timezone: "America/Guatemala"
+- name: "Departamento de Escuintla"
+  cities:
+  - name: "San Vicente Pacaya"
+    latitude: 14.41466
+    longitude: -90.63613
+    population: 7162
+    dem: 1582
+    timezone: "America/Guatemala"
+  - name: "Santa Lucia Cotzumalguapa"
+    latitude: 14.33505
+    longitude: -91.02339
+    population: 62097
+    dem: 392
+    timezone: "America/Guatemala"
+  - name: "Puerto San Jose"
+    latitude: 13.9274
+    longitude: -90.82166
+    population: 18655
+    dem: 6
+    timezone: "America/Guatemala"
+  - name: "Tiquisate"
+    latitude: 14.28356
+    longitude: -91.36063
+    population: 18189
+    dem: 71
+    timezone: "America/Guatemala"
+  - name: "Palin"
+    latitude: 14.40358
+    longitude: -90.69659
+    population: 31329
+    dem: 1138
+    timezone: "America/Guatemala"
+  - name: "Nueva Concepcion"
+    latitude: 14.2
+    longitude: -91.3
+    population: 11121
+    dem: 58
+    timezone: "America/Guatemala"
+  - name: "Masagua"
+    latitude: 14.20306
+    longitude: -90.84806
+    population: 10045
+    dem: 118
+    timezone: "America/Guatemala"
+  - name: "La Gomera"
+    latitude: 14.08213
+    longitude: -91.05383
+    population: 24001
+    dem: 38
+    timezone: "America/Guatemala"
+  - name: "La Democracia"
+    latitude: 14.23083
+    longitude: -90.94722
+    population: 5479
+    dem: 168
+    timezone: "America/Guatemala"
+  - name: "Escuintla"
+    latitude: 14.305
+    longitude: -90.785
+    population: 103165
+    dem: 356
+    timezone: "America/Guatemala"
+- name: "Departamento de Retalhuleu"
+  cities:
+  - name: "San Sebastian"
+    latitude: 14.56177
+    longitude: -91.64865
+    population: 14823
+    dem: 310
+    timezone: "America/Guatemala"
+  - name: "San Felipe"
+    latitude: 14.62304
+    longitude: -91.595
+    population: 8921
+    dem: 604
+    timezone: "America/Guatemala"
+  - name: "San Andres Villa Seca"
+    latitude: 14.57801
+    longitude: -91.58539
+    population: 5102
+    dem: 453
+    timezone: "America/Guatemala"
+  - name: "Retalhuleu"
+    latitude: 14.53611
+    longitude: -91.67778
+    population: 36656
+    dem: 241
+    timezone: "America/Guatemala"
+  - name: "Nuevo San Carlos"
+    latitude: 14.593
+    longitude: -91.6939
+    population: 19162
+    dem: 376
+    timezone: "America/Guatemala"
+  - name: "El Asintal"
+    latitude: 14.59626
+    longitude: -91.72744
+    population: 6156
+    dem: 371
+    timezone: "America/Guatemala"
+  - name: "Champerico"
+    latitude: 14.29337
+    longitude: -91.91214
+    population: 7761
+    dem: 1
+    timezone: "America/Guatemala"
+- name: "Departamento de Izabal"
+  cities:
+  - name: "Puerto Barrios"
+    latitude: 15.72778
+    longitude: -88.59444
+    population: 56605
+    dem: 7
+    timezone: "America/Guatemala"
+  - name: "Morales"
+    latitude: 15.48333
+    longitude: -88.81667
+    population: 18994
+    dem: 37
+    timezone: "America/Guatemala"
+  - name: "Livingston"
+    latitude: 15.82826
+    longitude: -88.75039
+    population: 14350
+    dem: 16
+    timezone: "America/Guatemala"
+  - name: "El Estor"
+    latitude: 15.53333
+    longitude: -89.35
+    population: 15842
+    dem: 92
+    timezone: "America/Guatemala"
+- name: "Departamento de Huehuetenango"
+  cities:
+  - name: "Soloma"
+    latitude: 15.65841
+    longitude: -91.42994
+    population: 10916
+    dem: 2270
+    timezone: "America/Guatemala"
+  - name: "San Mateo Ixtatan"
+    latitude: 15.83194
+    longitude: -91.47806
+    population: 13213
+    dem: 2599
+    timezone: "America/Guatemala"
+  - name: "San Antonio Huista"
+    latitude: 15.6501
+    longitude: -91.77163
+    population: 5669
+    dem: 1243
+    timezone: "America/Guatemala"
+  - name: "La Libertad"
+    latitude: 15.51421
+    longitude: -91.86944
+    population: 6439
+    dem: 1710
+    timezone: "America/Guatemala"
+  - name: "Jacaltenango"
+    latitude: 15.66662
+    longitude: -91.71177
+    population: 34084
+    dem: 1459
+    timezone: "America/Guatemala"
+  - name: "Huehuetenango"
+    latitude: 15.31918
+    longitude: -91.47241
+    population: 79426
+    dem: 1896
+    timezone: "America/Guatemala"
+  - name: "Concepcion Huista"
+    latitude: 15.62378
+    longitude: -91.66521
+    population: 8925
+    dem: 2238
+    timezone: "America/Guatemala"
+  - name: "Chiantla"
+    latitude: 15.35484
+    longitude: -91.45807
+    population: 8465
+    dem: 1995
+    timezone: "America/Guatemala"
+  - name: "Barillas"
+    latitude: 15.80361
+    longitude: -91.31583
+    population: 14100
+    dem: 1462
+    timezone: "America/Guatemala"
+  - name: "Aguacatan"
+    latitude: 15.34222
+    longitude: -91.31141
+    population: 5572
+    dem: 1667
+    timezone: "America/Guatemala"
+- name: "Departamento del Quiche"
+  cities:
+  - name: "Zacualpa"
+    latitude: 15.08333
+    longitude: -90.83333
+    population: 9241
+    dem: 1920
+    timezone: "America/Guatemala"
+  - name: "Santa Cruz del Quiche"
+    latitude: 15.03085
+    longitude: -91.14871
+    population: 23618
+    dem: 2023
+    timezone: "America/Guatemala"
+  - name: "San Luis Ixcan"
+    latitude: 15.78722
+    longitude: -91.095
+    population: 7850
+    dem: 294
+    timezone: "America/Guatemala"
+  - name: "San Juan Cotzal"
+    latitude: 15.43368
+    longitude: -91.03481
+    population: 11046
+    dem: 1769
+    timezone: "America/Guatemala"
+  - name: "Sacapulas"
+    latitude: 15.28801
+    longitude: -91.08914
+    population: 12088
+    dem: 1198
+    timezone: "America/Guatemala"
+  - name: "Nebaj"
+    latitude: 15.40614
+    longitude: -91.14682
+    population: 23301
+    dem: 1909
+    timezone: "America/Guatemala"
+  - name: "Joyabaj"
+    latitude: 14.99311
+    longitude: -90.80161
+    population: 13164
+    dem: 1405
+    timezone: "America/Guatemala"
+  - name: "Cunen"
+    latitude: 15.33626
+    longitude: -91.02776
+    population: 8400
+    dem: 1824
+    timezone: "America/Guatemala"
+  - name: "Chichicastenango"
+    latitude: 14.94333
+    longitude: -91.11116
+    population: 79759
+    dem: 2049
+    timezone: "America/Guatemala"
+  - name: "Chajul"
+    latitude: 15.48523
+    longitude: -91.0352
+    population: 11657
+    dem: 1987
+    timezone: "America/Guatemala"
+- name: "Departamento de Suchitepequez"
+  cities:
+  - name: "Santo Tomas La Union"
+    latitude: 14.63219
+    longitude: -91.41075
+    population: 7081
+    dem: 870
+    timezone: "America/Guatemala"
+  - name: "Santo Domingo Suchitepequez"
+    latitude: 14.47901
+    longitude: -91.48327
+    population: 6270
+    dem: 230
+    timezone: "America/Guatemala"
+  - name: "Santa Barbara"
+    latitude: 14.43333
+    longitude: -91.23333
+    population: 12906
+    dem: 392
+    timezone: "America/Guatemala"
+  - name: "San Pablo Jocopilas"
+    latitude: 14.58882
+    longitude: -91.45188
+    population: 20259
+    dem: 663
+    timezone: "America/Guatemala"
+  - name: "San Francisco Zapotitlan"
+    latitude: 14.58939
+    longitude: -91.52144
+    population: 13855
+    dem: 600
+    timezone: "America/Guatemala"
+  - name: "San Bernardino"
+    latitude: 14.5424
+    longitude: -91.45811
+    population: 5501
+    dem: 439
+    timezone: "America/Guatemala"
+  - name: "San Antonio Suchitepequez"
+    latitude: 14.53938
+    longitude: -91.41442
+    population: 10951
+    dem: 389
+    timezone: "America/Guatemala"
+  - name: "Rio Bravo"
+    latitude: 14.40042
+    longitude: -91.31713
+    population: 7568
+    dem: 161
+    timezone: "America/Guatemala"
+  - name: "Patulul"
+    latitude: 14.41667
+    longitude: -91.16667
+    population: 14196
+    dem: 315
+    timezone: "America/Guatemala"
+  - name: "Mazatenango"
+    latitude: 14.53417
+    longitude: -91.50333
+    population: 44132
+    dem: 373
+    timezone: "America/Guatemala"
+  - name: "Cuyotenango"
+    latitude: 14.54006
+    longitude: -91.57179
+    population: 10825
+    dem: 336
+    timezone: "America/Guatemala"
+  - name: "Chicacao"
+    latitude: 14.54295
+    longitude: -91.32636
+    population: 20426
+    dem: 505
+    timezone: "America/Guatemala"
+- name: "Departamento de San Marcos"
+  cities:
+  - name: "Tacana"
+    latitude: 15.24058
+    longitude: -92.06721
+    population: 6438
+    dem: 2427
+    timezone: "America/Guatemala"
+  - name: "San Pedro Sacatepequez"
+    latitude: 14.96807
+    longitude: -91.76172
+    population: 40021
+    dem: 2412
+    timezone: "America/Guatemala"
+  - name: "San Pablo"
+    latitude: 14.93269
+    longitude: -92.00415
+    population: 13668
+    dem: 617
+    timezone: "America/Guatemala"
+  - name: "San Marcos"
+    latitude: 14.96389
+    longitude: -91.79444
+    population: 25088
+    dem: 2380
+    timezone: "America/Guatemala"
+  - name: "San Cristobal Cucho"
+    latitude: 14.90505
+    longitude: -91.78123
+    population: 9152
+    dem: 2350
+    timezone: "America/Guatemala"
+  - name: "Pajapita"
+    latitude: 14.72152
+    longitude: -92.03521
+    population: 8164
+    dem: 99
+    timezone: "America/Guatemala"
+  - name: "Ocos"
+    latitude: 14.50998
+    longitude: -92.19298
+    population: 9463
+    dem: 9
+    timezone: "America/Guatemala"
+  - name: "Nuevo Progreso"
+    latitude: 14.79174
+    longitude: -91.91946
+    population: 8113
+    dem: 606
+    timezone: "America/Guatemala"
+  - name: "Malacatan"
+    latitude: 14.91132
+    longitude: -92.05788
+    population: 14923
+    dem: 387
+    timezone: "America/Guatemala"
+  - name: "El Tumbador"
+    latitude: 14.86375
+    longitude: -91.93416
+    population: 7562
+    dem: 867
+    timezone: "America/Guatemala"
+  - name: "El Quetzal"
+    latitude: 14.76865
+    longitude: -91.81757
+    population: 12122
+    dem: 784
+    timezone: "America/Guatemala"
+  - name: "Comitancillo"
+    latitude: 15.08937
+    longitude: -91.74971
+    population: 19669
+    dem: 2271
+    timezone: "America/Guatemala"
+  - name: "Ciudad Tecun Uman"
+    latitude: 14.67737
+    longitude: -92.14039
+    population: 11432
+    dem: 29
+    timezone: "America/Guatemala"
+- name: "Departamento de Baja Verapaz"
+  cities:
+  - name: "San Miguel Chicaj"
+    latitude: 15.1
+    longitude: -90.4
+    population: 13747
+    dem: 979
+    timezone: "America/Guatemala"
+  - name: "San Jeronimo"
+    latitude: 15.06032
+    longitude: -90.2405
+    population: 8093
+    dem: 1001
+    timezone: "America/Guatemala"
+  - name: "Salama"
+    latitude: 15.10278
+    longitude: -90.31806
+    population: 40000
+    dem: 946
+    timezone: "America/Guatemala"
+  - name: "Rabinal"
+    latitude: 15.1
+    longitude: -90.45
+    population: 10737
+    dem: 1282
+    timezone: "America/Guatemala"
+  - name: "Purulha"
+    latitude: 15.26667
+    longitude: -90.2
+    population: 5370
+    dem: 2084
+    timezone: "America/Guatemala"
+  - name: "Cubulco"
+    latitude: 15.13333
+    longitude: -90.58333
+    population: 9753
+    dem: 1092
+    timezone: "America/Guatemala"
+- name: "Departamento de El Progreso"
+  cities:
+  - name: "Sanarate"
+    latitude: 14.78828
+    longitude: -90.19876
+    population: 15843
+    dem: 840
+    timezone: "America/Guatemala"
+  - name: "San Antonio La Paz"
+    latitude: 14.75888
+    longitude: -90.28485
+    population: 7781
+    dem: 1171
+    timezone: "America/Guatemala"
+  - name: "San Agustin Acasaguastlan"
+    latitude: 14.95
+    longitude: -89.96667
+    population: 10335
+    dem: 327
+    timezone: "America/Guatemala"
+  - name: "Guastatoya"
+    latitude: 14.85417
+    longitude: -90.06944
+    population: 13467
+    dem: 520
+    timezone: "America/Guatemala"
+- name: "Departamento de Jutiapa"
+  cities:
+  - name: "Santa Catarina Mita"
+    latitude: 14.45
+    longitude: -89.75
+    population: 10817
+    dem: 752
+    timezone: "America/Guatemala"
+  - name: "San Jose Acatempa"
+    latitude: 14.26528
+    longitude: -90.12694
+    population: 6367
+    dem: 1346
+    timezone: "America/Guatemala"
+  - name: "Moyuta"
+    latitude: 14.03861
+    longitude: -90.08083
+    population: 8145
+    dem: 1285
+    timezone: "America/Guatemala"
+  - name: "Jutiapa"
+    latitude: 14.29167
+    longitude: -89.89583
+    population: 34332
+    dem: 905
+    timezone: "America/Guatemala"
+  - name: "Jalpatagua"
+    latitude: 14.14167
+    longitude: -90.00861
+    population: 10469
+    dem: 587
+    timezone: "America/Guatemala"
+  - name: "El Progreso"
+    latitude: 14.35
+    longitude: -89.85
+    population: 7350
+    dem: 962
+    timezone: "America/Guatemala"
+  - name: "Atescatempa"
+    latitude: 14.17444
+    longitude: -89.7425
+    population: 11543
+    dem: 684
+    timezone: "America/Guatemala"
+  - name: "Asuncion Mita"
+    latitude: 14.33083
+    longitude: -89.71083
+    population: 15608
+    dem: 476
+    timezone: "America/Guatemala"
+- name: "Departamento de Jalapa"
+  cities:
+  - name: "San Luis Jilotepeque"
+    latitude: 14.65
+    longitude: -89.73333
+    population: 10306
+    dem: 853
+    timezone: "America/Guatemala"
+  - name: "Monjas"
+    latitude: 14.5
+    longitude: -89.86667
+    population: 10351
+    dem: 956
+    timezone: "America/Guatemala"
+  - name: "Mataquescuintla"
+    latitude: 14.52917
+    longitude: -90.18417
+    population: 7539
+    dem: 1641
+    timezone: "America/Guatemala"
+  - name: "Jalapa"
+    latitude: 14.63472
+    longitude: -89.98889
+    population: 45834
+    dem: 1373
+    timezone: "America/Guatemala"
+- name: "Departamento de Solola"
+  cities:
+  - name: "Solola"
+    latitude: 14.77222
+    longitude: -91.18333
+    population: 45373
+    dem: 2126
+    timezone: "America/Guatemala"
+  - name: "Santiago Atitlan"
+    latitude: 14.63823
+    longitude: -91.22901
+    population: 33309
+    dem: 1603
+    timezone: "America/Guatemala"
+  - name: "Santa Clara La Laguna"
+    latitude: 14.71509
+    longitude: -91.30355
+    population: 5306
+    dem: 2075
+    timezone: "America/Guatemala"
+  - name: "Santa Catarina Ixtahuacan"
+    latitude: 14.79797
+    longitude: -91.35866
+    population: 14734
+    dem: 2198
+    timezone: "America/Guatemala"
+  - name: "San Pedro La Laguna"
+    latitude: 14.69297
+    longitude: -91.27201
+    population: 9681
+    dem: 1590
+    timezone: "America/Guatemala"
+  - name: "San Pablo La Laguna"
+    latitude: 14.72092
+    longitude: -91.27242
+    population: 6186
+    dem: 1621
+    timezone: "America/Guatemala"
+  - name: "San Lucas Toliman"
+    latitude: 14.59471
+    longitude: -91.14659
+    population: 14545
+    dem: 1576
+    timezone: "America/Guatemala"
+  - name: "Panajachel"
+    latitude: 14.74185
+    longitude: -91.15676
+    population: 12863
+    dem: 1612
+    timezone: "America/Guatemala"
+  - name: "Nahuala"
+    latitude: 14.8429
+    longitude: -91.31799
+    population: 27690
+    dem: 2482
+    timezone: "America/Guatemala"
+- name: "Departamento de Quetzaltenango"
+  cities:
+  - name: "Zunil"
+    latitude: 14.78463
+    longitude: -91.48345
+    population: 9986
+    dem: 2200
+    timezone: "America/Guatemala"
+  - name: "San Miguel Siguila"
+    latitude: 14.89547
+    longitude: -91.61457
+    population: 7551
+    dem: 2485
+    timezone: "America/Guatemala"
+  - name: "San Mateo"
+    latitude: 14.858
+    longitude: -91.59004
+    population: 5534
+    dem: 2576
+    timezone: "America/Guatemala"
+  - name: "San Carlos Sija"
+    latitude: 14.98436
+    longitude: -91.54912
+    population: 6831
+    dem: 2730
+    timezone: "America/Guatemala"
+  - name: "Samayac"
+    latitude: 14.58084
+    longitude: -91.46135
+    population: 8994
+    dem: 621
+    timezone: "America/Guatemala"
+  - name: "Salcaja"
+    latitude: 14.87964
+    longitude: -91.45699
+    population: 11966
+    dem: 2349
+    timezone: "America/Guatemala"
+  - name: "Quetzaltenango"
+    latitude: 14.83472
+    longitude: -91.51806
+    population: 132230
+    dem: 2344
+    timezone: "America/Guatemala"
+  - name: "Ostuncalco"
+    latitude: 14.86899
+    longitude: -91.62137
+    population: 28894
+    dem: 2498
+    timezone: "America/Guatemala"
+  - name: "La Esperanza"
+    latitude: 14.87169
+    longitude: -91.5614
+    population: 16461
+    dem: 2455
+    timezone: "America/Guatemala"
+  - name: "Huitan"
+    latitude: 15.0492
+    longitude: -91.63944
+    population: 9958
+    dem: 2615
+    timezone: "America/Guatemala"
+  - name: "Flores Costa Cuca"
+    latitude: 14.63238
+    longitude: -91.86341
+    population: 11984
+    dem: 316
+    timezone: "America/Guatemala"
+  - name: "El Palmar"
+    latitude: 14.65083
+    longitude: -91.578
+    population: 15167
+    dem: 748
+    timezone: "America/Guatemala"
+  - name: "Concepcion Chiquirichapa"
+    latitude: 14.8551
+    longitude: -91.6236
+    population: 8080
+    dem: 2572
+    timezone: "America/Guatemala"
+  - name: "Colomba"
+    latitude: 14.7073
+    longitude: -91.73167
+    population: 19115
+    dem: 991
+    timezone: "America/Guatemala"
+  - name: "Coatepeque"
+    latitude: 14.70413
+    longitude: -91.86426
+    population: 45654
+    dem: 492
+    timezone: "America/Guatemala"
+  - name: "Cantel"
+    latitude: 14.81154
+    longitude: -91.45536
+    population: 26063
+    dem: 2296
+    timezone: "America/Guatemala"
+  - name: "Cabrican"
+    latitude: 15.07485
+    longitude: -91.648
+    population: 11946
+    dem: 2617
+    timezone: "America/Guatemala"
+  - name: "Almolonga"
+    latitude: 14.81591
+    longitude: -91.49464
+    population: 11913
+    dem: 2322
+    timezone: "America/Guatemala"
+- name: "Departamento de Guatemala"
+  cities:
+  - name: "Villa Nueva"
+    latitude: 14.52512
+    longitude: -90.58544
+    population: 406830
+    dem: 1363
+    timezone: "America/Guatemala"
+  - name: "Villa Canales"
+    latitude: 14.48285
+    longitude: -90.53425
+    population: 122194
+    dem: 1259
+    timezone: "America/Guatemala"
+  - name: "Santa Catarina Pinula"
+    latitude: 14.56889
+    longitude: -90.49528
+    population: 67994
+    dem: 1554
+    timezone: "America/Guatemala"
+  - name: "San Raimundo"
+    latitude: 14.76462
+    longitude: -90.59493
+    population: 8689
+    dem: 1579
+    timezone: "America/Guatemala"
+  - name: "San Pedro Sacatepequez"
+    latitude: 14.68612
+    longitude: -90.64253
+    population: 14315
+    dem: 2096
+    timezone: "America/Guatemala"
+  - name: "San Pedro Ayampuc"
+    latitude: 14.77943
+    longitude: -90.45318
+    population: 46803
+    dem: 1192
+    timezone: "America/Guatemala"
+  - name: "San Juan Sacatepequez"
+    latitude: 14.71889
+    longitude: -90.64417
+    population: 136886
+    dem: 1842
+    timezone: "America/Guatemala"
+  - name: "San Jose Pinula"
+    latitude: 14.54611
+    longitude: -90.41139
+    population: 47247
+    dem: 1750
+    timezone: "America/Guatemala"
+  - name: "Petapa"
+    latitude: 14.50189
+    longitude: -90.56196
+    population: 141455
+    dem: 1269
+    timezone: "America/Guatemala"
+  - name: "Palencia"
+    latitude: 14.66715
+    longitude: -90.35721
+    population: 18574
+    dem: 1344
+    timezone: "America/Guatemala"
+  - name: "Mixco"
+    latitude: 14.63077
+    longitude: -90.60711
+    population: 473080
+    dem: 1692
+    timezone: "America/Guatemala"
+  - name: "Fraijanes"
+    latitude: 14.46528
+    longitude: -90.44083
+    population: 28492
+    dem: 1641
+    timezone: "America/Guatemala"
+  - name: "Guatemala City"
+    latitude: 14.64072
+    longitude: -90.51327
+    population: 994938
+    dem: 1508
+    timezone: "America/Guatemala"
+  - name: "Chuarrancho"
+    latitude: 14.81794
+    longitude: -90.51568
+    population: 7149
+    dem: 1289
+    timezone: "America/Guatemala"
+  - name: "Chinautla"
+    latitude: 14.70289
+    longitude: -90.49983
+    population: 97172
+    dem: 1233
+    timezone: "America/Guatemala"
+  - name: "Amatitlan"
+    latitude: 14.4774
+    longitude: -90.63489
+    population: 71836
+    dem: 1219
+    timezone: "America/Guatemala"
+- name: "Departamento de Alta Verapaz"
+  cities:
+  - name: "Tactic"
+    latitude: 15.32218
+    longitude: -90.35448
+    population: 8999
+    dem: 1456
+    timezone: "America/Guatemala"
+  - name: "Senahu"
+    latitude: 15.4
+    longitude: -89.83333
+    population: 5633
+    dem: 1323
+    timezone: "America/Guatemala"
+  - name: "Santa Cruz Verapaz"
+    latitude: 15.36667
+    longitude: -90.43333
+    population: 5843
+    dem: 1420
+    timezone: "America/Guatemala"
+  - name: "San Pedro Carcha"
+    latitude: 15.48333
+    longitude: -90.26667
+    population: 13332
+    dem: 1278
+    timezone: "America/Guatemala"
+  - name: "San Juan Chamelco"
+    latitude: 15.43333
+    longitude: -90.33333
+    population: 11944
+    dem: 1408
+    timezone: "America/Guatemala"
+  - name: "San Cristobal Verapaz"
+    latitude: 15.39632
+    longitude: -90.56513
+    population: 19664
+    dem: 2149
+    timezone: "America/Guatemala"
+  - name: "Panzos"
+    latitude: 15.4
+    longitude: -89.66667
+    population: 25569
+    dem: 175
+    timezone: "America/Guatemala"
+  - name: "Coban"
+    latitude: 15.47083
+    longitude: -90.37083
+    population: 53375
+    dem: 1329
+    timezone: "America/Guatemala"
+  - name: "Chisec"
+    latitude: 15.81667
+    longitude: -90.28333
+    population: 17018
+    dem: 219
+    timezone: "America/Guatemala"
+  - name: "Chahal Guatemala"
+    latitude: 15.79122
+    longitude: -89.60518
+    population: 7465
+    dem: 178
+    timezone: "America/Guatemala"
+- name: "Departamento de Sacatepequez"
+  cities:
+  - name: "Sumpango"
+    latitude: 14.64623
+    longitude: -90.73427
+    population: 20884
+    dem: 1897
+    timezone: "America/Guatemala"
+  - name: "Santo Domingo Xenacoj"
+    latitude: 14.68057
+    longitude: -90.70012
+    population: 8791
+    dem: 1805
+    timezone: "America/Guatemala"
+  - name: "Santiago Sacatepequez"
+    latitude: 14.6351
+    longitude: -90.67654
+    population: 24210
+    dem: 2033
+    timezone: "America/Guatemala"
+  - name: "Santa Maria de Jesus"
+    latitude: 14.49452
+    longitude: -90.71036
+    population: 15529
+    dem: 2060
+    timezone: "America/Guatemala"
+  - name: "Santa Lucia Milpas Altas"
+    latitude: 14.57655
+    longitude: -90.67632
+    population: 13001
+    dem: 1939
+    timezone: "America/Guatemala"
+  - name: "San Miguel Duenas"
+    latitude: 14.52241
+    longitude: -90.79938
+    population: 8424
+    dem: 1459
+    timezone: "America/Guatemala"
+  - name: "San Lucas Sacatepequez"
+    latitude: 14.61075
+    longitude: -90.65681
+    population: 17959
+    dem: 2087
+    timezone: "America/Guatemala"
+  - name: "San Bartolome Milpas Altas"
+    latitude: 14.6069
+    longitude: -90.67807
+    population: 6261
+    dem: 2115
+    timezone: "America/Guatemala"
+  - name: "San Antonio Aguas Calientes"
+    latitude: 14.54676
+    longitude: -90.78054
+    population: 7811
+    dem: 1503
+    timezone: "America/Guatemala"
+  - name: "Pastores"
+    latitude: 14.59433
+    longitude: -90.75473
+    population: 10393
+    dem: 1603
+    timezone: "America/Guatemala"
+  - name: "Magdalena Milpas Altas"
+    latitude: 14.54801
+    longitude: -90.67477
+    population: 5582
+    dem: 2029
+    timezone: "America/Guatemala"
+  - name: "Jocotenango"
+    latitude: 14.57814
+    longitude: -90.73804
+    population: 17918
+    dem: 1590
+    timezone: "America/Guatemala"
+  - name: "Ciudad Vieja"
+    latitude: 14.52396
+    longitude: -90.76308
+    population: 30203
+    dem: 1580
+    timezone: "America/Guatemala"
+  - name: "Antigua Guatemala"
+    latitude: 14.56111
+    longitude: -90.73444
+    population: 39368
+    dem: 1539
+    timezone: "America/Guatemala"
+  - name: "Alotenango"
+    latitude: 14.48028
+    longitude: -90.8075
+    population: 17410
+    dem: 1368
+    timezone: "America/Guatemala"
+- name: "Departamento de Zacapa"
+  cities:
+  - name: "Zacapa"
+    latitude: 14.97222
+    longitude: -89.53056
+    population: 36088
+    dem: 231
+    timezone: "America/Guatemala"
+  - name: "Teculutan"
+    latitude: 14.98333
+    longitude: -89.71667
+    population: 6407
+    dem: 239
+    timezone: "America/Guatemala"
+  - name: "Rio Hondo"
+    latitude: 15.06667
+    longitude: -89.58333
+    population: 5997
+    dem: 528
+    timezone: "America/Guatemala"
+  - name: "Gualan"
+    latitude: 15.11952
+    longitude: -89.35721
+    population: 19354
+    dem: 123
+    timezone: "America/Guatemala"
+  - name: "Estanzuela"
+    latitude: 15.0
+    longitude: -89.56667
+    population: 8937
+    dem: 189
+    timezone: "America/Guatemala"
+- name: "Departamento de Chiquimula"
+  cities:
+  - name: "Ipala"
+    latitude: 14.61667
+    longitude: -89.61667
+    population: 5283
+    dem: 833
+    timezone: "America/Guatemala"
+  - name: "Esquipulas"
+    latitude: 14.56667
+    longitude: -89.35
+    population: 20674
+    dem: 940
+    timezone: "America/Guatemala"
+  - name: "Chiquimula"
+    latitude: 14.8
+    longitude: -89.54583
+    population: 41521
+    dem: 425
+    timezone: "America/Guatemala"

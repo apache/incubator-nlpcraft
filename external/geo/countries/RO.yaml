@@ -1,0 +1,4809 @@
+---
+name: "Romania"
+iso: "RO"
+iso3: "ROU"
+code: "642"
+capital: "Bucharest"
+area: 237500.0
+population: 21959278
+continent: "EU"
+currencyCode: "RON"
+currencyName: "Leu"
+phone: "40"
+postalCodeFormat: "######"
+postalCodeRegex: "^(\\d{6})$"
+languages: "ro,hu,rom"
+neighbours: "MD,HU,UA,BG,RS"
+regions:
+- name: "Arad"
+  cities:
+  - name: "Vladimirescu"
+    latitude: 46.16628
+    longitude: 21.40102
+    population: 10451
+    dem: 109
+    timezone: "Europe/Bucharest"
+  - name: "Vinga"
+    latitude: 46.01667
+    longitude: 21.2
+    population: 6283
+    dem: 102
+    timezone: "Europe/Bucharest"
+  - name: "Tarnova"
+    latitude: 46.31667
+    longitude: 21.8
+    population: 6146
+    dem: 124
+    timezone: "Europe/Bucharest"
+  - name: "Siria"
+    latitude: 46.26667
+    longitude: 21.63333
+    population: 8004
+    dem: 110
+    timezone: "Europe/Bucharest"
+  - name: "Santana"
+    latitude: 46.35
+    longitude: 21.5
+    population: 12706
+    dem: 109
+    timezone: "Europe/Bucharest"
+  - name: "Secusigiu"
+    latitude: 46.08333
+    longitude: 20.98333
+    population: 5748
+    dem: 97
+    timezone: "Europe/Bucharest"
+  - name: "Sebis"
+    latitude: 46.36667
+    longitude: 22.11667
+    population: 6168
+    dem: 132
+    timezone: "Europe/Bucharest"
+  - name: "Pecica"
+    latitude: 46.16667
+    longitude: 21.06667
+    population: 12804
+    dem: 100
+    timezone: "Europe/Bucharest"
+  - name: "Pancota"
+    latitude: 46.33333
+    longitude: 21.7
+    population: 7133
+    dem: 105
+    timezone: "Europe/Bucharest"
+  - name: "Nadlac"
+    latitude: 46.16667
+    longitude: 20.75
+    population: 8067
+    dem: 89
+    timezone: "Europe/Bucharest"
+  - name: "Macea"
+    latitude: 46.38333
+    longitude: 21.3
+    population: 6056
+    dem: 100
+    timezone: "Europe/Bucharest"
+  - name: "Lipova"
+    latitude: 46.09085
+    longitude: 21.69628
+    population: 11041
+    dem: 129
+    timezone: "Europe/Bucharest"
+  - name: "Ineu"
+    latitude: 46.43372
+    longitude: 21.84048
+    population: 10051
+    dem: 107
+    timezone: "Europe/Bucharest"
+  - name: "Fantanele"
+    latitude: 46.1237
+    longitude: 21.3842
+    population: 5597
+    dem: 125
+    timezone: "Europe/Bucharest"
+  - name: "Felnac"
+    latitude: 46.11667
+    longitude: 21.15
+    population: 5097
+    dem: 113
+    timezone: "Europe/Bucharest"
+  - name: "Curtici"
+    latitude: 46.35
+    longitude: 21.3
+    population: 9615
+    dem: 100
+    timezone: "Europe/Bucharest"
+  - name: "Chisineu-Cris"
+    latitude: 46.52509
+    longitude: 21.51844
+    population: 8171
+    dem: 94
+    timezone: "Europe/Bucharest"
+  - name: "Arad"
+    latitude: 46.18333
+    longitude: 21.31667
+    population: 169065
+    dem: 109
+    timezone: "Europe/Bucharest"
+- name: "Salaj"
+  cities:
+  - name: "Zalau"
+    latitude: 47.2
+    longitude: 23.05
+    population: 63232
+    dem: 261
+    timezone: "Europe/Bucharest"
+  - name: "Simleu Silvaniei"
+    latitude: 47.23333
+    longitude: 22.8
+    population: 15721
+    dem: 238
+    timezone: "Europe/Bucharest"
+  - name: "Sarmasag"
+    latitude: 47.35
+    longitude: 22.83333
+    population: 6400
+    dem: 234
+    timezone: "Europe/Bucharest"
+  - name: "Nusfalau"
+    latitude: 47.2
+    longitude: 22.73333
+    population: 5436
+    dem: 291
+    timezone: "Europe/Bucharest"
+  - name: "Jibou"
+    latitude: 47.25896
+    longitude: 23.25651
+    population: 11183
+    dem: 191
+    timezone: "Europe/Bucharest"
+  - name: "Crasna"
+    latitude: 47.16667
+    longitude: 22.9
+    population: 6233
+    dem: 302
+    timezone: "Europe/Bucharest"
+- name: "Suceava"
+  cities:
+  - name: "Zvoristea"
+    latitude: 47.83333
+    longitude: 26.28333
+    population: 6275
+    dem: 279
+    timezone: "Europe/Bucharest"
+  - name: "Volovat"
+    latitude: 47.81667
+    longitude: 25.9
+    population: 6990
+    dem: 383
+    timezone: "Europe/Bucharest"
+  - name: "Vicovu de Sus"
+    latitude: 47.93333
+    longitude: 25.68333
+    population: 14077
+    dem: 460
+    timezone: "Europe/Bucharest"
+  - name: "Vicovu de Jos"
+    latitude: 47.9
+    longitude: 25.73333
+    population: 5956
+    dem: 438
+    timezone: "Europe/Bucharest"
+  - name: "Veresti"
+    latitude: 47.6
+    longitude: 26.43333
+    population: 7089
+    dem: 246
+    timezone: "Europe/Bucharest"
+  - name: "Vatra Dornei"
+    latitude: 47.35
+    longitude: 25.36667
+    population: 16054
+    dem: 814
+    timezone: "Europe/Bucharest"
+  - name: "Vama"
+    latitude: 47.56667
+    longitude: 25.68333
+    population: 5995
+    dem: 649
+    timezone: "Europe/Bucharest"
+  - name: "Valea Moldovei"
+    latitude: 47.46667
+    longitude: 26.03333
+    population: 5814
+    dem: 487
+    timezone: "Europe/Bucharest"
+  - name: "Vadu Moldovei"
+    latitude: 47.38333
+    longitude: 26.36667
+    population: 7325
+    dem: 326
+    timezone: "Europe/Bucharest"
+  - name: "Udesti"
+    latitude: 47.56667
+    longitude: 26.41667
+    population: 7177
+    dem: 331
+    timezone: "Europe/Bucharest"
+  - name: "Todiresti"
+    latitude: 47.7
+    longitude: 26.03333
+    population: 5763
+    dem: 365
+    timezone: "Europe/Bucharest"
+  - name: "Suceava"
+    latitude: 47.63333
+    longitude: 26.25
+    population: 105796
+    dem: 360
+    timezone: "Europe/Bucharest"
+  - name: "Stulpicani"
+    latitude: 47.46667
+    longitude: 25.76667
+    population: 6234
+    dem: 570
+    timezone: "Europe/Bucharest"
+  - name: "Straja"
+    latitude: 47.91667
+    longitude: 25.55
+    population: 5304
+    dem: 512
+    timezone: "Europe/Bucharest"
+  - name: "Slatina"
+    latitude: 47.45
+    longitude: 26.01667
+    population: 5196
+    dem: 454
+    timezone: "Europe/Bucharest"
+  - name: "Siret"
+    latitude: 47.95
+    longitude: 26.06667
+    population: 9246
+    dem: 319
+    timezone: "Europe/Bucharest"
+  - name: "Scheia"
+    latitude: 47.65
+    longitude: 26.23333
+    population: 7533
+    dem: 307
+    timezone: "Europe/Bucharest"
+  - name: "Salcea"
+    latitude: 47.65
+    longitude: 26.36667
+    population: 8655
+    dem: 329
+    timezone: "Europe/Bucharest"
+  - name: "Radauti"
+    latitude: 47.85
+    longitude: 25.91667
+    population: 23822
+    dem: 368
+    timezone: "Europe/Bucharest"
+  - name: "Preutesti"
+    latitude: 47.45
+    longitude: 26.41667
+    population: 9048
+    dem: 268
+    timezone: "Europe/Bucharest"
+  - name: "Paltinoasa"
+    latitude: 47.55
+    longitude: 25.95
+    population: 5635
+    dem: 459
+    timezone: "Europe/Bucharest"
+  - name: "Milisauti"
+    latitude: 47.78333
+    longitude: 26.0
+    population: 8399
+    dem: 334
+    timezone: "Europe/Bucharest"
+  - name: "Marginea"
+    latitude: 47.81667
+    longitude: 25.81667
+    population: 9488
+    dem: 437
+    timezone: "Europe/Bucharest"
+  - name: "Malini"
+    latitude: 47.46667
+    longitude: 26.08333
+    population: 7163
+    dem: 403
+    timezone: "Europe/Bucharest"
+  - name: "Liteni"
+    latitude: 47.56667
+    longitude: 26.2
+    population: 9833
+    dem: 314
+    timezone: "Europe/Bucharest"
+  - name: "Horodnic de Sus"
+    latitude: 47.84012
+    longitude: 25.82354
+    population: 5136
+    dem: 423
+    timezone: "Europe/Bucharest"
+  - name: "Gura Humorului"
+    latitude: 47.55
+    longitude: 25.9
+    population: 15728
+    dem: 463
+    timezone: "Europe/Bucharest"
+  - name: "Galanesti"
+    latitude: 47.91667
+    longitude: 25.8
+    population: 6211
+    dem: 405
+    timezone: "Europe/Bucharest"
+  - name: "Fratautii Noi"
+    latitude: 47.94257
+    longitude: 25.84465
+    population: 5512
+    dem: 408
+    timezone: "Europe/Bucharest"
+  - name: "Frasin"
+    latitude: 47.53333
+    longitude: 25.8
+    population: 6519
+    dem: 505
+    timezone: "Europe/Bucharest"
+  - name: "Falticeni"
+    latitude: 47.45
+    longitude: 26.3
+    population: 29576
+    dem: 307
+    timezone: "Europe/Bucharest"
+  - name: "Dumbraveni"
+    latitude: 47.65
+    longitude: 26.41667
+    population: 8110
+    dem: 328
+    timezone: "Europe/Bucharest"
+  - name: "Dolhasca"
+    latitude: 47.43333
+    longitude: 26.6
+    population: 11025
+    dem: 231
+    timezone: "Europe/Bucharest"
+  - name: "Darmanesti"
+    latitude: 47.73333
+    longitude: 26.15
+    population: 5817
+    dem: 340
+    timezone: "Europe/Bucharest"
+  - name: "Cornu Luncii"
+    latitude: 47.46667
+    longitude: 26.15
+    population: 7288
+    dem: 385
+    timezone: "Europe/Bucharest"
+  - name: "Ciprian Porumbescu"
+    latitude: 47.56667
+    longitude: 26.06667
+    population: 6405
+    dem: 426
+    timezone: "Europe/Bucharest"
+  - name: "Campulung Moldovenesc"
+    latitude: 47.53333
+    longitude: 25.56667
+    population: 19765
+    dem: 655
+    timezone: "Europe/Bucharest"
+  - name: "Calafindesti"
+    latitude: 47.85
+    longitude: 26.11667
+    population: 5764
+    dem: 422
+    timezone: "Europe/Bucharest"
+  - name: "Cajvana"
+    latitude: 47.7
+    longitude: 25.96667
+    population: 7236
+    dem: 389
+    timezone: "Europe/Bucharest"
+  - name: "Brosteni"
+    latitude: 47.23333
+    longitude: 25.7
+    population: 6578
+    dem: 699
+    timezone: "Europe/Bucharest"
+  - name: "Bosanci"
+    latitude: 47.58333
+    longitude: 26.31667
+    population: 6270
+    dem: 360
+    timezone: "Europe/Bucharest"
+  - name: "Baia"
+    latitude: 47.41667
+    longitude: 26.21667
+    population: 6762
+    dem: 360
+    timezone: "Europe/Bucharest"
+  - name: "Arbore"
+    latitude: 47.73333
+    longitude: 25.93333
+    population: 6736
+    dem: 367
+    timezone: "Europe/Bucharest"
+  - name: "Adancata"
+    latitude: 47.73333
+    longitude: 26.3
+    population: 7779
+    dem: 401
+    timezone: "Europe/Bucharest"
+- name: "Neamt"
+  cities:
+  - name: "Zanesti"
+    latitude: 46.81667
+    longitude: 26.55
+    population: 6077
+    dem: 261
+    timezone: "Europe/Bucharest"
+  - name: "Vanatori-Neamt"
+    latitude: 47.2
+    longitude: 26.31667
+    population: 8707
+    dem: 445
+    timezone: "Europe/Bucharest"
+  - name: "Viisoara"
+    latitude: 46.93333
+    longitude: 26.23333
+    population: 5014
+    dem: 347
+    timezone: "Europe/Bucharest"
+  - name: "Trifesti"
+    latitude: 46.91667
+    longitude: 26.81667
+    population: 5018
+    dem: 235
+    timezone: "Europe/Bucharest"
+  - name: "Targu Neamt"
+    latitude: 47.2
+    longitude: 26.36667
+    population: 20473
+    dem: 361
+    timezone: "Europe/Bucharest"
+  - name: "Tamaseni"
+    latitude: 46.98333
+    longitude: 26.93333
+    population: 8292
+    dem: 186
+    timezone: "Europe/Bucharest"
+  - name: "Savinesti"
+    latitude: 46.85
+    longitude: 26.46667
+    population: 6012
+    dem: 274
+    timezone: "Europe/Bucharest"
+  - name: "Sagna"
+    latitude: 46.98333
+    longitude: 27.01667
+    population: 7443
+    dem: 236
+    timezone: "Europe/Bucharest"
+  - name: "Sabaoani"
+    latitude: 47.01667
+    longitude: 26.85
+    population: 10218
+    dem: 223
+    timezone: "Europe/Bucharest"
+  - name: "Roznov"
+    latitude: 46.83333
+    longitude: 26.51667
+    population: 8688
+    dem: 269
+    timezone: "Europe/Bucharest"
+  - name: "Roman"
+    latitude: 46.92119
+    longitude: 26.92646
+    population: 67819
+    dem: 202
+    timezone: "Europe/Bucharest"
+  - name: "Rediu"
+    latitude: 46.75598
+    longitude: 26.56254
+    population: 5182
+    dem: 276
+    timezone: "Europe/Bucharest"
+  - name: "Raucesti"
+    latitude: 47.25
+    longitude: 26.41667
+    population: 8204
+    dem: 326
+    timezone: "Europe/Bucharest"
+  - name: "Poiana Teiului"
+    latitude: 47.1
+    longitude: 25.96667
+    population: 5145
+    dem: 664
+    timezone: "Europe/Bucharest"
+  - name: "Podoleni"
+    latitude: 46.8
+    longitude: 26.61667
+    population: 5520
+    dem: 247
+    timezone: "Europe/Bucharest"
+  - name: "Pipirig"
+    latitude: 47.25
+    longitude: 26.06667
+    population: 8569
+    dem: 737
+    timezone: "Europe/Bucharest"
+  - name: "Piatra Soimului"
+    latitude: 46.83333
+    longitude: 26.43333
+    population: 7848
+    dem: 325
+    timezone: "Europe/Bucharest"
+  - name: "Piatra Neamt"
+    latitude: 46.91667
+    longitude: 26.33333
+    population: 102688
+    dem: 508
+    timezone: "Europe/Bucharest"
+  - name: "Petricani"
+    latitude: 47.16667
+    longitude: 26.46667
+    population: 5580
+    dem: 304
+    timezone: "Europe/Bucharest"
+  - name: "Grumazesti"
+    latitude: 47.13333
+    longitude: 26.36667
+    population: 5385
+    dem: 387
+    timezone: "Europe/Bucharest"
+  - name: "Girov"
+    latitude: 46.95
+    longitude: 26.51667
+    population: 7396
+    dem: 347
+    timezone: "Europe/Bucharest"
+  - name: "Gheraesti"
+    latitude: 47.01667
+    longitude: 26.81667
+    population: 6448
+    dem: 210
+    timezone: "Europe/Bucharest"
+  - name: "Dumbrava Rosie"
+    latitude: 46.88333
+    longitude: 26.43333
+    population: 7104
+    dem: 299
+    timezone: "Europe/Bucharest"
+  - name: "Doljesti"
+    latitude: 47.03333
+    longitude: 26.98333
+    population: 7359
+    dem: 208
+    timezone: "Europe/Bucharest"
+  - name: "Cordun"
+    latitude: 46.95
+    longitude: 26.86667
+    population: 7124
+    dem: 189
+    timezone: "Europe/Bucharest"
+  - name: "Brusturi"
+    latitude: 47.28333
+    longitude: 26.38333
+    population: 5554
+    dem: 335
+    timezone: "Europe/Bucharest"
+  - name: "Borlesti"
+    latitude: 46.76667
+    longitude: 26.48333
+    population: 8965
+    dem: 355
+    timezone: "Europe/Bucharest"
+  - name: "Borca"
+    latitude: 47.18333
+    longitude: 25.76667
+    population: 6556
+    dem: 856
+    timezone: "Europe/Bucharest"
+  - name: "Bodesti"
+    latitude: 47.03333
+    longitude: 26.41667
+    population: 5122
+    dem: 409
+    timezone: "Europe/Bucharest"
+  - name: "Bicaz"
+    latitude: 46.91667
+    longitude: 26.06667
+    population: 8340
+    dem: 744
+    timezone: "Europe/Bucharest"
+  - name: "Baltatesti"
+    latitude: 47.11667
+    longitude: 26.3
+    population: 6635
+    dem: 491
+    timezone: "Europe/Bucharest"
+- name: "Cluj"
+  cities:
+  - name: "Viisoara"
+    latitude: 46.55
+    longitude: 23.91667
+    population: 5786
+    dem: 340
+    timezone: "Europe/Bucharest"
+  - name: "Turda"
+    latitude: 46.56667
+    longitude: 23.78333
+    population: 54586
+    dem: 324
+    timezone: "Europe/Bucharest"
+  - name: "Tritenii de Jos"
+    latitude: 46.58333
+    longitude: 24.0
+    population: 5008
+    dem: 342
+    timezone: "Europe/Bucharest"
+  - name: "Mihai Viteazu"
+    latitude: 46.53333
+    longitude: 23.75
+    population: 5659
+    dem: 330
+    timezone: "Europe/Bucharest"
+  - name: "Huedin"
+    latitude: 46.86667
+    longitude: 23.05
+    population: 9395
+    dem: 595
+    timezone: "Europe/Bucharest"
+  - name: "Gilau"
+    latitude: 46.73245
+    longitude: 23.36174
+    population: 7745
+    dem: 424
+    timezone: "Europe/Bucharest"
+  - name: "Gherla"
+    latitude: 47.03333
+    longitude: 23.91667
+    population: 23741
+    dem: 250
+    timezone: "Europe/Bucharest"
+  - name: "Floresti"
+    latitude: 46.74574
+    longitude: 23.49375
+    population: 7397
+    dem: 366
+    timezone: "Europe/Bucharest"
+  - name: "Dej"
+    latitude: 47.15
+    longitude: 23.86667
+    population: 38033
+    dem: 231
+    timezone: "Europe/Bucharest"
+  - name: "Cluj-Napoca"
+    latitude: 46.76667
+    longitude: 23.6
+    population: 316748
+    dem: 352
+    timezone: "Europe/Bucharest"
+  - name: "Campia Turzii"
+    latitude: 46.55
+    longitude: 23.88333
+    population: 26457
+    dem: 299
+    timezone: "Europe/Bucharest"
+  - name: "Baciu"
+    latitude: 46.8
+    longitude: 23.51667
+    population: 8046
+    dem: 395
+    timezone: "Europe/Bucharest"
+  - name: "Apahida"
+    latitude: 46.81667
+    longitude: 23.75
+    population: 8658
+    dem: 299
+    timezone: "Europe/Bucharest"
+- name: "Vrancea"
+  cities:
+  - name: "Vanatori"
+    latitude: 45.73333
+    longitude: 27.25
+    population: 5521
+    dem: 45
+    timezone: "Europe/Bucharest"
+  - name: "Vidra"
+    latitude: 45.91667
+    longitude: 26.9
+    population: 7423
+    dem: 275
+    timezone: "Europe/Bucharest"
+  - name: "Urechesti"
+    latitude: 45.6
+    longitude: 27.06667
+    population: 5855
+    dem: 164
+    timezone: "Europe/Bucharest"
+  - name: "Tulnici"
+    latitude: 45.91667
+    longitude: 26.66667
+    population: 5803
+    dem: 546
+    timezone: "Europe/Bucharest"
+  - name: "Tifesti"
+    latitude: 45.85
+    longitude: 27.1
+    population: 5202
+    dem: 150
+    timezone: "Europe/Bucharest"
+  - name: "Suraia"
+    latitude: 45.68333
+    longitude: 27.4
+    population: 7770
+    dem: 22
+    timezone: "Europe/Bucharest"
+  - name: "Slobozia Bradului"
+    latitude: 45.5
+    longitude: 27.05
+    population: 5060
+    dem: 171
+    timezone: "Europe/Bucharest"
+  - name: "Sihlea"
+    latitude: 45.5
+    longitude: 27.11667
+    population: 5354
+    dem: 107
+    timezone: "Europe/Bucharest"
+  - name: "Paunesti"
+    latitude: 46.03333
+    longitude: 27.1
+    population: 6778
+    dem: 261
+    timezone: "Europe/Bucharest"
+  - name: "Panciu"
+    latitude: 45.9
+    longitude: 27.08333
+    population: 8810
+    dem: 201
+    timezone: "Europe/Bucharest"
+  - name: "Odobesti"
+    latitude: 45.76667
+    longitude: 27.05
+    population: 8026
+    dem: 223
+    timezone: "Europe/Bucharest"
+  - name: "Milcovul"
+    latitude: 45.65
+    longitude: 27.25
+    population: 8547
+    dem: 35
+    timezone: "Europe/Bucharest"
+  - name: "Marasesti"
+    latitude: 45.88333
+    longitude: 27.23333
+    population: 8844
+    dem: 58
+    timezone: "Europe/Bucharest"
+  - name: "Maicanesti"
+    latitude: 45.5
+    longitude: 27.5
+    population: 5312
+    dem: 14
+    timezone: "Europe/Bucharest"
+  - name: "Homocea"
+    latitude: 46.13333
+    longitude: 27.23333
+    population: 9869
+    dem: 88
+    timezone: "Europe/Bucharest"
+  - name: "Gugesti"
+    latitude: 45.56667
+    longitude: 27.13333
+    population: 6478
+    dem: 81
+    timezone: "Europe/Bucharest"
+  - name: "Focsani"
+    latitude: 45.7
+    longitude: 27.18333
+    population: 77313
+    dem: 54
+    timezone: "Europe/Bucharest"
+  - name: "Adjud"
+    latitude: 46.1
+    longitude: 27.16667
+    population: 17298
+    dem: 101
+    timezone: "Europe/Bucharest"
+- name: "Ilfov"
+  cities:
+  - name: "Voluntari"
+    latitude: 44.49002
+    longitude: 26.17338
+    population: 30323
+    dem: 82
+    timezone: "Europe/Bucharest"
+  - name: "Vidra"
+    latitude: 44.26056
+    longitude: 26.16972
+    population: 8322
+    dem: 53
+    timezone: "Europe/Bucharest"
+  - name: "Snagov"
+    latitude: 44.7
+    longitude: 26.18333
+    population: 6126
+    dem: 102
+    timezone: "Europe/Bucharest"
+  - name: "Popesti-Leordeni"
+    latitude: 44.38333
+    longitude: 26.16667
+    population: 15279
+    dem: 76
+    timezone: "Europe/Bucharest"
+  - name: "Peris"
+    latitude: 44.68472
+    longitude: 26.01389
+    population: 7235
+    dem: 108
+    timezone: "Europe/Bucharest"
+  - name: "Pantelimon"
+    latitude: 44.45
+    longitude: 26.2
+    population: 16206
+    dem: 72
+    timezone: "Europe/Bucharest"
+  - name: "Otopeni"
+    latitude: 44.55
+    longitude: 26.06667
+    population: 10332
+    dem: 94
+    timezone: "Europe/Bucharest"
+  - name: "Mogosoaia"
+    latitude: 44.52917
+    longitude: 26.0
+    population: 5304
+    dem: 95
+    timezone: "Europe/Bucharest"
+  - name: "Magurele"
+    latitude: 44.35
+    longitude: 26.03333
+    population: 9375
+    dem: 76
+    timezone: "Europe/Bucharest"
+  - name: "Jilava"
+    latitude: 44.33333
+    longitude: 26.07806
+    population: 12023
+    dem: 73
+    timezone: "Europe/Bucharest"
+  - name: "Gruiu"
+    latitude: 44.73333
+    longitude: 26.23333
+    population: 7183
+    dem: 82
+    timezone: "Europe/Bucharest"
+  - name: "Glina"
+    latitude: 44.38333
+    longitude: 26.25
+    population: 7227
+    dem: 67
+    timezone: "Europe/Bucharest"
+  - name: "Domnesti-Sarbi"
+    latitude: 44.38333
+    longitude: 25.91667
+    population: 6393
+    dem: 82
+    timezone: "Europe/Bucharest"
+  - name: "Domnesti"
+    latitude: 44.39919
+    longitude: 25.91618
+    population: 5423
+    dem: 91
+    timezone: "Europe/Bucharest"
+  - name: "Dobroesti"
+    latitude: 44.45
+    longitude: 26.18333
+    population: 6599
+    dem: 72
+    timezone: "Europe/Bucharest"
+  - name: "Cornetu"
+    latitude: 44.34167
+    longitude: 25.94083
+    population: 5063
+    dem: 78
+    timezone: "Europe/Bucharest"
+  - name: "Chitila"
+    latitude: 44.50806
+    longitude: 25.98222
+    population: 12788
+    dem: 93
+    timezone: "Europe/Bucharest"
+  - name: "Chiajna"
+    latitude: 44.46
+    longitude: 25.97333
+    population: 8105
+    dem: 94
+    timezone: "Europe/Bucharest"
+  - name: "Cernica"
+    latitude: 44.41667
+    longitude: 26.28333
+    population: 9530
+    dem: 60
+    timezone: "Europe/Bucharest"
+  - name: "Buftea"
+    latitude: 44.56139
+    longitude: 25.94889
+    population: 20691
+    dem: 107
+    timezone: "Europe/Bucharest"
+  - name: "Branesti"
+    latitude: 44.45
+    longitude: 26.33333
+    population: 8645
+    dem: 53
+    timezone: "Europe/Bucharest"
+  - name: "Bragadiru"
+    latitude: 44.37111
+    longitude: 25.9775
+    population: 8274
+    dem: 82
+    timezone: "Europe/Bucharest"
+  - name: "Balotesti"
+    latitude: 44.61667
+    longitude: 26.11667
+    population: 6795
+    dem: 94
+    timezone: "Europe/Bucharest"
+  - name: "Afumati"
+    latitude: 44.51667
+    longitude: 26.26667
+    population: 6696
+    dem: 79
+    timezone: "Europe/Bucharest"
+  - name: "1 Decembrie"
+    latitude: 44.29083
+    longitude: 26.05806
+    population: 7817
+    dem: 64
+    timezone: "Europe/Bucharest"
+- name: "Tulcea"
+  cities:
+  - name: "Tulcea"
+    latitude: 45.1787
+    longitude: 28.80501
+    population: 92475
+    dem: 34
+    timezone: "Europe/Bucharest"
+  - name: "Sarichioi"
+    latitude: 44.95
+    longitude: 28.85
+    population: 7483
+    dem: 35
+    timezone: "Europe/Bucharest"
+  - name: "Macin"
+    latitude: 45.24371
+    longitude: 28.13564
+    population: 10295
+    dem: 36
+    timezone: "Europe/Bucharest"
+  - name: "Luncavita"
+    latitude: 45.28333
+    longitude: 28.26667
+    population: 7050
+    dem: 27
+    timezone: "Europe/Bucharest"
+  - name: "Jurilovca"
+    latitude: 44.76667
+    longitude: 28.86667
+    population: 5133
+    dem: 45
+    timezone: "Europe/Bucharest"
+  - name: "Jijila"
+    latitude: 45.3
+    longitude: 28.15
+    population: 5770
+    dem: 28
+    timezone: "Europe/Bucharest"
+  - name: "Isaccea"
+    latitude: 45.26667
+    longitude: 28.46667
+    population: 5375
+    dem: 8
+    timezone: "Europe/Bucharest"
+  - name: "Greci"
+    latitude: 45.18333
+    longitude: 28.23333
+    population: 5384
+    dem: 25
+    timezone: "Europe/Bucharest"
+  - name: "Babadag"
+    latitude: 44.9
+    longitude: 28.71667
+    population: 10101
+    dem: 61
+    timezone: "Europe/Bucharest"
+- name: "Alba"
+  cities:
+  - name: "Zlatna"
+    latitude: 46.10633
+    longitude: 23.23162
+    population: 8393
+    dem: 407
+    timezone: "Europe/Bucharest"
+  - name: "Vurpar"
+    latitude: 46.0
+    longitude: 23.46667
+    population: 5215
+    dem: 218
+    timezone: "Europe/Bucharest"
+  - name: "Teius"
+    latitude: 46.2
+    longitude: 23.68333
+    population: 7112
+    dem: 238
+    timezone: "Europe/Bucharest"
+  - name: "Sebes"
+    latitude: 45.95646
+    longitude: 23.571
+    population: 27246
+    dem: 254
+    timezone: "Europe/Bucharest"
+  - name: "Sasciori"
+    latitude: 45.86667
+    longitude: 23.58333
+    population: 5822
+    dem: 460
+    timezone: "Europe/Bucharest"
+  - name: "Ocna Mures"
+    latitude: 46.38333
+    longitude: 23.85
+    population: 15316
+    dem: 254
+    timezone: "Europe/Bucharest"
+  - name: "Ighiu"
+    latitude: 46.15
+    longitude: 23.51667
+    population: 6294
+    dem: 282
+    timezone: "Europe/Bucharest"
+  - name: "Cugir"
+    latitude: 45.83651
+    longitude: 23.36998
+    population: 24734
+    dem: 300
+    timezone: "Europe/Bucharest"
+  - name: "Campeni"
+    latitude: 46.36667
+    longitude: 23.05
+    population: 7932
+    dem: 559
+    timezone: "Europe/Bucharest"
+  - name: "Blaj"
+    latitude: 46.17508
+    longitude: 23.91578
+    population: 20371
+    dem: 246
+    timezone: "Europe/Bucharest"
+  - name: "Alba Iulia"
+    latitude: 46.06667
+    longitude: 23.58333
+    population: 66085
+    dem: 219
+    timezone: "Europe/Bucharest"
+  - name: "Aiud"
+    latitude: 46.31006
+    longitude: 23.72128
+    population: 28341
+    dem: 254
+    timezone: "Europe/Bucharest"
+  - name: "Abrud"
+    latitude: 46.27406
+    longitude: 23.06339
+    population: 6122
+    dem: 598
+    timezone: "Europe/Bucharest"
+- name: "Ialomita"
+  cities:
+  - name: "Urziceni"
+    latitude: 44.71667
+    longitude: 26.63333
+    population: 16770
+    dem: 52
+    timezone: "Europe/Bucharest"
+  - name: "Tandarei"
+    latitude: 44.65
+    longitude: 27.66667
+    population: 12231
+    dem: 15
+    timezone: "Europe/Bucharest"
+  - name: "Saveni"
+    latitude: 44.6
+    longitude: 27.65
+    population: 5579
+    dem: 36
+    timezone: "Europe/Bucharest"
+  - name: "Mihail Kogalniceanu"
+    latitude: 44.68333
+    longitude: 27.73333
+    population: 6181
+    dem: 16
+    timezone: "Europe/Bucharest"
+  - name: "Grivita"
+    latitude: 44.73333
+    longitude: 27.28333
+    population: 7032
+    dem: 42
+    timezone: "Europe/Bucharest"
+  - name: "Fetesti-Gara"
+    latitude: 44.4196
+    longitude: 27.82536
+    population: 23789
+    dem: 58
+    timezone: "Europe/Bucharest"
+  - name: "Fetesti"
+    latitude: 44.38333
+    longitude: 27.83333
+    population: 32866
+    dem: 59
+    timezone: "Europe/Bucharest"
+  - name: "Facaeni"
+    latitude: 44.56667
+    longitude: 27.9
+    population: 5893
+    dem: 9
+    timezone: "Europe/Bucharest"
+  - name: "Dridu"
+    latitude: 44.7
+    longitude: 26.45
+    population: 5111
+    dem: 70
+    timezone: "Europe/Bucharest"
+  - name: "Cosereni"
+    latitude: 44.68333
+    longitude: 26.56667
+    population: 6957
+    dem: 55
+    timezone: "Europe/Bucharest"
+  - name: "Bucu"
+    latitude: 44.60532
+    longitude: 27.49337
+    population: 5232
+    dem: 21
+    timezone: "Europe/Bucharest"
+  - name: "Bordusani"
+    latitude: 44.48333
+    longitude: 27.9
+    population: 5285
+    dem: 19
+    timezone: "Europe/Bucharest"
+  - name: "Armasesti"
+    latitude: 44.75
+    longitude: 26.58333
+    population: 7243
+    dem: 60
+    timezone: "Europe/Bucharest"
+  - name: "Amara"
+    latitude: 44.61667
+    longitude: 27.31667
+    population: 7557
+    dem: 28
+    timezone: "Europe/Bucharest"
+  - name: "Slobozia"
+    latitude: 44.5647
+    longitude: 27.3633
+    population: 52710
+    dem: 24
+    timezone: "Europe/Bucharest"
+- name: "Dambovita"
+  cities:
+  - name: "Voinesti"
+    latitude: 45.06667
+    longitude: 25.25
+    population: 6159
+    dem: 396
+    timezone: "Europe/Bucharest"
+  - name: "Visina"
+    latitude: 44.58333
+    longitude: 25.33333
+    population: 6604
+    dem: 165
+    timezone: "Europe/Bucharest"
+  - name: "Vacaresti"
+    latitude: 44.85
+    longitude: 25.48333
+    population: 7812
+    dem: 236
+    timezone: "Europe/Bucharest"
+  - name: "Titu"
+    latitude: 44.65
+    longitude: 25.53333
+    population: 10081
+    dem: 155
+    timezone: "Europe/Bucharest"
+  - name: "Targoviste"
+    latitude: 44.92543
+    longitude: 25.4567
+    population: 88435
+    dem: 283
+    timezone: "Europe/Bucharest"
+  - name: "Tatarani"
+    latitude: 45.0
+    longitude: 25.26667
+    population: 5422
+    dem: 408
+    timezone: "Europe/Bucharest"
+  - name: "Tartasesti"
+    latitude: 44.57722
+    longitude: 25.81278
+    population: 5066
+    dem: 119
+    timezone: "Europe/Bucharest"
+  - name: "Razvad"
+    latitude: 44.93333
+    longitude: 25.53333
+    population: 8305
+    dem: 260
+    timezone: "Europe/Bucharest"
+  - name: "Racari"
+    latitude: 44.63333
+    longitude: 25.73333
+    population: 6828
+    dem: 133
+    timezone: "Europe/Bucharest"
+  - name: "Pucioasa"
+    latitude: 45.07807
+    longitude: 25.43232
+    population: 14971
+    dem: 407
+    timezone: "Europe/Bucharest"
+  - name: "Potlogi"
+    latitude: 44.55
+    longitude: 25.58333
+    population: 8299
+    dem: 133
+    timezone: "Europe/Bucharest"
+  - name: "Petresti"
+    latitude: 44.65
+    longitude: 25.33333
+    population: 6020
+    dem: 174
+    timezone: "Europe/Bucharest"
+  - name: "Odobesti"
+    latitude: 44.61667
+    longitude: 25.56667
+    population: 5211
+    dem: 146
+    timezone: "Europe/Bucharest"
+  - name: "Moroeni"
+    latitude: 45.21667
+    longitude: 25.43333
+    population: 5042
+    dem: 569
+    timezone: "Europe/Bucharest"
+  - name: "Moreni"
+    latitude: 44.98301
+    longitude: 25.64415
+    population: 20596
+    dem: 264
+    timezone: "Europe/Bucharest"
+  - name: "Matasaru"
+    latitude: 44.71667
+    longitude: 25.41667
+    population: 5722
+    dem: 173
+    timezone: "Europe/Bucharest"
+  - name: "Lunguletu"
+    latitude: 44.61667
+    longitude: 25.65
+    population: 5718
+    dem: 138
+    timezone: "Europe/Bucharest"
+  - name: "Ludesti"
+    latitude: 44.86667
+    longitude: 25.23333
+    population: 5011
+    dem: 290
+    timezone: "Europe/Bucharest"
+  - name: "Lucieni"
+    latitude: 44.85
+    longitude: 25.43333
+    population: 6286
+    dem: 253
+    timezone: "Europe/Bucharest"
+  - name: "Izvoarele"
+    latitude: 45.03333
+    longitude: 25.26667
+    population: 6836
+    dem: 363
+    timezone: "Europe/Bucharest"
+  - name: "Gura Sutii"
+    latitude: 44.75
+    longitude: 25.51667
+    population: 5355
+    dem: 192
+    timezone: "Europe/Bucharest"
+  - name: "Gaesti"
+    latitude: 44.71667
+    longitude: 25.31667
+    population: 15037
+    dem: 186
+    timezone: "Europe/Bucharest"
+  - name: "Fieni"
+    latitude: 45.13333
+    longitude: 25.41667
+    population: 7566
+    dem: 486
+    timezone: "Europe/Bucharest"
+  - name: "Dragomiresti"
+    latitude: 44.91667
+    longitude: 25.33333
+    population: 8194
+    dem: 295
+    timezone: "Europe/Bucharest"
+  - name: "Dragodana"
+    latitude: 44.73333
+    longitude: 25.35
+    population: 6918
+    dem: 184
+    timezone: "Europe/Bucharest"
+  - name: "Darmanesti"
+    latitude: 44.91667
+    longitude: 25.78333
+    population: 7919
+    dem: 222
+    timezone: "Europe/Bucharest"
+  - name: "Crevedia"
+    latitude: 44.6
+    longitude: 25.93333
+    population: 6674
+    dem: 110
+    timezone: "Europe/Bucharest"
+  - name: "Cornesti"
+    latitude: 44.78333
+    longitude: 25.86667
+    population: 7616
+    dem: 141
+    timezone: "Europe/Bucharest"
+  - name: "Corbii Mari"
+    latitude: 44.55
+    longitude: 25.5
+    population: 8257
+    dem: 142
+    timezone: "Europe/Bucharest"
+  - name: "Comisani"
+    latitude: 44.88333
+    longitude: 25.58333
+    population: 5401
+    dem: 226
+    timezone: "Europe/Bucharest"
+  - name: "Cojasca"
+    latitude: 44.71667
+    longitude: 25.85
+    population: 7205
+    dem: 133
+    timezone: "Europe/Bucharest"
+  - name: "Ciocanesti"
+    latitude: 44.6
+    longitude: 25.85
+    population: 5354
+    dem: 116
+    timezone: "Europe/Bucharest"
+  - name: "Bucsani"
+    latitude: 44.86667
+    longitude: 25.65
+    population: 6797
+    dem: 204
+    timezone: "Europe/Bucharest"
+  - name: "Branesti"
+    latitude: 45.03333
+    longitude: 25.41667
+    population: 9094
+    dem: 360
+    timezone: "Europe/Bucharest"
+  - name: "Bezdead"
+    latitude: 45.15
+    longitude: 25.51667
+    population: 5067
+    dem: 534
+    timezone: "Europe/Bucharest"
+  - name: "Barbuletu"
+    latitude: 45.13333
+    longitude: 25.3
+    population: 6777
+    dem: 492
+    timezone: "Europe/Bucharest"
+  - name: "Baleni Sarbi"
+    latitude: 44.81667
+    longitude: 25.63333
+    population: 8231
+    dem: 202
+    timezone: "Europe/Bucharest"
+  - name: "Aninoasa"
+    latitude: 44.96667
+    longitude: 25.43333
+    population: 5907
+    dem: 307
+    timezone: "Europe/Bucharest"
+- name: "Bacau"
+  cities:
+  - name: "Zemes"
+    latitude: 46.58333
+    longitude: 26.41667
+    population: 5171
+    dem: 853
+    timezone: "Europe/Bucharest"
+  - name: "Targu Trotus"
+    latitude: 46.26667
+    longitude: 26.66667
+    population: 5305
+    dem: 242
+    timezone: "Europe/Bucharest"
+  - name: "Targu Ocna"
+    latitude: 46.27899
+    longitude: 26.61301
+    population: 13127
+    dem: 261
+    timezone: "Europe/Bucharest"
+  - name: "Tamasi"
+    latitude: 46.48333
+    longitude: 26.98333
+    population: 6330
+    dem: 141
+    timezone: "Europe/Bucharest"
+  - name: "Sascut"
+    latitude: 46.2
+    longitude: 27.1
+    population: 10031
+    dem: 152
+    timezone: "Europe/Bucharest"
+  - name: "Rachitoasa"
+    latitude: 46.43333
+    longitude: 27.36667
+    population: 5009
+    dem: 337
+    timezone: "Europe/Bucharest"
+  - name: "Racaciuni"
+    latitude: 46.33333
+    longitude: 26.98333
+    population: 7839
+    dem: 216
+    timezone: "Europe/Bucharest"
+  - name: "Podu Turcului"
+    latitude: 46.2
+    longitude: 27.38333
+    population: 5081
+    dem: 114
+    timezone: "Europe/Bucharest"
+  - name: "Poduri"
+    latitude: 46.46667
+    longitude: 26.53333
+    population: 7937
+    dem: 449
+    timezone: "Europe/Bucharest"
+  - name: "Parjol"
+    latitude: 46.58333
+    longitude: 26.6
+    population: 6688
+    dem: 395
+    timezone: "Europe/Bucharest"
+  - name: "Oituz"
+    latitude: 46.2
+    longitude: 26.61667
+    population: 9596
+    dem: 306
+    timezone: "Europe/Bucharest"
+  - name: "Nicolae Balcescu"
+    latitude: 46.46667
+    longitude: 26.91667
+    population: 10140
+    dem: 162
+    timezone: "Europe/Bucharest"
+  - name: "Moinesti"
+    latitude: 46.47523
+    longitude: 26.48907
+    population: 23981
+    dem: 476
+    timezone: "Europe/Bucharest"
+  - name: "Margineni-Munteni"
+    latitude: 46.6
+    longitude: 26.9
+    population: 8033
+    dem: 164
+    timezone: "Europe/Bucharest"
+  - name: "Livezi-Vale"
+    latitude: 46.41667
+    longitude: 26.73333
+    population: 5255
+    dem: 246
+    timezone: "Europe/Bucharest"
+  - name: "Helegiu"
+    latitude: 46.35
+    longitude: 26.75
+    population: 7195
+    dem: 255
+    timezone: "Europe/Bucharest"
+  - name: "Gura Vaii"
+    latitude: 46.33333
+    longitude: 26.73333
+    population: 6075
+    dem: 246
+    timezone: "Europe/Bucharest"
+  - name: "Ghimes-Faget"
+    latitude: 46.58333
+    longitude: 26.06667
+    population: 5248
+    dem: 804
+    timezone: "Europe/Bucharest"
+  - name: "Faraoani"
+    latitude: 46.43333
+    longitude: 26.9
+    population: 5141
+    dem: 206
+    timezone: "Europe/Bucharest"
+  - name: "Dofteana"
+    latitude: 46.31667
+    longitude: 26.51667
+    population: 10785
+    dem: 333
+    timezone: "Europe/Bucharest"
+  - name: "Darmanesti"
+    latitude: 46.36667
+    longitude: 26.48333
+    population: 14290
+    dem: 347
+    timezone: "Europe/Bucharest"
+  - name: "Corbasca"
+    latitude: 46.28333
+    longitude: 27.16667
+    population: 5328
+    dem: 255
+    timezone: "Europe/Bucharest"
+  - name: "Comanesti"
+    latitude: 46.42135
+    longitude: 26.43645
+    population: 23729
+    dem: 385
+    timezone: "Europe/Bucharest"
+  - name: "Cleja"
+    latitude: 46.41667
+    longitude: 26.9
+    population: 6816
+    dem: 249
+    timezone: "Europe/Bucharest"
+  - name: "Caiuti-Sat"
+    latitude: 46.18333
+    longitude: 26.93333
+    population: 5357
+    dem: 166
+    timezone: "Europe/Bucharest"
+  - name: "Buhusi"
+    latitude: 46.71667
+    longitude: 26.7
+    population: 18395
+    dem: 254
+    timezone: "Europe/Bucharest"
+  - name: "Blagesti"
+    latitude: 46.68333
+    longitude: 26.65
+    population: 7165
+    dem: 329
+    timezone: "Europe/Bucharest"
+  - name: "Berzunti"
+    latitude: 46.4
+    longitude: 26.63333
+    population: 5285
+    dem: 344
+    timezone: "Europe/Bucharest"
+  - name: "Beresti-Tazlau"
+    latitude: 46.46667
+    longitude: 26.66667
+    population: 5661
+    dem: 345
+    timezone: "Europe/Bucharest"
+  - name: "Balcani"
+    latitude: 46.63333
+    longitude: 26.55
+    population: 7958
+    dem: 432
+    timezone: "Europe/Bucharest"
+  - name: "Bacau"
+    latitude: 46.56718
+    longitude: 26.91384
+    population: 171396
+    dem: 165
+    timezone: "Europe/Bucharest"
+  - name: "Asau"
+    latitude: 46.43333
+    longitude: 26.4
+    population: 7438
+    dem: 409
+    timezone: "Europe/Bucharest"
+  - name: "Agas"
+    latitude: 46.48333
+    longitude: 26.21667
+    population: 6619
+    dem: 563
+    timezone: "Europe/Bucharest"
+- name: "Bucuresti"
+  cities:
+  - name: "Bucharest"
+    latitude: 44.43225
+    longitude: 26.10626
+    population: 1877155
+    dem: 83
+    timezone: "Europe/Bucharest"
+  - name: "Sector 1"
+    latitude: 44.49239
+    longitude: 26.04831
+    population: 225453
+    dem: 86
+    timezone: "Europe/Bucharest"
+  - name: "Sector 2"
+    latitude: 44.4528
+    longitude: 26.13321
+    population: 345370
+    dem: 80
+    timezone: "Europe/Bucharest"
+  - name: "Sector 3"
+    latitude: 44.4234
+    longitude: 26.16874
+    population: 385439
+    dem: 76
+    timezone: "Europe/Bucharest"
+  - name: "Sector 4"
+    latitude: 44.37571
+    longitude: 26.12085
+    population: 287828
+    dem: 79
+    timezone: "Europe/Bucharest"
+  - name: "Sector 5"
+    latitude: 44.38808
+    longitude: 26.07144
+    population: 271575
+    dem: 81
+    timezone: "Europe/Bucharest"
+  - name: "Sector 6"
+    latitude: 44.43579
+    longitude: 26.01649
+    population: 367760
+    dem: 95
+    timezone: "Europe/Bucharest"
+- name: "Gorj"
+  cities:
+  - name: "Turceni"
+    latitude: 44.68333
+    longitude: 23.36667
+    population: 8458
+    dem: 127
+    timezone: "Europe/Bucharest"
+  - name: "Tismana"
+    latitude: 45.05
+    longitude: 22.96667
+    population: 7751
+    dem: 212
+    timezone: "Europe/Bucharest"
+  - name: "Targu Jiu"
+    latitude: 45.05
+    longitude: 23.28333
+    population: 97179
+    dem: 212
+    timezone: "Europe/Bucharest"
+  - name: "Targu Carbunesti"
+    latitude: 44.95
+    longitude: 23.51667
+    population: 8646
+    dem: 195
+    timezone: "Europe/Bucharest"
+  - name: "Ticleni"
+    latitude: 44.88333
+    longitude: 23.4
+    population: 5250
+    dem: 179
+    timezone: "Europe/Bucharest"
+  - name: "Runcu"
+    latitude: 45.11667
+    longitude: 23.13333
+    population: 5760
+    dem: 282
+    timezone: "Europe/Bucharest"
+  - name: "Rovinari"
+    latitude: 44.91667
+    longitude: 23.18333
+    population: 12259
+    dem: 166
+    timezone: "Europe/Bucharest"
+  - name: "Plopsoru"
+    latitude: 44.78333
+    longitude: 23.35
+    population: 6576
+    dem: 141
+    timezone: "Europe/Bucharest"
+  - name: "Pades"
+    latitude: 45.01667
+    longitude: 22.85
+    population: 5071
+    dem: 274
+    timezone: "Europe/Bucharest"
+  - name: "Motru"
+    latitude: 44.80333
+    longitude: 22.97194
+    population: 22319
+    dem: 182
+    timezone: "Europe/Bucharest"
+  - name: "Matasari"
+    latitude: 44.85
+    longitude: 23.08333
+    population: 5411
+    dem: 242
+    timezone: "Europe/Bucharest"
+  - name: "Dragutesti"
+    latitude: 44.96667
+    longitude: 23.23333
+    population: 5126
+    dem: 175
+    timezone: "Europe/Bucharest"
+  - name: "Crasna"
+    latitude: 45.16667
+    longitude: 23.5
+    population: 5466
+    dem: 445
+    timezone: "Europe/Bucharest"
+  - name: "Bumbesti-Jiu"
+    latitude: 45.16667
+    longitude: 23.4
+    population: 10445
+    dem: 380
+    timezone: "Europe/Bucharest"
+  - name: "Balesti"
+    latitude: 45.01667
+    longitude: 23.21667
+    population: 7333
+    dem: 183
+    timezone: "Europe/Bucharest"
+- name: "Maramures"
+  cities:
+  - name: "Viseu de Sus"
+    latitude: 47.71667
+    longitude: 24.43333
+    population: 16938
+    dem: 510
+    timezone: "Europe/Bucharest"
+  - name: "Viseu de Jos"
+    latitude: 47.72558
+    longitude: 24.36613
+    population: 5201
+    dem: 457
+    timezone: "Europe/Bucharest"
+  - name: "Ulmeni"
+    latitude: 47.46667
+    longitude: 23.3
+    population: 7047
+    dem: 168
+    timezone: "Europe/Bucharest"
+  - name: "Suciu de Sus"
+    latitude: 47.43333
+    longitude: 24.03333
+    population: 6125
+    dem: 418
+    timezone: "Europe/Bucharest"
+  - name: "Somcuta Mare"
+    latitude: 47.51667
+    longitude: 23.46667
+    population: 7584
+    dem: 190
+    timezone: "Europe/Bucharest"
+  - name: "Sighetu Marmatiei"
+    latitude: 47.93195
+    longitude: 23.88603
+    population: 40653
+    dem: 270
+    timezone: "Europe/Bucharest"
+  - name: "Seini"
+    latitude: 47.75
+    longitude: 23.28333
+    population: 10382
+    dem: 140
+    timezone: "Europe/Bucharest"
+  - name: "Satulung"
+    latitude: 47.56667
+    longitude: 23.43333
+    population: 5334
+    dem: 164
+    timezone: "Europe/Bucharest"
+  - name: "Salistea de Sus"
+    latitude: 47.65
+    longitude: 24.35
+    population: 5119
+    dem: 498
+    timezone: "Europe/Bucharest"
+  - name: "Ruscova"
+    latitude: 47.79289
+    longitude: 24.28546
+    population: 5183
+    dem: 419
+    timezone: "Europe/Bucharest"
+  - name: "Rozavlea"
+    latitude: 47.73333
+    longitude: 24.21667
+    population: 6076
+    dem: 360
+    timezone: "Europe/Bucharest"
+  - name: "Recea"
+    latitude: 47.63333
+    longitude: 23.51667
+    population: 5360
+    dem: 190
+    timezone: "Europe/Bucharest"
+  - name: "Poienile de sub Munte"
+    latitude: 47.81667
+    longitude: 24.43333
+    population: 9865
+    dem: 634
+    timezone: "Europe/Bucharest"
+  - name: "Moisei"
+    latitude: 47.65562
+    longitude: 24.54011
+    population: 8877
+    dem: 565
+    timezone: "Europe/Bucharest"
+  - name: "Miresu Mare"
+    latitude: 47.5
+    longitude: 23.33333
+    population: 5054
+    dem: 166
+    timezone: "Europe/Bucharest"
+  - name: "Copalnic Manastur"
+    latitude: 47.5
+    longitude: 23.68333
+    population: 5747
+    dem: 321
+    timezone: "Europe/Bucharest"
+  - name: "Cavnic"
+    latitude: 47.66667
+    longitude: 23.86667
+    population: 5072
+    dem: 859
+    timezone: "Europe/Bucharest"
+  - name: "Borsa"
+    latitude: 47.65527
+    longitude: 24.66328
+    population: 26966
+    dem: 658
+    timezone: "Europe/Bucharest"
+  - name: "Barsana"
+    latitude: 47.81667
+    longitude: 24.06667
+    population: 6266
+    dem: 344
+    timezone: "Europe/Bucharest"
+  - name: "Baia Sprie"
+    latitude: 47.66189
+    longitude: 23.69215
+    population: 16746
+    dem: 350
+    timezone: "Europe/Bucharest"
+  - name: "Baia Mare"
+    latitude: 47.65729
+    longitude: 23.56808
+    population: 136553
+    dem: 220
+    timezone: "Europe/Bucharest"
+- name: "Botosani"
+  cities:
+  - name: "Vorona Teodoru"
+    latitude: 47.55
+    longitude: 26.6
+    population: 7992
+    dem: 253
+    timezone: "Europe/Bucharest"
+  - name: "Ungureni-Jianu"
+    latitude: 47.88333
+    longitude: 26.78333
+    population: 6948
+    dem: 110
+    timezone: "Europe/Bucharest"
+  - name: "Tudora"
+    latitude: 47.51667
+    longitude: 26.63333
+    population: 5139
+    dem: 286
+    timezone: "Europe/Bucharest"
+  - name: "Trusesti"
+    latitude: 47.76667
+    longitude: 27.01667
+    population: 5748
+    dem: 106
+    timezone: "Europe/Bucharest"
+  - name: "Suharau"
+    latitude: 48.13333
+    longitude: 26.41667
+    population: 5356
+    dem: 193
+    timezone: "Europe/Bucharest"
+  - name: "Storesti"
+    latitude: 47.55
+    longitude: 26.86667
+    population: 11806
+    dem: 164
+    timezone: "Europe/Bucharest"
+  - name: "Stefanesti-Sat"
+    latitude: 47.78333
+    longitude: 27.18333
+    population: 5607
+    dem: 131
+    timezone: "Europe/Bucharest"
+  - name: "Saveni"
+    latitude: 47.95
+    longitude: 26.86667
+    population: 8126
+    dem: 83
+    timezone: "Europe/Bucharest"
+  - name: "Mihaileni"
+    latitude: 47.96667
+    longitude: 26.15
+    population: 5037
+    dem: 332
+    timezone: "Europe/Bucharest"
+  - name: "Hudesti"
+    latitude: 48.15
+    longitude: 26.5
+    population: 6360
+    dem: 191
+    timezone: "Europe/Bucharest"
+  - name: "Havarna"
+    latitude: 48.06667
+    longitude: 26.65
+    population: 5088
+    dem: 131
+    timezone: "Europe/Bucharest"
+  - name: "Frumusica"
+    latitude: 47.53333
+    longitude: 26.9
+    population: 6069
+    dem: 139
+    timezone: "Europe/Bucharest"
+  - name: "Dorohoi"
+    latitude: 47.95
+    longitude: 26.4
+    population: 30776
+    dem: 151
+    timezone: "Europe/Bucharest"
+  - name: "Dersca"
+    latitude: 47.98333
+    longitude: 26.2
+    population: 5105
+    dem: 382
+    timezone: "Europe/Bucharest"
+  - name: "Darabani"
+    latitude: 48.18333
+    longitude: 26.58333
+    population: 11890
+    dem: 222
+    timezone: "Europe/Bucharest"
+  - name: "Cotusca"
+    latitude: 48.13333
+    longitude: 26.85
+    population: 5333
+    dem: 189
+    timezone: "Europe/Bucharest"
+  - name: "Corni"
+    latitude: 47.65
+    longitude: 26.58333
+    population: 6521
+    dem: 276
+    timezone: "Europe/Bucharest"
+  - name: "Copalau"
+    latitude: 47.61667
+    longitude: 26.83333
+    population: 7086
+    dem: 104
+    timezone: "Europe/Bucharest"
+  - name: "Bucecea"
+    latitude: 47.76667
+    longitude: 26.43333
+    population: 5143
+    dem: 265
+    timezone: "Europe/Bucharest"
+  - name: "Botosani"
+    latitude: 47.75
+    longitude: 26.66667
+    population: 114783
+    dem: 159
+    timezone: "Europe/Bucharest"
+  - name: "Baluseni"
+    latitude: 47.66667
+    longitude: 26.8
+    population: 5017
+    dem: 96
+    timezone: "Europe/Bucharest"
+  - name: "Avrameni"
+    latitude: 48.01667
+    longitude: 26.95
+    population: 5490
+    dem: 233
+    timezone: "Europe/Bucharest"
+  - name: "Albesti"
+    latitude: 47.7
+    longitude: 27.06667
+    population: 6578
+    dem: 64
+    timezone: "Europe/Bucharest"
+- name: "Giurgiu"
+  cities:
+  - name: "Vedea"
+    latitude: 43.78333
+    longitude: 25.78333
+    population: 5785
+    dem: 27
+    timezone: "Europe/Bucharest"
+  - name: "Varasti"
+    latitude: 44.23778
+    longitude: 26.24861
+    population: 6412
+    dem: 51
+    timezone: "Europe/Bucharest"
+  - name: "Ulmi"
+    latitude: 44.48667
+    longitude: 25.78028
+    population: 7606
+    dem: 111
+    timezone: "Europe/Bucharest"
+  - name: "Roata de Jos"
+    latitude: 44.41083
+    longitude: 25.54333
+    population: 8350
+    dem: 107
+    timezone: "Europe/Bucharest"
+  - name: "Mihailesti"
+    latitude: 44.32667
+    longitude: 25.90833
+    population: 7506
+    dem: 87
+    timezone: "Europe/Bucharest"
+  - name: "Joita"
+    latitude: 44.49417
+    longitude: 25.85389
+    population: 8616
+    dem: 104
+    timezone: "Europe/Bucharest"
+  - name: "Hotarele"
+    latitude: 44.1725
+    longitude: 26.37028
+    population: 8790
+    dem: 42
+    timezone: "Europe/Bucharest"
+  - name: "Giurgiu"
+    latitude: 43.88664
+    longitude: 25.9627
+    population: 69067
+    dem: 7
+    timezone: "Europe/Bucharest"
+  - name: "Gaiseni"
+    latitude: 44.515
+    longitude: 25.64528
+    population: 5455
+    dem: 125
+    timezone: "Europe/Bucharest"
+  - name: "Fratesti"
+    latitude: 43.96667
+    longitude: 25.96667
+    population: 5527
+    dem: 23
+    timezone: "Europe/Bucharest"
+  - name: "Comana"
+    latitude: 44.17056
+    longitude: 26.145
+    population: 7717
+    dem: 52
+    timezone: "Europe/Bucharest"
+  - name: "Calugareni"
+    latitude: 44.17167
+    longitude: 25.99556
+    population: 6444
+    dem: 49
+    timezone: "Europe/Bucharest"
+  - name: "Bolintin Vale"
+    latitude: 44.44889
+    longitude: 25.75778
+    population: 11700
+    dem: 106
+    timezone: "Europe/Bucharest"
+  - name: "Bolintin Deal"
+    latitude: 44.45917
+    longitude: 25.82111
+    population: 6139
+    dem: 101
+    timezone: "Europe/Bucharest"
+  - name: "Baneasa"
+    latitude: 44.04611
+    longitude: 26.06417
+    population: 5582
+    dem: 92
+    timezone: "Europe/Bucharest"
+- name: "Valcea"
+  cities:
+  - name: "Ramnicu Valcea"
+    latitude: 45.1
+    longitude: 24.36667
+    population: 107558
+    dem: 237
+    timezone: "Europe/Bucharest"
+  - name: "Mihaesti"
+    latitude: 45.03333
+    longitude: 24.25
+    population: 6263
+    dem: 234
+    timezone: "Europe/Bucharest"
+  - name: "Horezu"
+    latitude: 45.15
+    longitude: 24.01667
+    population: 6743
+    dem: 468
+    timezone: "Europe/Bucharest"
+  - name: "Dragasani"
+    latitude: 44.65
+    longitude: 24.26667
+    population: 20630
+    dem: 155
+    timezone: "Europe/Bucharest"
+  - name: "Calimanesti"
+    latitude: 45.23333
+    longitude: 24.33333
+    population: 8485
+    dem: 366
+    timezone: "Europe/Bucharest"
+  - name: "Budesti"
+    latitude: 45.05
+    longitude: 24.38333
+    population: 5362
+    dem: 316
+    timezone: "Europe/Bucharest"
+  - name: "Brezoi"
+    latitude: 45.33797
+    longitude: 24.24863
+    population: 6668
+    dem: 317
+    timezone: "Europe/Bucharest"
+  - name: "Berbesti"
+    latitude: 44.98333
+    longitude: 23.88333
+    population: 5606
+    dem: 359
+    timezone: "Europe/Bucharest"
+  - name: "Balcesti"
+    latitude: 44.61667
+    longitude: 23.95
+    population: 5683
+    dem: 198
+    timezone: "Europe/Bucharest"
+  - name: "Babeni"
+    latitude: 44.96667
+    longitude: 24.23333
+    population: 9350
+    dem: 205
+    timezone: "Europe/Bucharest"
+- name: "Prahova"
+  cities:
+  - name: "Varbilau"
+    latitude: 45.18333
+    longitude: 25.95
+    population: 7084
+    dem: 394
+    timezone: "Europe/Bucharest"
+  - name: "Valenii de Munte"
+    latitude: 45.18333
+    longitude: 26.03333
+    population: 13276
+    dem: 353
+    timezone: "Europe/Bucharest"
+  - name: "Valea Calugareasca"
+    latitude: 44.96667
+    longitude: 26.15
+    population: 10378
+    dem: 199
+    timezone: "Europe/Bucharest"
+  - name: "Urlati"
+    latitude: 44.98333
+    longitude: 26.23333
+    population: 11798
+    dem: 125
+    timezone: "Europe/Bucharest"
+  - name: "Targsoru Vechi"
+    latitude: 44.86667
+    longitude: 25.91667
+    population: 8460
+    dem: 162
+    timezone: "Europe/Bucharest"
+  - name: "Telega"
+    latitude: 45.13333
+    longitude: 25.78333
+    population: 6358
+    dem: 436
+    timezone: "Europe/Bucharest"
+  - name: "Starchiojd"
+    latitude: 45.31667
+    longitude: 26.18333
+    population: 6592
+    dem: 449
+    timezone: "Europe/Bucharest"
+  - name: "Slanic"
+    latitude: 45.25
+    longitude: 25.93333
+    population: 6967
+    dem: 515
+    timezone: "Europe/Bucharest"
+  - name: "Sirna"
+    latitude: 44.8
+    longitude: 25.95
+    population: 5331
+    dem: 133
+    timezone: "Europe/Bucharest"
+  - name: "Sangeru"
+    latitude: 45.13333
+    longitude: 26.35
+    population: 5271
+    dem: 260
+    timezone: "Europe/Bucharest"
+  - name: "Sinaia"
+    latitude: 45.35
+    longitude: 25.55
+    population: 11918
+    dem: 813
+    timezone: "Europe/Bucharest"
+  - name: "Scorteni"
+    latitude: 45.1
+    longitude: 25.85
+    population: 5995
+    dem: 410
+    timezone: "Europe/Bucharest"
+  - name: "Rafov"
+    latitude: 44.86667
+    longitude: 26.13333
+    population: 5472
+    dem: 102
+    timezone: "Europe/Bucharest"
+  - name: "Puchenii Mari"
+    latitude: 44.81667
+    longitude: 26.08333
+    population: 8869
+    dem: 103
+    timezone: "Europe/Bucharest"
+  - name: "Poiana Campina"
+    latitude: 45.13333
+    longitude: 25.68333
+    population: 5254
+    dem: 571
+    timezone: "Europe/Bucharest"
+  - name: "Plopeni"
+    latitude: 45.04955
+    longitude: 25.95202
+    population: 7718
+    dem: 254
+    timezone: "Europe/Bucharest"
+  - name: "Ploiesti"
+    latitude: 44.95
+    longitude: 26.01667
+    population: 228851
+    dem: 161
+    timezone: "Europe/Bucharest"
+  - name: "Paulesti"
+    latitude: 45.0
+    longitude: 25.98333
+    population: 5069
+    dem: 210
+    timezone: "Europe/Bucharest"
+  - name: "Mocesti"
+    latitude: 45.05
+    longitude: 26.25
+    population: 5100
+    dem: 212
+    timezone: "Europe/Bucharest"
+  - name: "Mizil"
+    latitude: 45.01667
+    longitude: 26.45
+    population: 15532
+    dem: 124
+    timezone: "Europe/Bucharest"
+  - name: "Manesti"
+    latitude: 44.86667
+    longitude: 25.85
+    population: 7186
+    dem: 184
+    timezone: "Europe/Bucharest"
+  - name: "Magureni"
+    latitude: 45.06667
+    longitude: 25.73333
+    population: 6515
+    dem: 364
+    timezone: "Europe/Bucharest"
+  - name: "Gura Vitioarei"
+    latitude: 45.15
+    longitude: 26.03333
+    population: 5947
+    dem: 302
+    timezone: "Europe/Bucharest"
+  - name: "Gorgota"
+    latitude: 44.78333
+    longitude: 26.08333
+    population: 5459
+    dem: 110
+    timezone: "Europe/Bucharest"
+  - name: "Floresti"
+    latitude: 45.05
+    longitude: 25.78333
+    population: 7507
+    dem: 333
+    timezone: "Europe/Bucharest"
+  - name: "Filipestii de Targ"
+    latitude: 44.98333
+    longitude: 25.78333
+    population: 7794
+    dem: 278
+    timezone: "Europe/Bucharest"
+  - name: "Filipestii de Padure"
+    latitude: 45.0
+    longitude: 25.75
+    population: 10169
+    dem: 301
+    timezone: "Europe/Bucharest"
+  - name: "Drajna de Jos"
+    latitude: 45.21667
+    longitude: 26.05
+    population: 5660
+    dem: 381
+    timezone: "Europe/Bucharest"
+  - name: "Draganesti"
+    latitude: 44.81667
+    longitude: 26.3
+    population: 5156
+    dem: 73
+    timezone: "Europe/Bucharest"
+  - name: "Doftana"
+    latitude: 45.15
+    longitude: 25.8
+    population: 6777
+    dem: 517
+    timezone: "Europe/Bucharest"
+  - name: "Comarnic"
+    latitude: 45.25
+    longitude: 25.63333
+    population: 13254
+    dem: 641
+    timezone: "Europe/Bucharest"
+  - name: "Colceag"
+    latitude: 44.95
+    longitude: 26.35
+    population: 5473
+    dem: 107
+    timezone: "Europe/Bucharest"
+  - name: "Cioranii de Jos"
+    latitude: 44.81667
+    longitude: 26.41667
+    population: 7036
+    dem: 76
+    timezone: "Europe/Bucharest"
+  - name: "Campina"
+    latitude: 45.12619
+    longitude: 25.73496
+    population: 41554
+    dem: 443
+    timezone: "Europe/Bucharest"
+  - name: "Cerasu"
+    latitude: 45.31667
+    longitude: 26.03333
+    population: 5105
+    dem: 564
+    timezone: "Europe/Bucharest"
+  - name: "Ceptura de Sus"
+    latitude: 45.01667
+    longitude: 26.31667
+    population: 5204
+    dem: 222
+    timezone: "Europe/Bucharest"
+  - name: "Busteni"
+    latitude: 45.4
+    longitude: 25.53333
+    population: 9906
+    dem: 900
+    timezone: "Europe/Bucharest"
+  - name: "Bucov"
+    latitude: 44.96667
+    longitude: 26.08333
+    population: 10279
+    dem: 142
+    timezone: "Europe/Bucharest"
+  - name: "Brebu Manastirei"
+    latitude: 45.18333
+    longitude: 25.76667
+    population: 7591
+    dem: 525
+    timezone: "Europe/Bucharest"
+  - name: "Breaza de Sus"
+    latitude: 45.19879
+    longitude: 25.65578
+    population: 10903
+    dem: 571
+    timezone: "Europe/Bucharest"
+  - name: "Breaza"
+    latitude: 45.18333
+    longitude: 25.66667
+    population: 17949
+    dem: 548
+    timezone: "Europe/Bucharest"
+  - name: "Brazii de Sus"
+    latitude: 44.86667
+    longitude: 26.01667
+    population: 8406
+    dem: 132
+    timezone: "Europe/Bucharest"
+  - name: "Boldesti-Scaeni"
+    latitude: 45.03333
+    longitude: 26.03333
+    population: 11460
+    dem: 211
+    timezone: "Europe/Bucharest"
+  - name: "Blejoi"
+    latitude: 45.0
+    longitude: 26.01667
+    population: 7646
+    dem: 182
+    timezone: "Europe/Bucharest"
+  - name: "Berceni"
+    latitude: 44.93333
+    longitude: 26.11667
+    population: 5976
+    dem: 129
+    timezone: "Europe/Bucharest"
+  - name: "Barcanesti"
+    latitude: 44.88333
+    longitude: 26.05
+    population: 9225
+    dem: 129
+    timezone: "Europe/Bucharest"
+  - name: "Banesti"
+    latitude: 45.1
+    longitude: 25.76667
+    population: 5636
+    dem: 401
+    timezone: "Europe/Bucharest"
+  - name: "Baicoi"
+    latitude: 45.03333
+    longitude: 25.85
+    population: 19869
+    dem: 312
+    timezone: "Europe/Bucharest"
+  - name: "Aricestii-Rahtivani"
+    latitude: 44.95
+    longitude: 25.83333
+    population: 8764
+    dem: 238
+    timezone: "Europe/Bucharest"
+  - name: "Albesti-Paleologu"
+    latitude: 44.95
+    longitude: 26.21667
+    population: 5695
+    dem: 116
+    timezone: "Europe/Bucharest"
+- name: "Bistrita-Nasaud"
+  cities:
+  - name: "Telciu"
+    latitude: 47.43333
+    longitude: 24.4
+    population: 5314
+    dem: 393
+    timezone: "Europe/Bucharest"
+  - name: "Teaca"
+    latitude: 46.91667
+    longitude: 24.51667
+    population: 5954
+    dem: 384
+    timezone: "Europe/Bucharest"
+  - name: "Sangeorz-Bai"
+    latitude: 47.3685
+    longitude: 24.67212
+    population: 8244
+    dem: 434
+    timezone: "Europe/Bucharest"
+  - name: "Rodna"
+    latitude: 47.41667
+    longitude: 24.81667
+    population: 6218
+    dem: 525
+    timezone: "Europe/Bucharest"
+  - name: "Nimigea de Sus"
+    latitude: 47.28333
+    longitude: 24.31667
+    population: 5457
+    dem: 332
+    timezone: "Europe/Bucharest"
+  - name: "Nasaud"
+    latitude: 47.28333
+    longitude: 24.4
+    population: 10380
+    dem: 317
+    timezone: "Europe/Bucharest"
+  - name: "Maieru"
+    latitude: 47.4
+    longitude: 24.75
+    population: 7259
+    dem: 496
+    timezone: "Europe/Bucharest"
+  - name: "Lechinta"
+    latitude: 47.01667
+    longitude: 24.35
+    population: 5939
+    dem: 344
+    timezone: "Europe/Bucharest"
+  - name: "Josenii Bargaului"
+    latitude: 47.21667
+    longitude: 24.68333
+    population: 5006
+    dem: 467
+    timezone: "Europe/Bucharest"
+  - name: "Feldru"
+    latitude: 47.28333
+    longitude: 24.6
+    population: 6967
+    dem: 393
+    timezone: "Europe/Bucharest"
+  - name: "Cormaia"
+    latitude: 47.36667
+    longitude: 24.68333
+    population: 10254
+    dem: 456
+    timezone: "Europe/Bucharest"
+  - name: "Caianu Mic"
+    latitude: 47.23333
+    longitude: 24.15
+    population: 5340
+    dem: 276
+    timezone: "Europe/Bucharest"
+  - name: "Bistrita"
+    latitude: 47.13316
+    longitude: 24.50011
+    population: 81318
+    dem: 362
+    timezone: "Europe/Bucharest"
+  - name: "Beclean"
+    latitude: 47.18333
+    longitude: 24.18333
+    population: 10909
+    dem: 257
+    timezone: "Europe/Bucharest"
+- name: "Sibiu"
+  cities:
+  - name: "Talmaciu"
+    latitude: 45.66714
+    longitude: 24.26464
+    population: 5849
+    dem: 382
+    timezone: "Europe/Bucharest"
+  - name: "Sibiu"
+    latitude: 45.8
+    longitude: 24.15
+    population: 151894
+    dem: 410
+    timezone: "Europe/Bucharest"
+  - name: "Saliste"
+    latitude: 45.79633
+    longitude: 23.88677
+    population: 5660
+    dem: 545
+    timezone: "Europe/Bucharest"
+  - name: "Rasinari"
+    latitude: 45.7
+    longitude: 24.06667
+    population: 5403
+    dem: 580
+    timezone: "Europe/Bucharest"
+  - name: "Medias"
+    latitude: 46.16667
+    longitude: 24.35
+    population: 53040
+    dem: 301
+    timezone: "Europe/Bucharest"
+  - name: "Dumbraveni"
+    latitude: 46.23333
+    longitude: 24.56667
+    population: 8167
+    dem: 349
+    timezone: "Europe/Bucharest"
+  - name: "Copsa Mica"
+    latitude: 46.11667
+    longitude: 24.25
+    population: 5349
+    dem: 281
+    timezone: "Europe/Bucharest"
+  - name: "Cisnadie"
+    latitude: 45.71667
+    longitude: 24.15
+    population: 15042
+    dem: 455
+    timezone: "Europe/Bucharest"
+  - name: "Avrig"
+    latitude: 45.71667
+    longitude: 24.38333
+    population: 14032
+    dem: 385
+    timezone: "Europe/Bucharest"
+  - name: "Agnita"
+    latitude: 45.96667
+    longitude: 24.61667
+    population: 10505
+    dem: 464
+    timezone: "Europe/Bucharest"
+- name: "Mures"
+  cities:
+  - name: "Ungheni"
+    latitude: 46.48333
+    longitude: 24.46667
+    population: 6449
+    dem: 297
+    timezone: "Europe/Bucharest"
+  - name: "Tarnaveni"
+    latitude: 46.33191
+    longitude: 24.29662
+    population: 28634
+    dem: 284
+    timezone: "Europe/Bucharest"
+  - name: "Targu-Mures"
+    latitude: 46.54245
+    longitude: 24.55747
+    population: 146863
+    dem: 319
+    timezone: "Europe/Bucharest"
+  - name: "Sovata"
+    latitude: 46.58333
+    longitude: 25.06667
+    population: 11465
+    dem: 454
+    timezone: "Europe/Bucharest"
+  - name: "Sangeorgiu de Mures"
+    latitude: 46.5696
+    longitude: 24.59453
+    population: 7776
+    dem: 315
+    timezone: "Europe/Bucharest"
+  - name: "Sancraiu de Mures"
+    latitude: 46.55119
+    longitude: 24.52663
+    population: 6161
+    dem: 308
+    timezone: "Europe/Bucharest"
+  - name: "Sarmasu"
+    latitude: 46.75
+    longitude: 24.16667
+    population: 7371
+    dem: 340
+    timezone: "Europe/Bucharest"
+  - name: "Reghin-Sat"
+    latitude: 46.78333
+    longitude: 24.71667
+    population: 35490
+    dem: 363
+    timezone: "Europe/Bucharest"
+  - name: "Panet"
+    latitude: 46.55514
+    longitude: 24.46973
+    population: 5880
+    dem: 318
+    timezone: "Europe/Bucharest"
+  - name: "Miercurea Nirajului"
+    latitude: 46.53333
+    longitude: 24.8
+    population: 5741
+    dem: 347
+    timezone: "Europe/Bucharest"
+  - name: "Ludus"
+    latitude: 46.48333
+    longitude: 24.1
+    population: 17165
+    dem: 272
+    timezone: "Europe/Bucharest"
+  - name: "Iernut"
+    latitude: 46.45
+    longitude: 24.25
+    population: 9343
+    dem: 275
+    timezone: "Europe/Bucharest"
+  - name: "Gurghiu"
+    latitude: 46.76667
+    longitude: 24.85
+    population: 6277
+    dem: 417
+    timezone: "Europe/Bucharest"
+  - name: "Gornesti"
+    latitude: 46.67129
+    longitude: 24.64757
+    population: 5787
+    dem: 338
+    timezone: "Europe/Bucharest"
+  - name: "Ernei"
+    latitude: 46.60505
+    longitude: 24.64148
+    population: 5141
+    dem: 333
+    timezone: "Europe/Bucharest"
+  - name: "Cristesti"
+    latitude: 46.5
+    longitude: 24.48333
+    population: 5507
+    dem: 298
+    timezone: "Europe/Bucharest"
+  - name: "Band"
+    latitude: 46.58333
+    longitude: 24.38333
+    population: 7599
+    dem: 358
+    timezone: "Europe/Bucharest"
+  - name: "Albesti"
+    latitude: 46.23333
+    longitude: 24.85
+    population: 5382
+    dem: 367
+    timezone: "Europe/Bucharest"
+  - name: "Adamus"
+    latitude: 46.3
+    longitude: 24.23333
+    population: 5905
+    dem: 310
+    timezone: "Europe/Bucharest"
+  - name: "Sighisoara"
+    latitude: 46.22141
+    longitude: 24.79279
+    population: 34537
+    elevation: 350
+    dem: 358
+    timezone: "Europe/Bucharest"
+- name: "Caras-Severin"
+  cities:
+  - name: "Resita"
+    latitude: 45.30083
+    longitude: 21.88917
+    population: 81228
+    dem: 301
+    timezone: "Europe/Bucharest"
+  - name: "Otelu Rosu"
+    latitude: 45.53333
+    longitude: 22.36667
+    population: 11482
+    dem: 327
+    timezone: "Europe/Bucharest"
+  - name: "Oravita"
+    latitude: 45.0325
+    longitude: 21.68944
+    population: 12332
+    dem: 213
+    timezone: "Europe/Bucharest"
+  - name: "Moldova Noua"
+    latitude: 44.7375
+    longitude: 21.66694
+    population: 13263
+    dem: 170
+    timezone: "Europe/Bucharest"
+  - name: "Caransebes"
+    latitude: 45.41667
+    longitude: 22.21667
+    population: 27521
+    dem: 202
+    timezone: "Europe/Bucharest"
+  - name: "Bocsa"
+    latitude: 45.37333
+    longitude: 21.70917
+    population: 16349
+    dem: 159
+    timezone: "Europe/Bucharest"
+  - name: "Baile Herculane"
+    latitude: 44.87972
+    longitude: 22.4125
+    population: 6022
+    dem: 147
+    timezone: "Europe/Bucharest"
+  - name: "Anina"
+    latitude: 45.07944
+    longitude: 21.85694
+    population: 8689
+    dem: 755
+    timezone: "Europe/Bucharest"
+- name: "Brasov"
+  cities:
+  - name: "Zarnesti"
+    latitude: 45.56093
+    longitude: 25.31787
+    population: 24926
+    dem: 716
+    timezone: "Europe/Bucharest"
+  - name: "Vulcan"
+    latitude: 45.63333
+    longitude: 25.41667
+    population: 5493
+    dem: 600
+    timezone: "Europe/Bucharest"
+  - name: "Victoria"
+    latitude: 45.72968
+    longitude: 24.7028
+    population: 10247
+    dem: 551
+    timezone: "Europe/Bucharest"
+  - name: "Tarlungeni"
+    latitude: 45.63333
+    longitude: 25.75
+    population: 7219
+    dem: 632
+    timezone: "Europe/Bucharest"
+  - name: "Sacele"
+    latitude: 45.61674
+    longitude: 25.71101
+    population: 29918
+    dem: 652
+    timezone: "Europe/Bucharest"
+  - name: "Rupea"
+    latitude: 46.03333
+    longitude: 25.21667
+    population: 5610
+    dem: 458
+    timezone: "Europe/Bucharest"
+  - name: "Rasnov"
+    latitude: 45.58333
+    longitude: 25.45
+    population: 15253
+    dem: 641
+    timezone: "Europe/Bucharest"
+  - name: "Prejmer"
+    latitude: 45.71667
+    longitude: 25.76667
+    population: 8106
+    dem: 523
+    timezone: "Europe/Bucharest"
+  - name: "Predeal"
+    latitude: 45.5
+    longitude: 25.56667
+    population: 5615
+    dem: 1110
+    timezone: "Europe/Bucharest"
+  - name: "Halchiu"
+    latitude: 45.76667
+    longitude: 25.55
+    population: 6051
+    dem: 505
+    timezone: "Europe/Bucharest"
+  - name: "Feldioara"
+    latitude: 45.81667
+    longitude: 25.6
+    population: 6307
+    dem: 487
+    timezone: "Europe/Bucharest"
+  - name: "Fagaras"
+    latitude: 45.85
+    longitude: 24.96667
+    population: 30714
+    dem: 420
+    timezone: "Europe/Bucharest"
+  - name: "Codlea"
+    latitude: 45.7
+    longitude: 25.45
+    population: 24188
+    dem: 550
+    timezone: "Europe/Bucharest"
+  - name: "Brasov"
+    latitude: 45.64861
+    longitude: 25.60613
+    population: 276088
+    dem: 573
+    timezone: "Europe/Bucharest"
+  - name: "Bran"
+    latitude: 45.51667
+    longitude: 25.35
+    population: 5177
+    dem: 1017
+    timezone: "Europe/Bucharest"
+- name: "Covasna"
+  cities:
+  - name: "Zagon"
+    latitude: 45.76667
+    longitude: 26.11667
+    population: 5416
+    dem: 592
+    timezone: "Europe/Bucharest"
+  - name: "Targu Secuiesc"
+    latitude: 46.0
+    longitude: 26.13333
+    population: 20067
+    dem: 571
+    timezone: "Europe/Bucharest"
+  - name: "Sfantu Gheorghe"
+    latitude: 45.86667
+    longitude: 25.78333
+    population: 60677
+    dem: 552
+    timezone: "Europe/Bucharest"
+  - name: "Intorsura Buzaului"
+    latitude: 45.68333
+    longitude: 26.03333
+    population: 9026
+    dem: 763
+    timezone: "Europe/Bucharest"
+  - name: "Covasna"
+    latitude: 45.85
+    longitude: 26.18333
+    population: 10979
+    dem: 584
+    timezone: "Europe/Bucharest"
+  - name: "Baraolt"
+    latitude: 46.07514
+    longitude: 25.60029
+    population: 9429
+    dem: 478
+    timezone: "Europe/Bucharest"
+- name: "Timis"
+  cities:
+  - name: "Varias"
+    latitude: 46.01667
+    longitude: 20.95
+    population: 6054
+    dem: 87
+    timezone: "Europe/Bucharest"
+  - name: "Timisoara"
+    latitude: 45.75372
+    longitude: 21.22571
+    population: 315053
+    dem: 96
+    timezone: "Europe/Bucharest"
+  - name: "Sanpetru Mare"
+    latitude: 46.04515
+    longitude: 20.81834
+    population: 5782
+    dem: 90
+    timezone: "Europe/Bucharest"
+  - name: "Sannicolau Mare"
+    latitude: 46.08333
+    longitude: 20.63333
+    population: 12888
+    dem: 80
+    timezone: "Europe/Bucharest"
+  - name: "Sanandrei"
+    latitude: 45.85306
+    longitude: 21.16806
+    population: 5302
+    dem: 90
+    timezone: "Europe/Bucharest"
+  - name: "Sacalaz"
+    latitude: 45.75833
+    longitude: 21.11222
+    population: 6176
+    dem: 84
+    timezone: "Europe/Bucharest"
+  - name: "Recas"
+    latitude: 45.79889
+    longitude: 21.50083
+    population: 8508
+    dem: 104
+    timezone: "Europe/Bucharest"
+  - name: "Periam"
+    latitude: 46.05
+    longitude: 20.86667
+    population: 6563
+    dem: 88
+    timezone: "Europe/Bucharest"
+  - name: "Lugoj"
+    latitude: 45.68861
+    longitude: 21.90306
+    population: 43243
+    dem: 122
+    timezone: "Europe/Bucharest"
+  - name: "Lovrin"
+    latitude: 45.96806
+    longitude: 20.77028
+    population: 8851
+    dem: 92
+    timezone: "Europe/Bucharest"
+  - name: "Lenauheim"
+    latitude: 45.87194
+    longitude: 20.79944
+    population: 5605
+    dem: 86
+    timezone: "Europe/Bucharest"
+  - name: "Jimbolia"
+    latitude: 45.79139
+    longitude: 20.71722
+    population: 10860
+    dem: 83
+    timezone: "Europe/Bucharest"
+  - name: "Jebel"
+    latitude: 45.55556
+    longitude: 21.21361
+    population: 5298
+    dem: 83
+    timezone: "Europe/Bucharest"
+  - name: "Giarmata"
+    latitude: 45.83833
+    longitude: 21.31083
+    population: 5357
+    dem: 110
+    timezone: "Europe/Bucharest"
+  - name: "Gataia"
+    latitude: 45.43111
+    longitude: 21.43
+    population: 8002
+    dem: 109
+    timezone: "Europe/Bucharest"
+  - name: "Faget"
+    latitude: 45.85
+    longitude: 22.18333
+    population: 7125
+    dem: 150
+    timezone: "Europe/Bucharest"
+  - name: "Dudestii Vechi"
+    latitude: 46.05
+    longitude: 20.48333
+    population: 5746
+    dem: 79
+    timezone: "Europe/Bucharest"
+  - name: "Deta"
+    latitude: 45.38889
+    longitude: 21.22444
+    population: 6252
+    dem: 91
+    timezone: "Europe/Bucharest"
+  - name: "Ciacova"
+    latitude: 45.50806
+    longitude: 21.12861
+    population: 7205
+    dem: 79
+    timezone: "Europe/Bucharest"
+  - name: "Carpinis"
+    latitude: 45.78722
+    longitude: 20.90417
+    population: 7071
+    dem: 83
+    timezone: "Europe/Bucharest"
+  - name: "Buzias"
+    latitude: 45.64917
+    longitude: 21.60361
+    population: 7625
+    dem: 125
+    timezone: "Europe/Bucharest"
+  - name: "Biled"
+    latitude: 45.88639
+    longitude: 20.95889
+    population: 6230
+    dem: 89
+    timezone: "Europe/Bucharest"
+- name: "Hunedoara"
+  cities:
+  - name: "Vulcan"
+    latitude: 45.38333
+    longitude: 23.26667
+    population: 28869
+    dem: 757
+    timezone: "Europe/Bucharest"
+  - name: "Uricani"
+    latitude: 45.33731
+    longitude: 23.1524
+    population: 9924
+    dem: 692
+    timezone: "Europe/Bucharest"
+  - name: "Simeria"
+    latitude: 45.85
+    longitude: 23.01667
+    population: 13827
+    dem: 200
+    timezone: "Europe/Bucharest"
+  - name: "Petrosani"
+    latitude: 45.41667
+    longitude: 23.36667
+    population: 44187
+    dem: 606
+    timezone: "Europe/Bucharest"
+  - name: "Petrila"
+    latitude: 45.45
+    longitude: 23.41667
+    population: 25234
+    dem: 676
+    timezone: "Europe/Bucharest"
+  - name: "Orastie"
+    latitude: 45.83333
+    longitude: 23.2
+    population: 20763
+    dem: 224
+    timezone: "Europe/Bucharest"
+  - name: "Lupeni"
+    latitude: 45.36029
+    longitude: 23.23832
+    population: 30488
+    dem: 634
+    timezone: "Europe/Bucharest"
+  - name: "Hunedoara"
+    latitude: 45.75
+    longitude: 22.9
+    population: 69136
+    dem: 236
+    timezone: "Europe/Bucharest"
+  - name: "Hateg"
+    latitude: 45.61667
+    longitude: 22.95
+    population: 10865
+    dem: 339
+    timezone: "Europe/Bucharest"
+  - name: "Geoagiu"
+    latitude: 45.91667
+    longitude: 23.2
+    population: 5919
+    dem: 213
+    timezone: "Europe/Bucharest"
+  - name: "Deva"
+    latitude: 45.88333
+    longitude: 22.9
+    population: 67802
+    dem: 196
+    timezone: "Europe/Bucharest"
+  - name: "Calan"
+    latitude: 45.73333
+    longitude: 22.98333
+    population: 12782
+    dem: 245
+    timezone: "Europe/Bucharest"
+  - name: "Brad"
+    latitude: 46.13333
+    longitude: 22.78333
+    population: 15988
+    dem: 272
+    timezone: "Europe/Bucharest"
+- name: "Arges"
+  cities:
+  - name: "Topoloveni"
+    latitude: 44.81667
+    longitude: 25.08333
+    population: 11039
+    dem: 243
+    timezone: "Europe/Bucharest"
+  - name: "Stalpeni"
+    latitude: 45.05
+    longitude: 24.96667
+    population: 5088
+    dem: 356
+    timezone: "Europe/Bucharest"
+  - name: "Stefanesti"
+    latitude: 44.86506
+    longitude: 24.94961
+    population: 12837
+    dem: 284
+    timezone: "Europe/Bucharest"
+  - name: "Slobozia"
+    latitude: 44.52527
+    longitude: 25.24263
+    population: 5045
+    dem: 158
+    timezone: "Europe/Bucharest"
+  - name: "Rucar"
+    latitude: 45.4
+    longitude: 25.16667
+    population: 6142
+    dem: 774
+    timezone: "Europe/Bucharest"
+  - name: "Poiana Lacului"
+    latitude: 44.81667
+    longitude: 24.73333
+    population: 6705
+    dem: 355
+    timezone: "Europe/Bucharest"
+  - name: "Pitesti"
+    latitude: 44.85
+    longitude: 24.86667
+    population: 167669
+    dem: 307
+    timezone: "Europe/Bucharest"
+  - name: "Pietrosani"
+    latitude: 45.18333
+    longitude: 24.85
+    population: 5871
+    dem: 437
+    timezone: "Europe/Bucharest"
+  - name: "Mihaesti"
+    latitude: 45.11667
+    longitude: 25.0
+    population: 5825
+    dem: 410
+    timezone: "Europe/Bucharest"
+  - name: "Leordeni"
+    latitude: 44.78333
+    longitude: 25.11667
+    population: 6019
+    dem: 224
+    timezone: "Europe/Bucharest"
+  - name: "Curtea de Arges"
+    latitude: 45.13422
+    longitude: 24.67409
+    population: 32178
+    dem: 421
+    timezone: "Europe/Bucharest"
+  - name: "Costesti"
+    latitude: 44.66667
+    longitude: 24.88333
+    population: 10654
+    dem: 231
+    timezone: "Europe/Bucharest"
+  - name: "Cosesti"
+    latitude: 45.06667
+    longitude: 24.86667
+    population: 5416
+    dem: 366
+    timezone: "Europe/Bucharest"
+  - name: "Corbeni"
+    latitude: 45.3
+    longitude: 24.65
+    population: 5613
+    dem: 620
+    timezone: "Europe/Bucharest"
+  - name: "Calinesti"
+    latitude: 44.81667
+    longitude: 25.05
+    population: 10419
+    dem: 240
+    timezone: "Europe/Bucharest"
+  - name: "Buzoesti"
+    latitude: 44.58333
+    longitude: 24.91667
+    population: 6281
+    dem: 219
+    timezone: "Europe/Bucharest"
+  - name: "Bradu"
+    latitude: 44.78333
+    longitude: 24.9
+    population: 5091
+    dem: 294
+    timezone: "Europe/Bucharest"
+  - name: "Barla"
+    latitude: 44.42606
+    longitude: 24.77743
+    population: 5795
+    dem: 151
+    timezone: "Europe/Bucharest"
+  - name: "Bascov"
+    latitude: 44.9
+    longitude: 24.81667
+    population: 8759
+    dem: 294
+    timezone: "Europe/Bucharest"
+  - name: "Baiculesti"
+    latitude: 45.06667
+    longitude: 24.7
+    population: 6207
+    dem: 413
+    timezone: "Europe/Bucharest"
+  - name: "Albestii Pamanteni"
+    latitude: 45.21667
+    longitude: 24.66667
+    population: 5815
+    dem: 489
+    timezone: "Europe/Bucharest"
+  - name: "Mioveni"
+    latitude: 44.95905
+    longitude: 24.94198
+    population: 29062
+    dem: 326
+    timezone: "Europe/Bucharest"
+- name: "Galati"
+  cities:
+  - name: "Umbraresti"
+    latitude: 45.71667
+    longitude: 27.46667
+    population: 7116
+    dem: 21
+    timezone: "Europe/Bucharest"
+  - name: "Tulucesti"
+    latitude: 45.56667
+    longitude: 28.03333
+    population: 7503
+    dem: 71
+    timezone: "Europe/Bucharest"
+  - name: "Tudor Vladimirescu"
+    latitude: 45.56667
+    longitude: 27.65
+    population: 5498
+    dem: 20
+    timezone: "Europe/Bucharest"
+  - name: "Tecuci"
+    latitude: 45.84973
+    longitude: 27.43441
+    population: 41154
+    dem: 36
+    timezone: "Europe/Bucharest"
+  - name: "Piscu"
+    latitude: 45.5
+    longitude: 27.73333
+    population: 5002
+    dem: 14
+    timezone: "Europe/Bucharest"
+  - name: "Pechea"
+    latitude: 45.63333
+    longitude: 27.8
+    population: 11287
+    dem: 44
+    timezone: "Europe/Bucharest"
+  - name: "Nicoresti"
+    latitude: 45.93223
+    longitude: 27.30866
+    population: 6147
+    dem: 131
+    timezone: "Europe/Bucharest"
+  - name: "Munteni"
+    latitude: 45.93333
+    longitude: 27.43333
+    population: 9760
+    dem: 43
+    timezone: "Europe/Bucharest"
+  - name: "Matca"
+    latitude: 45.85
+    longitude: 27.53333
+    population: 11642
+    dem: 58
+    timezone: "Europe/Bucharest"
+  - name: "Mastacani"
+    latitude: 45.78333
+    longitude: 28.03333
+    population: 5185
+    dem: 35
+    timezone: "Europe/Bucharest"
+  - name: "Liesti"
+    latitude: 45.61667
+    longitude: 27.51667
+    population: 10956
+    dem: 16
+    timezone: "Europe/Bucharest"
+  - name: "Ivesti"
+    latitude: 45.68333
+    longitude: 27.51667
+    population: 9671
+    dem: 21
+    timezone: "Europe/Bucharest"
+  - name: "Ghidigeni"
+    latitude: 46.05
+    longitude: 27.5
+    population: 6294
+    dem: 102
+    timezone: "Europe/Bucharest"
+  - name: "Galati"
+    latitude: 45.43687
+    longitude: 28.05028
+    population: 294087
+    dem: 3
+    timezone: "Europe/Bucharest"
+  - name: "Frumusita"
+    latitude: 45.66667
+    longitude: 28.06667
+    population: 5206
+    dem: 19
+    timezone: "Europe/Bucharest"
+  - name: "Draguseni"
+    latitude: 45.96667
+    longitude: 27.75
+    population: 5297
+    dem: 272
+    timezone: "Europe/Bucharest"
+  - name: "Draganesti"
+    latitude: 45.78333
+    longitude: 27.46667
+    population: 5874
+    dem: 32
+    timezone: "Europe/Bucharest"
+  - name: "Cudalbi"
+    latitude: 45.78333
+    longitude: 27.7
+    population: 8055
+    dem: 97
+    timezone: "Europe/Bucharest"
+  - name: "Cosmesti"
+    latitude: 45.87017
+    longitude: 27.31115
+    population: 6526
+    dem: 81
+    timezone: "Europe/Bucharest"
+  - name: "Corod"
+    latitude: 45.9
+    longitude: 27.61667
+    population: 7855
+    dem: 96
+    timezone: "Europe/Bucharest"
+  - name: "Brahasestii de Sus"
+    latitude: 46.05
+    longitude: 27.35
+    population: 7692
+    dem: 117
+    timezone: "Europe/Bucharest"
+  - name: "Barcea"
+    latitude: 45.75
+    longitude: 27.46667
+    population: 5985
+    dem: 23
+    timezone: "Europe/Bucharest"
+- name: "Teleorman"
+  cities:
+  - name: "Zimnicea"
+    latitude: 43.65638
+    longitude: 25.36454
+    population: 15228
+    dem: 26
+    timezone: "Europe/Bucharest"
+  - name: "Videle"
+    latitude: 44.27806
+    longitude: 25.52444
+    population: 11813
+    dem: 104
+    timezone: "Europe/Bucharest"
+  - name: "Turnu Magurele"
+    latitude: 43.7469
+    longitude: 24.86846
+    population: 28783
+    dem: 30
+    timezone: "Europe/Bucharest"
+  - name: "Tiganesti"
+    latitude: 43.9
+    longitude: 25.36667
+    population: 5397
+    dem: 38
+    timezone: "Europe/Bucharest"
+  - name: "Rosiorii de Vede"
+    latitude: 44.11667
+    longitude: 24.98333
+    population: 27416
+    dem: 85
+    timezone: "Europe/Bucharest"
+  - name: "Plosca"
+    latitude: 44.03333
+    longitude: 25.13333
+    population: 6404
+    dem: 65
+    timezone: "Europe/Bucharest"
+  - name: "Peretu"
+    latitude: 44.05
+    longitude: 25.08333
+    population: 7816
+    dem: 70
+    timezone: "Europe/Bucharest"
+  - name: "Orbeasca de Sus"
+    latitude: 44.15
+    longitude: 25.31667
+    population: 8203
+    dem: 70
+    timezone: "Europe/Bucharest"
+  - name: "Mavrodin"
+    latitude: 44.03333
+    longitude: 25.25
+    population: 5628
+    dem: 66
+    timezone: "Europe/Bucharest"
+  - name: "Lunca"
+    latitude: 43.83333
+    longitude: 24.76667
+    population: 6485
+    dem: 34
+    timezone: "Europe/Bucharest"
+  - name: "Islaz"
+    latitude: 43.72006
+    longitude: 24.76436
+    population: 6029
+    dem: 31
+    timezone: "Europe/Bucharest"
+  - name: "Dobrotesti"
+    latitude: 44.28333
+    longitude: 24.88333
+    population: 5096
+    dem: 117
+    timezone: "Europe/Bucharest"
+  - name: "Botoroaga"
+    latitude: 44.14833
+    longitude: 25.54472
+    population: 6488
+    dem: 86
+    timezone: "Europe/Bucharest"
+  - name: "Babaita"
+    latitude: 44.16667
+    longitude: 25.38333
+    population: 6276
+    dem: 93
+    timezone: "Europe/Bucharest"
+  - name: "Alexandria"
+    latitude: 43.98333
+    longitude: 25.33333
+    population: 49346
+    dem: 48
+    timezone: "Europe/Bucharest"
+- name: "Calarasi"
+  cities:
+  - name: "Vasilati"
+    latitude: 44.28778
+    longitude: 26.4475
+    population: 7840
+    dem: 43
+    timezone: "Europe/Bucharest"
+  - name: "Ulmeni"
+    latitude: 44.15
+    longitude: 26.71667
+    population: 5285
+    dem: 34
+    timezone: "Europe/Bucharest"
+  - name: "Roseti"
+    latitude: 44.21482
+    longitude: 27.44848
+    population: 5843
+    dem: 18
+    timezone: "Europe/Bucharest"
+  - name: "Radovanu"
+    latitude: 44.2
+    longitude: 26.51667
+    population: 5065
+    dem: 28
+    timezone: "Europe/Bucharest"
+  - name: "Perisoru"
+    latitude: 44.45
+    longitude: 27.55
+    population: 5535
+    dem: 35
+    timezone: "Europe/Bucharest"
+  - name: "Oltenita"
+    latitude: 44.08333
+    longitude: 26.63333
+    population: 26356
+    dem: 14
+    timezone: "Europe/Bucharest"
+  - name: "Modelu"
+    latitude: 44.19574
+    longitude: 27.3872
+    population: 9672
+    dem: 19
+    timezone: "Europe/Bucharest"
+  - name: "Calarasi"
+    latitude: 44.2051
+    longitude: 27.31356
+    population: 6687
+    dem: 18
+    timezone: "Europe/Bucharest"
+  - name: "Manastirea"
+    latitude: 44.21667
+    longitude: 26.9
+    population: 6123
+    dem: 17
+    timezone: "Europe/Bucharest"
+  - name: "Lehliu-Gara"
+    latitude: 44.43333
+    longitude: 26.85
+    population: 6538
+    dem: 51
+    timezone: "Europe/Bucharest"
+  - name: "Gradistea"
+    latitude: 44.23333
+    longitude: 27.21667
+    population: 5232
+    dem: 10
+    timezone: "Europe/Bucharest"
+  - name: "Fundulea"
+    latitude: 44.46667
+    longitude: 26.51667
+    population: 6668
+    dem: 64
+    timezone: "Europe/Bucharest"
+  - name: "Fundeni"
+    latitude: 44.38333
+    longitude: 26.35
+    population: 5443
+    dem: 54
+    timezone: "Europe/Bucharest"
+  - name: "Frumusani"
+    latitude: 44.29611
+    longitude: 26.32556
+    population: 5111
+    dem: 50
+    timezone: "Europe/Bucharest"
+  - name: "Dragalina"
+    latitude: 44.43333
+    longitude: 27.31667
+    population: 8642
+    dem: 39
+    timezone: "Europe/Bucharest"
+  - name: "Dor Marunt"
+    latitude: 44.45
+    longitude: 26.91667
+    population: 6806
+    dem: 49
+    timezone: "Europe/Bucharest"
+  - name: "Curcani"
+    latitude: 44.2
+    longitude: 26.58333
+    population: 5167
+    dem: 31
+    timezone: "Europe/Bucharest"
+  - name: "Chirnogi"
+    latitude: 44.11667
+    longitude: 26.56667
+    population: 8022
+    dem: 27
+    timezone: "Europe/Bucharest"
+  - name: "Budesti"
+    latitude: 44.23472
+    longitude: 26.46583
+    population: 9598
+    dem: 32
+    timezone: "Europe/Bucharest"
+  - name: "Borcea"
+    latitude: 44.33333
+    longitude: 27.75
+    population: 9546
+    dem: 29
+    timezone: "Europe/Bucharest"
+- name: "Olt"
+  cities:
+  - name: "Slatina"
+    latitude: 44.43333
+    longitude: 24.36667
+    population: 78988
+    dem: 165
+    timezone: "Europe/Bucharest"
+  - name: "Scornicesti"
+    latitude: 44.56667
+    longitude: 24.55
+    population: 12456
+    dem: 204
+    timezone: "Europe/Bucharest"
+  - name: "Potcoava"
+    latitude: 44.48333
+    longitude: 24.65
+    population: 6022
+    dem: 185
+    timezone: "Europe/Bucharest"
+  - name: "Piatra Olt"
+    latitude: 44.36667
+    longitude: 24.26667
+    population: 6313
+    dem: 132
+    timezone: "Europe/Bucharest"
+  - name: "Osica de Sus"
+    latitude: 44.25
+    longitude: 24.31667
+    population: 5351
+    dem: 101
+    timezone: "Europe/Bucharest"
+  - name: "Izbiceni"
+    latitude: 43.83333
+    longitude: 24.65
+    population: 5089
+    dem: 40
+    timezone: "Europe/Bucharest"
+  - name: "Farcasele"
+    latitude: 44.15
+    longitude: 24.43333
+    population: 5045
+    dem: 88
+    timezone: "Europe/Bucharest"
+  - name: "Draganesti-Olt"
+    latitude: 44.16667
+    longitude: 24.53333
+    population: 12056
+    dem: 82
+    timezone: "Europe/Bucharest"
+  - name: "Corabia"
+    latitude: 43.77513
+    longitude: 24.50146
+    population: 20047
+    dem: 54
+    timezone: "Europe/Bucharest"
+  - name: "Caracal"
+    latitude: 44.11667
+    longitude: 24.35
+    population: 33761
+    dem: 105
+    timezone: "Europe/Bucharest"
+  - name: "Bals"
+    latitude: 44.35
+    longitude: 24.1
+    population: 20626
+    dem: 133
+    timezone: "Europe/Bucharest"
+- name: "Iasi"
+  cities:
+  - name: "Voinesti"
+    latitude: 47.06667
+    longitude: 27.41667
+    population: 6161
+    dem: 191
+    timezone: "Europe/Bucharest"
+  - name: "Trifesti"
+    latitude: 47.45
+    longitude: 27.51667
+    population: 5232
+    dem: 44
+    timezone: "Europe/Bucharest"
+  - name: "Tomesti"
+    latitude: 47.11667
+    longitude: 27.68333
+    population: 11828
+    dem: 152
+    timezone: "Europe/Bucharest"
+  - name: "Todiresti"
+    latitude: 47.31667
+    longitude: 26.83333
+    population: 6970
+    dem: 371
+    timezone: "Europe/Bucharest"
+  - name: "Targu Frumos"
+    latitude: 47.2
+    longitude: 27.0
+    population: 13797
+    dem: 104
+    timezone: "Europe/Bucharest"
+  - name: "Tibanesti"
+    latitude: 46.91667
+    longitude: 27.33333
+    population: 7662
+    dem: 150
+    timezone: "Europe/Bucharest"
+  - name: "Tibana"
+    latitude: 46.98333
+    longitude: 27.33333
+    population: 7098
+    dem: 162
+    timezone: "Europe/Bucharest"
+  - name: "Tatarusi"
+    latitude: 47.35
+    longitude: 26.6
+    population: 5651
+    dem: 338
+    timezone: "Europe/Bucharest"
+  - name: "Stolniceni-Prajescu"
+    latitude: 47.19858
+    longitude: 26.7481
+    population: 5625
+    dem: 239
+    timezone: "Europe/Bucharest"
+  - name: "Sipote"
+    latitude: 47.46667
+    longitude: 27.21667
+    population: 5800
+    dem: 54
+    timezone: "Europe/Bucharest"
+  - name: "Scobinti"
+    latitude: 47.38333
+    longitude: 26.93333
+    population: 7618
+    dem: 125
+    timezone: "Europe/Bucharest"
+  - name: "Ruginoasa"
+    latitude: 47.25
+    longitude: 26.85
+    population: 6220
+    dem: 293
+    timezone: "Europe/Bucharest"
+  - name: "Rediu"
+    latitude: 47.21667
+    longitude: 27.5
+    population: 6548
+    dem: 142
+    timezone: "Europe/Bucharest"
+  - name: "Raducaneni"
+    latitude: 46.95
+    longitude: 27.93333
+    population: 7706
+    dem: 242
+    timezone: "Europe/Bucharest"
+  - name: "Popricani"
+    latitude: 47.3
+    longitude: 27.51667
+    population: 6752
+    dem: 143
+    timezone: "Europe/Bucharest"
+  - name: "Podu Iloaiei"
+    latitude: 47.21667
+    longitude: 27.26667
+    population: 9752
+    dem: 84
+    timezone: "Europe/Bucharest"
+  - name: "Motca"
+    latitude: 47.25
+    longitude: 26.61667
+    population: 5095
+    dem: 360
+    timezone: "Europe/Bucharest"
+  - name: "Miroslava"
+    latitude: 47.15
+    longitude: 27.51667
+    population: 8127
+    dem: 128
+    timezone: "Europe/Bucharest"
+  - name: "Mircesti"
+    latitude: 47.08333
+    longitude: 26.83333
+    population: 6797
+    dem: 229
+    timezone: "Europe/Bucharest"
+  - name: "Lungani"
+    latitude: 47.18333
+    longitude: 27.15
+    population: 5065
+    dem: 109
+    timezone: "Europe/Bucharest"
+  - name: "Letcani"
+    latitude: 47.18333
+    longitude: 27.41667
+    population: 6642
+    dem: 46
+    timezone: "Europe/Bucharest"
+  - name: "Lespezi"
+    latitude: 47.36667
+    longitude: 26.7
+    population: 6138
+    dem: 296
+    timezone: "Europe/Bucharest"
+  - name: "Iasi"
+    latitude: 47.16667
+    longitude: 27.6
+    population: 318012
+    dem: 66
+    timezone: "Europe/Bucharest"
+  - name: "Holboca"
+    latitude: 47.15
+    longitude: 27.7
+    population: 11708
+    dem: 52
+    timezone: "Europe/Bucharest"
+  - name: "Harlau"
+    latitude: 47.43333
+    longitude: 26.9
+    population: 11295
+    dem: 153
+    timezone: "Europe/Bucharest"
+  - name: "Halaucesti"
+    latitude: 47.1
+    longitude: 26.8
+    population: 5819
+    dem: 256
+    timezone: "Europe/Bucharest"
+  - name: "Focuri"
+    latitude: 47.35
+    longitude: 27.21667
+    population: 6030
+    dem: 98
+    timezone: "Europe/Bucharest"
+  - name: "Erbiceni"
+    latitude: 47.26667
+    longitude: 27.23333
+    population: 5655
+    dem: 128
+    timezone: "Europe/Bucharest"
+  - name: "Deleni"
+    latitude: 47.46667
+    longitude: 26.88333
+    population: 10484
+    dem: 258
+    timezone: "Europe/Bucharest"
+  - name: "Dancu"
+    latitude: 47.15417
+    longitude: 27.66623
+    population: 6903
+    dem: 56
+    timezone: "Europe/Bucharest"
+  - name: "Cotnari"
+    latitude: 47.35
+    longitude: 26.98333
+    population: 7985
+    dem: 107
+    timezone: "Europe/Bucharest"
+  - name: "Ciurea"
+    latitude: 47.05
+    longitude: 27.56667
+    population: 10110
+    dem: 92
+    timezone: "Europe/Bucharest"
+  - name: "Belcesti"
+    latitude: 47.3
+    longitude: 27.08333
+    population: 11335
+    dem: 90
+    timezone: "Europe/Bucharest"
+  - name: "Baltati"
+    latitude: 47.21667
+    longitude: 27.15
+    population: 5061
+    dem: 86
+    timezone: "Europe/Bucharest"
+  - name: "Pascani"
+    latitude: 47.2469
+    longitude: 26.72291
+    population: 45000
+    elevation: 230
+    dem: 242
+    timezone: "Europe/Bucharest"
+- name: "Vaslui"
+  cities:
+  - name: "Zorleni"
+    latitude: 46.26667
+    longitude: 27.71667
+    population: 9511
+    dem: 70
+    timezone: "Europe/Bucharest"
+  - name: "Vaslui"
+    latitude: 46.63333
+    longitude: 27.73333
+    population: 69225
+    dem: 96
+    timezone: "Europe/Bucharest"
+  - name: "Tutova"
+    latitude: 46.11667
+    longitude: 27.55
+    population: 5619
+    dem: 54
+    timezone: "Europe/Bucharest"
+  - name: "Todiresti"
+    latitude: 46.85
+    longitude: 27.36667
+    population: 5388
+    dem: 183
+    timezone: "Europe/Bucharest"
+  - name: "Tanacu"
+    latitude: 46.68333
+    longitude: 27.81667
+    population: 5986
+    dem: 211
+    timezone: "Europe/Bucharest"
+  - name: "Stanilesti"
+    latitude: 46.61833
+    longitude: 28.17139
+    population: 5874
+    dem: 47
+    timezone: "Europe/Bucharest"
+  - name: "Valeni"
+    latitude: 46.59278
+    longitude: 28.0625
+    population: 6723
+    dem: 163
+    timezone: "Europe/Bucharest"
+  - name: "Puiesti"
+    latitude: 46.41667
+    longitude: 27.5
+    population: 5050
+    dem: 116
+    timezone: "Europe/Bucharest"
+  - name: "Perieni"
+    latitude: 46.3
+    longitude: 27.61667
+    population: 5258
+    dem: 241
+    timezone: "Europe/Bucharest"
+  - name: "Negresti"
+    latitude: 46.83333
+    longitude: 27.43333
+    population: 10043
+    dem: 119
+    timezone: "Europe/Bucharest"
+  - name: "Murgeni"
+    latitude: 46.20444
+    longitude: 28.01972
+    population: 7665
+    dem: 35
+    timezone: "Europe/Bucharest"
+  - name: "Laza"
+    latitude: 46.65
+    longitude: 27.58333
+    population: 6694
+    dem: 219
+    timezone: "Europe/Bucharest"
+  - name: "Husi"
+    latitude: 46.67361
+    longitude: 28.05944
+    population: 29129
+    dem: 98
+    timezone: "Europe/Bucharest"
+  - name: "Grivita"
+    latitude: 46.15
+    longitude: 27.65
+    population: 5405
+    dem: 183
+    timezone: "Europe/Bucharest"
+  - name: "Falciu"
+    latitude: 46.29611
+    longitude: 28.14083
+    population: 6178
+    dem: 27
+    timezone: "Europe/Bucharest"
+  - name: "Duda"
+    latitude: 46.7525
+    longitude: 28.03722
+    population: 5037
+    dem: 204
+    timezone: "Europe/Bucharest"
+  - name: "Delesti"
+    latitude: 46.7
+    longitude: 27.55
+    population: 5122
+    dem: 216
+    timezone: "Europe/Bucharest"
+  - name: "Barlad"
+    latitude: 46.23175
+    longitude: 27.66907
+    population: 67818
+    dem: 70
+    timezone: "Europe/Bucharest"
+  - name: "Berezeni"
+    latitude: 46.37611
+    longitude: 28.14778
+    population: 5590
+    dem: 39
+    timezone: "Europe/Bucharest"
+  - name: "Banca"
+    latitude: 46.3
+    longitude: 27.8
+    population: 5600
+    dem: 182
+    timezone: "Europe/Bucharest"
+- name: "Dolj"
+  cities:
+  - name: "Valea Stanciului"
+    latitude: 43.98333
+    longitude: 23.86667
+    population: 6264
+    dem: 76
+    timezone: "Europe/Bucharest"
+  - name: "Segarcea"
+    latitude: 44.1
+    longitude: 23.75
+    population: 7944
+    dem: 146
+    timezone: "Europe/Bucharest"
+  - name: "Sadova"
+    latitude: 43.9
+    longitude: 23.95
+    population: 8277
+    dem: 85
+    timezone: "Europe/Bucharest"
+  - name: "Poiana Mare"
+    latitude: 43.91667
+    longitude: 23.06667
+    population: 12633
+    dem: 41
+    timezone: "Europe/Bucharest"
+  - name: "Podari"
+    latitude: 44.25
+    longitude: 23.78333
+    population: 6302
+    dem: 73
+    timezone: "Europe/Bucharest"
+  - name: "Plenita"
+    latitude: 44.21667
+    longitude: 23.18333
+    population: 5260
+    dem: 146
+    timezone: "Europe/Bucharest"
+  - name: "Piscu Vechi"
+    latitude: 43.9
+    longitude: 23.16667
+    population: 5445
+    dem: 37
+    timezone: "Europe/Bucharest"
+  - name: "Ostroveni"
+    latitude: 43.8
+    longitude: 23.9
+    population: 5731
+    dem: 31
+    timezone: "Europe/Bucharest"
+  - name: "Motatei"
+    latitude: 44.08333
+    longitude: 23.2
+    population: 7898
+    dem: 69
+    timezone: "Europe/Bucharest"
+  - name: "Maglavit"
+    latitude: 44.03333
+    longitude: 23.1
+    population: 5753
+    dem: 73
+    timezone: "Europe/Bucharest"
+  - name: "Leu"
+    latitude: 44.18333
+    longitude: 24.0
+    population: 5404
+    dem: 163
+    timezone: "Europe/Bucharest"
+  - name: "Filiasi"
+    latitude: 44.55
+    longitude: 23.51667
+    population: 18995
+    dem: 106
+    timezone: "Europe/Bucharest"
+  - name: "Daneti"
+    latitude: 43.98333
+    longitude: 24.05
+    population: 7110
+    dem: 110
+    timezone: "Europe/Bucharest"
+  - name: "Dabuleni"
+    latitude: 43.8
+    longitude: 24.08333
+    population: 13641
+    dem: 55
+    timezone: "Europe/Bucharest"
+  - name: "Craiova"
+    latitude: 44.31667
+    longitude: 23.8
+    population: 304142
+    dem: 105
+    timezone: "Europe/Bucharest"
+  - name: "Cosoveni"
+    latitude: 44.25
+    longitude: 23.93333
+    population: 5024
+    dem: 171
+    timezone: "Europe/Bucharest"
+  - name: "Ciupercenii Noi"
+    latitude: 43.90972
+    longitude: 22.94833
+    population: 5949
+    dem: 40
+    timezone: "Europe/Bucharest"
+  - name: "Cetate"
+    latitude: 44.1
+    longitude: 23.05
+    population: 5908
+    dem: 41
+    timezone: "Europe/Bucharest"
+  - name: "Celaru"
+    latitude: 44.05
+    longitude: 24.13333
+    population: 5326
+    dem: 136
+    timezone: "Europe/Bucharest"
+  - name: "Calarasi"
+    latitude: 43.8
+    longitude: 24.05
+    population: 6632
+    dem: 57
+    timezone: "Europe/Bucharest"
+  - name: "Calafat"
+    latitude: 43.99069
+    longitude: 22.93328
+    population: 18643
+    dem: 44
+    timezone: "Europe/Bucharest"
+  - name: "Bailesti"
+    latitude: 44.01667
+    longitude: 23.35
+    population: 19599
+    dem: 55
+    timezone: "Europe/Bucharest"
+  - name: "Amarastii de Jos"
+    latitude: 43.95
+    longitude: 24.16667
+    population: 5870
+    dem: 120
+    timezone: "Europe/Bucharest"
+- name: "Bihor"
+  cities:
+  - name: "Valea lui Mihai"
+    latitude: 47.51667
+    longitude: 22.15
+    population: 10240
+    dem: 128
+    timezone: "Europe/Bucharest"
+  - name: "Tileagd"
+    latitude: 47.06667
+    longitude: 22.2
+    population: 6994
+    dem: 172
+    timezone: "Europe/Bucharest"
+  - name: "Salonta"
+    latitude: 46.8
+    longitude: 21.65
+    population: 17561
+    dem: 92
+    timezone: "Europe/Bucharest"
+  - name: "Sacueni"
+    latitude: 47.35
+    longitude: 22.1
+    population: 7075
+    elevation: 126
+    dem: 116
+    timezone: "Europe/Bucharest"
+  - name: "Popesti"
+    latitude: 47.23333
+    longitude: 22.41667
+    population: 8386
+    dem: 169
+    timezone: "Europe/Bucharest"
+  - name: "Oradea"
+    latitude: 47.0458
+    longitude: 21.91833
+    population: 206614
+    elevation: 126
+    dem: 123
+    timezone: "Europe/Bucharest"
+  - name: "Marghita"
+    latitude: 47.35
+    longitude: 22.33333
+    population: 13871
+    dem: 140
+    timezone: "Europe/Bucharest"
+  - name: "Stei"
+    latitude: 46.53333
+    longitude: 22.45
+    population: 6529
+    dem: 241
+    timezone: "Europe/Bucharest"
+  - name: "Dobresti"
+    latitude: 46.85
+    longitude: 22.3
+    population: 5573
+    dem: 273
+    timezone: "Europe/Bucharest"
+  - name: "Diosig"
+    latitude: 47.3
+    longitude: 22.0
+    population: 6529
+    dem: 103
+    timezone: "Europe/Bucharest"
+  - name: "Cefa"
+    latitude: 46.91667
+    longitude: 21.73333
+    population: 6206
+    dem: 101
+    timezone: "Europe/Bucharest"
+  - name: "Bratca"
+    latitude: 46.93333
+    longitude: 22.61667
+    population: 5462
+    dem: 381
+    timezone: "Europe/Bucharest"
+  - name: "Beius"
+    latitude: 46.66667
+    longitude: 22.35
+    population: 10721
+    dem: 187
+    timezone: "Europe/Bucharest"
+  - name: "Batar"
+    latitude: 46.7
+    longitude: 21.81667
+    population: 5143
+    dem: 100
+    timezone: "Europe/Bucharest"
+  - name: "Alesd"
+    latitude: 47.06667
+    longitude: 22.41667
+    population: 10264
+    dem: 255
+    timezone: "Europe/Bucharest"
+- name: "Satu Mare"
+  cities:
+  - name: "Turt"
+    latitude: 47.98333
+    longitude: 23.21667
+    population: 6693
+    dem: 204
+    timezone: "Europe/Bucharest"
+  - name: "Tasnad"
+    latitude: 47.48333
+    longitude: 22.58333
+    population: 9466
+    dem: 177
+    timezone: "Europe/Bucharest"
+  - name: "Satu Mare"
+    latitude: 47.79926
+    longitude: 22.86255
+    population: 112490
+    dem: 124
+    timezone: "Europe/Bucharest"
+  - name: "Sanislau"
+    latitude: 47.63333
+    longitude: 22.33333
+    population: 5072
+    dem: 133
+    timezone: "Europe/Bucharest"
+  - name: "Orasu Nou"
+    latitude: 47.83333
+    longitude: 23.28333
+    population: 6737
+    dem: 186
+    timezone: "Europe/Bucharest"
+  - name: "Negresti-Oas"
+    latitude: 47.86667
+    longitude: 23.43333
+    population: 13456
+    dem: 253
+    timezone: "Europe/Bucharest"
+  - name: "Mediesu Aurit"
+    latitude: 47.78333
+    longitude: 23.15
+    population: 7122
+    dem: 132
+    timezone: "Europe/Bucharest"
+  - name: "Livada"
+    latitude: 47.86667
+    longitude: 23.13333
+    population: 6833
+    dem: 132
+    timezone: "Europe/Bucharest"
+  - name: "Lazuri"
+    latitude: 47.85
+    longitude: 22.86667
+    population: 5237
+    dem: 123
+    timezone: "Europe/Bucharest"
+  - name: "Halmeu"
+    latitude: 47.96667
+    longitude: 23.01667
+    population: 7184
+    dem: 123
+    timezone: "Europe/Bucharest"
+  - name: "Certeze"
+    latitude: 47.9
+    longitude: 23.46667
+    population: 5330
+    dem: 272
+    timezone: "Europe/Bucharest"
+  - name: "Carei"
+    latitude: 47.68333
+    longitude: 22.46667
+    population: 20775
+    dem: 139
+    timezone: "Europe/Bucharest"
+  - name: "Bixad"
+    latitude: 47.93333
+    longitude: 23.4
+    population: 7369
+    dem: 192
+    timezone: "Europe/Bucharest"
+  - name: "Ardud"
+    latitude: 47.63333
+    longitude: 22.88333
+    population: 6357
+    dem: 129
+    timezone: "Europe/Bucharest"
+- name: "Mehedinti"
+  cities:
+  - name: "Vanju-Mare"
+    latitude: 44.42528
+    longitude: 22.86972
+    population: 6740
+    dem: 101
+    timezone: "Europe/Bucharest"
+  - name: "Strehaia"
+    latitude: 44.61667
+    longitude: 23.2
+    population: 11607
+    dem: 136
+    timezone: "Europe/Bucharest"
+  - name: "Simian"
+    latitude: 44.61417
+    longitude: 22.70722
+    population: 9434
+    dem: 55
+    timezone: "Europe/Bucharest"
+  - name: "Orsova"
+    latitude: 44.72299
+    longitude: 22.39619
+    population: 12350
+    dem: 55
+    timezone: "Europe/Bucharest"
+  - name: "Gogosu"
+    latitude: 44.37389
+    longitude: 22.59306
+    population: 5309
+    dem: 76
+    timezone: "Europe/Bucharest"
+  - name: "Garla-Mare"
+    latitude: 44.20917
+    longitude: 22.775
+    population: 5258
+    dem: 83
+    timezone: "Europe/Bucharest"
+  - name: "Drobeta-Turnu Severin"
+    latitude: 44.62693
+    longitude: 22.65288
+    population: 102346
+    dem: 61
+    timezone: "Europe/Bucharest"
+  - name: "Corcova"
+    latitude: 44.7
+    longitude: 23.05
+    population: 5946
+    dem: 212
+    timezone: "Europe/Bucharest"
+- name: "Buzau"
+  cities:
+  - name: "Zarnesti"
+    latitude: 45.3
+    longitude: 26.86667
+    population: 5459
+    dem: 245
+    timezone: "Europe/Bucharest"
+  - name: "Vernesti"
+    latitude: 45.21667
+    longitude: 26.73333
+    population: 8603
+    dem: 121
+    timezone: "Europe/Bucharest"
+  - name: "Vadu Pasii"
+    latitude: 45.16667
+    longitude: 26.9
+    population: 9034
+    dem: 100
+    timezone: "Europe/Bucharest"
+  - name: "Smeeni"
+    latitude: 44.98333
+    longitude: 26.85
+    population: 7015
+    dem: 78
+    timezone: "Europe/Bucharest"
+  - name: "Sageata"
+    latitude: 45.1
+    longitude: 26.98333
+    population: 5427
+    dem: 68
+    timezone: "Europe/Bucharest"
+  - name: "Ramnicu Sarat"
+    latitude: 45.38333
+    longitude: 27.05
+    population: 38526
+    dem: 130
+    timezone: "Europe/Bucharest"
+  - name: "Posta Calnau"
+    latitude: 45.23333
+    longitude: 26.85
+    population: 5982
+    dem: 159
+    timezone: "Europe/Bucharest"
+  - name: "Pogoanele"
+    latitude: 44.91667
+    longitude: 27.0
+    population: 7777
+    dem: 62
+    timezone: "Europe/Bucharest"
+  - name: "Parscov"
+    latitude: 45.28333
+    longitude: 26.55
+    population: 5968
+    dem: 179
+    timezone: "Europe/Bucharest"
+  - name: "Nehoiu"
+    latitude: 45.41667
+    longitude: 26.3
+    population: 11350
+    dem: 392
+    timezone: "Europe/Bucharest"
+  - name: "Merei"
+    latitude: 45.13333
+    longitude: 26.68333
+    population: 7137
+    dem: 136
+    timezone: "Europe/Bucharest"
+  - name: "Maracineni"
+    latitude: 45.2
+    longitude: 26.8
+    population: 7096
+    dem: 125
+    timezone: "Europe/Bucharest"
+  - name: "Cochirleanca"
+    latitude: 45.21667
+    longitude: 27.03333
+    population: 5712
+    dem: 85
+    timezone: "Europe/Bucharest"
+  - name: "Buzau"
+    latitude: 45.15
+    longitude: 26.83333
+    population: 130954
+    dem: 93
+    timezone: "Europe/Bucharest"
+  - name: "Buruenesti"
+    latitude: 45.31667
+    longitude: 26.35
+    population: 8101
+    dem: 340
+    timezone: "Europe/Bucharest"
+  - name: "Berca"
+    latitude: 45.28333
+    longitude: 26.68333
+    population: 9479
+    dem: 147
+    timezone: "Europe/Bucharest"
+- name: "Braila"
+  cities:
+  - name: "Viziru"
+    latitude: 45.01667
+    longitude: 27.7
+    population: 6305
+    dem: 15
+    timezone: "Europe/Bucharest"
+  - name: "Tufesti"
+    latitude: 45.05
+    longitude: 27.81667
+    population: 5784
+    dem: 12
+    timezone: "Europe/Bucharest"
+  - name: "Tudor Vladimirescu"
+    latitude: 45.21667
+    longitude: 27.8
+    population: 5327
+    dem: 12
+    timezone: "Europe/Bucharest"
+  - name: "Insuratei"
+    latitude: 44.91667
+    longitude: 27.6
+    population: 7309
+    dem: 25
+    timezone: "Europe/Bucharest"
+  - name: "Ianca"
+    latitude: 45.13333
+    longitude: 27.45
+    population: 11209
+    dem: 31
+    timezone: "Europe/Bucharest"
+  - name: "Chiscani"
+    latitude: 45.18333
+    longitude: 27.93333
+    population: 5294
+    dem: 10
+    timezone: "Europe/Bucharest"
+  - name: "Braila"
+    latitude: 45.27152
+    longitude: 27.97429
+    population: 213569
+    dem: 13
+    timezone: "Europe/Bucharest"
+- name: "Harghita"
+  cities:
+  - name: "Zetea"
+    latitude: 46.38333
+    longitude: 25.36667
+    population: 5670
+    dem: 526
+    timezone: "Europe/Bucharest"
+  - name: "Vlahita"
+    latitude: 46.35
+    longitude: 25.51667
+    population: 6922
+    dem: 853
+    timezone: "Europe/Bucharest"
+  - name: "Suseni"
+    latitude: 46.66667
+    longitude: 25.55
+    population: 5079
+    dem: 745
+    timezone: "Europe/Bucharest"
+  - name: "Sandominic"
+    latitude: 46.584
+    longitude: 25.78028
+    population: 6306
+    dem: 767
+    timezone: "Europe/Bucharest"
+  - name: "Sancraieni"
+    latitude: 46.31439
+    longitude: 25.83941
+    population: 6105
+    dem: 657
+    timezone: "Europe/Bucharest"
+  - name: "Siculeni"
+    latitude: 46.41667
+    longitude: 25.75
+    population: 6807
+    dem: 669
+    timezone: "Europe/Bucharest"
+  - name: "Remetea"
+    latitude: 46.78333
+    longitude: 25.45
+    population: 6225
+    dem: 724
+    timezone: "Europe/Bucharest"
+  - name: "Praid"
+    latitude: 46.55
+    longitude: 25.13333
+    population: 6739
+    dem: 527
+    timezone: "Europe/Bucharest"
+  - name: "Odorheiu Secuiesc"
+    latitude: 46.3
+    longitude: 25.3
+    population: 36532
+    dem: 495
+    timezone: "Europe/Bucharest"
+  - name: "Mugeni"
+    latitude: 46.25
+    longitude: 25.21667
+    population: 5784
+    dem: 448
+    timezone: "Europe/Bucharest"
+  - name: "Miercurea-Ciuc"
+    latitude: 46.35
+    longitude: 25.8
+    population: 41282
+    dem: 653
+    timezone: "Europe/Bucharest"
+  - name: "Lunca de Jos"
+    latitude: 46.56667
+    longitude: 25.98333
+    population: 5152
+    dem: 899
+    timezone: "Europe/Bucharest"
+  - name: "Joseni"
+    latitude: 46.7
+    longitude: 25.5
+    population: 5635
+    dem: 741
+    timezone: "Europe/Bucharest"
+  - name: "Gheorgheni"
+    latitude: 46.72292
+    longitude: 25.60055
+    population: 19777
+    dem: 816
+    timezone: "Europe/Bucharest"
+  - name: "Ditrau"
+    latitude: 46.81667
+    longitude: 25.51667
+    population: 5858
+    dem: 779
+    timezone: "Europe/Bucharest"
+  - name: "Cristuru Secuiesc"
+    latitude: 46.28333
+    longitude: 25.03333
+    population: 9554
+    dem: 387
+    timezone: "Europe/Bucharest"
+  - name: "Corund"
+    latitude: 46.46667
+    longitude: 25.18333
+    population: 6091
+    dem: 589
+    timezone: "Europe/Bucharest"
+  - name: "Carta"
+    latitude: 46.53333
+    longitude: 25.75
+    population: 5407
+    dem: 735
+    timezone: "Europe/Bucharest"
+  - name: "Balan"
+    latitude: 46.6505
+    longitude: 25.80834
+    population: 7275
+    dem: 890
+    timezone: "Europe/Bucharest"
+- name: "Constanta"
+  cities:
+  - name: "Valu lui Traian"
+    latitude: 44.16667
+    longitude: 28.46667
+    population: 8733
+    dem: 36
+    timezone: "Europe/Bucharest"
+  - name: "Tuzla"
+    latitude: 44.0
+    longitude: 28.63333
+    population: 6292
+    dem: 15
+    timezone: "Europe/Bucharest"
+  - name: "Topraisar"
+    latitude: 44.01667
+    longitude: 28.45
+    population: 5329
+    dem: 84
+    timezone: "Europe/Bucharest"
+  - name: "Techirghiol"
+    latitude: 44.05
+    longitude: 28.6
+    population: 7083
+    dem: 18
+    timezone: "Europe/Bucharest"
+  - name: "Ovidiu"
+    latitude: 44.26667
+    longitude: 28.56667
+    population: 13257
+    dem: 3
+    timezone: "Europe/Bucharest"
+  - name: "Ostrov"
+    latitude: 44.11667
+    longitude: 27.36667
+    population: 5516
+    dem: 9
+    timezone: "Europe/Bucharest"
+  - name: "Negru Voda"
+    latitude: 43.81667
+    longitude: 28.2
+    population: 5585
+    dem: 151
+    timezone: "Europe/Bucharest"
+  - name: "Navodari"
+    latitude: 44.31667
+    longitude: 28.6
+    population: 33106
+    dem: 20
+    timezone: "Europe/Bucharest"
+  - name: "Murfatlar"
+    latitude: 44.18333
+    longitude: 28.41667
+    population: 10906
+    dem: 41
+    timezone: "Europe/Bucharest"
+  - name: "Mircea Voda"
+    latitude: 44.28333
+    longitude: 28.16667
+    population: 6983
+    dem: 45
+    timezone: "Europe/Bucharest"
+  - name: "Mihail Kogalniceanu"
+    latitude: 44.36798
+    longitude: 28.46
+    population: 9970
+    dem: 76
+    timezone: "Europe/Bucharest"
+  - name: "Medgidia"
+    latitude: 44.25
+    longitude: 28.28333
+    population: 43315
+    dem: 9
+    timezone: "Europe/Bucharest"
+  - name: "Mangalia"
+    latitude: 43.8
+    longitude: 28.58333
+    population: 39619
+    dem: 0
+    timezone: "Europe/Bucharest"
+  - name: "Lumina"
+    latitude: 44.28333
+    longitude: 28.56667
+    population: 7168
+    dem: 11
+    timezone: "Europe/Bucharest"
+  - name: "Harsova"
+    latitude: 44.68555
+    longitude: 27.95009
+    population: 10055
+    dem: 3
+    timezone: "Europe/Bucharest"
+  - name: "Eforie Sud"
+    latitude: 44.02294
+    longitude: 28.64943
+    population: 9498
+    dem: 23
+    timezone: "Europe/Bucharest"
+  - name: "Cumpana"
+    latitude: 44.11667
+    longitude: 28.56667
+    population: 9731
+    dem: 50
+    timezone: "Europe/Bucharest"
+  - name: "Corbu"
+    latitude: 44.38333
+    longitude: 28.65
+    population: 5180
+    dem: 4
+    timezone: "Europe/Bucharest"
+  - name: "Constanta"
+    latitude: 44.18073
+    longitude: 28.63432
+    population: 303399
+    dem: 40
+    timezone: "Europe/Bucharest"
+  - name: "Cogealac"
+    latitude: 44.55
+    longitude: 28.56667
+    population: 7046
+    dem: 94
+    timezone: "Europe/Bucharest"
+  - name: "Cobadin"
+    latitude: 44.08333
+    longitude: 28.21667
+    population: 8979
+    dem: 129
+    timezone: "Europe/Bucharest"
+  - name: "Cernavoda"
+    latitude: 44.33957
+    longitude: 28.03273
+    population: 18502
+    dem: 15
+    timezone: "Europe/Bucharest"
+  - name: "Castelu"
+    latitude: 44.25
+    longitude: 28.33333
+    population: 7816
+    dem: 10
+    timezone: "Europe/Bucharest"
+  - name: "Baneasa"
+    latitude: 44.06667
+    longitude: 27.7
+    population: 5280
+    dem: 110
+    timezone: "Europe/Bucharest"
+  - name: "Agigea"
+    latitude: 44.08333
+    longitude: 28.61667
+    population: 5405
+    dem: 34
+    timezone: "Europe/Bucharest"

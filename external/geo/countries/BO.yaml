@@ -1,0 +1,393 @@
+---
+name: "Bolivia"
+iso: "BO"
+iso3: "BOL"
+code: "068"
+capital: "Sucre"
+area: 1098580.0
+population: 9947418
+continent: "SA"
+currencyCode: "BOB"
+currencyName: "Boliviano"
+phone: "591"
+languages: "es-BO,qu,ay"
+neighbours: "PE,CL,PY,BR,AR"
+regions:
+- name: "Departamento de La Paz"
+  cities:
+  - name: "San Pedro"
+    latitude: -16.23717
+    longitude: -68.85063
+    population: 5002
+    dem: 4013
+    timezone: "America/La_Paz"
+  - name: "Patacamaya"
+    latitude: -17.2358
+    longitude: -67.92169
+    population: 12260
+    dem: 3799
+    timezone: "America/La_Paz"
+  - name: "La Paz"
+    latitude: -16.5
+    longitude: -68.15
+    population: 812799
+    dem: 3782
+    timezone: "America/La_Paz"
+  - name: "Achacachi"
+    latitude: -16.05
+    longitude: -68.68333
+    population: 8447
+    dem: 3838
+    timezone: "America/La_Paz"
+- name: "Departamento de Potosi"
+  cities:
+  - name: "Villazon"
+    latitude: -22.08659
+    longitude: -65.59422
+    population: 30253
+    dem: 3455
+    timezone: "America/La_Paz"
+  - name: "Uyuni"
+    latitude: -20.45967
+    longitude: -66.82503
+    population: 10293
+    dem: 3673
+    timezone: "America/La_Paz"
+  - name: "Tupiza"
+    latitude: -21.44345
+    longitude: -65.71875
+    population: 22233
+    dem: 2961
+    timezone: "America/La_Paz"
+  - name: "Potosi"
+    latitude: -19.58361
+    longitude: -65.75306
+    population: 141251
+    dem: 3967
+    timezone: "America/La_Paz"
+  - name: "Llallagua"
+    latitude: -18.42426
+    longitude: -66.58388
+    population: 28069
+    dem: 3897
+    timezone: "America/La_Paz"
+  - name: "Colchani"
+    latitude: -20.3
+    longitude: -66.93333
+    population: 11988
+    dem: 3668
+    timezone: "America/La_Paz"
+- name: "Departamento de Tarija"
+  cities:
+  - name: "Yacuiba"
+    latitude: -22.01643
+    longitude: -63.67753
+    population: 82803
+    dem: 629
+    timezone: "America/La_Paz"
+  - name: "Villamontes"
+    latitude: -21.26235
+    longitude: -63.46903
+    population: 18761
+    dem: 388
+    timezone: "America/La_Paz"
+  - name: "Tarija"
+    latitude: -21.53549
+    longitude: -64.72956
+    population: 159269
+    dem: 1870
+    timezone: "America/La_Paz"
+  - name: "Bermejo"
+    latitude: -22.73206
+    longitude: -64.33724
+    population: 35411
+    dem: 416
+    timezone: "America/La_Paz"
+- name: "El Beni"
+  cities:
+  - name: "Trinidad"
+    latitude: -14.83333
+    longitude: -64.9
+    population: 84259
+    dem: 159
+    timezone: "America/La_Paz"
+  - name: "Santa Ana de Yacuma"
+    latitude: -13.74406
+    longitude: -65.42688
+    population: 12783
+    dem: 148
+    timezone: "America/La_Paz"
+  - name: "San Borja"
+    latitude: -14.81667
+    longitude: -66.85
+    population: 19640
+    dem: 191
+    timezone: "America/La_Paz"
+  - name: "Rurrenabaque"
+    latitude: -14.44125
+    longitude: -67.52781
+    population: 11749
+    dem: 210
+    timezone: "America/La_Paz"
+  - name: "Riberalta"
+    latitude: -11.00654
+    longitude: -66.06312
+    population: 74014
+    dem: 150
+    timezone: "America/La_Paz"
+  - name: "Reyes"
+    latitude: -14.2952
+    longitude: -67.33624
+    population: 7376
+    dem: 189
+    timezone: "America/La_Paz"
+  - name: "Guayaramerin"
+    latitude: -10.8258
+    longitude: -65.3581
+    population: 36008
+    dem: 136
+    timezone: "America/La_Paz"
+  - name: "San Borja"
+    latitude: -14.85195
+    longitude: -66.74954
+    population: 24610
+    dem: 195
+    timezone: "America/La_Paz"
+- name: "Departamento de Pando"
+  cities:
+  - name: "Cobija"
+    latitude: -11.02671
+    longitude: -68.76918
+    population: 26585
+    dem: 200
+    timezone: "America/La_Paz"
+- name: "Departamento de Oruro"
+  cities:
+  - name: "Oruro"
+    latitude: -17.98333
+    longitude: -67.15
+    population: 208684
+    dem: 3936
+    timezone: "America/La_Paz"
+  - name: "Huanuni"
+    latitude: -18.289
+    longitude: -66.83583
+    population: 15492
+    dem: 3963
+    timezone: "America/La_Paz"
+  - name: "Challapata"
+    latitude: -18.90208
+    longitude: -66.77048
+    population: 8016
+    dem: 3732
+    timezone: "America/La_Paz"
+- name: "Departamento de Santa Cruz"
+  cities:
+  - name: "San Matias"
+    latitude: -16.36667
+    longitude: -58.4
+    population: 6352
+    dem: 120
+    timezone: "America/La_Paz"
+  - name: "Robore"
+    latitude: -18.33473
+    longitude: -59.76142
+    population: 9882
+    dem: 258
+    timezone: "America/La_Paz"
+  - name: "Puerto Quijarro"
+    latitude: -17.78333
+    longitude: -57.76667
+    population: 10392
+    dem: 92
+    timezone: "America/La_Paz"
+  - name: "Warnes"
+    latitude: -17.5163
+    longitude: -63.16778
+    population: 22036
+    dem: 340
+    timezone: "America/La_Paz"
+  - name: "Villa Yapacani"
+    latitude: -17.4
+    longitude: -63.83333
+    population: 18187
+    dem: 297
+    timezone: "America/La_Paz"
+  - name: "Vallegrande"
+    latitude: -18.48923
+    longitude: -64.10609
+    population: 8422
+    dem: 2042
+    timezone: "America/La_Paz"
+  - name: "Santiago del Torno"
+    latitude: -17.98674
+    longitude: -63.38118
+    population: 15543
+    dem: 514
+    timezone: "America/La_Paz"
+  - name: "Santa Rosa del Sara"
+    latitude: -17.10916
+    longitude: -63.59514
+    population: 5251
+    dem: 271
+    timezone: "America/La_Paz"
+  - name: "Santa Cruz de la Sierra"
+    latitude: -17.78629
+    longitude: -63.18117
+    population: 1364389
+    dem: 433
+    timezone: "America/La_Paz"
+  - name: "San Julian"
+    latitude: -17.78333
+    longitude: -62.86667
+    population: 7706
+    dem: 332
+    timezone: "America/La_Paz"
+  - name: "San Ignacio de Velasco"
+    latitude: -16.36667
+    longitude: -60.95
+    population: 23569
+    dem: 385
+    timezone: "America/La_Paz"
+  - name: "Portachuelo"
+    latitude: -17.35168
+    longitude: -63.39282
+    population: 11485
+    dem: 298
+    timezone: "America/La_Paz"
+  - name: "Pailon"
+    latitude: -17.65
+    longitude: -62.75
+    population: 9304
+    dem: 298
+    timezone: "America/La_Paz"
+  - name: "Montero"
+    latitude: -17.33866
+    longitude: -63.2505
+    population: 88616
+    dem: 300
+    timezone: "America/La_Paz"
+  - name: "Mineros"
+    latitude: -17.11876
+    longitude: -63.231
+    population: 14385
+    dem: 258
+    timezone: "America/La_Paz"
+  - name: "La Belgica"
+    latitude: -17.55
+    longitude: -63.21667
+    population: 5501
+    dem: 353
+    timezone: "America/La_Paz"
+  - name: "Cotoca"
+    latitude: -17.81667
+    longitude: -63.05
+    population: 18347
+    dem: 387
+    timezone: "America/La_Paz"
+  - name: "Concepcion"
+    latitude: -16.43333
+    longitude: -60.9
+    population: 6900
+    dem: 478
+    timezone: "America/La_Paz"
+  - name: "Camiri"
+    latitude: -20.03849
+    longitude: -63.51833
+    population: 27961
+    dem: 802
+    timezone: "America/La_Paz"
+  - name: "Ascension"
+    latitude: -15.7
+    longitude: -63.08333
+    population: 14429
+    dem: 198
+    timezone: "America/La_Paz"
+  - name: "Ascencion de Guarayos"
+    latitude: -15.89299
+    longitude: -63.18855
+    population: 18816
+    dem: 248
+    timezone: "America/La_Paz"
+- name: "Departamento de Cochabamba"
+  cities:
+  - name: "Tiquipaya"
+    latitude: -17.33801
+    longitude: -66.21579
+    population: 53904
+    dem: 2651
+    timezone: "America/La_Paz"
+  - name: "Tarata"
+    latitude: -17.60898
+    longitude: -66.02135
+    population: 8043
+    dem: 2760
+    timezone: "America/La_Paz"
+  - name: "Sacaba"
+    latitude: -17.39799
+    longitude: -66.03825
+    population: 107628
+    dem: 2710
+    timezone: "America/La_Paz"
+  - name: "Quillacollo"
+    latitude: -17.39228
+    longitude: -66.27838
+    population: 87309
+    dem: 2559
+    timezone: "America/La_Paz"
+  - name: "Punata"
+    latitude: -17.54234
+    longitude: -65.83472
+    population: 15194
+    dem: 2731
+    timezone: "America/La_Paz"
+  - name: "Mizque"
+    latitude: -17.94101
+    longitude: -65.34016
+    population: 30481
+    dem: 2014
+    timezone: "America/La_Paz"
+  - name: "Cochabamba"
+    latitude: -17.3895
+    longitude: -66.1568
+    population: 900414
+    dem: 2577
+    timezone: "America/La_Paz"
+  - name: "Cliza"
+    latitude: -17.58777
+    longitude: -65.93253
+    population: 8654
+    dem: 2726
+    timezone: "America/La_Paz"
+  - name: "Chimore"
+    latitude: -16.99417
+    longitude: -65.1533
+    population: 5147
+    dem: 243
+    timezone: "America/La_Paz"
+  - name: "Capinota"
+    latitude: -17.71113
+    longitude: -66.26082
+    population: 5157
+    dem: 2395
+    timezone: "America/La_Paz"
+  - name: "Aiquile"
+    latitude: -18.20408
+    longitude: -65.18068
+    population: 8224
+    dem: 2258
+    timezone: "America/La_Paz"
+- name: "Departamento de Chuquisaca"
+  cities:
+  - name: "Sucre"
+    latitude: -19.03332
+    longitude: -65.26274
+    population: 224838
+    dem: 2798
+    timezone: "America/La_Paz"
+  - name: "Monteagudo"
+    latitude: -19.79989
+    longitude: -63.95461
+    population: 8289
+    dem: 1148
+    timezone: "America/La_Paz"

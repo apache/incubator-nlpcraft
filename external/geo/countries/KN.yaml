@@ -1,0 +1,127 @@
+---
+name: "Saint Kitts and Nevis"
+iso: "KN"
+iso3: "KNA"
+code: "659"
+capital: "Basseterre"
+area: 261.0
+population: 51134
+continent: "NA"
+currencyCode: "XCD"
+currencyName: "Dollar"
+phone: "+1-869"
+languages: "en-KN"
+regions:
+- name: "Saint John Capesterre"
+  cities:
+  - name: "Dieppe Bay Town"
+    latitude: 17.41473
+    longitude: -62.8139
+    population: 592
+    dem: 20
+    timezone: "America/St_Kitts"
+- name: "Saint Thomas Lowland"
+  cities:
+  - name: "Cotton Ground"
+    latitude: 17.16667
+    longitude: -62.61667
+    population: 381
+    dem: 83
+    timezone: "America/St_Kitts"
+- name: "Trinity Palmetto Point"
+  cities:
+  - name: "Trinity"
+    latitude: 17.30037
+    longitude: -62.77584
+    population: 1692
+    dem: 41
+    timezone: "America/St_Kitts"
+- name: "Saint Paul Capesterre"
+  cities:
+  - name: "Saint Pauls"
+    latitude: 17.40605
+    longitude: -62.83562
+    population: 2460
+    dem: 59
+    timezone: "America/St_Kitts"
+- name: "Saint George Basseterre"
+  cities:
+  - name: "Basseterre"
+    latitude: 17.2955
+    longitude: -62.72499
+    population: 12920
+    elevation: -22
+    dem: 1
+    timezone: "America/St_Kitts"
+- name: "Saint Anne Sandy Point"
+  cities:
+  - name: "Sandy Point Town"
+    latitude: 17.35908
+    longitude: -62.84858
+    population: 780
+    dem: 23
+    timezone: "America/St_Kitts"
+- name: "Saint Peter Basseterre"
+  cities:
+  - name: "Monkey Hill"
+    latitude: 17.32327
+    longitude: -62.72914
+    population: 592
+    dem: 148
+    timezone: "America/St_Kitts"
+- name: "Saint James Windward"
+  cities:
+  - name: "Newcastle"
+    latitude: 17.2
+    longitude: -62.58333
+    population: 493
+    dem: 27
+    timezone: "America/St_Kitts"
+- name: "Saint Mary Cayon"
+  cities:
+  - name: "Cayon"
+    latitude: 17.35
+    longitude: -62.73333
+    population: 788
+    dem: 109
+    timezone: "America/St_Kitts"
+- name: "Saint John Figtree"
+  cities:
+  - name: "Fig Tree"
+    latitude: 17.12623
+    longitude: -62.60265
+    population: 2922
+    dem: 115
+    timezone: "America/St_Kitts"
+- name: "Saint Thomas Middle Island"
+  cities:
+  - name: "Middle Island"
+    latitude: 17.3259
+    longitude: -62.81055
+    population: 2332
+    dem: 14
+    timezone: "America/St_Kitts"
+- name: "Christ Church Nichola Town"
+  cities:
+  - name: "Nicola Town"
+    latitude: 17.37956
+    longitude: -62.75318
+    population: 2059
+    dem: 47
+    timezone: "America/St_Kitts"
+- name: "Saint Paul Charlestown"
+  cities:
+  - name: "Charlestown"
+    latitude: 17.13333
+    longitude: -62.61667
+    population: 1538
+    dem: 46
+    timezone: "America/St_Kitts"
+- name: "Saint George Gingerland"
+  cities:
+  - name: "Market Shop"
+    latitude: 17.13218
+    longitude: -62.57267
+    population: 2568
+    dem: 220
+    timezone: "America/St_Kitts"

@@ -1,0 +1,37 @@
+---
+name: "Tokelau"
+iso: "TK"
+iso3: "TKL"
+code: "772"
+area: 10.0
+population: 1466
+continent: "OC"
+currencyCode: "NZD"
+currencyName: "Dollar"
+phone: "690"
+languages: "tkl,en-TK"
+regions:
+- name: "Atafu"
+  cities:
+  - name: "Atafu Village"
+    latitude: -8.54212
+    longitude: -172.51591
+    population: 524
+    dem: 10
+    timezone: "Pacific/Fakaofo"
+- name: "Fakaofo"
+  cities:
+  - name: "Fale old settlement"
+    latitude: -9.38516
+    longitude: -171.24675
+    population: 120
+    dem: 7
+    timezone: "Pacific/Fakaofo"
+- name: "Nukunonu"
+  cities:
+  - name: "Nukunonu"
+    latitude: -9.20045
+    longitude: -171.84804
+    population: 426
+    dem: 10
+    timezone: "Pacific/Fakaofo"

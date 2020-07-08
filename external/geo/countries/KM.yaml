@@ -1,0 +1,131 @@
+---
+name: "Comoros"
+iso: "KM"
+iso3: "COM"
+code: "174"
+capital: "Moroni"
+area: 2170.0
+population: 773407
+continent: "AF"
+currencyCode: "KMF"
+currencyName: "Franc"
+phone: "269"
+languages: "ar,fr-KM"
+regions:
+- name: "Grande Comore"
+  cities:
+  - name: "Ouellah"
+    latitude: -11.39028
+    longitude: 43.33194
+    population: 5478
+    dem: 140
+    timezone: "Indian/Comoro"
+  - name: "Moroni"
+    latitude: -11.70216
+    longitude: 43.25506
+    population: 42872
+    dem: 27
+    timezone: "Indian/Comoro"
+  - name: "Mitsamiouli"
+    latitude: -11.38472
+    longitude: 43.28444
+    population: 6102
+    dem: 48
+    timezone: "Indian/Comoro"
+  - name: "Mbeni"
+    latitude: -11.50139
+    longitude: 43.3775
+    population: 6516
+    dem: 480
+    timezone: "Indian/Comoro"
+- name: "Ndzuwani"
+  cities:
+  - name: "Tsimbeo"
+    latitude: -12.20583
+    longitude: 44.46472
+    population: 12472
+    dem: 433
+    timezone: "Indian/Comoro"
+  - name: "Sima"
+    latitude: -12.19556
+    longitude: 44.27667
+    population: 10374
+    dem: 120
+    timezone: "Indian/Comoro"
+  - name: "Ouani"
+    latitude: -12.13554
+    longitude: 44.42493
+    population: 10179
+    dem: 18
+    timezone: "Indian/Comoro"
+  - name: "Moutsamoudou"
+    latitude: -12.16672
+    longitude: 44.39944
+    population: 23594
+    dem: 61
+    timezone: "Indian/Comoro"
+  - name: "Mramani"
+    latitude: -12.34639
+    longitude: 44.52861
+    population: 5126
+    dem: 83
+    timezone: "Indian/Comoro"
+  - name: "Moya"
+    latitude: -12.30667
+    longitude: 44.43778
+    population: 7529
+    dem: 142
+    timezone: "Indian/Comoro"
+  - name: "Koni-Djodjo"
+    latitude: -12.22972
+    longitude: 44.48167
+    population: 8109
+    dem: 662
+    timezone: "Indian/Comoro"
+  - name: "Domoni"
+    latitude: -12.25694
+    longitude: 44.53194
+    population: 14509
+    dem: 18
+    timezone: "Indian/Comoro"
+  - name: "Chandra"
+    latitude: -12.195
+    longitude: 44.46472
+    population: 5645
+    dem: 469
+    timezone: "Indian/Comoro"
+  - name: "Barakani"
+    latitude: -12.13861
+    longitude: 44.43026
+    population: 6089
+    dem: 57
+    timezone: "Indian/Comoro"
+  - name: "Mirontsi"
+    latitude: -12.15667
+    longitude: 44.40806
+    population: 10168
+    dem: -9999
+    timezone: "Indian/Comoro"
+  - name: "Adda-Doueni"
+    latitude: -12.2925
+    longitude: 44.49722
+    population: 10858
+    dem: 706
+    timezone: "Indian/Comoro"
+- name: "Comoros"
+  cities:
+  - name: "Mkiriwadjumoi"
+    latitude: -12.31086
+    longitude: 44.43702
+    population: 8749
+    elevation: 300
+    dem: 40
+    timezone: "Indian/Comoro"
+- name: "Moheli"
+  cities:
+  - name: "Fomboni"
+    latitude: -12.28759
+    longitude: 43.74344
+    population: 14966
+    dem: 18
+    timezone: "Indian/Comoro"

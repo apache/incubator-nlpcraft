@@ -1,0 +1,426 @@
+---
+name: "Paraguay"
+iso: "PY"
+iso3: "PRY"
+code: "600"
+capital: "Asuncion"
+area: 406750.0
+population: 6375830
+continent: "SA"
+currencyCode: "PYG"
+currencyName: "Guarani"
+phone: "595"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "es-PY,gn"
+neighbours: "BO,BR,AR"
+regions:
+- name: "Departamento de Boqueron"
+  cities:
+  - name: "Colonia Menno"
+    latitude: -22.36667
+    longitude: -59.81667
+    population: 5615
+    dem: 128
+    timezone: "America/Asuncion"
+  - name: "Filadelfia"
+    latitude: -22.33936
+    longitude: -60.03157
+    population: 8048
+    dem: 140
+    timezone: "America/Asuncion"
+- name: "Departamento Central"
+  cities:
+  - name: "Ypacarai"
+    latitude: -25.40777
+    longitude: -57.28889
+    population: 9655
+    dem: 91
+    timezone: "America/Asuncion"
+  - name: "Villa Elisa"
+    latitude: -25.3676
+    longitude: -57.59274
+    population: 64099
+    dem: 119
+    timezone: "America/Asuncion"
+  - name: "San Lorenzo"
+    latitude: -25.33968
+    longitude: -57.50879
+    population: 227876
+    dem: 119
+    timezone: "America/Asuncion"
+  - name: "San Antonio"
+    latitude: -25.42126
+    longitude: -57.54725
+    population: 55754
+    dem: 123
+    timezone: "America/Asuncion"
+  - name: "Nemby"
+    latitude: -25.3949
+    longitude: -57.53574
+    population: 94641
+    dem: 109
+    timezone: "America/Asuncion"
+  - name: "Limpio"
+    latitude: -25.16611
+    longitude: -57.48562
+    population: 96143
+    dem: 74
+    timezone: "America/Asuncion"
+  - name: "Lambare"
+    latitude: -25.34682
+    longitude: -57.60647
+    population: 126377
+    dem: 119
+    timezone: "America/Asuncion"
+  - name: "Itaugua"
+    latitude: -25.39258
+    longitude: -57.35421
+    population: 64997
+    dem: 140
+    timezone: "America/Asuncion"
+  - name: "Ita"
+    latitude: -25.50054
+    longitude: -57.36717
+    population: 18459
+    dem: 147
+    timezone: "America/Asuncion"
+  - name: "Guarambare"
+    latitude: -25.49096
+    longitude: -57.45567
+    population: 9065
+    dem: 123
+    timezone: "America/Asuncion"
+  - name: "Fernando de la Mora"
+    latitude: -25.3386
+    longitude: -57.52167
+    population: 120167
+    dem: 131
+    timezone: "America/Asuncion"
+  - name: "Mariano Roque Alonso"
+    latitude: -25.20791
+    longitude: -57.53202
+    population: 72008
+    dem: 80
+    timezone: "America/Asuncion"
+  - name: "Capiata"
+    latitude: -25.3552
+    longitude: -57.44545
+    population: 198553
+    dem: 130
+    timezone: "America/Asuncion"
+  - name: "Aregua"
+    latitude: -25.3125
+    longitude: -57.38472
+    population: 11222
+    dem: 114
+    timezone: "America/Asuncion"
+- name: "Departamento de Alto Paraguay"
+  cities:
+  - name: "Fuerte Olimpo"
+    latitude: -21.04153
+    longitude: -57.87377
+    population: 2475
+    dem: 84
+    timezone: "America/Asuncion"
+- name: "Departamento de San Pedro"
+  cities:
+  - name: "San Pedro de Ycuamandiyu"
+    latitude: -24.08534
+    longitude: -57.08745
+    population: 9360
+    dem: 81
+    timezone: "America/Asuncion"
+  - name: "Puerto Rosario"
+    latitude: -24.44127
+    longitude: -57.14272
+    population: 5123
+    dem: 70
+    timezone: "America/Asuncion"
+  - name: "Lima"
+    latitude: -23.88327
+    longitude: -56.48217
+    population: 10367
+    dem: 137
+    timezone: "America/Asuncion"
+- name: "Departamento de Caazapa"
+  cities:
+  - name: "San Juan Nepomuceno"
+    latitude: -26.11229
+    longitude: -55.93861
+    population: 7893
+    dem: 145
+    timezone: "America/Asuncion"
+  - name: "Caazapa"
+    latitude: -26.19583
+    longitude: -56.36806
+    population: 23996
+    dem: 150
+    timezone: "America/Asuncion"
+- name: "Departamento de Itapua"
+  cities:
+  - name: "San Pedro del Parana"
+    latitude: -26.83268
+    longitude: -56.20575
+    population: 5722
+    dem: 147
+    timezone: "America/Asuncion"
+  - name: "Obligado"
+    latitude: -27.03333
+    longitude: -55.63333
+    population: 6350
+    dem: 188
+    timezone: "America/Asuncion"
+  - name: "Hohenau"
+    latitude: -27.07315
+    longitude: -55.64247
+    population: 5306
+    dem: 202
+    timezone: "America/Asuncion"
+  - name: "Encarnacion"
+    latitude: -27.33056
+    longitude: -55.86667
+    population: 74983
+    dem: 119
+    timezone: "America/Asuncion"
+  - name: "Arquitecto Tomas Romero Pereira"
+    latitude: -26.48333
+    longitude: -55.25
+    population: 5533
+    dem: 333
+    timezone: "America/Asuncion"
+- name: "Departamento de la Cordillera"
+  cities:
+  - name: "Tobati"
+    latitude: -25.26111
+    longitude: -57.08329
+    population: 9952
+    dem: 125
+    timezone: "America/Asuncion"
+  - name: "Piribebuy"
+    latitude: -25.46498
+    longitude: -57.04183
+    population: 10337
+    dem: 253
+    timezone: "America/Asuncion"
+  - name: "Eusebio Ayala"
+    latitude: -25.38276
+    longitude: -56.96088
+    population: 8253
+    dem: 155
+    timezone: "America/Asuncion"
+  - name: "Emboscada"
+    latitude: -25.15
+    longitude: -57.35
+    population: 5911
+    dem: 93
+    timezone: "America/Asuncion"
+  - name: "Caacupe"
+    latitude: -25.38575
+    longitude: -57.14217
+    population: 21696
+    dem: 180
+    timezone: "America/Asuncion"
+- name: "Departamento del Amambay"
+  cities:
+  - name: "Pedro Juan Caballero"
+    latitude: -22.54722
+    longitude: -55.73333
+    population: 75109
+    dem: 658
+    timezone: "America/Asuncion"
+  - name: "Capitan Bado"
+    latitude: -23.26667
+    longitude: -55.53333
+    population: 9114
+    dem: 514
+    timezone: "America/Asuncion"
+  - name: "Bella Vista"
+    latitude: -22.13333
+    longitude: -56.51667
+    population: 5653
+    dem: 173
+    timezone: "America/Asuncion"
+- name: "Departamento de Presidente Hayes"
+  cities:
+  - name: "Villa Hayes"
+    latitude: -25.09306
+    longitude: -57.52361
+    population: 57217
+    dem: 75
+    timezone: "America/Asuncion"
+  - name: "Nanawua"
+    latitude: -25.2793
+    longitude: -57.70307
+    population: 5587
+    dem: 64
+    timezone: "America/Asuncion"
+  - name: "Benjamin Aceval"
+    latitude: -24.96667
+    longitude: -57.56667
+    population: 7751
+    dem: 68
+    timezone: "America/Asuncion"
+- name: "Departamento del Alto Parana"
+  cities:
+  - name: "Santa Rita"
+    latitude: -25.78333
+    longitude: -55.06667
+    population: 11823
+    dem: 292
+    timezone: "America/Asuncion"
+  - name: "Presidente Franco"
+    latitude: -25.56384
+    longitude: -54.61097
+    population: 54292
+    dem: 206
+    timezone: "America/Asuncion"
+  - name: "Doctor Juan Leon Mallorquin"
+    latitude: -25.43053
+    longitude: -55.25412
+    population: 7481
+    dem: 247
+    timezone: "America/Asuncion"
+  - name: "Ciudad del Este"
+    latitude: -25.50972
+    longitude: -54.61111
+    population: 320782
+    dem: 186
+    timezone: "America/Asuncion"
+- name: "Asuncion"
+  cities:
+  - name: "Asuncion"
+    latitude: -25.28646
+    longitude: -57.647
+    population: 1482200
+    dem: 107
+    timezone: "America/Asuncion"
+- name: "Departamento de Caaguazu"
+  cities:
+  - name: "San Jose"
+    latitude: -25.53333
+    longitude: -56.73333
+    population: 5117
+    dem: 125
+    timezone: "America/Asuncion"
+  - name: "Repatriacion"
+    latitude: -25.53333
+    longitude: -55.95
+    population: 7085
+    dem: 269
+    timezone: "America/Asuncion"
+  - name: "Coronel Oviedo"
+    latitude: -25.44444
+    longitude: -56.44028
+    population: 51286
+    dem: 169
+    timezone: "America/Asuncion"
+  - name: "Colonia General Alfredo Stroessner"
+    latitude: -25.36395
+    longitude: -55.7069
+    population: 11558
+    dem: 308
+    timezone: "America/Asuncion"
+  - name: "Caaguazu"
+    latitude: -25.47104
+    longitude: -56.01603
+    population: 54808
+    dem: 336
+    timezone: "America/Asuncion"
+- name: "Departamento de Canindeyu"
+  cities:
+  - name: "San Isidro de Curuguaty"
+    latitude: -24.47184
+    longitude: -55.69227
+    population: 11095
+    dem: 215
+    timezone: "America/Asuncion"
+  - name: "Salto del Guaira"
+    latitude: -24.0625
+    longitude: -54.30694
+    population: 7385
+    dem: 269
+    timezone: "America/Asuncion"
+  - name: "Nueva Esperanza"
+    latitude: -24.5076
+    longitude: -54.8551
+    population: 12717
+    elevation: 368
+    dem: 370
+    timezone: "America/Asuncion"
+- name: "Departamento del Guaira"
+  cities:
+  - name: "Villarrica"
+    latitude: -25.74946
+    longitude: -56.43518
+    population: 41157
+    dem: 143
+    timezone: "America/Asuncion"
+- name: "Departamento de Concepcion"
+  cities:
+  - name: "Concepcion"
+    latitude: -23.39985
+    longitude: -57.43236
+    population: 48123
+    dem: 78
+    timezone: "America/Asuncion"
+  - name: "Horqueta"
+    latitude: -23.34278
+    longitude: -57.05972
+    population: 10531
+    dem: 165
+    timezone: "America/Asuncion"
+- name: "Departamento de Neembucu"
+  cities:
+  - name: "Pilar"
+    latitude: -26.85874
+    longitude: -58.30639
+    population: 28716
+    dem: 55
+    timezone: "America/Asuncion"
+- name: "Departamento de Misiones"
+  cities:
+  - name: "Santa Rosa Misiones"
+    latitude: -26.8873
+    longitude: -56.84905
+    population: 7257
+    dem: 200
+    timezone: "America/Asuncion"
+  - name: "San Juan Bautista"
+    latitude: -26.66944
+    longitude: -57.14583
+    population: 16593
+    dem: 128
+    timezone: "America/Asuncion"
+  - name: "Juan de Ayolas"
+    latitude: -27.38662
+    longitude: -56.84724
+    population: 12061
+    dem: 81
+    timezone: "America/Asuncion"
+- name: "Departamento de Paraguari"
+  cities:
+  - name: "Yaguaron"
+    latitude: -25.56139
+    longitude: -57.28343
+    population: 7181
+    dem: 116
+    timezone: "America/Asuncion"
+  - name: "Quiindy"
+    latitude: -25.97606
+    longitude: -57.23353
+    population: 5137
+    dem: 195
+    timezone: "America/Asuncion"
+  - name: "Paraguari"
+    latitude: -25.62083
+    longitude: -57.14722
+    population: 10079
+    dem: 134
+    timezone: "America/Asuncion"
+  - name: "Carapegua"
+    latitude: -25.8
+    longitude: -57.23333
+    population: 5784
+    dem: 292
+    timezone: "America/Asuncion"

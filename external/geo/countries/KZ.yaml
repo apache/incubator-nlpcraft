@@ -1,0 +1,1208 @@
+---
+name: "Kazakhstan"
+iso: "KZ"
+iso3: "KAZ"
+code: "398"
+capital: "Nur-Sultan"
+area: 2717300.0
+population: 15340000
+continent: "AS"
+currencyCode: "KZT"
+currencyName: "Tenge"
+phone: "7"
+postalCodeFormat: "######"
+postalCodeRegex: "^(\\d{6})$"
+languages: "kk,ru"
+neighbours: "TM,CN,KG,UZ,RU"
+regions:
+- name: "Mangistauskaya Oblast"
+  cities:
+  - name: "Zhetibay"
+    latitude: 43.59417
+    longitude: 52.07889
+    population: 11731
+    dem: 144
+    timezone: "Asia/Aqtau"
+  - name: "Zhanaozen"
+    latitude: 43.34116
+    longitude: 52.86192
+    population: 103598
+    dem: 204
+    timezone: "Asia/Aqtau"
+  - name: "Shetpe"
+    latitude: 44.16667
+    longitude: 52.11667
+    population: 11836
+    dem: 209
+    timezone: "Asia/Aqtau"
+  - name: "Fort-Shevchenko"
+    latitude: 44.50654
+    longitude: 50.26388
+    population: 5213
+    dem: -17
+    timezone: "Asia/Aqtau"
+  - name: "Yeraliyev"
+    latitude: 43.18032
+    longitude: 51.68116
+    population: 11836
+    dem: -11
+    timezone: "Asia/Aqtau"
+  - name: "Beyneu"
+    latitude: 45.31667
+    longitude: 55.2
+    population: 14245
+    dem: 6
+    timezone: "Asia/Aqtau"
+  - name: "Aktau"
+    latitude: 43.65
+    longitude: 51.16667
+    population: 147443
+    dem: -5
+    timezone: "Asia/Aqtau"
+- name: "East Kazakhstan"
+  cities:
+  - name: "Zyryanovsk"
+    latitude: 49.72654
+    longitude: 84.27318
+    population: 44929
+    dem: 471
+    timezone: "Asia/Almaty"
+  - name: "Zhezkent"
+    latitude: 50.93112
+    longitude: 81.3615
+    population: 8896
+    dem: 283
+    timezone: "Asia/Almaty"
+  - name: "Zaysan"
+    latitude: 47.46657
+    longitude: 84.87144
+    population: 17600
+    dem: 635
+    timezone: "Asia/Almaty"
+  - name: "Ust-Talovka"
+    latitude: 50.54927
+    longitude: 81.84997
+    population: 6122
+    dem: 302
+    timezone: "Asia/Almaty"
+  - name: "Urzhar"
+    latitude: 47.09302
+    longitude: 81.62939
+    population: 14826
+    dem: 479
+    timezone: "Asia/Almaty"
+  - name: "Shemonaikha"
+    latitude: 50.62811
+    longitude: 81.91213
+    population: 20087
+    dem: 313
+    timezone: "Asia/Almaty"
+  - name: "Shar"
+    latitude: 49.5872
+    longitude: 81.04883
+    population: 9087
+    dem: 339
+    timezone: "Asia/Almaty"
+  - name: "Semey"
+    latitude: 50.42675
+    longitude: 80.26669
+    population: 292780
+    dem: 211
+    timezone: "Asia/Almaty"
+  - name: "Qarauyl"
+    latitude: 48.94509
+    longitude: 79.25502
+    population: 5261
+    dem: 622
+    timezone: "Asia/Almaty"
+  - name: "Tughyl"
+    latitude: 47.72521
+    longitude: 84.20629
+    population: 6696
+    dem: 404
+    timezone: "Asia/Almaty"
+  - name: "Ust-Kamenogorsk"
+    latitude: 49.97143
+    longitude: 82.60586
+    population: 319067
+    dem: 287
+    timezone: "Asia/Almaty"
+  - name: "Zhanga Buqtyrma"
+    latitude: 49.6295
+    longitude: 83.52475
+    population: 6026
+    dem: 418
+    timezone: "Asia/Almaty"
+  - name: "Kurchatov"
+    latitude: 50.75617
+    longitude: 78.54188
+    population: 10747
+    dem: 165
+    timezone: "Asia/Almaty"
+  - name: "Ridder"
+    latitude: 50.34413
+    longitude: 83.51287
+    population: 52664
+    dem: 741
+    timezone: "Asia/Almaty"
+  - name: "Kurchum"
+    latitude: 48.56603
+    longitude: 83.66146
+    population: 8800
+    dem: 427
+    timezone: "Asia/Almaty"
+  - name: "Glubokoye"
+    latitude: 50.13887
+    longitude: 82.31114
+    population: 11192
+    dem: 277
+    timezone: "Asia/Almaty"
+  - name: "Georgievka"
+    latitude: 49.32671
+    longitude: 81.57373
+    population: 22047
+    dem: 425
+    timezone: "Asia/Almaty"
+  - name: "Borodulikha"
+    latitude: 50.71841
+    longitude: 80.9295
+    population: 5931
+    dem: 316
+    timezone: "Asia/Almaty"
+  - name: "Belousovka"
+    latitude: 50.13287
+    longitude: 82.52481
+    population: 9948
+    dem: 365
+    timezone: "Asia/Almaty"
+  - name: "Ayagoz"
+    latitude: 47.96447
+    longitude: 80.43437
+    population: 33479
+    dem: 665
+    timezone: "Asia/Almaty"
+  - name: "Asubulaq"
+    latitude: 49.55688
+    longitude: 83.06355
+    population: 5644
+    dem: 645
+    timezone: "Asia/Almaty"
+- name: "Aqmola Oblysy"
+  cities:
+  - name: "Zholymbet"
+    latitude: 51.74211
+    longitude: 71.71245
+    population: 6876
+    dem: 329
+    timezone: "Asia/Almaty"
+  - name: "Zhaqsy"
+    latitude: 51.91058
+    longitude: 67.31665
+    population: 5001
+    dem: 392
+    timezone: "Asia/Almaty"
+  - name: "Shortandy"
+    latitude: 51.69946
+    longitude: 70.99457
+    population: 6980
+    dem: 375
+    timezone: "Asia/Almaty"
+  - name: "Shchuchinsk"
+    latitude: 52.93592
+    longitude: 70.18895
+    population: 47290
+    dem: 405
+    timezone: "Asia/Almaty"
+  - name: "Shantobe"
+    latitude: 52.45376
+    longitude: 68.17475
+    population: 5626
+    dem: 385
+    timezone: "Asia/Almaty"
+  - name: "Makinsk"
+    latitude: 52.6329
+    longitude: 70.41911
+    population: 17711
+    dem: 380
+    timezone: "Asia/Almaty"
+  - name: "Kokshetau"
+    latitude: 53.28333
+    longitude: 69.4
+    population: 124444
+    dem: 234
+    timezone: "Asia/Almaty"
+  - name: "Esil"
+    latitude: 51.95495
+    longitude: 66.40841
+    population: 13504
+    dem: 221
+    timezone: "Asia/Almaty"
+  - name: "Yermentau"
+    latitude: 51.62364
+    longitude: 73.10265
+    population: 14169
+    dem: 392
+    timezone: "Asia/Almaty"
+  - name: "Derzhavinsk"
+    latitude: 51.09922
+    longitude: 66.31557
+    population: 13856
+    dem: 247
+    timezone: "Asia/Almaty"
+  - name: "Bestobe"
+    latitude: 52.49795
+    longitude: 73.09592
+    population: 7189
+    dem: 174
+    timezone: "Asia/Almaty"
+  - name: "Balkashino"
+    latitude: 52.51779
+    longitude: 68.7516
+    population: 6147
+    dem: 371
+    timezone: "Asia/Almaty"
+  - name: "Atbasar"
+    latitude: 51.80652
+    longitude: 68.35996
+    population: 34797
+    dem: 283
+    timezone: "Asia/Almaty"
+  - name: "Astrakhan"
+    latitude: 51.53092
+    longitude: 69.79684
+    population: 6459
+    dem: 302
+    timezone: "Asia/Almaty"
+  - name: "Aksu"
+    latitude: 52.44422
+    longitude: 71.95761
+    population: 8543
+    dem: 278
+    timezone: "Asia/Almaty"
+  - name: "Akkol"
+    latitude: 53.29617
+    longitude: 69.59997
+    population: 16773
+    dem: 261
+    timezone: "Asia/Almaty"
+  - name: "Stepnogorsk"
+    latitude: 52.35062
+    longitude: 71.88161
+    population: 46736
+    dem: 311
+    timezone: "Asia/Almaty"
+  - name: "Zavodskoy"
+    latitude: 52.47031
+    longitude: 72.01514
+    population: 6043
+    dem: 264
+    timezone: "Asia/Almaty"
+- name: "Shymkent"
+  cities:
+  - name: "Shymkent"
+    latitude: 42.3
+    longitude: 69.6
+    population: 414032
+    dem: 513
+    timezone: "Asia/Almaty"
+- name: "Atyrau Oblysy"
+  cities:
+  - name: "Shalkar"
+    latitude: 48.03333
+    longitude: 48.9
+    population: 27072
+    dem: -14
+    timezone: "Asia/Atyrau"
+  - name: "Miyaly"
+    latitude: 48.88504
+    longitude: 53.79194
+    population: 6213
+    dem: 33
+    timezone: "Asia/Atyrau"
+  - name: "Maqat"
+    latitude: 47.65
+    longitude: 53.31667
+    population: 14082
+    dem: -25
+    timezone: "Asia/Atyrau"
+  - name: "Maloye Ganyushkino"
+    latitude: 46.6
+    longitude: 49.26667
+    population: 8387
+    dem: -24
+    timezone: "Asia/Atyrau"
+  - name: "Makhambet"
+    latitude: 47.66667
+    longitude: 51.58333
+    population: 8905
+    dem: -22
+    timezone: "Asia/Atyrau"
+  - name: "Qulsary"
+    latitude: 46.95307
+    longitude: 54.01978
+    population: 51216
+    dem: -14
+    timezone: "Asia/Atyrau"
+  - name: "Qaraton"
+    latitude: 46.43528
+    longitude: 53.48639
+    population: 8905
+    dem: -26
+    timezone: "Asia/Atyrau"
+  - name: "Inderbor"
+    latitude: 48.55
+    longitude: 51.78333
+    population: 13254
+    dem: 22
+    timezone: "Asia/Atyrau"
+  - name: "Dossor"
+    latitude: 47.52722
+    longitude: 52.98111
+    population: 9526
+    dem: -24
+    timezone: "Asia/Atyrau"
+  - name: "Balykshi"
+    latitude: 47.06667
+    longitude: 51.86667
+    population: 19260
+    dem: -24
+    timezone: "Asia/Atyrau"
+  - name: "Atyrau"
+    latitude: 47.11667
+    longitude: 51.88333
+    population: 180000
+    dem: -25
+    timezone: "Asia/Atyrau"
+- name: "Qaraghandy Oblysy"
+  cities:
+  - name: "Karagandy"
+    latitude: 49.80187
+    longitude: 73.10211
+    population: 451800
+    dem: 537
+    timezone: "Asia/Almaty"
+  - name: "Zhezqazghan"
+    latitude: 47.78333
+    longitude: 67.76667
+    population: 104357
+    dem: 330
+    timezone: "Asia/Almaty"
+  - name: "Temirtau"
+    latitude: 50.05494
+    longitude: 72.96464
+    population: 170600
+    dem: 513
+    timezone: "Asia/Almaty"
+  - name: "Shakhtinsk"
+    latitude: 49.70885
+    longitude: 72.59212
+    population: 41602
+    dem: 488
+    timezone: "Asia/Almaty"
+  - name: "Shakhan"
+    latitude: 49.81958
+    longitude: 72.65407
+    population: 13273
+    dem: 478
+    timezone: "Asia/Almaty"
+  - name: "Soran"
+    latitude: 49.7908
+    longitude: 72.83744
+    population: 42552
+    dem: 491
+    timezone: "Asia/Almaty"
+  - name: "Qarqaraly"
+    latitude: 49.41287
+    longitude: 75.47286
+    population: 8195
+    dem: 849
+    timezone: "Asia/Almaty"
+  - name: "Qarazhal"
+    latitude: 48.00627
+    longitude: 70.79607
+    population: 13807
+    dem: 468
+    timezone: "Asia/Almaty"
+  - name: "Osakarovka"
+    latitude: 50.56219
+    longitude: 72.57089
+    population: 7305
+    dem: 506
+    timezone: "Asia/Almaty"
+  - name: "Novodolinskiy"
+    latitude: 49.7065
+    longitude: 72.70807
+    population: 5167
+    dem: 484
+    timezone: "Asia/Almaty"
+  - name: "Kievka"
+    latitude: 50.26212
+    longitude: 71.54839
+    population: 7037
+    dem: 397
+    timezone: "Asia/Almaty"
+  - name: "Balqash"
+    latitude: 46.84806
+    longitude: 74.995
+    population: 81364
+    dem: 372
+    timezone: "Asia/Almaty"
+  - name: "Atasu"
+    latitude: 48.68659
+    longitude: 71.64469
+    population: 13184
+    dem: 487
+    timezone: "Asia/Almaty"
+  - name: "Aktau"
+    latitude: 50.23466
+    longitude: 73.06662
+    population: 9500
+    dem: 503
+    timezone: "Asia/Almaty"
+  - name: "Aqadyr"
+    latitude: 48.26014
+    longitude: 72.85851
+    population: 9710
+    dem: 693
+    timezone: "Asia/Almaty"
+  - name: "Aktau"
+    latitude: 48.03333
+    longitude: 72.83333
+    population: 9977
+    dem: 765
+    timezone: "Asia/Almaty"
+  - name: "Aktas"
+    latitude: 49.77952
+    longitude: 72.96128
+    population: 9888
+    dem: 558
+    timezone: "Asia/Almaty"
+  - name: "Abay"
+    latitude: 49.63575
+    longitude: 72.86164
+    population: 35454
+    dem: 503
+    timezone: "Asia/Almaty"
+  - name: "Priozersk"
+    latitude: 46.03106
+    longitude: 73.70247
+    population: 13457
+    dem: 358
+    timezone: "Asia/Almaty"
+- name: "Pavlodar Region"
+  cities:
+  - name: "Zhelezinka"
+    latitude: 53.5388
+    longitude: 75.31326
+    population: 5225
+    dem: 92
+    timezone: "Asia/Almaty"
+  - name: "Pavlodar"
+    latitude: 52.28333
+    longitude: 76.96667
+    population: 329002
+    dem: 133
+    timezone: "Asia/Almaty"
+  - name: "Mayqayyng"
+    latitude: 51.45981
+    longitude: 75.80232
+    population: 7695
+    dem: 260
+    timezone: "Asia/Almaty"
+  - name: "Leninskiy"
+    latitude: 52.25346
+    longitude: 76.78211
+    population: 8646
+    dem: 109
+    timezone: "Asia/Almaty"
+  - name: "Kalkaman"
+    latitude: 51.95349
+    longitude: 76.02723
+    population: 5415
+    dem: 122
+    timezone: "Asia/Almaty"
+  - name: "Qashyr"
+    latitude: 53.06649
+    longitude: 76.10489
+    population: 8931
+    dem: 97
+    timezone: "Asia/Almaty"
+  - name: "Irtyshsk"
+    latitude: 53.33365
+    longitude: 75.45775
+    population: 9216
+    dem: 91
+    timezone: "Asia/Almaty"
+  - name: "Aksu"
+    latitude: 52.04023
+    longitude: 76.92748
+    population: 44808
+    dem: 123
+    timezone: "Asia/Almaty"
+  - name: "Ekibastuz"
+    latitude: 51.72371
+    longitude: 75.32287
+    population: 121470
+    dem: 203
+    timezone: "Asia/Almaty"
+  - name: "Bayanaul"
+    latitude: 50.79304
+    longitude: 75.70123
+    population: 5700
+    dem: 474
+    timezone: "Asia/Almaty"
+- name: "Qyzylorda Oblysy"
+  cities:
+  - name: "Zhosaly"
+    latitude: 45.48778
+    longitude: 64.07806
+    population: 20065
+    dem: 100
+    timezone: "Asia/Qyzylorda"
+  - name: "Ayteke Bi"
+    latitude: 45.84607
+    longitude: 62.15264
+    population: 35883
+    dem: 70
+    timezone: "Asia/Qyzylorda"
+  - name: "Yanykurgan"
+    latitude: 43.90652
+    longitude: 67.24637
+    population: 21339
+    dem: 166
+    timezone: "Asia/Qyzylorda"
+  - name: "Terenozek"
+    latitude: 45.05053
+    longitude: 64.98395
+    population: 9661
+    dem: 119
+    timezone: "Asia/Qyzylorda"
+  - name: "Tasboget"
+    latitude: 44.77384
+    longitude: 65.55227
+    population: 16455
+    dem: 129
+    timezone: "Asia/Qyzylorda"
+  - name: "Sekseuil"
+    latitude: 47.09
+    longitude: 61.15194
+    population: 9296
+    dem: 73
+    timezone: "Asia/Qyzylorda"
+  - name: "Kyzylorda"
+    latitude: 44.85278
+    longitude: 65.50917
+    population: 300000
+    dem: 128
+    timezone: "Asia/Qyzylorda"
+  - name: "Qazaly"
+    latitude: 45.76278
+    longitude: 62.1075
+    population: 7686
+    dem: 68
+    timezone: "Asia/Qyzylorda"
+  - name: "Dzhalagash"
+    latitude: 45.08333
+    longitude: 64.66667
+    population: 14226
+    dem: 111
+    timezone: "Asia/Qyzylorda"
+  - name: "Shieli"
+    latitude: 44.16882
+    longitude: 66.73887
+    population: 29832
+    dem: 154
+    timezone: "Asia/Qyzylorda"
+  - name: "Aral"
+    latitude: 46.8
+    longitude: 61.66667
+    population: 33017
+    dem: 57
+    timezone: "Asia/Qyzylorda"
+- name: "Baikonur"
+  cities:
+  - name: "Baikonur"
+    latitude: 45.61667
+    longitude: 63.31667
+    population: 70000
+    elevation: 730
+    dem: 91
+    timezone: "Asia/Qostanay"
+  - name: "Tyuratam"
+    latitude: 45.65005
+    longitude: 63.31163
+    population: 9548
+    dem: 106
+    timezone: "Asia/Qostanay"
+- name: "Almaty"
+  cities:
+  - name: "Almaty"
+    latitude: 43.25667
+    longitude: 76.92861
+    population: 2000900
+    dem: 787
+    timezone: "Asia/Almaty"
+- name: "Zhambyl Oblysy"
+  cities:
+  - name: "Zhangatas"
+    latitude: 43.56222
+    longitude: 69.73428
+    population: 33492
+    dem: 511
+    timezone: "Asia/Almaty"
+  - name: "Taraz"
+    latitude: 42.9
+    longitude: 71.36667
+    population: 358153
+    dem: 623
+    timezone: "Asia/Almaty"
+  - name: "Chu"
+    latitude: 43.60334
+    longitude: 73.75919
+    population: 39785
+    dem: 470
+    timezone: "Asia/Almaty"
+  - name: "Karatau"
+    latitude: 43.17869
+    longitude: 70.46768
+    population: 37881
+    dem: 521
+    timezone: "Asia/Almaty"
+  - name: "Oytal"
+    latitude: 42.90573
+    longitude: 73.26972
+    population: 9821
+    dem: 675
+    timezone: "Asia/Almaty"
+  - name: "Sarykemer"
+    latitude: 43.0
+    longitude: 71.5
+    population: 15132
+    dem: 552
+    timezone: "Asia/Almaty"
+  - name: "Merke"
+    latitude: 42.86976
+    longitude: 73.18463
+    population: 15934
+    dem: 700
+    timezone: "Asia/Almaty"
+  - name: "Lugovoye"
+    latitude: 42.9101
+    longitude: 72.72066
+    population: 13128
+    dem: 712
+    timezone: "Asia/Almaty"
+  - name: "Lugovoy"
+    latitude: 42.94197
+    longitude: 72.76098
+    population: 10422
+    dem: 687
+    timezone: "Asia/Almaty"
+  - name: "Georgiyevka"
+    latitude: 43.03882
+    longitude: 74.71287
+    population: 9821
+    dem: 624
+    timezone: "Asia/Almaty"
+  - name: "Moyynkum"
+    latitude: 44.28461
+    longitude: 72.9392
+    population: 10923
+    dem: 352
+    timezone: "Asia/Almaty"
+- name: "Nur-Sultan"
+  cities:
+  - name: "Nur-Sultan"
+    latitude: 51.1801
+    longitude: 71.44598
+    population: 345604
+    dem: 358
+    timezone: "Asia/Almaty"
+- name: "North Kazakhstan"
+  cities:
+  - name: "Smirnovo"
+    latitude: 54.5148
+    longitude: 69.42732
+    population: 5742
+    dem: 135
+    timezone: "Asia/Almaty"
+  - name: "Sergeyevka"
+    latitude: 53.88139
+    longitude: 67.40882
+    population: 8845
+    dem: 149
+    timezone: "Asia/Almaty"
+  - name: "Petropavl"
+    latitude: 54.86667
+    longitude: 69.15
+    population: 200920
+    dem: 142
+    timezone: "Asia/Almaty"
+  - name: "Kzyltu"
+    latitude: 53.63589
+    longitude: 72.34079
+    population: 6779
+    dem: 135
+    timezone: "Asia/Almaty"
+  - name: "Taiynsha"
+    latitude: 53.84796
+    longitude: 69.76773
+    population: 13148
+    dem: 155
+    timezone: "Asia/Almaty"
+  - name: "Bulayevo"
+    latitude: 54.90596
+    longitude: 70.44155
+    population: 9886
+    dem: 130
+    timezone: "Asia/Almaty"
+  - name: "Burabay"
+    latitude: 53.08382
+    longitude: 70.31379
+    population: 6500
+    dem: 321
+    timezone: "Asia/Almaty"
+  - name: "Bishkul"
+    latitude: 54.77763
+    longitude: 69.09951
+    population: 5423
+    dem: 103
+    timezone: "Asia/Almaty"
+  - name: "Novoishimskiy"
+    latitude: 53.19806
+    longitude: 66.76944
+    population: 6062
+    dem: 184
+    timezone: "Asia/Almaty"
+- name: "Kazakhstan"
+  cities:
+  - name: "Zhumysker"
+    latitude: 49.33333
+    longitude: 49.4
+    population: 6834
+    dem: -1
+    timezone: "Asia/Oral"
+  - name: "Dzhangala"
+    latitude: 49.21667
+    longitude: 50.33333
+    population: 5954
+    dem: -2
+    timezone: "Asia/Oral"
+  - name: "Kokpekty"
+    latitude: 48.75
+    longitude: 82.4
+    population: 5165
+    dem: 514
+    timezone: "Asia/Almaty"
+  - name: "Aksuat"
+    latitude: 48.71667
+    longitude: 83.7
+    population: 6696
+    dem: 534
+    timezone: "Asia/Almaty"
+- name: "Turkistan"
+  cities:
+  - name: "Turar Ryskulov"
+    latitude: 42.5334
+    longitude: 70.3496
+    population: 18421
+    dem: 770
+    timezone: "Asia/Almaty"
+  - name: "Turkestan"
+    latitude: 43.29733
+    longitude: 68.25175
+    population: 97360
+    dem: 214
+    timezone: "Asia/Almaty"
+  - name: "Temirlanovka"
+    latitude: 42.59998
+    longitude: 69.25836
+    population: 12245
+    dem: 291
+    timezone: "Asia/Almaty"
+  - name: "Myrzakent"
+    latitude: 40.66338
+    longitude: 68.5451
+    population: 9752
+    dem: 269
+    timezone: "Asia/Almaty"
+  - name: "Sastobe"
+    latitude: 42.5533
+    longitude: 69.99835
+    population: 6827
+    dem: 559
+    timezone: "Asia/Almaty"
+  - name: "Saryaghash"
+    latitude: 41.46042
+    longitude: 69.16791
+    population: 25139
+    dem: 441
+    timezone: "Asia/Almaty"
+  - name: "Leninskoye"
+    latitude: 41.7564
+    longitude: 69.3839
+    population: 14737
+    dem: 585
+    timezone: "Asia/Almaty"
+  - name: "Lenger"
+    latitude: 42.18152
+    longitude: 69.88582
+    population: 21238
+    dem: 777
+    timezone: "Asia/Almaty"
+  - name: "Asyqata"
+    latitude: 40.8946
+    longitude: 68.3643
+    population: 11378
+    dem: 265
+    timezone: "Asia/Almaty"
+  - name: "Kentau"
+    latitude: 43.51672
+    longitude: 68.50463
+    population: 57408
+    dem: 426
+    timezone: "Asia/Almaty"
+  - name: "Kantagi"
+    latitude: 43.52786
+    longitude: 68.58287
+    population: 10186
+    dem: 470
+    timezone: "Asia/Almaty"
+  - name: "Atakent"
+    latitude: 40.84782
+    longitude: 68.50643
+    population: 12895
+    dem: 263
+    timezone: "Asia/Almaty"
+  - name: "Chulakkurgan"
+    latitude: 43.76453
+    longitude: 69.17856
+    population: 10836
+    dem: 472
+    timezone: "Asia/Almaty"
+  - name: "Chayan"
+    latitude: 43.03399
+    longitude: 69.38048
+    population: 9536
+    dem: 381
+    timezone: "Asia/Almaty"
+  - name: "Chardara"
+    latitude: 41.25832
+    longitude: 67.96991
+    population: 25356
+    dem: 255
+    timezone: "Asia/Almaty"
+  - name: "Belyye Vody"
+    latitude: 42.42193
+    longitude: 69.82709
+    population: 26115
+    dem: 614
+    timezone: "Asia/Almaty"
+  - name: "Ashchysay"
+    latitude: 43.5537
+    longitude: 68.89792
+    population: 5635
+    dem: 816
+    timezone: "Asia/Almaty"
+  - name: "Arys"
+    latitude: 42.43015
+    longitude: 68.8087
+    population: 36285
+    dem: 239
+    timezone: "Asia/Almaty"
+- name: "Aktyubinskaya Oblast"
+  cities:
+  - name: "Shubarshi"
+    latitude: 48.58022
+    longitude: 57.18289
+    population: 8651
+    dem: 183
+    timezone: "Asia/Aqtobe"
+  - name: "Shubarkuduk"
+    latitude: 49.14391
+    longitude: 56.48196
+    population: 11733
+    dem: 191
+    timezone: "Asia/Aqtobe"
+  - name: "Shalqar"
+    latitude: 47.83333
+    longitude: 59.6
+    population: 27399
+    dem: 164
+    timezone: "Asia/Aqtobe"
+  - name: "Kandyagash"
+    latitude: 49.46912
+    longitude: 57.41914
+    population: 28196
+    dem: 294
+    timezone: "Asia/Aqtobe"
+  - name: "Martuk"
+    latitude: 50.74746
+    longitude: 56.50611
+    population: 7756
+    dem: 176
+    timezone: "Asia/Aqtobe"
+  - name: "Khromtau"
+    latitude: 50.25117
+    longitude: 58.44003
+    population: 23715
+    dem: 429
+    timezone: "Asia/Aqtobe"
+  - name: "Embi"
+    latitude: 48.82981
+    longitude: 58.15042
+    population: 18760
+    dem: 233
+    timezone: "Asia/Aqtobe"
+  - name: "Bayganin"
+    latitude: 48.68975
+    longitude: 55.87512
+    population: 7657
+    dem: 198
+    timezone: "Asia/Aqtobe"
+  - name: "Batamshinskiy"
+    latitude: 50.56022
+    longitude: 58.27715
+    population: 5668
+    dem: 426
+    timezone: "Asia/Aqtobe"
+  - name: "Aktobe"
+    latitude: 50.27969
+    longitude: 57.20718
+    population: 262457
+    dem: 210
+    timezone: "Asia/Aqtobe"
+- name: "West Kazakhstan"
+  cities:
+  - name: "Oral"
+    latitude: 51.23333
+    longitude: 51.36667
+    population: 200000
+    dem: 35
+    timezone: "Asia/Oral"
+  - name: "Tasqala"
+    latitude: 51.11073
+    longitude: 50.29454
+    population: 6980
+    dem: 69
+    timezone: "Asia/Oral"
+  - name: "Fedorovka"
+    latitude: 51.22102
+    longitude: 51.95723
+    population: 5338
+    dem: 78
+    timezone: "Asia/Oral"
+  - name: "Zhanibek"
+    latitude: 49.42207
+    longitude: 46.84705
+    population: 8212
+    dem: 29
+    timezone: "Asia/Oral"
+  - name: "Dzhambeyty"
+    latitude: 50.25676
+    longitude: 52.59895
+    population: 6262
+    dem: 30
+    timezone: "Asia/Oral"
+  - name: "Chingirlau"
+    latitude: 51.09878
+    longitude: 54.08426
+    population: 6218
+    dem: 109
+    timezone: "Asia/Oral"
+  - name: "Chapaev"
+    latitude: 50.2
+    longitude: 51.16667
+    population: 6000
+    dem: 7
+    timezone: "Asia/Oral"
+  - name: "Aqsay"
+    latitude: 51.1681
+    longitude: 52.99782
+    population: 34799
+    dem: 65
+    timezone: "Asia/Oral"
+- name: "Qostanay Oblysy"
+  cities:
+  - name: "Dzhetygara"
+    latitude: 52.19019
+    longitude: 61.19894
+    population: 43104
+    dem: 271
+    timezone: "Asia/Qostanay"
+  - name: "Torghay"
+    latitude: 49.63389
+    longitude: 63.49806
+    population: 5277
+    dem: 105
+    timezone: "Asia/Qostanay"
+  - name: "Tobol"
+    latitude: 52.69366
+    longitude: 62.5914
+    population: 7155
+    dem: 207
+    timezone: "Asia/Qostanay"
+  - name: "Rudnyy"
+    latitude: 52.9729
+    longitude: 63.11677
+    population: 124000
+    dem: 167
+    timezone: "Asia/Qostanay"
+  - name: "Qusmuryn"
+    latitude: 52.45107
+    longitude: 64.61977
+    population: 8049
+    dem: 114
+    timezone: "Asia/Qostanay"
+  - name: "Kostanay"
+    latitude: 53.21435
+    longitude: 63.62463
+    population: 210000
+    dem: 167
+    timezone: "Asia/Qostanay"
+  - name: "Qashar"
+    latitude: 53.36799
+    longitude: 62.86839
+    population: 10285
+    dem: 197
+    timezone: "Asia/Qostanay"
+  - name: "Lisakovsk"
+    latitude: 52.54707
+    longitude: 62.49987
+    population: 40000
+    dem: 192
+    timezone: "Asia/Qostanay"
+  - name: "Komsomolets"
+    latitude: 53.75019
+    longitude: 62.0584
+    population: 9838
+    dem: 190
+    timezone: "Asia/Qostanay"
+  - name: "Fyodorovka"
+    latitude: 53.63809
+    longitude: 62.69653
+    population: 8317
+    dem: 196
+    timezone: "Asia/Qostanay"
+  - name: "Borovskoy"
+    latitude: 53.7927
+    longitude: 64.18268
+    population: 9659
+    dem: 175
+    timezone: "Asia/Qostanay"
+  - name: "Arkalyk"
+    latitude: 50.24915
+    longitude: 66.92027
+    population: 42000
+    dem: 349
+    timezone: "Asia/Qostanay"
+- name: "Almaty Oblysy"
+  cities:
+  - name: "Ush-Tyube"
+    latitude: 45.25201
+    longitude: 77.98007
+    population: 20492
+    dem: 430
+    timezone: "Asia/Almaty"
+  - name: "Turgen"
+    latitude: 43.40056
+    longitude: 77.59333
+    population: 13000
+    dem: 971
+    timezone: "Asia/Almaty"
+  - name: "Tekeli"
+    latitude: 44.83322
+    longitude: 78.83089
+    population: 26678
+    dem: 1146
+    timezone: "Asia/Almaty"
+  - name: "Talghar"
+    latitude: 43.30348
+    longitude: 77.24085
+    population: 42194
+    dem: 974
+    timezone: "Asia/Almaty"
+  - name: "Taldykorgan"
+    latitude: 45.01556
+    longitude: 78.37389
+    population: 116558
+    dem: 596
+    timezone: "Asia/Almaty"
+  - name: "Saryozek"
+    latitude: 44.36178
+    longitude: 77.97279
+    population: 13930
+    dem: 932
+    timezone: "Asia/Almaty"
+  - name: "Sarkand"
+    latitude: 45.41126
+    longitude: 79.91545
+    population: 76919
+    dem: 772
+    timezone: "Asia/Almaty"
+  - name: "Kapshagay"
+    latitude: 43.86681
+    longitude: 77.06304
+    population: 42167
+    dem: 497
+    timezone: "Asia/Almaty"
+  - name: "Pervomayka"
+    latitude: 43.37361
+    longitude: 76.94
+    population: 7874
+    dem: 670
+    timezone: "Asia/Almaty"
+  - name: "Zharkent"
+    latitude: 44.1666
+    longitude: 80.00655
+    population: 34422
+    dem: 636
+    timezone: "Asia/Almaty"
+  - name: "Lepsy"
+    latitude: 46.235
+    longitude: 78.94556
+    population: 5350
+    dem: 401
+    timezone: "Asia/Almaty"
+  - name: "Balpyk Bi"
+    latitude: 44.90225
+    longitude: 78.23157
+    population: 11810
+    dem: 584
+    timezone: "Asia/Almaty"
+  - name: "Kegen"
+    latitude: 43.02143
+    longitude: 79.22055
+    population: 9993
+    dem: 1847
+    timezone: "Asia/Almaty"
+  - name: "Esik"
+    latitude: 43.3552
+    longitude: 77.45245
+    population: 32995
+    dem: 1029
+    timezone: "Asia/Almaty"
+  - name: "Otegen Batyra"
+    latitude: 43.41949
+    longitude: 77.0202
+    population: 18864
+    dem: 643
+    timezone: "Asia/Almaty"
+  - name: "Burunday"
+    latitude: 43.35567
+    longitude: 76.85477
+    population: 20996
+    dem: 689
+    timezone: "Asia/Almaty"
+  - name: "Bakanas"
+    latitude: 44.80838
+    longitude: 76.27214
+    population: 6965
+    dem: 395
+    timezone: "Asia/Almaty"
+  - name: "Chemolgan"
+    latitude: 43.37633
+    longitude: 76.62456
+    population: 13616
+    dem: 687
+    timezone: "Asia/Almaty"

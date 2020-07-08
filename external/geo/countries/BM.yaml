@@ -1,0 +1,34 @@
+---
+name: "Bermuda"
+iso: "BM"
+iso3: "BMU"
+code: "060"
+capital: "Hamilton"
+area: 53.0
+population: 65365
+continent: "NA"
+currencyCode: "BMD"
+currencyName: "Dollar"
+phone: "+1-441"
+postalCodeFormat: "@@ ##"
+postalCodeRegex: "^([A-Z]{2}\\d{2})$"
+languages: "en-BM,pt"
+regions:
+- name: "Paget Parish"
+- name: "Southampton Parish"
+- name: "Saint Georges Parish"
+- name: "Devonshire Parish"
+- name: "Smiths Parish"
+- name: "Hamilton"
+  cities:
+  - name: "Hamilton"
+    latitude: 32.2949
+    longitude: -64.78303
+    population: 902
+    dem: 22
+    timezone: "Atlantic/Bermuda"
+- name: "Saint George"
+- name: "Pembroke Parish"
+- name: "Warwick Parish"
+- name: "Sandys Parish"
+- name: "Hamilton"
