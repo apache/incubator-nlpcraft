@@ -625,11 +625,11 @@ class SqlTest {
                   |  order_details
                   |  INNER JOIN orders ON order_details.order_id = orders.order_id
                   |  INNER JOIN products ON order_details.product_id = products.product_id
-                  |  LEFT JOIN suppliers ON products.supplier_id = suppliers.supplier_id
-                  |  LEFT JOIN categories ON products.category_id = categories.category_id
                   |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
                   |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
                   |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |  LEFT JOIN suppliers ON products.supplier_id = suppliers.supplier_id
+                  |  LEFT JOIN categories ON products.category_id = categories.category_id
                   |WHERE
                   |  orders.order_date >= ?
                   |  AND orders.order_date <= ?
@@ -667,13 +667,13 @@ class SqlTest {
                   |  shippers.company_name,
                   |  shippers.phone
                   |FROM
-                  |  products
-                  |  LEFT JOIN categories ON products.category_id = categories.category_id
-                  |  INNER JOIN order_details ON order_details.product_id = products.product_id
+                  |  order_details
                   |  INNER JOIN orders ON order_details.order_id = orders.order_id
+                  |  INNER JOIN products ON order_details.product_id = products.product_id
                   |  LEFT JOIN customers ON orders.customer_id = customers.customer_id
                   |  LEFT JOIN shippers ON orders.ship_via = shippers.shipper_id
                   |  LEFT JOIN employees ON orders.employee_id = employees.employee_id
+                  |  LEFT JOIN categories ON products.category_id = categories.category_id
                   |WHERE
                   |  orders.order_date >= ?
                   |  AND orders.order_date <= ?

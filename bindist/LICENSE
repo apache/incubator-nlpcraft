@@ -266,12 +266,3 @@
                                                                                                        
    Maven dependency: net.sf.extjwnl
    Licensed under BSD license: http://extjwnl.sourceforge.net/license.txt
-
-   Jgrapht
-   -------------
-   a Java library of graph theory data structures and algorithms https://jgrapht.org/
-
-   Maven dependency: org.jgrapht:jgrapht-core
-   Licensed under EPL 2.0 License: https://github.com/jgrapht/jgrapht/wiki/Users%3A-Relicensing
- 
-

@@ -86,7 +86,6 @@
         <commons-lang3.ver>3.9</commons-lang3.ver>
         <commons.validator.ver>1.6</commons.validator.ver>
         <apache.commons.text.ver>1.7</apache.commons.text.ver>
-        <jgrapht.ver>1.4.0</jgrapht.ver>
         <jsoup.ver>1.12.1</jsoup.ver>
         <slf4j.ver>1.7.26</slf4j.ver>
         <scala.logging.ver>3.9.2</scala.logging.ver>
@@ -228,12 +227,6 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${org.antlr4.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jgrapht</groupId>
-                <artifactId>jgrapht-core</artifactId>
-                <version>${jgrapht.ver}</version>
             </dependency>
 
             <dependency>

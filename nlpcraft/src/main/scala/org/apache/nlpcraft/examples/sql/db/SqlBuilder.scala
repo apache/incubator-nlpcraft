@@ -23,8 +23,6 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType._
 import org.apache.nlpcraft.model.tools.sqlgen._
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlSortImpl
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath
-import org.jgrapht.graph.{DefaultEdge, SimpleGraph}
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
@@ -37,28 +35,67 @@ import scala.compat.java8.OptionConverters._
   *  - negation (SQL <> condition),
   *  - LIKE and another functions.
   *
-  *  However, these capabilities can be added relatively easy to this extendable implementation.
+  * However, these capabilities can be added relatively easy to this extendable implementation.
   *
   * @param schema Parsed DB schema to initialize with.
   */
 case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private final val DFLT_LIMIT = 1000
 
-    private case class Edge(from: String, to: String) extends DefaultEdge
-    private case class Key(table: String, column: String)
-
     private val schemaTbls = schema.getTables.asScala.toSeq.sortBy(_.getTable)
     private val schemaTblsByNames = schemaTbls.map(p ⇒ p.getTable → p).toMap
     private val schemaCols = schemaTbls.flatMap(p ⇒ p.getColumns.asScala.map(col ⇒ Key(col.getTable, col.getColumn) → col)).toMap
     private val schemaJoins = schema.getJoins.asScala
 
-    private val schemaPaths = {
-        val g = new SimpleGraph[String, Edge](classOf[Edge])
+    private val g = Graph(schemaJoins.map(j ⇒ Edge(j.getFromTable, j.getToTable)).toSet)
 
-        schemaTbls.foreach(t ⇒ g.addVertex(t.getTable))
-        schemaJoins.foreach(j ⇒ g.addEdge(j.getFromTable, j.getToTable, Edge(j.getFromTable, j.getToTable)))
+    private case class Key(table: String, column: String)
 
-        new DijkstraShortestPath(g)
+    private case class Edge(from: String, to: String)
+
+    private case class Graph(edges: Set[Edge]) {
+        private val allNeighbors: Map[String, Set[String]] =
+            edges.
+                flatMap(e ⇒ Seq(e.from → e.to, e.to → e.from)).
+                groupBy { case (from, _) ⇒ from }.
+                map { case (from, seq) ⇒ from → seq.map { case (_, to) ⇒ to } }.
+                withDefaultValue(Set.empty)
+
+        def bfs(from: String, to: String): Seq[String] = {
+            val visited = mutable.Set[String](from)
+            val queue = mutable.Queue[String](from)
+            val parents = mutable.HashMap.empty[String, String]
+            val path = mutable.ArrayBuffer.empty[String]
+
+            var found = false
+
+            while (queue.nonEmpty && !found) {
+                val parent = queue.dequeue
+                val children = allNeighbors(parent)
+
+                if (children.contains(to)) {
+                    parents += to → parent
+
+                    var n: String = to
+
+                    while (n != null) {
+                        path += n
+
+                        n = parents.get(n).orNull
+                    }
+
+                    found = true
+                }
+                else
+                    for (child ← children if !visited.contains(child)) {
+                        parents += child → parent
+                        visited += child
+                        queue += child
+                    }
+            }
+
+            path.reverse
+        }
     }
 
     private var tbls: Seq[NCSqlTable] = Seq.empty
@@ -67,7 +104,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
     private var sorts: Seq[NCSqlSort] = Seq.empty
     private var freeDateRangeOpt: Option[NCSqlDateRange] = None
     private var limit: Option[NCSqlLimit] = None
-    
+
     /**
       * Makes SQL text fragment for given join type.
       *
@@ -83,7 +120,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
             case _ ⇒ throw new AssertionError(s"Unexpected join type: $clause")
         }
-    
+
     /**
       * Makes SQL join fragment for given tables. It uses tables parameters and information about relations between
       * tables based on schema information.
@@ -101,7 +138,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
                 val refs = names.
                     flatMap(t ⇒ schemaJoins.filter(j ⇒ j.getFromTable == t && names.contains(j.getToTable))).
-                    sortBy(j ⇒ Math.min(names.indexOf(j.getFromTable), names.indexOf(j.getToTable))).
+                    sortBy(_.getFromTable).
                     zipWithIndex.
                     map { case (join, idx) ⇒
                         val fromCols = join.getFromColumns.asScala
@@ -145,7 +182,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                 if (refs.length != names.length - 1)
                     throw new RuntimeException(s"Tables cannot be joined: ${names.mkString(", ")}")
 
-                 refs.mkString(" ")
+                refs.mkString(" ")
         }
     }
 
@@ -203,7 +240,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       * @param col Column element.
       */
     private def isString(col: NCSqlColumn): Boolean = col.getDataType == Types.VARCHAR
-    
+
     /**
       * Extends given columns list, if necessary, by some additional columns, based on schema model
       * configuration and free date column. It can be useful if column list is poor.
@@ -226,7 +263,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
         res
     }
-    
+
     /**
       * Tries to find sort elements if they are not detected explicitly.
       * It attempts to use sort information from limit element if it is defined, or from model configuration
@@ -248,7 +285,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                     ).distinct
             case _ ⇒ sorts.distinct
         }
-    
+
     /**
       * Extends given table list, if necessary, by some additional tables,
       * based on information about relations between model tables.
@@ -265,30 +302,26 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             case _ ⇒
                 // The simple algorithm, which takes into account only FKs between tables.
                 val extra =
-                    ext.combinations(2).flatMap(pair ⇒
-                        schemaPaths.getPath(pair.head.getTable, pair.last.getTable) match {
-                            case null ⇒ Seq.empty
-                            case list ⇒ list.getEdgeList.asScala.flatMap(e ⇒ Seq(e.from, e.to))
-                        }
-                    ).toSeq.distinct.map(schemaTblsByNames)
+                    ext.combinations(2).flatMap(pair ⇒ g.bfs(pair.head.getTable, pair.last.getTable)).
+                        toSeq.distinct.map(schemaTblsByNames)
 
                 if (ext.exists(t ⇒ !extra.contains(t)))
                     throw new RuntimeException(
                         s"Select clause cannot be prepared with given tables set: " +
-                        s"${ext.map(_.getTable).mkString(", ")}"
+                            s"${ext.map(_.getTable).mkString(", ")}"
                     )
 
                 extra
         }
     }
-    
+
     /**
       * Converts limit element to sort.
       *
       * @param l Limit element.
       */
     private def limit2Sort(l: NCSqlLimit): NCSqlSort = NCSqlSortImpl(l.getColumn, l.isAscending)
-    
+
     /**
       * Sorts given extra columns for select list, using the following criteria:
       *  - initially detected columns are more important.
@@ -308,7 +341,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
             else
                 2
         )
-    
+
     /**
       * Tries to find date sql column.
       *
@@ -331,7 +364,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
                 None
         }
-    
+
     /**
       * Extends conditions list by given free data (if defined) and converts conditions to
       * SQL text and parameters list.
@@ -409,7 +442,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
       * @param limit Limit element.
       */
     def withLimit(limit: NCSqlLimit): SqlBuilder = { this.limit = Option(limit); this }
-    
+
     /**
       * Main build method. Builds and returns newly constructed SQL query object.
       */
