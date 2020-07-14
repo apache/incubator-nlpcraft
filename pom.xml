@@ -634,7 +634,7 @@
                                 <exclude>src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4/*</exclude>
                                 <exclude>src/main/resources/opennlp/en-lemmatizer.dict</exclude>
                             </excludes>
-                            <numUnapprovedLicenses>1000000</numUnapprovedLicenses>
+                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
                         </configuration>
                         <executions>
                             <execution>
