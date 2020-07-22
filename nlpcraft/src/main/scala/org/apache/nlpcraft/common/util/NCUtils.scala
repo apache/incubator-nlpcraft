@@ -29,7 +29,7 @@ import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.concurrent.{ExecutorService, TimeUnit}
 import java.util.jar.JarFile
 import java.util.stream.Collectors
-import java.util.zip.{ZipInputStream, GZIPInputStream => GIS, GZIPOutputStream ⇒ GOS}
+import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
 import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
@@ -289,7 +289,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readPath(path: String, enc: String, log: Logger = logger): Iterator[String] =
+    def readPath(path: String, enc: String, log: Logger = logger): List[String] =
         readFile(new File(path), enc, log)
 
     /**
@@ -300,8 +300,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readResource(res: String, enc: String, log: Logger = logger): Iterator[String] =
-        readStream(getStream(res), enc, log)
+    def readResource(res: String, enc: String, log: Logger = logger): List[String] = readStream(getStream(res), enc, log)
 
     /**
       * Reads lines from given file.
@@ -311,7 +310,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readGzipPath(path: String, enc: String, log: Logger = logger): Iterator[String] =
+    def readGzipPath(path: String, enc: String, log: Logger = logger): List[String] =
         readGzipFile(new File(path), enc, log)
 
     /**
@@ -322,22 +321,14 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readFile(f: File, enc: String, log: Logger = logger): Iterator[String] = {
-        var src: Source = null
-
-        try {
-            src = Source.fromFile(f, enc)
-
-            val data = src.getLines().map(p ⇒ p)
-
-            log.trace(s"Loaded file: ${f.getAbsolutePath}")
-
-            data
-        }
+    def readFile(f: File, enc: String, log: Logger = logger): List[String] =
+        try
+            managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
+                getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
         }
-    }
 
     /**
       * Reads lines from given stream.
@@ -347,9 +338,11 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readStream(in: InputStream, enc: String, log: Logger = logger): Iterator[String] =
+    def readStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
         try
-            Source.fromInputStream(in, enc).getLines().map(p ⇒ p)
+            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
+                src.getLines().map(p ⇒ p).toList
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read stream", e)
         }
@@ -363,22 +356,18 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readTextFile(f: File, enc: String, log: Logger = logger): Iterator[String] = {
-        var src: Source = null
-
-        try {
-            src = Source.fromFile(f, enc)
-
-            val data = src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#"))
-
-            log.trace(s"Loaded file: ${f.getAbsolutePath}")
-
-            data
-        }
+    def readTextFile(f: File, enc: String, log: Logger = logger): List[String] =
+        try
+            managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
+                getAndLog(
+                    src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList,
+                    f,
+                    logger
+                )
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
         }
-    }
 
     /**
       * Reads lines from given stream converting to lower case, trimming, and filtering
@@ -389,11 +378,11 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readTextStream(in: InputStream, enc: String, log: Logger = logger): Iterator[String] =
-        try {
-            Source.fromInputStream(in, enc).getLines().map(_.toLowerCase.trim).
-                filter(s ⇒ !s.isEmpty && !s.startsWith("#"))
-        }
+    def readTextStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
+        try
+            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
+                src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read stream", e)
         }
@@ -407,15 +396,15 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readTextGzipFile(f: File, enc: String, log: Logger = logger): Iterator[String] =
-        try {
-            val data = Source.fromInputStream(new GIS(new FileInputStream(f)), enc).getLines().map(_.toLowerCase.trim).
-                filter(s ⇒ !s.isEmpty && !s.startsWith("#"))
-
-            log.trace(s"Loaded file: ${f.getAbsolutePath}")
-
-            data
-        }
+    def readTextGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
+        try
+            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src ⇒
+                getAndLog(
+                    src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList,
+                    f,
+                    log
+                )
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
         }
@@ -429,10 +418,11 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readTextGzipResource(res: String, enc: String, log: Logger = logger): Iterator[String] =
+    def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
         try
-            Source.fromInputStream(new GIS(getStream(res)), enc).getLines().map(_.toLowerCase.trim).
-                filter(s ⇒ !s.isEmpty && !s.startsWith("#"))
+            managed(Source.fromInputStream(new GIS(getStream(res)), enc)) acquireAndGet { src ⇒
+                src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read stream", e)
         }
@@ -446,7 +436,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readTextPath(path: String, enc: String, log: Logger = logger): Iterator[String] =
+    def readTextPath(path: String, enc: String, log: Logger = logger): List[String] =
         readTextFile(new File(path), enc, log)
 
     /**
@@ -458,7 +448,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readTextResource(res: String, enc: String, log: Logger = logger): Iterator[String] =
+    def readTextResource(res: String, enc: String, log: Logger = logger): List[String] =
         readTextStream(getStream(res), enc, log)
 
     /**
@@ -470,19 +460,8 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readTextGzipPath(path: String, enc: String, log: Logger = logger): Iterator[String] =
+    def readTextGzipPath(path: String, enc: String, log: Logger = logger): List[String] =
         readTextGzipFile(new File(path), enc, log)
-
-    /**
-      *
-      * @param path Folder path to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    @throws[NCE]
-    def readTextFolder(path: String, enc: String, log: Logger = logger): Iterator[String] =
-        (for (file ← new File(path).listFiles()) yield
-            readTextFile(file, enc, logger)).toIterator.flatten
 
     /**
       * Converts given name into properly capitalized first and last name.
@@ -566,14 +545,11 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readGzipFile(f: File, enc: String, log: Logger = logger): Iterator[String] =
-        try {
-            val data = Source.fromInputStream(new GIS(new FileInputStream(f)), enc).getLines().map(p ⇒ p)
-
-            log.trace(s"Loaded file: ${f.getAbsolutePath}")
-
-            data
-        }
+    def readGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
+        try
+            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src ⇒
+                getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
         }
@@ -586,9 +562,11 @@ object NCUtils extends LazyLogging {
       * @return
       */
     @throws[NCE]
-    def readGzipResource(in: InputStream, enc: String, log: Logger = logger): Iterator[String] =
+    def readGzipResource(in: InputStream, enc: String, log: Logger = logger): List[String] =
         try
-            Source.fromInputStream(new GIS(in), enc).getLines().map(p ⇒ p)
+            managed(Source.fromInputStream(new GIS(in), enc)) acquireAndGet { src ⇒
+                src.getLines().map(p ⇒ p).toList
+            }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read stream", e)
         }
@@ -600,8 +578,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger.
       */
     @throws[NCE]
-    def readPathBytes(path: String, log: Logger = logger): Array[Byte] =
-        readFileBytes(new File(path), log)
+    def readPathBytes(path: String, log: Logger = logger): Array[Byte] = readFileBytes(new File(path), log)
 
     /**
       * Reads bytes from given file.
@@ -618,9 +595,7 @@ object NCUtils extends LazyLogging {
                 in.read(arr)
             }
 
-            logger.trace(s"File read: $f")
-
-            arr
+            getAndLog(arr, f, log)
         }
         catch {
             case e: IOException ⇒ throw new NCE(s"Error reading file: $f", e)
@@ -628,38 +603,18 @@ object NCUtils extends LazyLogging {
     }
 
     /**
-      * Reads bytes from given file.
       *
-      * @param f File to read from.
-      * @param log Logger to use.
+      * @param data
+      * @param f
+      * @param log
+      * @tparam T
+      * @return
       */
-    @throws[NCE]
-    def readBinaryFile(f: File, log: Logger = logger): Array[Byte] = {
-        var src: Source = null
+    private def getAndLog[T](data: T, f: File, log: Logger = logger): T = {
+        log.trace(s"Loaded file: ${f.getAbsolutePath}")
 
-        try {
-            src = Source.fromFile(f, "ISO-8859-1")
-
-            val data = src.map(_.toByte).toArray
-
-            log.trace(s"Loaded file: ${f.getAbsolutePath}")
-
-            data
-        }
-        catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
-        }
+        data
     }
-
-    /**
-      * Reads bytes from given file.
-      *
-      * @param path File path to read from.
-      * @param log Logger to use.
-      */
-    @throws[NCE]
-    def readBinaryPath(path: String, log: Logger = logger): Array[Byte] =
-        readBinaryFile(new File(path), log)
 
     /**
       * Gzip file.
