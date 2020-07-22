@@ -17,7 +17,8 @@
 
 To install dependencies:  
 `$ bin/install_dependencies.sh`  
-To start server:  
+For Windows install please read WINDOWS_SETUP.md
+To start server (is not intendeed for production):    
 `$ bin/start_server.sh`  
 
 ### Routes
@@ -36,4 +37,4 @@ Endpoint returns object with elements `[word, total score, FastText score, Bert 
 
 Simple request with single sentence could be made with a script, e.g.  
 `$ bin/suggest.sh "what is the chance of rain tomorrow?" 5`  
-Would find suggestions for word "rain" in this sentence.
+Would find suggestions for word "rain" in this sentence.    
