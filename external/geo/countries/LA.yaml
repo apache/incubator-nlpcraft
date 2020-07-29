@@ -1,0 +1,178 @@
+---
+name: "Laos"
+iso: "LA"
+iso3: "LAO"
+code: "418"
+capital: "Vientiane"
+area: 236800.0
+population: 6368162
+continent: "AS"
+currencyCode: "LAK"
+currencyName: "Kip"
+phone: "856"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "lo,fr,en"
+neighbours: "CN,MM,KH,TH,VN"
+regions:
+- name: "Vientiane Province"
+  cities:
+  - name: "Vangviang"
+    latitude: 18.9235
+    longitude: 102.44784
+    population: 25000
+    dem: 243
+    timezone: "Asia/Vientiane"
+  - name: "Muang Phon-Hong"
+    latitude: 18.4953
+    longitude: 102.4153
+    population: 10112
+    dem: 187
+    timezone: "Asia/Vientiane"
+- name: "Khammouan"
+  cities:
+  - name: "Thakhek"
+    latitude: 17.41027
+    longitude: 104.83068
+    population: 85000
+    dem: 176
+    timezone: "Asia/Vientiane"
+- name: "Houaphan"
+  cities:
+  - name: "Xam Nua"
+    latitude: 20.4164
+    longitude: 104.045
+    population: 38992
+    dem: 967
+    timezone: "Asia/Vientiane"
+- name: "Khoueng Phongsali"
+  cities:
+  - name: "Phongsali"
+    latitude: 21.6808
+    longitude: 102.1003
+    population: 13500
+    dem: 1344
+    timezone: "Asia/Vientiane"
+- name: "Vientiane Prefecture"
+  cities:
+  - name: "Vientiane"
+    latitude: 17.96667
+    longitude: 102.6
+    population: 196731
+    dem: 174
+    timezone: "Asia/Vientiane"
+- name: "Luang Prabang Province"
+  cities:
+  - name: "Luang Prabang"
+    latitude: 19.88601
+    longitude: 102.13503
+    population: 47378
+    dem: 300
+    timezone: "Asia/Vientiane"
+- name: "Bolikhamxai"
+  cities:
+  - name: "Pakxan"
+    latitude: 18.3942
+    longitude: 103.6611
+    population: 21967
+    dem: 147
+    timezone: "Asia/Vientiane"
+- name: "Khoueng Xekong"
+  cities:
+  - name: "Sekong"
+    latitude: 15.34582
+    longitude: 106.72368
+    population: 0
+    dem: 148
+    timezone: "Asia/Vientiane"
+- name: "Xiangkhouang"
+  cities:
+  - name: "Muang Phonsavan"
+    latitude: 19.4494
+    longitude: 103.1917
+    population: 37507
+    dem: 1119
+    timezone: "Asia/Vientiane"
+- name: "Khoueng Savannakhet"
+  cities:
+  - name: "Savannakhet"
+    latitude: 16.5703
+    longitude: 104.7622
+    population: 66553
+    dem: 141
+    timezone: "Asia/Vientiane"
+- name: "Champasak"
+  cities:
+  - name: "Pakse"
+    latitude: 15.12022
+    longitude: 105.79898
+    population: 88332
+    dem: 105
+    timezone: "Asia/Vientiane"
+  - name: "Muang Khong"
+    latitude: 14.11785
+    longitude: 105.85469
+    population: 15000
+    dem: 83
+    timezone: "Asia/Vientiane"
+  - name: "Champasak"
+    latitude: 14.89204
+    longitude: 105.87787
+    population: 12994
+    dem: 101
+    timezone: "Asia/Vientiane"
+- name: "Xaisomboun Province"
+- name: "Attapu"
+  cities:
+  - name: "Attapeu"
+    latitude: 14.81071
+    longitude: 106.83184
+    population: 4297
+    dem: 100
+    timezone: "Asia/Vientiane"
+- name: "Khoueng Bokeo"
+  cities:
+  - name: "Ban Houayxay"
+    latitude: 20.27
+    longitude: 100.4178
+    population: 12500
+    dem: 399
+    timezone: "Asia/Vientiane"
+  - name: "Ban Houakhoua"
+    latitude: 20.2467
+    longitude: 100.45401
+    population: 15500
+    dem: 361
+    timezone: "Asia/Vientiane"
+- name: "Louangnamtha"
+  cities:
+  - name: "Luang Namtha"
+    latitude: 20.9486
+    longitude: 101.40188
+    population: 3225
+    dem: 551
+    timezone: "Asia/Vientiane"
+- name: "Salavan"
+  cities:
+  - name: "Salavan"
+    latitude: 15.71652
+    longitude: 106.41744
+    population: 5521
+    dem: 183
+    timezone: "Asia/Vientiane"
+- name: "Xaignabouli"
+  cities:
+  - name: "Sainyabuli"
+    latitude: 19.25756
+    longitude: 101.71032
+    population: 13500
+    dem: 292
+    timezone: "Asia/Vientiane"
+- name: "Khoueng Oudomxai"
+  cities:
+  - name: "Muang Xay"
+    latitude: 20.69229
+    longitude: 101.98368
+    population: 25000
+    dem: 652
+    timezone: "Asia/Vientiane"

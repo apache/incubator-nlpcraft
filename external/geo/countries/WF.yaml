@@ -1,0 +1,40 @@
+---
+name: "Wallis and Futuna"
+iso: "WF"
+iso3: "WLF"
+code: "876"
+capital: "Mata Utu"
+area: 274.0
+population: 16025
+continent: "OC"
+currencyCode: "XPF"
+currencyName: "Franc"
+phone: "681"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(986\\d{2})$"
+languages: "wls,fud,fr-WF"
+regions:
+- name: "Uvea"
+  cities:
+  - name: "Mata-Utu"
+    latitude: -13.28163
+    longitude: -176.17453
+    population: 1200
+    dem: 15
+    timezone: "Pacific/Wallis"
+- name: "Sigave"
+  cities:
+  - name: "Leava"
+    latitude: -14.29333
+    longitude: -178.15833
+    population: 480
+    dem: 7
+    timezone: "Pacific/Wallis"
+- name: "Alo"
+  cities:
+  - name: "Alo"
+    latitude: -14.31096
+    longitude: -178.11094
+    population: 239
+    dem: 10
+    timezone: "Pacific/Wallis"

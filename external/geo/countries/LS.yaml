@@ -1,0 +1,109 @@
+---
+name: "Lesotho"
+iso: "LS"
+iso3: "LSO"
+code: "426"
+capital: "Maseru"
+area: 30355.0
+population: 1919552
+continent: "AF"
+currencyCode: "LSL"
+currencyName: "Loti"
+phone: "266"
+postalCodeFormat: "###"
+postalCodeRegex: "^(\\d{3})$"
+languages: "en-LS,st,zu,xh"
+neighbours: "ZA"
+regions:
+- name: "Leribe District"
+  cities:
+  - name: "Maputsoe"
+    latitude: -28.8866
+    longitude: 27.89915
+    population: 32117
+    dem: 1583
+    timezone: "Africa/Maseru"
+  - name: "Leribe"
+    latitude: -28.87185
+    longitude: 28.04501
+    population: 47675
+    dem: 1645
+    timezone: "Africa/Maseru"
+- name: "Butha-Buthe"
+  cities:
+  - name: "Butha-Buthe"
+    latitude: -28.76659
+    longitude: 28.24937
+    population: 16330
+    dem: 1716
+    timezone: "Africa/Maseru"
+- name: "Maseru"
+  cities:
+  - name: "Nako"
+    latitude: -29.61667
+    longitude: 27.76667
+    population: 13146
+    dem: 1818
+    timezone: "Africa/Maseru"
+  - name: "Maseru"
+    latitude: -29.31667
+    longitude: 27.48333
+    population: 118355
+    dem: 1552
+    timezone: "Africa/Maseru"
+- name: "Qachas Nek"
+  cities:
+  - name: "Qachas Nek"
+    latitude: -30.11537
+    longitude: 28.68936
+    population: 25573
+    dem: 1974
+    timezone: "Africa/Maseru"
+- name: "Thaba-Tseka"
+  cities:
+  - name: "Thaba-Tseka"
+    latitude: -29.52204
+    longitude: 28.6084
+    population: 5423
+    dem: 2230
+    timezone: "Africa/Maseru"
+- name: "Berea"
+  cities:
+  - name: "Teyateyaneng"
+    latitude: -29.14719
+    longitude: 27.74895
+    population: 5115
+    dem: 1693
+    timezone: "Africa/Maseru"
+- name: "Mafeteng District"
+  cities:
+  - name: "Mafeteng"
+    latitude: -29.82299
+    longitude: 27.23744
+    population: 57059
+    dem: 1669
+    timezone: "Africa/Maseru"
+- name: "Mokhotlong"
+  cities:
+  - name: "Mokhotlong"
+    latitude: -29.28939
+    longitude: 29.06751
+    population: 8809
+    dem: 2201
+    timezone: "Africa/Maseru"
+- name: "Mohales Hoek District"
+  cities:
+  - name: "Mohales Hoek"
+    latitude: -30.15137
+    longitude: 27.47691
+    population: 28310
+    dem: 1598
+    timezone: "Africa/Maseru"
+- name: "Quthing"
+  cities:
+  - name: "Quthing"
+    latitude: -30.40001
+    longitude: 27.70027
+    population: 24130
+    dem: 1515
+    timezone: "Africa/Maseru"

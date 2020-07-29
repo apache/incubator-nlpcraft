@@ -1,0 +1,32 @@
+---
+name: "Saint Pierre and Miquelon"
+iso: "PM"
+iso3: "SPM"
+code: "666"
+capital: "Saint-Pierre"
+area: 242.0
+population: 7012
+continent: "NA"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "508"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(97500)$"
+languages: "fr-PM"
+regions:
+- name: "Commune de Saint-Pierre"
+  cities:
+  - name: "Saint-Pierre"
+    latitude: 46.77914
+    longitude: -56.1773
+    population: 6200
+    dem: 30
+    timezone: "America/Miquelon"
+- name: "Miquelon-Langlade"
+  cities:
+  - name: "Miquelon"
+    latitude: 47.0975
+    longitude: -56.38139
+    population: 1141
+    dem: 4
+    timezone: "America/Miquelon"

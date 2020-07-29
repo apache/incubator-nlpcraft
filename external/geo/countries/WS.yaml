@@ -1,0 +1,101 @@
+---
+name: "Samoa"
+iso: "WS"
+iso3: "WSM"
+code: "882"
+capital: "Apia"
+area: 2944.0
+population: 192001
+continent: "OC"
+currencyCode: "WST"
+currencyName: "Tala"
+phone: "685"
+languages: "sm,en-WS"
+regions:
+- name: "Palauli"
+  cities:
+  - name: "Vailoa"
+    latitude: -13.75551
+    longitude: -172.30698
+    population: 769
+    dem: 11
+    timezone: "Pacific/Apia"
+- name: "Aiga-i-le-Tai"
+  cities:
+  - name: "Mulifanua"
+    latitude: -13.83183
+    longitude: -172.03602
+    population: 4508
+    dem: 13
+    timezone: "Pacific/Apia"
+- name: "Gagaemauga"
+- name: "Vaisigano"
+  cities:
+  - name: "Asau"
+    latitude: -13.51963
+    longitude: -172.63784
+    population: 6643
+    dem: 13
+    timezone: "Pacific/Apia"
+- name: "Tuamasaga"
+  cities:
+  - name: "Apia"
+    latitude: -13.83333
+    longitude: -171.76666
+    population: 40407
+    dem: 9
+    timezone: "Pacific/Apia"
+  - name: "Afega"
+    latitude: -13.79726
+    longitude: -171.85308
+    population: 1895
+    dem: 11
+    timezone: "Pacific/Apia"
+- name: "Gagaifomauga"
+  cities:
+  - name: "Safotu"
+    latitude: -13.45132
+    longitude: -172.40177
+    population: 1207
+    dem: 15
+    timezone: "Pacific/Apia"
+- name: "Aana"
+  cities:
+  - name: "Leulumoega"
+    latitude: -13.82297
+    longitude: -171.96127
+    population: 1458
+    dem: 11
+    timezone: "Pacific/Apia"
+- name: "Faasaleleaga"
+  cities:
+  - name: "Safotulafai"
+    latitude: -13.67147
+    longitude: -172.17768
+    population: 0
+    dem: 10
+    timezone: "Pacific/Apia"
+- name: "Atua"
+  cities:
+  - name: "Lufilufi"
+    latitude: -13.87449
+    longitude: -171.59857
+    population: 1074
+    dem: 20
+    timezone: "Pacific/Apia"
+- name: "Vaa-o-Fonoti"
+  cities:
+  - name: "Samamea"
+    latitude: -13.93375
+    longitude: -171.53122
+    population: 89
+    dem: 13
+    timezone: "Pacific/Apia"
+- name: "Satupaitea"
+  cities:
+  - name: "Satupa`itea"
+    latitude: -13.76593
+    longitude: -172.32686
+    population: 0
+    dem: 11
+    timezone: "Pacific/Apia"

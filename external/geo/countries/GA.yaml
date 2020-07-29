@@ -1,0 +1,153 @@
+---
+name: "Gabon"
+iso: "GA"
+iso3: "GAB"
+code: "266"
+capital: "Libreville"
+area: 267667.0
+population: 1545255
+continent: "AF"
+currencyCode: "XAF"
+currencyName: "Franc"
+phone: "241"
+languages: "fr-GA"
+neighbours: "CM,GQ,CG"
+regions:
+- name: "Province de lOgooue-Maritime"
+  cities:
+  - name: "Port-Gentil"
+    latitude: -0.71933
+    longitude: 8.78151
+    population: 109163
+    dem: 4
+    timezone: "Africa/Libreville"
+  - name: "Gamba"
+    latitude: -2.65
+    longitude: 10.0
+    population: 9928
+    dem: 43
+    timezone: "Africa/Libreville"
+- name: "Province du Haut-Ogooue"
+  cities:
+  - name: "Okondja"
+    latitude: -0.65487
+    longitude: 13.67533
+    population: 7155
+    dem: 347
+    timezone: "Africa/Libreville"
+  - name: "Mounana"
+    latitude: -1.4085
+    longitude: 13.15857
+    population: 8780
+    dem: 459
+    timezone: "Africa/Libreville"
+  - name: "Moanda"
+    latitude: -1.56652
+    longitude: 13.1987
+    population: 30151
+    dem: 416
+    timezone: "Africa/Libreville"
+  - name: "Franceville"
+    latitude: -1.63333
+    longitude: 13.58357
+    population: 42967
+    dem: 405
+    timezone: "Africa/Libreville"
+- name: "Province de la Nyanga"
+  cities:
+  - name: "Tchibanga"
+    latitude: -2.93323
+    longitude: 10.98178
+    population: 19365
+    dem: 49
+    timezone: "Africa/Libreville"
+- name: "Province de la Ngounie"
+  cities:
+  - name: "Ndende"
+    latitude: -2.40077
+    longitude: 11.35813
+    population: 6200
+    dem: 130
+    timezone: "Africa/Libreville"
+  - name: "Mouila"
+    latitude: -1.86846
+    longitude: 11.05594
+    population: 22469
+    dem: 92
+    timezone: "Africa/Libreville"
+  - name: "Fougamou"
+    latitude: -1.21544
+    longitude: 10.58378
+    population: 5649
+    dem: 93
+    timezone: "Africa/Libreville"
+- name: "Province de lOgooue-Lolo"
+  cities:
+  - name: "Lastoursville"
+    latitude: -0.81742
+    longitude: 12.70818
+    population: 8340
+    dem: 251
+    timezone: "Africa/Libreville"
+  - name: "Koulamoutou"
+    latitude: -1.13667
+    longitude: 12.46399
+    population: 16222
+    dem: 282
+    timezone: "Africa/Libreville"
+- name: "Estuaire"
+  cities:
+  - name: "Ntoum"
+    latitude: 0.39051
+    longitude: 9.76096
+    population: 8569
+    dem: 11
+    timezone: "Africa/Libreville"
+  - name: "Libreville"
+    latitude: 0.39241
+    longitude: 9.45356
+    population: 578156
+    dem: 8
+    timezone: "Africa/Libreville"
+- name: "Province du Woleu-Ntem"
+  cities:
+  - name: "Oyem"
+    latitude: 1.5995
+    longitude: 11.57933
+    population: 30870
+    dem: 656
+    timezone: "Africa/Libreville"
+  - name: "Bitam"
+    latitude: 2.07597
+    longitude: 11.50065
+    population: 10297
+    dem: 575
+    timezone: "Africa/Libreville"
+- name: "Province du Moyen-Ogooue"
+  cities:
+  - name: "Ndjole"
+    latitude: -0.17827
+    longitude: 10.76488
+    population: 5098
+    dem: 53
+    timezone: "Africa/Libreville"
+  - name: "Lambarene"
+    latitude: -0.7001
+    longitude: 10.24055
+    population: 20714
+    dem: 26
+    timezone: "Africa/Libreville"
+- name: "Province de lOgooue-Ivindo"
+  cities:
+  - name: "Makokou"
+    latitude: 0.57381
+    longitude: 12.86419
+    population: 13571
+    dem: 489
+    timezone: "Africa/Libreville"
+  - name: "Booue"
+    latitude: -0.09207
+    longitude: 11.93846
+    population: 5787
+    dem: 217
+    timezone: "Africa/Libreville"

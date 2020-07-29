@@ -201,77 +201,24 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   ========================================================================
+Files under 'nlpcraft/src/main/resources/moby' folder are public domain. See
+https://en.wikipedia.org/wiki/Moby_Project for more information.
 
-   File org.apache.nlpcraft.common.util.NCIdGenerator.java is licensed
-   under MIT license:
+File org.apache.nlpcraft.common.util.NCIdGenerator.java is based on https://github.com/peet/hashids.java
+and licensed under MIT license:
 
-   Permission is hereby granted, free of charge, to any person
-   obtaining a copy of this software and associated documentation
-   files (the "Software"), to deal in the Software without
-   restriction, including without limitation the rights to use,
-   copy, modify, merge, publish, distribute, sublicense, and/or sell
-   copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following
-   conditions:
+    Copyright 2012 Ivan Akimov
 
-   The above copyright notice and this permission notice shall be
-   included in all copies or substantial portions of the Software.
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-   HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-   OTHER DEALINGS IN THE SOFTWARE.
+    The above copyright notice and this permission notice shall be included in all copies or substantial
+    portions of the Software.
 
-   Binary Distribution
-   ===================
-   This NLPCraft distribution bundles 3rd party binary dependencies that are        
-   licensed as outlined below. See the following link on ASF 3rd party license      
-   compatibility: https://www.apache.org/legal/resolved.html
-
-   Google Protobuf
-   ---------------
-   Protocol buffers are a language-neutral, platform-neutral extensible mechanism for
-   serializing structured data.
-                                                                                                       
-   Maven dependency: com.google.protobuf:protobuf-java
-   Licensed under BSD License: https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
-
-   ANTLR
-   -----
-   ANTLR (ANother Tool for Language Recognition) is a powerful parser generator for
-   reading, processing, executing, or translating structured text or binary files.
-   It's widely used to build languages, tools, and frameworks. From a grammar,
-   ANTLR generates a parser that can build and walk parse trees.
-                                                                                                       
-   Maven dependency: org.antlr:antlr4-runtime
-   Licensed under BSD license: https://www.antlr.org/license.html
-
-   MChange c3p0
-   ------------
-   c3p0 is an easy-to-use library for making traditional JDBC drivers "enterprise-ready" by
-   augmenting them with functionality defined by the jdbc3 spec and the optional extensions to jdbc2.
-                                                                                                       
-   Maven dependency: com.mchange:c3p0
-   Licensed under EPL license: http://www.eclipse.org/legal/epl-v10.html
-
-   extJWNL
-   -------
-   extJWNL (Extended Java WordNet Library) is a Java API for creating, reading and updating
-   dictionaries in WordNet format.
-                                                                                                       
-   Maven dependency: net.sf.extjwnl
-   Licensed under BSD license: http://extjwnl.sourceforge.net/license.txt
-
-   Jgrapht
-   -------------
-   a Java library of graph theory data structures and algorithms https://jgrapht.org/
-
-   Maven dependency: org.jgrapht:jgrapht-core
-   Licensed under EPL 2.0 License: https://github.com/jgrapht/jgrapht/wiki/Users%3A-Relicensing
- 
-
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+    TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+    CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.

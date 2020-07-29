@@ -1,0 +1,127 @@
+---
+name: "Anguilla"
+iso: "AI"
+iso3: "AIA"
+code: "660"
+capital: "The Valley"
+area: 102.0
+population: 13254
+continent: "NA"
+currencyCode: "XCD"
+currencyName: "Dollar"
+phone: "+1-264"
+languages: "en-AI"
+regions:
+- name: "West End"
+  cities:
+  - name: "West End Village"
+    latitude: 18.17191
+    longitude: -63.14941
+    population: 0
+    dem: 23
+    timezone: "America/Anguilla"
+- name: "Stoney Ground"
+  cities:
+  - name: "Stoney Ground"
+    latitude: 18.22026
+    longitude: -63.04607
+    population: 0
+    dem: 26
+    timezone: "America/Anguilla"
+- name: "North Side"
+  cities:
+  - name: "North Side"
+    latitude: 18.22919
+    longitude: -63.04401
+    population: 0
+    dem: 37
+    timezone: "America/Anguilla"
+- name: "East End"
+  cities:
+  - name: "East End Village"
+    latitude: 18.23333
+    longitude: -63.0
+    population: 0
+    dem: 6
+    timezone: "America/Anguilla"
+- name: "North Hill"
+  cities:
+  - name: "North Hill Village"
+    latitude: 18.20542
+    longitude: -63.07847
+    population: 0
+    dem: 36
+    timezone: "America/Anguilla"
+- name: "George Hill"
+  cities:
+  - name: "George Hill"
+    latitude: 18.19939
+    longitude: -63.0665
+    population: 0
+    dem: 30
+    timezone: "America/Anguilla"
+- name: "The Quarter"
+  cities:
+  - name: "The Quarter"
+    latitude: 18.20799
+    longitude: -63.04178
+    population: 0
+    dem: 40
+    timezone: "America/Anguilla"
+- name: "The Valley"
+  cities:
+  - name: "The Valley"
+    latitude: 18.21704
+    longitude: -63.05783
+    population: 2035
+    elevation: 7
+    dem: 19
+    timezone: "America/Anguilla"
+- name: "Sandy Hill"
+  cities:
+  - name: "Sandy Hill"
+    latitude: 18.22104
+    longitude: -63.01329
+    population: 0
+    dem: 18
+    timezone: "America/Anguilla"
+- name: "The Farrington"
+  cities:
+  - name: "Farrington"
+    latitude: 18.215
+    longitude: -63.02238
+    population: 0
+    dem: 19
+    timezone: "America/Anguilla"
+- name: "Island Harbour"
+  cities:
+  - name: "Island Harbour"
+    latitude: 18.25601
+    longitude: -63.0102
+    population: 0
+    dem: 11
+    timezone: "America/Anguilla"
+- name: "South Hill"
+  cities:
+  - name: "South Hill Village"
+    latitude: 18.19201
+    longitude: -63.08779
+    population: 0
+    dem: 40
+    timezone: "America/Anguilla"
+- name: "Sandy Ground"
+  cities:
+  - name: "Sandy Ground Village"
+    latitude: 18.20118
+    longitude: -63.08998
+    population: 274
+    dem: 4
+    timezone: "America/Anguilla"
+- name: "Blowing Point"
+  cities:
+  - name: "Blowing Point Village"
+    latitude: 18.17648
+    longitude: -63.09375
+    population: 942
+    dem: 10
+    timezone: "America/Anguilla"

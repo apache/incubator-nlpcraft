@@ -1,0 +1,659 @@
+---
+name: "Cameroon"
+iso: "CM"
+iso3: "CMR"
+code: "120"
+capital: "Yaounde"
+area: 475440.0
+population: 19294149
+continent: "AF"
+currencyCode: "XAF"
+currencyName: "Franc"
+phone: "237"
+languages: "en-CM,fr-CM"
+neighbours: "TD,CF,GA,GQ,CG,NG"
+regions:
+- name: "South Region"
+  cities:
+  - name: "Sangmelima"
+    latitude: 2.93333
+    longitude: 11.98333
+    population: 54251
+    dem: 675
+    timezone: "Africa/Douala"
+  - name: "Lolodorf"
+    latitude: 3.23333
+    longitude: 10.73333
+    population: 22252
+    dem: 467
+    timezone: "Africa/Douala"
+  - name: "Kribi"
+    latitude: 2.93725
+    longitude: 9.90765
+    population: 55224
+    dem: 12
+    timezone: "Africa/Douala"
+  - name: "Ebolowa"
+    latitude: 2.9
+    longitude: 11.15
+    population: 87875
+    dem: 583
+    timezone: "Africa/Douala"
+  - name: "Ambam"
+    latitude: 2.38333
+    longitude: 11.28333
+    population: 8476
+    dem: 570
+    timezone: "Africa/Douala"
+  - name: "Akom II"
+    latitude: 2.78333
+    longitude: 10.56667
+    population: 9709
+    dem: 507
+    timezone: "Africa/Douala"
+- name: "West Region"
+  cities:
+  - name: "Tonga"
+    latitude: 4.96667
+    longitude: 10.7
+    population: 16036
+    dem: 809
+    timezone: "Africa/Douala"
+  - name: "Mbouda"
+    latitude: 5.62611
+    longitude: 10.25421
+    population: 111320
+    dem: 1416
+    timezone: "Africa/Douala"
+  - name: "Foumbot"
+    latitude: 5.50803
+    longitude: 10.6325
+    population: 84065
+    dem: 1054
+    timezone: "Africa/Douala"
+  - name: "Foumban"
+    latitude: 5.72662
+    longitude: 10.89865
+    population: 92673
+    dem: 1179
+    timezone: "Africa/Douala"
+  - name: "Dschang"
+    latitude: 5.44397
+    longitude: 10.05332
+    population: 96112
+    dem: 1345
+    timezone: "Africa/Douala"
+  - name: "Bazou"
+    latitude: 5.06001
+    longitude: 10.46751
+    population: 13058
+    dem: 1206
+    timezone: "Africa/Douala"
+  - name: "Bansoa"
+    latitude: 5.44836
+    longitude: 10.31355
+    population: 7560
+    dem: 1483
+    timezone: "Africa/Douala"
+  - name: "Ngou"
+    latitude: 5.19685
+    longitude: 10.38595
+    population: 7560
+    dem: 1441
+    timezone: "Africa/Douala"
+  - name: "Bangangte"
+    latitude: 5.14079
+    longitude: 10.52535
+    population: 65385
+    dem: 1337
+    timezone: "Africa/Douala"
+  - name: "Bandjoun"
+    latitude: 5.37568
+    longitude: 10.41326
+    population: 6872
+    dem: 1529
+    timezone: "Africa/Douala"
+  - name: "Bana"
+    latitude: 5.14655
+    longitude: 10.27545
+    population: 5727
+    dem: 1415
+    timezone: "Africa/Douala"
+  - name: "Bamendjou"
+    latitude: 5.38988
+    longitude: 10.33014
+    population: 6643
+    dem: 1604
+    timezone: "Africa/Douala"
+  - name: "Bafoussam"
+    latitude: 5.47775
+    longitude: 10.41759
+    population: 290768
+    dem: 1438
+    timezone: "Africa/Douala"
+  - name: "Bafang"
+    latitude: 5.15705
+    longitude: 10.1771
+    population: 80688
+    dem: 1179
+    timezone: "Africa/Douala"
+- name: "North Region"
+  cities:
+  - name: "Tchollire"
+    latitude: 8.4022
+    longitude: 14.1698
+    population: 23187
+    dem: 382
+    timezone: "Africa/Douala"
+  - name: "Rey Bouba"
+    latitude: 8.6724
+    longitude: 14.1786
+    population: 11454
+    dem: 235
+    timezone: "Africa/Douala"
+  - name: "Poli"
+    latitude: 8.4756
+    longitude: 13.24097
+    population: 5727
+    dem: 477
+    timezone: "Africa/Douala"
+  - name: "Pitoa"
+    latitude: 9.3839
+    longitude: 13.50231
+    population: 11454
+    dem: 187
+    timezone: "Africa/Douala"
+  - name: "Lagdo"
+    latitude: 9.05828
+    longitude: 13.66605
+    population: 24596
+    dem: 234
+    timezone: "Africa/Douala"
+  - name: "Guider"
+    latitude: 9.9333
+    longitude: 13.94671
+    population: 84647
+    dem: 346
+    timezone: "Africa/Douala"
+  - name: "Garoua"
+    latitude: 9.30143
+    longitude: 13.39771
+    population: 436899
+    dem: 199
+    timezone: "Africa/Douala"
+- name: "East Region"
+  cities:
+  - name: "Yokadouma"
+    latitude: 3.51667
+    longitude: 15.05
+    population: 13287
+    dem: 523
+    timezone: "Africa/Douala"
+  - name: "Ndelele"
+    latitude: 4.04065
+    longitude: 14.92501
+    population: 5040
+    dem: 605
+    timezone: "Africa/Douala"
+  - name: "Garoua Boulai"
+    latitude: 5.88333
+    longitude: 14.55
+    population: 46615
+    dem: 1034
+    timezone: "Africa/Douala"
+  - name: "Doume"
+    latitude: 4.23333
+    longitude: 13.45
+    population: 5581
+    dem: 630
+    timezone: "Africa/Douala"
+  - name: "Dimako"
+    latitude: 4.38333
+    longitude: 13.56667
+    population: 8476
+    dem: 649
+    timezone: "Africa/Douala"
+  - name: "Betare Oya"
+    latitude: 5.6
+    longitude: 14.08333
+    population: 11866
+    dem: 768
+    timezone: "Africa/Douala"
+  - name: "Bertoua"
+    latitude: 4.57728
+    longitude: 13.68459
+    population: 218111
+    dem: 665
+    timezone: "Africa/Douala"
+  - name: "Belabo"
+    latitude: 4.93333
+    longitude: 13.3
+    population: 22553
+    dem: 614
+    timezone: "Africa/Douala"
+  - name: "Batouri"
+    latitude: 4.43333
+    longitude: 14.36667
+    population: 43821
+    dem: 631
+    timezone: "Africa/Douala"
+  - name: "Abong Mbang"
+    latitude: 3.98333
+    longitude: 13.18333
+    population: 14661
+    dem: 694
+    timezone: "Africa/Douala"
+- name: "Adamaoua Region"
+  cities:
+  - name: "Tibati"
+    latitude: 6.46504
+    longitude: 12.62843
+    population: 35589
+    dem: 871
+    timezone: "Africa/Douala"
+  - name: "Ngaoundere"
+    latitude: 7.32765
+    longitude: 13.58472
+    population: 231357
+    dem: 1128
+    timezone: "Africa/Douala"
+  - name: "Meiganga"
+    latitude: 6.51667
+    longitude: 14.3
+    population: 80100
+    dem: 970
+    timezone: "Africa/Douala"
+  - name: "Kontcha"
+    latitude: 7.96667
+    longitude: 12.23333
+    population: 8018
+    dem: 425
+    timezone: "Africa/Douala"
+  - name: "Bankim"
+    latitude: 6.08303
+    longitude: 11.4905
+    population: 5727
+    dem: 731
+    timezone: "Africa/Douala"
+  - name: "Belel"
+    latitude: 7.05
+    longitude: 14.43333
+    population: 6831
+    dem: 1448
+    timezone: "Africa/Douala"
+  - name: "Banyo"
+    latitude: 6.75
+    longitude: 11.81667
+    population: 40798
+    dem: 1077
+    timezone: "Africa/Douala"
+- name: "North-West Region"
+  cities:
+  - name: "Wum"
+    latitude: 6.38333
+    longitude: 10.06667
+    population: 68836
+    dem: 1055
+    timezone: "Africa/Douala"
+  - name: "Njinikom"
+    latitude: 6.23333
+    longitude: 10.28333
+    population: 8247
+    dem: 1315
+    timezone: "Africa/Douala"
+  - name: "Mme-Bafumen"
+    latitude: 6.33333
+    longitude: 10.23333
+    population: 6149
+    dem: 1403
+    timezone: "Africa/Douala"
+  - name: "Mbengwi"
+    latitude: 6.01667
+    longitude: 10.0
+    population: 9734
+    dem: 1222
+    timezone: "Africa/Douala"
+  - name: "Kumbo"
+    latitude: 6.2
+    longitude: 10.66667
+    population: 53970
+    dem: 1687
+    timezone: "Africa/Douala"
+  - name: "Jakiri"
+    latitude: 6.1
+    longitude: 10.65
+    population: 5269
+    dem: 1609
+    timezone: "Africa/Douala"
+  - name: "Fundong"
+    latitude: 6.25
+    longitude: 10.26667
+    population: 43509
+    dem: 1610
+    timezone: "Africa/Douala"
+  - name: "Belo"
+    latitude: 6.13333
+    longitude: 10.25
+    population: 8705
+    dem: 1138
+    timezone: "Africa/Douala"
+  - name: "Batibo"
+    latitude: 5.8358
+    longitude: 9.8553
+    population: 9163
+    dem: 1090
+    timezone: "Africa/Douala"
+  - name: "Bamenda"
+    latitude: 5.9597
+    longitude: 10.14597
+    population: 393835
+    dem: 1258
+    timezone: "Africa/Douala"
+  - name: "Bali"
+    latitude: 5.88737
+    longitude: 10.01176
+    population: 72606
+    dem: 1355
+    timezone: "Africa/Douala"
+  - name: "Babanki"
+    latitude: 6.11667
+    longitude: 10.25
+    population: 9851
+    dem: 1156
+    timezone: "Africa/Douala"
+- name: "Far North Region"
+  cities:
+  - name: "Yagoua"
+    latitude: 10.34107
+    longitude: 15.23288
+    population: 80235
+    dem: 336
+    timezone: "Africa/Douala"
+  - name: "Mora"
+    latitude: 11.04611
+    longitude: 14.14011
+    population: 55216
+    dem: 460
+    timezone: "Africa/Douala"
+  - name: "Mokolo"
+    latitude: 10.74244
+    longitude: 13.80227
+    population: 275239
+    dem: 813
+    timezone: "Africa/Douala"
+  - name: "Mindif"
+    latitude: 10.39757
+    longitude: 14.43626
+    population: 10538
+    dem: 396
+    timezone: "Africa/Douala"
+  - name: "Maroua"
+    latitude: 10.59095
+    longitude: 14.31593
+    population: 319941
+    dem: 406
+    timezone: "Africa/Douala"
+  - name: "Makary"
+    latitude: 12.57535
+    longitude: 14.45483
+    population: 7331
+    dem: 295
+    timezone: "Africa/Douala"
+  - name: "Kousseri"
+    latitude: 12.07689
+    longitude: 15.03063
+    population: 435547
+    dem: 300
+    timezone: "Africa/Douala"
+  - name: "Kaele"
+    latitude: 10.10917
+    longitude: 14.45083
+    population: 25199
+    dem: 373
+    timezone: "Africa/Douala"
+  - name: "Bogo"
+    latitude: 10.7336
+    longitude: 14.60928
+    population: 16952
+    dem: 343
+    timezone: "Africa/Douala"
+- name: "South-West Region"
+  cities:
+  - name: "Tiko"
+    latitude: 4.075
+    longitude: 9.36005
+    population: 55914
+    dem: 33
+    timezone: "Africa/Douala"
+  - name: "Nguti"
+    latitude: 5.3299
+    longitude: 9.4185
+    population: 5498
+    dem: 228
+    timezone: "Africa/Douala"
+  - name: "Muyuka"
+    latitude: 4.2898
+    longitude: 9.4103
+    population: 31384
+    dem: 41
+    timezone: "Africa/Douala"
+  - name: "Mutengene"
+    latitude: 4.0913
+    longitude: 9.3144
+    population: 47478
+    dem: 241
+    timezone: "Africa/Douala"
+  - name: "Mundemba"
+    latitude: 4.9479
+    longitude: 8.8724
+    population: 11912
+    dem: 111
+    timezone: "Africa/Douala"
+  - name: "Mamfe"
+    latitude: 5.75132
+    longitude: 9.3137
+    population: 19472
+    dem: 93
+    timezone: "Africa/Douala"
+  - name: "Limbe"
+    latitude: 4.02356
+    longitude: 9.20607
+    population: 72106
+    dem: 74
+    timezone: "Africa/Douala"
+  - name: "Kumba"
+    latitude: 4.6363
+    longitude: 9.4469
+    population: 144413
+    dem: 244
+    timezone: "Africa/Douala"
+  - name: "Fontem"
+    latitude: 5.4685
+    longitude: 9.8818
+    population: 42689
+    dem: 902
+    timezone: "Africa/Douala"
+  - name: "Buea"
+    latitude: 4.15342
+    longitude: 9.24231
+    population: 47300
+    dem: 825
+    timezone: "Africa/Douala"
+  - name: "Bekondo"
+    latitude: 4.6819
+    longitude: 9.3214
+    population: 7331
+    dem: 382
+    timezone: "Africa/Douala"
+  - name: "Bamusso"
+    latitude: 4.4591
+    longitude: 8.9027
+    population: 24741
+    dem: 8
+    timezone: "Africa/Douala"
+- name: "Centre Region"
+  cities:
+  - name: "Yoko"
+    latitude: 5.53333
+    longitude: 12.31667
+    population: 5269
+    dem: 992
+    timezone: "Africa/Douala"
+  - name: "Yaounde"
+    latitude: 3.86667
+    longitude: 11.51667
+    population: 1299369
+    dem: 726
+    timezone: "Africa/Douala"
+  - name: "Saa"
+    latitude: 4.36667
+    longitude: 11.45
+    population: 5727
+    dem: 512
+    timezone: "Africa/Douala"
+  - name: "Okola"
+    latitude: 4.01667
+    longitude: 11.38333
+    population: 5390
+    dem: 652
+    timezone: "Africa/Douala"
+  - name: "Obala"
+    latitude: 4.16667
+    longitude: 11.53333
+    population: 30012
+    dem: 542
+    timezone: "Africa/Douala"
+  - name: "Ntui"
+    latitude: 4.45
+    longitude: 11.63333
+    population: 6185
+    dem: 526
+    timezone: "Africa/Douala"
+  - name: "Nkoteng"
+    latitude: 4.51667
+    longitude: 12.03333
+    population: 50334
+    dem: 583
+    timezone: "Africa/Douala"
+  - name: "Ndikinimeki"
+    latitude: 4.76667
+    longitude: 10.83333
+    population: 8247
+    dem: 803
+    timezone: "Africa/Douala"
+  - name: "Nanga Eboko"
+    latitude: 4.68333
+    longitude: 12.36667
+    population: 29909
+    dem: 615
+    timezone: "Africa/Douala"
+  - name: "Mbandjok"
+    latitude: 4.45
+    longitude: 11.9
+    population: 26947
+    dem: 548
+    timezone: "Africa/Douala"
+  - name: "Mbalmayo"
+    latitude: 3.51667
+    longitude: 11.5
+    population: 80206
+    dem: 663
+    timezone: "Africa/Douala"
+  - name: "Eseka"
+    latitude: 3.65
+    longitude: 10.76667
+    population: 22221
+    dem: 247
+    timezone: "Africa/Douala"
+  - name: "Bafia"
+    latitude: 4.75
+    longitude: 11.23333
+    population: 69270
+    dem: 480
+    timezone: "Africa/Douala"
+  - name: "Akonolinga"
+    latitude: 3.76667
+    longitude: 12.25
+    population: 17181
+    dem: 643
+    timezone: "Africa/Douala"
+- name: "Littoral Region"
+  cities:
+  - name: "Yabassi"
+    latitude: 4.45697
+    longitude: 9.96822
+    population: 7560
+    dem: 49
+    timezone: "Africa/Douala"
+  - name: "Penja"
+    latitude: 4.63911
+    longitude: 9.67987
+    population: 28406
+    dem: 148
+    timezone: "Africa/Douala"
+  - name: "Nkongsamba"
+    latitude: 4.9547
+    longitude: 9.9404
+    population: 117063
+    dem: 844
+    timezone: "Africa/Douala"
+  - name: "Ngambe"
+    latitude: 4.23343
+    longitude: 10.61532
+    population: 6414
+    dem: 575
+    timezone: "Africa/Douala"
+  - name: "Melong"
+    latitude: 5.12181
+    longitude: 9.96143
+    population: 37086
+    dem: 792
+    timezone: "Africa/Douala"
+  - name: "Mbanga"
+    latitude: 4.5016
+    longitude: 9.5671
+    population: 42590
+    dem: 115
+    timezone: "Africa/Douala"
+  - name: "Manjo"
+    latitude: 4.8428
+    longitude: 9.8217
+    population: 37661
+    dem: 526
+    timezone: "Africa/Douala"
+  - name: "Loum"
+    latitude: 4.7182
+    longitude: 9.7351
+    population: 177429
+    dem: 235
+    timezone: "Africa/Douala"
+  - name: "Edea"
+    latitude: 3.8
+    longitude: 10.13333
+    population: 203149
+    dem: 27
+    timezone: "Africa/Douala"
+  - name: "Douala"
+    latitude: 4.04827
+    longitude: 9.70428
+    population: 1338082
+    dem: 19
+    timezone: "Africa/Douala"
+  - name: "Dizangue"
+    latitude: 3.76667
+    longitude: 9.98333
+    population: 19243
+    dem: 61
+    timezone: "Africa/Douala"
+  - name: "Bonaberi"
+    latitude: 4.07142
+    longitude: 9.68177
+    population: 8091
+    dem: 1
+    timezone: "Africa/Douala"
+  - name: "Ndom"
+    latitude: 4.4978
+    longitude: 9.5628
+    population: 5498
+    dem: 123
+    timezone: "Africa/Douala"

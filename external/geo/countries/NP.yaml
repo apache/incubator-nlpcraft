@@ -1,0 +1,332 @@
+---
+name: "Nepal"
+iso: "NP"
+iso3: "NPL"
+code: "524"
+capital: "Kathmandu"
+area: 140800.0
+population: 28951852
+continent: "AS"
+currencyCode: "NPR"
+currencyName: "Rupee"
+phone: "977"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ne,en"
+neighbours: "CN,IN"
+regions:
+- name: "Madhya Pashchimanchal"
+  cities:
+  - name: "Tulsipur"
+    latitude: 28.13099
+    longitude: 82.29726
+    population: 39058
+    dem: 675
+    timezone: "Asia/Kathmandu"
+  - name: "Jumla"
+    latitude: 29.27472
+    longitude: 82.18383
+    population: 9073
+    dem: 2354
+    timezone: "Asia/Kathmandu"
+  - name: "Gulariya"
+    latitude: 28.2058
+    longitude: 81.34532
+    population: 53107
+    dem: 141
+    timezone: "Asia/Kathmandu"
+  - name: "Dailekh"
+    latitude: 28.84434
+    longitude: 81.71011
+    population: 20908
+    dem: 1307
+    timezone: "Asia/Kathmandu"
+  - name: "Birendranagar"
+    latitude: 28.60194
+    longitude: 81.63389
+    population: 31381
+    dem: 736
+    timezone: "Asia/Kathmandu"
+  - name: "Nepalgunj"
+    latitude: 28.05
+    longitude: 81.61667
+    population: 64400
+    dem: 150
+    timezone: "Asia/Kathmandu"
+- name: "Pashchimanchal"
+  cities:
+  - name: "Walin"
+    latitude: 27.9837
+    longitude: 83.75925
+    population: 21867
+    dem: 722
+    timezone: "Asia/Kathmandu"
+  - name: "Tansen"
+    latitude: 27.86731
+    longitude: 83.5467
+    population: 23693
+    dem: 1303
+    timezone: "Asia/Kathmandu"
+  - name: "Pokhara"
+    latitude: 28.26689
+    longitude: 83.96851
+    population: 200000
+    dem: 1008
+    timezone: "Asia/Kathmandu"
+  - name: "Darchula"
+    latitude: 29.83
+    longitude: 80.55
+    population: 18317
+    dem: 1923
+    timezone: "Asia/Kathmandu"
+  - name: "Butwal"
+    latitude: 27.70055
+    longitude: 83.44836
+    population: 91733
+    dem: 322
+    timezone: "Asia/Kathmandu"
+  - name: "Siddharthanagar"
+    latitude: 27.5
+    longitude: 83.45
+    population: 63367
+    dem: 107
+    timezone: "Asia/Kathmandu"
+  - name: "Baglung"
+    latitude: 28.27189
+    longitude: 83.58975
+    population: 23296
+    dem: 1212
+    timezone: "Asia/Kathmandu"
+  - name: "Bhattarai Danda"
+    latitude: 27.88333
+    longitude: 83.93333
+    population: 5510
+    elevation: 479
+    dem: 436
+    timezone: "Asia/Kathmandu"
+- name: "Nepal"
+  cities:
+  - name: "Besisahar"
+    latitude: 28.23417
+    longitude: 82.41278
+    population: 5427
+    elevation: 760
+    dem: 1334
+    timezone: "Asia/Kathmandu"
+- name: "Sudur Pashchimanchal"
+  cities:
+  - name: "Tikapur"
+    latitude: 28.52823
+    longitude: 81.11798
+    population: 44758
+    dem: 168
+    timezone: "Asia/Kathmandu"
+  - name: "Mahendranagar"
+    latitude: 28.96399
+    longitude: 80.17715
+    population: 88381
+    dem: 199
+    timezone: "Asia/Kathmandu"
+  - name: "Dhangadhi"
+    latitude: 28.70137
+    longitude: 80.58975
+    population: 92294
+    dem: 176
+    timezone: "Asia/Kathmandu"
+  - name: "Dadeldhura"
+    latitude: 29.29842
+    longitude: 80.58059
+    population: 19014
+    dem: 1814
+    timezone: "Asia/Kathmandu"
+  - name: "Dipayal"
+    latitude: 29.26083
+    longitude: 80.94
+    population: 23416
+    dem: 565
+    timezone: "Asia/Kathmandu"
+- name: "Madhyamanchal"
+  cities:
+  - name: "Patan"
+    latitude: 27.67658
+    longitude: 85.31417
+    population: 183310
+    dem: 1334
+    timezone: "Asia/Kathmandu"
+  - name: "Panauti"
+    latitude: 27.58453
+    longitude: 85.51484
+    population: 27602
+    dem: 1455
+    timezone: "Asia/Kathmandu"
+  - name: "Malangawa"
+    latitude: 26.85658
+    longitude: 85.5594
+    population: 20284
+    dem: 89
+    timezone: "Asia/Kathmandu"
+  - name: "Kirtipur"
+    latitude: 27.67872
+    longitude: 85.2775
+    population: 44632
+    dem: 1408
+    timezone: "Asia/Kathmandu"
+  - name: "Kathmandu"
+    latitude: 27.70169
+    longitude: 85.3206
+    population: 1442271
+    elevation: 1317
+    dem: 1296
+    timezone: "Asia/Kathmandu"
+  - name: "Janakpur"
+    latitude: 26.72882
+    longitude: 85.92628
+    population: 93767
+    dem: 83
+    timezone: "Asia/Kathmandu"
+  - name: "Jaleshwar"
+    latitude: 26.64921
+    longitude: 85.80017
+    population: 23573
+    dem: 72
+    timezone: "Asia/Kathmandu"
+  - name: "Hetauda"
+    latitude: 27.42839
+    longitude: 85.03219
+    population: 84775
+    dem: 467
+    timezone: "Asia/Kathmandu"
+  - name: "Gaur"
+    latitude: 26.76448
+    longitude: 85.27841
+    population: 27325
+    dem: 76
+    timezone: "Asia/Kathmandu"
+  - name: "Dhulikhel"
+    latitude: 27.6221
+    longitude: 85.54281
+    population: 16263
+    dem: 1484
+    timezone: "Asia/Kathmandu"
+  - name: "Birganj"
+    latitude: 27.01709
+    longitude: 84.8808
+    population: 133238
+    dem: 79
+    timezone: "Asia/Kathmandu"
+  - name: "Bharatpur"
+    latitude: 27.6768
+    longitude: 84.43589
+    population: 107157
+    dem: 212
+    timezone: "Asia/Kathmandu"
+  - name: "Banepa"
+    latitude: 27.63245
+    longitude: 85.52192
+    population: 17153
+    dem: 1477
+    timezone: "Asia/Kathmandu"
+  - name: "Panauti"
+    latitude: 27.58466
+    longitude: 85.52122
+    population: 46595
+    dem: 1440
+    timezone: "Asia/Kathmandu"
+  - name: "kankrabari Dovan"
+    latitude: 27.62881
+    longitude: 85.45934
+    population: 10000
+    dem: 1703
+    timezone: "Asia/Kathmandu"
+  - name: "Madhyapur Thimi"
+    latitude: 27.68056
+    longitude: 85.3875
+    population: 83036
+    dem: 1341
+    timezone: "Asia/Kathmandu"
+  - name: "Hari Bdr Tamang House"
+    latitude: 27.6289
+    longitude: 85.45893
+    population: 10000
+    dem: 1703
+    timezone: "Asia/Kathmandu"
+- name: "Purwanchal"
+  cities:
+  - name: "Siraha"
+    latitude: 26.65422
+    longitude: 86.20795
+    population: 24657
+    dem: 82
+    timezone: "Asia/Kathmandu"
+  - name: "Rajbiraj"
+    latitude: 26.53968
+    longitude: 86.74796
+    population: 33061
+    dem: 89
+    timezone: "Asia/Kathmandu"
+  - name: "Lobujya"
+    latitude: 27.95
+    longitude: 86.81667
+    population: 8767
+    dem: 4972
+    timezone: "Asia/Kathmandu"
+  - name: "Lahan"
+    latitude: 26.72022
+    longitude: 86.48258
+    population: 31495
+    dem: 123
+    timezone: "Asia/Kathmandu"
+  - name: "Khanbari"
+    latitude: 27.37604
+    longitude: 87.20767
+    population: 22903
+    dem: 892
+    timezone: "Asia/Kathmandu"
+  - name: "Titahari"
+    latitude: 26.66371
+    longitude: 87.27403
+    population: 47984
+    dem: 118
+    timezone: "Asia/Kathmandu"
+  - name: "Ilam"
+    latitude: 26.90943
+    longitude: 87.92824
+    population: 17491
+    dem: 1218
+    timezone: "Asia/Kathmandu"
+  - name: "Dharan"
+    latitude: 26.81436
+    longitude: 87.27972
+    population: 108600
+    dem: 375
+    timezone: "Asia/Kathmandu"
+  - name: "Dhankuta"
+    latitude: 26.98333
+    longitude: 87.33333
+    population: 22084
+    dem: 1188
+    timezone: "Asia/Kathmandu"
+  - name: "Biratnagar"
+    latitude: 26.45505
+    longitude: 87.27007
+    population: 182324
+    dem: 74
+    timezone: "Asia/Kathmandu"
+  - name: "Bhadrapur"
+    latitude: 26.54404
+    longitude: 88.09436
+    population: 19523
+    dem: 91
+    timezone: "Asia/Kathmandu"
+  - name: "Inaruwa"
+    latitude: 26.60675
+    longitude: 87.1478
+    population: 70093
+    dem: 87
+    timezone: "Asia/Kathmandu"
+  - name: "Triyuga"
+    latitude: 26.7919
+    longitude: 86.699
+    population: 71405
+    dem: 165
+    timezone: "Asia/Kathmandu"

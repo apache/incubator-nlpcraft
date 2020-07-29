@@ -1,0 +1,2955 @@
+---
+name: "Netherlands"
+iso: "NL"
+iso3: "NLD"
+code: "528"
+capital: "Amsterdam"
+area: 41526.0
+population: 16645000
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "31"
+postalCodeFormat: "#### @@"
+postalCodeRegex: "^(\\d{4}[A-Z]{2})$"
+languages: "nl-NL,fy-NL"
+neighbours: "DE,BE"
+regions:
+- name: "Provincie Overijssel"
+  cities:
+  - name: "Zwolle"
+    latitude: 52.5125
+    longitude: 6.09444
+    population: 111805
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Wijhe"
+    latitude: 52.38667
+    longitude: 6.13472
+    population: 5640
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Wierden"
+    latitude: 52.35917
+    longitude: 6.59306
+    population: 23244
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Vroomshoop"
+    latitude: 52.46083
+    longitude: 6.56528
+    population: 8480
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Vriezenveen"
+    latitude: 52.40833
+    longitude: 6.62222
+    population: 12310
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Tubbergen"
+    latitude: 52.4075
+    longitude: 6.78472
+    population: 20334
+    dem: 25
+    timezone: "Europe/Amsterdam"
+  - name: "Steenwijk"
+    latitude: 52.7875
+    longitude: 6.12083
+    population: 17138
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Staphorst"
+    latitude: 52.645
+    longitude: 6.21111
+    population: 15765
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Raalte"
+    latitude: 52.38583
+    longitude: 6.275
+    population: 20015
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Ommen"
+    latitude: 52.52083
+    longitude: 6.42083
+    population: 11820
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Oldenzaal"
+    latitude: 52.31333
+    longitude: 6.92917
+    population: 31410
+    dem: 48
+    timezone: "Europe/Amsterdam"
+  - name: "Losser"
+    latitude: 52.26083
+    longitude: 7.00417
+    population: 22431
+    dem: 37
+    timezone: "Europe/Amsterdam"
+  - name: "Kampen"
+    latitude: 52.555
+    longitude: 5.91111
+    population: 48980
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Hengelo"
+    latitude: 52.26583
+    longitude: 6.79306
+    population: 80809
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Heino"
+    latitude: 52.43661
+    longitude: 6.23282
+    population: 6459
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Hasselt"
+    latitude: 52.59267
+    longitude: 6.09527
+    population: 6959
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Hardenberg"
+    latitude: 52.57583
+    longitude: 6.61944
+    population: 57909
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Haaksbergen"
+    latitude: 52.15667
+    longitude: 6.73889
+    population: 24137
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Goor"
+    latitude: 52.23333
+    longitude: 6.58611
+    population: 11460
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Frankhuis"
+    latitude: 52.525
+    longitude: 6.06806
+    population: 6145
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Enschede"
+    latitude: 52.21833
+    longitude: 6.89583
+    population: 153655
+    dem: 45
+    timezone: "Europe/Amsterdam"
+  - name: "Deventer"
+    latitude: 52.255
+    longitude: 6.16389
+    population: 97331
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Delden"
+    latitude: 52.26
+    longitude: 6.71111
+    population: 6920
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Dalfsen"
+    latitude: 52.51167
+    longitude: 6.25694
+    population: 26575
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Borne"
+    latitude: 52.30136
+    longitude: 6.7482
+    population: 20550
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Almelo"
+    latitude: 52.35667
+    longitude: 6.6625
+    population: 72725
+    dem: 15
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Utrecht"
+  cities:
+  - name: "Zeist"
+    latitude: 52.09
+    longitude: 5.23333
+    population: 60949
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Woudenberg"
+    latitude: 52.08083
+    longitude: 5.41667
+    population: 11305
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Woerden"
+    latitude: 52.085
+    longitude: 4.88333
+    population: 48431
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Wilnis"
+    latitude: 52.19667
+    longitude: 4.89722
+    population: 5715
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Wijk bij Duurstede"
+    latitude: 51.97417
+    longitude: 5.34167
+    population: 17465
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Vleuten"
+    latitude: 52.10583
+    longitude: 5.01528
+    population: 6945
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Vianen"
+    latitude: 51.9925
+    longitude: 5.09167
+    population: 19931
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Veldhuizen"
+    latitude: 52.07537
+    longitude: 5.01234
+    population: 9460
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Veenendaal"
+    latitude: 52.02863
+    longitude: 5.55891
+    population: 61271
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Utrecht"
+    latitude: 52.09083
+    longitude: 5.12222
+    population: 290529
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Soest"
+    latitude: 52.17333
+    longitude: 5.29167
+    population: 45021
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Rhenen"
+    latitude: 51.95917
+    longitude: 5.56806
+    population: 18061
+    dem: 31
+    timezone: "Europe/Amsterdam"
+  - name: "Oudewater"
+    latitude: 52.025
+    longitude: 4.86806
+    population: 9836
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Odijk"
+    latitude: 52.0525
+    longitude: 5.23611
+    population: 5480
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Nieuwegein"
+    latitude: 52.02917
+    longitude: 5.08056
+    population: 61489
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Montfoort"
+    latitude: 52.04583
+    longitude: 4.95278
+    population: 5500
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Mijdrecht"
+    latitude: 52.20667
+    longitude: 4.8625
+    population: 15230
+    dem: -3
+    timezone: "Europe/Amsterdam"
+  - name: "Maarssen"
+    latitude: 52.13917
+    longitude: 5.04167
+    population: 39675
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Lopik"
+    latitude: 51.9725
+    longitude: 4.94861
+    population: 14013
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Leusden"
+    latitude: 52.1325
+    longitude: 5.43194
+    population: 29215
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Leersum"
+    latitude: 52.01167
+    longitude: 5.42778
+    population: 6385
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Leerdam"
+    latitude: 51.89333
+    longitude: 5.09167
+    population: 20758
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "IJsselstein"
+    latitude: 52.02
+    longitude: 5.04306
+    population: 33886
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Hoogland"
+    latitude: 52.1825
+    longitude: 5.37361
+    population: 10587
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Driebergen-Rijsenburg"
+    latitude: 52.05333
+    longitude: 5.28056
+    population: 18553
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Doorn"
+    latitude: 52.03343
+    longitude: 5.34571
+    population: 10330
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "De Bilt"
+    latitude: 52.11
+    longitude: 5.18056
+    population: 8945
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Bunnik"
+    latitude: 52.06667
+    longitude: 5.19861
+    population: 6315
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Breukelen"
+    latitude: 52.17417
+    longitude: 5.00139
+    population: 14498
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Baarn"
+    latitude: 52.21167
+    longitude: 5.2875
+    population: 24584
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Amersfoort"
+    latitude: 52.155
+    longitude: 5.3875
+    population: 139914
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Amerongen"
+    latitude: 52.0025
+    longitude: 5.45972
+    population: 5085
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Abcoude"
+    latitude: 52.2725
+    longitude: 4.96944
+    population: 6920
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Lunetten"
+    latitude: 52.06178
+    longitude: 5.13474
+    population: 11679
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Randenbroek"
+    latitude: 52.14863
+    longitude: 5.4012
+    population: 7131
+    dem: 6
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Gelderland"
+  cities:
+  - name: "Zutphen"
+    latitude: 52.13833
+    longitude: 6.20139
+    population: 36188
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Zevenaar"
+    latitude: 51.93
+    longitude: 6.07083
+    population: 26063
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Zelhem"
+    latitude: 52.00667
+    longitude: 6.34861
+    population: 5760
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Zaltbommel"
+    latitude: 51.81
+    longitude: 5.24444
+    population: 26383
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Wisch"
+    latitude: 51.92648
+    longitude: 6.41705
+    population: 19496
+    dem: 15
+    timezone: "Europe/Amsterdam"
+  - name: "Winterswijk"
+    latitude: 51.9725
+    longitude: 6.71944
+    population: 29623
+    dem: 38
+    timezone: "Europe/Amsterdam"
+  - name: "Wijchen"
+    latitude: 51.80917
+    longitude: 5.725
+    population: 32693
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Westervoort"
+    latitude: 51.95583
+    longitude: 5.97222
+    population: 5635
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Warnsveld"
+    latitude: 52.1375
+    longitude: 6.23056
+    population: 9200
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Wageningen"
+    latitude: 51.97
+    longitude: 5.66667
+    population: 35433
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Voorthuizen"
+    latitude: 52.18667
+    longitude: 5.60556
+    population: 9710
+    dem: 15
+    timezone: "Europe/Amsterdam"
+  - name: "Velp"
+    latitude: 51.995
+    longitude: 5.97361
+    population: 17669
+    dem: 20
+    timezone: "Europe/Amsterdam"
+  - name: "Varsseveld"
+    latitude: 51.94333
+    longitude: 6.45833
+    population: 5450
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Vaassen"
+    latitude: 52.28583
+    longitude: 5.96667
+    population: 12719
+    dem: 15
+    timezone: "Europe/Amsterdam"
+  - name: "Twello"
+    latitude: 52.23667
+    longitude: 6.10278
+    population: 13500
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Tiel"
+    latitude: 51.88667
+    longitude: 5.42917
+    population: 40702
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Scherpenzeel"
+    latitude: 52.08
+    longitude: 5.48889
+    population: 8820
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Ruurlo"
+    latitude: 52.08833
+    longitude: 6.45
+    population: 5940
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Rheden"
+    latitude: 52.005
+    longitude: 6.02917
+    population: 7400
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Renkum"
+    latitude: 51.97667
+    longitude: 5.73333
+    population: 9421
+    dem: 22
+    timezone: "Europe/Amsterdam"
+  - name: "Putten"
+    latitude: 52.25917
+    longitude: 5.60694
+    population: 23168
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Orden"
+    latitude: 52.20113
+    longitude: 5.93417
+    population: 6385
+    dem: 25
+    timezone: "Europe/Amsterdam"
+  - name: "Opheusden"
+    latitude: 51.93167
+    longitude: 5.63194
+    population: 5460
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Oosterbeek"
+    latitude: 51.98583
+    longitude: 5.84583
+    population: 11138
+    dem: 44
+    timezone: "Europe/Amsterdam"
+  - name: "Nunspeet"
+    latitude: 52.37917
+    longitude: 5.78611
+    population: 19496
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Nijmegen"
+    latitude: 51.8425
+    longitude: 5.85278
+    population: 158732
+    dem: 25
+    timezone: "Europe/Amsterdam"
+  - name: "Nijkerk"
+    latitude: 52.22
+    longitude: 5.48611
+    population: 38335
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Neede"
+    latitude: 52.13417
+    longitude: 6.61389
+    population: 7730
+    dem: 20
+    timezone: "Europe/Amsterdam"
+  - name: "Lunteren"
+    latitude: 52.085
+    longitude: 5.62222
+    population: 12510
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Lochem"
+    latitude: 52.15917
+    longitude: 6.41111
+    population: 12360
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "Lindenholt"
+    latitude: 51.8327
+    longitude: 5.7934
+    population: 16121
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Lichtenvoorde"
+    latitude: 51.98667
+    longitude: 6.56667
+    population: 19590
+    dem: 22
+    timezone: "Europe/Amsterdam"
+  - name: "Lent"
+    latitude: 51.86167
+    longitude: 5.86667
+    population: 9160
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Leesten"
+    latitude: 52.1279
+    longitude: 6.23217
+    population: 10000
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Kerkdriel"
+    latitude: 51.77167
+    longitude: 5.33472
+    population: 6580
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Hengstdal"
+    latitude: 51.83333
+    longitude: 5.88333
+    population: 7010
+    dem: 44
+    timezone: "Europe/Amsterdam"
+  - name: "Heerde"
+    latitude: 52.38723
+    longitude: 6.04016
+    population: 8850
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Hattem"
+    latitude: 52.475
+    longitude: 6.06389
+    population: 11876
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Hatert"
+    latitude: 51.80635
+    longitude: 5.83057
+    population: 10210
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Harderwijk"
+    latitude: 52.34167
+    longitude: 5.62083
+    population: 40516
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Groesbeek"
+    latitude: 51.77667
+    longitude: 5.93611
+    population: 18741
+    dem: 39
+    timezone: "Europe/Amsterdam"
+  - name: "Gendt"
+    latitude: 51.8775
+    longitude: 5.97083
+    population: 5590
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Geldermalsen"
+    latitude: 51.88083
+    longitude: 5.28889
+    population: 25734
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Ermelo"
+    latitude: 52.29833
+    longitude: 5.62222
+    population: 10255
+    dem: 15
+    timezone: "Europe/Amsterdam"
+  - name: "Epe"
+    latitude: 52.3475
+    longitude: 5.98333
+    population: 33385
+    dem: 16
+    timezone: "Europe/Amsterdam"
+  - name: "Elst"
+    latitude: 51.91917
+    longitude: 5.84167
+    population: 20488
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Elburg"
+    latitude: 52.4475
+    longitude: 5.84306
+    population: 21844
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Eibergen"
+    latitude: 52.1
+    longitude: 6.64861
+    population: 16493
+    dem: 26
+    timezone: "Europe/Amsterdam"
+  - name: "Eerbeek"
+    latitude: 52.105
+    longitude: 6.05833
+    population: 10103
+    dem: 20
+    timezone: "Europe/Amsterdam"
+  - name: "Ede"
+    latitude: 52.03333
+    longitude: 5.65833
+    population: 67670
+    dem: 20
+    timezone: "Europe/Amsterdam"
+  - name: "Duiven"
+    latitude: 51.94667
+    longitude: 6.01389
+    population: 25469
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Druten"
+    latitude: 51.88833
+    longitude: 5.60556
+    population: 6270
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Doornsteeg"
+    latitude: 52.23
+    longitude: 5.45417
+    population: 5400
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Doetinchem"
+    latitude: 51.965
+    longitude: 6.28889
+    population: 49906
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Doesburg"
+    latitude: 52.0125
+    longitude: 6.13889
+    population: 11480
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Dieren"
+    latitude: 52.0525
+    longitude: 6.1
+    population: 14842
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Culemborg"
+    latitude: 51.955
+    longitude: 5.22778
+    population: 26826
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Brummen"
+    latitude: 52.09
+    longitude: 6.15556
+    population: 21344
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Borculo"
+    latitude: 52.11583
+    longitude: 6.52222
+    population: 10373
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Beuningen"
+    latitude: 51.86083
+    longitude: 5.76667
+    population: 25557
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Bennekom"
+    latitude: 51.99833
+    longitude: 5.67639
+    population: 14810
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Bemmel"
+    latitude: 51.89167
+    longitude: 5.89861
+    population: 12020
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Barneveld"
+    latitude: 52.14
+    longitude: 5.58472
+    population: 28640
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Arnhem"
+    latitude: 51.98
+    longitude: 5.91111
+    population: 141674
+    dem: 16
+    timezone: "Europe/Amsterdam"
+  - name: "Apeldoorn"
+    latitude: 52.21
+    longitude: 5.96944
+    population: 136670
+    elevation: 12
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Aalten"
+    latitude: 51.925
+    longitude: 6.58056
+    population: 19141
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Matenveld"
+    latitude: 52.18767
+    longitude: 5.99879
+    population: 5895
+    elevation: 11
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Matendonk"
+    latitude: 52.19766
+    longitude: 6.01115
+    population: 5225
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Woudhuis"
+    latitude: 52.21323
+    longitude: 6.01124
+    population: 6375
+    elevation: 9
+    dem: 7
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Noord-Brabant"
+  cities:
+  - name: "Zundert"
+    latitude: 51.47167
+    longitude: 4.65556
+    population: 6835
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Zeelst"
+    latitude: 51.42421
+    longitude: 5.41566
+    population: 5280
+    dem: 21
+    timezone: "Europe/Amsterdam"
+  - name: "Zandberg"
+    latitude: 51.57333
+    longitude: 4.78472
+    population: 5300
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Woudrichem"
+    latitude: 51.815
+    longitude: 5.00139
+    population: 14208
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Woenselse Heide"
+    latitude: 51.48333
+    longitude: 5.46667
+    population: 5205
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Werkendam"
+    latitude: 51.81
+    longitude: 4.89444
+    population: 26362
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Waspik"
+    latitude: 51.68667
+    longitude: 4.94444
+    population: 5120
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Waalwijk"
+    latitude: 51.6825
+    longitude: 5.07083
+    population: 45610
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Waalre"
+    latitude: 51.38667
+    longitude: 5.44444
+    population: 6445
+    dem: 24
+    timezone: "Europe/Amsterdam"
+  - name: "Vught"
+    latitude: 51.65333
+    longitude: 5.2875
+    population: 25043
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Veldhoven"
+    latitude: 51.41833
+    longitude: 5.40278
+    population: 5340
+    dem: 22
+    timezone: "Europe/Amsterdam"
+  - name: "Veghel"
+    latitude: 51.61667
+    longitude: 5.54861
+    population: 25352
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Valkenswaard"
+    latitude: 51.35083
+    longitude: 5.45972
+    population: 31071
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Vaartbroek"
+    latitude: 51.47954
+    longitude: 5.49806
+    population: 5200
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Udenhout"
+    latitude: 51.60917
+    longitude: 5.14306
+    population: 7650
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Uden"
+    latitude: 51.66083
+    longitude: 5.61944
+    population: 34601
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Tongelre"
+    latitude: 51.44889
+    longitude: 5.51978
+    population: 19680
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Tilburg"
+    latitude: 51.55551
+    longitude: 5.0913
+    population: 199613
+    dem: 16
+    timezone: "Europe/Amsterdam"
+  - name: "Teteringen"
+    latitude: 51.60917
+    longitude: 4.82083
+    population: 7230
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Terheijden"
+    latitude: 51.64333
+    longitude: 4.75417
+    population: 5910
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Steenbergen"
+    latitude: 51.58417
+    longitude: 4.31944
+    population: 23582
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Someren"
+    latitude: 51.385
+    longitude: 5.71111
+    population: 10690
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Sint Willebrord"
+    latitude: 51.54833
+    longitude: 4.58889
+    population: 8655
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Sint-Oedenrode"
+    latitude: 51.5675
+    longitude: 5.45972
+    population: 16931
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "s-Hertogenbosch"
+    latitude: 51.69917
+    longitude: 5.30417
+    population: 134520
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Schijndel"
+    latitude: 51.6225
+    longitude: 5.43194
+    population: 23239
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Schaijk"
+    latitude: 51.74583
+    longitude: 5.63194
+    population: 5970
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Roosendaal"
+    latitude: 51.53083
+    longitude: 4.46528
+    population: 77725
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Rijen"
+    latitude: 51.59083
+    longitude: 4.91944
+    population: 16230
+    dem: 11
+    timezone: "Europe/Amsterdam"
+  - name: "Reusel"
+    latitude: 51.3625
+    longitude: 5.16528
+    population: 7055
+    dem: 33
+    timezone: "Europe/Amsterdam"
+  - name: "Raamsdonksveer"
+    latitude: 51.69667
+    longitude: 4.87361
+    population: 6590
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Prinsenbeek"
+    latitude: 51.59833
+    longitude: 4.7125
+    population: 10720
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Princenhage"
+    latitude: 51.57632
+    longitude: 4.73906
+    population: 8535
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Oud Gastel"
+    latitude: 51.58667
+    longitude: 4.45972
+    population: 5305
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Oss"
+    latitude: 51.765
+    longitude: 5.51806
+    population: 76430
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Oosterhout"
+    latitude: 51.645
+    longitude: 4.85972
+    population: 53107
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Oisterwijk"
+    latitude: 51.57917
+    longitude: 5.18889
+    population: 25980
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Oirschot"
+    latitude: 51.505
+    longitude: 5.31389
+    population: 10393
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Nuenen"
+    latitude: 51.47
+    longitude: 5.55278
+    population: 23223
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Nistelrode"
+    latitude: 51.70417
+    longitude: 5.5625
+    population: 6090
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Mierlo"
+    latitude: 51.44
+    longitude: 5.61944
+    population: 9405
+    dem: 22
+    timezone: "Europe/Amsterdam"
+  - name: "Made"
+    latitude: 51.67667
+    longitude: 4.79306
+    population: 11795
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Loon op Zand"
+    latitude: 51.6275
+    longitude: 5.075
+    population: 23000
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Korvel"
+    latitude: 51.54954
+    longitude: 5.07079
+    population: 12520
+    dem: 15
+    timezone: "Europe/Amsterdam"
+  - name: "Klundert"
+    latitude: 51.665
+    longitude: 4.53472
+    population: 5405
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Hoogerheide"
+    latitude: 51.42417
+    longitude: 4.325
+    population: 5810
+    dem: 24
+    timezone: "Europe/Amsterdam"
+  - name: "Hoge Vucht"
+    latitude: 51.60794
+    longitude: 4.7915
+    population: 16000
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Hilvarenbeek"
+    latitude: 51.48583
+    longitude: 5.1375
+    population: 7855
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Heusdenhout"
+    latitude: 51.58811
+    longitude: 4.8193
+    population: 5160
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Helmond"
+    latitude: 51.48167
+    longitude: 5.66111
+    population: 74740
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Heeze"
+    latitude: 51.3828
+    longitude: 5.57145
+    population: 9110
+    dem: 24
+    timezone: "Europe/Amsterdam"
+  - name: "Heeswijk-Dinther"
+    latitude: 51.65083
+    longitude: 5.475
+    population: 7985
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Heesch"
+    latitude: 51.73362
+    longitude: 5.52672
+    population: 12810
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Halsteren"
+    latitude: 51.52834
+    longitude: 4.26785
+    population: 9850
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Groenewoud"
+    latitude: 51.5386
+    longitude: 5.09028
+    population: 7710
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "Grave"
+    latitude: 51.75902
+    longitude: 5.73882
+    population: 12999
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Goirle"
+    latitude: 51.52083
+    longitude: 5.06667
+    population: 22646
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Ginneken"
+    latitude: 51.56593
+    longitude: 4.7931
+    population: 5370
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Gilze"
+    latitude: 51.54417
+    longitude: 4.94028
+    population: 6300
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Gemert"
+    latitude: 51.55583
+    longitude: 5.69028
+    population: 15995
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Geldrop"
+    latitude: 51.42167
+    longitude: 5.55972
+    population: 27900
+    dem: 21
+    timezone: "Europe/Amsterdam"
+  - name: "Geertruidenberg"
+    latitude: 51.70167
+    longitude: 4.85694
+    population: 20941
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Eindhoven"
+    latitude: 51.44083
+    longitude: 5.47778
+    population: 209620
+    dem: 22
+    timezone: "Europe/Amsterdam"
+  - name: "Eersel"
+    latitude: 51.3575
+    longitude: 5.31806
+    population: 18185
+    dem: 30
+    timezone: "Europe/Amsterdam"
+  - name: "Dongen"
+    latitude: 51.62667
+    longitude: 4.93889
+    population: 25464
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Dinteloord"
+    latitude: 51.635
+    longitude: 4.36944
+    population: 5105
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "De Reit"
+    latitude: 51.56038
+    longitude: 5.04932
+    population: 6105
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "De Kruiskamp"
+    latitude: 51.69978
+    longitude: 5.26032
+    population: 8025
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "De Doornakkers"
+    latitude: 51.43844
+    longitude: 5.50887
+    population: 6345
+    dem: 20
+    timezone: "Europe/Amsterdam"
+  - name: "De Blaak"
+    latitude: 51.54626
+    longitude: 5.04465
+    population: 6005
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "Cranendonck"
+    latitude: 51.30417
+    longitude: 5.58889
+    population: 19966
+    dem: 31
+    timezone: "Europe/Amsterdam"
+  - name: "Coevering"
+    latitude: 51.41742
+    longitude: 5.57463
+    population: 5290
+    dem: 22
+    timezone: "Europe/Amsterdam"
+  - name: "Budel"
+    latitude: 51.27167
+    longitude: 5.575
+    population: 7895
+    dem: 32
+    timezone: "Europe/Amsterdam"
+  - name: "Broekhoven"
+    latitude: 51.54801
+    longitude: 5.09175
+    population: 7420
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "Breda"
+    latitude: 51.58656
+    longitude: 4.77596
+    population: 167673
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Boxtel"
+    latitude: 51.59083
+    longitude: 5.32917
+    population: 29511
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Boxmeer"
+    latitude: 51.64667
+    longitude: 5.94722
+    population: 12407
+    dem: 15
+    timezone: "Europe/Amsterdam"
+  - name: "Boekel"
+    latitude: 51.60333
+    longitude: 5.675
+    population: 5480
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Bladel"
+    latitude: 51.36833
+    longitude: 5.22083
+    population: 9785
+    dem: 33
+    timezone: "Europe/Amsterdam"
+  - name: "Best"
+    latitude: 51.5075
+    longitude: 5.39028
+    population: 29074
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Berghem"
+    latitude: 51.76991
+    longitude: 5.56827
+    population: 6500
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Bergeyk"
+    latitude: 51.31917
+    longitude: 5.35833
+    population: 18181
+    dem: 33
+    timezone: "Europe/Amsterdam"
+  - name: "Bergen op Zoom"
+    latitude: 51.495
+    longitude: 4.29167
+    population: 66256
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Beek"
+    latitude: 51.5289
+    longitude: 5.63382
+    population: 5185
+    dem: 16
+    timezone: "Europe/Amsterdam"
+  - name: "Bavel"
+    latitude: 51.56583
+    longitude: 4.83056
+    population: 5360
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Asten"
+    latitude: 51.40417
+    longitude: 5.74861
+    population: 9535
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Aalburg"
+    latitude: 51.75482
+    longitude: 5.13156
+    population: 5788
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Meerhoven"
+    latitude: 51.44267
+    longitude: 5.41102
+    population: 7175
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Grasrijk"
+    latitude: 51.43916
+    longitude: 5.41544
+    population: 5375
+    dem: 17
+    timezone: "Europe/Amsterdam"
+  - name: "Aarle-Rixtel"
+    latitude: 51.50976
+    longitude: 5.63839
+    population: 5125
+    dem: 19
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Limburg"
+  cities:
+  - name: "Weert"
+    latitude: 51.25167
+    longitude: 5.70694
+    population: 48662
+    dem: 38
+    timezone: "Europe/Amsterdam"
+  - name: "Venray"
+    latitude: 51.525
+    longitude: 5.975
+    population: 39047
+    dem: 29
+    timezone: "Europe/Amsterdam"
+  - name: "Venlo"
+    latitude: 51.37
+    longitude: 6.16806
+    population: 92403
+    dem: 24
+    timezone: "Europe/Amsterdam"
+  - name: "Vaals"
+    latitude: 50.77083
+    longitude: 6.01806
+    population: 6970
+    dem: 203
+    timezone: "Europe/Amsterdam"
+  - name: "Tegelen"
+    latitude: 51.34417
+    longitude: 6.13611
+    population: 20190
+    dem: 20
+    timezone: "Europe/Amsterdam"
+  - name: "Stein"
+    latitude: 50.96917
+    longitude: 5.76667
+    population: 11290
+    dem: 61
+    timezone: "Europe/Amsterdam"
+  - name: "Sittard"
+    latitude: 50.99833
+    longitude: 5.86944
+    population: 48400
+    dem: 48
+    timezone: "Europe/Amsterdam"
+  - name: "Sevenum"
+    latitude: 51.4125
+    longitude: 6.0375
+    population: 5035
+    dem: 31
+    timezone: "Europe/Amsterdam"
+  - name: "Scharn"
+    latitude: 50.85
+    longitude: 5.73333
+    population: 6540
+    dem: 58
+    timezone: "Europe/Amsterdam"
+  - name: "Roermond"
+    latitude: 51.19417
+    longitude: 5.9875
+    population: 44975
+    dem: 31
+    timezone: "Europe/Amsterdam"
+  - name: "Reuver"
+    latitude: 51.28417
+    longitude: 6.07778
+    population: 6140
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Panningen"
+    latitude: 51.32667
+    longitude: 5.97917
+    population: 6710
+    dem: 35
+    timezone: "Europe/Amsterdam"
+  - name: "Nederweert"
+    latitude: 51.28583
+    longitude: 5.74861
+    population: 7205
+    dem: 36
+    timezone: "Europe/Amsterdam"
+  - name: "Meijel"
+    latitude: 51.34417
+    longitude: 5.88472
+    population: 5180
+    dem: 37
+    timezone: "Europe/Amsterdam"
+  - name: "Meerssen"
+    latitude: 50.8875
+    longitude: 5.75
+    population: 5650
+    dem: 60
+    timezone: "Europe/Amsterdam"
+  - name: "Malberg"
+    latitude: 50.86244
+    longitude: 5.65419
+    population: 5345
+    dem: 65
+    timezone: "Europe/Amsterdam"
+  - name: "Maastricht"
+    latitude: 50.84833
+    longitude: 5.68889
+    population: 122378
+    dem: 56
+    timezone: "Europe/Amsterdam"
+  - name: "Maasbree"
+    latitude: 51.3575
+    longitude: 6.04861
+    population: 5045
+    dem: 31
+    timezone: "Europe/Amsterdam"
+  - name: "Maasbracht"
+    latitude: 51.13929
+    longitude: 5.88627
+    population: 5680
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Lindenheuvel"
+    latitude: 50.98509
+    longitude: 5.81667
+    population: 8040
+    dem: 62
+    timezone: "Europe/Amsterdam"
+  - name: "Kerkrade"
+    latitude: 50.86583
+    longitude: 6.0625
+    population: 49777
+    dem: 157
+    timezone: "Europe/Amsterdam"
+  - name: "Hoensbroek"
+    latitude: 50.92387
+    longitude: 5.92528
+    population: 25000
+    dem: 85
+    timezone: "Europe/Amsterdam"
+  - name: "Heythuysen"
+    latitude: 51.25
+    longitude: 5.89861
+    population: 6420
+    dem: 31
+    timezone: "Europe/Amsterdam"
+  - name: "Helden"
+    latitude: 51.31917
+    longitude: 6.0
+    population: 5530
+    dem: 36
+    timezone: "Europe/Amsterdam"
+  - name: "Heerlen"
+    latitude: 50.88365
+    longitude: 5.98154
+    population: 93084
+    dem: 114
+    timezone: "Europe/Amsterdam"
+  - name: "Heer"
+    latitude: 50.83836
+    longitude: 5.72989
+    population: 7615
+    dem: 58
+    timezone: "Europe/Amsterdam"
+  - name: "Haelen"
+    latitude: 51.23583
+    longitude: 5.95694
+    population: 9935
+    dem: 26
+    timezone: "Europe/Amsterdam"
+  - name: "Gennep"
+    latitude: 51.69833
+    longitude: 5.97361
+    population: 16642
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "Geleen"
+    latitude: 50.97417
+    longitude: 5.82917
+    population: 32790
+    dem: 66
+    timezone: "Europe/Amsterdam"
+  - name: "Elsloo"
+    latitude: 50.94917
+    longitude: 5.77083
+    population: 7220
+    dem: 70
+    timezone: "Europe/Amsterdam"
+  - name: "Eijsden"
+    latitude: 50.78
+    longitude: 5.7177
+    population: 11795
+    dem: 58
+    timezone: "Europe/Amsterdam"
+  - name: "De Heeg"
+    latitude: 50.82454
+    longitude: 5.72309
+    population: 6255
+    dem: 61
+    timezone: "Europe/Amsterdam"
+  - name: "Bunde"
+    latitude: 50.89667
+    longitude: 5.73194
+    population: 5500
+    dem: 49
+    timezone: "Europe/Amsterdam"
+  - name: "Brunssum"
+    latitude: 50.94667
+    longitude: 5.97083
+    population: 29254
+    dem: 79
+    timezone: "Europe/Amsterdam"
+  - name: "Beek"
+    latitude: 50.94083
+    longitude: 5.79722
+    population: 8415
+    dem: 79
+    timezone: "Europe/Amsterdam"
+  - name: "Baarlo"
+    latitude: 51.33083
+    longitude: 6.09444
+    population: 5215
+    dem: 24
+    timezone: "Europe/Amsterdam"
+  - name: "Arcen"
+    latitude: 51.47667
+    longitude: 6.18056
+    population: 8793
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Amby"
+    latitude: 50.86215
+    longitude: 5.73226
+    population: 6535
+    dem: 53
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Zuid-Holland"
+  cities:
+  - name: "Zwijndrecht"
+    latitude: 51.8175
+    longitude: 4.63333
+    population: 45696
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Zuidwijk"
+    latitude: 51.87532
+    longitude: 4.48514
+    population: 12490
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Zoetermeer"
+    latitude: 52.0575
+    longitude: 4.49306
+    population: 115845
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Wassenaar"
+    latitude: 52.14583
+    longitude: 4.40278
+    population: 25353
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Waddinxveen"
+    latitude: 52.045
+    longitude: 4.65139
+    population: 25338
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Vreewijk"
+    latitude: 51.88428
+    longitude: 4.51967
+    population: 13745
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Voorschoten"
+    latitude: 52.1275
+    longitude: 4.44861
+    population: 22468
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Voorburg"
+    latitude: 52.07417
+    longitude: 4.35972
+    population: 38000
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Vogelwijk"
+    latitude: 52.07631
+    longitude: 4.2479
+    population: 5155
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Vlaardingen"
+    latitude: 51.9125
+    longitude: 4.34167
+    population: 73798
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Strijen"
+    latitude: 51.74521
+    longitude: 4.55083
+    population: 9371
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Statenkwartier"
+    latitude: 52.09311
+    longitude: 4.27577
+    population: 9300
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Spijkenisse"
+    latitude: 51.845
+    longitude: 4.32917
+    population: 74988
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Spangen"
+    latitude: 51.91688
+    longitude: 4.43539
+    population: 10285
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Slikkerveer"
+    latitude: 51.88531
+    longitude: 4.60494
+    population: 8750
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Sliedrecht"
+    latitude: 51.82083
+    longitude: 4.77639
+    population: 23854
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "s-Gravenzande"
+    latitude: 52.00167
+    longitude: 4.16528
+    population: 19190
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "The Hague"
+    latitude: 52.07667
+    longitude: 4.29861
+    population: 474292
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Schoonhoven"
+    latitude: 51.9475
+    longitude: 4.84861
+    population: 12352
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Schiedam"
+    latitude: 51.91917
+    longitude: 4.38889
+    population: 75438
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Schiebroek"
+    latitude: 51.95838
+    longitude: 4.47124
+    population: 16305
+    dem: -4
+    timezone: "Europe/Amsterdam"
+  - name: "Scheveningen"
+    latitude: 52.10461
+    longitude: 4.27557
+    population: 23000
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Sassenheim"
+    latitude: 52.225
+    longitude: 4.52222
+    population: 15510
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Rozenburg"
+    latitude: 51.90417
+    longitude: 4.24861
+    population: 12420
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Rotterdam"
+    latitude: 51.9225
+    longitude: 4.47917
+    population: 598199
+    dem: 9
+    timezone: "Europe/Amsterdam"
+  - name: "Rijswijk"
+    latitude: 52.03634
+    longitude: 4.32501
+    population: 47299
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Rijnsburg"
+    latitude: 52.19
+    longitude: 4.44167
+    population: 7990
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Ridderkerk"
+    latitude: 51.8725
+    longitude: 4.60278
+    population: 45189
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Rhoon"
+    latitude: 51.8575
+    longitude: 4.42222
+    population: 18250
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Reeuwijk"
+    latitude: 52.04667
+    longitude: 4.725
+    population: 12817
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Poeldijk"
+    latitude: 52.02417
+    longitude: 4.21944
+    population: 5800
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Pijnacker"
+    latitude: 52.01954
+    longitude: 4.42946
+    population: 18695
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Pendrecht"
+    latitude: 51.87152
+    longitude: 4.46901
+    population: 11885
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Papendrecht"
+    latitude: 51.83167
+    longitude: 4.6875
+    population: 31621
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Palenstein"
+    latitude: 52.05579
+    longitude: 4.50869
+    population: 6000
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Overschie"
+    latitude: 51.93863
+    longitude: 4.42766
+    population: 6710
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Ouddorp"
+    latitude: 51.81167
+    longitude: 3.93472
+    population: 5930
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Oud-Beijerland"
+    latitude: 51.82417
+    longitude: 4.4125
+    population: 23569
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Ommoord"
+    latitude: 51.95951
+    longitude: 4.54533
+    population: 25150
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Oegstgeest"
+    latitude: 52.18
+    longitude: 4.46944
+    population: 21149
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Noordwijkerhout"
+    latitude: 52.26167
+    longitude: 4.49306
+    population: 11875
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Noordwijk-Binnen"
+    latitude: 52.234
+    longitude: 4.44474
+    population: 24363
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Noord-Hofland"
+    latitude: 52.14059
+    longitude: 4.45864
+    population: 5445
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Nieuw-Lekkerland"
+    latitude: 51.88915
+    longitude: 4.68653
+    population: 9535
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Neder-Hardinxveld"
+    latitude: 51.82879
+    longitude: 4.85489
+    population: 5335
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Naaldwijk"
+    latitude: 51.99417
+    longitude: 4.20972
+    population: 17753
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Monster"
+    latitude: 52.02583
+    longitude: 4.175
+    population: 11580
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Middelharnis"
+    latitude: 51.7575
+    longitude: 4.16528
+    population: 17554
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Merenwijk"
+    latitude: 52.17655
+    longitude: 4.50885
+    population: 16500
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Maassluis"
+    latitude: 51.92333
+    longitude: 4.25
+    population: 32780
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Lombardijen"
+    latitude: 51.8738
+    longitude: 4.52192
+    population: 13785
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Lisse"
+    latitude: 52.26
+    longitude: 4.55694
+    population: 22321
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Liesveld"
+    latitude: 51.9325
+    longitude: 4.83194
+    population: 9767
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Leiderdorp"
+    latitude: 52.15833
+    longitude: 4.52917
+    population: 25966
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Leiden"
+    latitude: 52.15833
+    longitude: 4.49306
+    population: 119713
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Krimpen aan den IJssel"
+    latitude: 51.91667
+    longitude: 4.60278
+    population: 29017
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Katwijk aan Zee"
+    latitude: 52.20333
+    longitude: 4.39861
+    population: 20010
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Katwijk aan den Rijn"
+    latitude: 52.19417
+    longitude: 4.42222
+    population: 5940
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Honselersdijk"
+    latitude: 52.00665
+    longitude: 4.22441
+    population: 7366
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Hoge Mors"
+    latitude: 52.15616
+    longitude: 4.46025
+    population: 5050
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Hoek van Holland"
+    latitude: 51.9775
+    longitude: 4.13333
+    population: 9400
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Hillegom"
+    latitude: 52.29083
+    longitude: 4.58333
+    population: 18419
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Hendrik-Ido-Ambacht"
+    latitude: 51.84417
+    longitude: 4.63889
+    population: 21027
+    dem: -3
+    timezone: "Europe/Amsterdam"
+  - name: "Hellevoetsluis"
+    latitude: 51.83333
+    longitude: 4.13333
+    population: 21927
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Groot IJsselmonde"
+    latitude: 51.88264
+    longitude: 4.54937
+    population: 28120
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Gouda"
+    latitude: 52.01667
+    longitude: 4.70833
+    population: 71952
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Gorinchem"
+    latitude: 51.83652
+    longitude: 4.97243
+    population: 34736
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Goedereede"
+    latitude: 51.8175
+    longitude: 3.98056
+    population: 11597
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Giessendam"
+    latitude: 51.83257
+    longitude: 4.83583
+    population: 5235
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Feijenoord"
+    latitude: 51.91169
+    longitude: 4.50645
+    population: 7275
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Duindorp"
+    latitude: 52.09078
+    longitude: 4.26038
+    population: 5935
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Driemanspolder"
+    latitude: 52.05176
+    longitude: 4.48504
+    population: 6250
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Dordrecht"
+    latitude: 51.81
+    longitude: 4.67361
+    population: 119260
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "De Lier"
+    latitude: 51.975
+    longitude: 4.24861
+    population: 11823
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Delft"
+    latitude: 52.00667
+    longitude: 4.35556
+    population: 95060
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Delfshaven"
+    latitude: 51.90488
+    longitude: 4.45315
+    population: 6835
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Carnisse"
+    latitude: 51.88932
+    longitude: 4.47758
+    population: 11225
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Capelle aan den IJssel"
+    latitude: 51.92917
+    longitude: 4.57778
+    population: 65255
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Boskoop"
+    latitude: 52.075
+    longitude: 4.65556
+    population: 15222
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Bolnes"
+    latitude: 51.895
+    longitude: 4.57917
+    population: 7650
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Bodegraven"
+    latitude: 52.0825
+    longitude: 4.75
+    population: 19395
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Bloemhof"
+    latitude: 51.89723
+    longitude: 4.49943
+    population: 13715
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Bloemendaal"
+    latitude: 52.02878
+    longitude: 4.6944
+    population: 9900
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Bleiswijk"
+    latitude: 52.01083
+    longitude: 4.53194
+    population: 10549
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Bergschenhoek"
+    latitude: 51.99
+    longitude: 4.49861
+    population: 16579
+    dem: -4
+    timezone: "Europe/Amsterdam"
+  - name: "Benthuizen"
+    latitude: 52.0775
+    longitude: 4.54444
+    population: 18959
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Barendrecht"
+    latitude: 51.85667
+    longitude: 4.53472
+    population: 38672
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Alphen aan den Rijn"
+    latitude: 52.12917
+    longitude: 4.65546
+    population: 70251
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Alblasserdam"
+    latitude: 51.86583
+    longitude: 4.66111
+    population: 18348
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Berkel en Rodenrijs"
+    latitude: 51.99313
+    longitude: 4.47865
+    population: 20189
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Ypenburg"
+    latitude: 52.04098
+    longitude: 4.36981
+    population: 30000
+    elevation: 0
+    dem: -4
+    timezone: "Europe/Amsterdam"
+  - name: "Groenswaard"
+    latitude: 52.05154
+    longitude: 4.64541
+    population: 5160
+    dem: -3
+    timezone: "Europe/Amsterdam"
+  - name: "s-Gravenland"
+    latitude: 51.92336
+    longitude: 4.55315
+    population: 10000
+    dem: -1
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Friesland"
+  cities:
+  - name: "De Westereen"
+    latitude: 53.25731
+    longitude: 6.0363
+    population: 5030
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Zuiderburen"
+    latitude: 53.1734
+    longitude: 5.84271
+    population: 5790
+    dem: -4
+    timezone: "Europe/Amsterdam"
+  - name: "Wolvega"
+    latitude: 52.87545
+    longitude: 5.99691
+    population: 12730
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Surhuisterveen"
+    latitude: 53.18477
+    longitude: 6.17031
+    population: 5550
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Stiens"
+    latitude: 53.26234
+    longitude: 5.75769
+    population: 7300
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Sneek"
+    latitude: 53.03297
+    longitude: 5.6589
+    population: 32811
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Oosterwolde"
+    latitude: 52.99164
+    longitude: 6.29096
+    population: 9245
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Lemmer"
+    latitude: 52.84618
+    longitude: 5.70912
+    population: 10050
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Leeuwarden"
+    latitude: 53.20139
+    longitude: 5.80859
+    population: 91424
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Kollum"
+    latitude: 53.27695
+    longitude: 6.15293
+    population: 5230
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Joure"
+    latitude: 52.9657
+    longitude: 5.80301
+    population: 12902
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Huizum"
+    latitude: 53.1917
+    longitude: 5.81119
+    population: 9000
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Heerenveen"
+    latitude: 52.95929
+    longitude: 5.91854
+    population: 43094
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Harlingen"
+    latitude: 53.17477
+    longitude: 5.42244
+    population: 16119
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Grou"
+    latitude: 53.09456
+    longitude: 5.83745
+    population: 5535
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Gorredijk"
+    latitude: 53.00659
+    longitude: 6.06402
+    population: 7040
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Franeker"
+    latitude: 53.18546
+    longitude: 5.54123
+    population: 12996
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Drachten"
+    latitude: 53.11254
+    longitude: 6.0989
+    population: 44537
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Dokkum"
+    latitude: 53.32224
+    longitude: 5.99697
+    population: 13145
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "De Greiden"
+    latitude: 52.9496
+    longitude: 5.91366
+    population: 7470
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "De Drait"
+    latitude: 53.09743
+    longitude: 6.06791
+    population: 6310
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Damwald"
+    latitude: 53.29046
+    longitude: 5.99785
+    population: 5560
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Buitenpost"
+    latitude: 53.25166
+    longitude: 6.14483
+    population: 5120
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Bolsward"
+    latitude: 53.06555
+    longitude: 5.53176
+    population: 9160
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Bilgaard"
+    latitude: 53.21551
+    longitude: 5.79574
+    population: 6105
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Burgum"
+    latitude: 53.19243
+    longitude: 5.99009
+    population: 9720
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Camminghaburen"
+    latitude: 53.20973
+    longitude: 5.84318
+    population: 11500
+    dem: -2
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Drenthe"
+  cities:
+  - name: "Roden"
+    latitude: 53.1375
+    longitude: 6.42083
+    population: 7030
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Peelo"
+    latitude: 53.01719
+    longitude: 6.56208
+    population: 6635
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Meppel"
+    latitude: 52.69583
+    longitude: 6.19444
+    population: 30697
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Krakeel"
+    latitude: 52.72339
+    longitude: 6.51146
+    population: 5105
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Klazienaveen"
+    latitude: 52.72417
+    longitude: 6.99028
+    population: 11919
+    dem: 18
+    timezone: "Europe/Amsterdam"
+  - name: "Hoogeveen"
+    latitude: 52.7225
+    longitude: 6.47639
+    population: 38754
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "Emmermeer"
+    latitude: 52.80071
+    longitude: 6.89315
+    population: 5995
+    dem: 22
+    timezone: "Europe/Amsterdam"
+  - name: "Emmerhout"
+    latitude: 52.78755
+    longitude: 6.93881
+    population: 7375
+    dem: 27
+    timezone: "Europe/Amsterdam"
+  - name: "Emmer-Compascuum"
+    latitude: 52.81167
+    longitude: 7.04722
+    population: 8130
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Emmen"
+    latitude: 52.77917
+    longitude: 6.90694
+    population: 57010
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Eelde"
+    latitude: 53.13583
+    longitude: 6.5625
+    population: 6450
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Coevorden"
+    latitude: 52.66103
+    longitude: 6.74046
+    population: 14600
+    dem: 14
+    timezone: "Europe/Amsterdam"
+  - name: "Beilen"
+    latitude: 52.86333
+    longitude: 6.51389
+    population: 9495
+    dem: 16
+    timezone: "Europe/Amsterdam"
+  - name: "Bargeres"
+    latitude: 52.76152
+    longitude: 6.88145
+    population: 9060
+    dem: 19
+    timezone: "Europe/Amsterdam"
+  - name: "Assen"
+    latitude: 52.99667
+    longitude: 6.5625
+    population: 62237
+    dem: 12
+    timezone: "Europe/Amsterdam"
+  - name: "Angelslo"
+    latitude: 52.7809
+    longitude: 6.92645
+    population: 7840
+    dem: 24
+    timezone: "Europe/Amsterdam"
+  - name: "Marsdijk"
+    latitude: 53.01766
+    longitude: 6.58527
+    population: 12241
+    dem: 10
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Flevoland"
+  cities:
+  - name: "Zeewolde"
+    latitude: 52.33
+    longitude: 5.54167
+    population: 19022
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Urk"
+    latitude: 52.6625
+    longitude: 5.60139
+    population: 17345
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Lelystad"
+    latitude: 52.50833
+    longitude: 5.475
+    population: 70741
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Emmeloord"
+    latitude: 52.71083
+    longitude: 5.74861
+    population: 46409
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Dronten"
+    latitude: 52.525
+    longitude: 5.71806
+    population: 28073
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Biddinghuizen"
+    latitude: 52.455
+    longitude: 5.69306
+    population: 5010
+    dem: -3
+    timezone: "Europe/Amsterdam"
+  - name: "Almere Stad"
+    latitude: 52.37025
+    longitude: 5.21413
+    population: 176432
+    dem: -3
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Zeeland"
+  cities:
+  - name: "Zierikzee"
+    latitude: 51.65
+    longitude: 3.91944
+    population: 10483
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Yerseke"
+    latitude: 51.4925
+    longitude: 4.05
+    population: 6541
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Vlissingen"
+    latitude: 51.4425
+    longitude: 3.57361
+    population: 45273
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Tholen"
+    latitude: 51.53167
+    longitude: 4.22083
+    population: 7475
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Terneuzen"
+    latitude: 51.33583
+    longitude: 3.82778
+    population: 27930
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Middelburg"
+    latitude: 51.5
+    longitude: 3.61389
+    population: 46485
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Goes"
+    latitude: 51.50417
+    longitude: 3.88889
+    population: 36931
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Dauwendaele"
+    latitude: 51.49299
+    longitude: 3.62624
+    population: 6220
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Borssele"
+    latitude: 51.42333
+    longitude: 3.73472
+    population: 22285
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Axel"
+    latitude: 51.26667
+    longitude: 3.90833
+    population: 8149
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Arnemuiden"
+    latitude: 51.50167
+    longitude: 3.675
+    population: 5075
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Kapelle"
+    latitude: 51.48627
+    longitude: 3.95804
+    population: 8670
+    dem: 3
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Groningen"
+  cities:
+  - name: "Zuidhorn"
+    latitude: 53.24667
+    longitude: 6.40278
+    population: 7075
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Winschoten"
+    latitude: 53.14417
+    longitude: 7.03472
+    population: 18506
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Veendam"
+    latitude: 53.10667
+    longitude: 6.87917
+    population: 28155
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Stadskanaal"
+    latitude: 52.98947
+    longitude: 6.9504
+    population: 20000
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Selwerd"
+    latitude: 53.2352
+    longitude: 6.5545
+    population: 6525
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Sappemeer"
+    latitude: 53.16417
+    longitude: 6.79028
+    population: 8298
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Oude Pekela"
+    latitude: 53.10417
+    longitude: 7.00972
+    population: 7580
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Oosterpark"
+    latitude: 53.2237
+    longitude: 6.5853
+    population: 10550
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Marum"
+    latitude: 53.14417
+    longitude: 6.2625
+    population: 5170
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Leek"
+    latitude: 53.1625
+    longitude: 6.37639
+    population: 19651
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Korrewegwijk"
+    latitude: 53.23235
+    longitude: 6.56804
+    population: 16710
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Hoogezand"
+    latitude: 53.16167
+    longitude: 6.76111
+    population: 21480
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Helpman"
+    latitude: 53.19794
+    longitude: 6.57978
+    population: 6050
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Haren"
+    latitude: 53.17209
+    longitude: 6.60931
+    population: 9375
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Groningen"
+    latitude: 53.21917
+    longitude: 6.56667
+    population: 181194
+    dem: 16
+    timezone: "Europe/Amsterdam"
+  - name: "Delfzijl"
+    latitude: 53.33
+    longitude: 6.91806
+    population: 28649
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Bedum"
+    latitude: 53.30083
+    longitude: 6.60278
+    population: 7765
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Appingedam"
+    latitude: 53.32167
+    longitude: 6.85833
+    population: 12364
+    dem: 2
+    timezone: "Europe/Amsterdam"
+- name: "Provincie Noord-Holland"
+  cities:
+  - name: "Zuid-Scharwoude"
+    latitude: 52.68667
+    longitude: 4.80833
+    population: 6165
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Zandvoort"
+    latitude: 52.37125
+    longitude: 4.53306
+    population: 16868
+    dem: 6
+    timezone: "Europe/Amsterdam"
+  - name: "Zaanstad"
+    latitude: 52.45313
+    longitude: 4.81356
+    population: 140085
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Zaandijk"
+    latitude: 52.47494
+    longitude: 4.80686
+    population: 9040
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Zaandam"
+    latitude: 52.43854
+    longitude: 4.82643
+    population: 71708
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Weesp"
+    latitude: 52.3075
+    longitude: 5.04167
+    population: 17802
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Volendam"
+    latitude: 52.495
+    longitude: 5.07083
+    population: 22000
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Velsen-Zuid"
+    latitude: 52.46
+    longitude: 4.65
+    population: 67758
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Uithoorn"
+    latitude: 52.2375
+    longitude: 4.82639
+    population: 26846
+    dem: -4
+    timezone: "Europe/Amsterdam"
+  - name: "Uitgeest"
+    latitude: 52.52917
+    longitude: 4.70972
+    population: 11794
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Sint Pancras"
+    latitude: 52.66
+    longitude: 4.78333
+    population: 6050
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Schagen"
+    latitude: 52.7875
+    longitude: 4.79861
+    population: 5910
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Purmerend"
+    latitude: 52.505
+    longitude: 4.95972
+    population: 76745
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Ouderkerk aan de Amstel"
+    latitude: 52.29504
+    longitude: 4.90746
+    population: 7955
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Opmeer"
+    latitude: 52.70667
+    longitude: 4.94444
+    population: 11183
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Oosteinde"
+    latitude: 52.27917
+    longitude: 4.79583
+    population: 7780
+    dem: -4
+    timezone: "Europe/Amsterdam"
+  - name: "Obdam"
+    latitude: 52.67583
+    longitude: 4.90694
+    population: 5690
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Noord-Scharwoude"
+    latitude: 52.69833
+    longitude: 4.81111
+    population: 5665
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Nieuw-Loosdrecht"
+    latitude: 52.19917
+    longitude: 5.13889
+    population: 5970
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Naarden"
+    latitude: 52.29583
+    longitude: 5.1625
+    population: 17115
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Muiden"
+    latitude: 52.33
+    longitude: 5.06944
+    population: 6223
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Medemblik"
+    latitude: 52.77167
+    longitude: 5.10556
+    population: 41500
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Limmen"
+    latitude: 52.56917
+    longitude: 4.69444
+    population: 7300
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Laren"
+    latitude: 52.25667
+    longitude: 5.22778
+    population: 11508
+    dem: 8
+    timezone: "Europe/Amsterdam"
+  - name: "Kudelstaart"
+    latitude: 52.23417
+    longitude: 4.75139
+    population: 9250
+    dem: -3
+    timezone: "Europe/Amsterdam"
+  - name: "Kortenhoef"
+    latitude: 52.23917
+    longitude: 5.10694
+    population: 6250
+    dem: 1
+    timezone: "Europe/Amsterdam"
+  - name: "Kerkelanden"
+    latitude: 52.21755
+    longitude: 5.13575
+    population: 5655
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Huizen"
+    latitude: 52.29917
+    longitude: 5.24167
+    population: 45292
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Hoorn"
+    latitude: 52.6425
+    longitude: 5.05972
+    population: 68852
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Hoofddorp"
+    latitude: 52.3025
+    longitude: 4.68889
+    population: 132734
+    dem: -2
+    timezone: "Europe/Amsterdam"
+  - name: "Hilversum"
+    latitude: 52.22333
+    longitude: 5.17639
+    population: 83640
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Heiloo"
+    latitude: 52.60252
+    longitude: 4.68815
+    population: 20510
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Heerhugowaard"
+    latitude: 52.67144
+    longitude: 4.84862
+    population: 47580
+    dem: -1
+    timezone: "Europe/Amsterdam"
+  - name: "Heemstede"
+    latitude: 52.34992
+    longitude: 4.62301
+    population: 25562
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Heemskerk"
+    latitude: 52.51108
+    longitude: 4.67165
+    population: 36170
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Harenkarspel"
+    latitude: 52.73416
+    longitude: 4.77682
+    population: 15941
+    dem: -3
+    timezone: "Europe/Amsterdam"
+  - name: "Haarlem"
+    latitude: 52.38084
+    longitude: 4.63683
+    population: 147590
+    dem: 10
+    timezone: "Europe/Amsterdam"
+  - name: "Enkhuizen"
+    latitude: 52.70333
+    longitude: 5.29167
+    population: 17365
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Edam"
+    latitude: 52.51215
+    longitude: 5.04805
+    population: 7380
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Diemen"
+    latitude: 52.33964
+    longitude: 4.96256
+    population: 24361
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Den Helder"
+    latitude: 52.95988
+    longitude: 4.75933
+    population: 59569
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Den Burg"
+    latitude: 53.05417
+    longitude: 4.79722
+    population: 6485
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Castricum"
+    latitude: 52.54833
+    longitude: 4.66944
+    population: 35256
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Bussum"
+    latitude: 52.27333
+    longitude: 5.16111
+    population: 31334
+    dem: 4
+    timezone: "Europe/Amsterdam"
+  - name: "Broek op Langedijk"
+    latitude: 52.67417
+    longitude: 4.80556
+    population: 5695
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Blaricum"
+    latitude: 52.2725
+    longitude: 5.24167
+    population: 5060
+    dem: 7
+    timezone: "Europe/Amsterdam"
+  - name: "Beverwijk"
+    latitude: 52.48333
+    longitude: 4.65694
+    population: 37585
+    dem: 3
+    timezone: "Europe/Amsterdam"
+  - name: "Bennebroek"
+    latitude: 52.32083
+    longitude: 4.59861
+    population: 5140
+    dem: 2
+    timezone: "Europe/Amsterdam"
+  - name: "Amsterdam"
+    latitude: 52.37403
+    longitude: 4.88969
+    population: 741636
+    dem: 13
+    timezone: "Europe/Amsterdam"
+  - name: "Amstelveen"
+    latitude: 52.30083
+    longitude: 4.86389
+    population: 79639
+    dem: 0
+    timezone: "Europe/Amsterdam"
+  - name: "Alkmaar"
+    latitude: 52.63167
+    longitude: 4.74861
+    population: 94853
+    dem: 5
+    timezone: "Europe/Amsterdam"
+  - name: "Aalsmeer"
+    latitude: 52.25917
+    longitude: 4.75972
+    population: 22991
+    dem: -4
+    timezone: "Europe/Amsterdam"
+  - name: "Amsterdam-Zuidoost"
+    latitude: 52.3075
+    longitude: 4.97222
+    population: 84811
+    dem: 4
+    timezone: "Europe/Amsterdam"

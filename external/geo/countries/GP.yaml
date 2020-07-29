@@ -1,0 +1,156 @@
+---
+name: "Guadeloupe"
+iso: "GP"
+iso3: "GLP"
+code: "312"
+capital: "Basse-Terre"
+area: 1780.0
+population: 443000
+continent: "NA"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "590"
+postalCodeFormat: "#####"
+postalCodeRegex: "^((97|98)\\d{3})$"
+languages: "fr-GP"
+regions:
+- name: "Guadeloupe"
+  cities:
+  - name: "Vieux-Habitants"
+    latitude: 16.05866
+    longitude: -61.76667
+    population: 7728
+    dem: 7
+    timezone: "America/Guadeloupe"
+  - name: "Trois-Rivieres"
+    latitude: 15.97595
+    longitude: -61.64492
+    population: 8812
+    dem: 110
+    timezone: "America/Guadeloupe"
+  - name: "Saint-Francois"
+    latitude: 16.25236
+    longitude: -61.27332
+    population: 12732
+    dem: 5
+    timezone: "America/Guadeloupe"
+  - name: "Sainte-Rose"
+    latitude: 16.33264
+    longitude: -61.6969
+    population: 20192
+    dem: 22
+    timezone: "America/Guadeloupe"
+  - name: "Sainte-Anne"
+    latitude: 16.22564
+    longitude: -61.38098
+    population: 22859
+    dem: 3
+    timezone: "America/Guadeloupe"
+  - name: "Saint-Claude"
+    latitude: 16.02515
+    longitude: -61.69975
+    population: 10134
+    dem: 462
+    timezone: "America/Guadeloupe"
+  - name: "Port-Louis"
+    latitude: 16.41749
+    longitude: -61.53045
+    population: 5515
+    dem: 6
+    timezone: "America/Guadeloupe"
+  - name: "Pointe-Noire"
+    latitude: 16.23218
+    longitude: -61.78917
+    population: 7749
+    dem: 9
+    timezone: "America/Guadeloupe"
+  - name: "Pointe-a-Pitre"
+    latitude: 16.24125
+    longitude: -61.53614
+    population: 18264
+    dem: 15
+    timezone: "America/Guadeloupe"
+  - name: "Petit-Canal"
+    latitude: 16.37913
+    longitude: -61.48716
+    population: 8554
+    dem: 16
+    timezone: "America/Guadeloupe"
+  - name: "Petit-Bourg"
+    latitude: 16.19163
+    longitude: -61.5914
+    population: 24994
+    dem: 7
+    timezone: "America/Guadeloupe"
+  - name: "Les Abymes"
+    latitude: 16.273
+    longitude: -61.50507
+    population: 63058
+    dem: 20
+    timezone: "America/Guadeloupe"
+  - name: "Le Moule"
+    latitude: 16.33164
+    longitude: -61.34656
+    population: 22692
+    dem: 8
+    timezone: "America/Guadeloupe"
+  - name: "Le Gosier"
+    latitude: 16.20618
+    longitude: -61.49306
+    population: 28698
+    dem: 24
+    timezone: "America/Guadeloupe"
+  - name: "Lamentin"
+    latitude: 16.27047
+    longitude: -61.63166
+    population: 14891
+    dem: 10
+    timezone: "America/Guadeloupe"
+  - name: "Grand-Bourg"
+    latitude: 15.88402
+    longitude: -61.3148
+    population: 5867
+    dem: 7
+    timezone: "America/Guadeloupe"
+  - name: "Gourbeyre"
+    latitude: 15.99454
+    longitude: -61.69203
+    population: 8571
+    dem: 339
+    timezone: "America/Guadeloupe"
+  - name: "Capesterre-Belle-Eau"
+    latitude: 16.04495
+    longitude: -61.56425
+    population: 19821
+    dem: 17
+    timezone: "America/Guadeloupe"
+  - name: "Bouillante"
+    latitude: 16.13043
+    longitude: -61.76895
+    population: 7540
+    dem: 9
+    timezone: "America/Guadeloupe"
+  - name: "Basse-Terre"
+    latitude: 15.99714
+    longitude: -61.73214
+    population: 11472
+    dem: -9999
+    timezone: "America/Guadeloupe"
+  - name: "Baillif"
+    latitude: 16.02037
+    longitude: -61.74611
+    population: 5705
+    dem: 12
+    timezone: "America/Guadeloupe"
+  - name: "Baie-Mahault"
+    latitude: 16.26738
+    longitude: -61.58543
+    population: 30551
+    dem: 18
+    timezone: "America/Guadeloupe"
+  - name: "Anse-Bertrand"
+    latitude: 16.47239
+    longitude: -61.50739
+    population: 5146
+    dem: 17
+    timezone: "America/Guadeloupe"

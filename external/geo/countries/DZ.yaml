@@ -1,0 +1,1641 @@
+---
+name: "Algeria"
+iso: "DZ"
+iso3: "DZA"
+code: "012"
+capital: "Algiers"
+area: 2381740.0
+population: 34586184
+continent: "AF"
+currencyCode: "DZD"
+currencyName: "Dinar"
+phone: "213"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ar-DZ"
+neighbours: "NE,EH,LY,MR,TN,MA,ML"
+regions:
+- name: "Wilaya de tiaret kabas"
+  cities:
+  - name: "Tiaret"
+    latitude: 35.37103
+    longitude: 1.31699
+    population: 178915
+    dem: 1031
+    timezone: "Africa/Algiers"
+  - name: "Sougueur"
+    latitude: 35.18568
+    longitude: 1.49612
+    population: 68654
+    dem: 1133
+    timezone: "Africa/Algiers"
+  - name: "Mehdia daira de meghila"
+    latitude: 35.43058
+    longitude: 1.75714
+    population: 39271
+    dem: 909
+    timezone: "Africa/Algiers"
+  - name: "Ksar Chellala"
+    latitude: 35.21222
+    longitude: 2.31889
+    population: 58478
+    dem: 842
+    timezone: "Africa/Algiers"
+  - name: "Frenda"
+    latitude: 35.06544
+    longitude: 1.04945
+    population: 63319
+    dem: 1058
+    timezone: "Africa/Algiers"
+  - name: "Ain Deheb"
+    latitude: 34.84218
+    longitude: 1.54697
+    population: 36146
+    dem: 1081
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Mostaganem"
+  cities:
+  - name: "Mostaganem"
+    latitude: 35.93115
+    longitude: 0.08918
+    population: 130000
+    dem: 102
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Sidi Bel Abbes"
+  cities:
+  - name: "Sidi Bel Abbes"
+    latitude: 35.18994
+    longitude: -0.63085
+    population: 191769
+    elevation: 492
+    dem: 476
+    timezone: "Africa/Algiers"
+  - name: "Sfizef"
+    latitude: 35.23464
+    longitude: -0.24435
+    population: 31081
+    dem: 551
+    timezone: "Africa/Algiers"
+  - name: "Ain el Berd"
+    latitude: 35.36395
+    longitude: -0.51279
+    population: 16548
+    dem: 483
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Relizane"
+  cities:
+  - name: "Zemoura"
+    latitude: 35.72251
+    longitude: 0.75509
+    population: 21770
+    dem: 288
+    timezone: "Africa/Algiers"
+  - name: "Relizane"
+    latitude: 35.73734
+    longitude: 0.55599
+    population: 130094
+    dem: 98
+    timezone: "Africa/Algiers"
+  - name: "Oued Rhiou"
+    latitude: 35.96124
+    longitude: 0.91896
+    population: 59864
+    dem: 97
+    timezone: "Africa/Algiers"
+  - name: "Mazouna"
+    latitude: 36.12232
+    longitude: 0.89865
+    population: 22366
+    dem: 342
+    timezone: "Africa/Algiers"
+  - name: "Djidiouia"
+    latitude: 35.92989
+    longitude: 0.82871
+    population: 31996
+    dem: 70
+    timezone: "Africa/Algiers"
+  - name: "Ammi Moussa"
+    latitude: 35.86781
+    longitude: 1.11143
+    population: 23001
+    dem: 157
+    timezone: "Africa/Algiers"
+  - name: "Ain Merane"
+    latitude: 36.16277
+    longitude: 0.97037
+    population: 34413
+    dem: 504
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Ghardaia"
+  cities:
+  - name: "Metlili Chaamba"
+    latitude: 32.26667
+    longitude: 3.63333
+    population: 50117
+    dem: 542
+    timezone: "Africa/Algiers"
+  - name: "Ghardaia"
+    latitude: 32.49094
+    longitude: 3.67347
+    population: 93423
+    dem: 503
+    timezone: "Africa/Algiers"
+  - name: "Berriane"
+    latitude: 32.82648
+    longitude: 3.76689
+    population: 44580
+    dem: 536
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Bordj Bou Arreridj"
+  cities:
+  - name: "Ras el Oued"
+    latitude: 35.9441
+    longitude: 5.03107
+    population: 56726
+    dem: 1102
+    timezone: "Africa/Algiers"
+  - name: "Melouza"
+    latitude: 35.97999
+    longitude: 4.18665
+    population: 25701
+    dem: 936
+    timezone: "Africa/Algiers"
+  - name: "Mansourah"
+    latitude: 36.08725
+    longitude: 4.45192
+    population: 22117
+    dem: 667
+    timezone: "Africa/Algiers"
+  - name: "El Achir"
+    latitude: 36.06386
+    longitude: 4.62744
+    population: 158333
+    dem: 998
+    timezone: "Africa/Algiers"
+  - name: "Bordj Zemoura"
+    latitude: 36.27462
+    longitude: 4.85668
+    population: 19782
+    dem: 1043
+    timezone: "Africa/Algiers"
+  - name: "Bordj Ghdir"
+    latitude: 35.90111
+    longitude: 4.89806
+    population: 34136
+    dem: 1088
+    timezone: "Africa/Algiers"
+  - name: "Bordj Bou Arreridj"
+    latitude: 36.07321
+    longitude: 4.76108
+    population: 168346
+    dem: 906
+    timezone: "Africa/Algiers"
+- name: "Wilaya de MSila"
+  cities:
+  - name: "Sidi Aissa"
+    latitude: 35.88548
+    longitude: 3.77236
+    population: 69740
+    dem: 662
+    timezone: "Africa/Algiers"
+  - name: "MSila"
+    latitude: 35.70583
+    longitude: 4.54194
+    population: 100000
+    dem: 477
+    timezone: "Africa/Algiers"
+  - name: "Ain el Melh"
+    latitude: 34.84146
+    longitude: 4.16383
+    population: 39798
+    dem: 930
+    timezone: "Africa/Algiers"
+  - name: "`Ain el Hadjel"
+    latitude: 35.67003
+    longitude: 3.88153
+    population: 42527
+    dem: 544
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Tindouf"
+  cities:
+  - name: "Tindouf"
+    latitude: 27.67111
+    longitude: -8.14743
+    population: 45966
+    dem: 402
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Setif"
+  cities:
+  - name: "Setif"
+    latitude: 36.19112
+    longitude: 5.41373
+    population: 288461
+    dem: 1096
+    timezone: "Africa/Algiers"
+  - name: "Salah Bey"
+    latitude: 35.85451
+    longitude: 5.29053
+    population: 23339
+    dem: 976
+    timezone: "Africa/Algiers"
+  - name: "El Eulma"
+    latitude: 36.15281
+    longitude: 5.69016
+    population: 128351
+    dem: 959
+    timezone: "Africa/Algiers"
+  - name: "Bougaa"
+    latitude: 36.33293
+    longitude: 5.08843
+    population: 38597
+    dem: 859
+    timezone: "Africa/Algiers"
+  - name: "Ain Arnat"
+    latitude: 36.18683
+    longitude: 5.31347
+    population: 35088
+    dem: 1022
+    timezone: "Africa/Algiers"
+  - name: "BABOR-VILLE"
+    latitude: 36.48994
+    longitude: 5.5393
+    population: 33000
+    elevation: 1000
+    dem: 944
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Mila"
+  cities:
+  - name: "Telerghma"
+    latitude: 36.11653
+    longitude: 6.35434
+    population: 51708
+    dem: 748
+    timezone: "Africa/Algiers"
+  - name: "Sidi Merouane"
+    latitude: 36.52056
+    longitude: 6.26111
+    population: 25129
+    dem: 289
+    timezone: "Africa/Algiers"
+  - name: "Rouached"
+    latitude: 36.45774
+    longitude: 6.04267
+    population: 40263
+    dem: 543
+    timezone: "Africa/Algiers"
+  - name: "Mila"
+    latitude: 36.45028
+    longitude: 6.26444
+    population: 68831
+    dem: 470
+    timezone: "Africa/Algiers"
+  - name: "Chelghoum el Aid"
+    latitude: 36.16286
+    longitude: 6.16651
+    population: 71660
+    dem: 766
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Tebessa"
+  cities:
+  - name: "Tebessa"
+    latitude: 35.40417
+    longitude: 8.12417
+    population: 634332
+    dem: 867
+    timezone: "Africa/Algiers"
+  - name: "Hammamet"
+    latitude: 35.44862
+    longitude: 7.95184
+    population: 28536
+    dem: 878
+    timezone: "Africa/Algiers"
+  - name: "Cheria"
+    latitude: 35.27306
+    longitude: 7.75194
+    population: 72095
+    dem: 1094
+    timezone: "Africa/Algiers"
+  - name: "Bir el Ater"
+    latitude: 34.74488
+    longitude: 8.06024
+    population: 68703
+    dem: 889
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Tlemcen"
+  cities:
+  - name: "Tlemcen"
+    latitude: 34.87833
+    longitude: -1.315
+    population: 132341
+    dem: 811
+    timezone: "Africa/Algiers"
+  - name: "Sidi Abdelli"
+    latitude: 35.06937
+    longitude: -1.13706
+    population: 23543
+    dem: 465
+    timezone: "Africa/Algiers"
+  - name: "Sebdou"
+    latitude: 34.63703
+    longitude: -1.33143
+    population: 41146
+    dem: 920
+    timezone: "Africa/Algiers"
+  - name: "Remchi"
+    latitude: 35.06196
+    longitude: -1.43362
+    population: 51224
+    dem: 209
+    timezone: "Africa/Algiers"
+  - name: "Ouled Mimoun"
+    latitude: 34.90472
+    longitude: -1.03394
+    population: 33888
+    dem: 700
+    timezone: "Africa/Algiers"
+  - name: "Nedroma"
+    latitude: 35.01361
+    longitude: -1.74799
+    population: 36995
+    dem: 355
+    timezone: "Africa/Algiers"
+  - name: "Mansoura"
+    latitude: 34.86158
+    longitude: -1.33935
+    population: 52285
+    dem: 894
+    timezone: "Africa/Algiers"
+  - name: "Hennaya"
+    latitude: 34.95139
+    longitude: -1.36806
+    population: 41959
+    dem: 430
+    timezone: "Africa/Algiers"
+  - name: "Chetouane"
+    latitude: 34.92129
+    longitude: -1.29512
+    population: 39913
+    dem: 578
+    timezone: "Africa/Algiers"
+  - name: "Bensekrane"
+    latitude: 35.07465
+    longitude: -1.22431
+    population: 21283
+    dem: 244
+    timezone: "Africa/Algiers"
+  - name: "Beni Mester"
+    latitude: 34.87045
+    longitude: -1.42319
+    population: 19808
+    dem: 683
+    timezone: "Africa/Algiers"
+  - name: "Sidi Senoussi sydy snwsy"
+    latitude: 34.99691
+    longitude: -1.09449
+    population: 7500
+    elevation: 589
+    dem: 589
+    timezone: "Africa/Algiers"
+- name: "Oran"
+  cities:
+  - name: "Sidi ech Chahmi"
+    latitude: 35.65903
+    longitude: -0.52168
+    population: 35512
+    dem: 92
+    timezone: "Africa/Algiers"
+  - name: "Oran"
+    latitude: 35.69906
+    longitude: -0.63588
+    population: 645984
+    dem: 118
+    timezone: "Africa/Algiers"
+  - name: "Mers el Kebir"
+    latitude: 35.7279
+    longitude: -0.7081
+    population: 20178
+    dem: 22
+    timezone: "Africa/Algiers"
+  - name: "Es Senia"
+    latitude: 35.64779
+    longitude: -0.62397
+    population: 68084
+    dem: 88
+    timezone: "Africa/Algiers"
+  - name: "Bou Tlelis"
+    latitude: 35.57272
+    longitude: -0.8996
+    population: 26144
+    dem: 103
+    timezone: "Africa/Algiers"
+  - name: "Bir el Djir"
+    latitude: 35.72
+    longitude: -0.545
+    population: 68032
+    dem: 162
+    timezone: "Africa/Algiers"
+  - name: "Ain el Turk"
+    latitude: 35.74381
+    longitude: -0.7693
+    population: 45323
+    dem: 31
+    timezone: "Africa/Algiers"
+  - name: "Ain el Bya"
+    latitude: 35.80389
+    longitude: -0.30178
+    population: 37241
+    dem: 63
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Bouira"
+  cities:
+  - name: "Sour el Ghozlane"
+    latitude: 36.14766
+    longitude: 3.69123
+    population: 50204
+    dem: 884
+    timezone: "Africa/Algiers"
+  - name: "Lakhdaria"
+    latitude: 36.56463
+    longitude: 3.5933
+    population: 56719
+    dem: 171
+    timezone: "Africa/Algiers"
+  - name: "Draa el Mizan"
+    latitude: 36.53628
+    longitude: 3.8334
+    population: 41263
+    dem: 410
+    timezone: "Africa/Algiers"
+  - name: "Chorfa"
+    latitude: 36.36505
+    longitude: 4.32636
+    population: 20556
+    dem: 342
+    timezone: "Africa/Algiers"
+  - name: "Bouira"
+    latitude: 36.37489
+    longitude: 3.902
+    population: 52500
+    dem: 519
+    timezone: "Africa/Algiers"
+  - name: "Ain Bessem"
+    latitude: 36.29333
+    longitude: 3.67319
+    population: 29461
+    dem: 677
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Ain Temouchent"
+  cities:
+  - name: "Hammam Bou Hadjar"
+    latitude: 35.37889
+    longitude: -0.96778
+    population: 35896
+    dem: 148
+    timezone: "Africa/Algiers"
+  - name: "El Malah"
+    latitude: 35.39137
+    longitude: -1.09238
+    population: 19415
+    dem: 84
+    timezone: "Africa/Algiers"
+  - name: "El Amria"
+    latitude: 35.52439
+    longitude: -1.01577
+    population: 26407
+    dem: 101
+    timezone: "Africa/Algiers"
+  - name: "Beni Saf"
+    latitude: 35.30099
+    longitude: -1.38226
+    population: 46382
+    dem: 35
+    timezone: "Africa/Algiers"
+  - name: "Ain Temouchent"
+    latitude: 35.29749
+    longitude: -1.14037
+    population: 57354
+    dem: 240
+    timezone: "Africa/Algiers"
+- name: "El Bayadh"
+  cities:
+  - name: "El Bayadh"
+    latitude: 33.68318
+    longitude: 1.01927
+    population: 64632
+    dem: 1310
+    timezone: "Africa/Algiers"
+  - name: "El Abiodh Sidi Cheikh"
+    latitude: 32.893
+    longitude: 0.54839
+    population: 39283
+    dem: 903
+    timezone: "Africa/Algiers"
+  - name: "Brezina"
+    latitude: 33.09892
+    longitude: 1.26082
+    population: 19084
+    dem: 855
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Batna"
+  cities:
+  - name: "Tazoult-Lambese"
+    latitude: 35.48171
+    longitude: 6.26074
+    population: 41636
+    dem: 1205
+    timezone: "Africa/Algiers"
+  - name: "Ras el Aioun"
+    latitude: 35.67384
+    longitude: 5.6453
+    population: 34167
+    dem: 862
+    timezone: "Africa/Algiers"
+  - name: "Merouana"
+    latitude: 35.63106
+    longitude: 5.91186
+    population: 47646
+    dem: 992
+    timezone: "Africa/Algiers"
+  - name: "Boumagueur"
+    latitude: 35.5052
+    longitude: 5.5525
+    population: 8474
+    elevation: 756
+    dem: 678
+    timezone: "Africa/Algiers"
+  - name: "Batna"
+    latitude: 35.55597
+    longitude: 6.17414
+    population: 280798
+    dem: 1037
+    timezone: "Africa/Algiers"
+  - name: "Barika"
+    latitude: 35.38901
+    longitude: 5.36584
+    population: 98846
+    dem: 476
+    timezone: "Africa/Algiers"
+  - name: "Arris"
+    latitude: 35.25881
+    longitude: 6.34706
+    population: 36641
+    dem: 1205
+    timezone: "Africa/Algiers"
+  - name: "Ain Touta"
+    latitude: 35.37675
+    longitude: 5.90001
+    population: 72280
+    dem: 925
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Bejaia"
+  cities:
+  - name: "el hed"
+    latitude: 36.65
+    longitude: 4.77361
+    population: 31890
+    dem: 94
+    timezone: "Africa/Algiers"
+  - name: "Seddouk"
+    latitude: 36.54722
+    longitude: 4.68611
+    population: 19884
+    dem: 353
+    timezone: "Africa/Algiers"
+  - name: "Feraoun"
+    latitude: 36.56041
+    longitude: 4.85454
+    population: 21700
+    dem: 652
+    timezone: "Africa/Algiers"
+  - name: "El Kseur"
+    latitude: 36.67942
+    longitude: 4.8555
+    population: 26050
+    dem: 84
+    timezone: "Africa/Algiers"
+  - name: "Bejaia"
+    latitude: 36.75587
+    longitude: 5.08433
+    population: 164103
+    dem: 86
+    timezone: "Africa/Algiers"
+  - name: "Barbacha"
+    latitude: 36.56667
+    longitude: 4.96667
+    population: 31983
+    dem: 571
+    timezone: "Africa/Algiers"
+  - name: "Amizour"
+    latitude: 36.64022
+    longitude: 4.90131
+    population: 25825
+    dem: 96
+    timezone: "Africa/Algiers"
+  - name: "Akbou"
+    latitude: 36.4575
+    longitude: 4.53494
+    population: 66654
+    dem: 215
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Jijel"
+  cities:
+  - name: "Jijel"
+    latitude: 36.82055
+    longitude: 5.76671
+    population: 148000
+    dem: 9
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Medea"
+  cities:
+  - name: "Medea"
+    latitude: 36.26417
+    longitude: 2.75393
+    population: 147707
+    dem: 910
+    timezone: "Africa/Algiers"
+  - name: "Ksar el Boukhari"
+    latitude: 35.88889
+    longitude: 2.74905
+    population: 77166
+    dem: 621
+    timezone: "Africa/Algiers"
+  - name: "Berrouaghia"
+    latitude: 36.13516
+    longitude: 2.91085
+    population: 80573
+    dem: 946
+    timezone: "Africa/Algiers"
+  - name: "Ain Boucif"
+    latitude: 35.89123
+    longitude: 3.1585
+    population: 11989
+    dem: 1123
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Chlef"
+  cities:
+  - name: "Sidi Akkacha"
+    latitude: 36.46472
+    longitude: 1.30258
+    population: 26558
+    dem: 120
+    timezone: "Africa/Algiers"
+  - name: "Oued Sly"
+    latitude: 36.10124
+    longitude: 1.19949
+    population: 30504
+    dem: 90
+    timezone: "Africa/Algiers"
+  - name: "Oued Fodda"
+    latitude: 36.18503
+    longitude: 1.53299
+    population: 44523
+    dem: 168
+    timezone: "Africa/Algiers"
+  - name: "Chlef"
+    latitude: 36.16525
+    longitude: 1.33452
+    population: 178616
+    dem: 116
+    timezone: "Africa/Algiers"
+  - name: "Ech Chettia"
+    latitude: 36.19591
+    longitude: 1.25537
+    population: 167955
+    dem: 140
+    timezone: "Africa/Algiers"
+  - name: "Boukadir"
+    latitude: 36.06629
+    longitude: 1.12602
+    population: 26662
+    dem: 79
+    timezone: "Africa/Algiers"
+  - name: "Abou el Hassan"
+    latitude: 36.41657
+    longitude: 1.19616
+    population: 24022
+    dem: 189
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Tissemsilt"
+  cities:
+  - name: "Tissemsilt"
+    latitude: 35.60722
+    longitude: 1.81081
+    population: 61155
+    dem: 866
+    timezone: "Africa/Algiers"
+  - name: "Lardjem"
+    latitude: 35.74922
+    longitude: 1.54778
+    population: 30000
+    dem: 552
+    timezone: "Africa/Algiers"
+- name: "El Tarf"
+  cities:
+  - name: "El Tarf"
+    latitude: 36.7672
+    longitude: 8.31377
+    population: 20300
+    dem: 24
+    timezone: "Africa/Algiers"
+  - name: "El Kala"
+    latitude: 36.89556
+    longitude: 8.44333
+    population: 35449
+    dem: 21
+    timezone: "Africa/Algiers"
+  - name: "Besbes"
+    latitude: 36.70222
+    longitude: 7.84722
+    population: 66287
+    dem: 20
+    timezone: "Africa/Algiers"
+  - name: "Ben Mehidi"
+    latitude: 36.76967
+    longitude: 7.90641
+    population: 28398
+    dem: 8
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Ouargla"
+  cities:
+  - name: "Touggourt"
+    latitude: 33.10527
+    longitude: 6.05796
+    population: 49044
+    dem: 72
+    timezone: "Africa/Algiers"
+  - name: "Tebesbest"
+    latitude: 33.11667
+    longitude: 6.08333
+    population: 41091
+    dem: 70
+    timezone: "Africa/Algiers"
+  - name: "Sidi Amrane"
+    latitude: 33.49885
+    longitude: 6.00803
+    population: 29734
+    dem: 45
+    timezone: "Africa/Algiers"
+  - name: "Rouissat"
+    latitude: 31.92427
+    longitude: 5.35018
+    population: 80784
+    dem: 138
+    timezone: "Africa/Algiers"
+  - name: "Ouargla"
+    latitude: 31.94932
+    longitude: 5.32502
+    population: 129402
+    dem: 138
+    timezone: "Africa/Algiers"
+  - name: "Megarine"
+    latitude: 33.19195
+    longitude: 6.08695
+    population: 31711
+    dem: 68
+    timezone: "Africa/Algiers"
+  - name: "Hassi Messaoud"
+    latitude: 31.68041
+    longitude: 6.07286
+    population: 53000
+    dem: 152
+    timezone: "Africa/Algiers"
+  - name: "El Hadjira"
+    latitude: 32.61336
+    longitude: 5.51259
+    population: 39744
+    dem: 130
+    timezone: "Africa/Algiers"
+  - name: "Djamaa"
+    latitude: 33.53388
+    longitude: 5.99306
+    population: 52882
+    dem: 40
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Guelma"
+  cities:
+  - name: "Heliopolis"
+    latitude: 36.50361
+    longitude: 7.44278
+    population: 40139
+    dem: 268
+    timezone: "Africa/Algiers"
+  - name: "Guelma"
+    latitude: 36.46214
+    longitude: 7.42608
+    population: 123590
+    dem: 305
+    timezone: "Africa/Algiers"
+  - name: "Boumahra Ahmed"
+    latitude: 36.45833
+    longitude: 7.51389
+    population: 23022
+    dem: 208
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Bechar"
+  cities:
+  - name: "Bechar"
+    latitude: 31.61667
+    longitude: -2.21667
+    population: 143382
+    dem: 780
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Tamanrasset"
+  cities:
+  - name: "Tamanrasset"
+    latitude: 22.785
+    longitude: 5.52278
+    population: 73128
+    dem: 1372
+    timezone: "Africa/Algiers"
+  - name: "I-n-Salah"
+    latitude: 27.19351
+    longitude: 2.46069
+    population: 49223
+    dem: 273
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Mascara"
+  cities:
+  - name: "Sig"
+    latitude: 35.52832
+    longitude: -0.19369
+    population: 58877
+    dem: 62
+    timezone: "Africa/Algiers"
+  - name: "Oued el Abtal"
+    latitude: 35.45595
+    longitude: 0.68778
+    population: 22819
+    dem: 259
+    timezone: "Africa/Algiers"
+  - name: "Mascara"
+    latitude: 35.39664
+    longitude: 0.14027
+    population: 150000
+    dem: 590
+    timezone: "Africa/Algiers"
+  - name: "Bou Hanifia el Hamamat"
+    latitude: 35.31473
+    longitude: -0.05037
+    population: 27576
+    dem: 232
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Khenchela"
+  cities:
+  - name: "Khenchela"
+    latitude: 35.43583
+    longitude: 7.14333
+    population: 117000
+    dem: 1128
+    timezone: "Africa/Algiers"
+- name: "Oum el Bouaghi"
+  cities:
+  - name: "Oum el Bouaghi"
+    latitude: 35.87541
+    longitude: 7.11353
+    population: 100821
+    dem: 925
+    timezone: "Africa/Algiers"
+  - name: "Meskiana"
+    latitude: 35.63058
+    longitude: 7.66606
+    population: 30071
+    dem: 850
+    timezone: "Africa/Algiers"
+  - name: "El Aouinet"
+    latitude: 35.86691
+    longitude: 7.88673
+    population: 32971
+    dem: 653
+    timezone: "Africa/Algiers"
+  - name: "Ain Kercha"
+    latitude: 35.92472
+    longitude: 6.69528
+    population: 32497
+    dem: 819
+    timezone: "Africa/Algiers"
+  - name: "Ain Fakroun"
+    latitude: 35.97108
+    longitude: 6.87374
+    population: 68433
+    dem: 953
+    timezone: "Africa/Algiers"
+  - name: "Ain Beida"
+    latitude: 35.79639
+    longitude: 7.39278
+    population: 105765
+    dem: 1008
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Blida"
+  cities:
+  - name: "Souma"
+    latitude: 36.51833
+    longitude: 2.90528
+    population: 40745
+    dem: 151
+    timezone: "Africa/Algiers"
+  - name: "Sidi Moussa"
+    latitude: 36.60637
+    longitude: 3.08783
+    population: 57928
+    dem: 46
+    timezone: "Africa/Algiers"
+  - name: "Meftah"
+    latitude: 36.6204
+    longitude: 3.22248
+    population: 59990
+    dem: 78
+    timezone: "Africa/Algiers"
+  - name: "Larbaa"
+    latitude: 36.56471
+    longitude: 3.15434
+    population: 69298
+    dem: 100
+    timezone: "Africa/Algiers"
+  - name: "Chiffa"
+    latitude: 36.46293
+    longitude: 2.73873
+    population: 23218
+    dem: 110
+    timezone: "Africa/Algiers"
+  - name: "Chebli"
+    latitude: 36.57722
+    longitude: 3.00917
+    population: 19901
+    dem: 56
+    timezone: "Africa/Algiers"
+  - name: "Bouinan"
+    latitude: 36.53167
+    longitude: 2.99194
+    population: 30271
+    dem: 92
+    timezone: "Africa/Algiers"
+  - name: "Bougara"
+    latitude: 36.54178
+    longitude: 3.081
+    population: 63155
+    dem: 110
+    timezone: "Africa/Algiers"
+  - name: "Boufarik"
+    latitude: 36.57413
+    longitude: 2.91214
+    population: 59742
+    dem: 49
+    timezone: "Africa/Algiers"
+  - name: "Bou Arfa"
+    latitude: 36.46298
+    longitude: 2.81464
+    population: 44143
+    dem: 241
+    timezone: "Africa/Algiers"
+  - name: "Blida"
+    latitude: 36.47004
+    longitude: 2.8277
+    population: 182447
+    dem: 256
+    timezone: "Africa/Algiers"
+  - name: "Beni Mered"
+    latitude: 36.52389
+    longitude: 2.86131
+    population: 92749
+    dem: 136
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Tizi Ouzou"
+  cities:
+  - name: "Tizi Rached"
+    latitude: 36.67176
+    longitude: 4.19176
+    population: 17872
+    dem: 405
+    timezone: "Africa/Algiers"
+  - name: "Tizi Ouzou"
+    latitude: 36.71182
+    longitude: 4.04591
+    population: 144000
+    dem: 206
+    timezone: "Africa/Algiers"
+  - name: "Tizi-n-Tleta"
+    latitude: 36.54569
+    longitude: 4.05712
+    population: 22404
+    dem: 483
+    timezone: "Africa/Algiers"
+  - name: "Tirmitine"
+    latitude: 36.65393
+    longitude: 3.98143
+    population: 26261
+    dem: 532
+    timezone: "Africa/Algiers"
+  - name: "Timizart"
+    latitude: 36.8
+    longitude: 4.26667
+    population: 41158
+    dem: 312
+    timezone: "Africa/Algiers"
+  - name: "Mekla"
+    latitude: 36.68178
+    longitude: 4.26378
+    population: 29560
+    dem: 325
+    timezone: "Africa/Algiers"
+  - name: "LArbaa Nait Irathen"
+    latitude: 36.63112
+    longitude: 4.19864
+    population: 30609
+    dem: 710
+    timezone: "Africa/Algiers"
+  - name: "Ighram"
+    latitude: 36.46295
+    longitude: 4.50532
+    population: 15030
+    dem: 334
+    timezone: "Africa/Algiers"
+  - name: "Freha"
+    latitude: 36.75234
+    longitude: 4.3155
+    population: 31068
+    dem: 170
+    timezone: "Africa/Algiers"
+  - name: "Chemini"
+    latitude: 36.6
+    longitude: 4.61667
+    population: 21585
+    dem: 852
+    timezone: "Africa/Algiers"
+  - name: "Boudjima"
+    latitude: 36.80218
+    longitude: 4.15187
+    population: 20557
+    dem: 295
+    timezone: "Africa/Algiers"
+  - name: "Boghni"
+    latitude: 36.54222
+    longitude: 3.95306
+    population: 54666
+    dem: 249
+    timezone: "Africa/Algiers"
+  - name: "Beni Douala"
+    latitude: 36.61954
+    longitude: 4.08282
+    population: 33611
+    dem: 804
+    timezone: "Africa/Algiers"
+  - name: "Azazga"
+    latitude: 36.74472
+    longitude: 4.37222
+    population: 40623
+    dem: 435
+    timezone: "Africa/Algiers"
+  - name: "Arhribs"
+    latitude: 36.79361
+    longitude: 4.31158
+    population: 23958
+    dem: 375
+    timezone: "Africa/Algiers"
+  - name: "Ain el Hammam"
+    latitude: 36.56471
+    longitude: 4.30619
+    population: 28029
+    dem: 841
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Ain Defla"
+  cities:
+  - name: "Theniet el Had"
+    latitude: 35.87111
+    longitude: 2.02806
+    population: 27687
+    dem: 1129
+    timezone: "Africa/Algiers"
+  - name: "Khemis Miliana"
+    latitude: 36.26104
+    longitude: 2.22015
+    population: 75865
+    dem: 299
+    timezone: "Africa/Algiers"
+  - name: "El Attaf"
+    latitude: 36.22393
+    longitude: 1.67187
+    population: 43837
+    dem: 158
+    timezone: "Africa/Algiers"
+  - name: "El Abadia"
+    latitude: 36.26951
+    longitude: 1.68609
+    population: 28724
+    dem: 177
+    timezone: "Africa/Algiers"
+  - name: "Ain Defla"
+    latitude: 36.26405
+    longitude: 1.9679
+    population: 52276
+    dem: 264
+    timezone: "Africa/Algiers"
+- name: "Illizi"
+  cities:
+  - name: "Illizi"
+    latitude: 26.48333
+    longitude: 8.46667
+    population: 6629
+    dem: 556
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Souk Ahras"
+  cities:
+  - name: "Souk Ahras"
+    latitude: 36.28639
+    longitude: 7.95111
+    population: 156745
+    dem: 697
+    timezone: "Africa/Algiers"
+  - name: "Sedrata"
+    latitude: 36.12868
+    longitude: 7.53376
+    population: 53318
+    dem: 794
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Tipaza"
+  cities:
+  - name: "Zeralda"
+    latitude: 36.71169
+    longitude: 2.84244
+    population: 17563
+    dem: 30
+    timezone: "Africa/Algiers"
+  - name: "Tipasa"
+    latitude: 36.58972
+    longitude: 2.4475
+    population: 25225
+    dem: 32
+    timezone: "Africa/Algiers"
+  - name: "Saoula"
+    latitude: 36.70456
+    longitude: 3.02462
+    population: 16812
+    dem: 105
+    timezone: "Africa/Algiers"
+  - name: "Oued el Alleug"
+    latitude: 36.55528
+    longitude: 2.79028
+    population: 21146
+    dem: 47
+    timezone: "Africa/Algiers"
+  - name: "Mouzaia"
+    latitude: 36.46695
+    longitude: 2.68991
+    population: 32981
+    dem: 121
+    timezone: "Africa/Algiers"
+  - name: "Kolea"
+    latitude: 36.63888
+    longitude: 2.76845
+    population: 31816
+    dem: 137
+    timezone: "Africa/Algiers"
+  - name: "Hadjout"
+    latitude: 36.51257
+    longitude: 2.41382
+    population: 27549
+    dem: 88
+    timezone: "Africa/Algiers"
+  - name: "El Affroun"
+    latitude: 36.4701
+    longitude: 2.62528
+    population: 42627
+    dem: 96
+    timezone: "Africa/Algiers"
+  - name: "Douera"
+    latitude: 36.67
+    longitude: 2.94444
+    population: 26926
+    dem: 178
+    timezone: "Africa/Algiers"
+  - name: "Cheraga"
+    latitude: 36.76775
+    longitude: 2.95924
+    population: 27835
+    dem: 171
+    timezone: "Africa/Algiers"
+  - name: "Bou Ismail"
+    latitude: 36.64262
+    longitude: 2.69007
+    population: 22411
+    dem: 29
+    timezone: "Africa/Algiers"
+  - name: "Baraki"
+    latitude: 36.66655
+    longitude: 3.09606
+    population: 105402
+    dem: 22
+    timezone: "Africa/Algiers"
+  - name: "Ain Benian"
+    latitude: 36.80277
+    longitude: 2.92185
+    population: 31102
+    dem: 30
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Boumerdes"
+  cities:
+  - name: "Boumerdas"
+    latitude: 36.76639
+    longitude: 3.47717
+    population: 786499
+    dem: 5
+    timezone: "Africa/Algiers"
+  - name: "Tizi Gheniff"
+    latitude: 36.58839
+    longitude: 3.77445
+    population: 27974
+    dem: 370
+    timezone: "Africa/Algiers"
+  - name: "Thenia"
+    latitude: 36.72544
+    longitude: 3.55665
+    population: 16180
+    dem: 148
+    timezone: "Africa/Algiers"
+  - name: "Tadmait"
+    latitude: 36.74413
+    longitude: 3.90045
+    population: 20952
+    dem: 52
+    timezone: "Africa/Algiers"
+  - name: "Reghaia"
+    latitude: 36.73587
+    longitude: 3.34018
+    population: 54962
+    dem: 14
+    timezone: "Africa/Algiers"
+  - name: "Ouled Moussa"
+    latitude: 36.68394
+    longitude: 3.36661
+    population: 13474
+    dem: 115
+    timezone: "Africa/Algiers"
+  - name: "Naciria"
+    latitude: 36.74625
+    longitude: 3.83163
+    population: 15387
+    dem: 169
+    timezone: "Africa/Algiers"
+  - name: "Makouda"
+    latitude: 36.78567
+    longitude: 4.06273
+    population: 34515
+    dem: 310
+    timezone: "Africa/Algiers"
+  - name: "Khemis el Khechna"
+    latitude: 36.64997
+    longitude: 3.3308
+    population: 49757
+    dem: 91
+    timezone: "Africa/Algiers"
+  - name: "Draa Ben Khedda"
+    latitude: 36.73436
+    longitude: 3.96223
+    population: 37443
+    dem: 43
+    timezone: "Africa/Algiers"
+  - name: "Dellys"
+    latitude: 36.91716
+    longitude: 3.91311
+    population: 26384
+    dem: 63
+    timezone: "Africa/Algiers"
+  - name: "Chabet el Ameur"
+    latitude: 36.63709
+    longitude: 3.69474
+    population: 19522
+    dem: 245
+    timezone: "Africa/Algiers"
+  - name: "Boudouaou"
+    latitude: 36.72735
+    longitude: 3.40995
+    population: 45153
+    dem: 17
+    timezone: "Africa/Algiers"
+  - name: "Beni Amrane"
+    latitude: 36.66774
+    longitude: 3.59115
+    population: 18414
+    dem: 129
+    timezone: "Africa/Algiers"
+  - name: "Arbatache"
+    latitude: 36.63773
+    longitude: 3.37127
+    population: 17481
+    dem: 150
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Naama"
+  cities:
+  - name: "Naama"
+    latitude: 33.26667
+    longitude: -0.31667
+    population: 8390
+    dem: 1169
+    timezone: "Africa/Algiers"
+  - name: "Ain Sefra"
+    latitude: 32.75
+    longitude: -0.58333
+    population: 63420
+    dem: 1078
+    timezone: "Africa/Algiers"
+- name: "Adrar"
+  cities:
+  - name: "Timimoun"
+    latitude: 29.26388
+    longitude: 0.23098
+    population: 49237
+    dem: 279
+    timezone: "Africa/Algiers"
+  - name: "Reggane"
+    latitude: 26.71576
+    longitude: 0.1714
+    population: 32974
+    dem: 210
+    timezone: "Africa/Algiers"
+  - name: "Aoulef"
+    latitude: 26.96667
+    longitude: 1.08333
+    population: 24812
+    dem: 285
+    timezone: "Africa/Algiers"
+  - name: "Adrar"
+    latitude: 27.87429
+    longitude: -0.29388
+    population: 43903
+    dem: 257
+    timezone: "Africa/Algiers"
+- name: "El Oued"
+  cities:
+  - name: "Robbah"
+    latitude: 33.27967
+    longitude: 6.90984
+    population: 30446
+    dem: 90
+    timezone: "Africa/Algiers"
+  - name: "Reguiba"
+    latitude: 33.56391
+    longitude: 6.70326
+    population: 62185
+    dem: 58
+    timezone: "Africa/Algiers"
+  - name: "El Oued"
+    latitude: 33.35608
+    longitude: 6.86319
+    population: 134699
+    dem: 84
+    timezone: "Africa/Algiers"
+  - name: "Debila"
+    latitude: 33.51667
+    longitude: 6.95
+    population: 36834
+    dem: 52
+    timezone: "Africa/Algiers"
+- name: "Wilaya d Alger"
+  cities:
+  - name: "Rouiba"
+    latitude: 36.73829
+    longitude: 3.28079
+    population: 20742
+    dem: 16
+    timezone: "Africa/Algiers"
+  - name: "Dar el Beida"
+    latitude: 36.71333
+    longitude: 3.2125
+    population: 37311
+    dem: 17
+    timezone: "Africa/Algiers"
+  - name: "Bordj el Kiffan"
+    latitude: 36.74871
+    longitude: 3.19249
+    population: 123246
+    dem: 11
+    timezone: "Africa/Algiers"
+  - name: "Birkhadem"
+    latitude: 36.71499
+    longitude: 3.05002
+    population: 71722
+    dem: 94
+    timezone: "Africa/Algiers"
+  - name: "Bab Ezzouar"
+    latitude: 36.72615
+    longitude: 3.18291
+    population: 275630
+    dem: 20
+    timezone: "Africa/Algiers"
+  - name: "Algiers"
+    latitude: 36.73225
+    longitude: 3.08746
+    population: 1977663
+    dem: 113
+    timezone: "Africa/Algiers"
+  - name: "Ain Taya"
+    latitude: 36.79333
+    longitude: 3.28694
+    population: 21815
+    dem: 26
+    timezone: "Africa/Algiers"
+- name: "Annaba"
+  cities:
+  - name: "El Hadjar"
+    latitude: 36.80377
+    longitude: 7.73684
+    population: 46656
+    dem: 13
+    timezone: "Africa/Algiers"
+  - name: "Drean"
+    latitude: 36.68482
+    longitude: 7.75111
+    population: 55147
+    dem: 24
+    timezone: "Africa/Algiers"
+  - name: "Berrahal"
+    latitude: 36.83528
+    longitude: 7.45333
+    population: 19294
+    dem: 30
+    timezone: "Africa/Algiers"
+  - name: "Annaba"
+    latitude: 36.9
+    longitude: 7.76667
+    population: 206570
+    dem: 5
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Djelfa"
+  cities:
+  - name: "Messaad"
+    latitude: 34.15429
+    longitude: 3.50309
+    population: 99485
+    dem: 777
+    timezone: "Africa/Algiers"
+  - name: "El Idrissia"
+    latitude: 34.44542
+    longitude: 2.52749
+    population: 38714
+    dem: 1070
+    timezone: "Africa/Algiers"
+  - name: "Djelfa"
+    latitude: 34.67279
+    longitude: 3.263
+    population: 154265
+    dem: 1138
+    timezone: "Africa/Algiers"
+  - name: "Dar Chioukh"
+    latitude: 34.89638
+    longitude: 3.48543
+    population: 54022
+    dem: 1094
+    timezone: "Africa/Algiers"
+  - name: "Charef"
+    latitude: 34.62098
+    longitude: 2.79503
+    population: 27700
+    dem: 1157
+    timezone: "Africa/Algiers"
+  - name: "Birine"
+    latitude: 35.635
+    longitude: 3.225
+    population: 51209
+    dem: 736
+    timezone: "Africa/Algiers"
+  - name: "Ain Oussera"
+    latitude: 35.45139
+    longitude: 2.90583
+    population: 118687
+    dem: 685
+    timezone: "Africa/Algiers"
+  - name: "Ain el Bell"
+    latitude: 34.34381
+    longitude: 3.22475
+    population: 31916
+    dem: 1008
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Constantine"
+  cities:
+  - name: "Hamma Bouziane"
+    latitude: 36.41205
+    longitude: 6.59603
+    population: 63012
+    dem: 479
+    timezone: "Africa/Algiers"
+  - name: "El Khroub"
+    latitude: 36.26333
+    longitude: 6.69361
+    population: 83746
+    dem: 630
+    timezone: "Africa/Algiers"
+  - name: "Didouche Mourad"
+    latitude: 36.4525
+    longitude: 6.63639
+    population: 25764
+    dem: 537
+    timezone: "Africa/Algiers"
+  - name: "Constantine"
+    latitude: 36.365
+    longitude: 6.61472
+    population: 450097
+    dem: 574
+    timezone: "Africa/Algiers"
+  - name: "Ain Smara"
+    latitude: 36.2674
+    longitude: 6.50135
+    population: 28968
+    dem: 627
+    timezone: "Africa/Algiers"
+  - name: "Ain Abid"
+    latitude: 36.23194
+    longitude: 6.94333
+    population: 29486
+    dem: 868
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Skikda"
+  cities:
+  - name: "Tamalous"
+    latitude: 36.83763
+    longitude: 6.64018
+    population: 32579
+    dem: 65
+    timezone: "Africa/Algiers"
+  - name: "Skikda"
+    latitude: 36.87617
+    longitude: 6.90921
+    population: 162702
+    dem: 24
+    timezone: "Africa/Algiers"
+  - name: "Kerkera"
+    latitude: 36.92917
+    longitude: 6.58556
+    population: 46747
+    dem: 39
+    timezone: "Africa/Algiers"
+  - name: "Azzaba"
+    latitude: 36.73944
+    longitude: 7.10528
+    population: 75317
+    dem: 99
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Laghouat"
+  cities:
+  - name: "Laghouat"
+    latitude: 33.8
+    longitude: 2.86514
+    population: 113872
+    dem: 764
+    timezone: "Africa/Algiers"
+  - name: "Aflou"
+    latitude: 34.11279
+    longitude: 2.10228
+    population: 84683
+    dem: 1392
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Biskra"
+  cities:
+  - name: "Zeribet el Oued"
+    latitude: 34.68284
+    longitude: 6.51109
+    population: 23187
+    dem: 47
+    timezone: "Africa/Algiers"
+  - name: "Tolga"
+    latitude: 34.72224
+    longitude: 5.37845
+    population: 68246
+    dem: 161
+    timezone: "Africa/Algiers"
+  - name: "Sidi Okba"
+    latitude: 34.74512
+    longitude: 5.89833
+    population: 34985
+    dem: 53
+    timezone: "Africa/Algiers"
+  - name: "Sidi Khaled"
+    latitude: 34.387
+    longitude: 4.98785
+    population: 64476
+    dem: 204
+    timezone: "Africa/Algiers"
+  - name: "Oumache"
+    latitude: 34.69292
+    longitude: 5.68092
+    population: 10424
+    dem: 54
+    timezone: "Africa/Algiers"
+  - name: "Biskra"
+    latitude: 34.85038
+    longitude: 5.72805
+    population: 307987
+    dem: 115
+    timezone: "Africa/Algiers"
+- name: "Wilaya de Saida"
+  cities:
+  - name: "Saida"
+    latitude: 34.83033
+    longitude: 0.15171
+    population: 127497
+    dem: 840
+    timezone: "Africa/Algiers"
+  - name: "Ain el Hadjar"
+    latitude: 34.75846
+    longitude: 0.14528
+    population: 12996
+    dem: 1024
+    timezone: "Africa/Algiers"

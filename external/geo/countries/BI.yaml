@@ -1,0 +1,159 @@
+---
+name: "Burundi"
+iso: "BI"
+iso3: "BDI"
+code: "108"
+capital: "Bujumbura"
+area: 27830.0
+population: 9863117
+continent: "AF"
+currencyCode: "BIF"
+currencyName: "Franc"
+phone: "257"
+languages: "fr-BI,rn"
+neighbours: "TZ,CD,RW"
+regions:
+- name: "Ngozi Province"
+  cities:
+  - name: "Ngozi"
+    latitude: -2.9075
+    longitude: 29.8306
+    population: 21506
+    dem: 1824
+    timezone: "Africa/Bujumbura"
+- name: "Bujumbura Rural Province"
+  cities:
+  - name: "Isale"
+    latitude: -3.3489
+    longitude: 29.4839
+    population: 0
+    dem: 1728
+    timezone: "Africa/Bujumbura"
+- name: "Bururi Province"
+  cities:
+  - name: "Bururi"
+    latitude: -3.94877
+    longitude: 29.62438
+    population: 19740
+    dem: 1857
+    timezone: "Africa/Bujumbura"
+- name: "Gitega Province"
+  cities:
+  - name: "Gitega"
+    latitude: -3.42708
+    longitude: 29.92463
+    population: 41000
+    dem: 1849
+    timezone: "Africa/Bujumbura"
+- name: "Kirundo Province"
+  cities:
+  - name: "Kirundo"
+    latitude: -2.5845
+    longitude: 30.0959
+    population: 6083
+    dem: 1403
+    timezone: "Africa/Bujumbura"
+- name: "Kayanza Province"
+  cities:
+  - name: "Kayanza"
+    latitude: -2.9221
+    longitude: 29.6293
+    population: 19443
+    dem: 1918
+    timezone: "Africa/Bujumbura"
+- name: "Bubanza Province"
+  cities:
+  - name: "Bubanza"
+    latitude: -3.0804
+    longitude: 29.391
+    population: 12728
+    dem: 1079
+    timezone: "Africa/Bujumbura"
+- name: "Ruyigi Province"
+  cities:
+  - name: "Ruyigi"
+    latitude: -3.47639
+    longitude: 30.24861
+    population: 38458
+    dem: 1596
+    timezone: "Africa/Bujumbura"
+- name: "Bujumbura Mairie Province"
+  cities:
+  - name: "Bujumbura"
+    latitude: -3.38193
+    longitude: 29.36142
+    population: 331700
+    dem: 795
+    timezone: "Africa/Bujumbura"
+- name: "Muyinga Province"
+  cities:
+  - name: "Muyinga"
+    latitude: -2.8451
+    longitude: 30.3414
+    population: 71076
+    dem: 1757
+    timezone: "Africa/Bujumbura"
+- name: "Cibitoke Province"
+  cities:
+  - name: "Cibitoke"
+    latitude: -2.8869
+    longitude: 29.1248
+    population: 14220
+    dem: 937
+    timezone: "Africa/Bujumbura"
+- name: "Cankuzo Province"
+  cities:
+  - name: "Cankuzo"
+    latitude: -3.2186
+    longitude: 30.5528
+    population: 6585
+    dem: 1616
+    timezone: "Africa/Bujumbura"
+- name: "Rumonge Province"
+  cities:
+  - name: "Rumonge"
+    latitude: -3.9736
+    longitude: 29.4386
+    population: 6074
+    dem: 790
+    timezone: "Africa/Bujumbura"
+- name: "Rutana Province"
+  cities:
+  - name: "Rutana"
+    latitude: -3.9279
+    longitude: 29.992
+    population: 20893
+    dem: 1792
+    timezone: "Africa/Bujumbura"
+- name: "Karuzi Province"
+  cities:
+  - name: "Karuzi"
+    latitude: -3.10139
+    longitude: 30.16278
+    population: 10705
+    dem: 1627
+    timezone: "Africa/Bujumbura"
+- name: "Province de Mwaro"
+  cities:
+  - name: "Mwaro"
+    latitude: -3.51128
+    longitude: 29.70334
+    population: 4924
+    dem: 1974
+    timezone: "Africa/Bujumbura"
+- name: "Makamba Province"
+  cities:
+  - name: "Makamba"
+    latitude: -4.1348
+    longitude: 29.804
+    population: 19642
+    dem: 1476
+    timezone: "Africa/Bujumbura"
+- name: "Muramvya Province"
+  cities:
+  - name: "Muramvya"
+    latitude: -3.2682
+    longitude: 29.6079
+    population: 18041
+    dem: 1878
+    timezone: "Africa/Bujumbura"

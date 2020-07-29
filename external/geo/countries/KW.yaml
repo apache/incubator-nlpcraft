@@ -1,0 +1,161 @@
+---
+name: "Kuwait"
+iso: "KW"
+iso3: "KWT"
+code: "414"
+capital: "Kuwait City"
+area: 17820.0
+population: 2789132
+continent: "AS"
+currencyCode: "KWD"
+currencyName: "Dinar"
+phone: "965"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ar-KW,en"
+neighbours: "SA,IQ"
+regions:
+- name: "Al Asimah Governorate"
+  cities:
+  - name: "Az Zawr"
+    latitude: 29.4425
+    longitude: 48.27472
+    population: 5750
+    dem: 5
+    timezone: "Asia/Kuwait"
+  - name: "Ash Shamiyah"
+    latitude: 29.34722
+    longitude: 47.96167
+    population: 13762
+    dem: 9
+    timezone: "Asia/Kuwait"
+  - name: "Kuwait City"
+    latitude: 29.36972
+    longitude: 47.97833
+    population: 60064
+    dem: 16
+    timezone: "Asia/Kuwait"
+  - name: "Ad Dasmah"
+    latitude: 29.365
+    longitude: 48.00139
+    population: 17585
+    dem: 9
+    timezone: "Asia/Kuwait"
+  - name: "Ar Rabiyah"
+    latitude: 29.295
+    longitude: 47.93306
+    population: 36447
+    dem: 24
+    timezone: "Asia/Kuwait"
+- name: "Muhafazat al Jahra"
+  cities:
+  - name: "Al Jahra"
+    latitude: 29.3375
+    longitude: 47.65806
+    population: 24281
+    dem: 40
+    timezone: "Asia/Kuwait"
+- name: "Muhafazat al Ahmadi"
+  cities:
+  - name: "Ar Riqqah"
+    latitude: 29.14583
+    longitude: 48.09472
+    population: 52068
+    dem: 45
+    timezone: "Asia/Kuwait"
+  - name: "Al Wafrah"
+    latitude: 28.63917
+    longitude: 47.93056
+    population: 10017
+    dem: 164
+    timezone: "Asia/Kuwait"
+  - name: "Al Manqaf"
+    latitude: 29.09611
+    longitude: 48.13278
+    population: 39025
+    dem: 14
+    timezone: "Asia/Kuwait"
+  - name: "Al Mahbulah"
+    latitude: 29.145
+    longitude: 48.13028
+    population: 18178
+    dem: 7
+    timezone: "Asia/Kuwait"
+  - name: "Al Fahahil"
+    latitude: 29.0825
+    longitude: 48.13028
+    population: 68290
+    dem: 18
+    timezone: "Asia/Kuwait"
+  - name: "Al Fintas"
+    latitude: 29.17389
+    longitude: 48.12111
+    population: 23071
+    dem: 8
+    timezone: "Asia/Kuwait"
+  - name: "Al Ahmadi"
+    latitude: 29.07694
+    longitude: 48.08389
+    population: 637411
+    dem: 70
+    timezone: "Asia/Kuwait"
+- name: "Muhafazat al Farwaniyah"
+  cities:
+  - name: "Janub as Surrah"
+    latitude: 29.26917
+    longitude: 47.97806
+    population: 18496
+    dem: 49
+    timezone: "Asia/Kuwait"
+  - name: "Al Farwaniyah"
+    latitude: 29.2775
+    longitude: 47.95861
+    population: 86525
+    dem: 44
+    timezone: "Asia/Kuwait"
+- name: "Muhafazat Mubarak al Kabir"
+  cities:
+  - name: "Sabah as Salim"
+    latitude: 29.25722
+    longitude: 48.05722
+    population: 139163
+    dem: 32
+    timezone: "Asia/Kuwait"
+  - name: "Mubarak al Kabir"
+    latitude: 29.18979
+    longitude: 48.08716
+    population: 0
+    dem: 37
+    timezone: "Asia/Kuwait"
+- name: "Muhafazat Hawalli"
+  cities:
+  - name: "Hawalli"
+    latitude: 29.33278
+    longitude: 48.02861
+    population: 164212
+    dem: 19
+    timezone: "Asia/Kuwait"
+  - name: "Bayan"
+    latitude: 29.3032
+    longitude: 48.04881
+    population: 30635
+    dem: 20
+    timezone: "Asia/Kuwait"
+  - name: "As Salimiyah"
+    latitude: 29.33389
+    longitude: 48.07611
+    population: 147649
+    dem: 11
+    timezone: "Asia/Kuwait"
+  - name: "Ar Rumaythiyah"
+    latitude: 29.31167
+    longitude: 48.07417
+    population: 58135
+    dem: 9
+    timezone: "Asia/Kuwait"
+  - name: "Salwa"
+    latitude: 29.29583
+    longitude: 48.07861
+    population: 40945
+    dem: 15
+    timezone: "Asia/Kuwait"

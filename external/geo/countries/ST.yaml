@@ -1,0 +1,30 @@
+---
+name: "Sao Tome and Principe"
+iso: "ST"
+iso3: "STP"
+code: "678"
+capital: "Sao Tome"
+area: 1001.0
+population: 197700
+continent: "AF"
+currencyCode: "STD"
+currencyName: "Dobra"
+phone: "239"
+languages: "pt-ST"
+regions:
+- name: "Principe"
+  cities:
+  - name: "Santo Antonio"
+    latitude: 1.63943
+    longitude: 7.41951
+    population: 1156
+    dem: 156
+    timezone: "Africa/Sao_Tome"
+- name: "Sao Tome"
+  cities:
+  - name: "Sao Tome"
+    latitude: 0.33654
+    longitude: 6.72732
+    population: 53300
+    dem: 8
+    timezone: "Africa/Sao_Tome"

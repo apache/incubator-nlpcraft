@@ -1,0 +1,671 @@
+---
+name: "Ethiopia"
+iso: "ET"
+iso3: "ETH"
+code: "231"
+capital: "Addis Ababa"
+area: 1127127.0
+population: 88013491
+continent: "AF"
+currencyCode: "ETB"
+currencyName: "Birr"
+phone: "251"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "am,en-ET,om-ET,ti-ET,so-ET,sid"
+neighbours: "ER,KE,SD,SS,SO,DJ"
+regions:
+- name: "Amhara Region"
+  cities:
+  - name: "Werota"
+    latitude: 11.91667
+    longitude: 37.7
+    population: 26813
+    dem: 1810
+    timezone: "Africa/Addis_Ababa"
+  - name: "Were Ilu"
+    latitude: 10.58964
+    longitude: 39.43767
+    population: 7636
+    dem: 2699
+    timezone: "Africa/Addis_Ababa"
+  - name: "Robit"
+    latitude: 12.01667
+    longitude: 39.63333
+    population: 20679
+    dem: 1597
+    timezone: "Africa/Addis_Ababa"
+  - name: "Lalibela"
+    latitude: 12.03219
+    longitude: 39.04756
+    population: 11152
+    dem: 2481
+    timezone: "Africa/Addis_Ababa"
+  - name: "Kemise"
+    latitude: 10.71668
+    longitude: 39.86997
+    population: 23861
+    dem: 1438
+    timezone: "Africa/Addis_Ababa"
+  - name: "Kombolcha"
+    latitude: 11.08155
+    longitude: 39.74339
+    population: 93605
+    dem: 1883
+    timezone: "Africa/Addis_Ababa"
+  - name: "Gondar"
+    latitude: 12.6
+    longitude: 37.46667
+    population: 153914
+    dem: 2201
+    timezone: "Africa/Addis_Ababa"
+  - name: "Finote Selam"
+    latitude: 10.7
+    longitude: 37.26667
+    population: 23463
+    dem: 1914
+    timezone: "Africa/Addis_Ababa"
+  - name: "Dese"
+    latitude: 11.13333
+    longitude: 39.63333
+    population: 136056
+    dem: 2494
+    timezone: "Africa/Addis_Ababa"
+  - name: "Dejen"
+    latitude: 10.16667
+    longitude: 38.13333
+    population: 11739
+    dem: 2452
+    timezone: "Africa/Addis_Ababa"
+  - name: "Debre Werk"
+    latitude: 10.66667
+    longitude: 38.16667
+    population: 10579
+    dem: 2513
+    timezone: "Africa/Addis_Ababa"
+  - name: "Debre Tabor"
+    latitude: 11.85
+    longitude: 38.01667
+    population: 32659
+    dem: 2692
+    timezone: "Africa/Addis_Ababa"
+  - name: "Debre Sina"
+    latitude: 9.84752
+    longitude: 39.76027
+    population: 9409
+    dem: 2703
+    timezone: "Africa/Addis_Ababa"
+  - name: "Debre Markos"
+    latitude: 10.35
+    longitude: 37.73333
+    population: 59920
+    dem: 2487
+    timezone: "Africa/Addis_Ababa"
+  - name: "Debre Birhan"
+    latitude: 9.67954
+    longitude: 39.53262
+    population: 57787
+    dem: 2830
+    timezone: "Africa/Addis_Ababa"
+  - name: "Debark"
+    latitude: 13.15611
+    longitude: 37.89806
+    population: 24700
+    dem: 2854
+    timezone: "Africa/Addis_Ababa"
+  - name: "Dabat"
+    latitude: 12.98417
+    longitude: 37.765
+    population: 11544
+    dem: 2602
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bure"
+    latitude: 10.7
+    longitude: 37.06667
+    population: 22038
+    dem: 2058
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bichena"
+    latitude: 10.45
+    longitude: 38.2
+    population: 16411
+    dem: 2544
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bati"
+    latitude: 11.19152
+    longitude: 40.01675
+    population: 19260
+    dem: 1662
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bahir Dar"
+    latitude: 11.59364
+    longitude: 37.39077
+    population: 168899
+    dem: 1799
+    timezone: "Africa/Addis_Ababa"
+  - name: "Adis Zemen"
+    latitude: 12.11667
+    longitude: 37.78333
+    population: 22522
+    dem: 2023
+    timezone: "Africa/Addis_Ababa"
+  - name: "Addiet Canna"
+    latitude: 11.26667
+    longitude: 37.48333
+    population: 22946
+    dem: 2203
+    timezone: "Africa/Addis_Ababa"
+  - name: "Abomsa"
+    latitude: 9.98333
+    longitude: 39.98333
+    population: 15258
+    dem: 1300
+    timezone: "Africa/Addis_Ababa"
+- name: "Somali Region"
+  cities:
+  - name: "Jijiga"
+    latitude: 9.35
+    longitude: 42.8
+    population: 56821
+    dem: 1646
+    timezone: "Africa/Addis_Ababa"
+- name: "Gambela Region"
+  cities:
+  - name: "Gambela"
+    latitude: 8.25
+    longitude: 34.58333
+    population: 42366
+    dem: 439
+    timezone: "Africa/Addis_Ababa"
+- name: "Afar Region"
+  cities:
+  - name: "Gewane"
+    latitude: 10.16658
+    longitude: 40.64689
+    population: 11279
+    dem: 620
+    timezone: "Africa/Addis_Ababa"
+  - name: "Dubti"
+    latitude: 11.73292
+    longitude: 41.082
+    population: 26370
+    dem: 381
+    timezone: "Africa/Addis_Ababa"
+  - name: "Awash"
+    latitude: 8.98333
+    longitude: 40.16667
+    population: 11415
+    dem: 917
+    timezone: "Africa/Addis_Ababa"
+  - name: "Asaita"
+    latitude: 11.56838
+    longitude: 41.43869
+    population: 20342
+    dem: 371
+    timezone: "Africa/Addis_Ababa"
+  - name: "Semera"
+    latitude: 11.79342
+    longitude: 41.00578
+    population: 833
+    dem: 433
+    timezone: "Africa/Addis_Ababa"
+- name: "Oromiya Region"
+  cities:
+  - name: "Ziway"
+    latitude: 7.93333
+    longitude: 38.71667
+    population: 49416
+    dem: 1649
+    timezone: "Africa/Addis_Ababa"
+  - name: "Yabelo"
+    latitude: 4.88333
+    longitude: 38.08333
+    population: 17819
+    dem: 1906
+    timezone: "Africa/Addis_Ababa"
+  - name: "Wenji"
+    latitude: 8.45
+    longitude: 39.28333
+    population: 17120
+    dem: 1589
+    timezone: "Africa/Addis_Ababa"
+  - name: "Tulu Bolo"
+    latitude: 8.66667
+    longitude: 38.21667
+    population: 10531
+    dem: 2172
+    timezone: "Africa/Addis_Ababa"
+  - name: "Sirre"
+    latitude: 8.31667
+    longitude: 39.48333
+    population: 10089
+    dem: 1755
+    timezone: "Africa/Addis_Ababa"
+  - name: "Shashemene"
+    latitude: 7.2
+    longitude: 38.6
+    population: 85871
+    dem: 1924
+    timezone: "Africa/Addis_Ababa"
+  - name: "Shambu"
+    latitude: 9.56667
+    longitude: 37.1
+    population: 15354
+    dem: 2576
+    timezone: "Africa/Addis_Ababa"
+  - name: "Shakiso"
+    latitude: 5.76494
+    longitude: 38.91006
+    population: 34078
+    dem: 1741
+    timezone: "Africa/Addis_Ababa"
+  - name: "Sendafa"
+    latitude: 9.15203
+    longitude: 39.02335
+    population: 7326
+    dem: 2560
+    timezone: "Africa/Addis_Ababa"
+  - name: "Sebeta"
+    latitude: 8.91667
+    longitude: 38.61667
+    population: 19533
+    dem: 2311
+    timezone: "Africa/Addis_Ababa"
+  - name: "Nejo"
+    latitude: 9.5
+    longitude: 35.5
+    population: 20166
+    dem: 1888
+    timezone: "Africa/Addis_Ababa"
+  - name: "Nazret"
+    latitude: 8.55
+    longitude: 39.26667
+    population: 213995
+    dem: 1627
+    timezone: "Africa/Addis_Ababa"
+  - name: "Mojo"
+    latitude: 8.58679
+    longitude: 39.12111
+    population: 34547
+    dem: 1774
+    timezone: "Africa/Addis_Ababa"
+  - name: "Metu"
+    latitude: 8.3
+    longitude: 35.58333
+    population: 29648
+    dem: 1700
+    timezone: "Africa/Addis_Ababa"
+  - name: "Metahara"
+    latitude: 8.9
+    longitude: 39.91667
+    population: 23403
+    dem: 958
+    timezone: "Africa/Addis_Ababa"
+  - name: "Mendi"
+    latitude: 9.8
+    longitude: 35.1
+    population: 25239
+    dem: 1665
+    timezone: "Africa/Addis_Ababa"
+  - name: "Mega"
+    latitude: 4.05
+    longitude: 38.3
+    population: 6884
+    dem: 1819
+    timezone: "Africa/Addis_Ababa"
+  - name: "Kofele"
+    latitude: 7.06667
+    longitude: 38.78333
+    population: 9643
+    dem: 2666
+    timezone: "Africa/Addis_Ababa"
+  - name: "Kibre Mengist"
+    latitude: 5.88333
+    longitude: 38.98333
+    population: 27854
+    dem: 1690
+    timezone: "Africa/Addis_Ababa"
+  - name: "Jimma"
+    latitude: 7.67344
+    longitude: 36.83441
+    population: 128306
+    dem: 1719
+    timezone: "Africa/Addis_Ababa"
+  - name: "Huruta"
+    latitude: 8.15
+    longitude: 39.35
+    population: 12442
+    dem: 2030
+    timezone: "Africa/Addis_Ababa"
+  - name: "Hirna"
+    latitude: 9.21667
+    longitude: 41.1
+    population: 12295
+    dem: 1789
+    timezone: "Africa/Addis_Ababa"
+  - name: "Hagere Hiywet"
+    latitude: 8.98333
+    longitude: 37.85
+    population: 43920
+    dem: 2089
+    timezone: "Africa/Addis_Ababa"
+  - name: "Gore"
+    latitude: 8.15
+    longitude: 35.53333
+    population: 9352
+    dem: 2046
+    timezone: "Africa/Addis_Ababa"
+  - name: "Goba"
+    latitude: 7.01667
+    longitude: 39.98333
+    population: 34369
+    dem: 2682
+    timezone: "Africa/Addis_Ababa"
+  - name: "Waliso"
+    latitude: 8.53417
+    longitude: 37.96515
+    population: 38394
+    dem: 2026
+    timezone: "Africa/Addis_Ababa"
+  - name: "Ginir"
+    latitude: 7.13952
+    longitude: 40.71083
+    population: 16757
+    dem: 1945
+    timezone: "Africa/Addis_Ababa"
+  - name: "Gimbi"
+    latitude: 9.17031
+    longitude: 35.83491
+    population: 31809
+    dem: 1980
+    timezone: "Africa/Addis_Ababa"
+  - name: "Genet"
+    latitude: 9.06667
+    longitude: 38.5
+    population: 23753
+    dem: 2402
+    timezone: "Africa/Addis_Ababa"
+  - name: "Gelemso"
+    latitude: 8.81667
+    longitude: 40.51667
+    population: 16065
+    dem: 1795
+    timezone: "Africa/Addis_Ababa"
+  - name: "Gedo"
+    latitude: 9.01667
+    longitude: 37.45
+    population: 7499
+    dem: 2500
+    timezone: "Africa/Addis_Ababa"
+  - name: "Gebre Guracha"
+    latitude: 9.8
+    longitude: 38.4
+    population: 16583
+    dem: 2539
+    timezone: "Africa/Addis_Ababa"
+  - name: "Fiche"
+    latitude: 9.8
+    longitude: 38.73333
+    population: 25758
+    dem: 2792
+    timezone: "Africa/Addis_Ababa"
+  - name: "Dodola"
+    latitude: 6.98333
+    longitude: 39.18333
+    population: 23116
+    dem: 2464
+    timezone: "Africa/Addis_Ababa"
+  - name: "Dembi Dolo"
+    latitude: 8.53333
+    longitude: 34.8
+    population: 26748
+    dem: 1847
+    timezone: "Africa/Addis_Ababa"
+  - name: "Deder"
+    latitude: 9.31168
+    longitude: 41.44301
+    population: 8884
+    dem: 2330
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bishoftu"
+    latitude: 8.75225
+    longitude: 38.97846
+    population: 104215
+    dem: 1978
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bedesa"
+    latitude: 8.9
+    longitude: 40.78333
+    population: 17526
+    dem: 1683
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bedele"
+    latitude: 8.456
+    longitude: 36.35302
+    population: 20293
+    dem: 2011
+    timezone: "Africa/Addis_Ababa"
+  - name: "Asbe Teferi"
+    latitude: 9.08569
+    longitude: 40.86708
+    population: 30772
+    dem: 1750
+    timezone: "Africa/Addis_Ababa"
+  - name: "Asasa"
+    latitude: 7.1
+    longitude: 39.2
+    population: 23790
+    dem: 2369
+    timezone: "Africa/Addis_Ababa"
+  - name: "Hagere Maryam"
+    latitude: 5.63418
+    longitude: 38.23603
+    population: 22105
+    dem: 1883
+    timezone: "Africa/Addis_Ababa"
+  - name: "Agaro"
+    latitude: 7.85
+    longitude: 36.65
+    population: 28268
+    dem: 1609
+    timezone: "Africa/Addis_Ababa"
+  - name: "Adis `Alem"
+    latitude: 9.03333
+    longitude: 38.4
+    population: 9859
+    dem: 2315
+    timezone: "Africa/Addis_Ababa"
+- name: "Southern Nations, Nationalities, and Peoples Region"
+  cities:
+  - name: "Yirga `Alem"
+    latitude: 6.75
+    longitude: 38.41667
+    population: 36292
+    dem: 1778
+    timezone: "Africa/Addis_Ababa"
+  - name: "Wendo"
+    latitude: 6.6
+    longitude: 38.41667
+    population: 12945
+    dem: 1911
+    timezone: "Africa/Addis_Ababa"
+  - name: "Tippi"
+    latitude: 7.2
+    longitude: 35.45
+    population: 24169
+    dem: 1175
+    timezone: "Africa/Addis_Ababa"
+  - name: "Mizan Teferi"
+    latitude: 6.99865
+    longitude: 35.58879
+    population: 14002
+    dem: 1419
+    timezone: "Africa/Addis_Ababa"
+  - name: "Leku"
+    latitude: 6.87309
+    longitude: 38.44425
+    population: 11398
+    dem: 1873
+    timezone: "Africa/Addis_Ababa"
+  - name: "Kolito"
+    latitude: 7.31667
+    longitude: 38.08333
+    population: 25614
+    dem: 1781
+    timezone: "Africa/Addis_Ababa"
+  - name: "Jinka"
+    latitude: 5.65
+    longitude: 36.65
+    population: 32115
+    dem: 1430
+    timezone: "Africa/Addis_Ababa"
+  - name: "Hosaina"
+    latitude: 7.54978
+    longitude: 37.85374
+    population: 75963
+    elevation: 2177
+    dem: 2329
+    timezone: "Africa/Addis_Ababa"
+  - name: "Hagere Selam"
+    latitude: 6.48333
+    longitude: 38.51667
+    population: 5169
+    dem: 2746
+    timezone: "Africa/Addis_Ababa"
+  - name: "Gidole"
+    latitude: 5.65
+    longitude: 37.36667
+    population: 10736
+    dem: 2102
+    timezone: "Africa/Addis_Ababa"
+  - name: "Felege Neway"
+    latitude: 6.3
+    longitude: 36.88333
+    population: 33429
+    dem: 1361
+    timezone: "Africa/Addis_Ababa"
+  - name: "Dila"
+    latitude: 6.41667
+    longitude: 38.31667
+    population: 47021
+    dem: 1594
+    timezone: "Africa/Addis_Ababa"
+  - name: "Butajira"
+    latitude: 8.11667
+    longitude: 38.36667
+    population: 30502
+    dem: 2073
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bonga"
+    latitude: 7.28333
+    longitude: 36.23333
+    population: 18973
+    dem: 1596
+    timezone: "Africa/Addis_Ababa"
+  - name: "Boditi"
+    latitude: 6.96667
+    longitude: 37.86667
+    population: 32997
+    dem: 1998
+    timezone: "Africa/Addis_Ababa"
+  - name: "Bako"
+    latitude: 5.78333
+    longitude: 36.56667
+    population: 17872
+    dem: 1401
+    timezone: "Africa/Addis_Ababa"
+  - name: "Hawassa"
+    latitude: 7.06205
+    longitude: 38.47635
+    population: 133097
+    dem: 1697
+    timezone: "Africa/Addis_Ababa"
+  - name: "Areka"
+    latitude: 7.06667
+    longitude: 37.7
+    population: 33150
+    dem: 1737
+    timezone: "Africa/Addis_Ababa"
+  - name: "Arba Minch"
+    latitude: 6.03333
+    longitude: 37.55
+    population: 69622
+    dem: 1269
+    timezone: "Africa/Addis_Ababa"
+  - name: "Sodo"
+    latitude: 6.86
+    longitude: 37.76159
+    population: 86050
+    dem: 2045
+    timezone: "Africa/Addis_Ababa"
+- name: "Dire Dawa Region"
+  cities:
+  - name: "Dire Dawa"
+    latitude: 9.59306
+    longitude: 41.86611
+    population: 252279
+    dem: 1204
+    timezone: "Africa/Addis_Ababa"
+- name: "Tigray Region"
+  cities:
+  - name: "Mekele"
+    latitude: 13.49667
+    longitude: 39.47528
+    population: 215546
+    dem: 2068
+    timezone: "Africa/Addis_Ababa"
+  - name: "Maychew"
+    latitude: 12.7875
+    longitude: 39.54222
+    population: 27186
+    dem: 2400
+    timezone: "Africa/Addis_Ababa"
+  - name: "Korem"
+    latitude: 12.50583
+    longitude: 39.52278
+    population: 30633
+    dem: 2487
+    timezone: "Africa/Addis_Ababa"
+  - name: "Inda Silase"
+    latitude: 14.10307
+    longitude: 38.28289
+    population: 50078
+    dem: 1912
+    timezone: "Africa/Addis_Ababa"
+  - name: "Axum"
+    latitude: 14.12109
+    longitude: 38.72337
+    population: 41249
+    dem: 2131
+    timezone: "Africa/Addis_Ababa"
+  - name: "Adigrat"
+    latitude: 14.277
+    longitude: 39.462
+    population: 65000
+    elevation: 2457
+    dem: 2451
+    timezone: "Africa/Addis_Ababa"
+- name: "Adis Abeba Astedader"
+  cities:
+  - name: "Addis Ababa"
+    latitude: 9.02497
+    longitude: 38.74689
+    population: 2757729
+    dem: 2405
+    timezone: "Africa/Addis_Ababa"
+- name: "Harari Region"
+  cities:
+  - name: "Harar"
+    latitude: 9.31387
+    longitude: 42.11815
+    population: 90218
+    dem: 1917
+    timezone: "Africa/Addis_Ababa"
+- name: "Benishangul-Gumuz Region"
+  cities:
+  - name: "Asosa"
+    latitude: 10.06667
+    longitude: 34.53333
+    population: 30512
+    dem: 1530
+    timezone: "Africa/Addis_Ababa"

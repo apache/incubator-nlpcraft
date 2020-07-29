@@ -1,0 +1,813 @@
+---
+name: "South Korea"
+iso: "KR"
+iso3: "KOR"
+code: "410"
+capital: "Seoul"
+area: 98480.0
+population: 48422644
+continent: "AS"
+currencyCode: "KRW"
+currencyName: "Won"
+phone: "82"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ko-KR,en"
+neighbours: "KP"
+regions:
+- name: "Ulsan"
+  cities:
+  - name: "Ulsan"
+    latitude: 35.53722
+    longitude: 129.31667
+    population: 962865
+    dem: 10
+    timezone: "Asia/Seoul"
+- name: "Gwangju"
+  cities:
+  - name: "Masan"
+    latitude: 35.12725
+    longitude: 126.83149
+    population: 434371
+    dem: 18
+    timezone: "Asia/Seoul"
+  - name: "Gwangju"
+    latitude: 35.15472
+    longitude: 126.91556
+    population: 1416938
+    dem: 47
+    timezone: "Asia/Seoul"
+- name: "Jeollabuk-do"
+  cities:
+  - name: "Wanju"
+    latitude: 35.84509
+    longitude: 127.14752
+    population: 84009
+    dem: 56
+    timezone: "Asia/Seoul"
+  - name: "Puan"
+    latitude: 35.72806
+    longitude: 126.73194
+    population: 22267
+    dem: 18
+    timezone: "Asia/Seoul"
+  - name: "Nangen"
+    latitude: 35.41
+    longitude: 127.38583
+    population: 58057
+    dem: 103
+    timezone: "Asia/Seoul"
+  - name: "Gunsan"
+    latitude: 35.97861
+    longitude: 126.71139
+    population: 243406
+    dem: 14
+    timezone: "Asia/Seoul"
+  - name: "Kochang"
+    latitude: 35.43333
+    longitude: 126.7
+    population: 72996
+    dem: 44
+    timezone: "Asia/Seoul"
+  - name: "Kimje"
+    latitude: 35.80167
+    longitude: 126.88889
+    population: 44894
+    dem: 18
+    timezone: "Asia/Seoul"
+  - name: "Iksan"
+    latitude: 35.94389
+    longitude: 126.95444
+    population: 283501
+    dem: 16
+    timezone: "Asia/Seoul"
+  - name: "Imsil"
+    latitude: 35.61306
+    longitude: 127.27944
+    population: 37514
+    dem: 233
+    timezone: "Asia/Seoul"
+  - name: "Jeonju"
+    latitude: 35.82194
+    longitude: 127.14889
+    population: 711424
+    dem: 44
+    timezone: "Asia/Seoul"
+  - name: "Jinan-gun"
+    latitude: 35.79167
+    longitude: 127.42528
+    population: 31273
+    dem: 295
+    timezone: "Asia/Seoul"
+  - name: "Changsu"
+    latitude: 35.64842
+    longitude: 127.51523
+    population: 26463
+    dem: 411
+    timezone: "Asia/Seoul"
+  - name: "Jeongeup"
+    latitude: 35.60004
+    longitude: 126.91699
+    population: 139876
+    dem: 53
+    timezone: "Asia/Seoul"
+- name: "Incheon"
+  cities:
+  - name: "Ganghwa-gun"
+    latitude: 37.74722
+    longitude: 126.48556
+    population: 25535
+    dem: 15
+    timezone: "Asia/Seoul"
+  - name: "Incheon"
+    latitude: 37.45646
+    longitude: 126.70515
+    population: 2628000
+    dem: 43
+    timezone: "Asia/Seoul"
+- name: "Gangwon-do"
+  cities:
+  - name: "Neietsu"
+    latitude: 37.18447
+    longitude: 128.46821
+    population: 25413
+    dem: 208
+    timezone: "Asia/Seoul"
+  - name: "Yanggu"
+    latitude: 38.10583
+    longitude: 127.98944
+    population: 24027
+    dem: 192
+    timezone: "Asia/Seoul"
+  - name: "Wonju"
+    latitude: 37.35139
+    longitude: 127.94528
+    population: 243387
+    dem: 133
+    timezone: "Asia/Seoul"
+  - name: "Taebaek"
+    latitude: 37.1759
+    longitude: 128.9889
+    population: 48962
+    dem: 691
+    timezone: "Asia/Seoul"
+  - name: "Sokcho"
+    latitude: 38.20701
+    longitude: 128.59181
+    population: 89047
+    dem: 20
+    timezone: "Asia/Seoul"
+  - name: "Santyoku"
+    latitude: 37.44056
+    longitude: 129.17083
+    population: 42145
+    dem: 23
+    timezone: "Asia/Seoul"
+  - name: "Pyeongchang"
+    latitude: 37.37028
+    longitude: 128.39306
+    population: 9940
+    dem: 300
+    timezone: "Asia/Seoul"
+  - name: "Kosong"
+    latitude: 38.37881
+    longitude: 128.4676
+    population: 62446
+    dem: 17
+    timezone: "Asia/Seoul"
+  - name: "Gangneung"
+    latitude: 37.75266
+    longitude: 128.87239
+    population: 180611
+    dem: 42
+    timezone: "Asia/Seoul"
+  - name: "Hwacheon"
+    latitude: 38.10705
+    longitude: 127.70632
+    population: 23822
+    dem: 115
+    timezone: "Asia/Seoul"
+  - name: "Hongchon"
+    latitude: 37.6918
+    longitude: 127.8857
+    population: 75251
+    dem: 137
+    timezone: "Asia/Seoul"
+  - name: "Chuncheon"
+    latitude: 37.87472
+    longitude: 127.73417
+    population: 209746
+    dem: 92
+    timezone: "Asia/Seoul"
+  - name: "Tonghae"
+    latitude: 37.54389
+    longitude: 129.10694
+    population: 101128
+    dem: 24
+    timezone: "Asia/Seoul"
+- name: "Daegu"
+  cities:
+  - name: "Daegu"
+    latitude: 35.87028
+    longitude: 128.59111
+    population: 2566540
+    dem: 45
+    timezone: "Asia/Seoul"
+  - name: "Hwawon"
+    latitude: 35.80167
+    longitude: 128.50083
+    population: 64718
+    dem: 36
+    timezone: "Asia/Seoul"
+- name: "Gyeongsangnam-do"
+  cities:
+  - name: "Yangsan"
+    latitude: 35.34199
+    longitude: 129.03358
+    population: 71936
+    dem: 6
+    timezone: "Asia/Seoul"
+  - name: "Miryang"
+    latitude: 35.49333
+    longitude: 128.74889
+    population: 53103
+    dem: 14
+    timezone: "Asia/Seoul"
+  - name: "Goseong"
+    latitude: 34.97631
+    longitude: 128.32361
+    population: 26704
+    dem: 14
+    timezone: "Asia/Seoul"
+  - name: "Kyosai"
+    latitude: 34.85028
+    longitude: 128.58861
+    population: 72124
+    dem: 11
+    timezone: "Asia/Seoul"
+  - name: "Kimhae"
+    latitude: 35.23417
+    longitude: 128.88111
+    population: 356242
+    dem: 13
+    timezone: "Asia/Seoul"
+  - name: "Chinju"
+    latitude: 35.19278
+    longitude: 128.08472
+    population: 307242
+    dem: 33
+    timezone: "Asia/Seoul"
+  - name: "Changwon"
+    latitude: 35.22806
+    longitude: 128.68111
+    population: 550000
+    dem: 27
+    timezone: "Asia/Seoul"
+  - name: "Sinhyeon"
+    latitude: 34.8825
+    longitude: 128.62667
+    population: 82560
+    dem: 14
+    timezone: "Asia/Seoul"
+  - name: "Ungsang"
+    latitude: 35.40611
+    longitude: 129.16861
+    population: 83360
+    dem: 101
+    timezone: "Asia/Seoul"
+  - name: "Naeso"
+    latitude: 35.24972
+    longitude: 128.52
+    population: 80987
+    dem: 62
+    timezone: "Asia/Seoul"
+  - name: "Changnyeong"
+    latitude: 35.54145
+    longitude: 128.49506
+    population: 74668
+    dem: 66
+    timezone: "Asia/Seoul"
+- name: "Gyeongsangbuk-do"
+  cities:
+  - name: "Heunghae"
+    latitude: 36.10945
+    longitude: 129.34517
+    population: 36080
+    dem: 22
+    timezone: "Asia/Seoul"
+  - name: "Yeonil"
+    latitude: 35.99526
+    longitude: 129.35162
+    population: 40852
+    dem: 4
+    timezone: "Asia/Seoul"
+  - name: "Eisen"
+    latitude: 36.82167
+    longitude: 128.63083
+    population: 84625
+    dem: 145
+    timezone: "Asia/Seoul"
+  - name: "Eisen"
+    latitude: 35.9675
+    longitude: 128.93083
+    population: 56006
+    dem: 85
+    timezone: "Asia/Seoul"
+  - name: "Waegwan"
+    latitude: 35.99251
+    longitude: 128.39785
+    population: 29691
+    dem: 33
+    timezone: "Asia/Seoul"
+  - name: "Jenzan"
+    latitude: 36.24083
+    longitude: 128.2975
+    population: 20673
+    dem: 48
+    timezone: "Asia/Seoul"
+  - name: "Sangju"
+    latitude: 36.41528
+    longitude: 128.16056
+    population: 55640
+    dem: 61
+    timezone: "Asia/Seoul"
+  - name: "Pohang"
+    latitude: 36.02917
+    longitude: 129.36481
+    population: 500000
+    dem: 5
+    timezone: "Asia/Seoul"
+  - name: "Mungyeong"
+    latitude: 36.59458
+    longitude: 128.19946
+    population: 81525
+    dem: 78
+    timezone: "Asia/Seoul"
+  - name: "Gyeongsan-si"
+    latitude: 35.82333
+    longitude: 128.73778
+    population: 129903
+    dem: 59
+    timezone: "Asia/Seoul"
+  - name: "Gyeongju"
+    latitude: 35.84278
+    longitude: 129.21167
+    population: 155237
+    dem: 45
+    timezone: "Asia/Seoul"
+  - name: "Kunwi"
+    latitude: 36.23472
+    longitude: 128.57278
+    population: 34293
+    dem: 95
+    timezone: "Asia/Seoul"
+  - name: "Gumi"
+    latitude: 36.1136
+    longitude: 128.336
+    population: 291006
+    dem: 63
+    timezone: "Asia/Seoul"
+  - name: "Gimcheon"
+    latitude: 36.12176
+    longitude: 128.11981
+    population: 150000
+    dem: 81
+    timezone: "Asia/Seoul"
+  - name: "Hayang"
+    latitude: 35.91333
+    longitude: 128.82
+    population: 40423
+    dem: 57
+    timezone: "Asia/Seoul"
+  - name: "Cheongsong gun"
+    latitude: 36.43351
+    longitude: 129.057
+    population: 31313
+    dem: 197
+    timezone: "Asia/Seoul"
+  - name: "Andong"
+    latitude: 36.56636
+    longitude: 128.72275
+    population: 129319
+    dem: 103
+    timezone: "Asia/Seoul"
+- name: "Chungcheongnam-do"
+  cities:
+  - name: "Yesan"
+    latitude: 36.67756
+    longitude: 126.84272
+    population: 39409
+    dem: 23
+    timezone: "Asia/Seoul"
+  - name: "Tangjin"
+    latitude: 36.89444
+    longitude: 126.62972
+    population: 32778
+    dem: 20
+    timezone: "Asia/Seoul"
+  - name: "Taesal-li"
+    latitude: 36.9714
+    longitude: 126.4542
+    population: 23149
+    dem: 13
+    timezone: "Asia/Seoul"
+  - name: "Taisen-ri"
+    latitude: 36.34931
+    longitude: 126.59772
+    population: 62039
+    dem: 11
+    timezone: "Asia/Seoul"
+  - name: "Seosan"
+    latitude: 36.78167
+    longitude: 126.45222
+    population: 74208
+    dem: 33
+    timezone: "Asia/Seoul"
+  - name: "Seonghwan"
+    latitude: 36.91556
+    longitude: 127.13139
+    population: 29239
+    dem: 38
+    timezone: "Asia/Seoul"
+  - name: "Buyeo"
+    latitude: 36.27472
+    longitude: 126.90906
+    population: 32642
+    dem: 3
+    timezone: "Asia/Seoul"
+  - name: "Asan"
+    latitude: 36.78361
+    longitude: 127.00417
+    population: 97749
+    dem: 27
+    timezone: "Asia/Seoul"
+  - name: "Nonsan"
+    latitude: 36.20389
+    longitude: 127.08472
+    population: 43845
+    dem: 16
+    timezone: "Asia/Seoul"
+  - name: "Kinzan"
+    latitude: 36.10306
+    longitude: 127.48889
+    population: 25243
+    dem: 160
+    timezone: "Asia/Seoul"
+  - name: "Gongju"
+    latitude: 36.45556
+    longitude: 127.12472
+    population: 72435
+    dem: 23
+    timezone: "Asia/Seoul"
+  - name: "Hongseong"
+    latitude: 36.6009
+    longitude: 126.665
+    population: 89174
+    dem: 31
+    timezone: "Asia/Seoul"
+  - name: "Cheonan"
+    latitude: 36.8065
+    longitude: 127.1522
+    population: 365114
+    dem: 40
+    timezone: "Asia/Seoul"
+  - name: "Yonmu"
+    latitude: 36.12944
+    longitude: 127.1
+    population: 25015
+    dem: 35
+    timezone: "Asia/Seoul"
+- name: "Chungcheongbuk-do"
+  cities:
+  - name: "Yong-dong"
+    latitude: 36.175
+    longitude: 127.77639
+    population: 24154
+    dem: 130
+    timezone: "Asia/Seoul"
+  - name: "Okcheon"
+    latitude: 36.3012
+    longitude: 127.568
+    population: 56634
+    dem: 97
+    timezone: "Asia/Seoul"
+  - name: "Koesan"
+    latitude: 36.81083
+    longitude: 127.79472
+    population: 44461
+    dem: 116
+    timezone: "Asia/Seoul"
+  - name: "Cheongju-si"
+    latitude: 36.63722
+    longitude: 127.48972
+    population: 634596
+    dem: 49
+    timezone: "Asia/Seoul"
+  - name: "Chinchon"
+    latitude: 36.85667
+    longitude: 127.44333
+    population: 60964
+    dem: 69
+    timezone: "Asia/Seoul"
+- name: "Seoul"
+  cities:
+  - name: "Seoul"
+    latitude: 37.566
+    longitude: 126.9784
+    population: 10349312
+    dem: 38
+    timezone: "Asia/Seoul"
+  - name: "Yongsan-dong"
+    latitude: 37.5445
+    longitude: 126.9837
+    population: 12612
+    dem: 85
+    timezone: "Asia/Seoul"
+- name: "Daejeon"
+  cities:
+  - name: "Daejeon"
+    latitude: 36.32139
+    longitude: 127.41972
+    population: 1475221
+    dem: 71
+    timezone: "Asia/Seoul"
+  - name: "Sintansin"
+    latitude: 36.45361
+    longitude: 127.43111
+    population: 15000
+    dem: 40
+    timezone: "Asia/Seoul"
+  - name: "Songgangdong"
+    latitude: 36.43406
+    longitude: 127.37559
+    population: 10000
+    dem: 184
+    timezone: "Asia/Seoul"
+- name: "Gyeonggi-do"
+  cities:
+  - name: "Yeoju"
+    latitude: 37.29583
+    longitude: 127.63389
+    population: 37490
+    dem: 50
+    timezone: "Asia/Seoul"
+  - name: "Yangpyong"
+    latitude: 37.48972
+    longitude: 127.49056
+    population: 83367
+    dem: 38
+    timezone: "Asia/Seoul"
+  - name: "Yangju"
+    latitude: 37.83311
+    longitude: 127.06169
+    population: 179923
+    dem: 76
+    timezone: "Asia/Seoul"
+  - name: "Uijeongbu-si"
+    latitude: 37.7415
+    longitude: 127.0474
+    population: 479141
+    dem: 50
+    timezone: "Asia/Seoul"
+  - name: "Suwon"
+    latitude: 37.29111
+    longitude: 127.00889
+    population: 1242724
+    dem: 58
+    timezone: "Asia/Seoul"
+  - name: "Bucheon-si"
+    latitude: 37.49889
+    longitude: 126.78306
+    population: 850731
+    dem: 14
+    timezone: "Asia/Seoul"
+  - name: "Osan"
+    latitude: 37.15222
+    longitude: 127.07056
+    population: 158978
+    dem: 22
+    timezone: "Asia/Seoul"
+  - name: "Munsan"
+    latitude: 37.85944
+    longitude: 126.785
+    population: 43208
+    dem: 21
+    timezone: "Asia/Seoul"
+  - name: "Gwangju"
+    latitude: 37.41
+    longitude: 127.25722
+    population: 81780
+    dem: 48
+    timezone: "Asia/Seoul"
+  - name: "Guri-si"
+    latitude: 37.5986
+    longitude: 127.1394
+    population: 195236
+    dem: 31
+    timezone: "Asia/Seoul"
+  - name: "Goyang-si"
+    latitude: 37.65639
+    longitude: 126.835
+    population: 1073069
+    dem: 19
+    timezone: "Asia/Seoul"
+  - name: "Gapyeong"
+    latitude: 37.83101
+    longitude: 127.51059
+    population: 55415
+    dem: 67
+    timezone: "Asia/Seoul"
+  - name: "Icheon-si"
+    latitude: 37.27917
+    longitude: 127.4425
+    population: 196230
+    dem: 68
+    timezone: "Asia/Seoul"
+  - name: "Hwaseong-si"
+    latitude: 37.20682
+    longitude: 126.8169
+    population: 476297
+    dem: 19
+    timezone: "Asia/Seoul"
+  - name: "Anyang-si"
+    latitude: 37.3925
+    longitude: 126.92694
+    population: 634367
+    dem: 52
+    timezone: "Asia/Seoul"
+  - name: "Anseong"
+    latitude: 37.01083
+    longitude: 127.27028
+    population: 69255
+    dem: 37
+    timezone: "Asia/Seoul"
+  - name: "Ansan-si"
+    latitude: 37.32361
+    longitude: 126.82194
+    population: 650728
+    dem: 15
+    timezone: "Asia/Seoul"
+  - name: "Pubal"
+    latitude: 37.29167
+    longitude: 127.50778
+    population: 63026
+    dem: 55
+    timezone: "Asia/Seoul"
+  - name: "Seongnam-si"
+    latitude: 37.43861
+    longitude: 127.13778
+    population: 1031935
+    dem: 80
+    timezone: "Asia/Seoul"
+  - name: "Hanam"
+    latitude: 37.54
+    longitude: 127.20556
+    population: 134902
+    dem: 33
+    timezone: "Asia/Seoul"
+  - name: "Hwado"
+    latitude: 37.6525
+    longitude: 127.3075
+    population: 106358
+    dem: 86
+    timezone: "Asia/Seoul"
+  - name: "Namyangju"
+    latitude: 37.63667
+    longitude: 127.21417
+    population: 90798
+    dem: 63
+    timezone: "Asia/Seoul"
+  - name: "Wabu"
+    latitude: 37.58972
+    longitude: 127.22028
+    population: 96775
+    dem: 38
+    timezone: "Asia/Seoul"
+  - name: "Kwangmyong"
+    latitude: 37.47722
+    longitude: 126.86639
+    population: 357545
+    dem: 30
+    timezone: "Asia/Seoul"
+- name: "Jeju-do"
+  cities:
+  - name: "Jeju City"
+    latitude: 33.50972
+    longitude: 126.52194
+    population: 408364
+    dem: 19
+    timezone: "Asia/Seoul"
+  - name: "Gaigeturi"
+    latitude: 33.46444
+    longitude: 126.31833
+    population: 23717
+    dem: 8
+    timezone: "Asia/Seoul"
+  - name: "Seogwipo"
+    latitude: 33.25333
+    longitude: 126.56181
+    population: 155691
+    dem: 69
+    timezone: "Asia/Seoul"
+- name: "Jeollanam-do"
+  cities:
+  - name: "Yeonggwang"
+    latitude: 35.27814
+    longitude: 126.51181
+    population: 19909
+    dem: 36
+    timezone: "Asia/Seoul"
+  - name: "Suncheon"
+    latitude: 34.9505
+    longitude: 127.48784
+    population: 230796
+    dem: 7
+    timezone: "Asia/Seoul"
+  - name: "Beolgyo"
+    latitude: 34.84897
+    longitude: 127.34052
+    population: 19842
+    dem: 64
+    timezone: "Asia/Seoul"
+  - name: "Naju"
+    latitude: 35.0292
+    longitude: 126.7175
+    population: 42459
+    dem: 25
+    timezone: "Asia/Seoul"
+  - name: "Muan"
+    latitude: 34.99014
+    longitude: 126.47899
+    population: 75718
+    dem: 21
+    timezone: "Asia/Seoul"
+  - name: "Mokpo"
+    latitude: 34.81282
+    longitude: 126.39181
+    population: 268402
+    dem: 48
+    timezone: "Asia/Seoul"
+  - name: "Kwangyang"
+    latitude: 34.97528
+    longitude: 127.58917
+    population: 89281
+    dem: 16
+    timezone: "Asia/Seoul"
+  - name: "Kurye"
+    latitude: 35.20944
+    longitude: 127.46444
+    population: 30000
+    dem: 46
+    timezone: "Asia/Seoul"
+  - name: "Hwasun"
+    latitude: 35.06125
+    longitude: 126.98746
+    population: 59914
+    dem: 75
+    timezone: "Asia/Seoul"
+  - name: "Haenam"
+    latitude: 34.57111
+    longitude: 126.59889
+    population: 23928
+    dem: 39
+    timezone: "Asia/Seoul"
+  - name: "Yeosu"
+    latitude: 34.76062
+    longitude: 127.66215
+    population: 295538
+    dem: 10
+    timezone: "Asia/Seoul"
+  - name: "Sinan"
+    latitude: 34.8262
+    longitude: 126.10863
+    population: 53150
+    dem: 3
+    timezone: "Asia/Seoul"
+  - name: "Yeongam"
+    latitude: 34.80059
+    longitude: 126.69669
+    population: 55000
+    dem: 34
+    timezone: "Asia/Seoul"
+- name: "Sejong-si"
+  cities:
+  - name: "Sejong"
+    latitude: 36.59245
+    longitude: 127.29223
+    population: 230327
+    dem: 49
+    timezone: "Asia/Seoul"
+- name: "Busan"
+  cities:
+  - name: "Busan"
+    latitude: 35.10168
+    longitude: 129.03004
+    population: 3678555
+    dem: 26
+    timezone: "Asia/Seoul"
+  - name: "Gijang"
+    latitude: 35.24417
+    longitude: 129.21389
+    population: 43064
+    dem: 21
+    timezone: "Asia/Seoul"

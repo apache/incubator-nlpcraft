@@ -1,0 +1,108 @@
+---
+name: "Guyana"
+iso: "GY"
+iso3: "GUY"
+code: "328"
+capital: "Georgetown"
+area: 214970.0
+population: 748486
+continent: "SA"
+currencyCode: "GYD"
+currencyName: "Dollar"
+phone: "592"
+languages: "en-GY"
+neighbours: "SR,BR,VE"
+regions:
+- name: "Barima-Waini Region"
+  cities:
+  - name: "Mabaruma"
+    latitude: 8.2
+    longitude: -59.78333
+    population: 717
+    dem: 13
+    timezone: "America/Guyana"
+- name: "Upper Takutu-Upper Essequibo Region"
+  cities:
+  - name: "Lethem"
+    latitude: 3.38333
+    longitude: -59.8
+    population: 716
+    dem: 85
+    timezone: "America/Guyana"
+- name: "East Berbice-Corentyne Region"
+  cities:
+  - name: "Skeldon"
+    latitude: 5.88333
+    longitude: -57.13333
+    population: 5859
+    dem: 0
+    timezone: "America/Guyana"
+  - name: "New Amsterdam"
+    latitude: 6.24793
+    longitude: -57.5171
+    population: 35039
+    dem: 7
+    timezone: "America/Guyana"
+- name: "Pomeroon-Supenaam Region"
+  cities:
+  - name: "Anna Regina"
+    latitude: 7.26439
+    longitude: -58.50769
+    population: 12448
+    dem: 3
+    timezone: "America/Guyana"
+- name: "Mahaica-Berbice Region"
+  cities:
+  - name: "Rosignol"
+    latitude: 6.27095
+    longitude: -57.53697
+    population: 5782
+    dem: 3
+    timezone: "America/Guyana"
+  - name: "Fort Wellington"
+    latitude: 6.39087
+    longitude: -57.60381
+    population: 0
+    dem: 2
+    timezone: "America/Guyana"
+- name: "Upper Demerara-Berbice Region"
+  cities:
+  - name: "Linden"
+    latitude: 6.00809
+    longitude: -58.30714
+    population: 44690
+    dem: 4
+    timezone: "America/Guyana"
+- name: "Demerara-Mahaica Region"
+  cities:
+  - name: "Georgetown"
+    latitude: 6.80448
+    longitude: -58.15527
+    population: 235017
+    dem: 3
+    timezone: "America/Guyana"
+- name: "Cuyuni-Mazaruni Region"
+  cities:
+  - name: "Bartica"
+    latitude: 6.40799
+    longitude: -58.62192
+    population: 11157
+    dem: 6
+    timezone: "America/Guyana"
+- name: "Essequibo Islands-West Demerara Region"
+  cities:
+  - name: "Vreed-en-Hoop"
+    latitude: 6.80927
+    longitude: -58.19798
+    population: 3073
+    elevation: 1
+    dem: 3
+    timezone: "America/Guyana"
+- name: "Potaro-Siparuni Region"
+  cities:
+  - name: "Mahdia"
+    latitude: 5.26667
+    longitude: -59.15
+    population: 4200
+    dem: 81
+    timezone: "America/Guyana"

@@ -67,7 +67,7 @@
         <connection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</developerConnection>
         <!-- Set actual tag name here -->
-        <tag>0.6.0</tag>
+        <tag>v0.6.2</tag>
     </scm>
 
     <properties>
@@ -86,7 +86,6 @@
         <commons-lang3.ver>3.9</commons-lang3.ver>
         <commons.validator.ver>1.6</commons.validator.ver>
         <apache.commons.text.ver>1.7</apache.commons.text.ver>
-        <jgrapht.ver>1.4.0</jgrapht.ver>
         <jsoup.ver>1.12.1</jsoup.ver>
         <slf4j.ver>1.7.26</slf4j.ver>
         <scala.logging.ver>3.9.2</scala.logging.ver>
@@ -228,12 +227,6 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${org.antlr4.ver}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jgrapht</groupId>
-                <artifactId>jgrapht-core</artifactId>
-                <version>${jgrapht.ver}</version>
             </dependency>
 
             <dependency>
@@ -426,6 +419,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
+                <version>${jackson.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_2.12</artifactId>
                 <version>${jackson.ver}</version>
             </dependency>
 
@@ -635,7 +634,7 @@
                                 <exclude>src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4/*</exclude>
                                 <exclude>src/main/resources/opennlp/en-lemmatizer.dict</exclude>
                             </excludes>
-                            <numUnapprovedLicenses>1000000</numUnapprovedLicenses>
+                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
                         </configuration>
                         <executions>
                             <execution>

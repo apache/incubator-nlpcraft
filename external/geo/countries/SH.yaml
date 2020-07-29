@@ -1,0 +1,42 @@
+---
+name: "Saint Helena"
+iso: "SH"
+iso3: "SHN"
+code: "654"
+capital: "Jamestown"
+area: 410.0
+population: 7460
+continent: "AF"
+currencyCode: "SHP"
+currencyName: "Pound"
+phone: "290"
+postalCodeFormat: "STHL 1ZZ"
+postalCodeRegex: "^(STHL1ZZ)$"
+languages: "en-SH"
+regions:
+- name: "Ascension"
+  cities:
+  - name: "Georgetown"
+    latitude: -7.92861
+    longitude: -14.41194
+    population: 538
+    dem: 20
+    timezone: "Atlantic/St_Helena"
+- name: "Tristan da Cunha"
+  cities:
+  - name: "Edinburgh of the Seven Seas"
+    latitude: -37.06757
+    longitude: -12.31155
+    population: 271
+    elevation: 10
+    dem: 42
+    timezone: "Atlantic/St_Helena"
+- name: "Saint Helena"
+  cities:
+  - name: "Jamestown"
+    latitude: -15.93872
+    longitude: -5.71675
+    population: 637
+    elevation: 10
+    dem: 426
+    timezone: "Atlantic/St_Helena"

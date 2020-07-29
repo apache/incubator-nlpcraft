@@ -1,0 +1,103 @@
+---
+name: "Qatar"
+iso: "QA"
+iso3: "QAT"
+code: "634"
+capital: "Doha"
+area: 11437.0
+population: 840926
+continent: "AS"
+currencyCode: "QAR"
+currencyName: "Rial"
+phone: "974"
+languages: "ar-QA,es"
+neighbours: "SA"
+regions:
+- name: "Baladiyat az Zaayin"
+  cities:
+  - name: "Az Za`ayin"
+    latitude: 25.57744
+    longitude: 51.48306
+    population: 0
+    dem: 6
+    timezone: "Asia/Qatar"
+- name: "Baladiyat ad Dawhah"
+  cities:
+  - name: "Doha"
+    latitude: 25.28545
+    longitude: 51.53096
+    population: 344939
+    dem: 11
+    timezone: "Asia/Qatar"
+- name: "Baladiyat al Khawr wa adh Dhakhirah"
+  cities:
+  - name: "Al Khawr"
+    latitude: 25.68389
+    longitude: 51.50583
+    population: 18923
+    dem: 10
+    timezone: "Asia/Qatar"
+- name: "Al Wakrah"
+  cities:
+  - name: "Musay`id"
+    latitude: 24.99226
+    longitude: 51.55067
+    population: 5769
+    dem: 7
+    timezone: "Asia/Qatar"
+  - name: "Al Wukayr"
+    latitude: 25.15107
+    longitude: 51.53718
+    population: 5146
+    dem: 7
+    timezone: "Asia/Qatar"
+  - name: "Al Wakrah"
+    latitude: 25.17151
+    longitude: 51.60337
+    population: 26436
+    dem: 9
+    timezone: "Asia/Qatar"
+- name: "Baladiyat ar Rayyan"
+  cities:
+  - name: "Ar Rayyan"
+    latitude: 25.29194
+    longitude: 51.42444
+    population: 272465
+    dem: 23
+    timezone: "Asia/Qatar"
+- name: "Baladiyat Umm Salal"
+  cities:
+  - name: "Umm Salal Muhammad"
+    latitude: 25.41524
+    longitude: 51.40647
+    population: 29391
+    dem: 25
+    timezone: "Asia/Qatar"
+  - name: "Umm Salal `Ali"
+    latitude: 25.46972
+    longitude: 51.3975
+    population: 0
+    dem: 16
+    timezone: "Asia/Qatar"
+- name: "Al-Shahaniya"
+  cities:
+  - name: "Dukhan"
+    latitude: 25.42485
+    longitude: 50.78227
+    population: 7250
+    dem: 33
+    timezone: "Asia/Qatar"
+  - name: "Ash Shihaniyah"
+    latitude: 25.37088
+    longitude: 51.22264
+    population: 8380
+    dem: 43
+    timezone: "Asia/Qatar"
+- name: "Baladiyat ash Shamal"
+  cities:
+  - name: "Madinat ash Shamal"
+    latitude: 26.12933
+    longitude: 51.2009
+    population: 5267
+    dem: 9
+    timezone: "Asia/Qatar"

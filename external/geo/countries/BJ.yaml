@@ -1,0 +1,237 @@
+---
+name: "Benin"
+iso: "BJ"
+iso3: "BEN"
+code: "204"
+capital: "Porto-Novo"
+area: 112620.0
+population: 9056010
+continent: "AF"
+currencyCode: "XOF"
+currencyName: "Franc"
+phone: "229"
+languages: "fr-BJ"
+neighbours: "NE,TG,BF,NG"
+regions:
+- name: "Collines Department"
+  cities:
+  - name: "Save"
+    latitude: 8.03424
+    longitude: 2.4866
+    population: 75970
+    dem: 190
+    timezone: "Africa/Porto-Novo"
+  - name: "Savalou"
+    latitude: 7.92807
+    longitude: 1.97558
+    population: 30187
+    dem: 181
+    timezone: "Africa/Porto-Novo"
+  - name: "Dassa-Zoume"
+    latitude: 7.75
+    longitude: 2.18333
+    population: 21672
+    dem: 156
+    timezone: "Africa/Porto-Novo"
+  - name: "Come"
+    latitude: 6.40764
+    longitude: 1.88198
+    population: 29208
+    dem: 29
+    timezone: "Africa/Porto-Novo"
+- name: "Atakora Department"
+  cities:
+  - name: "Tanguieta"
+    latitude: 10.62118
+    longitude: 1.26651
+    population: 19833
+    dem: 242
+    timezone: "Africa/Porto-Novo"
+  - name: "Natitingou"
+    latitude: 10.30416
+    longitude: 1.37962
+    population: 80892
+    dem: 450
+    timezone: "Africa/Porto-Novo"
+  - name: "Guilmaro"
+    latitude: 10.56583
+    longitude: 1.72444
+    population: 6516
+    dem: 472
+    timezone: "Africa/Porto-Novo"
+- name: "Littoral"
+  cities:
+  - name: "Cotonou"
+    latitude: 6.36536
+    longitude: 2.41833
+    population: 780000
+    dem: 7
+    timezone: "Africa/Porto-Novo"
+- name: "Plateau Department"
+  cities:
+  - name: "Sakete"
+    latitude: 6.73618
+    longitude: 2.65866
+    population: 30111
+    dem: 80
+    timezone: "Africa/Porto-Novo"
+  - name: "Pobe"
+    latitude: 6.98008
+    longitude: 2.6649
+    population: 32983
+    dem: 136
+    timezone: "Africa/Porto-Novo"
+  - name: "Ketou"
+    latitude: 7.36332
+    longitude: 2.59978
+    population: 22341
+    dem: 103
+    timezone: "Africa/Porto-Novo"
+- name: "Departement de lOueme"
+  cities:
+  - name: "Porto-Novo"
+    latitude: 6.49646
+    longitude: 2.60359
+    population: 234168
+    dem: 20
+    timezone: "Africa/Porto-Novo"
+- name: "Borgou Department"
+  cities:
+  - name: "Tchaourou"
+    latitude: 8.88649
+    longitude: 2.59753
+    population: 20971
+    dem: 332
+    timezone: "Africa/Porto-Novo"
+  - name: "Parakou"
+    latitude: 9.33716
+    longitude: 2.63031
+    population: 163753
+    dem: 369
+    timezone: "Africa/Porto-Novo"
+  - name: "Nikki"
+    latitude: 9.94009
+    longitude: 3.21075
+    population: 54009
+    dem: 403
+    timezone: "Africa/Porto-Novo"
+  - name: "Beterou"
+    latitude: 9.19916
+    longitude: 2.25855
+    population: 13108
+    dem: 259
+    timezone: "Africa/Porto-Novo"
+  - name: "Bembereke"
+    latitude: 10.22827
+    longitude: 2.66335
+    population: 24006
+    dem: 445
+    timezone: "Africa/Porto-Novo"
+- name: "Donga"
+  cities:
+  - name: "Djougou"
+    latitude: 9.70853
+    longitude: 1.66598
+    population: 237040
+    dem: 444
+    timezone: "Africa/Porto-Novo"
+  - name: "Bassila"
+    latitude: 9.00814
+    longitude: 1.6654
+    population: 23616
+    dem: 388
+    timezone: "Africa/Porto-Novo"
+- name: "Alibori"
+  cities:
+  - name: "Malanville"
+    latitude: 11.86819
+    longitude: 3.38327
+    population: 37117
+    dem: 164
+    timezone: "Africa/Porto-Novo"
+  - name: "Kandi"
+    latitude: 11.13417
+    longitude: 2.93861
+    population: 109701
+    dem: 294
+    timezone: "Africa/Porto-Novo"
+  - name: "Banikoara"
+    latitude: 11.29845
+    longitude: 2.43856
+    population: 22487
+    dem: 312
+    timezone: "Africa/Porto-Novo"
+- name: "Atlantique Department"
+  cities:
+  - name: "Ouidah"
+    latitude: 6.36307
+    longitude: 2.08506
+    population: 83503
+    dem: 17
+    timezone: "Africa/Porto-Novo"
+  - name: "Hevie"
+    latitude: 6.41667
+    longitude: 2.25
+    population: 13450
+    dem: 18
+    timezone: "Africa/Porto-Novo"
+  - name: "Allada"
+    latitude: 6.66547
+    longitude: 2.15138
+    population: 20094
+    dem: 93
+    timezone: "Africa/Porto-Novo"
+  - name: "Abomey-Calavi"
+    latitude: 6.44852
+    longitude: 2.35566
+    population: 385755
+    dem: 11
+    timezone: "Africa/Porto-Novo"
+- name: "Mono"
+  cities:
+  - name: "Lokossa"
+    latitude: 6.63869
+    longitude: 1.71674
+    population: 86971
+    dem: 47
+    timezone: "Africa/Porto-Novo"
+  - name: "Grand-Popo"
+    latitude: 6.28036
+    longitude: 1.82251
+    population: 9847
+    dem: 4
+    timezone: "Africa/Porto-Novo"
+- name: "Zou Department"
+  cities:
+  - name: "Cove"
+    latitude: 7.22097
+    longitude: 2.34017
+    population: 38566
+    dem: 117
+    timezone: "Africa/Porto-Novo"
+  - name: "Bohicon"
+    latitude: 7.17826
+    longitude: 2.0667
+    population: 125092
+    dem: 166
+    timezone: "Africa/Porto-Novo"
+  - name: "Abomey"
+    latitude: 7.18286
+    longitude: 1.99119
+    population: 82154
+    dem: 228
+    timezone: "Africa/Porto-Novo"
+- name: "Kouffo Department"
+  cities:
+  - name: "Dogbo"
+    latitude: 6.79911
+    longitude: 1.78073
+    population: 41312
+    dem: 72
+    timezone: "Africa/Porto-Novo"
+  - name: "Aplahoue"
+    latitude: 6.93333
+    longitude: 1.68333
+    population: 19862
+    dem: 124
+    timezone: "Africa/Porto-Novo"

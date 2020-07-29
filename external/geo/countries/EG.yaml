@@ -1,0 +1,840 @@
+---
+name: "Egypt"
+iso: "EG"
+iso3: "EGY"
+code: "818"
+capital: "Cairo"
+area: 1001450.0
+population: 80471869
+continent: "AF"
+currencyCode: "EGP"
+currencyName: "Pound"
+phone: "20"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ar-EG,en,fr"
+neighbours: "LY,SD,IL,PS"
+regions:
+- name: "Kafr ash Shaykh"
+  cities:
+  - name: "Sidi Salim"
+    latitude: 31.27133
+    longitude: 30.78617
+    population: 47998
+    dem: 6
+    timezone: "Africa/Cairo"
+  - name: "Kafr ash Shaykh"
+    latitude: 31.11174
+    longitude: 30.93991
+    population: 143970
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Fuwwah"
+    latitude: 31.20365
+    longitude: 30.54908
+    population: 63310
+    dem: 9
+    timezone: "Africa/Cairo"
+  - name: "Disuq"
+    latitude: 31.13259
+    longitude: 30.64784
+    population: 102037
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Al Hamul"
+    latitude: 31.31146
+    longitude: 31.14766
+    population: 45798
+    dem: 5
+    timezone: "Africa/Cairo"
+- name: "Beheira Governorate"
+  cities:
+  - name: "Rosetta"
+    latitude: 31.39951
+    longitude: 30.41718
+    population: 64481
+    dem: 15
+    timezone: "Africa/Cairo"
+  - name: "Kawm Hamadah"
+    latitude: 30.76128
+    longitude: 30.69972
+    population: 36751
+    dem: 15
+    timezone: "Africa/Cairo"
+  - name: "Kafr ad Dawwar"
+    latitude: 31.13379
+    longitude: 30.12969
+    population: 267370
+    dem: 5
+    timezone: "Africa/Cairo"
+  - name: "Idku"
+    latitude: 31.3073
+    longitude: 30.2981
+    population: 210678
+    elevation: 6
+    dem: 8
+    timezone: "Africa/Cairo"
+  - name: "Hawsh `Isa"
+    latitude: 30.9128
+    longitude: 30.29019
+    population: 85352
+    dem: 6
+    timezone: "Africa/Cairo"
+  - name: "Damanhur"
+    latitude: 31.03408
+    longitude: 30.46823
+    population: 227943
+    dem: 9
+    timezone: "Africa/Cairo"
+  - name: "Ad Dilinjat"
+    latitude: 30.82796
+    longitude: 30.53552
+    population: 40386
+    dem: 5
+    timezone: "Africa/Cairo"
+  - name: "Abu al Matamir"
+    latitude: 30.91018
+    longitude: 30.17438
+    population: 41302
+    dem: 0
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Suhaj"
+  cities:
+  - name: "Tahta"
+    latitude: 26.7693
+    longitude: 31.50214
+    population: 90591
+    dem: 66
+    timezone: "Africa/Cairo"
+  - name: "Sohag"
+    latitude: 26.55695
+    longitude: 31.69478
+    population: 209419
+    dem: 67
+    timezone: "Africa/Cairo"
+  - name: "Juhaynah"
+    latitude: 26.67319
+    longitude: 31.4976
+    population: 47821
+    dem: 64
+    timezone: "Africa/Cairo"
+  - name: "Jirja"
+    latitude: 26.33826
+    longitude: 31.89161
+    population: 128250
+    dem: 70
+    timezone: "Africa/Cairo"
+  - name: "Al Manshah"
+    latitude: 26.47686
+    longitude: 31.8035
+    population: 61134
+    dem: 72
+    timezone: "Africa/Cairo"
+  - name: "Al Balyana"
+    latitude: 26.23568
+    longitude: 32.00347
+    population: 48801
+    dem: 75
+    timezone: "Africa/Cairo"
+  - name: "Akhmim"
+    latitude: 26.56217
+    longitude: 31.74503
+    population: 99446
+    dem: 85
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Bani Suwayf"
+  cities:
+  - name: "Sumusta as Sultani"
+    latitude: 28.91667
+    longitude: 30.85
+    population: 37260
+    dem: 28
+    timezone: "Africa/Cairo"
+  - name: "Bush"
+    latitude: 29.14816
+    longitude: 31.12733
+    population: 86608
+    dem: 31
+    timezone: "Africa/Cairo"
+  - name: "Bani Suwayf"
+    latitude: 29.07441
+    longitude: 31.09785
+    population: 189624
+    dem: 33
+    timezone: "Africa/Cairo"
+  - name: "Al Fashn"
+    latitude: 28.82431
+    longitude: 30.89948
+    population: 63793
+    dem: 37
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Shamal Sina"
+  cities:
+  - name: "Arish"
+    latitude: 31.13159
+    longitude: 33.79844
+    population: 128855
+    dem: 15
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Qalyubiyah"
+  cities:
+  - name: "Toukh"
+    latitude: 30.35487
+    longitude: 31.20105
+    population: 67599
+    dem: 16
+    timezone: "Africa/Cairo"
+  - name: "Shibin al Qanatir"
+    latitude: 30.31269
+    longitude: 31.32018
+    population: 56872
+    dem: 20
+    timezone: "Africa/Cairo"
+  - name: "Qalyub"
+    latitude: 30.17922
+    longitude: 31.2056
+    population: 100495
+    dem: 22
+    timezone: "Africa/Cairo"
+  - name: "Banha"
+    latitude: 30.45977
+    longitude: 31.1842
+    population: 167029
+    dem: 27
+    timezone: "Africa/Cairo"
+  - name: "Al Qanatir al Khayriyah"
+    latitude: 30.19327
+    longitude: 31.13703
+    population: 56302
+    dem: 20
+    timezone: "Africa/Cairo"
+  - name: "Al Khankah"
+    latitude: 30.21035
+    longitude: 31.36812
+    population: 62434
+    dem: 19
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Iskandariyah"
+  cities:
+  - name: "Alexandria"
+    latitude: 31.20176
+    longitude: 29.91582
+    population: 3811516
+    dem: 9
+    timezone: "Africa/Cairo"
+- name: "As Suways"
+  cities:
+  - name: "Suez"
+    latitude: 29.97371
+    longitude: 32.52627
+    population: 488125
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Ain Sukhna"
+    latitude: 29.60018
+    longitude: 32.31671
+    population: 45552
+    dem: 30
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Minufiyah"
+  cities:
+  - name: "Tala"
+    latitude: 30.6798
+    longitude: 30.94364
+    population: 51498
+    dem: 16
+    timezone: "Africa/Cairo"
+  - name: "Shibin al Kawm"
+    latitude: 30.55258
+    longitude: 31.00904
+    population: 186345
+    dem: 23
+    timezone: "Africa/Cairo"
+  - name: "Quwaysina"
+    latitude: 30.56482
+    longitude: 31.15777
+    population: 42708
+    dem: 15
+    timezone: "Africa/Cairo"
+  - name: "Munuf"
+    latitude: 30.46597
+    longitude: 30.93199
+    population: 83651
+    dem: 20
+    timezone: "Africa/Cairo"
+  - name: "Ash Shuhada"
+    latitude: 30.59683
+    longitude: 30.89931
+    population: 48060
+    dem: 12
+    timezone: "Africa/Cairo"
+  - name: "Ashmun"
+    latitude: 30.29735
+    longitude: 30.97641
+    population: 82507
+    dem: 19
+    timezone: "Africa/Cairo"
+  - name: "Al Bajur"
+    latitude: 30.43046
+    longitude: 31.03679
+    population: 36633
+    dem: 15
+    timezone: "Africa/Cairo"
+- name: "Muhafazat ash Sharqiyah"
+  cities:
+  - name: "Mashtul as Suq"
+    latitude: 30.36056
+    longitude: 31.3776
+    population: 45798
+    dem: 15
+    timezone: "Africa/Cairo"
+  - name: "Kafr Saqr"
+    latitude: 30.79336
+    longitude: 31.62575
+    population: 34967
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Hihya"
+    latitude: 30.6713
+    longitude: 31.58801
+    population: 43432
+    dem: 14
+    timezone: "Africa/Cairo"
+  - name: "Faqus"
+    latitude: 30.72816
+    longitude: 31.79697
+    population: 62821
+    dem: 15
+    timezone: "Africa/Cairo"
+  - name: "Diyarb Najm"
+    latitude: 30.75438
+    longitude: 31.44016
+    population: 51841
+    dem: 10
+    timezone: "Africa/Cairo"
+  - name: "Bilbays"
+    latitude: 30.42039
+    longitude: 31.56223
+    population: 129211
+    dem: 17
+    timezone: "Africa/Cairo"
+  - name: "Zagazig"
+    latitude: 30.58768
+    longitude: 31.502
+    population: 285097
+    dem: 16
+    timezone: "Africa/Cairo"
+  - name: "At Tall al Kabir"
+    latitude: 30.54323
+    longitude: 31.78504
+    population: 51569
+    dem: 12
+    timezone: "Africa/Cairo"
+  - name: "Al Qurayn"
+    latitude: 30.61618
+    longitude: 31.73514
+    population: 61730
+    dem: 12
+    timezone: "Africa/Cairo"
+  - name: "Al Qanayat"
+    latitude: 30.61927
+    longitude: 31.46165
+    population: 42912
+    dem: 14
+    timezone: "Africa/Cairo"
+  - name: "Al Ibrahimiyah"
+    latitude: 30.71877
+    longitude: 31.56299
+    population: 34638
+    dem: 14
+    timezone: "Africa/Cairo"
+  - name: "Abu Kabir"
+    latitude: 30.72508
+    longitude: 31.67148
+    population: 100684
+    dem: 17
+    timezone: "Africa/Cairo"
+- name: "Damietta Governorate"
+  cities:
+  - name: "Faraskur"
+    latitude: 31.32977
+    longitude: 31.71507
+    population: 58284
+    dem: 15
+    timezone: "Africa/Cairo"
+  - name: "Damietta"
+    latitude: 31.41648
+    longitude: 31.81332
+    population: 76839
+    dem: 16
+    timezone: "Africa/Cairo"
+  - name: "Az Zarqa"
+    latitude: 31.20864
+    longitude: 31.63528
+    population: 40010
+    dem: 4
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Asyut"
+  cities:
+  - name: "Manfalut"
+    latitude: 27.3104
+    longitude: 30.97004
+    population: 78744
+    dem: 53
+    timezone: "Africa/Cairo"
+  - name: "Dayrut"
+    latitude: 27.55602
+    longitude: 30.80764
+    population: 67788
+    dem: 52
+    timezone: "Africa/Cairo"
+  - name: "Asyut"
+    latitude: 27.18096
+    longitude: 31.18368
+    population: 420585
+    dem: 56
+    timezone: "Africa/Cairo"
+  - name: "Al Qusiyah"
+    latitude: 27.4402
+    longitude: 30.81841
+    population: 68394
+    dem: 54
+    timezone: "Africa/Cairo"
+  - name: "Al Badari"
+    latitude: 26.99257
+    longitude: 31.41554
+    population: 44132
+    dem: 63
+    timezone: "Africa/Cairo"
+  - name: "Abu Tij"
+    latitude: 27.04411
+    longitude: 31.31897
+    population: 71257
+    dem: 65
+    timezone: "Africa/Cairo"
+  - name: "Abnub"
+    latitude: 27.2696
+    longitude: 31.15105
+    population: 68749
+    dem: 57
+    timezone: "Africa/Cairo"
+- name: "Red Sea Governorate"
+  cities:
+  - name: "Ras Gharib"
+    latitude: 28.35831
+    longitude: 33.07829
+    population: 32000
+    dem: 16
+    timezone: "Africa/Cairo"
+  - name: "Marsa Alam"
+    latitude: 25.06305
+    longitude: 34.89005
+    population: 10000
+    dem: 18
+    timezone: "Africa/Cairo"
+  - name: "Safaga"
+    latitude: 26.74906
+    longitude: 33.93891
+    population: 32944
+    dem: 13
+    timezone: "Africa/Cairo"
+  - name: "Al Qusayr"
+    latitude: 26.10426
+    longitude: 34.27793
+    population: 24653
+    dem: 21
+    timezone: "Africa/Cairo"
+  - name: "Hurghada"
+    latitude: 27.25738
+    longitude: 33.81291
+    population: 95622
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "El Gouna"
+    latitude: 27.39417
+    longitude: 33.67825
+    population: 15000
+    dem: 8
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Qina"
+  cities:
+  - name: "Kousa"
+    latitude: 25.91407
+    longitude: 32.76362
+    population: 60181
+    dem: 81
+    timezone: "Africa/Cairo"
+  - name: "Qina"
+    latitude: 26.16418
+    longitude: 32.72671
+    population: 235362
+    dem: 80
+    timezone: "Africa/Cairo"
+  - name: "Naja Hammadi"
+    latitude: 26.04949
+    longitude: 32.24142
+    population: 41184
+    dem: 78
+    timezone: "Africa/Cairo"
+  - name: "Isna"
+    latitude: 25.29336
+    longitude: 32.55402
+    population: 69335
+    dem: 86
+    timezone: "Africa/Cairo"
+  - name: "Farshut"
+    latitude: 26.05494
+    longitude: 32.16329
+    population: 53851
+    dem: 78
+    timezone: "Africa/Cairo"
+  - name: "Dishna"
+    latitude: 26.12467
+    longitude: 32.47598
+    population: 54197
+    dem: 75
+    timezone: "Africa/Cairo"
+- name: "Cairo Governorate"
+  cities:
+  - name: "Halwan"
+    latitude: 29.84144
+    longitude: 31.30084
+    population: 230000
+    dem: 28
+    timezone: "Africa/Cairo"
+  - name: "Cairo"
+    latitude: 30.06263
+    longitude: 31.24967
+    population: 7734614
+    dem: 23
+    timezone: "Africa/Cairo"
+  - name: "New Cairo"
+    latitude: 30.03
+    longitude: 31.47
+    population: 200000
+    dem: 271
+    timezone: "Africa/Cairo"
+- name: "South Sinai Governorate"
+  cities:
+  - name: "Sharm el-Sheikh"
+    latitude: 27.91582
+    longitude: 34.32995
+    population: 12000
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Dahab"
+    latitude: 28.48208
+    longitude: 34.49505
+    population: 8000
+    dem: 13
+    timezone: "Africa/Cairo"
+  - name: "El-Tor"
+    latitude: 28.24168
+    longitude: 33.6222
+    population: 14972
+    dem: 14
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Gharbiyah"
+  cities:
+  - name: "Zefta"
+    latitude: 30.7142
+    longitude: 31.24425
+    population: 92667
+    dem: 16
+    timezone: "Africa/Cairo"
+  - name: "Tanda"
+    latitude: 30.78847
+    longitude: 31.00192
+    population: 404901
+    dem: 18
+    timezone: "Africa/Cairo"
+  - name: "Samannud"
+    latitude: 30.9616
+    longitude: 31.24069
+    population: 54980
+    dem: 12
+    timezone: "Africa/Cairo"
+  - name: "Qutur"
+    latitude: 30.97225
+    longitude: 30.95614
+    population: 23842
+    dem: 9
+    timezone: "Africa/Cairo"
+  - name: "Kafr az Zayyat"
+    latitude: 30.8248
+    longitude: 30.81805
+    population: 73725
+    dem: 18
+    timezone: "Africa/Cairo"
+  - name: "Basyun"
+    latitude: 30.93976
+    longitude: 30.81338
+    population: 55523
+    dem: 12
+    timezone: "Africa/Cairo"
+  - name: "Al Mahallah al Kubra"
+    latitude: 30.97063
+    longitude: 31.1669
+    population: 431052
+    dem: 17
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Jizah"
+  cities:
+  - name: "Madinat Sittah Uktubar"
+    latitude: 29.81667
+    longitude: 31.05
+    population: 41930
+    dem: 126
+    timezone: "Africa/Cairo"
+  - name: "Awsim"
+    latitude: 30.12303
+    longitude: 31.13571
+    population: 63862
+    dem: 25
+    timezone: "Africa/Cairo"
+  - name: "As Saff"
+    latitude: 29.56472
+    longitude: 31.28111
+    population: 38213
+    dem: 27
+    timezone: "Africa/Cairo"
+  - name: "Giza"
+    latitude: 30.00808
+    longitude: 31.21093
+    population: 2443203
+    dem: 30
+    timezone: "Africa/Cairo"
+  - name: "Al Hawamidiyah"
+    latitude: 29.9
+    longitude: 31.25
+    population: 106841
+    dem: 23
+    timezone: "Africa/Cairo"
+  - name: "Al Bawiti"
+    latitude: 28.34919
+    longitude: 28.86591
+    population: 20000
+    dem: 130
+    timezone: "Africa/Cairo"
+  - name: "Al `Ayyat"
+    latitude: 29.61972
+    longitude: 31.2575
+    population: 34796
+    dem: 25
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Bur Said"
+  cities:
+  - name: "Port Said"
+    latitude: 31.25654
+    longitude: 32.28411
+    population: 538378
+    dem: 6
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Wadi al Jadid"
+  cities:
+  - name: "Al Kharijah"
+    latitude: 25.45141
+    longitude: 30.54635
+    population: 67700
+    dem: 81
+    timezone: "Africa/Cairo"
+- name: "Ismailia Governorate"
+  cities:
+  - name: "Ismailia"
+    latitude: 30.60427
+    longitude: 32.27225
+    population: 284813
+    dem: 14
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Uqsur"
+  cities:
+  - name: "Luxor"
+    latitude: 25.69893
+    longitude: 32.6421
+    population: 422407
+    dem: 89
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Matruh"
+  cities:
+  - name: "Siwa Oasis"
+    latitude: 29.2032
+    longitude: 25.51965
+    population: 7000
+    dem: -15
+    timezone: "Africa/Cairo"
+  - name: "Mersa Matruh"
+    latitude: 31.3529
+    longitude: 27.23725
+    population: 62042
+    dem: 7
+    timezone: "Africa/Cairo"
+  - name: "Al `Alamayn"
+    latitude: 30.83007
+    longitude: 28.95502
+    population: 7400
+    dem: 7
+    timezone: "Africa/Cairo"
+- name: "Muhafazat Aswan"
+  cities:
+  - name: "Kawm Umbu"
+    latitude: 24.47669
+    longitude: 32.94626
+    population: 59787
+    dem: 108
+    timezone: "Africa/Cairo"
+  - name: "Idfu"
+    latitude: 24.97916
+    longitude: 32.87722
+    population: 133000
+    dem: 90
+    timezone: "Africa/Cairo"
+  - name: "Aswan"
+    latitude: 24.09082
+    longitude: 32.89942
+    population: 241261
+    dem: 99
+    timezone: "Africa/Cairo"
+- name: "Muhafazat ad Daqahliyah"
+  cities:
+  - name: "Talkha"
+    latitude: 31.0539
+    longitude: 31.37787
+    population: 157737
+    dem: 7
+    timezone: "Africa/Cairo"
+  - name: "Shirbin"
+    latitude: 31.19688
+    longitude: 31.5243
+    population: 54676
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Minyat an Nasr"
+    latitude: 31.12624
+    longitude: 31.64313
+    population: 56951
+    dem: 4
+    timezone: "Africa/Cairo"
+  - name: "`Izbat al Burj"
+    latitude: 31.5084
+    longitude: 31.84106
+    population: 37953
+    dem: 8
+    timezone: "Africa/Cairo"
+  - name: "Dikirnis"
+    latitude: 31.08898
+    longitude: 31.59478
+    population: 137542
+    dem: 13
+    timezone: "Africa/Cairo"
+  - name: "Bilqas"
+    latitude: 31.21452
+    longitude: 31.35798
+    population: 103596
+    dem: 13
+    timezone: "Africa/Cairo"
+  - name: "Al Matariyah"
+    latitude: 31.18287
+    longitude: 32.03108
+    population: 99357
+    dem: 10
+    timezone: "Africa/Cairo"
+  - name: "Al Manzalah"
+    latitude: 31.15823
+    longitude: 31.936
+    population: 67486
+    dem: 9
+    timezone: "Africa/Cairo"
+  - name: "Al Mansurah"
+    latitude: 31.03637
+    longitude: 31.38069
+    population: 420195
+    dem: 15
+    timezone: "Africa/Cairo"
+  - name: "Al Jammaliyah"
+    latitude: 31.18065
+    longitude: 31.86497
+    population: 68381
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Aja"
+    latitude: 30.94162
+    longitude: 31.29039
+    population: 34692
+    dem: 12
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Minya"
+  cities:
+  - name: "Samalut"
+    latitude: 28.31214
+    longitude: 30.71007
+    population: 90465
+    dem: 41
+    timezone: "Africa/Cairo"
+  - name: "Matay"
+    latitude: 28.41899
+    longitude: 30.77924
+    population: 45215
+    dem: 40
+    timezone: "Africa/Cairo"
+  - name: "Mallawi"
+    latitude: 27.7314
+    longitude: 30.84165
+    population: 142504
+    dem: 52
+    timezone: "Africa/Cairo"
+  - name: "Dayr Mawas"
+    latitude: 27.64176
+    longitude: 30.84662
+    population: 40609
+    dem: 48
+    timezone: "Africa/Cairo"
+  - name: "Bani Mazar"
+    latitude: 28.5036
+    longitude: 30.8004
+    population: 58153
+    dem: 43
+    timezone: "Africa/Cairo"
+  - name: "Al Minya"
+    latitude: 28.10988
+    longitude: 30.7503
+    population: 227150
+    dem: 49
+    timezone: "Africa/Cairo"
+  - name: "Abu Qurqas"
+    latitude: 27.9312
+    longitude: 30.83841
+    population: 61182
+    dem: 54
+    timezone: "Africa/Cairo"
+- name: "Muhafazat al Fayyum"
+  cities:
+  - name: "Tamiyah"
+    latitude: 29.47639
+    longitude: 30.96119
+    population: 46866
+    dem: -6
+    timezone: "Africa/Cairo"
+  - name: "Itsa"
+    latitude: 29.2376
+    longitude: 30.78944
+    population: 45269
+    dem: 20
+    timezone: "Africa/Cairo"
+  - name: "Ibshaway"
+    latitude: 29.35896
+    longitude: 30.68061
+    population: 51173
+    dem: 11
+    timezone: "Africa/Cairo"
+  - name: "Al Wasitah"
+    latitude: 29.33778
+    longitude: 31.20556
+    population: 37453
+    dem: 33
+    timezone: "Africa/Cairo"
+  - name: "Al Fayyum"
+    latitude: 29.30995
+    longitude: 30.8418
+    population: 306393
+    dem: 29
+    timezone: "Africa/Cairo"

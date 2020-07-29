@@ -1,0 +1,756 @@
+---
+name: "Chile"
+iso: "CL"
+iso3: "CHL"
+code: "152"
+capital: "Santiago"
+area: 756950.0
+population: 16746491
+continent: "SA"
+currencyCode: "CLP"
+currencyName: "Peso"
+phone: "56"
+postalCodeFormat: "#######"
+postalCodeRegex: "^(\\d{7})$"
+languages: "es-CL"
+neighbours: "PE,BO,AR"
+regions:
+- name: "Region Metropolitana"
+  cities:
+  - name: "Talagante"
+    latitude: -33.66386
+    longitude: -70.92734
+    population: 51764
+    dem: 344
+    timezone: "America/Santiago"
+  - name: "Santiago"
+    latitude: -33.45694
+    longitude: -70.64827
+    population: 4837295
+    dem: 556
+    timezone: "America/Santiago"
+  - name: "San Bernardo"
+    latitude: -33.59217
+    longitude: -70.6996
+    population: 249858
+    dem: 571
+    timezone: "America/Santiago"
+  - name: "Puente Alto"
+    latitude: -33.61169
+    longitude: -70.57577
+    population: 510417
+    dem: 700
+    timezone: "America/Santiago"
+  - name: "Penaflor"
+    latitude: -33.60627
+    longitude: -70.87649
+    population: 65495
+    dem: 395
+    timezone: "America/Santiago"
+  - name: "Paine"
+    latitude: -33.80796
+    longitude: -70.74109
+    population: 32766
+    dem: 407
+    timezone: "America/Santiago"
+  - name: "Melipilla"
+    latitude: -33.68909
+    longitude: -71.21528
+    population: 63100
+    dem: 175
+    timezone: "America/Santiago"
+  - name: "Lampa"
+    latitude: -33.2863
+    longitude: -70.87561
+    population: 29250
+    dem: 498
+    timezone: "America/Santiago"
+  - name: "El Monte"
+    latitude: -33.67969
+    longitude: -70.98482
+    population: 23090
+    dem: 300
+    timezone: "America/Santiago"
+  - name: "Chicureo Abajo"
+    latitude: -33.28379
+    longitude: -70.65333
+    population: 18000
+    elevation: 568
+    dem: 563
+    timezone: "America/Santiago"
+  - name: "Buin"
+    latitude: -33.73257
+    longitude: -70.74281
+    population: 55441
+    dem: 483
+    timezone: "America/Santiago"
+  - name: "La Pintana"
+    latitude: -33.58331
+    longitude: -70.63419
+    population: 201178
+    dem: 630
+    timezone: "America/Santiago"
+  - name: "Lo Prado"
+    latitude: -33.4443
+    longitude: -70.72552
+    population: 104316
+    elevation: 508
+    dem: 509
+    timezone: "America/Santiago"
+  - name: "Villa Presidente Frei, Nunoa, Santiago, Chile"
+    latitude: -33.46069
+    longitude: -70.58024
+    population: 15000
+    elevation: 622
+    dem: 606
+    timezone: "America/Santiago"
+- name: "Region del Biobio"
+  cities:
+  - name: "Yumbel"
+    latitude: -37.0982
+    longitude: -72.56084
+    population: 11111
+    dem: 105
+    timezone: "America/Santiago"
+  - name: "Tome"
+    latitude: -36.61756
+    longitude: -72.95593
+    population: 46698
+    dem: 16
+    timezone: "America/Santiago"
+  - name: "Talcahuano"
+    latitude: -36.72494
+    longitude: -73.11684
+    population: 252968
+    dem: 15
+    timezone: "America/Santiago"
+  - name: "Penco"
+    latitude: -36.74075
+    longitude: -72.99528
+    population: 46091
+    dem: 24
+    timezone: "America/Santiago"
+  - name: "Nacimiento"
+    latitude: -37.50253
+    longitude: -72.67307
+    population: 21220
+    dem: 95
+    timezone: "America/Santiago"
+  - name: "Mulchen"
+    latitude: -37.71893
+    longitude: -72.24099
+    population: 22170
+    dem: 139
+    timezone: "America/Santiago"
+  - name: "Lota"
+    latitude: -37.08994
+    longitude: -73.1577
+    population: 49763
+    dem: 14
+    timezone: "America/Santiago"
+  - name: "Los Angeles"
+    latitude: -37.46973
+    longitude: -72.35366
+    population: 125430
+    dem: 141
+    timezone: "America/Santiago"
+  - name: "Lebu"
+    latitude: -37.60825
+    longitude: -73.65356
+    population: 22345
+    dem: 12
+    timezone: "America/Santiago"
+  - name: "Laja"
+    latitude: -37.28415
+    longitude: -72.71105
+    population: 16550
+    dem: 60
+    timezone: "America/Santiago"
+  - name: "Curanilahue"
+    latitude: -37.47793
+    longitude: -73.34495
+    population: 30611
+    dem: 141
+    timezone: "America/Santiago"
+  - name: "Coronel"
+    latitude: -37.03386
+    longitude: -73.14019
+    population: 92940
+    dem: 11
+    timezone: "America/Santiago"
+  - name: "Concepcion"
+    latitude: -36.82699
+    longitude: -73.04977
+    population: 215413
+    dem: 36
+    timezone: "America/Santiago"
+  - name: "Chiguayante"
+    latitude: -36.9256
+    longitude: -73.02841
+    population: 82545
+    dem: 36
+    timezone: "America/Santiago"
+  - name: "Canete"
+    latitude: -37.80128
+    longitude: -73.39616
+    population: 20158
+    dem: 69
+    timezone: "America/Santiago"
+  - name: "Cabrero"
+    latitude: -37.03394
+    longitude: -72.40468
+    population: 18327
+    dem: 129
+    timezone: "America/Santiago"
+  - name: "Arauco"
+    latitude: -37.2463
+    longitude: -73.31752
+    population: 24659
+    dem: 13
+    timezone: "America/Santiago"
+- name: "Region de Tarapaca"
+  cities:
+  - name: "Iquique"
+    latitude: -20.21326
+    longitude: -70.15027
+    population: 227499
+    dem: 20
+    timezone: "America/Santiago"
+- name: "Region de Antofagasta"
+  cities:
+  - name: "Tocopilla"
+    latitude: -22.09198
+    longitude: -70.19792
+    population: 24460
+    dem: 37
+    timezone: "America/Santiago"
+  - name: "Taltal"
+    latitude: -25.40713
+    longitude: -70.48554
+    population: 10018
+    dem: 1
+    timezone: "America/Santiago"
+  - name: "Calama"
+    latitude: -22.45667
+    longitude: -68.92371
+    population: 143084
+    dem: 2275
+    timezone: "America/Santiago"
+  - name: "Antofagasta"
+    latitude: -23.65236
+    longitude: -70.3954
+    population: 309832
+    dem: 31
+    timezone: "America/Santiago"
+- name: "Region de Nuble"
+  cities:
+  - name: "San Carlos"
+    latitude: -36.42477
+    longitude: -71.958
+    population: 31517
+    dem: 186
+    timezone: "America/Santiago"
+  - name: "Quirihue"
+    latitude: -36.27998
+    longitude: -72.54118
+    population: 8000
+    dem: 262
+    timezone: "America/Santiago"
+  - name: "Coihueco"
+    latitude: -36.62785
+    longitude: -71.83068
+    population: 7346
+    dem: 257
+    timezone: "America/Santiago"
+  - name: "Chillan"
+    latitude: -36.60664
+    longitude: -72.10344
+    population: 150396
+    dem: 132
+    timezone: "America/Santiago"
+  - name: "Bulnes"
+    latitude: -36.74232
+    longitude: -72.29854
+    population: 12715
+    dem: 96
+    timezone: "America/Santiago"
+- name: "Region de los Rios"
+  cities:
+  - name: "Valdivia"
+    latitude: -39.81422
+    longitude: -73.24589
+    population: 133419
+    dem: 17
+    timezone: "America/Santiago"
+  - name: "Rio Bueno"
+    latitude: -40.33494
+    longitude: -72.95564
+    population: 15456
+    dem: 61
+    timezone: "America/Santiago"
+  - name: "Panguipulli"
+    latitude: -39.64355
+    longitude: -72.33269
+    population: 16312
+    dem: 140
+    timezone: "America/Santiago"
+  - name: "La Union"
+    latitude: -40.29313
+    longitude: -73.08167
+    population: 26298
+    dem: 32
+    timezone: "America/Santiago"
+  - name: "Las Animas"
+    latitude: -39.80867
+    longitude: -73.21821
+    population: 30000
+    elevation: 10
+    dem: 10
+    timezone: "America/Santiago"
+- name: "Region del Maule"
+  cities:
+  - name: "Teno"
+    latitude: -34.87055
+    longitude: -71.16219
+    population: 6858
+    dem: 297
+    timezone: "America/Santiago"
+  - name: "Talca"
+    latitude: -35.4264
+    longitude: -71.65542
+    population: 197479
+    dem: 104
+    timezone: "America/Santiago"
+  - name: "San Javier"
+    latitude: -35.5952
+    longitude: -71.72924
+    population: 22427
+    dem: 101
+    timezone: "America/Santiago"
+  - name: "San Clemente"
+    latitude: -35.53777
+    longitude: -71.487
+    population: 13656
+    dem: 214
+    timezone: "America/Santiago"
+  - name: "Rauco"
+    latitude: -34.92546
+    longitude: -71.31722
+    population: 8566
+    dem: 195
+    timezone: "America/Santiago"
+  - name: "Parral"
+    latitude: -36.14311
+    longitude: -71.82605
+    population: 26904
+    dem: 178
+    timezone: "America/Santiago"
+  - name: "Molina"
+    latitude: -35.11428
+    longitude: -71.28232
+    population: 28775
+    dem: 253
+    timezone: "America/Santiago"
+  - name: "Longavi"
+    latitude: -35.96496
+    longitude: -71.6836
+    population: 6325
+    dem: 153
+    timezone: "America/Santiago"
+  - name: "Linares"
+    latitude: -35.84667
+    longitude: -71.59308
+    population: 69535
+    dem: 165
+    timezone: "America/Santiago"
+  - name: "Curico"
+    latitude: -34.98279
+    longitude: -71.23943
+    population: 102438
+    dem: 217
+    timezone: "America/Santiago"
+  - name: "Constitucion"
+    latitude: -35.33321
+    longitude: -72.41156
+    population: 37917
+    dem: 19
+    timezone: "America/Santiago"
+  - name: "Cauquenes"
+    latitude: -35.9671
+    longitude: -72.32248
+    population: 31362
+    dem: 172
+    timezone: "America/Santiago"
+- name: "Region de Atacama"
+  cities:
+  - name: "Vallenar"
+    latitude: -28.57617
+    longitude: -70.75938
+    population: 44895
+    dem: 388
+    timezone: "America/Santiago"
+  - name: "Diego de Almagro"
+    latitude: -26.36667
+    longitude: -70.05
+    population: 18137
+    dem: 1020
+    timezone: "America/Santiago"
+  - name: "Copiapo"
+    latitude: -27.36679
+    longitude: -70.3314
+    population: 129280
+    dem: 397
+    timezone: "America/Santiago"
+- name: "Region de los Lagos"
+  cities:
+  - name: "Purranque"
+    latitude: -40.91305
+    longitude: -73.15913
+    population: 13619
+    dem: 119
+    timezone: "America/Santiago"
+  - name: "Puerto Varas"
+    latitude: -41.31946
+    longitude: -72.98538
+    population: 24958
+    dem: 60
+    timezone: "America/Santiago"
+  - name: "Quellon"
+    latitude: -43.11819
+    longitude: -73.61661
+    population: 21823
+    dem: 23
+    timezone: "America/Santiago"
+  - name: "Puerto Montt"
+    latitude: -41.4693
+    longitude: -72.94237
+    population: 160054
+    dem: 27
+    timezone: "America/Santiago"
+  - name: "Osorno"
+    latitude: -40.57395
+    longitude: -73.13348
+    population: 135773
+    dem: 37
+    timezone: "America/Santiago"
+  - name: "Chonchi"
+    latitude: -42.62387
+    longitude: -73.775
+    population: 12572
+    dem: -9999
+    timezone: "America/Santiago"
+  - name: "Castro"
+    latitude: -42.4721
+    longitude: -73.77319
+    population: 29926
+    dem: 81
+    timezone: "America/Santiago"
+  - name: "Calbuco"
+    latitude: -41.77338
+    longitude: -73.13049
+    population: 12490
+    dem: 38
+    timezone: "America/Santiago"
+  - name: "Ancud"
+    latitude: -41.8707
+    longitude: -73.81622
+    population: 28020
+    dem: 51
+    timezone: "America/Santiago"
+- name: "Region del Libertador General Bernardo OHiggins"
+  cities:
+  - name: "San Vicente de Tagua Tagua"
+    latitude: -34.43859
+    longitude: -71.07751
+    population: 29560
+    dem: 214
+    timezone: "America/Santiago"
+  - name: "San Vicente"
+    latitude: -34.43333
+    longitude: -71.08333
+    population: 22572
+    dem: 210
+    timezone: "America/Santiago"
+  - name: "Santa Cruz"
+    latitude: -34.63881
+    longitude: -71.36576
+    population: 33283
+    dem: 174
+    timezone: "America/Santiago"
+  - name: "Rengo"
+    latitude: -34.40639
+    longitude: -70.85834
+    population: 38100
+    dem: 326
+    timezone: "America/Santiago"
+  - name: "Rancagua"
+    latitude: -34.17083
+    longitude: -70.74444
+    population: 212695
+    dem: 506
+    timezone: "America/Santiago"
+  - name: "Machali"
+    latitude: -34.18082
+    longitude: -70.64933
+    population: 27595
+    dem: 568
+    timezone: "America/Santiago"
+  - name: "Graneros"
+    latitude: -34.06863
+    longitude: -70.72747
+    population: 23301
+    dem: 483
+    timezone: "America/Santiago"
+  - name: "Chimbarongo"
+    latitude: -34.71247
+    longitude: -71.0434
+    population: 17356
+    dem: 309
+    timezone: "America/Santiago"
+- name: "Region Aysen"
+  cities:
+  - name: "Puerto Aysen"
+    latitude: -45.40303
+    longitude: -72.69184
+    population: 16936
+    dem: 9
+    timezone: "America/Santiago"
+  - name: "Coyhaique"
+    latitude: -45.57524
+    longitude: -72.06619
+    population: 45787
+    dem: 299
+    timezone: "America/Santiago"
+- name: "Region de Valparaiso"
+  cities:
+  - name: "Vina del Mar"
+    latitude: -33.02457
+    longitude: -71.55183
+    population: 294551
+    dem: 17
+    timezone: "America/Santiago"
+  - name: "Villa Alemana"
+    latitude: -33.04222
+    longitude: -71.37333
+    population: 97320
+    dem: 147
+    timezone: "America/Santiago"
+  - name: "Valparaiso"
+    latitude: -33.036
+    longitude: -71.62963
+    population: 282448
+    dem: 23
+    timezone: "America/Santiago"
+  - name: "San Felipe"
+    latitude: -32.74976
+    longitude: -70.72584
+    population: 59294
+    dem: 654
+    timezone: "America/Santiago"
+  - name: "San Antonio"
+    latitude: -33.59473
+    longitude: -71.60746
+    population: 85651
+    dem: 39
+    timezone: "America/Santiago"
+  - name: "Quilpue"
+    latitude: -33.04752
+    longitude: -71.44249
+    population: 130263
+    dem: 113
+    timezone: "America/Santiago"
+  - name: "Quillota"
+    latitude: -32.88341
+    longitude: -71.24882
+    population: 67779
+    dem: 128
+    timezone: "America/Santiago"
+  - name: "Los Andes"
+    latitude: -32.83369
+    longitude: -70.59827
+    population: 56859
+    dem: 833
+    timezone: "America/Santiago"
+  - name: "Llaillay"
+    latitude: -32.84043
+    longitude: -70.95623
+    population: 16646
+    dem: 395
+    timezone: "America/Santiago"
+  - name: "Limache"
+    latitude: -33.01667
+    longitude: -71.26667
+    population: 35876
+    dem: 107
+    timezone: "America/Santiago"
+  - name: "La Ligua"
+    latitude: -32.45242
+    longitude: -71.23106
+    population: 24857
+    dem: 78
+    timezone: "America/Santiago"
+  - name: "Hacienda La Calera"
+    latitude: -32.78333
+    longitude: -71.21667
+    population: 49106
+    dem: 203
+    timezone: "America/Santiago"
+  - name: "Cartagena"
+    latitude: -33.55384
+    longitude: -71.60761
+    population: 16875
+    dem: 82
+    timezone: "America/Santiago"
+- name: "Region de Arica y Parinacota"
+  cities:
+  - name: "Arica"
+    latitude: -18.4746
+    longitude: -70.29792
+    population: 185999
+    dem: 45
+    timezone: "America/Santiago"
+- name: "Region de Magallanes y Antartica Chilena"
+  cities:
+  - name: "Punta Arenas"
+    latitude: -53.15483
+    longitude: -70.91129
+    population: 117430
+    dem: 30
+    timezone: "America/Punta_Arenas"
+  - name: "Puerto Natales"
+    latitude: -51.72987
+    longitude: -72.50603
+    population: 20000
+    dem: 28
+    timezone: "America/Punta_Arenas"
+- name: "Region de la Araucania"
+  cities:
+  - name: "Villarrica"
+    latitude: -39.28569
+    longitude: -72.2279
+    population: 31602
+    dem: 232
+    timezone: "America/Santiago"
+  - name: "Vilcun"
+    latitude: -38.66875
+    longitude: -72.22565
+    population: 9241
+    dem: 295
+    timezone: "America/Santiago"
+  - name: "Victoria"
+    latitude: -38.23291
+    longitude: -72.33292
+    population: 24555
+    dem: 355
+    timezone: "America/Santiago"
+  - name: "Traiguen"
+    latitude: -38.2496
+    longitude: -72.67027
+    population: 14481
+    dem: 180
+    timezone: "America/Santiago"
+  - name: "Temuco"
+    latitude: -38.73965
+    longitude: -72.59842
+    population: 238129
+    dem: 114
+    timezone: "America/Santiago"
+  - name: "Pucon"
+    latitude: -39.28223
+    longitude: -71.95427
+    population: 26953
+    dem: 236
+    timezone: "America/Santiago"
+  - name: "Pitrufquen"
+    latitude: -38.98635
+    longitude: -72.63721
+    population: 13743
+    dem: 99
+    timezone: "America/Santiago"
+  - name: "Nueva Imperial"
+    latitude: -38.74451
+    longitude: -72.95025
+    population: 18777
+    dem: 29
+    timezone: "America/Santiago"
+  - name: "Loncoche"
+    latitude: -39.36708
+    longitude: -72.63087
+    population: 15590
+    dem: 114
+    timezone: "America/Santiago"
+  - name: "Lautaro"
+    latitude: -38.53066
+    longitude: -72.43652
+    population: 21579
+    dem: 217
+    timezone: "America/Santiago"
+  - name: "Freire"
+    latitude: -38.95252
+    longitude: -72.62653
+    population: 7813
+    dem: 108
+    timezone: "America/Santiago"
+  - name: "Collipulli"
+    latitude: -37.95453
+    longitude: -72.43438
+    population: 16392
+    dem: 257
+    timezone: "America/Santiago"
+  - name: "Carahue"
+    latitude: -38.71122
+    longitude: -73.16101
+    population: 11875
+    dem: 41
+    timezone: "America/Santiago"
+  - name: "Angol"
+    latitude: -37.79519
+    longitude: -72.71636
+    population: 44856
+    elevation: 65
+    dem: 101
+    timezone: "America/Santiago"
+- name: "Region de Coquimbo"
+  cities:
+  - name: "Vicuna"
+    latitude: -30.03541
+    longitude: -70.71274
+    population: 13496
+    dem: 616
+    timezone: "America/Santiago"
+  - name: "Salamanca"
+    latitude: -31.77922
+    longitude: -70.96389
+    population: 13265
+    dem: 508
+    timezone: "America/Santiago"
+  - name: "Ovalle"
+    latitude: -30.60106
+    longitude: -71.19901
+    population: 77138
+    dem: 218
+    timezone: "America/Santiago"
+  - name: "Monte Patria"
+    latitude: -30.69496
+    longitude: -70.9577
+    population: 13945
+    dem: 429
+    timezone: "America/Santiago"
+  - name: "La Serena"
+    latitude: -29.90453
+    longitude: -71.24894
+    population: 154521
+    dem: 30
+    timezone: "America/Santiago"
+  - name: "Illapel"
+    latitude: -31.63349
+    longitude: -71.16967
+    population: 22816
+    dem: 312
+    timezone: "America/Santiago"
+  - name: "Coquimbo"
+    latitude: -29.95332
+    longitude: -71.33947
+    population: 161317
+    dem: 22
+    timezone: "America/Santiago"

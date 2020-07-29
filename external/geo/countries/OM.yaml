@@ -1,0 +1,214 @@
+---
+name: "Oman"
+iso: "OM"
+iso3: "OMN"
+code: "512"
+capital: "Muscat"
+area: 212460.0
+population: 2967717
+continent: "AS"
+currencyCode: "OMR"
+currencyName: "Rial"
+phone: "968"
+postalCodeFormat: "###"
+postalCodeRegex: "^(\\d{3})$"
+languages: "ar-OM,en,bal,ur"
+neighbours: "SA,YE,AE"
+regions:
+- name: "Al Batinah South Governorate"
+  cities:
+  - name: "Barka"
+    latitude: 23.67872
+    longitude: 57.88605
+    population: 81647
+    dem: 14
+    timezone: "Asia/Muscat"
+  - name: "Rustaq"
+    latitude: 23.39083
+    longitude: 57.42444
+    population: 79383
+    dem: 341
+    timezone: "Asia/Muscat"
+  - name: "Bayt al `Awabi"
+    latitude: 23.30324
+    longitude: 57.52459
+    population: 10711
+    dem: 493
+    timezone: "Asia/Muscat"
+  - name: "Oman Smart Future City"
+    latitude: 23.6527
+    longitude: 57.59926
+    population: 25000
+    elevation: 55
+    dem: 69
+    timezone: "Asia/Muscat"
+- name: "Al Batinah North Governorate"
+  cities:
+  - name: "Sohar"
+    latitude: 24.34745
+    longitude: 56.70937
+    population: 108274
+    dem: 12
+    timezone: "Asia/Muscat"
+  - name: "Shinas"
+    latitude: 24.7426
+    longitude: 56.46698
+    population: 48009
+    dem: 3
+    timezone: "Asia/Muscat"
+  - name: "Saham"
+    latitude: 24.17222
+    longitude: 56.88861
+    population: 89327
+    dem: 2
+    timezone: "Asia/Muscat"
+  - name: "As Suwayq"
+    latitude: 23.84944
+    longitude: 57.43861
+    population: 107143
+    dem: 6
+    timezone: "Asia/Muscat"
+  - name: "Liwa"
+    latitude: 24.53077
+    longitude: 56.563
+    population: 26372
+    dem: 5
+    timezone: "Asia/Muscat"
+  - name: "Al Khaburah"
+    latitude: 23.97144
+    longitude: 57.09313
+    population: 50223
+    dem: 4
+    timezone: "Asia/Muscat"
+- name: "Muhafazat Zufar"
+  cities:
+  - name: "Salalah"
+    latitude: 17.01505
+    longitude: 54.09237
+    population: 163140
+    dem: 13
+    timezone: "Asia/Muscat"
+- name: "Musandam"
+  cities:
+  - name: "Khasab"
+    latitude: 26.17993
+    longitude: 56.24774
+    population: 17904
+    dem: 13
+    timezone: "Asia/Muscat"
+- name: "Muhafazat ad Dakhiliyah"
+  cities:
+  - name: "Sufalat Samail"
+    latitude: 23.31667
+    longitude: 58.01667
+    population: 47718
+    dem: 354
+    timezone: "Asia/Muscat"
+  - name: "Nizwa"
+    latitude: 22.93333
+    longitude: 57.53333
+    population: 72076
+    dem: 511
+    timezone: "Asia/Muscat"
+  - name: "Izki"
+    latitude: 22.93333
+    longitude: 57.76667
+    population: 36203
+    dem: 547
+    timezone: "Asia/Muscat"
+  - name: "Bidbid"
+    latitude: 23.40787
+    longitude: 58.1283
+    population: 21188
+    dem: 219
+    timezone: "Asia/Muscat"
+  - name: "Bahla"
+    latitude: 22.97886
+    longitude: 57.3047
+    population: 54338
+    dem: 567
+    timezone: "Asia/Muscat"
+  - name: "Adam"
+    latitude: 22.37934
+    longitude: 57.52718
+    population: 17283
+    dem: 274
+    timezone: "Asia/Muscat"
+- name: "Ash Sharqiyah South"
+  cities:
+  - name: "Sur"
+    latitude: 22.56667
+    longitude: 59.52889
+    population: 71152
+    dem: 6
+    timezone: "Asia/Muscat"
+- name: "Muhafazat al Buraymi"
+  cities:
+  - name: "Al Buraymi"
+    latitude: 24.25088
+    longitude: 55.79312
+    population: 73670
+    dem: 297
+    timezone: "Asia/Muscat"
+- name: "Muhafazat Shamal ash Sharqiyah"
+  cities:
+  - name: "Ibra"
+    latitude: 22.69057
+    longitude: 58.53337
+    population: 25265
+    dem: 446
+    timezone: "Asia/Muscat"
+  - name: "Badiyah"
+    latitude: 22.45
+    longitude: 58.8
+    population: 18479
+    dem: 298
+    timezone: "Asia/Muscat"
+  - name: "Al Qabil"
+    latitude: 22.571
+    longitude: 58.69472
+    population: 14008
+    dem: 343
+    timezone: "Asia/Muscat"
+- name: "Muhafazat Masqat"
+  cities:
+  - name: "Muscat"
+    latitude: 23.58413
+    longitude: 58.40778
+    population: 797000
+    dem: 14
+    timezone: "Asia/Muscat"
+  - name: "Bawshar"
+    latitude: 23.57769
+    longitude: 58.39982
+    population: 159487
+    dem: 15
+    timezone: "Asia/Muscat"
+  - name: "Seeb"
+    latitude: 23.67027
+    longitude: 58.18911
+    population: 237816
+    dem: 7
+    timezone: "Asia/Muscat"
+- name: "Az Zahirah"
+  cities:
+  - name: "`Ibri"
+    latitude: 23.22573
+    longitude: 56.51572
+    population: 101640
+    dem: 359
+    timezone: "Asia/Muscat"
+  - name: "Yanqul"
+    latitude: 23.58645
+    longitude: 56.53969
+    population: 16599
+    dem: 684
+    timezone: "Asia/Muscat"
+- name: "Muhafazat al Wusta"
+  cities:
+  - name: "Hayma"
+    latitude: 19.95931
+    longitude: 56.27575
+    population: 1294
+    dem: 135
+    timezone: "Asia/Muscat"

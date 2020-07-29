@@ -1,0 +1,236 @@
+---
+name: "Kosovo"
+iso: "XK"
+iso3: "XKX"
+code: "0"
+capital: "Pristina"
+area: 10908.0
+population: 1800000
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+languages: "sq,sr"
+neighbours: "RS,AL,MK,ME"
+regions:
+- name: "Pec District"
+  cities:
+  - name: "Pec"
+    latitude: 42.65913
+    longitude: 20.28828
+    population: 48962
+    elevation: 550
+    dem: 518
+    timezone: "Europe/Belgrade"
+  - name: "Klina"
+    latitude: 42.62167
+    longitude: 20.57778
+    population: 8050
+    dem: 404
+    timezone: "Europe/Belgrade"
+  - name: "Istok"
+    latitude: 42.78083
+    longitude: 20.4875
+    population: 40000
+    dem: 465
+    timezone: "Europe/Belgrade"
+- name: "Ferizaj District"
+  cities:
+  - name: "Ferizaj"
+    latitude: 42.37056
+    longitude: 21.15528
+    population: 59504
+    dem: 582
+    timezone: "Europe/Belgrade"
+  - name: "Strpce"
+    latitude: 42.23944
+    longitude: 21.02722
+    population: 6913
+    dem: 851
+    timezone: "Europe/Belgrade"
+  - name: "Shtime"
+    latitude: 42.43306
+    longitude: 21.03972
+    population: 35000
+    dem: 572
+    timezone: "Europe/Belgrade"
+  - name: "Kacanik"
+    latitude: 42.23194
+    longitude: 21.25944
+    population: 9800
+    dem: 487
+    timezone: "Europe/Belgrade"
+  - name: "Hani i Elezit"
+    latitude: 42.15
+    longitude: 21.29667
+    population: 9389
+    dem: 373
+    timezone: "Europe/Belgrade"
+- name: "Prizren District"
+  cities:
+  - name: "Suva Reka"
+    latitude: 42.35861
+    longitude: 20.825
+    population: 72229
+    dem: 387
+    timezone: "Europe/Belgrade"
+  - name: "Prizren"
+    latitude: 42.21389
+    longitude: 20.73972
+    population: 171464
+    dem: 413
+    timezone: "Europe/Belgrade"
+  - name: "Mamusa"
+    latitude: 42.33083
+    longitude: 20.72694
+    population: 5507
+    dem: 333
+    timezone: "Europe/Belgrade"
+  - name: "Llazice"
+    latitude: 42.55528
+    longitude: 20.76333
+    population: 19863
+    dem: 635
+    timezone: "Europe/Belgrade"
+  - name: "Dragash"
+    latitude: 42.0265
+    longitude: 20.65333
+    population: 35000
+    dem: 1062
+    timezone: "Europe/Belgrade"
+- name: "Mitrovica District"
+  cities:
+  - name: "Zvecan"
+    latitude: 42.9075
+    longitude: 20.84028
+    population: 17000
+    dem: 544
+    timezone: "Europe/Belgrade"
+  - name: "Zubin Potok"
+    latitude: 42.91444
+    longitude: 20.68972
+    population: 14900
+    dem: 580
+    timezone: "Europe/Belgrade"
+  - name: "Vushtrri"
+    latitude: 42.82306
+    longitude: 20.9675
+    population: 30651
+    dem: 529
+    timezone: "Europe/Belgrade"
+  - name: "Srbica"
+    latitude: 42.74667
+    longitude: 20.78861
+    population: 5089
+    dem: 612
+    timezone: "Europe/Belgrade"
+  - name: "Leposaviq"
+    latitude: 43.10389
+    longitude: 20.80278
+    population: 19000
+    dem: 468
+    timezone: "Europe/Belgrade"
+  - name: "Mitrovice"
+    latitude: 42.88333
+    longitude: 20.86667
+    population: 107045
+    dem: 509
+    timezone: "Europe/Belgrade"
+- name: "Pristina District"
+  cities:
+  - name: "Pristina"
+    latitude: 42.67272
+    longitude: 21.16688
+    population: 550000
+    dem: 597
+    timezone: "Europe/Belgrade"
+  - name: "Podujeva"
+    latitude: 42.91056
+    longitude: 21.19306
+    population: 35000
+    dem: 614
+    timezone: "Europe/Belgrade"
+  - name: "Obiliq"
+    latitude: 42.68694
+    longitude: 21.07028
+    population: 11612
+    dem: 537
+    timezone: "Europe/Belgrade"
+  - name: "Novo Brdo"
+    latitude: 42.6159
+    longitude: 21.43405
+    population: 6720
+    dem: 1029
+    timezone: "Europe/Belgrade"
+  - name: "Lipljan"
+    latitude: 42.52167
+    longitude: 21.12583
+    population: 9047
+    dem: 553
+    timezone: "Europe/Belgrade"
+  - name: "Kosovo Polje"
+    latitude: 42.66394
+    longitude: 21.09611
+    population: 16154
+    dem: 559
+    timezone: "Europe/Belgrade"
+  - name: "Glogovac"
+    latitude: 42.62833
+    longitude: 20.89389
+    population: 58579
+    dem: 584
+    timezone: "Europe/Belgrade"
+- name: "Gjilan District"
+  cities:
+  - name: "Vitina"
+    latitude: 42.32139
+    longitude: 21.35833
+    population: 46959
+    dem: 501
+    timezone: "Europe/Belgrade"
+  - name: "Kamenica"
+    latitude: 42.57806
+    longitude: 21.58028
+    population: 9312
+    dem: 477
+    timezone: "Europe/Belgrade"
+  - name: "Gjilan"
+    latitude: 42.46045
+    longitude: 21.46986
+    population: 51912
+    dem: 513
+    timezone: "Europe/Belgrade"
+- name: "Gjakova District"
+  cities:
+  - name: "Orahovac"
+    latitude: 42.39944
+    longitude: 20.65472
+    population: 22049
+    dem: 393
+    timezone: "Europe/Belgrade"
+  - name: "Isniq"
+    latitude: 42.5575
+    longitude: 20.30278
+    population: 5500
+    elevation: 586
+    dem: 587
+    timezone: "Europe/Belgrade"
+  - name: "Strellc i Eperm"
+    latitude: 42.57843
+    longitude: 20.29398
+    population: 6100
+    elevation: 624
+    dem: 627
+    timezone: "Europe/Belgrade"
+  - name: "Decan"
+    latitude: 42.54018
+    longitude: 20.28793
+    population: 50500
+    elevation: 612
+    dem: 611
+    timezone: "Europe/Belgrade"
+  - name: "Gjakove"
+    latitude: 42.38028
+    longitude: 20.43083
+    population: 94158
+    dem: 362
+    timezone: "Europe/Belgrade"

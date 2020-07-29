@@ -1,0 +1,26 @@
+---
+name: "Aland Islands"
+iso: "AX"
+iso3: "ALA"
+code: "248"
+capital: "Mariehamn"
+area: 1580.0
+population: 26711
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "+358-18"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(?:FI)*(\\d{5})$"
+languages: "sv-AX"
+regions:
+- name: "Alands landsbygd"
+- name: "Mariehamns stad"
+  cities:
+  - name: "Mariehamn"
+    latitude: 60.09726
+    longitude: 19.93481
+    population: 10682
+    dem: 11
+    timezone: "Europe/Mariehamn"
+- name: "Alands skaergard"

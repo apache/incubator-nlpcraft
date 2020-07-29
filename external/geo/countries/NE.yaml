@@ -1,0 +1,255 @@
+---
+name: "Niger"
+iso: "NE"
+iso3: "NER"
+code: "562"
+capital: "Niamey"
+area: 1267000.0
+population: 15878271
+continent: "AF"
+currencyCode: "XOF"
+currencyName: "Franc"
+phone: "227"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "fr-NE,ha,kr,dje"
+neighbours: "TD,BJ,DZ,LY,BF,NG,ML"
+regions:
+- name: "Maradi"
+  cities:
+  - name: "Tibiri"
+    latitude: 13.56271
+    longitude: 7.04848
+    population: 20019
+    dem: 347
+    timezone: "Africa/Niamey"
+  - name: "Tessaoua"
+    latitude: 13.75737
+    longitude: 7.9874
+    population: 35775
+    dem: 400
+    timezone: "Africa/Niamey"
+  - name: "Mayahi"
+    latitude: 13.95532
+    longitude: 7.67122
+    population: 22183
+    dem: 389
+    timezone: "Africa/Niamey"
+  - name: "Maradi"
+    latitude: 13.5
+    longitude: 7.10174
+    population: 163487
+    dem: 360
+    timezone: "Africa/Niamey"
+  - name: "Madarounfa"
+    latitude: 13.30867
+    longitude: 7.15602
+    population: 9791
+    dem: 356
+    timezone: "Africa/Niamey"
+  - name: "Dakoro"
+    latitude: 14.51056
+    longitude: 6.765
+    population: 19798
+    dem: 416
+    timezone: "Africa/Niamey"
+  - name: "Aguie"
+    latitude: 13.50601
+    longitude: 7.77863
+    population: 13152
+    dem: 424
+    timezone: "Africa/Niamey"
+- name: "Zinder"
+  cities:
+  - name: "Zinder"
+    latitude: 13.80716
+    longitude: 8.9881
+    population: 191424
+    dem: 460
+    timezone: "Africa/Niamey"
+  - name: "Tanout"
+    latitude: 14.97089
+    longitude: 8.88786
+    population: 15204
+    dem: 525
+    timezone: "Africa/Niamey"
+  - name: "Mirriah"
+    latitude: 13.70727
+    longitude: 9.15013
+    population: 20724
+    dem: 407
+    timezone: "Africa/Niamey"
+  - name: "Matamey"
+    latitude: 13.42309
+    longitude: 8.47485
+    population: 16844
+    dem: 445
+    timezone: "Africa/Niamey"
+  - name: "Magaria"
+    latitude: 12.99826
+    longitude: 8.90991
+    population: 19419
+    dem: 396
+    timezone: "Africa/Niamey"
+  - name: "Goure"
+    latitude: 13.9835
+    longitude: 10.27035
+    population: 14639
+    dem: 447
+    timezone: "Africa/Niamey"
+- name: "Agadez"
+  cities:
+  - name: "Alaghsas"
+    latitude: 17.0187
+    longitude: 8.0168
+    population: 88561
+    dem: 519
+    timezone: "Africa/Niamey"
+  - name: "Agadez"
+    latitude: 16.97333
+    longitude: 7.99111
+    population: 124324
+    dem: 505
+    timezone: "Africa/Niamey"
+- name: "Tillaberi Region"
+  cities:
+  - name: "Tillaberi"
+    latitude: 14.20711
+    longitude: 1.45418
+    population: 19262
+    dem: 215
+    timezone: "Africa/Niamey"
+  - name: "Tera"
+    latitude: 14.00776
+    longitude: 0.75306
+    population: 21095
+    dem: 248
+    timezone: "Africa/Niamey"
+  - name: "Say"
+    latitude: 13.1007
+    longitude: 2.3689
+    population: 10387
+    dem: 181
+    timezone: "Africa/Niamey"
+  - name: "Ouallam"
+    latitude: 14.31641
+    longitude: 2.08597
+    population: 7500
+    dem: 235
+    timezone: "Africa/Niamey"
+  - name: "Kollo"
+    latitude: 13.3043
+    longitude: 2.339
+    population: 10376
+    dem: 189
+    timezone: "Africa/Niamey"
+  - name: "Filingue"
+    latitude: 14.3521
+    longitude: 3.3168
+    population: 11677
+    dem: 222
+    timezone: "Africa/Niamey"
+  - name: "Ayorou"
+    latitude: 14.73075
+    longitude: 0.91739
+    population: 26290
+    dem: 226
+    timezone: "Africa/Niamey"
+- name: "Dosso Region"
+  cities:
+  - name: "Gaya"
+    latitude: 11.88435
+    longitude: 3.44919
+    population: 33051
+    dem: 177
+    timezone: "Africa/Niamey"
+  - name: "Dosso"
+    latitude: 13.049
+    longitude: 3.1937
+    population: 49750
+    dem: 218
+    timezone: "Africa/Niamey"
+  - name: "Dogondoutchi"
+    latitude: 13.6403
+    longitude: 4.02649
+    population: 31767
+    dem: 228
+    timezone: "Africa/Niamey"
+- name: "Tahoua"
+  cities:
+  - name: "Birni N Konni"
+    latitude: 13.79599
+    longitude: 5.25026
+    population: 48103
+    dem: 272
+    timezone: "Africa/Niamey"
+  - name: "Tchintabaraden"
+    latitude: 15.8969
+    longitude: 5.7985
+    population: 8851
+    dem: 419
+    timezone: "Africa/Niamey"
+  - name: "Tahoua"
+    latitude: 14.8888
+    longitude: 5.2692
+    population: 80425
+    dem: 389
+    timezone: "Africa/Niamey"
+  - name: "Madaoua"
+    latitude: 14.073
+    longitude: 5.96
+    population: 24804
+    dem: 328
+    timezone: "Africa/Niamey"
+  - name: "Keita"
+    latitude: 14.7551
+    longitude: 5.7749
+    population: 8960
+    dem: 395
+    timezone: "Africa/Niamey"
+  - name: "Illela"
+    latitude: 14.4605
+    longitude: 5.2437
+    population: 16678
+    dem: 307
+    timezone: "Africa/Niamey"
+  - name: "Bouza"
+    latitude: 14.42293
+    longitude: 6.04278
+    population: 7141
+    dem: 406
+    timezone: "Africa/Niamey"
+  - name: "Abalak"
+    latitude: 15.4509
+    longitude: 6.2793
+    population: 13555
+    dem: 439
+    timezone: "Africa/Niamey"
+- name: "Niamey"
+  cities:
+  - name: "Niamey"
+    latitude: 13.51366
+    longitude: 2.1098
+    population: 774235
+    dem: 206
+    timezone: "Africa/Niamey"
+- name: "Diffa"
+  cities:
+  - name: "Nguigmi"
+    latitude: 14.24953
+    longitude: 13.10921
+    population: 17897
+    dem: 287
+    timezone: "Africa/Niamey"
+  - name: "Maine Soroa"
+    latitude: 13.21139
+    longitude: 12.0241
+    population: 10699
+    dem: 335
+    timezone: "Africa/Niamey"
+  - name: "Diffa"
+    latitude: 13.31536
+    longitude: 12.61135
+    population: 27948
+    dem: 311
+    timezone: "Africa/Niamey"

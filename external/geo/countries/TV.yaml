@@ -1,0 +1,64 @@
+---
+name: "Tuvalu"
+iso: "TV"
+iso3: "TUV"
+code: "798"
+capital: "Funafuti"
+area: 26.0
+population: 10472
+continent: "OC"
+currencyCode: "AUD"
+currencyName: "Dollar"
+phone: "688"
+languages: "tvl,en,sm,gil"
+regions:
+- name: "Nanumanga"
+  cities:
+  - name: "Toga Village"
+    latitude: -6.28764
+    longitude: 176.31472
+    population: 258
+    dem: 11
+    timezone: "Pacific/Funafuti"
+- name: "Nanumea"
+- name: "Nukulaelae"
+- name: "Niutao"
+  cities:
+  - name: "Kulia Village"
+    latitude: -6.10819
+    longitude: 177.33393
+    population: 224
+    dem: 10
+    timezone: "Pacific/Funafuti"
+- name: "Vaitupu"
+  cities:
+  - name: "Asau Village"
+    latitude: -7.49026
+    longitude: 178.68016
+    population: 250
+    dem: 9
+    timezone: "Pacific/Funafuti"
+- name: "Nukufetau"
+  cities:
+  - name: "Savave Village"
+    latitude: -8.02731
+    longitude: 178.31351
+    population: 586
+    dem: 12
+    timezone: "Pacific/Funafuti"
+- name: "Nui"
+  cities:
+  - name: "Tanrake Village"
+    latitude: -7.24562
+    longitude: 177.14511
+    population: 408
+    dem: 4
+    timezone: "Pacific/Funafuti"
+- name: "Funafuti"
+  cities:
+  - name: "Funafuti"
+    latitude: -8.52425
+    longitude: 179.19417
+    population: 4492
+    dem: 7
+    timezone: "Pacific/Funafuti"

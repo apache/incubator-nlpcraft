@@ -1,0 +1,292 @@
+---
+name: "Armenia"
+iso: "AM"
+iso3: "ARM"
+code: "051"
+capital: "Yerevan"
+area: 29800.0
+population: 2968000
+continent: "AS"
+currencyCode: "AMD"
+currencyName: "Dram"
+phone: "374"
+postalCodeFormat: "######"
+postalCodeRegex: "^(\\d{6})$"
+languages: "hy"
+neighbours: "GE,IR,AZ,TR"
+regions:
+- name: "Armaviri Marz"
+  cities:
+  - name: "Vagharshapat"
+    latitude: 40.16557
+    longitude: 44.29462
+    population: 46540
+    elevation: 853
+    dem: 877
+    timezone: "Asia/Yerevan"
+  - name: "Sardarapat"
+    latitude: 40.13206
+    longitude: 44.00969
+    population: 5348
+    dem: 862
+    timezone: "Asia/Yerevan"
+  - name: "Metsamor"
+    latitude: 40.07233
+    longitude: 44.29169
+    population: 8789
+    dem: 840
+    timezone: "Asia/Yerevan"
+  - name: "Armavir"
+    latitude: 40.15446
+    longitude: 44.03815
+    population: 25963
+    dem: 870
+    timezone: "Asia/Yerevan"
+- name: "Lorru Marz"
+  cities:
+  - name: "Tashir"
+    latitude: 41.12072
+    longitude: 44.28462
+    population: 7318
+    dem: 1505
+    timezone: "Asia/Yerevan"
+  - name: "Stepanavan"
+    latitude: 41.00995
+    longitude: 44.38531
+    population: 23782
+    dem: 1405
+    timezone: "Asia/Yerevan"
+  - name: "Spitak"
+    latitude: 40.83221
+    longitude: 44.26731
+    population: 15059
+    dem: 1548
+    timezone: "Asia/Yerevan"
+  - name: "Vanadzor"
+    latitude: 40.80456
+    longitude: 44.4939
+    population: 101098
+    dem: 1344
+    timezone: "Asia/Yerevan"
+  - name: "Alaverdi"
+    latitude: 41.09766
+    longitude: 44.67316
+    population: 13184
+    dem: 699
+    timezone: "Asia/Yerevan"
+- name: "Tavushi Marz"
+  cities:
+  - name: "Noyemberyan"
+    latitude: 41.17244
+    longitude: 44.99917
+    population: 5119
+    dem: 842
+    timezone: "Asia/Yerevan"
+  - name: "Ijevan"
+    latitude: 40.87877
+    longitude: 45.14851
+    population: 14737
+    dem: 677
+    timezone: "Asia/Yerevan"
+  - name: "Dilijan"
+    latitude: 40.7417
+    longitude: 44.8501
+    population: 13478
+    dem: 1315
+    timezone: "Asia/Yerevan"
+  - name: "Berd"
+    latitude: 40.88135
+    longitude: 45.38901
+    population: 8374
+    dem: 949
+    timezone: "Asia/Yerevan"
+- name: "Syuniki Marz"
+  cities:
+  - name: "Kapan"
+    latitude: 39.20755
+    longitude: 46.40576
+    population: 33160
+    dem: 774
+    timezone: "Asia/Yerevan"
+  - name: "Goris"
+    latitude: 39.51111
+    longitude: 46.34168
+    population: 20379
+    dem: 1351
+    timezone: "Asia/Yerevan"
+  - name: "Hatsavan"
+    latitude: 39.46405
+    longitude: 45.97047
+    population: 15208
+    dem: 1761
+    timezone: "Asia/Yerevan"
+- name: "Ararati Marz"
+  cities:
+  - name: "Vedi"
+    latitude: 39.91388
+    longitude: 44.7251
+    population: 12192
+    dem: 914
+    timezone: "Asia/Yerevan"
+  - name: "Artashat"
+    latitude: 39.96144
+    longitude: 44.54447
+    population: 20562
+    dem: 830
+    timezone: "Asia/Yerevan"
+  - name: "Ararat"
+    latitude: 39.83069
+    longitude: 44.70569
+    population: 28832
+    dem: 823
+    timezone: "Asia/Yerevan"
+  - name: "Masis"
+    latitude: 40.06542
+    longitude: 44.41618
+    population: 18911
+    dem: 833
+    timezone: "Asia/Yerevan"
+- name: "Yerevan"
+  cities:
+  - name: "Yerevan"
+    latitude: 40.18111
+    longitude: 44.51361
+    population: 1093485
+    dem: 994
+    timezone: "Asia/Yerevan"
+- name: "Kotayki Marz"
+  cities:
+  - name: "Yeghvard"
+    latitude: 40.32507
+    longitude: 44.48608
+    population: 10705
+    dem: 1343
+    timezone: "Asia/Yerevan"
+  - name: "Hrazdan"
+    latitude: 40.49748
+    longitude: 44.7662
+    population: 40795
+    dem: 1762
+    timezone: "Asia/Yerevan"
+  - name: "Garrni"
+    latitude: 40.11931
+    longitude: 44.73442
+    population: 6827
+    dem: 1413
+    timezone: "Asia/Yerevan"
+  - name: "Byureghavan"
+    latitude: 40.31417
+    longitude: 44.59333
+    population: 6972
+    dem: 1385
+    timezone: "Asia/Yerevan"
+  - name: "Abovyan"
+    latitude: 40.27368
+    longitude: 44.63348
+    population: 35673
+    dem: 1423
+    timezone: "Asia/Yerevan"
+- name: "Gegharkuniki Marz"
+  cities:
+  - name: "Vardenis"
+    latitude: 40.18329
+    longitude: 45.73053
+    population: 11382
+    dem: 1939
+    timezone: "Asia/Yerevan"
+  - name: "Vardenik"
+    latitude: 40.13348
+    longitude: 45.44311
+    population: 7709
+    dem: 1971
+    timezone: "Asia/Yerevan"
+  - name: "Sevan"
+    latitude: 40.5473
+    longitude: 44.94171
+    population: 17083
+    dem: 1934
+    timezone: "Asia/Yerevan"
+  - name: "Sarukhan"
+    latitude: 40.29169
+    longitude: 45.13068
+    population: 6173
+    dem: 1990
+    timezone: "Asia/Yerevan"
+  - name: "Noratus"
+    latitude: 40.37793
+    longitude: 45.18048
+    population: 5426
+    dem: 1926
+    timezone: "Asia/Yerevan"
+  - name: "Nerkin Getashen"
+    latitude: 40.14172
+    longitude: 45.27087
+    population: 7010
+    dem: 1936
+    timezone: "Asia/Yerevan"
+  - name: "Martuni"
+    latitude: 40.13892
+    longitude: 45.30548
+    population: 11037
+    dem: 1935
+    timezone: "Asia/Yerevan"
+  - name: "Karanlukh"
+    latitude: 40.10444
+    longitude: 45.28972
+    population: 5104
+    dem: 2111
+    timezone: "Asia/Yerevan"
+  - name: "Gavarr"
+    latitude: 40.35398
+    longitude: 45.12386
+    population: 21680
+    dem: 1953
+    timezone: "Asia/Yerevan"
+  - name: "Chambarak"
+    latitude: 40.59655
+    longitude: 45.35498
+    population: 6153
+    dem: 1848
+    timezone: "Asia/Yerevan"
+- name: "Vayots Dzor"
+  cities:
+  - name: "Yeghegnadzor"
+    latitude: 39.76389
+    longitude: 45.33239
+    population: 8200
+    dem: 1242
+    timezone: "Asia/Yerevan"
+  - name: "Vayk"
+    latitude: 39.6889
+    longitude: 45.46668
+    population: 5419
+    dem: 1237
+    timezone: "Asia/Yerevan"
+- name: "Shiraki Marz"
+  cities:
+  - name: "Gyumri"
+    latitude: 40.7942
+    longitude: 43.84528
+    population: 148381
+    dem: 1549
+    timezone: "Asia/Yerevan"
+  - name: "Akhuryan"
+    latitude: 40.78003
+    longitude: 43.90027
+    population: 7672
+    dem: 1544
+    timezone: "Asia/Yerevan"
+- name: "Aragatsotni Marz"
+  cities:
+  - name: "Ashtarak"
+    latitude: 40.2991
+    longitude: 44.36204
+    population: 18779
+    dem: 1142
+    timezone: "Asia/Yerevan"
+  - name: "Aparan"
+    latitude: 40.59323
+    longitude: 44.3589
+    population: 5670
+    dem: 1892
+    timezone: "Asia/Yerevan"

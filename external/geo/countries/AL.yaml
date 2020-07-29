@@ -1,0 +1,305 @@
+---
+name: "Albania"
+iso: "AL"
+iso3: "ALB"
+code: "008"
+capital: "Tirana"
+area: 28748.0
+population: 2986952
+continent: "EU"
+currencyCode: "ALL"
+currencyName: "Lek"
+phone: "355"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "sq,el"
+neighbours: "MK,GR,ME,RS,XK"
+regions:
+- name: "Qarku i Shkodres"
+  cities:
+  - name: "Shkoder"
+    latitude: 42.06828
+    longitude: 19.51258
+    population: 88245
+    dem: 12
+    timezone: "Europe/Tirane"
+  - name: "Puke"
+    latitude: 42.04444
+    longitude: 19.89972
+    population: 6495
+    dem: 799
+    timezone: "Europe/Tirane"
+- name: "Qarku i Beratit"
+  cities:
+  - name: "Polican"
+    latitude: 40.61222
+    longitude: 20.09806
+    population: 10663
+    dem: 328
+    timezone: "Europe/Tirane"
+  - name: "Corovode"
+    latitude: 40.50417
+    longitude: 20.22722
+    population: 14046
+    dem: 320
+    timezone: "Europe/Tirane"
+  - name: "Kucove"
+    latitude: 40.80028
+    longitude: 19.91667
+    population: 18166
+    dem: 58
+    timezone: "Europe/Tirane"
+  - name: "Berat"
+    latitude: 40.70583
+    longitude: 19.95222
+    population: 46866
+    dem: 66
+    timezone: "Europe/Tirane"
+- name: "Qarku i Elbasanit"
+  cities:
+  - name: "Gramsh"
+    latitude: 40.86972
+    longitude: 20.18444
+    population: 11556
+    dem: 200
+    timezone: "Europe/Tirane"
+  - name: "Elbasan"
+    latitude: 41.1125
+    longitude: 20.08222
+    population: 100903
+    dem: 128
+    timezone: "Europe/Tirane"
+  - name: "Librazhd-Qender"
+    latitude: 41.19694
+    longitude: 20.33556
+    population: 12691
+    dem: 554
+    timezone: "Europe/Tirane"
+  - name: "Peqin"
+    latitude: 41.04611
+    longitude: 19.75111
+    population: 7513
+    dem: 52
+    timezone: "Europe/Tirane"
+  - name: "Cerrik"
+    latitude: 41.03167
+    longitude: 19.97583
+    population: 14269
+    dem: 77
+    timezone: "Europe/Tirane"
+- name: "Qarku i Korces"
+  cities:
+  - name: "Pogradec"
+    latitude: 40.9025
+    longitude: 20.6525
+    population: 61530
+    dem: 702
+    timezone: "Europe/Tirane"
+  - name: "Korce"
+    latitude: 40.61861
+    longitude: 20.78083
+    population: 58259
+    dem: 869
+    timezone: "Europe/Tirane"
+  - name: "Erseke"
+    latitude: 40.33778
+    longitude: 20.67889
+    population: 7890
+    dem: 1021
+    timezone: "Europe/Tirane"
+  - name: "Bilisht"
+    latitude: 40.6275
+    longitude: 20.99
+    population: 7114
+    dem: 926
+    timezone: "Europe/Tirane"
+- name: "Qarku i Vlores"
+  cities:
+  - name: "Sarande"
+    latitude: 39.87534
+    longitude: 20.00477
+    population: 15147
+    dem: 170
+    timezone: "Europe/Tirane"
+  - name: "Vlore"
+    latitude: 40.4686
+    longitude: 19.48318
+    population: 89546
+    dem: 17
+    timezone: "Europe/Tirane"
+  - name: "Selenice"
+    latitude: 40.53056
+    longitude: 19.63583
+    population: 6912
+    dem: 73
+    timezone: "Europe/Tirane"
+- name: "Qarku i Lezhes"
+  cities:
+  - name: "Rreshen"
+    latitude: 41.7675
+    longitude: 19.87556
+    population: 10064
+    dem: 94
+    timezone: "Europe/Tirane"
+  - name: "Mamurras"
+    latitude: 41.5775
+    longitude: 19.69222
+    population: 8282
+    dem: 25
+    timezone: "Europe/Tirane"
+  - name: "Lezhe"
+    latitude: 41.78361
+    longitude: 19.64361
+    population: 18695
+    dem: 7
+    timezone: "Europe/Tirane"
+  - name: "Lac"
+    latitude: 41.63556
+    longitude: 19.71306
+    population: 24825
+    dem: 33
+    timezone: "Europe/Tirane"
+- name: "Qarku i Durresit"
+  cities:
+  - name: "Shijak"
+    latitude: 41.34556
+    longitude: 19.56722
+    population: 14138
+    dem: 34
+    timezone: "Europe/Tirane"
+  - name: "Kruje"
+    latitude: 41.50917
+    longitude: 19.79278
+    population: 21286
+    dem: 509
+    timezone: "Europe/Tirane"
+  - name: "Fushe-Kruje"
+    latitude: 41.47833
+    longitude: 19.71778
+    population: 10458
+    dem: 24
+    timezone: "Europe/Tirane"
+  - name: "Durres"
+    latitude: 41.32355
+    longitude: 19.45469
+    population: 122034
+    dem: 6
+    timezone: "Europe/Tirane"
+- name: "Qarku i Gjirokastres"
+  cities:
+  - name: "Tepelene"
+    latitude: 40.29583
+    longitude: 20.01917
+    population: 11955
+    dem: 212
+    timezone: "Europe/Tirane"
+  - name: "Permet"
+    latitude: 40.23361
+    longitude: 20.35167
+    population: 10686
+    dem: 244
+    timezone: "Europe/Tirane"
+  - name: "Gjirokaster"
+    latitude: 40.07583
+    longitude: 20.13889
+    population: 23437
+    dem: 286
+    timezone: "Europe/Tirane"
+- name: "Qarku i Fierit"
+  cities:
+  - name: "Roskovec"
+    latitude: 40.7375
+    longitude: 19.70222
+    population: 6657
+    dem: 18
+    timezone: "Europe/Tirane"
+  - name: "Patos Fshat"
+    latitude: 40.64278
+    longitude: 19.65083
+    population: 22679
+    dem: 157
+    timezone: "Europe/Tirane"
+  - name: "Patos"
+    latitude: 40.68333
+    longitude: 19.61944
+    population: 60000
+    dem: 61
+    timezone: "Europe/Tirane"
+  - name: "Lushnje"
+    latitude: 40.94194
+    longitude: 19.705
+    population: 41469
+    dem: 22
+    timezone: "Europe/Tirane"
+  - name: "Fier-Cifci"
+    latitude: 40.71667
+    longitude: 19.56667
+    population: 60995
+    dem: 17
+    timezone: "Europe/Tirane"
+  - name: "Fier"
+    latitude: 40.72389
+    longitude: 19.55611
+    population: 56297
+    dem: 20
+    timezone: "Europe/Tirane"
+  - name: "Ballsh"
+    latitude: 40.59889
+    longitude: 19.73472
+    population: 10361
+    dem: 206
+    timezone: "Europe/Tirane"
+- name: "Qarku i Tiranes"
+  cities:
+  - name: "Tirana"
+    latitude: 41.3275
+    longitude: 19.81889
+    population: 374801
+    dem: 113
+    timezone: "Europe/Tirane"
+  - name: "Rrogozhine"
+    latitude: 41.07639
+    longitude: 19.66528
+    population: 5620
+    dem: 22
+    timezone: "Europe/Tirane"
+  - name: "Kavaje"
+    latitude: 41.18556
+    longitude: 19.55694
+    population: 29354
+    dem: 19
+    timezone: "Europe/Tirane"
+  - name: "Kamez"
+    latitude: 41.38167
+    longitude: 19.76028
+    population: 11026
+    dem: 55
+    timezone: "Europe/Tirane"
+- name: "Qarku i Kukesit"
+  cities:
+  - name: "Kukes"
+    latitude: 42.07694
+    longitude: 20.42194
+    population: 17832
+    dem: 351
+    timezone: "Europe/Tirane"
+- name: "Qarku i Dibres"
+  cities:
+  - name: "Peshkopi"
+    latitude: 41.685
+    longitude: 20.42889
+    population: 14848
+    dem: 660
+    timezone: "Europe/Tirane"
+  - name: "Burrel"
+    latitude: 41.61028
+    longitude: 20.00889
+    population: 15405
+    dem: 315
+    timezone: "Europe/Tirane"
+  - name: "Bulqize"
+    latitude: 41.49167
+    longitude: 20.22194
+    population: 11212
+    dem: 775
+    timezone: "Europe/Tirane"

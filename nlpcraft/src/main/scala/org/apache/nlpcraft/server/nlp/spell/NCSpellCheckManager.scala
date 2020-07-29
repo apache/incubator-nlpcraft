@@ -17,9 +17,9 @@
 
 package org.apache.nlpcraft.server.nlp.spell
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.NCService
-import org.apache.nlpcraft.server.json.NCJson
+import org.apache.nlpcraft.common.{NCService, U}
 
 import scala.collection._
 
@@ -27,14 +27,10 @@ import scala.collection._
   * Basic dictionary-based spell checker.
   */
 object NCSpellCheckManager extends NCService {
-    case class Record(correct: String, misspellings: Seq[String])
-    
-    private val dict: Map[String, String] = (
-        for (rec ← NCJson.extractResource[List[Record]]("spell/dictionary.json", ignoreCase = true)) yield {
-            for (v ← rec.misspellings) yield v → rec.correct
-        })
-        .flatten.toMap
-    
+    private final val PATH = "spell/dictionary.yaml"
+
+    @volatile private var dict: Map[String, String] = _
+
     private def isWordUpper(s: String): Boolean = s.forall(_.isUpper)
     private def isHeadUpper(s: String): Boolean = s.head.isUpper
     private def split(s: String): Seq[String] = s.split(" ").filter(!_.isEmpty)
@@ -47,11 +43,27 @@ object NCSpellCheckManager extends NCService {
             s // Full lower case by default.
     
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        val extOpt = U.sysEnv("NLPCRAFT_RESOURCE_EXT")
+        
+        if (extOpt.isDefined)
+            logger.info(s"Using external spelling configuration from: ${extOpt.get}")
+        
+        dict = U.extractYamlString(
+            U.getContent(PATH, extOpt),
+            PATH,
+            ignoreCase = true,
+            new TypeReference[Map[String, String]] {}
+        )
+
+        logger.info(s"Spell checker dictionary loaded: ${dict.size} entries")
+
         super.start()
     }
     
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
+
+        dict = null
     }
     
     /**

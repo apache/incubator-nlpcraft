@@ -835,7 +835,7 @@ object NCDateGenerator {
 }
 
 object DLDateGeneratorRunner extends App {
-    private def mkPath(path: String): String = U.mkPath(s"src/main/resources/date/$path")
+    private def mkPath(path: String): String = U.mkPath(s"nlpcraft/src/main/resources/date/$path")
     private def convert(entry: (String, String)): String = s"${entry._1} | ${entry._2}"
 
     private def process(): Unit = {

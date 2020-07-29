@@ -19,13 +19,13 @@ package org.apache.nlpcraft.server.nlp.enrichers.geo
 
 import java.util
 
+import com.fasterxml.jackson.core.`type`.TypeReference
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
 import org.apache.nlpcraft.server.geo.NCGeoLocationKind._
 import org.apache.nlpcraft.server.geo._
-import org.apache.nlpcraft.server.json.NCJson
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 import org.apache.nlpcraft.server.nlp.wordnet.NCWordNetManager
 
@@ -44,42 +44,25 @@ object NCGeoEnricher extends NCServerEnricher {
         immutable.HashSet(",", "in", "within", "inside", "of", "inside of", "within of", "wherein")
 
     // USA large cities configuration file.
-    private final val US_TOP_PATH = "geo/us_top.json"
+    private final val US_TOP_PATH = "geo/us_top.yaml"
 
     // World large cities configuration file.
-    private final val WORLD_TOP_PATH = "geo/world_top.json"
+    private final val WORLD_TOP_PATH = "geo/world_top.yaml"
 
     // Common word exceptions configuration folder.
     private final val EXCEPTIONS_PATH = "geo/exceptions"
 
-    @throws[NCE]
-    private[geo] final val LOCATIONS: Map[String, Set[NCGeoEntry]] = NCGeoManager.getModel.synonyms
-
-    // GEO names matched with common english words and user defined exception GEO names.
-    // Note that 'ignore case' parameter set as false because DLGeoLocationKind definition (CITY ect)
-    @throws[NCE]
-    // TODO: refactor... incomprehensible!
-    private final val COMMONS: Map[NCGeoLocationKind, Set[String]]  =
-        U.getFilesResources(EXCEPTIONS_PATH).
-            flatMap(f ⇒
-                NCJson.extractResource[immutable.Map[String, immutable.Set[String]]](f, ignoreCase = false).
-                    map(p ⇒ NCGeoLocationKind.withName(p._1.toUpperCase) → p._2)
-            ).groupBy(_._1).map(p ⇒ p._1 → p._2.flatMap(_._2).toSet).map(p ⇒ p._1 → p._2.map(_.toLowerCase))
-
     private final val GEO_TYPES: Set[String] = NCGeoLocationKind.values.map(mkName)
 
-    // JSON extractor for largest cities.
+    @volatile private var locations: Map[String, Set[NCGeoEntry]] = _
+    @volatile private var commons: Map[NCGeoLocationKind, Set[String]] = _
+    @volatile private var topUsa: Set[String] = _
+    @volatile private var topWorld: Set[String] = _
+
+    // Extractor for largest cities.
     case class TopCity(name: String, region: String)
 
     private def glue(s: String*): String = s.map(_.toLowerCase).mkString("|")
-
-    private final val TOP_USA: Set[String] =
-        NCJson.extractResource[List[TopCity]](US_TOP_PATH, ignoreCase = true).
-            map(city ⇒ glue(city.name, city.region)).toSet
-
-    private final val TOP_WORLD: Set[String] =
-        NCJson.extractResource[List[TopCity]](WORLD_TOP_PATH, ignoreCase = true).
-            map(city ⇒ glue(city.name, city.region)).toSet
 
     private def isConflictName(name: String): Boolean =
         US_CONFLICT_STATES.contains(name.toLowerCase) && name.exists(_.isLower)
@@ -93,9 +76,45 @@ object NCGeoEnricher extends NCServerEnricher {
 
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
+
+        commons = null
+        topUsa = null
+        topWorld = null
+        locations = null
     }
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        locations = NCGeoManager.getModel.synonyms
+
+        val extOpt = U.sysEnv("NLPCRAFT_RESOURCE_EXT")
+
+        // GEO names matched with common english words and user defined exception GEO names.
+        // Note that 'ignore case' parameter set as false because DLGeoLocationKind definition (CITY ect)
+
+        commons =
+            U.getContent(
+                EXCEPTIONS_PATH,
+                extOpt,
+                (name: String) ⇒ name.endsWith("yaml")
+            ).
+                flatMap { case (path, data) ⇒
+                    U.extractYamlString(
+                        data,
+                        path,
+                        ignoreCase = false,
+                        new TypeReference[immutable.Map[String, immutable.Set[String]]] {}
+                    )
+                }.
+                map(p ⇒ NCGeoLocationKind.withName(p._1.toUpperCase) → p._2).
+                groupBy(_._1).
+                map(p ⇒ p._1 → p._2.flatMap(_._2).toSet).map(p ⇒ p._1 → p._2.map(_.toLowerCase))
+
+        def readCities(res: String): List[TopCity] =
+            U.extractYamlString(U.getContent(res, extOpt), res, ignoreCase = true, new TypeReference[List[TopCity]] {})
+
+        topUsa = readCities(US_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
+        topWorld = readCities(WORLD_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
+
         super.start()
     }
 
@@ -183,7 +202,7 @@ object NCGeoEnricher extends NCServerEnricher {
                             foreach(t ⇒ ns.fixNote(t.getNlpNote, "pos" → NCPennTreebank.SYNTH_POS))
                     }
 
-                LOCATIONS.get(toks.map(_.normText).mkString(" ")) match {
+                locations.get(toks.map(_.normText).mkString(" ")) match {
                     case Some(locs) ⇒
                         // If multiple token match - add it.
                         if (toks.length > 1)
@@ -204,7 +223,7 @@ object NCGeoEnricher extends NCServerEnricher {
                                 def isTopCity(g: NCGeoCity): Boolean = {
                                     val name = glue(g.name, g.region.name)
 
-                                    TOP_USA.contains(name) || TOP_WORLD.contains(name)
+                                    topUsa.contains(name) || topWorld.contains(name)
                                 }
 
                                 addAll(locs.collect {
@@ -220,7 +239,7 @@ object NCGeoEnricher extends NCServerEnricher {
                         }
                     case None ⇒
                         // Case sensitive synonyms.
-                        LOCATIONS.get(toks.map(_.origText).mkString(" ")) match {
+                        locations.get(toks.map(_.origText).mkString(" ")) match {
                             case Some(locs) ⇒ addAll(locs)
                             case None ⇒
                                 // If there is no direct match try to convert JJs to NNs and re-check
@@ -237,10 +256,10 @@ object NCGeoEnricher extends NCServerEnricher {
                                                 endLoop = true
                                             }
 
-                                            LOCATIONS.get(noun) match {
+                                            locations.get(noun) match {
                                                 case Some(locs) ⇒ onResult(locs)
                                                 case None ⇒
-                                                    LOCATIONS.get(noun.toLowerCase) match {
+                                                    locations.get(noun.toLowerCase) match {
                                                         case Some(locs) ⇒ onResult(locs)
                                                         case None ⇒ // No-op.
                                                     }
@@ -313,7 +332,7 @@ object NCGeoEnricher extends NCServerEnricher {
         val excls = new mutable.HashSet[NCNlpSentenceNote]() ++ getGeoNotes(ns).filter(note ⇒ {
             val kind = extractKind(note)
 
-            COMMONS.get(kind) match {
+            commons.get(kind) match {
                 // GEO is common word defined directly or via synonym.
                 case Some(cs) ⇒
                     cs.contains(getName(kind, note)) ||
@@ -416,9 +435,9 @@ object NCGeoEnricher extends NCServerEnricher {
                 case CITY ⇒
                     val cityReg = glue(get("city"), get("region"))
 
-                    if (TOP_WORLD.contains(cityReg))
+                    if (topWorld.contains(cityReg))
                         2
-                    else if (TOP_USA.contains(cityReg))
+                    else if (topUsa.contains(cityReg))
                         1
                     else
                         0

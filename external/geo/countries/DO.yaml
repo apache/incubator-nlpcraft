@@ -1,0 +1,777 @@
+---
+name: "Dominican Republic"
+iso: "DO"
+iso3: "DOM"
+code: "214"
+capital: "Santo Domingo"
+area: 48730.0
+population: 9823821
+continent: "NA"
+currencyCode: "DOP"
+currencyName: "Peso"
+phone: "+1-809 and 1-829"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "es-DO"
+neighbours: "HT"
+regions:
+- name: "Provincia de Monte Plata"
+  cities:
+  - name: "Yamasa"
+    latitude: 18.77315
+    longitude: -70.02583
+    population: 11595
+    dem: 89
+    timezone: "America/Santo_Domingo"
+  - name: "Sabana Grande de Boya"
+    latitude: 18.94498
+    longitude: -69.79331
+    population: 16834
+    dem: 291
+    timezone: "America/Santo_Domingo"
+  - name: "Monte Plata"
+    latitude: 18.807
+    longitude: -69.78399
+    population: 15532
+    dem: 55
+    timezone: "America/Santo_Domingo"
+  - name: "Esperalvillo"
+    latitude: 18.81509
+    longitude: -70.03557
+    population: 5445
+    dem: 148
+    timezone: "America/Santo_Domingo"
+  - name: "Bayaguana"
+    latitude: 18.75031
+    longitude: -69.63525
+    population: 21055
+    dem: 59
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Santiago Rodriguez"
+  cities:
+  - name: "Sabaneta"
+    latitude: 19.47793
+    longitude: -71.34125
+    population: 16380
+    dem: 127
+    timezone: "America/Santo_Domingo"
+  - name: "Moncion"
+    latitude: 19.41083
+    longitude: -71.15257
+    population: 6625
+    dem: 372
+    timezone: "America/Santo_Domingo"
+- name: "Provincia Espaillat"
+  cities:
+  - name: "Veragua Arriba"
+    latitude: 19.58333
+    longitude: -70.33333
+    population: 5858
+    dem: 108
+    timezone: "America/Santo_Domingo"
+  - name: "San Victor Arriba"
+    latitude: 19.47741
+    longitude: -70.53585
+    population: 5624
+    dem: 530
+    timezone: "America/Santo_Domingo"
+  - name: "Moca"
+    latitude: 19.39352
+    longitude: -70.52598
+    population: 61834
+    dem: 191
+    timezone: "America/Santo_Domingo"
+  - name: "Gaspar Hernandez"
+    latitude: 19.62748
+    longitude: -70.27772
+    population: 6506
+    dem: 13
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Peravia"
+  cities:
+  - name: "Paya"
+    latitude: 18.26196
+    longitude: -70.2956
+    population: 6916
+    dem: 47
+    timezone: "America/Santo_Domingo"
+  - name: "Nizao"
+    latitude: 18.24697
+    longitude: -70.21053
+    population: 6530
+    dem: 29
+    timezone: "America/Santo_Domingo"
+  - name: "Bani"
+    latitude: 18.27964
+    longitude: -70.33185
+    population: 66709
+    dem: 67
+    timezone: "America/Santo_Domingo"
+- name: "Samana Province"
+  cities:
+  - name: "Samana"
+    latitude: 19.20561
+    longitude: -69.33685
+    population: 11432
+    dem: 15
+    timezone: "America/Santo_Domingo"
+  - name: "Sanchez"
+    latitude: 19.2281
+    longitude: -69.6137
+    population: 11365
+    dem: 25
+    timezone: "America/Santo_Domingo"
+  - name: "Las Terrenas"
+    latitude: 19.31102
+    longitude: -69.5428
+    population: 7713
+    dem: 17
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Hato Mayor"
+  cities:
+  - name: "Sabana de la Mar"
+    latitude: 19.05934
+    longitude: -69.38843
+    population: 13977
+    dem: 9
+    timezone: "America/Santo_Domingo"
+  - name: "Hato Mayor del Rey"
+    latitude: 18.76278
+    longitude: -69.25681
+    population: 35999
+    dem: 106
+    timezone: "America/Santo_Domingo"
+  - name: "El Valle"
+    latitude: 18.97567
+    longitude: -69.37827
+    population: 5666
+    dem: 42
+    timezone: "America/Santo_Domingo"
+- name: "Provincia Maria Trinidad Sanchez"
+  cities:
+  - name: "Rio San Juan"
+    latitude: 19.64385
+    longitude: -70.07635
+    population: 8983
+    dem: 6
+    timezone: "America/Santo_Domingo"
+  - name: "Nagua"
+    latitude: 19.3832
+    longitude: -69.8474
+    population: 33862
+    dem: 9
+    timezone: "America/Santo_Domingo"
+  - name: "El Factor"
+    latitude: 19.31834
+    longitude: -69.88827
+    population: 7014
+    dem: 20
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Baoruco"
+  cities:
+  - name: "Villa Jaragua"
+    latitude: 18.49077
+    longitude: -71.48377
+    population: 9248
+    dem: 12
+    timezone: "America/Santo_Domingo"
+  - name: "Tamayo"
+    latitude: 18.3947
+    longitude: -71.2029
+    population: 6429
+    dem: 32
+    timezone: "America/Santo_Domingo"
+  - name: "Neiba"
+    latitude: 18.48137
+    longitude: -71.41965
+    population: 18670
+    dem: 25
+    timezone: "America/Santo_Domingo"
+  - name: "Galvan"
+    latitude: 18.50228
+    longitude: -71.34271
+    population: 6027
+    dem: 42
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de San Juan"
+  cities:
+  - name: "Vallejuelo"
+    latitude: 18.65354
+    longitude: -71.33431
+    population: 5217
+    dem: 675
+    timezone: "America/Santo_Domingo"
+  - name: "San Juan de la Maguana"
+    latitude: 18.80588
+    longitude: -71.22991
+    population: 72950
+    dem: 418
+    timezone: "America/Santo_Domingo"
+  - name: "Las Matas de Farfan"
+    latitude: 18.87309
+    longitude: -71.51656
+    population: 21802
+    dem: 451
+    timezone: "America/Santo_Domingo"
+  - name: "Juan de Herrera"
+    latitude: 18.87402
+    longitude: -71.2383
+    population: 5543
+    dem: 477
+    timezone: "America/Santo_Domingo"
+  - name: "Cercado Abajo"
+    latitude: 18.72681
+    longitude: -71.51742
+    population: 5316
+    dem: 740
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Elias Pina"
+  cities:
+  - name: "Comendador"
+    latitude: 18.8775
+    longitude: -71.70278
+    population: 12070
+    dem: 394
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Santo Domingo"
+  cities:
+  - name: "Boca Chica"
+    latitude: 18.45
+    longitude: -69.6
+    population: 46300
+    dem: 12
+    timezone: "America/Santo_Domingo"
+  - name: "Santo Domingo Oeste"
+    latitude: 18.5
+    longitude: -70.0
+    population: 701269
+    dem: 58
+    timezone: "America/Santo_Domingo"
+  - name: "Santo Domingo Este"
+    latitude: 18.48847
+    longitude: -69.85707
+    population: 700000
+    dem: 46
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Monsenor Nouel"
+  cities:
+  - name: "Piedra Blanca"
+    latitude: 18.84431
+    longitude: -70.31688
+    population: 8531
+    dem: 180
+    timezone: "America/Santo_Domingo"
+  - name: "Bonao"
+    latitude: 18.93687
+    longitude: -70.40923
+    population: 73269
+    dem: 177
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de La Altagracia"
+  cities:
+  - name: "San Rafael del Yuma"
+    latitude: 18.42993
+    longitude: -68.6739
+    population: 5285
+    dem: 49
+    timezone: "America/Santo_Domingo"
+  - name: "Salvaleon de Higueey"
+    latitude: 18.61501
+    longitude: -68.70798
+    population: 123787
+    dem: 95
+    timezone: "America/Santo_Domingo"
+  - name: "Punta Cana"
+    latitude: 18.58182
+    longitude: -68.40431
+    population: 100023
+    dem: 28
+    timezone: "America/Santo_Domingo"
+  - name: "Otra Banda"
+    latitude: 18.65017
+    longitude: -68.66281
+    population: 6071
+    dem: 113
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Hermanas Mirabal"
+  cities:
+  - name: "Tenares"
+    latitude: 19.37439
+    longitude: -70.35087
+    population: 7390
+    dem: 173
+    timezone: "America/Santo_Domingo"
+  - name: "Salsipuedes"
+    latitude: 19.40552
+    longitude: -70.37985
+    population: 11675
+    dem: 252
+    timezone: "America/Santo_Domingo"
+  - name: "Salcedo"
+    latitude: 19.37762
+    longitude: -70.41762
+    population: 45299
+    dem: 196
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Santiago"
+  cities:
+  - name: "Villa Gonzalez"
+    latitude: 19.54057
+    longitude: -70.78853
+    population: 10177
+    dem: 164
+    timezone: "America/Santo_Domingo"
+  - name: "Villa Bisono"
+    latitude: 19.56378
+    longitude: -70.87582
+    population: 33137
+    dem: 131
+    timezone: "America/Santo_Domingo"
+  - name: "Tamboril"
+    latitude: 19.48538
+    longitude: -70.61104
+    population: 23304
+    dem: 266
+    timezone: "America/Santo_Domingo"
+  - name: "Santiago de los Caballeros"
+    latitude: 19.4517
+    longitude: -70.69703
+    population: 1200000
+    dem: 199
+    timezone: "America/Santo_Domingo"
+  - name: "San Jose de Las Matas"
+    latitude: 19.33915
+    longitude: -70.93819
+    population: 9853
+    dem: 524
+    timezone: "America/Santo_Domingo"
+  - name: "Sabana Iglesia"
+    latitude: 19.32114
+    longitude: -70.75992
+    population: 5135
+    dem: 291
+    timezone: "America/Santo_Domingo"
+  - name: "Licey al Medio"
+    latitude: 19.43333
+    longitude: -70.6
+    population: 6435
+    dem: 199
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de El Seibo"
+  cities:
+  - name: "Santa Cruz de El Seibo"
+    latitude: 18.76559
+    longitude: -69.03886
+    population: 23547
+    dem: 106
+    timezone: "America/Santo_Domingo"
+  - name: "Miches"
+    latitude: 18.98364
+    longitude: -69.0476
+    population: 9273
+    dem: 6
+    timezone: "America/Santo_Domingo"
+- name: "Distrito Nacional"
+  cities:
+  - name: "Villa Francisca"
+    latitude: 18.48278
+    longitude: -69.88914
+    population: 50185
+    dem: 42
+    timezone: "America/Santo_Domingo"
+  - name: "Villa Consuelo"
+    latitude: 18.48333
+    longitude: -69.9
+    population: 28621
+    dem: 50
+    timezone: "America/Santo_Domingo"
+  - name: "Santo Domingo"
+    latitude: 18.47186
+    longitude: -69.89232
+    population: 2201941
+    dem: 9
+    timezone: "America/Santo_Domingo"
+  - name: "San Carlos"
+    latitude: 18.48333
+    longitude: -69.9
+    population: 13456
+    dem: 50
+    timezone: "America/Santo_Domingo"
+  - name: "La Julia"
+    latitude: 18.46667
+    longitude: -69.93333
+    population: 12575
+    dem: 57
+    timezone: "America/Santo_Domingo"
+  - name: "La Agustina"
+    latitude: 18.5
+    longitude: -69.93333
+    population: 10457
+    dem: 31
+    timezone: "America/Santo_Domingo"
+  - name: "Ensanche Luperon"
+    latitude: 18.5
+    longitude: -69.9
+    population: 8576
+    dem: 44
+    timezone: "America/Santo_Domingo"
+  - name: "Cristo Rey"
+    latitude: 18.5
+    longitude: -69.93333
+    population: 14325
+    dem: 31
+    timezone: "America/Santo_Domingo"
+  - name: "Ciudad Nueva"
+    latitude: 18.46707
+    longitude: -69.89339
+    population: 18756
+    dem: 15
+    timezone: "America/Santo_Domingo"
+  - name: "Bella Vista"
+    latitude: 18.45539
+    longitude: -69.9454
+    population: 175683
+    dem: 50
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Azua"
+  cities:
+  - name: "Yayas de Viajama"
+    latitude: 18.6071
+    longitude: -70.92753
+    population: 5669
+    dem: 317
+    timezone: "America/Santo_Domingo"
+  - name: "Sabana Yegua"
+    latitude: 18.71667
+    longitude: -71.01667
+    population: 10624
+    dem: 393
+    timezone: "America/Santo_Domingo"
+  - name: "Peralta"
+    latitude: 18.58164
+    longitude: -70.77029
+    population: 7236
+    dem: 482
+    timezone: "America/Santo_Domingo"
+  - name: "Padre Las Casas"
+    latitude: 18.73172
+    longitude: -70.93917
+    population: 8485
+    dem: 518
+    timezone: "America/Santo_Domingo"
+  - name: "Estebania"
+    latitude: 18.4577
+    longitude: -70.6435
+    population: 5591
+    dem: 61
+    timezone: "America/Santo_Domingo"
+  - name: "Azua"
+    latitude: 18.45319
+    longitude: -70.7349
+    population: 59139
+    dem: 86
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Pedernales"
+  cities:
+  - name: "Pedernales"
+    latitude: 18.03838
+    longitude: -71.74403
+    population: 11072
+    dem: 22
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Dajabon"
+  cities:
+  - name: "Loma de Cabrera"
+    latitude: 19.43333
+    longitude: -71.6
+    population: 6679
+    dem: 303
+    timezone: "America/Santo_Domingo"
+  - name: "Dajabon"
+    latitude: 19.54878
+    longitude: -71.70829
+    population: 16398
+    dem: 38
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de San Jose de Ocoa"
+  cities:
+  - name: "San Jose de Ocoa"
+    latitude: 18.54661
+    longitude: -70.50631
+    population: 21148
+    dem: 481
+    timezone: "America/Santo_Domingo"
+- name: "Provincia Sanchez Ramirez"
+  cities:
+  - name: "Fantino"
+    latitude: 19.12148
+    longitude: -70.29972
+    population: 10024
+    dem: 56
+    timezone: "America/Santo_Domingo"
+  - name: "Cotui"
+    latitude: 19.05272
+    longitude: -70.14939
+    population: 41641
+    dem: 67
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Barahona"
+  cities:
+  - name: "Vicente Noble"
+    latitude: 18.38443
+    longitude: -71.18009
+    population: 11060
+    dem: 36
+    timezone: "America/Santo_Domingo"
+  - name: "Santa Cruz de Barahona"
+    latitude: 18.20854
+    longitude: -71.10077
+    population: 77160
+    dem: 39
+    timezone: "America/Santo_Domingo"
+  - name: "Paraiso"
+    latitude: 17.99172
+    longitude: -71.16526
+    population: 6490
+    dem: 28
+    timezone: "America/Santo_Domingo"
+  - name: "Enriquillo"
+    latitude: 17.9
+    longitude: -71.23333
+    population: 5423
+    dem: 51
+    timezone: "America/Santo_Domingo"
+  - name: "Cabral"
+    latitude: 18.25
+    longitude: -71.21667
+    population: 12303
+    dem: 21
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de La Vega"
+  cities:
+  - name: "Rincon"
+    latitude: 19.11938
+    longitude: -70.40632
+    population: 5909
+    dem: 88
+    timezone: "America/Santo_Domingo"
+  - name: "Jima Abajo"
+    latitude: 19.13292
+    longitude: -70.37607
+    population: 6299
+    dem: 69
+    timezone: "America/Santo_Domingo"
+  - name: "Jarabacoa"
+    latitude: 19.11683
+    longitude: -70.63595
+    population: 29983
+    dem: 552
+    timezone: "America/Santo_Domingo"
+  - name: "Constanza"
+    latitude: 18.90919
+    longitude: -70.74499
+    population: 29481
+    dem: 1177
+    timezone: "America/Santo_Domingo"
+  - name: "Concepcion de La Vega"
+    latitude: 19.22207
+    longitude: -70.52956
+    population: 102426
+    dem: 101
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de San Pedro de Macoris"
+  cities:
+  - name: "San Pedro de Macoris"
+    latitude: 18.4539
+    longitude: -69.30864
+    population: 217899
+    dem: 6
+    timezone: "America/Santo_Domingo"
+  - name: "Quisqueya"
+    latitude: 18.55542
+    longitude: -69.40814
+    population: 17694
+    dem: 30
+    timezone: "America/Santo_Domingo"
+  - name: "Los Llanos"
+    latitude: 18.62035
+    longitude: -69.49581
+    population: 5529
+    dem: 45
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Puerto Plata"
+  cities:
+  - name: "Sosua"
+    latitude: 19.7522
+    longitude: -70.51995
+    population: 7713
+    dem: 27
+    timezone: "America/Santo_Domingo"
+  - name: "Puerto Plata"
+    latitude: 19.79344
+    longitude: -70.6884
+    population: 146000
+    dem: 34
+    timezone: "America/Santo_Domingo"
+  - name: "Rio Grande"
+    latitude: 19.66667
+    longitude: -70.76667
+    population: 20154
+    dem: 397
+    timezone: "America/Santo_Domingo"
+  - name: "Monte Llano"
+    latitude: 19.7346
+    longitude: -70.59915
+    population: 19029
+    dem: 12
+    timezone: "America/Santo_Domingo"
+  - name: "Imbert"
+    latitude: 19.75371
+    longitude: -70.82906
+    population: 8024
+    dem: 121
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de La Romana"
+  cities:
+  - name: "La Romana"
+    latitude: 18.42733
+    longitude: -68.97285
+    population: 208437
+    dem: 30
+    timezone: "America/Santo_Domingo"
+  - name: "Guaymate"
+    latitude: 18.58793
+    longitude: -68.97867
+    population: 6224
+    dem: 88
+    timezone: "America/Santo_Domingo"
+- name: "Provincia Duarte"
+  cities:
+  - name: "Villa Riva"
+    latitude: 19.18069
+    longitude: -69.91319
+    population: 5700
+    dem: 29
+    timezone: "America/Santo_Domingo"
+  - name: "San Francisco de Macoris"
+    latitude: 19.30099
+    longitude: -70.25259
+    population: 124763
+    dem: 121
+    timezone: "America/Santo_Domingo"
+  - name: "Pimentel"
+    latitude: 19.18416
+    longitude: -70.10884
+    population: 9550
+    dem: 42
+    timezone: "America/Santo_Domingo"
+  - name: "Las Guaranas"
+    latitude: 19.1931
+    longitude: -70.20835
+    population: 9586
+    dem: 48
+    timezone: "America/Santo_Domingo"
+  - name: "Castillo"
+    latitude: 19.20824
+    longitude: -70.02726
+    population: 6328
+    dem: 80
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de San Cristobal"
+  cities:
+  - name: "Yaguate"
+    latitude: 18.3353
+    longitude: -70.18113
+    population: 5610
+    dem: 52
+    timezone: "America/Santo_Domingo"
+  - name: "Villa Altagracia"
+    latitude: 18.67297
+    longitude: -70.17095
+    population: 40027
+    dem: 178
+    timezone: "America/Santo_Domingo"
+  - name: "San Gregorio de Nigua"
+    latitude: 18.38333
+    longitude: -70.08333
+    population: 11542
+    dem: 81
+    timezone: "America/Santo_Domingo"
+  - name: "Cambita Garabitos"
+    latitude: 18.45458
+    longitude: -70.19907
+    population: 13382
+    dem: 184
+    timezone: "America/Santo_Domingo"
+  - name: "San Cristobal"
+    latitude: 18.41667
+    longitude: -70.1
+    population: 154040
+    dem: 33
+    timezone: "America/Santo_Domingo"
+  - name: "Bajos de Haina"
+    latitude: 18.41538
+    longitude: -70.03317
+    population: 66784
+    dem: 36
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Valverde"
+  cities:
+  - name: "Mao"
+    latitude: 19.55186
+    longitude: -71.07813
+    population: 48297
+    dem: 85
+    timezone: "America/Santo_Domingo"
+  - name: "Laguna Salada"
+    latitude: 19.65043
+    longitude: -71.08429
+    population: 7601
+    dem: 77
+    timezone: "America/Santo_Domingo"
+  - name: "Esperanza"
+    latitude: 19.58469
+    longitude: -70.98489
+    population: 42169
+    dem: 113
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Monte Cristi"
+  cities:
+  - name: "Villa Vasquez"
+    latitude: 19.7411
+    longitude: -71.4464
+    population: 11642
+    dem: 32
+    timezone: "America/Santo_Domingo"
+  - name: "San Fernando de Monte Cristi"
+    latitude: 19.84826
+    longitude: -71.64597
+    population: 17001
+    dem: 16
+    timezone: "America/Santo_Domingo"
+  - name: "Las Matas de Santa Cruz"
+    latitude: 19.67119
+    longitude: -71.50471
+    population: 10218
+    dem: 34
+    timezone: "America/Santo_Domingo"
+- name: "Provincia de Independencia"
+  cities:
+  - name: "La Descubierta"
+    latitude: 18.57053
+    longitude: -71.72967
+    population: 5521
+    dem: 31
+    timezone: "America/Santo_Domingo"
+  - name: "Jimani"
+    latitude: 18.49169
+    longitude: -71.85022
+    population: 6567
+    dem: 48
+    timezone: "America/Santo_Domingo"
+  - name: "Duverge"
+    latitude: 18.37839
+    longitude: -71.52469
+    population: 13405
+    dem: 9
+    timezone: "America/Santo_Domingo"

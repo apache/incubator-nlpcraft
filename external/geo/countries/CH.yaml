@@ -1,0 +1,2152 @@
+---
+name: "Switzerland"
+iso: "CH"
+iso3: "CHE"
+code: "756"
+capital: "Bern"
+area: 41290.0
+population: 8484100
+continent: "EU"
+currencyCode: "CHF"
+currencyName: "Franc"
+phone: "41"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "de-CH,fr-CH,it-CH,rm"
+neighbours: "DE,IT,LI,FR,AT"
+regions:
+- name: "Kanton Solothurn"
+  cities:
+  - name: "Zuchwil"
+    latitude: 47.20173
+    longitude: 7.56649
+    population: 9268
+    dem: 434
+    timezone: "Europe/Zurich"
+  - name: "Trimbach"
+    latitude: 47.36561
+    longitude: 7.8868
+    population: 6220
+    dem: 438
+    timezone: "Europe/Zurich"
+  - name: "Solothurn"
+    latitude: 47.20791
+    longitude: 7.53714
+    population: 14853
+    dem: 440
+    timezone: "Europe/Zurich"
+  - name: "Olten"
+    latitude: 47.34999
+    longitude: 7.90329
+    population: 16411
+    dem: 406
+    timezone: "Europe/Zurich"
+  - name: "Grenchen"
+    latitude: 47.1921
+    longitude: 7.39586
+    population: 15927
+    dem: 454
+    timezone: "Europe/Zurich"
+  - name: "Dornach"
+    latitude: 47.48038
+    longitude: 7.61644
+    population: 6449
+    dem: 337
+    timezone: "Europe/Zurich"
+  - name: "Derendingen"
+    latitude: 47.1985
+    longitude: 7.58844
+    population: 6093
+    dem: 439
+    timezone: "Europe/Zurich"
+  - name: "Biberist"
+    latitude: 47.18009
+    longitude: 7.56246
+    population: 7889
+    dem: 449
+    timezone: "Europe/Zurich"
+  - name: "Balsthal"
+    latitude: 47.31613
+    longitude: 7.69318
+    population: 5863
+    dem: 493
+    timezone: "Europe/Zurich"
+- name: "Kanton Zug"
+  cities:
+  - name: "Zug"
+    latitude: 47.17242
+    longitude: 8.51745
+    population: 23435
+    elevation: 425
+    dem: 424
+    timezone: "Europe/Zurich"
+  - name: "Unterageri"
+    latitude: 47.13645
+    longitude: 8.5853
+    population: 7973
+    dem: 727
+    timezone: "Europe/Zurich"
+  - name: "Steinhausen"
+    latitude: 47.1951
+    longitude: 8.48581
+    population: 8509
+    dem: 425
+    timezone: "Europe/Zurich"
+  - name: "Rotkreuz"
+    latitude: 47.14283
+    longitude: 8.4314
+    population: 10439
+    elevation: 430
+    dem: 427
+    timezone: "Europe/Zurich"
+  - name: "Hunenberg"
+    latitude: 47.17536
+    longitude: 8.42497
+    population: 9032
+    dem: 449
+    timezone: "Europe/Zurich"
+  - name: "Cham"
+    latitude: 47.18213
+    longitude: 8.46358
+    population: 13495
+    elevation: 420
+    dem: 424
+    timezone: "Europe/Zurich"
+  - name: "Baar"
+    latitude: 47.19625
+    longitude: 8.52954
+    population: 20546
+    dem: 447
+    timezone: "Europe/Zurich"
+- name: "Kanton Nidwalden"
+  cities:
+  - name: "Stans"
+    latitude: 46.95805
+    longitude: 8.36609
+    population: 7475
+    dem: 453
+    timezone: "Europe/Zurich"
+  - name: "Hergiswil"
+    latitude: 46.98429
+    longitude: 8.30944
+    population: 5437
+    dem: 452
+    timezone: "Europe/Zurich"
+  - name: "Buochs"
+    latitude: 46.97398
+    longitude: 8.42279
+    population: 5524
+    dem: 441
+    timezone: "Europe/Zurich"
+- name: "Neuchatel"
+  cities:
+  - name: "Peseux"
+    latitude: 46.98704
+    longitude: 6.88903
+    population: 5716
+    dem: 539
+    timezone: "Europe/Zurich"
+  - name: "Neuchatel"
+    latitude: 46.99179
+    longitude: 6.931
+    population: 31270
+    dem: 441
+    timezone: "Europe/Zurich"
+  - name: "Le Locle"
+    latitude: 47.05619
+    longitude: 6.74913
+    population: 10279
+    dem: 934
+    timezone: "Europe/Zurich"
+  - name: "La Chaux-de-Fonds"
+    latitude: 47.09993
+    longitude: 6.82586
+    population: 36825
+    dem: 995
+    timezone: "Europe/Zurich"
+- name: "Kanton Basel-Landschaft"
+  cities:
+  - name: "Therwil"
+    latitude: 47.49941
+    longitude: 7.55669
+    population: 9595
+    dem: 308
+    timezone: "Europe/Zurich"
+  - name: "Sissach"
+    latitude: 47.46408
+    longitude: 7.80888
+    population: 5873
+    dem: 374
+    timezone: "Europe/Zurich"
+  - name: "Pratteln"
+    latitude: 47.52071
+    longitude: 7.69356
+    population: 14877
+    dem: 291
+    timezone: "Europe/Zurich"
+  - name: "Oberwil"
+    latitude: 47.51407
+    longitude: 7.55786
+    population: 10187
+    dem: 299
+    timezone: "Europe/Zurich"
+  - name: "Muttenz"
+    latitude: 47.52271
+    longitude: 7.64511
+    population: 16927
+    dem: 293
+    timezone: "Europe/Zurich"
+  - name: "Munchenstein"
+    latitude: 47.51848
+    longitude: 7.60966
+    population: 11644
+    dem: 287
+    timezone: "Europe/Zurich"
+  - name: "Liestal"
+    latitude: 47.48455
+    longitude: 7.73446
+    population: 12832
+    dem: 327
+    timezone: "Europe/Zurich"
+  - name: "Laufen"
+    latitude: 47.42193
+    longitude: 7.49946
+    population: 5210
+    dem: 354
+    timezone: "Europe/Zurich"
+  - name: "Gelterkinden"
+    latitude: 47.46497
+    longitude: 7.85174
+    population: 5709
+    dem: 397
+    timezone: "Europe/Zurich"
+  - name: "Frenkendorf"
+    latitude: 47.50686
+    longitude: 7.71648
+    population: 6180
+    dem: 330
+    timezone: "Europe/Zurich"
+  - name: "Bottmingen"
+    latitude: 47.52343
+    longitude: 7.57211
+    population: 5912
+    dem: 295
+    timezone: "Europe/Zurich"
+  - name: "Birsfelden"
+    latitude: 47.5529
+    longitude: 7.62322
+    population: 10232
+    dem: 259
+    timezone: "Europe/Zurich"
+  - name: "Binningen"
+    latitude: 47.54021
+    longitude: 7.56932
+    population: 14130
+    dem: 316
+    timezone: "Europe/Zurich"
+  - name: "Arlesheim"
+    latitude: 47.49412
+    longitude: 7.61979
+    population: 9301
+    dem: 332
+    timezone: "Europe/Zurich"
+  - name: "Allschwil"
+    latitude: 47.55074
+    longitude: 7.53599
+    population: 18189
+    dem: 288
+    timezone: "Europe/Zurich"
+  - name: "Aesch"
+    latitude: 47.47104
+    longitude: 7.5973
+    population: 10138
+    dem: 307
+    timezone: "Europe/Zurich"
+- name: "Kanton Aargau"
+  cities:
+  - name: "Zofingen"
+    latitude: 47.28779
+    longitude: 7.94586
+    population: 11451
+    dem: 441
+    timezone: "Europe/Zurich"
+  - name: "Wurenlos"
+    latitude: 47.44205
+    longitude: 8.36261
+    population: 5497
+    dem: 407
+    timezone: "Europe/Zurich"
+  - name: "Wohlen"
+    latitude: 47.35066
+    longitude: 8.27517
+    population: 13875
+    dem: 418
+    timezone: "Europe/Zurich"
+  - name: "Windisch"
+    latitude: 47.47899
+    longitude: 8.21842
+    population: 6689
+    dem: 363
+    timezone: "Europe/Zurich"
+  - name: "Wettingen"
+    latitude: 47.47049
+    longitude: 8.31636
+    population: 18191
+    dem: 386
+    timezone: "Europe/Zurich"
+  - name: "Villmergen"
+    latitude: 47.35009
+    longitude: 8.24762
+    population: 5489
+    dem: 422
+    timezone: "Europe/Zurich"
+  - name: "Untersiggenthal"
+    latitude: 47.50213
+    longitude: 8.25554
+    population: 6344
+    dem: 385
+    timezone: "Europe/Zurich"
+  - name: "Suhr"
+    latitude: 47.37172
+    longitude: 8.07967
+    population: 9374
+    dem: 396
+    timezone: "Europe/Zurich"
+  - name: "Spreitenbach"
+    latitude: 47.42285
+    longitude: 8.36792
+    population: 10562
+    dem: 403
+    timezone: "Europe/Zurich"
+  - name: "Rothrist"
+    latitude: 47.30508
+    longitude: 7.89196
+    population: 7423
+    dem: 410
+    timezone: "Europe/Zurich"
+  - name: "Rheinfelden"
+    latitude: 47.55437
+    longitude: 7.79403
+    population: 10733
+    dem: 277
+    timezone: "Europe/Zurich"
+  - name: "Reinach"
+    latitude: 47.25732
+    longitude: 8.18091
+    population: 7845
+    dem: 523
+    timezone: "Europe/Zurich"
+  - name: "Oftringen"
+    latitude: 47.31382
+    longitude: 7.92533
+    population: 10390
+    dem: 416
+    timezone: "Europe/Zurich"
+  - name: "Obersiggenthal"
+    latitude: 47.4875
+    longitude: 8.29652
+    population: 7990
+    dem: 392
+    timezone: "Europe/Zurich"
+  - name: "Oberentfelden"
+    latitude: 47.35639
+    longitude: 8.04594
+    population: 7553
+    dem: 413
+    timezone: "Europe/Zurich"
+  - name: "Neuenhof"
+    latitude: 47.44985
+    longitude: 8.32682
+    population: 7957
+    dem: 398
+    timezone: "Europe/Zurich"
+  - name: "Muri"
+    latitude: 47.27428
+    longitude: 8.33854
+    population: 6463
+    dem: 478
+    timezone: "Europe/Zurich"
+  - name: "Mohlin"
+    latitude: 47.55915
+    longitude: 7.84329
+    population: 9382
+    dem: 310
+    timezone: "Europe/Zurich"
+  - name: "Menziken"
+    latitude: 47.23965
+    longitude: 8.18996
+    population: 5415
+    dem: 580
+    timezone: "Europe/Zurich"
+  - name: "Lenzburg"
+    latitude: 47.38853
+    longitude: 8.17503
+    population: 7392
+    dem: 402
+    timezone: "Europe/Zurich"
+  - name: "Kuttigen"
+    latitude: 47.41484
+    longitude: 8.04979
+    population: 5234
+    dem: 417
+    timezone: "Europe/Zurich"
+  - name: "Graenichen"
+    latitude: 47.3593
+    longitude: 8.10243
+    population: 6557
+    dem: 411
+    timezone: "Europe/Zurich"
+  - name: "Buchs"
+    latitude: 47.39358
+    longitude: 8.08233
+    population: 6599
+    dem: 385
+    timezone: "Europe/Zurich"
+  - name: "Brugg"
+    latitude: 47.48096
+    longitude: 8.20869
+    population: 9196
+    dem: 354
+    timezone: "Europe/Zurich"
+  - name: "Bremgarten"
+    latitude: 47.35109
+    longitude: 8.34214
+    population: 6543
+    dem: 389
+    timezone: "Europe/Zurich"
+  - name: "Baden"
+    latitude: 47.47333
+    longitude: 8.30592
+    population: 16118
+    elevation: 381
+    dem: 418
+    timezone: "Europe/Zurich"
+  - name: "Aarburg"
+    latitude: 47.32067
+    longitude: 7.89986
+    population: 6828
+    dem: 408
+    timezone: "Europe/Zurich"
+  - name: "Aarau"
+    latitude: 47.39254
+    longitude: 8.04422
+    population: 15501
+    dem: 389
+    timezone: "Europe/Zurich"
+- name: "Kanton Schwyz"
+  cities:
+  - name: "Wollerau"
+    latitude: 47.19478
+    longitude: 8.71903
+    population: 6883
+    dem: 520
+    timezone: "Europe/Zurich"
+  - name: "Siebnen"
+    latitude: 47.17449
+    longitude: 8.89781
+    population: 7104
+    dem: 447
+    timezone: "Europe/Zurich"
+  - name: "Schwyz"
+    latitude: 47.02076
+    longitude: 8.65414
+    population: 14177
+    dem: 521
+    timezone: "Europe/Zurich"
+  - name: "Schubelbach"
+    latitude: 47.17326
+    longitude: 8.92811
+    population: 7745
+    dem: 429
+    timezone: "Europe/Zurich"
+  - name: "Pfaeffikon"
+    latitude: 47.20109
+    longitude: 8.77816
+    population: 7310
+    elevation: 416
+    dem: 420
+    timezone: "Europe/Zurich"
+  - name: "Lachen"
+    latitude: 47.19224
+    longitude: 8.85324
+    population: 6685
+    dem: 413
+    timezone: "Europe/Zurich"
+  - name: "Kussnacht"
+    latitude: 47.08557
+    longitude: 8.44206
+    population: 11777
+    dem: 440
+    timezone: "Europe/Zurich"
+  - name: "Ingenbohl"
+    latitude: 46.9988
+    longitude: 8.61529
+    population: 7967
+    dem: 438
+    timezone: "Europe/Zurich"
+  - name: "Goldau"
+    latitude: 47.04761
+    longitude: 8.54616
+    population: 5285
+    dem: 517
+    timezone: "Europe/Zurich"
+  - name: "Freienbach"
+    latitude: 47.20534
+    longitude: 8.75842
+    population: 14302
+    dem: 410
+    timezone: "Europe/Zurich"
+  - name: "Einsiedeln"
+    latitude: 47.12849
+    longitude: 8.74735
+    population: 13148
+    elevation: 882
+    dem: 887
+    timezone: "Europe/Zurich"
+  - name: "Arth"
+    latitude: 47.06337
+    longitude: 8.52349
+    population: 9850
+    dem: 425
+    timezone: "Europe/Zurich"
+  - name: "Altendorf"
+    latitude: 47.18994
+    longitude: 8.83823
+    population: 5280
+    dem: 414
+    timezone: "Europe/Zurich"
+- name: "Kanton Uri"
+  cities:
+  - name: "Altdorf"
+    latitude: 46.88042
+    longitude: 8.64441
+    population: 8678
+    elevation: 458
+    dem: 465
+    timezone: "Europe/Zurich"
+- name: "Jura"
+  cities:
+  - name: "Porrentruy"
+    latitude: 47.41728
+    longitude: 7.07573
+    population: 6521
+    dem: 425
+    timezone: "Europe/Zurich"
+  - name: "Delemont"
+    latitude: 47.36493
+    longitude: 7.34453
+    population: 11315
+    dem: 432
+    timezone: "Europe/Zurich"
+- name: "Kanton Thurgau"
+  cities:
+  - name: "Weinfelden"
+    latitude: 47.56667
+    longitude: 9.1
+    population: 9414
+    dem: 429
+    timezone: "Europe/Zurich"
+  - name: "Sirnach"
+    latitude: 47.46222
+    longitude: 8.99763
+    population: 6463
+    dem: 541
+    timezone: "Europe/Zurich"
+  - name: "Romanshorn"
+    latitude: 47.56586
+    longitude: 9.37869
+    population: 8956
+    dem: 401
+    timezone: "Europe/Zurich"
+  - name: "Kreuzlingen"
+    latitude: 47.65051
+    longitude: 9.17504
+    population: 17655
+    dem: 414
+    timezone: "Europe/Zurich"
+  - name: "Frauenfeld"
+    latitude: 47.55776
+    longitude: 8.89893
+    population: 21979
+    elevation: 417
+    dem: 418
+    timezone: "Europe/Zurich"
+  - name: "Arbon"
+    latitude: 47.51667
+    longitude: 9.43333
+    population: 12933
+    dem: 408
+    timezone: "Europe/Zurich"
+  - name: "Amriswil"
+    latitude: 47.54699
+    longitude: 9.29586
+    population: 11351
+    dem: 451
+    timezone: "Europe/Zurich"
+  - name: "Aadorf"
+    latitude: 47.49204
+    longitude: 8.90099
+    population: 7620
+    dem: 526
+    timezone: "Europe/Zurich"
+- name: "Kanton Graubunden"
+  cities:
+  - name: "Igis"
+    latitude: 46.94531
+    longitude: 9.57218
+    population: 6828
+    elevation: 563
+    dem: 567
+    timezone: "Europe/Zurich"
+  - name: "Domat"
+    latitude: 46.83483
+    longitude: 9.45075
+    population: 6817
+    dem: 585
+    timezone: "Europe/Zurich"
+  - name: "Davos"
+    latitude: 46.80429
+    longitude: 9.83723
+    population: 11024
+    dem: 1560
+    timezone: "Europe/Zurich"
+  - name: "Chur"
+    latitude: 46.84986
+    longitude: 9.53287
+    population: 32429
+    dem: 601
+    timezone: "Europe/Zurich"
+- name: "Kanton Glarus"
+  cities:
+  - name: "Glarus"
+    latitude: 47.04057
+    longitude: 9.06804
+    population: 5681
+    dem: 476
+    timezone: "Europe/Zurich"
+- name: "Kanton Schaffhausen"
+  cities:
+  - name: "Schaffhausen"
+    latitude: 47.69732
+    longitude: 8.63493
+    population: 33863
+    elevation: 403
+    dem: 403
+    timezone: "Europe/Zurich"
+  - name: "Neuhausen"
+    latitude: 47.68579
+    longitude: 8.61474
+    population: 10019
+    elevation: 410
+    dem: 471
+    timezone: "Europe/Zurich"
+- name: "Kanton Luzern"
+  cities:
+  - name: "Sursee"
+    latitude: 47.17088
+    longitude: 8.11113
+    population: 8014
+    dem: 503
+    timezone: "Europe/Zurich"
+  - name: "Ruswil"
+    latitude: 47.08425
+    longitude: 8.12645
+    population: 6432
+    dem: 642
+    timezone: "Europe/Zurich"
+  - name: "Neuenkirch"
+    latitude: 47.09989
+    longitude: 8.20416
+    population: 5963
+    dem: 550
+    timezone: "Europe/Zurich"
+  - name: "Meggen"
+    latitude: 47.04691
+    longitude: 8.37467
+    population: 6533
+    dem: 476
+    timezone: "Europe/Zurich"
+  - name: "Malters"
+    latitude: 47.03628
+    longitude: 8.18193
+    population: 6181
+    dem: 504
+    timezone: "Europe/Zurich"
+  - name: "Luzern"
+    latitude: 47.05048
+    longitude: 8.30635
+    population: 57066
+    dem: 437
+    timezone: "Europe/Zurich"
+  - name: "Littau"
+    latitude: 47.05
+    longitude: 8.26274
+    population: 16121
+    dem: 509
+    timezone: "Europe/Zurich"
+  - name: "Kriens"
+    latitude: 47.0311
+    longitude: 8.28547
+    population: 25010
+    dem: 476
+    timezone: "Europe/Zurich"
+  - name: "Horw"
+    latitude: 47.01692
+    longitude: 8.30956
+    population: 12348
+    dem: 441
+    timezone: "Europe/Zurich"
+  - name: "Hochdorf"
+    latitude: 47.16841
+    longitude: 8.29179
+    population: 8192
+    dem: 491
+    timezone: "Europe/Zurich"
+  - name: "Emmen"
+    latitude: 47.07819
+    longitude: 8.27331
+    population: 26889
+    dem: 464
+    timezone: "Europe/Zurich"
+  - name: "Ebikon"
+    latitude: 47.07937
+    longitude: 8.34041
+    population: 11471
+    dem: 437
+    timezone: "Europe/Zurich"
+  - name: "Buchrain"
+    latitude: 47.09625
+    longitude: 8.34729
+    population: 5341
+    dem: 458
+    timezone: "Europe/Zurich"
+  - name: "Adligenswil"
+    latitude: 47.06521
+    longitude: 8.36124
+    population: 5576
+    dem: 547
+    timezone: "Europe/Zurich"
+- name: "Ticino"
+  cities:
+  - name: "Viganello"
+    latitude: 46.01342
+    longitude: 8.96879
+    population: 6375
+    dem: 301
+    timezone: "Europe/Zurich"
+  - name: "Pregassona"
+    latitude: 46.02021
+    longitude: 8.97429
+    population: 7548
+    dem: 373
+    timezone: "Europe/Zurich"
+  - name: "Minusio"
+    latitude: 46.17769
+    longitude: 8.81473
+    population: 6653
+    dem: 243
+    timezone: "Europe/Zurich"
+  - name: "Mendrisio"
+    latitude: 45.87019
+    longitude: 8.9816
+    population: 7310
+    dem: 338
+    timezone: "Europe/Zurich"
+  - name: "Massagno"
+    latitude: 46.01257
+    longitude: 8.94354
+    population: 5774
+    dem: 375
+    timezone: "Europe/Zurich"
+  - name: "Lugano"
+    latitude: 46.01008
+    longitude: 8.96004
+    population: 63000
+    dem: 284
+    timezone: "Europe/Zurich"
+  - name: "Losone"
+    latitude: 46.16866
+    longitude: 8.75928
+    population: 6070
+    dem: 239
+    timezone: "Europe/Zurich"
+  - name: "Locarno"
+    latitude: 46.17086
+    longitude: 8.79953
+    population: 14509
+    dem: 206
+    timezone: "Europe/Zurich"
+  - name: "Giubiasco"
+    latitude: 46.17246
+    longitude: 9.00793
+    population: 7752
+    dem: 244
+    timezone: "Europe/Zurich"
+  - name: "Chiasso"
+    latitude: 45.83203
+    longitude: 9.03119
+    population: 8060
+    dem: 237
+    timezone: "Europe/Zurich"
+  - name: "Biasca"
+    latitude: 46.35972
+    longitude: 8.96965
+    population: 5885
+    dem: 305
+    timezone: "Europe/Zurich"
+  - name: "Bellinzona"
+    latitude: 46.19278
+    longitude: 9.01703
+    population: 16572
+    dem: 230
+    timezone: "Europe/Zurich"
+  - name: "Ascona"
+    latitude: 46.15451
+    longitude: 8.77327
+    population: 5084
+    dem: 202
+    timezone: "Europe/Zurich"
+- name: "Canton du Valais"
+  cities:
+  - name: "Zermatt"
+    latitude: 46.01998
+    longitude: 7.74863
+    population: 6629
+    elevation: 1608
+    dem: 1610
+    timezone: "Europe/Zurich"
+  - name: "Visp"
+    latitude: 46.2937
+    longitude: 7.88149
+    population: 6576
+    dem: 653
+    timezone: "Europe/Zurich"
+  - name: "Sitten"
+    latitude: 46.22739
+    longitude: 7.35559
+    population: 28045
+    elevation: 500
+    dem: 487
+    timezone: "Europe/Zurich"
+  - name: "Sierre"
+    latitude: 46.29192
+    longitude: 7.53559
+    population: 15752
+    dem: 528
+    timezone: "Europe/Zurich"
+  - name: "Saviese"
+    latitude: 46.25115
+    longitude: 7.34558
+    population: 5575
+    dem: 840
+    timezone: "Europe/Zurich"
+  - name: "Naters"
+    latitude: 46.32536
+    longitude: 7.98912
+    population: 7552
+    elevation: 720
+    dem: 680
+    timezone: "Europe/Zurich"
+  - name: "Monthey"
+    latitude: 46.25451
+    longitude: 6.95406
+    population: 15106
+    dem: 413
+    timezone: "Europe/Zurich"
+  - name: "Martigny-Ville"
+    latitude: 46.10276
+    longitude: 7.07245
+    population: 14768
+    dem: 475
+    timezone: "Europe/Zurich"
+  - name: "Fully"
+    latitude: 46.13851
+    longitude: 7.11468
+    population: 5922
+    dem: 471
+    timezone: "Europe/Zurich"
+  - name: "Conthey"
+    latitude: 46.2237
+    longitude: 7.30283
+    population: 6634
+    dem: 491
+    timezone: "Europe/Zurich"
+  - name: "Collombey"
+    latitude: 46.27385
+    longitude: 6.94789
+    population: 5926
+    dem: 389
+    timezone: "Europe/Zurich"
+  - name: "Basse-Nendaz"
+    latitude: 46.18993
+    longitude: 7.31209
+    population: 5410
+    dem: 1004
+    timezone: "Europe/Zurich"
+  - name: "Bagnes"
+    latitude: 46.08333
+    longitude: 7.21667
+    population: 6626
+    dem: 924
+    timezone: "Europe/Zurich"
+- name: "Canton de Berne"
+  cities:
+  - name: "Zollikofen"
+    latitude: 46.99905
+    longitude: 7.45809
+    population: 9121
+    dem: 558
+    timezone: "Europe/Zurich"
+  - name: "Worb"
+    latitude: 46.92984
+    longitude: 7.56306
+    population: 11053
+    dem: 585
+    timezone: "Europe/Zurich"
+  - name: "Wohlen"
+    latitude: 46.97118
+    longitude: 7.35685
+    population: 9159
+    dem: 546
+    timezone: "Europe/Zurich"
+  - name: "Urtenen"
+    latitude: 47.02667
+    longitude: 7.50081
+    population: 5258
+    dem: 528
+    timezone: "Europe/Zurich"
+  - name: "Unterseen"
+    latitude: 46.6853
+    longitude: 7.84722
+    population: 5150
+    dem: 570
+    timezone: "Europe/Zurich"
+  - name: "Uetendorf"
+    latitude: 46.77392
+    longitude: 7.57251
+    population: 5654
+    dem: 557
+    timezone: "Europe/Zurich"
+  - name: "Thun"
+    latitude: 46.75118
+    longitude: 7.62166
+    population: 42136
+    elevation: 560
+    dem: 565
+    timezone: "Europe/Zurich"
+  - name: "Sumiswald"
+    latitude: 47.02747
+    longitude: 7.74526
+    population: 5159
+    dem: 703
+    timezone: "Europe/Zurich"
+  - name: "Steffisburg"
+    latitude: 46.77807
+    longitude: 7.63249
+    population: 15191
+    dem: 584
+    timezone: "Europe/Zurich"
+  - name: "Spiez"
+    latitude: 46.68473
+    longitude: 7.69111
+    population: 12594
+    dem: 595
+    timezone: "Europe/Zurich"
+  - name: "Saint-Imier"
+    latitude: 47.15284
+    longitude: 6.99692
+    population: 5220
+    dem: 814
+    timezone: "Europe/Zurich"
+  - name: "Saanen"
+    latitude: 46.48945
+    longitude: 7.26003
+    population: 6621
+    dem: 1010
+    timezone: "Europe/Zurich"
+  - name: "Nidau"
+    latitude: 47.12545
+    longitude: 7.24033
+    population: 6696
+    dem: 437
+    timezone: "Europe/Zurich"
+  - name: "Muri"
+    latitude: 46.93122
+    longitude: 7.48658
+    population: 12374
+    dem: 558
+    timezone: "Europe/Zurich"
+  - name: "Munsingen"
+    latitude: 46.87298
+    longitude: 7.561
+    population: 10928
+    dem: 539
+    timezone: "Europe/Zurich"
+  - name: "Munchenbuchsee"
+    latitude: 47.02175
+    longitude: 7.45036
+    population: 9801
+    dem: 556
+    timezone: "Europe/Zurich"
+  - name: "Moutier"
+    latitude: 47.27818
+    longitude: 7.36951
+    population: 7721
+    dem: 536
+    timezone: "Europe/Zurich"
+  - name: "Lyss"
+    latitude: 47.0741
+    longitude: 7.30655
+    population: 10937
+    dem: 445
+    timezone: "Europe/Zurich"
+  - name: "Lengnau"
+    latitude: 47.18155
+    longitude: 7.36814
+    population: 7336
+    dem: 442
+    timezone: "Europe/Zurich"
+  - name: "Langnau"
+    latitude: 46.93936
+    longitude: 7.78738
+    population: 8784
+    dem: 677
+    timezone: "Europe/Zurich"
+  - name: "Langenthal"
+    latitude: 47.21526
+    longitude: 7.79607
+    population: 14184
+    dem: 478
+    timezone: "Europe/Zurich"
+  - name: "Koniz"
+    latitude: 46.92436
+    longitude: 7.41457
+    population: 37196
+    dem: 577
+    timezone: "Europe/Zurich"
+  - name: "Kirchberg"
+    latitude: 47.08538
+    longitude: 7.58288
+    population: 5335
+    dem: 509
+    timezone: "Europe/Zurich"
+  - name: "Interlaken"
+    latitude: 46.68387
+    longitude: 7.86638
+    population: 5067
+    dem: 570
+    timezone: "Europe/Zurich"
+  - name: "Herzogenbuchsee"
+    latitude: 47.18795
+    longitude: 7.7062
+    population: 5522
+    dem: 474
+    timezone: "Europe/Zurich"
+  - name: "Heimberg"
+    latitude: 46.79482
+    longitude: 7.60433
+    population: 5501
+    dem: 564
+    timezone: "Europe/Zurich"
+  - name: "Gstaad"
+    latitude: 46.47215
+    longitude: 7.28685
+    population: 9200
+    dem: 1055
+    timezone: "Europe/Zurich"
+  - name: "Frutigen"
+    latitude: 46.58723
+    longitude: 7.64945
+    population: 6671
+    dem: 786
+    timezone: "Europe/Zurich"
+  - name: "Burgdorf"
+    latitude: 47.05901
+    longitude: 7.62786
+    population: 14788
+    dem: 535
+    timezone: "Europe/Zurich"
+  - name: "Bolligen"
+    latitude: 46.9751
+    longitude: 7.49697
+    population: 6086
+    dem: 582
+    timezone: "Europe/Zurich"
+  - name: "Biel/Bienne"
+    latitude: 47.13713
+    longitude: 7.24608
+    population: 48614
+    elevation: 434
+    dem: 439
+    timezone: "Europe/Zurich"
+  - name: "Bern"
+    latitude: 46.94809
+    longitude: 7.44744
+    population: 121631
+    dem: 549
+    timezone: "Europe/Zurich"
+  - name: "Belp"
+    latitude: 46.89129
+    longitude: 7.49825
+    population: 9307
+    dem: 519
+    timezone: "Europe/Zurich"
+- name: "Kanton Appenzell Innerrhoden"
+  cities:
+  - name: "Appenzell"
+    latitude: 47.33103
+    longitude: 9.40996
+    population: 5649
+    dem: 783
+    timezone: "Europe/Zurich"
+- name: "Canton de Vaud"
+  cities:
+  - name: "Yverdon-les-Bains"
+    latitude: 46.77852
+    longitude: 6.64115
+    population: 23702
+    dem: 438
+    timezone: "Europe/Zurich"
+  - name: "Vevey"
+    latitude: 46.46299
+    longitude: 6.84345
+    population: 15812
+    dem: 388
+    timezone: "Europe/Zurich"
+  - name: "Renens"
+    latitude: 46.53989
+    longitude: 6.5881
+    population: 17811
+    dem: 441
+    timezone: "Europe/Zurich"
+  - name: "Pully"
+    latitude: 46.51027
+    longitude: 6.66183
+    population: 16263
+    dem: 428
+    timezone: "Europe/Zurich"
+  - name: "Prilly"
+    latitude: 46.53698
+    longitude: 6.60456
+    population: 10524
+    dem: 489
+    timezone: "Europe/Zurich"
+  - name: "Payerne"
+    latitude: 46.82192
+    longitude: 6.93817
+    population: 7655
+    dem: 455
+    timezone: "Europe/Zurich"
+  - name: "Orbe"
+    latitude: 46.72504
+    longitude: 6.53069
+    population: 5132
+    dem: 477
+    timezone: "Europe/Zurich"
+  - name: "Ollon"
+    latitude: 46.29524
+    longitude: 6.99314
+    population: 6665
+    dem: 452
+    timezone: "Europe/Zurich"
+  - name: "Nyon"
+    latitude: 46.38318
+    longitude: 6.23955
+    population: 16797
+    dem: 401
+    timezone: "Europe/Zurich"
+  - name: "Morges"
+    latitude: 46.51127
+    longitude: 6.49854
+    population: 14117
+    dem: 380
+    timezone: "Europe/Zurich"
+  - name: "Montreux"
+    latitude: 46.43301
+    longitude: 6.91143
+    population: 22897
+    dem: 403
+    timezone: "Europe/Zurich"
+  - name: "Lutry"
+    latitude: 46.50241
+    longitude: 6.68647
+    population: 8774
+    dem: 386
+    timezone: "Europe/Zurich"
+  - name: "Le Mont-sur-Lausanne"
+    latitude: 46.55815
+    longitude: 6.63145
+    population: 5270
+    dem: 684
+    timezone: "Europe/Zurich"
+  - name: "Lausanne"
+    latitude: 46.516
+    longitude: 6.63282
+    population: 116751
+    dem: 453
+    timezone: "Europe/Zurich"
+  - name: "La Tour-de-Peilz"
+    latitude: 46.45312
+    longitude: 6.85856
+    population: 10522
+    dem: 387
+    timezone: "Europe/Zurich"
+  - name: "Gland"
+    latitude: 46.42082
+    longitude: 6.2701
+    population: 10641
+    dem: 416
+    timezone: "Europe/Zurich"
+  - name: "Epalinges"
+    latitude: 46.54896
+    longitude: 6.66831
+    population: 7706
+    dem: 782
+    timezone: "Europe/Zurich"
+  - name: "Crissier"
+    latitude: 46.54586
+    longitude: 6.57567
+    population: 6612
+    dem: 434
+    timezone: "Europe/Zurich"
+  - name: "Colombier"
+    latitude: 46.55709
+    longitude: 6.47284
+    population: 9297
+    dem: 531
+    timezone: "Europe/Zurich"
+  - name: "Chavannes"
+    latitude: 46.53005
+    longitude: 6.57068
+    population: 5454
+    dem: 399
+    timezone: "Europe/Zurich"
+  - name: "Bussigny"
+    latitude: 46.5511
+    longitude: 6.55597
+    population: 7408
+    dem: 432
+    timezone: "Europe/Zurich"
+  - name: "Blonay"
+    latitude: 46.46778
+    longitude: 6.89615
+    population: 5244
+    dem: 629
+    timezone: "Europe/Zurich"
+  - name: "Bex"
+    latitude: 46.24965
+    longitude: 7.0098
+    population: 5956
+    dem: 421
+    timezone: "Europe/Zurich"
+  - name: "Aigle"
+    latitude: 46.3181
+    longitude: 6.96457
+    population: 7723
+    elevation: 410
+    dem: 408
+    timezone: "Europe/Zurich"
+  - name: "Ecublens"
+    latitude: 46.52899
+    longitude: 6.56261
+    population: 10262
+    elevation: 409
+    dem: 419
+    timezone: "Europe/Zurich"
+  - name: "Blecherette"
+    latitude: 46.53932
+    longitude: 6.62227
+    population: 6516
+    dem: 606
+    timezone: "Europe/Zurich"
+- name: "Kanton Appenzell Ausserrhoden"
+  cities:
+  - name: "Teufen"
+    latitude: 47.3908
+    longitude: 9.38644
+    population: 5683
+    dem: 842
+    timezone: "Europe/Zurich"
+  - name: "Herisau"
+    latitude: 47.38615
+    longitude: 9.27916
+    population: 15438
+    dem: 780
+    timezone: "Europe/Zurich"
+- name: "Kanton St. Gallen"
+  cities:
+  - name: "Wittenbach"
+    latitude: 47.46108
+    longitude: 9.38601
+    population: 8542
+    dem: 615
+    timezone: "Europe/Zurich"
+  - name: "Wil"
+    latitude: 47.46152
+    longitude: 9.04552
+    population: 16808
+    dem: 569
+    timezone: "Europe/Zurich"
+  - name: "Wattwil"
+    latitude: 47.29955
+    longitude: 9.08657
+    population: 8089
+    dem: 613
+    timezone: "Europe/Zurich"
+  - name: "Uzwil"
+    latitude: 47.43653
+    longitude: 9.13422
+    population: 12111
+    dem: 542
+    timezone: "Europe/Zurich"
+  - name: "Uznach"
+    latitude: 47.22421
+    longitude: 8.98263
+    population: 5561
+    dem: 411
+    timezone: "Europe/Zurich"
+  - name: "Sargans"
+    latitude: 47.04896
+    longitude: 9.44103
+    population: 5045
+    dem: 487
+    timezone: "Europe/Zurich"
+  - name: "Sankt Margrethen"
+    latitude: 47.45253
+    longitude: 9.63741
+    population: 5395
+    dem: 403
+    timezone: "Europe/Zurich"
+  - name: "Sankt Gallen"
+    latitude: 47.42391
+    longitude: 9.37477
+    population: 70572
+    dem: 684
+    timezone: "Europe/Zurich"
+  - name: "Rorschach"
+    latitude: 47.478
+    longitude: 9.4903
+    population: 9000
+    dem: 404
+    timezone: "Europe/Zurich"
+  - name: "Rapperswil"
+    latitude: 47.22557
+    longitude: 8.82228
+    population: 34776
+    dem: 408
+    timezone: "Europe/Zurich"
+  - name: "Oberuzwil"
+    latitude: 47.43076
+    longitude: 9.12724
+    population: 5616
+    dem: 563
+    timezone: "Europe/Zurich"
+  - name: "Oberriet"
+    latitude: 47.32088
+    longitude: 9.56808
+    population: 7675
+    dem: 419
+    timezone: "Europe/Zurich"
+  - name: "Kirchberg"
+    latitude: 47.41159
+    longitude: 9.0402
+    population: 8127
+    dem: 737
+    timezone: "Europe/Zurich"
+  - name: "Jona"
+    latitude: 47.22983
+    longitude: 8.83884
+    population: 17655
+    dem: 424
+    timezone: "Europe/Zurich"
+  - name: "Grabs"
+    latitude: 47.18248
+    longitude: 9.44395
+    population: 6384
+    elevation: 465
+    dem: 474
+    timezone: "Europe/Zurich"
+  - name: "Gossau"
+    latitude: 47.41551
+    longitude: 9.25482
+    population: 17043
+    dem: 637
+    timezone: "Europe/Zurich"
+  - name: "Goldach"
+    latitude: 47.47401
+    longitude: 9.46711
+    population: 9094
+    dem: 448
+    timezone: "Europe/Zurich"
+  - name: "Flawil"
+    latitude: 47.41301
+    longitude: 9.18324
+    population: 9739
+    dem: 621
+    timezone: "Europe/Zurich"
+  - name: "Eschenbach"
+    latitude: 47.23981
+    longitude: 8.92156
+    population: 9175
+    dem: 480
+    timezone: "Europe/Zurich"
+  - name: "Diepoldsau"
+    latitude: 47.386
+    longitude: 9.65558
+    population: 5401
+    dem: 411
+    timezone: "Europe/Zurich"
+  - name: "Buchs"
+    latitude: 47.16743
+    longitude: 9.47794
+    population: 10418
+    elevation: 447
+    dem: 451
+    timezone: "Europe/Zurich"
+  - name: "Bad Ragaz"
+    latitude: 47.00601
+    longitude: 9.50266
+    population: 5063
+    dem: 512
+    timezone: "Europe/Zurich"
+  - name: "Au"
+    latitude: 47.43093
+    longitude: 9.63448
+    population: 6673
+    dem: 403
+    timezone: "Europe/Zurich"
+  - name: "Altstatten"
+    latitude: 47.37766
+    longitude: 9.54746
+    population: 10574
+    dem: 447
+    timezone: "Europe/Zurich"
+  - name: "Thal"
+    latitude: 47.46677
+    longitude: 9.56643
+    population: 6433
+    dem: 420
+    timezone: "Europe/Zurich"
+- name: "Geneve"
+  cities:
+  - name: "Veyrier"
+    latitude: 46.16699
+    longitude: 6.18436
+    population: 9800
+    dem: 424
+    timezone: "Europe/Zurich"
+  - name: "Versoix"
+    latitude: 46.28382
+    longitude: 6.16214
+    population: 11467
+    dem: 404
+    timezone: "Europe/Zurich"
+  - name: "Vernier"
+    latitude: 46.21702
+    longitude: 6.08497
+    population: 30086
+    dem: 440
+    timezone: "Europe/Zurich"
+  - name: "Plan-les-Ouates"
+    latitude: 46.16789
+    longitude: 6.11664
+    population: 10540
+    dem: 407
+    timezone: "Europe/Zurich"
+  - name: "Onex"
+    latitude: 46.18396
+    longitude: 6.10237
+    population: 17302
+    dem: 426
+    timezone: "Europe/Zurich"
+  - name: "Meyrin"
+    latitude: 46.23424
+    longitude: 6.08025
+    population: 19772
+    dem: 445
+    timezone: "Europe/Zurich"
+  - name: "Le Grand-Saconnex"
+    latitude: 46.23188
+    longitude: 6.12091
+    population: 9781
+    dem: 450
+    timezone: "Europe/Zurich"
+  - name: "Geneve"
+    latitude: 46.20222
+    longitude: 6.14569
+    population: 183981
+    dem: 400
+    timezone: "Europe/Zurich"
+  - name: "Chene-Bourg"
+    latitude: 46.19534
+    longitude: 6.19406
+    population: 7959
+    dem: 422
+    timezone: "Europe/Zurich"
+  - name: "Carouge"
+    latitude: 46.18096
+    longitude: 6.13921
+    population: 19344
+    dem: 388
+    timezone: "Europe/Zurich"
+  - name: "Bernex"
+    latitude: 46.1765
+    longitude: 6.07544
+    population: 9759
+    dem: 451
+    timezone: "Europe/Zurich"
+  - name: "Chene-Bougeries"
+    latitude: 46.19843
+    longitude: 6.18642
+    population: 10487
+    dem: 423
+    timezone: "Europe/Zurich"
+  - name: "Thonex"
+    latitude: 46.18815
+    longitude: 6.19904
+    population: 13057
+    dem: 408
+    timezone: "Europe/Zurich"
+  - name: "Lancy"
+    latitude: 46.18981
+    longitude: 6.11441
+    population: 27291
+    dem: 421
+    timezone: "Europe/Zurich"
+  - name: "Les Avanchets"
+    latitude: 46.22168
+    longitude: 6.10814
+    population: 5730
+    dem: 430
+    timezone: "Europe/Zurich"
+- name: "Canton de Fribourg"
+  cities:
+  - name: "Villars-sur-Glane"
+    latitude: 46.79054
+    longitude: 7.11717
+    population: 10021
+    dem: 656
+    timezone: "Europe/Zurich"
+  - name: "Murten/Morat"
+    latitude: 46.92827
+    longitude: 7.11715
+    population: 5800
+    elevation: 435
+    dem: 462
+    timezone: "Europe/Zurich"
+  - name: "Marly"
+    latitude: 46.77611
+    longitude: 7.16459
+    population: 7653
+    elevation: 627
+    dem: 636
+    timezone: "Europe/Zurich"
+  - name: "Fribourg"
+    latitude: 46.80237
+    longitude: 7.15128
+    population: 32827
+    elevation: 610
+    dem: 627
+    timezone: "Europe/Zurich"
+  - name: "Estavayer-le-Lac"
+    latitude: 46.84876
+    longitude: 6.8465
+    population: 5061
+    dem: 453
+    timezone: "Europe/Zurich"
+  - name: "Ecublens"
+    latitude: 46.60735
+    longitude: 6.80895
+    population: 10065
+    dem: 591
+    timezone: "Europe/Zurich"
+  - name: "Dudingen"
+    latitude: 46.84916
+    longitude: 7.1915
+    population: 7155
+    dem: 600
+    timezone: "Europe/Zurich"
+  - name: "Chatel-Saint-Denis"
+    latitude: 46.52691
+    longitude: 6.90083
+    population: 5094
+    dem: 809
+    timezone: "Europe/Zurich"
+  - name: "Bulle"
+    latitude: 46.61797
+    longitude: 7.0569
+    population: 12095
+    dem: 771
+    timezone: "Europe/Zurich"
+- name: "Kanton Obwalden"
+  cities:
+  - name: "Sarnen"
+    latitude: 46.89611
+    longitude: 8.24531
+    population: 9410
+    dem: 473
+    timezone: "Europe/Zurich"
+  - name: "Kerns"
+    latitude: 46.90121
+    longitude: 8.27514
+    population: 5217
+    dem: 564
+    timezone: "Europe/Zurich"
+  - name: "Alpnach"
+    latitude: 46.94227
+    longitude: 8.2718
+    population: 5218
+    dem: 463
+    timezone: "Europe/Zurich"
+- name: "Kanton Zurich"
+  cities:
+  - name: "Zurich"
+    latitude: 47.36667
+    longitude: 8.55
+    population: 341730
+    dem: 429
+    timezone: "Europe/Zurich"
+  - name: "Zollikon"
+    latitude: 47.34019
+    longitude: 8.57407
+    population: 5812
+    dem: 469
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Witikon"
+    latitude: 47.35751
+    longitude: 8.59105
+    population: 9099
+    dem: 599
+    timezone: "Europe/Zurich"
+  - name: "Winterthur"
+    latitude: 47.50564
+    longitude: 8.72413
+    population: 91908
+    dem: 441
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Alt-Wiedikon"
+    latitude: 47.36201
+    longitude: 8.51497
+    population: 14931
+    dem: 431
+    timezone: "Europe/Zurich"
+  - name: "Wetzikon"
+    latitude: 47.3264
+    longitude: 8.79779
+    population: 12969
+    dem: 539
+    timezone: "Europe/Zurich"
+  - name: "Wallisellen"
+    latitude: 47.41499
+    longitude: 8.59672
+    population: 11705
+    dem: 462
+    timezone: "Europe/Zurich"
+  - name: "Waedenswil"
+    latitude: 47.22683
+    longitude: 8.6687
+    population: 13269
+    dem: 450
+    timezone: "Europe/Zurich"
+  - name: "Veltheim"
+    latitude: 47.51419
+    longitude: 8.717
+    population: 8901
+    dem: 472
+    timezone: "Europe/Zurich"
+  - name: "Uster"
+    latitude: 47.34713
+    longitude: 8.72091
+    population: 23279
+    dem: 469
+    timezone: "Europe/Zurich"
+  - name: "Toss"
+    latitude: 47.4789
+    longitude: 8.70215
+    population: 8672
+    dem: 470
+    timezone: "Europe/Zurich"
+  - name: "Thalwil"
+    latitude: 47.29175
+    longitude: 8.56351
+    population: 13296
+    dem: 468
+    timezone: "Europe/Zurich"
+  - name: "Stafa"
+    latitude: 47.24254
+    longitude: 8.72342
+    population: 5737
+    dem: 425
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Seebach"
+    latitude: 47.42181
+    longitude: 8.54779
+    population: 17851
+    dem: 436
+    timezone: "Europe/Zurich"
+  - name: "Schlieren"
+    latitude: 47.39668
+    longitude: 8.44763
+    population: 12695
+    dem: 399
+    timezone: "Europe/Zurich"
+  - name: "Rueti"
+    latitude: 47.25603
+    longitude: 8.85552
+    population: 9576
+    dem: 470
+    timezone: "Europe/Zurich"
+  - name: "Rumlang"
+    latitude: 47.45041
+    longitude: 8.52993
+    population: 5144
+    dem: 448
+    timezone: "Europe/Zurich"
+  - name: "Richterswil"
+    latitude: 47.20622
+    longitude: 8.69686
+    population: 10189
+    dem: 482
+    timezone: "Europe/Zurich"
+  - name: "Regensdorf"
+    latitude: 47.4341
+    longitude: 8.46874
+    population: 7531
+    dem: 440
+    timezone: "Europe/Zurich"
+  - name: "Pfaffikon"
+    latitude: 47.36453
+    longitude: 8.79202
+    population: 7994
+    dem: 557
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Oerlikon"
+    latitude: 47.40823
+    longitude: 8.54258
+    population: 17922
+    dem: 459
+    timezone: "Europe/Zurich"
+  - name: "Ober Urdorf"
+    latitude: 47.38507
+    longitude: 8.42581
+    population: 9205
+    dem: 424
+    timezone: "Europe/Zurich"
+  - name: "Oberengstringen"
+    latitude: 47.40841
+    longitude: 8.46515
+    population: 5805
+    dem: 417
+    timezone: "Europe/Zurich"
+  - name: "Maennedorf"
+    latitude: 47.25686
+    longitude: 8.69893
+    population: 7951
+    dem: 460
+    timezone: "Europe/Zurich"
+  - name: "Kuesnacht"
+    latitude: 47.31805
+    longitude: 8.58401
+    population: 11525
+    dem: 427
+    timezone: "Europe/Zurich"
+  - name: "Kloten"
+    latitude: 47.45152
+    longitude: 8.58491
+    population: 16289
+    dem: 439
+    timezone: "Europe/Zurich"
+  - name: "Kilchberg"
+    latitude: 47.32438
+    longitude: 8.54548
+    population: 6511
+    dem: 467
+    timezone: "Europe/Zurich"
+  - name: "Horgen"
+    latitude: 47.25983
+    longitude: 8.59778
+    population: 15973
+    elevation: 415
+    dem: 419
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Hoengg"
+    latitude: 47.40313
+    longitude: 8.4971
+    population: 17117
+    dem: 468
+    timezone: "Europe/Zurich"
+  - name: "Hinwil"
+    latitude: 47.29426
+    longitude: 8.84393
+    population: 5488
+    dem: 573
+    timezone: "Europe/Zurich"
+  - name: "Herrliberg"
+    latitude: 47.29064
+    longitude: 8.61464
+    population: 5025
+    dem: 519
+    timezone: "Europe/Zurich"
+  - name: "Greifensee"
+    latitude: 47.36717
+    longitude: 8.68115
+    population: 5032
+    dem: 444
+    timezone: "Europe/Zurich"
+  - name: "Embrach"
+    latitude: 47.50561
+    longitude: 8.59406
+    population: 7088
+    dem: 425
+    timezone: "Europe/Zurich"
+  - name: "Effretikon"
+    latitude: 47.42575
+    longitude: 8.69094
+    population: 10119
+    dem: 506
+    timezone: "Europe/Zurich"
+  - name: "Dubendorf"
+    latitude: 47.39724
+    longitude: 8.61872
+    population: 19882
+    dem: 436
+    timezone: "Europe/Zurich"
+  - name: "Dietlikon/Dietlikon"
+    latitude: 47.41827
+    longitude: 8.6188
+    population: 6149
+    dem: 442
+    timezone: "Europe/Zurich"
+  - name: "Dietikon"
+    latitude: 47.40165
+    longitude: 8.40015
+    population: 20893
+    dem: 397
+    timezone: "Europe/Zurich"
+  - name: "Bulach"
+    latitude: 47.52197
+    longitude: 8.54049
+    population: 13172
+    dem: 419
+    timezone: "Europe/Zurich"
+  - name: "Bassersdorf"
+    latitude: 47.44342
+    longitude: 8.62851
+    population: 7010
+    dem: 461
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Aussersihl"
+    latitude: 47.37752
+    longitude: 8.52127
+    population: 27273
+    dem: 416
+    timezone: "Europe/Zurich"
+  - name: "Affoltern am Albis"
+    latitude: 47.27743
+    longitude: 8.45128
+    population: 8928
+    dem: 496
+    timezone: "Europe/Zurich"
+  - name: "Adliswil"
+    latitude: 47.30997
+    longitude: 8.52462
+    population: 15230
+    dem: 450
+    timezone: "Europe/Zurich"
+  - name: "Wallisellen/Wallisellen-Ost"
+    latitude: 47.41446
+    longitude: 8.59727
+    population: 5031
+    dem: 455
+    timezone: "Europe/Zurich"
+  - name: "Horgen/Horgen"
+    latitude: 47.25604
+    longitude: 8.60159
+    population: 6140
+    dem: 449
+    timezone: "Europe/Zurich"
+  - name: "Thalwil/Dorfkern"
+    latitude: 47.29047
+    longitude: 8.56633
+    population: 6829
+    dem: 470
+    timezone: "Europe/Zurich"
+  - name: "Pfaeffikon/Pfaeffikon"
+    latitude: 47.36943
+    longitude: 8.78309
+    population: 5595
+    dem: 549
+    timezone: "Europe/Zurich"
+  - name: "Uster/Kirch-Uster"
+    latitude: 47.34579
+    longitude: 8.71839
+    population: 10428
+    dem: 475
+    timezone: "Europe/Zurich"
+  - name: "Uster/Ober-Uster"
+    latitude: 47.34874
+    longitude: 8.73319
+    population: 5100
+    dem: 502
+    timezone: "Europe/Zurich"
+  - name: "Oberwinterthur/Talacker"
+    latitude: 47.50596
+    longitude: 8.7515
+    population: 5375
+    dem: 475
+    timezone: "Europe/Zurich"
+  - name: "Oberwinterthur/Guggenbuehl"
+    latitude: 47.51339
+    longitude: 8.75998
+    population: 5376
+    dem: 457
+    timezone: "Europe/Zurich"
+  - name: "Mattenbach/Deutweg"
+    latitude: 47.49419
+    longitude: 8.73948
+    population: 5930
+    dem: 447
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Wipkingen"
+    latitude: 47.39503
+    longitude: 8.52529
+    population: 15718
+    dem: 434
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Affoltern"
+    latitude: 47.41814
+    longitude: 8.5122
+    population: 17241
+    dem: 466
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Saatlen"
+    latitude: 47.41127
+    longitude: 8.5648
+    population: 5209
+    dem: 430
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Schwamendingen-Mitte"
+    latitude: 47.4063
+    longitude: 8.57242
+    population: 10476
+    dem: 431
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Hirzenbach"
+    latitude: 47.40187
+    longitude: 8.58633
+    population: 11335
+    dem: 432
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Wollishofen"
+    latitude: 47.3401
+    longitude: 8.53134
+    population: 16073
+    dem: 447
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Enge"
+    latitude: 47.3605
+    longitude: 8.53127
+    population: 8253
+    dem: 421
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Friesenberg"
+    latitude: 47.36372
+    longitude: 8.50417
+    population: 9909
+    dem: 465
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Sihlfeld"
+    latitude: 47.37382
+    longitude: 8.51164
+    population: 20977
+    dem: 416
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Langstrasse"
+    latitude: 47.37767
+    longitude: 8.52854
+    population: 10386
+    dem: 412
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Hard"
+    latitude: 47.38311
+    longitude: 8.50942
+    population: 12976
+    dem: 410
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Gewerbeschule"
+    latitude: 47.38481
+    longitude: 8.53011
+    population: 9891
+    dem: 419
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Unterstrass"
+    latitude: 47.3953
+    longitude: 8.53721
+    population: 20045
+    dem: 476
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Oberstrass"
+    latitude: 47.38917
+    longitude: 8.5504
+    population: 9906
+    dem: 527
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Fluntern"
+    latitude: 47.38013
+    longitude: 8.56133
+    population: 7009
+    dem: 561
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Hottingen"
+    latitude: 47.37011
+    longitude: 8.56306
+    population: 9934
+    dem: 477
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Hirslanden"
+    latitude: 47.3624
+    longitude: 8.56755
+    population: 6769
+    dem: 469
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Muehlebach"
+    latitude: 47.35727
+    longitude: 8.55744
+    population: 5570
+    dem: 425
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Albisrieden"
+    latitude: 47.37398
+    longitude: 8.49007
+    population: 16480
+    dem: 428
+    timezone: "Europe/Zurich"
+  - name: "Zuerich/Altstetten"
+    latitude: 47.38946
+    longitude: 8.48533
+    population: 28307
+    dem: 403
+    timezone: "Europe/Zurich"
+  - name: "Hegnau"
+    latitude: 47.39227
+    longitude: 8.66988
+    population: 7961
+    dem: 451
+    timezone: "Europe/Zurich"
+  - name: "Stadt Winterthur"
+    latitude: 47.49494
+    longitude: 8.71954
+    population: 16182
+    dem: 439
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.38767
+    longitude: 8.52152
+    population: 11737
+    dem: 405
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.40372
+    longitude: 8.57608
+    population: 28189
+    dem: 435
+    timezone: "Europe/Zurich"
+  - name: "Wuelflingen"
+    latitude: 47.51036
+    longitude: 8.68333
+    population: 12598
+    dem: 410
+    timezone: "Europe/Zurich"
+  - name: "Seen"
+    latitude: 47.47646
+    longitude: 8.76996
+    population: 15434
+    dem: 478
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.35785
+    longitude: 8.50296
+    population: 46018
+    dem: 507
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.42326
+    longitude: 8.52166
+    population: 54260
+    dem: 445
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.38245
+    longitude: 8.47993
+    population: 44878
+    dem: 426
+    timezone: "Europe/Zurich"
+  - name: "Oberwinterthur"
+    latitude: 47.51692
+    longitude: 8.76863
+    population: 16356
+    dem: 455
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.40773
+    longitude: 8.5005
+    population: 36216
+    dem: 516
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.33756
+    longitude: 8.5211
+    population: 29215
+    dem: 439
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.3548
+    longitude: 8.56097
+    population: 15519
+    dem: 430
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.37055
+    longitude: 8.54177
+    population: 6185
+    dem: 418
+    timezone: "Europe/Zurich"
+  - name: "Mattenbach"
+    latitude: 47.48705
+    longitude: 8.74681
+    population: 11043
+    dem: 446
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.37328
+    longitude: 8.58038
+    population: 33820
+    dem: 656
+    timezone: "Europe/Zurich"
+  - name: "Zuerich"
+    latitude: 47.39223
+    longitude: 8.54381
+    population: 29951
+    dem: 487
+    timezone: "Europe/Zurich"
+  - name: "Langnau am Albis"
+    latitude: 47.28885
+    longitude: 8.5411
+    population: 7000
+    elevation: 490
+    dem: 485
+    timezone: "Europe/Zurich"
+- name: "Kanton Basel-Stadt"
+  cities:
+  - name: "Basel"
+    latitude: 47.55839
+    longitude: 7.57327
+    population: 164488
+    dem: 279
+    timezone: "Europe/Zurich"
+  - name: "Riehen"
+    latitude: 47.57884
+    longitude: 7.64683
+    population: 20000
+    dem: 280
+    timezone: "Europe/Zurich"

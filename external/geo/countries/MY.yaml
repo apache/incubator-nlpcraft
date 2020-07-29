@@ -1,0 +1,995 @@
+---
+name: "Malaysia"
+iso: "MY"
+iso3: "MYS"
+code: "458"
+capital: "Kuala Lumpur"
+area: 329750.0
+population: 28274729
+continent: "AS"
+currencyCode: "MYR"
+currencyName: "Ringgit"
+phone: "60"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ms-MY,en,zh,ta,te,ml,pa,th"
+neighbours: "BN,TH,ID"
+regions:
+- name: "Selangor"
+  cities:
+  - name: "Kuala Selangor"
+    latitude: 3.35
+    longitude: 101.25
+    population: 55887
+    dem: 2
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Batang Berjuntai"
+    latitude: 3.38333
+    longitude: 101.41667
+    population: 20001
+    dem: 35
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Batu Arang"
+    latitude: 3.31667
+    longitude: 101.46667
+    population: 22579
+    dem: 61
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Shah Alam"
+    latitude: 3.08507
+    longitude: 101.53281
+    population: 481654
+    dem: 53
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Klang"
+    latitude: 3.03667
+    longitude: 101.44333
+    population: 879867
+    dem: 5
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pelabuhan Klang"
+    latitude: 2.99959
+    longitude: 101.39287
+    population: 20000
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Banting"
+    latitude: 2.8136
+    longitude: 101.50185
+    population: 48240
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Jenjarum"
+    latitude: 2.8724
+    longitude: 101.49484
+    population: 24857
+    dem: 8
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Semenyih"
+    latitude: 2.9516
+    longitude: 101.843
+    population: 92491
+    dem: 39
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Sepang"
+    latitude: 2.6931
+    longitude: 101.7498
+    population: 212050
+    dem: 12
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Serendah"
+    latitude: 3.3646
+    longitude: 101.6041
+    population: 28484
+    dem: 42
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Rawang"
+    latitude: 3.3213
+    longitude: 101.5767
+    population: 120447
+    dem: 38
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Petaling Jaya"
+    latitude: 3.10726
+    longitude: 101.60671
+    population: 520698
+    dem: 45
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Sabak Bernam"
+    latitude: 3.7698
+    longitude: 100.9879
+    population: 17251
+    dem: 4
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Sungai Besar"
+    latitude: 3.6746
+    longitude: 100.9867
+    population: 26939
+    dem: 8
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tanjung Sepat"
+    latitude: 2.6579
+    longitude: 101.5629
+    population: 22340
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Ladang Seri Kundang"
+    latitude: 3.2856
+    longitude: 101.519
+    population: 23307
+    dem: 25
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuang"
+    latitude: 3.2594
+    longitude: 101.5541
+    population: 21185
+    dem: 46
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Tanjung Karang"
+    latitude: 3.4242
+    longitude: 101.1849
+    population: 16393
+    dem: 7
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Baru Subang"
+    latitude: 3.15
+    longitude: 101.53333
+    population: 833571
+    dem: 27
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampong Baharu Balakong"
+    latitude: 3.03333
+    longitude: 101.75
+    population: 69302
+    dem: 57
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Subang Jaya"
+    latitude: 3.04384
+    longitude: 101.58062
+    population: 708296
+    dem: 41
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Putra Heights"
+    latitude: 2.99361
+    longitude: 101.57255
+    population: 60000
+    elevation: 25
+    dem: 27
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Pahang"
+  cities:
+  - name: "Jerantut"
+    latitude: 3.936
+    longitude: 102.3626
+    population: 33606
+    dem: 73
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Raub"
+    latitude: 3.7899
+    longitude: 101.857
+    population: 40024
+    dem: 149
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuala Lipis"
+    latitude: 4.1842
+    longitude: 102.0468
+    population: 15448
+    dem: 99
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pekan"
+    latitude: 3.4836
+    longitude: 103.3996
+    population: 31826
+    dem: 11
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Mentekab"
+    latitude: 3.4854
+    longitude: 102.3484
+    population: 42171
+    dem: 43
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Temerluh"
+    latitude: 3.4506
+    longitude: 102.4176
+    population: 59916
+    dem: 45
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Bukit Tinggi, Bentong"
+    latitude: 3.34944
+    longitude: 101.82631
+    population: 12346
+    dem: 390
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuantan"
+    latitude: 3.8077
+    longitude: 103.326
+    population: 366229
+    dem: 12
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tanah Rata"
+    latitude: 4.46361
+    longitude: 101.3763
+    population: 7000
+    dem: 1488
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bentong Town"
+    latitude: 3.52229
+    longitude: 101.90866
+    population: 49213
+    dem: 95
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Labuan"
+  cities:
+  - name: "Labuan"
+    latitude: 5.28028
+    longitude: 115.2475
+    population: 73653
+    dem: 1
+    timezone: "Asia/Kuching"
+- name: "Pulau Pinang"
+  cities:
+  - name: "Batu Feringgi"
+    latitude: 5.4709
+    longitude: 100.24529
+    population: 20000
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Butterworth"
+    latitude: 5.3991
+    longitude: 100.36382
+    population: 107591
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Perai"
+    latitude: 5.38333
+    longitude: 100.38333
+    population: 65301
+    dem: 5
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bukit Mertajam"
+    latitude: 5.36301
+    longitude: 100.4667
+    population: 212329
+    dem: 27
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Nibong Tebal"
+    latitude: 5.16586
+    longitude: 100.47793
+    population: 40072
+    dem: 5
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tasek Glugor"
+    latitude: 5.48032
+    longitude: 100.49849
+    population: 135786
+    dem: 10
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "George Town"
+    latitude: 5.41123
+    longitude: 100.33543
+    population: 300000
+    dem: 14
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kepala Batas"
+    latitude: 5.51707
+    longitude: 100.4265
+    population: 17131
+    dem: 8
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Telaga Batu"
+    latitude: 5.46667
+    longitude: 100.23333
+    population: 10000
+    dem: -9999
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tanjung Tokong"
+    latitude: 5.46061
+    longitude: 100.30742
+    population: 24071
+    dem: 10
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Permatang Kuching"
+    latitude: 5.46339
+    longitude: 100.38144
+    population: 27191
+    dem: 10
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Sungai Ara"
+    latitude: 5.32699
+    longitude: 100.27348
+    population: 140849
+    dem: 21
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Juru"
+    latitude: 5.31201
+    longitude: 100.44229
+    population: 12265
+    dem: 10
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Kelantan"
+  cities:
+  - name: "Gua Musang"
+    latitude: 4.88441
+    longitude: 101.96857
+    population: 19731
+    dem: 90
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tanah Merah"
+    latitude: 5.8
+    longitude: 102.15
+    population: 29116
+    dem: 19
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tumpat"
+    latitude: 6.19775
+    longitude: 102.17098
+    population: 12280
+    dem: 7
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pasir Mas"
+    latitude: 6.04934
+    longitude: 102.13987
+    population: 19017
+    dem: 13
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kota Bharu"
+    latitude: 6.12361
+    longitude: 102.24333
+    population: 1459994
+    dem: 1
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Peringat"
+    latitude: 6.03333
+    longitude: 102.28333
+    population: 23288
+    dem: 11
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampong Pangkal Kalong"
+    latitude: 5.91667
+    longitude: 102.21667
+    population: 39904
+    dem: 31
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampong Kadok"
+    latitude: 6.0
+    longitude: 102.25
+    population: 19233
+    dem: 12
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Putrajaya"
+  cities:
+  - name: "Putrajaya"
+    latitude: 2.93527
+    longitude: 101.69112
+    population: 50000
+    dem: 35
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Kedah"
+  cities:
+  - name: "Padang Mat Sirat"
+    latitude: 6.35423
+    longitude: 99.73404
+    population: 10000
+    dem: 8
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Ayer Hangat"
+    latitude: 6.42062
+    longitude: 99.82199
+    population: 10000
+    dem: 12
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuah"
+    latitude: 6.32649
+    longitude: 99.8432
+    population: 30212
+    dem: 11
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kulim"
+    latitude: 5.36499
+    longitude: 100.56177
+    population: 170889
+    dem: 54
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bedong"
+    latitude: 5.72743
+    longitude: 100.50876
+    population: 47585
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Gurun"
+    latitude: 5.81717
+    longitude: 100.47381
+    population: 15964
+    dem: 22
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Sungai Petani"
+    latitude: 5.647
+    longitude: 100.48772
+    population: 228843
+    dem: 17
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Jitra"
+    latitude: 6.26812
+    longitude: 100.42167
+    population: 63489
+    dem: 17
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuala Kedah"
+    latitude: 6.1
+    longitude: 100.3
+    population: 19231
+    dem: 7
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Alor Setar"
+    latitude: 6.12104
+    longitude: 100.36014
+    population: 217368
+    dem: 7
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Malaysia"
+  cities:
+  - name: "Sungai Pelek New Village"
+    latitude: 2.65
+    longitude: 101.7
+    population: 13829
+    dem: 12
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Sarawak"
+  cities:
+  - name: "Kuching"
+    latitude: 1.55
+    longitude: 110.33333
+    population: 570407
+    dem: 8
+    timezone: "Asia/Kuching"
+  - name: "Simanggang"
+    latitude: 1.24722
+    longitude: 111.45278
+    population: 27207
+    dem: 11
+    timezone: "Asia/Kuching"
+  - name: "Sarikei"
+    latitude: 2.11667
+    longitude: 111.51667
+    population: 29281
+    dem: 11
+    timezone: "Asia/Kuching"
+  - name: "Sibu"
+    latitude: 2.3
+    longitude: 111.81667
+    population: 198239
+    dem: 0
+    timezone: "Asia/Kuching"
+  - name: "Kapit"
+    latitude: 1.99546
+    longitude: 112.93254
+    population: 15771
+    dem: 43
+    timezone: "Asia/Kuching"
+  - name: "Bintulu"
+    latitude: 3.16667
+    longitude: 113.03333
+    population: 151617
+    dem: 8
+    timezone: "Asia/Kuching"
+  - name: "Limbang"
+    latitude: 4.75
+    longitude: 115.0
+    population: 26199
+    dem: 6
+    timezone: "Asia/Kuching"
+  - name: "Miri"
+    latitude: 4.39928
+    longitude: 113.99163
+    population: 228212
+    dem: 8
+    timezone: "Asia/Kuching"
+- name: "Negeri Sembilan"
+  cities:
+  - name: "Tampin"
+    latitude: 2.4701
+    longitude: 102.2302
+    population: 28238
+    dem: 61
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Seremban"
+    latitude: 2.7297
+    longitude: 101.9381
+    population: 372917
+    dem: 59
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Port Dickson"
+    latitude: 2.53718
+    longitude: 101.80571
+    population: 89198
+    dem: 10
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bahau"
+    latitude: 2.8079
+    longitude: 102.4049
+    population: 31273
+    dem: 63
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuala Pilah"
+    latitude: 2.7389
+    longitude: 102.2487
+    population: 19510
+    dem: 93
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Baharu Nilai"
+    latitude: 2.8033
+    longitude: 101.7972
+    population: 36720
+    dem: 32
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Kuala Lumpur"
+  cities:
+  - name: "Kuala Lumpur"
+    latitude: 3.1412
+    longitude: 101.68653
+    population: 1453975
+    dem: 56
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Perlis"
+  cities:
+  - name: "Kangar"
+    latitude: 6.4414
+    longitude: 100.19862
+    population: 63869
+    dem: 8
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuala Perlis"
+    latitude: 6.4
+    longitude: 100.13333
+    population: 13917
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pantai Cenang"
+    latitude: 6.29369
+    longitude: 99.72786
+    population: 15000
+    dem: 8
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Terengganu"
+  cities:
+  - name: "Cukai"
+    latitude: 4.25
+    longitude: 103.41667
+    population: 82425
+    dem: 12
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Paka"
+    latitude: 4.6374
+    longitude: 103.4368
+    population: 21044
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kertih"
+    latitude: 4.5141
+    longitude: 103.4483
+    population: 24401
+    dem: 5
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuala Terengganu"
+    latitude: 5.3302
+    longitude: 103.1408
+    population: 285065
+    dem: 15
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Marang"
+    latitude: 5.2056
+    longitude: 103.2059
+    population: 21410
+    dem: 14
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Jertih"
+    latitude: 5.7336
+    longitude: 102.4897
+    population: 13526
+    dem: 16
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Johor"
+  cities:
+  - name: "Batu Pahat"
+    latitude: 1.8548
+    longitude: 102.9325
+    population: 156236
+    dem: 7
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Parit Raja"
+    latitude: 1.8681
+    longitude: 103.1124
+    population: 17441
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pekan Nenas"
+    latitude: 1.51
+    longitude: 103.5141
+    population: 23292
+    dem: 20
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pontian Kechil"
+    latitude: 1.4866
+    longitude: 103.3896
+    population: 50836
+    dem: 11
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Pasir Gudang Baru"
+    latitude: 1.4726
+    longitude: 103.878
+    population: 145639
+    dem: 10
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kota Tinggi"
+    latitude: 1.7381
+    longitude: 103.8999
+    population: 52743
+    dem: 17
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Taman Senai"
+    latitude: 1.6006
+    longitude: 103.6419
+    population: 73176
+    dem: 26
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kulai"
+    latitude: 1.6561
+    longitude: 103.6032
+    population: 63762
+    dem: 33
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Skudai"
+    latitude: 1.53741
+    longitude: 103.65779
+    population: 159733
+    dem: 40
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Johor Bahru"
+    latitude: 1.4655
+    longitude: 103.7578
+    population: 802489
+    dem: 32
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kluang"
+    latitude: 2.03046
+    longitude: 103.31689
+    population: 169828
+    dem: 51
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Yong Peng"
+    latitude: 2.0136
+    longitude: 103.0659
+    population: 27138
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Mersing"
+    latitude: 2.4312
+    longitude: 103.8405
+    population: 22007
+    dem: 8
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Segamat"
+    latitude: 2.5148
+    longitude: 102.8158
+    population: 69816
+    dem: 35
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tangkak"
+    latitude: 2.2673
+    longitude: 102.5453
+    population: 35109
+    dem: 20
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Muar"
+    latitude: 2.0442
+    longitude: 102.5689
+    population: 127897
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bakri"
+    latitude: 2.0441
+    longitude: 102.6527
+    population: 30280
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Labis"
+    latitude: 2.385
+    longitude: 103.021
+    population: 21906
+    dem: 48
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Chaah"
+    latitude: 2.249
+    longitude: 103.048
+    population: 11844
+    dem: 24
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Buloh Kasap"
+    latitude: 2.5536
+    longitude: 102.764
+    population: 13088
+    dem: 20
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Ulu Tiram"
+    latitude: 1.6
+    longitude: 103.81667
+    population: 75350
+    dem: 28
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kelapa Sawit"
+    latitude: 1.6698
+    longitude: 103.5327
+    population: 13239
+    dem: 24
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Simpang Renggam"
+    latitude: 1.8278
+    longitude: 103.3
+    population: 17528
+    dem: 16
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Sabah"
+  cities:
+  - name: "Papar"
+    latitude: 5.73333
+    longitude: 115.93333
+    population: 19278
+    dem: 6
+    timezone: "Asia/Kuching"
+  - name: "Kota Kinabalu"
+    latitude: 5.9749
+    longitude: 116.0724
+    population: 457326
+    dem: 5
+    timezone: "Asia/Kuching"
+  - name: "Donggongon"
+    latitude: 5.90702
+    longitude: 116.10146
+    population: 71585
+    dem: 13
+    timezone: "Asia/Kuching"
+  - name: "Putatan"
+    latitude: 5.9258
+    longitude: 116.06094
+    population: 78340
+    dem: 6
+    timezone: "Asia/Kuching"
+  - name: "Kinarut"
+    latitude: 5.8231
+    longitude: 116.0466
+    population: 15716
+    dem: 9
+    timezone: "Asia/Kuching"
+  - name: "Ranau"
+    latitude: 5.9538
+    longitude: 116.6641
+    population: 19294
+    dem: 570
+    timezone: "Asia/Kuching"
+  - name: "Semporna"
+    latitude: 4.48178
+    longitude: 118.61119
+    population: 62641
+    dem: 7
+    timezone: "Asia/Kuching"
+  - name: "Beaufort"
+    latitude: 5.3473
+    longitude: 115.7455
+    population: 15855
+    dem: 18
+    timezone: "Asia/Kuching"
+  - name: "Lahad Datu"
+    latitude: 5.02298
+    longitude: 118.32897
+    population: 105622
+    dem: -9999
+    timezone: "Asia/Kuching"
+  - name: "Sandakan"
+    latitude: 5.8402
+    longitude: 118.1179
+    population: 392288
+    dem: 10
+    timezone: "Asia/Kuching"
+  - name: "Keningau"
+    latitude: 5.3378
+    longitude: 116.1602
+    population: 77650
+    dem: 277
+    timezone: "Asia/Kuching"
+  - name: "Tawau"
+    latitude: 4.24482
+    longitude: 117.89115
+    population: 306462
+    elevation: 0
+    dem: 12
+    timezone: "Asia/Kuching"
+  - name: "Kudat"
+    latitude: 6.88732
+    longitude: 116.82364
+    population: 32393
+    dem: 1
+    timezone: "Asia/Kuching"
+  - name: "Kota Belud"
+    latitude: 6.351
+    longitude: 116.4305
+    population: 12825
+    dem: 31
+    timezone: "Asia/Kuching"
+  - name: "Bandar Labuan"
+    latitude: 5.28883
+    longitude: 115.26924
+    population: 54752
+    dem: 12
+    timezone: "Asia/Kuching"
+  - name: "Taman Rajawali"
+    latitude: 5.89477
+    longitude: 118.04576
+    population: 10000
+    dem: 4
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Melaka"
+  cities:
+  - name: "Alor Gajah"
+    latitude: 2.3804
+    longitude: 102.2089
+    population: 20163
+    dem: 19
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Ayer Keroh"
+    latitude: 2.2654
+    longitude: 102.2801
+    population: 37716
+    dem: 22
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Sungai Udang"
+    latitude: 2.269
+    longitude: 102.1427
+    population: 26044
+    dem: 31
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Malacca"
+    latitude: 2.196
+    longitude: 102.2405
+    population: 180671
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pulau Sebang"
+    latitude: 2.455
+    longitude: 102.2329
+    population: 11879
+    dem: 42
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuala Sungai Baru"
+    latitude: 2.3594
+    longitude: 102.0353
+    population: 12269
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Klebang Besar"
+    latitude: 2.2186
+    longitude: 102.1995
+    population: 38643
+    dem: 5
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampong Masjid Tanah"
+    latitude: 2.35
+    longitude: 102.11667
+    population: 29185
+    dem: 17
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Bukit Baharu"
+    latitude: 2.2152
+    longitude: 102.2851
+    population: 55656
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampung Ayer Molek"
+    latitude: 2.2139
+    longitude: 102.3278
+    population: 15497
+    dem: 26
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bukit Rambai"
+    latitude: 2.2594
+    longitude: 102.1838
+    population: 17391
+    dem: 12
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bemban"
+    latitude: 2.2684
+    longitude: 102.3746
+    population: 14329
+    dem: 27
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Batu Berendam"
+    latitude: 2.2487
+    longitude: 102.246
+    population: 25028
+    dem: 5
+    timezone: "Asia/Kuala_Lumpur"
+- name: "Perak"
+  cities:
+  - name: "Bagan Serai"
+    latitude: 5.0108
+    longitude: 100.54101
+    population: 20476
+    dem: 3
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Simpang Empat"
+    latitude: 4.95
+    longitude: 100.63333
+    population: 58004
+    dem: 4
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Taiping"
+    latitude: 4.85
+    longitude: 100.73333
+    population: 217647
+    dem: 19
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kuala Kangsar"
+    latitude: 4.76667
+    longitude: 100.93333
+    population: 39331
+    dem: 42
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Ipoh"
+    latitude: 4.5841
+    longitude: 101.0829
+    population: 673318
+    dem: 45
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Parit Buntar"
+    latitude: 5.12671
+    longitude: 100.49316
+    population: 27313
+    dem: 5
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Batu Gajah"
+    latitude: 4.46916
+    longitude: 101.04107
+    population: 46183
+    dem: 31
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampar"
+    latitude: 4.3
+    longitude: 101.15
+    population: 19056
+    dem: 25
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Tapah Road"
+    latitude: 4.16667
+    longitude: 101.2
+    population: 27863
+    dem: 40
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Bidur"
+    latitude: 4.11667
+    longitude: 101.28333
+    population: 30016
+    dem: 39
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Lumut"
+    latitude: 4.2323
+    longitude: 100.6298
+    population: 39595
+    dem: 13
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Teluk Intan"
+    latitude: 4.02219
+    longitude: 101.02083
+    population: 63353
+    dem: 4
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Pantai Remis"
+    latitude: 4.4557
+    longitude: 100.6288
+    population: 16317
+    dem: 6
+    timezone: "Asia/Kuala_Lumpur"
+  - name: "Kampong Dungun"
+    latitude: 3.21667
+    longitude: 101.31667
+    population: 58674
+    dem: 9
+    timezone: "Asia/Kuala_Lumpur"

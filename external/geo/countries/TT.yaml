@@ -1,0 +1,164 @@
+---
+name: "Trinidad and Tobago"
+iso: "TT"
+iso3: "TTO"
+code: "780"
+capital: "Port of Spain"
+area: 5128.0
+population: 1328019
+continent: "NA"
+currencyCode: "TTD"
+currencyName: "Dollar"
+phone: "+1-868"
+languages: "en-TT,hns,fr,es,zh"
+regions:
+- name: "Point Fortin"
+  cities:
+  - name: "Point Fortin"
+    latitude: 10.17411
+    longitude: -61.68407
+    population: 19056
+    dem: 12
+    timezone: "America/Port_of_Spain"
+- name: "Tunapuna/Piarco"
+  cities:
+  - name: "Tunapuna"
+    latitude: 10.65245
+    longitude: -61.38878
+    population: 17758
+    dem: 55
+    timezone: "America/Port_of_Spain"
+  - name: "Paradise"
+    latitude: 10.65298
+    longitude: -61.36298
+    population: 15067
+    dem: 77
+    timezone: "America/Port_of_Spain"
+  - name: "Arouca"
+    latitude: 10.62877
+    longitude: -61.33487
+    population: 12054
+    dem: 31
+    timezone: "America/Port_of_Spain"
+- name: "Sangre Grande"
+  cities:
+  - name: "Sangre Grande"
+    latitude: 10.58705
+    longitude: -61.13008
+    population: 15968
+    dem: 17
+    timezone: "America/Port_of_Spain"
+- name: "Princes Town"
+  cities:
+  - name: "Princes Town"
+    latitude: 10.27184
+    longitude: -61.37103
+    population: 10000
+    dem: 69
+    timezone: "America/Port_of_Spain"
+- name: "Penal/Debe"
+  cities:
+  - name: "Penal"
+    latitude: 10.16667
+    longitude: -61.46667
+    population: 12281
+    dem: 8
+    timezone: "America/Port_of_Spain"
+- name: "San Fernando"
+  cities:
+  - name: "San Fernando"
+    latitude: 10.27969
+    longitude: -61.46835
+    population: 55419
+    dem: 28
+    timezone: "America/Port_of_Spain"
+  - name: "Mon Repos"
+    latitude: 10.27979
+    longitude: -61.4459
+    population: 56380
+    dem: 37
+    timezone: "America/Port_of_Spain"
+  - name: "Marabella"
+    latitude: 10.30618
+    longitude: -61.44671
+    population: 26700
+    dem: 7
+    timezone: "America/Port_of_Spain"
+- name: "Arima"
+  cities:
+  - name: "Arima"
+    latitude: 10.63737
+    longitude: -61.28228
+    population: 35000
+    dem: 62
+    timezone: "America/Port_of_Spain"
+- name: "Chaguanas"
+  cities:
+  - name: "Chaguanas"
+    latitude: 10.51667
+    longitude: -61.41667
+    population: 67433
+    dem: 18
+    timezone: "America/Port_of_Spain"
+- name: "Mayaro"
+  cities:
+  - name: "Rio Claro"
+    latitude: 10.30594
+    longitude: -61.17556
+    population: 35650
+    dem: 45
+    timezone: "America/Port_of_Spain"
+- name: "San Juan/Laventille"
+  cities:
+  - name: "Laventille"
+    latitude: 10.64917
+    longitude: -61.49889
+    population: 21000
+    dem: 28
+    timezone: "America/Port_of_Spain"
+- name: "Siparia"
+  cities:
+  - name: "Siparia"
+    latitude: 10.14525
+    longitude: -61.5074
+    population: 8568
+    dem: 61
+    timezone: "America/Port_of_Spain"
+- name: "Couva-Tabaquite-Talparo"
+  cities:
+  - name: "Couva"
+    latitude: 10.42248
+    longitude: -61.46748
+    population: 5178
+    dem: 15
+    timezone: "America/Port_of_Spain"
+- name: "Tobago"
+  cities:
+  - name: "Scarborough"
+    latitude: 11.18229
+    longitude: -60.73525
+    population: 17000
+    dem: 9
+    timezone: "America/Port_of_Spain"
+- name: "City of Port of Spain"
+  cities:
+  - name: "Port of Spain"
+    latitude: 10.66668
+    longitude: -61.51889
+    population: 49031
+    dem: 21
+    timezone: "America/Port_of_Spain"
+- name: "Diego Martin"
+  cities:
+  - name: "Petit Valley"
+    latitude: 10.69974
+    longitude: -61.54717
+    population: 8140
+    dem: 66
+    timezone: "America/Port_of_Spain"
+  - name: "Diego Martin"
+    latitude: 10.72081
+    longitude: -61.56616
+    population: 0
+    dem: 61
+    timezone: "America/Port_of_Spain"

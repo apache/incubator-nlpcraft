@@ -1,0 +1,36 @@
+---
+name: "Northern Mariana Islands"
+iso: "MP"
+iso3: "MNP"
+code: "580"
+capital: "Saipan"
+area: 477.0
+population: 53883
+continent: "OC"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "+1-670"
+postalCodeFormat: "#####"
+postalCodeRegex: "^9695\\d{1}$"
+languages: "fil,tl,zh,ch-MP,en-MP"
+regions:
+- name: "Saipan Municipality"
+  cities:
+  - name: "Saipan"
+    latitude: 15.21233
+    longitude: 145.7545
+    population: 48220
+    elevation: 5
+    dem: 211
+    timezone: "Pacific/Saipan"
+- name: "Northern Islands Municipality"
+- name: "Rota Municipality"
+- name: "Tinian Municipality"
+  cities:
+  - name: "San Jose Village"
+    latitude: 14.96823
+    longitude: 145.61998
+    population: 15000
+    elevation: 15
+    dem: 9
+    timezone: "Pacific/Saipan"

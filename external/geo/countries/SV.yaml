@@ -1,0 +1,483 @@
+---
+name: "El Salvador"
+iso: "SV"
+iso3: "SLV"
+code: "222"
+capital: "San Salvador"
+area: 21040.0
+population: 6052064
+continent: "NA"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "503"
+postalCodeFormat: "CP ####"
+postalCodeRegex: "^(?:CP)*(\\d{4})$"
+languages: "es-SV"
+neighbours: "GT,HN"
+regions:
+- name: "Departamento de Ahuachapan"
+  cities:
+  - name: "Tacuba"
+    latitude: 13.90111
+    longitude: -89.92972
+    population: 5055
+    dem: 681
+    timezone: "America/El_Salvador"
+  - name: "Concepcion de Ataco"
+    latitude: 13.87028
+    longitude: -89.84861
+    population: 7797
+    dem: 1255
+    timezone: "America/El_Salvador"
+  - name: "Atiquizaya"
+    latitude: 13.97694
+    longitude: -89.7525
+    population: 9476
+    dem: 615
+    timezone: "America/El_Salvador"
+  - name: "Ahuachapan"
+    latitude: 13.92139
+    longitude: -89.845
+    population: 34102
+    dem: 796
+    timezone: "America/El_Salvador"
+- name: "Departamento de Chalatenango"
+  cities:
+  - name: "Nueva Concepcion"
+    latitude: 14.13333
+    longitude: -89.3
+    population: 9990
+    dem: 346
+    timezone: "America/El_Salvador"
+  - name: "Chalatenango"
+    latitude: 14.03333
+    longitude: -88.93333
+    population: 19364
+    dem: 406
+    timezone: "America/El_Salvador"
+- name: "Departamento de San Vicente"
+  cities:
+  - name: "San Vicente"
+    latitude: 13.63333
+    longitude: -88.8
+    population: 41504
+    dem: 696
+    timezone: "America/El_Salvador"
+  - name: "San Sebastian"
+    latitude: 13.73333
+    longitude: -88.83333
+    population: 7333
+    dem: 690
+    timezone: "America/El_Salvador"
+  - name: "Apastepeque"
+    latitude: 13.66667
+    longitude: -88.78333
+    population: 5785
+    dem: 623
+    timezone: "America/El_Salvador"
+- name: "Departamento de La Paz"
+  cities:
+  - name: "Zacatecoluca"
+    latitude: 13.5
+    longitude: -88.86667
+    population: 39613
+    dem: 165
+    timezone: "America/El_Salvador"
+  - name: "Santiago Nonualco"
+    latitude: 13.51667
+    longitude: -88.95
+    population: 9490
+    dem: 134
+    timezone: "America/El_Salvador"
+  - name: "Olocuilta"
+    latitude: 13.56972
+    longitude: -89.11722
+    population: 6324
+    dem: 485
+    timezone: "America/El_Salvador"
+  - name: "El Rosario"
+    latitude: 13.49778
+    longitude: -89.02972
+    population: 5620
+    dem: 104
+    timezone: "America/El_Salvador"
+- name: "Departamento de San Miguel"
+  cities:
+  - name: "San Rafael Oriente"
+    latitude: 13.38333
+    longitude: -88.35
+    population: 19095
+    dem: 212
+    timezone: "America/El_Salvador"
+  - name: "San Miguel"
+    latitude: 13.48333
+    longitude: -88.18333
+    population: 161880
+    dem: 130
+    timezone: "America/El_Salvador"
+  - name: "Nueva Guadalupe"
+    latitude: 13.53333
+    longitude: -88.35
+    population: 5798
+    dem: 495
+    timezone: "America/El_Salvador"
+  - name: "El Transito"
+    latitude: 13.35
+    longitude: -88.35
+    population: 9485
+    dem: 119
+    timezone: "America/El_Salvador"
+  - name: "Ciudad Barrios"
+    latitude: 13.76667
+    longitude: -88.26667
+    population: 8491
+    dem: 847
+    timezone: "America/El_Salvador"
+  - name: "Chirilagua"
+    latitude: 13.22028
+    longitude: -88.13861
+    population: 6393
+    dem: 228
+    timezone: "America/El_Salvador"
+  - name: "Chinameca"
+    latitude: 13.5
+    longitude: -88.35
+    population: 8646
+    dem: 718
+    timezone: "America/El_Salvador"
+- name: "Departamento de Santa Ana"
+  cities:
+  - name: "Santa Ana"
+    latitude: 13.99417
+    longitude: -89.55972
+    population: 176661
+    dem: 649
+    timezone: "America/El_Salvador"
+  - name: "Metapan"
+    latitude: 14.33333
+    longitude: -89.45
+    population: 19143
+    dem: 471
+    timezone: "America/El_Salvador"
+  - name: "El Congo"
+    latitude: 13.90889
+    longitude: -89.49583
+    population: 8905
+    dem: 847
+    timezone: "America/El_Salvador"
+  - name: "Coatepeque"
+    latitude: 13.92861
+    longitude: -89.50417
+    population: 5773
+    dem: 756
+    timezone: "America/El_Salvador"
+  - name: "Chalchuapa"
+    latitude: 13.98667
+    longitude: -89.68111
+    population: 32282
+    dem: 710
+    timezone: "America/El_Salvador"
+  - name: "Candelaria de La Frontera"
+    latitude: 14.11667
+    longitude: -89.65
+    population: 6301
+    dem: 712
+    timezone: "America/El_Salvador"
+- name: "Departamento de Usulutan"
+  cities:
+  - name: "Usulutan"
+    latitude: 13.35
+    longitude: -88.45
+    population: 51910
+    dem: 105
+    timezone: "America/El_Salvador"
+  - name: "Santiago de Maria"
+    latitude: 13.48333
+    longitude: -88.46667
+    population: 15032
+    dem: 896
+    timezone: "America/El_Salvador"
+  - name: "Santa Elena"
+    latitude: 13.38333
+    longitude: -88.41667
+    population: 5887
+    dem: 180
+    timezone: "America/El_Salvador"
+  - name: "Puerto El Triunfo"
+    latitude: 13.28333
+    longitude: -88.55
+    population: 19074
+    dem: 15
+    timezone: "America/El_Salvador"
+  - name: "Jucuapa"
+    latitude: 13.51667
+    longitude: -88.38333
+    population: 10601
+    dem: 476
+    timezone: "America/El_Salvador"
+  - name: "Jiquilisco"
+    latitude: 13.31667
+    longitude: -88.58333
+    population: 9129
+    dem: 27
+    timezone: "America/El_Salvador"
+  - name: "Berlin"
+    latitude: 13.5
+    longitude: -88.53333
+    population: 11313
+    dem: 975
+    timezone: "America/El_Salvador"
+- name: "Departamento de Morazan"
+  cities:
+  - name: "San Francisco"
+    latitude: 13.7
+    longitude: -88.1
+    population: 16152
+    dem: 270
+    timezone: "America/El_Salvador"
+  - name: "Guatajiagua"
+    latitude: 13.66667
+    longitude: -88.2
+    population: 5273
+    dem: 288
+    timezone: "America/El_Salvador"
+- name: "Departamento de Cabanas"
+  cities:
+  - name: "Sensuntepeque"
+    latitude: 13.86667
+    longitude: -88.63333
+    population: 20386
+    dem: 734
+    timezone: "America/El_Salvador"
+- name: "Departamento de La Libertad"
+  cities:
+  - name: "Zaragoza"
+    latitude: 13.58944
+    longitude: -89.28889
+    population: 11749
+    dem: 612
+    timezone: "America/El_Salvador"
+  - name: "San Juan Opico"
+    latitude: 13.87611
+    longitude: -89.35972
+    population: 7127
+    dem: 518
+    timezone: "America/El_Salvador"
+  - name: "Quezaltepeque"
+    latitude: 13.83124
+    longitude: -89.27221
+    population: 28886
+    dem: 443
+    timezone: "America/El_Salvador"
+  - name: "Nuevo Cuscatlan"
+    latitude: 13.64861
+    longitude: -89.26528
+    population: 6469
+    dem: 906
+    timezone: "America/El_Salvador"
+  - name: "Santa Tecla"
+    latitude: 13.67694
+    longitude: -89.27972
+    population: 124694
+    dem: 935
+    timezone: "America/El_Salvador"
+  - name: "La Libertad"
+    latitude: 13.48833
+    longitude: -89.32222
+    population: 16855
+    dem: 13
+    timezone: "America/El_Salvador"
+  - name: "Ciudad Arce"
+    latitude: 13.84028
+    longitude: -89.44722
+    population: 10095
+    dem: 554
+    timezone: "America/El_Salvador"
+  - name: "Antiguo Cuscatlan"
+    latitude: 13.66492
+    longitude: -89.25319
+    population: 33767
+    dem: 891
+    timezone: "America/El_Salvador"
+- name: "Departamento de San Salvador"
+  cities:
+  - name: "Tonacatepeque"
+    latitude: 13.78111
+    longitude: -89.11861
+    population: 6245
+    dem: 611
+    timezone: "America/El_Salvador"
+  - name: "Soyapango"
+    latitude: 13.71024
+    longitude: -89.13989
+    population: 329708
+    dem: 634
+    timezone: "America/El_Salvador"
+  - name: "Santo Tomas"
+    latitude: 13.64083
+    longitude: -89.13333
+    population: 14581
+    dem: 712
+    timezone: "America/El_Salvador"
+  - name: "San Salvador"
+    latitude: 13.68935
+    longitude: -89.18718
+    population: 525990
+    dem: 653
+    timezone: "America/El_Salvador"
+  - name: "San Marcos"
+    latitude: 13.65889
+    longitude: -89.18306
+    population: 54615
+    dem: 738
+    timezone: "America/El_Salvador"
+  - name: "Rosario de Mora"
+    latitude: 13.57528
+    longitude: -89.20889
+    population: 5178
+    dem: 500
+    timezone: "America/El_Salvador"
+  - name: "Panchimalco"
+    latitude: 13.61278
+    longitude: -89.18
+    population: 6764
+    dem: 603
+    timezone: "America/El_Salvador"
+  - name: "Mejicanos"
+    latitude: 13.74028
+    longitude: -89.21306
+    population: 160317
+    dem: 723
+    timezone: "America/El_Salvador"
+  - name: "Ilopango"
+    latitude: 13.70167
+    longitude: -89.10944
+    population: 38890
+    dem: 620
+    timezone: "America/El_Salvador"
+  - name: "Guazapa"
+    latitude: 13.87694
+    longitude: -89.17306
+    population: 10995
+    dem: 434
+    timezone: "America/El_Salvador"
+  - name: "Delgado"
+    latitude: 13.72417
+    longitude: -89.17028
+    population: 71594
+    dem: 632
+    timezone: "America/El_Salvador"
+  - name: "Cuscatancingo"
+    latitude: 13.73611
+    longitude: -89.18139
+    population: 44369
+    dem: 661
+    timezone: "America/El_Salvador"
+  - name: "Ayutuxtepeque"
+    latitude: 13.74556
+    longitude: -89.20639
+    population: 25426
+    dem: 658
+    timezone: "America/El_Salvador"
+  - name: "Apopa"
+    latitude: 13.80722
+    longitude: -89.17917
+    population: 112158
+    dem: 434
+    timezone: "America/El_Salvador"
+  - name: "Aguilares"
+    latitude: 13.95722
+    longitude: -89.18972
+    population: 21445
+    dem: 304
+    timezone: "America/El_Salvador"
+- name: "Departamento de Cuscatlan"
+  cities:
+  - name: "Suchitoto"
+    latitude: 13.93806
+    longitude: -89.02778
+    population: 5735
+    dem: 391
+    timezone: "America/El_Salvador"
+  - name: "San Martin"
+    latitude: 13.78333
+    longitude: -88.91667
+    population: 39361
+    dem: 622
+    timezone: "America/El_Salvador"
+  - name: "Cojutepeque"
+    latitude: 13.71667
+    longitude: -88.93333
+    population: 48411
+    dem: 874
+    timezone: "America/El_Salvador"
+- name: "Departamento de La Union"
+  cities:
+  - name: "Santa Rosa de Lima"
+    latitude: 13.62472
+    longitude: -87.89361
+    population: 13249
+    dem: 96
+    timezone: "America/El_Salvador"
+  - name: "San Alejo"
+    latitude: 13.43139
+    longitude: -87.96306
+    population: 5149
+    dem: 177
+    timezone: "America/El_Salvador"
+  - name: "La Union"
+    latitude: 13.33694
+    longitude: -87.84389
+    population: 26807
+    dem: 16
+    timezone: "America/El_Salvador"
+- name: "Departamento de Sonsonate"
+  cities:
+  - name: "Sonzacate"
+    latitude: 13.73417
+    longitude: -89.71472
+    population: 15446
+    dem: 275
+    timezone: "America/El_Salvador"
+  - name: "Sonsonate"
+    latitude: 13.71889
+    longitude: -89.72417
+    population: 59468
+    dem: 235
+    timezone: "America/El_Salvador"
+  - name: "San Antonio del Monte"
+    latitude: 13.71639
+    longitude: -89.73833
+    population: 9135
+    dem: 224
+    timezone: "America/El_Salvador"
+  - name: "Nahuizalco"
+    latitude: 13.7775
+    longitude: -89.73667
+    population: 7358
+    dem: 544
+    timezone: "America/El_Salvador"
+  - name: "Juayua"
+    latitude: 13.84139
+    longitude: -89.74556
+    population: 9936
+    dem: 1037
+    timezone: "America/El_Salvador"
+  - name: "Izalco"
+    latitude: 13.74472
+    longitude: -89.67306
+    population: 19197
+    dem: 422
+    timezone: "America/El_Salvador"
+  - name: "Armenia"
+    latitude: 13.74361
+    longitude: -89.49889
+    population: 14997
+    dem: 559
+    timezone: "America/El_Salvador"
+  - name: "Acajutla"
+    latitude: 13.59278
+    longitude: -89.8275
+    population: 22763
+    dem: 26
+    timezone: "America/El_Salvador"

@@ -1,0 +1,22 @@
+---
+name: "Niue"
+iso: "NU"
+iso3: "NIU"
+code: "570"
+capital: "Alofi"
+area: 260.0
+population: 2166
+continent: "OC"
+currencyCode: "NZD"
+currencyName: "Dollar"
+phone: "683"
+languages: "niu,en-NU"
+regions:
+- name: "Niue"
+  cities:
+  - name: "Alofi"
+    latitude: -19.05451
+    longitude: -169.91768
+    population: 624
+    dem: 44
+    timezone: "Pacific/Niue"

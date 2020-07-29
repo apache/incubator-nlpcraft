@@ -1,0 +1,1460 @@
+---
+name: "South Africa"
+iso: "ZA"
+iso3: "ZAF"
+code: "710"
+capital: "Pretoria"
+area: 1219912.0
+population: 49000000
+continent: "AF"
+currencyCode: "ZAR"
+currencyName: "Rand"
+phone: "27"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "zu,xh,af,nso,en-ZA,tn,st,ts,ss,ve,nr"
+neighbours: "ZW,SZ,MZ,BW,NA,LS"
+regions:
+- name: "Province of Northern Cape"
+  cities:
+  - name: "Warrenton"
+    latitude: -28.11396
+    longitude: 24.84753
+    population: 17946
+    dem: 1190
+    timezone: "Africa/Johannesburg"
+  - name: "Upington"
+    latitude: -28.44776
+    longitude: 21.25612
+    population: 71373
+    dem: 808
+    timezone: "Africa/Johannesburg"
+  - name: "Ritchie"
+    latitude: -29.03801
+    longitude: 24.60278
+    population: 9960
+    dem: 1115
+    timezone: "Africa/Johannesburg"
+  - name: "Prieska"
+    latitude: -29.66803
+    longitude: 22.74251
+    population: 11236
+    dem: 942
+    timezone: "Africa/Johannesburg"
+  - name: "Postmasburg"
+    latitude: -28.33392
+    longitude: 23.06541
+    population: 30089
+    dem: 1305
+    timezone: "Africa/Johannesburg"
+  - name: "Pampierstad"
+    latitude: -27.78324
+    longitude: 24.68768
+    population: 21800
+    dem: 1078
+    timezone: "Africa/Johannesburg"
+  - name: "Kuruman"
+    latitude: -27.4524
+    longitude: 23.43246
+    population: 9093
+    dem: 1323
+    timezone: "Africa/Johannesburg"
+  - name: "Kimberley"
+    latitude: -28.73226
+    longitude: 24.76232
+    population: 142089
+    dem: 1224
+    timezone: "Africa/Johannesburg"
+  - name: "Kathu"
+    latitude: -27.69569
+    longitude: 23.04929
+    population: 9219
+    dem: 1233
+    timezone: "Africa/Johannesburg"
+  - name: "De Aar"
+    latitude: -30.64966
+    longitude: 24.0123
+    population: 32318
+    dem: 1247
+    timezone: "Africa/Johannesburg"
+  - name: "Danielskuil"
+    latitude: -28.18873
+    longitude: 23.53951
+    population: 10123
+    dem: 1468
+    timezone: "Africa/Johannesburg"
+  - name: "Colesberg"
+    latitude: -30.71999
+    longitude: 25.09718
+    population: 12423
+    dem: 1369
+    timezone: "Africa/Johannesburg"
+  - name: "Carnarvon"
+    latitude: -30.96827
+    longitude: 22.13303
+    population: 5785
+    dem: 1249
+    timezone: "Africa/Johannesburg"
+  - name: "Barkly West"
+    latitude: -28.53537
+    longitude: 24.52151
+    population: 11621
+    dem: 1104
+    timezone: "Africa/Johannesburg"
+  - name: "Springbok"
+    latitude: -29.66434
+    longitude: 17.8865
+    population: 10438
+    dem: 925
+    timezone: "Africa/Johannesburg"
+  - name: "Calvinia"
+    latitude: -31.47069
+    longitude: 19.77601
+    population: 8146
+    dem: 987
+    timezone: "Africa/Johannesburg"
+- name: "Province of KwaZulu-Natal"
+  cities:
+  - name: "Vryheid"
+    latitude: -27.76952
+    longitude: 30.79165
+    population: 150012
+    dem: 1170
+    timezone: "Africa/Johannesburg"
+  - name: "eMkhomazi"
+    latitude: -30.20674
+    longitude: 30.79776
+    population: 20410
+    dem: 41
+    timezone: "Africa/Johannesburg"
+  - name: "Ulundi"
+    latitude: -28.33523
+    longitude: 31.41617
+    population: 20753
+    dem: 484
+    timezone: "Africa/Johannesburg"
+  - name: "Sundumbili"
+    latitude: -29.13371
+    longitude: 31.39752
+    population: 12455
+    dem: 64
+    timezone: "Africa/Johannesburg"
+  - name: "KwaDukuza"
+    latitude: -29.32816
+    longitude: 31.28954
+    population: 59899
+    dem: 111
+    timezone: "Africa/Johannesburg"
+  - name: "Scottburgh"
+    latitude: -30.28666
+    longitude: 30.75316
+    population: 23949
+    dem: 48
+    timezone: "Africa/Johannesburg"
+  - name: "Richmond"
+    latitude: -29.87196
+    longitude: 30.27235
+    population: 32445
+    dem: 883
+    timezone: "Africa/Johannesburg"
+  - name: "Richards Bay"
+    latitude: -28.78301
+    longitude: 32.03768
+    population: 252968
+    dem: 9
+    timezone: "Africa/Johannesburg"
+  - name: "Port Shepstone"
+    latitude: -30.74137
+    longitude: 30.45499
+    population: 52793
+    dem: 36
+    timezone: "Africa/Johannesburg"
+  - name: "Pietermaritzburg"
+    latitude: -29.61679
+    longitude: 30.39278
+    population: 750845
+    dem: 636
+    timezone: "Africa/Johannesburg"
+  - name: "Newcastle"
+    latitude: -27.75796
+    longitude: 29.9318
+    population: 404838
+    dem: 1195
+    timezone: "Africa/Johannesburg"
+  - name: "Mpumalanga"
+    latitude: -29.81292
+    longitude: 30.63646
+    population: 140121
+    dem: 711
+    timezone: "Africa/Johannesburg"
+  - name: "Mpophomeni"
+    latitude: -29.56822
+    longitude: 30.18618
+    population: 26229
+    dem: 1103
+    timezone: "Africa/Johannesburg"
+  - name: "Mooirivier"
+    latitude: -29.20824
+    longitude: 29.9946
+    population: 10132
+    dem: 1403
+    timezone: "Africa/Johannesburg"
+  - name: "Mondlo"
+    latitude: -27.98299
+    longitude: 30.71769
+    population: 44922
+    dem: 1155
+    timezone: "Africa/Johannesburg"
+  - name: "Margate"
+    latitude: -30.8636
+    longitude: 30.37052
+    population: 34407
+    dem: 20
+    timezone: "Africa/Johannesburg"
+  - name: "Kokstad"
+    latitude: -30.54723
+    longitude: 29.42412
+    population: 25373
+    dem: 1316
+    timezone: "Africa/Johannesburg"
+  - name: "Howick"
+    latitude: -29.47795
+    longitude: 30.23057
+    population: 28725
+    dem: 1048
+    timezone: "Africa/Johannesburg"
+  - name: "Greytown"
+    latitude: -29.06415
+    longitude: 30.59279
+    population: 13912
+    dem: 1050
+    timezone: "Africa/Johannesburg"
+  - name: "Glencoe"
+    latitude: -28.17827
+    longitude: 30.14702
+    population: 13547
+    dem: 1293
+    timezone: "Africa/Johannesburg"
+  - name: "eSikhaleni"
+    latitude: -28.87097
+    longitude: 31.89961
+    population: 49265
+    dem: 15
+    timezone: "Africa/Johannesburg"
+  - name: "Eshowe"
+    latitude: -28.88649
+    longitude: 31.4699
+    population: 14786
+    dem: 539
+    timezone: "Africa/Johannesburg"
+  - name: "Empangeni"
+    latitude: -28.76197
+    longitude: 31.89329
+    population: 28093
+    dem: 103
+    timezone: "Africa/Johannesburg"
+  - name: "Ekuvukeni"
+    latitude: -28.46752
+    longitude: 30.15513
+    population: 14331
+    dem: 1006
+    timezone: "Africa/Johannesburg"
+  - name: "Durban"
+    latitude: -29.8579
+    longitude: 31.0292
+    population: 3120282
+    dem: 21
+    timezone: "Africa/Johannesburg"
+  - name: "Dundee"
+    latitude: -28.16678
+    longitude: 30.23371
+    population: 84413
+    dem: 1260
+    timezone: "Africa/Johannesburg"
+  - name: "Berea"
+    latitude: -29.85185
+    longitude: 30.99337
+    population: 15000
+    dem: 92
+    timezone: "Africa/Johannesburg"
+  - name: "Ballito"
+    latitude: -29.53897
+    longitude: 31.21439
+    population: 17218
+    dem: 51
+    timezone: "Africa/Johannesburg"
+- name: "Eastern Cape"
+  cities:
+  - name: "Willowmore"
+    latitude: -33.29265
+    longitude: 23.48954
+    population: 7100
+    dem: 828
+    timezone: "Africa/Johannesburg"
+  - name: "Whittlesea"
+    latitude: -32.17588
+    longitude: 26.82437
+    population: 12080
+    dem: 1062
+    timezone: "Africa/Johannesburg"
+  - name: "Mthatha"
+    latitude: -31.58893
+    longitude: 28.78443
+    population: 78663
+    dem: 694
+    timezone: "Africa/Johannesburg"
+  - name: "Uitenhage"
+    latitude: -33.75757
+    longitude: 25.3971
+    population: 228912
+    dem: 103
+    timezone: "Africa/Johannesburg"
+  - name: "Stutterheim"
+    latitude: -32.57076
+    longitude: 27.42396
+    population: 35510
+    dem: 849
+    timezone: "Africa/Johannesburg"
+  - name: "Somerset East"
+    latitude: -32.72173
+    longitude: 25.58804
+    population: 16155
+    dem: 748
+    timezone: "Africa/Johannesburg"
+  - name: "Queenstown"
+    latitude: -31.89756
+    longitude: 26.87533
+    population: 105309
+    dem: 1081
+    timezone: "Africa/Johannesburg"
+  - name: "Queensdale"
+    latitude: -31.87101
+    longitude: 26.97862
+    population: 20009
+    dem: 1205
+    timezone: "Africa/Johannesburg"
+  - name: "Port Saint Johns"
+    latitude: -31.62291
+    longitude: 29.54477
+    population: 5939
+    dem: 7
+    timezone: "Africa/Johannesburg"
+  - name: "Port Elizabeth"
+    latitude: -33.96109
+    longitude: 25.61494
+    population: 967677
+    dem: 75
+    timezone: "Africa/Johannesburg"
+  - name: "Port Alfred"
+    latitude: -33.58601
+    longitude: 26.88329
+    population: 17959
+    dem: 35
+    timezone: "Africa/Johannesburg"
+  - name: "Molteno"
+    latitude: -31.39675
+    longitude: 26.36246
+    population: 10078
+    dem: 1595
+    timezone: "Africa/Johannesburg"
+  - name: "Middelburg"
+    latitude: -31.49285
+    longitude: 25.00633
+    population: 18164
+    dem: 1253
+    timezone: "Africa/Johannesburg"
+  - name: "Lady Frere"
+    latitude: -31.70312
+    longitude: 27.2329
+    population: 25041
+    dem: 1020
+    timezone: "Africa/Johannesburg"
+  - name: "Kruisfontein"
+    latitude: -34.00333
+    longitude: 24.73142
+    population: 18991
+    dem: 228
+    timezone: "Africa/Johannesburg"
+  - name: "Kirkwood"
+    latitude: -33.39829
+    longitude: 25.44279
+    population: 10148
+    dem: 113
+    timezone: "Africa/Johannesburg"
+  - name: "Ilinge"
+    latitude: -31.97676
+    longitude: 27.04267
+    population: 10899
+    dem: 1107
+    timezone: "Africa/Johannesburg"
+  - name: "Grahamstown"
+    latitude: -33.30422
+    longitude: 26.53276
+    population: 91548
+    dem: 551
+    timezone: "Africa/Johannesburg"
+  - name: "Graaff-Reinet"
+    latitude: -32.25215
+    longitude: 24.53075
+    population: 62896
+    dem: 756
+    timezone: "Africa/Johannesburg"
+  - name: "Fort Beaufort"
+    latitude: -32.77477
+    longitude: 26.63376
+    population: 58419
+    dem: 444
+    timezone: "Africa/Johannesburg"
+  - name: "Elliot"
+    latitude: -31.33333
+    longitude: 27.85
+    population: 11836
+    dem: 1451
+    timezone: "Africa/Johannesburg"
+  - name: "East London"
+    latitude: -33.01529
+    longitude: 27.91162
+    population: 478676
+    dem: 48
+    timezone: "Africa/Johannesburg"
+  - name: "Dordrecht"
+    latitude: -31.372
+    longitude: 27.04878
+    population: 9123
+    dem: 1620
+    timezone: "Africa/Johannesburg"
+  - name: "Cradock"
+    latitude: -32.16422
+    longitude: 25.61918
+    population: 32898
+    dem: 896
+    timezone: "Africa/Johannesburg"
+  - name: "Butterworth"
+    latitude: -32.33083
+    longitude: 28.14981
+    population: 34353
+    dem: 545
+    timezone: "Africa/Johannesburg"
+  - name: "Burgersdorp"
+    latitude: -30.99766
+    longitude: 26.32862
+    population: 12548
+    dem: 1405
+    timezone: "Africa/Johannesburg"
+  - name: "Bhisho"
+    latitude: -32.84721
+    longitude: 27.44218
+    population: 137287
+    dem: 535
+    timezone: "Africa/Johannesburg"
+  - name: "Aliwal North"
+    latitude: -30.69366
+    longitude: 26.71141
+    population: 44436
+    dem: 1325
+    timezone: "Africa/Johannesburg"
+  - name: "Alice"
+    latitude: -32.78749
+    longitude: 26.8344
+    population: 9788
+    dem: 522
+    timezone: "Africa/Johannesburg"
+  - name: "Adelaide"
+    latitude: -32.70747
+    longitude: 26.29564
+    population: 12212
+    dem: 587
+    timezone: "Africa/Johannesburg"
+- name: "Western Cape"
+  cities:
+  - name: "Swellendam"
+    latitude: -34.02262
+    longitude: 20.44171
+    population: 13674
+    dem: 128
+    timezone: "Africa/Johannesburg"
+  - name: "Riversdale"
+    latitude: -34.09345
+    longitude: 21.25725
+    population: 16176
+    dem: 121
+    timezone: "Africa/Johannesburg"
+  - name: "Prince Albert"
+    latitude: -33.22476
+    longitude: 22.02673
+    population: 13136
+    dem: 633
+    timezone: "Africa/Johannesburg"
+  - name: "Plettenberg Bay"
+    latitude: -34.05274
+    longitude: 23.3716
+    population: 19445
+    dem: 77
+    timezone: "Africa/Johannesburg"
+  - name: "Oudtshoorn"
+    latitude: -33.60047
+    longitude: 22.19955
+    population: 61507
+    dem: 319
+    timezone: "Africa/Johannesburg"
+  - name: "Mossel Bay"
+    latitude: -34.18307
+    longitude: 22.14605
+    population: 59031
+    dem: 43
+    timezone: "Africa/Johannesburg"
+  - name: "Montagu"
+    latitude: -33.78664
+    longitude: 20.12106
+    population: 15176
+    dem: 228
+    timezone: "Africa/Johannesburg"
+  - name: "Ladismith"
+    latitude: -33.49331
+    longitude: 21.26755
+    population: 7127
+    dem: 544
+    timezone: "Africa/Johannesburg"
+  - name: "Knysna"
+    latitude: -34.03627
+    longitude: 23.04713
+    population: 68659
+    dem: 9
+    timezone: "Africa/Johannesburg"
+  - name: "George"
+    latitude: -33.963
+    longitude: 22.46173
+    population: 12345
+    dem: 232
+    timezone: "Africa/Johannesburg"
+  - name: "Bredasdorp"
+    latitude: -34.53215
+    longitude: 20.04031
+    population: 14936
+    dem: 84
+    timezone: "Africa/Johannesburg"
+  - name: "Beaufort West"
+    latitude: -32.35671
+    longitude: 22.58295
+    population: 44737
+    dem: 849
+    timezone: "Africa/Johannesburg"
+  - name: "Albertina"
+    latitude: -34.20544
+    longitude: 21.58001
+    population: 6372
+    dem: 183
+    timezone: "Africa/Johannesburg"
+  - name: "Worcester"
+    latitude: -33.64651
+    longitude: 19.44852
+    population: 127597
+    dem: 234
+    timezone: "Africa/Johannesburg"
+  - name: "Wellington"
+    latitude: -33.63981
+    longitude: 19.0112
+    population: 55543
+    dem: 127
+    timezone: "Africa/Johannesburg"
+  - name: "Vredendal"
+    latitude: -31.66833
+    longitude: 18.50119
+    population: 14806
+    dem: 36
+    timezone: "Africa/Johannesburg"
+  - name: "Vredenburg"
+    latitude: -32.90719
+    longitude: 17.98997
+    population: 38382
+    dem: 129
+    timezone: "Africa/Johannesburg"
+  - name: "Stellenbosch"
+    latitude: -33.93462
+    longitude: 18.86676
+    population: 94263
+    dem: 122
+    timezone: "Africa/Johannesburg"
+  - name: "Saldanha"
+    latitude: -33.01167
+    longitude: 17.9442
+    population: 68284
+    dem: 20
+    timezone: "Africa/Johannesburg"
+  - name: "Rosebank"
+    latitude: -33.95556
+    longitude: 18.47417
+    population: 10000
+    dem: 11
+    timezone: "Africa/Johannesburg"
+  - name: "Robertson"
+    latitude: -33.80342
+    longitude: 19.88537
+    population: 27715
+    dem: 187
+    timezone: "Africa/Johannesburg"
+  - name: "Paarl"
+    latitude: -33.73378
+    longitude: 18.97523
+    population: 190000
+    dem: 107
+    timezone: "Africa/Johannesburg"
+  - name: "Malmesbury"
+    latitude: -33.4608
+    longitude: 18.72714
+    population: 34991
+    dem: 136
+    timezone: "Africa/Johannesburg"
+  - name: "Lansdowne"
+    latitude: -33.98735
+    longitude: 18.49746
+    population: 17399
+    dem: 22
+    timezone: "Africa/Johannesburg"
+  - name: "Kraaifontein"
+    latitude: -33.84808
+    longitude: 18.71723
+    population: 57911
+    dem: 102
+    timezone: "Africa/Johannesburg"
+  - name: "Hermanus"
+    latitude: -34.4187
+    longitude: 19.23446
+    population: 25153
+    dem: 27
+    timezone: "Africa/Johannesburg"
+  - name: "Grabouw"
+    latitude: -34.15152
+    longitude: 19.01509
+    population: 29885
+    dem: 332
+    timezone: "Africa/Johannesburg"
+  - name: "Constantia"
+    latitude: -34.03139
+    longitude: 18.41833
+    population: 6922
+    dem: 91
+    timezone: "Africa/Johannesburg"
+  - name: "Claremont"
+    latitude: -33.98056
+    longitude: 18.46528
+    population: 14531
+    dem: 38
+    timezone: "Africa/Johannesburg"
+  - name: "Ceres"
+    latitude: -33.36889
+    longitude: 19.31095
+    population: 41596
+    dem: 457
+    timezone: "Africa/Johannesburg"
+  - name: "Cape Town"
+    latitude: -33.92584
+    longitude: 18.42322
+    population: 3433441
+    dem: 25
+    timezone: "Africa/Johannesburg"
+  - name: "Atlantis"
+    latitude: -33.56668
+    longitude: 18.48335
+    population: 60266
+    dem: 178
+    timezone: "Africa/Johannesburg"
+  - name: "Rondebosch"
+    latitude: -33.96333
+    longitude: 18.47639
+    population: 15158
+    dem: 28
+    timezone: "Africa/Johannesburg"
+  - name: "Newlands"
+    latitude: -33.97846
+    longitude: 18.4481
+    population: 5343
+    dem: 70
+    timezone: "Africa/Johannesburg"
+  - name: "Retreat"
+    latitude: -34.05515
+    longitude: 18.47617
+    population: 32289
+    dem: 8
+    timezone: "Africa/Johannesburg"
+  - name: "Hardys Memories of Africa"
+    latitude: -33.90539
+    longitude: 20.7169
+    population: 7500
+    elevation: 358
+    dem: 383
+    timezone: "Africa/Johannesburg"
+- name: "Province of North West"
+  cities:
+  - name: "Zeerust"
+    latitude: -25.53695
+    longitude: 26.07512
+    population: 17708
+    dem: 1213
+    timezone: "Africa/Johannesburg"
+  - name: "Wolmaransstad"
+    latitude: -27.1974
+    longitude: 25.98311
+    population: 49366
+    dem: 1357
+    timezone: "Africa/Johannesburg"
+  - name: "Vryburg"
+    latitude: -26.95659
+    longitude: 24.7284
+    population: 49588
+    dem: 1202
+    timezone: "Africa/Johannesburg"
+  - name: "Stilfontein"
+    latitude: -26.84493
+    longitude: 26.76829
+    population: 93110
+    dem: 1357
+    timezone: "Africa/Johannesburg"
+  - name: "Schweizer-Reneke"
+    latitude: -27.18871
+    longitude: 25.32931
+    population: 70214
+    dem: 1312
+    timezone: "Africa/Johannesburg"
+  - name: "Rustenburg"
+    latitude: -25.66756
+    longitude: 27.24208
+    population: 124064
+    dem: 1171
+    timezone: "Africa/Johannesburg"
+  - name: "Potchefstroom"
+    latitude: -26.71667
+    longitude: 27.1
+    population: 123669
+    dem: 1335
+    timezone: "Africa/Johannesburg"
+  - name: "Orkney"
+    latitude: -26.98023
+    longitude: 26.67272
+    population: 145801
+    dem: 1312
+    timezone: "Africa/Johannesburg"
+  - name: "Mmabatho"
+    latitude: -25.85
+    longitude: 25.63333
+    population: 76754
+    dem: 1282
+    timezone: "Africa/Johannesburg"
+  - name: "Maile"
+    latitude: -25.44152
+    longitude: 27.28165
+    population: 10000
+    dem: 1066
+    timezone: "Africa/Johannesburg"
+  - name: "Mahikeng"
+    latitude: -25.86522
+    longitude: 25.64421
+    population: 14000
+    dem: 1284
+    timezone: "Africa/Johannesburg"
+  - name: "Lichtenburg"
+    latitude: -26.152
+    longitude: 26.15968
+    population: 65863
+    dem: 1486
+    timezone: "Africa/Johannesburg"
+  - name: "Koster"
+    latitude: -25.86301
+    longitude: 26.89756
+    population: 12126
+    dem: 1620
+    timezone: "Africa/Johannesburg"
+  - name: "Klerksdorp"
+    latitude: -26.85213
+    longitude: 26.66672
+    population: 178921
+    dem: 1318
+    timezone: "Africa/Johannesburg"
+  - name: "Jan Kempdorp"
+    latitude: -27.92246
+    longitude: 24.83051
+    population: 13485
+    dem: 1159
+    timezone: "Africa/Johannesburg"
+  - name: "Ga-Rankuwa"
+    latitude: -25.61692
+    longitude: 27.99471
+    population: 68767
+    dem: 1246
+    timezone: "Africa/Johannesburg"
+  - name: "Fochville"
+    latitude: -26.48862
+    longitude: 27.49387
+    population: 62416
+    dem: 1478
+    timezone: "Africa/Johannesburg"
+  - name: "Christiana"
+    latitude: -27.91402
+    longitude: 25.16111
+    population: 17523
+    dem: 1207
+    timezone: "Africa/Johannesburg"
+  - name: "Brits"
+    latitude: -25.63473
+    longitude: 27.78022
+    population: 122497
+    dem: 1118
+    timezone: "Africa/Johannesburg"
+  - name: "Bloemhof"
+    latitude: -27.64685
+    longitude: 25.60697
+    population: 17122
+    dem: 1236
+    timezone: "Africa/Johannesburg"
+- name: "Mpumalanga"
+  cities:
+  - name: "White River"
+    latitude: -25.33177
+    longitude: 31.01166
+    population: 15954
+    dem: 944
+    timezone: "Africa/Johannesburg"
+  - name: "Witbank"
+    latitude: -25.87133
+    longitude: 29.23323
+    population: 262491
+    dem: 1629
+    timezone: "Africa/Johannesburg"
+  - name: "Volksrust"
+    latitude: -27.36541
+    longitude: 29.88175
+    population: 43378
+    dem: 1664
+    timezone: "Africa/Johannesburg"
+  - name: "Standerton"
+    latitude: -26.93366
+    longitude: 29.24152
+    population: 74021
+    dem: 1569
+    timezone: "Africa/Johannesburg"
+  - name: "Siyabuswa"
+    latitude: -25.11319
+    longitude: 29.04454
+    population: 26236
+    dem: 935
+    timezone: "Africa/Johannesburg"
+  - name: "Secunda"
+    latitude: -26.55
+    longitude: 29.16667
+    population: 20418
+    dem: 1592
+    timezone: "Africa/Johannesburg"
+  - name: "Piet Retief"
+    latitude: -27.00706
+    longitude: 30.81323
+    population: 84349
+    dem: 1251
+    timezone: "Africa/Johannesburg"
+  - name: "Nelspruit"
+    latitude: -25.47448
+    longitude: 30.97033
+    population: 110159
+    dem: 676
+    timezone: "Africa/Johannesburg"
+  - name: "Middelburg"
+    latitude: -25.77507
+    longitude: 29.46482
+    population: 154706
+    dem: 1479
+    timezone: "Africa/Johannesburg"
+  - name: "Lydenburg"
+    latitude: -25.09598
+    longitude: 30.44393
+    population: 21695
+    dem: 1371
+    timezone: "Africa/Johannesburg"
+  - name: "Kriel"
+    latitude: -26.27391
+    longitude: 29.2253
+    population: 15055
+    dem: 1552
+    timezone: "Africa/Johannesburg"
+  - name: "Komatipoort"
+    latitude: -25.43321
+    longitude: 31.95478
+    population: 20508
+    dem: 159
+    timezone: "Africa/Johannesburg"
+  - name: "Hendrina"
+    latitude: -26.15881
+    longitude: 29.71528
+    population: 15871
+    dem: 1686
+    timezone: "Africa/Johannesburg"
+  - name: "Ermelo"
+    latitude: -26.53333
+    longitude: 29.98333
+    population: 41124
+    dem: 1700
+    timezone: "Africa/Johannesburg"
+  - name: "eMbalenhle"
+    latitude: -26.53333
+    longitude: 29.06667
+    population: 141741
+    dem: 1575
+    timezone: "Africa/Johannesburg"
+  - name: "Driefontein"
+    latitude: -27.0177
+    longitude: 30.44979
+    population: 28127
+    dem: 1345
+    timezone: "Africa/Johannesburg"
+  - name: "Delmas"
+    latitude: -26.1466
+    longitude: 28.68322
+    population: 92046
+    dem: 1558
+    timezone: "Africa/Johannesburg"
+  - name: "Breyten"
+    latitude: -26.30176
+    longitude: 29.98696
+    population: 12550
+    dem: 1753
+    timezone: "Africa/Johannesburg"
+  - name: "Bethal"
+    latitude: -26.45794
+    longitude: 29.46553
+    population: 101919
+    dem: 1661
+    timezone: "Africa/Johannesburg"
+  - name: "Belfast"
+    latitude: -25.68991
+    longitude: 30.03504
+    population: 11916
+    dem: 1873
+    timezone: "Africa/Johannesburg"
+  - name: "Barberton"
+    latitude: -25.78842
+    longitude: 31.05319
+    population: 67927
+    dem: 853
+    timezone: "Africa/Johannesburg"
+  - name: "Balfour"
+    latitude: -26.66331
+    longitude: 28.59016
+    population: 46008
+    dem: 1622
+    timezone: "Africa/Johannesburg"
+- name: "Free State"
+  cities:
+  - name: "Zastron"
+    latitude: -30.30225
+    longitude: 27.08395
+    population: 12449
+    dem: 1668
+    timezone: "Africa/Johannesburg"
+  - name: "Winburg"
+    latitude: -28.51805
+    longitude: 27.00933
+    population: 11072
+    dem: 1438
+    timezone: "Africa/Johannesburg"
+  - name: "Wesselsbron"
+    latitude: -27.8549
+    longitude: 26.36583
+    population: 42552
+    dem: 1315
+    timezone: "Africa/Johannesburg"
+  - name: "Welkom"
+    latitude: -27.97742
+    longitude: 26.73506
+    population: 431944
+    dem: 1376
+    timezone: "Africa/Johannesburg"
+  - name: "Vredefort"
+    latitude: -27.00805
+    longitude: 27.3646
+    population: 10649
+    dem: 1425
+    timezone: "Africa/Johannesburg"
+  - name: "Vrede"
+    latitude: -27.42573
+    longitude: 29.16585
+    population: 14622
+    dem: 1678
+    timezone: "Africa/Johannesburg"
+  - name: "Virginia"
+    latitude: -28.10391
+    longitude: 26.86593
+    population: 122502
+    dem: 1326
+    timezone: "Africa/Johannesburg"
+  - name: "Villiers"
+    latitude: -27.03026
+    longitude: 28.60061
+    population: 11240
+    dem: 1517
+    timezone: "Africa/Johannesburg"
+  - name: "Viljoenskroon"
+    latitude: -27.20841
+    longitude: 26.94855
+    population: 54955
+    dem: 1345
+    timezone: "Africa/Johannesburg"
+  - name: "Ventersburg"
+    latitude: -28.08561
+    longitude: 27.13814
+    population: 10698
+    dem: 1435
+    timezone: "Africa/Johannesburg"
+  - name: "Theunissen"
+    latitude: -28.41098
+    longitude: 26.70107
+    population: 34718
+    dem: 1406
+    timezone: "Africa/Johannesburg"
+  - name: "Thaba Nchu"
+    latitude: -29.20932
+    longitude: 26.83898
+    population: 38616
+    dem: 1531
+    timezone: "Africa/Johannesburg"
+  - name: "Senekal"
+    latitude: -28.31971
+    longitude: 27.62082
+    population: 39584
+    dem: 1431
+    timezone: "Africa/Johannesburg"
+  - name: "Sasolburg"
+    latitude: -26.81358
+    longitude: 27.81695
+    population: 77016
+    dem: 1473
+    timezone: "Africa/Johannesburg"
+  - name: "Reitz"
+    latitude: -27.80138
+    longitude: 28.42726
+    population: 16637
+    dem: 1643
+    timezone: "Africa/Johannesburg"
+  - name: "Phuthaditjhaba"
+    latitude: -28.52423
+    longitude: 28.81582
+    population: 84258
+    dem: 1671
+    timezone: "Africa/Johannesburg"
+  - name: "Parys"
+    latitude: -26.9033
+    longitude: 27.45727
+    population: 71319
+    dem: 1398
+    timezone: "Africa/Johannesburg"
+  - name: "Marquard"
+    latitude: -28.66449
+    longitude: 27.43048
+    population: 10839
+    dem: 1518
+    timezone: "Africa/Johannesburg"
+  - name: "Lindley"
+    latitude: -27.8791
+    longitude: 27.91348
+    population: 12000
+    dem: 1519
+    timezone: "Africa/Johannesburg"
+  - name: "Ladybrand"
+    latitude: -29.19448
+    longitude: 27.45739
+    population: 17228
+    dem: 1588
+    timezone: "Africa/Johannesburg"
+  - name: "Kutloanong"
+    latitude: -27.83333
+    longitude: 26.75
+    population: 95008
+    dem: 1326
+    timezone: "Africa/Johannesburg"
+  - name: "Kroonstad"
+    latitude: -27.65036
+    longitude: 27.23488
+    population: 103992
+    dem: 1399
+    timezone: "Africa/Johannesburg"
+  - name: "Koppies"
+    latitude: -27.24179
+    longitude: 27.57422
+    population: 11445
+    dem: 1413
+    timezone: "Africa/Johannesburg"
+  - name: "Hoopstad"
+    latitude: -27.83273
+    longitude: 25.90833
+    population: 12663
+    dem: 1253
+    timezone: "Africa/Johannesburg"
+  - name: "Hennenman"
+    latitude: -27.97654
+    longitude: 27.02423
+    population: 22847
+    dem: 1396
+    timezone: "Africa/Johannesburg"
+  - name: "Heilbron"
+    latitude: -27.28115
+    longitude: 27.9709
+    population: 55196
+    dem: 1539
+    timezone: "Africa/Johannesburg"
+  - name: "Harrismith"
+    latitude: -28.27276
+    longitude: 29.12946
+    population: 35108
+    dem: 1643
+    timezone: "Africa/Johannesburg"
+  - name: "Deneysville"
+    latitude: -26.8908
+    longitude: 28.09707
+    population: 12397
+    dem: 1513
+    timezone: "Africa/Johannesburg"
+  - name: "Clocolan"
+    latitude: -28.91367
+    longitude: 27.56555
+    population: 12318
+    dem: 1593
+    timezone: "Africa/Johannesburg"
+  - name: "Brandfort"
+    latitude: -28.70008
+    longitude: 26.45968
+    population: 12091
+    dem: 1403
+    timezone: "Africa/Johannesburg"
+  - name: "Botshabelo"
+    latitude: -29.26737
+    longitude: 26.72595
+    population: 309714
+    dem: 1448
+    timezone: "Africa/Johannesburg"
+  - name: "Bothaville"
+    latitude: -27.3887
+    longitude: 26.61701
+    population: 71934
+    dem: 1276
+    timezone: "Africa/Johannesburg"
+  - name: "Bloemfontein"
+    latitude: -29.12107
+    longitude: 26.214
+    population: 463064
+    dem: 1396
+    timezone: "Africa/Johannesburg"
+  - name: "Bethlehem"
+    latitude: -28.23078
+    longitude: 28.30707
+    population: 83654
+    dem: 1630
+    timezone: "Africa/Johannesburg"
+  - name: "Allanridge"
+    latitude: -27.75431
+    longitude: 26.64382
+    population: 31700
+    dem: 1322
+    timezone: "Africa/Johannesburg"
+- name: "Gauteng"
+  cities:
+  - name: "Roodepoort"
+    latitude: -26.1625
+    longitude: 27.8725
+    population: 225000
+    dem: 1738
+    timezone: "Africa/Johannesburg"
+  - name: "Westonaria"
+    latitude: -26.31905
+    longitude: 27.6486
+    population: 156831
+    dem: 1593
+    timezone: "Africa/Johannesburg"
+  - name: "Vereeniging"
+    latitude: -26.67313
+    longitude: 27.92615
+    population: 474681
+    dem: 1445
+    timezone: "Africa/Johannesburg"
+  - name: "Vanderbijlpark"
+    latitude: -26.71171
+    longitude: 27.83795
+    population: 246754
+    dem: 1485
+    timezone: "Africa/Johannesburg"
+  - name: "Tembisa"
+    latitude: -25.99636
+    longitude: 28.2268
+    population: 511655
+    dem: 1577
+    timezone: "Africa/Johannesburg"
+  - name: "Springs"
+    latitude: -26.25
+    longitude: 28.4
+    population: 186394
+    dem: 1630
+    timezone: "Africa/Johannesburg"
+  - name: "Soweto"
+    latitude: -26.26781
+    longitude: 27.85849
+    population: 1695047
+    dem: 1632
+    timezone: "Africa/Johannesburg"
+  - name: "Randfontein"
+    latitude: -26.1844
+    longitude: 27.70203
+    population: 133654
+    dem: 1716
+    timezone: "Africa/Johannesburg"
+  - name: "Randburg"
+    latitude: -26.0941
+    longitude: 28.00123
+    population: 337053
+    dem: 1593
+    timezone: "Africa/Johannesburg"
+  - name: "Pretoria"
+    latitude: -25.74486
+    longitude: 28.18783
+    population: 1619438
+    dem: 1332
+    timezone: "Africa/Johannesburg"
+  - name: "Orange Farm"
+    latitude: -26.48333
+    longitude: 27.86667
+    population: 10000
+    dem: 1572
+    timezone: "Africa/Johannesburg"
+  - name: "Nigel"
+    latitude: -26.43138
+    longitude: 28.47713
+    population: 140644
+    dem: 1566
+    timezone: "Africa/Johannesburg"
+  - name: "Mabopane"
+    latitude: -25.49768
+    longitude: 28.10065
+    population: 97417
+    dem: 1225
+    timezone: "Africa/Johannesburg"
+  - name: "Krugersdorp"
+    latitude: -26.08577
+    longitude: 27.77515
+    population: 378821
+    dem: 1724
+    timezone: "Africa/Johannesburg"
+  - name: "Johannesburg"
+    latitude: -26.20227
+    longitude: 28.04363
+    population: 2026469
+    dem: 1767
+    timezone: "Africa/Johannesburg"
+  - name: "Heidelberg"
+    latitude: -26.50476
+    longitude: 28.35921
+    population: 64199
+    dem: 1525
+    timezone: "Africa/Johannesburg"
+  - name: "Edenvale"
+    latitude: -26.14095
+    longitude: 28.15247
+    population: 49292
+    dem: 1651
+    timezone: "Africa/Johannesburg"
+  - name: "Cullinan"
+    latitude: -25.67088
+    longitude: 28.52364
+    population: 25490
+    dem: 1449
+    timezone: "Africa/Johannesburg"
+  - name: "Carletonville"
+    latitude: -26.36094
+    longitude: 27.39767
+    population: 182304
+    dem: 1529
+    timezone: "Africa/Johannesburg"
+  - name: "Bronkhorstspruit"
+    latitude: -25.81015
+    longitude: 28.74248
+    population: 27343
+    dem: 1399
+    timezone: "Africa/Johannesburg"
+  - name: "Brakpan"
+    latitude: -26.23656
+    longitude: 28.36938
+    population: 305692
+    dem: 1631
+    timezone: "Africa/Johannesburg"
+  - name: "Boksburg"
+    latitude: -26.21197
+    longitude: 28.25958
+    population: 445168
+    dem: 1624
+    timezone: "Africa/Johannesburg"
+  - name: "Benoni"
+    latitude: -26.18848
+    longitude: 28.32078
+    population: 605344
+    dem: 1641
+    timezone: "Africa/Johannesburg"
+  - name: "Alberton"
+    latitude: -26.26786
+    longitude: 28.12225
+    population: 121536
+    dem: 1574
+    timezone: "Africa/Johannesburg"
+  - name: "Ekangala"
+    latitude: -25.69619
+    longitude: 28.74918
+    population: 37650
+    dem: 1504
+    timezone: "Africa/Johannesburg"
+  - name: "Midrand"
+    latitude: -25.98953
+    longitude: 28.12843
+    population: 173009
+    dem: 1562
+    timezone: "Africa/Johannesburg"
+  - name: "Centurion"
+    latitude: -25.85891
+    longitude: 28.18577
+    population: 233386
+    dem: 1432
+    timezone: "Africa/Johannesburg"
+  - name: "Eden Glen"
+    latitude: -26.1323
+    longitude: 28.16859
+    population: 7345
+    dem: 1620
+    timezone: "Africa/Johannesburg"
+  - name: "Midstream"
+    latitude: -25.91849
+    longitude: 28.19881
+    population: 25000
+    elevation: 1520
+    dem: 1520
+    timezone: "Africa/Johannesburg"
+  - name: "Diepsloot"
+    latitude: -25.93312
+    longitude: 28.01213
+    population: 350000
+    dem: 1410
+    timezone: "Africa/Johannesburg"
+  - name: "Eastleigh"
+    latitude: -26.12965
+    longitude: 28.15541
+    population: 6988
+    dem: 1594
+    timezone: "Africa/Johannesburg"
+  - name: "Riverlea"
+    latitude: -26.2119
+    longitude: 27.97322
+    population: 0
+    dem: 1690
+    timezone: "Africa/Johannesburg"
+  - name: "Eden Glen Ext 60"
+    latitude: -26.12593
+    longitude: 28.165
+    population: 5494
+    dem: 1636
+    timezone: "Africa/Johannesburg"
+- name: "Limpopo"
+  cities:
+  - name: "Warmbaths"
+    latitude: -24.88333
+    longitude: 28.28333
+    population: 90210
+    dem: 1136
+    timezone: "Africa/Johannesburg"
+  - name: "Tzaneen"
+    latitude: -23.83322
+    longitude: 30.16351
+    population: 16954
+    dem: 719
+    timezone: "Africa/Johannesburg"
+  - name: "Thulamahashi"
+    latitude: -24.72459
+    longitude: 31.19939
+    population: 11655
+    dem: 488
+    timezone: "Africa/Johannesburg"
+  - name: "Thohoyandou"
+    latitude: -22.94564
+    longitude: 30.48497
+    population: 44046
+    dem: 724
+    timezone: "Africa/Johannesburg"
+  - name: "Thabazimbi"
+    latitude: -24.59165
+    longitude: 27.41155
+    population: 10365
+    dem: 979
+    timezone: "Africa/Johannesburg"
+  - name: "Mokopane"
+    latitude: -24.19436
+    longitude: 29.00974
+    population: 101090
+    dem: 1117
+    timezone: "Africa/Johannesburg"
+  - name: "Polokwane"
+    latitude: -23.90449
+    longitude: 29.46885
+    population: 123749
+    dem: 1315
+    timezone: "Africa/Johannesburg"
+  - name: "Phalaborwa"
+    latitude: -23.94299
+    longitude: 31.14107
+    population: 109468
+    dem: 435
+    timezone: "Africa/Johannesburg"
+  - name: "Modimolle"
+    latitude: -24.7
+    longitude: 28.4
+    population: 20527
+    dem: 1177
+    timezone: "Africa/Johannesburg"
+  - name: "Nkowakowa"
+    latitude: -23.88782
+    longitude: 30.28708
+    population: 30138
+    dem: 584
+    timezone: "Africa/Johannesburg"
+  - name: "Mankoeng"
+    latitude: -23.9
+    longitude: 29.81667
+    population: 12499
+    dem: 1389
+    timezone: "Africa/Johannesburg"
+  - name: "Louis Trichardt"
+    latitude: -23.04385
+    longitude: 29.90319
+    population: 86854
+    dem: 956
+    timezone: "Africa/Johannesburg"
+  - name: "Lebowakgomo"
+    latitude: -24.2
+    longitude: 29.5
+    population: 33308
+    dem: 1161
+    timezone: "Africa/Johannesburg"
+  - name: "Giyani"
+    latitude: -23.30246
+    longitude: 30.71868
+    population: 37024
+    dem: 484
+    timezone: "Africa/Johannesburg"
+  - name: "Ga-Kgapane"
+    latitude: -23.64378
+    longitude: 30.22324
+    population: 13000
+    elevation: 709
+    dem: 774
+    timezone: "Africa/Johannesburg"
+  - name: "Duiwelskloof"
+    latitude: -23.69339
+    longitude: 30.14002
+    population: 24572
+    dem: 875
+    timezone: "Africa/Johannesburg"
+  - name: "Bochum"
+    latitude: -23.28609
+    longitude: 29.13964
+    population: 12000
+    dem: 997
+    timezone: "Africa/Johannesburg"

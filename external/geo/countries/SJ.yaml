@@ -1,0 +1,32 @@
+---
+name: "Svalbard and Jan Mayen"
+iso: "SJ"
+iso3: "SJM"
+code: "744"
+capital: "Longyearbyen"
+area: 62049.0
+population: 2550
+continent: "EU"
+currencyCode: "NOK"
+currencyName: "Krone"
+phone: "47"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "no,ru"
+regions:
+- name: "Jan Mayen"
+  cities:
+  - name: "Olonkinbyen"
+    latitude: 70.9221
+    longitude: -8.7187
+    population: 14
+    dem: 1
+    timezone: "Arctic/Longyearbyen"
+- name: "Svalbard"
+  cities:
+  - name: "Longyearbyen"
+    latitude: 78.22334
+    longitude: 15.64689
+    population: 2060
+    dem: 1
+    timezone: "Arctic/Longyearbyen"

@@ -1,0 +1,105 @@
+---
+name: "Liechtenstein"
+iso: "LI"
+iso3: "LIE"
+code: "438"
+capital: "Vaduz"
+area: 160.0
+population: 35000
+continent: "EU"
+currencyCode: "CHF"
+currencyName: "Franc"
+phone: "423"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "de-LI"
+neighbours: "CH,AT"
+regions:
+- name: "Ruggell"
+  cities:
+  - name: "Ruggell"
+    latitude: 47.23799
+    longitude: 9.5254
+    population: 1862
+    dem: 434
+    timezone: "Europe/Vaduz"
+- name: "Triesen"
+  cities:
+  - name: "Triesen"
+    latitude: 47.10752
+    longitude: 9.52815
+    population: 4701
+    dem: 500
+    timezone: "Europe/Vaduz"
+- name: "Gamprin"
+  cities:
+  - name: "Gamprin"
+    latitude: 47.22038
+    longitude: 9.50935
+    population: 1268
+    dem: 470
+    timezone: "Europe/Vaduz"
+- name: "Eschen"
+  cities:
+  - name: "Eschen"
+    latitude: 47.21071
+    longitude: 9.52223
+    population: 4008
+    dem: 446
+    timezone: "Europe/Vaduz"
+- name: "Vaduz"
+  cities:
+  - name: "Vaduz"
+    latitude: 47.14151
+    longitude: 9.52154
+    population: 5197
+    dem: 465
+    timezone: "Europe/Vaduz"
+- name: "Planken"
+  cities:
+  - name: "Planken"
+    latitude: 47.18516
+    longitude: 9.54437
+    population: 377
+    dem: 785
+    timezone: "Europe/Vaduz"
+- name: "Schellenberg"
+  cities:
+  - name: "Schellenberg"
+    latitude: 47.23123
+    longitude: 9.54678
+    population: 1004
+    dem: 631
+    timezone: "Europe/Vaduz"
+- name: "Schaan"
+  cities:
+  - name: "Schaan"
+    latitude: 47.16498
+    longitude: 9.50867
+    population: 5748
+    dem: 453
+    timezone: "Europe/Vaduz"
+- name: "Balzers"
+  cities:
+  - name: "Balzers"
+    latitude: 47.06665
+    longitude: 9.50251
+    population: 4447
+    dem: 476
+    timezone: "Europe/Vaduz"
+- name: "Mauren"
+  cities:
+  - name: "Mauren"
+    latitude: 47.21805
+    longitude: 9.5442
+    population: 3626
+    dem: 452
+    timezone: "Europe/Vaduz"
+- name: "Triesenberg"
+  cities:
+  - name: "Triesenberg"
+    latitude: 47.11815
+    longitude: 9.54197
+    population: 2689
+    dem: 854
+    timezone: "Europe/Vaduz"

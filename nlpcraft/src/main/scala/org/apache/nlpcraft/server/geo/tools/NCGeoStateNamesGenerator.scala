@@ -17,12 +17,13 @@
 
 package org.apache.nlpcraft.server.geo.tools
 
-import java.io.{File, PrintStream}
+import java.io.File
 
-import net.liftweb.json.Extraction._
-import net.liftweb.json._
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.apache.nlpcraft.common.U
-import resource._
 
 /**
  * Generator for US state names.
@@ -50,8 +51,8 @@ object NCGeoStateNamesGenerator extends App {
     private val allCntrs = s"$GEO_NAMES_DIR/allCountries.txt"
 
     // Output directory.
-    private val outDir = U.mkPath(s"src/main/resources/geo")
-    private val out = s"$outDir/synonyms/states.json"
+    private val outDir = U.mkPath(s"nlpcraft/src/main/resources/geo")
+    private val out = s"$outDir/synonyms/states.yaml"
 
     // JSON extractor for synonyms.
     case class Synonym(
@@ -74,13 +75,13 @@ object NCGeoStateNamesGenerator extends App {
         Synonym(region = name, synonyms = seq)
     }).toSeq.sortBy(_.region)
 
-    // Required for Lift JSON processing.
-    implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
+    val mapper = new ObjectMapper(new YAMLFactory)
 
-    // Burn it.
-    managed(new PrintStream(new File(out))) acquireAndGet { ps ⇒
-        ps.println(prettyRender(decompose(syns)))
-    }
+    mapper.registerModule(new DefaultScalaModule())
+    mapper.setSerializationInclusion(Include.NON_NULL)
+    mapper.setSerializationInclusion(Include.NON_EMPTY)
+
+    mapper.writeValue(new File(out), syns)
 
     println(s"Files generated OK: $out")
 }

@@ -1,0 +1,370 @@
+---
+name: "Senegal"
+iso: "SN"
+iso3: "SEN"
+code: "686"
+capital: "Dakar"
+area: 196190.0
+population: 12323252
+continent: "AF"
+currencyCode: "XOF"
+currencyName: "Franc"
+phone: "221"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "fr-SN,wo,fuc,mnk"
+neighbours: "GN,MR,GW,GM,ML"
+regions:
+- name: "Dakar"
+  cities:
+  - name: "Pikine"
+    latitude: 14.76457
+    longitude: -17.39071
+    population: 874062
+    dem: 17
+    timezone: "Africa/Dakar"
+  - name: "Dakar"
+    latitude: 14.6937
+    longitude: -17.44406
+    population: 2476400
+    dem: 12
+    timezone: "Africa/Dakar"
+  - name: "Mermoz Boabab"
+    latitude: 14.70649
+    longitude: -17.47581
+    population: 15000
+    elevation: 0
+    dem: 37
+    timezone: "Africa/Dakar"
+  - name: "Ndiareme limamoulaye"
+    latitude: 14.78148
+    longitude: -17.3841
+    population: 35171
+    dem: 14
+    timezone: "Africa/Dakar"
+- name: "Region de Kaffrine"
+  cities:
+  - name: "Koungheul"
+    latitude: 13.98333
+    longitude: -14.8
+    population: 14725
+    dem: 17
+    timezone: "Africa/Dakar"
+  - name: "Kaffrine"
+    latitude: 14.10594
+    longitude: -15.5508
+    population: 28396
+    dem: 15
+    timezone: "Africa/Dakar"
+- name: "Kaolack"
+  cities:
+  - name: "Nioro du Rip"
+    latitude: 13.75
+    longitude: -15.8
+    population: 20711
+    dem: 19
+    timezone: "Africa/Dakar"
+  - name: "Ndofane"
+    latitude: 13.91667
+    longitude: -15.93333
+    population: 9946
+    dem: 22
+    timezone: "Africa/Dakar"
+  - name: "Kaolack"
+    latitude: 14.15197
+    longitude: -16.07259
+    population: 172305
+    dem: 7
+    timezone: "Africa/Dakar"
+  - name: "Gandiaye"
+    latitude: 14.23333
+    longitude: -16.26667
+    population: 9894
+    dem: 17
+    timezone: "Africa/Dakar"
+- name: "Region de Sedhiou"
+  cities:
+  - name: "Sedhiou"
+    latitude: 12.70806
+    longitude: -15.55694
+    population: 19702
+    dem: 21
+    timezone: "Africa/Dakar"
+- name: "Ziguinchor"
+  cities:
+  - name: "Ziguinchor"
+    latitude: 12.56801
+    longitude: -16.27326
+    population: 159778
+    dem: 19
+    timezone: "Africa/Dakar"
+  - name: "Tionk Essil"
+    latitude: 12.78556
+    longitude: -16.52167
+    population: 8151
+    dem: 18
+    timezone: "Africa/Dakar"
+  - name: "Bignona"
+    latitude: 12.81028
+    longitude: -16.22639
+    population: 26237
+    dem: 30
+    timezone: "Africa/Dakar"
+- name: "Matam"
+  cities:
+  - name: "Seme"
+    latitude: 15.19422
+    longitude: -12.94482
+    population: 5075
+    dem: 42
+    timezone: "Africa/Dakar"
+  - name: "Ouro Sogui"
+    latitude: 15.60588
+    longitude: -13.3223
+    population: 14888
+    dem: 26
+    timezone: "Africa/Dakar"
+  - name: "Waounde"
+    latitude: 15.26367
+    longitude: -12.86821
+    population: 9085
+    dem: 24
+    timezone: "Africa/Dakar"
+  - name: "Matam"
+    latitude: 15.65587
+    longitude: -13.25544
+    population: 15306
+    dem: 22
+    timezone: "Africa/Dakar"
+  - name: "Kanel"
+    latitude: 15.4916
+    longitude: -13.17627
+    population: 10165
+    dem: 24
+    timezone: "Africa/Dakar"
+  - name: "Diawara"
+    latitude: 15.02196
+    longitude: -12.54374
+    population: 8112
+    dem: 29
+    timezone: "Africa/Dakar"
+- name: "Fatick"
+  cities:
+  - name: "Sokone"
+    latitude: 13.88333
+    longitude: -16.36667
+    population: 11680
+    dem: 14
+    timezone: "Africa/Dakar"
+  - name: "Pourham"
+    latitude: 14.35
+    longitude: -16.41667
+    population: 24146
+    dem: 4
+    timezone: "Africa/Dakar"
+  - name: "Passi"
+    latitude: 13.98333
+    longitude: -16.26667
+    population: 6367
+    dem: 15
+    timezone: "Africa/Dakar"
+  - name: "Guinguineo"
+    latitude: 14.26667
+    longitude: -15.95
+    population: 15395
+    dem: 21
+    timezone: "Africa/Dakar"
+  - name: "Foundiougne"
+    latitude: 14.13333
+    longitude: -16.46667
+    population: 5306
+    dem: 0
+    timezone: "Africa/Dakar"
+  - name: "Fatick"
+    latitude: 14.33236
+    longitude: -16.40513
+    population: 0
+    dem: 7
+    timezone: "Africa/Dakar"
+  - name: "Diofior"
+    latitude: 14.18333
+    longitude: -16.66667
+    population: 8645
+    dem: 8
+    timezone: "Africa/Dakar"
+- name: "Diourbel"
+  cities:
+  - name: "Touba"
+    latitude: 14.85
+    longitude: -15.88333
+    population: 529176
+    dem: 46
+    timezone: "Africa/Dakar"
+  - name: "Tiebo"
+    latitude: 14.63333
+    longitude: -16.23333
+    population: 100289
+    dem: 17
+    timezone: "Africa/Dakar"
+  - name: "Mbake"
+    latitude: 14.79032
+    longitude: -15.90803
+    population: 74100
+    dem: 44
+    timezone: "Africa/Dakar"
+  - name: "Diourbel"
+    latitude: 14.64792
+    longitude: -16.24363
+    population: 0
+    dem: 8
+    timezone: "Africa/Dakar"
+- name: "Saint-Louis"
+  cities:
+  - name: "Saint-Louis"
+    latitude: 16.01793
+    longitude: -16.48962
+    population: 176000
+    dem: 8
+    timezone: "Africa/Dakar"
+  - name: "Rosso"
+    latitude: 16.42028
+    longitude: -15.79834
+    population: 9923
+    dem: 5
+    timezone: "Africa/Dakar"
+  - name: "Richard-Toll"
+    latitude: 16.4625
+    longitude: -15.70083
+    population: 44752
+    dem: 7
+    timezone: "Africa/Dakar"
+  - name: "Ndioum"
+    latitude: 16.51293
+    longitude: -14.64706
+    population: 13198
+    dem: 18
+    timezone: "Africa/Dakar"
+  - name: "Golere"
+    latitude: 16.25575
+    longitude: -14.10165
+    population: 5461
+    dem: 18
+    timezone: "Africa/Dakar"
+- name: "Region de Kedougou"
+  cities:
+  - name: "Kedougou"
+    latitude: 12.55561
+    longitude: -12.18076
+    population: 17922
+    dem: 127
+    timezone: "Africa/Dakar"
+- name: "Kolda"
+  cities:
+  - name: "Velingara"
+    latitude: 13.15
+    longitude: -14.11667
+    population: 22441
+    dem: 50
+    timezone: "Africa/Dakar"
+  - name: "Marsassoum"
+    latitude: 12.8275
+    longitude: -15.98056
+    population: 6817
+    dem: 19
+    timezone: "Africa/Dakar"
+  - name: "Kolda"
+    latitude: 12.8939
+    longitude: -14.94125
+    population: 58809
+    dem: 17
+    timezone: "Africa/Dakar"
+- name: "Tambacounda"
+  cities:
+  - name: "Tambacounda"
+    latitude: 13.77073
+    longitude: -13.66734
+    population: 78800
+    dem: 32
+    timezone: "Africa/Dakar"
+- name: "Louga"
+  cities:
+  - name: "Ndibene Dahra"
+    latitude: 15.3338
+    longitude: -15.4766
+    population: 27741
+    dem: 42
+    timezone: "Africa/Dakar"
+  - name: "Louga"
+    latitude: 15.61867
+    longitude: -16.22436
+    population: 67154
+    dem: 42
+    timezone: "Africa/Dakar"
+  - name: "Gueoul"
+    latitude: 15.48333
+    longitude: -16.35
+    population: 10918
+    dem: 41
+    timezone: "Africa/Dakar"
+  - name: "Dara"
+    latitude: 15.34844
+    longitude: -15.47993
+    population: 30000
+    dem: 41
+    timezone: "Africa/Dakar"
+- name: "Region de Thies"
+  cities:
+  - name: "Tiadiaye"
+    latitude: 14.41667
+    longitude: -16.7
+    population: 10853
+    dem: 18
+    timezone: "Africa/Dakar"
+  - name: "Thies Nones"
+    latitude: 14.78333
+    longitude: -16.96667
+    population: 252320
+    dem: 85
+    timezone: "Africa/Dakar"
+  - name: "Thies"
+    latitude: 14.78944
+    longitude: -16.92602
+    population: 320000
+    dem: 72
+    timezone: "Africa/Dakar"
+  - name: "Pout"
+    latitude: 14.77099
+    longitude: -17.06107
+    population: 17752
+    dem: 25
+    timezone: "Africa/Dakar"
+  - name: "Nguekhokh"
+    latitude: 14.51255
+    longitude: -17.00447
+    population: 17885
+    dem: 13
+    timezone: "Africa/Dakar"
+  - name: "Mekhe"
+    latitude: 15.1097
+    longitude: -16.6218
+    population: 19242
+    dem: 43
+    timezone: "Africa/Dakar"
+  - name: "Khombole"
+    latitude: 14.76667
+    longitude: -16.7
+    population: 12061
+    dem: 17
+    timezone: "Africa/Dakar"
+  - name: "Kayar"
+    latitude: 14.91893
+    longitude: -17.11978
+    population: 17193
+    dem: 9
+    timezone: "Africa/Dakar"
+  - name: "Joal-Fadiout"
+    latitude: 14.16667
+    longitude: -16.83333
+    population: 36735
+    dem: 7
+    timezone: "Africa/Dakar"

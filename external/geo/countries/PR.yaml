@@ -1,0 +1,823 @@
+---
+name: "Puerto Rico"
+iso: "PR"
+iso3: "PRI"
+code: "630"
+capital: "San Juan"
+area: 9104.0
+population: 3916632
+continent: "NA"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "+1-787 and 1-939"
+postalCodeFormat: "#####-####"
+postalCodeRegex: "^00[679]\\d{2}(?:-\\d{4})?$"
+languages: "en-PR,es-PR"
+regions:
+- name: "Dorado Municipio"
+  cities:
+  - name: "Dorado"
+    latitude: 18.45883
+    longitude: -66.26767
+    population: 13117
+    elevation: 3
+    dem: 8
+    timezone: "America/Puerto_Rico"
+  - name: "San Antonio"
+    latitude: 18.44884
+    longitude: -66.30267
+    population: 6456
+    elevation: 7
+    dem: 7
+    timezone: "America/Puerto_Rico"
+- name: "Ciales Municipio"
+  cities:
+  - name: "Ciales"
+    latitude: 18.33606
+    longitude: -66.46878
+    population: 3256
+    elevation: 92
+    dem: 93
+    timezone: "America/Puerto_Rico"
+- name: "Rincon Municipio"
+  cities:
+  - name: "Rincon"
+    latitude: 18.34023
+    longitude: -67.2499
+    population: 1499
+    elevation: 11
+    dem: 15
+    timezone: "America/Puerto_Rico"
+- name: "Salinas Municipio"
+  cities:
+  - name: "Coco"
+    latitude: 18.00719
+    longitude: -66.25933
+    population: 5803
+    elevation: 40
+    dem: 43
+    timezone: "America/Puerto_Rico"
+  - name: "Salinas"
+    latitude: 17.97747
+    longitude: -66.29795
+    population: 6375
+    elevation: 7
+    dem: 9
+    timezone: "America/Puerto_Rico"
+- name: "Comerio Municipio"
+  cities:
+  - name: "Comerio"
+    latitude: 18.21801
+    longitude: -66.226
+    population: 4649
+    elevation: 196
+    dem: 202
+    timezone: "America/Puerto_Rico"
+- name: "Penuelas Municipio"
+  cities:
+  - name: "Penuelas"
+    latitude: 18.05635
+    longitude: -66.72156
+    population: 6847
+    elevation: 56
+    dem: 61
+    timezone: "America/Puerto_Rico"
+- name: "Naranjito Municipio"
+  cities:
+  - name: "Naranjito"
+    latitude: 18.30079
+    longitude: -66.24489
+    population: 2005
+    elevation: 108
+    dem: 114
+    timezone: "America/Puerto_Rico"
+- name: "Camuy Municipio"
+  cities:
+  - name: "Camuy"
+    latitude: 18.48383
+    longitude: -66.8449
+    population: 4240
+    elevation: 11
+    dem: 14
+    timezone: "America/Puerto_Rico"
+- name: "Maunabo Municipio"
+  cities:
+  - name: "Maunabo"
+    latitude: 18.00719
+    longitude: -65.89933
+    population: 2154
+    elevation: 10
+    dem: 13
+    timezone: "America/Puerto_Rico"
+- name: "Catano Municipio"
+  cities:
+  - name: "Catano"
+    latitude: 18.44134
+    longitude: -66.11822
+    population: 28093
+    elevation: 3
+    dem: 1
+    timezone: "America/Puerto_Rico"
+- name: "Arroyo"
+  cities:
+  - name: "Arroyo"
+    latitude: 17.9658
+    longitude: -66.06128
+    population: 7520
+    elevation: 7
+    dem: 7
+    timezone: "America/Puerto_Rico"
+- name: "Aibonito"
+  cities:
+  - name: "Aibonito"
+    latitude: 18.13996
+    longitude: -66.266
+    population: 8947
+    elevation: 604
+    dem: 607
+    timezone: "America/Puerto_Rico"
+- name: "Municipio de Juncos"
+  cities:
+  - name: "Juncos"
+    latitude: 18.22746
+    longitude: -65.921
+    population: 8905
+    elevation: 65
+    dem: 68
+    timezone: "America/Puerto_Rico"
+- name: "Las Marias Municipio"
+  cities:
+  - name: "Las Marias"
+    latitude: 18.2519
+    longitude: -66.99212
+    population: 1031
+    elevation: 291
+    dem: 300
+    timezone: "America/Puerto_Rico"
+- name: "Bayamon Municipio"
+  cities:
+  - name: "Bayamon"
+    latitude: 18.39856
+    longitude: -66.15572
+    population: 203499
+    elevation: 16
+    dem: 20
+    timezone: "America/Puerto_Rico"
+- name: "Aguada"
+  cities:
+  - name: "Aguada"
+    latitude: 18.37939
+    longitude: -67.18824
+    population: 4040
+    elevation: 18
+    dem: 20
+    timezone: "America/Puerto_Rico"
+- name: "Municipio de Isabela"
+  cities:
+  - name: "Isabela"
+    latitude: 18.50078
+    longitude: -67.02435
+    population: 12505
+    elevation: 71
+    dem: 76
+    timezone: "America/Puerto_Rico"
+- name: "Hatillo Municipio"
+  cities:
+  - name: "Hatillo"
+    latitude: 18.48633
+    longitude: -66.82545
+    population: 5622
+    elevation: 7
+    dem: 9
+    timezone: "America/Puerto_Rico"
+- name: "Guayanilla Municipio"
+  cities:
+  - name: "Guayanilla"
+    latitude: 18.01913
+    longitude: -66.79184
+    population: 5213
+    elevation: 10
+    dem: 16
+    timezone: "America/Puerto_Rico"
+- name: "San Sebastian Municipio"
+  cities:
+  - name: "San Sebastian"
+    latitude: 18.33662
+    longitude: -66.99018
+    population: 11590
+    elevation: 77
+    dem: 83
+    timezone: "America/Puerto_Rico"
+- name: "Fajardo Municipio"
+  cities:
+  - name: "Fajardo"
+    latitude: 18.32579
+    longitude: -65.65238
+    population: 34068
+    elevation: 10
+    dem: 16
+    timezone: "America/Puerto_Rico"
+- name: "Luquillo Municipio"
+  cities:
+  - name: "Luquillo"
+    latitude: 18.37245
+    longitude: -65.71655
+    population: 8326
+    elevation: 4
+    dem: 12
+    timezone: "America/Puerto_Rico"
+- name: "Corozal Municipio"
+  cities:
+  - name: "Corozal"
+    latitude: 18.34106
+    longitude: -66.31684
+    population: 11297
+    elevation: 92
+    dem: 97
+    timezone: "America/Puerto_Rico"
+- name: "Ponce Municipio"
+  cities:
+  - name: "Ponce"
+    latitude: 18.01031
+    longitude: -66.62398
+    population: 152634
+    elevation: 15
+    dem: 16
+    timezone: "America/Puerto_Rico"
+- name: "Cayey Municipio"
+  cities:
+  - name: "Cayey"
+    latitude: 18.11191
+    longitude: -66.166
+    population: 18494
+    elevation: 397
+    dem: 397
+    timezone: "America/Puerto_Rico"
+- name: "Canovanas Municipio"
+  cities:
+  - name: "Canovanas"
+    latitude: 18.3751
+    longitude: -65.89934
+    population: 8437
+    elevation: 7
+    dem: 15
+    timezone: "America/Puerto_Rico"
+  - name: "San Isidro"
+    latitude: 18.39217
+    longitude: -65.88544
+    population: 8071
+    elevation: 13
+    dem: 12
+    timezone: "America/Puerto_Rico"
+  - name: "Santa Barbara"
+    latitude: 18.39356
+    longitude: -65.91878
+    population: 5168
+    elevation: 14
+    dem: 18
+    timezone: "America/Puerto_Rico"
+- name: "Villalba Municipio"
+  cities:
+  - name: "Villalba"
+    latitude: 18.12718
+    longitude: -66.49212
+    population: 4555
+    elevation: 151
+    dem: 159
+    timezone: "America/Puerto_Rico"
+- name: "Cidra Municipio"
+  cities:
+  - name: "Cidra"
+    latitude: 18.17579
+    longitude: -66.16128
+    population: 5067
+    elevation: 423
+    dem: 426
+    timezone: "America/Puerto_Rico"
+- name: "Vega Alta Municipio"
+  cities:
+  - name: "Ceiba"
+    latitude: 18.44634
+    longitude: -66.35073
+    population: 6576
+    elevation: 10
+    dem: 8
+    timezone: "America/Puerto_Rico"
+  - name: "Vega Alta"
+    latitude: 18.41217
+    longitude: -66.33128
+    population: 12036
+    elevation: 33
+    dem: 34
+    timezone: "America/Puerto_Rico"
+- name: "Morovis Municipio"
+  cities:
+  - name: "Morovis"
+    latitude: 18.32578
+    longitude: -66.40656
+    population: 2414
+    elevation: 216
+    dem: 219
+    timezone: "America/Puerto_Rico"
+- name: "Toa Baja Municipio"
+  cities:
+  - name: "Campanilla"
+    latitude: 18.42134
+    longitude: -66.23683
+    population: 7757
+    elevation: 7
+    dem: 8
+    timezone: "America/Puerto_Rico"
+  - name: "Candelaria"
+    latitude: 18.40411
+    longitude: -66.20878
+    population: 17631
+    elevation: 72
+    dem: 74
+    timezone: "America/Puerto_Rico"
+  - name: "Candelaria Arenas"
+    latitude: 18.41717
+    longitude: -66.21739
+    population: 5854
+    elevation: 33
+    dem: 36
+    timezone: "America/Puerto_Rico"
+  - name: "Ingenio"
+    latitude: 18.44217
+    longitude: -66.226
+    population: 5664
+    elevation: 3
+    dem: 5
+    timezone: "America/Puerto_Rico"
+  - name: "Levittown"
+    latitude: 18.44995
+    longitude: -66.18156
+    population: 29785
+    elevation: 3
+    dem: 3
+    timezone: "America/Puerto_Rico"
+  - name: "Sabana Seca"
+    latitude: 18.42689
+    longitude: -66.18461
+    population: 6247
+    elevation: 15
+    dem: 16
+    timezone: "America/Puerto_Rico"
+  - name: "Toa Baja"
+    latitude: 18.44384
+    longitude: -66.25961
+    population: 1889
+    elevation: 7
+    dem: 6
+    timezone: "America/Puerto_Rico"
+- name: "Cabo Rojo Municipio"
+  cities:
+  - name: "Cabo Rojo"
+    latitude: 18.08663
+    longitude: -67.14573
+    population: 10839
+    elevation: 20
+    dem: 27
+    timezone: "America/Puerto_Rico"
+  - name: "Puerto Real"
+    latitude: 18.07496
+    longitude: -67.18712
+    population: 6166
+    elevation: 3
+    dem: 8
+    timezone: "America/Puerto_Rico"
+- name: "Barceloneta"
+  cities:
+  - name: "Barceloneta"
+    latitude: 18.4505
+    longitude: -66.53851
+    population: 22322
+    elevation: 3
+    dem: 9
+    timezone: "America/Puerto_Rico"
+- name: "Anasco"
+  cities:
+  - name: "Anasco"
+    latitude: 18.28273
+    longitude: -67.13962
+    population: 6136
+    elevation: 9
+    dem: 14
+    timezone: "America/Puerto_Rico"
+- name: "San German Municipio"
+  cities:
+  - name: "San German"
+    latitude: 18.08163
+    longitude: -67.0449
+    population: 12055
+    elevation: 60
+    dem: 69
+    timezone: "America/Puerto_Rico"
+- name: "Rio Grande Municipio"
+  cities:
+  - name: "Rio Grande"
+    latitude: 18.38023
+    longitude: -65.83127
+    population: 13467
+    elevation: 13
+    dem: 16
+    timezone: "America/Puerto_Rico"
+- name: "Aguadilla"
+  cities:
+  - name: "Aguadilla"
+    latitude: 18.42745
+    longitude: -67.15407
+    population: 16073
+    elevation: 7
+    dem: 7
+    timezone: "America/Puerto_Rico"
+- name: "Guaynabo Municipio"
+  cities:
+  - name: "Guaynabo"
+    latitude: 18.35745
+    longitude: -66.111
+    population: 81360
+    elevation: 47
+    dem: 50
+    timezone: "America/Puerto_Rico"
+- name: "Orocovis Municipio"
+  cities:
+  - name: "Orocovis"
+    latitude: 18.2269
+    longitude: -66.391
+    population: 944
+    elevation: 513
+    dem: 514
+    timezone: "America/Puerto_Rico"
+- name: "Mayagueez Municipio"
+  cities:
+  - name: "Mayagueez"
+    latitude: 18.20107
+    longitude: -67.13962
+    population: 78647
+    elevation: 21
+    dem: 27
+    timezone: "America/Puerto_Rico"
+- name: "Lajas Municipio"
+  cities:
+  - name: "Lajas"
+    latitude: 18.04996
+    longitude: -67.05934
+    population: 5255
+    elevation: 48
+    dem: 58
+    timezone: "America/Puerto_Rico"
+- name: "Manati Municipio"
+  cities:
+  - name: "Manati"
+    latitude: 18.42745
+    longitude: -66.49212
+    population: 16092
+    elevation: 33
+    dem: 33
+    timezone: "America/Puerto_Rico"
+- name: "Las Piedras Municipio"
+  cities:
+  - name: "Las Piedras"
+    latitude: 18.18301
+    longitude: -65.86627
+    population: 6655
+    elevation: 136
+    dem: 136
+    timezone: "America/Puerto_Rico"
+- name: "Coamo Municipio"
+  cities:
+  - name: "Coamo"
+    latitude: 18.07996
+    longitude: -66.35795
+    population: 11940
+    elevation: 125
+    dem: 126
+    timezone: "America/Puerto_Rico"
+- name: "Municipio de Jayuya"
+  cities:
+  - name: "Jayuya"
+    latitude: 18.21857
+    longitude: -66.59156
+    population: 3587
+    elevation: 431
+    dem: 441
+    timezone: "America/Puerto_Rico"
+- name: "Yabucoa Municipio"
+  cities:
+  - name: "Yabucoa"
+    latitude: 18.05052
+    longitude: -65.87933
+    population: 6952
+    elevation: 33
+    dem: 27
+    timezone: "America/Puerto_Rico"
+- name: "Vega Baja Municipio"
+  cities:
+  - name: "Vega Baja"
+    latitude: 18.44439
+    longitude: -66.38767
+    population: 29325
+    elevation: 10
+    dem: 12
+    timezone: "America/Puerto_Rico"
+- name: "Carolina Municipio"
+  cities:
+  - name: "Carolina"
+    latitude: 18.38078
+    longitude: -65.95739
+    population: 170404
+    elevation: 16
+    dem: 22
+    timezone: "America/Puerto_Rico"
+- name: "Hormigueros Municipio"
+  cities:
+  - name: "Hormigueros"
+    latitude: 18.13968
+    longitude: -67.1274
+    population: 11934
+    elevation: 25
+    dem: 28
+    timezone: "America/Puerto_Rico"
+- name: "Trujillo Alto Municipio"
+  cities:
+  - name: "Trujillo Alto"
+    latitude: 18.35467
+    longitude: -66.00739
+    population: 54189
+    elevation: 20
+    dem: 21
+    timezone: "America/Puerto_Rico"
+- name: "Caguas Municipio"
+  cities:
+  - name: "Caguas"
+    latitude: 18.23412
+    longitude: -66.0485
+    population: 86804
+    elevation: 65
+    dem: 65
+    timezone: "America/Puerto_Rico"
+- name: "San Juan"
+  cities:
+  - name: "San Juan"
+    latitude: 18.46633
+    longitude: -66.10572
+    population: 418140
+    elevation: 7
+    dem: 11
+    timezone: "America/Puerto_Rico"
+- name: "Culebra Municipio"
+  cities:
+  - name: "Culebra"
+    latitude: 18.30301
+    longitude: -65.30099
+    population: 1486
+    elevation: 3
+    dem: 7
+    timezone: "America/Puerto_Rico"
+- name: "Aguas Buenas"
+  cities:
+  - name: "Aguas Buenas"
+    latitude: 18.2569
+    longitude: -66.10294
+    population: 4576
+    elevation: 258
+    dem: 259
+    timezone: "America/Puerto_Rico"
+- name: "Guanica Municipio"
+  cities:
+  - name: "Guanica"
+    latitude: 17.97163
+    longitude: -66.90795
+    population: 9224
+    elevation: 3
+    dem: 7
+    timezone: "America/Puerto_Rico"
+- name: "Santa Isabel Municipio"
+  cities:
+  - name: "Santa Isabel"
+    latitude: 17.96608
+    longitude: -66.40489
+    population: 7260
+    elevation: 7
+    dem: 6
+    timezone: "America/Puerto_Rico"
+- name: "Arecibo"
+  cities:
+  - name: "Arecibo"
+    latitude: 18.47245
+    longitude: -66.71573
+    population: 49318
+    elevation: 7
+    dem: 14
+    timezone: "America/Puerto_Rico"
+- name: "Patillas Municipio"
+  cities:
+  - name: "Patillas"
+    latitude: 18.00635
+    longitude: -66.01572
+    population: 4247
+    elevation: 20
+    dem: 21
+    timezone: "America/Puerto_Rico"
+- name: "Moca Municipio"
+  cities:
+  - name: "Moca"
+    latitude: 18.39467
+    longitude: -67.11324
+    population: 4964
+    elevation: 40
+    dem: 49
+    timezone: "America/Puerto_Rico"
+- name: "Sabana Grande Municipio"
+  cities:
+  - name: "Sabana Grande"
+    latitude: 18.07774
+    longitude: -66.96045
+    population: 8961
+    elevation: 95
+    dem: 98
+    timezone: "America/Puerto_Rico"
+- name: "Quebradillas Municipio"
+  cities:
+  - name: "Quebradillas"
+    latitude: 18.47383
+    longitude: -66.93851
+    population: 5620
+    elevation: 112
+    dem: 119
+    timezone: "America/Puerto_Rico"
+- name: "Adjuntas"
+  cities:
+  - name: "Adjuntas"
+    latitude: 18.16274
+    longitude: -66.72212
+    population: 5080
+    elevation: 502
+    dem: 501
+    timezone: "America/Puerto_Rico"
+- name: "Ceiba Municipio"
+  cities:
+  - name: "Ceiba"
+    latitude: 18.26412
+    longitude: -65.6485
+    population: 6277
+    elevation: 23
+    dem: 24
+    timezone: "America/Puerto_Rico"
+- name: "Maricao Municipio"
+  cities:
+  - name: "Maricao"
+    latitude: 18.18079
+    longitude: -66.9799
+    population: 1172
+    elevation: 432
+    dem: 436
+    timezone: "America/Puerto_Rico"
+- name: "Barranquitas"
+  cities:
+  - name: "Barranquitas"
+    latitude: 18.18662
+    longitude: -66.30628
+    population: 3021
+    elevation: 603
+    dem: 603
+    timezone: "America/Puerto_Rico"
+- name: "Loiza Municipio"
+  cities:
+  - name: "Loiza"
+    latitude: 18.43134
+    longitude: -65.88016
+    population: 4311
+    elevation: 3
+    dem: 4
+    timezone: "America/Puerto_Rico"
+- name: "Naguabo Municipio"
+  cities:
+  - name: "Naguabo"
+    latitude: 18.21162
+    longitude: -65.73488
+    population: 4643
+    elevation: 17
+    dem: 20
+    timezone: "America/Puerto_Rico"
+- name: "Yauco Municipio"
+  cities:
+  - name: "Yauco"
+    latitude: 18.03496
+    longitude: -66.8499
+    population: 20295
+    elevation: 40
+    dem: 46
+    timezone: "America/Puerto_Rico"
+- name: "Vieques Municipality"
+  cities:
+  - name: "Isabel Segunda"
+    latitude: 18.14913
+    longitude: -65.44266
+    population: 9301
+    elevation: 12
+    dem: 16
+    timezone: "America/Puerto_Rico"
+- name: "Humacao Municipio"
+  cities:
+  - name: "Humacao"
+    latitude: 18.14968
+    longitude: -65.82738
+    population: 20387
+    elevation: 22
+    dem: 25
+    timezone: "America/Puerto_Rico"
+  - name: "Punta Santiago"
+    latitude: 18.16635
+    longitude: -65.74822
+    population: 5803
+    elevation: 1
+    dem: 4
+    timezone: "America/Puerto_Rico"
+- name: "Juana Diaz Municipio"
+  cities:
+  - name: "Juana Diaz"
+    latitude: 18.05246
+    longitude: -66.50656
+    population: 9427
+    elevation: 49
+    dem: 50
+    timezone: "America/Puerto_Rico"
+- name: "Lares Municipio"
+  cities:
+  - name: "Lares"
+    latitude: 18.29467
+    longitude: -66.87712
+    population: 7184
+    elevation: 319
+    dem: 349
+    timezone: "America/Puerto_Rico"
+- name: "Florida Municipio"
+  cities:
+  - name: "Estancias de Florida"
+    latitude: 18.36662
+    longitude: -66.56962
+    population: 5972
+    elevation: 188
+    dem: 200
+    timezone: "America/Puerto_Rico"
+  - name: "Florida"
+    latitude: 18.36245
+    longitude: -66.56128
+    population: 5652
+    elevation: 192
+    dem: 193
+    timezone: "America/Puerto_Rico"
+- name: "Gurabo Municipio"
+  cities:
+  - name: "Gurabo"
+    latitude: 18.2544
+    longitude: -65.97294
+    population: 8973
+    elevation: 61
+    dem: 68
+    timezone: "America/Puerto_Rico"
+- name: "Guayama Municipio"
+  cities:
+  - name: "Guayama"
+    latitude: 17.98413
+    longitude: -66.11378
+    population: 21575
+    elevation: 73
+    dem: 74
+    timezone: "America/Puerto_Rico"
+- name: "San Lorenzo Municipio"
+  cities:
+  - name: "San Lorenzo"
+    latitude: 18.1894
+    longitude: -65.961
+    population: 9373
+    elevation: 92
+    dem: 97
+    timezone: "America/Puerto_Rico"
+- name: "Utuado Municipio"
+  cities:
+  - name: "Utuado"
+    latitude: 18.26551
+    longitude: -66.70045
+    population: 9844
+    elevation: 142
+    dem: 145
+    timezone: "America/Puerto_Rico"
+- name: "Toa Alta Municipio"
+  cities:
+  - name: "Pajaros"
+    latitude: 18.36856
+    longitude: -66.21683
+    population: 9466
+    elevation: 55
+    dem: 53
+    timezone: "America/Puerto_Rico"
+  - name: "Toa Alta"
+    latitude: 18.38828
+    longitude: -66.24822
+    population: 4483
+    elevation: 25
+    dem: 25
+    timezone: "America/Puerto_Rico"

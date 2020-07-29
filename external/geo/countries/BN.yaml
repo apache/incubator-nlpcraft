@@ -1,0 +1,55 @@
+---
+name: "Brunei"
+iso: "BN"
+iso3: "BRN"
+code: "096"
+capital: "Bandar Seri Begawan"
+area: 5770.0
+population: 395027
+continent: "AS"
+currencyCode: "BND"
+currencyName: "Dollar"
+phone: "673"
+postalCodeFormat: "@@####"
+postalCodeRegex: "^([A-Z]{2}\\d{4})$"
+languages: "ms-BN,en-BN"
+neighbours: "MY"
+regions:
+- name: "Daerah Brunei dan Muara"
+  cities:
+  - name: "Bandar Seri Begawan"
+    latitude: 4.89035
+    longitude: 114.94006
+    population: 64409
+    dem: 10
+    timezone: "Asia/Brunei"
+- name: "Tutong"
+  cities:
+  - name: "Tutong"
+    latitude: 4.80278
+    longitude: 114.64917
+    population: 19151
+    dem: 1
+    timezone: "Asia/Brunei"
+- name: "Belait"
+  cities:
+  - name: "Seria"
+    latitude: 4.60637
+    longitude: 114.32476
+    population: 30097
+    dem: 6
+    timezone: "Asia/Brunei"
+  - name: "Kuala Belait"
+    latitude: 4.58361
+    longitude: 114.2312
+    population: 31178
+    dem: 5
+    timezone: "Asia/Brunei"
+- name: "Temburong"
+  cities:
+  - name: "Bangar"
+    latitude: 4.70861
+    longitude: 115.07167
+    population: 3970
+    dem: 75
+    timezone: "Asia/Brunei"

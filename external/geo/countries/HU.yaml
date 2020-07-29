@@ -1,0 +1,1849 @@
+---
+name: "Hungary"
+iso: "HU"
+iso3: "HUN"
+code: "348"
+capital: "Budapest"
+area: 93030.0
+population: 9982000
+continent: "EU"
+currencyCode: "HUF"
+currencyName: "Forint"
+phone: "36"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "hu-HU"
+neighbours: "SK,SI,RO,UA,HR,AT,RS"
+regions:
+- name: "Heves megye"
+  cities:
+  - name: "Heves"
+    latitude: 47.6
+    longitude: 20.28333
+    population: 11311
+    dem: 96
+    timezone: "Europe/Budapest"
+  - name: "Fuzesabony"
+    latitude: 47.75
+    longitude: 20.41667
+    population: 8182
+    dem: 112
+    timezone: "Europe/Budapest"
+  - name: "Eger"
+    latitude: 47.90265
+    longitude: 20.37329
+    population: 56647
+    dem: 168
+    timezone: "Europe/Budapest"
+  - name: "Paradsasvar"
+    latitude: 47.9126
+    longitude: 19.97709
+    population: 76000
+    dem: 357
+    timezone: "Europe/Budapest"
+  - name: "Lorinci"
+    latitude: 47.73295
+    longitude: 19.67867
+    population: 6089
+    dem: 124
+    timezone: "Europe/Budapest"
+  - name: "Hatvan"
+    latitude: 47.66667
+    longitude: 19.68333
+    population: 22710
+    dem: 117
+    timezone: "Europe/Budapest"
+  - name: "Gyongyos"
+    latitude: 47.78257
+    longitude: 19.928
+    population: 32938
+    dem: 168
+    timezone: "Europe/Budapest"
+- name: "Nograd megye"
+  cities:
+  - name: "Szecseny"
+    latitude: 48.08057
+    longitude: 19.52019
+    population: 6446
+    dem: 172
+    timezone: "Europe/Budapest"
+  - name: "Salgotarjan"
+    latitude: 48.09872
+    longitude: 19.80303
+    population: 39640
+    dem: 242
+    timezone: "Europe/Budapest"
+  - name: "Paszto"
+    latitude: 47.92019
+    longitude: 19.69829
+    population: 10119
+    dem: 168
+    timezone: "Europe/Budapest"
+  - name: "Batonyterenye"
+    latitude: 47.96962
+    longitude: 19.84076
+    population: 14214
+    dem: 223
+    timezone: "Europe/Budapest"
+  - name: "Balassagyarmat"
+    latitude: 48.07296
+    longitude: 19.29614
+    population: 17541
+    dem: 150
+    timezone: "Europe/Budapest"
+- name: "Jasz-Nagykun-Szolnok"
+  cities:
+  - name: "Ujszasz"
+    latitude: 47.3
+    longitude: 20.08333
+    population: 6855
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Turkeve"
+    latitude: 47.1
+    longitude: 20.75
+    population: 10016
+    dem: 80
+    timezone: "Europe/Budapest"
+  - name: "Torokszentmiklos"
+    latitude: 47.18333
+    longitude: 20.41667
+    population: 22770
+    dem: 82
+    timezone: "Europe/Budapest"
+  - name: "Tiszafured"
+    latitude: 47.61667
+    longitude: 20.76667
+    population: 12000
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Tiszafoldvar"
+    latitude: 46.98333
+    longitude: 20.25
+    population: 11873
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Szolnok"
+    latitude: 47.18333
+    longitude: 20.2
+    population: 75474
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Rakoczifalva"
+    latitude: 47.08333
+    longitude: 20.23333
+    population: 5481
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Mezotur"
+    latitude: 47.0
+    longitude: 20.63333
+    population: 19168
+    dem: 82
+    timezone: "Europe/Budapest"
+  - name: "Kunszentmarton"
+    latitude: 46.83916
+    longitude: 20.28879
+    population: 9606
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Kunmadaras"
+    latitude: 47.43333
+    longitude: 20.8
+    population: 5826
+    dem: 90
+    timezone: "Europe/Budapest"
+  - name: "Kunhegyes"
+    latitude: 47.36667
+    longitude: 20.63333
+    population: 8462
+    dem: 88
+    timezone: "Europe/Budapest"
+  - name: "Kisujszallas"
+    latitude: 47.21667
+    longitude: 20.76667
+    population: 12661
+    dem: 84
+    timezone: "Europe/Budapest"
+  - name: "Kenderes"
+    latitude: 47.25
+    longitude: 20.68333
+    population: 5243
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Karcag"
+    latitude: 47.31667
+    longitude: 20.93333
+    population: 22370
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Jaszladany"
+    latitude: 47.36667
+    longitude: 20.16667
+    population: 6215
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Jaszkiser"
+    latitude: 47.45
+    longitude: 20.21667
+    population: 5741
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Jaszapati"
+    latitude: 47.51667
+    longitude: 20.15
+    population: 9806
+    dem: 95
+    timezone: "Europe/Budapest"
+  - name: "Fegyvernek"
+    latitude: 47.26667
+    longitude: 20.53333
+    population: 6972
+    dem: 84
+    timezone: "Europe/Budapest"
+  - name: "Jaszbereny"
+    latitude: 47.5
+    longitude: 19.91667
+    population: 27835
+    dem: 96
+    timezone: "Europe/Budapest"
+  - name: "Jaszarokszallas"
+    latitude: 47.64238
+    longitude: 19.98038
+    population: 8107
+    dem: 101
+    timezone: "Europe/Budapest"
+- name: "Fejer megye"
+  cities:
+  - name: "Szekesfehervar"
+    latitude: 47.18995
+    longitude: 18.41034
+    population: 101600
+    dem: 117
+    timezone: "Europe/Budapest"
+  - name: "Sarbogard"
+    latitude: 46.88692
+    longitude: 18.62041
+    population: 13424
+    dem: 107
+    timezone: "Europe/Budapest"
+  - name: "Pusztaszabolcs"
+    latitude: 47.13718
+    longitude: 18.76704
+    population: 6355
+    dem: 111
+    timezone: "Europe/Budapest"
+  - name: "Polgardi"
+    latitude: 47.06099
+    longitude: 18.302
+    population: 6564
+    dem: 151
+    timezone: "Europe/Budapest"
+  - name: "Mor"
+    latitude: 47.37787
+    longitude: 18.20353
+    population: 14690
+    dem: 177
+    timezone: "Europe/Budapest"
+  - name: "Martonvasar"
+    latitude: 47.31601
+    longitude: 18.79045
+    population: 5166
+    dem: 109
+    timezone: "Europe/Budapest"
+  - name: "Gardony"
+    latitude: 47.20942
+    longitude: 18.63607
+    population: 8105
+    dem: 110
+    timezone: "Europe/Budapest"
+  - name: "Ercsi"
+    latitude: 47.25194
+    longitude: 18.89623
+    population: 8383
+    dem: 123
+    timezone: "Europe/Budapest"
+  - name: "Enying"
+    latitude: 46.93046
+    longitude: 18.24202
+    population: 7171
+    dem: 127
+    timezone: "Europe/Budapest"
+  - name: "Dunaujvaros"
+    latitude: 46.96479
+    longitude: 18.93974
+    population: 50084
+    dem: 146
+    timezone: "Europe/Budapest"
+  - name: "Csakvar"
+    latitude: 47.39184
+    longitude: 18.46501
+    population: 5259
+    dem: 143
+    timezone: "Europe/Budapest"
+  - name: "Bicske"
+    latitude: 47.48419
+    longitude: 18.64404
+    population: 11072
+    dem: 164
+    timezone: "Europe/Budapest"
+- name: "Baranya county"
+  cities:
+  - name: "Szigetvar"
+    latitude: 46.04865
+    longitude: 17.80554
+    population: 11267
+    dem: 113
+    timezone: "Europe/Budapest"
+  - name: "Szentlorinc"
+    latitude: 46.04016
+    longitude: 17.98719
+    population: 7123
+    dem: 119
+    timezone: "Europe/Budapest"
+  - name: "Siklos"
+    latitude: 45.85499
+    longitude: 18.29752
+    population: 10180
+    dem: 104
+    timezone: "Europe/Budapest"
+  - name: "Pecs"
+    latitude: 46.08333
+    longitude: 18.23333
+    population: 156649
+    dem: 193
+    timezone: "Europe/Budapest"
+  - name: "Mohacs"
+    latitude: 45.9902
+    longitude: 18.68621
+    population: 18711
+    dem: 82
+    timezone: "Europe/Budapest"
+  - name: "Komlo"
+    latitude: 46.19278
+    longitude: 18.26494
+    population: 26924
+    dem: 246
+    timezone: "Europe/Budapest"
+- name: "Veszprem megye"
+  cities:
+  - name: "Zirc"
+    latitude: 47.26362
+    longitude: 17.87373
+    population: 7314
+    dem: 395
+    timezone: "Europe/Budapest"
+  - name: "Veszprem"
+    latitude: 47.09327
+    longitude: 17.91149
+    population: 62023
+    dem: 265
+    timezone: "Europe/Budapest"
+  - name: "Varpalota"
+    latitude: 47.19936
+    longitude: 18.13954
+    population: 21299
+    dem: 158
+    timezone: "Europe/Budapest"
+  - name: "Tapolca"
+    latitude: 46.88152
+    longitude: 17.44117
+    population: 17598
+    dem: 124
+    timezone: "Europe/Budapest"
+  - name: "Sumeg"
+    latitude: 46.97703
+    longitude: 17.28209
+    population: 6726
+    dem: 185
+    timezone: "Europe/Budapest"
+  - name: "Papa"
+    latitude: 47.33004
+    longitude: 17.4674
+    population: 32990
+    dem: 154
+    timezone: "Europe/Budapest"
+  - name: "Devecser"
+    latitude: 47.10316
+    longitude: 17.43802
+    population: 5140
+    dem: 175
+    timezone: "Europe/Budapest"
+  - name: "Berhida"
+    latitude: 47.11131
+    longitude: 18.12948
+    population: 5822
+    dem: 130
+    timezone: "Europe/Budapest"
+  - name: "Balatonfured"
+    latitude: 46.96188
+    longitude: 17.87187
+    population: 13055
+    dem: 152
+    timezone: "Europe/Budapest"
+  - name: "Balatonalmadi"
+    latitude: 47.03526
+    longitude: 18.02076
+    population: 8364
+    dem: 109
+    timezone: "Europe/Budapest"
+  - name: "Ajka"
+    latitude: 47.10196
+    longitude: 17.55892
+    population: 31407
+    dem: 225
+    timezone: "Europe/Budapest"
+- name: "Somogy megye"
+  cities:
+  - name: "Siofok"
+    latitude: 46.90413
+    longitude: 18.058
+    population: 23028
+    dem: 107
+    timezone: "Europe/Budapest"
+  - name: "Nagyatad"
+    latitude: 46.22961
+    longitude: 17.35788
+    population: 11843
+    dem: 133
+    timezone: "Europe/Budapest"
+  - name: "Marcali"
+    latitude: 46.58498
+    longitude: 17.41196
+    population: 12344
+    dem: 130
+    timezone: "Europe/Budapest"
+  - name: "Kaposvar"
+    latitude: 46.36667
+    longitude: 17.8
+    population: 67746
+    dem: 144
+    timezone: "Europe/Budapest"
+  - name: "Fonyod"
+    latitude: 46.75552
+    longitude: 17.57945
+    population: 5199
+    dem: 106
+    timezone: "Europe/Budapest"
+  - name: "Csurgo"
+    latitude: 46.25314
+    longitude: 17.1006
+    population: 5682
+    dem: 151
+    timezone: "Europe/Budapest"
+  - name: "Barcs"
+    latitude: 45.96
+    longitude: 17.45861
+    population: 12116
+    dem: 107
+    timezone: "Europe/Budapest"
+  - name: "Balatonboglar"
+    latitude: 46.77525
+    longitude: 17.64415
+    population: 5964
+    dem: 104
+    timezone: "Europe/Budapest"
+- name: "Budapest"
+  cities:
+  - name: "Zuglo"
+    latitude: 47.51758
+    longitude: 19.10549
+    population: 130000
+    dem: 111
+    timezone: "Europe/Budapest"
+  - name: "Kispest"
+    latitude: 47.4515
+    longitude: 19.14017
+    population: 61453
+    dem: 115
+    timezone: "Europe/Budapest"
+  - name: "Erzsebetvaros"
+    latitude: 47.50207
+    longitude: 19.07218
+    population: 62000
+    dem: 114
+    timezone: "Europe/Budapest"
+  - name: "Budapest"
+    latitude: 47.49835
+    longitude: 19.04045
+    population: 1741041
+    dem: 75
+    timezone: "Europe/Budapest"
+  - name: "Budapest XII. keruelet"
+    latitude: 47.49192
+    longitude: 19.01493
+    population: 56544
+    dem: 168
+    timezone: "Europe/Budapest"
+  - name: "Budapest XI. keruelet"
+    latitude: 47.47603
+    longitude: 19.03605
+    population: 139049
+    dem: 107
+    timezone: "Europe/Budapest"
+  - name: "Budapest VIII. keruelet"
+    latitude: 47.48919
+    longitude: 19.07012
+    population: 82222
+    dem: 115
+    timezone: "Europe/Budapest"
+  - name: "Budapest VI. keruelet"
+    latitude: 47.50369
+    longitude: 19.06583
+    population: 42120
+    dem: 117
+    timezone: "Europe/Budapest"
+  - name: "Budapest XIII. keruelet"
+    latitude: 47.52978
+    longitude: 19.08068
+    population: 113531
+    dem: 106
+    timezone: "Europe/Budapest"
+  - name: "Budapest IV. keruelet"
+    latitude: 47.56182
+    longitude: 19.08909
+    population: 98374
+    dem: 109
+    timezone: "Europe/Budapest"
+  - name: "Budapest XV. keruelet"
+    latitude: 47.56263
+    longitude: 19.11681
+    population: 80218
+    dem: 111
+    timezone: "Europe/Budapest"
+  - name: "Budapest XVI. keruelet"
+    latitude: 47.51482
+    longitude: 19.17028
+    population: 68484
+    dem: 146
+    timezone: "Europe/Budapest"
+  - name: "Budapest X. keruelet"
+    latitude: 47.4791
+    longitude: 19.15835
+    population: 79270
+    dem: 136
+    timezone: "Europe/Budapest"
+  - name: "Budapest XIX. keruelet"
+    latitude: 47.45293
+    longitude: 19.14943
+    population: 61610
+    dem: 124
+    timezone: "Europe/Budapest"
+  - name: "Budapest XVIII. keruelet"
+    latitude: 47.44417
+    longitude: 19.17595
+    population: 93225
+    dem: 127
+    timezone: "Europe/Budapest"
+  - name: "Budapest XXIII. keruelet"
+    latitude: 47.39788
+    longitude: 19.11492
+    population: 20387
+    dem: 105
+    timezone: "Europe/Budapest"
+  - name: "Budapest XXII. keruelet"
+    latitude: 47.42698
+    longitude: 19.04016
+    population: 50499
+    dem: 104
+    timezone: "Europe/Budapest"
+  - name: "Budapest XXI. keruelet"
+    latitude: 47.43047
+    longitude: 19.07098
+    population: 76339
+    dem: 105
+    timezone: "Europe/Budapest"
+  - name: "Budapest XX. keruelet"
+    latitude: 47.43674
+    longitude: 19.10093
+    population: 63371
+    dem: 114
+    timezone: "Europe/Budapest"
+  - name: "Budapest XVII. keruelet"
+    latitude: 47.47997
+    longitude: 19.25388
+    population: 78250
+    dem: 137
+    timezone: "Europe/Budapest"
+  - name: "Budapest III. keruelet"
+    latitude: 47.54157
+    longitude: 19.04501
+    population: 123723
+    dem: 109
+    timezone: "Europe/Budapest"
+  - name: "Budapest II. keruelet"
+    latitude: 47.51984
+    longitude: 19.02218
+    population: 88729
+    dem: 202
+    timezone: "Europe/Budapest"
+  - name: "Budapest I. keruelet"
+    latitude: 47.49705
+    longitude: 19.03961
+    population: 24728
+    dem: 150
+    timezone: "Europe/Budapest"
+  - name: "Jozsefvaros"
+    latitude: 47.48938
+    longitude: 19.07292
+    population: 76957
+    elevation: 0
+    dem: 110
+    timezone: "Europe/Budapest"
+- name: "Vas megye"
+  cities:
+  - name: "Szombathely"
+    latitude: 47.23088
+    longitude: 16.62155
+    population: 79534
+    elevation: 230
+    dem: 215
+    timezone: "Europe/Budapest"
+  - name: "Szentgotthard"
+    latitude: 46.95261
+    longitude: 16.27358
+    population: 8911
+    dem: 229
+    timezone: "Europe/Budapest"
+  - name: "Sarvar"
+    latitude: 47.25395
+    longitude: 16.93525
+    population: 15343
+    dem: 158
+    timezone: "Europe/Budapest"
+  - name: "Koszeg"
+    latitude: 47.38922
+    longitude: 16.541
+    population: 11500
+    dem: 277
+    timezone: "Europe/Budapest"
+  - name: "Kormend"
+    latitude: 47.01096
+    longitude: 16.60596
+    population: 12368
+    dem: 192
+    timezone: "Europe/Budapest"
+  - name: "Celldomolk"
+    latitude: 47.25713
+    longitude: 17.15027
+    population: 11421
+    dem: 136
+    timezone: "Europe/Budapest"
+- name: "Pest megye"
+  cities:
+  - name: "Abony"
+    latitude: 47.1899
+    longitude: 20.00476
+    population: 16342
+    dem: 91
+    timezone: "Europe/Budapest"
+  - name: "Veresegyhaz"
+    latitude: 47.6459
+    longitude: 19.29536
+    population: 11087
+    dem: 175
+    timezone: "Europe/Budapest"
+  - name: "Vecses"
+    latitude: 47.40705
+    longitude: 19.28648
+    population: 19327
+    dem: 120
+    timezone: "Europe/Budapest"
+  - name: "Vac"
+    latitude: 47.77591
+    longitude: 19.13612
+    population: 35108
+    dem: 113
+    timezone: "Europe/Budapest"
+  - name: "Ullo"
+    latitude: 47.38771
+    longitude: 19.35533
+    population: 10232
+    dem: 126
+    timezone: "Europe/Budapest"
+  - name: "Tura"
+    latitude: 47.60924
+    longitude: 19.60279
+    population: 8294
+    dem: 115
+    timezone: "Europe/Budapest"
+  - name: "Toeroekbalint"
+    latitude: 47.42931
+    longitude: 18.91356
+    population: 11658
+    elevation: 160
+    dem: 174
+    timezone: "Europe/Budapest"
+  - name: "Toekoel"
+    latitude: 47.32178
+    longitude: 18.96249
+    population: 10164
+    dem: 100
+    timezone: "Europe/Budapest"
+  - name: "Tarnok"
+    latitude: 47.37327
+    longitude: 18.84579
+    population: 7990
+    dem: 113
+    timezone: "Europe/Budapest"
+  - name: "Tapioszentmarton"
+    latitude: 47.3399
+    longitude: 19.74648
+    population: 5596
+    dem: 108
+    timezone: "Europe/Budapest"
+  - name: "Tapioszele"
+    latitude: 47.33609
+    longitude: 19.87724
+    population: 6214
+    dem: 98
+    timezone: "Europe/Budapest"
+  - name: "Tapioszecso"
+    latitude: 47.45
+    longitude: 19.60923
+    population: 6628
+    dem: 137
+    timezone: "Europe/Budapest"
+  - name: "Suelysap"
+    latitude: 47.45206
+    longitude: 19.53369
+    population: 8258
+    dem: 142
+    timezone: "Europe/Budapest"
+  - name: "Taksony"
+    latitude: 47.32968
+    longitude: 19.06695
+    population: 6129
+    dem: 105
+    timezone: "Europe/Budapest"
+  - name: "Szigetszentmiklos"
+    latitude: 47.34382
+    longitude: 19.04335
+    population: 24874
+    dem: 99
+    timezone: "Europe/Budapest"
+  - name: "Szigethalom"
+    latitude: 47.32228
+    longitude: 19.00262
+    population: 13092
+    dem: 99
+    timezone: "Europe/Budapest"
+  - name: "Szentendre"
+    latitude: 47.66943
+    longitude: 19.07561
+    population: 23606
+    dem: 119
+    timezone: "Europe/Budapest"
+  - name: "Szazhalombatta"
+    latitude: 47.32949
+    longitude: 18.93878
+    population: 17566
+    dem: 71
+    timezone: "Europe/Budapest"
+  - name: "Solymar"
+    latitude: 47.59246
+    longitude: 18.93212
+    population: 9242
+    dem: 193
+    timezone: "Europe/Budapest"
+  - name: "Rackeve"
+    latitude: 47.16095
+    longitude: 18.94478
+    population: 9229
+    dem: 100
+    timezone: "Europe/Budapest"
+  - name: "Pomaz"
+    latitude: 47.64227
+    longitude: 19.02784
+    population: 14917
+    dem: 125
+    timezone: "Europe/Budapest"
+  - name: "Pilisvorosvar"
+    latitude: 47.61386
+    longitude: 18.90893
+    population: 13150
+    dem: 178
+    timezone: "Europe/Budapest"
+  - name: "Piliscsaba"
+    latitude: 47.63417
+    longitude: 18.82886
+    population: 6468
+    dem: 211
+    timezone: "Europe/Budapest"
+  - name: "Pilis"
+    latitude: 47.28904
+    longitude: 19.54848
+    population: 11102
+    dem: 139
+    timezone: "Europe/Budapest"
+  - name: "Pecel"
+    latitude: 47.48962
+    longitude: 19.34162
+    population: 13193
+    dem: 160
+    timezone: "Europe/Budapest"
+  - name: "Paty"
+    latitude: 47.51709
+    longitude: 18.82851
+    population: 5475
+    dem: 195
+    timezone: "Europe/Budapest"
+  - name: "Orkeny"
+    latitude: 47.12991
+    longitude: 19.43324
+    population: 5119
+    dem: 123
+    timezone: "Europe/Budapest"
+  - name: "Orbottyan"
+    latitude: 47.68711
+    longitude: 19.28239
+    population: 5495
+    dem: 187
+    timezone: "Europe/Budapest"
+  - name: "Ocsa"
+    latitude: 47.29986
+    longitude: 19.23057
+    population: 9097
+    dem: 111
+    timezone: "Europe/Budapest"
+  - name: "Nagykoros"
+    latitude: 47.03419
+    longitude: 19.77857
+    population: 26711
+    dem: 113
+    timezone: "Europe/Budapest"
+  - name: "Nagykata"
+    latitude: 47.41514
+    longitude: 19.7441
+    population: 13322
+    dem: 112
+    timezone: "Europe/Budapest"
+  - name: "Monor"
+    latitude: 47.35133
+    longitude: 19.44733
+    population: 21720
+    dem: 137
+    timezone: "Europe/Budapest"
+  - name: "Maglod"
+    latitude: 47.44258
+    longitude: 19.36438
+    population: 10144
+    dem: 182
+    timezone: "Europe/Budapest"
+  - name: "Kiskunlachaza"
+    latitude: 47.18839
+    longitude: 19.0093
+    population: 8980
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Kistarcsa"
+    latitude: 47.54757
+    longitude: 19.26247
+    population: 10986
+    dem: 207
+    timezone: "Europe/Budapest"
+  - name: "Kartal"
+    latitude: 47.67133
+    longitude: 19.542
+    population: 6017
+    dem: 155
+    timezone: "Europe/Budapest"
+  - name: "Isaszeg"
+    latitude: 47.53011
+    longitude: 19.40205
+    population: 10754
+    dem: 182
+    timezone: "Europe/Budapest"
+  - name: "Halasztelek"
+    latitude: 47.36173
+    longitude: 18.98119
+    population: 7245
+    dem: 99
+    timezone: "Europe/Budapest"
+  - name: "Gyomro"
+    latitude: 47.42733
+    longitude: 19.40133
+    population: 14155
+    dem: 168
+    timezone: "Europe/Budapest"
+  - name: "Gyal"
+    latitude: 47.38449
+    longitude: 19.2214
+    population: 21937
+    dem: 113
+    timezone: "Europe/Budapest"
+  - name: "Godollo"
+    latitude: 47.59657
+    longitude: 19.35515
+    population: 32374
+    dem: 210
+    timezone: "Europe/Budapest"
+  - name: "God"
+    latitude: 47.68324
+    longitude: 19.13417
+    population: 15874
+    dem: 112
+    timezone: "Europe/Budapest"
+  - name: "Fot"
+    latitude: 47.6177
+    longitude: 19.1887
+    population: 16770
+    dem: 145
+    timezone: "Europe/Budapest"
+  - name: "Erdokertes"
+    latitude: 47.67261
+    longitude: 19.30786
+    population: 5996
+    dem: 210
+    timezone: "Europe/Budapest"
+  - name: "Erd"
+    latitude: 47.39489
+    longitude: 18.91361
+    population: 62408
+    dem: 150
+    timezone: "Europe/Budapest"
+  - name: "Dunavarsany"
+    latitude: 47.27859
+    longitude: 19.06617
+    population: 6016
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Dunakeszi"
+    latitude: 47.63641
+    longitude: 19.13864
+    population: 30246
+    dem: 129
+    timezone: "Europe/Budapest"
+  - name: "Dunaharaszti"
+    latitude: 47.3545
+    longitude: 19.09822
+    population: 16973
+    dem: 100
+    timezone: "Europe/Budapest"
+  - name: "Domsod"
+    latitude: 47.09005
+    longitude: 19.01106
+    population: 5942
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Diosd"
+    latitude: 47.4095
+    longitude: 18.94898
+    population: 6168
+    dem: 133
+    timezone: "Europe/Budapest"
+  - name: "Dabas"
+    latitude: 47.18594
+    longitude: 19.31091
+    population: 16590
+    dem: 99
+    timezone: "Europe/Budapest"
+  - name: "Csomor"
+    latitude: 47.55
+    longitude: 19.23333
+    population: 7544
+    dem: 197
+    timezone: "Europe/Budapest"
+  - name: "Cegled"
+    latitude: 47.17266
+    longitude: 19.79952
+    population: 39287
+    dem: 106
+    timezone: "Europe/Budapest"
+  - name: "Bugyi"
+    latitude: 47.22748
+    longitude: 19.14664
+    population: 5412
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Budaors"
+    latitude: 47.46181
+    longitude: 18.95845
+    population: 25089
+    dem: 139
+    timezone: "Europe/Budapest"
+  - name: "Budakeszi"
+    latitude: 47.51083
+    longitude: 18.92717
+    population: 13248
+    dem: 234
+    timezone: "Europe/Budapest"
+  - name: "Aszod"
+    latitude: 47.65174
+    longitude: 19.4785
+    population: 6186
+    dem: 128
+    timezone: "Europe/Budapest"
+  - name: "Biatorbagy"
+    latitude: 47.4706
+    longitude: 18.81892
+    population: 8632
+    dem: 167
+    timezone: "Europe/Budapest"
+  - name: "Albertirsa"
+    latitude: 47.24315
+    longitude: 19.61686
+    population: 11864
+    dem: 125
+    timezone: "Europe/Budapest"
+  - name: "Kerepes"
+    latitude: 47.56008
+    longitude: 19.28289
+    population: 9960
+    dem: 215
+    timezone: "Europe/Budapest"
+- name: "Hajdu-Bihar"
+  cities:
+  - name: "Vamospercs"
+    latitude: 47.53333
+    longitude: 21.9
+    population: 5451
+    dem: 130
+    timezone: "Europe/Budapest"
+  - name: "Teglas"
+    latitude: 47.71667
+    longitude: 21.68333
+    population: 6285
+    dem: 135
+    timezone: "Europe/Budapest"
+  - name: "Puspokladany"
+    latitude: 47.31667
+    longitude: 21.11667
+    population: 15990
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Polgar"
+    latitude: 47.86667
+    longitude: 21.11667
+    population: 8347
+    dem: 91
+    timezone: "Europe/Budapest"
+  - name: "Nyiradony"
+    latitude: 47.69746
+    longitude: 21.91878
+    population: 7827
+    dem: 152
+    timezone: "Europe/Budapest"
+  - name: "Nadudvar"
+    latitude: 47.41667
+    longitude: 21.16667
+    population: 9135
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Letavertes"
+    latitude: 47.38333
+    longitude: 21.9
+    population: 7157
+    dem: 113
+    timezone: "Europe/Budapest"
+  - name: "Komadi"
+    latitude: 47.0
+    longitude: 21.5
+    population: 6091
+    dem: 88
+    timezone: "Europe/Budapest"
+  - name: "Kaba"
+    latitude: 47.35
+    longitude: 21.28333
+    population: 6392
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Hosszupalyi"
+    latitude: 47.39303
+    longitude: 21.7328
+    population: 5479
+    dem: 107
+    timezone: "Europe/Budapest"
+  - name: "Hajduszoboszlo"
+    latitude: 47.45
+    longitude: 21.4
+    population: 23496
+    dem: 96
+    timezone: "Europe/Budapest"
+  - name: "Hajdusamson"
+    latitude: 47.6
+    longitude: 21.76667
+    population: 10854
+    dem: 133
+    timezone: "Europe/Budapest"
+  - name: "Hajdunanas"
+    latitude: 47.85
+    longitude: 21.43333
+    population: 18032
+    dem: 98
+    timezone: "Europe/Budapest"
+  - name: "Hajduhadhaz"
+    latitude: 47.68333
+    longitude: 21.66667
+    population: 12892
+    dem: 148
+    timezone: "Europe/Budapest"
+  - name: "Hajdudorog"
+    latitude: 47.81667
+    longitude: 21.5
+    population: 9514
+    dem: 109
+    timezone: "Europe/Budapest"
+  - name: "Hajduboszormeny"
+    latitude: 47.66667
+    longitude: 21.51667
+    population: 31957
+    dem: 128
+    timezone: "Europe/Budapest"
+  - name: "Egyek"
+    latitude: 47.63333
+    longitude: 20.9
+    population: 5573
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Derecske"
+    latitude: 47.35
+    longitude: 21.56667
+    population: 9207
+    dem: 96
+    timezone: "Europe/Budapest"
+  - name: "Debrecen"
+    latitude: 47.53333
+    longitude: 21.63333
+    population: 204124
+    dem: 123
+    timezone: "Europe/Budapest"
+  - name: "Berettyoujfalu"
+    latitude: 47.21667
+    longitude: 21.55
+    population: 16090
+    dem: 93
+    timezone: "Europe/Budapest"
+  - name: "Balmazujvaros"
+    latitude: 47.61667
+    longitude: 21.35
+    population: 18012
+    dem: 89
+    timezone: "Europe/Budapest"
+- name: "Borsod-Abauj Zemplen county"
+  cities:
+  - name: "Tokaj"
+    latitude: 48.11667
+    longitude: 21.41667
+    population: 5071
+    dem: 95
+    timezone: "Europe/Budapest"
+  - name: "Tiszaujvaros"
+    latitude: 47.93333
+    longitude: 21.08333
+    population: 17295
+    elevation: 94
+    dem: 89
+    timezone: "Europe/Budapest"
+  - name: "Tiszaluc"
+    latitude: 48.03774
+    longitude: 21.07261
+    population: 5551
+    dem: 106
+    timezone: "Europe/Budapest"
+  - name: "Szikszo"
+    latitude: 48.2
+    longitude: 20.93333
+    population: 5963
+    dem: 115
+    timezone: "Europe/Budapest"
+  - name: "Szerencs"
+    latitude: 48.15993
+    longitude: 21.2097
+    population: 10046
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Satoraljaujhely"
+    latitude: 48.39492
+    longitude: 21.65871
+    population: 18052
+    dem: 108
+    timezone: "Europe/Budapest"
+  - name: "Sarospatak"
+    latitude: 48.3245
+    longitude: 21.57383
+    population: 14478
+    dem: 106
+    timezone: "Europe/Budapest"
+  - name: "Sajoszentpeter"
+    latitude: 48.21667
+    longitude: 20.71667
+    population: 13125
+    dem: 125
+    timezone: "Europe/Budapest"
+  - name: "Putnok"
+    latitude: 48.3
+    longitude: 20.43333
+    population: 7501
+    dem: 178
+    timezone: "Europe/Budapest"
+  - name: "Ozd"
+    latitude: 48.21667
+    longitude: 20.3
+    population: 38476
+    dem: 175
+    timezone: "Europe/Budapest"
+  - name: "Miskolc"
+    latitude: 48.1
+    longitude: 20.78333
+    population: 172637
+    dem: 131
+    timezone: "Europe/Budapest"
+  - name: "Mezokovesd"
+    latitude: 47.81667
+    longitude: 20.58333
+    population: 17701
+    dem: 117
+    timezone: "Europe/Budapest"
+  - name: "Mezocsat"
+    latitude: 47.81667
+    longitude: 20.91667
+    population: 6519
+    dem: 91
+    timezone: "Europe/Budapest"
+  - name: "Kazincbarcika"
+    latitude: 48.25
+    longitude: 20.63333
+    population: 32396
+    dem: 185
+    timezone: "Europe/Budapest"
+  - name: "Felsozsolca"
+    latitude: 48.1
+    longitude: 20.86667
+    population: 7040
+    dem: 112
+    timezone: "Europe/Budapest"
+  - name: "Encs"
+    latitude: 48.33333
+    longitude: 21.13333
+    population: 6886
+    dem: 131
+    timezone: "Europe/Budapest"
+  - name: "Emod"
+    latitude: 47.93333
+    longitude: 20.81667
+    population: 5382
+    dem: 108
+    timezone: "Europe/Budapest"
+  - name: "Edeleny"
+    latitude: 48.3
+    longitude: 20.73333
+    population: 11037
+    dem: 131
+    timezone: "Europe/Budapest"
+  - name: "Alsozsolca"
+    latitude: 48.06982
+    longitude: 20.88046
+    population: 6044
+    dem: 113
+    timezone: "Europe/Budapest"
+- name: "Bacs-Kiskun county"
+  cities:
+  - name: "Tiszakecske"
+    latitude: 46.93261
+    longitude: 20.10349
+    population: 11745
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Szabadszallas"
+    latitude: 46.87575
+    longitude: 19.22324
+    population: 6605
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Soltvadkert"
+    latitude: 46.57889
+    longitude: 19.39389
+    population: 7695
+    dem: 111
+    timezone: "Europe/Budapest"
+  - name: "Solt"
+    latitude: 46.80101
+    longitude: 19.00098
+    population: 6984
+    dem: 87
+    timezone: "Europe/Budapest"
+  - name: "Melykut"
+    latitude: 46.21509
+    longitude: 19.38102
+    population: 5766
+    dem: 133
+    timezone: "Europe/Budapest"
+  - name: "Lajosmizse"
+    latitude: 47.02133
+    longitude: 19.56171
+    population: 11034
+    dem: 132
+    timezone: "Europe/Budapest"
+  - name: "Kunszentmiklos"
+    latitude: 47.02699
+    longitude: 19.12575
+    population: 8976
+    dem: 95
+    timezone: "Europe/Budapest"
+  - name: "Kiskunmajsa"
+    latitude: 46.49028
+    longitude: 19.74
+    population: 11955
+    dem: 104
+    timezone: "Europe/Budapest"
+  - name: "Kiskunhalas"
+    latitude: 46.43402
+    longitude: 19.48479
+    population: 29354
+    dem: 127
+    timezone: "Europe/Budapest"
+  - name: "Kiskunfelegyhaza"
+    latitude: 46.71213
+    longitude: 19.84458
+    population: 31720
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Kiskoros"
+    latitude: 46.62139
+    longitude: 19.28528
+    population: 15091
+    dem: 100
+    timezone: "Europe/Budapest"
+  - name: "Kerekegyhaza"
+    latitude: 46.93722
+    longitude: 19.47806
+    population: 5983
+    dem: 118
+    timezone: "Europe/Budapest"
+  - name: "Kecskemet"
+    latitude: 46.90618
+    longitude: 19.69128
+    population: 109847
+    dem: 120
+    timezone: "Europe/Budapest"
+  - name: "Kecel"
+    latitude: 46.52528
+    longitude: 19.25194
+    population: 9155
+    dem: 102
+    timezone: "Europe/Budapest"
+  - name: "Kalocsa"
+    latitude: 46.52981
+    longitude: 18.97283
+    population: 18242
+    dem: 90
+    timezone: "Europe/Budapest"
+  - name: "Janoshalma"
+    latitude: 46.29861
+    longitude: 19.32583
+    population: 9755
+    dem: 136
+    timezone: "Europe/Budapest"
+  - name: "Izsak"
+    latitude: 46.80454
+    longitude: 19.35172
+    population: 6117
+    dem: 101
+    timezone: "Europe/Budapest"
+  - name: "Baja"
+    latitude: 46.18299
+    longitude: 18.95307
+    population: 37714
+    dem: 99
+    timezone: "Europe/Budapest"
+  - name: "Bacsalmas"
+    latitude: 46.12648
+    longitude: 19.3326
+    population: 7608
+    dem: 123
+    timezone: "Europe/Budapest"
+  - name: "Tiszaalpar"
+    latitude: 46.81279
+    longitude: 19.99841
+    population: 5070
+    dem: 87
+    timezone: "Europe/Budapest"
+- name: "Tolna megye"
+  cities:
+  - name: "Tolna"
+    latitude: 46.42677
+    longitude: 18.78248
+    population: 12011
+    dem: 100
+    timezone: "Europe/Budapest"
+  - name: "Tamasi"
+    latitude: 46.63333
+    longitude: 18.28333
+    population: 9682
+    dem: 126
+    timezone: "Europe/Budapest"
+  - name: "Szekszard"
+    latitude: 46.35014
+    longitude: 18.70905
+    population: 34174
+    dem: 94
+    timezone: "Europe/Budapest"
+  - name: "Paks"
+    latitude: 46.6221
+    longitude: 18.85569
+    population: 20638
+    dem: 71
+    timezone: "Europe/Budapest"
+  - name: "Dunafoldvar"
+    latitude: 46.80713
+    longitude: 18.92763
+    population: 9073
+    dem: 132
+    timezone: "Europe/Budapest"
+  - name: "Dombovar"
+    latitude: 46.37657
+    longitude: 18.13696
+    population: 20748
+    dem: 131
+    timezone: "Europe/Budapest"
+  - name: "Bonyhad"
+    latitude: 46.29921
+    longitude: 18.53024
+    population: 14184
+    dem: 122
+    timezone: "Europe/Budapest"
+  - name: "Bataszek"
+    latitude: 46.19373
+    longitude: 18.72307
+    population: 6820
+    dem: 88
+    timezone: "Europe/Budapest"
+- name: "Gyor-Moson-Sopron megye"
+  cities:
+  - name: "Sopron"
+    latitude: 47.68501
+    longitude: 16.59049
+    population: 57210
+    dem: 217
+    timezone: "Europe/Budapest"
+  - name: "Mosonmagyarovar"
+    latitude: 47.86789
+    longitude: 17.26994
+    population: 30359
+    dem: 119
+    timezone: "Europe/Budapest"
+  - name: "Kapuvar"
+    latitude: 47.59224
+    longitude: 17.02886
+    population: 10661
+    dem: 124
+    timezone: "Europe/Budapest"
+  - name: "Janossomorja"
+    latitude: 47.78621
+    longitude: 17.13603
+    population: 5985
+    dem: 120
+    timezone: "Europe/Budapest"
+  - name: "Gyor"
+    latitude: 47.68333
+    longitude: 17.63512
+    population: 128265
+    dem: 122
+    timezone: "Europe/Budapest"
+  - name: "Csorna"
+    latitude: 47.61155
+    longitude: 17.25012
+    population: 10825
+    dem: 118
+    timezone: "Europe/Budapest"
+- name: "Szabolcs-Szatmar-Bereg"
+  cities:
+  - name: "Vasarosnameny"
+    latitude: 48.12542
+    longitude: 22.31325
+    population: 9310
+    dem: 109
+    timezone: "Europe/Budapest"
+  - name: "Ujfeherto"
+    latitude: 47.8
+    longitude: 21.68333
+    population: 13542
+    dem: 121
+    timezone: "Europe/Budapest"
+  - name: "Tiszavasvari"
+    latitude: 47.96667
+    longitude: 21.35
+    population: 13631
+    dem: 93
+    timezone: "Europe/Budapest"
+  - name: "Tiszalok"
+    latitude: 48.01667
+    longitude: 21.38333
+    population: 6122
+    dem: 93
+    timezone: "Europe/Budapest"
+  - name: "Rakamaz"
+    latitude: 48.12372
+    longitude: 21.46429
+    population: 5197
+    dem: 102
+    timezone: "Europe/Budapest"
+  - name: "Nyirtelek"
+    latitude: 48.01667
+    longitude: 21.63333
+    population: 7138
+    dem: 101
+    timezone: "Europe/Budapest"
+  - name: "Nyiregyhaza"
+    latitude: 47.95539
+    longitude: 21.71671
+    population: 116298
+    dem: 111
+    timezone: "Europe/Budapest"
+  - name: "Nyirbator"
+    latitude: 47.83333
+    longitude: 22.13333
+    population: 13434
+    dem: 152
+    timezone: "Europe/Budapest"
+  - name: "Nagykallo"
+    latitude: 47.87491
+    longitude: 21.84082
+    population: 10796
+    dem: 123
+    timezone: "Europe/Budapest"
+  - name: "Nagyhalasz"
+    latitude: 48.13266
+    longitude: 21.76104
+    population: 5924
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Nagyecsed"
+    latitude: 47.86547
+    longitude: 22.39159
+    population: 6919
+    dem: 115
+    timezone: "Europe/Budapest"
+  - name: "Mateszalka"
+    latitude: 47.95528
+    longitude: 22.32348
+    population: 18718
+    dem: 124
+    timezone: "Europe/Budapest"
+  - name: "Kisvarda"
+    latitude: 48.21667
+    longitude: 22.08333
+    population: 18190
+    dem: 106
+    timezone: "Europe/Budapest"
+  - name: "Kemecse"
+    latitude: 48.07532
+    longitude: 21.80625
+    population: 5029
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Ibrany"
+    latitude: 48.12329
+    longitude: 21.70953
+    population: 6880
+    dem: 100
+    timezone: "Europe/Budapest"
+  - name: "Fehergyarmat"
+    latitude: 47.98333
+    longitude: 22.51667
+    population: 9031
+    dem: 111
+    timezone: "Europe/Budapest"
+  - name: "Csenger"
+    latitude: 47.83582
+    longitude: 22.68096
+    population: 5225
+    dem: 120
+    timezone: "Europe/Budapest"
+  - name: "Balkany"
+    latitude: 47.77066
+    longitude: 21.86314
+    population: 6798
+    dem: 138
+    timezone: "Europe/Budapest"
+- name: "Bekes County"
+  cities:
+  - name: "Veszto"
+    latitude: 46.91667
+    longitude: 21.26667
+    population: 7494
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Ujkigyos"
+    latitude: 46.58333
+    longitude: 21.03333
+    population: 5602
+    dem: 91
+    timezone: "Europe/Budapest"
+  - name: "Totkomlos"
+    latitude: 46.41667
+    longitude: 20.73333
+    population: 6497
+    dem: 91
+    timezone: "Europe/Budapest"
+  - name: "Szeghalom"
+    latitude: 47.03333
+    longitude: 21.16667
+    population: 9985
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Szarvas"
+    latitude: 46.86667
+    longitude: 20.55
+    population: 18170
+    dem: 82
+    timezone: "Europe/Budapest"
+  - name: "Sarkad"
+    latitude: 46.75
+    longitude: 21.38333
+    population: 10698
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Oroshaza"
+    latitude: 46.56667
+    longitude: 20.66667
+    population: 31373
+    dem: 88
+    timezone: "Europe/Budapest"
+  - name: "Nagyszenas"
+    latitude: 46.68333
+    longitude: 20.66667
+    population: 5617
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Mezokovacshaza"
+    latitude: 46.4
+    longitude: 20.91667
+    population: 6877
+    dem: 97
+    timezone: "Europe/Budapest"
+  - name: "Mezohegyes"
+    latitude: 46.31667
+    longitude: 20.81667
+    population: 6220
+    dem: 96
+    timezone: "Europe/Budapest"
+  - name: "Mezobereny"
+    latitude: 46.81667
+    longitude: 21.03333
+    population: 11306
+    dem: 81
+    timezone: "Europe/Budapest"
+  - name: "Korosladany"
+    latitude: 46.96667
+    longitude: 21.08333
+    population: 5006
+    dem: 85
+    timezone: "Europe/Budapest"
+  - name: "Kondoros"
+    latitude: 46.76667
+    longitude: 20.8
+    population: 5793
+    dem: 84
+    timezone: "Europe/Budapest"
+  - name: "Gyula"
+    latitude: 46.65
+    longitude: 21.28333
+    population: 32269
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Gyomaendrod"
+    latitude: 46.93333
+    longitude: 20.83333
+    population: 15194
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Fuzesgyarmat"
+    latitude: 47.1
+    longitude: 21.21667
+    population: 6426
+    dem: 86
+    timezone: "Europe/Budapest"
+  - name: "Elek"
+    latitude: 46.53333
+    longitude: 21.25
+    population: 5465
+    dem: 93
+    timezone: "Europe/Budapest"
+  - name: "Devavanya"
+    latitude: 47.03333
+    longitude: 20.96667
+    population: 8796
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Csorvas"
+    latitude: 46.63333
+    longitude: 20.83333
+    population: 5643
+    dem: 89
+    timezone: "Europe/Budapest"
+  - name: "Bekescsaba"
+    latitude: 46.68333
+    longitude: 21.1
+    population: 65206
+    dem: 87
+    timezone: "Europe/Budapest"
+  - name: "Bekes"
+    latitude: 46.76667
+    longitude: 21.13333
+    population: 21198
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Battonya"
+    latitude: 46.28333
+    longitude: 21.01667
+    population: 6604
+    dem: 100
+    timezone: "Europe/Budapest"
+- name: "Zala megye"
+  cities:
+  - name: "Zalaszentgrot"
+    latitude: 46.94474
+    longitude: 17.07925
+    population: 7796
+    dem: 124
+    timezone: "Europe/Budapest"
+  - name: "Zalaegerszeg"
+    latitude: 46.84
+    longitude: 16.84389
+    population: 61898
+    dem: 152
+    timezone: "Europe/Budapest"
+  - name: "Nagykanizsa"
+    latitude: 46.45347
+    longitude: 16.99104
+    population: 50823
+    dem: 152
+    timezone: "Europe/Budapest"
+  - name: "Lenti"
+    latitude: 46.62403
+    longitude: 16.53863
+    population: 8399
+    dem: 168
+    timezone: "Europe/Budapest"
+  - name: "Keszthely"
+    latitude: 46.76812
+    longitude: 17.24317
+    population: 21534
+    dem: 128
+    timezone: "Europe/Budapest"
+- name: "Komarom-Esztergom"
+  cities:
+  - name: "Tatabanya"
+    latitude: 47.58494
+    longitude: 18.39325
+    population: 70541
+    dem: 146
+    timezone: "Europe/Budapest"
+  - name: "Tata"
+    latitude: 47.65289
+    longitude: 18.31838
+    population: 23868
+    dem: 123
+    timezone: "Europe/Budapest"
+  - name: "Tat"
+    latitude: 47.74148
+    longitude: 18.64813
+    population: 5575
+    dem: 106
+    timezone: "Europe/Budapest"
+  - name: "Oroszlany"
+    latitude: 47.48671
+    longitude: 18.31225
+    population: 20271
+    dem: 182
+    timezone: "Europe/Budapest"
+  - name: "Nyergesujfalu"
+    latitude: 47.76027
+    longitude: 18.55694
+    population: 7667
+    dem: 108
+    timezone: "Europe/Budapest"
+  - name: "Labatlan"
+    latitude: 47.74735
+    longitude: 18.49623
+    population: 5357
+    dem: 143
+    timezone: "Europe/Budapest"
+  - name: "Komarom"
+    latitude: 47.74318
+    longitude: 18.11913
+    population: 19646
+    dem: 112
+    timezone: "Europe/Budapest"
+  - name: "Kisber"
+    latitude: 47.50289
+    longitude: 18.03665
+    population: 5850
+    dem: 177
+    timezone: "Europe/Budapest"
+  - name: "Esztergom"
+    latitude: 47.7928
+    longitude: 18.74148
+    population: 28785
+    dem: 110
+    timezone: "Europe/Budapest"
+  - name: "Dorog"
+    latitude: 47.72095
+    longitude: 18.73641
+    population: 12658
+    dem: 129
+    timezone: "Europe/Budapest"
+  - name: "Acs"
+    latitude: 47.71231
+    longitude: 18.01131
+    population: 7180
+    dem: 116
+    timezone: "Europe/Budapest"
+- name: "Csongrad megye"
+  cities:
+  - name: "Szeged"
+    latitude: 46.253
+    longitude: 20.14824
+    population: 164883
+    dem: 84
+    timezone: "Europe/Budapest"
+  - name: "Sandorfalva"
+    latitude: 46.36087
+    longitude: 20.09889
+    population: 7738
+    dem: 83
+    timezone: "Europe/Budapest"
+  - name: "Mindszent"
+    latitude: 46.52362
+    longitude: 20.19038
+    population: 7243
+    dem: 80
+    timezone: "Europe/Budapest"
+  - name: "Mako"
+    latitude: 46.21667
+    longitude: 20.48333
+    population: 25135
+    dem: 81
+    timezone: "Europe/Budapest"
+  - name: "Hodmezovasarhely"
+    latitude: 46.41667
+    longitude: 20.33333
+    population: 47485
+    dem: 80
+    timezone: "Europe/Budapest"
+  - name: "Csongrad"
+    latitude: 46.71332
+    longitude: 20.14241
+    population: 18580
+    dem: 81
+    timezone: "Europe/Budapest"
+  - name: "Morahalom"
+    latitude: 46.21806
+    longitude: 19.8851
+    population: 5445
+    dem: 92
+    timezone: "Europe/Budapest"
+  - name: "Kistelek"
+    latitude: 46.4725
+    longitude: 19.97972
+    population: 7430
+    dem: 88
+    timezone: "Europe/Budapest"
+  - name: "Algyo"
+    latitude: 46.33472
+    longitude: 20.20849
+    population: 5247
+    dem: 78
+    timezone: "Europe/Budapest"

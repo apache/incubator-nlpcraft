@@ -1,0 +1,700 @@
+---
+name: "Slovakia"
+iso: "SK"
+iso3: "SVK"
+code: "703"
+capital: "Bratislava"
+area: 48845.0
+population: 5455000
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "421"
+postalCodeFormat: "### ##"
+postalCodeRegex: "^\\d{3}\\s?\\d{2}$"
+languages: "sk,hu"
+neighbours: "PL,HU,CZ,UA,AT"
+regions:
+- name: "Bratislava"
+  cities:
+  - name: "Stupava"
+    latitude: 48.27474
+    longitude: 17.03173
+    population: 8063
+    dem: 179
+    timezone: "Europe/Bratislava"
+  - name: "Senec"
+    latitude: 48.21951
+    longitude: 17.40043
+    population: 14673
+    dem: 127
+    timezone: "Europe/Bratislava"
+  - name: "Pezinok"
+    latitude: 48.28986
+    longitude: 17.26664
+    population: 21343
+    dem: 162
+    timezone: "Europe/Bratislava"
+  - name: "Modra"
+    latitude: 48.33397
+    longitude: 17.30711
+    population: 8536
+    dem: 173
+    timezone: "Europe/Bratislava"
+  - name: "Malacky"
+    latitude: 48.43604
+    longitude: 17.02188
+    population: 17773
+    dem: 164
+    timezone: "Europe/Bratislava"
+  - name: "Ivanka pri Dunaji"
+    latitude: 48.18675
+    longitude: 17.2554
+    population: 6245
+    dem: 132
+    timezone: "Europe/Bratislava"
+  - name: "Bratislava-Vajnory"
+    latitude: 48.20563
+    longitude: 17.20759
+    population: 5484
+    dem: 133
+    timezone: "Europe/Bratislava"
+  - name: "Bratislava"
+    latitude: 48.14816
+    longitude: 17.10674
+    population: 423737
+    dem: 157
+    timezone: "Europe/Bratislava"
+- name: "Presov"
+  cities:
+  - name: "Vranov nad Toplou"
+    latitude: 48.88836
+    longitude: 21.68479
+    population: 23246
+    dem: 131
+    timezone: "Europe/Bratislava"
+  - name: "Svit"
+    latitude: 49.06014
+    longitude: 20.20695
+    population: 7445
+    dem: 723
+    timezone: "Europe/Bratislava"
+  - name: "Svidnik"
+    latitude: 49.30819
+    longitude: 21.5703
+    population: 12428
+    dem: 229
+    timezone: "Europe/Bratislava"
+  - name: "Stropkov"
+    latitude: 49.20211
+    longitude: 21.65216
+    population: 10874
+    dem: 201
+    timezone: "Europe/Bratislava"
+  - name: "Stara Lubovna"
+    latitude: 49.29859
+    longitude: 20.6862
+    population: 16000
+    dem: 548
+    timezone: "Europe/Bratislava"
+  - name: "Spisska Bela"
+    latitude: 49.18725
+    longitude: 20.45948
+    population: 6136
+    dem: 625
+    timezone: "Europe/Bratislava"
+  - name: "Snina"
+    latitude: 48.98857
+    longitude: 22.15099
+    population: 22221
+    dem: 215
+    timezone: "Europe/Bratislava"
+  - name: "Sabinov"
+    latitude: 49.10309
+    longitude: 21.0988
+    population: 12290
+    dem: 318
+    timezone: "Europe/Bratislava"
+  - name: "Presov"
+    latitude: 48.99839
+    longitude: 21.23393
+    population: 94718
+    dem: 247
+    timezone: "Europe/Bratislava"
+  - name: "Poprad"
+    latitude: 49.06144
+    longitude: 20.29798
+    population: 57431
+    dem: 668
+    timezone: "Europe/Bratislava"
+  - name: "Medzilaborce"
+    latitude: 49.27195
+    longitude: 21.90073
+    population: 6741
+    dem: 326
+    timezone: "Europe/Bratislava"
+  - name: "Lipany"
+    latitude: 49.15376
+    longitude: 20.96382
+    population: 6130
+    dem: 387
+    timezone: "Europe/Bratislava"
+  - name: "Levoca"
+    latitude: 49.02173
+    longitude: 20.59212
+    population: 14511
+    dem: 536
+    timezone: "Europe/Bratislava"
+  - name: "Kezmarok"
+    latitude: 49.13571
+    longitude: 20.43352
+    population: 21391
+    elevation: 630
+    dem: 615
+    timezone: "Europe/Bratislava"
+  - name: "Humenne"
+    latitude: 48.93707
+    longitude: 21.91625
+    population: 35367
+    dem: 152
+    timezone: "Europe/Bratislava"
+  - name: "Chlmec"
+    latitude: 48.88628
+    longitude: 21.9393
+    population: 8031
+    dem: 213
+    timezone: "Europe/Bratislava"
+  - name: "Bardejov"
+    latitude: 49.29175
+    longitude: 21.27271
+    population: 33060
+    dem: 283
+    timezone: "Europe/Bratislava"
+- name: "Zilina"
+  cities:
+  - name: "Zilina"
+    latitude: 49.22315
+    longitude: 18.73941
+    population: 85985
+    dem: 347
+    timezone: "Europe/Bratislava"
+  - name: "Vrutky"
+    latitude: 49.11328
+    longitude: 18.91714
+    population: 7298
+    dem: 386
+    timezone: "Europe/Bratislava"
+  - name: "Tvrdosin"
+    latitude: 49.337
+    longitude: 19.556
+    population: 9544
+    dem: 585
+    timezone: "Europe/Bratislava"
+  - name: "Turzovka"
+    latitude: 49.40429
+    longitude: 18.62258
+    population: 7854
+    dem: 472
+    timezone: "Europe/Bratislava"
+  - name: "Trstena"
+    latitude: 49.36101
+    longitude: 19.61249
+    population: 7461
+    dem: 607
+    timezone: "Europe/Bratislava"
+  - name: "Ruzomberok"
+    latitude: 49.0748
+    longitude: 19.30751
+    population: 30806
+    dem: 481
+    timezone: "Europe/Bratislava"
+  - name: "Rajec"
+    latitude: 49.08899
+    longitude: 18.64007
+    population: 6400
+    dem: 448
+    timezone: "Europe/Bratislava"
+  - name: "Namestovo"
+    latitude: 49.4079
+    longitude: 19.48032
+    population: 8135
+    dem: 629
+    timezone: "Europe/Bratislava"
+  - name: "Martin"
+    latitude: 49.06651
+    longitude: 18.92399
+    population: 60817
+    dem: 396
+    timezone: "Europe/Bratislava"
+  - name: "Liptovsky Mikulas"
+    latitude: 49.08061
+    longitude: 19.62218
+    population: 33509
+    dem: 582
+    timezone: "Europe/Bratislava"
+  - name: "Liptovsky Hradok"
+    latitude: 49.03962
+    longitude: 19.72335
+    population: 7572
+    elevation: 640
+    dem: 645
+    timezone: "Europe/Bratislava"
+  - name: "Kysucke Nove Mesto"
+    latitude: 49.3
+    longitude: 18.78333
+    population: 16558
+    dem: 356
+    timezone: "Europe/Bratislava"
+  - name: "Dolny Kubin"
+    latitude: 49.20983
+    longitude: 19.30341
+    population: 18995
+    elevation: 468
+    dem: 520
+    timezone: "Europe/Bratislava"
+  - name: "Cadca"
+    latitude: 49.43503
+    longitude: 18.78895
+    population: 24670
+    dem: 428
+    timezone: "Europe/Bratislava"
+  - name: "Bytca"
+    latitude: 49.22404
+    longitude: 18.55878
+    population: 11279
+    dem: 307
+    timezone: "Europe/Bratislava"
+- name: "Banska Bystrica"
+  cities:
+  - name: "Rimavska Sobota"
+    latitude: 48.38284
+    longitude: 20.02239
+    population: 25235
+    dem: 208
+    timezone: "Europe/Bratislava"
+  - name: "Revuca"
+    latitude: 48.68346
+    longitude: 20.11734
+    population: 13466
+    dem: 318
+    timezone: "Europe/Bratislava"
+  - name: "Zvolen"
+    latitude: 48.57442
+    longitude: 19.15324
+    population: 44502
+    dem: 297
+    timezone: "Europe/Bratislava"
+  - name: "Ziar nad Hronom"
+    latitude: 48.59184
+    longitude: 18.84958
+    population: 19392
+    dem: 279
+    timezone: "Europe/Bratislava"
+  - name: "Zarnovica"
+    latitude: 48.48123
+    longitude: 18.71565
+    population: 6596
+    dem: 230
+    timezone: "Europe/Bratislava"
+  - name: "Velky Krtis"
+    latitude: 48.21059
+    longitude: 19.35043
+    population: 12608
+    dem: 218
+    timezone: "Europe/Bratislava"
+  - name: "Poltar"
+    latitude: 48.43094
+    longitude: 19.79408
+    population: 6099
+    dem: 246
+    timezone: "Europe/Bratislava"
+  - name: "Nova Bana"
+    latitude: 48.42305
+    longitude: 18.64037
+    population: 7505
+    dem: 231
+    timezone: "Europe/Bratislava"
+  - name: "Lucenec"
+    latitude: 48.33249
+    longitude: 19.66708
+    population: 28159
+    dem: 187
+    timezone: "Europe/Bratislava"
+  - name: "Krupina"
+    latitude: 48.3554
+    longitude: 19.06474
+    population: 7991
+    dem: 270
+    timezone: "Europe/Bratislava"
+  - name: "Kremnica"
+    latitude: 48.70519
+    longitude: 18.91834
+    population: 5356
+    elevation: 550
+    dem: 566
+    timezone: "Europe/Bratislava"
+  - name: "Hrinova"
+    latitude: 48.57787
+    longitude: 19.52574
+    population: 8289
+    dem: 476
+    timezone: "Europe/Bratislava"
+  - name: "Filakovo"
+    latitude: 48.26757
+    longitude: 19.82473
+    population: 10198
+    dem: 191
+    timezone: "Europe/Bratislava"
+  - name: "Detva"
+    latitude: 48.56082
+    longitude: 19.41954
+    population: 15020
+    dem: 414
+    timezone: "Europe/Bratislava"
+  - name: "Cierny Balog"
+    latitude: 48.74722
+    longitude: 19.65125
+    population: 5234
+    elevation: 555
+    dem: 530
+    timezone: "Europe/Bratislava"
+  - name: "Brezno"
+    latitude: 48.80431
+    longitude: 19.63631
+    population: 21331
+    dem: 492
+    timezone: "Europe/Bratislava"
+  - name: "Banska Stiavnica"
+    latitude: 48.44858
+    longitude: 18.91003
+    population: 10191
+    dem: 522
+    timezone: "Europe/Bratislava"
+  - name: "Banska Bystrica"
+    latitude: 48.73946
+    longitude: 19.15349
+    population: 82336
+    dem: 351
+    timezone: "Europe/Bratislava"
+- name: "Nitra"
+  cities:
+  - name: "Zlate Moravce"
+    latitude: 48.38553
+    longitude: 18.40063
+    population: 15618
+    dem: 197
+    timezone: "Europe/Bratislava"
+  - name: "Zeliezovce"
+    latitude: 48.05075
+    longitude: 18.65421
+    population: 7522
+    dem: 135
+    timezone: "Europe/Bratislava"
+  - name: "Vrable"
+    latitude: 48.24371
+    longitude: 18.30846
+    population: 9493
+    dem: 143
+    timezone: "Europe/Bratislava"
+  - name: "Surany"
+    latitude: 48.08613
+    longitude: 18.18447
+    population: 10491
+    dem: 122
+    timezone: "Europe/Bratislava"
+  - name: "Sturovo"
+    latitude: 47.79495
+    longitude: 18.7175
+    population: 11708
+    dem: 110
+    timezone: "Europe/Bratislava"
+  - name: "Sala"
+    latitude: 48.15127
+    longitude: 17.88062
+    population: 24513
+    dem: 114
+    timezone: "Europe/Bratislava"
+  - name: "Sahy"
+    latitude: 48.07408
+    longitude: 18.94946
+    population: 8061
+    dem: 143
+    timezone: "Europe/Bratislava"
+  - name: "Puchov"
+    latitude: 49.12494
+    longitude: 18.32597
+    population: 18833
+    dem: 264
+    timezone: "Europe/Bratislava"
+  - name: "Prievidza"
+    latitude: 48.77446
+    longitude: 18.6275
+    population: 52987
+    dem: 295
+    timezone: "Europe/Bratislava"
+  - name: "Partizanske"
+    latitude: 48.62861
+    longitude: 18.38455
+    population: 24370
+    dem: 192
+    timezone: "Europe/Bratislava"
+  - name: "Nove Zamky"
+    latitude: 47.98544
+    longitude: 18.16195
+    population: 42044
+    dem: 122
+    timezone: "Europe/Bratislava"
+  - name: "Nitra"
+    latitude: 48.30763
+    longitude: 18.08453
+    population: 86329
+    dem: 144
+    timezone: "Europe/Bratislava"
+  - name: "Nemsova"
+    latitude: 48.96702
+    longitude: 18.11892
+    population: 6136
+    dem: 226
+    timezone: "Europe/Bratislava"
+  - name: "Levice"
+    latitude: 48.21563
+    longitude: 18.60705
+    population: 37574
+    dem: 162
+    timezone: "Europe/Bratislava"
+  - name: "Komarno"
+    latitude: 47.76356
+    longitude: 18.12263
+    population: 36279
+    dem: 116
+    timezone: "Europe/Bratislava"
+  - name: "Kolarovo"
+    latitude: 47.92294
+    longitude: 17.98467
+    population: 10823
+    dem: 109
+    timezone: "Europe/Bratislava"
+  - name: "Ilava"
+    latitude: 48.99769
+    longitude: 18.2353
+    population: 5411
+    dem: 258
+    timezone: "Europe/Bratislava"
+  - name: "Hurbanovo"
+    latitude: 47.86984
+    longitude: 18.19233
+    population: 8153
+    dem: 111
+    timezone: "Europe/Bratislava"
+  - name: "Handlova"
+    latitude: 48.7276
+    longitude: 18.76012
+    population: 18018
+    dem: 424
+    timezone: "Europe/Bratislava"
+- name: "Trnava"
+  cities:
+  - name: "Vrbove"
+    latitude: 48.61973
+    longitude: 17.7226
+    population: 6249
+    dem: 183
+    timezone: "Europe/Bratislava"
+  - name: "Velky Meder"
+    latitude: 47.85798
+    longitude: 17.76884
+    population: 9113
+    dem: 111
+    timezone: "Europe/Bratislava"
+  - name: "Trnava"
+    latitude: 48.37741
+    longitude: 17.58723
+    population: 69785
+    dem: 147
+    timezone: "Europe/Bratislava"
+  - name: "Sladkovicovo"
+    latitude: 48.20137
+    longitude: 17.63852
+    population: 6078
+    dem: 118
+    timezone: "Europe/Bratislava"
+  - name: "Skalica"
+    latitude: 48.8449
+    longitude: 17.22635
+    population: 15013
+    dem: 179
+    timezone: "Europe/Bratislava"
+  - name: "Senica"
+    latitude: 48.67922
+    longitude: 17.36697
+    population: 21741
+    dem: 209
+    timezone: "Europe/Bratislava"
+  - name: "Samorin"
+    latitude: 48.03015
+    longitude: 17.30972
+    population: 12143
+    dem: 125
+    timezone: "Europe/Bratislava"
+  - name: "Piestany"
+    latitude: 48.59479
+    longitude: 17.82591
+    population: 30000
+    dem: 161
+    timezone: "Europe/Bratislava"
+  - name: "Holic"
+    latitude: 48.81105
+    longitude: 17.16238
+    population: 11416
+    dem: 180
+    timezone: "Europe/Bratislava"
+  - name: "Hlohovec"
+    latitude: 48.43174
+    longitude: 17.8031
+    population: 23930
+    dem: 144
+    timezone: "Europe/Bratislava"
+  - name: "Gbely"
+    latitude: 48.718
+    longitude: 17.11628
+    population: 5223
+    dem: 186
+    timezone: "Europe/Bratislava"
+  - name: "Galanta"
+    latitude: 48.19001
+    longitude: 17.72747
+    population: 16365
+    dem: 119
+    timezone: "Europe/Bratislava"
+  - name: "Gabcikovo"
+    latitude: 47.89211
+    longitude: 17.57884
+    population: 5343
+    elevation: 114
+    dem: 116
+    timezone: "Europe/Bratislava"
+  - name: "Dunajska Streda"
+    latitude: 47.99268
+    longitude: 17.61211
+    population: 23639
+    dem: 117
+    timezone: "Europe/Bratislava"
+- name: "Trencin"
+  cities:
+  - name: "Trencin"
+    latitude: 48.89452
+    longitude: 18.04436
+    population: 58278
+    dem: 284
+    timezone: "Europe/Bratislava"
+  - name: "Stara Tura"
+    latitude: 48.77721
+    longitude: 17.69433
+    population: 10291
+    dem: 279
+    timezone: "Europe/Bratislava"
+  - name: "Povazska Bystrica"
+    latitude: 49.12153
+    longitude: 18.42169
+    population: 43936
+    dem: 280
+    timezone: "Europe/Bratislava"
+  - name: "Nove Mesto nad Vahom"
+    latitude: 48.75763
+    longitude: 17.8309
+    population: 21527
+    dem: 195
+    timezone: "Europe/Bratislava"
+  - name: "Nova Dubnica"
+    latitude: 48.93479
+    longitude: 18.14632
+    population: 12358
+    dem: 239
+    timezone: "Europe/Bratislava"
+  - name: "Myjava"
+    latitude: 48.75876
+    longitude: 17.56866
+    population: 13142
+    dem: 332
+    timezone: "Europe/Bratislava"
+  - name: "Dubnica nad Vahom"
+    latitude: 48.95981
+    longitude: 18.16634
+    population: 26617
+    elevation: 220
+    dem: 246
+    timezone: "Europe/Bratislava"
+  - name: "Brezova pod Bradlom"
+    latitude: 48.66349
+    longitude: 17.53905
+    population: 5567
+    dem: 259
+    timezone: "Europe/Bratislava"
+  - name: "Banovce nad Bebravou"
+    latitude: 48.7213
+    longitude: 18.25754
+    population: 18933
+    dem: 217
+    timezone: "Europe/Bratislava"
+- name: "Kosice"
+  cities:
+  - name: "Trebisov"
+    latitude: 48.62858
+    longitude: 21.71954
+    population: 22947
+    dem: 105
+    timezone: "Europe/Bratislava"
+  - name: "Spisska Nova Ves"
+    latitude: 48.94464
+    longitude: 20.56153
+    population: 39195
+    dem: 459
+    timezone: "Europe/Bratislava"
+  - name: "Sobrance"
+    latitude: 48.74455
+    longitude: 22.18136
+    population: 6262
+    dem: 118
+    timezone: "Europe/Bratislava"
+  - name: "Secovce"
+    latitude: 48.70074
+    longitude: 21.66104
+    population: 7819
+    dem: 125
+    timezone: "Europe/Bratislava"
+  - name: "Roznava"
+    latitude: 48.66009
+    longitude: 20.53758
+    population: 19261
+    dem: 318
+    timezone: "Europe/Bratislava"
+  - name: "Moldava nad Bodvou"
+    latitude: 48.61428
+    longitude: 20.99957
+    population: 9525
+    dem: 209
+    timezone: "Europe/Bratislava"
+  - name: "Michalovce"
+    latitude: 48.75434
+    longitude: 21.9195
+    population: 40360
+    dem: 111
+    timezone: "Europe/Bratislava"
+  - name: "Krompachy"
+    latitude: 48.91447
+    longitude: 20.87514
+    population: 8812
+    dem: 380
+    timezone: "Europe/Bratislava"
+  - name: "Kosice"
+    latitude: 48.71395
+    longitude: 21.25808
+    population: 236563
+    dem: 205
+    timezone: "Europe/Bratislava"
+  - name: "Gelnica"
+    latitude: 48.85584
+    longitude: 20.93713
+    population: 6404
+    dem: 363
+    timezone: "Europe/Bratislava"

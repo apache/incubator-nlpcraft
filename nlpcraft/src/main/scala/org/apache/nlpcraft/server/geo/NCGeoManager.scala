@@ -17,10 +17,12 @@
 
 package org.apache.nlpcraft.server.geo
 
+import java.io.File
+
+import com.fasterxml.jackson.core.`type`.TypeReference
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.dict.{NCDictionaryManager, NCDictionaryType}
 import org.apache.nlpcraft.common.{NCService, _}
-import org.apache.nlpcraft.server.json.NCJson
 
 import scala.collection.{immutable, mutable}
 
@@ -30,13 +32,13 @@ import scala.collection.{immutable, mutable}
 object NCGeoManager extends NCService {
     // Config files.
     private final val COUNTRY_DIR = "geo/countries"
-    private final val CONT_PATH = "geo/continents.json"
-    private final val METRO_PATH = "geo/metro.json"
+    private final val CONT_PATH = "geo/continents.yaml"
+    private final val METRO_PATH = "geo/metro.yaml"
     private final val SYNONYMS_DIR_PATH = "geo/synonyms"
     private final val CASE_SENSITIVE_DIR_PATH = s"$SYNONYMS_DIR_PATH/case_sensitive"
     
     // Special file, the data of which are not filtered by common dictionary words.
-    private final val SYNONYMS_MANUAL_FILES = Seq("manual.json", "states.json")
+    private final val SYNONYMS_MANUAL_FILES = Seq("list.yaml", "states.yaml")
 
     @volatile private var model: NCGeoModel = _
     
@@ -44,10 +46,10 @@ object NCGeoManager extends NCService {
     private final val CITY_AUX = Seq("city", "town", "metropolis")
     private final val REGION_AUX = Seq("region", "state", "area")
 
-    case class JsonMetro(name: String)
-    case class JsonCountry(name: String, iso: String)
+    case class YamlMetro(name: String)
+    case class YamlCountry(name: String, iso: String)
 
-    case class JsonCity(
+    case class YamlCity(
         name: String,
         latitude: Double,
         longitude: Double,
@@ -56,8 +58,8 @@ object NCGeoManager extends NCService {
         dem: Int,
         timezone: String
     )
-    case class JsonRegion(name: String, cities: List[JsonCity])
-    case class JsonCountryHolder(
+    case class YamlRegion(name: String, cities: List[YamlCity])
+    case class YamlCountryHolder(
         name: String,
         iso: String,
         iso3: String,
@@ -73,9 +75,9 @@ object NCGeoManager extends NCService {
         postalCodeRegex: Option[String],
         languages: Option[String],
         neighbours: Option[String],
-        regions: Seq[JsonRegion]
+        regions: Seq[YamlRegion]
     )
-    case class JsTopCity(name: String, region: String, country: String)
+    case class YamlTopCity(name: String, region: String, country: String)
 
     /**
       * Starts manager.
@@ -83,7 +85,7 @@ object NCGeoManager extends NCService {
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         model = readAndConstructModel(true)
-        
+
         super.start()
     }
 
@@ -96,16 +98,16 @@ object NCGeoManager extends NCService {
 
         super.start()
     }
-    
+
     /**
       * Stops this component.
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         model = null
-        
+
         super.stop()
     }
-    
+
     /**
       * Gets GEO model.
       *
@@ -134,8 +136,19 @@ object NCGeoManager extends NCService {
       */
     @throws[NCE]
     private def readAndConstructModel(extended: Boolean): NCGeoModel = {
+        val extOpt = U.sysEnv("NLPCRAFT_RESOURCE_EXT")
+
+        if (extOpt.isDefined) {
+            logger.info(s"Using external GEO configuration from: ${extOpt.get}")
+            
+            val dir = new File(extOpt.get)
+
+            if (!dir.exists() || !dir.isDirectory)
+                throw new NCE(s"Invalid resource external folder: $dir")
+        }
+
         val geoEntries = mutable.HashMap[String, mutable.HashSet[NCGeoEntry]]()
-        
+
         val conts = mutable.HashSet.empty[NCGeoContinent]
         val subs = mutable.HashSet.empty[NCGeoSubContinent]
         val cntrs = mutable.HashSet.empty[NCGeoCountry]
@@ -151,7 +164,7 @@ object NCGeoManager extends NCService {
                 case Some(set) ⇒ set.add(geo)
                 case None ⇒ geoEntries += k → mutable.HashSet[NCGeoEntry](geo)
             }
-            
+
             geo match {
                 case x: NCGeoContinent ⇒ conts += x
                 case x: NCGeoSubContinent ⇒ subs += x
@@ -159,19 +172,20 @@ object NCGeoManager extends NCService {
                 case x: NCGeoRegion ⇒ regions += x
                 case x: NCGeoCity ⇒ cities += x
                 case x: NCGeoMetro ⇒ metro += x
-                
+
                 case _ ⇒ assert(assertion = false)
             }
         }
 
         // Subcontinent name -> continent.
         val subCont2ContMap = mutable.HashMap.empty[String, NCGeoContinent]
-        
+
         // +====================+
         // | 1. Process metros. |
         // +====================+
-        
-        for (p ← NCJson.extractResource[List[JsonMetro]](METRO_PATH, ignoreCase = true))
+        for (p ← U.extractYamlString(
+            U.getContent(METRO_PATH, extOpt), METRO_PATH, ignoreCase = true, new TypeReference[List[YamlMetro]] {})
+        )
             addEntry(p.name, NCGeoMetro(p.name), lowerCase = true)
 
         // +========================+
@@ -179,11 +193,12 @@ object NCGeoManager extends NCService {
         // +========================+
         val ctrsIsoToSubconts = mutable.HashMap.empty[String, NCGeoSubContinent]
 
-        for ((contName, subMap) ← NCJson.extractResource[
-            immutable.Map[
-                /* Continent name */String,
-                /* Map of sub-continents */immutable.Map[String, List[JsonCountry]]
-                ]](CONT_PATH, ignoreCase = true)) {
+        for ((contName, subMap) ← U.extractYamlString(
+            U.getContent(CONT_PATH, extOpt),
+            CONT_PATH,
+            ignoreCase = true,
+            new TypeReference[immutable.Map[String, immutable.Map[String, List[YamlCountry]]]] {} )
+        ) {
             val gCont = NCGeoContinent(contName)
 
             addEntry(contName, gCont, lowerCase = true)
@@ -213,78 +228,77 @@ object NCGeoManager extends NCService {
 
         val cntrMap = mutable.HashMap.empty[String, NCGeoCountry]
         val citiesMap = mutable.HashMap.empty[CityKey, NCGeoCity]
-        
-        for (f ← U.getFilesResources(COUNTRY_DIR)) {
-            val countryJs = NCJson.extractResource[JsonCountryHolder](f, ignoreCase = true)
+
+        for ((path, data) ← U.getContent(COUNTRY_DIR, extOpt, (name: String) ⇒ name.endsWith("yaml"))) {
+            val countryYaml = U.extractYamlString(data, path, ignoreCase = true, new TypeReference[YamlCountryHolder] {})
 
             val meta = mutable.HashMap.empty[String, Any]
 
-            add(meta, "iso", countryJs.iso)
-            add(meta, "iso3", countryJs.iso3)
-            add(meta, "isoCode", countryJs.code)
-            add(meta, "capital", countryJs.capital)
-            add(meta, "area", countryJs.area)
-            add(meta, "population", countryJs.population)
-            add(meta, "continent", countryJs.continent)
-            add(meta, "currencyCode", countryJs.currencyCode)
-            add(meta, "currencyName", countryJs.currencyName)
-            add(meta, "phone", countryJs.phone)
-            add(meta, "postalCodeFormat", countryJs.postalCodeFormat)
-            add(meta, "postalCodeRegex", countryJs.postalCodeRegex)
-            add(meta, "languages", countryJs.languages)
-            add(meta, "neighbours", countryJs.neighbours)
+            add(meta, "iso", countryYaml.iso)
+            add(meta, "iso3", countryYaml.iso3)
+            add(meta, "isoCode", countryYaml.code)
+            add(meta, "capital", countryYaml.capital)
+            add(meta, "area", countryYaml.area)
+            add(meta, "population", countryYaml.population)
+            add(meta, "continent", countryYaml.continent)
+            add(meta, "currencyCode", countryYaml.currencyCode)
+            add(meta, "currencyName", countryYaml.currencyName)
+            add(meta, "phone", countryYaml.phone)
+            add(meta, "postalCodeFormat", countryYaml.postalCodeFormat)
+            add(meta, "postalCodeRegex", countryYaml.postalCodeRegex)
+            add(meta, "languages", countryYaml.languages)
+            add(meta, "neighbours", countryYaml.neighbours)
 
-            val geoCountry = NCGeoCountry(countryJs.name, ctrsIsoToSubconts(countryJs.iso), meta.toMap)
+            val geoCountry = NCGeoCountry(countryYaml.name, ctrsIsoToSubconts(countryYaml.iso), meta.toMap)
 
             addEntry(geoCountry.name, geoCountry, lowerCase = true)
 
             cntrMap += geoCountry.name → geoCountry
 
-            for (reg ← countryJs.regions) {
-                val gReg = NCGeoRegion(reg.name, geoCountry)
+            if (countryYaml.regions != null)
+                for (reg ← countryYaml.regions) {
+                    val gReg = NCGeoRegion(reg.name, geoCountry)
 
-                addEntry(reg.name, gReg, lowerCase = true)
+                    addEntry(reg.name, gReg, lowerCase = true)
 
-                reg.cities.foreach(
-                    jsCity ⇒ {
-                        val meta = mutable.HashMap.empty[String, Any]
+                    if (reg.cities != null)
+                        reg.cities.foreach(
+                            jsCity ⇒ {
+                                val meta = mutable.HashMap.empty[String, Any]
 
-                        add(meta, "latitude", jsCity.latitude)
-                        add(meta, "longitude", jsCity.longitude)
-                        add(meta, "population", jsCity.population)
-                        add(meta, "elevation", jsCity.elevation)
-                        add(meta, "dem", jsCity.dem)
-                        add(meta, "timezone", jsCity.timezone)
+                                add(meta, "latitude", jsCity.latitude)
+                                add(meta, "longitude", jsCity.longitude)
+                                add(meta, "population", jsCity.population)
+                                add(meta, "elevation", jsCity.elevation)
+                                add(meta, "dem", jsCity.dem)
+                                add(meta, "timezone", jsCity.timezone)
 
-                        val geoCity = NCGeoCity(jsCity.name, gReg, meta.toMap)
+                                val geoCity = NCGeoCity(jsCity.name, gReg, meta.toMap)
 
-                        addEntry(jsCity.name, geoCity, lowerCase = true)
+                                addEntry(jsCity.name, geoCity, lowerCase = true)
 
-                        citiesMap += CityKey(jsCity.name, gReg.name, geoCountry.name) → geoCity
-                        citiesMap +=
-                            CityKey(
-                                jsCity.name,
-                                gReg.name,
-                                geoCountry.name,
-                                Some(geoCountry.subContinent.name),
-                                Some(geoCountry.subContinent.continent.name)
-                            ) → geoCity
-                    }
-                )
-            }
+                                citiesMap += CityKey(jsCity.name, gReg.name, geoCountry.name) → geoCity
+                                citiesMap +=
+                                    CityKey(
+                                        jsCity.name,
+                                        gReg.name,
+                                        geoCountry.name,
+                                        Some(geoCountry.subContinent.name),
+                                        Some(geoCountry.subContinent.continent.name)
+                                    ) → geoCity
+                            }
+                        )
+                }
         }
 
         // +======================+
         // | 4. Process synonyms. |
         // +======================+
-        
+
         val dicts = NCDictionaryManager.get(NCDictionaryType.WORD_COMMON)
-        
-        def readJss(dir: String): Seq[String] =
-            if (U.hasResource(dir)) U.getFilesResources(dir).filter(_.endsWith(".json")) else Seq.empty
-        
-        def extract(res: String, ignoreCase: Boolean): Seq[NCGeoSynonym] =
-            NCJson.extractResource[List[NCGeoSynonym]](res, ignoreCase)
+
+        def extractSynonyms(s: String, path: String, ignoreCase: Boolean): Seq[NCGeoSynonym] =
+            U.extractYamlString(s, path, ignoreCase, new TypeReference[List[NCGeoSynonym]] {})
 
         def getCachedCountry(cntr: String, sub: String, cont: String) = {
             val country = cntrMap.getOrElse(cntr, throw new NCE(s"Country not found: $cntr"))
@@ -302,11 +316,11 @@ object NCGeoManager extends NCService {
                 // Metro.
                 case NCGeoSynonym(None, None, None, None, None, Some(m), syns) ⇒
                     add(syns, NCGeoMetro(m))
-                
+
                 // Continent.
                 case NCGeoSynonym(None, None, None, None, Some(cont), None, syns) ⇒
                     add(syns, NCGeoContinent(cont))
-                
+
                 // Sub-continent (full representation).
                 case NCGeoSynonym(None, None, None, Some(sub), Some(cont), None, syns) ⇒
                     add(syns, NCGeoSubContinent(sub, NCGeoContinent(cont)))
@@ -322,7 +336,7 @@ object NCGeoManager extends NCService {
                 // Country (short representation).
                 case NCGeoSynonym(None, None, Some(cntr), None, None, None, syns) ⇒
                     add(syns, cntrMap(cntr))
-                
+
                 // Region (full representation).
                 case NCGeoSynonym(None, Some(reg), Some(cntr), Some(sub), Some(cont), None, syns) ⇒
                     add(syns, NCGeoRegion(reg, getCachedCountry(cntr, sub, cont)))
@@ -330,28 +344,31 @@ object NCGeoManager extends NCService {
                 // Region (short representation).
                 case NCGeoSynonym(None, Some(reg), Some(cntr), None, None, None, syns) ⇒
                     add(syns, NCGeoRegion(reg, cntrMap(cntr)))
-                
+
                 // City (full representation).
                 case NCGeoSynonym(Some(city), Some(reg), Some(cntr), Some(sub), Some(cont), None, syns) ⇒
                     add(syns, citiesMap(CityKey(city, reg, cntr, Some(sub), Some(cont))))
-                
+
                 // City (short representation).
                 case NCGeoSynonym(Some(city), Some(reg), Some(cntr), None, None, None, syns) ⇒
                     add(syns, citiesMap(CityKey(city, reg, cntr)))
 
                 case _ ⇒ throw new AssertionError(s"Unexpected synonym: $s")
             }
-        
-        for (file ← readJss(SYNONYMS_DIR_PATH); synonym ← extract(file, ignoreCase = true))
+
+        for (
+            (path, data) ← U.getContent(SYNONYMS_DIR_PATH, extOpt, (name: String) ⇒ name.endsWith("yaml"));
+            s ← extractSynonyms(data, path, ignoreCase = true)
+        )
             process(
-                synonym,
+                s,
                 (syns: Seq[String], geoEntry: NCGeoEntry) ⇒
                     geoEntries.get(geoEntry.name.toLowerCase) match {
                         case Some(set) if set.contains(geoEntry) ⇒
                             // NCGeoSynonym shouldn't be matched with common dictionary word.
                             // Exception - manually defined synonyms.
                             syns.filter(s ⇒
-                                SYNONYMS_MANUAL_FILES.exists(p ⇒ file.endsWith(s"/$p")) ||
+                                SYNONYMS_MANUAL_FILES.exists(p ⇒ path.endsWith(s"/$p")) ||
                                     (!dicts.contains(s) &&
                                         !dicts.contains(s.replaceAll("the ", "")) &&
                                         !dicts.contains(s.replaceAll("the-", "")))
@@ -363,14 +380,17 @@ object NCGeoManager extends NCService {
         // +=====================================+
         // | 5. Process case sensitive synonyms. |
         // +=====================================+
-        
-        for (file ← readJss(CASE_SENSITIVE_DIR_PATH); s ← extract(file, ignoreCase = false)) {
+
+        for (
+            (path, data) ← U.getContent(CASE_SENSITIVE_DIR_PATH, extOpt, (name: String) ⇒ name.endsWith("yaml"));
+            s ← extractSynonyms(data, path, ignoreCase = false)
+        ) {
             def toLc(opt: Option[String]): Option[String] =
                 opt match {
                     case Some(str) ⇒ Some(str.toLowerCase)
                     case None ⇒ None
                 }
-            
+
             process(
                 NCGeoSynonym(
                     toLc(s.city),
@@ -410,22 +430,41 @@ object NCGeoManager extends NCService {
         }
 
         /**
-          * Loads top cities from JSON res.
+          * Loads top cities from YAML res.
           *
-          * @param path JSON res path.
+          * @param path YAML res path.
           */
         def mkTopCities(path: String): immutable.Set[NCTopGeoCity] =
-            NCJson.extractResource[List[JsTopCity]](path, ignoreCase = true).map(city ⇒
-                cntrs.find(_.name == city.country) match {
-                    case Some(country) ⇒
-                        regions.find(r ⇒ r.name == city.region && r.country == country) match {
-                            case Some(region) ⇒ NCTopGeoCity(city.name, region)
-                            case None ⇒ throw new AssertionError(s"Region is not found: ${city.region}")
-                        }
-                    case None ⇒ throw new AssertionError(s"Country is not found: ${city.country}")
-                }
-            ).toSet
-        
+            U.extractYamlString(
+                U.getContent(path, extOpt), path, ignoreCase = true, new TypeReference[List[YamlTopCity]] {}
+            ).
+                map(city ⇒
+                    cntrs.find(_.name == city.country) match {
+                        case Some(country) ⇒
+                            regions.find(r ⇒ r.name == city.region && r.country == country) match {
+                                case Some(region) ⇒ NCTopGeoCity(city.name, region)
+                                case None ⇒ throw new AssertionError(s"Region is not found: ${city.region}")
+                            }
+                        case None ⇒ throw new AssertionError(s"Country is not found: ${city.country}")
+                    }
+                ).toSet
+
+        val topWorld = mkTopCities("geo/world_top.yaml")
+        val topUsa = mkTopCities("geo/us_top.yaml")
+
+        logger.info(s"GEO data loaded [" +
+            s"continents=${conts.size}, " +
+            s"subcontinents=${subs.size}, " +
+            s"countries=${cntrs.size}, " +
+            s"regions=${regions.size}, " +
+            s"cities=${cities.size}, " +
+            s"metro=${metro.size}, " +
+            s"topWorld=${topWorld.size}, " +
+            s"topUsa=${topUsa.size}, " +
+            s"synonyms=${geoEntries.size}" +
+            s"]"
+        )
+
         NCGeoModel(
             geoEntries.map(p ⇒ p._1 → p._2.toSet).toMap,
             conts.toSet,
@@ -434,8 +473,8 @@ object NCGeoManager extends NCService {
             regions.toSet,
             cities.toSet,
             metro.toSet,
-            mkTopCities("geo/world_top.json"),
-            mkTopCities("geo/us_top.json")
+            topWorld,
+            topUsa
         )
     }
 }

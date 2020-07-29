@@ -1,0 +1,482 @@
+---
+name: "Costa Rica"
+iso: "CR"
+iso3: "CRI"
+code: "188"
+capital: "San Jose"
+area: 51100.0
+population: 4516220
+continent: "NA"
+currencyCode: "CRC"
+currencyName: "Colon"
+phone: "506"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "es-CR,en"
+neighbours: "PA,NI"
+regions:
+- name: "Provincia de Limon"
+  cities:
+  - name: "Siquirres"
+    latitude: 10.09748
+    longitude: -83.50659
+    population: 18231
+    dem: 69
+    timezone: "America/Costa_Rica"
+  - name: "Limon"
+    latitude: 9.99074
+    longitude: -83.03596
+    population: 63081
+    dem: 29
+    timezone: "America/Costa_Rica"
+  - name: "Pocora"
+    latitude: 10.17185
+    longitude: -83.60439
+    population: 5248
+    dem: 99
+    timezone: "America/Costa_Rica"
+  - name: "Guapiles"
+    latitude: 10.21682
+    longitude: -83.78483
+    population: 19092
+    dem: 254
+    timezone: "America/Costa_Rica"
+  - name: "Guacimo"
+    latitude: 10.2129
+    longitude: -83.68793
+    population: 7022
+    dem: 120
+    timezone: "America/Costa_Rica"
+- name: "Provincia de Guanacaste"
+  cities:
+  - name: "Tilaran"
+    latitude: 10.46701
+    longitude: -84.96775
+    population: 7301
+    dem: 545
+    timezone: "America/Costa_Rica"
+  - name: "Santa Cruz"
+    latitude: 10.26053
+    longitude: -85.5851
+    population: 12281
+    dem: 58
+    timezone: "America/Costa_Rica"
+  - name: "Nicoya"
+    latitude: 10.15038
+    longitude: -85.45093
+    population: 15313
+    dem: 128
+    timezone: "America/Costa_Rica"
+  - name: "Liberia"
+    latitude: 10.63504
+    longitude: -85.43772
+    population: 45380
+    dem: 148
+    timezone: "America/Costa_Rica"
+  - name: "Canas"
+    latitude: 10.43105
+    longitude: -85.09825
+    population: 20306
+    dem: 86
+    timezone: "America/Costa_Rica"
+- name: "Provincia de Cartago"
+  cities:
+  - name: "Turrialba"
+    latitude: 9.90467
+    longitude: -83.68352
+    population: 28955
+    dem: 648
+    timezone: "America/Costa_Rica"
+  - name: "Tres Rios"
+    latitude: 9.90644
+    longitude: -83.9876
+    population: 10430
+    dem: 1332
+    timezone: "America/Costa_Rica"
+  - name: "San Diego"
+    latitude: 9.89898
+    longitude: -84.00287
+    population: 16991
+    dem: 1275
+    timezone: "America/Costa_Rica"
+  - name: "Paraiso"
+    latitude: 9.83832
+    longitude: -83.86557
+    population: 39702
+    dem: 1332
+    timezone: "America/Costa_Rica"
+  - name: "Cot"
+    latitude: 9.89449
+    longitude: -83.87302
+    population: 6784
+    dem: 1811
+    timezone: "America/Costa_Rica"
+  - name: "Concepcion"
+    latitude: 9.93333
+    longitude: -84.0
+    population: 14000
+    dem: 1388
+    timezone: "America/Costa_Rica"
+  - name: "Cartago"
+    latitude: 9.86444
+    longitude: -83.91944
+    population: 26594
+    dem: 1440
+    timezone: "America/Costa_Rica"
+- name: "Provincia de San Jose"
+  cities:
+  - name: "Tejar"
+    latitude: 9.74622
+    longitude: -84.23368
+    population: 22433
+    dem: 989
+    timezone: "America/Costa_Rica"
+  - name: "San Vicente"
+    latitude: 9.96016
+    longitude: -84.04762
+    population: 34447
+    dem: 1236
+    timezone: "America/Costa_Rica"
+  - name: "Santiago"
+    latitude: 9.84636
+    longitude: -84.31428
+    population: 8292
+    dem: 1109
+    timezone: "America/Costa_Rica"
+  - name: "Santa Ana"
+    latitude: 9.9326
+    longitude: -84.18255
+    population: 8029
+    dem: 909
+    timezone: "America/Costa_Rica"
+  - name: "San Rafael Arriba"
+    latitude: 9.87556
+    longitude: -84.07661
+    population: 15051
+    dem: 1205
+    timezone: "America/Costa_Rica"
+  - name: "San Rafael Abajo"
+    latitude: 9.831
+    longitude: -84.29008
+    population: 27419
+    dem: 826
+    timezone: "America/Costa_Rica"
+  - name: "San Rafael"
+    latitude: 9.92787
+    longitude: -84.13722
+    population: 25410
+    dem: 1060
+    timezone: "America/Costa_Rica"
+  - name: "San Pedro"
+    latitude: 9.92829
+    longitude: -84.05074
+    population: 27477
+    dem: 1199
+    timezone: "America/Costa_Rica"
+  - name: "San Miguel"
+    latitude: 9.87121
+    longitude: -84.06084
+    population: 28827
+    dem: 1216
+    timezone: "America/Costa_Rica"
+  - name: "San Juan de Dios"
+    latitude: 9.8773
+    longitude: -84.0847
+    population: 15469
+    dem: 1207
+    timezone: "America/Costa_Rica"
+  - name: "San Juan"
+    latitude: 9.95974
+    longitude: -84.08165
+    population: 26047
+    dem: 1151
+    timezone: "America/Costa_Rica"
+  - name: "San Jose"
+    latitude: 9.93333
+    longitude: -84.08333
+    population: 335007
+    dem: 1161
+    timezone: "America/Costa_Rica"
+  - name: "San Isidro"
+    latitude: 9.3674
+    longitude: -83.69713
+    population: 34877
+    dem: 707
+    timezone: "America/Costa_Rica"
+  - name: "San Felipe"
+    latitude: 9.90488
+    longitude: -84.10551
+    population: 24985
+    dem: 1127
+    timezone: "America/Costa_Rica"
+  - name: "Salitrillos"
+    latitude: 9.85259
+    longitude: -84.09062
+    population: 5738
+    dem: 1319
+    timezone: "America/Costa_Rica"
+  - name: "Sabanilla"
+    latitude: 9.94522
+    longitude: -84.03927
+    population: 13251
+    dem: 1240
+    timezone: "America/Costa_Rica"
+  - name: "Purral"
+    latitude: 9.95808
+    longitude: -84.0305
+    population: 30034
+    dem: 1270
+    timezone: "America/Costa_Rica"
+  - name: "Patarra"
+    latitude: 9.88071
+    longitude: -84.03501
+    population: 23983
+    dem: 1180
+    timezone: "America/Costa_Rica"
+  - name: "Mercedes"
+    latitude: 9.2627
+    longitude: -83.58202
+    population: 5467
+    dem: 597
+    timezone: "America/Costa_Rica"
+  - name: "Ipis"
+    latitude: 9.96745
+    longitude: -84.01326
+    population: 26669
+    dem: 1352
+    timezone: "America/Costa_Rica"
+  - name: "Guadalupe"
+    latitude: 9.94805
+    longitude: -84.05665
+    population: 26005
+    dem: 1202
+    timezone: "America/Costa_Rica"
+  - name: "Granadilla"
+    latitude: 9.93491
+    longitude: -84.01688
+    population: 12683
+    dem: 1326
+    timezone: "America/Costa_Rica"
+  - name: "Escazu"
+    latitude: 9.91887
+    longitude: -84.13989
+    population: 12071
+    dem: 1111
+    timezone: "America/Costa_Rica"
+  - name: "Daniel Flores"
+    latitude: 9.33554
+    longitude: -83.6694
+    population: 10028
+    dem: 639
+    timezone: "America/Costa_Rica"
+  - name: "Curridabat"
+    latitude: 9.91179
+    longitude: -84.03407
+    population: 34586
+    dem: 1212
+    timezone: "America/Costa_Rica"
+  - name: "Colon"
+    latitude: 9.91491
+    longitude: -84.2417
+    population: 9687
+    dem: 801
+    timezone: "America/Costa_Rica"
+  - name: "Colima"
+    latitude: 9.95091
+    longitude: -84.08503
+    population: 15875
+    dem: 1146
+    timezone: "America/Costa_Rica"
+  - name: "Calle Blancos"
+    latitude: 9.95
+    longitude: -84.06667
+    population: 20710
+    dem: 1188
+    timezone: "America/Costa_Rica"
+  - name: "Aserri"
+    latitude: 9.85876
+    longitude: -84.0923
+    population: 25874
+    dem: 1331
+    timezone: "America/Costa_Rica"
+  - name: "Alajuelita"
+    latitude: 9.90163
+    longitude: -84.10042
+    population: 13845
+    dem: 1135
+    timezone: "America/Costa_Rica"
+  - name: "San Vicente de Moravia"
+    latitude: 9.96164
+    longitude: -84.0488
+    population: 34447
+    elevation: 1240
+    dem: 1235
+    timezone: "America/Costa_Rica"
+- name: "Provincia de Puntarenas"
+  cities:
+  - name: "Quepos"
+    latitude: 9.43063
+    longitude: -84.16231
+    population: 7810
+    dem: 7
+    timezone: "America/Costa_Rica"
+  - name: "Puntarenas"
+    latitude: 9.97625
+    longitude: -84.83836
+    population: 35650
+    dem: 9
+    timezone: "America/Costa_Rica"
+  - name: "Miramar"
+    latitude: 10.0925
+    longitude: -84.72978
+    population: 6540
+    dem: 339
+    timezone: "America/Costa_Rica"
+  - name: "Golfito"
+    latitude: 8.60327
+    longitude: -83.11342
+    population: 6777
+    dem: 39
+    timezone: "America/Costa_Rica"
+  - name: "Esparza"
+    latitude: 9.99447
+    longitude: -84.66466
+    population: 15575
+    dem: 214
+    timezone: "America/Costa_Rica"
+  - name: "Corredor"
+    latitude: 8.64002
+    longitude: -82.946
+    population: 7084
+    dem: 36
+    timezone: "America/Costa_Rica"
+  - name: "Chacarita"
+    latitude: 9.98424
+    longitude: -84.77892
+    population: 26354
+    dem: 7
+    timezone: "America/Costa_Rica"
+  - name: "Buenos Aires"
+    latitude: 9.17189
+    longitude: -83.33417
+    population: 11680
+    dem: 361
+    timezone: "America/Costa_Rica"
+- name: "Provincia de Alajuela"
+  cities:
+  - name: "San Ramon"
+    latitude: 10.08802
+    longitude: -84.47022
+    population: 10765
+    dem: 1061
+    timezone: "America/Costa_Rica"
+  - name: "San Juan"
+    latitude: 10.10248
+    longitude: -84.31694
+    population: 7729
+    dem: 1090
+    timezone: "America/Costa_Rica"
+  - name: "San Jose"
+    latitude: 10.95173
+    longitude: -85.1361
+    population: 31430
+    dem: 50
+    timezone: "America/Costa_Rica"
+  - name: "Rio Segundo"
+    latitude: 10.24138
+    longitude: -84.27933
+    population: 9853
+    dem: 1275
+    timezone: "America/Costa_Rica"
+  - name: "Quesada"
+    latitude: 10.32381
+    longitude: -84.42714
+    population: 27310
+    dem: 651
+    timezone: "America/Costa_Rica"
+  - name: "Orotina"
+    latitude: 9.91197
+    longitude: -84.52337
+    population: 6135
+    dem: 237
+    timezone: "America/Costa_Rica"
+  - name: "Naranjo"
+    latitude: 10.09866
+    longitude: -84.37824
+    population: 11853
+    dem: 1044
+    timezone: "America/Costa_Rica"
+  - name: "Desamparados"
+    latitude: 9.94727
+    longitude: -84.50626
+    population: 14448
+    dem: 281
+    timezone: "America/Costa_Rica"
+  - name: "Atenas"
+    latitude: 9.97489
+    longitude: -84.37886
+    population: 7014
+    dem: 704
+    timezone: "America/Costa_Rica"
+  - name: "Alajuela"
+    latitude: 10.01625
+    longitude: -84.21163
+    population: 47494
+    dem: 954
+    timezone: "America/Costa_Rica"
+- name: "Provincia de Heredia"
+  cities:
+  - name: "Santo Domingo"
+    latitude: 10.06389
+    longitude: -84.15499
+    population: 5745
+    dem: 1327
+    timezone: "America/Costa_Rica"
+  - name: "San Rafael"
+    latitude: 10.0132
+    longitude: -84.10016
+    population: 8887
+    dem: 1263
+    timezone: "America/Costa_Rica"
+  - name: "San Pablo"
+    latitude: 9.99559
+    longitude: -84.09656
+    population: 21662
+    dem: 1203
+    timezone: "America/Costa_Rica"
+  - name: "San Josecito"
+    latitude: 10.01667
+    longitude: -84.1
+    population: 12195
+    dem: 1272
+    timezone: "America/Costa_Rica"
+  - name: "San Francisco"
+    latitude: 9.99299
+    longitude: -84.12934
+    population: 55923
+    dem: 1128
+    timezone: "America/Costa_Rica"
+  - name: "San Antonio"
+    latitude: 9.98333
+    longitude: -84.18333
+    population: 10938
+    dem: 937
+    timezone: "America/Costa_Rica"
+  - name: "Mercedes"
+    latitude: 10.00695
+    longitude: -84.13396
+    population: 26007
+    dem: 1107
+    timezone: "America/Costa_Rica"
+  - name: "Llorente"
+    latitude: 9.99844
+    longitude: -84.15448
+    population: 6626
+    dem: 1041
+    timezone: "America/Costa_Rica"
+  - name: "Heredia"
+    latitude: 10.00236
+    longitude: -84.11651
+    population: 21947
+    dem: 1174
+    timezone: "America/Costa_Rica"

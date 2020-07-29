@@ -1,0 +1,30 @@
+---
+name: "Macao"
+iso: "MO"
+iso3: "MAC"
+code: "446"
+capital: "Macao"
+area: 254.0
+population: 449198
+continent: "AS"
+currencyCode: "MOP"
+currencyName: "Pataca"
+phone: "853"
+languages: "zh,zh-MO,pt"
+regions:
+- name: "Macao"
+  cities:
+  - name: "Macau"
+    latitude: 22.20056
+    longitude: 113.54611
+    population: 520400
+    dem: 22
+    timezone: "Asia/Macau"
+- name: "Sao Lazaro"
+- name: "Sao Francisco Xavier"
+- name: "Santo Antonio"
+- name: "Sao Lourenco"
+- name: "Cotai"
+- name: "Nossa Senhora de Fatima"
+- name: "Se"
+- name: "Nossa Senhora do Carmo"

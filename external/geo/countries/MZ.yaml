@@ -1,0 +1,195 @@
+---
+name: "Mozambique"
+iso: "MZ"
+iso3: "MOZ"
+code: "508"
+capital: "Maputo"
+area: 801590.0
+population: 22061451
+continent: "AF"
+currencyCode: "MZN"
+currencyName: "Metical"
+phone: "258"
+postalCodeFormat: "####"
+postalCodeRegex: "^(\\d{4})$"
+languages: "pt-MZ,vmw"
+neighbours: "ZW,TZ,SZ,ZA,ZM,MW"
+regions:
+- name: "Sofala Province"
+  cities:
+  - name: "Dondo"
+    latitude: -19.60944
+    longitude: 34.74306
+    population: 78648
+    dem: 55
+    timezone: "Africa/Maputo"
+  - name: "Beira"
+    latitude: -19.84361
+    longitude: 34.83889
+    population: 530604
+    dem: 6
+    timezone: "Africa/Maputo"
+- name: "Cidade de Maputo"
+  cities:
+  - name: "Maputo"
+    latitude: -25.96553
+    longitude: 32.58322
+    population: 1191613
+    dem: 70
+    timezone: "Africa/Maputo"
+- name: "Tete"
+  cities:
+  - name: "Tete"
+    latitude: -16.15639
+    longitude: 33.58667
+    population: 129316
+    dem: 137
+    timezone: "Africa/Maputo"
+- name: "Niassa Province"
+  cities:
+  - name: "Mandimba"
+    latitude: -14.3525
+    longitude: 35.65056
+    population: 118922
+    dem: 768
+    timezone: "Africa/Maputo"
+  - name: "Lichinga"
+    latitude: -13.31278
+    longitude: 35.24056
+    population: 109839
+    dem: 1349
+    timezone: "Africa/Maputo"
+  - name: "Cuamba"
+    latitude: -14.80306
+    longitude: 36.53722
+    population: 73268
+    dem: 586
+    timezone: "Africa/Maputo"
+- name: "Cabo Delgado Province"
+  cities:
+  - name: "Pemba"
+    latitude: -12.97395
+    longitude: 40.51775
+    population: 108737
+    dem: 50
+    timezone: "Africa/Maputo"
+  - name: "Montepuez"
+    latitude: -13.12556
+    longitude: 38.99972
+    population: 72279
+    dem: 532
+    timezone: "Africa/Maputo"
+  - name: "Mocimboa"
+    latitude: -11.31667
+    longitude: 40.35
+    population: 27909
+    dem: 19
+    timezone: "Africa/Maputo"
+- name: "Manica Province"
+  cities:
+  - name: "Chimoio"
+    latitude: -19.11639
+    longitude: 33.48333
+    population: 256936
+    dem: 709
+    timezone: "Africa/Maputo"
+- name: "Maputo Province"
+  cities:
+  - name: "Ressano Garcia"
+    latitude: -25.44278
+    longitude: 31.99528
+    population: 110000
+    dem: 125
+    timezone: "Africa/Maputo"
+  - name: "Matola"
+    latitude: -25.96222
+    longitude: 32.45889
+    population: 675422
+    dem: 42
+    timezone: "Africa/Maputo"
+- name: "Nampula"
+  cities:
+  - name: "Nampula"
+    latitude: -15.11646
+    longitude: 39.2666
+    population: 388526
+    dem: 431
+    timezone: "Africa/Maputo"
+  - name: "Nacala"
+    latitude: -14.56257
+    longitude: 40.68538
+    population: 224795
+    dem: 137
+    timezone: "Africa/Maputo"
+  - name: "Ilha de Mocambique"
+    latitude: -15.03417
+    longitude: 40.73583
+    population: 54315
+    dem: 10
+    timezone: "Africa/Maputo"
+  - name: "Antonio Enes"
+    latitude: -16.2325
+    longitude: 39.90861
+    population: 74624
+    dem: 12
+    timezone: "Africa/Maputo"
+  - name: "Mutuali"
+    latitude: -14.87056
+    longitude: 37.00444
+    population: 30523
+    dem: 587
+    timezone: "Africa/Maputo"
+- name: "Provincia de Zambezia"
+  cities:
+  - name: "Chinde"
+    latitude: -18.58111
+    longitude: 36.45861
+    population: 16500
+    dem: 4
+    timezone: "Africa/Maputo"
+  - name: "Quelimane"
+    latitude: -17.87861
+    longitude: 36.88833
+    population: 188964
+    dem: 9
+    timezone: "Africa/Maputo"
+- name: "Inhambane Province"
+  cities:
+  - name: "Maxixe"
+    latitude: -23.85972
+    longitude: 35.34722
+    population: 119868
+    dem: 21
+    timezone: "Africa/Maputo"
+  - name: "Inhambane"
+    latitude: -23.865
+    longitude: 35.38333
+    population: 73884
+    dem: 8
+    timezone: "Africa/Maputo"
+- name: "Gaza Province"
+  cities:
+  - name: "Xai-Xai"
+    latitude: -25.05194
+    longitude: 33.64417
+    population: 127366
+    dem: 4
+    timezone: "Africa/Maputo"
+  - name: "Macia"
+    latitude: -25.02694
+    longitude: 33.09889
+    population: 23156
+    dem: 75
+    timezone: "Africa/Maputo"
+  - name: "Chokwe"
+    latitude: -24.53333
+    longitude: 32.98333
+    population: 63695
+    dem: 35
+    timezone: "Africa/Maputo"
+  - name: "Chibuto"
+    latitude: -24.68667
+    longitude: 33.53056
+    population: 59165
+    dem: 105
+    timezone: "Africa/Maputo"

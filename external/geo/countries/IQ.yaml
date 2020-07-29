@@ -1,0 +1,475 @@
+---
+name: "Iraq"
+iso: "IQ"
+iso3: "IRQ"
+code: "368"
+capital: "Baghdad"
+area: 437072.0
+population: 29671605
+continent: "AS"
+currencyCode: "IQD"
+currencyName: "Dinar"
+phone: "964"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ar-IQ,ku,hy"
+neighbours: "SY,SA,IR,JO,TR,KW"
+regions:
+- name: "Muhafazat Dhi Qar"
+  cities:
+  - name: "Ash Shatrah"
+    latitude: 31.40906
+    longitude: 46.1727
+    population: 82732
+    dem: 13
+    timezone: "Asia/Baghdad"
+  - name: "Nasiriyah"
+    latitude: 31.05799
+    longitude: 46.25726
+    population: 400249
+    dem: 7
+    timezone: "Asia/Baghdad"
+  - name: "Nahiyat al Fuhud"
+    latitude: 30.96972
+    longitude: 46.72278
+    population: 21551
+    dem: 5
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Ninawa"
+  cities:
+  - name: "Tallkayf"
+    latitude: 36.49118
+    longitude: 43.12114
+    population: 23524
+    dem: 279
+    timezone: "Asia/Baghdad"
+  - name: "Al-Hamdaniya"
+    latitude: 36.27093
+    longitude: 43.37758
+    population: 50000
+    dem: 274
+    timezone: "Asia/Baghdad"
+  - name: "Aqrah"
+    latitude: 36.76038
+    longitude: 43.89428
+    population: 23000
+    dem: 716
+    timezone: "Asia/Baghdad"
+  - name: "Al Mawsil al Jadidah"
+    latitude: 36.33271
+    longitude: 43.10555
+    population: 2065597
+    dem: 239
+    timezone: "Asia/Baghdad"
+  - name: "Mosul"
+    latitude: 36.335
+    longitude: 43.11889
+    population: 1739800
+    dem: 228
+    timezone: "Asia/Baghdad"
+  - name: "Sinjar"
+    latitude: 36.3209
+    longitude: 41.87656
+    population: 38294
+    dem: 517
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Salah ad Din"
+  cities:
+  - name: "Tozkhurmato"
+    latitude: 34.88808
+    longitude: 44.63256
+    population: 59886
+    dem: 227
+    timezone: "Asia/Baghdad"
+  - name: "Tikrit"
+    latitude: 34.61581
+    longitude: 43.67861
+    population: 42477
+    dem: 112
+    timezone: "Asia/Baghdad"
+  - name: "Samarra"
+    latitude: 34.1959
+    longitude: 43.88568
+    population: 158508
+    dem: 80
+    timezone: "Asia/Baghdad"
+  - name: "Bayji"
+    latitude: 34.92915
+    longitude: 43.48878
+    population: 36454
+    dem: 115
+    timezone: "Asia/Baghdad"
+  - name: "Balad"
+    latitude: 34.01485
+    longitude: 44.14574
+    population: 42088
+    dem: 53
+    timezone: "Asia/Baghdad"
+  - name: "Ad Dujayl"
+    latitude: 33.84667
+    longitude: 44.23444
+    population: 26362
+    dem: 46
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat al Muthanna"
+  cities:
+  - name: "As Samawah"
+    latitude: 31.33198
+    longitude: 45.2944
+    population: 152890
+    dem: 15
+    timezone: "Asia/Baghdad"
+  - name: "Ar Rumaythah"
+    latitude: 31.52845
+    longitude: 45.20377
+    population: 47248
+    dem: 18
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Babil"
+  cities:
+  - name: "Nahiyat Saddat al Hindiyah"
+    latitude: 32.71557
+    longitude: 44.27857
+    population: 30622
+    dem: 36
+    timezone: "Asia/Baghdad"
+  - name: "Imam Qasim"
+    latitude: 32.29799
+    longitude: 44.68282
+    population: 36992
+    dem: 30
+    timezone: "Asia/Baghdad"
+  - name: "Al Musayyib"
+    latitude: 32.77872
+    longitude: 44.29005
+    population: 42901
+    dem: 37
+    timezone: "Asia/Baghdad"
+  - name: "Al Hillah"
+    latitude: 32.46367
+    longitude: 44.41963
+    population: 289709
+    dem: 33
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Karbala"
+  cities:
+  - name: "Karbala"
+    latitude: 32.61603
+    longitude: 44.02488
+    population: 434450
+    dem: 32
+    timezone: "Asia/Baghdad"
+  - name: "Al Hindiyah"
+    latitude: 32.54671
+    longitude: 44.22765
+    population: 57490
+    dem: 36
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Arbil"
+  cities:
+  - name: "Ruwandiz"
+    latitude: 36.61207
+    longitude: 44.52372
+    population: 22943
+    dem: 797
+    timezone: "Asia/Baghdad"
+  - name: "Koysinceq"
+    latitude: 36.08289
+    longitude: 44.62873
+    population: 44987
+    dem: 600
+    timezone: "Asia/Baghdad"
+  - name: "Erbil"
+    latitude: 36.18333
+    longitude: 44.01193
+    population: 932800
+    dem: 428
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat as Sulaymaniyah"
+  cities:
+  - name: "Halabjah"
+    latitude: 35.17778
+    longitude: 45.98611
+    population: 57333
+    dem: 711
+    timezone: "Asia/Baghdad"
+  - name: "Jamjamal"
+    latitude: 35.53356
+    longitude: 44.8343
+    population: 75634
+    dem: 705
+    timezone: "Asia/Baghdad"
+  - name: "Baynjiwayn"
+    latitude: 35.62054
+    longitude: 45.94908
+    population: 27116
+    dem: 1256
+    timezone: "Asia/Baghdad"
+  - name: "As Sulaymaniyah"
+    latitude: 35.56496
+    longitude: 45.4329
+    population: 723170
+    dem: 847
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Maysan"
+  cities:
+  - name: "Ali al Gharbi"
+    latitude: 32.46186
+    longitude: 46.68794
+    population: 19711
+    dem: 14
+    timezone: "Asia/Baghdad"
+  - name: "Al Amarah"
+    latitude: 31.83561
+    longitude: 47.14483
+    population: 323302
+    dem: 10
+    timezone: "Asia/Baghdad"
+- name: "Dihok"
+  cities:
+  - name: "Zaxo"
+    latitude: 37.14871
+    longitude: 42.68591
+    population: 95052
+    dem: 439
+    timezone: "Asia/Baghdad"
+  - name: "Sinah"
+    latitude: 36.80851
+    longitude: 43.03935
+    population: 128776
+    dem: 669
+    timezone: "Asia/Baghdad"
+  - name: "Dihok"
+    latitude: 36.86709
+    longitude: 42.98845
+    population: 284000
+    dem: 567
+    timezone: "Asia/Baghdad"
+  - name: "Batifa"
+    latitude: 37.17454
+    longitude: 43.01233
+    population: 26000
+    elevation: 850
+    dem: 860
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat al Basrah"
+  cities:
+  - name: "Umm Qasr"
+    latitude: 30.0362
+    longitude: 47.91951
+    population: 107620
+    elevation: 9
+    dem: 13
+    timezone: "Asia/Baghdad"
+  - name: "Az Zubayr"
+    latitude: 30.39213
+    longitude: 47.70175
+    population: 122676
+    dem: 13
+    timezone: "Asia/Baghdad"
+  - name: "Al Harithah"
+    latitude: 30.58481
+    longitude: 47.76114
+    population: 92395
+    dem: 5
+    timezone: "Asia/Baghdad"
+  - name: "Al Faw"
+    latitude: 29.97421
+    longitude: 48.47309
+    population: 104569
+    dem: 2
+    timezone: "Asia/Baghdad"
+  - name: "Basrah"
+    latitude: 30.50852
+    longitude: 47.7804
+    population: 2600000
+    dem: 4
+    timezone: "Asia/Baghdad"
+  - name: "Al Basrah al Qadimah"
+    latitude: 30.50316
+    longitude: 47.81507
+    population: 2015483
+    dem: 7
+    timezone: "Asia/Baghdad"
+- name: "An Najaf"
+  cities:
+  - name: "Najaf"
+    latitude: 32.02594
+    longitude: 44.34625
+    population: 482576
+    dem: 41
+    timezone: "Asia/Baghdad"
+  - name: "Al Mishkhab"
+    latitude: 31.80437
+    longitude: 44.4893
+    population: 23189
+    dem: 24
+    timezone: "Asia/Baghdad"
+  - name: "Kufa"
+    latitude: 32.05114
+    longitude: 44.44017
+    population: 110000
+    dem: 24
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Wasit"
+  cities:
+  - name: "As Suwayrah"
+    latitude: 32.92556
+    longitude: 44.77583
+    population: 42354
+    dem: 32
+    timezone: "Asia/Baghdad"
+  - name: "Al Kut"
+    latitude: 32.5128
+    longitude: 45.81817
+    population: 315162
+    dem: 22
+    timezone: "Asia/Baghdad"
+  - name: "Al Hayy"
+    latitude: 32.17419
+    longitude: 46.04345
+    population: 78272
+    dem: 20
+    timezone: "Asia/Baghdad"
+  - name: "Al Aziziyah"
+    latitude: 32.90941
+    longitude: 45.06359
+    population: 44751
+    dem: 28
+    timezone: "Asia/Baghdad"
+- name: "Diyala"
+  cities:
+  - name: "Mandali"
+    latitude: 33.7481
+    longitude: 45.55503
+    population: 29785
+    dem: 129
+    timezone: "Asia/Baghdad"
+  - name: "Kifri"
+    latitude: 34.68963
+    longitude: 44.96057
+    population: 30143
+    dem: 229
+    timezone: "Asia/Baghdad"
+  - name: "Baqubah"
+    latitude: 33.75403
+    longitude: 44.60518
+    population: 152550
+    dem: 48
+    timezone: "Asia/Baghdad"
+  - name: "Al Miqdadiyah"
+    latitude: 33.97861
+    longitude: 44.93694
+    population: 50698
+    dem: 60
+    timezone: "Asia/Baghdad"
+  - name: "Khalis"
+    latitude: 33.80809
+    longitude: 44.53343
+    population: 70046
+    dem: 43
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat al Qadisiyah"
+  cities:
+  - name: "Nahiyat ash Shinafiyah"
+    latitude: 31.58376
+    longitude: 44.64675
+    population: 22643
+    dem: 21
+    timezone: "Asia/Baghdad"
+  - name: "Ash Shamiyah"
+    latitude: 31.96257
+    longitude: 44.60075
+    population: 57661
+    dem: 23
+    timezone: "Asia/Baghdad"
+  - name: "Nahiyat Ghammas"
+    latitude: 31.74311
+    longitude: 44.6196
+    population: 30909
+    dem: 18
+    timezone: "Asia/Baghdad"
+  - name: "Afak"
+    latitude: 32.0643
+    longitude: 45.24743
+    population: 21888
+    dem: 25
+    timezone: "Asia/Baghdad"
+  - name: "Ad Diwaniyah"
+    latitude: 31.99289
+    longitude: 44.92552
+    population: 318801
+    dem: 25
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Kirkuk"
+  cities:
+  - name: "Kirkuk"
+    latitude: 35.46806
+    longitude: 44.39222
+    population: 601433
+    dem: 346
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat Baghdad"
+  cities:
+  - name: "Baghdad"
+    latitude: 33.34058
+    longitude: 44.40088
+    population: 7216000
+    dem: 41
+    timezone: "Asia/Baghdad"
+  - name: "Abu Ghurayb"
+    latitude: 33.30563
+    longitude: 44.18477
+    population: 900000
+    dem: 42
+    timezone: "Asia/Baghdad"
+- name: "Muhafazat al Anbar"
+  cities:
+  - name: "Rawah"
+    latitude: 34.48229
+    longitude: 41.91898
+    population: 13000
+    dem: 186
+    timezone: "Asia/Baghdad"
+  - name: "Hit"
+    latitude: 33.63664
+    longitude: 42.82768
+    population: 31901
+    dem: 61
+    timezone: "Asia/Baghdad"
+  - name: "Hadithah"
+    latitude: 34.13661
+    longitude: 42.37727
+    population: 30925
+    dem: 121
+    timezone: "Asia/Baghdad"
+  - name: "Ar Rutbah"
+    latitude: 33.03718
+    longitude: 40.28586
+    population: 22370
+    dem: 620
+    timezone: "Asia/Baghdad"
+  - name: "Ramadi"
+    latitude: 33.42056
+    longitude: 43.30778
+    population: 274539
+    dem: 53
+    timezone: "Asia/Baghdad"
+  - name: "Anat al Qadimah"
+    latitude: 34.46934
+    longitude: 41.94223
+    population: 19719
+    dem: 171
+    timezone: "Asia/Baghdad"
+  - name: "Al Fallujah"
+    latitude: 33.34913
+    longitude: 43.78599
+    population: 190159
+    dem: 45
+    timezone: "Asia/Baghdad"
+  - name: "Anah"
+    latitude: 34.36857
+    longitude: 41.98194
+    population: 27000
+    dem: 177
+    timezone: "Asia/Baghdad"

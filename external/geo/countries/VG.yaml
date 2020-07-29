@@ -1,0 +1,23 @@
+---
+name: "British Virgin Islands"
+iso: "VG"
+iso3: "VGB"
+code: "092"
+capital: "Road Town"
+area: 153.0
+population: 21730
+continent: "NA"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "+1-284"
+languages: "en-VG"
+regions:
+- name: "British Virgin Islands"
+  cities:
+  - name: "Road Town"
+    latitude: 18.42693
+    longitude: -64.62079
+    population: 8449
+    elevation: 9
+    dem: 9
+    timezone: "America/Tortola"

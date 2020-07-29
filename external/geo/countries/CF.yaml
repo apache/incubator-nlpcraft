@@ -1,0 +1,253 @@
+---
+name: "Central African Republic"
+iso: "CF"
+iso3: "CAF"
+code: "140"
+capital: "Bangui"
+area: 622984.0
+population: 4844927
+continent: "AF"
+currencyCode: "XAF"
+currencyName: "Franc"
+phone: "236"
+languages: "fr-CF,sg,ln,kg"
+neighbours: "TD,SD,CD,SS,CM,CG"
+regions:
+- name: "Ouham"
+  cities:
+  - name: "Kabo"
+    latitude: 7.69937
+    longitude: 18.62903
+    population: 13637
+    dem: 418
+    timezone: "Africa/Bangui"
+  - name: "Bouca"
+    latitude: 6.50734
+    longitude: 18.2767
+    population: 13250
+    dem: 463
+    timezone: "Africa/Bangui"
+  - name: "Bossangoa"
+    latitude: 6.49263
+    longitude: 17.45518
+    population: 27428
+    dem: 456
+    timezone: "Africa/Bangui"
+  - name: "Batangafo"
+    latitude: 7.30082
+    longitude: 18.2833
+    population: 15310
+    dem: 425
+    timezone: "Africa/Bangui"
+- name: "Prefecture de la Nana-Grebizi"
+  cities:
+  - name: "Kaga Bandoro"
+    latitude: 6.98961
+    longitude: 19.18744
+    population: 56520
+    dem: 416
+    timezone: "Africa/Bangui"
+- name: "Prefecture de la Nana-Mambere"
+  cities:
+  - name: "Bouar"
+    latitude: 5.93404
+    longitude: 15.59599
+    population: 28581
+    dem: 976
+    timezone: "Africa/Bangui"
+  - name: "Baoro"
+    latitude: 5.66667
+    longitude: 15.96667
+    population: 6319
+    dem: 728
+    timezone: "Africa/Bangui"
+- name: "Haute-Kotto"
+  cities:
+  - name: "Ouadda"
+    latitude: 8.07771
+    longitude: 22.40075
+    population: 5434
+    dem: 710
+    timezone: "Africa/Bangui"
+  - name: "Bria"
+    latitude: 6.54233
+    longitude: 21.98633
+    population: 29027
+    dem: 572
+    timezone: "Africa/Bangui"
+- name: "Commune de Bangui"
+  cities:
+  - name: "Bangui"
+    latitude: 4.36122
+    longitude: 18.55496
+    population: 542393
+    dem: 351
+    timezone: "Africa/Bangui"
+- name: "Prefecture de la Kemo"
+  cities:
+  - name: "Sibut"
+    latitude: 5.71801
+    longitude: 19.07389
+    population: 34267
+    dem: 431
+    timezone: "Africa/Bangui"
+- name: "Ouaka"
+  cities:
+  - name: "Ippy"
+    latitude: 6.26793
+    longitude: 21.22468
+    population: 16571
+    dem: 596
+    timezone: "Africa/Bangui"
+  - name: "Bambari"
+    latitude: 5.76795
+    longitude: 20.67565
+    population: 32547
+    dem: 465
+    timezone: "Africa/Bangui"
+  - name: "Kouango"
+    latitude: 4.99337
+    longitude: 19.96186
+    population: 7529
+    dem: 363
+    timezone: "Africa/Bangui"
+- name: "Haut-Mbomou"
+  cities:
+  - name: "Zemio"
+    latitude: 5.03144
+    longitude: 25.13614
+    population: 14000
+    dem: 579
+    timezone: "Africa/Bangui"
+  - name: "Obo"
+    latitude: 5.39586
+    longitude: 26.49211
+    population: 12887
+    dem: 639
+    timezone: "Africa/Bangui"
+- name: "Vakaga"
+  cities:
+  - name: "Birao"
+    latitude: 10.28488
+    longitude: 22.78818
+    population: 10178
+    dem: 468
+    timezone: "Africa/Bangui"
+- name: "Mbomou"
+  cities:
+  - name: "Bangassou"
+    latitude: 4.74132
+    longitude: 22.81838
+    population: 24361
+    dem: 506
+    timezone: "Africa/Bangui"
+- name: "Ombella-Mpoko"
+  cities:
+  - name: "Damara"
+    latitude: 4.96075
+    longitude: 18.7035
+    population: 20093
+    dem: 415
+    timezone: "Africa/Bangui"
+  - name: "Boali"
+    latitude: 4.80048
+    longitude: 18.12747
+    population: 5876
+    dem: 379
+    timezone: "Africa/Bangui"
+  - name: "Bimbo"
+    latitude: 4.25671
+    longitude: 18.41583
+    population: 129655
+    dem: 371
+    timezone: "Africa/Bangui"
+- name: "Basse-Kotto"
+  cities:
+  - name: "Mobaye"
+    latitude: 4.31902
+    longitude: 21.17861
+    population: 19431
+    dem: 388
+    timezone: "Africa/Bangui"
+  - name: "Kembe"
+    latitude: 4.62275
+    longitude: 21.88645
+    population: 11513
+    dem: 499
+    timezone: "Africa/Bangui"
+  - name: "Alindao"
+    latitude: 5.02667
+    longitude: 21.20876
+    population: 14234
+    dem: 441
+    timezone: "Africa/Bangui"
+- name: "Prefecture de la Sangha-Mbaere"
+  cities:
+  - name: "Nola"
+    latitude: 3.52494
+    longitude: 16.04583
+    population: 26809
+    dem: 386
+    timezone: "Africa/Bangui"
+- name: "Mambere-Kadei"
+  cities:
+  - name: "Gamboula"
+    latitude: 4.11775
+    longitude: 15.13926
+    population: 7646
+    dem: 589
+    timezone: "Africa/Bangui"
+  - name: "Carnot"
+    latitude: 4.94273
+    longitude: 15.87735
+    population: 38071
+    dem: 551
+    timezone: "Africa/Bangui"
+  - name: "Berberati"
+    latitude: 4.26116
+    longitude: 15.79216
+    population: 61815
+    dem: 599
+    timezone: "Africa/Bangui"
+- name: "Lobaye"
+  cities:
+  - name: "Mongoumba"
+    latitude: 3.64153
+    longitude: 18.59364
+    population: 10885
+    dem: 356
+    timezone: "Africa/Bangui"
+  - name: "Mbaiki"
+    latitude: 3.86781
+    longitude: 17.98923
+    population: 67132
+    dem: 476
+    timezone: "Africa/Bangui"
+  - name: "Boda"
+    latitude: 4.31887
+    longitude: 17.46953
+    population: 16655
+    dem: 507
+    timezone: "Africa/Bangui"
+- name: "Prefecture de lOuham-Pende"
+  cities:
+  - name: "Paoua"
+    latitude: 7.24269
+    longitude: 16.44059
+    population: 18441
+    dem: 601
+    timezone: "Africa/Bangui"
+  - name: "Bozoum"
+    latitude: 6.31933
+    longitude: 16.37992
+    population: 40201
+    dem: 664
+    timezone: "Africa/Bangui"
+- name: "Bamingui-Bangoran"
+  cities:
+  - name: "Ndele"
+    latitude: 8.41091
+    longitude: 20.64728
+    population: 11764
+    dem: 514
+    timezone: "Africa/Bangui"

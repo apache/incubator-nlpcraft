@@ -1,0 +1,207 @@
+---
+name: "Montenegro"
+iso: "ME"
+iso3: "MNE"
+code: "499"
+capital: "Podgorica"
+area: 14026.0
+population: 666730
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "382"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "sr,hu,bs,sq,hr,rom"
+neighbours: "AL,HR,BA,RS,XK"
+regions:
+- name: "Podgorica"
+  cities:
+  - name: "Podgorica"
+    latitude: 42.44111
+    longitude: 19.26361
+    population: 136473
+    dem: 49
+    timezone: "Europe/Podgorica"
+- name: "Gusinje"
+  cities:
+  - name: "Gusinje"
+    latitude: 42.56194
+    longitude: 19.83389
+    population: 4
+    dem: 924
+    timezone: "Europe/Podgorica"
+- name: "Andrijevica"
+  cities:
+  - name: "Andrijevica"
+    latitude: 42.73389
+    longitude: 19.79194
+    population: 1073
+    dem: 783
+    timezone: "Europe/Podgorica"
+- name: "Bijelo Polje"
+  cities:
+  - name: "Bijelo Polje"
+    latitude: 43.03834
+    longitude: 19.74758
+    population: 15400
+    dem: 623
+    timezone: "Europe/Podgorica"
+- name: "Kotor"
+  cities:
+  - name: "Kotor"
+    latitude: 42.42067
+    longitude: 18.76825
+    population: 5345
+    dem: 5
+    timezone: "Europe/Podgorica"
+  - name: "Dobrota"
+    latitude: 42.45417
+    longitude: 18.76833
+    population: 5435
+    dem: 69
+    timezone: "Europe/Podgorica"
+- name: "Opstina Zabljak"
+  cities:
+  - name: "Zabljak"
+    latitude: 43.15423
+    longitude: 19.12325
+    population: 1937
+    dem: 1448
+    timezone: "Europe/Podgorica"
+- name: "Opstina Savnik"
+  cities:
+  - name: "Savnik"
+    latitude: 42.95639
+    longitude: 19.09667
+    population: 633
+    dem: 843
+    timezone: "Europe/Podgorica"
+- name: "Berane"
+  cities:
+  - name: "Berane"
+    latitude: 42.8425
+    longitude: 19.87333
+    population: 11073
+    dem: 676
+    timezone: "Europe/Podgorica"
+- name: "Opstina Niksic"
+  cities:
+  - name: "Niksic"
+    latitude: 42.7731
+    longitude: 18.94446
+    population: 58212
+    dem: 630
+    timezone: "Europe/Podgorica"
+- name: "Cetinje"
+  cities:
+  - name: "Cetinje"
+    latitude: 42.39063
+    longitude: 18.91417
+    population: 15137
+    dem: 686
+    timezone: "Europe/Podgorica"
+- name: "Opstina Kolasin"
+  cities:
+  - name: "Kolasin"
+    latitude: 42.82229
+    longitude: 19.51653
+    population: 2989
+    dem: 936
+    timezone: "Europe/Podgorica"
+- name: "Opstina Pluzine"
+  cities:
+  - name: "Pluzine"
+    latitude: 43.15278
+    longitude: 18.83944
+    population: 1494
+    dem: 693
+    timezone: "Europe/Podgorica"
+- name: "Ulcinj"
+  cities:
+  - name: "Ulcinj"
+    latitude: 41.92936
+    longitude: 19.22436
+    population: 10828
+    dem: 8
+    timezone: "Europe/Podgorica"
+- name: "Pljevlja"
+  cities:
+  - name: "Pljevlja"
+    latitude: 43.3567
+    longitude: 19.35843
+    population: 19489
+    dem: 772
+    timezone: "Europe/Podgorica"
+- name: "Petnjica"
+  cities:
+  - name: "Petnjica"
+    latitude: 42.90889
+    longitude: 19.96444
+    population: 0
+    dem: 724
+    timezone: "Europe/Podgorica"
+- name: "Bar"
+  cities:
+  - name: "Bar"
+    latitude: 42.09306
+    longitude: 19.10028
+    population: 17727
+    dem: 4
+    timezone: "Europe/Podgorica"
+- name: "Opstina Rozaje"
+  cities:
+  - name: "Rozaje"
+    latitude: 42.83299
+    longitude: 20.16652
+    population: 9121
+    dem: 1081
+    timezone: "Europe/Podgorica"
+- name: "Mojkovac"
+  cities:
+  - name: "Mojkovac"
+    latitude: 42.96044
+    longitude: 19.5833
+    population: 4120
+    dem: 826
+    timezone: "Europe/Podgorica"
+- name: "Budva"
+  cities:
+  - name: "Budva"
+    latitude: 42.28639
+    longitude: 18.84
+    population: 18000
+    dem: 7
+    timezone: "Europe/Podgorica"
+- name: "Herceg Novi"
+  cities:
+  - name: "Herceg-Novi"
+    latitude: 42.45306
+    longitude: 18.5375
+    population: 19536
+    dem: 87
+    timezone: "Europe/Podgorica"
+- name: "Tivat"
+  cities:
+  - name: "Tivat"
+    latitude: 42.43639
+    longitude: 18.69611
+    population: 6280
+    dem: 6
+    timezone: "Europe/Podgorica"
+- name: "Opstina Plav"
+  cities:
+  - name: "Plav"
+    latitude: 42.59694
+    longitude: 19.94556
+    population: 3615
+    dem: 948
+    timezone: "Europe/Podgorica"
+- name: "Danilovgrad"
+  cities:
+  - name: "Danilovgrad"
+    latitude: 42.55384
+    longitude: 19.14608
+    population: 5208
+    dem: 49
+    timezone: "Europe/Podgorica"

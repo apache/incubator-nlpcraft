@@ -1,0 +1,581 @@
+---
+name: "Serbia"
+iso: "RS"
+iso3: "SRB"
+code: "688"
+capital: "Belgrade"
+area: 88361.0
+population: 7344847
+continent: "EU"
+currencyCode: "RSD"
+currencyName: "Dinar"
+phone: "381"
+postalCodeFormat: "######"
+postalCodeRegex: "^(\\d{6})$"
+languages: "sr,hu,bs,rom"
+neighbours: "AL,HU,MK,RO,HR,BA,BG,ME,XK"
+regions:
+- name: "Autonomna Pokrajina Vojvodina"
+  cities:
+  - name: "Zrenjanin"
+    latitude: 45.38361
+    longitude: 20.38194
+    population: 79773
+    dem: 81
+    timezone: "Europe/Belgrade"
+  - name: "Zabalj"
+    latitude: 45.37222
+    longitude: 20.06389
+    population: 8503
+    dem: 84
+    timezone: "Europe/Belgrade"
+  - name: "Vrsac"
+    latitude: 45.11667
+    longitude: 21.30361
+    population: 36300
+    dem: 96
+    timezone: "Europe/Belgrade"
+  - name: "Vladimirovac"
+    latitude: 45.03122
+    longitude: 20.86566
+    population: 5106
+    dem: 137
+    timezone: "Europe/Belgrade"
+  - name: "Titel"
+    latitude: 45.20611
+    longitude: 20.29444
+    population: 6227
+    dem: 90
+    timezone: "Europe/Belgrade"
+  - name: "Stara Pazova"
+    latitude: 44.985
+    longitude: 20.16083
+    population: 16217
+    dem: 81
+    timezone: "Europe/Belgrade"
+  - name: "Srpska Crnja"
+    latitude: 45.72538
+    longitude: 20.69008
+    population: 5467
+    dem: 76
+    timezone: "Europe/Belgrade"
+  - name: "Senta"
+    latitude: 45.9275
+    longitude: 20.07722
+    population: 20302
+    dem: 81
+    timezone: "Europe/Belgrade"
+  - name: "Pancevo"
+    latitude: 44.87177
+    longitude: 20.64167
+    population: 76654
+    dem: 80
+    timezone: "Europe/Belgrade"
+  - name: "Padina"
+    latitude: 45.11988
+    longitude: 20.7286
+    population: 6367
+    dem: 110
+    timezone: "Europe/Belgrade"
+  - name: "Novo Milosevo"
+    latitude: 45.71916
+    longitude: 20.30364
+    population: 7805
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Novi Knezevac"
+    latitude: 46.05
+    longitude: 20.1
+    population: 8166
+    dem: 76
+    timezone: "Europe/Belgrade"
+  - name: "Nova Pazova"
+    latitude: 44.94366
+    longitude: 20.21931
+    population: 15488
+    dem: 76
+    timezone: "Europe/Belgrade"
+  - name: "Mol"
+    latitude: 45.76457
+    longitude: 20.13286
+    population: 7950
+    dem: 81
+    timezone: "Europe/Belgrade"
+  - name: "Mokrin"
+    latitude: 45.93362
+    longitude: 20.41215
+    population: 6567
+    dem: 77
+    timezone: "Europe/Belgrade"
+  - name: "Melenci"
+    latitude: 45.5168
+    longitude: 20.31961
+    population: 7685
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Kovin"
+    latitude: 44.7475
+    longitude: 20.97611
+    population: 14250
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Kovilj"
+    latitude: 45.23422
+    longitude: 20.02327
+    population: 5279
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Kovacica"
+    latitude: 45.11167
+    longitude: 20.62139
+    population: 7357
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Kikinda"
+    latitude: 45.82972
+    longitude: 20.46528
+    population: 41935
+    dem: 84
+    timezone: "Europe/Belgrade"
+  - name: "Kanjiza"
+    latitude: 46.06667
+    longitude: 20.05
+    population: 10200
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Ingija"
+    latitude: 45.04816
+    longitude: 20.08165
+    population: 26247
+    dem: 114
+    timezone: "Europe/Belgrade"
+  - name: "Ecka"
+    latitude: 45.32328
+    longitude: 20.44294
+    population: 5293
+    dem: 77
+    timezone: "Europe/Belgrade"
+  - name: "Debeljaca"
+    latitude: 45.0707
+    longitude: 20.60153
+    population: 6413
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Curug"
+    latitude: 45.47221
+    longitude: 20.06861
+    population: 9231
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Crepaja"
+    latitude: 45.00984
+    longitude: 20.63702
+    population: 5369
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Coka"
+    latitude: 45.9425
+    longitude: 20.14333
+    population: 5414
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Beska"
+    latitude: 45.13092
+    longitude: 20.06698
+    population: 6377
+    dem: 120
+    timezone: "Europe/Belgrade"
+  - name: "Bela Crkva"
+    latitude: 44.8975
+    longitude: 21.41722
+    population: 10675
+    dem: 82
+    timezone: "Europe/Belgrade"
+  - name: "Becej"
+    latitude: 45.61632
+    longitude: 20.03331
+    population: 25774
+    dem: 77
+    timezone: "Europe/Belgrade"
+  - name: "Banatski Karlovac"
+    latitude: 45.04987
+    longitude: 21.018
+    population: 6319
+    dem: 97
+    timezone: "Europe/Belgrade"
+  - name: "Backo Petrovo Selo"
+    latitude: 45.70681
+    longitude: 20.07928
+    population: 8959
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Backo Gradiste"
+    latitude: 45.53271
+    longitude: 20.03082
+    population: 5764
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Vrbas"
+    latitude: 45.57139
+    longitude: 19.64083
+    population: 25907
+    dem: 85
+    timezone: "Europe/Belgrade"
+  - name: "Veternik"
+    latitude: 45.25446
+    longitude: 19.7588
+    population: 10226
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Subotica"
+    latitude: 46.1
+    longitude: 19.66667
+    population: 100000
+    dem: 115
+    timezone: "Europe/Belgrade"
+  - name: "Stanisic"
+    latitude: 45.93895
+    longitude: 19.16709
+    population: 5476
+    dem: 95
+    timezone: "Europe/Belgrade"
+  - name: "Sremski Karlovci"
+    latitude: 45.20285
+    longitude: 19.93373
+    population: 8839
+    dem: 64
+    timezone: "Europe/Belgrade"
+  - name: "Sremska Mitrovica"
+    latitude: 44.97639
+    longitude: 19.61222
+    population: 39084
+    dem: 84
+    timezone: "Europe/Belgrade"
+  - name: "Sonta"
+    latitude: 45.59427
+    longitude: 19.09719
+    population: 5991
+    dem: 83
+    timezone: "Europe/Belgrade"
+  - name: "Sombor"
+    latitude: 45.77417
+    longitude: 19.11222
+    population: 48454
+    dem: 89
+    timezone: "Europe/Belgrade"
+  - name: "Ruma"
+    latitude: 45.00806
+    longitude: 19.82222
+    population: 32229
+    dem: 114
+    timezone: "Europe/Belgrade"
+  - name: "Prigrevica"
+    latitude: 45.67636
+    longitude: 19.08809
+    population: 5026
+    dem: 85
+    timezone: "Europe/Belgrade"
+  - name: "Petrovaradin"
+    latitude: 45.24667
+    longitude: 19.87944
+    population: 13917
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Novi Sad"
+    latitude: 45.25167
+    longitude: 19.83694
+    population: 215400
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Celarevo"
+    latitude: 45.26999
+    longitude: 19.52484
+    population: 5017
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Backi Petrovac"
+    latitude: 45.36056
+    longitude: 19.59167
+    population: 7229
+    dem: 83
+    timezone: "Europe/Belgrade"
+  - name: "Backa Topola"
+    latitude: 45.81516
+    longitude: 19.6318
+    population: 16154
+    dem: 94
+    timezone: "Europe/Belgrade"
+  - name: "Backa Palanka"
+    latitude: 45.24966
+    longitude: 19.39664
+    population: 29449
+    dem: 88
+    timezone: "Europe/Belgrade"
+  - name: "Apatin"
+    latitude: 45.6726
+    longitude: 18.978
+    population: 18320
+    dem: 90
+    timezone: "Europe/Zagreb"
+- name: "Central Serbia"
+  cities:
+  - name: "Zvecka"
+    latitude: 44.64025
+    longitude: 20.16432
+    population: 5321
+    dem: 76
+    timezone: "Europe/Belgrade"
+  - name: "Zemun"
+    latitude: 44.8458
+    longitude: 20.40116
+    population: 155591
+    dem: 88
+    timezone: "Europe/Belgrade"
+  - name: "Zajecar"
+    latitude: 43.90358
+    longitude: 22.26405
+    population: 49800
+    dem: 130
+    timezone: "Europe/Belgrade"
+  - name: "Vrnjacka Banja"
+    latitude: 43.62725
+    longitude: 20.89634
+    population: 10207
+    dem: 211
+    timezone: "Europe/Belgrade"
+  - name: "Vranje"
+    latitude: 42.55139
+    longitude: 21.90028
+    population: 56199
+    dem: 468
+    timezone: "Europe/Belgrade"
+  - name: "Umka"
+    latitude: 44.67806
+    longitude: 20.30472
+    population: 5618
+    dem: 82
+    timezone: "Europe/Belgrade"
+  - name: "Trstenik"
+    latitude: 43.61694
+    longitude: 21.0025
+    population: 49043
+    dem: 170
+    timezone: "Europe/Belgrade"
+  - name: "Surcin"
+    latitude: 44.79306
+    longitude: 20.28028
+    population: 12575
+    dem: 87
+    timezone: "Europe/Belgrade"
+  - name: "Sremcica"
+    latitude: 44.67653
+    longitude: 20.39232
+    population: 23000
+    dem: 225
+    timezone: "Europe/Belgrade"
+  - name: "Smederevska Palanka"
+    latitude: 44.36548
+    longitude: 20.95885
+    population: 27000
+    elevation: 119
+    dem: 122
+    timezone: "Europe/Belgrade"
+  - name: "Smederevo"
+    latitude: 44.66436
+    longitude: 20.92763
+    population: 62000
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Prokuplje"
+    latitude: 43.23417
+    longitude: 21.58806
+    population: 27673
+    dem: 259
+    timezone: "Europe/Belgrade"
+  - name: "Pozarevac"
+    latitude: 44.62133
+    longitude: 21.18782
+    population: 41736
+    dem: 80
+    timezone: "Europe/Belgrade"
+  - name: "Pirot"
+    latitude: 43.15306
+    longitude: 22.58611
+    population: 40678
+    dem: 371
+    timezone: "Europe/Belgrade"
+  - name: "Paracin"
+    latitude: 43.86083
+    longitude: 21.40778
+    population: 6000
+    dem: 130
+    timezone: "Europe/Belgrade"
+  - name: "Obrenovac"
+    latitude: 44.65486
+    longitude: 20.20017
+    population: 16821
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Novi Pazar"
+    latitude: 43.13667
+    longitude: 20.51222
+    population: 85996
+    dem: 511
+    timezone: "Europe/Belgrade"
+  - name: "Nis"
+    latitude: 43.32472
+    longitude: 21.90333
+    population: 250000
+    dem: 194
+    timezone: "Europe/Belgrade"
+  - name: "Negotin"
+    latitude: 44.22639
+    longitude: 22.53083
+    population: 17612
+    dem: 49
+    timezone: "Europe/Belgrade"
+  - name: "Majdanpek"
+    latitude: 44.42771
+    longitude: 21.94596
+    population: 10071
+    dem: 504
+    timezone: "Europe/Belgrade"
+  - name: "Leskovac"
+    latitude: 42.99806
+    longitude: 21.94611
+    population: 94758
+    dem: 230
+    timezone: "Europe/Belgrade"
+  - name: "Lazarevac"
+    latitude: 44.38534
+    longitude: 20.2557
+    population: 23551
+    dem: 117
+    timezone: "Europe/Belgrade"
+  - name: "Lapovo"
+    latitude: 44.18424
+    longitude: 21.09727
+    population: 7422
+    dem: 110
+    timezone: "Europe/Belgrade"
+  - name: "Krusevac"
+    latitude: 43.58
+    longitude: 21.33389
+    population: 75256
+    dem: 162
+    timezone: "Europe/Belgrade"
+  - name: "Kraljevo"
+    latitude: 43.72583
+    longitude: 20.68944
+    population: 82846
+    dem: 207
+    timezone: "Europe/Belgrade"
+  - name: "Kragujevac"
+    latitude: 44.01667
+    longitude: 20.91667
+    population: 147473
+    dem: 182
+    timezone: "Europe/Belgrade"
+  - name: "Jagodina"
+    latitude: 43.97713
+    longitude: 21.26121
+    population: 35589
+    dem: 120
+    timezone: "Europe/Belgrade"
+  - name: "Gornji Milanovac"
+    latitude: 44.02603
+    longitude: 20.46152
+    population: 23982
+    dem: 326
+    timezone: "Europe/Belgrade"
+  - name: "Dobanovci"
+    latitude: 44.82631
+    longitude: 20.22487
+    population: 7592
+    dem: 78
+    timezone: "Europe/Belgrade"
+  - name: "Cuprija"
+    latitude: 43.9275
+    longitude: 21.37
+    population: 20585
+    dem: 124
+    timezone: "Europe/Belgrade"
+  - name: "Cacak"
+    latitude: 43.89139
+    longitude: 20.34972
+    population: 117072
+    dem: 241
+    timezone: "Europe/Belgrade"
+  - name: "Bor"
+    latitude: 44.07488
+    longitude: 22.09591
+    population: 39387
+    dem: 405
+    timezone: "Europe/Belgrade"
+  - name: "Belgrade"
+    latitude: 44.80401
+    longitude: 20.46513
+    population: 1273651
+    dem: 120
+    timezone: "Europe/Belgrade"
+  - name: "Baric"
+    latitude: 44.6507
+    longitude: 20.25941
+    population: 5033
+    dem: 82
+    timezone: "Europe/Belgrade"
+  - name: "Arilje"
+    latitude: 43.75306
+    longitude: 20.09556
+    population: 6762
+    dem: 334
+    timezone: "Europe/Belgrade"
+  - name: "Arangelovac"
+    latitude: 44.30694
+    longitude: 20.56
+    population: 24309
+    dem: 251
+    timezone: "Europe/Belgrade"
+  - name: "Valjevo"
+    latitude: 44.27513
+    longitude: 19.89821
+    population: 61035
+    dem: 180
+    timezone: "Europe/Belgrade"
+  - name: "Uzice"
+    latitude: 43.85861
+    longitude: 19.84878
+    population: 63577
+    dem: 438
+    timezone: "Europe/Belgrade"
+  - name: "Sabac"
+    latitude: 44.74667
+    longitude: 19.69
+    population: 55114
+    dem: 79
+    timezone: "Europe/Belgrade"
+  - name: "Bogatic"
+    latitude: 44.8375
+    longitude: 19.48056
+    population: 7225
+    dem: 84
+    timezone: "Europe/Belgrade"
+  - name: "Bajina Basta"
+    latitude: 43.97083
+    longitude: 19.5675
+    population: 8533
+    dem: 242
+    timezone: "Europe/Belgrade"
+  - name: "Badovinci"
+    latitude: 44.78534
+    longitude: 19.37146
+    population: 5879
+    dem: 90
+    timezone: "Europe/Belgrade"
+  - name: "Knjazevac"
+    latitude: 43.56634
+    longitude: 22.25701
+    population: 25000
+    elevation: 217
+    dem: 232
+    timezone: "Europe/Belgrade"

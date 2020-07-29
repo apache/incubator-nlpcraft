@@ -1,0 +1,65 @@
+---
+name: "Micronesia"
+iso: "FM"
+iso3: "FSM"
+code: "583"
+capital: "Palikir"
+area: 702.0
+population: 107708
+continent: "OC"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "691"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "en-FM,chk,pon,yap,kos,uli,woe,nkr,kpg"
+regions:
+- name: "State of Yap"
+  cities:
+  - name: "Colonia"
+    latitude: 9.51638
+    longitude: 138.12167
+    population: 7371
+    dem: 10
+    timezone: "Pacific/Chuuk"
+- name: "State of Kosrae"
+  cities:
+  - name: "Tofol"
+    latitude: 5.32479
+    longitude: 163.00781
+    population: 9686
+    elevation: 5
+    dem: 9
+    timezone: "Pacific/Kosrae"
+- name: "State of Chuuk"
+  cities:
+  - name: "Weno"
+    latitude: 7.44648
+    longitude: 151.84135
+    population: 13856
+    elevation: 0
+    dem: 3
+    timezone: "Pacific/Chuuk"
+- name: "State of Pohnpei"
+  cities:
+  - name: "Palikir-National Government Center"
+    latitude: 6.92477
+    longitude: 158.16109
+    population: 0
+    elevation: 90
+    dem: 92
+    timezone: "Pacific/Pohnpei"
+  - name: "Kolonia Town"
+    latitude: 6.964
+    longitude: 158.206
+    population: 5681
+    elevation: 0
+    dem: 36
+    timezone: "Pacific/Pohnpei"
+  - name: "Kolonia"
+    latitude: 6.964
+    longitude: 158.2062
+    population: 6074
+    elevation: 0
+    dem: 36
+    timezone: "Pacific/Pohnpei"

@@ -17,31 +17,27 @@
 
 package org.apache.nlpcraft.server.geo.tools.metro
 
-import java.io.{File, PrintStream}
+import java.io.File
 
-import net.liftweb.json.Extraction._
-import net.liftweb.json._
 import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.server.geo.NCGeoSynonym
-import resource._
 
 /**
- * Generator of ga:metro values and synthetic synonyms.
+ * Generator of metro values and synthetic synonyms.
  */
 object NCGeoMetroGenerator extends App {
-    private val in = s"${U.mkPath("src/main")}/${U.toPath(this)}/ga_metro.txt"
-    private val out_vals =
-        U.mkPath(s"src/main/resources/geo/metro.json")
-    private val out_syns =
-        U.mkPath(s"src/main/resources/geo/synonyms/metro.json")
+    private val in = s"${U.mkPath("nlpcraft/src/main/scala")}/${U.toPath(this)}/ga_metro.txt"
+    private val out_vals = U.mkPath(s"nlpcraft/src/main/resources/geo/metro.yaml")
+    private val out_syns = U.mkPath(s"nlpcraft/src/main/resources/geo/synonyms/metro.yaml")
 
     private val SYNTH_PART = Seq(
         "Designated Market Area",
         "Market Area",
         "DMA",
-        "metro",
-        "ga:metro"
+        "metro"
     )
+
+    case class Holder(name: String)
 
     private def deleteBrackets(s: String): String =
         s.replaceAll("\\(", " ").replaceAll("\\)", " ").split(" ").map(_.trim).filter(_.nonEmpty).mkString(" ")
@@ -49,17 +45,12 @@ object NCGeoMetroGenerator extends App {
     private def generate() {
         val lines = U.readPath(in, "UTF-8").toSeq.map(_.trim).filter(_.nonEmpty)
 
-        case class Holder(name: String)
-
-        // Skips header.
+       // Skips header.
         val metro = lines.tail.filter(!_.contains("(not set)")).map(line ⇒ Holder(line.takeWhile(_ != ',')))
 
-        // Required for Lift JSON processing.
-        implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
+        val mapper = U.getYamlMapper
 
-        managed(new PrintStream(new File(out_vals))) acquireAndGet { ps ⇒
-            ps.println(prettyRender(decompose(metro)))
-        }
+        mapper.writeValue(new File(out_vals), metro)
 
         println(s"File created: $out_vals")
 
@@ -80,9 +71,7 @@ object NCGeoMetroGenerator extends App {
             NCGeoSynonym(None, None, None, None, None, Some(metro), (mkSeq(normMetro) ++ addSeq).toList)
         })
 
-        managed(new PrintStream(new File(out_syns))) acquireAndGet { ps ⇒
-            ps.println(prettyRender(decompose(sync)))
-        }
+        mapper.writeValue(new File(out_syns), sync)
 
         println(s"Synonyms file created: $out_syns")
     }

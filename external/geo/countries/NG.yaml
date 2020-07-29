@@ -1,0 +1,2797 @@
+---
+name: "Nigeria"
+iso: "NG"
+iso3: "NGA"
+code: "566"
+capital: "Abuja"
+area: 923768.0
+population: 154000000
+continent: "AF"
+currencyCode: "NGN"
+currencyName: "Naira"
+phone: "234"
+postalCodeFormat: "######"
+postalCodeRegex: "^(\\d{6})$"
+languages: "en-NG,ha,yo,ig,ff"
+neighbours: "TD,NE,BJ,CM"
+regions:
+- name: "Bayelsa State"
+  cities:
+  - name: "Yenagoa"
+    latitude: 4.92675
+    longitude: 6.26764
+    population: 24335
+    dem: 8
+    timezone: "Africa/Lagos"
+  - name: "Twon-Brass"
+    latitude: 4.31231
+    longitude: 6.24091
+    population: 11122
+    dem: 3
+    timezone: "Africa/Lagos"
+  - name: "Amassoma"
+    latitude: 4.97032
+    longitude: 6.10915
+    population: 6970
+    dem: 11
+    timezone: "Africa/Lagos"
+- name: "Lagos State"
+  cities:
+  - name: "Makoko"
+    latitude: 6.49611
+    longitude: 3.38778
+    population: 85840
+    dem: 4
+    timezone: "Africa/Lagos"
+  - name: "Lagos"
+    latitude: 6.45407
+    longitude: 3.39467
+    population: 9000000
+    dem: 11
+    timezone: "Africa/Lagos"
+  - name: "Ikeja"
+    latitude: 6.59651
+    longitude: 3.34205
+    population: 313196
+    dem: 40
+    timezone: "Africa/Lagos"
+  - name: "Epe"
+    latitude: 6.58412
+    longitude: 3.98336
+    population: 84711
+    dem: 17
+    timezone: "Africa/Lagos"
+  - name: "Ejirin"
+    latitude: 6.61423
+    longitude: 3.90019
+    population: 9204
+    dem: 6
+    timezone: "Africa/Lagos"
+  - name: "Ebute Ikorodu"
+    latitude: 6.60086
+    longitude: 3.48818
+    population: 535619
+    dem: 4
+    timezone: "Africa/Lagos"
+  - name: "Badagry"
+    latitude: 6.41502
+    longitude: 2.88132
+    population: 26383
+    dem: 5
+    timezone: "Africa/Lagos"
+- name: "Gombe State"
+  cities:
+  - name: "Pindiga"
+    latitude: 9.98433
+    longitude: 10.95229
+    population: 106322
+    dem: 490
+    timezone: "Africa/Lagos"
+  - name: "Nafada"
+    latitude: 11.09596
+    longitude: 11.33261
+    population: 22920
+    dem: 275
+    timezone: "Africa/Lagos"
+  - name: "Kumo"
+    latitude: 10.04807
+    longitude: 11.21055
+    population: 35712
+    dem: 427
+    timezone: "Africa/Lagos"
+  - name: "Kaltungo"
+    latitude: 9.81998
+    longitude: 11.30871
+    population: 12357
+    dem: 489
+    timezone: "Africa/Lagos"
+  - name: "Kafarati"
+    latitude: 10.38304
+    longitude: 11.09567
+    population: 11535
+    dem: 496
+    timezone: "Africa/Lagos"
+  - name: "Hinna"
+    latitude: 10.30426
+    longitude: 11.49905
+    population: 7826
+    dem: 221
+    timezone: "Africa/Lagos"
+  - name: "Gombe"
+    latitude: 10.28969
+    longitude: 11.16729
+    population: 250258
+    dem: 460
+    timezone: "Africa/Lagos"
+  - name: "Garko"
+    latitude: 10.17506
+    longitude: 11.16458
+    population: 21141
+    dem: 470
+    timezone: "Africa/Lagos"
+  - name: "Dukku"
+    latitude: 10.82379
+    longitude: 10.77221
+    population: 16961
+    dem: 474
+    timezone: "Africa/Lagos"
+  - name: "Deba"
+    latitude: 10.21187
+    longitude: 11.3871
+    population: 17671
+    dem: 311
+    timezone: "Africa/Lagos"
+  - name: "Dadiya"
+    latitude: 9.61667
+    longitude: 11.43333
+    population: 7152
+    dem: 349
+    timezone: "Africa/Lagos"
+  - name: "Billiri"
+    latitude: 9.86545
+    longitude: 11.22624
+    population: 15976
+    dem: 529
+    timezone: "Africa/Lagos"
+  - name: "Bara"
+    latitude: 10.37444
+    longitude: 10.72884
+    population: 11673
+    dem: 330
+    timezone: "Africa/Lagos"
+  - name: "Akko"
+    latitude: 10.28899
+    longitude: 10.9732
+    population: 6129
+    dem: 615
+    timezone: "Africa/Lagos"
+- name: "Plateau State"
+  cities:
+  - name: "Yelwa"
+    latitude: 8.83333
+    longitude: 9.63333
+    population: 13234
+    dem: 221
+    timezone: "Africa/Lagos"
+  - name: "Vom"
+    latitude: 9.7291
+    longitude: 8.79138
+    population: 12000
+    dem: 1275
+    timezone: "Africa/Lagos"
+  - name: "Panyam"
+    latitude: 9.40756
+    longitude: 9.21481
+    population: 10715
+    dem: 1133
+    timezone: "Africa/Lagos"
+  - name: "Pankshin"
+    latitude: 9.32541
+    longitude: 9.4352
+    population: 31516
+    dem: 1235
+    timezone: "Africa/Lagos"
+  - name: "Langtang"
+    latitude: 9.14164
+    longitude: 9.79101
+    population: 13172
+    dem: 328
+    timezone: "Africa/Lagos"
+  - name: "Kwolla"
+    latitude: 8.90361
+    longitude: 9.29086
+    population: 8200
+    dem: 269
+    timezone: "Africa/Lagos"
+  - name: "Jos"
+    latitude: 9.92849
+    longitude: 8.89212
+    population: 816824
+    dem: 1186
+    timezone: "Africa/Lagos"
+  - name: "Dengi"
+    latitude: 9.36872
+    longitude: 9.96223
+    population: 6276
+    dem: 384
+    timezone: "Africa/Lagos"
+  - name: "Bukuru"
+    latitude: 9.79399
+    longitude: 8.86397
+    population: 15540
+    dem: 1277
+    timezone: "Africa/Lagos"
+  - name: "Bokkos"
+    latitude: 9.29921
+    longitude: 8.99467
+    population: 12538
+    dem: 1336
+    timezone: "Africa/Lagos"
+  - name: "Amper"
+    latitude: 9.35509
+    longitude: 9.70121
+    population: 12212
+    dem: 461
+    timezone: "Africa/Lagos"
+- name: "Kebbi State"
+  cities:
+  - name: "Zuru"
+    latitude: 11.43522
+    longitude: 5.23494
+    population: 24338
+    dem: 394
+    timezone: "Africa/Lagos"
+  - name: "Wasagu"
+    latitude: 11.3764
+    longitude: 5.79536
+    population: 8157
+    dem: 501
+    timezone: "Africa/Lagos"
+  - name: "Shanga"
+    latitude: 11.21374
+    longitude: 4.57941
+    population: 7471
+    dem: 167
+    timezone: "Africa/Lagos"
+  - name: "Maiyama"
+    latitude: 12.08225
+    longitude: 4.36907
+    population: 10014
+    dem: 256
+    timezone: "Africa/Lagos"
+  - name: "Mahuta"
+    latitude: 11.55338
+    longitude: 4.98138
+    population: 9047
+    dem: 271
+    timezone: "Africa/Lagos"
+  - name: "Kende"
+    latitude: 11.51966
+    longitude: 4.2603
+    population: 7395
+    dem: 159
+    timezone: "Africa/Lagos"
+  - name: "Kamba"
+    latitude: 11.85172
+    longitude: 3.65478
+    population: 25568
+    dem: 177
+    timezone: "Africa/Lagos"
+  - name: "Kangiwa"
+    latitude: 12.55339
+    longitude: 3.81814
+    population: 11701
+    dem: 237
+    timezone: "Africa/Lagos"
+  - name: "Jega"
+    latitude: 12.22336
+    longitude: 4.37971
+    population: 73495
+    dem: 242
+    timezone: "Africa/Lagos"
+  - name: "Gwandu"
+    latitude: 12.50204
+    longitude: 4.64295
+    population: 10018
+    dem: 249
+    timezone: "Africa/Lagos"
+  - name: "Gulma"
+    latitude: 12.64231
+    longitude: 4.35545
+    population: 6719
+    dem: 214
+    timezone: "Africa/Lagos"
+  - name: "Dakingari"
+    latitude: 11.64809
+    longitude: 4.06177
+    population: 12558
+    dem: 191
+    timezone: "Africa/Lagos"
+  - name: "Dabai"
+    latitude: 11.47651
+    longitude: 5.20625
+    population: 6012
+    dem: 452
+    timezone: "Africa/Lagos"
+  - name: "Birnin Kebbi"
+    latitude: 12.45389
+    longitude: 4.1975
+    population: 108164
+    dem: 234
+    timezone: "Africa/Lagos"
+  - name: "Bin Yauri"
+    latitude: 10.7823
+    longitude: 4.81135
+    population: 11501
+    dem: 204
+    timezone: "Africa/Lagos"
+  - name: "Bena"
+    latitude: 11.28444
+    longitude: 5.93472
+    population: 8361
+    dem: 555
+    timezone: "Africa/Lagos"
+  - name: "Bagudo"
+    latitude: 11.40351
+    longitude: 4.22571
+    population: 6924
+    dem: 159
+    timezone: "Africa/Lagos"
+  - name: "Argungu"
+    latitude: 12.74482
+    longitude: 4.52514
+    population: 45584
+    dem: 228
+    timezone: "Africa/Lagos"
+- name: "Taraba State"
+  cities:
+  - name: "Wukari"
+    latitude: 7.87139
+    longitude: 9.77786
+    population: 92933
+    dem: 189
+    timezone: "Africa/Lagos"
+  - name: "Riti"
+    latitude: 7.90844
+    longitude: 9.61688
+    population: 6875
+    dem: 127
+    timezone: "Africa/Lagos"
+  - name: "Mutum Biyu"
+    latitude: 8.64138
+    longitude: 10.77355
+    population: 11702
+    dem: 146
+    timezone: "Africa/Lagos"
+  - name: "Lau"
+    latitude: 9.20827
+    longitude: 11.27541
+    population: 12657
+    dem: 132
+    timezone: "Africa/Lagos"
+  - name: "Jalingo"
+    latitude: 8.89367
+    longitude: 11.3596
+    population: 117757
+    dem: 208
+    timezone: "Africa/Lagos"
+  - name: "Ibi"
+    latitude: 8.18122
+    longitude: 9.74431
+    population: 22757
+    dem: 109
+    timezone: "Africa/Lagos"
+  - name: "Gembu"
+    latitude: 6.72556
+    longitude: 11.25652
+    population: 19881
+    dem: 1599
+    timezone: "Africa/Lagos"
+  - name: "Gassol"
+    latitude: 8.53535
+    longitude: 10.44615
+    population: 14326
+    dem: 132
+    timezone: "Africa/Lagos"
+  - name: "Beli"
+    latitude: 7.85868
+    longitude: 10.97187
+    population: 17467
+    dem: 183
+    timezone: "Africa/Lagos"
+  - name: "Baissa"
+    latitude: 7.23087
+    longitude: 10.62444
+    population: 8911
+    dem: 248
+    timezone: "Africa/Lagos"
+- name: "Cross River State"
+  cities:
+  - name: "Ugep"
+    latitude: 5.80865
+    longitude: 8.08098
+    population: 200276
+    dem: 101
+    timezone: "Africa/Lagos"
+  - name: "Ogoja"
+    latitude: 6.6584
+    longitude: 8.79923
+    population: 37466
+    dem: 96
+    timezone: "Africa/Lagos"
+  - name: "Obudu"
+    latitude: 6.66819
+    longitude: 9.16453
+    population: 19668
+    dem: 224
+    timezone: "Africa/Lagos"
+  - name: "Obubra"
+    latitude: 6.07672
+    longitude: 8.33241
+    population: 12885
+    dem: 91
+    timezone: "Africa/Lagos"
+  - name: "Ikom"
+    latitude: 5.96669
+    longitude: 8.70632
+    population: 79103
+    dem: 60
+    timezone: "Africa/Lagos"
+  - name: "Ikang"
+    latitude: 4.78978
+    longitude: 8.5316
+    population: 13305
+    dem: 9
+    timezone: "Africa/Lagos"
+  - name: "Gakem"
+    latitude: 6.76963
+    longitude: 8.9912
+    population: 5865
+    dem: 162
+    timezone: "Africa/Lagos"
+  - name: "Calabar"
+    latitude: 4.95893
+    longitude: 8.32695
+    population: 461796
+    dem: 37
+    timezone: "Africa/Lagos"
+  - name: "Akankpa"
+    latitude: 5.1264
+    longitude: 8.1898
+    population: 7000
+    dem: 80
+    timezone: "Africa/Lagos"
+- name: "Ogun State"
+  cities:
+  - name: "Shagamu"
+    latitude: 6.8485
+    longitude: 3.64633
+    population: 214558
+    dem: 53
+    timezone: "Africa/Lagos"
+  - name: "Owode"
+    latitude: 6.94851
+    longitude: 3.50561
+    population: 8513
+    dem: 134
+    timezone: "Africa/Lagos"
+  - name: "Imeko"
+    latitude: 7.44888
+    longitude: 2.84289
+    population: 8627
+    dem: 204
+    timezone: "Africa/Lagos"
+  - name: "Isara"
+    latitude: 6.99345
+    longitude: 3.68148
+    population: 8205
+    dem: 138
+    timezone: "Africa/Lagos"
+  - name: "Iperu"
+    latitude: 6.91002
+    longitude: 3.66557
+    population: 15935
+    dem: 97
+    timezone: "Africa/Lagos"
+  - name: "Ilaro"
+    latitude: 6.88901
+    longitude: 3.01416
+    population: 46999
+    dem: 73
+    timezone: "Africa/Lagos"
+  - name: "Ijebu-Ode"
+    latitude: 6.81944
+    longitude: 3.91731
+    population: 209175
+    dem: 74
+    timezone: "Africa/Lagos"
+  - name: "Ijebu-Igbo"
+    latitude: 6.97198
+    longitude: 3.99938
+    population: 109261
+    dem: 94
+    timezone: "Africa/Lagos"
+  - name: "Ijebu-Ife"
+    latitude: 6.77837
+    longitude: 4.03386
+    population: 5733
+    dem: 55
+    timezone: "Africa/Lagos"
+  - name: "Ifo"
+    latitude: 6.81491
+    longitude: 3.19518
+    population: 88272
+    dem: 65
+    timezone: "Africa/Lagos"
+  - name: "Idi Iroko"
+    latitude: 6.63333
+    longitude: 2.73333
+    population: 7487
+    dem: 15
+    timezone: "Africa/Lagos"
+  - name: "Ado Odo"
+    latitude: 6.6
+    longitude: 2.93333
+    population: 15442
+    dem: 9
+    timezone: "Africa/Lagos"
+  - name: "Abeokuta"
+    latitude: 7.15571
+    longitude: 3.34509
+    population: 593100
+    dem: 64
+    timezone: "Africa/Lagos"
+- name: "Edo"
+  cities:
+  - name: "Uromi"
+    latitude: 6.7
+    longitude: 6.33333
+    population: 108608
+    dem: 381
+    timezone: "Africa/Lagos"
+  - name: "Ubiaja"
+    latitude: 6.65581
+    longitude: 6.38494
+    population: 21782
+    dem: 286
+    timezone: "Africa/Lagos"
+  - name: "Siluko"
+    latitude: 6.53589
+    longitude: 5.16005
+    population: 7920
+    dem: 51
+    timezone: "Africa/Lagos"
+  - name: "Illushi"
+    latitude: 6.67033
+    longitude: 6.62907
+    population: 7340
+    dem: 32
+    timezone: "Africa/Lagos"
+  - name: "Igarra"
+    latitude: 7.29366
+    longitude: 6.10432
+    population: 14647
+    dem: 296
+    timezone: "Africa/Lagos"
+  - name: "Ekpoma"
+    latitude: 6.743
+    longitude: 6.14029
+    population: 59618
+    dem: 364
+    timezone: "Africa/Lagos"
+  - name: "Benin City"
+    latitude: 6.33815
+    longitude: 5.62575
+    population: 1125058
+    dem: 88
+    timezone: "Africa/Lagos"
+  - name: "Auchi"
+    latitude: 7.06756
+    longitude: 6.2636
+    population: 62907
+    dem: 188
+    timezone: "Africa/Lagos"
+  - name: "Agenebode"
+    latitude: 7.10512
+    longitude: 6.69381
+    population: 12730
+    dem: 55
+    timezone: "Africa/Lagos"
+- name: "Niger State"
+  cities:
+  - name: "Zungeru"
+    latitude: 9.80726
+    longitude: 6.15238
+    population: 24447
+    dem: 125
+    timezone: "Africa/Lagos"
+  - name: "Wawa"
+    latitude: 9.90222
+    longitude: 4.41917
+    population: 10200
+    dem: 254
+    timezone: "Africa/Lagos"
+  - name: "Ukata"
+    latitude: 10.83122
+    longitude: 5.82494
+    population: 6188
+    dem: 420
+    timezone: "Africa/Lagos"
+  - name: "Tegina"
+    latitude: 10.0706
+    longitude: 6.1906
+    population: 24037
+    dem: 270
+    timezone: "Africa/Lagos"
+  - name: "Suleja"
+    latitude: 9.18059
+    longitude: 7.17939
+    population: 162135
+    dem: 421
+    timezone: "Africa/Lagos"
+  - name: "Rijau"
+    latitude: 11.10389
+    longitude: 5.25556
+    population: 16613
+    dem: 358
+    timezone: "Africa/Lagos"
+  - name: "New Shagunnu"
+    latitude: 10.33957
+    longitude: 4.4688
+    population: 7349
+    dem: 153
+    timezone: "Africa/Lagos"
+  - name: "Mokwa"
+    latitude: 9.29482
+    longitude: 5.05412
+    population: 21128
+    dem: 153
+    timezone: "Africa/Lagos"
+  - name: "Minna"
+    latitude: 9.61524
+    longitude: 6.54776
+    population: 291905
+    dem: 243
+    timezone: "Africa/Lagos"
+  - name: "Lapai"
+    latitude: 9.04439
+    longitude: 6.57089
+    population: 16442
+    dem: 169
+    timezone: "Africa/Lagos"
+  - name: "Kuta"
+    latitude: 9.86864
+    longitude: 6.71042
+    population: 7528
+    dem: 318
+    timezone: "Africa/Lagos"
+  - name: "Kusheriki"
+    latitude: 10.53283
+    longitude: 6.44222
+    population: 6941
+    dem: 421
+    timezone: "Africa/Lagos"
+  - name: "Kontagora"
+    latitude: 10.40319
+    longitude: 5.4708
+    population: 98754
+    dem: 339
+    timezone: "Africa/Lagos"
+  - name: "Konkwesso"
+    latitude: 10.84686
+    longitude: 4.09835
+    population: 7687
+    dem: 265
+    timezone: "Africa/Lagos"
+  - name: "Ibeto"
+    latitude: 10.48536
+    longitude: 5.14501
+    population: 15565
+    dem: 344
+    timezone: "Africa/Lagos"
+  - name: "Duku"
+    latitude: 11.2361
+    longitude: 4.90727
+    population: 8014
+    dem: 279
+    timezone: "Africa/Lagos"
+  - name: "Bokani"
+    latitude: 9.43333
+    longitude: 5.2
+    population: 8624
+    dem: 169
+    timezone: "Africa/Lagos"
+  - name: "Bida"
+    latitude: 9.08044
+    longitude: 6.0099
+    population: 171656
+    dem: 118
+    timezone: "Africa/Lagos"
+  - name: "Baro"
+    latitude: 8.61565
+    longitude: 6.4185
+    population: 26821
+    dem: 94
+    timezone: "Africa/Lagos"
+  - name: "Badeggi"
+    latitude: 9.0563
+    longitude: 6.143
+    population: 8283
+    dem: 82
+    timezone: "Africa/Lagos"
+  - name: "Babana"
+    latitude: 10.42949
+    longitude: 3.81495
+    population: 17617
+    dem: 291
+    timezone: "Africa/Lagos"
+  - name: "Auna"
+    latitude: 10.18805
+    longitude: 4.72318
+    population: 8590
+    dem: 198
+    timezone: "Africa/Lagos"
+  - name: "Agaie"
+    latitude: 9.0085
+    longitude: 6.31821
+    population: 11742
+    dem: 120
+    timezone: "Africa/Lagos"
+- name: "Anambra State"
+  cities:
+  - name: "Uruobo-Okija"
+    latitude: 5.90016
+    longitude: 6.84312
+    population: 13898
+    dem: 86
+    timezone: "Africa/Lagos"
+  - name: "Uga"
+    latitude: 5.93576
+    longitude: 7.0793
+    population: 64179
+    dem: 227
+    timezone: "Africa/Lagos"
+  - name: "Ozubulu"
+    latitude: 5.95753
+    longitude: 6.85305
+    population: 73812
+    dem: 135
+    timezone: "Africa/Lagos"
+  - name: "Onitsha"
+    latitude: 6.14978
+    longitude: 6.78569
+    population: 561066
+    dem: 57
+    timezone: "Africa/Lagos"
+  - name: "Nnewi"
+    latitude: 6.01962
+    longitude: 6.91729
+    population: 193987
+    dem: 151
+    timezone: "Africa/Lagos"
+  - name: "Nkpor"
+    latitude: 6.15038
+    longitude: 6.83042
+    population: 103733
+    dem: 124
+    timezone: "Africa/Lagos"
+  - name: "Ihiala"
+    latitude: 5.85475
+    longitude: 6.85944
+    population: 83265
+    dem: 146
+    timezone: "Africa/Lagos"
+  - name: "Igbo-Ukwu"
+    latitude: 6.01798
+    longitude: 7.02027
+    population: 75224
+    dem: 359
+    timezone: "Africa/Lagos"
+  - name: "Enugu-Ukwu"
+    latitude: 6.17146
+    longitude: 7.00525
+    population: 68785
+    dem: 220
+    timezone: "Africa/Lagos"
+  - name: "Awka"
+    latitude: 6.21269
+    longitude: 7.07199
+    population: 167738
+    dem: 99
+    timezone: "Africa/Lagos"
+  - name: "Atani"
+    latitude: 6.01277
+    longitude: 6.74768
+    population: 230000
+    dem: 25
+    timezone: "Africa/Lagos"
+  - name: "Agulu"
+    latitude: 6.10045
+    longitude: 7.061
+    population: 79021
+    dem: 201
+    timezone: "Africa/Lagos"
+- name: "Bauchi State"
+  cities:
+  - name: "Zalanga"
+    latitude: 10.61432
+    longitude: 10.17647
+    population: 12070
+    dem: 554
+    timezone: "Africa/Lagos"
+  - name: "Zadawa"
+    latitude: 11.4496
+    longitude: 10.3672
+    population: 7495
+    dem: 435
+    timezone: "Africa/Lagos"
+  - name: "Yuli"
+    latitude: 9.69707
+    longitude: 10.2735
+    population: 9549
+    dem: 283
+    timezone: "Africa/Lagos"
+  - name: "Yanda Bayo"
+    latitude: 11.5071
+    longitude: 10.7459
+    population: 5927
+    dem: 455
+    timezone: "Africa/Lagos"
+  - name: "Yamrat"
+    latitude: 10.11161
+    longitude: 9.82604
+    population: 7098
+    dem: 553
+    timezone: "Africa/Lagos"
+  - name: "Sade"
+    latitude: 11.3595
+    longitude: 10.6732
+    population: 8223
+    dem: 414
+    timezone: "Africa/Lagos"
+  - name: "Misau"
+    latitude: 11.3137
+    longitude: 10.46664
+    population: 13957
+    dem: 436
+    timezone: "Africa/Lagos"
+  - name: "Madara"
+    latitude: 11.7798
+    longitude: 10.4479
+    population: 10015
+    dem: 392
+    timezone: "Africa/Lagos"
+  - name: "Lere"
+    latitude: 9.71052
+    longitude: 9.34029
+    population: 14620
+    dem: 873
+    timezone: "Africa/Lagos"
+  - name: "Lame"
+    latitude: 10.44154
+    longitude: 9.23955
+    population: 6705
+    dem: 711
+    timezone: "Africa/Lagos"
+  - name: "Katagum"
+    latitude: 12.28507
+    longitude: 10.35027
+    population: 10602
+    dem: 362
+    timezone: "Africa/Lagos"
+  - name: "Kari"
+    latitude: 11.2471
+    longitude: 10.561
+    population: 18812
+    dem: 408
+    timezone: "Africa/Lagos"
+  - name: "Gwaram"
+    latitude: 10.23295
+    longitude: 10.28572
+    population: 6700
+    dem: 447
+    timezone: "Africa/Lagos"
+  - name: "Gamawa"
+    latitude: 12.13379
+    longitude: 10.53785
+    population: 13549
+    dem: 364
+    timezone: "Africa/Lagos"
+  - name: "Gabarin"
+    latitude: 11.1093
+    longitude: 10.4441
+    population: 10160
+    dem: 478
+    timezone: "Africa/Lagos"
+  - name: "Disina"
+    latitude: 11.48135
+    longitude: 9.91903
+    population: 5833
+    dem: 415
+    timezone: "Africa/Lagos"
+  - name: "Dindima"
+    latitude: 10.22629
+    longitude: 10.15132
+    population: 13356
+    dem: 470
+    timezone: "Africa/Lagos"
+  - name: "Darazo"
+    latitude: 10.9992
+    longitude: 10.41062
+    population: 18415
+    dem: 507
+    timezone: "Africa/Lagos"
+  - name: "Bununu"
+    latitude: 9.88224
+    longitude: 9.68058
+    population: 6123
+    dem: 579
+    timezone: "Africa/Lagos"
+  - name: "Dass"
+    latitude: 10.00065
+    longitude: 9.51596
+    population: 7417
+    dem: 617
+    timezone: "Africa/Lagos"
+  - name: "Boi"
+    latitude: 9.56109
+    longitude: 9.50154
+    population: 6033
+    dem: 776
+    timezone: "Africa/Lagos"
+  - name: "Bauchi"
+    latitude: 10.31032
+    longitude: 9.84388
+    population: 316149
+    dem: 623
+    timezone: "Africa/Lagos"
+  - name: "Azare"
+    latitude: 11.67478
+    longitude: 10.19069
+    population: 105687
+    dem: 413
+    timezone: "Africa/Lagos"
+- name: "Imo State"
+  cities:
+  - name: "Owerri"
+    latitude: 5.48363
+    longitude: 7.03325
+    population: 215038
+    dem: 73
+    timezone: "Africa/Lagos"
+  - name: "Orodo"
+    latitude: 5.61667
+    longitude: 7.03333
+    population: 8527
+    dem: 138
+    timezone: "Africa/Lagos"
+  - name: "Orlu"
+    latitude: 5.79565
+    longitude: 7.03513
+    population: 9351
+    dem: 173
+    timezone: "Africa/Lagos"
+  - name: "Okigwe"
+    latitude: 5.82917
+    longitude: 7.35056
+    population: 115499
+    dem: 158
+    timezone: "Africa/Lagos"
+  - name: "Oguta"
+    latitude: 5.71044
+    longitude: 6.80936
+    population: 21639
+    dem: 26
+    timezone: "Africa/Lagos"
+  - name: "Nkwerre"
+    latitude: 5.75917
+    longitude: 7.10384
+    population: 62973
+    dem: 179
+    timezone: "Africa/Lagos"
+  - name: "Iho"
+    latitude: 5.58225
+    longitude: 7.09896
+    population: 7776
+    dem: 149
+    timezone: "Africa/Lagos"
+- name: "Abia State"
+  cities:
+  - name: "Umuahia"
+    latitude: 5.52491
+    longitude: 7.49461
+    population: 264662
+    dem: 148
+    timezone: "Africa/Lagos"
+  - name: "Ohafia-Ifigh"
+    latitude: 5.61455
+    longitude: 7.81191
+    population: 73355
+    dem: 124
+    timezone: "Africa/Lagos"
+  - name: "Bende"
+    latitude: 5.55874
+    longitude: 7.63359
+    population: 79618
+    dem: 123
+    timezone: "Africa/Lagos"
+  - name: "Arochukwu"
+    latitude: 5.38941
+    longitude: 7.91235
+    population: 10776
+    dem: 82
+    timezone: "Africa/Lagos"
+  - name: "Amaigbo"
+    latitude: 5.78917
+    longitude: 7.83829
+    population: 127300
+    dem: 84
+    timezone: "Africa/Lagos"
+  - name: "Aba"
+    latitude: 5.10658
+    longitude: 7.36667
+    population: 897560
+    dem: 64
+    timezone: "Africa/Lagos"
+- name: "Sokoto State"
+  cities:
+  - name: "Wurno"
+    latitude: 13.29048
+    longitude: 5.42373
+    population: 13087
+    dem: 273
+    timezone: "Africa/Lagos"
+  - name: "Tambuwal"
+    latitude: 12.40592
+    longitude: 4.64605
+    population: 20932
+    dem: 261
+    timezone: "Africa/Lagos"
+  - name: "Sokoto"
+    latitude: 13.06269
+    longitude: 5.24322
+    population: 563861
+    dem: 296
+    timezone: "Africa/Lagos"
+  - name: "Rabah"
+    latitude: 13.12257
+    longitude: 5.50762
+    population: 8707
+    dem: 265
+    timezone: "Africa/Lagos"
+  - name: "Illela"
+    latitude: 13.73064
+    longitude: 5.29777
+    population: 17461
+    dem: 272
+    timezone: "Africa/Lagos"
+  - name: "Gwadabawa"
+    latitude: 13.35819
+    longitude: 5.23812
+    population: 17486
+    dem: 270
+    timezone: "Africa/Lagos"
+  - name: "Goronyo"
+    latitude: 13.44226
+    longitude: 5.67234
+    population: 10460
+    dem: 279
+    timezone: "Africa/Lagos"
+  - name: "Gandi"
+    latitude: 12.96358
+    longitude: 5.74337
+    population: 13940
+    dem: 278
+    timezone: "Africa/Lagos"
+  - name: "Dange"
+    latitude: 12.85313
+    longitude: 5.34572
+    population: 12369
+    dem: 344
+    timezone: "Africa/Lagos"
+  - name: "Binji"
+    latitude: 13.22294
+    longitude: 4.90888
+    population: 6717
+    dem: 250
+    timezone: "Africa/Lagos"
+- name: "Ondo State"
+  cities:
+  - name: "Owo"
+    latitude: 7.1962
+    longitude: 5.58681
+    population: 276574
+    dem: 348
+    timezone: "Africa/Lagos"
+  - name: "Ore"
+    latitude: 6.74716
+    longitude: 4.8761
+    population: 13905
+    dem: 76
+    timezone: "Africa/Lagos"
+  - name: "Ondo"
+    latitude: 7.09316
+    longitude: 4.83528
+    population: 257005
+    dem: 263
+    timezone: "Africa/Lagos"
+  - name: "Ode"
+    latitude: 7.7899
+    longitude: 5.7117
+    population: 75463
+    dem: 529
+    timezone: "Africa/Lagos"
+  - name: "Ilare"
+    latitude: 7.35067
+    longitude: 5.11333
+    population: 7685
+    dem: 348
+    timezone: "Africa/Lagos"
+  - name: "Ifon"
+    latitude: 6.92973
+    longitude: 5.77368
+    population: 7623
+    dem: 184
+    timezone: "Africa/Lagos"
+  - name: "Idanre"
+    latitude: 7.1127
+    longitude: 5.1159
+    population: 86468
+    dem: 332
+    timezone: "Africa/Lagos"
+  - name: "Akure"
+    latitude: 7.25256
+    longitude: 5.19312
+    population: 420594
+    dem: 353
+    timezone: "Africa/Lagos"
+  - name: "Agbabu"
+    latitude: 6.58862
+    longitude: 4.8343
+    population: 8611
+    dem: 12
+    timezone: "Africa/Lagos"
+- name: "Ekiti State"
+  cities:
+  - name: "Omuo-Ekiti"
+    latitude: 7.75833
+    longitude: 5.72227
+    population: 6317
+    dem: 546
+    timezone: "Africa/Lagos"
+  - name: "Oke Ila"
+    latitude: 7.95
+    longitude: 4.98333
+    population: 35000
+    dem: 540
+    timezone: "Africa/Lagos"
+  - name: "Ise-Ekiti"
+    latitude: 7.46478
+    longitude: 5.42333
+    population: 190063
+    dem: 379
+    timezone: "Africa/Lagos"
+  - name: "Ipoti"
+    latitude: 7.87377
+    longitude: 5.07691
+    population: 82113
+    dem: 593
+    timezone: "Africa/Lagos"
+  - name: "Ikere-Ekiti"
+    latitude: 7.49748
+    longitude: 5.23041
+    population: 103054
+    dem: 381
+    timezone: "Africa/Lagos"
+  - name: "Ijero-Ekiti"
+    latitude: 7.81514
+    longitude: 5.06716
+    population: 167632
+    dem: 491
+    timezone: "Africa/Lagos"
+  - name: "Igede-Ekiti"
+    latitude: 7.6685
+    longitude: 5.12627
+    population: 87282
+    dem: 576
+    timezone: "Africa/Lagos"
+  - name: "Igbara-Odo"
+    latitude: 7.50251
+    longitude: 5.06258
+    population: 74121
+    dem: 367
+    timezone: "Africa/Lagos"
+  - name: "Ifaki"
+    latitude: 7.78942
+    longitude: 5.24852
+    population: 9185
+    dem: 571
+    timezone: "Africa/Lagos"
+  - name: "Emure-Ekiti"
+    latitude: 7.43636
+    longitude: 5.45925
+    population: 90645
+    dem: 379
+    timezone: "Africa/Lagos"
+  - name: "Efon-Alaaye"
+    latitude: 7.65649
+    longitude: 4.92235
+    population: 279319
+    dem: 556
+    timezone: "Africa/Lagos"
+  - name: "Aramoko-Ekiti"
+    latitude: 7.70483
+    longitude: 5.04054
+    population: 74491
+    dem: 458
+    timezone: "Africa/Lagos"
+  - name: "Ado-Ekiti"
+    latitude: 7.62329
+    longitude: 5.22087
+    population: 424340
+    dem: 439
+    timezone: "Africa/Lagos"
+- name: "Borno State"
+  cities:
+  - name: "Yajiwa"
+    latitude: 11.38623
+    longitude: 12.71992
+    population: 6880
+    dem: 377
+    timezone: "Africa/Lagos"
+  - name: "Wuyo"
+    latitude: 10.38522
+    longitude: 11.69678
+    population: 9189
+    dem: 312
+    timezone: "Africa/Lagos"
+  - name: "Uba"
+    latitude: 10.45509
+    longitude: 13.22233
+    population: 11648
+    dem: 496
+    timezone: "Africa/Lagos"
+  - name: "Tokombere"
+    latitude: 11.22135
+    longitude: 13.48783
+    population: 7092
+    dem: 360
+    timezone: "Africa/Lagos"
+  - name: "Shani"
+    latitude: 10.21824
+    longitude: 12.06059
+    population: 14305
+    dem: 239
+    timezone: "Africa/Lagos"
+  - name: "Shaffa"
+    latitude: 10.50673
+    longitude: 12.33315
+    population: 6508
+    dem: 649
+    timezone: "Africa/Lagos"
+  - name: "Ngala"
+    latitude: 12.34053
+    longitude: 14.1867
+    population: 14031
+    dem: 294
+    timezone: "Africa/Lagos"
+  - name: "Monguno"
+    latitude: 12.67059
+    longitude: 13.61224
+    population: 20297
+    dem: 290
+    timezone: "Africa/Lagos"
+  - name: "Miringa"
+    latitude: 10.73115
+    longitude: 12.14626
+    population: 12117
+    dem: 659
+    timezone: "Africa/Lagos"
+  - name: "Marte"
+    latitude: 12.36532
+    longitude: 13.8293
+    population: 15707
+    dem: 292
+    timezone: "Africa/Lagos"
+  - name: "Maiduguri"
+    latitude: 11.84692
+    longitude: 13.15712
+    population: 1112449
+    dem: 325
+    timezone: "Africa/Lagos"
+  - name: "Magumeri"
+    latitude: 12.11451
+    longitude: 12.8262
+    population: 19363
+    dem: 336
+    timezone: "Africa/Lagos"
+  - name: "Kukawa"
+    latitude: 12.92475
+    longitude: 13.56617
+    population: 16077
+    dem: 291
+    timezone: "Africa/Lagos"
+  - name: "Konduga"
+    latitude: 11.65331
+    longitude: 13.41787
+    population: 13400
+    dem: 330
+    timezone: "Africa/Lagos"
+  - name: "Gwoza"
+    latitude: 11.08313
+    longitude: 13.69595
+    population: 15176
+    dem: 418
+    timezone: "Africa/Lagos"
+  - name: "Gamboru"
+    latitude: 12.37299
+    longitude: 14.2069
+    population: 84672
+    dem: 291
+    timezone: "Africa/Lagos"
+  - name: "Dikwa"
+    latitude: 12.03609
+    longitude: 13.91815
+    population: 29026
+    dem: 298
+    timezone: "Africa/Lagos"
+  - name: "Damboa"
+    latitude: 11.15534
+    longitude: 12.75638
+    population: 21571
+    dem: 401
+    timezone: "Africa/Lagos"
+  - name: "Damasak"
+    latitude: 13.10518
+    longitude: 12.50854
+    population: 13874
+    dem: 313
+    timezone: "Africa/Lagos"
+  - name: "Bornu Yassu"
+    latitude: 12.27503
+    longitude: 12.56856
+    population: 5811
+    dem: 332
+    timezone: "Africa/Lagos"
+  - name: "Biu"
+    latitude: 10.61285
+    longitude: 12.19458
+    population: 95005
+    dem: 762
+    timezone: "Africa/Lagos"
+  - name: "Benisheikh"
+    latitude: 11.80919
+    longitude: 12.49151
+    population: 9825
+    dem: 351
+    timezone: "Africa/Lagos"
+  - name: "Bama"
+    latitude: 11.52134
+    longitude: 13.68952
+    population: 118121
+    dem: 330
+    timezone: "Africa/Lagos"
+- name: "Zamfara State"
+  cities:
+  - name: "Talata Mafara"
+    latitude: 12.56841
+    longitude: 6.06225
+    population: 39045
+    dem: 316
+    timezone: "Africa/Lagos"
+  - name: "Shinkafi"
+    latitude: 13.07296
+    longitude: 6.50574
+    population: 9324
+    dem: 329
+    timezone: "Africa/Lagos"
+  - name: "Sauri"
+    latitude: 11.72655
+    longitude: 6.78374
+    population: 13445
+    dem: 612
+    timezone: "Africa/Lagos"
+  - name: "Moriki"
+    latitude: 12.87405
+    longitude: 6.48754
+    population: 28735
+    dem: 353
+    timezone: "Africa/Lagos"
+  - name: "Maru"
+    latitude: 12.3336
+    longitude: 6.40372
+    population: 11496
+    dem: 381
+    timezone: "Africa/Lagos"
+  - name: "Kwatarkwashi"
+    latitude: 12.14082
+    longitude: 6.82196
+    population: 9084
+    dem: 483
+    timezone: "Africa/Lagos"
+  - name: "Kaura Namoda"
+    latitude: 12.59371
+    longitude: 6.58648
+    population: 69725
+    dem: 396
+    timezone: "Africa/Lagos"
+  - name: "Gusau"
+    latitude: 12.17024
+    longitude: 6.66412
+    population: 226857
+    dem: 451
+    timezone: "Africa/Lagos"
+  - name: "Gummi"
+    latitude: 12.14484
+    longitude: 5.11776
+    population: 38744
+    dem: 233
+    timezone: "Africa/Lagos"
+  - name: "Dan Sadau"
+    latitude: 11.29621
+    longitude: 6.4952
+    population: 7568
+    dem: 502
+    timezone: "Africa/Lagos"
+  - name: "Tsafe"
+    latitude: 11.95775
+    longitude: 6.92083
+    population: 9367
+    dem: 565
+    timezone: "Africa/Lagos"
+  - name: "Anka"
+    latitude: 12.11347
+    longitude: 5.92681
+    population: 11641
+    dem: 318
+    timezone: "Africa/Lagos"
+- name: "Osun State"
+  cities:
+  - name: "Oyan"
+    latitude: 8.05
+    longitude: 4.76667
+    population: 73622
+    dem: 422
+    timezone: "Africa/Lagos"
+  - name: "Otan Ayegbaju"
+    latitude: 7.94783
+    longitude: 4.78836
+    population: 37783
+    dem: 484
+    timezone: "Africa/Lagos"
+  - name: "Osogbo"
+    latitude: 7.77104
+    longitude: 4.55698
+    population: 156694
+    dem: 336
+    timezone: "Africa/Lagos"
+  - name: "Olupona"
+    latitude: 7.6
+    longitude: 4.18333
+    population: 95002
+    dem: 241
+    timezone: "Africa/Lagos"
+  - name: "Oke Mesi"
+    latitude: 7.81667
+    longitude: 4.91667
+    population: 79563
+    dem: 514
+    timezone: "Africa/Lagos"
+  - name: "Modakeke"
+    latitude: 7.38333
+    longitude: 4.26667
+    population: 119529
+    dem: 241
+    timezone: "Africa/Lagos"
+  - name: "Iwo"
+    latitude: 7.63527
+    longitude: 4.18156
+    population: 250443
+    dem: 246
+    timezone: "Africa/Lagos"
+  - name: "Inisa"
+    latitude: 7.85
+    longitude: 4.33333
+    population: 164161
+    dem: 368
+    timezone: "Africa/Lagos"
+  - name: "Ilobu"
+    latitude: 7.84036
+    longitude: 4.48557
+    population: 118089
+    dem: 334
+    timezone: "Africa/Lagos"
+  - name: "Ilesa"
+    latitude: 7.62789
+    longitude: 4.74161
+    population: 277904
+    dem: 377
+    timezone: "Africa/Lagos"
+  - name: "Ila Orangun"
+    latitude: 8.01714
+    longitude: 4.90421
+    population: 179192
+    dem: 493
+    timezone: "Africa/Lagos"
+  - name: "Ikirun"
+    latitude: 7.91283
+    longitude: 4.66741
+    population: 134240
+    dem: 379
+    timezone: "Africa/Lagos"
+  - name: "Ikire"
+    latitude: 7.37241
+    longitude: 4.18739
+    population: 222160
+    dem: 207
+    timezone: "Africa/Lagos"
+  - name: "Ijebu-Jesa"
+    latitude: 7.68267
+    longitude: 4.81436
+    population: 51730
+    dem: 388
+    timezone: "Africa/Lagos"
+  - name: "Gbongan"
+    latitude: 7.47734
+    longitude: 4.35351
+    population: 139485
+    dem: 236
+    timezone: "Africa/Lagos"
+  - name: "Ejigbo"
+    latitude: 7.90292
+    longitude: 4.31419
+    population: 138357
+    dem: 353
+    timezone: "Africa/Lagos"
+  - name: "Apomu"
+    latitude: 7.35156
+    longitude: 4.18335
+    population: 71656
+    dem: 193
+    timezone: "Africa/Lagos"
+- name: "Delta State"
+  cities:
+  - name: "Warri"
+    latitude: 5.51737
+    longitude: 5.75006
+    population: 536023
+    dem: 6
+    timezone: "Africa/Lagos"
+  - name: "Umunede"
+    latitude: 6.26549
+    longitude: 6.30962
+    population: 8331
+    dem: 247
+    timezone: "Africa/Lagos"
+  - name: "Ughelli"
+    latitude: 5.48956
+    longitude: 6.00407
+    population: 79986
+    dem: 13
+    timezone: "Africa/Lagos"
+  - name: "Sapele"
+    latitude: 5.89405
+    longitude: 5.67666
+    population: 161686
+    dem: 9
+    timezone: "Africa/Lagos"
+  - name: "Patani"
+    latitude: 5.22885
+    longitude: 6.19139
+    population: 7327
+    dem: 13
+    timezone: "Africa/Lagos"
+  - name: "Orerokpe"
+    latitude: 5.63747
+    longitude: 5.89013
+    population: 5893
+    dem: 14
+    timezone: "Africa/Lagos"
+  - name: "Ogwashi-Uku"
+    latitude: 6.17811
+    longitude: 6.52461
+    population: 26137
+    dem: 198
+    timezone: "Africa/Lagos"
+  - name: "Obiaruku"
+    latitude: 5.84672
+    longitude: 6.1529
+    population: 11936
+    dem: 35
+    timezone: "Africa/Lagos"
+  - name: "Kwale"
+    latitude: 5.70773
+    longitude: 6.43402
+    population: 20226
+    dem: 22
+    timezone: "Africa/Lagos"
+  - name: "Burutu"
+    latitude: 5.35328
+    longitude: 5.50826
+    population: 16410
+    dem: 7
+    timezone: "Africa/Lagos"
+  - name: "Bomadi"
+    latitude: 5.16073
+    longitude: 5.92375
+    population: 8402
+    dem: 11
+    timezone: "Africa/Lagos"
+  - name: "Asaba"
+    latitude: 6.19824
+    longitude: 6.73187
+    population: 73374
+    dem: 46
+    timezone: "Africa/Lagos"
+  - name: "Agbor"
+    latitude: 6.25375
+    longitude: 6.1942
+    population: 67610
+    dem: 130
+    timezone: "Africa/Lagos"
+  - name: "Abraka"
+    latitude: 5.79023
+    longitude: 6.10473
+    population: 6940
+    dem: 29
+    timezone: "Africa/Lagos"
+- name: "Akwa Ibom State"
+  cities:
+  - name: "Uyo"
+    latitude: 5.05127
+    longitude: 7.9335
+    population: 436606
+    dem: 45
+    timezone: "Africa/Lagos"
+  - name: "Itu"
+    latitude: 5.20131
+    longitude: 7.98373
+    population: 36358
+    dem: 32
+    timezone: "Africa/Lagos"
+  - name: "Ikot Ekpene"
+    latitude: 5.18194
+    longitude: 7.71481
+    population: 254806
+    dem: 89
+    timezone: "Africa/Lagos"
+  - name: "Etinan"
+    latitude: 4.84262
+    longitude: 7.85252
+    population: 10318
+    dem: 39
+    timezone: "Africa/Lagos"
+  - name: "Esuk Oron"
+    latitude: 4.80293
+    longitude: 8.25341
+    population: 112033
+    dem: 38
+    timezone: "Africa/Lagos"
+  - name: "Eket"
+    latitude: 4.64231
+    longitude: 7.92438
+    population: 25569
+    dem: 30
+    timezone: "Africa/Lagos"
+  - name: "Abak"
+    latitude: 4.98236
+    longitude: 7.78922
+    population: 12562
+    dem: 56
+    timezone: "Africa/Lagos"
+- name: "Jigawa State"
+  cities:
+  - name: "Samamiya"
+    latitude: 11.34873
+    longitude: 9.63989
+    population: 8087
+    dem: 437
+    timezone: "Africa/Lagos"
+  - name: "Ringim"
+    latitude: 12.15143
+    longitude: 9.16216
+    population: 14463
+    dem: 392
+    timezone: "Africa/Lagos"
+  - name: "Mallammaduri"
+    latitude: 12.56427
+    longitude: 9.95727
+    population: 11156
+    dem: 357
+    timezone: "Africa/Lagos"
+  - name: "Kiyawa"
+    latitude: 11.78442
+    longitude: 9.6069
+    population: 17704
+    dem: 395
+    timezone: "Africa/Lagos"
+  - name: "Kafin Hausa"
+    latitude: 12.23933
+    longitude: 9.91105
+    population: 12609
+    dem: 364
+    timezone: "Africa/Lagos"
+  - name: "Kazaure"
+    latitude: 12.64846
+    longitude: 8.41178
+    population: 13169
+    dem: 444
+    timezone: "Africa/Lagos"
+  - name: "Hadejia"
+    latitude: 12.45347
+    longitude: 10.04115
+    population: 110753
+    dem: 359
+    timezone: "Africa/Lagos"
+  - name: "Gwaram"
+    latitude: 11.27727
+    longitude: 9.88385
+    population: 15806
+    dem: 452
+    timezone: "Africa/Lagos"
+  - name: "Gumel"
+    latitude: 12.6269
+    longitude: 9.38807
+    population: 42742
+    dem: 369
+    timezone: "Africa/Lagos"
+  - name: "Gagarawa"
+    latitude: 12.40848
+    longitude: 9.52881
+    population: 11450
+    dem: 374
+    timezone: "Africa/Lagos"
+  - name: "Dutse"
+    latitude: 11.75618
+    longitude: 9.33896
+    population: 17129
+    dem: 444
+    timezone: "Africa/Lagos"
+  - name: "Birniwa"
+    latitude: 12.7907
+    longitude: 10.23614
+    population: 9334
+    dem: 353
+    timezone: "Africa/Lagos"
+  - name: "Birnin Kudu"
+    latitude: 11.45207
+    longitude: 9.47856
+    population: 26565
+    dem: 450
+    timezone: "Africa/Lagos"
+  - name: "Babura"
+    latitude: 12.77256
+    longitude: 9.01525
+    population: 7267
+    dem: 384
+    timezone: "Africa/Lagos"
+- name: "Katsina State"
+  cities:
+  - name: "Zango"
+    latitude: 13.05313
+    longitude: 8.48574
+    population: 12371
+    dem: 484
+    timezone: "Africa/Lagos"
+  - name: "Wagini"
+    latitude: 12.68781
+    longitude: 7.19579
+    population: 9986
+    dem: 488
+    timezone: "Africa/Lagos"
+  - name: "Runka"
+    latitude: 12.44788
+    longitude: 7.30918
+    population: 12665
+    dem: 489
+    timezone: "Africa/Lagos"
+  - name: "Ruma"
+    latitude: 12.8626
+    longitude: 7.23469
+    population: 8857
+    dem: 502
+    timezone: "Africa/Lagos"
+  - name: "Musawa"
+    latitude: 12.12949
+    longitude: 7.67023
+    population: 8904
+    dem: 578
+    timezone: "Africa/Lagos"
+  - name: "Mashi"
+    latitude: 12.98044
+    longitude: 7.94703
+    population: 7845
+    dem: 494
+    timezone: "Africa/Lagos"
+  - name: "Malumfashi"
+    latitude: 11.78935
+    longitude: 7.62061
+    population: 70709
+    dem: 618
+    timezone: "Africa/Lagos"
+  - name: "Katsina"
+    latitude: 12.99082
+    longitude: 7.60177
+    population: 432149
+    dem: 519
+    timezone: "Africa/Lagos"
+  - name: "Kankara"
+    latitude: 11.93114
+    longitude: 7.41115
+    population: 9609
+    dem: 595
+    timezone: "Africa/Lagos"
+  - name: "Jikamshi"
+    latitude: 12.17328
+    longitude: 7.77424
+    population: 6923
+    dem: 565
+    timezone: "Africa/Lagos"
+  - name: "Jibia"
+    latitude: 13.09378
+    longitude: 7.22624
+    population: 14424
+    dem: 409
+    timezone: "Africa/Lagos"
+  - name: "Gora"
+    latitude: 11.91294
+    longitude: 7.66531
+    population: 5867
+    dem: 593
+    timezone: "Africa/Lagos"
+  - name: "Funtua"
+    latitude: 11.52351
+    longitude: 7.31174
+    population: 136811
+    dem: 709
+    timezone: "Africa/Lagos"
+  - name: "Dutsin-Ma"
+    latitude: 12.45392
+    longitude: 7.49723
+    population: 12595
+    dem: 544
+    timezone: "Africa/Lagos"
+  - name: "Daura"
+    latitude: 13.03299
+    longitude: 8.32351
+    population: 25289
+    dem: 475
+    timezone: "Africa/Lagos"
+  - name: "Dankama"
+    latitude: 13.29782
+    longitude: 7.79492
+    population: 6531
+    dem: 414
+    timezone: "Africa/Lagos"
+  - name: "Danja"
+    latitude: 11.3771
+    longitude: 7.56097
+    population: 9736
+    dem: 681
+    timezone: "Africa/Lagos"
+  - name: "Batsari"
+    latitude: 12.75551
+    longitude: 7.24809
+    population: 7445
+    dem: 471
+    timezone: "Africa/Lagos"
+  - name: "Bakori"
+    latitude: 11.55559
+    longitude: 7.42419
+    population: 12604
+    dem: 656
+    timezone: "Africa/Lagos"
+- name: "Kwara State"
+  cities:
+  - name: "Yashikera"
+    latitude: 9.76667
+    longitude: 3.4
+    population: 14454
+    dem: 416
+    timezone: "Africa/Lagos"
+  - name: "Suya"
+    latitude: 9.46667
+    longitude: 3.18333
+    population: 7936
+    dem: 439
+    timezone: "Africa/Lagos"
+  - name: "Patigi"
+    latitude: 8.72851
+    longitude: 5.75561
+    population: 28285
+    dem: 123
+    timezone: "Africa/Lagos"
+  - name: "Omu-Aran"
+    latitude: 8.13857
+    longitude: 5.1026
+    population: 14477
+    dem: 556
+    timezone: "Africa/Lagos"
+  - name: "Okuta"
+    latitude: 9.21667
+    longitude: 3.18333
+    population: 26589
+    dem: 405
+    timezone: "Africa/Lagos"
+  - name: "Offa"
+    latitude: 8.14911
+    longitude: 4.72074
+    population: 113830
+    dem: 419
+    timezone: "Africa/Lagos"
+  - name: "Lafiagi"
+    latitude: 8.85299
+    longitude: 5.41641
+    population: 102779
+    dem: 116
+    timezone: "Africa/Lagos"
+  - name: "Kaiama"
+    latitude: 9.6053
+    longitude: 3.94101
+    population: 21897
+    dem: 325
+    timezone: "Africa/Lagos"
+  - name: "Jebba"
+    latitude: 9.11972
+    longitude: 4.8236
+    population: 21488
+    dem: 56
+    timezone: "Africa/Lagos"
+  - name: "Ilorin"
+    latitude: 8.49664
+    longitude: 4.54214
+    population: 814192
+    dem: 320
+    timezone: "Africa/Lagos"
+  - name: "Gwasero"
+    latitude: 9.48333
+    longitude: 3.5
+    population: 7263
+    dem: 355
+    timezone: "Africa/Lagos"
+  - name: "Bode Saadu"
+    latitude: 8.939
+    longitude: 4.78227
+    population: 16619
+    dem: 151
+    timezone: "Africa/Lagos"
+  - name: "Ajasse Ipo"
+    latitude: 8.23333
+    longitude: 4.81667
+    population: 12718
+    dem: 402
+    timezone: "Africa/Lagos"
+- name: "Nasarawa State"
+  cities:
+  - name: "Wamba"
+    latitude: 8.94153
+    longitude: 8.60315
+    population: 27137
+    dem: 388
+    timezone: "Africa/Lagos"
+  - name: "Nasarawa"
+    latitude: 8.53895
+    longitude: 7.70821
+    population: 30949
+    dem: 185
+    timezone: "Africa/Lagos"
+  - name: "Lafia"
+    latitude: 8.4939
+    longitude: 8.51532
+    population: 127236
+    dem: 179
+    timezone: "Africa/Lagos"
+  - name: "Keffi"
+    latitude: 8.84651
+    longitude: 7.87354
+    population: 85911
+    dem: 321
+    timezone: "Africa/Lagos"
+  - name: "Doma"
+    latitude: 8.39307
+    longitude: 8.35544
+    population: 15097
+    dem: 157
+    timezone: "Africa/Lagos"
+  - name: "Buga"
+    latitude: 8.49056
+    longitude: 7.34139
+    population: 9913
+    dem: 187
+    timezone: "Africa/Lagos"
+  - name: "Akwanga"
+    latitude: 8.91077
+    longitude: 8.40655
+    population: 15985
+    dem: 454
+    timezone: "Africa/Lagos"
+- name: "Rivers State"
+  cities:
+  - name: "Port Harcourt"
+    latitude: 4.77742
+    longitude: 7.0134
+    population: 1148665
+    dem: 16
+    timezone: "Africa/Lagos"
+  - name: "Omoku"
+    latitude: 5.34388
+    longitude: 6.65684
+    population: 11625
+    dem: 18
+    timezone: "Africa/Lagos"
+  - name: "Okrika"
+    latitude: 4.74215
+    longitude: 7.08368
+    population: 133271
+    dem: 7
+    timezone: "Africa/Lagos"
+  - name: "Obonoma"
+    latitude: 4.71131
+    longitude: 6.79084
+    population: 68584
+    dem: 6
+    timezone: "Africa/Lagos"
+  - name: "Elele"
+    latitude: 5.1009
+    longitude: 6.81411
+    population: 20620
+    dem: 32
+    timezone: "Africa/Lagos"
+  - name: "Buguma"
+    latitude: 4.73614
+    longitude: 6.86236
+    population: 135404
+    dem: 7
+    timezone: "Africa/Lagos"
+  - name: "Bori"
+    latitude: 4.67629
+    longitude: 7.36519
+    population: 11693
+    dem: 18
+    timezone: "Africa/Lagos"
+  - name: "Bonny"
+    latitude: 4.4516
+    longitude: 7.17074
+    population: 16868
+    dem: 7
+    timezone: "Africa/Lagos"
+  - name: "Ahoada"
+    latitude: 5.0828
+    longitude: 6.64981
+    population: 12848
+    dem: 13
+    timezone: "Africa/Lagos"
+  - name: "Degema Hulk"
+    latitude: 4.76145
+    longitude: 6.74957
+    population: 19223
+    dem: 6
+    timezone: "Africa/Lagos"
+- name: "Yobe State"
+  cities:
+  - name: "Potiskum"
+    latitude: 11.71391
+    longitude: 11.08108
+    population: 86002
+    dem: 427
+    timezone: "Africa/Lagos"
+  - name: "Nguru"
+    latitude: 12.87695
+    longitude: 10.45536
+    population: 111014
+    dem: 349
+    timezone: "Africa/Lagos"
+  - name: "Machina"
+    latitude: 13.13639
+    longitude: 10.04924
+    population: 11707
+    dem: 366
+    timezone: "Africa/Lagos"
+  - name: "Kumagunnam"
+    latitude: 13.15498
+    longitude: 10.63468
+    population: 16557
+    dem: 346
+    timezone: "Africa/Lagos"
+  - name: "Lajere"
+    latitude: 11.98022
+    longitude: 11.44002
+    population: 7356
+    dem: 366
+    timezone: "Africa/Lagos"
+  - name: "Gwio Kura"
+    latitude: 12.67479
+    longitude: 11.0669
+    population: 7091
+    dem: 342
+    timezone: "Africa/Lagos"
+  - name: "Gujba"
+    latitude: 11.49959
+    longitude: 11.93396
+    population: 11359
+    dem: 420
+    timezone: "Africa/Lagos"
+  - name: "Gorgoram"
+    latitude: 12.63958
+    longitude: 10.70422
+    population: 12470
+    dem: 348
+    timezone: "Africa/Lagos"
+  - name: "Goniri"
+    latitude: 11.48451
+    longitude: 12.31264
+    population: 11673
+    dem: 405
+    timezone: "Africa/Lagos"
+  - name: "Geidam"
+    latitude: 12.89439
+    longitude: 11.92649
+    population: 41367
+    dem: 329
+    timezone: "Africa/Lagos"
+  - name: "Gashua"
+    latitude: 12.87398
+    longitude: 11.04057
+    population: 125817
+    dem: 339
+    timezone: "Africa/Lagos"
+  - name: "Daura"
+    latitude: 11.5541
+    longitude: 11.406
+    population: 78277
+    dem: 484
+    timezone: "Africa/Lagos"
+  - name: "Dapchi"
+    latitude: 12.49536
+    longitude: 11.49977
+    population: 14077
+    dem: 341
+    timezone: "Africa/Lagos"
+  - name: "Dankalwa"
+    latitude: 11.74449
+    longitude: 12.18545
+    population: 5730
+    dem: 397
+    timezone: "Africa/Lagos"
+  - name: "Damaturu"
+    latitude: 11.74697
+    longitude: 11.96083
+    population: 46000
+    dem: 371
+    timezone: "Africa/Lagos"
+- name: "Enugu State"
+  cities:
+  - name: "Udi"
+    latitude: 6.31592
+    longitude: 7.42086
+    population: 14998
+    dem: 437
+    timezone: "Africa/Lagos"
+  - name: "Opi"
+    latitude: 6.78223
+    longitude: 7.43319
+    population: 11237
+    dem: 496
+    timezone: "Africa/Lagos"
+  - name: "Obolo-Eke"
+    latitude: 6.88333
+    longitude: 7.63333
+    population: 5842
+    dem: 251
+    timezone: "Africa/Lagos"
+  - name: "Nsukka"
+    latitude: 6.85783
+    longitude: 7.39577
+    population: 111017
+    dem: 423
+    timezone: "Africa/Lagos"
+  - name: "Mberubu"
+    latitude: 6.1731
+    longitude: 7.63017
+    population: 8904
+    dem: 82
+    timezone: "Africa/Lagos"
+  - name: "Ikem"
+    latitude: 6.77993
+    longitude: 7.71484
+    population: 7282
+    dem: 146
+    timezone: "Africa/Lagos"
+  - name: "Ete"
+    latitude: 7.08956
+    longitude: 7.45341
+    population: 9805
+    dem: 338
+    timezone: "Africa/Lagos"
+  - name: "Enugu-Ezike"
+    latitude: 6.9827
+    longitude: 7.45534
+    population: 18989
+    dem: 376
+    timezone: "Africa/Lagos"
+  - name: "Enugu"
+    latitude: 6.44132
+    longitude: 7.49883
+    population: 688862
+    dem: 192
+    timezone: "Africa/Lagos"
+  - name: "Eha Amufu"
+    latitude: 6.65915
+    longitude: 7.75961
+    population: 70779
+    dem: 109
+    timezone: "Africa/Lagos"
+  - name: "Awgu"
+    latitude: 6.07278
+    longitude: 7.47739
+    population: 23175
+    dem: 133
+    timezone: "Africa/Lagos"
+  - name: "Amagunze"
+    latitude: 6.33063
+    longitude: 7.65247
+    population: 9598
+    dem: 92
+    timezone: "Africa/Lagos"
+  - name: "Aku"
+    latitude: 6.70902
+    longitude: 7.31826
+    population: 73742
+    dem: 299
+    timezone: "Africa/Lagos"
+  - name: "Ake-Eze"
+    latitude: 5.91677
+    longitude: 7.67615
+    population: 6537
+    dem: 52
+    timezone: "Africa/Lagos"
+  - name: "Adani"
+    latitude: 6.73971
+    longitude: 7.01117
+    population: 6161
+    dem: 59
+    timezone: "Africa/Lagos"
+- name: "Benue State"
+  cities:
+  - name: "Zaki Biam"
+    latitude: 7.50671
+    longitude: 9.6104
+    population: 10470
+    dem: 204
+    timezone: "Africa/Lagos"
+  - name: "Yandev"
+    latitude: 7.36308
+    longitude: 9.04235
+    population: 7750
+    dem: 225
+    timezone: "Africa/Lagos"
+  - name: "Takum"
+    latitude: 7.26667
+    longitude: 9.98333
+    population: 24822
+    dem: 256
+    timezone: "Africa/Lagos"
+  - name: "Otukpa"
+    latitude: 7.10168
+    longitude: 7.65945
+    population: 21686
+    dem: 417
+    timezone: "Africa/Lagos"
+  - name: "Ochobo"
+    latitude: 7.18045
+    longitude: 7.9824
+    population: 8567
+    dem: 127
+    timezone: "Africa/Lagos"
+  - name: "Makurdi"
+    latitude: 7.73375
+    longitude: 8.52139
+    population: 292645
+    dem: 92
+    timezone: "Africa/Lagos"
+  - name: "Katsina-Ala"
+    latitude: 7.16938
+    longitude: 9.28465
+    population: 36722
+    dem: 152
+    timezone: "Africa/Lagos"
+  - name: "Igbor"
+    latitude: 7.45123
+    longitude: 8.60805
+    population: 17666
+    dem: 212
+    timezone: "Africa/Lagos"
+  - name: "Ugbokpo"
+    latitude: 7.65321
+    longitude: 7.8841
+    population: 14218
+    dem: 138
+    timezone: "Africa/Lagos"
+  - name: "Boju"
+    latitude: 7.35572
+    longitude: 7.89303
+    population: 12814
+    dem: 215
+    timezone: "Africa/Lagos"
+  - name: "Aliade"
+    latitude: 7.29627
+    longitude: 8.48278
+    population: 10292
+    dem: 161
+    timezone: "Africa/Lagos"
+- name: "Ebonyi State"
+  cities:
+  - name: "Isieke"
+    latitude: 6.38186
+    longitude: 8.03736
+    population: 89990
+    dem: 68
+    timezone: "Africa/Lagos"
+  - name: "Ezza-Ohu"
+    latitude: 6.44094
+    longitude: 8.08432
+    population: 67414
+    dem: 80
+    timezone: "Africa/Lagos"
+  - name: "Effium"
+    latitude: 6.63105
+    longitude: 8.05814
+    population: 86945
+    dem: 115
+    timezone: "Africa/Lagos"
+  - name: "Afikpo"
+    latitude: 5.89258
+    longitude: 7.93534
+    population: 71866
+    dem: 92
+    timezone: "Africa/Lagos"
+  - name: "Abakaliki"
+    latitude: 6.32485
+    longitude: 8.11368
+    population: 134102
+    dem: 65
+    timezone: "Africa/Lagos"
+- name: "Federal Capital Territory"
+  cities:
+  - name: "Madala"
+    latitude: 9.10444
+    longitude: 7.21333
+    population: 11771
+    dem: 416
+    timezone: "Africa/Lagos"
+  - name: "Kwali"
+    latitude: 8.88346
+    longitude: 7.01858
+    population: 6229
+    dem: 197
+    timezone: "Africa/Lagos"
+  - name: "Kuje"
+    latitude: 8.87952
+    longitude: 7.22756
+    population: 97367
+    dem: 300
+    timezone: "Africa/Lagos"
+  - name: "Abuja"
+    latitude: 9.05785
+    longitude: 7.49508
+    population: 590400
+    dem: 476
+    timezone: "Africa/Lagos"
+- name: "Oyo State"
+  cities:
+  - name: "Saki"
+    latitude: 8.66762
+    longitude: 3.39393
+    population: 178677
+    dem: 472
+    timezone: "Africa/Lagos"
+  - name: "Oyo"
+    latitude: 7.85257
+    longitude: 3.93125
+    population: 736072
+    dem: 298
+    timezone: "Africa/Lagos"
+  - name: "Orita Eruwa"
+    latitude: 7.55
+    longitude: 3.43333
+    population: 71027
+    dem: 187
+    timezone: "Africa/Lagos"
+  - name: "Okeho"
+    latitude: 8.03386
+    longitude: 3.34759
+    population: 12964
+    dem: 417
+    timezone: "Africa/Lagos"
+  - name: "Lalupon"
+    latitude: 7.46667
+    longitude: 4.06667
+    population: 81130
+    dem: 213
+    timezone: "Africa/Lagos"
+  - name: "Kisi"
+    latitude: 9.08297
+    longitude: 3.85196
+    population: 155510
+    dem: 371
+    timezone: "Africa/Lagos"
+  - name: "Igbo-Ora"
+    latitude: 7.43383
+    longitude: 3.28788
+    population: 92719
+    dem: 170
+    timezone: "Africa/Lagos"
+  - name: "Igboho"
+    latitude: 8.83784
+    longitude: 3.75628
+    population: 136764
+    dem: 405
+    timezone: "Africa/Lagos"
+  - name: "Igbeti"
+    latitude: 8.74921
+    longitude: 4.13113
+    population: 24690
+    dem: 371
+    timezone: "Africa/Lagos"
+  - name: "Ibadan"
+    latitude: 7.37756
+    longitude: 3.90591
+    population: 3565108
+    dem: 181
+    timezone: "Africa/Lagos"
+  - name: "Fiditi"
+    latitude: 7.71361
+    longitude: 3.91722
+    population: 71461
+    dem: 288
+    timezone: "Africa/Lagos"
+  - name: "Alapa"
+    latitude: 8.61667
+    longitude: 4.38333
+    population: 9584
+    dem: 357
+    timezone: "Africa/Lagos"
+  - name: "Ago Are"
+    latitude: 8.5
+    longitude: 3.41667
+    population: 13919
+    dem: 317
+    timezone: "Africa/Lagos"
+- name: "Kano State"
+  cities:
+  - name: "Wudil"
+    latitude: 11.80937
+    longitude: 8.84422
+    population: 23066
+    dem: 419
+    timezone: "Africa/Lagos"
+  - name: "Takai"
+    latitude: 11.57569
+    longitude: 9.1088
+    population: 10748
+    dem: 458
+    timezone: "Africa/Lagos"
+  - name: "Rano"
+    latitude: 11.55684
+    longitude: 8.58065
+    population: 17972
+    dem: 526
+    timezone: "Africa/Lagos"
+  - name: "Kura"
+    latitude: 11.77232
+    longitude: 8.42631
+    population: 9537
+    dem: 477
+    timezone: "Africa/Lagos"
+  - name: "Kibiya"
+    latitude: 11.528
+    longitude: 8.66108
+    population: 8500
+    dem: 504
+    timezone: "Africa/Lagos"
+  - name: "Kano"
+    latitude: 12.00012
+    longitude: 8.51672
+    population: 3626068
+    dem: 484
+    timezone: "Africa/Lagos"
+  - name: "Gwarzo"
+    latitude: 11.91597
+    longitude: 7.9337
+    population: 16303
+    dem: 581
+    timezone: "Africa/Lagos"
+  - name: "Gaya"
+    latitude: 11.86064
+    longitude: 9.0027
+    population: 20959
+    dem: 437
+    timezone: "Africa/Lagos"
+  - name: "Dan Gora"
+    latitude: 11.53485
+    longitude: 8.15224
+    population: 7907
+    dem: 576
+    timezone: "Africa/Lagos"
+  - name: "Dambatta"
+    latitude: 12.435
+    longitude: 8.51531
+    population: 8940
+    dem: 460
+    timezone: "Africa/Lagos"
+  - name: "Bebeji"
+    latitude: 11.66768
+    longitude: 8.262
+    population: 10987
+    dem: 513
+    timezone: "Africa/Lagos"
+- name: "Kogi State"
+  cities:
+  - name: "Okene"
+    latitude: 7.55122
+    longitude: 6.23589
+    population: 479178
+    dem: 384
+    timezone: "Africa/Lagos"
+  - name: "Ogurugu"
+    latitude: 6.78636
+    longitude: 6.95017
+    population: 9135
+    dem: 54
+    timezone: "Africa/Lagos"
+  - name: "Ogaminana"
+    latitude: 7.59383
+    longitude: 6.21798
+    population: 84373
+    dem: 247
+    timezone: "Africa/Lagos"
+  - name: "Lokoja"
+    latitude: 7.79688
+    longitude: 6.74048
+    population: 60579
+    dem: 53
+    timezone: "Africa/Lagos"
+  - name: "Koton-Karfe"
+    latitude: 8.0912
+    longitude: 6.79782
+    population: 10709
+    dem: 51
+    timezone: "Africa/Lagos"
+  - name: "Kabba"
+    latitude: 7.82719
+    longitude: 6.07502
+    population: 49869
+    dem: 436
+    timezone: "Africa/Lagos"
+  - name: "Isanlu-Itedoijowa"
+    latitude: 8.27445
+    longitude: 5.83528
+    population: 15087
+    dem: 323
+    timezone: "Africa/Lagos"
+  - name: "Idah"
+    latitude: 7.11345
+    longitude: 6.73866
+    population: 68703
+    dem: 73
+    timezone: "Africa/Lagos"
+  - name: "Icheu"
+    latitude: 7.7067
+    longitude: 6.7718
+    population: 14704
+    dem: 47
+    timezone: "Africa/Lagos"
+  - name: "Egbe"
+    latitude: 8.21667
+    longitude: 5.51667
+    population: 17612
+    dem: 471
+    timezone: "Africa/Lagos"
+  - name: "Dekina"
+    latitude: 7.68967
+    longitude: 7.0438
+    population: 11067
+    dem: 141
+    timezone: "Africa/Lagos"
+  - name: "Bugana"
+    latitude: 7.99917
+    longitude: 7.58361
+    population: 9737
+    dem: 89
+    timezone: "Africa/Lagos"
+  - name: "Ankpa"
+    latitude: 7.40249
+    longitude: 7.63196
+    population: 14630
+    dem: 334
+    timezone: "Africa/Lagos"
+  - name: "Ajaokuta"
+    latitude: 7.56229
+    longitude: 6.65497
+    population: 15144
+    dem: 52
+    timezone: "Africa/Lagos"
+  - name: "Adoru"
+    latitude: 6.97694
+    longitude: 7.16262
+    population: 8203
+    dem: 90
+    timezone: "Africa/Lagos"
+  - name: "Abocho"
+    latitude: 7.5677
+    longitude: 6.9863
+    population: 6801
+    dem: 412
+    timezone: "Africa/Lagos"
+- name: "Adamawa State"
+  cities:
+  - name: "Yola"
+    latitude: 9.20839
+    longitude: 12.48146
+    population: 96006
+    dem: 180
+    timezone: "Africa/Lagos"
+  - name: "Toungo"
+    latitude: 8.11733
+    longitude: 12.04611
+    population: 11759
+    dem: 503
+    timezone: "Africa/Lagos"
+  - name: "Numan"
+    latitude: 9.46374
+    longitude: 12.03062
+    population: 77617
+    dem: 161
+    timezone: "Africa/Lagos"
+  - name: "Ngurore"
+    latitude: 9.28871
+    longitude: 12.24026
+    population: 8139
+    dem: 179
+    timezone: "Africa/Lagos"
+  - name: "Mubi"
+    latitude: 10.26858
+    longitude: 13.26701
+    population: 225705
+    dem: 582
+    timezone: "Africa/Lagos"
+  - name: "Mayo-Belwa"
+    latitude: 9.05421
+    longitude: 12.05794
+    population: 6304
+    dem: 269
+    timezone: "Africa/Lagos"
+  - name: "Madagali"
+    latitude: 10.88942
+    longitude: 13.62832
+    population: 12919
+    dem: 503
+    timezone: "Africa/Lagos"
+  - name: "Jimeta"
+    latitude: 9.27949
+    longitude: 12.45819
+    population: 248148
+    dem: 172
+    timezone: "Africa/Lagos"
+  - name: "Holma"
+    latitude: 9.89863
+    longitude: 13.0545
+    population: 9199
+    dem: 570
+    timezone: "Africa/Lagos"
+  - name: "Gombi"
+    latitude: 10.16756
+    longitude: 12.73684
+    population: 19616
+    dem: 597
+    timezone: "Africa/Lagos"
+  - name: "Ganye"
+    latitude: 8.43497
+    longitude: 12.05107
+    population: 15178
+    dem: 484
+    timezone: "Africa/Lagos"
+- name: "Kaduna State"
+  cities:
+  - name: "Zaria"
+    latitude: 11.11128
+    longitude: 7.7227
+    population: 975153
+    dem: 644
+    timezone: "Africa/Lagos"
+  - name: "Soba"
+    latitude: 10.98133
+    longitude: 8.05749
+    population: 15715
+    dem: 683
+    timezone: "Africa/Lagos"
+  - name: "Saminaka"
+    latitude: 10.41227
+    longitude: 8.68748
+    population: 7165
+    dem: 765
+    timezone: "Africa/Lagos"
+  - name: "Mando"
+    latitude: 10.71667
+    longitude: 6.56667
+    population: 7500
+    dem: 435
+    timezone: "Africa/Lagos"
+  - name: "Lere"
+    latitude: 10.38584
+    longitude: 8.57286
+    population: 93290
+    dem: 753
+    timezone: "Africa/Lagos"
+  - name: "Kujama"
+    latitude: 10.45767
+    longitude: 7.63808
+    population: 12967
+    dem: 663
+    timezone: "Africa/Lagos"
+  - name: "Kajuru"
+    latitude: 10.32281
+    longitude: 7.68462
+    population: 14389
+    dem: 686
+    timezone: "Africa/Lagos"
+  - name: "Kagoro"
+    latitude: 9.60776
+    longitude: 8.39043
+    population: 77008
+    dem: 816
+    timezone: "Africa/Lagos"
+  - name: "Kafanchan"
+    latitude: 9.58126
+    longitude: 8.2926
+    population: 79522
+    dem: 733
+    timezone: "Africa/Lagos"
+  - name: "Kaduna"
+    latitude: 10.52641
+    longitude: 7.43879
+    population: 1582102
+    dem: 626
+    timezone: "Africa/Lagos"
+  - name: "Kachia"
+    latitude: 9.87342
+    longitude: 7.95407
+    population: 30893
+    dem: 718
+    timezone: "Africa/Lagos"
+  - name: "Igabi"
+    latitude: 10.80603
+    longitude: 7.71443
+    population: 8840
+    dem: 673
+    timezone: "Africa/Lagos"
+  - name: "Hunkuyi"
+    latitude: 11.2668
+    longitude: 7.64916
+    population: 8465
+    dem: 653
+    timezone: "Africa/Lagos"
+  - name: "Dutsen Wai"
+    latitude: 10.85009
+    longitude: 8.199
+    population: 22062
+    dem: 694
+    timezone: "Africa/Lagos"
+  - name: "Burumburum"
+    latitude: 11.39106
+    longitude: 8.72341
+    population: 11689
+    dem: 603
+    timezone: "Africa/Lagos"
+  - name: "Sofo-Birnin-Gwari"
+    latitude: 11.01537
+    longitude: 6.78036
+    population: 22380
+    dem: 657
+    timezone: "Africa/Lagos"
+  - name: "Anchau"
+    latitude: 10.96245
+    longitude: 8.39233
+    population: 15538
+    dem: 691
+    timezone: "Africa/Lagos"

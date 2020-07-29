@@ -1,0 +1,223 @@
+---
+name: "Marshall Islands"
+iso: "MH"
+iso3: "MHL"
+code: "584"
+capital: "Majuro"
+area: 181.3
+population: 65859
+continent: "OC"
+currencyCode: "USD"
+currencyName: "Dollar"
+phone: "692"
+postalCodeFormat: "#####-####"
+postalCodeRegex: "^969\\d{2}(-\\d{4})$"
+languages: "mh,en-MH"
+regions:
+- name: "Lib Island"
+  cities:
+  - name: "Lib"
+    latitude: 8.31221
+    longitude: 167.37662
+    population: 115
+    dem: 15
+    timezone: "Pacific/Majuro"
+- name: "Aur Atoll"
+  cities:
+  - name: "Aur"
+    latitude: 8.1499
+    longitude: 171.16869
+    population: 438
+    dem: 10
+    timezone: "Pacific/Majuro"
+- name: "Rongelap Atoll"
+  cities:
+  - name: "Rongelap"
+    latitude: 11.16351
+    longitude: 166.89408
+    population: 19
+    dem: 11
+    timezone: "Pacific/Majuro"
+- name: "Jabat Island"
+  cities:
+  - name: "Jabat"
+    latitude: 7.75003
+    longitude: 168.97513
+    population: 112
+    dem: 16
+    timezone: "Pacific/Kwajalein"
+- name: "Kili Island"
+  cities:
+  - name: "Kili"
+    latitude: 5.64387
+    longitude: 169.12109
+    population: 602
+    dem: 6
+    timezone: "Pacific/Majuro"
+- name: "Utrik Atoll"
+  cities:
+  - name: "Utrik"
+    latitude: 11.22778
+    longitude: 169.84739
+    population: 409
+    dem: 10
+    timezone: "Pacific/Majuro"
+- name: "Mili Atoll"
+  cities:
+  - name: "Mili"
+    latitude: 6.0815
+    longitude: 171.73502
+    population: 854
+    dem: 10
+    timezone: "Pacific/Majuro"
+- name: "Majuro Atoll"
+  cities:
+  - name: "Majuro"
+    latitude: 7.08971
+    longitude: 171.38027
+    population: 25400
+    dem: 6
+    timezone: "Pacific/Majuro"
+  - name: "RMI Capitol"
+    latitude: 7.08931
+    longitude: 171.3805
+    population: 0
+    dem: 7
+    timezone: "Pacific/Majuro"
+- name: "Taka Atoll"
+- name: "Bokak Atoll"
+- name: "Arno Atoll"
+  cities:
+  - name: "Arno"
+    latitude: 7.06691
+    longitude: 171.55413
+    population: 2068
+    dem: 14
+    timezone: "Pacific/Majuro"
+- name: "Lae Atoll"
+  cities:
+  - name: "Lae"
+    latitude: 8.92217
+    longitude: 166.26344
+    population: 319
+    dem: 8
+    timezone: "Pacific/Majuro"
+- name: "Wotje Atoll"
+  cities:
+  - name: "Wotje"
+    latitude: 9.45429
+    longitude: 170.23674
+    population: 880
+    dem: 9
+    timezone: "Pacific/Majuro"
+- name: "Namu Atoll"
+  cities:
+  - name: "Loen"
+    latitude: 7.76007
+    longitude: 168.23072
+    population: 0
+    dem: 13
+    timezone: "Pacific/Majuro"
+- name: "Bikini Atoll"
+- name: "Jemo Island"
+- name: "Ailinglaplap Atoll"
+  cities:
+  - name: "Airuk"
+    latitude: 7.27717
+    longitude: 168.8203
+    population: 0
+    dem: 13
+    timezone: "Pacific/Majuro"
+- name: "Ujelang Atoll"
+- name: "Ailinginae Atoll"
+- name: "Likiep Atoll"
+  cities:
+  - name: "Likiep"
+    latitude: 9.82511
+    longitude: 169.31065
+    population: 482
+    dem: 7
+    timezone: "Pacific/Majuro"
+- name: "Mejit Island"
+  cities:
+  - name: "Mejit"
+    latitude: 10.27531
+    longitude: 170.86461
+    population: 300
+    dem: 13
+    timezone: "Pacific/Majuro"
+- name: "Erikub Atoll"
+- name: "Enewetak Atoll"
+  cities:
+  - name: "Enewetak"
+    latitude: 11.34735
+    longitude: 162.33733
+    population: 0
+    dem: 8
+    timezone: "Pacific/Majuro"
+- name: "Rongrik Atoll"
+- name: "Kwajalein Atoll"
+  cities:
+  - name: "Ebaye"
+    latitude: 8.77479
+    longitude: 167.73919
+    population: 15000
+    dem: 6
+    timezone: "Pacific/Kwajalein"
+- name: "Ujae Atoll"
+  cities:
+  - name: "Ujae"
+    latitude: 8.93218
+    longitude: 165.76416
+    population: 448
+    dem: 8
+    timezone: "Pacific/Majuro"
+- name: "Bikar Atoll"
+- name: "Namdrik Atoll"
+  cities:
+  - name: "Namdrik"
+    latitude: 5.59944
+    longitude: 168.10282
+    population: 814
+    dem: 9
+    timezone: "Pacific/Majuro"
+- name: "Jaluit Atoll"
+  cities:
+  - name: "Jabor"
+    latitude: 5.92098
+    longitude: 169.64335
+    population: 1200
+    dem: 5
+    timezone: "Pacific/Majuro"
+- name: "Ailuk Atoll"
+  cities:
+  - name: "Ailuk"
+    latitude: 10.21972
+    longitude: 169.97967
+    population: 451
+    dem: 10
+    timezone: "Pacific/Majuro"
+- name: "Wotho Atoll"
+  cities:
+  - name: "Wotho"
+    latitude: 10.16575
+    longitude: 166.01022
+    population: 160
+    dem: 8
+    timezone: "Pacific/Majuro"
+- name: "Maloelap Atoll"
+  cities:
+  - name: "Taroa"
+    latitude: 8.70576
+    longitude: 171.2275
+    population: 0
+    dem: 10
+    timezone: "Pacific/Majuro"
+- name: "Ebon Atoll"
+  cities:
+  - name: "Ebon"
+    latitude: 4.58199
+    longitude: 168.69636
+    population: 714
+    dem: 11
+    timezone: "Pacific/Majuro"

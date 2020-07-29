@@ -1,0 +1,1478 @@
+---
+name: "Greece"
+iso: "GR"
+iso3: "GRC"
+code: "300"
+capital: "Athens"
+area: 131940.0
+population: 11000000
+continent: "EU"
+currencyCode: "EUR"
+currencyName: "Euro"
+phone: "30"
+postalCodeFormat: "### ##"
+postalCodeRegex: "^(\\d{5})$"
+languages: "el-GR,en,fr"
+neighbours: "AL,MK,TR,BG"
+regions:
+- name: "Central Macedonia"
+  cities:
+  - name: "Giannitsa"
+    latitude: 40.79194
+    longitude: 22.4075
+    population: 27817
+    dem: 31
+    timezone: "Europe/Athens"
+  - name: "Veroia"
+    latitude: 40.52437
+    longitude: 22.20242
+    population: 44464
+    dem: 152
+    timezone: "Europe/Athens"
+  - name: "Trilofos"
+    latitude: 40.46898
+    longitude: 22.9718
+    population: 7227
+    dem: 143
+    timezone: "Europe/Athens"
+  - name: "Thessaloniki"
+    latitude: 40.64361
+    longitude: 22.93086
+    population: 354290
+    dem: 8
+    timezone: "Europe/Athens"
+  - name: "Thermi"
+    latitude: 40.54712
+    longitude: 23.01967
+    population: 14373
+    dem: 54
+    timezone: "Europe/Athens"
+  - name: "Sindos"
+    latitude: 40.67045
+    longitude: 22.80545
+    population: 8228
+    dem: 8
+    timezone: "Europe/Athens"
+  - name: "Sykies"
+    latitude: 40.64944
+    longitude: 22.95083
+    population: 44955
+    dem: 115
+    timezone: "Europe/Athens"
+  - name: "Sidirokastro"
+    latitude: 41.23499
+    longitude: 23.38899
+    population: 5177
+    dem: 90
+    timezone: "Europe/Athens"
+  - name: "Serres"
+    latitude: 41.08499
+    longitude: 23.54757
+    population: 58287
+    dem: 41
+    timezone: "Europe/Athens"
+  - name: "Polygyros"
+    latitude: 40.37704
+    longitude: 23.44135
+    population: 10000
+    dem: 523
+    timezone: "Europe/Athens"
+  - name: "Polichni"
+    latitude: 40.66671
+    longitude: 22.94881
+    population: 39765
+    dem: 109
+    timezone: "Europe/Athens"
+  - name: "Polykastro"
+    latitude: 40.99444
+    longitude: 22.56909
+    population: 7064
+    dem: 36
+    timezone: "Europe/Athens"
+  - name: "Plagiari"
+    latitude: 40.47276
+    longitude: 22.9579
+    population: 5392
+    dem: 139
+    timezone: "Europe/Athens"
+  - name: "Chalastra"
+    latitude: 40.62643
+    longitude: 22.73291
+    population: 7360
+    dem: 5
+    timezone: "Europe/Athens"
+  - name: "Pylaia"
+    latitude: 40.59918
+    longitude: 22.98613
+    population: 23494
+    dem: 90
+    timezone: "Europe/Athens"
+  - name: "Peraia"
+    latitude: 40.49874
+    longitude: 22.92617
+    population: 16067
+    dem: 52
+    timezone: "Europe/Athens"
+  - name: "Panorama"
+    latitude: 40.58779
+    longitude: 23.0315
+    population: 16551
+    dem: 368
+    timezone: "Europe/Athens"
+  - name: "Oraiokastro"
+    latitude: 40.73083
+    longitude: 22.91722
+    population: 15006
+    dem: 269
+    timezone: "Europe/Athens"
+  - name: "Neoi Epivates"
+    latitude: 40.49863
+    longitude: 22.91192
+    population: 5077
+    dem: 45
+    timezone: "Europe/Athens"
+  - name: "Nea Moudhania"
+    latitude: 40.2439
+    longitude: 23.28484
+    population: 9342
+    dem: 3
+    timezone: "Europe/Athens"
+  - name: "Nea Michaniona"
+    latitude: 40.46371
+    longitude: 22.8617
+    population: 7908
+    dem: 26
+    timezone: "Europe/Athens"
+  - name: "Nea Kallikrateia"
+    latitude: 40.31312
+    longitude: 23.06343
+    population: 7238
+    dem: 9
+    timezone: "Europe/Athens"
+  - name: "Naousa"
+    latitude: 40.62944
+    longitude: 22.06806
+    population: 19887
+    dem: 350
+    timezone: "Europe/Athens"
+  - name: "Menemeni"
+    latitude: 40.65829
+    longitude: 22.89712
+    population: 15706
+    dem: 7
+    timezone: "Europe/Athens"
+  - name: "Litochoro"
+    latitude: 40.10056
+    longitude: 22.49778
+    population: 6709
+    dem: 350
+    timezone: "Europe/Athens"
+  - name: "Lagkadas"
+    latitude: 40.75
+    longitude: 23.06667
+    population: 7215
+    dem: 103
+    timezone: "Europe/Athens"
+  - name: "Krya Vrysi"
+    latitude: 40.68738
+    longitude: 22.30516
+    population: 6839
+    dem: 6
+    timezone: "Europe/Athens"
+  - name: "Koufalia"
+    latitude: 40.77778
+    longitude: 22.57194
+    population: 8305
+    dem: 47
+    timezone: "Europe/Athens"
+  - name: "Kilkis"
+    latitude: 40.99302
+    longitude: 22.87433
+    population: 22914
+    dem: 277
+    timezone: "Europe/Athens"
+  - name: "Katerini"
+    latitude: 40.26956
+    longitude: 22.50608
+    population: 53293
+    dem: 40
+    timezone: "Europe/Athens"
+  - name: "Kalamaria"
+    latitude: 40.5825
+    longitude: 22.95028
+    population: 91617
+    dem: 39
+    timezone: "Europe/Athens"
+  - name: "Epanomi"
+    latitude: 40.42614
+    longitude: 22.92782
+    population: 8121
+    dem: 40
+    timezone: "Europe/Athens"
+  - name: "Edessa"
+    latitude: 40.8026
+    longitude: 22.04751
+    population: 18669
+    dem: 312
+    timezone: "Europe/Athens"
+  - name: "Diavata"
+    latitude: 40.68744
+    longitude: 22.85799
+    population: 10216
+    dem: 15
+    timezone: "Europe/Athens"
+  - name: "Asvestochori"
+    latitude: 40.64125
+    longitude: 23.02528
+    population: 6404
+    dem: 357
+    timezone: "Europe/Athens"
+  - name: "Aridaia"
+    latitude: 40.97306
+    longitude: 22.05639
+    population: 6561
+    elevation: 127
+    dem: 122
+    timezone: "Europe/Athens"
+  - name: "Alexandreia"
+    latitude: 40.62667
+    longitude: 22.44417
+    population: 13665
+    dem: 8
+    timezone: "Europe/Athens"
+  - name: "Agios Pavlos"
+    latitude: 40.64075
+    longitude: 22.96039
+    population: 7221
+    dem: 145
+    timezone: "Europe/Athens"
+  - name: "Triandria"
+    latitude: 40.615
+    longitude: 22.9762
+    population: 11082
+    dem: 71
+    timezone: "Europe/Athens"
+  - name: "Neapoli"
+    latitude: 40.6532
+    longitude: 22.94156
+    population: 27084
+    dem: 82
+    timezone: "Europe/Athens"
+- name: "North Aegean"
+  cities:
+  - name: "Vrontados"
+    latitude: 38.40876
+    longitude: 26.12948
+    population: 5323
+    dem: 42
+    timezone: "Europe/Athens"
+  - name: "Neon Karlovasion"
+    latitude: 37.79209
+    longitude: 26.7049
+    population: 6708
+    dem: 24
+    timezone: "Europe/Athens"
+  - name: "Mytilene"
+    latitude: 39.10772
+    longitude: 26.55529
+    population: 28322
+    dem: 14
+    timezone: "Europe/Athens"
+  - name: "Myrina"
+    latitude: 39.87483
+    longitude: 25.06359
+    population: 5406
+    dem: 7
+    timezone: "Europe/Athens"
+  - name: "Chios"
+    latitude: 38.36875
+    longitude: 26.13718
+    population: 23953
+    dem: 1
+    timezone: "Europe/Athens"
+- name: "Western Greece"
+  cities:
+  - name: "Zacharo"
+    latitude: 37.48333
+    longitude: 21.65
+    population: 5894
+    dem: 17
+    timezone: "Europe/Athens"
+  - name: "Pyrgos"
+    latitude: 37.67513
+    longitude: 21.44102
+    population: 22399
+    dem: 25
+    timezone: "Europe/Athens"
+  - name: "Patra"
+    latitude: 38.24444
+    longitude: 21.73444
+    population: 168034
+    dem: 20
+    timezone: "Europe/Athens"
+  - name: "Paralia"
+    latitude: 38.19833
+    longitude: 21.70263
+    population: 6336
+    dem: 5
+    timezone: "Europe/Athens"
+  - name: "Ovria"
+    latitude: 38.18866
+    longitude: 21.72903
+    population: 5838
+    dem: 61
+    timezone: "Europe/Athens"
+  - name: "Nafpaktos"
+    latitude: 38.39167
+    longitude: 21.8275
+    population: 13415
+    dem: 3
+    timezone: "Europe/Athens"
+  - name: "Mesolongi"
+    latitude: 38.37138
+    longitude: 21.43151
+    population: 12785
+    dem: 3
+    timezone: "Europe/Athens"
+  - name: "Kato Achaia"
+    latitude: 38.15
+    longitude: 21.55
+    population: 5752
+    dem: 0
+    timezone: "Europe/Athens"
+  - name: "Gastouni"
+    latitude: 37.85
+    longitude: 21.25
+    population: 8114
+    dem: 4
+    timezone: "Europe/Athens"
+  - name: "Ayios Konstandinos"
+    latitude: 38.63337
+    longitude: 21.3995
+    population: 6534
+    dem: 81
+    timezone: "Europe/Athens"
+  - name: "Amaliada"
+    latitude: 37.79842
+    longitude: 21.35068
+    population: 16763
+    dem: 57
+    timezone: "Europe/Athens"
+  - name: "Aigio"
+    latitude: 38.24861
+    longitude: 22.08194
+    population: 20422
+    dem: 70
+    timezone: "Europe/Athens"
+  - name: "Agrinio"
+    latitude: 38.62139
+    longitude: 21.40778
+    population: 46899
+    dem: 66
+    timezone: "Europe/Athens"
+- name: "Eastern Macedonia and Thrace"
+  cities:
+  - name: "Xanthi"
+    latitude: 41.13488
+    longitude: 24.888
+    population: 48221
+    dem: 81
+    timezone: "Europe/Athens"
+  - name: "Orestiada"
+    latitude: 41.50306
+    longitude: 26.52972
+    population: 16221
+    dem: 45
+    timezone: "Europe/Athens"
+  - name: "Komotini"
+    latitude: 41.11917
+    longitude: 25.40535
+    population: 45631
+    dem: 41
+    timezone: "Europe/Athens"
+  - name: "Chrysoupolis"
+    latitude: 40.98556
+    longitude: 24.69389
+    population: 8885
+    dem: 19
+    timezone: "Europe/Athens"
+  - name: "Kavala"
+    latitude: 40.93959
+    longitude: 24.40687
+    population: 54027
+    dem: 34
+    timezone: "Europe/Athens"
+  - name: "Feres"
+    latitude: 40.89305
+    longitude: 26.17234
+    population: 5403
+    dem: 30
+    timezone: "Europe/Athens"
+  - name: "Drama"
+    latitude: 41.15283
+    longitude: 24.1473
+    population: 44823
+    dem: 122
+    timezone: "Europe/Athens"
+  - name: "Didymoteicho"
+    latitude: 41.34806
+    longitude: 26.49611
+    population: 8336
+    dem: 33
+    timezone: "Europe/Athens"
+  - name: "Alexandroupoli"
+    latitude: 40.84995
+    longitude: 25.87644
+    population: 52979
+    dem: 19
+    timezone: "Europe/Athens"
+- name: "Thessaly"
+  cities:
+  - name: "Giannouli"
+    latitude: 39.66717
+    longitude: 22.39597
+    population: 7885
+    dem: 75
+    timezone: "Europe/Athens"
+  - name: "Volos"
+    latitude: 39.36103
+    longitude: 22.94248
+    population: 86048
+    dem: 7
+    timezone: "Europe/Athens"
+  - name: "Trikala"
+    latitude: 39.55493
+    longitude: 21.76837
+    population: 61653
+    dem: 114
+    timezone: "Europe/Athens"
+  - name: "Tyrnavos"
+    latitude: 39.73778
+    longitude: 22.28917
+    population: 10796
+    dem: 94
+    timezone: "Europe/Athens"
+  - name: "Skiathos"
+    latitude: 39.16227
+    longitude: 23.49089
+    population: 5187
+    dem: 4
+    timezone: "Europe/Athens"
+  - name: "Palamas"
+    latitude: 39.46667
+    longitude: 22.08333
+    population: 5719
+    dem: 92
+    timezone: "Europe/Athens"
+  - name: "Nea Anchialos"
+    latitude: 39.28015
+    longitude: 22.81819
+    population: 5908
+    dem: 25
+    timezone: "Europe/Athens"
+  - name: "Larisa"
+    latitude: 39.63689
+    longitude: 22.41761
+    population: 144651
+    dem: 84
+    timezone: "Europe/Athens"
+  - name: "Karditsa"
+    latitude: 39.36485
+    longitude: 21.92191
+    population: 32789
+    dem: 111
+    timezone: "Europe/Athens"
+  - name: "Kalampaka"
+    latitude: 39.70444
+    longitude: 21.62694
+    population: 8138
+    dem: 221
+    timezone: "Europe/Athens"
+  - name: "Farsala"
+    latitude: 39.29472
+    longitude: 22.38472
+    population: 10380
+    dem: 145
+    timezone: "Europe/Athens"
+  - name: "Elassona"
+    latitude: 39.89472
+    longitude: 22.18861
+    population: 7060
+    dem: 284
+    timezone: "Europe/Athens"
+  - name: "Ampelona"
+    latitude: 39.74481
+    longitude: 22.36575
+    population: 5961
+    dem: 72
+    timezone: "Europe/Athens"
+  - name: "Almyros"
+    latitude: 39.18222
+    longitude: 22.75944
+    population: 7955
+    dem: 58
+    timezone: "Europe/Athens"
+  - name: "Agria"
+    latitude: 39.34078
+    longitude: 23.01258
+    population: 5519
+    dem: 1
+    timezone: "Europe/Athens"
+  - name: "Nea Ionia"
+    latitude: 39.37904
+    longitude: 22.92752
+    population: 32661
+    dem: 34
+    timezone: "Europe/Athens"
+- name: "Ionian Islands"
+  cities:
+  - name: "Zakynthos"
+    latitude: 37.78022
+    longitude: 20.89555
+    population: 11541
+    dem: 8
+    timezone: "Europe/Athens"
+  - name: "Lefkada"
+    latitude: 38.83036
+    longitude: 20.70442
+    population: 8673
+    dem: 8
+    timezone: "Europe/Athens"
+  - name: "Argostolion"
+    latitude: 38.18109
+    longitude: 20.48903
+    population: 9820
+    dem: 2
+    timezone: "Europe/Athens"
+  - name: "Corfu"
+    latitude: 39.62069
+    longitude: 19.91975
+    population: 27003
+    dem: 15
+    timezone: "Europe/Athens"
+- name: "Crete"
+  cities:
+  - name: "Tympaki"
+    latitude: 35.07286
+    longitude: 24.76851
+    population: 5285
+    dem: 25
+    timezone: "Europe/Athens"
+  - name: "Souda"
+    latitude: 35.48717
+    longitude: 24.07344
+    population: 6729
+    dem: 8
+    timezone: "Europe/Athens"
+  - name: "Sitia"
+    latitude: 35.20783
+    longitude: 26.10467
+    population: 8707
+    dem: 17
+    timezone: "Europe/Athens"
+  - name: "Rethymno"
+    latitude: 35.36555
+    longitude: 24.48232
+    population: 32468
+    dem: 14
+    timezone: "Europe/Athens"
+  - name: "Mournies"
+    latitude: 35.48228
+    longitude: 24.01253
+    population: 5318
+    dem: 51
+    timezone: "Europe/Athens"
+  - name: "Moires"
+    latitude: 35.05143
+    longitude: 24.8733
+    population: 6379
+    dem: 84
+    timezone: "Europe/Athens"
+  - name: "Chania"
+    latitude: 35.51124
+    longitude: 24.02921
+    population: 53910
+    dem: 24
+    timezone: "Europe/Athens"
+  - name: "Irakleion"
+    latitude: 35.32787
+    longitude: 25.14341
+    population: 137154
+    dem: 60
+    timezone: "Europe/Athens"
+  - name: "Ierapetra"
+    latitude: 35.01186
+    longitude: 25.74234
+    population: 12355
+    dem: 9
+    timezone: "Europe/Athens"
+  - name: "Gazi"
+    latitude: 35.32531
+    longitude: 25.06694
+    population: 12606
+    elevation: 52
+    dem: 36
+    timezone: "Europe/Athens"
+  - name: "Agios Nikolaos"
+    latitude: 35.19106
+    longitude: 25.71524
+    population: 11421
+    dem: 30
+    timezone: "Europe/Athens"
+  - name: "Nea Alikarnassos"
+    latitude: 35.33977
+    longitude: 25.15895
+    population: 11886
+    dem: 24
+    timezone: "Europe/Athens"
+- name: "Attica"
+  cities:
+  - name: "Voula"
+    latitude: 37.84221
+    longitude: 23.77651
+    population: 28364
+    dem: 54
+    timezone: "Europe/Athens"
+  - name: "Vyronas"
+    latitude: 37.96105
+    longitude: 23.753
+    population: 61308
+    dem: 143
+    timezone: "Europe/Athens"
+  - name: "Vari"
+    latitude: 37.8332
+    longitude: 23.80311
+    population: 15855
+    dem: 30
+    timezone: "Europe/Athens"
+  - name: "Tavros"
+    latitude: 37.97064
+    longitude: 23.69043
+    population: 14972
+    dem: 23
+    timezone: "Europe/Athens"
+  - name: "Spata"
+    latitude: 37.96163
+    longitude: 23.91514
+    population: 9198
+    dem: 142
+    timezone: "Europe/Athens"
+  - name: "Salamina"
+    latitude: 37.96427
+    longitude: 23.49649
+    population: 25370
+    dem: 5
+    timezone: "Europe/Athens"
+  - name: "Rafina"
+    latitude: 38.01812
+    longitude: 24.00599
+    population: 12168
+    dem: 11
+    timezone: "Europe/Athens"
+  - name: "Psychiko"
+    latitude: 38.01324
+    longitude: 23.77223
+    population: 9529
+    dem: 197
+    timezone: "Europe/Athens"
+  - name: "Piraeus"
+    latitude: 37.94203
+    longitude: 23.64619
+    population: 163688
+    dem: 65
+    timezone: "Europe/Athens"
+  - name: "Petroupolis"
+    latitude: 38.04187
+    longitude: 23.68494
+    population: 58979
+    dem: 144
+    timezone: "Europe/Athens"
+  - name: "Peristeri"
+    latitude: 38.01539
+    longitude: 23.69187
+    population: 139981
+    dem: 66
+    timezone: "Europe/Athens"
+  - name: "Perama"
+    latitude: 37.96775
+    longitude: 23.5721
+    population: 25389
+    dem: 71
+    timezone: "Europe/Athens"
+  - name: "Pallini"
+    latitude: 38.00514
+    longitude: 23.88302
+    population: 14808
+    dem: 199
+    timezone: "Europe/Athens"
+  - name: "Palaio Faliro"
+    latitude: 37.92812
+    longitude: 23.70105
+    population: 64021
+    dem: 18
+    timezone: "Europe/Athens"
+  - name: "Paiania"
+    latitude: 37.95527
+    longitude: 23.85443
+    population: 14595
+    dem: 183
+    timezone: "Europe/Athens"
+  - name: "Papagou"
+    latitude: 37.98642
+    longitude: 23.79347
+    population: 13699
+    dem: 222
+    timezone: "Europe/Athens"
+  - name: "Nikaia"
+    latitude: 37.96667
+    longitude: 23.65
+    population: 89380
+    dem: 30
+    timezone: "Europe/Athens"
+  - name: "Nea Smyrni"
+    latitude: 37.94504
+    longitude: 23.71416
+    population: 73076
+    dem: 57
+    timezone: "Europe/Athens"
+  - name: "Nea Peramos"
+    latitude: 38.00647
+    longitude: 23.42348
+    population: 8333
+    dem: 14
+    timezone: "Europe/Athens"
+  - name: "Nea Makri"
+    latitude: 38.08733
+    longitude: 23.97642
+    population: 15554
+    dem: 15
+    timezone: "Europe/Athens"
+  - name: "Ilion"
+    latitude: 38.03333
+    longitude: 23.7
+    population: 84793
+    dem: 90
+    timezone: "Europe/Athens"
+  - name: "Nea Ionia"
+    latitude: 38.0357
+    longitude: 23.75733
+    population: 67134
+    dem: 152
+    timezone: "Europe/Athens"
+  - name: "Nea Filadelfeia"
+    latitude: 38.03491
+    longitude: 23.73811
+    population: 25734
+    dem: 104
+    timezone: "Europe/Athens"
+  - name: "Nea Erythraia"
+    latitude: 38.0927
+    longitude: 23.82223
+    population: 17379
+    dem: 321
+    timezone: "Europe/Athens"
+  - name: "Moskhaton"
+    latitude: 37.94789
+    longitude: 23.6788
+    population: 25441
+    dem: 6
+    timezone: "Europe/Athens"
+  - name: "Melissia"
+    latitude: 38.05
+    longitude: 23.83333
+    population: 22741
+    dem: 273
+    timezone: "Europe/Athens"
+  - name: "Megara"
+    latitude: 37.99471
+    longitude: 23.34324
+    population: 23456
+    dem: 35
+    timezone: "Europe/Athens"
+  - name: "Markopoulo"
+    latitude: 37.88333
+    longitude: 23.93333
+    population: 9513
+    dem: 95
+    timezone: "Europe/Athens"
+  - name: "Marathonas"
+    latitude: 38.15317
+    longitude: 23.96278
+    population: 7170
+    dem: 40
+    timezone: "Europe/Athens"
+  - name: "Mandra"
+    latitude: 38.06667
+    longitude: 23.5
+    population: 11327
+    dem: 79
+    timezone: "Europe/Athens"
+  - name: "Artemida"
+    latitude: 37.96727
+    longitude: 23.99684
+    population: 21488
+    dem: 37
+    timezone: "Europe/Athens"
+  - name: "Limin Mesoyaias"
+    latitude: 37.89108
+    longitude: 24.00307
+    population: 9686
+    dem: 21
+    timezone: "Europe/Athens"
+  - name: "Lykovrysi"
+    latitude: 38.06933
+    longitude: 23.78223
+    population: 9650
+    dem: 225
+    timezone: "Europe/Athens"
+  - name: "Leondarion"
+    latitude: 37.987
+    longitude: 23.85518
+    population: 5929
+    dem: 207
+    timezone: "Europe/Athens"
+  - name: "Lavrio"
+    latitude: 37.71445
+    longitude: 24.05647
+    population: 7078
+    dem: 9
+    timezone: "Europe/Athens"
+  - name: "Kryoneri"
+    latitude: 38.13712
+    longitude: 23.83055
+    population: 5040
+    dem: 365
+    timezone: "Europe/Athens"
+  - name: "Metamorfosi"
+    latitude: 38.06576
+    longitude: 23.76356
+    population: 29891
+    dem: 173
+    timezone: "Europe/Athens"
+  - name: "Koropi"
+    latitude: 37.89886
+    longitude: 23.87181
+    population: 19164
+    dem: 130
+    timezone: "Europe/Athens"
+  - name: "Kifisia"
+    latitude: 38.07438
+    longitude: 23.81106
+    population: 47332
+    dem: 290
+    timezone: "Europe/Athens"
+  - name: "Cholargos"
+    latitude: 38.0
+    longitude: 23.8
+    population: 30840
+    dem: 219
+    timezone: "Europe/Athens"
+  - name: "Khalandrion"
+    latitude: 38.02369
+    longitude: 23.80068
+    population: 74192
+    dem: 194
+    timezone: "Europe/Athens"
+  - name: "Chaidari"
+    latitude: 38.01135
+    longitude: 23.66597
+    population: 45642
+    dem: 92
+    timezone: "Europe/Athens"
+  - name: "Keratsini"
+    latitude: 37.9625
+    longitude: 23.61972
+    population: 77077
+    dem: 40
+    timezone: "Europe/Athens"
+  - name: "Keratea"
+    latitude: 37.80585
+    longitude: 23.9774
+    population: 7493
+    dem: 197
+    timezone: "Europe/Athens"
+  - name: "Kamateron"
+    latitude: 38.05586
+    longitude: 23.70515
+    population: 28361
+    dem: 142
+    timezone: "Europe/Athens"
+  - name: "Kallithea"
+    latitude: 37.95
+    longitude: 23.7
+    population: 100641
+    dem: 28
+    timezone: "Europe/Athens"
+  - name: "Kalyvia Thorikou"
+    latitude: 37.83894
+    longitude: 23.92505
+    population: 14424
+    dem: 116
+    timezone: "Europe/Athens"
+  - name: "Alimos"
+    latitude: 37.91033
+    longitude: 23.72361
+    population: 41720
+    dem: 44
+    timezone: "Europe/Athens"
+  - name: "Kaisariani"
+    latitude: 37.9634
+    longitude: 23.76523
+    population: 26370
+    dem: 191
+    timezone: "Europe/Athens"
+  - name: "Irakleio"
+    latitude: 38.05282
+    longitude: 23.76523
+    population: 49642
+    dem: 169
+    timezone: "Europe/Athens"
+  - name: "Glyfada"
+    latitude: 37.86289
+    longitude: 23.75802
+    population: 87305
+    dem: 24
+    timezone: "Europe/Athens"
+  - name: "Galatsi"
+    latitude: 38.01667
+    longitude: 23.75
+    population: 59345
+    dem: 177
+    timezone: "Europe/Athens"
+  - name: "Filothei"
+    latitude: 38.02524
+    longitude: 23.78257
+    population: 7302
+    dem: 162
+    timezone: "Europe/Athens"
+  - name: "Elliniko"
+    latitude: 37.89013
+    longitude: 23.74406
+    population: 17259
+    dem: 52
+    timezone: "Europe/Athens"
+  - name: "Elefsina"
+    latitude: 38.04135
+    longitude: 23.54295
+    population: 24910
+    dem: 7
+    timezone: "Europe/Athens"
+  - name: "Ekali"
+    latitude: 38.11035
+    longitude: 23.83505
+    population: 5889
+    dem: 323
+    timezone: "Europe/Athens"
+  - name: "Drosia"
+    latitude: 38.11977
+    longitude: 23.86428
+    population: 7186
+    dem: 377
+    timezone: "Europe/Athens"
+  - name: "Dionysos"
+    latitude: 38.10458
+    longitude: 23.87938
+    population: 5651
+    dem: 482
+    timezone: "Europe/Athens"
+  - name: "Dhafni"
+    latitude: 37.95002
+    longitude: 23.73437
+    population: 22913
+    dem: 100
+    timezone: "Europe/Athens"
+  - name: "Agios Stefanos"
+    latitude: 38.14657
+    longitude: 23.85608
+    population: 9892
+    dem: 368
+    timezone: "Europe/Athens"
+  - name: "Agios Dimitrios"
+    latitude: 37.93333
+    longitude: 23.73333
+    population: 71294
+    dem: 73
+    timezone: "Europe/Athens"
+  - name: "Agia Varvara"
+    latitude: 37.98938
+    longitude: 23.66011
+    population: 26550
+    dem: 58
+    timezone: "Europe/Athens"
+  - name: "Agia Paraskevi"
+    latitude: 38.01667
+    longitude: 23.83333
+    population: 59704
+    dem: 216
+    timezone: "Europe/Athens"
+  - name: "Avlonas"
+    latitude: 38.25149
+    longitude: 23.69554
+    population: 5744
+    dem: 155
+    timezone: "Europe/Athens"
+  - name: "Athens"
+    latitude: 37.98376
+    longitude: 23.72784
+    population: 664046
+    elevation: 70
+    dem: 126
+    timezone: "Europe/Athens"
+  - name: "Aspropyrgos"
+    latitude: 38.06134
+    longitude: 23.58971
+    population: 30251
+    dem: 35
+    timezone: "Europe/Athens"
+  - name: "Argyroupoli"
+    latitude: 37.90594
+    longitude: 23.75035
+    population: 34097
+    dem: 67
+    timezone: "Europe/Athens"
+  - name: "Ano Liosia"
+    latitude: 38.08333
+    longitude: 23.7
+    population: 33565
+    dem: 174
+    timezone: "Europe/Athens"
+  - name: "Anoixi"
+    latitude: 38.13267
+    longitude: 23.85874
+    population: 6510
+    dem: 359
+    timezone: "Europe/Athens"
+  - name: "Anavyssos"
+    latitude: 37.73414
+    longitude: 23.94389
+    population: 6202
+    dem: 6
+    timezone: "Europe/Athens"
+  - name: "Marousi"
+    latitude: 38.05
+    longitude: 23.8
+    population: 72333
+    dem: 220
+    timezone: "Europe/Athens"
+  - name: "Acharnes"
+    latitude: 38.08333
+    longitude: 23.73333
+    population: 99346
+    dem: 171
+    timezone: "Europe/Athens"
+  - name: "Aegina"
+    latitude: 37.74667
+    longitude: 23.4275
+    population: 6867
+    dem: 4
+    timezone: "Europe/Athens"
+  - name: "Aigaleo"
+    latitude: 37.98333
+    longitude: 23.68333
+    population: 69946
+    dem: 24
+    timezone: "Europe/Athens"
+  - name: "Vrilissia"
+    latitude: 38.03381
+    longitude: 23.82962
+    population: 30741
+    elevation: 250
+    dem: 232
+    timezone: "Europe/Athens"
+  - name: "Ymittos"
+    latitude: 37.95342
+    longitude: 23.74897
+    population: 11000
+    elevation: 120
+    dem: 122
+    timezone: "Europe/Athens"
+  - name: "Gerakas"
+    latitude: 38.02277
+    longitude: 23.8576
+    population: 29939
+    dem: 250
+    timezone: "Europe/Athens"
+  - name: "Ilioupoli"
+    latitude: 37.93149
+    longitude: 23.76779
+    population: 78153
+    dem: 308
+    timezone: "Europe/Athens"
+  - name: "Korydallos"
+    latitude: 37.98468
+    longitude: 23.64711
+    population: 63445
+    dem: 93
+    timezone: "Europe/Athens"
+  - name: "Zografos"
+    latitude: 37.97574
+    longitude: 23.76911
+    population: 71026
+    dem: 176
+    timezone: "Europe/Athens"
+  - name: "Pefki"
+    latitude: 38.06019
+    longitude: 23.79264
+    population: 21352
+    dem: 257
+    timezone: "Europe/Athens"
+  - name: "Agioi Anargyroi"
+    latitude: 38.03013
+    longitude: 23.72379
+    population: 34168
+    dem: 84
+    timezone: "Europe/Athens"
+  - name: "Agios Ioannis Rentis"
+    latitude: 37.96491
+    longitude: 23.66511
+    population: 16050
+    dem: 13
+    timezone: "Europe/Athens"
+  - name: "Drapetsona"
+    latitude: 37.94988
+    longitude: 23.62309
+    population: 13968
+    dem: 33
+    timezone: "Europe/Athens"
+  - name: "Neo Psychiko"
+    latitude: 38.00624
+    longitude: 23.78373
+    population: 10137
+    dem: 195
+    timezone: "Europe/Athens"
+  - name: "Zefyri"
+    latitude: 38.06647
+    longitude: 23.71701
+    population: 9454
+    dem: 148
+    timezone: "Europe/Athens"
+  - name: "Thrakomakedones"
+    latitude: 38.12964
+    longitude: 23.75751
+    population: 6200
+    dem: 370
+    timezone: "Europe/Athens"
+  - name: "Nea Penteli"
+    latitude: 38.06059
+    longitude: 23.85926
+    population: 7198
+    dem: 432
+    timezone: "Europe/Athens"
+  - name: "Nea Chalkidona"
+    latitude: 38.0271
+    longitude: 23.73051
+    population: 9822
+    dem: 82
+    timezone: "Europe/Athens"
+- name: "Peloponnese"
+  cities:
+  - name: "Xylokastro"
+    latitude: 38.07762
+    longitude: 22.63166
+    population: 5500
+    dem: 8
+    timezone: "Europe/Athens"
+  - name: "Tripoli"
+    latitude: 37.50889
+    longitude: 22.37944
+    population: 26561
+    dem: 660
+    timezone: "Europe/Athens"
+  - name: "Sparti"
+    latitude: 37.07446
+    longitude: 22.43009
+    population: 16239
+    dem: 206
+    timezone: "Europe/Athens"
+  - name: "Nafplio"
+    latitude: 37.56863
+    longitude: 22.80691
+    population: 14582
+    dem: 5
+    timezone: "Europe/Athens"
+  - name: "Messini"
+    latitude: 37.05111
+    longitude: 22.00778
+    population: 6773
+    dem: 21
+    timezone: "Europe/Athens"
+  - name: "Megalopoli"
+    latitude: 37.40111
+    longitude: 22.14222
+    population: 5283
+    dem: 429
+    timezone: "Europe/Athens"
+  - name: "Loutraki"
+    latitude: 37.9783
+    longitude: 22.97781
+    population: 11564
+    dem: 11
+    timezone: "Europe/Athens"
+  - name: "Korinthos"
+    latitude: 37.94007
+    longitude: 22.9513
+    population: 30176
+    dem: 24
+    timezone: "Europe/Athens"
+  - name: "Kyparissia"
+    latitude: 37.25111
+    longitude: 21.67361
+    population: 5033
+    dem: 44
+    timezone: "Europe/Athens"
+  - name: "Kiato"
+    latitude: 38.01321
+    longitude: 22.74839
+    population: 9812
+    dem: 9
+    timezone: "Europe/Athens"
+  - name: "Kalamata"
+    latitude: 37.03913
+    longitude: 22.11265
+    population: 54100
+    dem: 26
+    timezone: "Europe/Athens"
+  - name: "Gargalianoi"
+    latitude: 37.06518
+    longitude: 21.63809
+    population: 6282
+    dem: 279
+    timezone: "Europe/Athens"
+  - name: "Filiatra"
+    latitude: 37.15637
+    longitude: 21.58532
+    population: 6970
+    dem: 67
+    timezone: "Europe/Athens"
+  - name: "Argos"
+    latitude: 37.63333
+    longitude: 22.73333
+    population: 22209
+    dem: 19
+    timezone: "Europe/Athens"
+- name: "Western Macedonia"
+  cities:
+  - name: "Siatista"
+    latitude: 40.26194
+    longitude: 21.54417
+    population: 5612
+    dem: 948
+    timezone: "Europe/Athens"
+  - name: "Ptolemaida"
+    latitude: 40.51472
+    longitude: 21.67861
+    population: 30045
+    dem: 609
+    timezone: "Europe/Athens"
+  - name: "Kozani"
+    latitude: 40.30069
+    longitude: 21.78896
+    population: 36481
+    dem: 713
+    timezone: "Europe/Athens"
+  - name: "Kastoria"
+    latitude: 40.52165
+    longitude: 21.26341
+    population: 13387
+    dem: 641
+    timezone: "Europe/Athens"
+  - name: "Grevena"
+    latitude: 40.08452
+    longitude: 21.42744
+    population: 10563
+    dem: 534
+    timezone: "Europe/Athens"
+  - name: "Florina"
+    latitude: 40.78197
+    longitude: 21.40981
+    population: 17686
+    dem: 656
+    timezone: "Europe/Athens"
+  - name: "Argos Orestiko"
+    latitude: 40.45354
+    longitude: 21.25889
+    population: 7473
+    dem: 654
+    timezone: "Europe/Athens"
+- name: "South Aegean"
+  cities:
+  - name: "Ialysos"
+    latitude: 36.41352
+    longitude: 28.15516
+    population: 11473
+    dem: 16
+    timezone: "Europe/Athens"
+  - name: "Paros"
+    latitude: 37.08333
+    longitude: 25.15
+    population: 5289
+    dem: 10
+    timezone: "Europe/Athens"
+  - name: "Naxos"
+    latitude: 37.10556
+    longitude: 25.37639
+    population: 7070
+    dem: 32
+    timezone: "Europe/Athens"
+  - name: "Kos"
+    latitude: 36.89295
+    longitude: 27.28768
+    population: 19244
+    dem: 1
+    timezone: "Europe/Athens"
+  - name: "Kalymnos"
+    latitude: 36.9503
+    longitude: 26.98388
+    population: 12324
+    dem: 6
+    timezone: "Europe/Athens"
+  - name: "Ermoupolis"
+    latitude: 37.44466
+    longitude: 24.9429
+    population: 11351
+    dem: 1
+    timezone: "Europe/Athens"
+  - name: "Rodos"
+    latitude: 36.43556
+    longitude: 28.22199
+    population: 56128
+    dem: 36
+    timezone: "Europe/Athens"
+  - name: "Afantou"
+    latitude: 36.29354
+    longitude: 28.16225
+    population: 5562
+    dem: 28
+    timezone: "Europe/Athens"
+  - name: "Archangelos"
+    latitude: 36.21492
+    longitude: 28.11487
+    population: 5398
+    dem: 163
+    timezone: "Europe/Athens"
+  - name: "Faliraki"
+    latitude: 36.33981
+    longitude: 28.19942
+    population: 6000
+    dem: 12
+    timezone: "Europe/Athens"
+- name: "Epirus"
+  cities:
+  - name: "Preveza"
+    latitude: 38.95617
+    longitude: 20.7505
+    population: 17283
+    dem: 9
+    timezone: "Europe/Athens"
+  - name: "Ioannina"
+    latitude: 39.66486
+    longitude: 20.85189
+    population: 65574
+    dem: 505
+    timezone: "Europe/Athens"
+  - name: "Igoumenitsa"
+    latitude: 39.50342
+    longitude: 20.26728
+    population: 9496
+    dem: 29
+    timezone: "Europe/Athens"
+  - name: "Arta"
+    latitude: 39.16014
+    longitude: 20.98561
+    population: 21895
+    dem: 52
+    timezone: "Europe/Athens"
+  - name: "Anatoli"
+    latitude: 39.63531
+    longitude: 20.86578
+    population: 9798
+    dem: 503
+    timezone: "Europe/Athens"
+- name: "Central Greece"
+  cities:
+  - name: "Vasilikon"
+    latitude: 38.42586
+    longitude: 23.67189
+    population: 6571
+    dem: 29
+    timezone: "Europe/Athens"
+  - name: "Thivai"
+    latitude: 38.325
+    longitude: 23.31889
+    population: 22026
+    dem: 170
+    timezone: "Europe/Athens"
+  - name: "Psachna"
+    latitude: 38.57852
+    longitude: 23.64326
+    population: 5828
+    dem: 22
+    timezone: "Europe/Athens"
+  - name: "Orchomenos"
+    latitude: 38.4929
+    longitude: 22.97962
+    population: 5919
+    dem: 104
+    timezone: "Europe/Athens"
+  - name: "Nea Artaki"
+    latitude: 38.52027
+    longitude: 23.63296
+    population: 9489
+    dem: 19
+    timezone: "Europe/Athens"
+  - name: "Livadeia"
+    latitude: 38.43616
+    longitude: 22.87665
+    population: 21492
+    dem: 174
+    timezone: "Europe/Athens"
+  - name: "Lamia"
+    latitude: 38.9
+    longitude: 22.43333
+    population: 52006
+    dem: 88
+    timezone: "Europe/Athens"
+  - name: "Chalkida"
+    latitude: 38.46354
+    longitude: 23.60284
+    population: 59125
+    dem: 22
+    timezone: "Europe/Athens"
+  - name: "Karpenisi"
+    latitude: 38.91218
+    longitude: 21.79836
+    population: 6888
+    dem: 948
+    timezone: "Europe/Athens"
+  - name: "Karystos"
+    latitude: 38.01333
+    longitude: 24.41611
+    population: 5091
+    dem: 7
+    timezone: "Europe/Athens"
+  - name: "Dhrosia"
+    latitude: 38.48413
+    longitude: 23.54774
+    population: 5020
+    dem: 33
+    timezone: "Europe/Athens"
+  - name: "Amfissa"
+    latitude: 38.52813
+    longitude: 22.37713
+    population: 6854
+    dem: 178
+    timezone: "Europe/Athens"
+  - name: "Aliveri"
+    latitude: 38.41667
+    longitude: 24.03333
+    population: 5184
+    dem: 48
+    timezone: "Europe/Athens"
+- name: "Mount Athos"
+  cities:
+  - name: "Karyes"
+    latitude: 40.25715
+    longitude: 24.24498
+    population: 237
+    dem: 364
+    timezone: "Europe/Athens"

@@ -1,0 +1,449 @@
+---
+name: "Jordan"
+iso: "JO"
+iso3: "JOR"
+code: "400"
+capital: "Amman"
+area: 92300.0
+population: 6407085
+continent: "AS"
+currencyCode: "JOD"
+currencyName: "Dinar"
+phone: "962"
+postalCodeFormat: "#####"
+postalCodeRegex: "^(\\d{5})$"
+languages: "ar-JO,en"
+neighbours: "SY,SA,IQ,IL,PS"
+regions:
+- name: "Amman Governorate"
+  cities:
+  - name: "Wadi as Sir"
+    latitude: 31.9545
+    longitude: 35.81831
+    population: 181212
+    dem: 764
+    timezone: "Asia/Amman"
+  - name: "Umm as Summaq"
+    latitude: 31.88542
+    longitude: 35.8543
+    population: 18274
+    dem: 934
+    timezone: "Asia/Amman"
+  - name: "Sahab"
+    latitude: 31.87032
+    longitude: 36.00479
+    population: 40241
+    dem: 872
+    timezone: "Asia/Amman"
+  - name: "Jawa"
+    latitude: 31.85247
+    longitude: 35.93928
+    population: 10628
+    dem: 889
+    timezone: "Asia/Amman"
+  - name: "Amman"
+    latitude: 31.95522
+    longitude: 35.94503
+    population: 1275857
+    dem: 757
+    timezone: "Asia/Amman"
+  - name: "Hayy al Quwaysimah"
+    latitude: 31.91037
+    longitude: 35.94975
+    population: 32396
+    dem: 983
+    timezone: "Asia/Amman"
+  - name: "Al Jubayhah"
+    latitude: 32.01071
+    longitude: 35.89802
+    population: 46834
+    dem: 989
+    timezone: "Asia/Amman"
+  - name: "Hayy al Bunayyat"
+    latitude: 31.89603
+    longitude: 35.88465
+    population: 5579
+    dem: 925
+    timezone: "Asia/Amman"
+- name: "Jerash"
+  cities:
+  - name: "Suf"
+    latitude: 32.31372
+    longitude: 35.83713
+    population: 12942
+    dem: 965
+    timezone: "Asia/Amman"
+  - name: "Sakib"
+    latitude: 32.28431
+    longitude: 35.80909
+    population: 11586
+    elevation: 1200
+    dem: 862
+    timezone: "Asia/Amman"
+  - name: "Raymun"
+    latitude: 32.28202
+    longitude: 35.82779
+    population: 6082
+    dem: 773
+    timezone: "Asia/Amman"
+  - name: "Jarash"
+    latitude: 32.28082
+    longitude: 35.89929
+    population: 27046
+    dem: 620
+    timezone: "Asia/Amman"
+  - name: "Balila"
+    latitude: 32.39109
+    longitude: 35.93832
+    population: 5206
+    dem: 796
+    timezone: "Asia/Amman"
+  - name: "Al Kittah"
+    latitude: 32.27685
+    longitude: 35.84114
+    population: 5626
+    dem: 698
+    timezone: "Asia/Amman"
+- name: "Muhafazat Maan"
+  cities:
+  - name: "Petra"
+    latitude: 30.32096
+    longitude: 35.47895
+    population: 14000
+    dem: 1127
+    timezone: "Asia/Amman"
+  - name: "Maan"
+    latitude: 30.19624
+    longitude: 35.73405
+    population: 50350
+    dem: 1111
+    timezone: "Asia/Amman"
+  - name: "Al Quwayrah"
+    latitude: 29.80045
+    longitude: 35.3116
+    population: 7372
+    dem: 813
+    timezone: "Asia/Amman"
+  - name: "Qir Moav"
+    latitude: 31.18248
+    longitude: 35.69999
+    population: 22581
+    elevation: 1000
+    dem: 888
+    timezone: "Asia/Amman"
+- name: "Muhafazat at Tafilah"
+  cities:
+  - name: "Busayra"
+    latitude: 30.73256
+    longitude: 35.60943
+    population: 7154
+    dem: 1124
+    timezone: "Asia/Amman"
+  - name: "At Tafilah"
+    latitude: 30.83752
+    longitude: 35.60442
+    population: 25429
+    dem: 1041
+    timezone: "Asia/Amman"
+- name: "Al Karak"
+  cities:
+  - name: "`Izra"
+    latitude: 31.15889
+    longitude: 35.69278
+    population: 22756
+    dem: 1111
+    timezone: "Asia/Amman"
+  - name: "`Ayy"
+    latitude: 31.13371
+    longitude: 35.64375
+    population: 7340
+    dem: 909
+    timezone: "Asia/Amman"
+  - name: "Al Khinzirah"
+    latitude: 31.05056
+    longitude: 35.60606
+    population: 5231
+    dem: 1067
+    timezone: "Asia/Amman"
+  - name: "Safi"
+    latitude: 31.03608
+    longitude: 35.46544
+    population: 15200
+    dem: -366
+    timezone: "Asia/Amman"
+  - name: "Al Mazar al Janubi"
+    latitude: 31.06722
+    longitude: 35.69486
+    population: 9383
+    dem: 1239
+    timezone: "Asia/Amman"
+  - name: "Karak City"
+    latitude: 31.16368
+    longitude: 35.76204
+    population: 21678
+    elevation: 930
+    dem: 948
+    timezone: "Asia/Amman"
+- name: "Muhafazat al Aqabah"
+  cities:
+  - name: "Aqaba"
+    latitude: 29.52667
+    longitude: 35.00778
+    population: 95048
+    dem: 46
+    timezone: "Asia/Amman"
+- name: "Al Mafraq"
+  cities:
+  - name: "Sabha"
+    latitude: 32.32696
+    longitude: 36.50159
+    population: 5315
+    dem: 834
+    timezone: "Asia/Amman"
+  - name: "Rehab"
+    latitude: 32.32341
+    longitude: 36.09087
+    population: 10000
+    elevation: 900
+    dem: 896
+    timezone: "Asia/Amman"
+  - name: "Mafraq"
+    latitude: 32.34289
+    longitude: 36.20804
+    population: 57118
+    dem: 705
+    timezone: "Asia/Amman"
+  - name: "Al Hamra"
+    latitude: 32.44017
+    longitude: 36.15265
+    population: 6211
+    dem: 697
+    timezone: "Asia/Amman"
+  - name: "Rukban"
+    latitude: 33.31405
+    longitude: 38.70342
+    population: 85000
+    elevation: 200
+    dem: 772
+    timezone: "Asia/Amman"
+- name: "Irbid"
+  cities:
+  - name: "Waqqas"
+    latitude: 32.54214
+    longitude: 35.60508
+    population: 5678
+    dem: -192
+    timezone: "Asia/Amman"
+  - name: "Tibnah"
+    latitude: 32.47521
+    longitude: 35.73056
+    population: 5229
+    dem: 569
+    timezone: "Asia/Amman"
+  - name: "Samma"
+    latitude: 32.57102
+    longitude: 35.68984
+    population: 8926
+    dem: 320
+    timezone: "Asia/Amman"
+  - name: "Sal"
+    latitude: 32.56897
+    longitude: 35.91185
+    population: 6896
+    dem: 571
+    timezone: "Asia/Amman"
+  - name: "Saham al Kaffarat"
+    latitude: 32.69848
+    longitude: 35.77438
+    population: 6203
+    dem: 402
+    timezone: "Asia/Amman"
+  - name: "Qumaym"
+    latitude: 32.57174
+    longitude: 35.73452
+    population: 5111
+    dem: 383
+    timezone: "Asia/Amman"
+  - name: "Malka"
+    latitude: 32.67645
+    longitude: 35.74851
+    population: 6856
+    dem: 420
+    timezone: "Asia/Amman"
+  - name: "Kurayyimah"
+    latitude: 32.27639
+    longitude: 35.59938
+    population: 17837
+    dem: -183
+    timezone: "Asia/Amman"
+  - name: "Kitim"
+    latitude: 32.43834
+    longitude: 35.89677
+    population: 5292
+    dem: 791
+    timezone: "Asia/Amman"
+  - name: "Kharja"
+    latitude: 32.65988
+    longitude: 35.88782
+    population: 5498
+    dem: 449
+    timezone: "Asia/Amman"
+  - name: "Kafr Sawm"
+    latitude: 32.68527
+    longitude: 35.80102
+    population: 7152
+    dem: 435
+    timezone: "Asia/Amman"
+  - name: "Kafr Asad"
+    latitude: 32.598
+    longitude: 35.71266
+    population: 8203
+    dem: 353
+    timezone: "Asia/Amman"
+  - name: "Kafr Abil"
+    latitude: 32.41752
+    longitude: 35.66305
+    population: 6333
+    dem: 440
+    timezone: "Asia/Amman"
+  - name: "Judita"
+    latitude: 32.40792
+    longitude: 35.70802
+    population: 20000
+    elevation: 700
+    dem: 586
+    timezone: "Asia/Amman"
+  - name: "Irbid"
+    latitude: 32.55556
+    longitude: 35.85
+    population: 307480
+    dem: 570
+    timezone: "Asia/Amman"
+  - name: "Hatim"
+    latitude: 32.64492
+    longitude: 35.77771
+    population: 5542
+    dem: 420
+    timezone: "Asia/Amman"
+  - name: "Hakama"
+    latitude: 32.59354
+    longitude: 35.8832
+    population: 7075
+    dem: 550
+    timezone: "Asia/Amman"
+  - name: "Dayr Yusuf"
+    latitude: 32.48701
+    longitude: 35.79635
+    population: 6223
+    dem: 752
+    timezone: "Asia/Amman"
+  - name: "Bayt Yafa"
+    latitude: 32.52253
+    longitude: 35.78618
+    population: 7788
+    dem: 582
+    timezone: "Asia/Amman"
+  - name: "Aydun"
+    latitude: 32.50528
+    longitude: 35.85809
+    population: 18376
+    dem: 657
+    timezone: "Asia/Amman"
+  - name: "At Turrah"
+    latitude: 32.63979
+    longitude: 35.98943
+    population: 14619
+    dem: 466
+    timezone: "Asia/Amman"
+  - name: "At Tayyibah"
+    latitude: 32.54304
+    longitude: 35.71756
+    population: 12615
+    dem: 388
+    timezone: "Asia/Amman"
+  - name: "Ash Shajarah"
+    latitude: 32.64391
+    longitude: 35.94175
+    population: 11243
+    dem: 454
+    timezone: "Asia/Amman"
+  - name: "Ar Ramtha"
+    latitude: 32.55873
+    longitude: 36.00816
+    population: 74901
+    dem: 536
+    timezone: "Asia/Amman"
+- name: "Muhafazat Madaba"
+  cities:
+  - name: "Madaba"
+    latitude: 31.71599
+    longitude: 35.79392
+    population: 82335
+    dem: 790
+    timezone: "Asia/Amman"
+- name: "Muhafazat az Zarqa"
+  cities:
+  - name: "Zarqa"
+    latitude: 32.07275
+    longitude: 36.08796
+    population: 792665
+    dem: 625
+    timezone: "Asia/Amman"
+  - name: "Al Azraq ash Shamali"
+    latitude: 31.88209
+    longitude: 36.83017
+    population: 14800
+    dem: 521
+    timezone: "Asia/Amman"
+  - name: "Russeifa"
+    latitude: 32.01778
+    longitude: 36.04639
+    population: 268237
+    dem: 614
+    timezone: "Asia/Amman"
+- name: "Ajloun"
+  cities:
+  - name: "Sakhrah"
+    latitude: 32.37087
+    longitude: 35.84267
+    population: 10616
+    dem: 1083
+    timezone: "Asia/Amman"
+  - name: "Halawah"
+    latitude: 32.38433
+    longitude: 35.66167
+    population: 5376
+    dem: 407
+    timezone: "Asia/Amman"
+  - name: "`Ayn Jannah"
+    latitude: 32.33466
+    longitude: 35.7637
+    population: 9586
+    dem: 871
+    timezone: "Asia/Amman"
+  - name: "`Anjarah"
+    latitude: 32.3063
+    longitude: 35.75653
+    population: 17634
+    dem: 890
+    timezone: "Asia/Amman"
+  - name: "Ajlun"
+    latitude: 32.33326
+    longitude: 35.75279
+    population: 125557
+    dem: 769
+    timezone: "Asia/Amman"
+- name: "Muhafazat al Balqa"
+  cities:
+  - name: "As Salt"
+    latitude: 32.03917
+    longitude: 35.72722
+    population: 80189
+    dem: 816
+    timezone: "Asia/Amman"
+  - name: "Al Karamah"
+    latitude: 31.95439
+    longitude: 35.58033
+    population: 9384
+    dem: -255
+    timezone: "Asia/Amman"

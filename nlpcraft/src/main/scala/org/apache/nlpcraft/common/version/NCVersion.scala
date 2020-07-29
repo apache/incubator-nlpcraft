@@ -47,7 +47,7 @@ object NCVersion extends LazyLogging {
     private final val VERSIONS = Seq(
         Version("0.5.0", LocalDate.of(2020, 4, 16)),
         Version("0.6.0", LocalDate.of(2020, 5, 25)),
-        Version("0.6.2", LocalDate.of(2020, 6, 18))
+        Version("0.6.2", LocalDate.of(2020, 7, 9))
     ).sortBy(_.version)
     // +=================================================+
     // | UPDATE THIS SEQUENCE FOR EACH RELEASE MANUALLY. |

@@ -1,0 +1,2697 @@
+---
+name: "Canada"
+iso: "CA"
+iso3: "CAN"
+code: "124"
+capital: "Ottawa"
+area: 9984670.0
+population: 33679000
+continent: "NA"
+currencyCode: "CAD"
+currencyName: "Dollar"
+phone: "1"
+postalCodeFormat: "@#@ #@#"
+postalCodeRegex: "^([ABCEGHJKLMNPRSTVXY]\\d[ABCEGHJKLMNPRSTVWXYZ]) ?(\\d[ABCEGHJKLMNPRSTVWXYZ]\\\
+  d)$"
+languages: "en-CA,fr-CA,iu"
+neighbours: "US"
+regions:
+- name: "Nunavut"
+  cities:
+  - name: "Iqaluit"
+    latitude: 63.74697
+    longitude: -68.51727
+    population: 6124
+    dem: 14
+    timezone: "America/Iqaluit"
+- name: "Ontario"
+  cities:
+  - name: "Ajax"
+    latitude: 43.85012
+    longitude: -79.03288
+    population: 90167
+    dem: 97
+    timezone: "America/Toronto"
+  - name: "Amherstburg"
+    latitude: 42.11679
+    longitude: -83.04985
+    population: 11459
+    dem: 183
+    timezone: "America/Toronto"
+  - name: "Angus"
+    latitude: 44.31681
+    longitude: -79.88295
+    population: 10269
+    dem: 193
+    timezone: "America/Toronto"
+  - name: "Arnprior"
+    latitude: 45.43341
+    longitude: -76.34939
+    population: 9607
+    dem: 72
+    timezone: "America/Toronto"
+  - name: "Aylmer"
+    latitude: 42.76679
+    longitude: -80.98302
+    population: 7527
+    dem: 229
+    timezone: "America/Toronto"
+  - name: "Barrie"
+    latitude: 44.40011
+    longitude: -79.66634
+    population: 182041
+    dem: 269
+    timezone: "America/Toronto"
+  - name: "Belleville"
+    latitude: 44.16682
+    longitude: -77.38277
+    population: 49454
+    dem: 93
+    timezone: "America/Toronto"
+  - name: "Bells Corners"
+    latitude: 45.31588
+    longitude: -75.83012
+    population: 9977
+    dem: 96
+    timezone: "America/Toronto"
+  - name: "Binbrook"
+    latitude: 43.12135
+    longitude: -79.81104
+    population: 8796
+    dem: 216
+    timezone: "America/Toronto"
+  - name: "Bluewater"
+    latitude: 43.46679
+    longitude: -81.59977
+    population: 7044
+    dem: 249
+    timezone: "America/Toronto"
+  - name: "Bracebridge"
+    latitude: 45.03341
+    longitude: -79.31633
+    population: 8238
+    dem: 240
+    timezone: "America/Toronto"
+  - name: "Brampton"
+    latitude: 43.68341
+    longitude: -79.76633
+    population: 433806
+    dem: 221
+    timezone: "America/Toronto"
+  - name: "Brant"
+    latitude: 43.1334
+    longitude: -80.34967
+    population: 34415
+    dem: 245
+    timezone: "America/Toronto"
+  - name: "Brantford"
+    latitude: 43.1334
+    longitude: -80.26636
+    population: 87759
+    dem: 200
+    timezone: "America/Toronto"
+  - name: "Brockville"
+    latitude: 44.59132
+    longitude: -75.68705
+    population: 23886
+    dem: 93
+    timezone: "America/Toronto"
+  - name: "Burlington"
+    latitude: 43.38621
+    longitude: -79.83713
+    population: 164415
+    dem: 165
+    timezone: "America/Toronto"
+  - name: "Cambridge"
+    latitude: 43.3601
+    longitude: -80.31269
+    population: 120372
+    dem: 272
+    timezone: "America/Toronto"
+  - name: "Camlachie"
+    latitude: 43.03596
+    longitude: -82.1616
+    population: 7506
+    dem: 200
+    timezone: "America/Toronto"
+  - name: "Carleton Place"
+    latitude: 45.13341
+    longitude: -76.14938
+    population: 9743
+    dem: 144
+    timezone: "America/Toronto"
+  - name: "Chatham"
+    latitude: 42.41224
+    longitude: -82.18494
+    population: 43550
+    dem: 183
+    timezone: "America/Toronto"
+  - name: "Clarence-Rockland"
+    latitude: 45.5501
+    longitude: -75.29101
+    population: 20790
+    dem: 55
+    timezone: "America/Toronto"
+  - name: "Cobourg"
+    latitude: 43.95977
+    longitude: -78.16515
+    population: 18099
+    dem: 82
+    timezone: "America/Toronto"
+  - name: "Collingwood"
+    latitude: 44.4834
+    longitude: -80.21638
+    population: 15809
+    dem: 194
+    timezone: "America/Toronto"
+  - name: "Concord"
+    latitude: 43.80011
+    longitude: -79.48291
+    population: 8255
+    dem: 188
+    timezone: "America/Toronto"
+  - name: "Cornwall"
+    latitude: 45.01809
+    longitude: -74.72815
+    population: 48821
+    dem: 59
+    timezone: "America/Toronto"
+  - name: "Dorchester"
+    latitude: 42.98339
+    longitude: -81.06643
+    population: 9329
+    dem: 260
+    timezone: "America/Toronto"
+  - name: "Dryden"
+    latitude: 49.78334
+    longitude: -92.75032
+    population: 8195
+    dem: 387
+    timezone: "America/Winnipeg"
+  - name: "Elliot Lake"
+    latitude: 46.38336
+    longitude: -82.63315
+    population: 12508
+    dem: 310
+    timezone: "America/Toronto"
+  - name: "Etobicoke"
+    latitude: 43.65421
+    longitude: -79.56711
+    population: 347948
+    dem: 148
+    timezone: "America/Toronto"
+  - name: "Fort Erie"
+    latitude: 42.90012
+    longitude: -78.93286
+    population: 15953
+    dem: 183
+    timezone: "America/Toronto"
+  - name: "Fort Frances"
+    latitude: 48.61667
+    longitude: -93.4003
+    population: 7931
+    dem: 340
+    timezone: "America/Winnipeg"
+  - name: "Gananoque"
+    latitude: 44.33342
+    longitude: -76.16607
+    population: 5458
+    dem: 84
+    timezone: "America/Toronto"
+  - name: "Goderich"
+    latitude: 43.74171
+    longitude: -81.71339
+    population: 8032
+    dem: 222
+    timezone: "America/Toronto"
+  - name: "Greater Sudbury"
+    latitude: 46.49
+    longitude: -80.99001
+    population: 157857
+    dem: 266
+    timezone: "America/Toronto"
+  - name: "Gravenhurst"
+    latitude: 44.91681
+    longitude: -79.36633
+    population: 5839
+    dem: 260
+    timezone: "America/Toronto"
+  - name: "Greater Napanee"
+    latitude: 44.25012
+    longitude: -76.94944
+    population: 15132
+    dem: 92
+    timezone: "America/Toronto"
+  - name: "Guelph"
+    latitude: 43.54594
+    longitude: -80.25599
+    population: 115760
+    dem: 335
+    timezone: "America/Toronto"
+  - name: "Hamilton"
+    latitude: 43.25011
+    longitude: -79.84963
+    population: 519949
+    dem: 95
+    timezone: "America/Toronto"
+  - name: "Hanover"
+    latitude: 44.15009
+    longitude: -81.03303
+    population: 7255
+    dem: 277
+    timezone: "America/Toronto"
+  - name: "Hawkesbury"
+    latitude: 45.60009
+    longitude: -74.61595
+    population: 12283
+    dem: 53
+    timezone: "America/Toronto"
+  - name: "Huntsville"
+    latitude: 45.33341
+    longitude: -79.21632
+    population: 19579
+    dem: 302
+    timezone: "America/Toronto"
+  - name: "Huron East"
+    latitude: 43.61679
+    longitude: -81.29975
+    population: 9264
+    dem: 338
+    timezone: "America/Toronto"
+  - name: "Ingersoll"
+    latitude: 43.03339
+    longitude: -80.88302
+    population: 11874
+    dem: 293
+    timezone: "America/Toronto"
+  - name: "Innisfil"
+    latitude: 44.30011
+    longitude: -79.64964
+    population: 7345
+    dem: 266
+    timezone: "America/Toronto"
+  - name: "Kapuskasing"
+    latitude: 49.41694
+    longitude: -82.43308
+    population: 9240
+    dem: 219
+    timezone: "America/Toronto"
+  - name: "Kenora"
+    latitude: 49.76741
+    longitude: -94.48985
+    population: 15096
+    dem: 328
+    timezone: "America/Winnipeg"
+  - name: "Keswick"
+    latitude: 44.25011
+    longitude: -79.46632
+    population: 21000
+    dem: 230
+    timezone: "America/Toronto"
+  - name: "Kincardine"
+    latitude: 44.18339
+    longitude: -81.63307
+    population: 6725
+    dem: 195
+    timezone: "America/Toronto"
+  - name: "Kingston"
+    latitude: 44.22976
+    longitude: -76.48098
+    population: 114195
+    elevation: 70
+    dem: 83
+    timezone: "America/Toronto"
+  - name: "Kirkland Lake"
+    latitude: 48.14461
+    longitude: -80.03767
+    population: 7775
+    dem: 321
+    timezone: "America/Toronto"
+  - name: "Kitchener"
+    latitude: 43.42537
+    longitude: -80.5112
+    population: 233700
+    dem: 336
+    timezone: "America/Toronto"
+  - name: "Lambton Shores"
+    latitude: 43.16678
+    longitude: -81.93309
+    population: 10656
+    dem: 207
+    timezone: "America/Toronto"
+  - name: "Lindsay"
+    latitude: 44.35012
+    longitude: -78.73286
+    population: 20354
+    dem: 261
+    timezone: "America/Toronto"
+  - name: "London"
+    latitude: 42.98339
+    longitude: -81.23304
+    population: 346765
+    dem: 252
+    timezone: "America/Toronto"
+  - name: "Markham"
+    latitude: 43.86682
+    longitude: -79.2663
+    population: 261573
+    dem: 168
+    timezone: "America/Toronto"
+  - name: "Midland"
+    latitude: 44.7501
+    longitude: -79.88296
+    population: 31502
+    dem: 195
+    timezone: "America/Toronto"
+  - name: "Milton"
+    latitude: 43.51681
+    longitude: -79.88294
+    population: 84362
+    elevation: 195
+    dem: 194
+    timezone: "America/Toronto"
+  - name: "Mississauga"
+    latitude: 43.5789
+    longitude: -79.6583
+    population: 668549
+    dem: 159
+    timezone: "America/Toronto"
+  - name: "Nepean"
+    latitude: 45.35215
+    longitude: -75.73975
+    population: 180000
+    dem: 102
+    timezone: "America/Toronto"
+  - name: "Newmarket"
+    latitude: 44.05011
+    longitude: -79.46631
+    population: 74295
+    dem: 250
+    timezone: "America/Toronto"
+  - name: "Niagara Falls"
+    latitude: 43.10012
+    longitude: -79.06627
+    population: 82000
+    dem: 184
+    timezone: "America/Toronto"
+  - name: "Norfolk County"
+    latitude: 42.8334
+    longitude: -80.38297
+    population: 60847
+    dem: 235
+    timezone: "America/Toronto"
+  - name: "North Bay"
+    latitude: 46.3168
+    longitude: -79.46633
+    population: 50170
+    dem: 206
+    timezone: "America/Toronto"
+  - name: "North Perth"
+    latitude: 43.7251
+    longitude: -80.96723
+    population: 12254
+    dem: 380
+    timezone: "America/Toronto"
+  - name: "North York"
+    latitude: 43.76681
+    longitude: -79.4163
+    population: 636000
+    elevation: 180
+    dem: 178
+    timezone: "America/Toronto"
+  - name: "Oakville"
+    latitude: 43.45011
+    longitude: -79.68292
+    population: 165697
+    dem: 99
+    timezone: "America/Toronto"
+  - name: "Orangeville"
+    latitude: 43.9168
+    longitude: -80.09967
+    population: 32640
+    dem: 443
+    timezone: "America/Toronto"
+  - name: "Orillia"
+    latitude: 44.60868
+    longitude: -79.42068
+    population: 30178
+    dem: 232
+    timezone: "America/Toronto"
+  - name: "Oshawa"
+    latitude: 43.90012
+    longitude: -78.84957
+    population: 247989
+    dem: 105
+    timezone: "America/Toronto"
+  - name: "Ottawa"
+    latitude: 45.41117
+    longitude: -75.69812
+    population: 812129
+    dem: 71
+    timezone: "America/Toronto"
+  - name: "Owen Sound"
+    latitude: 44.56717
+    longitude: -80.94349
+    population: 22625
+    dem: 180
+    timezone: "America/Toronto"
+  - name: "Parry Sound"
+    latitude: 45.34732
+    longitude: -80.03527
+    population: 6469
+    dem: 199
+    timezone: "America/Toronto"
+  - name: "Pembroke"
+    latitude: 45.81681
+    longitude: -77.11616
+    population: 15551
+    dem: 120
+    timezone: "America/Toronto"
+  - name: "Perth"
+    latitude: 44.90011
+    longitude: -76.24939
+    population: 6481
+    dem: 134
+    timezone: "America/Toronto"
+  - name: "Petawawa"
+    latitude: 45.89452
+    longitude: -77.28007
+    population: 15988
+    dem: 143
+    timezone: "America/Toronto"
+  - name: "Peterborough"
+    latitude: 44.30012
+    longitude: -78.31623
+    population: 75877
+    dem: 188
+    timezone: "America/Toronto"
+  - name: "Petrolia"
+    latitude: 42.86678
+    longitude: -82.14981
+    population: 5453
+    dem: 190
+    timezone: "America/Toronto"
+  - name: "Pickering"
+    latitude: 43.90012
+    longitude: -79.13289
+    population: 87838
+    dem: 214
+    timezone: "America/Toronto"
+  - name: "Port Colborne"
+    latitude: 42.90012
+    longitude: -79.23288
+    population: 18599
+    dem: 188
+    timezone: "America/Toronto"
+  - name: "Prince Edward"
+    latitude: 44.00012
+    longitude: -77.24946
+    population: 25496
+    dem: 97
+    timezone: "America/Toronto"
+  - name: "Quinte West"
+    latitude: 44.18342
+    longitude: -77.56618
+    population: 42697
+    dem: 130
+    timezone: "America/Toronto"
+  - name: "Rayside-Balfour"
+    latitude: 46.60873
+    longitude: -81.20763
+    population: 16050
+    dem: 280
+    timezone: "America/Toronto"
+  - name: "Renfrew"
+    latitude: 45.46681
+    longitude: -76.68272
+    population: 8018
+    dem: 128
+    timezone: "America/Toronto"
+  - name: "Richmond Hill"
+    latitude: 43.87111
+    longitude: -79.43725
+    population: 185541
+    dem: 232
+    timezone: "America/Toronto"
+  - name: "Sarnia"
+    latitude: 42.97866
+    longitude: -82.40407
+    population: 82998
+    dem: 185
+    timezone: "America/Toronto"
+  - name: "Sault Ste. Marie"
+    latitude: 46.51677
+    longitude: -84.33325
+    population: 74948
+    dem: 186
+    timezone: "America/Toronto"
+  - name: "Simcoe"
+    latitude: 42.8334
+    longitude: -80.29967
+    population: 13922
+    dem: 210
+    timezone: "America/Toronto"
+  - name: "Smiths Falls"
+    latitude: 44.90452
+    longitude: -76.02333
+    population: 10553
+    dem: 131
+    timezone: "America/Toronto"
+  - name: "South Huron"
+    latitude: 43.31679
+    longitude: -81.51647
+    population: 9982
+    dem: 246
+    timezone: "America/Toronto"
+  - name: "St. Catharines"
+    latitude: 43.17126
+    longitude: -79.24267
+    population: 131989
+    dem: 102
+    timezone: "America/Toronto"
+  - name: "Stratford"
+    latitude: 43.36679
+    longitude: -80.94972
+    population: 30233
+    dem: 365
+    timezone: "America/Toronto"
+  - name: "St. Thomas"
+    latitude: 42.77361
+    longitude: -81.18038
+    population: 36110
+    dem: 232
+    timezone: "America/Toronto"
+  - name: "Temiskaming Shores"
+    latitude: 47.49376
+    longitude: -79.71529
+    population: 10442
+    dem: 248
+    timezone: "America/Toronto"
+  - name: "Thorold"
+    latitude: 43.11682
+    longitude: -79.19958
+    population: 18224
+    dem: 178
+    timezone: "America/Toronto"
+  - name: "Thunder Bay"
+    latitude: 48.38202
+    longitude: -89.25018
+    population: 99334
+    dem: 188
+    timezone: "America/Thunder_Bay"
+  - name: "Timmins"
+    latitude: 48.46686
+    longitude: -81.33312
+    population: 42997
+    dem: 301
+    timezone: "America/Toronto"
+  - name: "Toronto"
+    latitude: 43.70011
+    longitude: -79.4163
+    population: 2600000
+    dem: 175
+    timezone: "America/Toronto"
+  - name: "Uxbridge"
+    latitude: 44.10012
+    longitude: -79.11628
+    population: 11531
+    dem: 274
+    timezone: "America/Toronto"
+  - name: "Vaughan"
+    latitude: 43.8361
+    longitude: -79.49827
+    population: 238866
+    dem: 218
+    timezone: "America/Toronto"
+  - name: "Wasaga Beach"
+    latitude: 44.5168
+    longitude: -80.01637
+    population: 7567
+    dem: 188
+    timezone: "America/Toronto"
+  - name: "Waterloo"
+    latitude: 43.4668
+    longitude: -80.51639
+    population: 97475
+    dem: 325
+    timezone: "America/Toronto"
+  - name: "Welland"
+    latitude: 42.98342
+    longitude: -79.24958
+    population: 50331
+    dem: 180
+    timezone: "America/Toronto"
+  - name: "Windsor"
+    latitude: 42.30008
+    longitude: -83.01654
+    population: 278013
+    dem: 190
+    timezone: "America/Toronto"
+  - name: "Woodstock"
+    latitude: 43.13339
+    longitude: -80.7497
+    population: 33892
+    dem: 299
+    timezone: "America/Toronto"
+  - name: "Paris"
+    latitude: 43.2
+    longitude: -80.38333
+    population: 11177
+    dem: 255
+    timezone: "America/Toronto"
+  - name: "Scarborough"
+    latitude: 43.77223
+    longitude: -79.25666
+    population: 600000
+    dem: 171
+    timezone: "America/Toronto"
+  - name: "East York"
+    latitude: 43.69053
+    longitude: -79.32794
+    population: 115365
+    dem: 125
+    timezone: "America/Toronto"
+  - name: "Ancaster"
+    latitude: 43.21806
+    longitude: -79.98716
+    population: 33232
+    dem: 253
+    timezone: "America/Toronto"
+  - name: "Willowdale"
+    latitude: 43.76672
+    longitude: -79.39909
+    population: 79440
+    dem: 176
+    timezone: "America/Toronto"
+- name: "British Columbia"
+  cities:
+  - name: "Abbotsford"
+    latitude: 49.05798
+    longitude: -122.25257
+    population: 151683
+    dem: 114
+    timezone: "America/Vancouver"
+  - name: "Burnaby"
+    latitude: 49.26636
+    longitude: -122.95263
+    population: 202799
+    dem: 87
+    timezone: "America/Vancouver"
+  - name: "Campbell River"
+    latitude: 50.01634
+    longitude: -125.24459
+    population: 33430
+    dem: 65
+    timezone: "America/Vancouver"
+  - name: "Castlegar"
+    latitude: 49.29984
+    longitude: -117.66894
+    population: 8715
+    dem: 613
+    timezone: "America/Vancouver"
+  - name: "Chilliwack"
+    latitude: 49.16638
+    longitude: -121.95257
+    population: 77000
+    dem: 11
+    timezone: "America/Vancouver"
+  - name: "Colwood"
+    latitude: 48.43293
+    longitude: -123.48591
+    population: 14687
+    dem: 95
+    timezone: "America/Vancouver"
+  - name: "Coquitlam"
+    latitude: 49.2846
+    longitude: -122.78217
+    population: 140000
+    dem: 39
+    timezone: "America/Vancouver"
+  - name: "Courtenay"
+    latitude: 49.68657
+    longitude: -124.9936
+    population: 32793
+    dem: 13
+    timezone: "America/Vancouver"
+  - name: "Cranbrook"
+    latitude: 49.49991
+    longitude: -115.76879
+    population: 18610
+    dem: 949
+    timezone: "America/Edmonton"
+  - name: "Dawson Creek"
+    latitude: 55.75984
+    longitude: -120.2403
+    population: 10802
+    dem: 663
+    timezone: "America/Dawson_Creek"
+  - name: "Delta"
+    latitude: 49.14399
+    longitude: -122.9068
+    population: 101668
+    dem: 81
+    timezone: "America/Vancouver"
+  - name: "Duncan"
+    latitude: 48.78293
+    longitude: -123.70266
+    population: 22199
+    dem: 14
+    timezone: "America/Vancouver"
+  - name: "Fernie"
+    latitude: 49.49996
+    longitude: -115.06871
+    population: 5019
+    dem: 996
+    timezone: "America/Edmonton"
+  - name: "Fort St. John"
+    latitude: 56.24988
+    longitude: -120.85292
+    population: 17402
+    dem: 696
+    timezone: "America/Dawson_Creek"
+  - name: "Gibsons"
+    latitude: 49.39539
+    longitude: -123.50555
+    population: 6821
+    dem: 16
+    timezone: "America/Vancouver"
+  - name: "Hanceville"
+    latitude: 51.91922
+    longitude: -123.04458
+    population: 10000
+    dem: 691
+    timezone: "America/Vancouver"
+  - name: "Kamloops"
+    latitude: 50.66648
+    longitude: -120.3192
+    population: 68714
+    dem: 414
+    timezone: "America/Vancouver"
+  - name: "Kelowna"
+    latitude: 49.88307
+    longitude: -119.48568
+    population: 125109
+    dem: 350
+    timezone: "America/Vancouver"
+  - name: "Kimberley"
+    latitude: 49.67071
+    longitude: -115.9776
+    population: 6513
+    dem: 1067
+    timezone: "America/Edmonton"
+  - name: "Kitimat"
+    latitude: 54.05244
+    longitude: -128.65342
+    population: 8987
+    dem: 22
+    timezone: "America/Vancouver"
+  - name: "Ladysmith"
+    latitude: 48.99016
+    longitude: -123.81699
+    population: 8740
+    dem: 71
+    timezone: "America/Vancouver"
+  - name: "Langford"
+    latitude: 48.44963
+    longitude: -123.50261
+    population: 22459
+    dem: 80
+    timezone: "America/Vancouver"
+  - name: "Langley"
+    latitude: 49.10107
+    longitude: -122.65883
+    population: 23606
+    dem: 13
+    timezone: "America/Vancouver"
+  - name: "Maple Ridge"
+    latitude: 49.21939
+    longitude: -122.60193
+    population: 70000
+    dem: 42
+    timezone: "America/Vancouver"
+  - name: "Merritt"
+    latitude: 50.11225
+    longitude: -120.7942
+    population: 7179
+    dem: 593
+    timezone: "America/Vancouver"
+  - name: "Nanaimo"
+    latitude: 49.16638
+    longitude: -123.94003
+    population: 84905
+    dem: 16
+    timezone: "America/Vancouver"
+  - name: "Nelson"
+    latitude: 49.49985
+    longitude: -117.28553
+    population: 9813
+    dem: 541
+    timezone: "America/Vancouver"
+  - name: "New Westminster"
+    latitude: 49.20678
+    longitude: -122.91092
+    population: 58549
+    dem: 64
+    timezone: "America/Vancouver"
+  - name: "North Cowichan"
+    latitude: 48.84133
+    longitude: -123.68596
+    population: 32272
+    dem: 145
+    timezone: "America/Vancouver"
+  - name: "North Saanich"
+    latitude: 48.66634
+    longitude: -123.41933
+    population: 11089
+    dem: 11
+    timezone: "America/Vancouver"
+  - name: "North Vancouver"
+    latitude: 49.31636
+    longitude: -123.06934
+    population: 48000
+    elevation: 68
+    dem: 89
+    timezone: "America/Vancouver"
+  - name: "Oak Bay"
+    latitude: 48.44964
+    longitude: -123.3026
+    population: 18015
+    dem: 45
+    timezone: "America/Vancouver"
+  - name: "Parksville"
+    latitude: 49.31947
+    longitude: -124.31575
+    population: 12000
+    dem: 26
+    timezone: "America/Vancouver"
+  - name: "Penticton"
+    latitude: 49.48062
+    longitude: -119.58584
+    population: 37721
+    dem: 357
+    timezone: "America/Vancouver"
+  - name: "Pitt Meadows"
+    latitude: 49.22119
+    longitude: -122.68965
+    population: 17410
+    dem: 13
+    timezone: "America/Vancouver"
+  - name: "Port Alberni"
+    latitude: 49.24133
+    longitude: -124.8028
+    population: 21282
+    dem: 22
+    timezone: "America/Vancouver"
+  - name: "Port Coquitlam"
+    latitude: 49.26637
+    longitude: -122.76932
+    population: 58000
+    dem: 16
+    timezone: "America/Vancouver"
+  - name: "Port Moody"
+    latitude: 49.28124
+    longitude: -122.82457
+    population: 27512
+    dem: 30
+    timezone: "America/Vancouver"
+  - name: "Powell River"
+    latitude: 49.83278
+    longitude: -124.52368
+    population: 12779
+    dem: 41
+    timezone: "America/Vancouver"
+  - name: "Prince George"
+    latitude: 53.9166
+    longitude: -122.75301
+    population: 65558
+    dem: 578
+    timezone: "America/Vancouver"
+  - name: "Prince Rupert"
+    latitude: 54.31507
+    longitude: -130.32098
+    population: 14708
+    dem: 26
+    timezone: "America/Vancouver"
+  - name: "Quesnel"
+    latitude: 52.97842
+    longitude: -122.4931
+    population: 13788
+    dem: 479
+    timezone: "America/Vancouver"
+  - name: "Revelstoke"
+    latitude: 50.99712
+    longitude: -118.1953
+    population: 7533
+    dem: 459
+    timezone: "America/Vancouver"
+  - name: "Richmond"
+    latitude: 49.17003
+    longitude: -123.13683
+    population: 182000
+    dem: 9
+    timezone: "America/Vancouver"
+  - name: "Salmon Arm"
+    latitude: 50.6998
+    longitude: -119.30237
+    population: 16205
+    dem: 347
+    timezone: "America/Vancouver"
+  - name: "Sechelt"
+    latitude: 49.47512
+    longitude: -123.75903
+    population: 5977
+    dem: 10
+    timezone: "America/Vancouver"
+  - name: "Smithers"
+    latitude: 54.78036
+    longitude: -127.17428
+    population: 5438
+    dem: 494
+    timezone: "America/Vancouver"
+  - name: "Sooke"
+    latitude: 48.37463
+    longitude: -123.72762
+    population: 6145
+    dem: 39
+    timezone: "America/Vancouver"
+  - name: "Summerland"
+    latitude: 49.59977
+    longitude: -119.66911
+    population: 6292
+    dem: 475
+    timezone: "America/Vancouver"
+  - name: "Surrey"
+    latitude: 49.10635
+    longitude: -122.82509
+    population: 394976
+    dem: 82
+    timezone: "America/Vancouver"
+  - name: "Terrace"
+    latitude: 54.51634
+    longitude: -128.60345
+    population: 19443
+    dem: 70
+    timezone: "America/Vancouver"
+  - name: "Trail"
+    latitude: 49.09983
+    longitude: -117.70223
+    population: 9707
+    dem: 422
+    timezone: "America/Vancouver"
+  - name: "Vancouver"
+    latitude: 49.24966
+    longitude: -123.11934
+    population: 600000
+    dem: 70
+    timezone: "America/Vancouver"
+  - name: "Vernon"
+    latitude: 50.26729
+    longitude: -119.27337
+    population: 47274
+    dem: 383
+    timezone: "America/Vancouver"
+  - name: "Victoria"
+    latitude: 48.4359
+    longitude: -123.35155
+    population: 289625
+    dem: 41
+    timezone: "America/Vancouver"
+  - name: "West End"
+    latitude: 49.28333
+    longitude: -123.13333
+    population: 44560
+    dem: 49
+    timezone: "America/Vancouver"
+  - name: "Whistler"
+    latitude: 50.1164
+    longitude: -122.96946
+    population: 10600
+    dem: 688
+    timezone: "America/Vancouver"
+  - name: "White Rock"
+    latitude: 49.01636
+    longitude: -122.8026
+    population: 66450
+    dem: -9999
+    timezone: "America/Vancouver"
+  - name: "Williams Lake"
+    latitude: 52.14153
+    longitude: -122.14451
+    population: 14168
+    dem: 674
+    timezone: "America/Vancouver"
+  - name: "Okanagan"
+    latitude: 50.36386
+    longitude: -119.34997
+    population: 297601
+    dem: 598
+    timezone: "America/Vancouver"
+  - name: "West Kelowna"
+    latitude: 49.8625
+    longitude: -119.58333
+    population: 28793
+    dem: 484
+    timezone: "America/Vancouver"
+  - name: "Ladner"
+    latitude: 49.08938
+    longitude: -123.08241
+    population: 200000
+    elevation: 1
+    dem: 3
+    timezone: "America/Vancouver"
+  - name: "Walnut Grove"
+    latitude: 49.16473
+    longitude: -122.64042
+    population: 25683
+    dem: 40
+    timezone: "America/Vancouver"
+  - name: "Aldergrove"
+    latitude: 49.05801
+    longitude: -122.47087
+    population: 12363
+    dem: 102
+    timezone: "America/Vancouver"
+  - name: "West Vancouver"
+    latitude: 49.36672
+    longitude: -123.16652
+    population: 42694
+    dem: 750
+    timezone: "America/Vancouver"
+  - name: "Salt Spring Island"
+    latitude: 48.81852
+    longitude: -123.49061
+    population: 10557
+    dem: 122
+    timezone: "America/Vancouver"
+- name: "Newfoundland and Labrador"
+  cities:
+  - name: "Bay Roberts"
+    latitude: 47.59989
+    longitude: -53.26478
+    population: 13737
+    dem: 9
+    timezone: "America/St_Johns"
+  - name: "Carbonear"
+    latitude: 47.73319
+    longitude: -53.21478
+    population: 6814
+    dem: 11
+    timezone: "America/St_Johns"
+  - name: "Conception Bay South"
+    latitude: 47.49989
+    longitude: -52.99806
+    population: 17087
+    dem: 48
+    timezone: "America/St_Johns"
+  - name: "Corner Brook"
+    latitude: 48.95001
+    longitude: -57.95202
+    population: 18693
+    dem: 17
+    timezone: "America/St_Johns"
+  - name: "Grand Falls-Windsor"
+    latitude: 48.93324
+    longitude: -55.66492
+    population: 12076
+    dem: 67
+    timezone: "America/St_Johns"
+  - name: "Happy Valley-Goose Bay"
+    latitude: 53.3038
+    longitude: -60.32576
+    population: 7572
+    elevation: 12
+    dem: 17
+    timezone: "America/Goose_Bay"
+  - name: "Labrador City"
+    latitude: 52.94626
+    longitude: -66.91137
+    population: 10313
+    dem: 555
+    timezone: "America/Goose_Bay"
+  - name: "Mount Pearl"
+    latitude: 47.51659
+    longitude: -52.78135
+    population: 24671
+    dem: 109
+    timezone: "America/St_Johns"
+  - name: "Stephenville"
+    latitude: 48.55001
+    longitude: -58.5818
+    population: 6278
+    dem: 15
+    timezone: "America/St_Johns"
+  - name: "St. Johns"
+    latitude: 47.56494
+    longitude: -52.70931
+    population: 99182
+    dem: 35
+    timezone: "America/St_Johns"
+- name: "New Brunswick/Nouveau-Brunswick"
+  cities:
+  - name: "Dieppe"
+    latitude: 46.07844
+    longitude: -64.68735
+    population: 18565
+    dem: 42
+    timezone: "America/Moncton"
+  - name: "Fredericton"
+    latitude: 45.94541
+    longitude: -66.66558
+    population: 52337
+    dem: 110
+    timezone: "America/Moncton"
+  - name: "Lutes Mountain"
+    latitude: 46.13544
+    longitude: -64.90504
+    population: 16311
+    dem: 133
+    timezone: "America/Moncton"
+  - name: "Miramichi"
+    latitude: 47.02895
+    longitude: -65.50186
+    population: 18129
+    dem: 18
+    timezone: "America/Moncton"
+  - name: "Moncton"
+    latitude: 46.09454
+    longitude: -64.7965
+    population: 87467
+    dem: 30
+    timezone: "America/Moncton"
+  - name: "Oromocto"
+    latitude: 45.83512
+    longitude: -66.47917
+    population: 8998
+    dem: 27
+    timezone: "America/Moncton"
+  - name: "Sackville"
+    latitude: 45.91875
+    longitude: -64.38455
+    population: 5411
+    dem: 13
+    timezone: "America/Moncton"
+  - name: "Saint John"
+    latitude: 45.27271
+    longitude: -66.06766
+    population: 87857
+    dem: 5
+    timezone: "America/Moncton"
+  - name: "Edmundston"
+    latitude: 47.3737
+    longitude: -68.32512
+    population: 16643
+    elevation: 200
+    dem: 154
+    timezone: "America/Moncton"
+  - name: "Campbellton"
+    latitude: 48.00751
+    longitude: -66.67272
+    population: 7384
+    dem: 9
+    timezone: "America/Moncton"
+  - name: "Bathurst"
+    latitude: 47.61814
+    longitude: -65.65112
+    population: 12714
+    dem: 6
+    timezone: "America/Moncton"
+- name: "Quebec"
+  cities:
+  - name: "Acton Vale"
+    latitude: 45.65007
+    longitude: -72.56582
+    population: 5135
+    dem: 90
+    timezone: "America/Toronto"
+  - name: "Alma"
+    latitude: 48.55009
+    longitude: -71.6491
+    population: 29526
+    dem: 90
+    timezone: "America/Toronto"
+  - name: "Amos"
+    latitude: 48.56688
+    longitude: -78.11624
+    population: 17918
+    dem: 298
+    timezone: "America/Toronto"
+  - name: "Asbestos"
+    latitude: 45.76678
+    longitude: -71.9324
+    population: 7190
+    dem: 252
+    timezone: "America/Toronto"
+  - name: "Baie-Comeau"
+    latitude: 49.21679
+    longitude: -68.14894
+    population: 29808
+    dem: 76
+    timezone: "America/Toronto"
+  - name: "Beaconsfield"
+    latitude: 45.43341
+    longitude: -73.86586
+    population: 19194
+    dem: 33
+    timezone: "America/Toronto"
+  - name: "Beauharnois"
+    latitude: 45.31341
+    longitude: -73.8725
+    population: 11918
+    dem: 27
+    timezone: "America/Toronto"
+  - name: "Becancour"
+    latitude: 46.33336
+    longitude: -72.43241
+    population: 11134
+    dem: 10
+    timezone: "America/Toronto"
+  - name: "Beloeil"
+    latitude: 45.56839
+    longitude: -73.20568
+    population: 18927
+    dem: 13
+    timezone: "America/Toronto"
+  - name: "Blainville"
+    latitude: 45.66678
+    longitude: -73.88249
+    population: 46493
+    dem: 73
+    timezone: "America/Toronto"
+  - name: "Boisbriand"
+    latitude: 45.61678
+    longitude: -73.83249
+    population: 26483
+    dem: 30
+    timezone: "America/Toronto"
+  - name: "Bois-des-Filion"
+    latitude: 45.66678
+    longitude: -73.74918
+    population: 8383
+    dem: 17
+    timezone: "America/Toronto"
+  - name: "Boucherville"
+    latitude: 45.59104
+    longitude: -73.43605
+    population: 39062
+    dem: 16
+    timezone: "America/Toronto"
+  - name: "Bromont"
+    latitude: 45.31678
+    longitude: -72.64912
+    population: 6049
+    dem: 126
+    timezone: "America/Toronto"
+  - name: "Brossard"
+    latitude: 45.45008
+    longitude: -73.46583
+    population: 69575
+    dem: 17
+    timezone: "America/Toronto"
+  - name: "Brownsburg-Chatham"
+    latitude: 45.68342
+    longitude: -74.4159
+    population: 6664
+    dem: 157
+    timezone: "America/Toronto"
+  - name: "Candiac"
+    latitude: 45.38338
+    longitude: -73.51587
+    population: 15947
+    dem: 25
+    timezone: "America/Toronto"
+  - name: "Cantley"
+    latitude: 45.5668
+    longitude: -75.78265
+    population: 10412
+    dem: 162
+    timezone: "America/Toronto"
+  - name: "Carignan"
+    latitude: 45.45008
+    longitude: -73.29916
+    population: 7426
+    dem: 10
+    timezone: "America/Toronto"
+  - name: "Chambly"
+    latitude: 45.45008
+    longitude: -73.28246
+    population: 22608
+    dem: 4
+    timezone: "America/Toronto"
+  - name: "Charlemagne"
+    latitude: 45.71678
+    longitude: -73.48247
+    population: 5594
+    dem: 7
+    timezone: "America/Toronto"
+  - name: "Chateauguay"
+    latitude: 45.38338
+    longitude: -73.74919
+    population: 42786
+    dem: 19
+    timezone: "America/Toronto"
+  - name: "Chibougamau"
+    latitude: 49.91684
+    longitude: -74.36586
+    population: 7563
+    dem: 407
+    timezone: "America/Toronto"
+  - name: "Coaticook"
+    latitude: 45.13339
+    longitude: -71.79907
+    population: 7021
+    dem: 289
+    timezone: "America/Toronto"
+  - name: "Cote-Saint-Luc"
+    latitude: 45.46536
+    longitude: -73.66585
+    population: 31395
+    dem: 47
+    timezone: "America/Toronto"
+  - name: "Cowansville"
+    latitude: 45.20008
+    longitude: -72.74913
+    population: 10887
+    dem: 117
+    timezone: "America/Toronto"
+  - name: "Delson"
+    latitude: 45.36678
+    longitude: -73.54917
+    population: 7322
+    dem: 27
+    timezone: "America/Toronto"
+  - name: "Deux-Montagnes"
+    latitude: 45.53455
+    longitude: -73.90168
+    population: 17402
+    dem: 29
+    timezone: "America/Toronto"
+  - name: "Dolbeau-Mistassini"
+    latitude: 48.8786
+    longitude: -72.23142
+    population: 12916
+    dem: 127
+    timezone: "America/Toronto"
+  - name: "Dollard-Des Ormeaux"
+    latitude: 45.49452
+    longitude: -73.82419
+    population: 48930
+    dem: 34
+    timezone: "America/Toronto"
+  - name: "Dorval"
+    latitude: 45.4473
+    longitude: -73.75335
+    population: 18088
+    dem: 27
+    timezone: "America/Toronto"
+  - name: "Drummondville"
+    latitude: 45.88336
+    longitude: -72.48241
+    population: 59489
+    dem: 89
+    timezone: "America/Toronto"
+  - name: "Farnham"
+    latitude: 45.28338
+    longitude: -72.98244
+    population: 6061
+    dem: 55
+    timezone: "America/Toronto"
+  - name: "Gaspe"
+    latitude: 48.83341
+    longitude: -64.48194
+    population: 14819
+    dem: 15
+    timezone: "America/Toronto"
+  - name: "Gatineau"
+    latitude: 45.47723
+    longitude: -75.70164
+    population: 242124
+    dem: 53
+    timezone: "America/Toronto"
+  - name: "Granby"
+    latitude: 45.40008
+    longitude: -72.73243
+    population: 53979
+    dem: 102
+    timezone: "America/Toronto"
+  - name: "Hampstead"
+    latitude: 45.48064
+    longitude: -73.66307
+    population: 6996
+    dem: 49
+    timezone: "America/Toronto"
+  - name: "Hudson"
+    latitude: 45.45008
+    longitude: -74.14922
+    population: 5088
+    dem: 47
+    timezone: "America/Toronto"
+  - name: "Joliette"
+    latitude: 46.0164
+    longitude: -73.4236
+    population: 34772
+    dem: 57
+    timezone: "America/Toronto"
+  - name: "Kirkland"
+    latitude: 45.45008
+    longitude: -73.86586
+    population: 20491
+    dem: 36
+    timezone: "America/Toronto"
+  - name: "Lac-Brome"
+    latitude: 45.21678
+    longitude: -72.51581
+    population: 5629
+    dem: 209
+    timezone: "America/Toronto"
+  - name: "Lachute"
+    latitude: 45.65008
+    longitude: -74.33253
+    population: 9562
+    dem: 70
+    timezone: "America/Toronto"
+  - name: "La Prairie"
+    latitude: 45.41678
+    longitude: -73.49917
+    population: 21763
+    dem: 8
+    timezone: "America/Toronto"
+  - name: "La Sarre"
+    latitude: 48.80019
+    longitude: -79.19964
+    population: 7206
+    dem: 269
+    timezone: "America/Toronto"
+  - name: "LAssomption"
+    latitude: 45.82318
+    longitude: -73.4294
+    population: 16738
+    dem: 13
+    timezone: "America/Toronto"
+  - name: "La Tuque"
+    latitude: 47.43337
+    longitude: -72.7824
+    population: 9503
+    dem: 165
+    timezone: "America/Toronto"
+  - name: "Laval"
+    latitude: 45.56995
+    longitude: -73.692
+    population: 376845
+    dem: 34
+    timezone: "America/Toronto"
+  - name: "Lavaltrie"
+    latitude: 45.88338
+    longitude: -73.28245
+    population: 8762
+    dem: 21
+    timezone: "America/Toronto"
+  - name: "Les Coteaux"
+    latitude: 45.28338
+    longitude: -74.23254
+    population: 10622
+    dem: 44
+    timezone: "America/Toronto"
+  - name: "LIle-Perrot"
+    latitude: 45.38338
+    longitude: -73.9492
+    population: 9927
+    dem: 49
+    timezone: "America/Toronto"
+  - name: "Longueuil"
+    latitude: 45.53121
+    longitude: -73.51806
+    population: 229330
+    dem: 18
+    timezone: "America/Toronto"
+  - name: "Lorraine"
+    latitude: 45.68338
+    longitude: -73.78249
+    population: 9613
+    dem: 64
+    timezone: "America/Toronto"
+  - name: "Louiseville"
+    latitude: 46.25594
+    longitude: -72.94145
+    population: 5819
+    dem: 17
+    timezone: "America/Toronto"
+  - name: "Magog"
+    latitude: 45.26678
+    longitude: -72.14909
+    population: 15550
+    dem: 220
+    timezone: "America/Toronto"
+  - name: "Marieville"
+    latitude: 45.43338
+    longitude: -73.16585
+    population: 5600
+    dem: 34
+    timezone: "America/Toronto"
+  - name: "Mascouche"
+    latitude: 45.74965
+    longitude: -73.59956
+    population: 34626
+    dem: 17
+    timezone: "America/Toronto"
+  - name: "Mercier"
+    latitude: 45.31678
+    longitude: -73.74919
+    population: 10121
+    dem: 47
+    timezone: "America/Toronto"
+  - name: "Mirabel"
+    latitude: 45.65008
+    longitude: -74.08251
+    population: 34626
+    dem: 70
+    timezone: "America/Toronto"
+  - name: "Mont-Laurier"
+    latitude: 46.55011
+    longitude: -75.4993
+    population: 13405
+    dem: 226
+    timezone: "America/Toronto"
+  - name: "Montreal"
+    latitude: 45.50884
+    longitude: -73.58781
+    population: 1600000
+    dem: 216
+    timezone: "America/Toronto"
+  - name: "Montreal-Ouest"
+    latitude: 45.45286
+    longitude: -73.64918
+    population: 5184
+    dem: 48
+    timezone: "America/Toronto"
+  - name: "Mont-Royal"
+    latitude: 45.51675
+    longitude: -73.64918
+    population: 18933
+    dem: 47
+    timezone: "America/Toronto"
+  - name: "Mont-Saint-Hilaire"
+    latitude: 45.56515
+    longitude: -73.1868
+    population: 15720
+    dem: 39
+    timezone: "America/Toronto"
+  - name: "Mont-Tremblant"
+    latitude: 46.21274
+    longitude: -74.58438
+    population: 8892
+    dem: 257
+    timezone: "America/Toronto"
+  - name: "Nicolet"
+    latitude: 46.21676
+    longitude: -72.61582
+    population: 5257
+    dem: 20
+    timezone: "America/Toronto"
+  - name: "Notre-Dame-de-Grace"
+    latitude: 45.47675
+    longitude: -73.61432
+    population: 67000
+    dem: 84
+    timezone: "America/Toronto"
+  - name: "Notre-Dame-de-lIle-Perrot"
+    latitude: 45.36678
+    longitude: -73.9325
+    population: 9885
+    dem: 41
+    timezone: "America/Toronto"
+  - name: "Notre-Dame-des-Prairies"
+    latitude: 46.05007
+    longitude: -73.43245
+    population: 8230
+    dem: 62
+    timezone: "America/Toronto"
+  - name: "Otterburn Park"
+    latitude: 45.53338
+    longitude: -73.21585
+    population: 8464
+    dem: 13
+    timezone: "America/Toronto"
+  - name: "Pincourt"
+    latitude: 45.38338
+    longitude: -73.9825
+    population: 11197
+    dem: 27
+    timezone: "America/Toronto"
+  - name: "Pointe-Calumet"
+    latitude: 45.50008
+    longitude: -73.9659
+    population: 6396
+    dem: 23
+    timezone: "America/Toronto"
+  - name: "Pointe-Claire"
+    latitude: 45.44868
+    longitude: -73.81669
+    population: 30161
+    dem: 45
+    timezone: "America/Toronto"
+  - name: "Pont Rouge"
+    latitude: 48.88332
+    longitude: -72.08247
+    population: 7518
+    dem: 135
+    timezone: "America/Toronto"
+  - name: "Port-Cartier"
+    latitude: 50.03339
+    longitude: -66.86545
+    population: 5851
+    dem: 31
+    timezone: "America/Toronto"
+  - name: "Prevost"
+    latitude: 45.86678
+    longitude: -74.08251
+    population: 10132
+    dem: 166
+    timezone: "America/Toronto"
+  - name: "Rawdon"
+    latitude: 46.05007
+    longitude: -73.71587
+    population: 10400
+    dem: 176
+    timezone: "America/Toronto"
+  - name: "Repentigny"
+    latitude: 45.74222
+    longitude: -73.45008
+    population: 76237
+    dem: 10
+    timezone: "America/Toronto"
+  - name: "Richelieu"
+    latitude: 45.44336
+    longitude: -73.24602
+    population: 5208
+    dem: 29
+    timezone: "America/Toronto"
+  - name: "Roberval"
+    latitude: 48.5168
+    longitude: -72.23244
+    population: 9287
+    dem: 113
+    timezone: "America/Toronto"
+  - name: "Rock Forest"
+    latitude: 45.35699
+    longitude: -71.99676
+    population: 35500
+    dem: 240
+    timezone: "America/Toronto"
+  - name: "Rosemere"
+    latitude: 45.63338
+    longitude: -73.79919
+    population: 14173
+    dem: 29
+    timezone: "America/Toronto"
+  - name: "Rouyn-Noranda"
+    latitude: 48.23656
+    longitude: -79.02311
+    population: 24023
+    dem: 299
+    timezone: "America/Toronto"
+  - name: "Saguenay"
+    latitude: 48.41675
+    longitude: -71.06573
+    population: 143692
+    dem: 84
+    timezone: "America/Toronto"
+  - name: "Saint-Basile-le-Grand"
+    latitude: 45.53338
+    longitude: -73.28246
+    population: 15605
+    dem: 13
+    timezone: "America/Toronto"
+  - name: "Saint-Bruno-de-Montarville"
+    latitude: 45.53341
+    longitude: -73.34916
+    population: 24388
+    dem: 41
+    timezone: "America/Toronto"
+  - name: "Saint-Constant"
+    latitude: 45.36678
+    longitude: -73.56588
+    population: 23957
+    dem: 26
+    timezone: "America/Toronto"
+  - name: "Sainte-Adele"
+    latitude: 45.95008
+    longitude: -74.13251
+    population: 10634
+    dem: 246
+    timezone: "America/Toronto"
+  - name: "Sainte-Agathe-des-Monts"
+    latitude: 46.05009
+    longitude: -74.28252
+    population: 5706
+    dem: 375
+    timezone: "America/Toronto"
+  - name: "Sainte-Anne-de-Bellevue"
+    latitude: 45.40618
+    longitude: -73.9456
+    population: 5197
+    dem: 34
+    timezone: "America/Toronto"
+  - name: "Sainte-Anne-des-Monts"
+    latitude: 49.12402
+    longitude: -66.49243
+    population: 5602
+    dem: 15
+    timezone: "America/Toronto"
+  - name: "Sainte-Anne-des-Plaines"
+    latitude: 45.76468
+    longitude: -73.81156
+    population: 10680
+    dem: 67
+    timezone: "America/Toronto"
+  - name: "Sainte-Catherine"
+    latitude: 45.40008
+    longitude: -73.58248
+    population: 16762
+    dem: 25
+    timezone: "America/Toronto"
+  - name: "Sainte-Catherine"
+    latitude: 46.31836
+    longitude: -72.56632
+    population: 16211
+    dem: 10
+    timezone: "America/Toronto"
+  - name: "Sainte-Julie"
+    latitude: 45.58338
+    longitude: -73.33246
+    population: 29019
+    dem: 37
+    timezone: "America/Toronto"
+  - name: "Sainte-Marthe-sur-le-Lac"
+    latitude: 45.53338
+    longitude: -73.9325
+    population: 11311
+    dem: 35
+    timezone: "America/Toronto"
+  - name: "Sainte-Therese"
+    latitude: 45.63922
+    longitude: -73.82757
+    population: 25224
+    dem: 36
+    timezone: "America/Toronto"
+  - name: "Saint-Eustache"
+    latitude: 45.565
+    longitude: -73.90554
+    population: 42062
+    dem: 42
+    timezone: "America/Toronto"
+  - name: "Saint-Felicien"
+    latitude: 48.65007
+    longitude: -72.44906
+    population: 8088
+    dem: 111
+    timezone: "America/Toronto"
+  - name: "Saint-Felix-de-Valois"
+    latitude: 46.16977
+    longitude: -73.42525
+    population: 6029
+    dem: 123
+    timezone: "America/Toronto"
+  - name: "Saint-Hippolyte"
+    latitude: 45.93338
+    longitude: -74.0159
+    population: 8083
+    dem: 254
+    timezone: "America/Toronto"
+  - name: "Saint-Hyacinthe"
+    latitude: 45.63076
+    longitude: -72.95699
+    population: 50326
+    dem: 32
+    timezone: "America/Toronto"
+  - name: "Saint-Jean-sur-Richelieu"
+    latitude: 45.30713
+    longitude: -73.26259
+    population: 71613
+    dem: 32
+    timezone: "America/Toronto"
+  - name: "Saint-Jerome"
+    latitude: 45.78036
+    longitude: -74.00365
+    population: 54948
+    dem: 95
+    timezone: "America/Toronto"
+  - name: "Saint-Joseph-du-Lac"
+    latitude: 45.53338
+    longitude: -73.9992
+    population: 6195
+    dem: 63
+    timezone: "America/Toronto"
+  - name: "Saint-Laurent"
+    latitude: 45.50008
+    longitude: -73.66585
+    population: 77391
+    dem: 41
+    timezone: "America/Toronto"
+  - name: "Saint-Lazare"
+    latitude: 45.40008
+    longitude: -74.13256
+    population: 17016
+    dem: 56
+    timezone: "America/Toronto"
+  - name: "Saint-Leonard"
+    latitude: 45.58773
+    longitude: -73.59501
+    population: 73423
+    dem: 43
+    timezone: "America/Toronto"
+  - name: "Saint-Lin-Laurentides"
+    latitude: 45.85008
+    longitude: -73.76588
+    population: 14159
+    dem: 59
+    timezone: "America/Toronto"
+  - name: "Saint-Pie"
+    latitude: 45.50277
+    longitude: -72.9089
+    population: 5438
+    dem: 38
+    timezone: "America/Toronto"
+  - name: "Saint-Raymond"
+    latitude: 45.46698
+    longitude: -73.60948
+    population: 9273
+    dem: 50
+    timezone: "America/Toronto"
+  - name: "Saint-Sauveur"
+    latitude: 45.88686
+    longitude: -74.17943
+    population: 9191
+    dem: 254
+    timezone: "America/Toronto"
+  - name: "Saint-Zotique"
+    latitude: 45.25009
+    longitude: -74.24924
+    population: 6773
+    dem: 47
+    timezone: "America/Toronto"
+  - name: "Salaberry-de-Valleyfield"
+    latitude: 45.25008
+    longitude: -74.13253
+    population: 38662
+    dem: 46
+    timezone: "America/Toronto"
+  - name: "Sept-Iles"
+    latitude: 50.20011
+    longitude: -66.38208
+    population: 22582
+    dem: 5
+    timezone: "America/Toronto"
+  - name: "Shawinigan"
+    latitude: 46.56675
+    longitude: -72.74913
+    population: 49161
+    dem: 123
+    timezone: "America/Toronto"
+  - name: "Sherbrooke"
+    latitude: 45.40008
+    longitude: -71.89908
+    population: 129447
+    dem: 175
+    timezone: "America/Toronto"
+  - name: "Terrebonne"
+    latitude: 45.70004
+    longitude: -73.64732
+    population: 94703
+    dem: 18
+    timezone: "America/Toronto"
+  - name: "Trois-Rivieres"
+    latitude: 46.34515
+    longitude: -72.5477
+    population: 119693
+    dem: 16
+    timezone: "America/Toronto"
+  - name: "Val-des-Monts"
+    latitude: 45.6501
+    longitude: -75.66604
+    population: 9539
+    dem: 141
+    timezone: "America/Toronto"
+  - name: "Val-dOr"
+    latitude: 48.0974
+    longitude: -77.79737
+    population: 31123
+    dem: 338
+    timezone: "America/Toronto"
+  - name: "Varennes"
+    latitude: 45.68338
+    longitude: -73.43246
+    population: 20950
+    dem: 15
+    timezone: "America/Toronto"
+  - name: "Vaudreuil-Dorion"
+    latitude: 45.40008
+    longitude: -74.03251
+    population: 25789
+    dem: 22
+    timezone: "America/Toronto"
+  - name: "Victoriaville"
+    latitude: 46.05007
+    longitude: -71.96579
+    population: 34426
+    dem: 131
+    timezone: "America/Toronto"
+  - name: "Westmount"
+    latitude: 45.48341
+    longitude: -73.59918
+    population: 20494
+    dem: 52
+    timezone: "America/Toronto"
+  - name: "Windsor"
+    latitude: 45.56678
+    longitude: -71.99909
+    population: 5408
+    dem: 173
+    timezone: "America/Toronto"
+  - name: "Beauceville"
+    latitude: 46.21785
+    longitude: -70.77873
+    population: 6226
+    elevation: 229
+    dem: 174
+    timezone: "America/Toronto"
+  - name: "Quebec"
+    latitude: 46.81228
+    longitude: -71.21454
+    population: 528595
+    dem: 54
+    timezone: "America/Toronto"
+  - name: "Levis"
+    latitude: 46.80326
+    longitude: -71.17793
+    population: 126396
+    dem: 87
+    timezone: "America/Blanc-Sablon"
+  - name: "Montmagny"
+    latitude: 46.98043
+    longitude: -70.55493
+    population: 11724
+    dem: 15
+    timezone: "America/Toronto"
+  - name: "Rimouski"
+    latitude: 48.44879
+    longitude: -68.52396
+    population: 42240
+    dem: 23
+    timezone: "America/Toronto"
+  - name: "Riviere-du-Loup"
+    latitude: 47.82699
+    longitude: -69.54243
+    population: 18586
+    dem: 56
+    timezone: "America/Toronto"
+  - name: "LAncienne-Lorette"
+    latitude: 46.79392
+    longitude: -71.35191
+    population: 16516
+    dem: 27
+    timezone: "America/Toronto"
+  - name: "Saint-Georges"
+    latitude: 46.11353
+    longitude: -70.66526
+    population: 31173
+    dem: 163
+    timezone: "America/Toronto"
+  - name: "Sainte Catherine de la Jacques Cartier"
+    latitude: 46.85244
+    longitude: -71.62056
+    population: 5021
+    dem: 159
+    timezone: "America/Toronto"
+  - name: "Baie-Saint-Paul"
+    latitude: 47.44109
+    longitude: -70.49858
+    population: 7288
+    dem: 7
+    timezone: "America/Toronto"
+  - name: "Matane"
+    latitude: 48.82857
+    longitude: -67.52197
+    population: 14812
+    dem: 74
+    timezone: "America/Toronto"
+  - name: "Amqui"
+    latitude: 48.46382
+    longitude: -67.43134
+    population: 6261
+    dem: 161
+    timezone: "America/Toronto"
+  - name: "Chandler"
+    latitude: 48.34935
+    longitude: -64.67926
+    population: 7914
+    dem: 17
+    timezone: "America/Toronto"
+  - name: "Thetford-Mines"
+    latitude: 46.09371
+    longitude: -71.30539
+    population: 25704
+    dem: 317
+    timezone: "America/Toronto"
+  - name: "Mont-Joli"
+    latitude: 48.58388
+    longitude: -68.19214
+    population: 6568
+    dem: 81
+    timezone: "America/Toronto"
+  - name: "La Malbaie"
+    latitude: 47.654
+    longitude: -70.15268
+    population: 8959
+    dem: 16
+    timezone: "America/Toronto"
+  - name: "Sainte-Marie"
+    latitude: 46.43401
+    longitude: -71.01168
+    population: 11584
+    dem: 159
+    timezone: "America/Toronto"
+  - name: "Plessisville"
+    latitude: 46.21856
+    longitude: -71.76201
+    population: 6677
+    dem: 163
+    timezone: "America/Toronto"
+  - name: "Jonquiere"
+    latitude: 48.41648
+    longitude: -71.24884
+    population: 54842
+    elevation: 146
+    dem: 142
+    timezone: "America/Toronto"
+  - name: "Saint-Augustin-de-Desmaures"
+    latitude: 46.74064
+    longitude: -71.45131
+    population: 17281
+    dem: 78
+    timezone: "America/Toronto"
+  - name: "Donnacona"
+    latitude: 46.68042
+    longitude: -71.7239
+    population: 5564
+    dem: 60
+    timezone: "America/Toronto"
+  - name: "Shannon"
+    latitude: 46.88026
+    longitude: -71.51464
+    population: 5086
+    dem: 170
+    timezone: "America/Toronto"
+  - name: "Saint-Henri"
+    latitude: 46.69314
+    longitude: -71.06927
+    population: 5023
+    dem: 87
+    timezone: "America/Toronto"
+  - name: "Pont-Rouge"
+    latitude: 46.75468
+    longitude: -71.69566
+    population: 8723
+    dem: 104
+    timezone: "America/Toronto"
+  - name: "Princeville"
+    latitude: 46.17163
+    longitude: -71.87462
+    population: 5693
+    dem: 160
+    timezone: "America/Toronto"
+  - name: "le Plateau"
+    latitude: 45.43514
+    longitude: -75.7803
+    population: 15000
+    dem: 89
+    timezone: "America/Toronto"
+  - name: "La Haute-Saint-Charles"
+    latitude: 46.89028
+    longitude: -71.37222
+    population: 74070
+    dem: 151
+    timezone: "America/Toronto"
+- name: "Northwest Territories"
+  cities:
+  - name: "Yellowknife"
+    latitude: 62.45411
+    longitude: -114.37248
+    population: 15865
+    dem: 252
+    timezone: "America/Yellowknife"
+- name: "Nova Scotia"
+  cities:
+  - name: "Amherst"
+    latitude: 45.83345
+    longitude: -64.19874
+    population: 9336
+    dem: 20
+    timezone: "America/Halifax"
+  - name: "Antigonish"
+    latitude: 45.61685
+    longitude: -61.99858
+    population: 5003
+    dem: 17
+    timezone: "America/Halifax"
+  - name: "Bridgewater"
+    latitude: 44.37856
+    longitude: -64.51882
+    population: 8070
+    dem: 6
+    timezone: "America/Halifax"
+  - name: "Dartmouth"
+    latitude: 44.67134
+    longitude: -63.57719
+    population: 101343
+    dem: 35
+    timezone: "America/Halifax"
+  - name: "Fall River"
+    latitude: 44.81685
+    longitude: -63.6154
+    population: 11526
+    dem: 33
+    timezone: "America/Halifax"
+  - name: "Glace Bay"
+    latitude: 46.19695
+    longitude: -59.95698
+    population: 19968
+    dem: 15
+    timezone: "America/Glace_Bay"
+  - name: "Greenwood"
+    latitude: 44.97413
+    longitude: -64.93169
+    population: 6915
+    dem: 28
+    timezone: "America/Halifax"
+  - name: "Kentville"
+    latitude: 45.0771
+    longitude: -64.49605
+    population: 12636
+    dem: 15
+    timezone: "America/Halifax"
+  - name: "New Glasgow"
+    latitude: 45.58344
+    longitude: -62.64863
+    population: 20322
+    dem: 11
+    timezone: "America/Halifax"
+  - name: "Princeville"
+    latitude: 45.76684
+    longitude: -61.29853
+    population: 5571
+    dem: 43
+    timezone: "America/Halifax"
+  - name: "Truro"
+    latitude: 45.36685
+    longitude: -63.26538
+    population: 20650
+    dem: 17
+    timezone: "America/Halifax"
+  - name: "Yarmouth"
+    latitude: 43.83345
+    longitude: -66.11557
+    population: 7500
+    dem: 26
+    timezone: "America/Halifax"
+  - name: "Halifax"
+    latitude: 44.64533
+    longitude: -63.57239
+    population: 359111
+    dem: 23
+    timezone: "America/Halifax"
+  - name: "Sydney"
+    latitude: 46.1351
+    longitude: -60.1831
+    population: 105968
+    dem: 6
+    timezone: "America/Glace_Bay"
+  - name: "Cole Harbour"
+    latitude: 44.67244
+    longitude: -63.47506
+    population: 20000
+    elevation: 50
+    dem: 49
+    timezone: "America/Halifax"
+  - name: "Sydney Mines"
+    latitude: 46.23669
+    longitude: -60.21767
+    population: 7312
+    elevation: 0
+    dem: 18
+    timezone: "America/Glace_Bay"
+  - name: "Lower Sackville"
+    latitude: 44.77599
+    longitude: -63.67865
+    population: 21379
+    dem: 53
+    timezone: "America/Halifax"
+- name: "Alberta"
+  cities:
+  - name: "Airdrie"
+    latitude: 51.30011
+    longitude: -114.03528
+    population: 24673
+    dem: 1086
+    timezone: "America/Edmonton"
+  - name: "Banff"
+    latitude: 51.17622
+    longitude: -115.56982
+    population: 7502
+    dem: 1388
+    timezone: "America/Edmonton"
+  - name: "Beaumont"
+    latitude: 53.35013
+    longitude: -113.41871
+    population: 7366
+    dem: 716
+    timezone: "America/Edmonton"
+  - name: "Bonnyville"
+    latitude: 54.26684
+    longitude: -110.73505
+    population: 6003
+    dem: 555
+    timezone: "America/Edmonton"
+  - name: "Brooks"
+    latitude: 50.58341
+    longitude: -111.88509
+    population: 12744
+    dem: 748
+    timezone: "America/Edmonton"
+  - name: "Calgary"
+    latitude: 51.05011
+    longitude: -114.08529
+    population: 1019942
+    elevation: 1048
+    dem: 1042
+    timezone: "America/Edmonton"
+  - name: "Camrose"
+    latitude: 53.01684
+    longitude: -112.83525
+    population: 15686
+    dem: 739
+    timezone: "America/Edmonton"
+  - name: "Canmore"
+    latitude: 51.08335
+    longitude: -115.35206
+    population: 12288
+    elevation: 1375
+    dem: 1309
+    timezone: "America/Edmonton"
+  - name: "Coaldale"
+    latitude: 49.7167
+    longitude: -112.61854
+    population: 6317
+    dem: 865
+    timezone: "America/Edmonton"
+  - name: "Cochrane"
+    latitude: 51.18341
+    longitude: -114.46871
+    population: 16365
+    dem: 1143
+    timezone: "America/Edmonton"
+  - name: "Cold Lake"
+    latitude: 54.46525
+    longitude: -110.18154
+    population: 11595
+    dem: 548
+    timezone: "America/Edmonton"
+  - name: "Devon"
+    latitude: 53.36683
+    longitude: -113.73533
+    population: 5225
+    dem: 695
+    timezone: "America/Edmonton"
+  - name: "Drayton Valley"
+    latitude: 53.21682
+    longitude: -114.98544
+    population: 6099
+    dem: 846
+    timezone: "America/Edmonton"
+  - name: "Edmonton"
+    latitude: 53.55014
+    longitude: -113.46871
+    population: 712391
+    elevation: 668
+    dem: 610
+    timezone: "America/Edmonton"
+  - name: "Edson"
+    latitude: 53.58345
+    longitude: -116.43559
+    population: 7975
+    dem: 913
+    timezone: "America/Edmonton"
+  - name: "Fort McMurray"
+    latitude: 56.72676
+    longitude: -111.38103
+    population: 76000
+    dem: 258
+    timezone: "America/Edmonton"
+  - name: "Fort Saskatchewan"
+    latitude: 53.71684
+    longitude: -113.2187
+    population: 14957
+    dem: 595
+    timezone: "America/Edmonton"
+  - name: "Grande Prairie"
+    latitude: 55.16667
+    longitude: -118.80271
+    population: 41462
+    dem: 653
+    timezone: "America/Edmonton"
+  - name: "High River"
+    latitude: 50.58341
+    longitude: -113.86867
+    population: 9826
+    dem: 1034
+    timezone: "America/Edmonton"
+  - name: "Hinton"
+    latitude: 53.40009
+    longitude: -117.58567
+    population: 9889
+    dem: 1022
+    timezone: "America/Edmonton"
+  - name: "Lacombe"
+    latitude: 52.46681
+    longitude: -113.7353
+    population: 10059
+    dem: 853
+    timezone: "America/Edmonton"
+  - name: "Leduc"
+    latitude: 53.26682
+    longitude: -113.55201
+    population: 15561
+    dem: 728
+    timezone: "America/Edmonton"
+  - name: "Lethbridge"
+    latitude: 49.69999
+    longitude: -112.81856
+    population: 70617
+    dem: 907
+    timezone: "America/Edmonton"
+  - name: "Lloydminster"
+    latitude: 53.27237
+    longitude: -110.02256
+    population: 27000
+    dem: 652
+    timezone: "America/Edmonton"
+  - name: "Medicine Hat"
+    latitude: 50.03928
+    longitude: -110.67661
+    population: 63138
+    dem: 673
+    timezone: "America/Edmonton"
+  - name: "Morinville"
+    latitude: 53.80014
+    longitude: -113.65203
+    population: 8108
+    dem: 701
+    timezone: "America/Edmonton"
+  - name: "Okotoks"
+    latitude: 50.72885
+    longitude: -113.98281
+    population: 14826
+    dem: 1071
+    timezone: "America/Edmonton"
+  - name: "Olds"
+    latitude: 51.78341
+    longitude: -114.10199
+    population: 6947
+    dem: 1039
+    timezone: "America/Edmonton"
+  - name: "Peace River"
+    latitude: 56.23715
+    longitude: -117.29176
+    population: 5340
+    dem: 330
+    timezone: "America/Edmonton"
+  - name: "Ponoka"
+    latitude: 52.6768
+    longitude: -113.58147
+    population: 6656
+    dem: 806
+    timezone: "America/Edmonton"
+  - name: "Red Deer"
+    latitude: 52.26682
+    longitude: -113.802
+    population: 73593
+    dem: 856
+    timezone: "America/Edmonton"
+  - name: "Rocky Mountain House"
+    latitude: 52.36683
+    longitude: -114.9188
+    population: 6527
+    dem: 982
+    timezone: "America/Edmonton"
+  - name: "Sherwood Park"
+    latitude: 53.51684
+    longitude: -113.3187
+    population: 55063
+    elevation: 729
+    dem: 722
+    timezone: "America/Edmonton"
+  - name: "Slave Lake"
+    latitude: 55.28344
+    longitude: -114.76896
+    population: 7661
+    dem: 583
+    timezone: "America/Edmonton"
+  - name: "Spruce Grove"
+    latitude: 53.53344
+    longitude: -113.91874
+    population: 17767
+    dem: 704
+    timezone: "America/Edmonton"
+  - name: "St. Albert"
+    latitude: 53.63344
+    longitude: -113.63533
+    population: 57719
+    dem: 663
+    timezone: "America/Edmonton"
+  - name: "Stettler"
+    latitude: 52.31683
+    longitude: -112.71861
+    population: 5494
+    dem: 814
+    timezone: "America/Edmonton"
+  - name: "Stony Plain"
+    latitude: 53.53343
+    longitude: -114.00205
+    population: 8939
+    dem: 705
+    timezone: "America/Edmonton"
+  - name: "Strathmore"
+    latitude: 51.05011
+    longitude: -113.38523
+    population: 10009
+    dem: 976
+    timezone: "America/Edmonton"
+  - name: "Sylvan Lake"
+    latitude: 52.311
+    longitude: -114.08375
+    population: 10518
+    dem: 961
+    timezone: "America/Edmonton"
+  - name: "Taber"
+    latitude: 49.78703
+    longitude: -112.14603
+    population: 8163
+    dem: 813
+    timezone: "America/Edmonton"
+  - name: "Vegreville"
+    latitude: 53.50015
+    longitude: -112.05182
+    population: 5678
+    dem: 635
+    timezone: "America/Edmonton"
+  - name: "Wainwright"
+    latitude: 52.83482
+    longitude: -110.85342
+    population: 5380
+    dem: 680
+    timezone: "America/Edmonton"
+  - name: "Westlock"
+    latitude: 54.15016
+    longitude: -113.86876
+    population: 5067
+    dem: 651
+    timezone: "America/Edmonton"
+  - name: "Wetaskiwin"
+    latitude: 52.96683
+    longitude: -113.36869
+    population: 11302
+    dem: 758
+    timezone: "America/Edmonton"
+  - name: "Whitecourt"
+    latitude: 54.15015
+    longitude: -115.68548
+    population: 8763
+    dem: 689
+    timezone: "America/Edmonton"
+  - name: "Wild Rose"
+    latitude: 53.4708
+    longitude: -113.38119
+    population: 8031
+    elevation: 717
+    dem: 714
+    timezone: "America/Edmonton"
+  - name: "Silver Berry"
+    latitude: 53.45787
+    longitude: -113.3817
+    population: 8089
+    elevation: 713
+    dem: 713
+    timezone: "America/Edmonton"
+- name: "Manitoba"
+  cities:
+  - name: "Brandon"
+    latitude: 49.84692
+    longitude: -99.95306
+    population: 26234
+    dem: 383
+    timezone: "America/Winnipeg"
+  - name: "Dauphin"
+    latitude: 51.14941
+    longitude: -100.05023
+    population: 8418
+    dem: 294
+    timezone: "America/Winnipeg"
+  - name: "Flin Flon"
+    latitude: 54.76703
+    longitude: -101.87433
+    population: 6002
+    dem: 336
+    timezone: "America/Winnipeg"
+  - name: "Morden"
+    latitude: 49.1919
+    longitude: -98.10136
+    population: 6395
+    dem: 306
+    timezone: "America/Winnipeg"
+  - name: "Portage la Prairie"
+    latitude: 49.97282
+    longitude: -98.29263
+    population: 12957
+    dem: 263
+    timezone: "America/Winnipeg"
+  - name: "Selkirk"
+    latitude: 50.1436
+    longitude: -96.88452
+    population: 9653
+    dem: 227
+    timezone: "America/Winnipeg"
+  - name: "Steinbach"
+    latitude: 49.52579
+    longitude: -96.68451
+    population: 9607
+    dem: 263
+    timezone: "America/Winnipeg"
+  - name: "The Pas"
+    latitude: 53.82509
+    longitude: -101.25413
+    population: 6055
+    dem: 267
+    timezone: "America/Winnipeg"
+  - name: "Thompson"
+    latitude: 55.7435
+    longitude: -97.85579
+    population: 12467
+    dem: 205
+    timezone: "America/Winnipeg"
+  - name: "Winkler"
+    latitude: 49.1817
+    longitude: -97.94104
+    population: 8270
+    dem: 271
+    timezone: "America/Winnipeg"
+  - name: "Winnipeg"
+    latitude: 49.8844
+    longitude: -97.14704
+    population: 632063
+    dem: 245
+    timezone: "America/Winnipeg"
+- name: "Yukon"
+  cities:
+  - name: "Whitehorse"
+    latitude: 60.71611
+    longitude: -135.05375
+    population: 23272
+    elevation: 707
+    dem: 630
+    timezone: "America/Whitehorse"
+- name: "Prince Edward Island"
+  cities:
+  - name: "Charlottetown"
+    latitude: 46.23899
+    longitude: -63.13414
+    population: 42402
+    dem: 5
+    timezone: "America/Halifax"
+  - name: "Summerside"
+    latitude: 46.39593
+    longitude: -63.78762
+    population: 14808
+    dem: 16
+    timezone: "America/Halifax"
+- name: "Saskatchewan"
+  cities:
+  - name: "Estevan"
+    latitude: 49.13337
+    longitude: -102.98422
+    population: 9904
+    dem: 563
+    timezone: "America/Regina"
+  - name: "Melfort"
+    latitude: 52.86673
+    longitude: -104.61768
+    population: 5410
+    dem: 457
+    timezone: "America/Regina"
+  - name: "Moose Jaw"
+    latitude: 50.40005
+    longitude: -105.53445
+    population: 32166
+    dem: 552
+    timezone: "America/Regina"
+  - name: "North Battleford"
+    latitude: 52.77972
+    longitude: -108.2967
+    population: 19440
+    dem: 526
+    timezone: "America/Regina"
+  - name: "Prince Albert"
+    latitude: 53.20008
+    longitude: -105.76772
+    population: 34609
+    dem: 431
+    timezone: "America/Regina"
+  - name: "Regina"
+    latitude: 50.45008
+    longitude: -104.6178
+    population: 176183
+    dem: 577
+    timezone: "America/Regina"
+  - name: "Saskatoon"
+    latitude: 52.13238
+    longitude: -106.66892
+    population: 198958
+    dem: 484
+    timezone: "America/Regina"
+  - name: "Swift Current"
+    latitude: 50.28337
+    longitude: -107.80135
+    population: 14703
+    dem: 742
+    timezone: "America/Swift_Current"
+  - name: "Weyburn"
+    latitude: 49.66675
+    longitude: -103.85109
+    population: 9362
+    dem: 568
+    timezone: "America/Regina"
+  - name: "Yorkton"
+    latitude: 51.2167
+    longitude: -102.46766
+    population: 15669
+    elevation: 498
+    dem: 504
+    timezone: "America/Regina"

@@ -1,0 +1,354 @@
+---
+name: "Libya"
+iso: "LY"
+iso3: "LBY"
+code: "434"
+capital: "Tripoli"
+area: 1759540.0
+population: 6461454
+continent: "AF"
+currencyCode: "LYD"
+currencyName: "Dinar"
+phone: "218"
+languages: "ar-LY,it,en"
+neighbours: "TD,NE,DZ,SD,TN,EG"
+regions:
+- name: "Jabal al Gharbi District"
+  cities:
+  - name: "Yafran"
+    latitude: 32.06329
+    longitude: 12.52859
+    population: 67638
+    dem: 681
+    timezone: "Africa/Tripoli"
+  - name: "Mizdah"
+    latitude: 31.44934
+    longitude: 12.9853
+    population: 26107
+    dem: 458
+    timezone: "Africa/Tripoli"
+  - name: "Giado"
+    latitude: 31.95506
+    longitude: 12.02901
+    population: 6013
+    dem: 693
+    timezone: "Africa/Tripoli"
+  - name: "Gharyan"
+    latitude: 32.17222
+    longitude: 13.02028
+    population: 85219
+    dem: 704
+    timezone: "Africa/Tripoli"
+  - name: "Zintan"
+    latitude: 31.93155
+    longitude: 12.25291
+    population: 33000
+    dem: 700
+    timezone: "Africa/Tripoli"
+- name: "Nalut"
+  cities:
+  - name: "Nalut"
+    latitude: 31.86848
+    longitude: 10.9812
+    population: 26256
+    dem: 637
+    timezone: "Africa/Tripoli"
+  - name: "Ghadamis"
+    latitude: 30.13366
+    longitude: 9.50072
+    population: 7000
+    dem: 339
+    timezone: "Africa/Tripoli"
+- name: "Az Zawiyah"
+  cities:
+  - name: "Surman"
+    latitude: 32.75668
+    longitude: 12.57159
+    population: 25235
+    dem: 8
+    timezone: "Africa/Tripoli"
+  - name: "Sabratah"
+    latitude: 32.79335
+    longitude: 12.48845
+    population: 102038
+    dem: 17
+    timezone: "Africa/Tripoli"
+  - name: "Zawiya"
+    latitude: 32.75222
+    longitude: 12.72778
+    population: 186123
+    dem: 21
+    timezone: "Africa/Tripoli"
+  - name: "Az Zawiyah"
+    latitude: 32.7571
+    longitude: 12.72764
+    population: 200000
+    dem: 18
+    timezone: "Africa/Tripoli"
+- name: "Al Wahat"
+  cities:
+  - name: "Az Zuwaytinah"
+    latitude: 30.9522
+    longitude: 20.12022
+    population: 21015
+    dem: 7
+    timezone: "Africa/Tripoli"
+  - name: "Awjilah"
+    latitude: 29.10806
+    longitude: 21.28694
+    population: 6610
+    dem: 41
+    timezone: "Africa/Tripoli"
+  - name: "Ajdabiya"
+    latitude: 30.75545
+    longitude: 20.22625
+    population: 134358
+    dem: 3
+    timezone: "Africa/Tripoli"
+  - name: "Al Burayqah"
+    latitude: 30.40624
+    longitude: 19.57386
+    population: 13780
+    dem: 5
+    timezone: "Africa/Tripoli"
+- name: "Tripoli"
+  cities:
+  - name: "Tripoli"
+    latitude: 32.88743
+    longitude: 13.18733
+    population: 1150989
+    dem: 7
+    timezone: "Africa/Tripoli"
+  - name: "Tagiura"
+    latitude: 32.88167
+    longitude: 13.35056
+    population: 100000
+    dem: 6
+    timezone: "Africa/Tripoli"
+- name: "Al Kufrah"
+  cities:
+  - name: "At Taj"
+    latitude: 24.20487
+    longitude: 23.2857
+    population: 46050
+    dem: 379
+    timezone: "Africa/Tripoli"
+  - name: "Al Jawf"
+    latitude: 24.1989
+    longitude: 23.29093
+    population: 17320
+    dem: 391
+    timezone: "Africa/Tripoli"
+- name: "Al Marqab"
+  cities:
+  - name: "Tarhuna"
+    latitude: 32.43501
+    longitude: 13.6332
+    population: 210697
+    dem: 391
+    timezone: "Africa/Tripoli"
+  - name: "Masallatah"
+    latitude: 32.61667
+    longitude: 14.0
+    population: 23702
+    dem: 236
+    timezone: "Africa/Tripoli"
+  - name: "Al Khums"
+    latitude: 32.64861
+    longitude: 14.26191
+    population: 201943
+    dem: 27
+    timezone: "Africa/Tripoli"
+- name: "Darnah"
+  cities:
+  - name: "Darnah"
+    latitude: 32.76704
+    longitude: 22.63669
+    population: 78782
+    dem: 9
+    timezone: "Africa/Tripoli"
+  - name: "Al Qubbah"
+    latitude: 32.75684
+    longitude: 22.24106
+    population: 24631
+    dem: 614
+    timezone: "Africa/Tripoli"
+- name: "Al Butnan"
+  cities:
+  - name: "Al Bardiyah"
+    latitude: 31.75598
+    longitude: 25.0866
+    population: 9149
+    dem: 92
+    timezone: "Africa/Tripoli"
+  - name: "Tobruk"
+    latitude: 32.08963
+    longitude: 23.95385
+    population: 121052
+    dem: 21
+    timezone: "Africa/Tripoli"
+- name: "Al Jufrah"
+  cities:
+  - name: "Waddan"
+    latitude: 29.1614
+    longitude: 16.13904
+    population: 27590
+    dem: 251
+    timezone: "Africa/Tripoli"
+  - name: "Hun"
+    latitude: 29.12684
+    longitude: 15.94772
+    population: 18878
+    dem: 260
+    timezone: "Africa/Tripoli"
+- name: "Murzuq"
+  cities:
+  - name: "Murzuq"
+    latitude: 25.91552
+    longitude: 13.91839
+    population: 43732
+    dem: 449
+    timezone: "Africa/Tripoli"
+- name: "An Nuqat al Khams"
+  cities:
+  - name: "Zuwarah"
+    latitude: 32.9312
+    longitude: 12.08199
+    population: 45000
+    dem: 5
+    timezone: "Africa/Tripoli"
+  - name: "Zaltan"
+    latitude: 32.94699
+    longitude: 11.86668
+    population: 17700
+    dem: 4
+    timezone: "Africa/Tripoli"
+  - name: "Al Ajaylat"
+    latitude: 32.75718
+    longitude: 12.37633
+    population: 130546
+    elevation: 33
+    dem: 19
+    timezone: "Africa/Tripoli"
+- name: "Surt"
+  cities:
+  - name: "Sirte"
+    latitude: 31.20892
+    longitude: 16.58866
+    population: 128123
+    dem: 17
+    timezone: "Africa/Tripoli"
+- name: "Al Jafarah"
+  cities:
+  - name: "Al Aziziyah"
+    latitude: 32.53194
+    longitude: 13.0175
+    population: 4000
+    dem: 116
+    timezone: "Africa/Tripoli"
+- name: "Sabha"
+  cities:
+  - name: "Sabha"
+    latitude: 27.03766
+    longitude: 14.42832
+    population: 130000
+    dem: 421
+    timezone: "Africa/Tripoli"
+  - name: "Al Jadid"
+    latitude: 27.05
+    longitude: 14.4
+    population: 126386
+    dem: 417
+    timezone: "Africa/Tripoli"
+- name: "Shabiyat Banghazi"
+  cities:
+  - name: "Qaryat Suluq"
+    latitude: 31.66818
+    longitude: 20.25205
+    population: 15543
+    dem: 55
+    timezone: "Africa/Tripoli"
+  - name: "Benghazi"
+    latitude: 32.11486
+    longitude: 20.06859
+    population: 650629
+    dem: 3
+    timezone: "Africa/Tripoli"
+- name: "Wadi al Hayat"
+  cities:
+  - name: "Ubari"
+    latitude: 26.59034
+    longitude: 12.77511
+    population: 42975
+    dem: 463
+    timezone: "Africa/Tripoli"
+- name: "Wadi ash Shati"
+  cities:
+  - name: "Brak"
+    latitude: 27.54956
+    longitude: 14.27139
+    population: 39444
+    dem: 349
+    timezone: "Africa/Tripoli"
+  - name: "Idri"
+    latitude: 27.44707
+    longitude: 13.05173
+    population: 4611
+    dem: 355
+    timezone: "Africa/Tripoli"
+- name: "Al Jabal al Akhdar"
+  cities:
+  - name: "Al Bayda"
+    latitude: 32.76272
+    longitude: 21.75506
+    population: 74594
+    dem: 631
+    timezone: "Africa/Tripoli"
+- name: "Al Marj"
+  cities:
+  - name: "Tukrah"
+    latitude: 32.53414
+    longitude: 20.57911
+    population: 23164
+    dem: 16
+    timezone: "Africa/Tripoli"
+  - name: "Al Marj"
+    latitude: 32.49257
+    longitude: 20.82909
+    population: 85315
+    dem: 334
+    timezone: "Africa/Tripoli"
+  - name: "Al Abyar"
+    latitude: 32.19
+    longitude: 20.59653
+    population: 32563
+    dem: 289
+    timezone: "Africa/Tripoli"
+- name: "Shabiyat Misratah"
+  cities:
+  - name: "Zliten"
+    latitude: 32.46739
+    longitude: 14.56874
+    population: 109972
+    dem: 9
+    timezone: "Africa/Tripoli"
+  - name: "Misratah"
+    latitude: 32.37535
+    longitude: 15.09254
+    population: 386120
+    dem: 11
+    timezone: "Africa/Tripoli"
+  - name: "Bani Walid"
+    latitude: 31.74554
+    longitude: 13.98354
+    population: 46350
+    dem: 269
+    timezone: "Africa/Tripoli"
+- name: "Ghat"
+  cities:
+  - name: "Ghat"
+    latitude: 24.96334
+    longitude: 10.18003
+    population: 24347
+    dem: 673
+    timezone: "Africa/Tripoli"

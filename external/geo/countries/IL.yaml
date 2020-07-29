@@ -1,0 +1,690 @@
+---
+name: "Israel"
+iso: "IL"
+iso3: "ISR"
+code: "376"
+capital: "Jerusalem"
+area: 20770.0
+population: 7353985
+continent: "AS"
+currencyCode: "ILS"
+currencyName: "Shekel"
+phone: "972"
+postalCodeFormat: "#######"
+postalCodeRegex: "^(\\d{7}|\\d{5})$"
+languages: "he,ar-IL,en-IL,"
+neighbours: "SY,JO,LB,EG,PS"
+regions:
+- name: "Central District"
+  cities:
+  - name: "Modiin Makkabbim Reut"
+    latitude: 31.89385
+    longitude: 35.01504
+    population: 88749
+    dem: 276
+    timezone: "Asia/Hebron"
+  - name: "Yehud"
+    latitude: 32.03317
+    longitude: 34.89091
+    population: 25600
+    dem: 44
+    timezone: "Asia/Jerusalem"
+  - name: "Yavne"
+    latitude: 31.87808
+    longitude: 34.73983
+    population: 31774
+    dem: 37
+    timezone: "Asia/Jerusalem"
+  - name: "Tel Mond"
+    latitude: 32.24995
+    longitude: 34.91737
+    population: 8725
+    dem: 68
+    timezone: "Asia/Jerusalem"
+  - name: "Rosh HaAyin"
+    latitude: 32.09556
+    longitude: 34.95664
+    population: 39215
+    elevation: 30
+    dem: 62
+    timezone: "Asia/Jerusalem"
+  - name: "Rishon LeZiyyon"
+    latitude: 31.97102
+    longitude: 34.78939
+    population: 220492
+    dem: 56
+    timezone: "Asia/Jerusalem"
+  - name: "Rehovot"
+    latitude: 31.89421
+    longitude: 34.81199
+    population: 132671
+    dem: 47
+    timezone: "Asia/Jerusalem"
+  - name: "Ramla"
+    latitude: 31.92923
+    longitude: 34.86563
+    population: 63860
+    dem: 83
+    timezone: "Asia/Jerusalem"
+  - name: "Raanana"
+    latitude: 32.1836
+    longitude: 34.87386
+    population: 80000
+    dem: 49
+    timezone: "Asia/Jerusalem"
+  - name: "Qalansuwa"
+    latitude: 32.28493
+    longitude: 34.98106
+    population: 16898
+    dem: 39
+    timezone: "Asia/Jerusalem"
+  - name: "Petah Tiqwa"
+    latitude: 32.08707
+    longitude: 34.88747
+    population: 200000
+    dem: 54
+    timezone: "Asia/Jerusalem"
+  - name: "Pardesiyya"
+    latitude: 32.30577
+    longitude: 34.90911
+    population: 6254
+    dem: 53
+    timezone: "Asia/Jerusalem"
+  - name: "Netanya"
+    latitude: 32.33291
+    longitude: 34.85992
+    population: 171676
+    dem: 38
+    timezone: "Asia/Jerusalem"
+  - name: "Ness Ziona"
+    latitude: 31.92933
+    longitude: 34.79868
+    population: 38700
+    dem: 35
+    timezone: "Asia/Jerusalem"
+  - name: "Mazkeret Batya"
+    latitude: 31.85357
+    longitude: 34.84646
+    population: 8034
+    dem: 75
+    timezone: "Asia/Jerusalem"
+  - name: "Lod"
+    latitude: 31.9467
+    longitude: 34.8903
+    population: 66589
+    dem: 68
+    timezone: "Asia/Jerusalem"
+  - name: "Kefar Yona"
+    latitude: 32.31669
+    longitude: 34.93507
+    population: 21611
+    dem: 59
+    timezone: "Asia/Jerusalem"
+  - name: "Kfar Saba"
+    latitude: 32.175
+    longitude: 34.90694
+    population: 80773
+    dem: 57
+    timezone: "Asia/Jerusalem"
+  - name: "Kafr Qasim"
+    latitude: 32.11406
+    longitude: 34.97624
+    population: 17303
+    dem: 136
+    timezone: "Asia/Jerusalem"
+  - name: "Jaljulya"
+    latitude: 32.1547
+    longitude: 34.95372
+    population: 7505
+    dem: 51
+    timezone: "Asia/Jerusalem"
+  - name: "Hod HaSharon"
+    latitude: 32.15934
+    longitude: 34.8932
+    population: 43185
+    dem: 57
+    timezone: "Asia/Jerusalem"
+  - name: "Gedera"
+    latitude: 31.81456
+    longitude: 34.77998
+    population: 26217
+    dem: 64
+    timezone: "Asia/Jerusalem"
+  - name: "Gan Yavne"
+    latitude: 31.78737
+    longitude: 34.70659
+    population: 22453
+    dem: 52
+    timezone: "Asia/Jerusalem"
+  - name: "Ganei Tikva"
+    latitude: 32.05971
+    longitude: 34.8732
+    population: 16053
+    dem: 79
+    timezone: "Asia/Jerusalem"
+  - name: "Even Yehuda"
+    latitude: 32.26959
+    longitude: 34.88759
+    population: 15221
+    dem: 49
+    timezone: "Asia/Jerusalem"
+  - name: "Tirah"
+    latitude: 32.2341
+    longitude: 34.95023
+    population: 20786
+    dem: 78
+    timezone: "Asia/Jerusalem"
+  - name: "Et Taiyiba"
+    latitude: 32.26616
+    longitude: 35.00893
+    population: 32978
+    dem: 86
+    timezone: "Asia/Jerusalem"
+  - name: "Bet Dagan"
+    latitude: 32.00191
+    longitude: 34.82977
+    population: 7099
+    dem: 36
+    timezone: "Asia/Jerusalem"
+  - name: "Bnei Ayish"
+    latitude: 31.78333
+    longitude: 34.75
+    population: 7920
+    dem: 61
+    timezone: "Asia/Jerusalem"
+  - name: "Shoham"
+    latitude: 31.99866
+    longitude: 34.94559
+    population: 20740
+    dem: 82
+    timezone: "Asia/Jerusalem"
+- name: "Tel Aviv District"
+  cities:
+  - name: "Jaffa"
+    latitude: 32.05043
+    longitude: 34.75224
+    population: 100000
+    dem: 26
+    timezone: "Asia/Jerusalem"
+  - name: "Tel Aviv"
+    latitude: 32.08088
+    longitude: 34.78057
+    population: 432892
+    dem: 15
+    timezone: "Asia/Jerusalem"
+  - name: "Ramat HaSharon"
+    latitude: 32.14613
+    longitude: 34.8394
+    population: 36137
+    dem: 68
+    timezone: "Asia/Jerusalem"
+  - name: "Ramat Gan"
+    latitude: 32.08227
+    longitude: 34.81065
+    population: 128095
+    dem: 57
+    timezone: "Asia/Jerusalem"
+  - name: "Or Yehuda"
+    latitude: 32.02923
+    longitude: 34.85788
+    population: 30802
+    dem: 33
+    timezone: "Asia/Jerusalem"
+  - name: "Holon"
+    latitude: 32.01034
+    longitude: 34.77918
+    population: 165787
+    dem: 31
+    timezone: "Asia/Jerusalem"
+  - name: "Herzliya"
+    latitude: 32.16627
+    longitude: 34.82536
+    population: 83600
+    dem: 28
+    timezone: "Asia/Jerusalem"
+  - name: "Givat Shmuel"
+    latitude: 32.07817
+    longitude: 34.84858
+    population: 18500
+    dem: 53
+    timezone: "Asia/Jerusalem"
+  - name: "Givatayim"
+    latitude: 32.07225
+    longitude: 34.81253
+    population: 48000
+    dem: 50
+    timezone: "Asia/Jerusalem"
+  - name: "Bnei Brak"
+    latitude: 32.08074
+    longitude: 34.8338
+    population: 154400
+    dem: 51
+    timezone: "Asia/Jerusalem"
+  - name: "Bat Yam"
+    latitude: 32.02379
+    longitude: 34.75185
+    population: 128979
+    dem: 32
+    timezone: "Asia/Jerusalem"
+  - name: "Azor"
+    latitude: 32.0243
+    longitude: 34.80632
+    population: 16201
+    dem: 25
+    timezone: "Asia/Jerusalem"
+  - name: "Herzliya Pituah"
+    latitude: 32.17409
+    longitude: 34.8028
+    population: 10000
+    dem: 23
+    timezone: "Asia/Jerusalem"
+  - name: "Yehud-Monosson"
+    latitude: 32.0284
+    longitude: 34.8796
+    population: 29312
+    dem: 36
+    timezone: "Asia/Jerusalem"
+- name: "Haifa"
+  cities:
+  - name: "Umm el Fahm"
+    latitude: 32.51725
+    longitude: 35.15349
+    population: 41030
+    dem: 398
+    timezone: "Asia/Jerusalem"
+  - name: "Tirat Karmel"
+    latitude: 32.76021
+    longitude: 34.97183
+    population: 18993
+    dem: 47
+    timezone: "Asia/Jerusalem"
+  - name: "Rekhasim"
+    latitude: 32.74907
+    longitude: 35.09901
+    population: 10682
+    dem: 43
+    timezone: "Asia/Jerusalem"
+  - name: "Qiryat Yam"
+    latitude: 32.84966
+    longitude: 35.06973
+    population: 39273
+    dem: 9
+    timezone: "Asia/Jerusalem"
+  - name: "Qiryat Mozqin"
+    latitude: 32.83706
+    longitude: 35.0776
+    population: 39404
+    dem: 10
+    timezone: "Asia/Jerusalem"
+  - name: "Qiryat Bialik"
+    latitude: 32.8275
+    longitude: 35.08583
+    population: 36551
+    dem: 12
+    timezone: "Asia/Jerusalem"
+  - name: "Qiryat Ata"
+    latitude: 32.81149
+    longitude: 35.11323
+    population: 48966
+    dem: 46
+    timezone: "Asia/Jerusalem"
+  - name: "Nesher"
+    latitude: 32.76622
+    longitude: 35.04425
+    population: 21245
+    dem: 125
+    timezone: "Asia/Jerusalem"
+  - name: "Haifa"
+    latitude: 32.81841
+    longitude: 34.9885
+    population: 267300
+    dem: 40
+    timezone: "Asia/Jerusalem"
+  - name: "Hadera"
+    latitude: 32.44192
+    longitude: 34.9039
+    population: 75854
+    dem: 13
+    timezone: "Asia/Jerusalem"
+  - name: "El Fureidis"
+    latitude: 32.59812
+    longitude: 34.95153
+    population: 9999
+    dem: 33
+    timezone: "Asia/Jerusalem"
+  - name: "Daliyat al Karmel"
+    latitude: 32.69383
+    longitude: 35.04686
+    population: 25000
+    dem: 414
+    timezone: "Asia/Jerusalem"
+- name: "Judea and Samaria Area"
+  cities:
+  - name: "Ariel"
+    latitude: 32.1065
+    longitude: 35.18449
+    population: 17668
+    elevation: 560
+    dem: 567
+    timezone: "Asia/Jerusalem"
+- name: "Southern District"
+  cities:
+  - name: "Yeroham"
+    latitude: 30.98822
+    longitude: 34.93176
+    population: 8631
+    dem: 499
+    timezone: "Asia/Jerusalem"
+  - name: "Sederot"
+    latitude: 31.525
+    longitude: 34.59693
+    population: 20228
+    dem: 90
+    timezone: "Asia/Jerusalem"
+  - name: "Qiryat Gat"
+    latitude: 31.60998
+    longitude: 34.76422
+    population: 47450
+    dem: 133
+    timezone: "Asia/Jerusalem"
+  - name: "Ofaqim"
+    latitude: 31.3141
+    longitude: 34.62025
+    population: 24311
+    dem: 137
+    timezone: "Asia/Jerusalem"
+  - name: "Netivot"
+    latitude: 31.42305
+    longitude: 34.58911
+    population: 24564
+    dem: 151
+    timezone: "Asia/Jerusalem"
+  - name: "Eilat"
+    latitude: 29.55805
+    longitude: 34.94821
+    population: 45588
+    dem: 63
+    timezone: "Asia/Jerusalem"
+  - name: "Dimona"
+    latitude: 31.07079
+    longitude: 35.03269
+    population: 33558
+    dem: 551
+    timezone: "Asia/Jerusalem"
+  - name: "Beersheba"
+    latitude: 31.25181
+    longitude: 34.7913
+    population: 186600
+    dem: 285
+    timezone: "Asia/Jerusalem"
+  - name: "Ashkelon"
+    latitude: 31.66926
+    longitude: 34.57149
+    population: 105995
+    dem: 42
+    timezone: "Asia/Jerusalem"
+  - name: "Ashdod"
+    latitude: 31.79213
+    longitude: 34.64966
+    population: 224656
+    dem: 27
+    timezone: "Asia/Jerusalem"
+  - name: "Arad"
+    latitude: 31.25882
+    longitude: 35.21282
+    population: 23700
+    dem: 613
+    timezone: "Asia/Jerusalem"
+  - name: "Lehavim"
+    latitude: 31.37284
+    longitude: 34.81619
+    population: 6000
+    elevation: 260
+    dem: 317
+    timezone: "Asia/Jerusalem"
+  - name: "Rahat"
+    latitude: 31.39547
+    longitude: 34.75699
+    population: 19586
+    dem: 228
+    timezone: "Asia/Jerusalem"
+- name: "Northern District"
+  cities:
+  - name: "Safed"
+    latitude: 32.96465
+    longitude: 35.496
+    population: 27816
+    dem: 779
+    timezone: "Asia/Jerusalem"
+  - name: "Tiberias"
+    latitude: 32.79221
+    longitude: 35.53124
+    population: 39790
+    dem: -140
+    timezone: "Asia/Jerusalem"
+  - name: "maalot Tarshiha"
+    latitude: 33.01667
+    longitude: 35.26667
+    population: 21400
+    dem: 484
+    timezone: "Asia/Jerusalem"
+  - name: "Tamra"
+    latitude: 32.85301
+    longitude: 35.1987
+    population: 25917
+    dem: 92
+    timezone: "Asia/Jerusalem"
+  - name: "Shelomi"
+    latitude: 33.07216
+    longitude: 35.14452
+    population: 5608
+    dem: 82
+    timezone: "Asia/Jerusalem"
+  - name: "Sakhnin"
+    latitude: 32.86422
+    longitude: 35.29707
+    population: 24596
+    dem: 236
+    timezone: "Asia/Jerusalem"
+  - name: "Ramat Yishay"
+    latitude: 32.70444
+    longitude: 35.1707
+    population: 5431
+    dem: 98
+    timezone: "Asia/Jerusalem"
+  - name: "Qiryat Shemona"
+    latitude: 33.20733
+    longitude: 35.57212
+    population: 22035
+    dem: 124
+    timezone: "Asia/Jerusalem"
+  - name: "Nazareth"
+    latitude: 32.69925
+    longitude: 35.30483
+    population: 64800
+    dem: 358
+    timezone: "Asia/Jerusalem"
+  - name: "Nahf"
+    latitude: 32.93444
+    longitude: 35.31679
+    population: 10105
+    dem: 326
+    timezone: "Asia/Jerusalem"
+  - name: "Nahariyya"
+    latitude: 33.00892
+    longitude: 35.09814
+    population: 51200
+    elevation: 15
+    dem: 15
+    timezone: "Asia/Jerusalem"
+  - name: "Migdal Ha`Emeq"
+    latitude: 32.67597
+    longitude: 35.23986
+    population: 24800
+    dem: 227
+    timezone: "Asia/Jerusalem"
+  - name: "Maghar"
+    latitude: 32.88984
+    longitude: 35.40703
+    population: 18915
+    dem: 292
+    timezone: "Asia/Jerusalem"
+  - name: "Karmiel"
+    latitude: 32.91708
+    longitude: 35.30501
+    population: 44382
+    dem: 233
+    timezone: "Asia/Jerusalem"
+  - name: "Kfar Yasif"
+    latitude: 32.95451
+    longitude: 35.1623
+    population: 9587
+    dem: 59
+    timezone: "Asia/Jerusalem"
+  - name: "Kafr Manda"
+    latitude: 32.81034
+    longitude: 35.26009
+    population: 15014
+    dem: 176
+    timezone: "Asia/Jerusalem"
+  - name: "Kafr Kanna"
+    latitude: 32.7466
+    longitude: 35.34242
+    population: 17606
+    dem: 278
+    timezone: "Asia/Jerusalem"
+  - name: "Kabul"
+    latitude: 32.86856
+    longitude: 35.21171
+    population: 9497
+    dem: 92
+    timezone: "Asia/Jerusalem"
+  - name: "Judeida Makr"
+    latitude: 32.9282
+    longitude: 35.15705
+    population: 17530
+    dem: 82
+    timezone: "Asia/Jerusalem"
+  - name: "Iksal"
+    latitude: 32.68164
+    longitude: 35.32365
+    population: 11398
+    dem: 160
+    timezone: "Asia/Jerusalem"
+  - name: "Hurfeish"
+    latitude: 33.01711
+    longitude: 35.34835
+    population: 5308
+    dem: 657
+    timezone: "Asia/Jerusalem"
+  - name: "Er Reina"
+    latitude: 32.72339
+    longitude: 35.31622
+    population: 15621
+    dem: 343
+    timezone: "Asia/Jerusalem"
+  - name: "Deir Hanna"
+    latitude: 32.86196
+    longitude: 35.36365
+    population: 8417
+    dem: 289
+    timezone: "Asia/Jerusalem"
+  - name: "Dabburiya"
+    latitude: 32.69256
+    longitude: 35.37123
+    population: 8305
+    dem: 180
+    timezone: "Asia/Jerusalem"
+  - name: "Buqei`a"
+    latitude: 32.97747
+    longitude: 35.33345
+    population: 5200
+    dem: 565
+    timezone: "Asia/Jerusalem"
+  - name: "Bu`eina"
+    latitude: 32.80636
+    longitude: 35.36486
+    population: 7900
+    dem: 238
+    timezone: "Asia/Jerusalem"
+  - name: "Bir el Maksur"
+    latitude: 32.77732
+    longitude: 35.22069
+    population: 7106
+    dem: 255
+    timezone: "Asia/Jerusalem"
+  - name: "Bet Shean"
+    latitude: 32.49728
+    longitude: 35.49632
+    population: 16800
+    dem: -121
+    timezone: "Asia/Jerusalem"
+  - name: "Beit Jann"
+    latitude: 32.96464
+    longitude: 35.38152
+    population: 10002
+    dem: 923
+    timezone: "Asia/Jerusalem"
+  - name: "Basmat Tab`un"
+    latitude: 32.73898
+    longitude: 35.15716
+    population: 6300
+    dem: 194
+    timezone: "Asia/Jerusalem"
+  - name: "Acre"
+    latitude: 32.92814
+    longitude: 35.07647
+    population: 45603
+    dem: 8
+    timezone: "Asia/Jerusalem"
+  - name: "Afula"
+    latitude: 32.60907
+    longitude: 35.2892
+    population: 44930
+    dem: 62
+    timezone: "Asia/Jerusalem"
+  - name: "Kefar Weradim"
+    latitude: 32.99385
+    longitude: 35.27793
+    population: 5608
+    dem: 629
+    timezone: "Asia/Jerusalem"
+- name: "Jerusalem"
+  cities:
+  - name: "Jerusalem"
+    latitude: 31.76904
+    longitude: 35.21633
+    population: 801000
+    dem: 786
+    timezone: "Asia/Jerusalem"
+  - name: "Mevasseret Ziyyon"
+    latitude: 31.80186
+    longitude: 35.15072
+    population: 24409
+    dem: 711
+    timezone: "Asia/Jerusalem"
+  - name: "Bet Shemesh"
+    latitude: 31.73072
+    longitude: 34.99293
+    population: 67100
+    dem: 282
+    timezone: "Asia/Jerusalem"
+  - name: "Abu Ghaush"
+    latitude: 31.80592
+    longitude: 35.1093
+    population: 5707
+    dem: 707
+    timezone: "Asia/Jerusalem"
+  - name: "West Jerusalem"
+    latitude: 31.78199
+    longitude: 35.21961
+    population: 400000
+    dem: 796
+    timezone: "Asia/Jerusalem"
+  - name: "Modiin Ilit"
+    latitude: 31.93221
+    longitude: 35.04416
+    population: 64179
+    elevation: 280
+    dem: 319
+    timezone: "Asia/Jerusalem"

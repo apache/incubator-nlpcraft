@@ -67,12 +67,12 @@ object NCUnsdStatsService {
         "039" → Seq(NCUnsdStatsCountry("XKX", "Kosovo"))
     )
 
-    private val dir = s"${U.mkPath("src/main/scala")}/${U.toPath(this)}"
+    private val dir = s"${U.mkPath("nlpcraft/src/main/scala")}/${U.toPath(this)}"
     private val subContsPath = s"$dir/subcontinents.txt"
     private val codesPath = s"$dir/codes.txt"
 
     private def read(path: String): Seq[String] =
-        U.readPath(path, "UTF-8").map(_.trim).filter(_.nonEmpty).filter(_.head != '#').toSeq
+        U.readPath(path, "UTF-8").map(_.trim).filter(_.nonEmpty).filter(_.head != '#')
 
     def skip(iso: String): Boolean = SKIPPED_COUNTRIES_ISO3.contains(iso)
 
@@ -86,7 +86,7 @@ object NCUnsdStatsService {
         }).toMap
 
         val subContsCodes = CONTINENTS.flatMap(_._2).toSeq
-        val contsCodes = CONTINENTS.unzip._1.toSeq
+        val contsCodes = CONTINENTS.keys.toSeq
 
         val buf = mutable.Buffer.empty[NCUnsdStatsContinent]
 

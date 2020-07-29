@@ -17,22 +17,21 @@
 
 package org.apache.nlpcraft.server.geo.tools
 
-import java.io.{File, PrintStream}
+import java.io.File
 
-import net.liftweb.json.Extraction._
+import com.fasterxml.jackson.core.`type`.TypeReference
 import net.liftweb.json._
-import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
+import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.server.geo._
-import org.apache.nlpcraft.server.json.NCJson
-import resource._
 
 import scala.collection._
 
 /**
- * Generator of additional synonyms for geo names.
- */
+  * Generator of additional synonyms for geo names.
+  */
 object NCGeoSyntheticNamesGenerator extends App {
+
     // Base synonym should be saved for console debug message.
     case class Holder(base: String, var entries: Set[NCGeoEntry])
 
@@ -46,6 +45,8 @@ object NCGeoSyntheticNamesGenerator extends App {
         NCGeoManager.start(false)
 
         val hs = mutable.Map.empty[String, Holder]
+
+        println(s"Synonyms count: ${NCGeoManager.getModel.synonyms.size}")
 
         for ((synonym, entries) ← NCGeoManager.getModel.synonyms) {
             val strs2Process = mutable.Set.empty[String] + synonym
@@ -148,17 +149,15 @@ object NCGeoSyntheticNamesGenerator extends App {
         // Required for Lift JSON processing.
         implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
 
+        val f = new File(outFile)
+
         val exists =
-            if (new File(outFile).exists())
-                NCJson(U.readPath(outFile, "UTF8").mkString).json.extract[List[NCGeoSynonym]]
+            if (f.exists())
+                U.extractYamlFile(f, ignoreCase = false, new TypeReference[List[NCGeoSynonym]] {})
             else
                 Seq.empty[NCGeoSynonym]
 
-        val data = (syns.values ++ exists).toSet
-
-        managed(new PrintStream(new File(outFile))) acquireAndGet { ps ⇒
-            ps.println(prettyRender(decompose(data)))
-        }
+        U.getYamlMapper.writeValue(new File(outFile), (syns.values ++ exists).toSet)
     }
 
     private def printResults(buf: Map[String, Holder]) {
@@ -184,6 +183,6 @@ object NCGeoSyntheticNamesGenerator extends App {
     }
 
     process(
-        U.mkPath(s"src/main/resources/geo/synonyms/synthetic.json")
+        U.mkPath(s"nlpcraft/src/main/resources/geo/synonyms/synthetic.yaml")
     )
 }

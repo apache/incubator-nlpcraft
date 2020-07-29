@@ -1,0 +1,155 @@
+---
+name: "United Arab Emirates"
+iso: "AE"
+iso3: "ARE"
+code: "784"
+capital: "Abu Dhabi"
+area: 82880.0
+population: 4975593
+continent: "AS"
+currencyCode: "AED"
+currencyName: "Dirham"
+phone: "971"
+languages: "ar-AE,fa,en,hi,ur"
+neighbours: "SA,OM"
+regions:
+- name: "Ash Shariqah"
+  cities:
+  - name: "Khawr Fakkan"
+    latitude: 25.33132
+    longitude: 56.34199
+    population: 40677
+    dem: 20
+    timezone: "Asia/Dubai"
+  - name: "Sharjah"
+    latitude: 25.33737
+    longitude: 55.41206
+    population: 1324473
+    dem: 6
+    timezone: "Asia/Dubai"
+  - name: "Adh Dhayd"
+    latitude: 25.28812
+    longitude: 55.88157
+    population: 24716
+    dem: 114
+    timezone: "Asia/Dubai"
+- name: "Dubai"
+  cities:
+  - name: "Dubai"
+    latitude: 25.0657
+    longitude: 55.17128
+    population: 2956587
+    dem: 3
+    timezone: "Asia/Dubai"
+- name: "`Ajman"
+  cities:
+  - name: "Ajman City"
+    latitude: 25.40177
+    longitude: 55.47878
+    population: 490035
+    dem: 16
+    timezone: "Asia/Dubai"
+- name: "Ras al Khaymah"
+  cities:
+  - name: "Ras Al Khaimah City"
+    latitude: 25.78953
+    longitude: 55.9432
+    population: 351943
+    dem: 2
+    timezone: "Asia/Dubai"
+- name: "Umm al Qaywayn"
+  cities:
+  - name: "Umm Al Quwain City"
+    latitude: 25.56473
+    longitude: 55.55517
+    population: 62747
+    dem: 2
+    timezone: "Asia/Dubai"
+- name: "Abu Zaby"
+  cities:
+  - name: "Muzayri`"
+    latitude: 23.14355
+    longitude: 53.7881
+    population: 10000
+    dem: 123
+    timezone: "Asia/Dubai"
+  - name: "Zayed City"
+    latitude: 23.65416
+    longitude: 53.70522
+    population: 63482
+    dem: 124
+    timezone: "Asia/Dubai"
+  - name: "Ar Ruways"
+    latitude: 24.11028
+    longitude: 52.73056
+    population: 16000
+    dem: 16
+    timezone: "Asia/Dubai"
+  - name: "Al Ain City"
+    latitude: 24.19167
+    longitude: 55.76056
+    population: 55091
+    dem: 275
+    timezone: "Asia/Dubai"
+  - name: "Abu Dhabi"
+    latitude: 24.46667
+    longitude: 54.36667
+    population: 603492
+    dem: 6
+    timezone: "Asia/Dubai"
+  - name: "Khalifah A City"
+    latitude: 24.42588
+    longitude: 54.605
+    population: 85374
+    dem: 1
+    timezone: "Asia/Dubai"
+  - name: "Bani Yas City"
+    latitude: 24.30978
+    longitude: 54.62944
+    population: 80498
+    dem: 16
+    timezone: "Asia/Dubai"
+  - name: "Musaffah"
+    latitude: 24.35893
+    longitude: 54.48267
+    population: 243341
+    dem: 10
+    timezone: "Asia/Dubai"
+  - name: "Al Shamkhah City"
+    latitude: 24.39268
+    longitude: 54.70779
+    population: 61710
+    dem: 18
+    timezone: "Asia/Dubai"
+  - name: "Abu Dhabi Island and Internal Islands City"
+    latitude: 24.4511
+    longitude: 54.3969
+    population: 552215
+    dem: 13
+    timezone: "Asia/Dubai"
+- name: "Al Fujayrah"
+  cities:
+  - name: "Dibba Al-Fujairah"
+    latitude: 25.59246
+    longitude: 56.26176
+    population: 30000
+    dem: 16
+    timezone: "Asia/Dubai"
+  - name: "Dibba Al-Hisn"
+    latitude: 25.61955
+    longitude: 56.27291
+    population: 26395
+    dem: 4
+    timezone: "Asia/Dubai"
+  - name: "Al Fujairah City"
+    latitude: 25.11641
+    longitude: 56.34141
+    population: 86512
+    dem: 15
+    timezone: "Asia/Dubai"
+  - name: "Reef Al Fujairah City"
+    latitude: 25.14479
+    longitude: 56.24764
+    population: 82310
+    dem: 187
+    timezone: "Asia/Dubai"

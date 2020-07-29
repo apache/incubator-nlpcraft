@@ -1,0 +1,449 @@
+---
+name: "Ghana"
+iso: "GH"
+iso3: "GHA"
+code: "288"
+capital: "Accra"
+area: 239460.0
+population: 24339838
+continent: "AF"
+currencyCode: "GHS"
+currencyName: "Cedi"
+phone: "233"
+languages: "en-GH,ak,ee,tw"
+neighbours: "CI,TG,BF"
+regions:
+- name: "Western Region"
+  cities:
+  - name: "Tarkwa"
+    latitude: 5.30383
+    longitude: -1.98956
+    population: 34941
+    dem: 66
+    timezone: "Africa/Accra"
+  - name: "Takoradi"
+    latitude: 4.89816
+    longitude: -1.76029
+    population: 232919
+    dem: 74
+    timezone: "Africa/Accra"
+  - name: "Shama Junction"
+    latitude: 5.01806
+    longitude: -1.66437
+    population: 20946
+    dem: 12
+    timezone: "Africa/Accra"
+  - name: "Sekondi-Takoradi"
+    latitude: 4.92678
+    longitude: -1.75773
+    population: 138872
+    dem: 73
+    timezone: "Africa/Accra"
+  - name: "Prestea"
+    latitude: 5.43385
+    longitude: -2.14295
+    population: 35155
+    dem: 69
+    timezone: "Africa/Accra"
+  - name: "Bibiani"
+    latitude: 6.46346
+    longitude: -2.31938
+    population: 19076
+    dem: 223
+    timezone: "Africa/Accra"
+  - name: "Axim"
+    latitude: 4.86641
+    longitude: -2.24181
+    population: 24500
+    dem: 8
+    timezone: "Africa/Accra"
+  - name: "Aboso"
+    latitude: 5.36073
+    longitude: -1.94856
+    population: 8790
+    dem: 73
+    timezone: "Africa/Accra"
+- name: "Brong-Ahafo Region"
+  cities:
+  - name: "Wenchi"
+    latitude: 7.73916
+    longitude: -2.10456
+    population: 31411
+    dem: 308
+    timezone: "Africa/Accra"
+  - name: "Techiman"
+    latitude: 7.58417
+    longitude: -1.93815
+    population: 69720
+    dem: 390
+    timezone: "Africa/Accra"
+  - name: "Sunyani"
+    latitude: 7.33991
+    longitude: -2.32676
+    population: 70299
+    dem: 298
+    timezone: "Africa/Accra"
+  - name: "Kintampo"
+    latitude: 8.05627
+    longitude: -1.73058
+    population: 47185
+    dem: 343
+    timezone: "Africa/Accra"
+  - name: "Japekrom"
+    latitude: 7.5758
+    longitude: -2.78516
+    population: 96000
+    dem: 267
+    timezone: "Africa/Accra"
+  - name: "Duayaw Nkwanta"
+    latitude: 7.17242
+    longitude: -2.10281
+    population: 17000
+    dem: 331
+    timezone: "Africa/Accra"
+  - name: "Berekum"
+    latitude: 7.4534
+    longitude: -2.58404
+    population: 62364
+    dem: 330
+    timezone: "Africa/Accra"
+  - name: "Bechem"
+    latitude: 7.09034
+    longitude: -2.02498
+    population: 17000
+    dem: 296
+    timezone: "Africa/Accra"
+- name: "Northern Region"
+  cities:
+  - name: "Yendi"
+    latitude: 9.44272
+    longitude: -0.00991
+    population: 42972
+    dem: 208
+    timezone: "Africa/Accra"
+  - name: "Tamale"
+    latitude: 9.40079
+    longitude: -0.8393
+    population: 360579
+    dem: 196
+    timezone: "Africa/Accra"
+  - name: "Savelugu"
+    latitude: 9.62441
+    longitude: -0.8253
+    population: 29310
+    dem: 169
+    timezone: "Africa/Accra"
+  - name: "Salaga"
+    latitude: 8.55083
+    longitude: -0.51875
+    population: 25472
+    dem: 163
+    timezone: "Africa/Accra"
+  - name: "Kpandae"
+    latitude: 8.46885
+    longitude: -0.01127
+    population: 8652
+    dem: 183
+    timezone: "Africa/Accra"
+- name: "Upper West Region"
+  cities:
+  - name: "Wa"
+    latitude: 10.06069
+    longitude: -2.50192
+    population: 78107
+    dem: 326
+    timezone: "Africa/Accra"
+- name: "Eastern Region"
+  cities:
+  - name: "Suhum"
+    latitude: 6.04089
+    longitude: -0.45004
+    population: 49398
+    dem: 182
+    timezone: "Africa/Accra"
+  - name: "Akim Oda"
+    latitude: 5.92665
+    longitude: -0.98577
+    population: 60604
+    dem: 132
+    timezone: "Africa/Accra"
+  - name: "Nsawam"
+    latitude: 5.80893
+    longitude: -0.35026
+    population: 44522
+    dem: 61
+    timezone: "Africa/Accra"
+  - name: "Mpraeso"
+    latitude: 6.59321
+    longitude: -0.73462
+    population: 9007
+    dem: 477
+    timezone: "Africa/Accra"
+  - name: "Koforidua"
+    latitude: 6.09408
+    longitude: -0.25913
+    population: 96266
+    dem: 172
+    timezone: "Africa/Accra"
+  - name: "Kibi"
+    latitude: 6.16494
+    longitude: -0.55376
+    population: 9399
+    dem: 318
+    timezone: "Africa/Accra"
+  - name: "Begoro"
+    latitude: 6.38706
+    longitude: -0.37738
+    population: 29516
+    dem: 460
+    timezone: "Africa/Accra"
+  - name: "Asamankese"
+    latitude: 5.86006
+    longitude: -0.6635
+    population: 39435
+    dem: 147
+    timezone: "Africa/Accra"
+  - name: "Akwatia"
+    latitude: 6.04024
+    longitude: -0.80876
+    population: 23766
+    dem: 138
+    timezone: "Africa/Accra"
+  - name: "Akropong"
+    latitude: 5.97462
+    longitude: -0.08542
+    population: 11096
+    dem: 454
+    timezone: "Africa/Accra"
+  - name: "Akim Swedru"
+    latitude: 5.8938
+    longitude: -1.01636
+    population: 10000
+    dem: 140
+    timezone: "Africa/Accra"
+  - name: "Aburi"
+    latitude: 5.84802
+    longitude: -0.17449
+    population: 18399
+    dem: 447
+    timezone: "Africa/Accra"
+- name: "Volta Region"
+  cities:
+  - name: "Kpandu"
+    latitude: 6.99536
+    longitude: 0.29306
+    population: 28334
+    dem: 153
+    timezone: "Africa/Accra"
+  - name: "Kete Krachi"
+    latitude: 7.79391
+    longitude: -0.0498
+    population: 11000
+    dem: 117
+    timezone: "Africa/Accra"
+  - name: "Keta"
+    latitude: 5.91793
+    longitude: 0.98789
+    population: 18077
+    dem: 0
+    timezone: "Africa/Accra"
+  - name: "Hohoe"
+    latitude: 7.15181
+    longitude: 0.47362
+    population: 56202
+    dem: 173
+    timezone: "Africa/Accra"
+  - name: "Ho"
+    latitude: 6.60084
+    longitude: 0.4713
+    population: 69998
+    dem: 171
+    timezone: "Africa/Accra"
+  - name: "Anloga"
+    latitude: 5.79473
+    longitude: 0.89728
+    population: 29748
+    dem: 6
+    timezone: "Africa/Accra"
+  - name: "Aflao"
+    latitude: 6.11982
+    longitude: 1.19012
+    population: 66546
+    dem: 9
+    timezone: "Africa/Accra"
+- name: "Ashanti Region"
+  cities:
+  - name: "Tafo"
+    latitude: 6.73156
+    longitude: -1.6137
+    population: 50457
+    dem: 291
+    timezone: "Africa/Accra"
+  - name: "Obuase"
+    latitude: 6.20228
+    longitude: -1.66796
+    population: 137856
+    dem: 233
+    timezone: "Africa/Accra"
+  - name: "Mampong"
+    latitude: 7.06273
+    longitude: -1.4001
+    population: 42037
+    dem: 395
+    timezone: "Africa/Accra"
+  - name: "Kumasi"
+    latitude: 6.68848
+    longitude: -1.62443
+    population: 1468609
+    dem: 270
+    timezone: "Africa/Accra"
+  - name: "Konongo"
+    latitude: 6.61667
+    longitude: -1.21667
+    population: 41238
+    dem: 230
+    timezone: "Africa/Accra"
+  - name: "Ejura"
+    latitude: 7.38558
+    longitude: -1.35617
+    population: 70807
+    dem: 224
+    timezone: "Africa/Accra"
+  - name: "Agogo"
+    latitude: 6.80004
+    longitude: -1.08193
+    population: 31554
+    dem: 418
+    timezone: "Africa/Accra"
+- name: "Greater Accra Region"
+  cities:
+  - name: "Teshi Old Town"
+    latitude: 5.58365
+    longitude: -0.10722
+    population: 144013
+    dem: 13
+    timezone: "Africa/Accra"
+  - name: "Tema"
+    latitude: 5.6698
+    longitude: -0.01657
+    population: 155782
+    dem: 27
+    timezone: "Africa/Accra"
+  - name: "Nungua"
+    latitude: 5.60105
+    longitude: -0.07713
+    population: 70483
+    dem: 28
+    timezone: "Africa/Accra"
+  - name: "Medina Estates"
+    latitude: 5.6658
+    longitude: -0.16307
+    population: 101207
+    dem: 86
+    timezone: "Africa/Accra"
+  - name: "Gbawe"
+    latitude: 5.57692
+    longitude: -0.31038
+    population: 44645
+    dem: 31
+    timezone: "Africa/Accra"
+  - name: "Dome"
+    latitude: 5.65003
+    longitude: -0.2361
+    population: 47260
+    dem: 35
+    timezone: "Africa/Accra"
+  - name: "Atsiaman"
+    latitude: 5.69775
+    longitude: -0.32824
+    population: 202932
+    dem: 45
+    timezone: "Africa/Accra"
+  - name: "Accra"
+    latitude: 5.55602
+    longitude: -0.1969
+    population: 1963264
+    dem: 33
+    timezone: "Africa/Accra"
+- name: "Upper East Region"
+  cities:
+  - name: "Navrongo"
+    latitude: 10.89557
+    longitude: -1.0921
+    population: 25470
+    dem: 198
+    timezone: "Africa/Accra"
+  - name: "Bolgatanga"
+    latitude: 10.78556
+    longitude: -0.85139
+    population: 54430
+    dem: 191
+    timezone: "Africa/Accra"
+  - name: "Bawku"
+    latitude: 11.0616
+    longitude: -0.24169
+    population: 56830
+    dem: 252
+    timezone: "Africa/Accra"
+- name: "Central Region"
+  cities:
+  - name: "Winneba"
+    latitude: 5.35113
+    longitude: -0.62313
+    population: 44254
+    dem: 25
+    timezone: "Africa/Accra"
+  - name: "Swedru"
+    latitude: 5.53711
+    longitude: -0.69984
+    population: 50293
+    dem: 74
+    timezone: "Africa/Accra"
+  - name: "Saltpond"
+    latitude: 5.20913
+    longitude: -1.06058
+    population: 24689
+    dem: 14
+    timezone: "Africa/Accra"
+  - name: "Kasoa"
+    latitude: 5.53449
+    longitude: -0.41679
+    population: 44227
+    dem: 18
+    timezone: "Africa/Accra"
+  - name: "Mumford"
+    latitude: 5.26176
+    longitude: -0.75897
+    population: 13983
+    dem: 33
+    timezone: "Africa/Accra"
+  - name: "Foso"
+    latitude: 5.70119
+    longitude: -1.28657
+    population: 20078
+    dem: 148
+    timezone: "Africa/Accra"
+  - name: "Elmina"
+    latitude: 5.0847
+    longitude: -1.35093
+    population: 25560
+    dem: 21
+    timezone: "Africa/Accra"
+  - name: "Dunkwa"
+    latitude: 5.95996
+    longitude: -1.77792
+    population: 33379
+    dem: 118
+    timezone: "Africa/Accra"
+  - name: "Cape Coast"
+    latitude: 5.10535
+    longitude: -1.2466
+    population: 143015
+    dem: 21
+    timezone: "Africa/Accra"
+  - name: "Apam"
+    latitude: 5.28483
+    longitude: -0.73711
+    population: 20147
+    dem: 12
+    timezone: "Africa/Accra"

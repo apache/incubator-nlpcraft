@@ -1,0 +1,28 @@
+---
+name: "Curacao"
+iso: "CW"
+iso3: "CUW"
+code: "531"
+capital: "Willemstad"
+area: 444.0
+population: 141766
+continent: "NA"
+currencyCode: "ANG"
+currencyName: "Guilder"
+phone: "599"
+languages: "nl,pap"
+regions:
+- name: "Curacao"
+  cities:
+  - name: "Willemstad"
+    latitude: 12.1084
+    longitude: -68.93354
+    population: 125000
+    dem: 1
+    timezone: "America/Curacao"
+  - name: "Sint Michiel Liber"
+    latitude: 12.15
+    longitude: -68.98333
+    population: 5138
+    dem: 21
+    timezone: "America/Curacao"
