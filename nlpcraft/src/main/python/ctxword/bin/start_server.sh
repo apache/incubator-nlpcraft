@@ -16,6 +16,6 @@
 # limitations under the License.
 #
 
-# This script is not intendeed for production use.
+# This script is not intended for production use.
 # Please see official Flask documentation for more info how to deploy Flask apps.
 FLASK_APP=server.py python3 -m flask run
