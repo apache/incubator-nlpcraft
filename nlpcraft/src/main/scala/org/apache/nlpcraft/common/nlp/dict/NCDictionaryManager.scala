@@ -47,19 +47,24 @@ object NCDictionaryManager extends NCService {
         dicts = dictFiles.map(p ⇒ {
             val wordType = p._1
             val path = p._2
-        
-            // Reads single words only.
-            def read = U.readResource(s"moby/$path", "iso-8859-1", logger).
-                filter(!_.contains(" ")).toSet
-        
+
+            def read(p: String ⇒ Boolean = _ ⇒ true) =
+                U.mapResource(s"moby/$path", "iso-8859-1", logger, {
+                    // Read single words only.
+                    _.filter(!_.contains(" ")).
+                        filter(p).
+                        map(_.toLowerCase).
+                        toSet
+                })
+
             val words =
                 wordType match {
                     // Skips proper nouns for this dictionary type.
-                    case WORD_COMMON ⇒ read.filter(_.head.isLower)
-                    case _ ⇒ read
+                    case WORD_COMMON ⇒ read(_.head.isLower)
+                    case _ ⇒ read()
                 }
-        
-            wordType → words.map(_.toLowerCase)
+
+            wordType → words
         })
         
         // Read summary dictionary.
