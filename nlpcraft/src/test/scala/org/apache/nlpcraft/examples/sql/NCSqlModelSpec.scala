@@ -30,7 +30,6 @@ class NCSqlModelWrapper extends NCDefaultTestModel {
 
     override def getElements: util.Set[NCElement] = delegate.getElements
     override def getMacros: util.Map[String, String] = delegate.getMacros
-    override def getExamples: util.Set[String] = delegate.getExamples
 }
 
 class NCSqlModelSpec extends NCEnricherBaseSpec {

@@ -195,6 +195,7 @@ public class NCTestClientBuilder {
         @SerializedName("error") private String error;
         @SerializedName("createTstamp") private long createTstamp;
         @SerializedName("updateTstamp") private long updateTstamp;
+        @SerializedName("intentId") private String intentId;
 
         /**
          *
@@ -338,6 +339,22 @@ public class NCTestClientBuilder {
          */
         public void setUpdateTstamp(long updateTstamp) {
             this.updateTstamp = updateTstamp;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public String getIntentId() {
+            return intentId;
+        }
+
+        /**
+         *
+         * @param intentId
+         */
+        public void setIntentId(String intentId) {
+            this.intentId = intentId;
         }
     }
 
@@ -539,7 +556,7 @@ public class NCTestClientBuilder {
                     e.getLocalizedMessage()
                 );
 
-                return mkResult(txt, mdlId, null, null, e.getLocalizedMessage(), 0);
+                return mkResult(txt, mdlId, null, null, e.getLocalizedMessage(), null, 0);
             }
 
             NCRequestStateJson state = resJs.getState();
@@ -556,6 +573,7 @@ public class NCTestClientBuilder {
                             (String)state.getResultBody() :
                         null,
                     state.getError(),
+                    state.getIntentId(),
                     System.currentTimeMillis() - now
                 )
             );
@@ -581,7 +599,7 @@ public class NCTestClientBuilder {
                     e.getLocalizedMessage()
                 );
 
-                return mkResult(txt, mdlId, null, null, e.getLocalizedMessage(), 0);
+                return mkResult(txt, mdlId, null, null, e.getLocalizedMessage(), null,0);
             }
 
             long maxTime = System.currentTimeMillis() + DFLT_MAX_WAIT_TIME;
@@ -619,6 +637,7 @@ public class NCTestClientBuilder {
                         "json".equals(res.getType()) ? gson.toJson(res.getBody()) : res.getBody() :
                         null,
                     res.getErrorMessage(),
+                    res.getIntentId(),
                     System.currentTimeMillis() - now
                 )
             );
@@ -959,6 +978,7 @@ public class NCTestClientBuilder {
          * @param resType
          * @param resBody
          * @param errMsg
+         * @param intentId
          * @param time
          * @return
          */
@@ -968,6 +988,7 @@ public class NCTestClientBuilder {
             String resType,
             String resBody,
             String errMsg,
+            String intentId,
             long time
         ) {
             assert txt != null;
@@ -1007,6 +1028,11 @@ public class NCTestClientBuilder {
                 @Override
                 public Optional<String> getResultError() {
                     return convert(errMsg);
+                }
+
+                @Override
+                public String getIntentId() {
+                    return intentId;
                 }
             };
         }

@@ -28,9 +28,7 @@ import org.apache.nlpcraft.model.NCResult;
  * This trivial example simply responds with 'Hello World!' on any user input.
  * This is the simplest user model that can be defined.
  * <p>
- * See 'README.md' file in the same folder for running instructions.
- * 
- * @see HelloWorldTest
+ * See 'README.md' file in the same folder for running & testing instructions.
  */
 public class HelloWorldModel extends NCModelAdapter {
     /**

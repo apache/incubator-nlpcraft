@@ -20,7 +20,7 @@ package org.apache.nlpcraft.probe.mgrs.nlp
 import java.io.Serializable
 import java.util
 import java.util.Objects
-import java.util.concurrent.Executors
+import java.util.concurrent.{ExecutorService, Executors}
 import java.util.function.Predicate
 
 import io.opencensus.trace.{Span, Status}
@@ -46,29 +46,27 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.relation.NCRelationEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
-import org.apache.nlpcraft.probe.mgrs.nlp.impl.{_}
+import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, _}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 /**
   * Probe enrichment manager.
   */
 object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     private final val MAX_NESTED_TOKENS = 32
-    
-    private final val EC = ExecutionContext.fromExecutor(
-        Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
-    )
-    
+
     // Embedded probe Java callback function.
     private type EMBEDDED_CB = java.util.function.Consumer[NCEmbeddedResult]
 
-    @volatile private var embeddedCbs: mutable.Set[EMBEDDED_CB] = _
-
     private final val mux = new Object()
+
+    @volatile private var embeddedCbs: mutable.Set[EMBEDDED_CB] = _
+    @volatile private var pool: ExecutorService = _
+    @volatile private var execCtxExecutor: ExecutionContextExecutor = _
 
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.probe"
@@ -85,6 +83,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
+        pool = Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
+        execCtxExecutor = ExecutionContext.fromExecutor(pool)
 
         super.start()
     }
@@ -94,6 +94,9 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             if (embeddedCbs != null)
                 embeddedCbs.clear()
         }
+
+        U.shutdownPools(pool)
+        execCtxExecutor = null
 
         super.stop()
     }
@@ -246,6 +249,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
           * @param errCode Error code.
           * @param msgName Message name.
           * @param log Log data.
+          * @param intentId Intent ID.
           */
         def respond(
             resType: Option[String],
@@ -253,7 +257,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             errMsg: Option[String],
             errCode: Option[Int],
             msgName: String,
-            log: Option[String]
+            log: Option[String],
+            intentId: Option[String]
         ): Unit = {
             require(errMsg.isDefined || (resType.isDefined && resBody.isDefined))
 
@@ -277,6 +282,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 addOptional("resType", resType)
                 addOptional("resBody", resBody)
                 addOptional("log", log)
+                addOptional("intentId", intentId)
             }
 
             if (embeddedCbs.nonEmpty) {
@@ -291,6 +297,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     override val getErrorCode: Int = msg.dataOpt[Int]("errorCode").getOrElse(0)
                     override def getProbeId: String = Config.id
                     override def getLogHolder: String = log.orNull
+                    override def getIntentId: String = intentId.orNull
                 }
 
                 // Call all embedded callbacks first.
@@ -342,6 +349,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 Some(errMsg),
                 Some(errCode),
                 "P2S_ASK_RESULT",
+                None,
                 None
             )
 
@@ -466,6 +474,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     Some(errMsg),
                     Some(errCode),
                     "P2S_ASK_RESULT",
+                    None,
                     None
                 )
 
@@ -554,7 +563,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             None,
             None,
             "P2S_ASK_RESULT",
-            log
+            log,
+            Option(res.getIntentId)
         )
         
         def onFinish(): Unit = {
@@ -625,6 +635,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                                 Some(e.getMessage), // User provided rejection message.
                                 Some(MODEL_REJECTION),
                                 "P2S_ASK_RESULT",
+                                None,
                                 None
                             )
                     }
@@ -653,6 +664,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                                 Some("Processing failed with unexpected error."), // System error message.
                                 Some(UNEXPECTED_ERROR),
                                 "P2S_ASK_RESULT",
+                                None,
                                 None
                             )
                     }
@@ -674,6 +686,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 finally
                     onFinish()
             }
-        )(EC)
+        )(execCtxExecutor)
     }
 }

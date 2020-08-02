@@ -43,7 +43,6 @@ import java.util.stream.*;
  */
 abstract public class NCModelFileAdapter extends NCModelAdapter {
     private final NCModelJson proxy;
-    private final Set<String> examples;
     private final Set<String> suspWords;
     private final Set<String> enabledToks;
     private final Set<String> addStopwords;
@@ -92,7 +91,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         super(proxy.getId(), proxy.getName(), proxy.getDescription());
 
         this.proxy = proxy;
-        this.examples = convert(proxy.getExamples());
         this.suspWords = convert(proxy.getSuspiciousWords());
         this.enabledToks = convert(proxy.getEnabledBuiltInTokens(), DFLT_ENABLED_BUILTIN_TOKENS);
         this.addStopwords = convert(proxy.getAdditionalStopwords());
@@ -456,11 +454,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     @Override
     public Set<String> getExcludedStopWords() {
         return exclStopwords;
-    }
-
-    @Override
-    public Set<String> getExamples() {
-        return examples;
     }
 
     @Override

@@ -147,6 +147,9 @@ class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 // Don't override if user already set it.
                 if (cbRes.getTokens == null)
                     cbRes.setTokens(res.groups.flatMap(_.tokens).asJava)
+
+                if (cbRes.getIntentId == null)
+                    cbRes.setIntentId(res.intentId)
                     
                 logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the **winning match**.")
 

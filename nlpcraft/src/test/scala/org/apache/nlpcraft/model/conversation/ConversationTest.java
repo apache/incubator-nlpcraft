@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.phone;
+package org.apache.nlpcraft.model.conversation;
 
 import org.apache.nlpcraft.common.NCException;
+import org.apache.nlpcraft.examples.weather.WeatherModel;
 import org.apache.nlpcraft.model.tools.test.NCTestClient;
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder;
 import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -31,20 +31,18 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Phone model test.
- *
- * @see PhoneModel
+ * @see WeatherModel
  */
-class PhoneTest {
+class ConversationTest {
     private NCTestClient cli;
 
     @BeforeEach
     void setUp() throws NCException, IOException {
-        NCEmbeddedProbe.start(PhoneModel.class);
+        NCEmbeddedProbe.start(WeatherModel.class);
 
         cli = new NCTestClientBuilder().newBuilder().build();
 
-        cli.open("nlpcraft.phone.ex"); // See phone_model.json
+        cli.open("nlpcraft.weather.ex");  // See weather_model.json
     }
 
     @AfterEach
@@ -55,12 +53,17 @@ class PhoneTest {
         NCEmbeddedProbe.stop();
     }
 
-    // Uncomment if this model is configured.
-    @Disabled
     @Test
     void test() throws NCException, IOException {
-        assertTrue(cli.ask("Call to Apple office").isOk());
-        assertTrue(cli.ask("Can you please ping John Smith?").isOk());
-        assertTrue(cli.ask("Could you dial +7 (931) 188 34 58 and ask Mike?").isOk());
+        assertTrue(cli.ask("What's the weather in Moscow?").isOk());
+
+        // Can be answered with conversation.
+        assertTrue(cli.ask("Chance of snow?").isOk());
+        assertTrue(cli.ask("Moscow").isOk());
+
+        cli.clearConversation();
+
+        // Cannot be answered without conversation.
+        assertTrue(cli.ask("Moscow").isFailed());
     }
 }

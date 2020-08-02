@@ -92,6 +92,7 @@ CREATE TABLE proc_log (
     cancel_tstamp TIMESTAMP NULL,
     res_type VARCHAR NULL,
     res_body_gzip VARCHAR NULL,
+    intent_id VARCHAR NULL,
     error VARCHAR NULL,
     probe_token VARCHAR NULL,
     probe_id VARCHAR NULL,
