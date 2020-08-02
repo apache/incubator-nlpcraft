@@ -15,41 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.weather;
+package org.apache.nlpcraft
+
+import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
+import org.junit.jupiter.api.{Assertions, Test}
 
 /**
- * Weather result wrapper for JSON formatting.
- */
-public class WeatherResultWrapper {
-    private final String intentId;
-    private final Object result;
-    
-    /**
-     * Creates new bean instance.
-     *
-     * @param intentId Matched intent ID.
-     * @param result Execution result bean.
-     */
-    public WeatherResultWrapper(String intentId, Object result) {
-        this.intentId = intentId;
-        this.result = result;
-    }
-    
-    /**
-     * Gets intent id.
-     *
-     * @return Intent id.
-     */
-    public String getIntentId() {
-        return intentId;
-    }
-    
-    /**
-     * Gets execution result bean.
-     *
-     * @return Execution result bean.
-     */
-    public Object getResult() {
-        return result;
-    }
+  * JUnit wrapper for `NCTestAutoModelValidator` mode validator.
+  */
+class NCTestAutoModelValidatorSpec {
+    @Test
+    def test(): Unit = Assertions.assertTrue(NCTestAutoModelValidator.isValid(), "See error logs above.")
 }

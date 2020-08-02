@@ -17,26 +17,20 @@
 
 package org.apache.nlpcraft.examples.time;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.apache.commons.text.WordUtils;
-import org.apache.nlpcraft.common.NCException;
-import org.apache.nlpcraft.examples.misc.geo.cities.CitiesDataProvider;
-import org.apache.nlpcraft.examples.misc.geo.cities.City;
-import org.apache.nlpcraft.examples.misc.geo.cities.CityData;
-import org.apache.nlpcraft.examples.misc.geo.keycdn.GeoManager;
-import org.apache.nlpcraft.examples.misc.geo.keycdn.beans.GeoDataBean;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.dataformat.yaml.*;
+import org.apache.commons.text.*;
+import org.apache.nlpcraft.common.*;
+import org.apache.nlpcraft.examples.misc.geo.cities.*;
+import org.apache.nlpcraft.examples.misc.geo.keycdn.*;
+import org.apache.nlpcraft.examples.misc.geo.keycdn.beans.*;
 import org.apache.nlpcraft.model.*;
+import java.time.*;
+import java.time.format.*;
+import java.util.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.time.format.FormatStyle.MEDIUM;
+import static java.time.format.FormatStyle.*;
 
 /**
  * Time example data model.
@@ -44,9 +38,7 @@ import static java.time.format.FormatStyle.MEDIUM;
  * This example answers the questions about current time, either local or at some city.
  * It provides YAML response with time and timezone information.
  * <p>
- * See 'README.md' file in the same folder for running instructions.
- *
- * @see TimeTest
+ * See 'README.md' file in the same folder for running & testing instructions.
  */
 public class TimeModel extends NCModelFileAdapter {
     // Medium data formatter.
@@ -101,6 +93,9 @@ public class TimeModel extends NCModelFileAdapter {
      * @return Query result.
      */
     @NCIntent("intent=intent1 conv=false term={id=='x:time'}")
+    @NCIntentSample({
+        "What's the local time?"
+    })
     private NCResult onLocalMatch(NCIntentMatch ctx) {
         // NOTE:
         // We need to have two intents vs. one intent with an optional GEO. The reason is that
@@ -132,6 +127,12 @@ public class TimeModel extends NCModelFileAdapter {
      * @return Query result.
      */
     @NCIntent("intent=intent2 term={id=='x:time'} term(city)={id=='nlpcraft:city'}")
+    @NCIntentSample({
+        "What time is it now in New York City?",
+        "What's the current time in Moscow?",
+        "Show me time of the day in London.",
+        "Can you please give me the San Francisco's current date and time."
+    })
     private NCResult onRemoteMatch(@NCIntentTerm("city") NCToken cityTok) {
         String city = cityTok.meta("nlpcraft:city:city");
         String cntry = cityTok.meta("nlpcraft:city:country");

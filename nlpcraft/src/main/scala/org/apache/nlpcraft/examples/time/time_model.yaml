@@ -19,12 +19,6 @@ id: "nlpcraft.time.ex"
 name: "Time Example Model"
 version: "1.0"
 description: "Global time example model."
-examples:
-  - "What time is it now in New York City?"
-  - "What's the time in Moscow?"
-  - "Show me time of the day in London."
-  - "Give me San Francisco's current date and time."
-  - "What's the local time?"
 macros:
   - name: "<OF>"
     macro: "{of|for|per}"

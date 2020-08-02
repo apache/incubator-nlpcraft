@@ -19,11 +19,6 @@ id: "nlpcraft.lightswitch.ex"
 name: "Light Switch Example Model"
 version: "1.0"
 description: "NLI-powered light switch example model."
-examples:
-  - "Set the lights on in the entire house."
-  - "Turn the lights off in the guest bedroom."
-  - "Could you please switch off all the lights?"
-  - "Dial off illumination on the 2nd floor."
 macros:
   - name: "<ACTION>"
     macro: "{turn|switch|dial|control|let|set|get|put}"

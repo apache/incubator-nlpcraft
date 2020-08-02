@@ -38,8 +38,6 @@ embedded probe and starts it automatically:
  *  Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **Program arguments:** `-server`
- * To run unit test with embedded probe:
-    * **JUnit 5 test:** `org.apache.nlpcraft.examples.sql.SqlTest`
  * To run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
@@ -48,7 +46,9 @@ embedded probe and starts it automatically:
     
     When running data probe standalone you need run H2 database sever manually (from command line or IDE):
     * **Main class:** `org.apache.nlpcraft.examples.sql.db.SqlServerRunner`
-
+ * Test using built-in test framework:
+    * **JUnit class:** `org.apache.nlpcraft.examples.sql.NCSqlExampleTest`
+    
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
 

@@ -29,7 +29,7 @@ import org.apache.nlpcraft.model.{NCIntentTerm, _}
   * You can easily modify intent callbacks to perform the actual light switching using
   * HomeKit or Arduino-based controllers.
   * <p>
-  * See 'README.md' file in the same folder for running instructions.
+  * See 'README.md' file in the same folder for running & testing instructions.
   */
 class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/lightswitch/lightswitch_model.yaml") {
     /**
@@ -40,6 +40,19 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
       * @return Query result to be sent to the REST caller.
       */
     @NCIntentRef("ls")
+    @NCIntentSample(Array(
+        "Turn the lights off in the entire house.",
+        "Switch on the illumination in the master bedroom closet.",
+        "Get the lights on.",
+        "Please, put the light out in the upstairs bedroom.",
+        "Set the lights on in the entire house.",
+        "Turn the lights off in the guest bedroom.",
+        "Could you please switch off all the lights?",
+        "Dial off illumination on the 2nd floor.",
+        "Please, no lights!",
+        "Kill off all the lights now!",
+        "No lights in the bedroom, please."
+    ))
     def onMatch(
         @NCIntentTerm("act") actTok: NCToken,
         @NCIntentTerm("loc") locToks: List[NCToken]

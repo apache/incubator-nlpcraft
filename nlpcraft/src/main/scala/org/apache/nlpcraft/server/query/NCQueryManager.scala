@@ -344,6 +344,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     Some(errMsg),
                     None,
                     None,
+                    None,
                     span
                 )
         }
@@ -355,14 +356,24 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       * @param resType
       * @param resBody
       * @param logJson
+      * @param intentId
       * @param parent Optional parent span.
       */
     @throws[NCE]
-    def setResult(srvReqId: String, resType: String, resBody: String, logJson: Option[String], parent: Span = null): Unit = {
+    def setResult(
+        srvReqId: String,
+        resType: String,
+        resBody: String,
+        logJson: Option[String],
+        intentId: Option[String],
+        parent: Span = null
+    ): Unit = {
         startScopedSpan("setResult", parent,
             "srvReqId" → srvReqId,
             "resType" → resType,
-            "resBody" → resBody) { span ⇒
+            "resBody" → resBody,
+            "intentId" → intentId
+        ) { span ⇒
             val now = U.nowUtcTs()
             
             val found = catching(wrapIE) {
@@ -373,6 +384,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                         copy.resultType = Some(resType)
                         copy.resultBody = Some(resBody)
                         copy.logJson = logJson
+                        copy.intentId = intentId
     
                         recordStats(M_ROUND_TRIP_LATENCY_MS → (copy.updateTstamp.getTime - copy.createTstamp.getTime))
     
@@ -394,6 +406,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     None,
                     resType = Some(resType),
                     resBody = Some(resBody),
+                    intentId = intentId,
                     span
                 )
         }

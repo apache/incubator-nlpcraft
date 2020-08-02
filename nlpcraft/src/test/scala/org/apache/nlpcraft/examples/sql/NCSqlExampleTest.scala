@@ -37,7 +37,7 @@ import scala.compat.java8.OptionConverters._
   *
   * @see SqlModel
   */
-class SqlTest {
+class NCSqlExampleTest {
     private val GSON = new Gson
     private val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
     private val NORM = Seq("\n", "\r", "\t")

@@ -177,4 +177,7 @@ public interface NCEmbeddedResult {
      * @return Request processing log holder as JSON string.
      */
     String getLogHolder();
+
+    // TODO:
+    String getIntentId();
 }

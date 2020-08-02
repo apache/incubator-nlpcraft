@@ -17,20 +17,21 @@
 
 package org.apache.nlpcraft.model;
 
+import org.apache.nlpcraft.model.tools.test.*;
 import java.lang.annotation.*;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Annotation to define one or more examples of the user input that should match a corresponding intent. This
+ * Annotation to define one or more samples of the user input that should match a corresponding intent. This
  * annotation can only be used together with {@link NCIntent} or {@link NCIntentRef} annotations on the callback
- * methods.
+ * methods. Method can have multiple annotations of this type and each annotation can define multiple input
+ * examples.
  * <p>
- * Note that the examples provided by this annotation not only serve the documentation purpose but are also
- * used internally by various parts of NLPCraft for uint testing, synonym detection, etc. It is highly
- * advised to provide multiple examples per each intent either through this annotation of in external model
- * declaration.
+ * Note that the samples provided by this annotation not only serve the documentation purpose but are also
+ * used by {@link NCTestAutoModelValidator} class from built-in test framework for auto-validation between
+ * data models and intents.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
@@ -41,10 +42,17 @@ import static java.lang.annotation.RetentionPolicy.*;
  * @see NCIntentSkip
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch)
+ * @see NCTestAutoModelValidator
  */
 @Documented
 @Retention(value=RUNTIME)
 @Target(value=METHOD)
-public @interface NCIntentExample {
+public @interface NCIntentSample {
+    /**
+     * Gets a list of user input samples that should match corresponding intent. This annotation should be
+     * attached the intent callback method.
+     *
+     * @return Set of user input examples that should match corresponding intent.
+     */
     String[] value();
 }
