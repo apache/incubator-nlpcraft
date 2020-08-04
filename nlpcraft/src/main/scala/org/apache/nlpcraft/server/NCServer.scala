@@ -28,6 +28,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.version._
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
@@ -88,22 +89,22 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     
         startScopedSpan("startManagers", "relVer" → ver.version, "relDate" → ver.date) { span ⇒
             U.executeParallel(
-                () ⇒ {
-                    NCNlpCoreManager.start(span)
-                    NCNlpServerManager.start(span)
-                    NCNumericManager.start(span)
-                },
+                () ⇒ NCExternalConfigManager.start(span),
+                () ⇒ NCWordNetManager.start(span),
+                () ⇒ NCDictionaryManager.start(span),
                 () ⇒ {
                     NCTxManager.start(span)
                     NCSqlManager.start(span)
                     NCProcessLogManager.start(span)
-                },
+                }
+            )
+
+            U.executeParallel(
+                () ⇒ NCGeoManager.start(span),
                 () ⇒ {
-                    NCWordNetManager.start(span)
-                },
-                () ⇒ {
-                    NCDictionaryManager.start(span)
-                    NCGeoManager.start(span)
+                    NCNlpCoreManager.start(span)
+                    NCNlpServerManager.start(span)
+                    NCNumericManager.start(span)
                 },
                 () ⇒ {
                     NCSpellCheckManager.start(span)
@@ -156,7 +157,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 NCProcessLogManager,
                 NCSqlManager,
                 NCTxManager,
-                NCNlpCoreManager
+                NCNlpCoreManager,
+                NCExternalConfigManager
             ).foreach(p ⇒
                 try
                     p.stop(span)

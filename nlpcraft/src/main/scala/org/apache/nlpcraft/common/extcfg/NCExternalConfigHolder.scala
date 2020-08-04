@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.nlp.core
+package org.apache.nlpcraft.common.extcfg
 
-import org.apache.nlpcraft.common.NCService
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.NCResourceType
 
 /**
-  * NLP tokenizer.
+  * Holder for a single external configuration resource.
+  *
+  * @param resType Resource type.
+  * @param fileName Resource file name.
+  * @param content Resource content.
   */
-trait NCNlpTokenizer extends NCService {
-    /**
-      * Tokenizes the sentence.
-      *
-      * @param sen Sentence
-      */
-    def tokenize(sen: String): Seq[NCNlpCoreToken]
-}
+case class NCExternalConfigHolder(resType: NCResourceType, fileName: String, content: String)

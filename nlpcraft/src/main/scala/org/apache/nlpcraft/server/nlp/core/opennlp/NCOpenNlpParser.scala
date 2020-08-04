@@ -17,14 +17,14 @@
 
 package org.apache.nlpcraft.server.nlp.core.opennlp
 
-import java.io.BufferedInputStream
-
 import io.opencensus.trace.Span
 import opennlp.tools.lemmatizer.DictionaryLemmatizer
 import opennlp.tools.postag.{POSModel, POSTagger, POSTaggerME}
 import org.apache.ignite.IgniteCache
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizer
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
 import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
@@ -41,17 +41,19 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
     @volatile private var lemmatizer: DictionaryLemmatizer = _
     @volatile private var cache: IgniteCache[String, Array[String]] = _
 
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        require(NCOpenNlpTokenizer.isStarted)
+
         U.executeParallel(
             () ⇒ {
                 tagger =
-                    managed(new BufferedInputStream(U.getStream("opennlp/en-pos-maxent.bin"))) acquireAndGet { in ⇒
+                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-pos-maxent.bin", span)) acquireAndGet { in ⇒
                         new POSTaggerME(new POSModel(in))
                     }
             },
             () ⇒ {
                 lemmatizer =
-                    managed(new BufferedInputStream(U.getStream("opennlp/en-lemmatizer.dict"))) acquireAndGet { in ⇒
+                    managed(NCExternalConfigManager.getStream(OPENNLP, "en-lemmatizer.dict", span)) acquireAndGet { in ⇒
                         new DictionaryLemmatizer(in)
                     }
             }

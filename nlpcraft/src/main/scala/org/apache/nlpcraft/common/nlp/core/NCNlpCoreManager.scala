@@ -21,7 +21,6 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCE, NCService, _}
 
-
 /**
  *  NLP core manager.
  */
@@ -56,6 +55,8 @@ object NCNlpCoreManager extends NCService {
         
                 case _ ⇒ throw new AssertionError(s"Unexpected engine: ${Config.engine}")
             }
+
+        tokenizer.start()
       
         super.start()
     }
