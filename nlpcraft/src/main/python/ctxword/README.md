@@ -29,11 +29,13 @@ input sentence. This utility provides a single REST endpoint and is based on Goo
 models and Facebook's [fasttext](https://fasttext.cc/) library.
 
 ### Dependencies
+To install necessary dependency:
  * **Linux/MacOS**: run `bin/install_dependencies.sh` script.  
  * **Windows**: read `WINDOWS_SETUP.md` in the same folder.
 
 ### Start REST Server
- * **Linux/MacOS**: `$ bin/start_server.sh`  
+To start REST server:
+ * **Linux/MacOS**: run `bin/start_server.sh` script.  
  * **Windows**: read `WINDOWS_SETUP.md` in the same folder.
  
  NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
@@ -41,23 +43,49 @@ models and Facebook's [fasttext](https://fasttext.cc/) library.
  available memory. Subsequent starts will skip this step, and the server will start much faster.
 
 ### REST API
-##### /suggestions (POST)
-Returns word replacement suggestions for following word in the sentence.  
-Accepts JSON object with fields:
-* "sentences": List of sentences information. Each sentence encoded as object, argument `"text"` of which is sentence itself,
-  `"indexes"` are positions in the sentence of the words to generate suggestions for.  
-  Example: ``"sentences": [{"text": "foo bar baz", "indexes": [0, 2]}, {"text": "sample second sentence", indexes:[1]}]``
-* "simple" (Optional, default to false): If set to true omits verbose data.  
-* "limit" (Optional, default to 10): Sets limit of result words number. 
-* "min_score" (Optional, default to 0): Sets minimal requirement of total score.
-* "min_ftext" (Optional, default to 0.25): Sets minimal requirement of FastText score.  
-* "min_bert" (Optional, default to 0): Sets minimal requirement of Bert score.  
-Endpoint returns object with elements `[word, total score, FastText score, Bert score]`
+Once the REST server is started you can issue REST calls to get suggestions for the contextual related words.
+REST server provides a single `application/json` endpoint:
+ 
+##### `/suggestions` (POST)
+Returns contextual word replacement(s) for the specified word in the input sentence. Accepts JSON object parameter 
+with the following fields:
+ * `"sentences"`
+   - List of sentences. Each sentence encoded as object with the following fields:
+     - `"text"` represents the sentence text.
+     - `"indexes"` array of positions in the sentence of the words to generate suggestions for.  
+ * `"simple"` 
+   - Optional, defaults to `false`. If set to `true`, returns simple objects. If set to `false` returns
+   expanded objects with total, BERT and fasttext scores.  
+ * `"limit"` 
+   - Optional, defaults to 10. Sets limit of result words number. 
+ * `"min_score"` 
+   - Optional, defaults to 0. Sets the minimal requirement for total score.
+ * `"min_ftext"` 
+   - Optional, default to 0.25. Sets the minimal requirement of FastText score.  
+*  `"min_bert"` 
+   - Optional, default to 0. Sets the minimal requirement of Bert score.
+     
+Endpoint returns one or more JSON objects with the following fields (depending on `"simple"` request field):
+ * If `"simple"` set to `true`: `[word1, word2, ...]`
+ * If `"simple"` set to `false`:`[{word1, total_score1, ft_score1, bert_score1}, {...}]`
 
+#### Examples
+Here's the sample request and response JSON objects:
+ * Request JSON: 
+   - ``"simple": true, "sentences": [{"text": "foo bar baz", "indexes": [0, 2]}, {"text": "sample second sentence", indexes:[1]}]``
+ * Response JSON:
+   - `[["word1", "word2", "word3"]]`
+ 
 ### `bin/suggest.sh`
-Simple request with single sentence could be made with a script, e.g.  
-`$ bin/suggest.sh "what is the chance of rain tomorrow?" 5`  
-Would find suggestions for word "rain" in this sentence.    
+You can use Curl-based `bin/suggest.sh` script for the suggestion processing of single sentences from the command line.
+Following call returns list of contextual suggestions for the 5th word (counting from zero) in the given sentence: 
+
+```
+$ bin/suggest.sh "what is the chance of rain tomorrow?" 5
+[["rain","snow","rainfall","precipitation","rains","flooding","storms","raining","sunshine","showers"]]
+```    
+
+                                 
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
