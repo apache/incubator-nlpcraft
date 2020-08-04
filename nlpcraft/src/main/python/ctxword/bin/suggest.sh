@@ -16,4 +16,13 @@
 # limitations under the License.
 #
 
+#
+# Simple Curl-based script for getting contextual related words suggestions for a single input sentence.
+# Example:
+#     $ bin/suggest.sh "what is the chance of rain tomorrow?" 5
+#     [["rain","snow","rainfall","precipitation","rains","flooding","storms","raining","sunshine","showers"]]
+#
+# NOTE: You need to have REST server running (see 'start_server.sh' script in the same folder).
+#
+
 curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions

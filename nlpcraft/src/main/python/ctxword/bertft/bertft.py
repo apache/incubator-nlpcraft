@@ -42,10 +42,10 @@ class Pipeline:
         self.use_cuda = use_cuda and torch.cuda.is_available()
 
         if self.use_cuda:
-            self.log.debug("CUDA is available")
+            self.log.debug("CUDA is available for Torch.")
             self.device = torch.device('cuda')
         else:
-            self.log.warning("CUDA is not available")
+            self.log.warning("CUDA is not available for Torch.")
             self.device = torch.device('cpu')
 
         start_time = time.time()
@@ -89,8 +89,8 @@ class Pipeline:
 
     """
     Finds top words suggestions for provided data with given parameters
-    :param: input_data list of lists, first element of which is sentence and elements from second to last are indexes 
-    in the sentence of words to find synonyms for
+    :param: input_data list of lists, first element is sentence and elements from second to last are indexes 
+            in the sentence of words to find synonyms for
     :param k limits number of top words
     :param top_bert limits number of Bert suggestions
     :param min_ftext minimal FastText score is required for word to get 
@@ -141,7 +141,7 @@ class Pipeline:
                 nmax = torch.max(d)
                 nvl.append((d - nmin) / (nmax - nmin))
 
-            start_time = self.print_time(start_time, "Bert post-processing")
+            start_time = self.print_time(start_time, "Bert post-processing.")
 
             suggestions = []
             for index in topk.indices:
@@ -151,7 +151,7 @@ class Pipeline:
                     tmp.append(tokenizer.decode([single]).strip())
                 suggestions.append(tuple(tmp))
 
-            start_time = self.print_time(start_time, "Bert decoding")
+            start_time = self.print_time(start_time, "Bert decoding.")
 
             cos = torch.nn.CosineSimilarity()
 
@@ -176,9 +176,9 @@ class Pipeline:
                     )[:k]
                 )
 
-            self.print_time(start_time, "Fast text similarities found")
+            self.print_time(start_time, "Fast text similarities found.")
 
-            self.print_time(req_start_time, "Request processed")
+            self.print_time(req_start_time, "Request processed.")
 
             if self.use_cuda:
                 torch.cuda.empty_cache()

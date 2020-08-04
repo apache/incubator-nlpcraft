@@ -83,9 +83,7 @@ Following call returns list of contextual suggestions for the 5th word (counting
 ```
 $ bin/suggest.sh "what is the chance of rain tomorrow?" 5
 [["rain","snow","rainfall","precipitation","rains","flooding","storms","raining","sunshine","showers"]]
-```    
-
-                                 
+```                                     
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation

@@ -67,6 +67,7 @@ def main():
     min_bert = json['min_bert'] if 'min_bert' in json else 0
 
     data = pipeline.do_find(sentences, limit, min_score, min_ftext, min_bert)
+
     if 'simple' not in json or not json['simple']:
         return jsonify(list(map(lambda x: list(map(lambda y: to_dict(y), x)), data)))
     else:

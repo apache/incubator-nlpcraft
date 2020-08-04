@@ -14,12 +14,29 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-To setup project for work under Windows, you would need to repeat steps from `bin/install_dependencies.sh`
-1. Before starting, make sure that you have python3, pip3 (included in latest versions of python3) and git installed.
-2. [Download pre-trained FastText model](https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz)
-3. Extract achieve into `data` folder (`/nlpcraft/src/main/python/ctxword/data`)
-4. Clone [FastText repository](https://github.com/facebookresearch/fastText.git)
-5. Install it with pip running `pip3 install fastText` (where `fastText` is root of cloned git repository)
-6. Install the rest of required python packages from `bin/py_requirements` running `pip3 install -r bin/py_requirements`  
 
-FastTest repository may be removed after setup is finished. 
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<br>
+
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
+[![build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
+[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
+[![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
+
+### Windows Setup
+To set up `ctxword` module under Windows, you would need to repeat steps from `bin/install_dependencies.sh` script:
+ 1. Before starting, make sure you have the following installed:
+    - `python3`
+    - `pip3` (included in the latest versions of python3)
+    - `git`
+ 2. Download pre-trained [FastText model](https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz)
+ 3. Extract archive into `data` folder (i.e. `/nlpcraft/src/main/python/ctxword/data`)
+ 4. Clone [FastText repository](https://github.com/facebookresearch/fastText.git)
+ 5. Install it with `pip3 install fastText` (where `fastText` is root of the cloned git repository)
+ 6. Install the rest of required python packages from `bin/py_requirements` by running `pip3 install -r bin/py_requirements`  
+ 7. A local clone of FastTest git repository may be removed after setup is finished.
+ 
+ ### Copyright
+ Copyright (C) 2020 Apache Software Foundation
+ 
+ <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px"> 

@@ -15,7 +15,20 @@
  limitations under the License.
 -->
 
-#### Note
-This Notebook is intended to be used for development purposes.   
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<br>
+
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
+[![build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
+[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
+[![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
+
+#### Overview
+This [Jupyter Notebook](https://jupyter.org/) is intended to be used for development purposes.   
 You can modify weights/variables for models, build graphs, etc. using this Notebook.  
 Additional requirements are needed to run this Notebook, see `py_requirements` file.  
+
+### Copyright
+Copyright (C) 2020 Apache Software Foundation
+
+<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
