@@ -15,13 +15,32 @@
  limitations under the License.
 -->
 
-To install dependencies:  
-`$ bin/install_dependencies.sh`  
-For Windows install please read WINDOWS_SETUP.md
-To start server (is not intendeed for production):    
-`$ bin/start_server.sh`  
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<br>
 
-### Routes
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
+[![build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
+[![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
+[![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
+
+### Overview
+`ctxword` module provides Python-based internal tool for finding a contextually related words for a given word from the
+input sentence. This utility provides a single REST endpoint and is based on Google's [BERT](https://github.com/google-research/bert) 
+models and Facebook's [fasttext](https://fasttext.cc/) library.
+
+### Dependencies
+ * **Linux/MacOS**: run `bin/install_dependencies.sh` script.  
+ * **Windows**: read `WINDOWS_SETUP.md` in the same folder.
+
+### Start REST Server
+ * **Linux/MacOS**: `$ bin/start_server.sh`  
+ * **Windows**: read `WINDOWS_SETUP.md` in the same folder.
+ 
+ NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
+ then download this library and compress it which will take a several minutes and may require 10GB+ of 
+ available memory. Subsequent starts will skip this step, and the server will start much faster.
+
+### REST API
 ##### /suggestions (POST)
 Returns word replacement suggestions for following word in the sentence.  
 Accepts JSON object with fields:
@@ -35,6 +54,12 @@ Accepts JSON object with fields:
 * "min_bert" (Optional, default to 0): Sets minimal requirement of Bert score.  
 Endpoint returns object with elements `[word, total score, FastText score, Bert score]`
 
+### `bin/suggest.sh`
 Simple request with single sentence could be made with a script, e.g.  
 `$ bin/suggest.sh "what is the chance of rain tomorrow?" 5`  
 Would find suggestions for word "rain" in this sentence.    
+
+### Copyright
+Copyright (C) 2020 Apache Software Foundation
+
+<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
