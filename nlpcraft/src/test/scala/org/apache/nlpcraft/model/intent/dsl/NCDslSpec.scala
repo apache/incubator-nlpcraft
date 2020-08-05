@@ -28,7 +28,7 @@ import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 /**
  * DSL test model test. Make sure to start up the NLPCraft server before running this test.
  */
-class NCDslTest {
+class NCDslSpec {
     private var cli: NCTestClient = _
 
     @BeforeEach
