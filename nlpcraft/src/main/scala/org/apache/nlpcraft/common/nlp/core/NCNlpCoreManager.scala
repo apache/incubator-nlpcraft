@@ -61,7 +61,12 @@ object NCNlpCoreManager extends NCService {
         super.start()
     }
     
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent)(_ ⇒ super.stop())
+    override def stop(parent: Span): Unit = {
+        if (tokenizer != null)
+            tokenizer.stop(parent)
+
+        startScopedSpan("stop", parent)(_ ⇒ super.stop())
+    }
     
     /**
       * Stems given word or a sequence of words which will be tokenized before.
