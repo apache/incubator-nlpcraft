@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px" alt="">
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
