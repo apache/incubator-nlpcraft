@@ -124,10 +124,10 @@ object NCNumericManager extends NCService {
     
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         genNums = mapResource("numeric/numeric.txt", "utf-8", logger, {
-            _.filter(!_.isEmpty).
-                map(_.split("=")).
-                map(s ⇒ (s(1), s(0).toInt)).
-                toMap
+            _.filter(s => !s.isEmpty && !s.trim.startsWith("#")).
+            map(_.split("=")).
+            map(s ⇒ (s(1), s(0).toInt)).
+            toMap
         })
 
         // Data source: https://www.adducation.info/how-to-improve-your-knowledge/units-of-measurement/
