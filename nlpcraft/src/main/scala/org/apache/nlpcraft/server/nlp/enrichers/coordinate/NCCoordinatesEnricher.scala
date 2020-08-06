@@ -35,8 +35,8 @@ import scala.collection._
   * See http://www.geomidpoint.com/latlon.html.
   */
 object NCCoordinatesEnricher extends NCServerEnricher {
-    private final val LAT_STEMS = Seq("lat", "latitude").map(NCNlpCoreManager.stem)
-    private final val LON_STEMS = Seq("lon", "longitude").map(NCNlpCoreManager.stem)
+    @volatile private var latStems: Seq[String] = _
+    @volatile private var lonStems: Seq[String] = _
 
     private final val MARKERS_STEMS = {
         val p = new NCMacroParser
@@ -52,11 +52,17 @@ object NCCoordinatesEnricher extends NCServerEnricher {
     private final val EQUALS = Seq("=", "==", "is", "are", "equal")
     
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        latStems = Seq("lat", "latitude").map(NCNlpCoreManager.stem)
+        lonStems = Seq("lon", "longitude").map(NCNlpCoreManager.stem)
+
         super.start()
     }
     
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
+
+        latStems = null
+        lonStems = null
     }
     
     /**
@@ -187,8 +193,8 @@ object NCCoordinatesEnricher extends NCServerEnricher {
                 
                     val after = getAfter(ns, ns.drop(lon.tokens.last.index + 1), markers)
                 
-                    if (hasStem(before, LON_STEMS) && hasStem(between, LAT_STEMS) ||
-                        hasStem(between, LON_STEMS) && hasStem(after, LAT_STEMS) ||
+                    if (hasStem(before, lonStems) && hasStem(between, latStems) ||
+                        hasStem(between, lonStems) && hasStem(after, latStems) ||
                         !inRange(lat, 90) && inRange(lat, 180)
                     ) {
                         val tmp = lat

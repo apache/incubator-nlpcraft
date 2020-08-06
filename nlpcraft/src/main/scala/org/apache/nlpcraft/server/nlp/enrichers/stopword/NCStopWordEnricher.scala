@@ -85,23 +85,12 @@ object NCStopWordEnricher extends NCServerEnricher {
 
     private final val STOP_BEFORE_STOP: Seq[Word] = Seq("DT", "PRP", "PRP$", "WDT", "WP", "WP$", "WRB")
 
-    private final val PERCENTS = Set(
-        "%",
-        "pct",
-        "pc",
-        "percentage",
-        "proportion",
-        "interest",
-        "rate",
-        "percent"
-    ).map(NCNlpCoreManager.stem)
-
-    @volatile private var POSSESSIVE_WORDS: Set[String] = _
-    @volatile private var FIRST_WORDS: Set[String] = _
-    @volatile private var NOUN_WORDS: Set[String] = _
-
-    @volatile private var STOP_WORDS: StopWordHolder = _
-    @volatile private var EXCEPTIONS: StopWordHolder = _
+    @volatile private var percents: Set[String] = _
+    @volatile private var possessiveWords: Set[String] = _
+    @volatile private var firstWords: Set[String] = _
+    @volatile private var nounWords: Set[String] = _
+    @volatile private var stopWords: StopWordHolder = _
+    @volatile private var exceptions: StopWordHolder = _
 
     /**
      * Stop words holder, used for hash search.
@@ -557,9 +546,9 @@ object NCStopWordEnricher extends NCServerEnricher {
             val cacheSw = mutable.HashMap.empty[Seq[NCNlpSentenceToken], Boolean]
             val cacheEx = mutable.HashMap.empty[Seq[NCNlpSentenceToken], Boolean]
     
-            def isStop(toks: Seq[NCNlpSentenceToken]): Boolean = exists(toks, cacheSw, STOP_WORDS.matches)
+            def isStop(toks: Seq[NCNlpSentenceToken]): Boolean = exists(toks, cacheSw, stopWords.matches)
     
-            def isException(toks: Seq[NCNlpSentenceToken]): Boolean = exists(toks, cacheEx, EXCEPTIONS.matches)
+            def isException(toks: Seq[NCNlpSentenceToken]): Boolean = exists(toks, cacheEx, exceptions.matches)
     
             for (p ← ns.zipWithIndex) {
                 val tok = p._1
@@ -586,7 +575,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                 !tok.isQuoted && !isException(Seq(tok)) &&
                     (// Percents after numbers.
                         // 1. Word from 'percentage' list.
-                        PERCENTS.contains(stem) &&
+                        percents.contains(stem) &&
                             // 2. Number before.
                             !isFirst && prev().pos == "CD" &&
                             // 3. It's last word or any words after except numbers.
@@ -618,7 +607,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             // | Pass #4.                                   |
             // | Check external possessive stop-word file.  |
             // +--------------------------------------------+
-            for (tup ← origToks; key = tup._2 if POSSESSIVE_WORDS.contains(key) && !isException(tup._1))
+            for (tup ← origToks; key = tup._2 if possessiveWords.contains(key) && !isException(tup._1))
                 tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
             
             // +--------------------------------------------------+
@@ -631,7 +620,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             // All sentence first stop words + first non stop word.
             val startToks = ns.takeWhile(_.isStopWord) ++ ns.find(!_.isStopWord).map(p ⇒ p)
             for (startTok ← startToks; tup ← origToks.filter(_._1.head == startTok); key = tup._2
-                if FIRST_WORDS.contains(key) && !isException(tup._1)) {
+                if firstWords.contains(key) && !isException(tup._1)) {
                 tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
                 foundKeys += key
             }
@@ -643,7 +632,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             for (tup ← origToks; key = tup._2 if !foundKeys.contains(key) && !isException(tup._1))
                 foundKeys.find(key.startsWith) match {
                     case Some(s) ⇒
-                        if (NOUN_WORDS.contains(key.substring(s.length).trim))
+                        if (nounWords.contains(key.substring(s.length).trim))
                             tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
                     case None ⇒ ()
                 }
@@ -658,10 +647,22 @@ object NCStopWordEnricher extends NCServerEnricher {
 
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        percents = Set(
+            "%",
+            "pct",
+            "pc",
+            "percentage",
+            "proportion",
+            "interest",
+            "rate",
+            "percent"
+        ).map(NCNlpCoreManager.stem)
+
+
         // Stemmatization is done already by generator.
-        POSSESSIVE_WORDS = U.readTextGzipResource("stopwords/possessive_words.txt.gz", "UTF-8", logger).toSet
-        FIRST_WORDS = U.readTextGzipResource("stopwords/first_words.txt.gz", "UTF-8", logger).toSet
-        NOUN_WORDS = U.readTextGzipResource("stopwords/noun_words.txt.gz", "UTF-8", logger).toSet
+        possessiveWords = U.readTextGzipResource("stopwords/possessive_words.txt.gz", "UTF-8", logger).toSet
+        firstWords = U.readTextGzipResource("stopwords/first_words.txt.gz", "UTF-8", logger).toSet
+        nounWords = U.readTextGzipResource("stopwords/noun_words.txt.gz", "UTF-8", logger).toSet
 
         // Case sensitive.
         val m =
@@ -670,8 +671,8 @@ object NCStopWordEnricher extends NCServerEnricher {
                     map(_.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toSeq
             )
 
-        STOP_WORDS = m(false)
-        EXCEPTIONS = m(true)
+        stopWords = m(false)
+        exceptions = m(true)
 
         super.start()
     }

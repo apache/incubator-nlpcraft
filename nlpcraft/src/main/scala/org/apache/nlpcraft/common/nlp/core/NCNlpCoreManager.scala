@@ -21,7 +21,6 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCE, NCService, _}
 
-
 /**
  *  NLP core manager.
  */
@@ -56,11 +55,18 @@ object NCNlpCoreManager extends NCService {
         
                 case _ ⇒ throw new AssertionError(s"Unexpected engine: ${Config.engine}")
             }
+
+        tokenizer.start()
       
         super.start()
     }
     
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent)(_ ⇒ super.stop())
+    override def stop(parent: Span): Unit = {
+        if (tokenizer != null)
+            tokenizer.stop(parent)
+
+        startScopedSpan("stop", parent)(_ ⇒ super.stop())
+    }
     
     /**
       * Stems given word or a sequence of words which will be tokenized before.

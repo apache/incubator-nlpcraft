@@ -57,7 +57,7 @@ object NCNumericManager extends NCService {
     private def dropRedundantSeparators(s: String): String = {
         val lastDotIdx = s.lastIndexOf("\\.")
 
-        s.zipWithIndex.filter { case (ch, idx) ⇒ ch != '.' || idx == lastDotIdx }.unzip._1.mkString
+        s.zipWithIndex.filter { case (ch, idx) ⇒ ch != '.' || idx == lastDotIdx }.map(_._1).mkString
     }
     
     /**
@@ -312,7 +312,7 @@ object NCNumericManager extends NCService {
     private def canBeNum(s: String): Boolean = isDigitText(s) || s.forall(Character.isLetter)
 
     /**
-      * Gets `numerics` which found in the given sentence.
+      * Gets `numeric` which found in the given sentence.
       *
       * @param ns Sentence.
       * @param parent Optional span parent.

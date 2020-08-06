@@ -17,28 +17,39 @@
 
 package org.apache.nlpcraft.common.nlp.core.opennlp
 
-import java.io.BufferedInputStream
-
+import io.opencensus.trace.Span
 import opennlp.tools.tokenize.{Tokenizer, TokenizerME, TokenizerModel}
+import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreToken, NCNlpTokenizer}
-import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import resource.managed
-
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
 import scala.language.{implicitConversions, postfixOps}
 
 /**
   * OpenNLP tokenizer implementation.
   */
 object NCOpenNlpTokenizer extends NCNlpTokenizer {
-    private final val MODEL_PATH = "opennlp/en-token.bin"
-    
-    private val tokenizer: Tokenizer = managed(new BufferedInputStream(U.getStream(MODEL_PATH))) acquireAndGet { in ⇒
-        new TokenizerME(new TokenizerModel(in))
+    private final val RESOURCE = "en-token.bin"
+
+    @volatile private var tokenizer: Tokenizer = _
+
+    override def start(parent: Span): NCService = {
+        tokenizer = managed(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) acquireAndGet { in ⇒
+            new TokenizerME(new TokenizerModel(in))
+        }
+
+        super.start(parent)
     }
-    
+
+    override def stop(parent: Span): Unit = {
+        tokenizer = null
+
+        super.stop(parent)
+    }
+
     override def tokenize(sen: String): Seq[NCNlpCoreToken] =
         this.synchronized {
             tokenizer.tokenizePos(sen)
-        }
-        .toSeq.map(s ⇒ NCNlpCoreToken(s.getCoveredText(sen).toString, s.getStart, s.getEnd, s.length()))
+        }.toSeq.map(s ⇒ NCNlpCoreToken(s.getCoveredText(sen).toString, s.getStart, s.getEnd, s.length()))
 }

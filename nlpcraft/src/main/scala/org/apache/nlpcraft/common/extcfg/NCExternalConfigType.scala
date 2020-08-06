@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.nlp.core
-
-import org.apache.nlpcraft.common.NCService
+package org.apache.nlpcraft.common.extcfg
 
 /**
-  * NLP tokenizer.
+  * Internal type for external configuration resource.
   */
-trait NCNlpTokenizer extends NCService {
-    /**
-      * Tokenizes the sentence.
-      *
-      * @param sen Sentence
-      */
-    def tokenize(sen: String): Seq[NCNlpCoreToken]
+object NCExternalConfigType extends Enumeration {
+    type NCResourceType = Value
+
+    val SPELL, GEO, OPENNLP = Value
 }

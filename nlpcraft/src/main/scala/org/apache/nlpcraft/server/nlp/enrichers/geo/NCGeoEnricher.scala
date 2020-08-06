@@ -24,6 +24,8 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.GEO
 import org.apache.nlpcraft.server.geo.NCGeoLocationKind._
 import org.apache.nlpcraft.server.geo._
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
@@ -44,13 +46,13 @@ object NCGeoEnricher extends NCServerEnricher {
         immutable.HashSet(",", "in", "within", "inside", "of", "inside of", "within of", "wherein")
 
     // USA large cities configuration file.
-    private final val US_TOP_PATH = "geo/us_top.yaml"
+    private final val US_TOP_PATH = "us_top.yaml"
 
     // World large cities configuration file.
-    private final val WORLD_TOP_PATH = "geo/world_top.yaml"
+    private final val WORLD_TOP_PATH = "world_top.yaml"
 
     // Common word exceptions configuration folder.
-    private final val EXCEPTIONS_PATH = "geo/exceptions"
+    private final val EXCEPTIONS_PATH = "exceptions"
 
     private final val GEO_TYPES: Set[String] = NCGeoLocationKind.values.map(mkName)
 
@@ -86,31 +88,31 @@ object NCGeoEnricher extends NCServerEnricher {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         locations = NCGeoManager.getModel.synonyms
 
-        val extOpt = U.sysEnv("NLPCRAFT_RESOURCE_EXT")
-
         // GEO names matched with common english words and user defined exception GEO names.
         // Note that 'ignore case' parameter set as false because DLGeoLocationKind definition (CITY ect)
 
         commons =
-            U.getContent(
+            NCExternalConfigManager.getDirContent(
+                GEO,
                 EXCEPTIONS_PATH,
-                extOpt,
                 (name: String) ⇒ name.endsWith("yaml")
             ).
-                flatMap { case (path, data) ⇒
+                flatMap(p ⇒
                     U.extractYamlString(
-                        data,
-                        path,
+                        p.content,
+                        p.fileName,
                         ignoreCase = false,
                         new TypeReference[immutable.Map[String, immutable.Set[String]]] {}
                     )
-                }.
+                ).
                 map(p ⇒ NCGeoLocationKind.withName(p._1.toUpperCase) → p._2).
                 groupBy(_._1).
                 map(p ⇒ p._1 → p._2.flatMap(_._2).toSet).map(p ⇒ p._1 → p._2.map(_.toLowerCase))
 
         def readCities(res: String): List[TopCity] =
-            U.extractYamlString(U.getContent(res, extOpt), res, ignoreCase = true, new TypeReference[List[TopCity]] {})
+            U.extractYamlString(
+                NCExternalConfigManager.getContent(GEO, res), res, ignoreCase = true, new TypeReference[List[TopCity]] {}
+            )
 
         topUsa = readCities(US_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
         topWorld = readCities(WORLD_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
