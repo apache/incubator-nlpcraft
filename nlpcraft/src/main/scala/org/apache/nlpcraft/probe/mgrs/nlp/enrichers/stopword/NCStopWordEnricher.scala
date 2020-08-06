@@ -44,39 +44,46 @@ object NCStopWordEnricher extends NCProbeEnricher {
         "nlpcraft:city"
     )
 
-    @throws[NCE]
-    private final val GEO_PRE_WORDS: Seq[Seq[String]] =
-    // NOTE: stemmatisation is done already by generator.
-        U.readTextResource(s"context/geo_pre_words.txt", "UTF-8", logger).
-            toSeq.map(_.split(" ").toSeq).sortBy(-_.size)
-
-    private final val GEO_KIND_STOPS =
-        Map(
-            "nlpcraft:city" → Seq("city", "town"),
-            "nlpcraft:country" → Seq("country", "land", "countryside", "area", "territory"),
-            "nlpcraft:region" → Seq("region", "area", "state", "county", "district", "ground", "territory"),
-            "nlpcraft:continent" → Seq("continent", "land", "area")
-        ).map(p ⇒ p._1 → p._2.map(NCNlpCoreManager.stem))
-
-    private final val NUM_PREFIX_STOPS = Seq(
-        "is",
-        "was",
-        "were",
-        "are",
-        "with value",
-        "might be",
-        "would be",
-        "has value",
-        "can be",
-        "should be",
-        "must be"
-    ).map(NCNlpCoreManager.stem)
+    @volatile private var geoPreWords: Seq[Seq[String]] = _
+    @volatile private var geoKindStops: Map[String, Seq[String]] = _
+    @volatile private var numPrefixStops:Seq[String] = _
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        geoPreWords=
+            // NOTE: stemmatisation is done already by generator.
+            U.readTextResource(s"context/geo_pre_words.txt", "UTF-8", logger).
+                map(_.split(" ").toSeq).sortBy(-_.size)
+
+        geoKindStops =
+            Map(
+                "nlpcraft:city" → Seq("city", "town"),
+                "nlpcraft:country" → Seq("country", "land", "countryside", "area", "territory"),
+                "nlpcraft:region" → Seq("region", "area", "state", "county", "district", "ground", "territory"),
+                "nlpcraft:continent" → Seq("continent", "land", "area")
+            ).map(p ⇒ p._1 → p._2.map(NCNlpCoreManager.stem))
+
+        numPrefixStops = Seq(
+            "is",
+            "was",
+            "were",
+            "are",
+            "with value",
+            "might be",
+            "would be",
+            "has value",
+            "can be",
+            "should be",
+            "must be"
+        ).map(NCNlpCoreManager.stem)
+
         super.start()
     }
     
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        geoPreWords = null
+        geoKindStops = null
+        numPrefixStops = null
+
         super.stop()
     }
 
@@ -112,7 +119,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
             if (toks.nonEmpty) {
                 val stems = toks.map(_.stem)
 
-                GEO_PRE_WORDS.find(stems.endsWith) match {
+                geoPreWords.find(stems.endsWith) match {
                     case Some(words) ⇒ toks.reverse.take(words.size).filter(!_.isStopWord).foreach(_.addStopReason(note))
                     case None ⇒ // No-op.
                 }
@@ -120,7 +127,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
         }
 
         // 2. Marks some specific words before and after GEO (like 'city London')
-        GEO_KIND_STOPS.foreach { case (typ, stops) ⇒
+        geoKindStops.foreach { case (typ, stops) ⇒
             for (geoNote ← ns.getNotes(typ)) {
                 def process(toks: Seq[NCNlpSentenceToken]): Unit =
                     toks.find(!_.isStopWord) match {
@@ -152,7 +159,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
                     t ⇒
                         t.isStopWord ||
                         (!t.isBracketed && !t.isQuoted)) &&
-                    NUM_PREFIX_STOPS.contains(seq.filter(!_.isStopWord).map(_.stem).mkString(" "))
+                    numPrefixStops.contains(seq.filter(!_.isStopWord).map(_.stem).mkString(" "))
             ) match {
                 case Some(seq) ⇒ seq.filter(!_.isStopWord).foreach(_.addStopReason(numNote))
                 case None ⇒ // No-op.

@@ -324,7 +324,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                 if (mdl.isPermutateSynonyms && !isElementId && chunks.forall(_.wordStem != null))
                     simplePermute(chunks).map(p ⇒ p.map(_.wordStem) → p).toMap.values.foreach(p ⇒ add(p, p == chunks))
                 else
-                    add(chunks, true)
+                    add(chunks, isDirect = true)
             }
 
             /**
@@ -345,7 +345,7 @@ object NCModelManager extends NCService with DecorateAsScala {
             // Add element ID as a synonyms (dups ignored).
             val idChunks = Seq(chunkIdSplit(elmId))
 
-            idChunks.distinct.foreach(ch ⇒ addSynonym(true, false, null, ch))
+            idChunks.distinct.foreach(ch ⇒ addSynonym(isElementId = true, isValueName = false, null, ch))
 
             // Add straight element synonyms (dups printed as warnings).
             val synsChunks = for (syn ← elm.getSynonyms.flatMap(parser.expand)) yield chunkSplit(syn)
@@ -358,7 +358,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                     s"]"
                 )
 
-            synsChunks.distinct.foreach(ch ⇒ addSynonym(false, false, null, ch))
+            synsChunks.distinct.foreach(ch ⇒ addSynonym(isElementId = false, isValueName = false, null, ch))
 
             val vals =
                 (if (elm.getValues != null) elm.getValues.asScala else Seq.empty) ++
@@ -382,7 +382,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                 val idChunks = Seq(chunkIdSplit(valId))
 
                 // Add value name as a synonyms (dups ignored)
-                idChunks.distinct.foreach(ch ⇒ addSynonym(false, true, valId, ch))
+                idChunks.distinct.foreach(ch ⇒ addSynonym(isElementId = false, isValueName = true, valId, ch))
 
                 // Add straight value synonyms (dups printed as warnings)
                 var skippedOneLikeName = false
@@ -409,7 +409,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                         s"]"
                     )
 
-                chunks.distinct.foreach(ch ⇒ addSynonym(false, false, valId, ch))
+                chunks.distinct.foreach(ch ⇒ addSynonym(isElementId = false, isValueName = false, valId, ch))
             }
         }
         

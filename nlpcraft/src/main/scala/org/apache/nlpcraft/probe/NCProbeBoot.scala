@@ -27,6 +27,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCE, NCException, U}
 import org.apache.nlpcraft.model.NCModel
@@ -91,8 +92,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             withValue(s"$prefix.models", fromIterable(Seq().asJava)).
             withValue(s"$prefix.lifecycle", fromIterable(Seq().asJava)).
             withValue(s"$prefix.resultMaxSizeBytes", fromAnyRef(1048576)).
-            withValue("nlpcraft.nlpEngine", fromAnyRef("opennlp")).
-            withValue("nlpcraft.versionCheckDisable", fromAnyRef(false))
+            withValue("nlpcraft.nlpEngine", fromAnyRef("opennlp"))
         
         // Following properties are 'null' by default:
         // -------------------------------------------
@@ -417,7 +417,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "lifecycle" → cfg.lifecycle.mkString(","),
                 "jarFolder" → cfg.jarsFolder
             )
-            
+
+            NCExternalConfigManager.start(span)
             NCNlpCoreManager.start(span)
             NCNumericManager.start(span)
             NCDeployManager.start(span)
@@ -463,6 +464,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             NCDeployManager.stop(span)
             NCNumericManager.stop(span)
             NCNlpCoreManager.stop(span)
+            NCExternalConfigManager.stop(span)
         }
         
         // Lifecycle callback.

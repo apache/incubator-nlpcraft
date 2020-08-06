@@ -287,7 +287,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         "term(sort)={id == 'nlpcraft:sort'}? " +
         "term(limit)={id == 'nlpcraft:limit'}?"
     )
-    @NCIntentExample(Array(
+    @NCIntentSample(Array(
         "order date, please!",
         "show me the order dates",
         "list dates of orders"
@@ -349,7 +349,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         "term(condFreeDate)={id == 'nlpcraft:date'}? " +
         "term(limit)={id == 'nlpcraft:limit'}?"
     )
-    @NCIntentExample(Array(
+    @NCIntentSample(Array(
         "What are the least performing categories for the last quarter?"
     ))
     def onCustomSortReport(

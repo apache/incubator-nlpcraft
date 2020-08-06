@@ -11,3 +11,6 @@ out
 zips
 model.yaml
 model.json
+**/__pycache__
+**/data
+**/.ipynb_checkpoints/

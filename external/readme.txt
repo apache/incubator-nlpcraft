@@ -1,15 +1,30 @@
-This folder contains 3rd party pre-packaged configuration. Note that this configuration
-is based on Creative Commons Attribution 4.0 International (CC BY 4.0) license
-(https://creativecommons.org/licenses/by/4.0/).
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-Note that CC BY 4.0 is not automatically compatible with Apache Software License 2.0 and
-therefore is NOT included into official Apache source release. This configuration can
-be downloaded separately if CC BY 4.0 derived content is acceptable by the end user.
+This folder contains external pre-packaged configuration.
 
-To use pre-packaged configuration files (expanded in this directory or elsewhere) you
-need to provide NLPCRAFT_RESOURCE_EXT system property or environment variable to NLPCraft
-server that should point to the absolute path of the folder where these files are located.
+'spell' and 'geo' folders contain configuration that is based on external data that is licensed under Creative
+Commons Attribution 4.0 International (CC BY 4.0) license (https://creativecommons.org/licenses/by/4.0/).
+Note that CC BY 4.0 is not automatically compatible with Apache Software License 2.0 (ASL 2.0) and
+therefore is NOT included into official Apache source release.
 
-For example, if you obtained the 'cc_by40_geo_config.zip' file from this folder and unzipped
-into '/home/nlpcraft/ext' folder, then you need to run NLPCraft server with the
-following system property configuration '-DNLPCRAFT_RESOURCE_EXT=/home/nlpcraft/ext'.
+'opennlp' folder contains *binary* models from Apache OpenNLP project and are ASL 2.0 licensed.
+Note also that these files cannot be included into the official Apache source release despite the fact that
+OpenNLP binary models are ASL 2.0 licensed.
+
+See 'nlpcraft.conf' main configuration file for more details on how to configure the external configuration.
+

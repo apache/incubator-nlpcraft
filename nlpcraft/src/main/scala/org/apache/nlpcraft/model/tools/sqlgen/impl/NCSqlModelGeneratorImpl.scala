@@ -318,7 +318,6 @@ object NCSqlModelGeneratorImpl {
         ))
         mdl.setAdditionalStopwords(Array())
         mdl.setSuspiciousWords(Array())
-        mdl.setExamples(Array())
         mdl.setEnabledBuiltInTokens(Array())
         mdl.setIntents(Array())
 

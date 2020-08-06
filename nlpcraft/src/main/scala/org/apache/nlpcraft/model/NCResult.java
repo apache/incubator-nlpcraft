@@ -57,6 +57,7 @@ public class NCResult implements Serializable {
     private String body;
     private String type;
     private Collection<NCToken> tokens;
+    private String intentId;
     
     /**
      * Creates new result with given body and type.
@@ -211,5 +212,23 @@ public class NCResult implements Serializable {
      */
     public String getBody() {
         return body;
+    }
+
+    /**
+     * Get optional intent ID. 
+     *
+     * @return Intent ID or {@code null} if intent ID was not provided.
+     */
+    public String getIntentId() {
+        return intentId;
+    }
+
+    /**
+     * Sets optional intent ID.
+     *
+     * @param intentId
+     */
+    public void setIntentId(String intentId) {
+        this.intentId = intentId;
     }
 }

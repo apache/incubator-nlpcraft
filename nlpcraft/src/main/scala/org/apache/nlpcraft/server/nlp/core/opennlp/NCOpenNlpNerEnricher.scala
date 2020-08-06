@@ -17,13 +17,13 @@
 
 package org.apache.nlpcraft.server.nlp.core.opennlp
 
-import java.io.BufferedInputStream
-
 import io.opencensus.trace.Span
 import opennlp.tools.namefind.{NameFinderME, TokenNameFinderModel}
 import org.apache.ignite.IgniteCache
 import org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizer
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
 import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
@@ -39,12 +39,14 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
     @volatile private var nerFinders: Map[NameFinderME, String] = _
     @volatile private var cache: IgniteCache[String, Array[String]] = _
 
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        require(NCOpenNlpTokenizer.isStarted)
+
         val m = collection.mutable.HashMap.empty[NameFinderME, String]
 
-        def add(typ: String, file: String): Unit = {
+        def add(typ: String, res: String): Unit = {
             val f =
-                managed(new BufferedInputStream(U.getStream(s"opennlp/$file"))) acquireAndGet { in ⇒
+                managed(NCExternalConfigManager.getStream(OPENNLP, res, span)) acquireAndGet { in ⇒
                     new NameFinderME(new TokenNameFinderModel(in))
                 }
 
@@ -68,7 +70,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
         catching(wrapIE) {
             cache = ignite.cache[String, Array[String]]("opennlp-cache")
         }
-        
+
         super.start()
     }
 

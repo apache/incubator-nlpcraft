@@ -20,11 +20,6 @@
     "name": "Phone Example Model",
     "version": "1.0",
     "description": "Phone example model.",
-    "examples": [
-        "Call Apple office",
-        "Can you give a call to John Smith?",
-        "Please, dial +7 (931) 188 34 58 and ask Mike"
-    ],
     "enabledBuiltInTokens": [
         "google:organization",
         "google:person",

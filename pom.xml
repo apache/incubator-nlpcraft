@@ -321,12 +321,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.scalatest</groupId>
-                <artifactId>scalatest_${scala.base}</artifactId>
-                <version>${scalatest.ver}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j.ver}</version>
@@ -429,12 +423,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit.ver}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>com.google.cloud</groupId>
                 <artifactId>google-cloud-language</artifactId>
                 <version>${google.clould.language.ver}</version>
@@ -475,6 +463,19 @@
                 <artifactId>stanford-corenlp</artifactId>
                 <version>${stanford.corenlp.ver}</version>
                 <classifier>models</classifier>
+            </dependency>
+
+            <!-- Test dependencies. -->
+            <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest_${scala.base}</artifactId>
+                <version>${scalatest.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.ver}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

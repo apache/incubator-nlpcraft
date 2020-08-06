@@ -17,10 +17,12 @@
 
 package org.apache.nlpcraft.common.nlp.core
 
+import org.apache.nlpcraft.common.NCService
+
 /**
   * NLP tokenizer.
   */
-trait NCNlpTokenizer {
+trait NCNlpTokenizer extends NCService {
     /**
       * Tokenizes the sentence.
       *

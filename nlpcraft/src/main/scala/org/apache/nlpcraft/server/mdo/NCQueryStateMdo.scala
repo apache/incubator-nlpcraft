@@ -41,6 +41,7 @@ case class NCQueryStateMdo(
     @NCMdoField var status: String,
     @NCMdoField enabledLog: Boolean,
     @NCMdoField var logJson: Option[String] = None,
+    @NCMdoField var intentId: Option[String] = None,
     // Query OK.
     @NCMdoField var resultType: Option[String] = None,
     @NCMdoField var resultBody: Option[String] = None,

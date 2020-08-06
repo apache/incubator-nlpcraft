@@ -20,7 +20,7 @@
 <Configuration status="INFO">
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{MMM-dd HH:mm:ss} [%-5p] %m%n"/>
+            <PatternLayout pattern="%d{MMM-dd|HH:mm:ss}|%-5p| %C{1} - (%F:%L) - %m%n"/>
         </Console>
     </Appenders>
     <Loggers>

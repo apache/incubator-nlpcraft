@@ -31,7 +31,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  *
  * @see NCIntentRef
  * @see NCIntentTerm
- * @see NCIntentExample
+ * @see NCIntentSample
  * @see NCIntentSkip
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch) 

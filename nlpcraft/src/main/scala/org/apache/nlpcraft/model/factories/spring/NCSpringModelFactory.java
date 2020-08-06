@@ -58,7 +58,6 @@ import java.util.*;
  *         resultMaxSizeBytes = 1048576
  *     }
  *     nlpEngine = "opennlp"
- *     versionCheckDisable = false
  *  }
  * </pre>
  * <p>

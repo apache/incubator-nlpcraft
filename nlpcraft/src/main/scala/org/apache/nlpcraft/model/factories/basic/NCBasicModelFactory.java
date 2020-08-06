@@ -51,7 +51,6 @@ import java.util.*;
  *         resultMaxSizeBytes = 1048576
  *     }
  *     nlpEngine = "opennlp"
- *     versionCheckDisable = false
  * }
  * </pre>
  * <p>
@@ -76,6 +75,6 @@ public class NCBasicModelFactory implements NCModelFactory {
 
     @Override
     public void terminate() {
-        // No-op.
+        // No-op.  
     }
 }

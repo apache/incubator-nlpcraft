@@ -785,6 +785,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       * @param errMsg
       * @param resType
       * @param resBody
+      * @param intentId
       * @param tstamp
       * @param parent Optional parent span.
       */
@@ -794,6 +795,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         errMsg: String,
         resType: String,
         resBody: String,
+        intentId: String,
         tstamp: Timestamp,
         parent: Span): Unit =
         startScopedSpan("updateReadyProcessingLog", parent, "srvReqId" → srvReqId) { _ ⇒
@@ -805,14 +807,15 @@ object NCSqlManager extends NCService with NCIgniteInstance {
                   |    error = ?,
                   |    res_type = ?,
                   |    res_body_gzip = ?,
+                  |    intent_id = ?,
                   |    resp_tstamp = ?
                   |WHERE srv_req_id = ?
                 """.stripMargin,
                 QRY_READY.toString,
                 errMsg,
                 resType,
-                if (resBody == null) null
-                else U.compress(resBody),
+                if (resBody == null) null else U.compress(resBody),
+                intentId,
                 tstamp,
                 srvReqId
             )

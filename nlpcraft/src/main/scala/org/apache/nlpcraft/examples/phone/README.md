@@ -32,20 +32,21 @@ can easily add access to the contact database and issue the call via many existi
 You can run necessary JVMs for this example similarly from command line or IDE.
 NOTE: that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
 embedded probe and starts it automatically:
- *  Run REST server:
+ * Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
     * **Environment variables:** 
       * `CONFIG_FORCE_nlpcraft_server_tokenProviders.0=nlpcraft`
       * `CONFIG_FORCE_nlpcraft_server_tokenProviders.1=google`
     * **Program arguments:** `-server`
- * To run unit test with embedded probe:
-    * **JUnit 5 test:** `org.apache.nlpcraft.examples.phone.PhoneTest`
- * To run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
+ * Run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
     * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.phone.PhoneModel`
     * **Program arguments:** `-probe`
+ * Test using built-in test framework:
+    * **Main class:** `org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator`
+    * **VM arguments:** `-DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.phone.PhoneModel`       
 
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.

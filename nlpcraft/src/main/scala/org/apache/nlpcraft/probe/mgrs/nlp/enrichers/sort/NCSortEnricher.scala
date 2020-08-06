@@ -35,37 +35,6 @@ import scala.collection.{Map, Seq, mutable}
   * Sort enricher.
   */
 object NCSortEnricher extends NCProbeEnricher {
-    // Single words.
-    private final val SORT =
-        Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle").map(NCNlpCoreManager.stem)
-
-    // Single words.
-    // Cannot be same as in SORT.
-    private final val BY: Seq[String] = Seq("by", "on", "with").map(NCNlpCoreManager.stem)
-
-    // Multiple words.
-    // Cannot be same as in SORT and BY.
-    // Some words from chunks can be the same as SORT but cannot be same as BY.
-    private final val ORDER = {
-        val p = NCMacroParser()
-
-        Seq(
-            "top down" → false,
-            "bottom up" → true,
-            "ascending" → true,
-            "asc" → true,
-            "descending" → false,
-            "desc" → false,
-            "{in|by|from} {top down|descending} {order|way|fashion|*}" → false,
-            "{in|by|from} {bottom up|ascending} {order|way|fashion|*}" → true
-        ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
-    }
-
-    private final val STEM_AND = NCNlpCoreManager.stem("and")
-
-    private final val MASK_WORDS =
-        (SORT ++ BY ++ ORDER.map(_._1)).flatMap(_.split(" ")).map(_.trim).filter(_.nonEmpty).distinct
-
     private final val TOK_ID = "nlpcraft:sort"
 
     object Type extends Enumeration {
@@ -107,6 +76,12 @@ object NCSortEnricher extends NCProbeEnricher {
         override def toString: String = s"NoteData [note=$note, indexes=[${indexes.mkString(",")}]]"
     }
 
+    @volatile private var sort: Seq[String] = _
+    @volatile private var by: Seq[String] = _
+    @volatile private var order: Seq[(String, Boolean)] = _
+    @volatile private var stemAnd: String = _
+    @volatile private var maskWords: Seq[String] = _
+
     private case class Match(
         asc: Option[Boolean],
         main: Seq[NCNlpSentenceToken],
@@ -133,24 +108,24 @@ object NCSortEnricher extends NCProbeEnricher {
       */
     private def validate() {
         // Not duplicated.
-        require(SORT.size + BY.size + ORDER.size == (SORT ++ BY ++ ORDER.map(_._1)).distinct.size)
+        require(sort.size + by.size + order.size == (sort ++ by ++ order.map(_._1)).distinct.size)
 
         // Single words.
-        require(!SORT.exists(_.contains(" ")))
-        require(!BY.exists(_.contains(" ")))
+        require(!sort.exists(_.contains(" ")))
+        require(!by.exists(_.contains(" ")))
 
         // Different words.
-        require(SORT.intersect(BY).isEmpty)
-        require(SORT.intersect(ORDER.map(_._1)).isEmpty)
-        require(BY.intersect(ORDER.map(_._1)).isEmpty)
+        require(sort.intersect(by).isEmpty)
+        require(sort.intersect(order.map(_._1)).isEmpty)
+        require(by.intersect(order.map(_._1)).isEmpty)
 
         // `Sort by` as one element.
         require(MASKS.filter(_._2 == TYPE_BY).keys.forall(_.contains("SORT BY")))
 
-        val ordersSeq: Seq[Seq[String]] = ORDER.map(_._1).map(_.split(" ").toSeq)
+        val ordersSeq: Seq[Seq[String]] = order.map(_._1).map(_.split(" ").toSeq)
 
         // ORDER doesn't contain words from BY (it can contain words from SORT).
-        require(!BY.exists(ordersSeq.contains))
+        require(!by.exists(ordersSeq.contains))
 
         // Right order of keywords and references.
         MASKS.keys.map(_.split(" ")).foreach(seq ⇒ {
@@ -201,7 +176,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 def contiguous(tok1Idx: Int, tok2Idx: Int): Boolean = {
                     val between = toks.filter(t ⇒ t.index > tok1Idx && t.index < tok2Idx)
 
-                    between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == STEM_AND)
+                    between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == stemAnd)
                 }
 
                 val minIdx = toks.dropWhile(t ⇒ !isUserNotValue(t)).head.index
@@ -284,9 +259,9 @@ object NCSortEnricher extends NCProbeEnricher {
 
         // Order is important.
         // SORT and ORDER don't have same words (validated)
-        val orderOpt = extract(ORDER.map(_._1), used = Seq.empty)
-        val byOpt = extract(BY, used = orderOpt.toSeq.flatMap(_.tokens))
-        val sortOpt = extract(SORT, used = orderOpt.toSeq.flatMap(_.tokens) ++ byOpt.toSeq.flatMap(_.tokens))
+        val orderOpt = extract(order.map(_._1), used = Seq.empty)
+        val byOpt = extract(by, used = orderOpt.toSeq.flatMap(_.tokens))
+        val sortOpt = extract(sort, used = orderOpt.toSeq.flatMap(_.tokens) ++ byOpt.toSeq.flatMap(_.tokens))
 
         if (sortOpt.nonEmpty || orderOpt.nonEmpty) {
             val sortToks = sortOpt.toSeq.flatMap(_.tokens)
@@ -320,7 +295,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 if (
                     othersRefs.nonEmpty &&
                     others.filter(p ⇒ !othersRefs.contains(p)).
-                        forall(p ⇒ (p.isStopWord || p.stem == STEM_AND) && !MASK_WORDS.contains(p.stem))
+                        forall(p ⇒ (p.isStopWord || p.stem == stemAnd) && !maskWords.contains(p.stem))
                 ) {
                     // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
                     val mask = toks.map(getKeyWordType).
@@ -356,7 +331,7 @@ object NCSortEnricher extends NCProbeEnricher {
                                         split(part2, data2, nullable = true)
                                     else
                                         Seq.empty
-                                val asc = orderOpt.flatMap(order ⇒ Some(ORDER(order.synonymIndex)._2))
+                                val asc = orderOpt.flatMap(o ⇒ Some(order(o.synonymIndex)._2))
 
                                 typ match {
                                     case TYPE_SUBJ ⇒
@@ -429,7 +404,7 @@ object NCSortEnricher extends NCProbeEnricher {
       * @param toks Tokens in which some stopwords can be deleted.
       */
     private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
-        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || MASK_WORDS.contains(t.stem)
+        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || maskWords.contains(t.stem)
 
         val idxs = toks.map(_.index)
 
@@ -506,6 +481,37 @@ object NCSortEnricher extends NCProbeEnricher {
         }
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        // Single words.
+        sort =
+            Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle").map(NCNlpCoreManager.stem)
+
+        // Single words.
+        // Cannot be same as in SORT.
+        by = Seq("by", "on", "with").map(NCNlpCoreManager.stem)
+
+        // Multiple words.
+        // Cannot be same as in SORT and BY.
+        // Some words from chunks can be the same as SORT but cannot be same as BY.
+        order = {
+            val p = NCMacroParser()
+
+            Seq(
+                "top down" → false,
+                "bottom up" → true,
+                "ascending" → true,
+                "asc" → true,
+                "descending" → false,
+                "desc" → false,
+                "{in|by|from} {top down|descending} {order|way|fashion|*}" → false,
+                "{in|by|from} {bottom up|ascending} {order|way|fashion|*}" → true
+            ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
+        }
+
+        stemAnd = NCNlpCoreManager.stem("and")
+
+        maskWords =
+            (sort ++ by ++ order.map(_._1)).flatMap(_.split(" ")).map(_.trim).filter(_.nonEmpty).distinct
+
         validate()
 
         super.start()
@@ -513,5 +519,11 @@ object NCSortEnricher extends NCProbeEnricher {
 
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
+
+        sort = null
+        by = null
+        order = null
+        stemAnd = null
+        maskWords = null
     }
 }

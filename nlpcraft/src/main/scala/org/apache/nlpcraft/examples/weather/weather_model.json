@@ -20,10 +20,6 @@
     "name": "Weather Example Model",
     "version": "1.0",
     "description": "Weather example model.",
-    "examples": [
-        "What's the local weather forecast?",
-        "What's the weather in Moscow?"
-    ],
     "macros": [
         {
             "name": "<OF>",
