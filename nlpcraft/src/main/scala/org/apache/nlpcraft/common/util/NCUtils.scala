@@ -303,6 +303,18 @@ object NCUtils extends LazyLogging {
     def readResource(res: String, enc: String, log: Logger = logger): List[String] = readStream(getStream(res), enc, log)
 
     /**
+      * Maps lines from the given resource to an object.
+      *
+      * @param res Resource path to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      * @param mapper Function to map lines.
+      */
+    @throws[NCE]
+    def mapResource[T](res: String, enc: String, log: Logger = logger, mapper: Iterator[String] ⇒ T): T =
+        mapStream(getStream(res), enc, log, mapper)
+
+    /**
       * Reads lines from given file.
       *
       * @param path Zipped file path to read from.
@@ -339,10 +351,23 @@ object NCUtils extends LazyLogging {
       */
     @throws[NCE]
     def readStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
-        try
+        mapStream(in, enc, log, _.map(p ⇒ p).toList)
+
+    /**
+      * Maps lines from the given stream to an object.
+      *
+      * @param in Stream to read from.
+      * @param enc Encoding.
+      * @param log Logger to use.
+      * @param mapper Function to read lines.
+      */
+    @throws[NCE]
+    def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] ⇒ T): T =
+        try {
             managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
-                src.getLines().map(p ⇒ p).toList
+                mapper(src.getLines())
             }
+        }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read stream.", e)
         }
