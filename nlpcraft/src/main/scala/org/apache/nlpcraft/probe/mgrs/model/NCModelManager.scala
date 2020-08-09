@@ -59,24 +59,24 @@ object NCModelManager extends NCService with DecorateAsScala {
     )
     
     /**
-      * @param mdl Data model.
+      * @param h Data model holder.
       */
-    private def addNewModel(mdl: NCModel): Unit = {
+    private def addNewModel(h: NCModelHolder): Unit = {
         require(Thread.holdsLock(mux))
 
-        checkModelConfig(mdl)
+        checkModelConfig(h.model)
 
         val parser = new NCMacroParser
-        val macros = mdl.getMacros
+        val macros = h.model.getMacros
 
         // Initialize macro parser.
         if (macros != null)
             macros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
-        
-        models += mdl.getId → verifyAndDecorate(mdl, parser)
+
+        models += h.model.getId → verifyAndDecorate(h, parser)
 
         // Init callback on the model.
-        mdl.onInit()
+        h.model.onInit()
     }
 
     @throws[NCE]
@@ -249,12 +249,14 @@ object NCModelManager extends NCService with DecorateAsScala {
     /**
       * Verifies given model and makes a decorator optimized for model enricher.
       *
-      * @param mdl Model to verify and decorate.
+      * @param h Model holder to verify and decorate.
       * @param parser Initialized macro parser.
       * @return Model decorator.
       */
     @throws[NCE]
-    private def verifyAndDecorate(mdl: NCModel, parser: NCMacroParser): NCModelDecorator = {
+    private def verifyAndDecorate(h: NCModelHolder, parser: NCMacroParser): NCModelDecorator = {
+        val mdl = h.model
+
         for (elm ← mdl.getElements)
             checkElement(mdl, elm)
 
@@ -526,6 +528,7 @@ object NCModelManager extends NCService with DecorateAsScala {
 
         NCModelDecorator(
             model = mdl,
+            intentsSamples = h.intentSamples,
             synonyms = mkFastAccessMap(filter(syns, dsl = false)),
             synonymsDsl = mkFastAccessMap(filter(syns, dsl = true)),
             additionalStopWordsStems = addStopWords,

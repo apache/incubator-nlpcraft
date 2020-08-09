@@ -17,27 +17,19 @@
 
 package org.apache.nlpcraft.model.tools.test.impl
 
-import java.lang.reflect.Method
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.util.NCUtils
-import org.apache.nlpcraft.model.intent.impl.NCIntentDslCompiler
+import org.apache.nlpcraft.model.NCModel
+import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
-import org.apache.nlpcraft.model.{NCIntent, NCIntentRef, NCIntentSample, NCModel}
 import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.
   */
 private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
-    case class IntentSamples(intentId: String, samples: List[String])
-    
     private final val PROP_MODELS = "NLPCRAFT_TEST_MODELS"
-
-    private final val CLS_SAMPLE = classOf[NCIntentSample]
-    private final val CLS_INTENT = classOf[NCIntent]
-    private final val CLS_INTENT_REF = classOf[NCIntentRef]
 
     @throws[Exception]
     def isValid: Boolean =
@@ -66,7 +58,12 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
 
     @throws[Exception]
     private def isValid(classes: Seq[Class[_ <: NCModel]]) = {
-        val samples = getSamples(classes.map(cl ⇒ cl → cl.getDeclaredConstructor().newInstance().getId).toMap)
+        val samples =
+            classes.
+                map(_.getDeclaredConstructor().newInstance()).
+                map(mdl ⇒ mdl.getId → NCIntentScanner.scanIntentsSamples(mdl).toMap).
+                toMap.
+                filter(_._2.nonEmpty)
 
         NCEmbeddedProbe.start(classes: _*)
 
@@ -81,7 +78,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
       * @param samples
       * @return
       */
-    private def process(samples: Map[/*Model ID*/String, List[IntentSamples]]): Boolean = {
+    private def process(samples: Map[/*Model ID*/String, Map[String/*Intent ID*/, Seq[String]/*Samples*/]]): Boolean = {
         case class Result(
             modelId: String,
             intentId: String,
@@ -90,7 +87,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             error: Option[String]
         )
         
-        val results = samples.flatMap { case (mdlId, smpList) ⇒
+        val results = samples.flatMap { case (mdlId, samples) ⇒
             val cli = new NCTestClientBuilder().newBuilder.build
     
             cli.open(mdlId)
@@ -100,14 +97,14 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                     val res = cli.ask(txt)
             
                     if (res.isFailed)
-                        Result(mdlId, intentId, txt, false, Some(res.getResultError.get()))
+                        Result(mdlId, intentId, txt, pass = false, Some(res.getResultError.get()))
                     else if (intentId != res.getIntentId)
-                        Result(mdlId, intentId, txt, false, Some(s"Unexpected intent ID '${res.getIntentId}'"))
+                        Result(mdlId, intentId, txt, pass = false, Some(s"Unexpected intent ID '${res.getIntentId}'"))
                     else
-                        Result(mdlId, intentId, txt, true, None)
+                        Result(mdlId, intentId, txt, pass = true, None)
                 }
                 
-                for (smp ← smpList; txt ← smp.samples) yield ask(smp.intentId, txt)
+                for ((intentId, seq) ← samples; txt ← seq) yield ask(intentId, txt)
             }
             finally
                 cli.close()
@@ -139,73 +136,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         
         failCnt == 0
     }
-    
-    private def mkMethodName(mtd: Method): String =
-        s"${mtd.getDeclaringClass.getName}#${mtd.getName}(...)"
 
-    /**
-      *
-      * @param mdls
-      * @return
-      */
-    private def getSamples(mdls: Map[Class[_ <: NCModel], String]): Map[/*Model ID*/String, List[IntentSamples]] =
-        mdls.flatMap { case (claxx, mdlId) ⇒
-            var annFound = false
-
-            val mdlData = claxx.getDeclaredMethods.flatMap(method ⇒ {
-                val smpAnn = method.getAnnotation(CLS_SAMPLE)
-                val intAnn = method.getAnnotation(CLS_INTENT)
-                val refAnn = method.getAnnotation(CLS_INTENT_REF)
-
-                if (smpAnn != null || intAnn != null || refAnn != null) {
-                    annFound = true
-
-                    def mkIntentId(): String =
-                        if (intAnn != null)
-                            NCIntentDslCompiler.compile(intAnn.value(), mdlId).id
-                        else if (refAnn != null)
-                            refAnn.value().trim
-                        else
-                            throw new AssertionError()
-
-                    if (smpAnn != null) {
-                        if (intAnn == null && refAnn == null) {
-                            logger.warn(s"@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations " +
-                                s"in method (ignoring): ${mkMethodName(method)}")
-
-                            None
-                        }
-                        else {
-                            val samples = smpAnn.value().toList
-
-                            if (samples.isEmpty) {
-                                logger.warn(s"@NCTestSample annotation is empty in method (ignoring): ${mkMethodName(method)}")
-
-                                None
-                            }
-                            else
-                                Some(IntentSamples(mkIntentId(), samples))
-                        }
-                    }
-                    else {
-                        logger.warn(s"@NCTestSample annotation is missing in method (ignoring): ${mkMethodName(method)}")
-
-                        None
-                    }
-                }
-                else
-                    None
-            }).toList
-
-            if (mdlData.isEmpty) {
-                if (!annFound)
-                    logger.warn(s"Model '$mdlId' doesn't have any intents to test.")
-
-                None
-            }
-            else
-                Some(mdlId → mdlData)
-        }
 
     /**
       *

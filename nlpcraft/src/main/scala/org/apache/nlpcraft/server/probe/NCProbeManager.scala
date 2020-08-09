@@ -56,8 +56,8 @@ object NCProbeManager extends NCService {
     private[probe] object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.probe"
 
-        def getDnHostPort = getHostPort(s"$pre.links.downLink")
-        def getUpHostPort = getHostPort(s"$pre.links.upLink")
+        def getDnHostPort: (String, Integer) = getHostPort(s"$pre.links.downLink")
+        def getUpHostPort: (String, Integer) = getHostPort(s"$pre.links.upLink")
 
         def poolSize: Int = getInt(s"$pre.poolSize")
         def reconnectTimeoutMs: Long = getLong(s"$pre.reconnectTimeoutMs")
@@ -574,13 +574,34 @@ object NCProbeManager extends NCService {
                 respond("S2P_PROBE_VERSION_MISMATCH")
             else {
                 val models =
-                    hsMsg.data[List[(String, String, String, java.util.Set[String])]]("PROBE_MODELS").
-                        map { case (mdlId, mdlName, mdlVer, enabledBuiltInToks) ⇒
+                    hsMsg.data[
+                        List[(
+                            String,
+                            String,
+                            String,
+                            java.util.Set[String],
+                            java.util.Map[String, String],
+                            java.util.Map[String, java.util.List[String]],
+                            java.util.Map[String, java.util.List[String]]
+                        )]]("PROBE_MODELS").
+                        map {
+                            case (
+                                mdlId,
+                                mdlName,
+                                mdlVer,
+                                enabledBuiltInToks,
+                                macros,
+                                elemSyns,
+                                intentsSamples
+                            ) ⇒
                             NCProbeModelMdo(
                                 id = mdlId,
                                 name = mdlName,
                                 version = mdlVer,
-                                enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet
+                                enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
+                                macros = macros.asScala.toMap,
+                                elementsSynonyms = elemSyns.asScala.map(p ⇒ p._1 → p._2.asScala).toMap,
+                                intentsSamples.asScala.map(p ⇒ p._1 → p._2.asScala).toMap
                             )
                         }.toSet
 

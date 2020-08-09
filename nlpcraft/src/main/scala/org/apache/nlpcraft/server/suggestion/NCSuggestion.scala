@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.mdo
-
-import org.apache.nlpcraft.server.mdo.impl._
+package org.apache.nlpcraft.server.suggestion
 
 /**
-  * Probe model MDO.
+  * TODO:
+  * @param suggestion
+  * @param ctxWorldServerScore
+  * @param suggestedCount
+  * @param totalScore
   */
-@NCMdoEntity(sql = false)
-case class NCProbeModelMdo(
-    @NCMdoField id: String,
-    @NCMdoField name: String,
-    @NCMdoField version: String,
-    @NCMdoField enabledBuiltInTokens: Set[String],
-    @NCMdoField macros: Map[String, String],
-    @NCMdoField elementsSynonyms: Map[String, Seq[String]],
-    @NCMdoField intentsSamples: Map[String, Seq[String]]
-) extends NCAnnotatedMdo[NCProbeModelMdo] {
-    override def hashCode(): Int = s"$id$name".hashCode()
-    
-    override def equals(obj: Any): Boolean = {
-        obj match {
-            case x: NCProbeModelMdo ⇒ x.id == id
-            case _ ⇒ false
-        }
-    }
-}
+case class NCSuggestion(
+    suggestion: String,
+    ctxWorldServerScore: Double,
+    suggestedCount: Int,
+    totalScore: Double
+)

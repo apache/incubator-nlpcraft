@@ -35,6 +35,7 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
@@ -47,7 +48,7 @@ object NCConnectionManager extends NCService {
     private final val SO_TIMEOUT = 5 * 1000
     // Ping timeout.
     private final val PING_TIMEOUT = 5 * 1000
-    
+
     // Internal probe GUID.
     @volatile private var probeGuid: String = _
     
@@ -234,7 +235,18 @@ object NCConnectionManager extends NCService {
 
                             // util.HashSet created to avoid scala collections serialization error.
                             // Seems to be a Scala bug.
-                            (mdl.getId, mdl.getName, mdl.getVersion, new util.HashSet[String](mdl.getEnabledBuiltInTokens))
+                            (
+                                mdl.getId,
+                                mdl.getName,
+                                mdl.getVersion,
+                                new util.HashSet[String](mdl.getEnabledBuiltInTokens),
+                                mdl.getMacros,
+                                new util.HashMap[String, util.List[String]](
+                                    mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
+                                ),
+                                new util.HashMap[String, util.List[String]]
+                                    (m.intentsSamples.map(p ⇒ p._1 → new util.ArrayList[String](p._2.asJava)).asJava)
+                            )
                         })
                 ), cryptoKey)
     

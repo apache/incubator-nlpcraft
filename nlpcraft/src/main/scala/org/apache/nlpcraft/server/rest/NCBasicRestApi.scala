@@ -37,6 +37,7 @@ import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
+import org.apache.nlpcraft.server.suggestion.NCSuggestionsManager
 import org.apache.nlpcraft.server.user.NCUserManager
 import spray.json.DefaultJsonProtocol._
 import spray.json.{JsValue, RootJsonFormat}
@@ -257,14 +258,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @param acsTkn Access token to check.
       */
     @throws[NCE]
-    protected def authenticate(acsTkn: String): NCUserMdo = authenticate0(acsTkn, false)
+    protected def authenticate(acsTkn: String): NCUserMdo = authenticate0(acsTkn, shouldBeAdmin = false)
 
     /**
       *
       * @param acsTkn Access token to check.
       */
     @throws[NCE]
-    protected def authenticateAsAdmin(acsTkn: String): NCUserMdo = authenticate0(acsTkn, true)
+    protected def authenticateAsAdmin(acsTkn: String): NCUserMdo = authenticate0(acsTkn, shouldBeAdmin = true)
 
     /**
       * Checks length of field value.
@@ -618,7 +619,64 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             }
         }
     }
-    
+
+    /**
+      *
+      * @return
+      */
+    protected def suggestion$(): Route = {
+        case class Req(
+            acsTok: String,
+            mdlId: String,
+            limitOpt: Option[Int],
+            minScoreOpt: Option[Double]
+        )
+
+        case class Suggestion(
+            suggestion: String,
+            score: Double,
+            suggestedCount: Int
+        )
+
+        case class Res(
+            status: String,
+            suggestions: Map[String, Seq[Suggestion]]
+        )
+
+        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat4(Req)
+        implicit val fbFmt: RootJsonFormat[Suggestion] = jsonFormat3(Suggestion)
+        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+
+        entity(as[Req]) { req ⇒
+            startScopedSpan(
+                "check$",
+                "mdlId" → req.mdlId,
+                "limit" → req.limitOpt.getOrElse(() ⇒ null),
+                "minScore" → req.minScoreOpt.getOrElse(() ⇒ null),
+                "acsTok" → req.acsTok
+            ) { span ⇒
+                checkLength("acsTok", req.acsTok, 256)
+                checkLength("mdlId", req.mdlId, 32)
+
+                val admin = authenticateAsAdmin(req.acsTok)
+
+                if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == req.mdlId)))
+                    throw new NCE(s"Probe not found: ${req.mdlId}")
+
+                val res: Map[String, Seq[Suggestion]] =
+                    NCSuggestionsManager.
+                        suggest(req.mdlId, req.limitOpt, req.minScoreOpt, span).
+                        map { case (elemId, suggs) ⇒
+                            elemId → suggs.map(p ⇒ Suggestion(p.suggestion, p.ctxWorldServerScore, p.suggestedCount))
+                        }.toMap
+
+                complete {
+                    Res(API_OK, res)
+                }
+            }
+        }
+    }
+
     /**
       *
       * @return
@@ -1718,40 +1776,43 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 }
             } ~
             post {
-                withRequestTimeoutResponse(_ ⇒ timeoutResp) {
-                    path(API / "signin") { withLatency(M_SIGNIN_LATENCY_MS, signin$) } ~
-                    path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
-                    path(API / "cancel") { withLatency(M_CANCEL_LATENCY_MS, cancel$) } ~
-                    path(API / "check") { withLatency(M_CHECK_LATENCY_MS, check$) } ~
-                    path(API / "clear"/ "conversation") { withLatency(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
-                    path(API / "clear"/ "dialog") { withLatency(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
-                    path(API / "company"/ "add") { withLatency(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
-                    path(API / "company"/ "get") { withLatency(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
-                    path(API / "company" / "update") { withLatency(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
-                    path(API / "company" / "token" / "reset") { withLatency(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
-                    path(API / "company" / "delete") { withLatency(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
-                    path(API / "user" / "get") { withLatency(M_USER_GET_LATENCY_MS, user$Get) } ~
-                    path(API / "user" / "add") { withLatency(M_USER_ADD_LATENCY_MS, user$Add) } ~
-                    path(API / "user" / "update") { withLatency(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
-                    path(API / "user" / "delete") { withLatency(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
-                    path(API / "user" / "admin") { withLatency(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
-                    path(API / "user" / "passwd" / "reset") { withLatency(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
-                    path(API / "user" / "all") { withLatency(M_USER_ALL_LATENCY_MS, user$All) } ~
-                    path(API / "feedback"/ "add") { withLatency(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
-                    path(API / "feedback"/ "all") { withLatency(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
-                    path(API / "feedback" / "delete") { withLatency(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
-                    path(API / "probe" / "all") { withLatency(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
-                    path(API / "ask") { withLatency(M_ASK_LATENCY_MS, ask$) } ~
-                    (path(API / "ask" / "sync") &
-                        entity(as[JsValue]) &
-                        optionalHeaderValueByName("User-Agent") &
-                        extractClientIP
-                    ) {
-                        (req, userAgentOpt, rmtAddr) ⇒
-                            onSuccess(withLatency(M_ASK_SYNC_LATENCY_MS, ask$Sync(req, userAgentOpt, rmtAddr))) {
-                                js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
-                            }
-                    }}
+                withPrecompressedMediaTypeSupport {
+                    withRequestTimeoutResponse(_ ⇒ timeoutResp) {
+                        path(API / "signin") { withLatency(M_SIGNIN_LATENCY_MS, signin$) } ~
+                        path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
+                        path(API / "cancel") { withLatency(M_CANCEL_LATENCY_MS, cancel$) } ~
+                        path(API / "check") { withLatency(M_CHECK_LATENCY_MS, check$) } ~
+                        path(API / "suggestion") { withLatency(M_SUGGESTION_LATENCY_MS, suggestion$) } ~
+                        path(API / "clear"/ "conversation") { withLatency(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
+                        path(API / "clear"/ "dialog") { withLatency(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
+                        path(API / "company"/ "add") { withLatency(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
+                        path(API / "company"/ "get") { withLatency(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
+                        path(API / "company" / "update") { withLatency(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
+                        path(API / "company" / "token" / "reset") { withLatency(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
+                        path(API / "company" / "delete") { withLatency(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
+                        path(API / "user" / "get") { withLatency(M_USER_GET_LATENCY_MS, user$Get) } ~
+                        path(API / "user" / "add") { withLatency(M_USER_ADD_LATENCY_MS, user$Add) } ~
+                        path(API / "user" / "update") { withLatency(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
+                        path(API / "user" / "delete") { withLatency(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
+                        path(API / "user" / "admin") { withLatency(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
+                        path(API / "user" / "passwd" / "reset") { withLatency(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
+                        path(API / "user" / "all") { withLatency(M_USER_ALL_LATENCY_MS, user$All) } ~
+                        path(API / "feedback"/ "add") { withLatency(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
+                        path(API / "feedback"/ "all") { withLatency(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
+                        path(API / "feedback" / "delete") { withLatency(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
+                        path(API / "probe" / "all") { withLatency(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
+                        path(API / "ask") { withLatency(M_ASK_LATENCY_MS, ask$) } ~
+                        (path(API / "ask" / "sync") &
+                            entity(as[JsValue]) &
+                            optionalHeaderValueByName("User-Agent") &
+                            extractClientIP
+                        ) {
+                            (req, userAgentOpt, rmtAddr) ⇒
+                                onSuccess(withLatency(M_ASK_SYNC_LATENCY_MS, ask$Sync(req, userAgentOpt, rmtAddr))) {
+                                    js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
+                                }
+                        }}
+                    }
                 }
             }
         )
