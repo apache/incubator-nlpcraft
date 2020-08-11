@@ -293,4 +293,9 @@ public class WeatherModel extends NCModelFileAdapter {
         // Load model from external JSON file on classpath.
         super("org/apache/nlpcraft/examples/weather/weather_model.json");
     }
+
+    @Override
+    public void onDiscard() {
+        srv.stop();
+    }
 }
