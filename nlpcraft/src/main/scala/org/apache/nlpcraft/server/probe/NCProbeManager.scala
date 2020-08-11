@@ -591,18 +591,26 @@ object NCProbeManager extends NCService {
                                 mdlVer,
                                 enabledBuiltInToks,
                                 macros,
-                                elemSyns,
+                                elementsSynonyms,
                                 intentsSamples
                             ) ⇒
-                            NCProbeModelMdo(
-                                id = mdlId,
-                                name = mdlName,
-                                version = mdlVer,
-                                enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
-                                macros = macros.asScala.toMap,
-                                elementsSynonyms = elemSyns.asScala.map(p ⇒ p._1 → p._2.asScala).toMap,
-                                intentsSamples.asScala.map(p ⇒ p._1 → p._2.asScala).toMap
-                            )
+                                require(mdlId != null)
+                                require(mdlName != null)
+                                require(mdlVer != null)
+                                require(enabledBuiltInToks != null)
+                                require(macros != null)
+                                require(elementsSynonyms != null)
+                                require(intentsSamples != null)
+
+                                NCProbeModelMdo(
+                                    id = mdlId,
+                                    name = mdlName,
+                                    version = mdlVer,
+                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
+                                    macros = macros.asScala.toMap,
+                                    elementsSynonyms = elementsSynonyms.asScala.map(p ⇒ p._1 → p._2.asScala).toMap,
+                                    intentsSamples = intentsSamples.asScala.map(p ⇒ p._1 → p._2.asScala).toMap
+                                )
                         }.toSet
 
                 val probeTokTypes = models.flatMap(_.enabledBuiltInTokens).map(_.takeWhile(_ != ':'))

@@ -245,7 +245,10 @@ object NCConnectionManager extends NCService {
                                     mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
                                 ),
                                 new util.HashMap[String, util.List[String]]
-                                    (m.intentsSamples.map(p ⇒ p._1 → new util.ArrayList[String](p._2.asJava)).asJava)
+                                    (m.intentsSamples.map {
+                                        case (intentId, samples)  ⇒
+                                            intentId → new util.ArrayList[String](samples.asJava) }.asJava
+                                    )
                             )
                         })
                 ), cryptoKey)

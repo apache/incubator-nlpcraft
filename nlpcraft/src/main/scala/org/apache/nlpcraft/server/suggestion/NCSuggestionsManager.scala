@@ -43,7 +43,7 @@ import scala.collection._
 /**
   * TODO:
   */
-object NCSuggestionsManager extends NCService  {
+object NCSuggestionsManager extends NCService {
     private final val DFLT_LIMIT: Int = 20
     private final val DFLT_MIN_SCORE: Double = 0
 
@@ -122,16 +122,15 @@ object NCSuggestionsManager extends NCService  {
             "limit" → limitOpt.getOrElse(() ⇒ null),
             "minScore" → minScoreOpt.getOrElse(() ⇒ null)
         ) { _ ⇒
-            var url = Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))
-
-            url = s"$url/suggestions"
+            val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
             val mdl = NCProbeManager.getModel(mdlId)
 
+            require(mdl.intentsSamples != null && mdl.elementsSynonyms != null && mdl.macros != null)
+
             val parser = new NCMacroParser()
 
-            if (mdl.macros != null)
-                mdl.macros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+            mdl.macros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
 
             val examples =
                 mdl.
@@ -226,7 +225,7 @@ object NCSuggestionsManager extends NCService  {
 
                         require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
 
-                        reqs.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp}
+                        reqs.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp }
 
                         val i = cnt.addAndGet(batch.size)
 
