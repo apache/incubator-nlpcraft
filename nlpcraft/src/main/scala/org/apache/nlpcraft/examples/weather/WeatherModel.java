@@ -32,7 +32,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 /**
  * Weather example data model.
  * <p>
- * This is relatively complete weather service with JSON output and a non-trivial
+ * This is a relatively complete weather service with JSON output and a non-trivial
  * intent matching logic. It uses Apple's Dark Sky API weather provider REST service for the actual
  * weather information (https://darksky.net/dev/docs#overview)
  * <p>
@@ -215,9 +215,11 @@ public class WeatherModel extends NCModelFileAdapter {
      * @param ctx Intent solver context.
      * @return Query result.
      */
-    @NCIntent("intent=fcast term={id == 'wt:fcast'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
+    @NCIntent("intent=fcast conv=true term={id == 'wt:fcast'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
     @NCIntentSample({
-        "What's the weather forecast in Moscow?"
+        "What's the weather forecast in Moscow?",
+        "Will it be hot next Sunday?",
+        "How about a rain next week in London"
     })
     public NCResult onForecastMatch(
         NCIntentMatch ctx,
@@ -233,9 +235,9 @@ public class WeatherModel extends NCModelFileAdapter {
      * @param ctx Intent solver context.
      * @return Query result.
      */
-    @NCIntent("intent=hist term={id == 'wt:hist'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
+    @NCIntent("intent=hist conv=true term={id == 'wt:hist'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
     @NCIntentSample({
-        "What the weather history in Mosco last week?"
+        "What the weather history in Moscow last week?"
     })
     public NCResult onHistoryMatch(
         NCIntentMatch ctx,
@@ -251,7 +253,7 @@ public class WeatherModel extends NCModelFileAdapter {
      * @param ctx Intent solver context.
      * @return Query result.
      */
-    @NCIntent("intent=curr term={id == 'wt:curr'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
+    @NCIntent("intent=curr conv=true term={id == 'wt:curr'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
     @NCIntentSample({
         "What's the current weather in Moscow"
     })

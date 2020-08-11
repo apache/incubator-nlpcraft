@@ -51,22 +51,22 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
  * Dark Sky API weather provider. See https://darksky.net/dev/docs#overview for details.
  */
 public class DarkSkyService {
-    /** */
-    private final String key;
-
-    /** */
-    private final int maxDaysSecs;
-
-    /** */
-    private final CloseableHttpClient httpClient;
-
-    /** */
+    // GSON response type.
     private static final Type TYPE_RESP = new TypeToken<HashMap<String, Object>>() {}.getType();
 
-    /** */
+    // Access key.
+    private final String key;
+
+    // Maximum days in seconds.
+    private final int maxDaysSecs;
+
+    // HTTP client instance.
+    private final CloseableHttpClient httpClient;
+
+    // GSON instance.
     private static final Gson GSON = new Gson();
 
-    /** */
+    // Date formatter.
     private static final DateTimeFormatter FMT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.systemDefault());
 
@@ -98,7 +98,7 @@ public class DarkSkyService {
     /**
      * Constructor.
      *
-     * @param key     Service key.
+     * @param key  Service key.
      * @param maxDays Max days configuration value.
      */
     public DarkSkyService(String key, int maxDays) {

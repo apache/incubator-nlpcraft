@@ -22,17 +22,19 @@ package org.apache.nlpcraft.examples.misc.darksky;
  */
 public class DarkSkyException extends RuntimeException {
     /**
+     * Creates new exception.
      *
-     * @param msg
+     * @param msg Error message.
      */
     public DarkSkyException(String msg) {
         super(msg);
     }
 
     /**
-     *
-     * @param msg
-     * @param cause
+     * Creates new exceptions.
+     * 
+     * @param msg Error message.
+     * @param cause Optional cause.
      */
     public DarkSkyException(String msg, Throwable cause) {
         super(msg, cause);
