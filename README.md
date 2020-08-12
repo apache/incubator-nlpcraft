@@ -28,9 +28,10 @@
 NLPCraft is free and easy to use, it securely works with any private data source, and has no hardware or software 
 lock-in:
 
+ * Download, Maven/Grape/Gradle/SBT, installation [instructions](https://nlpcraft.apache.org/download.html) 
+ * Read [documentation](https://nlpcraft.apache.org/docs.html)
  * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
  * Latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
- * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.

@@ -48,16 +48,18 @@ object NCNlpCoreManager extends NCService {
       
         logger.info(s"NLP engine configured: ${Config.engine}")
       
-        tokenizer =
+        val factory: NCNlpTokenizerFactory =
             Config.engine match {
-                case "stanford" ⇒ U.mkObject("org.apache.nlpcraft.common.nlp.core.stanford.NCStanfordTokenizer")
-                case "opennlp" ⇒ U.mkObject("org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizer")
-        
+                case "stanford" ⇒ U.mkObject("org.apache.nlpcraft.common.nlp.core.stanford.NCStanfordTokenizerFactory")
+                case "opennlp" ⇒ U.mkObject("org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizerFactory")
+
                 case _ ⇒ throw new AssertionError(s"Unexpected engine: ${Config.engine}")
             }
 
+        tokenizer = factory.mkTokenizer()
+
         tokenizer.start()
-      
+
         super.start()
     }
     
