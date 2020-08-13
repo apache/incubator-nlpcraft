@@ -175,7 +175,7 @@ public class DarkSkyService {
         log.debug("DarkSky time machine API call [lat={}, lon={}, from={}, to={}]", lat, lon, from, to);
 
         if (Duration.between(from, to).get(SECONDS) > maxDaysSecs)
-            throw new DarkSkyException(String.format("Too long request period [from=%s, to=%s]", from, to));
+            throw new DarkSkyException(String.format("Request period is too long [from=%s, to=%s]", from, to));
 
         long durMs = to.toEpochMilli() - from.toEpochMilli();
 

@@ -16,81 +16,40 @@
  */
 
 {
-    "id": "nlpcraft.weather.ex",
-    "name": "Weather Example Model",
-    "version": "1.0",
-    "description": "Weather example model.",
-    "examples": [
-        "What's the local weather forecast?",
-        "What's the weather in Moscow?",
-        "What is the weather like outside?",
-        "How's the weather?",
-        "What's the weather forecast for the rest of the week?",
-        "What's the weather forecast this week?",
-        "What's the weather out there?",
-        "Is it cold outside?",
-        "Is it hot outside?",
-        "Will it rain today?",
-        "When it will rain in Delhi?",
-        "Is there any possibility of rain in Delhi?",
-        "Is it raining now?",
-        "Is there any chance of rain today?"
-    ],
-    "macros": [
-        {
-            "name": "<OF>",
-            "macro": "{of|for|per}"
-        },
-        {
-            "name": "<CHANCE>",
-            "macro": "{chance|possibility|probability|odds|likelihood|potential|risk|opportunity}"
-        },
-        {
-            "name": "<PHENOMENON>",
-            "macro": "{high sea|severe weather|hail|heat wave|cold wave|derecho|supercell|avalanche|cyclone|wildfire|landslide|firestorm|dust storm|thunder snow|winter storm|cloudburst|shower|condensation|precipitation|drizzle|rainstorm|rain storm|rainfall|rain|storm|sun|sunshine|cloud|hot|cold|dry|wet|wind||hurricane|typhoon|sand-storm|sand storm|tornado|humid|fog|snow|smog|black ice|haze|thundershower|thundersnow|sleet|drought|wildfire|blizzard|avalanche|mist|thunderstorm}"
-        },
-        {
-            "name": "<CUR>",
-            "macro": "{current|present|moment|now}"
-        },
-        {
-            "name": "<WEATHER>",
-            "macro": "{weather {condition|temp|temperature|data|*}|condition|temp|temperature}"
-        },
-        {
-            "name": "<FORECAST>",
-            "macro": "{forecast|prognosis|prediction}"
-        },
-        {
-            "name": "<HISTORY>",
-            "macro": "{history|past}"
-        }
-    ],
-    "elements": [
-        {
-            "id": "wt:hist",
-            "description": "Past weather conditions.",
-            "synonyms": [
-                "{<WEATHER>|*} <HISTORY>",
-                "<HISTORY> {<OF>|*} {<WEATHER>|<PHENOMENON>}"
-            ]
-        },
-        {
-            "id": "wt:curr",
-            "description": "Current weather conditions.",
-            "synonyms": [
-                "{<CUR>|*} {<WEATHER>|<PHENOMENON>}",
-                "<CHANCE> <OF> <PHENOMENON>",
-                "<PHENOMENON> {<CHANCE>|*}"
-            ]
-        },
-        {
-            "id": "wt:fcast",
-            "description": "Future weather forecast.",
-            "synonyms": [
-                "{<PHENOMENON>|<WEATHER>|*} <FORECAST>",
-                "<FORECAST> {<OF>|*} {<WEATHER>|<PHENOMENON>}"
-            ]
-        }
-    ]
+  "id": "nlpcraft.weather.ex",
+  "name": "Weather Example Model",
+  "version": "1.0",
+  "description": "Weather example model.",
+  "macros": [
+  ],
+  "elements": [
+    {
+      "id": "wt:phen",
+      "description": "Weather phenomenon.",
+      "synonyms": [
+        "{high sea|severe weather|hail|heat wave|cold wave|derecho|supercell|avalanche|cyclone|wildfire|landslide|firestorm|dust storm|thunder snow|winter storm|cloudburst|shower|condensation|precipitation|drizzle|rainstorm|rain storm|rainfall|rain|storm|sun|sunshine|cloud|hot|cold|dry|wet|wind||hurricane|typhoon|sand-storm|sand storm|tornado|humid|fog|snow|smog|black ice|haze|thundershower|thundersnow|sleet|drought|wildfire|blizzard|avalanche|mist|thunderstorm}",
+        "{weather {condition|temp|temperature|data|*}|condition|temp|temperature}"
+      ]
+    },
+    {
+      "id": "wt:hist",
+      "description": "History (past) indicator.",
+      "groups": [
+        "indicator"
+      ],
+      "synonyms": [
+        "{history|past|previous}"
+      ]
+    },
+    {
+      "id": "wt:fcast",
+      "description": "Forecast (future) indicator.",
+      "groups": [
+        "indicator"
+      ],
+      "synonyms": [
+        "{future|forecast|prognosis|prediction}"
+      ]
+    }
+  ]
 }
