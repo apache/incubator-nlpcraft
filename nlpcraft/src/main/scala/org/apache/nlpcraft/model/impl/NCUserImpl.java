@@ -25,14 +25,14 @@ import java.util.*;
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class NCUserImpl implements NCUser {
-    private long id;
-    private Optional<String> firstName;
-    private Optional<String> lastName;
-    private Optional<String> email;
-    private Optional<String> avatarUrl;
-    private Optional<Map<String, String>> props;
-    private boolean isAdmin;
-    private long signupTstamp;
+    private final long id;
+    private final Optional<String> firstName;
+    private final Optional<String> lastName;
+    private final Optional<String> email;
+    private final Optional<String> avatarUrl;
+    private final Optional<Map<String, String>> props;
+    private final boolean isAdmin;
+    private final long signupTstamp;
 
     /**
      * 

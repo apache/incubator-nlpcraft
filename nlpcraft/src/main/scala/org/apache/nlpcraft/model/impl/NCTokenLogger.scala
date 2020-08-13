@@ -519,7 +519,6 @@ object NCTokenLogger extends LazyLogging {
                             }
 
                             def mkMore(incl: Boolean): String = if (incl) ">=" else ">"
-
                             def mkLess(incl: Boolean): String = if (incl) "<=" else "<"
 
                             val from = mkValue("from", "isfractional")

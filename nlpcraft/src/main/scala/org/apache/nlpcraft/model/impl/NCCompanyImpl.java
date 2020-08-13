@@ -25,14 +25,14 @@ import java.util.*;
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class NCCompanyImpl implements NCCompany {
-    private long id;
-    private String name;
-    private Optional<String> website;
-    private Optional<String> country;
-    private Optional<String> region;
-    private Optional<String> address;
-    private Optional<String> city;
-    private Optional<String> postalCode;
+    private final long id;
+    private final String name;
+    private final Optional<String> website;
+    private final Optional<String> country;
+    private final Optional<String> region;
+    private final Optional<String> address;
+    private final Optional<String> city;
+    private final Optional<String> postalCode;
 
     /**
      * 
