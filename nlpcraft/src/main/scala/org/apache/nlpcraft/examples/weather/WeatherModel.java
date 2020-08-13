@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.examples.weather;
 
 import com.google.gson.Gson;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.nlpcraft.examples.misc.darksky.DarkSkyException;
 import org.apache.nlpcraft.examples.misc.darksky.DarkSkyService;
 import org.apache.nlpcraft.examples.misc.geo.keycdn.GeoManager;
@@ -59,26 +60,13 @@ public class WeatherModel extends NCModelFileAdapter {
     private static final Set<String> LOCAL_WORDS = new HashSet<>(Arrays.asList("my", "local", "hometown"));
 
     /**
-     * Coordinates holder.
-     */
-    private static class Coordinate {
-        private final double latitude;
-        private final double longitude;
-
-        Coordinate(double latitude, double longitude) {
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
-    }
-
-    /**
      * Extracts geo location (city) from given solver context that is suitable for Dark Sky API weather service.
      *
      * @param ctx Intent solver context.
      * @param geoTokOpt Optional geo token.
      * @return Geo location.
      */
-    private Coordinate prepGeo(NCIntentMatch ctx, Optional<NCToken> geoTokOpt) throws NCRejection {
+    private Pair<Double, Double> prepGeo(NCIntentMatch ctx, Optional<NCToken> geoTokOpt) throws NCRejection {
         if (geoTokOpt.isPresent()) {
             NCToken geoTok = geoTokOpt.get();
 
@@ -93,7 +81,7 @@ public class WeatherModel extends NCModelFileAdapter {
                 throw new NCRejection(String.format("Latitude and longitude not found for: %s", city));
             }
 
-            return new Coordinate(lat, lon);
+            return Pair.of(lat, lon);
         }
 
         Optional<GeoDataBean> geoOpt = geoMrg.get(ctx.getContext().getRequest());
@@ -122,7 +110,7 @@ public class WeatherModel extends NCModelFileAdapter {
         // Try current user location.
         GeoDataBean geo = geoOpt.get();
 
-        return new Coordinate(geo.getLatitude(), geo.getLongitude());
+        return Pair.of(geo.getLatitude(), geo.getLongitude());
     }
 
     /**
@@ -192,10 +180,12 @@ public class WeatherModel extends NCModelFileAdapter {
                 to = Instant.ofEpochMilli(dateTok.meta("nlpcraft:date:to"));
             }
 
-            Coordinate latLon = prepGeo(ctx, cityTokOpt); // Handles optional city too.
+            Pair<Double, Double> latLon = prepGeo(ctx, cityTokOpt); // Handles optional city too.
 
-            return NCResult.json(GSON.toJson(from == to ? darkSky.getCurrent(latLon.latitude, latLon.longitude) :
-                darkSky.getTimeMachine(latLon.latitude, latLon.longitude, from, to)));
+            double lat = latLon.getLeft();
+            double lon = latLon.getRight();
+
+            return NCResult.json(GSON.toJson(from == to ? darkSky.getCurrent(lat, lon) : darkSky.getTimeMachine(lat, lon, from, to)));
         }
         catch (DarkSkyException e) {
             throw new NCRejection(e.getLocalizedMessage());
