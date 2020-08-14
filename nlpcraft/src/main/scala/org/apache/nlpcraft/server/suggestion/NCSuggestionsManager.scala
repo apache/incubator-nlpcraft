@@ -45,7 +45,9 @@ import scala.collection._
   */
 object NCSuggestionsManager extends NCService {
     private final val DFLT_LIMIT: Int = 20
+    private final val MAX_LIMIT: Int = 1000
     private final val DFLT_MIN_SCORE: Double = 0
+    private final val MIN_REQUIRED_CNT = 5
 
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
@@ -114,25 +116,28 @@ object NCSuggestionsManager extends NCService {
     /**
       *
       * @param mdlId Model ID.
-      * @param minScoreOpt Context word server minimal suggestion score (default DFLT_MIN_SCORE). Increase it for suggestions count increasing, decrease it to be more precise.
-      * @param limitOpt TODO: inverse parameter.
+      * @param minScore Context word server minimal suggestion score (default DFLT_MIN_SCORE).
+      * Increase it for suggestions count increasing, decrease it to be more precise. Range 0 ... 2.
       *
       * @param parent Parent.
       */
     @throws[NCE]
-    def suggest(mdlId: String, minScoreOpt: Option[Double], limitOpt: Option[Int], parent: Span = null): Map[String, Seq[NCSuggestion]] =
+    def suggest(mdlId: String, minScore: Option[Double], parent: Span = null): Map[String, Seq[NCSuggestion]] =
         startScopedSpan(
-            "suggest",
-            parent,
-            "modelId" → mdlId,
-            "minScore" → minScoreOpt.getOrElse(() ⇒ null),
-            "limit" → limitOpt.getOrElse(() ⇒ null)
+            "suggest", parent, "modelId" → mdlId, "minScore" → minScore.getOrElse(() ⇒ null)
         ) { _ ⇒
             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
             val mdl = NCProbeManager.getModel(mdlId)
 
-            require(mdl.intentsSamples != null && mdl.elementsSynonyms != null && mdl.macros != null)
+            require(mdl.intentsSamples != null, "Samples cannot be null")
+            require(mdl.elementsSynonyms != null, "Element synonyms cannot be null")
+            require(mdl.macros != null, "Macros cannot be null")
+            require(mdl.intentsSamples.forall(_._2.nonEmpty), "Samples cannot be empty")
+
+            mdl.intentsSamples.
+                filter { case (_, samples) ⇒ samples.size < MIN_REQUIRED_CNT }.
+                foreach { case (intentId, _) ⇒ logger.warn(s"Intent has not enough samples: $intentId") }
 
             val parser = new NCMacroParser()
 
@@ -193,7 +198,7 @@ object NCSuggestionsManager extends NCService {
 
             val allReqsCnt = allReqs.map(_._2.size).sum
 
-            logger.debug(
+            logger.info(
                 s"Data prepared [examples=${examples.size}, synonyms=${elemSyns.map(_._2.size).sum}, requests=$allReqsCnt]"
             )
 
@@ -215,8 +220,8 @@ object NCSuggestionsManager extends NCService {
                                 GSON.toJson(
                                     RestRequest(
                                         sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
-                                        min_score = minScoreOpt.getOrElse(DFLT_MIN_SCORE),
-                                        limit = limitOpt.getOrElse(DFLT_LIMIT) + 1
+                                        min_score = minScore.getOrElse(DFLT_MIN_SCORE),
+                                        limit = (if (minScore.isDefined) MAX_LIMIT else DFLT_LIMIT) + 1
                                     )
                                 ),
                                 "UTF-8"
@@ -235,7 +240,7 @@ object NCSuggestionsManager extends NCService {
 
                         val i = cnt.addAndGet(batch.size)
 
-                        logger.debug(s"Executed: $i requests.")
+                        logger.info(s"Executed: $i requests...")
 
                         allSuggs.
                             computeIfAbsent(elemId, (_: String) ⇒ new CopyOnWriteArrayList[Suggestion]()).
@@ -293,7 +298,7 @@ object NCSuggestionsManager extends NCService {
                         }
                 }
 
-            logger.whenDebugEnabled({
+            logger.whenInfoEnabled({
                 var i = 1
 
                 debugs.groupBy(_._1.example).foreach { case (_, m) ⇒
@@ -303,7 +308,7 @@ object NCSuggestionsManager extends NCService {
                                 zipWithIndex.map { case (w, i) ⇒ if (i == req.index) s"<<<$w>>>" else w }.
                                 mkString(" ")
 
-                        logger.debug(
+                        logger.info(
                             s"$i. " +
                                 s"Request=$s, " +
                                 s"suggestions=[${suggs.map(_.word).mkString(", ")}], " +
