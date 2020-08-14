@@ -162,7 +162,7 @@ object NCIntentScanner extends LazyLogging {
         checkMinMax(m, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
-        (ctx: NCIntentMatch) => {
+        (ctx: NCIntentMatch) ⇒ {
             invoke(
                 m,
                 obj,

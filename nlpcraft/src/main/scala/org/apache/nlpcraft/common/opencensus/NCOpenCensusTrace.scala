@@ -148,24 +148,24 @@ trait NCOpenCensusTrace {
                     span().setStatus(Status.OK)
                 }
                 catch {
-                    case NonFatal(suppressed) =>
+                    case NonFatal(suppressed) ⇒
                         span().setStatus(Status.INTERNAL.withDescription(suppressed.getMessage))
                     
                         e.addSuppressed(suppressed)
                 
-                    case fatal: Throwable if NonFatal(e) =>
+                    case fatal: Throwable if NonFatal(e) ⇒
                         span().setStatus(Status.INTERNAL.withDescription(e.getMessage))
                     
                         fatal.addSuppressed(e)
                     
                         throw fatal
                 
-                    case fatal: InterruptedException =>
+                    case fatal: InterruptedException ⇒
                         fatal.addSuppressed(e)
                     
                         throw fatal
                 
-                    case fatal: Throwable =>
+                    case fatal: Throwable ⇒
                         span().setStatus(Status.INTERNAL.withDescription(fatal.getMessage))
                     
                         e.addSuppressed(fatal)
@@ -191,7 +191,7 @@ trait NCOpenCensusTrace {
         try
             f(span)
         catch {
-            case e: Throwable =>
+            case e: Throwable ⇒
                 ex = e
             
                 throw e

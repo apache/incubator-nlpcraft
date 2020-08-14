@@ -630,8 +630,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         case class Req(
             acsTok: String,
             mdlId: String,
-            limitOpt: Option[Int],
-            minScoreOpt: Option[Double]
+            limit: Option[Int],
+            minScore: Option[Double]
         )
 
         case class Suggestion(
@@ -653,8 +653,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan(
                 "check$",
                 "mdlId" → req.mdlId,
-                "limit" → req.limitOpt.getOrElse(() ⇒ null),
-                "minScore" → req.minScoreOpt.getOrElse(() ⇒ null),
+                "limit" → req.limit.getOrElse(() ⇒ null),
+                "minScore" → req.minScore.getOrElse(() ⇒ null),
                 "acsTok" → req.acsTok
             ) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
@@ -666,8 +666,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     throw new NCE(s"Probe not found: ${req.mdlId}")
 
                 val res: Map[String, Seq[Suggestion]] =
-                    NCSuggestionsManager.
-                        suggest(req.mdlId, req.limitOpt, req.minScoreOpt, span).
+                    NCSuggestionsManager.suggest(req.mdlId, req.minScore, req.limit, span).
                         map { case (elemId, suggs) ⇒
                             elemId → suggs.map(p ⇒ Suggestion(p.suggestion, p.ctxWorldServerScore, p.suggestedCount))
                         }.toMap

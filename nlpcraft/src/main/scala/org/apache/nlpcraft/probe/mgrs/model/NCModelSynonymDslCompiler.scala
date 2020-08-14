@@ -36,7 +36,7 @@ import scala.collection.mutable.ArrayBuffer
 object NCModelSynonymDslCompiler extends LazyLogging {
     private type Predicate = java.util.function.Function[NCToken, java.lang.Boolean]
     
-    def toJavaFunc(alias: String, func: NCToken ⇒ Boolean): Predicate = (tok: NCToken) => {
+    def toJavaFunc(alias: String, func: NCToken ⇒ Boolean): Predicate = (tok: NCToken) ⇒ {
         val res = func(tok)
     
         // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.

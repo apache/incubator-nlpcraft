@@ -111,16 +111,22 @@ object NCSuggestionsManager extends NCService {
         seq
     }
 
+    /**
+      *
+      * @param mdlId Model ID.
+      * @param minScoreOpt Context word server minimal suggestion score (default DFLT_MIN_SCORE). Increase it for suggestions count increasing, decrease it to be more precise.
+      * @param limitOpt TODO: inverse parameter.
+      *
+      * @param parent Parent.
+      */
     @throws[NCE]
-    def suggest(
-        mdlId: String, limitOpt: Option[Int], minScoreOpt: Option[Double], parent: Span = null
-    ): Map[String, Seq[NCSuggestion]] =
+    def suggest(mdlId: String, minScoreOpt: Option[Double], limitOpt: Option[Int], parent: Span = null): Map[String, Seq[NCSuggestion]] =
         startScopedSpan(
             "suggest",
             parent,
             "modelId" → mdlId,
-            "limit" → limitOpt.getOrElse(() ⇒ null),
-            "minScore" → minScoreOpt.getOrElse(() ⇒ null)
+            "minScore" → minScoreOpt.getOrElse(() ⇒ null),
+            "limit" → limitOpt.getOrElse(() ⇒ null)
         ) { _ ⇒
             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
@@ -187,9 +193,9 @@ object NCSuggestionsManager extends NCService {
 
             val allReqsCnt = allReqs.map(_._2.size).sum
 
-            logger.info(s"Examples count: ${examples.size}")
-            logger.info(s"Synonyms count: ${elemSyns.map(_._2.size).sum}")
-            logger.info(s"Requests prepared: $allReqsCnt")
+            logger.debug(
+                s"Data prepared [examples=${examples.size}, synonyms=${elemSyns.map(_._2.size).sum}, requests=$allReqsCnt]"
+            )
 
             val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, JList[Suggestion]]()
             val cdl = new CountDownLatch(1)
@@ -210,7 +216,7 @@ object NCSuggestionsManager extends NCService {
                                     RestRequest(
                                         sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
                                         min_score = minScoreOpt.getOrElse(DFLT_MIN_SCORE),
-                                        limit = limitOpt.getOrElse(DFLT_LIMIT)
+                                        limit = limitOpt.getOrElse(DFLT_LIMIT) + 1
                                     )
                                 ),
                                 "UTF-8"
@@ -229,7 +235,7 @@ object NCSuggestionsManager extends NCService {
 
                         val i = cnt.addAndGet(batch.size)
 
-                        logger.info(s"Executed: $i requests.")
+                        logger.debug(s"Executed: $i requests.")
 
                         allSuggs.
                             computeIfAbsent(elemId, (_: String) ⇒ new CopyOnWriteArrayList[Suggestion]()).
@@ -287,7 +293,7 @@ object NCSuggestionsManager extends NCService {
                         }
                 }
 
-            logger.whenInfoEnabled({
+            logger.whenDebugEnabled({
                 var i = 1
 
                 debugs.groupBy(_._1.example).foreach { case (_, m) ⇒
@@ -297,7 +303,7 @@ object NCSuggestionsManager extends NCService {
                                 zipWithIndex.map { case (w, i) ⇒ if (i == req.index) s"<<<$w>>>" else w }.
                                 mkString(" ")
 
-                        logger.info(
+                        logger.debug(
                             s"$i. " +
                                 s"Request=$s, " +
                                 s"suggestions=[${suggs.map(_.word).mkString(", ")}], " +
