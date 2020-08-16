@@ -44,10 +44,14 @@ import scala.collection._
   * TODO:
   */
 object NCSuggestionsManager extends NCService {
+    // For context word server requests.
     private final val DFLT_LIMIT: Int = 20
-    private final val MAX_LIMIT: Int = 1000
+    private final val MAX_LIMIT: Int = 10000
     private final val DFLT_MIN_SCORE: Double = 0
-    private final val MIN_REQUIRED_CNT = 5
+
+    // For warnings.
+    private final val MIN_CNT_INTENT = 5
+    private final val MIN_CNT_MODEL = 20
 
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
@@ -133,11 +137,24 @@ object NCSuggestionsManager extends NCService {
             require(mdl.intentsSamples != null, "Samples cannot be null")
             require(mdl.elementsSynonyms != null, "Element synonyms cannot be null")
             require(mdl.macros != null, "Macros cannot be null")
-            require(mdl.intentsSamples.forall(_._2.nonEmpty), "Samples cannot be empty")
+            require(mdl.intentsSamples.forall { case (_, samples) ⇒ samples.nonEmpty}, "Samples cannot be empty")
 
-            mdl.intentsSamples.
-                filter { case (_, samples) ⇒ samples.size < MIN_REQUIRED_CNT }.
-                foreach { case (intentId, _) ⇒ logger.warn(s"Intent has not enough samples: $intentId") }
+            if (mdl.intentsSamples.map { case (_, samples) ⇒ samples.size }.sum < MIN_CNT_MODEL)
+                logger.warn(
+                    s"Model: '$mdl' has too small synonyms count. " +
+                    "Try to increase their count to improve synonyms suggestions quality."
+                )
+            else {
+                val ids =
+                    mdl.intentsSamples.
+                        filter { case (_, samples) ⇒ samples.size < MIN_CNT_INTENT }.
+                        map { case (intentId, _) ⇒ intentId }
+
+                if (ids.nonEmpty)
+                    logger.warn(s"Models '$mdl' has intents: [${ids.mkString(", ")}] with too small synonyms count." +
+                        "Try to increase their count to improve synonyms suggestions quality."
+                    )
+            }
 
             val parser = new NCMacroParser()
 
@@ -146,7 +163,7 @@ object NCSuggestionsManager extends NCService {
             val examples =
                 mdl.
                     intentsSamples.
-                    flatMap(_._2).
+                    flatMap { case (_, samples) ⇒ samples }.
                     map(ex ⇒ SEPARATORS.foldLeft(ex)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
                     map(ex ⇒ {
                         val seq = ex.split(" ")
@@ -221,7 +238,9 @@ object NCSuggestionsManager extends NCService {
                                     RestRequest(
                                         sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
                                         min_score = minScore.getOrElse(DFLT_MIN_SCORE),
-                                        limit = (if (minScore.isDefined) MAX_LIMIT else DFLT_LIMIT) + 1
+                                        // If minScore defined, we set big limit value and in fact only minimal score
+                                        // is taken into account. Otherwise - default value.
+                                        limit = if (minScore.isDefined) MAX_LIMIT else DFLT_LIMIT
                                     )
                                 ),
                                 "UTF-8"
@@ -271,6 +290,7 @@ object NCSuggestionsManager extends NCService {
                     elemSuggs.
                         map(sugg ⇒ (sugg, toStem(sugg.word))).
                         groupBy { case (_, stem) ⇒ stem }.
+                        // Drops already defined.
                         filter { case (stem, _) ⇒ !allSynsStems.contains(stem) }.
                         map { case (_, group) ⇒
                             val seq = group.map { case (sugg, _) ⇒ sugg }.sortBy(-_.score)
