@@ -122,7 +122,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     private def checkCollection(name: String, col: Any): Unit =
         if (col == null)
-            throw new NCE(s"Collection '$name' can be empty but cannot be null")
+            throw new NCE(s"Collection '$name' can be empty but cannot be null.")
 
     /**
       *

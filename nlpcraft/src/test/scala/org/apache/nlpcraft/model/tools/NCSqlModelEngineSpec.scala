@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * TODO: add description.
+ * SQL model engine test.
  */
 class NCSqlModelEngineSpec {
     /**

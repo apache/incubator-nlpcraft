@@ -419,8 +419,9 @@ object NCIntentScanner extends LazyLogging {
         .toMap
 
     /**
-      * TODO:
-      * @param mdl
+      * Scans given model for intent samples.
+     *
+      * @param mdl Model to scan.
       */
     @throws[NCE]
     def scanIntentsSamples(mdl: NCModel): Map[String, Seq[String]] = {

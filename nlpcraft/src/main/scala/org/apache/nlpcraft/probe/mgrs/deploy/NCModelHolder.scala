@@ -20,9 +20,10 @@ package org.apache.nlpcraft.probe.mgrs.deploy
 import org.apache.nlpcraft.model.NCModel
 
 /**
-  * TODO:
-  * @param model
-  * @param intentSamples
+  * Holder for the model and its intent samepls.
+ *
+  * @param model Model.
+  * @param intentSamples Map of intent samples.
   */
 case class NCModelHolder(model: NCModel, intentSamples: Map[String, Seq[String]]) {
     require(model != null)

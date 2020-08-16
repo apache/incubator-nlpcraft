@@ -143,3 +143,16 @@ case class NCSocket(socket: Socket, host: String, soTimeout: Int = 20000) extend
         }
     }
 }
+
+object NCSocket {
+    /**
+     * Additional c-tor.
+     *
+     * @param host
+     * @param port
+     * @param soTimeout
+     * @return
+     */
+    def apply(host: String, port: Integer, soTimeout: Int = 20000): NCSocket =
+        NCSocket(new Socket(host, port), host,  soTimeout)
+}
