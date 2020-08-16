@@ -149,10 +149,10 @@ public interface NCElement extends NCMetadata, Serializable {
      *     ]
      * </pre>
      *
-     * @return Element's metadata or {@code null} if none provided. Default implementation return {@code null}.
+     * @return Element's metadata or empty collection if none provided. Default implementation return empty collection. TODO:
      */
     default Map<String, Object> getMetadata() {
-        return null;
+        return Collections.emptyMap();
     }
 
     /**

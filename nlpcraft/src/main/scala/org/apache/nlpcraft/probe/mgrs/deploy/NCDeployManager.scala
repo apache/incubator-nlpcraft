@@ -80,6 +80,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     @throws[NCE]
     private def wrap(mdl: NCModel): NCModelHolder = {
+        checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
+        checkCollection("elements", mdl.getElements)
+        checkCollection("enabledBuiltInTokens", mdl.getEnabledBuiltInTokens)
+        checkCollection("excludedStopWords", mdl.getExcludedStopWords)
+        checkCollection("parsers", mdl.getParsers)
+        checkCollection("suspiciousWords", mdl.getSuspiciousWords)
+        checkCollection("macros", mdl.getMacros)
+        checkCollection("metadata", mdl.getMetadata)
+
         // Scan for intent annotations in the model class.
         val intents = NCIntentScanner.scan(mdl)
 
@@ -104,6 +113,16 @@ object NCDeployManager extends NCService with DecorateAsScala {
             NCModelHolder(new NCModelImpl(mdl, null), Map.empty)
         }
     }
+
+    /**
+      *
+      * @param name
+      * @param col
+      */
+    @throws[NCE]
+    private def checkCollection(name: String, col: Any): Unit =
+        if (col == null)
+            throw new NCE(s"Collection '$name' can be empty but cannot be null")
 
     /**
       *

@@ -67,11 +67,9 @@ object NCModelManager extends NCService with DecorateAsScala {
         checkModelConfig(h.model)
 
         val parser = new NCMacroParser
-        val macros = h.model.getMacros
 
         // Initialize macro parser.
-        if (macros != null)
-            macros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
+        h.model.getMacros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
 
         models += h.model.getId → verifyAndDecorate(h, parser)
 

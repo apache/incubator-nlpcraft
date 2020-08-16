@@ -661,7 +661,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 val admin = authenticateAsAdmin(req.acsTok)
 
                 if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == req.mdlId)))
-                    throw new NCE(s"Probe not found: ${req.mdlId}")
+                    throw new NCE(s"Probe not found for model: ${req.mdlId}")
 
                 val res: Map[String, Seq[Suggestion]] =
                     NCSuggestionsManager.suggest(req.mdlId, req.minScore, span).

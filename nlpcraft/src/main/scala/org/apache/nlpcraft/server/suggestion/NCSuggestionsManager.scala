@@ -139,20 +139,26 @@ object NCSuggestionsManager extends NCService {
             require(mdl.macros != null, "Macros cannot be null")
             require(mdl.intentsSamples.forall { case (_, samples) ⇒ samples.nonEmpty}, "Samples cannot be empty")
 
-            if (mdl.intentsSamples.map { case (_, samples) ⇒ samples.size }.sum < MIN_CNT_MODEL)
+            val allSamplesCnt = mdl.intentsSamples.map { case (_, samples) ⇒ samples.size }.sum
+
+            if (allSamplesCnt < MIN_CNT_MODEL) {
+                // TODO: text
                 logger.warn(
-                    s"Model: '$mdl' has too small synonyms count. " +
-                    "Try to increase their count to improve synonyms suggestions quality."
+                    s"Model: '$mdlId' has too small intents samples count: $allSamplesCnt. " +
+                    s"Potentially is can be not enough for suggestions service high quality work. " +
+                    s"Try to increase their count at least to $MIN_CNT_MODEL."
                 )
-            else {
+            } else {
                 val ids =
                     mdl.intentsSamples.
                         filter { case (_, samples) ⇒ samples.size < MIN_CNT_INTENT }.
                         map { case (intentId, _) ⇒ intentId }
 
                 if (ids.nonEmpty)
-                    logger.warn(s"Models '$mdl' has intents: [${ids.mkString(", ")}] with too small synonyms count." +
-                        "Try to increase their count to improve synonyms suggestions quality."
+                    // TODO: text
+                    logger.warn(s"Models '$mdlId' has intents: [${ids.mkString(", ")}] with too small intents samples count." +
+                        s"Potentially is can be not enough for suggestions service high quality work. " +
+                        s"Try to increase their count at least to $MIN_CNT_INTENT."
                     )
             }
 

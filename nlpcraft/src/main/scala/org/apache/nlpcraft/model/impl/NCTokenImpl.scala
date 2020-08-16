@@ -139,8 +139,7 @@ private[nlpcraft] object NCTokenImpl {
                 // Special synthetic meta data element.
                 md.put("nlpcraft:nlp:freeword", false)
 
-                if (elm.getMetadata != null)
-                    elm.getMetadata.asScala.foreach { case (k, v) ⇒ md.put(k, v.asInstanceOf[java.io.Serializable]) }
+                elm.getMetadata.asScala.foreach { case (k, v) ⇒ md.put(k, v.asInstanceOf[java.io.Serializable]) }
 
                 new NCTokenImpl(
                     mdl.model,

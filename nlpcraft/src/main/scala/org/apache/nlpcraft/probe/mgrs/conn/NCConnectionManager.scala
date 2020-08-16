@@ -233,6 +233,9 @@ object NCConnectionManager extends NCService {
                         NCModelManager.getAllModels().map(m ⇒ {
                             val mdl = m.model
 
+                            require(m.intentsSamples != null)
+                            // Model already validated.
+
                             // util.HashSet created to avoid scala collections serialization error.
                             // Seems to be a Scala bug.
                             (

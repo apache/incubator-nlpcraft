@@ -24,4 +24,7 @@ import org.apache.nlpcraft.model.NCModel
   * @param model
   * @param intentSamples
   */
-case class NCModelHolder(model: NCModel, intentSamples: Map[String, Seq[String]])
+case class NCModelHolder(model: NCModel, intentSamples: Map[String, Seq[String]]) {
+    require(model != null)
+    require(intentSamples != null)
+}
