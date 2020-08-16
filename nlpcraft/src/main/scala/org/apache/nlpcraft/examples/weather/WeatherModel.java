@@ -152,7 +152,9 @@ public class WeatherModel extends NCModelFileAdapter {
         "When it will rain in Delhi?",
         "Is there any possibility of rain in Delhi?",
         "Is it raining now?",
-        "Is there any chance of rain today?"
+        "Is there any chance of rain today?",
+        "Was it raining in Beirut last week?",
+        "How about yesterday?"
     })
     public NCResult onMatch(
         NCIntentMatch ctx,
