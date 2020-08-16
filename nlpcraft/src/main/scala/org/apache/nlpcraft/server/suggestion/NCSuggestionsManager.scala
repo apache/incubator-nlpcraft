@@ -137,7 +137,6 @@ object NCSuggestionsManager extends NCService {
             require(mdl.intentsSamples != null, "Samples cannot be null")
             require(mdl.elementsSynonyms != null, "Element synonyms cannot be null")
             require(mdl.macros != null, "Macros cannot be null")
-            require(mdl.intentsSamples.forall { case (_, samples) ⇒ samples.nonEmpty}, "Samples cannot be empty")
 
             val allSamplesCnt = mdl.intentsSamples.map { case (_, samples) ⇒ samples.size }.sum
 
@@ -148,7 +147,8 @@ object NCSuggestionsManager extends NCService {
                     s"Potentially is can be not enough for suggestions service high quality work. " +
                     s"Try to increase their count at least to $MIN_CNT_MODEL."
                 )
-            } else {
+            }
+            else {
                 val ids =
                     mdl.intentsSamples.
                         filter { case (_, samples) ⇒ samples.size < MIN_CNT_INTENT }.
@@ -157,7 +157,7 @@ object NCSuggestionsManager extends NCService {
                 if (ids.nonEmpty)
                     // TODO: text
                     logger.warn(s"Models '$mdlId' has intents: [${ids.mkString(", ")}] with too small intents samples count." +
-                        s"Potentially is can be not enough for suggestions service high quality work. " +
+                        s"Potentially it can be not enough for suggestions service high quality work. " +
                         s"Try to increase their count at least to $MIN_CNT_INTENT."
                     )
             }
@@ -219,11 +219,22 @@ object NCSuggestionsManager extends NCService {
                         elemId → reqs.toSet
                 }.filter(_._2.nonEmpty)
 
-            val allReqsCnt = allReqs.map(_._2.size).sum
+            val noExElems =
+                mdl.elementsSynonyms.
+                    filter { case (elemId, syns) ⇒ syns.nonEmpty && !allReqs.contains(elemId) }.
+                    map { case (elemId, _) ⇒ elemId }
 
-            logger.info(
-                s"Data prepared [examples=${examples.size}, synonyms=${elemSyns.map(_._2.size).sum}, requests=$allReqsCnt]"
+            if (noExElems.nonEmpty)
+                // TODO: text
+                logger.warn(
+                    "Some elements don't have synonyms in intent samples, " +
+                    s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
             )
+
+            val allReqsCnt = allReqs.map(_._2.size).sum
+            val allSynsCnt = elemSyns.map(_._2.size).sum
+
+            logger.info(s"Data prepared [examples=${examples.size}, synonyms=$allSynsCnt, requests=$allReqsCnt]")
 
             val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, JList[Suggestion]]()
             val cdl = new CountDownLatch(1)
@@ -261,7 +272,7 @@ object NCSuggestionsManager extends NCService {
 
                         require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
 
-                        reqs.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp }
+                        batch.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp }
 
                         val i = cnt.addAndGet(batch.size)
 
