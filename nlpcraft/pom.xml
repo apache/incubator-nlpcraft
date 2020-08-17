@@ -336,6 +336,7 @@
                     <docfilessubdirs>true</docfilessubdirs>
                     <encoding>UTF-8</encoding>
                     <failOnError>false</failOnError>
+                    <failOnWarning>false</failOnWarning>
                     <sourcepath>${project.basedir}/src/main/scala</sourcepath>
                     <stylesheetfile>${project.parent.basedir}/javadoc/stylesheet.css</stylesheetfile>
                     <bottom>
