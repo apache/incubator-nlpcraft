@@ -150,9 +150,8 @@ object NCSocket {
      *
      * @param host
      * @param port
-     * @param soTimeout
      * @return
      */
-    def apply(host: String, port: Integer, soTimeout: Int = 20000): NCSocket =
-        NCSocket(new Socket(host, port), host,  soTimeout)
+    def apply(host: String, port: Integer): NCSocket =
+        new NCSocket(new Socket(host, port), host)
 }
