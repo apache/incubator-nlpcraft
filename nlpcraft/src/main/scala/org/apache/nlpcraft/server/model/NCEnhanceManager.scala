@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.suggestion
+package org.apache.nlpcraft.server.model
 
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CopyOnWriteArrayList, CountDownLatch, TimeUnit}
@@ -43,7 +43,7 @@ import scala.collection._
 /**
   * TODO:
   */
-object NCSuggestionsManager extends NCService {
+object NCEnhanceManager extends NCService {
     // For context word server requests.
     private final val DFLT_LIMIT: Int = 20
     private final val MAX_LIMIT: Int = 10000
@@ -118,18 +118,22 @@ object NCSuggestionsManager extends NCService {
     }
 
     /**
-      *
+      * TODO:
       * @param mdlId Model ID.
       * @param minScore Context word server minimal suggestion score (default DFLT_MIN_SCORE).
-      * Increase it for suggestions count increasing, decrease it to be more precise. Range 0 ... 2.
+      * Increase it for suggestions count increasing, decrease it to be more precise. Range 0 ... 1.
       *
       * @param parent Parent.
       */
     @throws[NCE]
-    def suggest(mdlId: String, minScore: Option[Double], parent: Span = null): Map[String, Seq[NCSuggestion]] =
+    def enhance(mdlId: String, minScore: Option[Double], parent: Span = null): Map[String, Seq[NCEnhanceSuggestion]] =
         startScopedSpan(
             "suggest", parent, "modelId" → mdlId, "minScore" → minScore.getOrElse(() ⇒ null)
         ) { _ ⇒
+            val minScoreVal = minScore.getOrElse(DFLT_MIN_SCORE)
+
+            require(minScoreVal >= 0 && minScoreVal <= 1)
+
             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
             val mdl = NCProbeManager.getModel(mdlId)
@@ -249,12 +253,14 @@ object NCSuggestionsManager extends NCService {
                         val post = new HttpPost(url)
 
                         post.setHeader("Content-Type", "application/json")
+
                         post.setEntity(
                             new StringEntity(
                                 GSON.toJson(
                                     RestRequest(
                                         sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
-                                        min_score = minScore.getOrElse(DFLT_MIN_SCORE),
+                                        // ContextWord server range is (0, 2), input range is (0, 1)
+                                        min_score = minScoreVal * 2,
                                         // If minScore defined, we set big limit value and in fact only minimal score
                                         // is taken into account. Otherwise - default value.
                                         limit = if (minScore.isDefined) MAX_LIMIT else DFLT_LIMIT
@@ -300,7 +306,7 @@ object NCSuggestionsManager extends NCService {
 
             val nonEmptySuggs = allSuggs.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
 
-            val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[NCSuggestion]]
+            val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[NCEnhanceSuggestion]]
 
             nonEmptySuggs.
                 foreach { case (elemId, elemSuggs) ⇒
@@ -324,14 +330,14 @@ object NCSuggestionsManager extends NCService {
                                 res.get(elemId) match {
                                     case Some(seq) ⇒ seq
                                     case None ⇒
-                                        val buf = mutable.ArrayBuffer.empty[NCSuggestion]
+                                        val buf = mutable.ArrayBuffer.empty[NCEnhanceSuggestion]
 
                                         res += elemId → buf
 
                                         buf
                                 }
 
-                            seq += NCSuggestion(sugg.word, sugg.score, cnt, sumFactor)
+                            seq += NCEnhanceSuggestion(sugg.word, sugg.score, cnt, sumFactor)
                         }
                 }
 

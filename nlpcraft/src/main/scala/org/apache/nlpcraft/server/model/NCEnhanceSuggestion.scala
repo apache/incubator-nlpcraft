@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.suggestion
+package org.apache.nlpcraft.server.model
 
 /**
   * TODO:
-  * @param suggestion
+  * @param synonym
   * @param ctxWorldServerScore
   * @param suggestedCount
   * @param totalScore
   */
-case class NCSuggestion(
-    suggestion: String,
+case class NCEnhanceSuggestion(
+    synonym: String,
     ctxWorldServerScore: Double,
     suggestedCount: Int,
     totalScore: Double

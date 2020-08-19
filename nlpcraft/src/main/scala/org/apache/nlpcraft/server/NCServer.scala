@@ -45,7 +45,7 @@ import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.rest.NCRestManager
 import org.apache.nlpcraft.server.sql.NCSqlManager
-import org.apache.nlpcraft.server.suggestion.NCSuggestionsManager
+import org.apache.nlpcraft.server.model.NCEnhanceManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 
@@ -123,7 +123,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 },
                 () ⇒ {
                     NCProbeManager.start(span)
-                    NCSuggestionsManager.start(span)
+                    NCEnhanceManager.start(span)
                 },
                 () ⇒ NCFeedbackManager.start(span)
             )
@@ -148,7 +148,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 NCRestManager,
                 NCQueryManager,
                 NCFeedbackManager,
-                NCSuggestionsManager,
+                NCEnhanceManager,
                 NCProbeManager,
                 NCCompanyManager,
                 NCUserManager,

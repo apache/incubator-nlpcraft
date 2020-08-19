@@ -158,14 +158,14 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
-  /suggestion:
+  /model/enhance:
     post:
       tags:
-        - Suggestion
-      summary: Synonyms suggestions for model.
+        - Model
+      summary: Model enchance suggestions for model.
       description: >-
         TODO:
-      operationId: Suggestion
+      operationId: enhance
       parameters:
         - in: body
           name: Payload body
@@ -189,7 +189,7 @@ paths:
                 type: number
                 format: double
                 description: >-
-                  Minimal score. Range from 0 to 2. Default 0.
+                  Minimal score. Range from 0 to 1. Default 0.
       responses:
         '200':
           description: Successful operation.
