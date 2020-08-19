@@ -48,6 +48,7 @@ object NCEnhanceManager extends NCService {
     private final val DFLT_LIMIT: Int = 20
     private final val MAX_LIMIT: Int = 10000
     private final val DFLT_MIN_SCORE: Double = 0
+    private final val BATCH_SIZE = 20
 
     // For warnings.
     private final val MIN_CNT_INTENT = 5
@@ -76,7 +77,6 @@ object NCEnhanceManager extends NCService {
     private final val GSON = new Gson
     private final val TYPE_RESP = new TypeToken[JList[JList[Suggestion]]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
-    private final val BATCH_SIZE = 20
 
     private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
         (resp: HttpResponse) ⇒ {
@@ -170,6 +170,8 @@ object NCEnhanceManager extends NCService {
 
             mdl.macros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
 
+            // Note that we don't use system tokenizer, because ContextWordServer doesn't have this tokenizer.
+            // We just split examples words with spaces. Also we divide SEPARATORS as separated words.
             val examples =
                 mdl.
                     intentsSamples.
