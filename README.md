@@ -39,7 +39,6 @@ lock-in:
   
 ## Other Projects
 - [Apache NLPCraft Java Client](https://github.com/apache/incubator-nlpcraft-java-client) - Native Java client for NLPCraft REST API.
-- [Apache NLPCraft UI](https://github.com/apache/incubator-nlpcraft-ui) - Web UI for testing and debugging. 
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
