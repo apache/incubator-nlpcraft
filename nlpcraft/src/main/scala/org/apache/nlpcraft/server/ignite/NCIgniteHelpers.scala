@@ -75,7 +75,7 @@ object NCIgniteHelpers extends NCIgniteInstance {
          * Gets an entry from the cache.
          *
          * @param key The key whose associated value is to be returned.
-         * @return Return some value, or none if it does't exist.
+         * @return Return some value, or none if it doesn't exist.
          */
         def apply(key: K): Option[V] =
             ic.get(key) match {
@@ -143,6 +143,9 @@ object NCIgniteHelpers extends NCIgniteInstance {
             assert(clause != null)
             assert(args != null)
 
+            // TODO: deprecated to what & how?
+            // TODO: Ignite is missing instructions on this migration.
+            // TODO: Perhaps - https://stackoverflow.com/questions/41309941/sqlquery-and-sqlfieldsquery
             val qry = new SqlQuery[K, V](cls, clause)
 
             if (args != null && args.nonEmpty)

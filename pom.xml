@@ -81,12 +81,12 @@
         <log4j.ver>2.12.0</log4j.ver>
         <scala.ver>${scala.base}.11</scala.ver>
         <scala.config.ver>1.3.4</scala.config.ver>
-        <commons.codec.ver>1.12</commons.codec.ver>
-        <commons.io.ver>2.6</commons.io.ver>
-        <commons-lang3.ver>3.9</commons-lang3.ver>
-        <commons.validator.ver>1.6</commons.validator.ver>
-        <apache.commons.text.ver>1.7</apache.commons.text.ver>
-        <jsoup.ver>1.12.1</jsoup.ver>
+        <commons.codec.ver>1.14</commons.codec.ver>
+        <commons.io.ver>2.7</commons.io.ver>
+        <commons-lang3.ver>3.11</commons-lang3.ver>
+        <commons.validator.ver>1.7</commons.validator.ver>
+        <apache.commons.text.ver>1.9</apache.commons.text.ver>
+        <jsoup.ver>1.13.1</jsoup.ver>
         <slf4j.ver>1.7.26</slf4j.ver>
         <scala.logging.ver>3.9.2</scala.logging.ver>
         <scala.arm.ver>2.0</scala.arm.ver>
@@ -97,7 +97,7 @@
         <scalaj.ver>2.4.1</scalaj.ver>
         <spray.ver>1.3.5</spray.ver>
         <tika.ver>1.21</tika.ver>
-        <apache.http.client.ver>4.5.9</apache.http.client.ver>
+        <apache.http.client.ver>4.5.12</apache.http.client.ver>
         <javax.websocket.ver>1.1</javax.websocket.ver>
         <paranamer.ver>2.8</paranamer.ver>
         <zeroturnaround.ver>1.12</zeroturnaround.ver>
@@ -109,8 +109,8 @@
         <maven.surefire.plugin.ver>2.22.1</maven.surefire.plugin.ver>
         <stringmetric.ver>0.27.4</stringmetric.ver>
         <gson.ver>2.8.5</gson.ver>
-        <jackson.ver>2.10.1</jackson.ver>
-        <jackson.yaml.ver>2.10.1</jackson.yaml.ver>
+        <jackson.ver>2.11.2</jackson.ver>
+        <jackson.yaml.ver>2.11.2</jackson.yaml.ver>
         <apache.math.ver>3.6.1</apache.math.ver>
         <apache.common.lang.ver>3.8.1</apache.common.lang.ver>
         <apache.httpcomponents.ver>4.5.7</apache.httpcomponents.ver>
@@ -122,12 +122,12 @@
         <maven.bazaarvoice.plugin.ver>0.9</maven.bazaarvoice.plugin.ver>
         <apache.rat.plugin.ver>0.13</apache.rat.plugin.ver>
         <org.antlr4.ver>4.8</org.antlr4.ver>
-        <akka.http.2.12.ver>10.1.9</akka.http.2.12.ver>
-        <akka.stream.2.12.ver>2.5.23</akka.stream.2.12.ver>
-        <akka.http.spray.json.2.12.ver>10.1.9</akka.http.spray.json.2.12.ver>
-        <google.guava.ver>28.1-jre</google.guava.ver>
-        <diff.utils.ver>4.5</diff.utils.ver>
-        <vertical.blank.ver>1.0</vertical.blank.ver>
+        <akka.http.2.12.ver>10.2.0</akka.http.2.12.ver>
+        <akka.stream.2.12.ver>2.6.8</akka.stream.2.12.ver>
+        <akka.http.spray.json.2.12.ver>10.2.0</akka.http.spray.json.2.12.ver>
+        <google.guava.ver>29.0-jre</google.guava.ver>
+        <diff.utils.ver>4.7</diff.utils.ver>
+        <vertical.blank.ver>1.0.1</vertical.blank.ver>
         <fliptables.ver>1.1.0</fliptables.ver>
 
         <!--
@@ -141,7 +141,7 @@
         <google.clould.language.ver>1.76.0</google.clould.language.ver>
         <opencensus.ver>0.23.0</opencensus.ver>
 
-        <prometheus.ver>0.3.0</prometheus.ver>
+        <prometheus.ver>0.9.0</prometheus.ver>
         <lightstep.ver>0.0.3</lightstep.ver>
         <lightstep.grpc.ver>0.15.8</lightstep.grpc.ver>
         <junit.ver>5.5.1</junit.ver>
