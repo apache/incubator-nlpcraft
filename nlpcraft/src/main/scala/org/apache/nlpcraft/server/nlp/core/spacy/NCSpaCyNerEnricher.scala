@@ -27,7 +27,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.StatusCodes.OK
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
@@ -46,9 +46,10 @@ import scala.concurrent.{Await, Awaitable, ExecutionContextExecutor, TimeoutExce
 object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteInstance {
     private final val TIMEOUT_SECS: Int = 5
 
-    private implicit val actSys: ActorSystem = ActorSystem()
-    private implicit val materializer: ActorMaterializer = ActorMaterializer()
-    private implicit val execCtx: ExecutionContextExecutor = actSys.dispatcher
+    private implicit final val SYSTEM: ActorSystem = ActorSystem("spacy-ner")
+    private implicit final val MATERIALIZER: Materializer = Materializer.createMaterializer(SYSTEM)
+    private implicit final val EXEC_CTX: ExecutionContextExecutor = SYSTEM.dispatcher
+
     private implicit val fmt: RootJsonFormat[SpacySpan] = jsonFormat7(SpacySpan)
     
     private object Config extends NCConfigurable {

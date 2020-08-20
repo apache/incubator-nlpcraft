@@ -20,7 +20,7 @@ package org.apache.nlpcraft.server.rest
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server._
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCService, _}
@@ -33,8 +33,8 @@ import scala.util.{Failure, Success}
   */
 object NCRestManager extends NCService {
     private implicit val SYSTEM: ActorSystem = ActorSystem("server-rest")
-    private implicit val MATERIALIZER: ActorMaterializer = ActorMaterializer()
-    private implicit val CTX: ExecutionContextExecutor = SYSTEM.dispatcher
+    private implicit val MATERIALIZER: Materializer = Materializer.createMaterializer(SYSTEM)
+    private implicit val EXEC_CTX: ExecutionContextExecutor = SYSTEM.dispatcher
 
     @volatile private var bindFut: Future[Http.ServerBinding] = _
 
@@ -78,7 +78,7 @@ object NCRestManager extends NCService {
         handleErrors = api.getExceptionHandler
         handleRejections = api.getRejectionHandler
 
-        bindFut = Http().bindAndHandleAsync(Route.asyncHandler(api.getRoute), Config.host, Config.port)
+        bindFut = Http().newServerAt(Config.host, Config.port).bind(Route.toFunction(api.getRoute))
 
         bindFut.onComplete {
             case Success(_) ⇒ logger.info(s"REST server is listening on '$url'.")
