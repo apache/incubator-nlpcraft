@@ -33,20 +33,22 @@ can operate on. This example can be useful during the development to see what
 object properties are available.
 
 ### Running
-You can run necessary JVMs for this example similarly from command line or IDE.
-NOTE: that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
+You can run necessary JVMs for this example the same way from either the command line or IDE.
+Note that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
 embedded probe and starts it automatically:
  * Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **Program arguments:** `-server`
+ * Test using built-in model auto-validator:
+    * **Main class:** `org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator`
+    * **VM arguments:** `-DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.echo.EchoModel`      
+
+If not using built-in test framework (i.e. not using embedded probe) you need to start data probe manually:     
  * Run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
     * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.echo.EchoModel`
     * **Program arguments:** `-probe`
- * Test using built-in test framework:
-    * **Main class:** `org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator`
-    * **VM arguments:** `-DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.echo.EchoModel`      
     
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
@@ -54,8 +56,7 @@ See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide fo
 For any questions, feedback or suggestions:
 
  * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples)
- * Latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
- * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
+ * Read [documentation](https://nlpcraft.apache.org/docs.html), latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html) * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
