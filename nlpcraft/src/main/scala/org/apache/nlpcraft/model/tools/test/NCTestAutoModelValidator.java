@@ -40,6 +40,11 @@ import java.util.*;
  *         various <code>isValid(...)</code> methods for more details.
  *     </li>
  * </ul>
+ * <p>
+ * See <a target=_ href="http://nlpcraft.apache.org/examples/alarm_clock.html">Alarm Clock</a>,
+ * <a target=_ href="http://nlpcraft.apache.org/examples/light_switch.html">Light Switch</a>, and
+ * <a target=_ href="http://nlpcraft.apache.org/examples/weather_bot.html">Weather Bot</a> examples
+ * for usage of model auto-validator.
  * 
  * @see NCIntentSample
  * @see NCIntent
@@ -54,7 +59,7 @@ public class NCTestAutoModelValidator {
      * list of data model class names. In this mode it can be used to automatically test
      * models from IDE, maven builds, etc. without creating a separate, dedicated unit test for it.
      * <p>
-     * Note that standard validation output will be printed out to the configured logger.
+     * Note that standard validation output will be printed out to the configured logger (e.g. log4j), if any.
      * 
      * @param args These arguments are ignored.
      * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
@@ -71,9 +76,9 @@ public class NCTestAutoModelValidator {
      * list of data model class names.
      * 
      * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger.
+     *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.
      * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger.
+     *      output will be printed out to the configured logger (e.g. log4j), if any.
      */
     public static boolean isValid() throws Exception {
         return NCTestAutoModelValidatorImpl.isValid();
@@ -84,9 +89,9 @@ public class NCTestAutoModelValidator {
      *
      * @param claxx Data model class.
      * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger.
+     *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.
      * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger.
+     *      output will be printed out to the configured logger (e.g. log4j), if any.
      */
     public static boolean isValid(Class<NCModel> claxx) throws Exception {
         return NCTestAutoModelValidatorImpl.isValidForClass(claxx);
@@ -97,9 +102,9 @@ public class NCTestAutoModelValidator {
      *
      * @param mdlIds One or more ID of the model to validate.
      * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger.
+     *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.
      * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger.
+     *      output will be printed out to the configured logger (e.g. log4j), if any.
      *
      * @see NCModelView#getId()
      */
@@ -127,9 +132,9 @@ public class NCTestAutoModelValidator {
      *
      * @param mdlIds Collection of model IDs to validate.
      * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger.
+     *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.
      * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger.
+     *      output will be printed out to the configured logger (e.g. log4j), if any.
      *
      * @see NCModelView#getId()
      */
