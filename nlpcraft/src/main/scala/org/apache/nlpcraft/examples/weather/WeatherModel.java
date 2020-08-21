@@ -114,21 +114,13 @@ public class WeatherModel extends NCModelFileAdapter {
     }
 
     /**
-     * Strict check for an exact match (i.e. no dangling unused system or user defined tokens) and
-     * maximum number of free words left unmatched. In both cases user input will be rejected.
+     * A callback for the intent match.
      *
-     * @param ctx Solver context.
-     */
-    private void checkMatch(NCIntentMatch ctx) {
-        // Reject if intent match is not exact (at least one "dangling" token remain).
-        if (ctx.isAmbiguous())
-            throw new NCRejection("Please clarify your request.");
-    }
-
-    /**
-     *
-     * @param ctx
-     * @return
+     * @param ctx Intent match context.
+     * @param indToksOpt List of optional indicator elements.
+     * @param cityTokOpt Optional GEO token for city.
+     * @param dateTokOpt Optional date token.
+     * @return Callback result.
      */
     @NCIntent(
         "intent=req " +
@@ -162,7 +154,9 @@ public class WeatherModel extends NCModelFileAdapter {
         @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
         @NCIntentTerm("date") Optional<NCToken> dateTokOpt
     ) {
-        checkMatch(ctx);
+        // Reject if intent match is not exact (at least one "dangling" token remain).
+        if (ctx.isAmbiguous())
+            throw new NCRejection("Please clarify your request.");
 
         try {
             Instant now = Instant.now();
