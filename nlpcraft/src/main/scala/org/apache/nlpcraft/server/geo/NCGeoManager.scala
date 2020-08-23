@@ -17,11 +17,11 @@
 
 package org.apache.nlpcraft.server.geo
 
-import java.io.File
-
 import com.fasterxml.jackson.core.`type`.TypeReference
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.dict.{NCDictionaryManager, NCDictionaryType}
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.GEO
 import org.apache.nlpcraft.common.{NCService, _}
 
 import scala.collection.{immutable, mutable}
@@ -31,12 +31,12 @@ import scala.collection.{immutable, mutable}
   */
 object NCGeoManager extends NCService {
     // Config files.
-    private final val COUNTRY_DIR = "geo/countries"
-    private final val CONT_PATH = "geo/continents.yaml"
-    private final val METRO_PATH = "geo/metro.yaml"
-    private final val SYNONYMS_DIR_PATH = "geo/synonyms"
-    private final val CASE_SENSITIVE_DIR_PATH = s"$SYNONYMS_DIR_PATH/case_sensitive"
-    
+    private final val COUNTRY_DIR = "countries"
+    private final val SYNONYMS_DIR = "synonyms"
+    private final val CASE_SENSITIVE_DIR = s"$SYNONYMS_DIR/case_sensitive"
+    private final val CONT_RESOURCE = "continents.yaml"
+    private final val METRO_RESOURCE = "metro.yaml"
+
     // Special file, the data of which are not filtered by common dictionary words.
     private final val SYNONYMS_MANUAL_FILES = Seq("list.yaml", "states.yaml")
 
@@ -136,17 +136,6 @@ object NCGeoManager extends NCService {
       */
     @throws[NCE]
     private def readAndConstructModel(extended: Boolean): NCGeoModel = {
-        val extOpt = U.sysEnv("NLPCRAFT_RESOURCE_EXT")
-
-        if (extOpt.isDefined) {
-            logger.info(s"Using external GEO configuration from: ${extOpt.get}")
-            
-            val dir = new File(extOpt.get)
-
-            if (!dir.exists() || !dir.isDirectory)
-                throw new NCE(s"Invalid resource external folder: $dir")
-        }
-
         val geoEntries = mutable.HashMap[String, mutable.HashSet[NCGeoEntry]]()
 
         val conts = mutable.HashSet.empty[NCGeoContinent]
@@ -184,7 +173,7 @@ object NCGeoManager extends NCService {
         // | 1. Process metros. |
         // +====================+
         for (p ← U.extractYamlString(
-            U.getContent(METRO_PATH, extOpt), METRO_PATH, ignoreCase = true, new TypeReference[List[YamlMetro]] {})
+            NCExternalConfigManager.getContent(GEO, METRO_RESOURCE), METRO_RESOURCE, ignoreCase = true, new TypeReference[List[YamlMetro]] {})
         )
             addEntry(p.name, NCGeoMetro(p.name), lowerCase = true)
 
@@ -194,8 +183,8 @@ object NCGeoManager extends NCService {
         val ctrsIsoToSubconts = mutable.HashMap.empty[String, NCGeoSubContinent]
 
         for ((contName, subMap) ← U.extractYamlString(
-            U.getContent(CONT_PATH, extOpt),
-            CONT_PATH,
+            NCExternalConfigManager.getContent(GEO, CONT_RESOURCE),
+            CONT_RESOURCE,
             ignoreCase = true,
             new TypeReference[immutable.Map[String, immutable.Map[String, List[YamlCountry]]]] {} )
         ) {
@@ -229,8 +218,9 @@ object NCGeoManager extends NCService {
         val cntrMap = mutable.HashMap.empty[String, NCGeoCountry]
         val citiesMap = mutable.HashMap.empty[CityKey, NCGeoCity]
 
-        for ((path, data) ← U.getContent(COUNTRY_DIR, extOpt, (name: String) ⇒ name.endsWith("yaml"))) {
-            val countryYaml = U.extractYamlString(data, path, ignoreCase = true, new TypeReference[YamlCountryHolder] {})
+        for (res ← NCExternalConfigManager.getDirContent(GEO, COUNTRY_DIR, (name: String) ⇒ name.endsWith("yaml"))) {
+            val countryYaml =
+                U.extractYamlString(res.content, res.fileName, ignoreCase = true, new TypeReference[YamlCountryHolder] {})
 
             val meta = mutable.HashMap.empty[String, Any]
 
@@ -357,8 +347,8 @@ object NCGeoManager extends NCService {
             }
 
         for (
-            (path, data) ← U.getContent(SYNONYMS_DIR_PATH, extOpt, (name: String) ⇒ name.endsWith("yaml"));
-            s ← extractSynonyms(data, path, ignoreCase = true)
+            res ← NCExternalConfigManager.getDirContent(GEO, SYNONYMS_DIR, (name: String) ⇒ name.endsWith("yaml"));
+            s ← extractSynonyms(res.content, res.fileName, ignoreCase = true)
         )
             process(
                 s,
@@ -368,7 +358,7 @@ object NCGeoManager extends NCService {
                             // NCGeoSynonym shouldn't be matched with common dictionary word.
                             // Exception - manually defined synonyms.
                             syns.filter(s ⇒
-                                SYNONYMS_MANUAL_FILES.exists(p ⇒ path.endsWith(s"/$p")) ||
+                                SYNONYMS_MANUAL_FILES.exists(p ⇒ res.fileName.endsWith(s"/$p")) ||
                                     (!dicts.contains(s) &&
                                         !dicts.contains(s.replaceAll("the ", "")) &&
                                         !dicts.contains(s.replaceAll("the-", "")))
@@ -382,8 +372,8 @@ object NCGeoManager extends NCService {
         // +=====================================+
 
         for (
-            (path, data) ← U.getContent(CASE_SENSITIVE_DIR_PATH, extOpt, (name: String) ⇒ name.endsWith("yaml"));
-            s ← extractSynonyms(data, path, ignoreCase = false)
+            res ← NCExternalConfigManager.getDirContent(GEO, CASE_SENSITIVE_DIR, (name: String) ⇒ name.endsWith("yaml"));
+            s ← extractSynonyms(res.content, res.fileName, ignoreCase = false)
         ) {
             def toLc(opt: Option[String]): Option[String] =
                 opt match {
@@ -432,11 +422,11 @@ object NCGeoManager extends NCService {
         /**
           * Loads top cities from YAML res.
           *
-          * @param path YAML res path.
+          * @param res YAML resource path.
           */
-        def mkTopCities(path: String): immutable.Set[NCTopGeoCity] =
+        def mkTopCities(res: String): immutable.Set[NCTopGeoCity] =
             U.extractYamlString(
-                U.getContent(path, extOpt), path, ignoreCase = true, new TypeReference[List[YamlTopCity]] {}
+                NCExternalConfigManager.getContent(GEO, res), res, ignoreCase = true, new TypeReference[List[YamlTopCity]] {}
             ).
                 map(city ⇒
                     cntrs.find(_.name == city.country) match {
@@ -449,10 +439,10 @@ object NCGeoManager extends NCService {
                     }
                 ).toSet
 
-        val topWorld = mkTopCities("geo/world_top.yaml")
-        val topUsa = mkTopCities("geo/us_top.yaml")
+        val topWorld = mkTopCities("world_top.yaml")
+        val topUsa = mkTopCities("us_top.yaml")
 
-        logger.info(s"GEO data loaded [" +
+        logger.debug(s"GEO data loaded [" +
             s"continents=${conts.size}, " +
             s"subcontinents=${subs.size}, " +
             s"countries=${cntrs.size}, " +

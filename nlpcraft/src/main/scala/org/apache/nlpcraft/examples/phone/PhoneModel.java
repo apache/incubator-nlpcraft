@@ -18,9 +18,8 @@
 package org.apache.nlpcraft.examples.phone;
 
 import org.apache.nlpcraft.model.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 
 /**
@@ -32,9 +31,7 @@ import java.util.stream.Collectors;
  * be enabled to run this example - see 'tokenProviders' section in server configuration.
  * Note also that this example is using class-based intent DSL (to demonstrate its usage).
  * <p>
- * See 'README.md' file in the same folder for running instructions.
- *
- * @see PhoneTest
+ * See 'README.md' file in the same folder for running & testing instructions.
  */
 public class PhoneModel extends NCModelFileAdapter {
     /**
@@ -59,7 +56,15 @@ public class PhoneModel extends NCModelFileAdapter {
         // Either organization, person or a phone number (or a combination of).
         "term(rcpt)={id == 'google:organization' || id == 'google:person' || id == 'google:phone_number'}[1,3]"
     )
-    NCResult onMatch(NCIntentMatch ctx, @NCIntentTerm("rcpt") List<NCToken> rcptToks) {
+    @NCIntentSample({
+        "Call to Apple office",
+        "Can you please ping John Smith?",
+        "Could you dial +7 (931) 188 34 58 and ask Mike?"
+    })
+    NCResult onMatch(
+        NCIntentMatch ctx,
+        @NCIntentTerm("rcpt") List<NCToken> rcptToks
+    ) {
         String rcpt = rcptToks.stream().map(tok -> {
             String txt = tok.meta("nlpcraft:nlp:origtext");
 

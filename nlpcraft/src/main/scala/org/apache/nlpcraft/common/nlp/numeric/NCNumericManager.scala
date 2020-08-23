@@ -24,6 +24,7 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
+import org.apache.nlpcraft.common.util.NCUtils.mapResource
 
 case class NCNumericUnit(name: String, unitType: String)
 case class NCNumeric(
@@ -57,7 +58,7 @@ object NCNumericManager extends NCService {
     private def dropRedundantSeparators(s: String): String = {
         val lastDotIdx = s.lastIndexOf("\\.")
 
-        s.zipWithIndex.filter { case (ch, idx) ⇒ ch != '.' || idx == lastDotIdx }.unzip._1.mkString
+        s.zipWithIndex.filter { case (ch, idx) ⇒ ch != '.' || idx == lastDotIdx }.map(_._1).mkString
     }
     
     /**
@@ -122,8 +123,13 @@ object NCNumericManager extends NCService {
     }
     
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        genNums = NCNumericGenerator.generate(100000).map(p ⇒ p._2 → p._1)
-        
+        genNums = mapResource("numeric/numeric.txt", "utf-8", logger, {
+            _.filter(s => !s.isEmpty && !s.trim.startsWith("#")).
+            map(_.split("=")).
+            map(s ⇒ (s(1), s(0).toInt)).
+            toMap
+        })
+
         // Data source: https://www.adducation.info/how-to-improve-your-knowledge/units-of-measurement/
         case class U(name: String, unitType: String, synonyms: Seq[String]) {
             val extSynonyms: Seq[String] =
@@ -312,7 +318,7 @@ object NCNumericManager extends NCService {
     private def canBeNum(s: String): Boolean = isDigitText(s) || s.forall(Character.isLetter)
 
     /**
-      * Gets `numerics` which found in the given sentence.
+      * Gets `numeric` which found in the given sentence.
       *
       * @param ns Sentence.
       * @param parent Optional span parent.

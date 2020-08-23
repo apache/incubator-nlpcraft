@@ -110,6 +110,7 @@ CREATE TABLE proc_log (
     -- Result parts.
     res_type VARCHAR2(32) NULL,
     res_body_gzip CLOB NULL, -- GZIP-ed result body.
+    intent_id VARCHAR2(256) NULL,
     error CLOB NULL,
     -- Probe information for this request.
     probe_token VARCHAR2(256) NULL,

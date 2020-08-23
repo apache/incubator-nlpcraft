@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.model.impl
 
-import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCModel, NCRejection, NCResult, NCVariant}
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolver
+import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCModel, NCRejection, NCResult, NCVariant}
 
 /**
  * Internal model implementation combining model and intent solver.
@@ -53,7 +53,6 @@ class NCModelImpl(val proxy: NCModel, val solver: NCIntentSolver) extends NCMode
     override def getMetadata = proxy.getMetadata
     override def getAdditionalStopWords = proxy.getAdditionalStopWords
     override def getExcludedStopWords = proxy.getExcludedStopWords
-    override def getExamples = proxy.getExamples
     override def getSuspiciousWords = proxy.getSuspiciousWords
     override def getMacros = proxy.getMacros
     override def getParsers = proxy.getParsers

@@ -18,15 +18,11 @@
 package org.apache.nlpcraft.examples.alarm;
 
 import org.apache.nlpcraft.model.*;
+import java.time.*;
+import java.time.format.*;
+import java.util.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.*;
 
 /**
  * Alarm example data model.
@@ -36,9 +32,7 @@ import static java.time.temporal.ChronoUnit.MILLIS;
  * "buzz me in an hour and 15 minutes", or "set my alarm for 30 secs". When the timers is up it will
  * simply print out "BEEP BEEP BEEP" in the probe console.
  * <p>
- * See 'README.md' file in the same folder for running instructions.
- *
- * @see AlarmTest
+ * See 'README.md' file in the same folder for running & testing instructions.
  */
 public class AlarmModel extends NCModelFileAdapter {
     private static final DateTimeFormatter FMT =
@@ -58,6 +52,11 @@ public class AlarmModel extends NCModelFileAdapter {
      * @return Query result.
      */
     @NCIntentRef("alarm")
+    @NCIntentSample({
+        "Ping me in 3 minutes",
+        "Buzz me in an hour and 15mins",
+        "Set my alarm for 30s"
+    })
     private NCResult onMatch(
         NCIntentMatch ctx,
         @NCIntentTerm("nums") List<NCToken> numToks

@@ -35,7 +35,6 @@ public class NCModelJson {
     private String[] additionalStopwords;
     private String[] excludedStopwords;
     private String[] suspiciousWords;
-    private String[] examples;
     private String[] enabledBuiltInTokens;
     private String[] intents;
     private String[] parsers;
@@ -57,22 +56,6 @@ public class NCModelJson {
     private boolean isDupSynonymsAllowed = DFLT_IS_DUP_SYNONYMS_ALLOWED;
     private int maxTotalSynonyms = DFLT_MAX_TOTAL_SYNONYMS;
     private boolean isPermutateSynonyms = DFLT_IS_PERMUTATE_SYNONYMS;
-
-    /**
-     *
-     * @return
-     */
-    public String[] getExamples() {
-        return examples;
-    }
-
-    /**
-     * 
-     * @param examples
-     */
-    public void setExamples(String[] examples) {
-        this.examples = examples;
-    }
 
     /**
      *

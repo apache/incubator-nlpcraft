@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.examples.time;
 
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe;
 
 /**
  * An app that demo the usage of embedded probe. This is an alternative way to

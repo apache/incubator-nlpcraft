@@ -20,7 +20,7 @@ package org.apache.nlpcraft.common.nlp.numeric
 import java.text.DecimalFormat
 
 /**
- * Java source http://www.rgagnon.com/javadetails/java-0426.html
+ * Converts numbers to their textual (word) presentation.
  */
 object NCNumericGenerator {
     private final val FORMATTER = new DecimalFormat("000000000000")

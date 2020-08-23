@@ -731,30 +731,6 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Gets an optional list of example sentences demonstrating what can be asked with this model. These
-     * examples may be displayed by the management tools. It is highly recommended to supply a good list of
-     * examples for the model as this provides perhaps the best description to the end user on how a particular
-     * model can be used.
-     * <p>
-     * <b>JSON</b>
-     * <br>
-     * If using JSON/YAML model presentation this is set by <code>examples</code> property:
-     * <pre class="brush: js">
-     * {
-     *      "examples": [
-     *          "Example questions one",
-     *          "Another sample sentence"
-     *      ]
-     * }
-     * </pre>
-     *
-     * @return Potentially empty list of model request examples.
-     */
-    default Set<String> getExamples() {
-        return Collections.emptySet();
-    }
-
-    /**
      * Gets an optional list of suspicious words. A suspicious word is a word that generally should not appear in user
      * sentence when used with this model. For example, if a particular model is for children oriented book search,
      * the words "sex" and "porn" should probably NOT appear in the user input and can be automatically rejected

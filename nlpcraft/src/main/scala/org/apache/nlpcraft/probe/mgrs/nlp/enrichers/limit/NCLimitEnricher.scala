@@ -45,6 +45,26 @@ object NCLimitEnricher extends NCProbeEnricher {
 
     private final val TOK_ID = "nlpcraft:limit"
 
+    // It designates:
+    // - digits (like `25`),
+    // - word numbers (like `twenty two`) or
+    // - fuzzy numbers (like `few`).
+    private final val CD = "[CD]"
+
+    // Possible elements:
+    // - Any macros,
+    // - Special symbol CD (which designates obvious number or fuzzy number word)
+    // - Any simple word.
+    // Note that `CD` is optional (DFLT_LIMIT will be used)
+    private final val SYNONYMS = Seq(
+        s"<TOP_WORDS> {of|*} {$CD|*} {<POST_WORDS>|*}",
+        s"$CD of",
+        s"$CD <POST_WORDS>",
+        s"<POST_WORDS> $CD"
+    )
+
+    private final val DFLT_LIMIT = 10
+
     /**
       * Group of neighbouring tokens. All of them numbers or all of the not.
       *
@@ -80,7 +100,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         }
 
         lazy val asc: Boolean = {
-            val sorts: Seq[Boolean] = tokens.map(_.stem).flatMap(SORT_WORDS.get)
+            val sorts: Seq[Boolean] = tokens.map(_.stem).flatMap(sortWords.get)
 
             sorts.size match {
                 case 1 ⇒ sorts.head
@@ -92,79 +112,13 @@ object NCLimitEnricher extends NCProbeEnricher {
         lazy val isFuzzyNum: Boolean = groups.size == 1 && groups.head.isFuzzyNum
     }
 
-    private final val DFLT_LIMIT = 10
-
-    // Note that single words only supported now in code.
-    private final val FUZZY_NUMS: Map[String, Int] = stemmatizeWords(Map(
-        "few" → 3,
-        "several" → 3,
-        "handful" → 5,
-        "single" → 1,
-        "some" → 3,
-        "couple" → 2
-    ))
-
-    // Note that single words only supported now in code.
-    private final val SORT_WORDS: Map[String, Boolean] = stemmatizeWords(Map(
-        "top" → false,
-        "most" → false,
-        "first" → false,
-        "bottom" → true,
-        "last" → true
-    ))
-
-    private final val TOP_WORDS: Seq[String] = Seq(
-        "top",
-        "most",
-        "bottom",
-        "first",
-        "last"
-    ).map(NCNlpCoreManager.stem)
-
-    private final val POST_WORDS: Seq[String] = Seq(
-        "total",
-        "all together",
-        "overall"
-    ).map(NCNlpCoreManager.stem)
-
-    // It designates:
-    // - digits (like `25`),
-    // - word numbers (like `twenty two`) or
-    // - fuzzy numbers (like `few`).
-    private final val CD = "[CD]"
-
-    // Macros: SORT_WORDS, TOP_WORDS, POST_WORDS
-    private final val MACROS: Map[String, Iterable[String]] = Map(
-        "SORT_WORDS" → SORT_WORDS.keys,
-        "TOP_WORDS" → TOP_WORDS,
-        "POST_WORDS" → POST_WORDS
-    )
-
-    // Possible elements:
-    // - Any macros,
-    // - Special symbol CD (which designates obvious number or fuzzy number word)
-    // - Any simple word.
-    // Note that `CD` is optional (DFLT_LIMIT will be used)
-    private final val SYNONYMS = Seq(
-        s"<TOP_WORDS> {of|*} {$CD|*} {<POST_WORDS>|*}",
-        s"$CD of",
-        s"$CD <POST_WORDS>",
-        s"<POST_WORDS> $CD"
-    )
-
-    private final val LIMITS: Seq[String] = {
-        // Few numbers cannot be in on template.
-        require(SYNONYMS.forall(_.split(" ").map(_.trim).count(_ == CD) < 2))
-
-        def toMacros(seq: Iterable[String]): String = seq.mkString("|")
-
-        val parser = NCMacroParser(MACROS.map { case (name, seq) ⇒ s"<$name>" → s"{${toMacros(seq)}}" })
-
-        // Duplicated elements is not a problem.
-        SYNONYMS.flatMap(parser.expand).distinct
-    }
-
-    private final val TECH_WORDS = (SORT_WORDS.keys ++ TOP_WORDS ++ POST_WORDS ++ FUZZY_NUMS.keySet).toSet
+    @volatile private var fuzzyNums: Map[String, Int] = _
+    @volatile private var sortWords: Map[String, Boolean]  = _
+    @volatile private var topWords: Seq[String] = _
+    @volatile private var postWords: Seq[String] = _
+    @volatile private var macros: Map[String, Iterable[String]] = _
+    @volatile private var limits: Seq[String] = _
+    @volatile private var techWords: Set[String] = _
 
     /**
       * Stemmatizes map's keys.
@@ -193,11 +147,74 @@ object NCLimitEnricher extends NCProbeEnricher {
       * Starts this component.
       */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        // Note that single words only supported now in code.
+        fuzzyNums = stemmatizeWords(Map(
+            "few" → 3,
+            "several" → 3,
+            "handful" → 5,
+            "single" → 1,
+            "some" → 3,
+            "couple" → 2
+        ))
+
+        // Note that single words only supported now in code.
+        sortWords = stemmatizeWords(Map(
+            "top" → false,
+            "most" → false,
+            "first" → false,
+            "bottom" → true,
+            "last" → true
+        ))
+
+        topWords = Seq(
+            "top",
+            "most",
+            "bottom",
+            "first",
+            "last"
+        ).map(NCNlpCoreManager.stem)
+
+        postWords = Seq(
+            "total",
+            "all together",
+            "overall"
+        ).map(NCNlpCoreManager.stem)
+
+
+        // Macros: SORT_WORDS, TOP_WORDS, POST_WORDS
+        macros = Map(
+            "SORT_WORDS" → sortWords.keys,
+            "TOP_WORDS" → topWords,
+            "POST_WORDS" → postWords
+        )
+
+        limits= {
+            // Few numbers cannot be in on template.
+            require(SYNONYMS.forall(_.split(" ").map(_.trim).count(_ == CD) < 2))
+
+            def toMacros(seq: Iterable[String]): String = seq.mkString("|")
+
+            val parser = NCMacroParser(macros.map { case (name, seq) ⇒ s"<$name>" → s"{${toMacros(seq)}}" })
+
+            // Duplicated elements is not a problem.
+            SYNONYMS.flatMap(parser.expand).distinct
+        }
+
+        techWords = (sortWords.keys ++ topWords ++ postWords ++ fuzzyNums.keySet).toSet
+
         super.start()
     }
 
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
+
+        fuzzyNums = null
+        sortWords = null
+        topWords = null
+        postWords = null
+        macros = null
+        limits = null
+        techWords = null
     }
 
     /**
@@ -207,7 +224,7 @@ object NCLimitEnricher extends NCProbeEnricher {
       * @param toks Tokens in which some stopwords can be deleted.
       */
     private def validImportant(ns: NCNlpSentence, toks: Seq[NCNlpSentenceToken]): Boolean = {
-        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || TECH_WORDS.contains(t.stem)
+        def isImportant(t: NCNlpSentenceToken): Boolean = isUserNotValue(t) || techWords.contains(t.stem)
 
         val idxs = toks.map(_.index)
 
@@ -313,7 +330,7 @@ object NCLimitEnricher extends NCProbeEnricher {
                 def try0(group: Seq[NCNlpSentenceToken]): Option[Match] =
                     groupsMap.get(group) match {
                         case Some(h) ⇒
-                            if (LIMITS.contains(h.value) || h.isFuzzyNum)
+                            if (limits.contains(h.value) || h.isFuzzyNum)
                                 Some(Match(h.limit, Some(h.asc), matchCands, commonRefNotes, idxs.asJava))
                             else
                                 numsMap.get(group) match {
@@ -345,7 +362,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         val numsMap = nums.map(n ⇒ n.tokens → n).toMap
 
         // All groups combinations.
-        val tks2Nums: Seq[(NCNlpSentenceToken, Option[Int])] = ns.filter(!_.isStopWord).map(t ⇒ t → FUZZY_NUMS.get(t.stem))
+        val tks2Nums: Seq[(NCNlpSentenceToken, Option[Int])] = ns.filter(!_.isStopWord).map(t ⇒ t → fuzzyNums.get(t.stem))
 
         // Tokens: A;  B;  20;  C;  twenty; two, D
         // NERs  : -;  -;  20;  -;  22;     22;  -

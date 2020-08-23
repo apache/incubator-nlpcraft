@@ -39,9 +39,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * Note that this example uses class-based intent DSL to demonstrate its usage pattern.
  * Note also that it also returns intent ID together with execution result which can be used in testing.
  * <p>
- * See 'README.md' file in the same folder for running instructions.
- *
- * @see WeatherTest
+ * See 'README.md' file in the same folder for running & testing instructions.
  */
 public class WeatherModel extends NCModelFileAdapter {
     // Please register your own account at https://darksky.net/dev/docs/libraries and
@@ -86,11 +84,10 @@ public class WeatherModel extends NCModelFileAdapter {
      * Makes JSON result.
      *
      * @param res Weather holder.
-     * @param intentId Intent ID.
      * @return Query result.
      */
-    private NCResult makeResult(Object res, String intentId) {
-        return NCResult.json(GSON.toJson(new WeatherResultWrapper(intentId, res)));
+    private NCResult makeResult(Object res) {
+        return NCResult.json(GSON.toJson(res));
     }
 
     /**
@@ -199,9 +196,7 @@ public class WeatherModel extends NCModelFileAdapter {
                     new DateRange(now.plus(shift, DAYS), now)
             );
 
-            return makeResult(
-                srv.getTimeMachine(cr.latitude, cr.longitude, range.from, range.to), ctx.getIntentId()
-            );
+            return makeResult(srv.getTimeMachine(cr.latitude, cr.longitude, range.from, range.to));
         }
         catch (DarkSkyException e) {
             throw new NCRejection(e.getLocalizedMessage());
@@ -221,6 +216,9 @@ public class WeatherModel extends NCModelFileAdapter {
      * @return Query result.
      */
     @NCIntent("intent=fcast term={id == 'wt:fcast'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
+    @NCIntentSample({
+        "What's the weather forecast in Moscow?"
+    })
     public NCResult onForecastMatch(
         NCIntentMatch ctx,
         @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
@@ -236,6 +234,9 @@ public class WeatherModel extends NCModelFileAdapter {
      * @return Query result.
      */
     @NCIntent("intent=hist term={id == 'wt:hist'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
+    @NCIntentSample({
+        "What the weather history in Mosco last week?"
+    })
     public NCResult onHistoryMatch(
         NCIntentMatch ctx,
         @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
@@ -251,6 +252,9 @@ public class WeatherModel extends NCModelFileAdapter {
      * @return Query result.
      */
     @NCIntent("intent=curr term={id == 'wt:curr'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
+    @NCIntentSample({
+        "What's the current weather in Moscow"
+    })
     public NCResult onCurrentMatch(
         NCIntentMatch ctx,
         @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
@@ -264,10 +268,10 @@ public class WeatherModel extends NCModelFileAdapter {
             if (dateTokOpt.isPresent()) {
                 DateRange range = extractDate(dateTokOpt.get());
 
-                return makeResult(srv.getTimeMachine(cr.latitude, cr.longitude, range.from, range.to), ctx.getIntentId());
+                return makeResult(srv.getTimeMachine(cr.latitude, cr.longitude, range.from, range.to));
             }
 
-            return makeResult(srv.getCurrent(cr.latitude, cr.longitude), ctx.getIntentId());
+            return makeResult(srv.getCurrent(cr.latitude, cr.longitude));
         }
         catch (DarkSkyException e) {
             throw new NCRejection(e.getLocalizedMessage());

@@ -79,16 +79,19 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
       * @param errMsg
       * @param resType
       * @param resBody
+      * @param intentId
       * @param parent Optional parent span.
       */
     @throws[NCE]
     def updateReady(
         srvReqId: String,
         tstamp: Timestamp,
-        errMsg: Option[String] = None,
-        resType: Option[String] = None,
-        resBody: Option[String] = None,
-        parent: Span = null): Unit =
+        errMsg: Option[String],
+        resType: Option[String],
+        resBody: Option[String],
+        intentId: Option[String],
+        parent: Span = null
+    ): Unit =
         startScopedSpan("updateReady", parent,
             "srvReqId" → srvReqId,
             "errMsg" → errMsg.getOrElse(""),
@@ -100,6 +103,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
                     errMsg.orNull,
                     resType.orNull,
                     resBody.orNull,
+                    intentId.orNull,
                     tstamp,
                     span
                 )

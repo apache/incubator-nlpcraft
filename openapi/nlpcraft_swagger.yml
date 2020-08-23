@@ -246,6 +246,9 @@ paths:
                       type: integer
                       format: int64
                       description: ID of the user that submitted the request
+                    intentId:
+                      type: string
+                      description: ID of the intent
                     mdlId:
                       type: string
                       description: ID of the model
@@ -539,6 +542,9 @@ paths:
                     type: integer
                     format: int64
                     description: ID of the user that submitted the request
+                  intentId:
+                    type: string
+                    description: ID of the intent
                   mdlId:
                     type: string
                     description: ID of the model

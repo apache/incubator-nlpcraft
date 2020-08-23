@@ -94,4 +94,7 @@ public interface NCTestResult {
     default boolean isOk() {
         return getResult().isPresent() && getResultType().isPresent();
     }
+
+    // TODO:
+    String getIntentId();
 }

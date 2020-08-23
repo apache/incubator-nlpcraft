@@ -30,7 +30,6 @@ Here's an example of the files for `time` example:
 <pre>
 ├── time
     ├── TimeModel.java
-    ├── TimeTest.java
     ├── time_model.yaml
     └── README.md
 </pre>
