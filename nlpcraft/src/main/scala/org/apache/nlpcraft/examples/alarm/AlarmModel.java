@@ -114,4 +114,10 @@ public class AlarmModel extends NCModelFileAdapter {
     
         return NCResult.text("Timer set for: " + FMT.format(dt));
     }
+
+    @Override
+    public void onDiscard() {
+        // Clean up when model gets discarded (e.g. during testing).
+        timer.cancel();
+    }
 }

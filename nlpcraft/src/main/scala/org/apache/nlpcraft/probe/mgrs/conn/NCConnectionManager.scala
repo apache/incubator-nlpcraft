@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.conn
 
 import java.io.{EOFException, IOException, InterruptedIOException}
-import java.net.{InetAddress, NetworkInterface, Socket}
+import java.net.{InetAddress, NetworkInterface}
 import java.util
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
@@ -35,6 +35,7 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
@@ -47,7 +48,7 @@ object NCConnectionManager extends NCService {
     private final val SO_TIMEOUT = 5 * 1000
     // Ping timeout.
     private final val PING_TIMEOUT = 5 * 1000
-    
+
     // Internal probe GUID.
     @volatile private var probeGuid: String = _
     
@@ -130,7 +131,7 @@ object NCConnectionManager extends NCService {
         logger.trace(s"Opening downlink to '$host:$port'")
     
         // Connect down socket.
-        val sock = NCSocket(new Socket(host, port), host)
+        val sock = NCSocket(host, port)
     
         sock.write(U.mkSha256Hash(Config.token)) // Hash.
         sock.write(NCProbeMessage( // Handshake.
@@ -146,12 +147,10 @@ object NCConnectionManager extends NCService {
     
         val resp = sock.read[NCProbeMessage](cryptoKey) // Get handshake response.
     
-        def err(msg: String) = throw new HandshakeError(msg)
-    
         resp.getType match {
             case "P2S_PROBE_OK" ⇒ logger.trace("Downlink handshake OK.") // Bingo!
-            case "P2S_PROBE_NOT_FOUND" ⇒ err("Probe failed to start due to unknown error.")
-            case _ ⇒ err(s"Unexpected REST server message: ${resp.getType}")
+            case "P2S_PROBE_NOT_FOUND" ⇒  throw new HandshakeError("Probe failed to start due to unknown error.")
+            case _ ⇒  throw new HandshakeError(s"Unexpected REST server message: ${resp.getType}")
         }
     
         sock
@@ -179,8 +178,8 @@ object NCConnectionManager extends NCService {
 
         logger.trace(s"Opening uplink to '$host:$port'")
 
-        // Connect down socket.
-        val sock = NCSocket(new Socket(host, port), host)
+        // Connect up socket.
+        val sock = NCSocket(host, port)
     
         sock.write(U.mkSha256Hash(Config.token)) // Hash, sent clear text.
     
@@ -232,23 +231,38 @@ object NCConnectionManager extends NCService {
                         NCModelManager.getAllModels().map(m ⇒ {
                             val mdl = m.model
 
+                            require(m.intentsSamples != null)
+                            // Model already validated.
+
                             // util.HashSet created to avoid scala collections serialization error.
                             // Seems to be a Scala bug.
-                            (mdl.getId, mdl.getName, mdl.getVersion, new util.HashSet[String](mdl.getEnabledBuiltInTokens))
+                            (
+                                mdl.getId,
+                                mdl.getName,
+                                mdl.getVersion,
+                                new util.HashSet[String](mdl.getEnabledBuiltInTokens),
+                                mdl.getMacros,
+                                new util.HashMap[String, util.List[String]](
+                                    mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
+                                ),
+                                new util.HashMap[String, util.List[String]]
+                                    (m.intentsSamples.map {
+                                        case (intentId, samples)  ⇒
+                                            intentId → new util.ArrayList[String](samples.asJava) }.asJava
+                                    )
+                            )
                         })
                 ), cryptoKey)
     
                 val resp = sock.read[NCProbeMessage](cryptoKey) // Get handshake response.
-                
-                def err(msg: String) = throw new HandshakeError(msg)
     
                 resp.getType match {
-                    case "S2P_PROBE_MULTIPLE_INSTANCES" ⇒ err("Duplicate probes ID detected. Each probe has to have a unique ID.")
-                    case "S2P_PROBE_NOT_FOUND" ⇒ err("Probe failed to start due to unknown error.")
-                    case "S2P_PROBE_VERSION_MISMATCH" ⇒ err(s"REST server does not support probe version: ${ver.version}")
-                    case "S2P_PROBE_UNSUPPORTED_TOKENS_TYPES" ⇒ err(s"REST server does not support some model enabled tokes types.")
+                    case "S2P_PROBE_MULTIPLE_INSTANCES" ⇒  throw new HandshakeError("Duplicate probes ID detected. Each probe has to have a unique ID.")
+                    case "S2P_PROBE_NOT_FOUND" ⇒  throw new HandshakeError("Probe failed to start due to unknown error.")
+                    case "S2P_PROBE_VERSION_MISMATCH" ⇒  throw new HandshakeError(s"REST server does not support probe version: ${ver.version}")
+                    case "S2P_PROBE_UNSUPPORTED_TOKENS_TYPES" ⇒  throw new HandshakeError(s"REST server does not support some model enabled tokes types.")
                     case "S2P_PROBE_OK" ⇒ logger.trace("Uplink handshake OK.") // Bingo!
-                    case _ ⇒ err(s"Unknown REST server message: ${resp.getType}")
+                    case _ ⇒  throw new HandshakeError(s"Unknown REST server message: ${resp.getType}")
                 }
     
                 sock

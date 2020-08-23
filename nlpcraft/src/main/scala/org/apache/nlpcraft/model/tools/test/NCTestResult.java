@@ -95,6 +95,11 @@ public interface NCTestResult {
         return getResult().isPresent() && getResultType().isPresent();
     }
 
-    // TODO:
+    /**
+     * Gets ID of the intent that was matched against the input sentence. Only set if {@link #isOk()} method
+     * returns {@code true}.
+     *
+     * @return ID of the matching intent.
+     */
     String getIntentId();
 }

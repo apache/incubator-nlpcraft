@@ -297,8 +297,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
-    def isComplex(mdl: NCModelDecorator): Boolean =
-        mdl.synonymsDsl.nonEmpty || (mdl.model.getParsers != null && !mdl.model.getParsers.isEmpty)
+    def isComplex(mdl: NCModelDecorator): Boolean = mdl.synonymsDsl.nonEmpty || !mdl.model.getParsers.isEmpty
 
     @throws[NCE]
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
@@ -432,81 +431,80 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
             val parsers = mdl.model.getParsers
 
-            if (parsers != null)
-                for (parser ← parsers.asScala) {
-                    parser.onInit()
-                    
-                    startScopedSpan("customParser", span,
-                        "srvReqId" → ns.srvReqId,
-                        "modelId" → mdl.model.getId,
-                        "txt" → ns.text) { _ ⇒
-                        def to(t: NCNlpSentenceToken): NCCustomWord =
-                            new NCCustomWord {
-                                override def getNormalizedText: String = t.normText
-                                override def getOriginalText: String = t.origText
-                                override def getStartCharIndex: Int = t.startCharIndex
-                                override def getEndCharIndex: Int = t.endCharIndex
-                                override def getPos: String = t.pos
-                                override def getPosDescription: String = t.posDesc
-                                override def getLemma: String = t.lemma
-                                override def getStem: String = t.stem
-                                override def isStopWord: Boolean = t.isStopWord
-                                override def isBracketed: Boolean = t.isBracketed
-                                override def isQuoted: Boolean = t.isQuoted
-                                override def isKnownWord: Boolean = t.isKnownWord
-                                override def isSwearWord: Boolean = t.isSwearWord
-                                override def isEnglish: Boolean = t.isEnglish
+            for (parser ← parsers.asScala) {
+                parser.onInit()
+
+                startScopedSpan("customParser", span,
+                    "srvReqId" → ns.srvReqId,
+                    "modelId" → mdl.model.getId,
+                    "txt" → ns.text) { _ ⇒
+                    def to(t: NCNlpSentenceToken): NCCustomWord =
+                        new NCCustomWord {
+                            override def getNormalizedText: String = t.normText
+                            override def getOriginalText: String = t.origText
+                            override def getStartCharIndex: Int = t.startCharIndex
+                            override def getEndCharIndex: Int = t.endCharIndex
+                            override def getPos: String = t.pos
+                            override def getPosDescription: String = t.posDesc
+                            override def getLemma: String = t.lemma
+                            override def getStem: String = t.stem
+                            override def isStopWord: Boolean = t.isStopWord
+                            override def isBracketed: Boolean = t.isBracketed
+                            override def isQuoted: Boolean = t.isQuoted
+                            override def isKnownWord: Boolean = t.isKnownWord
+                            override def isSwearWord: Boolean = t.isSwearWord
+                            override def isEnglish: Boolean = t.isEnglish
+                        }
+
+                    val res = parser.parse(
+                        NCRequestImpl(senMeta, ns.srvReqId),
+                        mdl.model,
+                        ns.map(to).asJava,
+                        ns.flatten.distinct.filter(!_.isNlp).map(n ⇒ {
+                            val noteId = n.noteType
+                            val words = ns.filter(t ⇒ t.index >= n.tokenFrom && t.index <= n.tokenTo).map(to).asJava
+                            val md = n.asMetadata()
+
+                            new NCCustomElement() {
+                                override def getElementId: String = noteId
+                                override def getWords: util.List[NCCustomWord] = words
+                                override def getMetadata: util.Map[String, AnyRef] =
+                                    md.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
                             }
-        
-                        val res = parser.parse(
-                            NCRequestImpl(senMeta, ns.srvReqId),
-                            mdl.model,
-                            ns.map(to).asJava,
-                            ns.flatten.distinct.filter(!_.isNlp).map(n ⇒ {
-                                val noteId = n.noteType
-                                val words = ns.filter(t ⇒ t.index >= n.tokenFrom && t.index <= n.tokenTo).map(to).asJava
-                                val md = n.asMetadata()
-                
-                                new NCCustomElement() {
-                                    override def getElementId: String = noteId
-                                    override def getWords: util.List[NCCustomWord] = words
-                                    override def getMetadata: util.Map[String, AnyRef] =
-                                        md.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
-                                }
-                            }).asJava
-                        )
-        
-                        if (res != null)
-                            res.asScala.foreach(e ⇒ {
-                                val elemId = e.getElementId
-                                val words = e.getWords
-                
-                                if (elemId == null)
-                                    throw new NCE(s"Custom model parser cannot return 'null' element ID.")
-                
-                                if (words == null || words.isEmpty)
-                                    throw new NCE(s"Custom model parser cannot return empty custom tokens [elementId=$elemId]")
-                
-                                val matchedToks = words.asScala.map(w ⇒
-                                    ns.find(t ⇒
-                                        t.startCharIndex == w.getStartCharIndex && t.endCharIndex == w.getEndCharIndex
-                                    ).getOrElse(throw new AssertionError(s"Custom model parser returned an invalid custom token: $w"))
+                        }).asJava
+                    )
+
+                    if (res != null)
+                        res.asScala.foreach(e ⇒ {
+                            val elemId = e.getElementId
+                            val words = e.getWords
+
+                            if (elemId == null)
+                                throw new NCE(s"Custom model parser cannot return 'null' element ID.")
+
+                            if (words == null || words.isEmpty)
+                                throw new NCE(s"Custom model parser cannot return empty custom tokens [elementId=$elemId]")
+
+                            val matchedToks = words.asScala.map(w ⇒
+                                ns.find(t ⇒
+                                    t.startCharIndex == w.getStartCharIndex && t.endCharIndex == w.getEndCharIndex
+                                ).getOrElse(throw new AssertionError(s"Custom model parser returned an invalid custom token: $w"))
+                            )
+
+                            if (!alreadyMarked(matchedToks, elemId))
+                                mark(
+                                    ns,
+                                    elem = mdl.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
+                                    toks = matchedToks,
+                                    direct = true,
+                                    syn = None,
+                                    metaOpt = Some(e.getMetadata.asScala),
+                                    parts = Seq.empty
                                 )
-                
-                                if (!alreadyMarked(matchedToks, elemId))
-                                    mark(
-                                        ns,
-                                        elem = mdl.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
-                                        toks = matchedToks,
-                                        direct = true,
-                                        syn = None,
-                                        metaOpt = Some(e.getMetadata.asScala),
-                                        parts = Seq.empty
-                                    )
-                            })
-                    }
-                    
-                    parser.onDiscard()
+                        })
                 }
+
+                parser.onDiscard()
+            }
         }
 }

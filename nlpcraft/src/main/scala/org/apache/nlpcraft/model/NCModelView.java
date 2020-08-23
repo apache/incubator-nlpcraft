@@ -669,7 +669,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Optional user defined model metadata.
+     * @return Optional user defined model metadata. TODO: cannot be null
      */
     default Map<String, Object> getMetadata() {
         return DFLT_METADATA;
@@ -808,7 +808,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Custom user parsers for model elements or {@code null} if not used (default).
+     * @return Custom user parsers for model elements or {@code null} if not used (default). TODO: cannot be null!
      */
     default List<NCCustomParser> getParsers() {
         return Collections.emptyList();

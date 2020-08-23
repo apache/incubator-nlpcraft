@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.examples.weather;
 
 import com.google.gson.Gson;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.nlpcraft.examples.misc.darksky.DarkSkyException;
 import org.apache.nlpcraft.examples.misc.darksky.DarkSkyService;
 import org.apache.nlpcraft.examples.misc.geo.keycdn.GeoManager;
@@ -32,7 +33,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 /**
  * Weather example data model.
  * <p>
- * This is relatively complete weather service with JSON output and a non-trivial
+ * This is a relatively complete weather service with JSON output and a non-trivial
  * intent matching logic. It uses Apple's Dark Sky API weather provider REST service for the actual
  * weather information (https://darksky.net/dev/docs#overview)
  * <p>
@@ -44,88 +45,43 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class WeatherModel extends NCModelFileAdapter {
     // Please register your own account at https://darksky.net/dev/docs/libraries and
     // replace this demo token with your own.
-    private final DarkSkyService srv = new DarkSkyService("097e1aad75b22b88f494cf49211975aa", 31);
+    private final DarkSkyService darkSky = new DarkSkyService("097e1aad75b22b88f494cf49211975aa", 31);
 
     // Geo manager.
     private final GeoManager geoMrg = new GeoManager();
-    
+
+    // Default shift in days for history and forecast.
+    private static final int DAYS_SHIFT = 5;
+
+    // GSON instance.
     private static final Gson GSON = new Gson();
-    
+
     // Keywords for 'local' weather.
     private static final Set<String> LOCAL_WORDS = new HashSet<>(Arrays.asList("my", "local", "hometown"));
-
-    /**
-     * Date range holder.
-     */
-    private static class DateRange {
-        private final Instant from;
-        private final Instant to;
-
-        DateRange(Instant from, Instant to) {
-            this.from = from;
-            this.to = to;
-        }
-    }
-
-    /**
-     * Coordinates holder.
-     */
-    private static class Coordinate {
-        private final double latitude;
-        private final double longitude;
-
-        Coordinate(double latitude, double longitude) {
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
-    }
-
-    /**
-     * Makes JSON result.
-     *
-     * @param res Weather holder.
-     * @return Query result.
-     */
-    private NCResult makeResult(Object res) {
-        return NCResult.json(GSON.toJson(res));
-    }
-
-    /**
-     * Extracts date range from given solver context.
-     *
-     * @param tok date token.
-     * @return Pair of dates.
-     */
-    private DateRange extractDate(NCToken tok) {
-        return new DateRange(
-            Instant.ofEpochMilli(tok.meta("nlpcraft:date:from")),
-            Instant.ofEpochMilli(tok.meta("nlpcraft:date:to"))
-        );
-    }
 
     /**
      * Extracts geo location (city) from given solver context that is suitable for Dark Sky API weather service.
      *
      * @param ctx Intent solver context.
-     * @param dateTokOpt Optional date token.
+     * @param geoTokOpt Optional geo token.
      * @return Geo location.
      */
-    private Coordinate prepGeo(NCIntentMatch ctx, Optional<NCToken> dateTokOpt) throws NCRejection {
-        if (dateTokOpt.isPresent()) {
-            NCToken tok = dateTokOpt.get();
+    private Pair<Double, Double> prepGeo(NCIntentMatch ctx, Optional<NCToken> geoTokOpt) throws NCRejection {
+        if (geoTokOpt.isPresent()) {
+            NCToken geoTok = geoTokOpt.get();
 
-            Map<String, Object> cityMeta = tok.meta("nlpcraft:city:citymeta");
+            Map<String, Object> cityMeta = geoTok.meta("nlpcraft:city:citymeta");
 
             Double lat = (Double)cityMeta.get("latitude");
             Double lon = (Double)cityMeta.get("longitude");
 
             if (lat == null || lon == null) {
-                String city = tok.meta("nlpcraft:city:city");
+                String city = geoTok.meta("nlpcraft:city:city");
 
                 throw new NCRejection(String.format("Latitude and longitude not found for: %s", city));
             }
 
-            return new Coordinate(lat, lon);
+            return Pair.of(lat, lon);
         }
 
         Optional<GeoDataBean> geoOpt = geoMrg.get(ctx.getContext().getRequest());
@@ -154,124 +110,78 @@ public class WeatherModel extends NCModelFileAdapter {
         // Try current user location.
         GeoDataBean geo = geoOpt.get();
 
-        return new Coordinate(geo.getLatitude(), geo.getLongitude());
+        return Pair.of(geo.getLatitude(), geo.getLongitude());
     }
 
     /**
-     * Strict check for an exact match (i.e. no dangling unused system or user defined tokens) and
-     * maximum number of free words left unmatched. In both cases user input will be rejected.
+     * A callback for the intent match.
      *
-     * @param ctx Solver context.
+     * @param ctx Intent match context.
+     * @param indToksOpt List of optional indicator elements.
+     * @param cityTokOpt Optional GEO token for city.
+     * @param dateTokOpt Optional date token.
+     * @return Callback result.
      */
-    private void checkMatch(NCIntentMatch ctx) {
+    @NCIntent(
+        "intent=req " +
+        "conv=true " + // Support conversation context (i.e. short term memory).
+        "term={id == 'wt:phen'}+ " + // One or more weather phenomenon (at least is mandatory).
+        "term(ind)={groups @@ 'indicator'}* " + // Optional indicator words (zero or more).
+        "term(city)={id == 'nlpcraft:city'}? " + // Optional city.
+        "term(date)={id == 'nlpcraft:date'}?" // Optional date (overrides indicator words).
+    )
+    @NCIntentSample({
+        "What's the local weather forecast?",
+        "What's the weather in Moscow?",
+        "What is the weather like outside?",
+        "How's the weather?",
+        "What's the weather forecast for the rest of the week?",
+        "What's the weather forecast this week?",
+        "What's the weather out there?",
+        "Is it cold outside?",
+        "Is it hot outside?",
+        "Will it rain today?",
+        "When it will rain in Delhi?",
+        "Is there any possibility of rain in Delhi?",
+        "Is it raining now?",
+        "Is there any chance of rain today?",
+        "Was it raining in Beirut last week?",
+        "How about yesterday?"
+    })
+    public NCResult onMatch(
+        NCIntentMatch ctx,
+        @NCIntentTerm("ind") List<NCToken> indToksOpt,
+        @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
+        @NCIntentTerm("date") Optional<NCToken> dateTokOpt
+    ) {
         // Reject if intent match is not exact (at least one "dangling" token remain).
         if (ctx.isAmbiguous())
             throw new NCRejection("Please clarify your request.");
-    }
-
-    /**
-     *
-     * @param ctx
-     * @param shift
-     * @return
-     */
-    private NCResult onPeriodMatch(
-        NCIntentMatch ctx,
-        Optional<NCToken> cityTokOpt,
-        Optional<NCToken> dateTokOpt,
-        int shift
-    ) {
-        assert shift != 0;
-
-        checkMatch(ctx);
 
         try {
-            Coordinate cr = prepGeo(ctx, cityTokOpt);
-
             Instant now = Instant.now();
 
-            DateRange range = dateTokOpt.map(this::extractDate).orElseGet(
-                () -> shift > 0 ?
-                    new DateRange(now, now.plus(shift, DAYS)) :
-                    new DateRange(now.plus(shift, DAYS), now)
-            );
+            Instant from = now;
+            Instant to = now;
 
-            return makeResult(srv.getTimeMachine(cr.latitude, cr.longitude, range.from, range.to));
-        }
-        catch (DarkSkyException e) {
-            throw new NCRejection(e.getLocalizedMessage());
-        }
-        catch (NCRejection e) {
-            throw e;
-        }
-        catch (Exception e) {
-            throw new NCRejection("Weather provider error.", e);
-        }
-    }
+            if (indToksOpt.stream().anyMatch(tok -> tok.getId().equals("wt:hist")))
+                from = from.minus(DAYS_SHIFT, DAYS);
+            else if (indToksOpt.stream().anyMatch(tok -> tok.getId().equals("wt:fcast")))
+                to = from.plus(DAYS_SHIFT, DAYS);
 
-    /**
-     * Callback on forecast intent match.
-     *
-     * @param ctx Intent solver context.
-     * @return Query result.
-     */
-    @NCIntent("intent=fcast term={id == 'wt:fcast'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
-    @NCIntentSample({
-        "What's the weather forecast in Moscow?"
-    })
-    public NCResult onForecastMatch(
-        NCIntentMatch ctx,
-        @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
-        @NCIntentTerm("date") Optional<NCToken> dateTokOpt
-    ) {
-        return onPeriodMatch(ctx, cityTokOpt, dateTokOpt, 5);
-    }
+            if (dateTokOpt.isPresent()) { // Date token overrides any indicators.
+                NCToken dateTok = dateTokOpt.get();
 
-    /**
-     * Callback on history intent match.
-     *
-     * @param ctx Intent solver context.
-     * @return Query result.
-     */
-    @NCIntent("intent=hist term={id == 'wt:hist'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
-    @NCIntentSample({
-        "What the weather history in Mosco last week?"
-    })
-    public NCResult onHistoryMatch(
-        NCIntentMatch ctx,
-        @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
-        @NCIntentTerm("date") Optional<NCToken> dateTokOpt
-    ) {
-        return onPeriodMatch(ctx, cityTokOpt, dateTokOpt, -5);
-    }
-
-    /**
-     * Callback on current date intent match.
-     *
-     * @param ctx Intent solver context.
-     * @return Query result.
-     */
-    @NCIntent("intent=curr term={id == 'wt:curr'} term(city)={id == 'nlpcraft:city'}? term(date)={id == 'nlpcraft:date'}?")
-    @NCIntentSample({
-        "What's the current weather in Moscow"
-    })
-    public NCResult onCurrentMatch(
-        NCIntentMatch ctx,
-        @NCIntentTerm("city") Optional<NCToken> cityTokOpt,
-        @NCIntentTerm("date") Optional<NCToken> dateTokOpt
-    ) {
-        checkMatch(ctx);
-
-        try {
-            Coordinate cr = prepGeo(ctx, cityTokOpt);
-
-            if (dateTokOpt.isPresent()) {
-                DateRange range = extractDate(dateTokOpt.get());
-
-                return makeResult(srv.getTimeMachine(cr.latitude, cr.longitude, range.from, range.to));
+                from = Instant.ofEpochMilli(dateTok.meta("nlpcraft:date:from"));
+                to = Instant.ofEpochMilli(dateTok.meta("nlpcraft:date:to"));
             }
 
-            return makeResult(srv.getCurrent(cr.latitude, cr.longitude));
+            Pair<Double, Double> latLon = prepGeo(ctx, cityTokOpt); // Handles optional city too.
+
+            double lat = latLon.getLeft();
+            double lon = latLon.getRight();
+
+            return NCResult.json(GSON.toJson(from == to ? darkSky.getCurrent(lat, lon) : darkSky.getTimeMachine(lat, lon, from, to)));
         }
         catch (DarkSkyException e) {
             throw new NCRejection(e.getLocalizedMessage());
@@ -285,10 +195,15 @@ public class WeatherModel extends NCModelFileAdapter {
     }
 
     /**
-     * Initializes the model.
+     * Loads the model.
      */
     public WeatherModel() {
         // Load model from external JSON file on classpath.
         super("org/apache/nlpcraft/examples/weather/weather_model.json");
+    }
+
+    @Override
+    public void onDiscard() {
+        darkSky.stop();
     }
 }

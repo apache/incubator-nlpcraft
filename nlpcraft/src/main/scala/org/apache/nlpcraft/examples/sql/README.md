@@ -33,11 +33,15 @@ This example can be run the same way as other examples with one exception - it n
 The unit test for this example runs H2 database server automatically (which can be run manually, if necessary).
 You need to start H2 database server standalone when you are using `NCSqlModelGenerator` model generation utility.
 You can run necessary JVMs for this example similarly from command line or IDE.
-NOTE: that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
+Note that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
 embedded probe and starts it automatically:
  *  Run REST server:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **Program arguments:** `-server`
+ * Test using built-in test framework:
+    * **JUnit class:** `org.apache.nlpcraft.examples.sql.NCSqlExampleTest`
+
+If not using built-in test framework (i.e. not using embedded probe) you need to start data probe manually:    
  * To run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
@@ -46,8 +50,6 @@ embedded probe and starts it automatically:
     
     When running data probe standalone you need run H2 database sever manually (from command line or IDE):
     * **Main class:** `org.apache.nlpcraft.examples.sql.db.SqlServerRunner`
- * Test using built-in test framework:
-    * **JUnit class:** `org.apache.nlpcraft.examples.sql.NCSqlExampleTest`
     
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
@@ -55,7 +57,7 @@ See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide fo
 For any questions, feedback or suggestions:
 
  * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples)
- * Latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
+ * Read [documentation](https://nlpcraft.apache.org/docs.html), latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
  * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag

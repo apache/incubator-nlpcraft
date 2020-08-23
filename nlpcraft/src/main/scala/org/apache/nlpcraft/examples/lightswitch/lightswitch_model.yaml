@@ -26,7 +26,7 @@ macros:
     macro: "{entire|full|whole|total|*}"
   - name: "<LIGHT>"
     macro: "{all|*} {it|them|light|illumination|lamp|lamplight}"
-enabledBuiltInTokens: [] # Don't use any built-in tokens.
+enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
 elements:
   - id: "ls:loc"
     description: "Location of lights."

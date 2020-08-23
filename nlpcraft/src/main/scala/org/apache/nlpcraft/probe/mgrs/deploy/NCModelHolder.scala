@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.mdo
+package org.apache.nlpcraft.probe.mgrs.deploy
 
-import org.apache.nlpcraft.server.mdo.impl._
+import org.apache.nlpcraft.model.NCModel
 
 /**
-  * Probe model MDO.
+  * Holder for the model and its intent samepls.
+ *
+  * @param model Model.
+  * @param intentSamples Map of intent samples.
   */
-@NCMdoEntity(sql = false)
-case class NCProbeModelMdo(
-    @NCMdoField id: String,
-    @NCMdoField name: String,
-    @NCMdoField version: String,
-    @NCMdoField enabledBuiltInTokens: Set[String],
-    @NCMdoField macros: Map[String, String],
-    @NCMdoField elementsSynonyms: Map[String, Seq[String]],
-    @NCMdoField intentsSamples: Map[String, Seq[String]]
-) extends NCAnnotatedMdo[NCProbeModelMdo] {
-    override def hashCode(): Int = s"$id$name".hashCode()
-    
-    override def equals(obj: Any): Boolean = {
-        obj match {
-            case x: NCProbeModelMdo ⇒ x.id == id
-            case _ ⇒ false
-        }
-    }
+case class NCModelHolder(model: NCModel, intentSamples: Map[String, Seq[String]]) {
+    require(model != null)
+    require(intentSamples != null)
 }

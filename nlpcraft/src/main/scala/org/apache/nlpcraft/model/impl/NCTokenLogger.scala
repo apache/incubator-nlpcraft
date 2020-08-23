@@ -33,6 +33,9 @@ import scala.collection._
 /**
  * Utility service that provides supporting functionality for ASCII rendering.
  */
+// TODO: we need to refactor this class eventually to remove
+// TODO: duplicate code usage.
+//noinspection DuplicatedCode
 object NCTokenLogger extends LazyLogging {
     case class NoteMetadata(noteType: String, filtered: Seq[String], isFull: Boolean)
     
@@ -85,6 +88,8 @@ object NCTokenLogger extends LazyLogging {
         ).map(p ⇒ p._1 → p._2.zipWithIndex.map(p ⇒ p._1 → p._2).toMap)
 
     private def format(l: Long): String = new SimpleDateFormat("yyyy/MM/dd").format(new java.util.Date(l))
+    private def mkMore(incl: Boolean): String = if (incl) ">=" else ">"
+    private def mkLess(incl: Boolean): String = if (incl) "<=" else "<"
 
     /**
      * Filters and sorts keys pairs to visually group notes logically.
@@ -152,8 +157,6 @@ object NCTokenLogger extends LazyLogging {
                 found.get._2
             }
         
-            def mkMore(incl: Boolean): String = if (incl) ">=" else ">"
-            def mkLess(incl: Boolean): String = if (incl) "<=" else "<"
             def mkValue(name: String, fractionalField: String): String = {
                 val d = getValue(name).asInstanceOf[Double]
 
@@ -182,15 +185,8 @@ object NCTokenLogger extends LazyLogging {
                 }
 
             def mkDouble3(name: String): Double = (getValue(name).asInstanceOf[Double] * 1000).intValue / 1000.0
-
             def indexes2String(v: java.io.Serializable): String = v.asInstanceOf[util.List[Int]].asScala.mkString(",")
             def mkIndexes(name: String): String = indexes2String(getValue(name))
-            def mkIndexesOpt(name: String): Option[String] =
-                getValueOpt(name) match {
-                    case Some(indexes) ⇒ Some(indexes2String(indexes))
-                    case None ⇒ None
-                }
-
             def getSeq(names: String*): String = names.flatMap(name ⇒ mkStringOpt(name)).mkString("|")
 
             note.noteType match {
@@ -232,10 +228,8 @@ object NCTokenLogger extends LazyLogging {
 
                     val ascOpt = mkBoolOpt("asc")
 
-                    ascOpt match {
-                        case Some(asc) ⇒ s = s"$s, asc=$asc"
-                        case None ⇒ // No-op.
-                    }
+                    if (ascOpt.isDefined)
+                        s = s"$s, asc=${ascOpt.get}"
 
                     s
 
@@ -246,10 +240,8 @@ object NCTokenLogger extends LazyLogging {
 
                     var s = s"limit=$limit, indexes=[${mkIndexes("indexes")}], note=$note"
 
-                    ascOpt match {
-                        case Some(asc) ⇒ s = s"$s, asc=$asc"
-                        case None ⇒ // No-op.
-                    }
+                    if (ascOpt.isDefined)
+                        s = s"$s, asc=${ascOpt.get}"
 
                     s
 
@@ -333,6 +325,7 @@ object NCTokenLogger extends LazyLogging {
 
                                 s = s"$s, meta=$v"
                             }
+
                         case None ⇒ // No-op.
                     }
 
@@ -517,10 +510,6 @@ object NCTokenLogger extends LazyLogging {
 
                                 if (fr) d.toString else d.toInt.toString
                             }
-
-                            def mkMore(incl: Boolean): String = if (incl) ">=" else ">"
-
-                            def mkLess(incl: Boolean): String = if (incl) "<=" else "<"
 
                             val from = mkValue("from", "isfractional")
                             val to = mkValue("to", "isfractional")

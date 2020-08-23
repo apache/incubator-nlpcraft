@@ -37,6 +37,7 @@ import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
+import org.apache.nlpcraft.server.model.NCEnhanceManager
 import org.apache.nlpcraft.server.user.NCUserManager
 import spray.json.DefaultJsonProtocol._
 import spray.json.{JsValue, RootJsonFormat}
@@ -44,6 +45,7 @@ import spray.json.{JsValue, RootJsonFormat}
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import akka.http.scaladsl.coding.{Coders, Gzip, NoCoding}
 
 /**
   * REST API default implementation.
@@ -51,17 +53,17 @@ import scala.concurrent.Future
 class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats {
     protected final val GSON = new Gson()
     protected final val URL_VALIDATOR = new UrlValidator(Array("http", "https"), UrlValidator.ALLOW_LOCAL_URLS)
-    
+
     final val API_VER = 1
     final val API = "api" / s"v$API_VER"
-    
+
     /** */
     private final val CORS_HDRS = List(
         `Access-Control-Allow-Origin`.*,
         `Access-Control-Allow-Credentials`(true),
         `Access-Control-Allow-Headers`("Authorization", "Content-Type", "X-Requested-With")
     )
-    
+
     /*
      * General control exception.
      * Note that these classes must be public because scala 2.11 internal errors (compilations problems).
@@ -232,7 +234,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     throw InvalidUserId(userId)
 
                 Some(userId)
-                
+
             case None ⇒ None
         }
 
@@ -257,14 +259,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @param acsTkn Access token to check.
       */
     @throws[NCE]
-    protected def authenticate(acsTkn: String): NCUserMdo = authenticate0(acsTkn, false)
+    protected def authenticate(acsTkn: String): NCUserMdo = authenticate0(acsTkn, shouldBeAdmin = false)
 
     /**
       *
       * @param acsTkn Access token to check.
       */
     @throws[NCE]
-    protected def authenticateAsAdmin(acsTkn: String): NCUserMdo = authenticate0(acsTkn, true)
+    protected def authenticateAsAdmin(acsTkn: String): NCUserMdo = authenticate0(acsTkn, shouldBeAdmin = true)
 
     /**
       * Checks length of field value.
@@ -339,7 +341,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan("signin$", "email" → req.email) { span ⇒
                 checkLength("email", req.email, 64)
                 checkLength("passwd", req.passwd, 64)
-                
+
                 NCUserManager.signin(
                     req.email,
                     req.passwd,
@@ -382,22 +384,22 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
         implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
-        
+
         entity(as[Req]) { req ⇒
             startScopedSpan("signout$", "acsTok" → req.acsTok) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
-                
+
                 authenticate(req.acsTok)
-    
+
                 NCUserManager.signout(req.acsTok, span)
-                
+
                 complete {
                     Res(API_OK)
                 }
             }
         }
     }
-    
+
     /**
       *
       * @param reqJs
@@ -434,9 +436,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             checkLength("mdlId", mdlId, 32)
             checkLengthOpt("data", data, 512000)
             checkLengthOpt("userExtId", data, 64)
-        
+
             val connUser = authenticate(acsTok)
-        
+
             NCQueryManager.futureAsk(
                 getUserId(connUser, usrIdOpt, usrExtIdOpt),
                 txt,
@@ -480,7 +482,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         implicit val reqFmt: RootJsonFormat[Req] = jsonFormat7(Req)
         implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
-    
+
         entity(as[Req]) { req ⇒
             //noinspection GetOrElseNull
             startScopedSpan(
@@ -494,17 +496,17 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 checkLengthOpt("userExtId", req.usrExtId, 64)
                 checkLength("txt", req.txt, 1024)
                 checkLength("mdlId", req.mdlId, 32)
-                
+
                 val dataJsOpt =
                     req.data match {
                         case Some(data) ⇒ Some(data.compactPrint)
                         case None ⇒ None
                     }
-                
+
                 checkLengthOpt("data", dataJsOpt, 512000)
-               
+
                 val connUser = authenticate(req.acsTok)
-                
+
                 optionalHeaderValueByName("User-Agent") { usrAgent ⇒
                     extractClientIP { rmtAddr ⇒
                         val newSrvReqId = NCQueryManager.asyncAsk(
@@ -517,7 +519,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                             req.enableLog.getOrElse(false),
                             span
                         )
-                        
+
                         complete {
                             Res(API_OK, newSrvReqId)
                         }
@@ -526,7 +528,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             }
         }
     }
-    
+
     /**
       *
       * @return
@@ -554,7 +556,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "srvReqIds" → req.srvReqIds.getOrElse(Nil).mkString(",")) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
                 checkLengthOpt("userExtId", req.usrExtId, 64)
-    
+
                 val connUser = authenticate(req.acsTok)
 
                 val srvReqs = getRequests(connUser, req.srvReqIds, req.usrId, req.usrExtId, span)
@@ -567,7 +569,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             }
         }
     }
-    
+
     /**
       *
       * @return
@@ -593,7 +595,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             ) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
                 checkLengthOpt("userExtId", req.usrExtId, 64)
-    
+
                 val connUser = authenticate(req.acsTok)
 
                 val states =
@@ -609,7 +611,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     )
                     .asJava
                 )
-    
+
                 complete(
                     HttpResponse(
                         entity = HttpEntity(ContentTypes.`application/json`, js)
@@ -618,7 +620,62 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             }
         }
     }
-    
+
+    /**
+      *
+      * @return
+      */
+    protected def modelEnhance$(): Route = {
+        case class Req(
+            acsTok: String,
+            mdlId: String,
+            minScore: Option[Double]
+        )
+
+        case class Suggestion(
+            synonym: String,
+            score: Double,
+            suggestedCount: Int
+        )
+
+        case class Res(
+            status: String,
+            suggestions: Map[String, Seq[Suggestion]]
+        )
+
+        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat3(Req)
+        implicit val fbFmt: RootJsonFormat[Suggestion] = jsonFormat3(Suggestion)
+        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+
+        entity(as[Req]) { req ⇒
+            startScopedSpan(
+                "modelEnhance$",
+                "mdlId" → req.mdlId,
+                "minScore" → req.minScore.getOrElse(() ⇒ null),
+                "acsTok" → req.acsTok
+            ) { span ⇒
+                checkLength("acsTok", req.acsTok, 256)
+                checkLength("mdlId", req.mdlId, 32)
+                checkRangeOpt("score", req.minScore, 0, 1)
+
+                val admin = authenticateAsAdmin(req.acsTok)
+
+                if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == req.mdlId)))
+                    throw new NCE(s"Probe not found for model: ${req.mdlId}")
+
+                val res: Map[String, Seq[Suggestion]] =
+                    NCEnhanceManager.enhance(req.mdlId, req.minScore, span).
+                        map { case (elemId, suggs) ⇒
+                            elemId → suggs.map(p ⇒ Suggestion(p.synonym, p.ctxWorldServerScore, p.suggestedCount))
+                        }.toMap
+
+                complete {
+                    Res(API_OK, res)
+                }
+            }
+        }
+    }
+
     /**
       *
       * @return
@@ -646,11 +703,11 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrId" → req.usrId.getOrElse(null)) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
                 checkLengthOpt("usrExtId", req.usrExtId, 64)
-    
+
                 val connUser = authenticate(req.acsTok)
 
                 NCProbeManager.clearConversation(getUserId(connUser, req.usrId, req.usrExtId), req.mdlId, span)
-    
+
                 complete {
                     Res(API_OK)
                 }
@@ -685,9 +742,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrId" → req.usrId.getOrElse(null)) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
                 checkLengthOpt("userExtId", req.usrExtId, 64)
-    
+
                 val connUser = authenticate(req.acsTok)
-    
+
                 NCProbeManager.clearDialog(getUserId(connUser, req.usrId, req.usrExtId), req.mdlId, span)
 
                 complete {
@@ -696,7 +753,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             }
         }
     }
-    
+
     /**
       *
       * @return
@@ -743,10 +800,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 checkLength("adminFirstName", req.adminFirstName, 64)
                 checkLength("adminLastName", req.adminLastName, 64)
                 checkLengthOpt("adminAvatarUrl", req.adminAvatarUrl, 512000)
-    
+
                 // Via REST only administrators of already created companies can create new companies.
                 authenticateAsAdmin(req.acsTok)
-    
+
                 val res = NCCompanyManager.addCompany(
                     req.name,
                     req.website,
@@ -762,14 +819,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     req.adminAvatarUrl,
                     span
                 )
-    
+
                 complete {
                     Res(API_OK, res.token, res.adminId)
                 }
             }
         }
     }
-    
+
     /**
       *
       * @return
@@ -789,21 +846,21 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             address: Option[String],
             postalCode: Option[String]
         )
-        
+
         implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
         implicit val resFmt: RootJsonFormat[Res] = jsonFormat9(Res)
-        
+
         entity(as[Req]) { req ⇒
             startScopedSpan("company$get", "acsTok" → req.acsTok) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
-                
+
                 val connUser = authenticate(req.acsTok)
-                
+
                 val company = NCCompanyManager.getCompany(connUser.companyId, span) match {
                     case Some(c) ⇒ c
                     case None ⇒ throw InvalidOperation(s"Failed to find company with ID: ${connUser.companyId}")
                 }
-                
+
                 complete {
                     Res(API_OK,
                         company.id,
@@ -855,9 +912,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 checkLengthOpt("city", req.city, 512)
                 checkLengthOpt("address", req.address, 512)
                 checkLengthOpt("postalCode", req.postalCode, 32)
-    
+
                 val admin = authenticateAsAdmin(req.acsTok)
-    
+
                 NCCompanyManager.updateCompany(
                     admin.companyId,
                     req.name,
@@ -869,7 +926,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     req.postalCode,
                     span
                 )
-    
+
                 complete {
                     Res(API_OK)
                 }
@@ -1718,40 +1775,43 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 }
             } ~
             post {
-                withRequestTimeoutResponse(_ ⇒ timeoutResp) {
-                    path(API / "signin") { withLatency(M_SIGNIN_LATENCY_MS, signin$) } ~
-                    path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
-                    path(API / "cancel") { withLatency(M_CANCEL_LATENCY_MS, cancel$) } ~
-                    path(API / "check") { withLatency(M_CHECK_LATENCY_MS, check$) } ~
-                    path(API / "clear"/ "conversation") { withLatency(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
-                    path(API / "clear"/ "dialog") { withLatency(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
-                    path(API / "company"/ "add") { withLatency(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
-                    path(API / "company"/ "get") { withLatency(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
-                    path(API / "company" / "update") { withLatency(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
-                    path(API / "company" / "token" / "reset") { withLatency(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
-                    path(API / "company" / "delete") { withLatency(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
-                    path(API / "user" / "get") { withLatency(M_USER_GET_LATENCY_MS, user$Get) } ~
-                    path(API / "user" / "add") { withLatency(M_USER_ADD_LATENCY_MS, user$Add) } ~
-                    path(API / "user" / "update") { withLatency(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
-                    path(API / "user" / "delete") { withLatency(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
-                    path(API / "user" / "admin") { withLatency(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
-                    path(API / "user" / "passwd" / "reset") { withLatency(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
-                    path(API / "user" / "all") { withLatency(M_USER_ALL_LATENCY_MS, user$All) } ~
-                    path(API / "feedback"/ "add") { withLatency(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
-                    path(API / "feedback"/ "all") { withLatency(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
-                    path(API / "feedback" / "delete") { withLatency(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
-                    path(API / "probe" / "all") { withLatency(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
-                    path(API / "ask") { withLatency(M_ASK_LATENCY_MS, ask$) } ~
-                    (path(API / "ask" / "sync") &
-                        entity(as[JsValue]) &
-                        optionalHeaderValueByName("User-Agent") &
-                        extractClientIP
-                    ) {
-                        (req, userAgentOpt, rmtAddr) ⇒
-                            onSuccess(withLatency(M_ASK_SYNC_LATENCY_MS, ask$Sync(req, userAgentOpt, rmtAddr))) {
-                                js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
-                            }
-                    }}
+                encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
+                    withRequestTimeoutResponse(_ ⇒ timeoutResp) {
+                        path(API / "signin") { withLatency(M_SIGNIN_LATENCY_MS, signin$) } ~
+                        path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
+                        path(API / "cancel") { withLatency(M_CANCEL_LATENCY_MS, cancel$) } ~
+                        path(API / "check") { withLatency(M_CHECK_LATENCY_MS, check$) } ~
+                        path(API / "model"/ "enhance") { withLatency(M_MODEL_ENHANCE_LATENCY_MS, modelEnhance$) } ~
+                        path(API / "clear"/ "conversation") { withLatency(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
+                        path(API / "clear"/ "dialog") { withLatency(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
+                        path(API / "company"/ "add") { withLatency(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
+                        path(API / "company"/ "get") { withLatency(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
+                        path(API / "company" / "update") { withLatency(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
+                        path(API / "company" / "token" / "reset") { withLatency(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
+                        path(API / "company" / "delete") { withLatency(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
+                        path(API / "user" / "get") { withLatency(M_USER_GET_LATENCY_MS, user$Get) } ~
+                        path(API / "user" / "add") { withLatency(M_USER_ADD_LATENCY_MS, user$Add) } ~
+                        path(API / "user" / "update") { withLatency(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
+                        path(API / "user" / "delete") { withLatency(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
+                        path(API / "user" / "admin") { withLatency(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
+                        path(API / "user" / "passwd" / "reset") { withLatency(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
+                        path(API / "user" / "all") { withLatency(M_USER_ALL_LATENCY_MS, user$All) } ~
+                        path(API / "feedback"/ "add") { withLatency(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
+                        path(API / "feedback"/ "all") { withLatency(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
+                        path(API / "feedback" / "delete") { withLatency(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
+                        path(API / "probe" / "all") { withLatency(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
+                        path(API / "ask") { withLatency(M_ASK_LATENCY_MS, ask$) } ~
+                        (path(API / "ask" / "sync") &
+                            entity(as[JsValue]) &
+                            optionalHeaderValueByName("User-Agent") &
+                            extractClientIP
+                        ) {
+                            (req, userAgentOpt, rmtAddr) ⇒
+                                onSuccess(withLatency(M_ASK_SYNC_LATENCY_MS, ask$Sync(req, userAgentOpt, rmtAddr))) {
+                                    js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
+                                }
+                        }}
+                    }
                 }
             }
         )

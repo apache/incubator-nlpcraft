@@ -124,7 +124,7 @@ object NCNumericManager extends NCService {
     
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         genNums = mapResource("numeric/numeric.txt", "utf-8", logger, {
-            _.filter(s => !s.isEmpty && !s.trim.startsWith("#")).
+            _.filter(s ⇒ !s.isEmpty && !s.trim.startsWith("#")).
             map(_.split("=")).
             map(s ⇒ (s(1), s(0).toInt)).
             toMap

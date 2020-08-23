@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px" alt="">
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
@@ -39,11 +39,10 @@ lock-in:
   
 ## Other Projects
 - [Apache NLPCraft Java Client](https://github.com/apache/incubator-nlpcraft-java-client) - Native Java client for NLPCraft REST API.
-- [Apache NLPCraft UI](https://github.com/apache/incubator-nlpcraft-ui) - Web UI for testing and debugging. 
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 
-<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
+<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="">
 
 

@@ -21,6 +21,7 @@ import java.lang.reflect.{InvocationTargetException, Method, ParameterizedType, 
 import java.util
 import java.util.function.Function
 
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
@@ -31,7 +32,7 @@ import scala.collection._
 /**
   * Scanner for `NCIntent`, `NCIntentRef` and `NCIntentTerm` annotations.
   */
-object NCIntentScanner {
+object NCIntentScanner extends LazyLogging {
     type Callback = Function[NCIntentMatch, NCResult]
 
     private final val CLS_INTENT = classOf[NCIntent]
@@ -39,6 +40,7 @@ object NCIntentScanner {
     private final val CLS_TERM = classOf[NCIntentTerm]
     private final val CLS_QRY_RES = classOf[NCResult]
     private final val CLS_SLV_CTX = classOf[NCIntentMatch]
+    private final val CLS_SAMPLE = classOf[NCIntentSample]
 
     // Java and scala lists.
     private final val CLS_SCALA_SEQ = classOf[Seq[_]]
@@ -160,7 +162,7 @@ object NCIntentScanner {
         checkMinMax(m, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
-        (ctx: NCIntentMatch) => {
+        (ctx: NCIntentMatch) ⇒ {
             invoke(
                 m,
                 obj,
@@ -415,4 +417,67 @@ object NCIntentScanner {
             case (intent, m) ⇒ intent → prepareCallback(m, mdl, intent)
         }
         .toMap
+
+    /**
+      * Scans given model for intent samples.
+     *
+      * @param mdl Model to scan.
+      */
+    @throws[NCE]
+    def scanIntentsSamples(mdl: NCModel): Map[String, Seq[String]] = {
+        var annFound = false
+
+        val res =
+            mdl.getClass.getDeclaredMethods.flatMap(method ⇒ {
+                def mkMethodName: String = s"${method.getDeclaringClass.getName}#${method.getName}(...)"
+
+                val smpAnn = method.getAnnotation(CLS_SAMPLE)
+                val intAnn = method.getAnnotation(CLS_INTENT)
+                val refAnn = method.getAnnotation(CLS_INTENT_REF)
+
+                if (smpAnn != null || intAnn != null || refAnn != null) {
+                    annFound = true
+
+                    def mkIntentId(): String =
+                        if (intAnn != null)
+                            NCIntentDslCompiler.compile(intAnn.value(), mdl.getId).id
+                        else if (refAnn != null)
+                            refAnn.value().trim
+                        else
+                            throw new AssertionError()
+
+                    if (smpAnn != null) {
+                        if (intAnn == null && refAnn == null) {
+                            logger.warn(s"@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations " +
+                                s"in method (ignoring): $mkMethodName")
+
+                            None
+                        }
+                        else {
+                            val samples = smpAnn.value().toList
+
+                            if (samples.isEmpty) {
+                                logger.warn(s"@NCTestSample annotation is empty in method (ignoring): $mkMethodName")
+
+                                None
+                            }
+                            else
+                                Some(mkIntentId() → samples)
+                        }
+                    }
+                    else {
+                        logger.warn(s"@NCTestSample annotation is missing in method (ignoring): $mkMethodName")
+
+                        None
+                    }
+                }
+                else
+                    None
+            }).toMap
+
+        if (!annFound)
+            logger.warn(s"Model '${mdl.getId}' doesn't have any intents.")
+            
+        res
+    }
 }

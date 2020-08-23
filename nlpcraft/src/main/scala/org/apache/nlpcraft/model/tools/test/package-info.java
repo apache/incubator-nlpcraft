@@ -18,7 +18,7 @@
 /**
  * Contains model testing framework.
  * <p>
- * Here's an code snippet from <code>Alarm Clock</code> example illustrating
+ * Here's an code snippet of using direct <b>test client</b> for <code>Alarm Clock</code> example illustrating
  * the usage of test framework together with JUnit 5:
  * <pre class="brush: java">
  * public class AlarmTest {
@@ -55,6 +55,12 @@
  *         assertTrue(cli.ask("Set my alarm for 30s").isOk());
  *     }
  * }
+ * </pre>
+ * <p>
+ * You can also <b>auto-test</b> the same model by using <code>NCTestAutoModelValidator</code> class without any
+ * additional coding utilizing <code>@NCIntentSample</code> annotation on the models' callback method. Add necessary classpath to:
+ * <pre class="brush: plain">
+ *     java -ea -DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.alarm.AlarmModel org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
  * </pre>
  */
 package org.apache.nlpcraft.model.tools.test;
