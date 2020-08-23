@@ -27,14 +27,18 @@
 To set up `ctxword` module under Windows, you would need to repeat steps from `bin/install_dependencies.sh` script:
  1. Before starting, make sure you have the following installed:
     - `python3`
-    - `pip3` (included in the latest versions of python3)
+    - `pip3` (included with the latest versions of python3)
     - `git`
- 2. Download pre-trained [FastText model](https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz)
- 3. Extract archive into `data` folder (i.e. `/nlpcraft/src/main/python/ctxword/data`)
- 4. Clone [FastText repository](https://github.com/facebookresearch/fastText.git)
- 5. Install it with `pip3 install fastText` (where `fastText` is root of the cloned git repository)
- 6. Install the rest of required python packages from `bin/py_requirements` by running `pip3 install -r bin/py_requirements`  
- 7. A local clone of FastTest git repository may be removed after setup is finished.
+ 2. Download pre-trained [FastText](https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz) model.
+ 3. Extract GZIP model into `data` folder (i.e. `/nlpcraft/src/main/python/ctxword/data`).
+ 4. Git clone [FastText](https://github.com/facebookresearch/fastText.git) into some temporary folder.
+ 5. Ensure that you have [Microsoft Windows 10 SDK](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk/) installed. Step 6. will fail unless this SDK is installed.
+ 6. Run `pip3 install fastText` (where `fastText` is root of the cloned git repository from the previous step).
+ 7. Install PyTorch depending on whether you have NVIDIA CUDA support:
+    - Without CUDA support: `pip3 install torch==1.6.0+cpu -f https://download.pytorch.org/whl/torch_stable.html`
+    - With CUDA support: `pip3 install torch==1.6.0 -f https://download.pytorch.org/whl/torch_stable.html`
+ 8. Install the rest of required python packages from `bin/py_requirements` by running `pip3 install -r bin/py_requirements`
+ 9. You can remove the local clone of FastText git repository after its setup is finished.
  
  ### Copyright
  Copyright (C) 2020 Apache Software Foundation

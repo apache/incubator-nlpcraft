@@ -26,21 +26,21 @@
 ### Overview
 `ctxword` module provides Python-based internal tool for finding a contextually related words for a given word from the
 input sentence. This utility provides a single REST endpoint and is based on Google's [BERT](https://github.com/google-research/bert) 
-models and Facebook's [fasttext](https://fasttext.cc/) library.
+models and Facebook's [FastText](https://fasttext.cc/) library.
 
 ### Dependencies
 To install necessary dependency:
  * **Linux/MacOS**: run `bin/install_dependencies.sh` script.  
- * **Windows**: read `WINDOWS_SETUP.md` in the same folder.
+ * **Windows**: read `WINDOWS_SETUP.md` file for manual installation.
 
 ### Start REST Server
 To start REST server:
  * **Linux/MacOS**: run `bin/start_server.sh` script.  
- * **Windows**: read `WINDOWS_SETUP.md` in the same folder.
+ * **Windows**: run `bin\start_server.cmd` script.
  
- NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
- then download this library and compress it which will take a several minutes and may require 10GB+ of 
- available memory. Subsequent starts will skip this step, and the server will start much faster.
+NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
+then download this library and compress it which will take a several minutes and may require 10 GB+ of 
+available memory. Subsequent starts will skip this step, and the server will start much faster.
 
 ### REST API
 Once the REST server is started you can issue REST calls to get suggestions for the contextual related words.
@@ -76,7 +76,7 @@ Here's the sample request and response JSON objects:
  * Response JSON:
    - `[["word1", "word2", "word3"]]`
  
-### `bin/suggest.sh`
+### `bin/suggest.{sh|cmd|ps1}`
 You can use Curl-based `bin/suggest.sh` script for the suggestion processing of single sentences from the command line.
 Following call returns list of contextual suggestions for the 5th word (counting from zero) in the given sentence: 
 
