@@ -45,8 +45,7 @@ import spray.json.{JsValue, RootJsonFormat}
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import akka.http.scaladsl.coding.NoCoding
-import akka.http.scaladsl.coding.Gzip
+import akka.http.scaladsl.coding.{Coders, Gzip, NoCoding}
 
 /**
   * REST API default implementation.
@@ -1776,7 +1775,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 }
             } ~
             post {
-                encodeResponseWith(NoCoding, Gzip) {
+                encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
                     withRequestTimeoutResponse(_ ⇒ timeoutResp) {
                         path(API / "signin") { withLatency(M_SIGNIN_LATENCY_MS, signin$) } ~
                         path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
