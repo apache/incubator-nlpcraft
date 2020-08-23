@@ -33,7 +33,7 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.{NCModelImpl, NCTokenLogger}
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedResult
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedResult
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager

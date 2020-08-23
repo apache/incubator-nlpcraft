@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
 import org.junit.jupiter.api.Assertions.{assertTrue, fail}
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
 import org.scalatest.Assertions

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.embedded;
+package org.apache.nlpcraft.model.tools.embedded;
 
 import org.apache.nlpcraft.common.*;
 import org.apache.nlpcraft.model.*;
