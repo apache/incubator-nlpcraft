@@ -25,8 +25,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.fliptables.FlipTable
 import org.apache.nlpcraft.examples.sql.db.SqlServer
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 import scala.collection.JavaConverters._

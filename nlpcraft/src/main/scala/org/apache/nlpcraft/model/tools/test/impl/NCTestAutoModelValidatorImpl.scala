@@ -23,9 +23,9 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.model.intent.impl.NCIntentDslCompiler
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
 import org.apache.nlpcraft.model.{NCIntent, NCIntentRef, NCIntentSample, NCModel}
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.

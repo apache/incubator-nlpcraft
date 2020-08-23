@@ -19,4 +19,4 @@
  * Contains embedded probe controller. Embedded probe can be used to start a data probe
  * in the same JVM process to save on REST network trips.
  */
-package org.apache.nlpcraft.probe.embedded;
+package org.apache.nlpcraft.model.tools.embedded;

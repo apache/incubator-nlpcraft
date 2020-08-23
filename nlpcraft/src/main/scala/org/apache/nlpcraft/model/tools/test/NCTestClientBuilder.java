@@ -33,8 +33,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedProbe;
-import org.apache.nlpcraft.probe.embedded.NCEmbeddedResult;
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe;
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
