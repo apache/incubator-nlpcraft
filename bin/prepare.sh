@@ -18,7 +18,7 @@
 
 if [[ $1 = "" ]] ; then
     echo "Version must be set as input parameter."
-    exit -1
+    exit 1
 fi
 
 #
@@ -68,8 +68,9 @@ rsync -avzq ${coreModule}/target/apidocs/** ${zipDir}/${tmpDir}/javadoc --exclud
 rsync -avzq ${stanfordModule}/target/*.jar ${zipDir}/${tmpDir}/build --exclude '*-sources.jar'
 
 # Prepares bin zip.
-cd ${zipDir}
-zip -rq ${zipFileBin} ${tmpDir} 2> /dev/null
+cd ${zipDir} || exit
+zip -rq "${zipFileBin}" ${tmpDir} 2> /dev/null
+echo "Binary zip created: " "${zipFileBin}"
 
 # Deletes some data for src zip
 rm -R ${tmpDir}/build 2> /dev/null
@@ -93,20 +94,21 @@ cp README.md ${zipDir}/${tmpDir}
 cp javadoc/stylesheet.css ${zipDir}/${tmpDir}/javadoc
 
 # Prepares src zip.
-cd ${zipDir}
-zip -rq ${zipFileSrc} ${tmpDir} 2> /dev/null
+cd ${zipDir} || exit
+zip -rq "${zipFileSrc}" ${tmpDir} 2> /dev/null
+echo "Source zip created: " "${zipFileSrc}"
 
 rm -R ${tmpDir} 2> /dev/null
 
 function sign() {
-  shasum -a 256 $1 > $1.sha256
-  gpg --local-user ${localUser} --sign --armor --output $1.asc --detach-sign $1
+  shasum -a 256 "$1" > "$1".sha256
+  gpg --local-user ${localUser} --sign --armor --output "$1".asc --detach-sign "$1"
 }
 
 sign "${zipFileBin}"
 sign "${zipFileSrc}"
 
-cd ${curDir}
+cd ${curDir} || exit
 
 echo
 echo "****************************"
