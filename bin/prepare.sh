@@ -108,7 +108,7 @@ function sign() {
 sign "${zipFileBin}"
 sign "${zipFileSrc}"
 
-cd ${curDir} || exit
+cd "${curDir}" || exit
 
 echo
 echo "****************************"
