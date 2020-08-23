@@ -76,13 +76,29 @@ Here's the sample request and response JSON objects:
  * Response JSON:
    - `[["word1", "word2", "word3"]]`
  
-### `bin/suggest.{sh|cmd|ps1}`
-You can use Curl-based `bin/suggest.sh` script for the suggestion processing of single sentences from the command line.
+### `bin/suggest.{sh|cmd}`
+You can use Curl-based `bin/suggest.{sh|cmd}` scripts for the suggestion processing of single sentences from the command line.
 Following call returns list of contextual suggestions for the 5th word (counting from zero) in the given sentence: 
 
 ```
 $ bin/suggest.sh "what is the chance of rain tomorrow?" 5
-[["rain","snow","rainfall","precipitation","rains","flooding","storms","raining","sunshine","showers"]]
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   214  100   104  100   110    954   1009 --:--:-- --:--:-- --:--:--  1963
+[
+    [
+        "rain",
+        "snow",
+        "rainfall",
+        "precipitation",
+        "rains",
+        "flooding",
+        "storms",
+        "raining",
+        "sunshine",
+        "showers"
+    ]
+]
 ```                                     
 
 ### Copyright
