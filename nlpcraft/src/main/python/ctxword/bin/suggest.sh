@@ -25,4 +25,4 @@
 # NOTE: You need to have REST server running (see 'start_server.sh' script in the same folder).
 #
 
-curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions | python -m json.tool
+curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions | python3 -m json.tool
