@@ -17,16 +17,9 @@
 
 package org.apache.nlpcraft.server.model
 
-/**
-  * TODO:
-  * @param synonym
-  * @param ctxWorldServerScore
-  * @param suggestedCount
-  * @param totalScore
-  */
-case class NCEnhanceSuggestion(
-    synonym: String,
-    ctxWorldServerScore: Double,
-    suggestedCount: Int,
-    totalScore: Double
-)
+object NCEnhanceType extends Enumeration {
+    type NCEnhanceType = Value
+
+    val ELEMENTS_SYNONYMS = Value
+    val VALIDATION_ELEMENTS = Value
+}

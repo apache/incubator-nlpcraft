@@ -18,8 +18,8 @@
 package org.apache.nlpcraft.server.model
 
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.{CopyOnWriteArrayList, CountDownLatch, TimeUnit}
-import java.util.{List ⇒ JList}
+import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, TimeUnit}
+import java.util.{List ⇒ JList, Map ⇒ JMap}
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -35,6 +35,7 @@ import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.server.model.NCEnhanceType._
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
 import scala.collection.JavaConverters._
@@ -45,10 +46,8 @@ import scala.collection._
   */
 object NCEnhanceManager extends NCService {
     // For context word server requests.
-    private final val DFLT_LIMIT: Int = 20
-    private final val MAX_LIMIT: Int = 10000
-    private final val DFLT_MIN_SCORE: Double = 0
-    private final val BATCH_SIZE = 20
+    private final val SUGGS_MAX_LIMIT: Int = 10000
+    private final val SUGGS_BATCH_SIZE = 20
 
     // For warnings.
     private final val MIN_CNT_INTENT = 5
@@ -56,7 +55,15 @@ object NCEnhanceManager extends NCService {
 
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
+        val suggestionsMinScore: Int = getInt("nlpcraft.server.ctxword.suggestions.minScore")
+
+        @throws[NCE]
+        def check(): Unit =
+            if (suggestionsMinScore < 0 || suggestionsMinScore > 1)
+                 throw new NCE("Invalid 'nlpcraft.server.ctxword.suggestions.minScore' parameter value. It should be double value between 0 and 1, inclusive")
     }
+
+    Config.check()
 
     case class Suggestion(word: String, score: Double)
     case class RequestData(sentence: String, example: String, elementId: String, index: Int)
@@ -117,23 +124,25 @@ object NCEnhanceManager extends NCService {
         seq
     }
 
+    @throws[NCE]
+    def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceResponse] =
+        startScopedSpan("enhance", parent, "modelId" → mdlId) { _ ⇒
+            types.map {
+                case typ@ELEMENTS_SYNONYMS ⇒ NCEnhanceResponse(typ, suggestions = Some(suggest(mdlId, parent)))
+                case typ@VALIDATION_ELEMENTS ⇒ NCEnhanceResponse(typ, null)
+            }
+    }
+
     /**
       * TODO:
       * @param mdlId Model ID.
-      * @param minScore Context word server minimal suggestion score (default DFLT_MIN_SCORE).
       * Increase it for suggestions count increasing, decrease it to be more precise. Range 0 ... 1.
       *
       * @param parent Parent.
       */
     @throws[NCE]
-    def enhance(mdlId: String, minScore: Option[Double], parent: Span = null): Map[String, Seq[NCEnhanceSuggestion]] =
-        startScopedSpan(
-            "suggest", parent, "modelId" → mdlId, "minScore" → minScore.getOrElse(() ⇒ null)
-        ) { _ ⇒
-            val minScoreVal = minScore.getOrElse(DFLT_MIN_SCORE)
-
-            require(minScoreVal >= 0 && minScoreVal <= 1)
-
+    private def suggest(mdlId: String, parent: Span = null): JMap[String, JList[NCEnhanceSynonymsSuggestion]] =
+        startScopedSpan("suggest", parent, "modelId" → mdlId) { _ ⇒
             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
             val mdl = NCProbeManager.getModel(mdlId)
@@ -242,14 +251,14 @@ object NCEnhanceManager extends NCService {
 
             logger.info(s"Data prepared [examples=${examples.size}, synonyms=$allSynsCnt, requests=$allReqsCnt]")
 
-            val allSuggs = new java.util.concurrent.ConcurrentHashMap[String, JList[Suggestion]]()
+            val allSuggs = new ConcurrentHashMap[String, JList[Suggestion]]()
             val cdl = new CountDownLatch(1)
             val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
             val cnt = new AtomicInteger(0)
 
             val client = HttpClients.createDefault
 
-            for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
+            for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(SUGGS_BATCH_SIZE, SUGGS_BATCH_SIZE).map(_.toSeq)) {
                 NCUtils.asFuture(
                     _ ⇒ {
                         val post = new HttpPost(url)
@@ -262,10 +271,9 @@ object NCEnhanceManager extends NCService {
                                     RestRequest(
                                         sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
                                         // ContextWord server range is (0, 2), input range is (0, 1)
-                                        min_score = minScoreVal * 2,
-                                        // If minScore defined, we set big limit value and in fact only minimal score
-                                        // is taken into account. Otherwise - default value.
-                                        limit = if (minScore.isDefined) MAX_LIMIT else DFLT_LIMIT
+                                        min_score = Config.suggestionsMinScore * 2,
+                                        // We set big limit value and in fact only minimal score is taken into account.
+                                        limit = SUGGS_MAX_LIMIT
                                     )
                                 ),
                                 "UTF-8"
@@ -308,7 +316,7 @@ object NCEnhanceManager extends NCService {
 
             val nonEmptySuggs = allSuggs.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
 
-            val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[NCEnhanceSuggestion]]
+            val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[NCEnhanceSynonymsSuggestion]]
 
             nonEmptySuggs.
                 foreach { case (elemId, elemSuggs) ⇒
@@ -332,14 +340,14 @@ object NCEnhanceManager extends NCService {
                                 res.get(elemId) match {
                                     case Some(seq) ⇒ seq
                                     case None ⇒
-                                        val buf = mutable.ArrayBuffer.empty[NCEnhanceSuggestion]
+                                        val buf = mutable.ArrayBuffer.empty[NCEnhanceSynonymsSuggestion]
 
                                         res += elemId → buf
 
                                         buf
                                 }
 
-                            seq += NCEnhanceSuggestion(sugg.word, sugg.score, cnt, sumFactor)
+                            seq += NCEnhanceSynonymsSuggestion(sugg.word, sugg.score, cnt, sumFactor)
                         }
                 }
 
@@ -365,6 +373,6 @@ object NCEnhanceManager extends NCService {
                 }
             })
 
-            res
+            res.map(p ⇒ p._1 → p._2.asJava).asJava
         }
 }

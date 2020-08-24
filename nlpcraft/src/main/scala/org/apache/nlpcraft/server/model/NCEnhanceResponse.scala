@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.rest
+package org.apache.nlpcraft.server.model
 
-import akka.http.scaladsl.server.Route
-import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
+import org.apache.nlpcraft.server.model.NCEnhanceType.NCEnhanceType
 
 /**
-  * REST API.
+  * TODO:
   */
-trait NCRestApi extends NCOpenCensusServerStats {
-    /**
-      * 
-      * @return
-      */
-    def getRoute: Route
-}
+case class NCEnhanceResponse(
+    enhanceType: NCEnhanceType,
+    errors: Option[Seq[String]] = None,
+    warnings: Option[Seq[String]] = None,
+    suggestions: Option[AnyRef] = None
+)

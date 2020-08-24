@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.rest
-
-import akka.http.scaladsl.server.Route
-import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
+package org.apache.nlpcraft.server.model
 
 /**
-  * REST API.
+  * TODO:
+  * @param synonym
+  * @param ctxWorldServerScore
+  * @param suggestedCount
+  * @param totalScore
   */
-trait NCRestApi extends NCOpenCensusServerStats {
-    /**
-      * 
-      * @return
-      */
-    def getRoute: Route
-}
+case class NCEnhanceSynonymsSuggestion(
+    synonym: String,
+    ctxWorldServerScore: Double,
+    suggestedCount: Int,
+    totalScore: Double
+)

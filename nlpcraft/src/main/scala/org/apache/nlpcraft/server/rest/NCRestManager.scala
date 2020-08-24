@@ -38,9 +38,6 @@ object NCRestManager extends NCService {
 
     @volatile private var bindFut: Future[Http.ServerBinding] = _
 
-    @volatile private implicit var handleErrors: ExceptionHandler = _
-    @volatile private implicit var handleRejections: RejectionHandler = _
-
     private final object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.rest"
 
@@ -74,9 +71,6 @@ object NCRestManager extends NCService {
             "url" → url,
             "api" → Config.apiImpl
         )
-
-        handleErrors = api.getExceptionHandler
-        handleRejections = api.getRejectionHandler
 
         bindFut = Http().newServerAt(Config.host, Config.port).bind(Route.toFunction(api.getRoute))
 
