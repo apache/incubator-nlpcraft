@@ -229,11 +229,9 @@ object NCEnhanceManager extends NCService {
                     map { case (elemId, _) ⇒ elemId }
 
             if (noExElems.nonEmpty)
-                // TODO: text
-                logger.warn(
+                warns +=
                     "Some elements don't have synonyms in intent samples, " +
                     s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
-            )
 
             val allReqsCnt = allReqs.map(_._2.size).sum
             val allSynsCnt = elemSyns.map(_._2.size).sum
