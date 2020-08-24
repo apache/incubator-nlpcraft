@@ -26,8 +26,13 @@
 #   $./nccurl.sh signin '{"email": "admin@admin.com", "passwd": "admin"}'
 #   $./nccurl.sh ask '{"acsTok": "OgJanjDzk", "txt": "Hi!", "mdlId": "nlpcraft.helloworld.ex"}'
 #   $./nccurl.sh check '{"acsTok": "OgJanjDzk"}'
-#
-# For pretty JSON output pipe curl to 'python -m json.tool':
-#   $./nccurl.sh check '{"acsTok": "OgJanjDzk"}' | python -m json.tool
 
-curl -s -d "$2" -H 'Content-Type: application/json' http://localhost:8081/api/v1/$1
+abort() {
+  echo "$1"
+  exit 1
+}
+
+[ -x "$(command -v curl)" ] || abort "'curl' not found."
+[ -x "$(command -v python3)" ] || abort "'python3' not found."
+
+curl -s -d "$2" -H 'Content-Type: application/json' http://localhost:8081/api/v1/$1 | python3 -m json.tool

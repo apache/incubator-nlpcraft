@@ -16,11 +16,12 @@ rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 rem See the License for the specific language governing permissions and
 rem limitations under the License.
 rem
-rem
 rem NOTE:
 rem ----
 rem This script may not be suitable for production usage. Please see official Flask documentation for
 rem more info on how to deploy Flask applications.
+
+where python3 >nul 2>&1 || echo 'python3' not found && exit /b
 
 set FLASK_APP=server.py
 python3 -m flask run
