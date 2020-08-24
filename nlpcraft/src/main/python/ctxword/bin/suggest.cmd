@@ -16,11 +16,9 @@ rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 rem See the License for the specific language governing permissions and
 rem limitations under the License.
 rem
-rem
-rem
 rem Simple Curl-based script for getting contextual related words suggestions for a single input sentence.
 rem Example:
-rem     > bin\win\suggest.cmd "what is the chance of rain tomorrow?" 5
+rem     > bin\suggest.cmd "what is the chance of rain tomorrow?" 5
 rem       % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 rem                                      Dload  Upload   Total   Spent    Left  Speed
 rem     100   214  100   104  100   110    104    110  0:00:01 --:--:--  0:00:01   804
@@ -42,4 +40,7 @@ rem
 rem NOTE: You need to have REST server running (see 'start_server.{cmd|ps1}' scripts in the same folder).
 rem
 
-curl http://localhost:5000/suggestions -d "{\"sentences\": [{\"text\": \"%~1\", \"indexes\": [%~2]}], \"simple\": true, \"limit\": 10}" -H "Content-Type: application/json" | python -m json.tool
+where curl >nul 2>&1 || echo 'curl' not found && exit /b
+where python3 >nul 2>&1 || echo 'python3' not found && exit /b
+
+curl http://localhost:5000/suggestions -d "{\"sentences\": [{\"text\": \"%~1\", \"indexes\": [%~2]}], \"simple\": true, \"limit\": 10}" -H "Content-Type: application/json" | python3 -m json.tool

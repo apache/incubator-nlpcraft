@@ -16,12 +16,20 @@ rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 rem See the License for the specific language governing permissions and
 rem limitations under the License.
 rem
-rem NOTE:
-rem ----
-rem This script may not be suitable for production usage. Please see official Flask documentation for
-rem more info on how to deploy Flask applications.
 
+rem Quick shortcut script for localhost testing with curl (w/o excessive command line).
+rem
+rem Usage:
+rem - 1st parameter is REST URL unique suffix (i.e. /signin) w/o leading '/'
+rem - 2nd parameter is JSON payload string (note that double quotes in JSON must be escaped).
+rem
+rem Example usage:
+rem   >./nccurl.cmd signin "{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}"
+rem   >./nccurl.cmd ask "{\"acsTok\": \"OgJanjDzk\", \"txt\": \"Hi!\", \"mdlId\": \"nlpcraft.helloworld.ex\"}"
+rem   >./nccurl.cmd check "{\"acsTok\": \"OgJanjDzk\"}"
+rem
+
+where curl >nul 2>&1 || echo 'curl' not found && exit /b
 where python3 >nul 2>&1 || echo 'python3' not found && exit /b
 
-set FLASK_APP=server.py
-python3 -m flask run
+curl http://localhost:8081/api/v1/%~1 -s -d "%~2" -H "Content-Type: application/json" | python3 -m json.tool
