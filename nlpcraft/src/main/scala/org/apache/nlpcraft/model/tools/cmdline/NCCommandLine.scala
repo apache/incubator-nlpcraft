@@ -17,19 +17,19 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
+import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.common.version.NCVersion
 
 /**
  * 'nlpcraft' script entry point.
  */
 object NCCommandLine extends App {
-    private final val NAME = "NLPCraft CLI"
+    private final val NAME = "Apache NLPCraft CLI"
 
-    case class Parameter(
-        names: Seq[String],
-        optional: Boolean = false,
-        desc: String
-    )
+    private final lazy val VER = NCVersion.getCurrent
+    private final lazy val SCRIPT = NCUtils.sysEnv("NLPCRAFT_CLI_SCRIPT")
+
+    // Single CLI command.
     case class Command(
         name: String,
         desc: String,
@@ -37,7 +37,14 @@ object NCCommandLine extends App {
         examples: Seq[String] = Seq.empty,
         body: (Seq[String]) => Unit
     )
+    // Single command's parameter.
+    case class Parameter(
+        names: Seq[String],
+        optional: Boolean = false,
+        desc: String
+    )
 
+    // All supported commands.
     private final val CMDS = Seq(
         Command(
             name = "help",
@@ -80,20 +87,53 @@ object NCCommandLine extends App {
      * @param params
      */
     private def cmdVersion(params: Seq[String]): Unit = {
-        val curVer = NCVersion.getCurrent
-
-        log(s"$NAME ver. ${curVer.version} released on ${curVer.date}")
+        // Nothing - common header with version will be printed before anyways.
     }
 
-    private def error(msg: String): Unit = System.err.println(msg)
-    private def log(msg: String): Unit = System.out.println(msg)
-
+    private def error(msg: String = ""): Unit = System.err.println(msg)
+    private def log(msg: String = ""): Unit = System.out.println(msg)
+    private def errorHelp(): Unit = SCRIPT match {
+        // Running from *.{s|cmd} script.
+        case Some(script) => error(s"Run '$script ${HELP_CMD.name}' to read the manual.")
+        // Running from IDE.
+        case None => error(s"Run the process with '${HELP_CMD.name}' parameter to read the manual.")
+    }
+    
     /**
      *
      * @param args
      */
     private def boot(args: Array[String]): Unit = {
+        var status = 0
 
+        // Print common version & copyright header.
+        log(s"$NAME ver. ${VER.version}, rel. ${VER.date}")
+        log(NCVersion.copyright)
+        log()
+
+        if (args.isEmpty)
+            NCCommandLine.DFLT_CMD.body(Seq.empty)
+        else {
+            val cmdName = args.head
+            val extCmdNames = Seq( // Safeguard against "common" errors.
+                cmdName,
+                s"-$cmdName",
+                s"--$cmdName",
+                s"/$cmdName",
+                s"\\$cmdName"
+            )
+
+            CMDS.find(c => extCmdNames.contains(c.name)) match {
+                case Some(cmd) =>
+                case None =>
+                    error(s"Unknown '$cmdName' command.")
+                    errorHelp()
+
+                    status = 1
+            }
+        }
+
+        sys.exit(status)
     }
 
     // Boot up.
