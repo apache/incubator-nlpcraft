@@ -17,9 +17,85 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
+import org.apache.nlpcraft.common.version.NCVersion
+
 /**
  * 'nlpcraft' script entry point.
  */
 object NCCommandLine extends App {
+    private final val NAME = "NLPCraft CLI"
 
+    case class Parameter(
+        names: Seq[String],
+        optional: Boolean = false,
+        desc: String
+    )
+    case class Command(
+        name: String,
+        desc: String,
+        params: Seq[Parameter] = Seq.empty,
+        examples: Seq[String] = Seq.empty,
+        body: (Seq[String]) => Unit
+    )
+
+    private final val CMDS = Seq(
+        Command(
+            name = "help",
+            desc = s"Displays manual page for $NAME.",
+            body = cmdHelp
+        ),
+        Command(
+            name = "version",
+            desc = s"Displays version of $NAME runtime.",
+            body = cmdVersion
+        ),
+        Command(
+            name = "repl",
+            desc = s"Starts '$NAME' in interactive REPL mode.",
+            body = cmdRepl
+        )
+    )
+
+    private final val HELP_CMD = CMDS.find(_.name == "help").get
+    private final val DFLT_CMD = CMDS.find(_.name == "repl").get
+
+    /**
+     *
+     * @param params
+     */
+    private def cmdHelp(params: Seq[String]): Unit = {
+
+    }
+
+    /**
+     *
+     * @param params
+     */
+    private def cmdRepl(params: Seq[String]): Unit = {
+
+    }
+
+    /**
+     *
+     * @param params
+     */
+    private def cmdVersion(params: Seq[String]): Unit = {
+        val curVer = NCVersion.getCurrent
+
+        log(s"$NAME ver. ${curVer.version} released on ${curVer.date}")
+    }
+
+    private def error(msg: String): Unit = System.err.println(msg)
+    private def log(msg: String): Unit = System.out.println(msg)
+
+    /**
+     *
+     * @param args
+     */
+    private def boot(args: Array[String]): Unit = {
+
+    }
+
+    // Boot up.
+    boot(args)
 }
