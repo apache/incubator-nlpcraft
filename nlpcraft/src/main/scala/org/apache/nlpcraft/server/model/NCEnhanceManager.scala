@@ -19,7 +19,7 @@ package org.apache.nlpcraft.server.model
 
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, TimeUnit}
-import java.util.{List ⇒ JList, Map ⇒ JMap}
+import java.util.{List ⇒ JList}
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -124,24 +124,12 @@ object NCEnhanceManager extends NCService {
         seq
     }
 
-    @throws[NCE]
-    def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceResponse] =
-        startScopedSpan("enhance", parent, "modelId" → mdlId) { _ ⇒
-            types.map {
-                case typ@ELEMENTS_SYNONYMS ⇒ NCEnhanceResponse(typ, suggestions = Some(suggest(mdlId, parent)))
-                case typ@VALIDATION_ELEMENTS ⇒ NCEnhanceResponse(typ, null)
-            }
-    }
-
     /**
-      * TODO:
       * @param mdlId Model ID.
-      * Increase it for suggestions count increasing, decrease it to be more precise. Range 0 ... 1.
-      *
       * @param parent Parent.
       */
     @throws[NCE]
-    private def suggest(mdlId: String, parent: Span = null): JMap[String, JList[NCEnhanceSynonymsSuggestion]] =
+    private def suggest(mdlId: String, parent: Span = null): NCEnhanceResponse =
         startScopedSpan("suggest", parent, "modelId" → mdlId) { _ ⇒
             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
@@ -153,14 +141,15 @@ object NCEnhanceManager extends NCService {
 
             val allSamplesCnt = mdl.intentsSamples.map { case (_, samples) ⇒ samples.size }.sum
 
-            if (allSamplesCnt < MIN_CNT_MODEL) {
+            val warns = mutable.ArrayBuffer.empty[String]
+
+            if (allSamplesCnt < MIN_CNT_MODEL)
                 // TODO: text
-                logger.warn(
+                warns +=
                     s"Model: '$mdlId' has too small intents samples count: $allSamplesCnt. " +
                     s"Potentially is can be not enough for suggestions service high quality work. " +
                     s"Try to increase their count at least to $MIN_CNT_MODEL."
-                )
-            }
+
             else {
                 val ids =
                     mdl.intentsSamples.
@@ -168,11 +157,11 @@ object NCEnhanceManager extends NCService {
                         map { case (intentId, _) ⇒ intentId }
 
                 if (ids.nonEmpty)
-                    // TODO: text
-                    logger.warn(s"Models '$mdlId' has intents: [${ids.mkString(", ")}] with too small intents samples count." +
-                        s"Potentially it can be not enough for suggestions service high quality work. " +
-                        s"Try to increase their count at least to $MIN_CNT_INTENT."
-                    )
+                    warns +=
+                        // TODO: text
+                        s"Models '$mdlId' has intents: [${ids.mkString(", ")}] with too small intents samples count." +
+                            s"Potentially it can be not enough for suggestions service high quality work. " +
+                            s"Try to increase their count at least to $MIN_CNT_INTENT."
             }
 
             val parser = new NCMacroParser()
@@ -373,6 +362,21 @@ object NCEnhanceManager extends NCService {
                 }
             })
 
-            res.map(p ⇒ p._1 → p._2.asJava).asJava
+            NCEnhanceResponse(
+                ELEMENTS_SYNONYMS,
+                warnings = if (warns.isEmpty) None else Some(warns),
+                suggestions = Some(res.map(p ⇒ p._1 → p._2.asJava).asJava)
+            )
+        }
+
+    @throws[NCE]
+    def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceResponse] =
+        startScopedSpan("enhance", parent, "modelId" → mdlId) { _ ⇒
+            // Note that NCEnhanceResponse#suggestions should be simple types or java collections.
+            // Scala collections cannot be simple converted into JSON (REST calls)
+            types.map {
+                case typ@ELEMENTS_SYNONYMS ⇒ suggest(mdlId, parent)
+                case typ@VALIDATION_ELEMENTS ⇒ NCEnhanceResponse(typ, null)
+            }
         }
 }
