@@ -20,4 +20,12 @@
 # ----
 # This script may not be suitable for production usage. Please see official Flask documentation for
 # more info on how to deploy Flask applications.
+
+abort() {
+  echo "$1"
+  exit 1
+}
+
+[ -x "$(command -v python3)" ] || abort "'python3' not found."
+
 FLASK_APP=server.py python3 -m flask run

@@ -30,4 +30,4 @@
 # For pretty JSON output pipe curl to 'python -m json.tool':
 #   $./nccurl.sh check '{"acsTok": "OgJanjDzk"}' | python -m json.tool
 
-curl -s -d"$2" -H 'Content-Type: application/json' http://localhost:8081/api/v1/$1
+curl -s -d "$2" -H 'Content-Type: application/json' http://localhost:8081/api/v1/$1
