@@ -157,8 +157,10 @@ class NCAsciiTable {
      * @param bottom Bottom margin.
      * @param left Left margin.
      */
-    def margin(top: Int = 0, right: Int = 0, bottom: Int = 0, left: Int = 0) {
+    def margin(top: Int = 0, right: Int = 0, bottom: Int = 0, left: Int = 0): NCAsciiTable = {
         margin = Margin(top, right, bottom, left)
+
+        this
     }
 
     /**
@@ -242,12 +244,21 @@ class NCAsciiTable {
     }
 
     /**
+     *
+     * @param style
+     * @param lines
+     * @return
+     */
+    private def mkRowCell(style: String, lines: Any*): Cell =
+        Cell(Style(style), (for (line ← lines) yield x(line).grouped(maxCellWidth)).flatten)
+
+    /**
      * Adds single header cell.
      *
      * @param lines One or more cell lines.
      */
     def addHeaderCell(lines: Any*): NCAsciiTable = {
-        hdr :+= Cell(Style(headerStyle), (for (line ← lines) yield x(line).grouped(maxCellWidth)).flatten)
+        hdr :+= mkRowCell(headerStyle, lines: _*)
 
         this
     }
@@ -258,7 +269,7 @@ class NCAsciiTable {
      * @param lines One or more row cells. Multiple lines will be printed on separate lines.
      */
     def addRowCell(lines: Any*): NCAsciiTable = {
-        curRow :+= Cell(Style(rowStyle), (for (line ← lines) yield x(line).grouped(maxCellWidth)).flatten)
+        curRow :+= mkRowCell(rowStyle, lines: _*)
 
         this
     }
@@ -341,9 +352,12 @@ class NCAsciiTable {
         for (_ ← 0 until margin.top)
             tbl ++= " \n"
 
+        def mkRow(crs: String, cor: String): String =
+            s"${space(margin.left)}$crs${dash(cor, tableW)}$crs${space(margin.right)}\n"
+
         // Print header, if any.
         if (isHdr) {
-            tbl ++= s"${space(margin.left)}$HDR_CRS${dash(HDR_HOR, tableW)}$HDR_CRS${space(margin.right)}\n"
+            tbl ++= mkRow(HDR_CRS, HDR_HOR)
 
             for (i ← 0 until hdrH) {
                 // Left margin and '|'.
@@ -364,10 +378,10 @@ class NCAsciiTable {
                 tbl ++= s"${space(margin.right)}\n"
             }
 
-            tbl ++= s"${space(margin.left)}$HDR_CRS${dash(HDR_HOR, tableW)}$HDR_CRS${space(margin.right)}\n"
+            tbl ++= mkRow(HDR_CRS, HDR_HOR)
         }
         else
-            tbl ++= s"${space(margin.left)}$ROW_CRS${dash(ROW_HOR, tableW)}$ROW_CRS${space(margin.right)}\n"
+            tbl ++= mkRow(ROW_CRS, ROW_HOR)
 
         // Print rows, if any.
         if (rows.nonEmpty) {
@@ -482,23 +496,19 @@ class NCAsciiTable {
      *
      * @param path File path.
      */
-    def render(path: String): Unit =
-        try
-            managed(new PrintStream(path)) acquireAndGet { ps ⇒
-                ps.print(mkString)
-            }
-        catch {
-            case e: IOException ⇒ throw new NCE(s"Error writing file: $path", e)
-        }
+    def render(path: String): Unit = renderPrintStream(new PrintStream(path), path)
 
     /**
      * Renders this table to file.
      *
      * @param file File.
      */
-    def render(file: java.io.File): Unit =
+    def render(file: java.io.File): Unit = renderPrintStream(new PrintStream(file), file.getAbsolutePath)
+
+
+    private def renderPrintStream(f: => PrintStream, file: String): Unit =
         try
-            managed(new PrintStream(file)) acquireAndGet { ps ⇒
+            managed(f) acquireAndGet { ps ⇒
                 ps.print(mkString)
             }
         catch {

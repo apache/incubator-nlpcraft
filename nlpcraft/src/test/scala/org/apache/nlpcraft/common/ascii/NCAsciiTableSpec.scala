@@ -76,6 +76,6 @@ class NCAsciiTableSpec {
 
         val dur = System.currentTimeMillis() - start
 
-        println(s"Rendered in ${dur}msec.")
+        println(s"Rendered in ${dur}ms.")
     }
 }
