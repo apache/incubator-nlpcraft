@@ -23,4 +23,5 @@ object NCEnhanceType extends Enumeration {
     val SUGGEST_SYNONYMS = Value
     val VALIDATION_MACROS = Value
     val VALIDATION_SYNONYMS = Value
+    val VALIDATION_INTENTS = Value
 }

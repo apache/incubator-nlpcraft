@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.server.model
 
+import java.util
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, TimeUnit}
 import java.util.{List ⇒ JList}
@@ -88,6 +89,12 @@ object NCEnhanceManager extends NCService {
         )
     }
 
+    case class SuggestionResult(
+        synonym: String,
+        ctxWorldServerScore: Double,
+        suggestedCount: Int
+    )
+
     case class Response(
         errors: Option[Seq[String]] = None,
         warnings: Option[Seq[String]] = None,
@@ -147,8 +154,8 @@ object NCEnhanceManager extends NCService {
       * @param typ
       * @param resp
       */
-    private def convert(typ: NCEnhanceType, resp: Response): NCEnhanceResponse =
-        NCEnhanceResponse(typ, resp.errors, resp.warnings, resp.suggestions)
+    private def convert(typ: NCEnhanceType, resp: Response): NCEnhanceElement =
+        NCEnhanceElement(typ, resp.errors, resp.warnings, resp.suggestions)
 
     /**
       *
@@ -348,7 +355,7 @@ object NCEnhanceManager extends NCService {
 
             val nonEmptySuggs = allSuggs.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
 
-            val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[NCEnhanceSynonymsSuggestion]]
+            val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[SuggestionResult]]
 
             nonEmptySuggs.
                 foreach { case (elemId, elemSuggs) ⇒
@@ -367,19 +374,19 @@ object NCEnhanceManager extends NCService {
                         map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * cnt / elemSuggs.size) }.
                         sortBy { case (_, _, sumFactor) ⇒ -sumFactor }.
                         zipWithIndex.
-                        foreach { case ((sugg, cnt, sumFactor), _) ⇒
+                        foreach { case ((sugg, cnt, _), _) ⇒
                             val seq =
                                 res.get(elemId) match {
                                     case Some(seq) ⇒ seq
                                     case None ⇒
-                                        val buf = mutable.ArrayBuffer.empty[NCEnhanceSynonymsSuggestion]
+                                        val buf = mutable.ArrayBuffer.empty[SuggestionResult]
 
                                         res += elemId → buf
 
                                         buf
                                 }
 
-                            seq += NCEnhanceSynonymsSuggestion(sugg.word, sugg.score, cnt, sumFactor)
+                            seq += SuggestionResult(sugg.word, sugg.score, cnt)
                         }
                 }
 
@@ -407,7 +414,19 @@ object NCEnhanceManager extends NCService {
 
             Response(
                 warnings = norm(warns),
-                suggestions = Some(res.map(p ⇒ p._1 → p._2.asJava).asJava)
+                suggestions = Some(
+                    res.map { case (id, data) ⇒
+                        id → data.map(d ⇒ {
+                            val m = new util.HashMap[String, Any]()
+
+                            m.put("synonym", d.synonym)
+                            m.put("ctxWorldServerScore", d.ctxWorldServerScore)
+                            m.put("suggestedCount", d.suggestedCount)
+
+                            m
+                        }).asJava
+                    }.asJava
+                )
             )
         }
 
@@ -468,18 +487,38 @@ object NCEnhanceManager extends NCService {
     /**
       *
       * @param mdlId
+      * @param parent
+      */
+    private def validateIntents(mdlId: String, parent: Span = null): Response =
+        startScopedSpan("validateIntents", parent, "modelId" → mdlId) { _ ⇒
+            val mdl = NCProbeManager.getModel(mdlId)
+            val syns = mdl.elementsSynonyms.values.flatten
+
+            Response(warnings =
+                norm(
+                    mdl.macros.keys.
+                        // TODO: is it valid check?
+                        flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
+                        toSeq
+                )
+            )
+        }
+
+
+    /**
+      *
+      * @param mdlId
       * @param types
       * @param parent
       */
     @throws[NCE]
-    def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceResponse] =
+    def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceElement] =
         startScopedSpan("enhance", parent, "modelId" → mdlId) { _ ⇒
-            // Note that NCEnhanceResponse#suggestions should be simple types or java collections.
-            // Scala collections cannot be simple converted into JSON (REST calls)
             types.map {
                 case t@SUGGEST_SYNONYMS ⇒ convert(t, suggestSynonyms(mdlId, parent))
                 case t@VALIDATION_MACROS ⇒ convert(t, validateMacros(mdlId, parent))
                 case t@VALIDATION_SYNONYMS ⇒ convert(t, validateSynonyms(mdlId, parent))
+                case t@VALIDATION_INTENTS ⇒ convert(t, validateIntents(mdlId, parent))
             }
         }
 }

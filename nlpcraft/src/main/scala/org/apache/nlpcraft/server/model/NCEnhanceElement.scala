@@ -17,16 +17,16 @@
 
 package org.apache.nlpcraft.server.model
 
+import org.apache.nlpcraft.server.model.NCEnhanceType.NCEnhanceType
+
 /**
   * TODO:
-  * @param synonym
-  * @param ctxWorldServerScore
-  * @param suggestedCount
-  * @param totalScore
   */
-case class NCEnhanceSynonymsSuggestion(
-    synonym: String,
-    ctxWorldServerScore: Double,
-    suggestedCount: Int,
-    totalScore: Double
+case class NCEnhanceElement(
+    enhanceType: NCEnhanceType,
+    errors: Option[Seq[String]] = None,
+    warnings: Option[Seq[String]] = None,
+    // Note that `suggestions` should be simple type or java collections.
+    // Scala collections cannot be converted into JSON.
+    suggestions: Option[AnyRef] = None
 )
