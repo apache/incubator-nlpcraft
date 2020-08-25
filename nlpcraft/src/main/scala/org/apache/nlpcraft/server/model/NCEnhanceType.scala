@@ -20,6 +20,7 @@ package org.apache.nlpcraft.server.model
 object NCEnhanceType extends Enumeration {
     type NCEnhanceType = Value
 
-    val ELEMENTS_SYNONYMS = Value
+    val SUGGEST_SYNONYMS = Value
     val VALIDATION_MACROS = Value
+    val VALIDATION_SYNONYMS = Value
 }

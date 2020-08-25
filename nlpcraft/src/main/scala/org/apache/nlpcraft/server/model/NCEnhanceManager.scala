@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.server.model
 
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, TimeUnit}
 import java.util.{List ⇒ JList}
 
@@ -45,13 +45,19 @@ import scala.collection._
   * TODO:
   */
 object NCEnhanceManager extends NCService {
+    // 1. SUGGEST_SYNONYMS
     // For context word server requests.
-    private final val SUGGS_MAX_LIMIT: Int = 10000
-    private final val SUGGS_BATCH_SIZE = 20
+    private final val SUGGEST_SYNONYMS_MAX_LIMIT: Int = 10000
+    private final val SUGGEST_SYNONYMS_BATCH_SIZE = 20
 
     // For warnings.
-    private final val MIN_CNT_INTENT = 5
-    private final val MIN_CNT_MODEL = 20
+    private final val SUGGEST_SYNONYMS_MIN_CNT_INTENT = 5
+    private final val SUGGEST_SYNONYMS_MIN_CNT_MODEL = 20
+
+    // 2. VALIDATION_MACROS
+
+    // 3. VALIDATION_SYNONYMS
+    private final val VALIDATION_SYNONYMS_MANY_SYNS = 20000
 
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
@@ -139,12 +145,19 @@ object NCEnhanceManager extends NCService {
         NCEnhanceResponse(typ, resp.errors, resp.warnings, resp.suggestions)
 
     /**
+      *
+      * @param seq
+      * @return
+      */
+    private def norm(seq: Seq[String]): Option[Seq[String]] = if (seq.isEmpty) None else Some(seq)
+
+    /**
       * @param mdlId Model ID.
       * @param parent Parent.
       */
     @throws[NCE]
-    private def suggest(mdlId: String, parent: Span = null): Response =
-        startScopedSpan("suggest", parent, "modelId" → mdlId) { _ ⇒
+    private def suggestSynonyms(mdlId: String, parent: Span = null): Response =
+        startScopedSpan("suggestSynonyms", parent, "modelId" → mdlId) { _ ⇒
             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
             val mdl = NCProbeManager.getModel(mdlId)
@@ -157,17 +170,17 @@ object NCEnhanceManager extends NCService {
 
             val warns = mutable.ArrayBuffer.empty[String]
 
-            if (allSamplesCnt < MIN_CNT_MODEL)
+            if (allSamplesCnt < SUGGEST_SYNONYMS_MIN_CNT_MODEL)
                 // TODO: text
                 warns +=
                     s"Model: '$mdlId' has too small intents samples count: $allSamplesCnt. " +
                     s"Potentially is can be not enough for suggestions service high quality work. " +
-                    s"Try to increase their count at least to $MIN_CNT_MODEL."
+                    s"Try to increase their count at least to $SUGGEST_SYNONYMS_MIN_CNT_MODEL."
 
             else {
                 val ids =
                     mdl.intentsSamples.
-                        filter { case (_, samples) ⇒ samples.size < MIN_CNT_INTENT }.
+                        filter { case (_, samples) ⇒ samples.size < SUGGEST_SYNONYMS_MIN_CNT_INTENT }.
                         map { case (intentId, _) ⇒ intentId }
 
                 if (ids.nonEmpty)
@@ -175,7 +188,7 @@ object NCEnhanceManager extends NCService {
                         // TODO: text
                         s"Models '$mdlId' has intents: [${ids.mkString(", ")}] with too small intents samples count." +
                             s"Potentially it can be not enough for suggestions service high quality work. " +
-                            s"Try to increase their count at least to $MIN_CNT_INTENT."
+                            s"Try to increase their count at least to $SUGGEST_SYNONYMS_MIN_CNT_INTENT."
             }
 
             val parser = new NCMacroParser()
@@ -258,8 +271,9 @@ object NCEnhanceManager extends NCService {
             val cnt = new AtomicInteger(0)
 
             val client = HttpClients.createDefault
+            val err = new AtomicReference[Throwable]()
 
-            for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(SUGGS_BATCH_SIZE, SUGGS_BATCH_SIZE).map(_.toSeq)) {
+            for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(SUGGEST_SYNONYMS_BATCH_SIZE, SUGGEST_SYNONYMS_BATCH_SIZE).map(_.toSeq)) {
                 NCUtils.asFuture(
                     _ ⇒ {
                         val post = new HttpPost(url)
@@ -274,7 +288,7 @@ object NCEnhanceManager extends NCService {
                                         // ContextWord server range is (0, 2), input range is (0, 1)
                                         min_score = Config.suggestionsMinScore * 2,
                                         // We set big limit value and in fact only minimal score is taken into account.
-                                        limit = SUGGS_MAX_LIMIT
+                                        limit = SUGGEST_SYNONYMS_MAX_LIMIT
                                     )
                                 ),
                                 "UTF-8"
@@ -303,7 +317,7 @@ object NCEnhanceManager extends NCService {
                             cdl.countDown()
                     },
                     (e: Throwable) ⇒ {
-                        logger.error("Error execution request", e)
+                        err.compareAndSet(null, e)
 
                         cdl.countDown()
                     },
@@ -312,6 +326,9 @@ object NCEnhanceManager extends NCService {
             }
 
             cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
+
+            if (err.get() != null)
+                throw new NCE("Error during work with ContextWord Server", err.get())
 
             val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
@@ -375,13 +392,13 @@ object NCEnhanceManager extends NCService {
             })
 
             Response(
-                warnings = if (warns.isEmpty) None else Some(warns),
+                warnings = norm(warns),
                 suggestions = Some(res.map(p ⇒ p._1 → p._2.asJava).asJava)
             )
         }
 
-    private def checkMacros(mdlId: String, parent: Span = null): Response =
-        startScopedSpan("suggest", parent, "modelId" → mdlId) { _ ⇒
+    private def validateMacros(mdlId: String, parent: Span = null): Response =
+        startScopedSpan("validateMacros", parent, "modelId" → mdlId) { _ ⇒
             val mdl = NCProbeManager.getModel(mdlId)
             val syns = mdl.elementsSynonyms.values.flatten
 
@@ -390,8 +407,42 @@ object NCEnhanceManager extends NCService {
                 flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
                 toSeq
 
-            Response(warnings = if (warns.isEmpty) None else Some(warns))
+            Response(warnings = norm(warns))
     }
+
+
+    private def validateSynonyms(mdlId: String, parent: Span = null): Response =
+        startScopedSpan("validateSynonyms", parent, "modelId" → mdlId) { _ ⇒
+            val warns = mutable.ArrayBuffer.empty[String]
+
+            val mdl = NCProbeManager.getModel(mdlId)
+
+            val parser = new NCMacroParser()
+
+            mdl.macros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+
+
+            val mdlSyns: Map[String, Seq[String]] =
+                mdl.elementsSynonyms.map { case (elemId, syns) ⇒ elemId → syns.flatMap(parser.expand) }
+
+            mdlSyns.foreach { case (elemId, syns) ⇒
+                val size = syns.size
+
+                if (size == 0)
+                    warns += s"Element: '$elemId' doesn't have synonyms"
+                else if (size > VALIDATION_SYNONYMS_MANY_SYNS)
+                    warns += s"Element: '$elemId' have too many synonyms: $size"
+
+                val others = mdlSyns.filter { case (othId, _) ⇒ othId != elemId}
+
+                val intersects = others.filter { case (_, othSyns) ⇒ othSyns.intersect(syns).nonEmpty }.keys.mkString(",")
+
+                if (intersects.nonEmpty)
+                    warns += s"Element: '$elemId' has same synonyms with '$intersects'"
+            }
+
+            Response(warnings = norm(warns))
+        }
 
     @throws[NCE]
     def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceResponse] =
@@ -399,8 +450,9 @@ object NCEnhanceManager extends NCService {
             // Note that NCEnhanceResponse#suggestions should be simple types or java collections.
             // Scala collections cannot be simple converted into JSON (REST calls)
             types.map {
-                case t@ELEMENTS_SYNONYMS ⇒ convert(t, suggest(mdlId, parent))
-                case t@VALIDATION_MACROS ⇒ convert(t, checkMacros(mdlId, parent))
+                case t@SUGGEST_SYNONYMS ⇒ convert(t, suggestSynonyms(mdlId, parent))
+                case t@VALIDATION_MACROS ⇒ convert(t, validateMacros(mdlId, parent))
+                case t@VALIDATION_SYNONYMS ⇒ convert(t, validateSynonyms(mdlId, parent))
             }
         }
 }

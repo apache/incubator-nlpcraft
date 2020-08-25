@@ -642,13 +642,16 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 checkLength("mdlId", req.mdlId, 32)
 
                 val types =
-                    req.types.map(typ ⇒
-                        try
-                            NCEnhanceType.withName(typ)
-                        catch {
-                            case _: Exception ⇒ throw InvalidField("types")
-                        }
-                    )
+                    if (req.types.size == 1 && req.types.head.toLowerCase == "all")
+                        NCEnhanceType.values.toSeq
+                    else
+                        req.types.map(typ ⇒
+                            try
+                                NCEnhanceType.withName(typ.toUpperCase)
+                            catch {
+                                case _: Exception ⇒ throw InvalidField("types")
+                            }
+                        )
 
                 val admin = authenticateAsAdmin(req.acsTok)
 
