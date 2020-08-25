@@ -35,6 +35,7 @@ import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.server.mdo.NCProbeModelMdo
 import org.apache.nlpcraft.server.model.NCEnhanceType._
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
@@ -42,7 +43,7 @@ import scala.collection.JavaConverters._
 import scala.collection._
 
 /**
-  * TODO:
+  * TODO: check all texts
   */
 object NCEnhanceManager extends NCService {
     // 1. SUGGEST_SYNONYMS
@@ -122,6 +123,11 @@ object NCEnhanceManager extends NCService {
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
 
+    /**
+      *
+      * @param seq1
+      * @param seq2
+      */
     private def getAllSlices(seq1: Seq[String], seq2: Seq[String]): Seq[Int] = {
         val seq = mutable.Buffer.empty[Int]
 
@@ -147,13 +153,25 @@ object NCEnhanceManager extends NCService {
     /**
       *
       * @param seq
-      * @return
       */
     private def norm(seq: Seq[String]): Option[Seq[String]] = if (seq.isEmpty) None else Some(seq)
 
     /**
-      * @param mdlId Model ID.
-      * @param parent Parent.
+      *
+      * @param mdl
+      */
+    private def prepareParser(mdl: NCProbeModelMdo): NCMacroParser = {
+        val parser = new NCMacroParser()
+
+        mdl.macros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+
+        parser
+    }
+
+    /**
+      *
+      * @param mdlId
+      * @param parent
       */
     @throws[NCE]
     private def suggestSynonyms(mdlId: String, parent: Span = null): Response =
@@ -171,7 +189,6 @@ object NCEnhanceManager extends NCService {
             val warns = mutable.ArrayBuffer.empty[String]
 
             if (allSamplesCnt < SUGGEST_SYNONYMS_MIN_CNT_MODEL)
-                // TODO: text
                 warns +=
                     s"Model: '$mdlId' has too small intents samples count: $allSamplesCnt. " +
                     s"Potentially is can be not enough for suggestions service high quality work. " +
@@ -185,15 +202,12 @@ object NCEnhanceManager extends NCService {
 
                 if (ids.nonEmpty)
                     warns +=
-                        // TODO: text
                         s"Models '$mdlId' has intents: [${ids.mkString(", ")}] with too small intents samples count." +
                             s"Potentially it can be not enough for suggestions service high quality work. " +
                             s"Try to increase their count at least to $SUGGEST_SYNONYMS_MIN_CNT_INTENT."
             }
 
-            val parser = new NCMacroParser()
-
-            mdl.macros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+            val parser = prepareParser(mdl)
 
             // Note that we don't use system tokenizer, because ContextWordServer doesn't have this tokenizer.
             // We just split examples words with spaces. Also we divide SEPARATORS as separated words.
@@ -397,33 +411,40 @@ object NCEnhanceManager extends NCService {
             )
         }
 
+    /**
+      *
+      * @param mdlId
+      * @param parent
+      */
     private def validateMacros(mdlId: String, parent: Span = null): Response =
         startScopedSpan("validateMacros", parent, "modelId" → mdlId) { _ ⇒
             val mdl = NCProbeManager.getModel(mdlId)
             val syns = mdl.elementsSynonyms.values.flatten
 
-            // TODO: is it valid?
-            val warns = mdl.macros.keys.
-                flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
-                toSeq
-
-            Response(warnings = norm(warns))
+            Response(warnings =
+                norm(
+                    mdl.macros.keys.
+                    // TODO: is it valid check?
+                    flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
+                    toSeq
+                )
+            )
     }
 
-
+    /**
+      *
+      * @param mdlId
+      * @param parent
+      */
     private def validateSynonyms(mdlId: String, parent: Span = null): Response =
         startScopedSpan("validateSynonyms", parent, "modelId" → mdlId) { _ ⇒
             val warns = mutable.ArrayBuffer.empty[String]
 
             val mdl = NCProbeManager.getModel(mdlId)
 
-            val parser = new NCMacroParser()
+            val parser = prepareParser(mdl)
 
-            mdl.macros.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
-
-
-            val mdlSyns: Map[String, Seq[String]] =
-                mdl.elementsSynonyms.map { case (elemId, syns) ⇒ elemId → syns.flatMap(parser.expand) }
+            val mdlSyns = mdl.elementsSynonyms.map { case (elemId, syns) ⇒ elemId → syns.flatMap(parser.expand) }
 
             mdlSyns.foreach { case (elemId, syns) ⇒
                 val size = syns.size
@@ -431,7 +452,7 @@ object NCEnhanceManager extends NCService {
                 if (size == 0)
                     warns += s"Element: '$elemId' doesn't have synonyms"
                 else if (size > VALIDATION_SYNONYMS_MANY_SYNS)
-                    warns += s"Element: '$elemId' have too many synonyms: $size"
+                    warns += s"Element: '$elemId' has too many synonyms: $size"
 
                 val others = mdlSyns.filter { case (othId, _) ⇒ othId != elemId}
 
@@ -444,6 +465,12 @@ object NCEnhanceManager extends NCService {
             Response(warnings = norm(warns))
         }
 
+    /**
+      *
+      * @param mdlId
+      * @param types
+      * @param parent
+      */
     @throws[NCE]
     def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceResponse] =
         startScopedSpan("enhance", parent, "modelId" → mdlId) { _ ⇒
