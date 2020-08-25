@@ -21,5 +21,5 @@ object NCEnhanceType extends Enumeration {
     type NCEnhanceType = Value
 
     val ELEMENTS_SYNONYMS = Value
-    val VALIDATION_ELEMENTS = Value
+    val VALIDATION_MACROS = Value
 }

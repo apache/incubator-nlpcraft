@@ -81,6 +81,12 @@ object NCEnhanceManager extends NCService {
         )
     }
 
+    case class Response(
+        errors: Option[Seq[String]] = None,
+        warnings: Option[Seq[String]] = None,
+        suggestions: Option[AnyRef] = None
+    )
+
     private final val GSON = new Gson
     private final val TYPE_RESP = new TypeToken[JList[JList[Suggestion]]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
@@ -125,11 +131,19 @@ object NCEnhanceManager extends NCService {
     }
 
     /**
+      *
+      * @param typ
+      * @param resp
+      */
+    private def convert(typ: NCEnhanceType, resp: Response): NCEnhanceResponse =
+        NCEnhanceResponse(typ, resp.errors, resp.warnings, resp.suggestions)
+
+    /**
       * @param mdlId Model ID.
       * @param parent Parent.
       */
     @throws[NCE]
-    private def suggest(mdlId: String, parent: Span = null): NCEnhanceResponse =
+    private def suggest(mdlId: String, parent: Span = null): Response =
         startScopedSpan("suggest", parent, "modelId" → mdlId) { _ ⇒
             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
@@ -360,12 +374,24 @@ object NCEnhanceManager extends NCService {
                 }
             })
 
-            NCEnhanceResponse(
-                ELEMENTS_SYNONYMS,
+            Response(
                 warnings = if (warns.isEmpty) None else Some(warns),
                 suggestions = Some(res.map(p ⇒ p._1 → p._2.asJava).asJava)
             )
         }
+
+    private def checkMacros(mdlId: String, parent: Span = null): Response =
+        startScopedSpan("suggest", parent, "modelId" → mdlId) { _ ⇒
+            val mdl = NCProbeManager.getModel(mdlId)
+            val syns = mdl.elementsSynonyms.values.flatten
+
+            // TODO: is it valid?
+            val warns = mdl.macros.keys.
+                flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
+                toSeq
+
+            Response(warnings = if (warns.isEmpty) None else Some(warns))
+    }
 
     @throws[NCE]
     def enhance(mdlId: String, types: Seq[NCEnhanceType], parent: Span = null): Seq[NCEnhanceResponse] =
@@ -373,8 +399,8 @@ object NCEnhanceManager extends NCService {
             // Note that NCEnhanceResponse#suggestions should be simple types or java collections.
             // Scala collections cannot be simple converted into JSON (REST calls)
             types.map {
-                case typ@ELEMENTS_SYNONYMS ⇒ suggest(mdlId, parent)
-                case typ@VALIDATION_ELEMENTS ⇒ NCEnhanceResponse(typ, null)
+                case t@ELEMENTS_SYNONYMS ⇒ convert(t, suggest(mdlId, parent))
+                case t@VALIDATION_MACROS ⇒ convert(t, checkMacros(mdlId, parent))
             }
         }
 }
