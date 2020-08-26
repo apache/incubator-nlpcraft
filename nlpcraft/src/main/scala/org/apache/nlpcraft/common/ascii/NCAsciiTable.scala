@@ -302,7 +302,7 @@ class NCAsciiTable {
      * @return
      */
     private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
-        lines.map(_.trim).flatMap(line => {
+        lines.flatMap(line => {
             if (line.isEmpty)
                 mutable.Buffer("")
             else {
@@ -317,7 +317,7 @@ class NCAsciiTable {
                     if (curr - start > maxWidth) {
                         val end = if (lastSpace == -1) curr else lastSpace + 1 /* Keep space at the end of the line. */
 
-                        buf += line.substring(start, end).trim
+                        buf += line.substring(start, end)
                         start = end
                     }
 
@@ -328,7 +328,7 @@ class NCAsciiTable {
                 }
 
                 if (start < len) {
-                    val lastLine = line.substring(start).trim
+                    val lastLine = line.substring(start)
 
                     if (lastLine.nonEmpty)
                         buf += lastLine

@@ -33,6 +33,8 @@ object NCCommandLine extends App {
     private final lazy val SCRIPT = NCUtils.sysEnv("NLPCRAFT_CLI_SCRIPT")
     private final lazy val SCRIPT_NAME = SCRIPT.getOrElse("NLPCraft CLI")
 
+    private final val TAB4 = "    "
+
     // Single CLI command.
     case class Command(
         id: String,
@@ -101,6 +103,16 @@ object NCCommandLine extends App {
                     arity = (0, 1),
                     desc = "Flag to show full manual for all commands."
                 )
+            ),
+            examples = Seq(
+                Example(
+                    code = s"$$ $SCRIPT_NAME help repl",
+                    desc = "Displays help for 'repl' command"
+                ),
+                Example(
+                    code = s"$$ $SCRIPT_NAME help -all",
+                    desc = "Displays help for all commands."
+                )
             )
         ),
         Command(
@@ -152,7 +164,30 @@ object NCCommandLine extends App {
                     lines += cmd.synopsis
 
                 if (cmd.params.nonEmpty) {
-                    lines ++= Seq("", "PARAMETERS")
+                    lines += ""
+                    lines += "PARAMETERS"
+
+                    for (param <- cmd.params) {
+                        var nameLine = s"$TAB4${param.names.mkString(", ")}"
+
+                        if (param.valueDesc.isDefined)
+                            nameLine += s"=${param.valueDesc.get}"
+
+                        val nameDesc = s"$TAB4$TAB4${param.desc}"
+
+                        lines += nameLine
+                        lines += nameDesc
+                    }
+                }
+
+                if (cmd.examples.nonEmpty) {
+                    lines += ""
+                    lines += "EXAMPLES"
+
+                    for (ex <- cmd.examples) {
+                        lines += s"$TAB4${ex.code}"
+                        lines += s"$TAB4$TAB4${ex.desc}"
+                    }
                 }
 
                 tbl +/ (
