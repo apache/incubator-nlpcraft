@@ -138,7 +138,10 @@ object NCCommandLine extends App {
         val tbl = NCAsciiTable().margin(left = 4)
 
         if (params.isEmpty)  // Default - show abbreviated help.
-            CMDS.foreach(cmd => tbl += (cmd.names.mkString(", "), cmd.synopsis))
+            CMDS.foreach(cmd => tbl +/ (
+                ("" -> cmd.names.mkString(", ")),
+                ("align:left, maxWidth:65" -> cmd.synopsis)
+            ))
         else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
             CMDS.foreach(cmd => {
                 var lines = mutable.Buffer.empty[String]
@@ -148,13 +151,14 @@ object NCCommandLine extends App {
                 else
                     lines += cmd.synopsis
 
-                lines += ""
-
                 if (cmd.params.nonEmpty) {
-                    lines += "PARAMETERS"
+                    lines ++= Seq("", "PARAMETERS")
                 }
 
-                tbl += (cmd.names.mkString(", "), lines)
+                tbl +/ (
+                    ("" -> cmd.names.mkString(", ")),
+                    ("align:left, maxWidth:65" -> lines)
+                )
             })
         }
 

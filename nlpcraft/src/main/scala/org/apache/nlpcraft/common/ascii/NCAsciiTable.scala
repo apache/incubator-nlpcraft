@@ -25,6 +25,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable._
 import resource._
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 /**
  * `ASCII`-based table with minimal styling support.
@@ -207,15 +208,14 @@ class NCAsciiTable {
     /**
      * Adds row (one or more row cells) with a given style.
      *
-     * @param style Style to use.
-     * @param cells Row cells. For multi-line cells - use `Seq(...)`.
+     * @param cells Row cells tuples (style, text). For multi-line cells - use `Seq(...)`.
      */
-    def +/(style: String, cells: Any*): NCAsciiTable = {
+    def +/(cells: (String, Any)*): NCAsciiTable = {
         startRow()
 
         cells foreach {
-            case i: Iterable[_] ⇒ addStyledRowCell(style, i.iterator.toSeq: _*)
-            case a ⇒ addStyledRowCell(style, a)
+            case i if i._2.isInstanceOf[Iterable[_]] ⇒ addStyledRowCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
+            case a ⇒ addStyledRowCell(a._1, a._2)
         }
 
         endRow()
@@ -255,13 +255,12 @@ class NCAsciiTable {
     /**
      * Adds styled header (one or more header cells).
      *
-     * @param style Style to use.
-     * @param cells Header cells. For multi-line cells - use `Seq(...)`.
+     * @param cells Header cells tuples (style, text). For multi-line cells - use `Seq(...)`.
      */
-    def #/(style: String, cells: Any*): NCAsciiTable = {
+    def #/(cells: (String, Any)*): NCAsciiTable = {
         cells foreach {
-            case i: Iterable[_] ⇒ addStyledHeaderCell(style, i.iterator.toSeq: _*)
-            case a ⇒ addStyledHeaderCell(style, a)
+            case i if i._2.isInstanceOf[Iterable[_]] ⇒ addStyledHeaderCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
+            case a ⇒ addStyledHeaderCell(a._1, a._2)
         }
 
         this
@@ -302,7 +301,42 @@ class NCAsciiTable {
      * @param lines
      * @return
      */
-    private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[Any]): Seq[String] = ???
+    private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
+        lines.map(_.trim).flatMap(line => {
+            if (line.isEmpty)
+                mutable.Buffer("")
+            else {
+                val buf = mutable.Buffer.empty[String]
+
+                var start = 0
+                var lastSpace = -1
+                var curr = 0
+                val len = line.length
+
+                while (curr < len) {
+                    if (curr - start > maxWidth) {
+                        val end = if (lastSpace == -1) curr else lastSpace + 1 /* Keep space at the end of the line. */
+
+                        buf += line.substring(start, end).trim
+                        start = end
+                    }
+
+                    if (line.charAt(curr) == ' ')
+                        lastSpace = curr
+
+                    curr += 1
+                }
+
+                if (start < len) {
+                    val lastLine = line.substring(start).trim
+
+                    if (lastLine.nonEmpty)
+                        buf += lastLine
+                }
+
+                buf
+            }
+        })
 
     /**
      *
@@ -310,15 +344,16 @@ class NCAsciiTable {
      * @param lines
      * @return
      */
-    private def mkRowCell(style: String, lines: Any*): Cell = {
+    private def mkStyledCell(style: String, lines: Any*): Cell = {
         val st = Style(style)
+        val strLines = lines.map(x)
 
         Cell(
             st,
             if (breakUpByWords)
-                breakUpByNearestSpace(st.maxWidth, lines)
+                breakUpByNearestSpace(st.maxWidth, strLines)
             else
-                (for (line ← lines) yield x(line).grouped(st.maxWidth)).flatten
+                (for (str ← strLines) yield str.grouped(st.maxWidth)).flatten
         )
     }
 
@@ -328,7 +363,7 @@ class NCAsciiTable {
      * @param lines One or more cell lines.
      */
     def addHeaderCell(lines: Any*): NCAsciiTable = {
-        hdr :+= mkRowCell(defaultHeaderStyle, lines: _*)
+        hdr :+= mkStyledCell(defaultHeaderStyle, lines: _*)
 
         this
     }
@@ -339,7 +374,7 @@ class NCAsciiTable {
      * @param lines One or more row cells. Multiple lines will be printed on separate lines.
      */
     def addRowCell(lines: Any*): NCAsciiTable = {
-        curRow :+= mkRowCell(defaultRowStyle, lines: _*)
+        curRow :+= mkStyledCell(defaultRowStyle, lines: _*)
 
         this
     }
@@ -351,7 +386,7 @@ class NCAsciiTable {
      * @param lines One or more cell lines.
      */
     def addStyledHeaderCell(style: String, lines: Any*): NCAsciiTable = {
-        hdr :+= mkRowCell(style, lines: _*)
+        hdr :+= mkStyledCell(if (style.trim.isEmpty) defaultHeaderStyle else style, lines: _*)
 
         this
     }
@@ -363,7 +398,7 @@ class NCAsciiTable {
      * @param lines One or more row cells. Multiple lines will be printed on separate lines.
      */
     def addStyledRowCell(style: String, lines: Any*): NCAsciiTable = {
-        curRow :+= mkRowCell(style, lines: _*)
+        curRow :+= mkStyledCell(if (style.trim.isEmpty) defaultRowStyle else style, lines: _*)
 
         this
     }
@@ -384,9 +419,9 @@ class NCAsciiTable {
             case _ ⇒ throw new AssertionError(s"Invalid align option in: $sty")
         }
     }
-    
+
     override def toString: String = mkString
-    
+
     /**
      * Prepares output string.
      */
@@ -408,7 +443,7 @@ class NCAsciiTable {
                 colsNum = r.size
             else if (colsNum != r.size)
                 assert(assertion = false, "Table with uneven rows.")
-    
+
         assert(colsNum > 0, "No columns found.")
 
         // At this point all rows in the table have the
@@ -569,7 +604,7 @@ class NCAsciiTable {
       * @param header Optional header.
       */
     def error(log: Logger, header: Option[String] = None): Unit = log.error(mkLogString(header))
-    
+
     /**
       * Renders this table to log as trace.
       *
