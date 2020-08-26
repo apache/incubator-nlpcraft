@@ -21,6 +21,8 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.common.version.NCVersion
 
+import scala.collection.mutable
+
 /**
  * 'nlpcraft' script entry point.
  */
@@ -33,12 +35,13 @@ object NCCommandLine extends App {
 
     // Single CLI command.
     case class Command(
+        id: String,
         names: Seq[String],
         synopsis: String,
-        desc: String = "",
+        desc: Option[String] = None,
         params: Seq[Parameter] = Seq.empty,
         examples: Seq[Example] = Seq.empty,
-        body: Seq[String] => Unit
+        body: (Command, Seq[String]) => Unit
     ) {
         final val extNames = names.flatMap(name => // Safeguard against "common" errors.
             Seq(
@@ -49,6 +52,15 @@ object NCCommandLine extends App {
                 s"\\$name"
             )
         )
+
+        /**
+         *
+         * @param paramId
+         * @param cliParams
+         * @return
+         */
+        def isParamPresent(paramId: String, cliParams: Seq[String]): Boolean =
+            params.find(_.id == paramId).get.names.intersect(cliParams).nonEmpty
     }
     // Single command's example.
     case class Example(
@@ -57,6 +69,7 @@ object NCCommandLine extends App {
     )
     // Single command's parameter.
     case class Parameter(
+        id: String,
         names: Seq[String],
         valueDesc: Option[String] = None,
         arity: (Int, Int) = (1, 1), // Mandatory by default.
@@ -66,22 +79,24 @@ object NCCommandLine extends App {
     // All supported commands.
     private final val CMDS = Seq(
         Command(
+            id = "help",
             names = Seq("help", "?"),
             synopsis = s"Displays manual page for $SCRIPT_NAME.",
-            desc =
-                s"""
-                   |By default, without '-all' or '-cmd' parameters, displays the abbreviated form of manual
-                   |only listing the commands without parameters or examples.
-                   |""".stripMargin,
+            desc = Some(
+                s"By default, without '-all' or '-cmd' parameters, displays the abbreviated form of manual " +
+                s"only listing the commands without parameters or examples."
+            ),
             body = cmdHelp,
             params = Seq(
                 Parameter(
+                    id = "cmd",
                     names = Seq("--cmd", "-c"),
                     valueDesc = Some("{cmd}"),
                     arity = (0, 3),
                     desc = "Set of commands to show the manual for."
                 ),
                 Parameter(
+                    id = "all",
                     names = Seq("--all", "-a"),
                     arity = (0, 1),
                     desc = "Flag to show full manual for all commands."
@@ -89,25 +104,27 @@ object NCCommandLine extends App {
             )
         ),
         Command(
+            id = "ver",
             names = Seq("version", "ver"),
             synopsis = s"Displays version of $SCRIPT_NAME runtime.",
             body = cmdVersion
         ),
         Command(
+            id = "repl",
             names = Seq("repl"),
             synopsis = s"Starts '$SCRIPT_NAME' in interactive REPL mode.",
             body = cmdRepl
         )
     )
 
-    private final val HELP_CMD = CMDS.find(_.names.contains("help")).get
-    private final val DFLT_CMD = CMDS.find(_.names.contains("repl")).get
+    private final val HELP_CMD = CMDS.find(_.id == "help").get
+    private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
 
     /**
-     *
+     * @param cmd Command descriptor.
      * @param params Parameters, if any, for this command.
      */
-    private def cmdHelp(params: Seq[String]): Unit = {
+    private def cmdHelp(cmd: Command, params: Seq[String]): Unit = {
         log(
             s"""    |NAME
                     |    $SCRIPT_NAME - command line interface to control NLPCraft.
@@ -118,13 +135,32 @@ object NCCommandLine extends App {
                     |COMMANDS""".stripMargin
         )
 
-        if (params.isEmpty) {
-            val tbl = NCAsciiTable().margin(left = 4)
+        val tbl = NCAsciiTable().margin(left = 4)
 
+        tbl.maxCellWidth = 55
+
+        if (params.isEmpty)  // Default - show abbreviated help.
             CMDS.foreach(cmd => tbl += (cmd.names.mkString(", "), cmd.synopsis))
+        else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
+            CMDS.foreach(cmd => {
+                var lines = mutable.Buffer.empty[String]
 
-            log(tbl.toString)
+                if (cmd.desc.isDefined)
+                    lines += cmd.synopsis + " " + cmd.desc.get
+                else
+                    lines += cmd.synopsis
+
+                lines += ""
+
+                if (cmd.params.nonEmpty) {
+                    lines += "PARAMETERS"
+                }
+
+                tbl += (cmd.names.mkString(", "), lines)
+            })
         }
+
+        log(tbl.toString)
 
 
 
@@ -178,17 +214,19 @@ object NCCommandLine extends App {
 
     /**
      *
+     * @param cmd Command descriptor.
      * @param params Parameters, if any, for this command.
      */
-    private def cmdRepl(params: Seq[String]): Unit = {
+    private def cmdRepl(cmd: Command, params: Seq[String]): Unit = {
 
     }
 
     /**
      *
+     * @param cmd Command descriptor.
      * @param params Parameters, if any, for this command.
      */
-    private def cmdVersion(params: Seq[String]): Unit = {
+    private def cmdVersion(cmd: Command, params: Seq[String]): Unit = {
         // Nothing - common header with version will be printed before anyways.
     }
 
@@ -215,12 +253,12 @@ object NCCommandLine extends App {
         log()
 
         if (args.isEmpty)
-            NCCommandLine.DFLT_CMD.body(Seq.empty)
+            NCCommandLine.DFLT_CMD.body(DFLT_CMD, Seq.empty)
         else {
             val cmdName = args.head
 
             CMDS.find(_.extNames.contains(cmdName)) match {
-                case Some(cmd) => cmd.body(args.tail)
+                case Some(cmd) => cmd.body(cmd, args.tail)
                 case None =>
                     error(s"Unknown command: $cmdName")
                     errorHelp()

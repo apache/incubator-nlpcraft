@@ -27,7 +27,7 @@ class NCAsciiTableSpec {
     def test() {
         val t = NCAsciiTable()
         
-        t.headerStyle = "leftPad: 10, rightPad: 5"
+        t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
 
         t.margin(5, 5, 5, 5)
 
@@ -45,7 +45,7 @@ class NCAsciiTableSpec {
     def testWithSequenceHeader() {
         val t = NCAsciiTable()
         
-        t.headerStyle = "leftPad: 10, rightPad: 5"
+        t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
 
         t.margin(5, 5, 5, 5)
 
@@ -65,7 +65,7 @@ class NCAsciiTableSpec {
 
         val t = NCAsciiTable()
         
-        t.headerStyle = "leftPad: 10, rightPad: 5"
+        t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
 
         t #= (Seq("Header 1", "Header 2", "Header 3"): _*)
 

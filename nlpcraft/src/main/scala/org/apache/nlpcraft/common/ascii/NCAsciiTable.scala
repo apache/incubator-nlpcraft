@@ -33,9 +33,10 @@ class NCAsciiTable {
     /**
      * Cell style.
      */
-    private sealed case class Style(
+    private final case class Style(
         var leftPad: Int = 1, // >= 0
         var rightPad: Int = 1, // >= 0
+        var maxWidth: Int = Int.MaxValue, // > 0
         var align: String = "center" // center, left, right
         ) {
         /** Gets overall padding (left + right). */
@@ -57,7 +58,7 @@ class NCAsciiTable {
                 for (e ← sty.split(',')) {
                     val a = e.split(":")
 
-                    assume(a.length == 2, s"Invalid cell style: ${e.trim}")
+                    require(a.length == 2, s"Invalid cell style: ${e.trim}")
 
                     val a0 = a(0).trim
                     val a1 = a(1).trim
@@ -65,11 +66,17 @@ class NCAsciiTable {
                     a0 match {
                         case "leftPad" ⇒ cs.leftPad = a1.toInt
                         case "rightPad" ⇒ cs.rightPad = a1.toInt
-                        case "align" ⇒ cs.align = a1
+                        case "maxWidth" ⇒ cs.maxWidth = a1.toInt
+                        case "align" ⇒ cs.align = a1.toLowerCase
                         case _ ⇒ assert(assertion = false, s"Invalid style: ${e.trim}")
                     }
                 }
             }
+
+            require(cs.leftPad >= 0, "Style 'leftPad' must >= 0.")
+            require(cs.rightPad >= 0, "Style 'rightPad' must >= 0.")
+            require(cs.maxWidth > 0, "Style 'maxWidth' must > 0.")
+            require(cs.align == "center" || cs.align == "left" || cs.align == "right", "Style 'align' must be 'left', 'right' or 'center'.")
 
             cs
         }
@@ -77,8 +84,11 @@ class NCAsciiTable {
 
     /**
      * Cell holder.
+     *
+     * @param style
+     * @param lines Lines that are already cut up per `style`, if required.
      */
-    private sealed case class Cell(style: Style, lines: Seq[String]) {
+    private final case class Cell(style: Style, lines: Seq[String]) {
         // Cell's calculated width including padding.
         lazy val width: Int =
             if (height > 0)
@@ -97,8 +107,8 @@ class NCAsciiTable {
         top: Int = 0,
         right: Int = 0,
         bottom: Int = 0,
-        left: Int = 0) {
-    }
+        left: Int = 0
+    )
 
     // Table drawing symbols.
     private val HDR_HOR = "="
@@ -119,31 +129,28 @@ class NCAsciiTable {
     private var margin = Margin()
 
     /**
-     * Flag indicating whether or not to draw inside horizontal lines
+     * Global flag indicating whether or not to draw inside horizontal lines
      * between individual rows.
      */
     var insideBorder = false
 
     /**
-     * Flag indicating whether of not to automatically draw horizontal lines
+     * Global Flag indicating whether of not to automatically draw horizontal lines
      * for multiline rows.
      */
     var autoBorder = true
 
     /**
-     * Maximum width of the cell. If any line in the cell exceeds this width
-     * it will be cut in two or more lines.
-     *
-     * '''NOTE''': it doesn't include into account the padding. Only the actual
-     * string length is counted.
+     * If lines exceeds the style's maximum width it will be broken up
+     * either by nearest space (by whole words) or mid-word.
      */
-    var maxCellWidth: Int = Int.MaxValue
+    var breakUpByWords = true
 
-    /** Row style. */
-    var rowStyle: String = DFLT_ROW_STYLE
+    /** Default row style. */
+    var defaultRowStyle: String = DFLT_ROW_STYLE
 
-    /** Header style. */
-    var headerStyle: String = DFLT_HEADER_STYLE
+    /** Default header style. */
+    var defaultHeaderStyle: String = DFLT_HEADER_STYLE
 
     // Dash drawing.
     private def dash(ch: String, len: Int): String = (for (_ ← 1 to len) yield ch).mkString("")
@@ -198,6 +205,25 @@ class NCAsciiTable {
     }
 
     /**
+     * Adds row (one or more row cells) with a given style.
+     *
+     * @param style Style to use.
+     * @param cells Row cells. For multi-line cells - use `Seq(...)`.
+     */
+    def +/(style: String, cells: Any*): NCAsciiTable = {
+        startRow()
+
+        cells foreach {
+            case i: Iterable[_] ⇒ addStyledRowCell(style, i.iterator.toSeq: _*)
+            case a ⇒ addStyledRowCell(style, a)
+        }
+
+        endRow()
+
+        this
+    }
+
+    /**
       * Adds row.
       *
       * @param cells Row cells.
@@ -227,12 +253,39 @@ class NCAsciiTable {
     }
 
     /**
+     * Adds styled header (one or more header cells).
+     *
+     * @param style Style to use.
+     * @param cells Header cells. For multi-line cells - use `Seq(...)`.
+     */
+    def #/(style: String, cells: Any*): NCAsciiTable = {
+        cells foreach {
+            case i: Iterable[_] ⇒ addStyledHeaderCell(style, i.iterator.toSeq: _*)
+            case a ⇒ addStyledHeaderCell(style, a)
+        }
+
+        this
+    }
+
+    /**
       * Adds headers.
       *
       * @param cells Header cells.
       */
     def addHeaders(cells: java.util.List[Any]): NCAsciiTable = {
-        cells.asScala.foreach(p ⇒ addHeaderCell(p))
+        cells.asScala.foreach(addHeaderCell(_))
+
+        this
+    }
+
+    /**
+     * Adds headers with the given `style`.
+     *
+     * @param style Style top use.
+     * @param cells Header cells.
+     */
+    def addStyledHeaders(style: String, cells: java.util.List[Any]): NCAsciiTable = {
+        cells.asScala.foreach(addHeaderCell(style, _))
 
         this
     }
@@ -245,31 +298,72 @@ class NCAsciiTable {
 
     /**
      *
+     * @param maxWidth
+     * @param lines
+     * @return
+     */
+    private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[Any]): Seq[String] = ???
+
+    /**
+     *
      * @param style
      * @param lines
      * @return
      */
-    private def mkRowCell(style: String, lines: Any*): Cell =
-        Cell(Style(style), (for (line ← lines) yield x(line).grouped(maxCellWidth)).flatten)
+    private def mkRowCell(style: String, lines: Any*): Cell = {
+        val st = Style(style)
+
+        Cell(
+            st,
+            if (breakUpByWords)
+                breakUpByNearestSpace(st.maxWidth, lines)
+            else
+                (for (line ← lines) yield x(line).grouped(st.maxWidth)).flatten
+        )
+    }
 
     /**
-     * Adds single header cell.
+     * Adds single header cell with the default style..
      *
      * @param lines One or more cell lines.
      */
     def addHeaderCell(lines: Any*): NCAsciiTable = {
-        hdr :+= mkRowCell(headerStyle, lines: _*)
+        hdr :+= mkRowCell(defaultHeaderStyle, lines: _*)
 
         this
     }
 
     /**
-     * Adds single row cell.
+     * Adds single row cell with the default style.
      *
      * @param lines One or more row cells. Multiple lines will be printed on separate lines.
      */
     def addRowCell(lines: Any*): NCAsciiTable = {
-        curRow :+= mkRowCell(rowStyle, lines: _*)
+        curRow :+= mkRowCell(defaultRowStyle, lines: _*)
+
+        this
+    }
+
+    /**
+     * Adds single header cell with the default style..
+     *
+     * @param style Style to use.
+     * @param lines One or more cell lines.
+     */
+    def addStyledHeaderCell(style: String, lines: Any*): NCAsciiTable = {
+        hdr :+= mkRowCell(style, lines: _*)
+
+        this
+    }
+
+    /**
+     * Adds single row cell with the default style.
+     *
+     * @param style Style to use.
+     * @param lines One or more row cells. Multiple lines will be printed on separate lines.
+     */
+    def addStyledRowCell(style: String, lines: Any*): NCAsciiTable = {
+        curRow :+= mkRowCell(style, lines: _*)
 
         this
     }
@@ -352,12 +446,12 @@ class NCAsciiTable {
         for (_ ← 0 until margin.top)
             tbl ++= " \n"
 
-        def mkRow(crs: String, cor: String): String =
+        def mkAsciiLine(crs: String, cor: String): String =
             s"${space(margin.left)}$crs${dash(cor, tableW)}$crs${space(margin.right)}\n"
 
         // Print header, if any.
         if (isHdr) {
-            tbl ++= mkRow(HDR_CRS, HDR_HOR)
+            tbl ++= mkAsciiLine(HDR_CRS, HDR_HOR)
 
             for (i ← 0 until hdrH) {
                 // Left margin and '|'.
@@ -378,10 +472,10 @@ class NCAsciiTable {
                 tbl ++= s"${space(margin.right)}\n"
             }
 
-            tbl ++= mkRow(HDR_CRS, HDR_HOR)
+            tbl ++= mkAsciiLine(HDR_CRS, HDR_HOR)
         }
         else
-            tbl ++= mkRow(ROW_CRS, ROW_HOR)
+            tbl ++= mkAsciiLine(ROW_CRS, ROW_HOR)
 
         // Print rows, if any.
         if (rows.nonEmpty) {
