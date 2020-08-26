@@ -33,7 +33,7 @@ object NCCommandLine extends App {
     private final lazy val SCRIPT = NCUtils.sysEnv("NLPCRAFT_CLI_SCRIPT")
     private final lazy val SCRIPT_NAME = SCRIPT.getOrElse("NLPCraft CLI")
 
-    private final val TAB4 = "    "
+    private final val T___ = "    "
 
     // Single CLI command.
     case class Command(
@@ -107,7 +107,7 @@ object NCCommandLine extends App {
             examples = Seq(
                 Example(
                     code = s"$$ $SCRIPT_NAME help repl",
-                    desc = "Displays help for 'repl' command"
+                    desc = "Displays help for 'repl' command."
                 ),
                 Example(
                     code = s"$$ $SCRIPT_NAME help -all",
@@ -138,14 +138,57 @@ object NCCommandLine extends App {
      */
     private def cmdHelp(cmd: Command, params: Seq[String]): Unit = {
         log(
-            s"""    |NAME
-                    |    $SCRIPT_NAME - command line interface to control NLPCraft.
-                    |
-                    |USAGE
-                    |    $SCRIPT_NAME COMMAND [PARAMETERS]
-                    |
-                    |COMMANDS""".stripMargin
+            s"""|NAME
+                |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
+                |
+                |USAGE
+                |$T___$SCRIPT_NAME COMMAND [PARAMETERS]
+                |
+                |COMMANDS""".stripMargin
         )
+
+        /**
+         *
+         * @param cmd
+         * @return
+         */
+        def mkCmdLines(cmd: Command): Seq[String] = {
+            var lines = mutable.Buffer.empty[String]
+
+            if (cmd.desc.isDefined)
+                lines += cmd.synopsis + " " + cmd.desc.get
+            else
+                lines += cmd.synopsis
+
+            if (cmd.params.nonEmpty) {
+                lines += ""
+                lines += "PARAMETERS:"
+
+                for (param <- cmd.params) {
+                    var nameLine = s"$T___${param.names.mkString(", ")}"
+
+                    if (param.valueDesc.isDefined)
+                        nameLine += s"=${param.valueDesc.get}"
+
+                    val nameDesc = s"$T___$T___${param.desc}"
+
+                    lines += nameLine
+                    lines += nameDesc
+                }
+            }
+
+            if (cmd.examples.nonEmpty) {
+                lines += ""
+                lines += "EXAMPLES:"
+
+                for (ex <- cmd.examples) {
+                    lines += s"$T___${ex.code}"
+                    lines += s"$T___$T___${ex.desc}"
+                }
+            }
+
+            lines
+        }
 
         val tbl = NCAsciiTable().margin(left = 4)
 
@@ -154,99 +197,27 @@ object NCCommandLine extends App {
                 ("" -> cmd.names.mkString(", ")),
                 ("align:left, maxWidth:65" -> cmd.synopsis)
             ))
-        else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
-            CMDS.foreach(cmd => {
-                var lines = mutable.Buffer.empty[String]
-
-                if (cmd.desc.isDefined)
-                    lines += cmd.synopsis + " " + cmd.desc.get
-                else
-                    lines += cmd.synopsis
-
-                if (cmd.params.nonEmpty) {
-                    lines += ""
-                    lines += "PARAMETERS"
-
-                    for (param <- cmd.params) {
-                        var nameLine = s"$TAB4${param.names.mkString(", ")}"
-
-                        if (param.valueDesc.isDefined)
-                            nameLine += s"=${param.valueDesc.get}"
-
-                        val nameDesc = s"$TAB4$TAB4${param.desc}"
-
-                        lines += nameLine
-                        lines += nameDesc
-                    }
-                }
-
-                if (cmd.examples.nonEmpty) {
-                    lines += ""
-                    lines += "EXAMPLES"
-
-                    for (ex <- cmd.examples) {
-                        lines += s"$TAB4${ex.code}"
-                        lines += s"$TAB4$TAB4${ex.desc}"
-                    }
-                }
-
+        else if (cmd.isParamPresent("all", params)) // Show a full format help for all commands.
+            CMDS.foreach(cmd =>
                 tbl +/ (
                     ("" -> cmd.names.mkString(", ")),
-                    ("align:left, maxWidth:65" -> lines)
+                    ("align:left, maxWidth:65" -> mkCmdLines(cmd))
                 )
-            })
-        }
+            )
+        else
+            for (param <- params) {
+                CMDS.find(_.names.contains(param)) match {
+                    case Some(cmd) =>
+                        tbl +/ (
+                            ("" -> cmd.names.mkString(", ")),
+                            ("align:left, maxWidth:65" -> mkCmdLines(cmd))
+                        )
+                    case None =>
+                        error(s"Unknown command to get help for: $param")
+                }
+            }
 
         log(tbl.toString)
-
-
-
-
-
-
-
-
-
-
-
-
-        //            |              |
-//              |    help
-//
-//        , ?
-//              |         Displays the manual.
-//              |
-//              |         PARAMETERS
-//              |             --cmd, -c={cmd}
-//              |                 Optional (zero or more).
-//              |                 Set of commands to show the manual for.
-//              |             --all, -a
-//              |                 Optional.
-//              |                 Flag to show manual for all commands.
-//              |         EXAMPLES
-//              |             $$ $SCRIPT_NAME help repl
-//              |                 Displays help for 'repl' command.
-//              |             $$ $SCRIPT_NAME help -all
-//              |                 Displays help for all commands.
-//              |
-//              |    version, ver
-//              |         Displays the version of $SCRIPT_NAME.
-//              |
-//              |    model-stub
-//              |         Generates JSON or YAML model stubs.
-//              |
-//              |         PARAMETERS
-//              |             --type, -t={json|yaml}
-//              |                 Mandatory.
-//              |             --output, -o={file-path}?
-//              |                 Optional.
-//              |         EXAMPLES
-//              |             $$ $SCRIPT_NAME model-stub --type=json --output=/home/user/model.js
-//              |                 Generates JSON model stub into '/home/user/model.js' file.
-//              |             $$ $SCRIPT_NAME model-stub -t=yaml
-//              |                 Generates YAML model stub into 'model.js' file.
-//              |""".stripMargin
-//        )
     }
 
     /**
@@ -267,14 +238,14 @@ object NCCommandLine extends App {
         // Nothing - common header with version will be printed before anyways.
     }
 
-    private def error(msg: String = ""): Unit = System.err.println(msg)
+    private def error(msg: String = ""): Unit = System.err.println(s"ERROR: $msg")
     private def log(msg: String = ""): Unit = System.out.println(msg)
 
     private def errorHelp(): Unit = SCRIPT match {
         // Running from *.{s|cmd} script.
-        case Some(script) => error(s"Run '$script ${HELP_CMD.names}' to read the manual.")
+        case Some(script) => error(s"Run '$script ${HELP_CMD.names.head}' to read the manual.")
         // Running from IDE.
-        case None => error(s"Run the process with '${HELP_CMD.names}' parameter to read the manual.")
+        case None => error(s"Run the process with '${HELP_CMD.names.head}' parameter to read the manual.")
     }
 
     /**
