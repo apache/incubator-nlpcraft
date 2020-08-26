@@ -137,8 +137,6 @@ object NCCommandLine extends App {
 
         val tbl = NCAsciiTable().margin(left = 4)
 
-        tbl.maxCellWidth = 55
-
         if (params.isEmpty)  // Default - show abbreviated help.
             CMDS.foreach(cmd => tbl += (cmd.names.mkString(", "), cmd.synopsis))
         else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
