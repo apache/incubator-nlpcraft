@@ -16,9 +16,10 @@
 # limitations under the License.
 #
 
-# Absolute path of this script.
+# Absolute directory path of this script.
 SCRIPT_HOME="$(dirname "$(readlink -f "$0")")"
 
+# Filename of the script.
 SCRIPT_NAME="$(basename "$0")"
 
 # NLPCraft installation home.
