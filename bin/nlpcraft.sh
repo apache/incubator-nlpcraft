@@ -15,3 +15,102 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+# Absolute path of this script.
+SCRIPT_HOME="$(dirname "$(readlink -f "$0")")"
+
+SCRIPT_NAME="$(basename "$0")"
+
+# NLPCraft installation home.
+INSTALL_HOME="$(dirname "$SCRIPT_HOME")"
+
+# Directory containing JARs.
+BUILD_HOME="$SCRIPT_HOME/build"
+
+# Mac OS specific support to display correct name in the dock.
+if [ "${DOCK_OPTS:-}" == "" ]; then
+    DOCK_OPTS="-Xdock:name=NLPCraft"
+fi
+
+# Extract java version to `version` variable.
+javaVersion() {
+    version=$("$1" -version 2>&1 | awk -F[\"-] '/version/ {print $2}')
+}
+
+#
+# Following several functions are copied from Apache Ignite.
+# See https://github.com/apache/ignite for more details.
+#
+
+# Extract only major version of java to `version` variable.
+javaMajorVersion() {
+    javaVersion "$1"
+    version="${version%%.*}"
+
+    if [ "${version}" -eq 1 ]; then
+        # Version seems to start from 1, we need second number.
+        javaVersion "$1"
+        version=$(awk -F[\"\.] '{print $2}' <<< "${version}")
+    fi
+}
+
+# Discovers path to Java executable and checks it's version.
+# The function exports JAVA variable with path to Java executable.
+checkJava() {
+    # Check JAVA_HOME.
+    if [ "${JAVA_HOME:-}" = "" ]; then
+        JAVA=$(type -p java)
+        RETCODE=$?
+
+        if [ $RETCODE -ne 0 ]; then
+            echo "$0"", ERROR:"
+            echo "JAVA_HOME environment variable is not found."
+            echo "Please point JAVA_HOME variable to location of JDK 1.8 or later."
+            echo "You can also download latest JDK at http://java.com/download"
+
+            exit 1
+        fi
+
+        JAVA_HOME=
+    else
+        JAVA=${JAVA_HOME}/bin/java
+    fi
+
+    # Check JDK.
+    javaMajorVersion "$JAVA"
+
+    if [ "$version" -lt 8 ]; then
+        echo "$0, ERROR:"
+        echo "The $version version of JAVA installed in JAVA_HOME=$JAVA_HOME is incompatible."
+        echo "Please point JAVA_HOME variable to installation of JDK 1.8 or later."
+        echo "You can also download latest JDK at http://java.com/download"
+        exit 1
+    fi
+}
+
+MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCommandLine
+JVM_OPTS="\
+    -ea \
+    -Xms1g \
+    -Xmx1g \
+    -server \
+    -XX:+UseG1GC \
+    -XX:MaxMetaspaceSize=256m \
+    -DNLPCRAFT_CLI_SCRIPT=$SCRIPT_NAME \
+    -DNLPCRAFT_CLI_INSTALL_HOME=$INSTALL_HOME"
+CP="$BUILD_HOME/*.jar"
+
+
+# Check Java version.
+checkJava
+
+osname=$(uname)
+
+case $osname in
+    Darwin*)
+        "$JAVA" "$JVM_OPTS" "$DOCK_OPTS" -cp "${CP}" $MAIN_CLASS "$@"
+        ;;
+    *)
+        "$JAVA" "$JVM_OPTS" -cp "${CP}" $MAIN_CLASS "$@"
+        ;;
+esac
