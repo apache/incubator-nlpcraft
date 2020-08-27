@@ -25,7 +25,7 @@ SCRIPT_NAME="$(basename "$0")"
 INSTALL_HOME="$(dirname "$SCRIPT_HOME")"
 
 # Directory containing JARs.
-BUILD_HOME="$SCRIPT_HOME/build"
+BUILD_HOME="$INSTALL_HOME/build"
 
 # Mac OS specific support to display correct name in the dock.
 if [ "${DOCK_OPTS:-}" == "" ]; then
@@ -98,19 +98,37 @@ JVM_OPTS="\
     -XX:MaxMetaspaceSize=256m \
     -DNLPCRAFT_CLI_SCRIPT=$SCRIPT_NAME \
     -DNLPCRAFT_CLI_INSTALL_HOME=$INSTALL_HOME"
-CP="$BUILD_HOME/*.jar"
 
+osname=$(uname)
+
+# OS specific classpath separator.
+SEP=":"
+
+case "${osname}" in
+    MINGW*)
+        SEP=";"
+        ;;
+    CYGWIN*)
+        SEP=";"
+        ;;
+esac
+
+# Build classpath.
+for file in "$BUILD_HOME"/*.jar
+do
+    CP=$CP$SEP$file
+done
 
 # Check Java version.
 checkJava
 
-osname=$(uname)
-
 case $osname in
     Darwin*)
-        "$JAVA" "$JVM_OPTS" "$DOCK_OPTS" -cp "${CP}" $MAIN_CLASS "$@"
+        # shellcheck disable=SC2086
+        "$JAVA" $JVM_OPTS "$DOCK_OPTS" -cp "${CP}" $MAIN_CLASS "$@"
         ;;
     *)
-        "$JAVA" "$JVM_OPTS" -cp "${CP}" $MAIN_CLASS "$@"
+        # shellcheck disable=SC2086
+        "$JAVA" $JVM_OPTS -cp "${CP}" $MAIN_CLASS "$@"
         ;;
 esac
