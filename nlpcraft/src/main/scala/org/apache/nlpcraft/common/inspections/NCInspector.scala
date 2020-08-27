@@ -15,17 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.deploy
+package org.apache.nlpcraft.common.inspections
 
-import org.apache.nlpcraft.model.NCModel
+import io.opencensus.trace.Span
 
-/**
-  * Holder for the model and its intent samepls.
- *
-  * @param model Model.
-  * @param intentSamples Map of intent samples.
-  */
-case class NCModelHolder(model: NCModel, intentSamples: Map[String, Seq[String]]) {
-    require(model != null)
-    require(intentSamples != null)
+trait NCInspector {
+    def inspect(mdlId: String, data: Option[AnyRef] = None, parent: Span = null): NCInspection
 }

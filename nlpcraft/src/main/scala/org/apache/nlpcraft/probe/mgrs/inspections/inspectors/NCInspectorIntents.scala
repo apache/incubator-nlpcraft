@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.model
+package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
-import org.apache.nlpcraft.server.model.NCEnhanceType.NCEnhanceType
+import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspector}
+import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
-/**
-  * TODO:
-  */
-case class NCEnhanceElement(
-    enhanceType: NCEnhanceType,
-    errors: Option[Seq[String]] = None,
-    warnings: Option[Seq[String]] = None,
-    // Note that `suggestions` should be simple type or java collections.
-    // Scala collections cannot be converted into JSON.
-    suggestions: Option[AnyRef] = None
-)
+object NCInspectorIntents extends NCService with NCInspector {
+    override def inspect(mdlId: String, data: Option[AnyRef], parent: Span = null): NCInspection =
+        startScopedSpan("inspect", parent) { _ ⇒
+            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: $mdlId")).model
+
+            NCInspection(
+                // TODO:
+            )
+        }
+}

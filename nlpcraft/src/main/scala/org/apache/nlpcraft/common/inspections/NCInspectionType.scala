@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.model
+package org.apache.nlpcraft.common.inspections
 
-object NCEnhanceType extends Enumeration {
-    type NCEnhanceType = Value
+object NCInspectionType extends Enumeration {
+    type NCInspectionType = Value
 
-    val SUGGEST_SYNONYMS = Value
-    val VALIDATION_MACROS = Value
-    val VALIDATION_SYNONYMS = Value
-    val VALIDATION_INTENTS = Value
+    val SUGGEST_SYNONYMS: Value = Value
+    val INSPECTION_MACROS: Value = Value
+    val INSPECTION_SYNONYMS: Value = Value
+    val INSPECTION_INTENTS: Value = Value
 }

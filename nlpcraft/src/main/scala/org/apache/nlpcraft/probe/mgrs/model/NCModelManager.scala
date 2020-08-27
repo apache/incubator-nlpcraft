@@ -23,11 +23,14 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.util.NCUtils._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
+import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind._
 import org.apache.nlpcraft.probe.mgrs.deploy._
+import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
 import org.apache.nlpcraft.probe.mgrs.{NCModelDecorator, NCSynonym, NCSynonymChunk}
 
 import collection.convert.ImplicitConversions._
@@ -59,22 +62,22 @@ object NCModelManager extends NCService with DecorateAsScala {
     )
     
     /**
-      * @param h Data model holder.
+      * @param mdl Model.
       */
-    private def addNewModel(h: NCModelHolder): Unit = {
+    private def addNewModel(mdl: NCModel): Unit = {
         require(Thread.holdsLock(mux))
 
-        checkModelConfig(h.model)
+        checkModelConfig(mdl)
 
         val parser = new NCMacroParser
 
         // Initialize macro parser.
-        h.model.getMacros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
+        mdl.getMacros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
 
-        models += h.model.getId → verifyAndDecorate(h, parser)
+        models += mdl.getId → verifyAndDecorate(mdl, parser)
 
         // Init callback on the model.
-        h.model.onInit()
+        mdl.onInit()
     }
 
     @throws[NCE]
@@ -99,9 +102,33 @@ object NCModelManager extends NCService with DecorateAsScala {
                     mdl.elements.keySet.size,
                     synCnt
                 )
+
             })
 
             tbl.info(logger, Some(s"Models deployed: ${models.size}\n"))
+
+            models.values.foreach(mdl ⇒ {
+                val mdlId = mdl.model.getId
+
+                val inspections = NCProbeInspectionManager.inspect(mdlId, NCInspectionType.values.toSeq)
+
+                inspections.foreach { case(_, inspection) ⇒
+                    inspection.errors match {
+                        case Some(errs) ⇒ errs.foreach(e ⇒ logger.error(s"Validation error [model=$mdlId, text=$e"))
+                        case None ⇒ // No-op.
+                    }
+
+                    inspection.warnings match {
+                        case Some(warns) ⇒ warns.foreach(w ⇒ logger.warn(s"Validation warning [model=$mdlId, text=$w"))
+                        case None ⇒ // No-op.
+                    }
+
+                    inspection.suggestions match {
+                        case Some(sugs) ⇒ sugs.foreach(s ⇒ logger.info(s"Validation suggestion [model=$mdlId, text=$s"))
+                        case None ⇒ // No-op.
+                    }
+                }
+            })
             
             addTags(
                 span,
@@ -247,14 +274,12 @@ object NCModelManager extends NCService with DecorateAsScala {
     /**
       * Verifies given model and makes a decorator optimized for model enricher.
       *
-      * @param h Model holder to verify and decorate.
+      * @param mdl Model to verify and decorate.
       * @param parser Initialized macro parser.
       * @return Model decorator.
       */
     @throws[NCE]
-    private def verifyAndDecorate(h: NCModelHolder, parser: NCMacroParser): NCModelDecorator = {
-        val mdl = h.model
-
+    private def verifyAndDecorate(mdl: NCModel, parser: NCMacroParser): NCModelDecorator = {
         for (elm ← mdl.getElements)
             checkElement(mdl, elm)
 
@@ -526,7 +551,7 @@ object NCModelManager extends NCService with DecorateAsScala {
 
         NCModelDecorator(
             model = mdl,
-            intentsSamples = h.intentSamples,
+            NCIntentScanner.scanIntentsSamples(mdl).toMap,
             synonyms = mkFastAccessMap(filter(syns, dsl = false)),
             synonymsDsl = mkFastAccessMap(filter(syns, dsl = true)),
             additionalStopWordsStems = addStopWords,

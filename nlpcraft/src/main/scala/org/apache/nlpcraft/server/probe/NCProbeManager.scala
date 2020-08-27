@@ -14,6 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.apache.nlpcraft.server.probe
 
@@ -23,12 +39,16 @@ import java.security.Key
 import java.util
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.{ExecutorService, Executors}
+import java.util.concurrent.{ConcurrentHashMap, ExecutorService, Executors}
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.crypto.NCCipher
+import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspectionType}
+import org.apache.nlpcraft.common.inspections.NCInspectionType._
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.socket.NCSocket
@@ -45,13 +65,16 @@ import org.apache.nlpcraft.server.sql.NCSql
 import scala.collection.JavaConverters._
 import scala.collection.{Map, mutable}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
 /**
   * Probe manager.
   */
 object NCProbeManager extends NCService {
+    private final val GSON = new Gson()
+    private val TYPE_INSPECTION_RESP = new TypeToken[ util.Map[String, util.Map[String, AnyRef]]]() {}.getType
+
     // Type safe and eager configuration container.
     private[probe] object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.probe"
@@ -138,7 +161,9 @@ object NCProbeManager extends NCService {
 
     @volatile private var pool: ExecutorService = _
     @volatile private var isStopping: AtomicBoolean = _
-    
+
+    @volatile private var inspections: ConcurrentHashMap[String, Promise[Map[NCInspectionType, NCInspection]]] = _
+
     /**
       *
       * @return
@@ -157,6 +182,8 @@ object NCProbeManager extends NCService {
         )
     
         isStopping = new AtomicBoolean(false)
+
+        inspections = new ConcurrentHashMap[String, Promise[Map[NCInspectionType, NCInspection]]]()
         
         pool = Executors.newFixedThreadPool(Config.poolSize)
         
@@ -195,6 +222,8 @@ object NCProbeManager extends NCService {
         U.stopThread(pingSrv)
         U.stopThread(dnSrv)
         U.stopThread(upSrv)
+
+        inspections = null
      
         super.stop()
     }
@@ -438,8 +467,8 @@ object NCProbeManager extends NCService {
                             t.interrupt()
                     
                         case e: Throwable ⇒
-                            logger.info(s"Error reading probe downlink socket (${e.getMessage}): $probeKey")
-                        
+                            logger.info(s"Error reading probe downlink socket (${e.getMessage}): $probeKey", e)
+
                             t.interrupt()
                     }
             }
@@ -579,37 +608,25 @@ object NCProbeManager extends NCService {
                             String,
                             String,
                             String,
-                            java.util.Set[String],
-                            java.util.Map[String, String],
-                            java.util.Map[String, java.util.List[String]],
-                            java.util.Map[String, java.util.List[String]]
+                            java.util.Set[String]
                         )]]("PROBE_MODELS").
                         map {
                             case (
                                 mdlId,
                                 mdlName,
                                 mdlVer,
-                                enabledBuiltInToks,
-                                macros,
-                                elementsSynonyms,
-                                intentsSamples
+                                enabledBuiltInToks
                             ) ⇒
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
-                                require(macros != null)
-                                require(elementsSynonyms != null)
-                                require(intentsSamples != null)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
                                     name = mdlName,
                                     version = mdlVer,
-                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
-                                    macros = macros.asScala.toMap,
-                                    elementsSynonyms = elementsSynonyms.asScala.map(p ⇒ p._1 → p._2.asScala).toMap,
-                                    intentsSamples = intentsSamples.asScala.map(p ⇒ p._1 → p._2.asScala).toMap
+                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet
                                 )
                         }.toSet
 
@@ -684,6 +701,21 @@ object NCProbeManager extends NCService {
             
             typ match {
                 case "P2S_PING" ⇒ ()
+
+                case "P2S_MODEL_INSPECTION" ⇒
+                    val promise = inspections.remove(probeMsg.data[String]("reqGuid"))
+
+                    if (promise != null) {
+                        val respJs: util.Map[String, util.Map[String, AnyRef]] =
+                            GSON.fromJson(probeMsg.data[String]("resp"), TYPE_INSPECTION_RESP)
+
+                        val resp =
+                            respJs.asScala.map { case (k, v) ⇒
+                                NCInspectionType.withName(k.toUpperCase) → NCInspection.deserialize(v)
+                            }
+
+                        promise.success(resp)
+                    }
                 
                 case "P2S_ASK_RESULT" ⇒
                     val srvReqId = probeMsg.data[String]("srvReqId")
@@ -950,12 +982,32 @@ object NCProbeManager extends NCService {
       *
       * @param mdlId Model ID.
       * @param parent Optional parent span.
-      * @return
       */
     def getModel(mdlId: String, parent: Span = null): NCProbeModelMdo =
         startScopedSpan("getModel", parent, "modelId" → mdlId) { _ ⇒
             probes.synchronized {
                 mdls.getOrElse(mdlId, throw new NCE(s"Unknown model ID: $mdlId"))
+            }
+        }
+
+    def inspect(mdlId: String, types: Seq[NCInspectionType], parent: Span = null): Future[Map[NCInspectionType, NCInspection]] =
+        startScopedSpan("inspect", parent, "modelId" → mdlId, "types" → types.map(_.toString)) { _ ⇒
+            getProbeForModelId(mdlId) match {
+                case Some(probe) ⇒
+                    val msg = NCProbeMessage(
+                        "S2P_MODEL_INSPECTION",
+                        "mdlId" → mdlId,
+                        "types" → new java.util.ArrayList(types.map(_.toString).asJava)
+                    )
+
+                    val promise = Promise[Map[NCInspectionType, NCInspection]]()
+
+                    inspections.put(msg.getGuid, promise)
+
+                    sendToProbe(probe.probeKey, msg, parent)
+
+                    promise.future
+                case None ⇒ throw new NCE(s"Probe not found for model: $mdlId")
             }
         }
 }

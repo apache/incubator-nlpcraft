@@ -18,15 +18,17 @@
 package org.apache.nlpcraft.probe.mgrs.deploy
 
 import java.io._
-import java.util.jar.{JarInputStream ⇒ JIS}
+import java.util.jar.{JarInputStream => JIS}
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
+import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
 import org.apache.nlpcraft.model.impl.NCModelImpl
 import org.apache.nlpcraft.model.intent.impl.{NCIntentScanner, NCIntentSolver}
+import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
 import resource.managed
 
 import scala.collection.JavaConverters._
@@ -45,7 +47,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:-_]*$"
 
-    @volatile private var models: ArrayBuffer[NCModelHolder] = _
+    @volatile private var models: ArrayBuffer[NCModel] = _
     @volatile private var modelFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
@@ -79,7 +81,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @return
       */
     @throws[NCE]
-    private def wrap(mdl: NCModel): NCModelHolder = {
+    private def wrap(mdl: NCModel): NCModel = {
         checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
         checkCollection("elements", mdl.getElements)
         checkCollection("enabledBuiltInTokens", mdl.getEnabledBuiltInTokens)
@@ -92,25 +94,27 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // Scan for intent annotations in the model class.
         val intents = NCIntentScanner.scan(mdl)
 
+        val mdlId = mdl.getId
+
         if (intents.nonEmpty) {
             // Check the uniqueness of intent IDs.
             U.getDups(intents.keys.toSeq.map(_.id)) match {
-                case ids if ids.nonEmpty ⇒ throw new NCE(s"Duplicate intent IDs found for '${mdl.getId}' model: ${ids.mkString(",")}")
+                case ids if ids.nonEmpty ⇒ throw new NCE(s"Duplicate intent IDs found for '$mdlId' model: ${ids.mkString(",")}")
                 case _ ⇒ ()
             }
     
-            logger.info(s"Intents found in the model: ${mdl.getId}")
+            logger.info(s"Intents found in the model: $mdlId")
 
             val solver = new NCIntentSolver(
                 intents.toList.map(x ⇒ (x._1, (z: NCIntentMatch) ⇒ x._2.apply(z)))
             )
 
-            NCModelHolder(new NCModelImpl(mdl, solver), NCIntentScanner.scanIntentsSamples(mdl).toMap)
+            new NCModelImpl(mdl, solver)
         }
         else {
-            logger.warn(s"Model has no intents: ${mdl.getId}")
+            logger.warn(s"Model has no intents: $mdlId")
 
-            NCModelHolder(new NCModelImpl(mdl, null), Map.empty)
+            new NCModelImpl(mdl, null)
         }
     }
 
@@ -145,7 +149,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param clsName Model class name.
       */
     @throws[NCE]
-    private def makeModel(clsName: String): NCModelHolder =
+    private def makeModel(clsName: String): NCModel =
         try
             wrap(
                 makeModelFromSource(
@@ -180,7 +184,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param jarFile JAR file to extract from.
       */
     @throws[NCE]
-    private def extractModels(jarFile: File): Seq[NCModelHolder] = {
+    private def extractModels(jarFile: File): Seq[NCModel] = {
         val clsLdr = Thread.currentThread().getContextClassLoader
         
         val classes = mutable.ArrayBuffer.empty[Class[_ <: NCModel]]
@@ -220,7 +224,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         modelFactory = new NCBasicModelFactory
-        models = ArrayBuffer.empty[NCModelHolder]
+        models = ArrayBuffer.empty[NCModel]
 
         // Initialize model factory (if configured).
         Config.modelFactoryType match {
@@ -253,9 +257,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         }
 
         // Verify models' identities.
-        models.foreach(h ⇒ {
-            val mdl = h.model
-
+        models.foreach(mdl ⇒ {
             val mdlName = mdl.getName
             val mdlId = mdl.getId
             val mdlVer = mdl.getVersion
@@ -284,7 +286,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
         })
 
-        if (U.containsDups(models.map(_.model.getId).toList))
+        if (U.containsDups(models.map(_.getId).toList))
             throw new NCE("Duplicate model IDs detected.")
         
         super.start()
@@ -305,5 +307,5 @@ object NCDeployManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getModels: Seq[NCModelHolder] = models
+    def getModels: Seq[NCModel] = models
 }

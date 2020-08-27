@@ -231,7 +231,6 @@ object NCConnectionManager extends NCService {
                         NCModelManager.getAllModels().map(m ⇒ {
                             val mdl = m.model
 
-                            require(m.intentsSamples != null)
                             // Model already validated.
 
                             // util.HashSet created to avoid scala collections serialization error.
@@ -240,16 +239,7 @@ object NCConnectionManager extends NCService {
                                 mdl.getId,
                                 mdl.getName,
                                 mdl.getVersion,
-                                new util.HashSet[String](mdl.getEnabledBuiltInTokens),
-                                mdl.getMacros,
-                                new util.HashMap[String, util.List[String]](
-                                    mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
-                                ),
-                                new util.HashMap[String, util.List[String]]
-                                    (m.intentsSamples.map {
-                                        case (intentId, samples)  ⇒
-                                            intentId → new util.ArrayList[String](samples.asJava) }.asJava
-                                    )
+                                new util.HashSet[String](mdl.getEnabledBuiltInTokens)
                             )
                         })
                 ), cryptoKey)

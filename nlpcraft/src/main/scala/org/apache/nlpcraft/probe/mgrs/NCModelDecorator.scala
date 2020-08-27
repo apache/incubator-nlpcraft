@@ -32,7 +32,7 @@ import scala.language.implicitConversions
 /**
   *
   * @param model Decorated model.
-  * @param intentsSamples Model examples.
+  * @param intentSamples Intents samples.
   * @param synonyms Fast-access synonyms map for first phase.
   * @param synonymsDsl Fast-access synonyms map for second phase.
   * @param additionalStopWordsStems Stemmatized additional stopwords.
@@ -42,7 +42,7 @@ import scala.language.implicitConversions
   */
 case class NCModelDecorator(
     model: NCModel,
-    intentsSamples: Map[String, Seq[String]],
+    intentSamples: Map[String, Seq[String]],
     synonyms: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
     synonymsDsl: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
     additionalStopWordsStems: Set[String],

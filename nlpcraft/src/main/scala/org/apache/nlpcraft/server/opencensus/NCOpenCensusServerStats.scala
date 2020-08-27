@@ -31,7 +31,7 @@ import io.opencensus.stats._
 trait NCOpenCensusServerStats {
     val M_ASK_LATENCY_MS: MeasureLong = MeasureLong.create("ask_latency", "The latency of '/ask' REST call", "ms")
     val M_CHECK_LATENCY_MS: MeasureLong = MeasureLong.create("check_latency", "The latency of '/check' REST call", "ms")
-    val M_MODEL_ENHANCE_LATENCY_MS: MeasureLong = MeasureLong.create("model_enhance_latency", "The latency of '/model/enhance' REST call", "ms")
+    val M_MODEL_INSPECT_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/inspect' REST call", "ms")
     val M_CANCEL_LATENCY_MS: MeasureLong = MeasureLong.create("cancel_latency", "The latency of '/cancel' REST call", "ms")
     val M_SIGNIN_LATENCY_MS: MeasureLong = MeasureLong.create("signin_latency", "The latency of '/signin' REST call", "ms")
     val M_SIGNOUT_LATENCY_MS: MeasureLong = MeasureLong.create("signout_latency", "The latency of '/signout' REST call", "ms")

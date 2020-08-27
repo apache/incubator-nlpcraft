@@ -36,7 +36,7 @@ import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
-import org.apache.nlpcraft.server.model.{NCEnhanceManager, NCEnhanceType}
+import org.apache.nlpcraft.server.model.NCServerInspectorManager
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
@@ -48,6 +48,7 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import akka.http.scaladsl.coding.Coders
+import org.apache.nlpcraft.common.inspections.NCInspectionType
 
 /**
   * REST API default implementation.
@@ -627,63 +628,53 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    protected def modelEnhance$(): Route = {
-        case class Req(
-            acsTok: String,
-            mdlId: String,
-            types: Seq[String]
-        )
+    protected def inspect$(reqJs: JsValue): Future[String] = {
+        val obj = reqJs.asJsObject()
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat3(Req)
+        def getOpt[T](name: String, convert: JsValue ⇒ T): Option[T] =
+            obj.fields.get(name) match {
+                case Some(v) ⇒ Some(convert(v))
+                case None ⇒ None
+            }
 
-        entity(as[Req]) { req ⇒
-            startScopedSpan("modelEnhance$", "mdlId" → req.mdlId, "acsTok" → req.acsTok) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLength("mdlId", req.mdlId, 32)
+        val acsTok = obj.fields("acsTok").convertTo[String]
+        val mdlId = obj.fields("mdlId").convertTo[String]
+        val types = obj.fields("types").convertTo[Seq[String]]
 
-                val types =
-                    if (req.types.size == 1 && req.types.head.toLowerCase == "all")
-                        NCEnhanceType.values.toSeq
-                    else
-                        req.types.map(typ ⇒
-                            try
-                                NCEnhanceType.withName(typ.toUpperCase)
-                            catch {
-                                case _: Exception ⇒ throw InvalidField("types")
-                            }
-                        )
+        startScopedSpan("modelEnhance$", "mdlId" → mdlId, "acsTok" → acsTok) { span ⇒
+            checkLength("acsTok", acsTok, 256)
+            checkLength("mdlId", mdlId, 32)
 
-                val admin = authenticateAsAdmin(req.acsTok)
-
-                if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == req.mdlId)))
-                    throw new NCE(s"Probe not found for model: ${req.mdlId}")
-
-                val res =
-                    NCEnhanceManager.
-                        enhance(req.mdlId, types, span).
-                        map(resp ⇒ {
-                            // We don't use internal case class here because GSON can use only public classes.
-                            // So, we use HashMap.
-                            val m = new util.HashMap[String, Object]()
-
-                            m.put("enhanceType", resp.enhanceType.toString)
-
-                            if (resp.errors.isDefined)
-                                m.put("errors", resp.errors.get.asJava)
-                            if (resp.warnings.isDefined)
-                                m.put("warnings", resp.warnings.get.asJava)
-                            if (resp.suggestions.isDefined)
-                                m.put("suggestions", resp.suggestions.get)
-
-                            m
-
-                        }).asJava
-
-                complete(
-                    HttpResponse(
-                        entity = HttpEntity(ContentTypes.`application/json`, GSON.toJson(res))
+            val typesVals =
+                if (types.size == 1 && types.head.toLowerCase == "all")
+                    NCInspectionType.values.toSeq
+                else
+                    types.map(typ ⇒
+                        try
+                            NCInspectionType.withName(typ.toUpperCase)
+                        catch {
+                            case _: Exception ⇒ throw InvalidField("types")
+                        }
                     )
-                )
+
+            val admin = authenticateAsAdmin(acsTok)
+
+            if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == mdlId)))
+                throw new NCE(s"Probe not found for model: $mdlId")
+
+            NCServerInspectorManager.
+                inspect(mdlId, typesVals, span).collect {
+                    // We have to use GSON (not spray) here to serialize `result` field.
+                    case res ⇒
+                        val m = new util.HashMap[String, AnyRef](
+                            res.map { case (typ, inspection) ⇒ typ.toString → inspection.serialize() }.asJava
+                        )
+                        GSON.toJson(
+                            Map(
+                                "status" → API_OK.toString,
+                                "result" → m
+                            ).asJava
+                    )
             }
         }
     }
@@ -1795,7 +1786,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                 path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
                                 path(API / "cancel") { withLatency(M_CANCEL_LATENCY_MS, cancel$) } ~
                                 path(API / "check") { withLatency(M_CHECK_LATENCY_MS, check$) } ~
-                                path(API / "model"/ "enhance") { withLatency(M_MODEL_ENHANCE_LATENCY_MS, modelEnhance$) } ~
                                 path(API / "clear"/ "conversation") { withLatency(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
                                 path(API / "clear"/ "dialog") { withLatency(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
                                 path(API / "company"/ "add") { withLatency(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
@@ -1815,6 +1805,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                 path(API / "feedback" / "delete") { withLatency(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
                                 path(API / "probe" / "all") { withLatency(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
                                 path(API / "ask") { withLatency(M_ASK_LATENCY_MS, ask$) } ~
+                                (path(API / "model" / "inspect") &
+                                    entity(as[JsValue])
+                                ) {
+                                    req ⇒
+                                        onSuccess(withLatency(M_MODEL_INSPECT_LATENCY_MS, inspect$(req))) {
+                                            js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
+                                        }
+                                } ~
                                 (path(API / "ask" / "sync") &
                                     entity(as[JsValue]) &
                                     optionalHeaderValueByName("User-Agent") &

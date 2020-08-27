@@ -18,15 +18,20 @@
 package org.apache.nlpcraft.probe.mgrs.cmd
 
 import java.io.Serializable
+import java.util
 
+import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
+import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
-import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
+import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
+import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
+import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import scala.collection.JavaConverters._
 
@@ -34,6 +39,8 @@ import scala.collection.JavaConverters._
   * Probe commands processor.
   */
 object NCCommandManager extends NCService {
+    private final val GSON = new Gson()
+
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         super.start()
     }
@@ -84,8 +91,28 @@ object NCCommandManager extends NCService {
                             mdlId = msg.data[String]("mdlId"),
                             logEnable = msg.data[Boolean]("logEnable"),
                             span
-                     )
-    
+                    )
+
+                    case "S2P_MODEL_INSPECTION" ⇒
+                        val resJs: util.Map[String, util.Map[String, AnyRef]] =
+                            NCProbeInspectionManager.inspect(
+                                mdlId = msg.data[String]("mdlId"),
+                                types =
+                                    msg.data[java.util.List[String]]("types").
+                                    asScala.
+                                    map(p ⇒ NCInspectionType.withName(p.toUpperCase)),
+                                span
+                            ).map { case (typ, inspection) ⇒ typ.toString → inspection.serialize() }.asJava
+
+                            NCConnectionManager.send(
+                                NCProbeMessage(
+                                    "P2S_MODEL_INSPECTION",
+                                    "reqGuid" → msg.getGuid,
+                                    "resp" → GSON.toJson(resJs)
+                                ),
+                                span
+                            )
+
                     case _ ⇒
                         logger.error(s"Received unknown server message (you need to update the probe): ${msg.getType}")
                 }
