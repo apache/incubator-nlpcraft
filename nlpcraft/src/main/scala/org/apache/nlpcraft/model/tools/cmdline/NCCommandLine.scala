@@ -55,6 +55,8 @@ object NCCommandLine extends App {
             )
         )
 
+        final val mainName = names.head
+
         /**
          *
          * @param paramId
@@ -74,7 +76,7 @@ object NCCommandLine extends App {
         id: String,
         names: Seq[String],
         valueDesc: Option[String] = None,
-        arity: (Int, Int) = (1, 1), // Mandatory by default.
+        optional: Boolean = false, // Mandatory by default.
         desc: String
     )
 
@@ -94,13 +96,13 @@ object NCCommandLine extends App {
                     id = "cmd",
                     names = Seq("--cmd", "-c"),
                     valueDesc = Some("{cmd}"),
-                    arity = (0, 3),
+                    optional = true,
                     desc = "Set of commands to show the manual for."
                 ),
                 Parameter(
                     id = "all",
                     names = Seq("--all", "-a"),
-                    arity = (0, 1),
+                    optional = true,
                     desc = "Flag to show full manual for all commands."
                 )
             ),
@@ -118,8 +120,27 @@ object NCCommandLine extends App {
         Command(
             id = "ver",
             names = Seq("version", "ver"),
-            synopsis = s"Displays version of $SCRIPT_NAME runtime.",
-            body = cmdVersion
+            synopsis = s"Displays full version of $SCRIPT_NAME runtime.",
+            desc = Some(
+                "Depending on the additional parameters can display only the semantic version or the release date."
+            ),
+            body = cmdVersion,
+            params = Seq(
+                Parameter(
+                    id = "semver",
+                    names = Seq("--semver", "-s"),
+                    valueDesc = None,
+                    optional = true,
+                    desc = s"Display only the semantic version value, e.g. ${VER.version}."
+                ),
+                Parameter(
+                    id = "reldate",
+                    names = Seq("--reldate", "-d"),
+                    valueDesc = None,
+                    optional = true,
+                    desc = s"Display only the release date, e.g. ${VER.date}."
+                )
+            )
         ),
         Command(
             id = "repl",
@@ -137,6 +158,8 @@ object NCCommandLine extends App {
      * @param params Parameters, if any, for this command.
      */
     private def cmdHelp(cmd: Command, params: Seq[String]): Unit = {
+        title()
+
         log(
             s"""|NAME
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
@@ -170,10 +193,14 @@ object NCCommandLine extends App {
                     if (param.valueDesc.isDefined)
                         nameLine += s"=${param.valueDesc.get}"
 
-                    val nameDesc = s"$T___$T___${param.desc}"
-
                     lines += nameLine
-                    lines += nameDesc
+
+                    if (param.optional)
+                        lines += s"$T___${T___}Optional."
+
+                    val descLine = s"$T___$T___${param.desc}"
+
+                    lines += descLine
                 }
             }
 
@@ -194,14 +221,14 @@ object NCCommandLine extends App {
 
         if (params.isEmpty)  // Default - show abbreviated help.
             CMDS.foreach(cmd => tbl +/ (
-                ("" -> cmd.names.mkString(", ")),
-                ("align:left, maxWidth:65" -> cmd.synopsis)
+                "" -> cmd.names.mkString(", "),
+                "align:left, maxWidth:65" -> cmd.synopsis
             ))
         else if (cmd.isParamPresent("all", params)) // Show a full format help for all commands.
             CMDS.foreach(cmd =>
                 tbl +/ (
-                    ("" -> cmd.names.mkString(", ")),
-                    ("align:left, maxWidth:65" -> mkCmdLines(cmd))
+                    "" -> cmd.names.mkString(", "),
+                    "align:left, maxWidth:65" -> mkCmdLines(cmd)
                 )
             )
         else
@@ -209,8 +236,8 @@ object NCCommandLine extends App {
                 CMDS.find(_.names.contains(param)) match {
                     case Some(cmd) =>
                         tbl +/ (
-                            ("" -> cmd.names.mkString(", ")),
-                            ("align:left, maxWidth:65" -> mkCmdLines(cmd))
+                            "" -> cmd.names.mkString(", "),
+                            "align:left, maxWidth:65" -> mkCmdLines(cmd)
                         )
                     case None =>
                         error(s"Unknown command to get help for: $param")
@@ -226,7 +253,7 @@ object NCCommandLine extends App {
      * @param params Parameters, if any, for this command.
      */
     private def cmdRepl(cmd: Command, params: Seq[String]): Unit = {
-
+        title()
     }
 
     /**
@@ -234,18 +261,41 @@ object NCCommandLine extends App {
      * @param cmd Command descriptor.
      * @param params Parameters, if any, for this command.
      */
-    private def cmdVersion(cmd: Command, params: Seq[String]): Unit = {
-        // Nothing - common header with version will be printed before anyways.
-    }
+    private def cmdVersion(cmd: Command, params: Seq[String]): Unit =
+        if (params.isEmpty)
+            title()
+        else {
+            val isS = cmd.isParamPresent("semver", params)
+            val isD = cmd.isParamPresent("reldate", params)
+
+            if (isS || isD) {
+                if (isS)
+                    log(s"${VER.version}")
+                if (isD)
+                    log(s"${VER.date}")
+            }
+            else
+                error(s"Invalid parameters for command '${cmd.mainName}': ${params.mkString(", ")}")
+        }
+
 
     private def error(msg: String = ""): Unit = System.err.println(s"ERROR: $msg")
     private def log(msg: String = ""): Unit = System.out.println(msg)
 
     private def errorHelp(): Unit = SCRIPT match {
         // Running from *.{s|cmd} script.
-        case Some(script) => error(s"Run '$script ${HELP_CMD.names.head}' to read the manual.")
+        case Some(script) => error(s"Run '$script ${HELP_CMD.mainName}' to read the manual.")
         // Running from IDE.
-        case None => error(s"Run the process with '${HELP_CMD.names.head}' parameter to read the manual.")
+        case None => error(s"Run the process with '${HELP_CMD.mainName}' parameter to read the manual.")
+    }
+
+    /**
+     * Prints out the version and copyright title header.
+     */
+    private def title(): Unit = {
+        log(s"$NAME ver. ${VER.version}, rel. ${VER.date}")
+        log(NCVersion.copyright)
+        log()
     }
 
     /**
@@ -254,11 +304,6 @@ object NCCommandLine extends App {
      */
     private def boot(args: Array[String]): Unit = {
         var status = 0
-
-        // Print common version & copyright header.
-        log(s"$NAME ver. ${VER.version}, rel. ${VER.date}")
-        log(NCVersion.copyright)
-        log()
 
         if (args.isEmpty)
             NCCommandLine.DFLT_CMD.body(DFLT_CMD, Seq.empty)
