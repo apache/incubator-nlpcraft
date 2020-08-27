@@ -165,7 +165,7 @@ object NCCommandLine extends App {
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
                 |
                 |USAGE
-                |$T___$SCRIPT_NAME COMMAND [PARAMETERS]
+                |$T___$SCRIPT_NAME [COMMAND] [PARAMETERS]
                 |
                 |COMMANDS""".stripMargin
         )
