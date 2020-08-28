@@ -24,14 +24,14 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.server.inspections.inspectors._
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
-import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.collection.JavaConverters._
 import scala.collection._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
 /**
-  * TODO: check all texts
+  * TODO:  + check all texts
   */
 object NCServerInspectorManager extends NCService {
     private final val INSPECTORS =
@@ -77,12 +77,11 @@ object NCServerInspectorManager extends NCService {
                                 if (seq.isEmpty) None else Some(seq)
                             }
 
+                            // Data  - we don't need pass it on last step.
                             typ → NCInspection(
                                 errors = union(inspectionProbe.errors, inspectionSrv.errors),
                                 warnings = union(inspectionProbe.warnings, inspectionSrv.warnings),
                                 suggestions = union(inspectionProbe.suggestions, inspectionSrv.suggestions),
-                                // Don't need pass this data on last step.
-                                data = None
                             )
                         }
 

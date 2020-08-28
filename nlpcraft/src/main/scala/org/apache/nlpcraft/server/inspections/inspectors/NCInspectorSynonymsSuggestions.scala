@@ -42,6 +42,7 @@ import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
 import scala.concurrent.ExecutionContext.Implicits.global
 
+// TODO:
 object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
@@ -134,7 +135,7 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
     }
 
     override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
-        startScopedSpan("inspect", parent) { _ ⇒
+        startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             val m: util.Map[String, AnyRef] =
                 prevLayerInspection.
                     getOrElse(throw new NCE(s"Missed previous inspection data for model: $mdlId")).
@@ -397,7 +398,7 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
                         }
                     })
 
-                    val resJs: util.Map[String, JList[util.HashMap[String, Any]]] =
+                    val resJ: util.Map[String, JList[util.HashMap[String, Any]]] =
                         res.map { case (id, data) ⇒
                             id → data.map(d ⇒ {
                                 val m = new util.HashMap[String, Any]()
@@ -411,7 +412,7 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
                         }.asJava
 
                     NCInspection(
-                        errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = Some(Seq(resJs))
+                        errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = Some(Seq(resJ))
                     )
                 }
             }

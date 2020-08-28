@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.deploy
 
 import java.io._
-import java.util.jar.{JarInputStream => JIS}
+import java.util.jar.{JarInputStream ⇒ JIS}
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._

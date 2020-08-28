@@ -39,7 +39,7 @@ object NCInspection {
     ): NCInspection = {
         def convert[T](optSeq: Option[Seq[T]]): java.util.List[T] = optSeq.getOrElse(Seq.empty).asJava
 
-        new NCInspection(
+        NCInspection(
             errors = convert(errors),
             warnings = convert(warnings),
             suggestions = convert(suggestions),
@@ -47,11 +47,10 @@ object NCInspection {
         )
     }
 
-    def apply(
-        errors: Option[Seq[String]],
-        warnings: Option[Seq[String]],
-        suggestions: Option[Seq[AnyRef]]
-    ): NCInspection = apply(errors, warnings, suggestions, None)
+    def apply(errors: Option[Seq[String]], warnings: Option[Seq[String]], suggestions: Option[Seq[AnyRef]]): NCInspection =
+        apply(errors, warnings, suggestions, None)
+
+    def apply(data: AnyRef): NCInspection = apply(None, None, None, Some(data))
 
     def apply(): NCInspection  = NCInspection(None, None, None, None)
 }

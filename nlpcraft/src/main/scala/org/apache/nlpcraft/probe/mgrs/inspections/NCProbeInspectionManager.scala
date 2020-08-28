@@ -24,6 +24,7 @@ import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
 import org.apache.nlpcraft.probe.mgrs.inspections.inspectors._
 
+// TODO:
 object NCProbeInspectionManager extends NCService with NCOpenCensusModelStats {
     private final val INSPECTORS =
         Map(
@@ -49,7 +50,7 @@ object NCProbeInspectionManager extends NCService with NCOpenCensusModelStats {
 
     @throws[NCE]
     def inspect(mdlId: String, types: Seq[NCInspectionType], parent: Span = null): Map[NCInspectionType, NCInspection] =
-        startScopedSpan("inspect", parent) { _ ⇒
+        startScopedSpan("inspect", parent, "modelId" → mdlId, "types" → types.map(_.toString)) { _ ⇒
             types.map(t ⇒  t → INSPECTORS(t).inspect(mdlId, parent = parent)).toMap
         }
 }

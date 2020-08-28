@@ -28,11 +28,12 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import scala.collection.JavaConverters._
 import scala.collection._
 
+// TODO:
 object NCInspectorIntents extends NCService with NCInspector {
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
     override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
-        startScopedSpan("inspect", parent) { _ ⇒
+        startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
             val res = NCIntentScanner.scanIntentsSamples(mdl.proxy)
@@ -62,6 +63,6 @@ object NCInspectorIntents extends NCService with NCInspector {
                         warns += s"Sample: '$s' doesn't contain synonyms"
                 }
 
-            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None, data = None)
+            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None)
         }
 }

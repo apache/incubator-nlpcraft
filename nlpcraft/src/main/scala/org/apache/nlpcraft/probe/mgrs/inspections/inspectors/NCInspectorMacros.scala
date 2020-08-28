@@ -24,9 +24,10 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
 
+// TODO:
 object NCInspectorMacros extends NCService with NCInspector {
     override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
-        startScopedSpan("inspect", parent) { _ ⇒
+        startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
             val syns = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala)
@@ -37,6 +38,6 @@ object NCInspectorMacros extends NCService with NCInspector {
                 flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
                 toSeq
 
-            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None, data = None)
+            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None)
         }
 }

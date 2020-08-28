@@ -27,9 +27,10 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
 
+// TODO:
 object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
     override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
-        startScopedSpan("inspect", parent) { _ ⇒
+        startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
             val data = new util.HashMap[String, Any]()
@@ -38,6 +39,6 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
             data.put("elementsSynonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
             data.put("intentsSamples", NCIntentScanner.scanIntentsSamples(mdl.proxy).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
 
-            NCInspection(errors = None, warnings = None, suggestions = None, data = Some(data))
+            NCInspection(data = data)
         }
 }
