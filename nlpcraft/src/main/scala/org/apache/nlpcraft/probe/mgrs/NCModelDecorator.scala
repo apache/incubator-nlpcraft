@@ -22,7 +22,7 @@ import java.util
 
 import org.apache.nlpcraft.common.TOK_META_ALIASES_KEY
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCVariantImpl}
+import org.apache.nlpcraft.model.impl.{NCModelWrapper, NCTokenImpl, NCVariantImpl}
 import org.apache.nlpcraft.model.{NCElement, NCModel, NCVariant}
 
 import scala.collection.JavaConverters._
@@ -32,7 +32,6 @@ import scala.language.implicitConversions
 /**
   *
   * @param model Decorated model.
-  * @param intentSamples Intents samples.
   * @param synonyms Fast-access synonyms map for first phase.
   * @param synonymsDsl Fast-access synonyms map for second phase.
   * @param additionalStopWordsStems Stemmatized additional stopwords.
@@ -41,8 +40,7 @@ import scala.language.implicitConversions
   * @param elements Map of model elements.
   */
 case class NCModelDecorator(
-    model: NCModel,
-    intentSamples: Map[String, Seq[String]],
+    model: NCModelWrapper,
     synonyms: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
     synonymsDsl: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
     additionalStopWordsStems: Set[String],

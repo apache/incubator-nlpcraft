@@ -94,7 +94,7 @@ object NCCommandManager extends NCService {
                     )
 
                     case "S2P_MODEL_INSPECTION" ⇒
-                        val resJs: util.Map[String, util.Map[String, AnyRef]] =
+                        val res =
                             NCProbeInspectionManager.inspect(
                                 mdlId = msg.data[String]("mdlId"),
                                 types =
@@ -102,13 +102,13 @@ object NCCommandManager extends NCService {
                                     asScala.
                                     map(p ⇒ NCInspectionType.withName(p.toUpperCase)),
                                 span
-                            ).map { case (typ, inspection) ⇒ typ.toString → inspection.serialize() }.asJava
+                            )
 
-                            NCConnectionManager.send(
+                        NCConnectionManager.send(
                                 NCProbeMessage(
                                     "P2S_MODEL_INSPECTION",
                                     "reqGuid" → msg.getGuid,
-                                    "resp" → GSON.toJson(resJs)
+                                    "resp" → GSON.toJson(res.map(p ⇒ p._1.toString → p._2).asJava)
                                 ),
                                 span
                             )

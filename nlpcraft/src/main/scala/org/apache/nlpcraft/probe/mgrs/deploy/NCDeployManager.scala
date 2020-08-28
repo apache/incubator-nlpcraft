@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
-import org.apache.nlpcraft.model.impl.NCModelImpl
+import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.model.intent.impl.{NCIntentScanner, NCIntentSolver}
 import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
 import resource.managed
@@ -47,7 +47,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:-_]*$"
 
-    @volatile private var models: ArrayBuffer[NCModel] = _
+    @volatile private var models: ArrayBuffer[NCModelWrapper] = _
     @volatile private var modelFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
@@ -81,7 +81,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @return
       */
     @throws[NCE]
-    private def wrap(mdl: NCModel): NCModel = {
+    private def wrap(mdl: NCModel): NCModelWrapper = {
         checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
         checkCollection("elements", mdl.getElements)
         checkCollection("enabledBuiltInTokens", mdl.getEnabledBuiltInTokens)
@@ -109,12 +109,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 intents.toList.map(x ⇒ (x._1, (z: NCIntentMatch) ⇒ x._2.apply(z)))
             )
 
-            new NCModelImpl(mdl, solver)
+            new NCModelWrapper(mdl, solver)
         }
         else {
             logger.warn(s"Model has no intents: $mdlId")
 
-            new NCModelImpl(mdl, null)
+            new NCModelWrapper(mdl, null)
         }
     }
 
@@ -149,7 +149,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param clsName Model class name.
       */
     @throws[NCE]
-    private def makeModel(clsName: String): NCModel =
+    private def makeModel(clsName: String): NCModelWrapper =
         try
             wrap(
                 makeModelFromSource(
@@ -184,7 +184,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param jarFile JAR file to extract from.
       */
     @throws[NCE]
-    private def extractModels(jarFile: File): Seq[NCModel] = {
+    private def extractModels(jarFile: File): Seq[NCModelWrapper] = {
         val clsLdr = Thread.currentThread().getContextClassLoader
         
         val classes = mutable.ArrayBuffer.empty[Class[_ <: NCModel]]
@@ -224,7 +224,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         modelFactory = new NCBasicModelFactory
-        models = ArrayBuffer.empty[NCModel]
+        models = ArrayBuffer.empty[NCModelWrapper]
 
         // Initialize model factory (if configured).
         Config.modelFactoryType match {
@@ -307,5 +307,5 @@ object NCDeployManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getModels: Seq[NCModel] = models
+    def getModels: Seq[NCModelWrapper] = models
 }

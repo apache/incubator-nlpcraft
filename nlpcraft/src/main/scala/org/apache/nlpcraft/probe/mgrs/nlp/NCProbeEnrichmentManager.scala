@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.impl.{NCModelImpl, NCTokenLogger}
+import org.apache.nlpcraft.model.impl.{NCModelWrapper, NCTokenLogger}
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedResult
@@ -574,7 +574,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             span.end()
         }
     
-        val mdl: NCModelImpl = mdlDec.model.asInstanceOf[NCModelImpl]
+        val mdl: NCModelWrapper = mdlDec.model.asInstanceOf[NCModelWrapper]
         
         val solverIn = new NCIntentSolverInput(ctx)
 

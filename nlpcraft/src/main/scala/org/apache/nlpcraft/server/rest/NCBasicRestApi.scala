@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.server.rest
 
-import java.util
-
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
@@ -36,7 +34,7 @@ import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
-import org.apache.nlpcraft.server.model.NCServerInspectorManager
+import org.apache.nlpcraft.server.inspections.NCServerInspectorManager
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
@@ -631,12 +629,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     protected def inspect$(reqJs: JsValue): Future[String] = {
         val obj = reqJs.asJsObject()
 
-        def getOpt[T](name: String, convert: JsValue ⇒ T): Option[T] =
-            obj.fields.get(name) match {
-                case Some(v) ⇒ Some(convert(v))
-                case None ⇒ None
-            }
-
         val acsTok = obj.fields("acsTok").convertTo[String]
         val mdlId = obj.fields("mdlId").convertTo[String]
         val types = obj.fields("types").convertTo[Seq[String]]
@@ -666,13 +658,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 inspect(mdlId, typesVals, span).collect {
                     // We have to use GSON (not spray) here to serialize `result` field.
                     case res ⇒
-                        val m = new util.HashMap[String, AnyRef](
-                            res.map { case (typ, inspection) ⇒ typ.toString → inspection.serialize() }.asJava
-                        )
                         GSON.toJson(
                             Map(
                                 "status" → API_OK.toString,
-                                "result" → m
+                                "result" → res.asJava
                             ).asJava
                     )
             }

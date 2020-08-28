@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.model
+package org.apache.nlpcraft.server.inspections
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.inspections.NCInspection
 import org.apache.nlpcraft.common.inspections.NCInspectionType._
-import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspectionType}
 import org.apache.nlpcraft.common.{NCE, NCService}
-import org.apache.nlpcraft.server.model.inspectors._
+import org.apache.nlpcraft.server.inspections.inspectors._
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
+import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
@@ -62,28 +63,30 @@ object NCServerInspectorManager extends NCService {
             val promise = Promise[Map[NCInspectionType, NCInspection]]()
 
             NCProbeManager.inspect(mdlId, types, parent).onComplete {
-                case Success(map) ⇒
-                    map.map { case (typ, inspectionProbe) ⇒
-                        val inspectionSrv = INSPECTORS.get(typ) match {
-                            case Some(inspector) ⇒ inspector.inspect(mdlId, inspectionProbe.data)
-                            case None ⇒ NCInspection()
+                case Success(probeRes) ⇒
+                    val srvRes =
+                        probeRes.map { case (typ, inspectionProbe) ⇒
+                            val inspectionSrv = INSPECTORS.get(typ) match {
+                                case Some(inspector) ⇒ inspector.inspect(mdlId, Some(inspectionProbe))
+                                case None ⇒ NCInspection()
+                            }
+
+                            def union[T](seq1: java.util.List[T], seq2: java.util.List[T]): Option[Seq[T]] = {
+                                val seq = seq1.asScala ++ seq2.asScala
+
+                                if (seq.isEmpty) None else Some(seq)
+                            }
+
+                            typ → NCInspection(
+                                errors = union(inspectionProbe.errors, inspectionSrv.errors),
+                                warnings = union(inspectionProbe.warnings, inspectionSrv.warnings),
+                                suggestions = union(inspectionProbe.suggestions, inspectionSrv.suggestions),
+                                // Don't need pass this data on last step.
+                                data = None
+                            )
                         }
 
-                        def union[T](seq1: Option[Seq[T]], seq2: Option[Seq[T]]): Option[Seq[T]] = {
-                            val seq = seq1.getOrElse(Seq.empty) ++ seq2.getOrElse(Seq.empty)
-
-                            if (seq.isEmpty) None else Some(seq)
-                        }
-
-                        typ → NCInspection(
-                            errors = union(inspectionProbe.errors, inspectionSrv.errors),
-                            warnings = union(inspectionProbe.warnings, inspectionSrv.warnings),
-                            suggestions = union(inspectionProbe.suggestions, inspectionSrv.suggestions),
-                            // Don't need pass this data on last step.
-                            data = None
-                        )
-                    }
-                    promise.success(map)
+                    promise.success(srvRes)
                 case Failure(err) ⇒ throw err
             }(global)
 

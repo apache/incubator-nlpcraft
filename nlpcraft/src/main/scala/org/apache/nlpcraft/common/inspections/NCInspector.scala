@@ -20,5 +20,5 @@ package org.apache.nlpcraft.common.inspections
 import io.opencensus.trace.Span
 
 trait NCInspector {
-    def inspect(mdlId: String, data: Option[AnyRef] = None, parent: Span = null): NCInspection
+    def inspect(mdlId: String, prevLayerInspection: Option[NCInspection] = None, parent: Span = null): NCInspection
 }

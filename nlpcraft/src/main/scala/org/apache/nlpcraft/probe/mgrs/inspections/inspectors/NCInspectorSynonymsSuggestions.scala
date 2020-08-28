@@ -28,22 +28,16 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import scala.collection.JavaConverters._
 
 object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
-    override def inspect(mdlId: String, data: Option[AnyRef], parent: Span = null): NCInspection =
+    override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
         startScopedSpan("inspect", parent) { _ ⇒
-            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: $mdlId")).model
+            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
-            val m = new util.HashMap[String, Any]()
+            val data = new util.HashMap[String, Any]()
 
-            m.put("macros", mdl.getMacros)
-            m.put("elementsSynonyms", new util.HashMap[String, util.List[String]](
-                mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
-            ))
-            m.put("intentsSamples", new util.HashMap[String, util.List[String]](
-                NCIntentScanner.scanIntentsSamples(mdl).toMap.map {
-                    case (intentId, samples) ⇒ intentId → samples.asJava
-                }.asJava
-            ))
+            data.put("macros", mdl.getMacros)
+            data.put("elementsSynonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
+            data.put("intentsSamples", NCIntentScanner.scanIntentsSamples(mdl.proxy).map(p ⇒ p._1 → p._2.asJava).asJava)
 
-            NCInspection(data = Some(m))
+            NCInspection(errors = None, warnings = None, suggestions = None, data = Some(data))
         }
 }

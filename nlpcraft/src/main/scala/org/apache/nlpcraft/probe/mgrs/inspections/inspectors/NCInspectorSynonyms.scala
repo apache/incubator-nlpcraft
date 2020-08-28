@@ -29,9 +29,9 @@ import scala.collection.mutable
 object NCInspectorSynonyms extends NCService with NCInspector {
     private final val TOO_MANY_SYNS = 10000
 
-    override def inspect(mdlId: String, data: Option[AnyRef], parent: Span = null): NCInspection =
+    override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
         startScopedSpan("inspect", parent) { _ ⇒
-            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: $mdlId")).model
+            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
             val warns = mutable.ArrayBuffer.empty[String]
 
@@ -58,6 +58,6 @@ object NCInspectorSynonyms extends NCService with NCInspector {
                     warns += s"Element: '$elemId' has same synonyms with '$intersects'"
             }
 
-            NCInspection(warnings = if (warns.isEmpty) None else Some(warns))
+            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None, data = None)
         }
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.model.inspectors
+package org.apache.nlpcraft.server.inspections.inspectors
 
 import java.util
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, TimeUnit}
-import java.util.{List => JList}
+import java.util.{List ⇒ JList}
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -133,12 +133,12 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
         seq
     }
 
-    override def inspect(mdlId: String, data: Option[AnyRef], parent: Span = null): NCInspection =
+    override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
         startScopedSpan("inspect", parent) { _ ⇒
             val m: util.Map[String, AnyRef] =
-                data.
-                    getOrElse(throw new NCE(s"Missed suggestions data for model: $mdlId")).
-                    asInstanceOf[util.Map[String, AnyRef]]
+                prevLayerInspection.
+                    getOrElse(throw new NCE(s"Missed previous inspection data for model: $mdlId")).
+                    data.asInstanceOf[util.Map[String, AnyRef]]
 
             val macrosJ = m.get("macros").asInstanceOf[util.Map[String, String]]
             val elementsSynonymsJ = m.get("elementsSynonyms").asInstanceOf[util.Map[String, util.List[String]]]
@@ -153,7 +153,11 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
             val intentsSamples = intentsSamplesJ.asScala.map(p ⇒ p._1 → p._2.asScala)
 
             if (intentsSamples.isEmpty)
-                NCInspection()
+                NCInspection(
+                    errors = Some(Seq(s"Missed intents samples for: '$mdlId'")),
+                    warnings = None,
+                    suggestions = None
+                )
             else {
                 val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
 
@@ -187,15 +191,15 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
                 // Note that we don't use system tokenizer, because ContextWordServer doesn't have this tokenizer.
                 // We just split examples words with spaces. Also we divide SEPARATORS as separated words.
                 val examples =
-                intentsSamples.
-                    flatMap { case (_, samples) ⇒ samples }.
-                    map(ex ⇒ SEPARATORS.foldLeft(ex)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
-                    map(ex ⇒ {
-                        val seq = ex.split(" ")
+                    intentsSamples.
+                        flatMap { case (_, samples) ⇒ samples }.
+                        map(ex ⇒ SEPARATORS.foldLeft(ex)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
+                        map(ex ⇒ {
+                            val seq = ex.split(" ")
 
-                        seq → seq.map(toStemWord)
-                    }).
-                    toMap
+                            seq → seq.map(toStemWord)
+                        }).
+                        toMap
 
                 val elemSyns =
                     elementsSynonyms.map { case (elemId, syns) ⇒ elemId → syns.flatMap(parser.expand) }.
@@ -246,156 +250,166 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
                 if (noExElems.nonEmpty)
                     warns +=
                         "Some elements don't have synonyms in intent samples, " +
-                            s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
+                         s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
 
                 val allReqsCnt = allReqs.map(_._2.size).sum
                 val allSynsCnt = elemSyns.map(_._2.size).sum
 
-                logger.info(s"Data prepared [examples=${examples.size}, synonyms=$allSynsCnt, requests=$allReqsCnt]")
+                logger.info(s"Data prepared for ContextWord Server [examples=${examples.size}, synonyms=$allSynsCnt, requests=$allReqsCnt]")
 
-                val allSuggs = new ConcurrentHashMap[String, JList[Suggestion]]()
-                val cdl = new CountDownLatch(1)
-                val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
-                val cnt = new AtomicInteger(0)
+                if (allReqsCnt == 0)
+                    NCInspection(
+                        errors = Some(Seq(s"Suggestions cannot be prepared: '$mdlId'. Samples don't contain synonyms")),
+                        warnings = None,
+                        suggestions = None
+                    )
 
-                val client = HttpClients.createDefault
-                val err = new AtomicReference[Throwable]()
+                else {
+                    val allSuggs = new ConcurrentHashMap[String, JList[Suggestion]]()
+                    val cdl = new CountDownLatch(1)
+                    val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
+                    val cnt = new AtomicInteger(0)
 
-                for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
-                    NCUtils.asFuture(
-                        _ ⇒ {
-                            val post = new HttpPost(url)
+                    val client = HttpClients.createDefault
+                    val err = new AtomicReference[Throwable]()
 
-                            post.setHeader("Content-Type", "application/json")
+                    for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
+                        NCUtils.asFuture(
+                            _ ⇒ {
+                                val post = new HttpPost(url)
 
-                            post.setEntity(
-                                new StringEntity(
-                                    GSON.toJson(
-                                        RestRequest(
-                                            sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
-                                            // ContextWord server range is (0, 2), input range is (0, 1)
-                                            min_score = Config.suggestionsMinScore * 2,
-                                            // We set big limit value and in fact only minimal score is taken into account.
-                                            limit = MAX_LIMIT
-                                        )
-                                    ),
-                                    "UTF-8"
+                                post.setHeader("Content-Type", "application/json")
+
+                                post.setEntity(
+                                    new StringEntity(
+                                        GSON.toJson(
+                                            RestRequest(
+                                                sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
+                                                // ContextWord server range is (0, 2), input range is (0, 1)
+                                                min_score = Config.suggestionsMinScore * 2,
+                                                // We set big limit value and in fact only minimal score is taken into account.
+                                                limit = MAX_LIMIT
+                                            )
+                                        ),
+                                        "UTF-8"
+                                    )
                                 )
-                            )
 
-                            val resps: Seq[Seq[Suggestion]] =
-                                try
-                                    client.execute(post, HANDLER)
-                                finally
-                                    post.releaseConnection()
+                                val resps: Seq[Seq[Suggestion]] =
+                                    try
+                                        client.execute(post, HANDLER)
+                                    finally
+                                        post.releaseConnection()
 
-                            require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
+                                require(batch.size == resps.size, s"Batch: ${batch.size}, responses: ${resps.size}")
 
-                            batch.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp }
+                                batch.zip(resps).foreach { case (req, resp) ⇒ debugs += req → resp }
 
-                            val i = cnt.addAndGet(batch.size)
+                                val i = cnt.addAndGet(batch.size)
 
-                            logger.info(s"Executed: $i requests...")
+                                logger.debug(s"Executed: $i requests...")
 
-                            allSuggs.
-                                computeIfAbsent(elemId, (_: String) ⇒ new CopyOnWriteArrayList[Suggestion]()).
-                                addAll(resps.flatten.asJava)
+                                allSuggs.
+                                    computeIfAbsent(elemId, (_: String) ⇒ new CopyOnWriteArrayList[Suggestion]()).
+                                    addAll(resps.flatten.asJava)
 
-                            if (i == allReqsCnt)
+                                if (i == allReqsCnt)
+                                    cdl.countDown()
+                            },
+                            (e: Throwable) ⇒ {
+                                err.compareAndSet(null, e)
+
                                 cdl.countDown()
-                        },
-                        (e: Throwable) ⇒ {
-                            err.compareAndSet(null, e)
+                            },
+                            (_: Unit) ⇒ ()
+                        )
+                    }
 
-                            cdl.countDown()
-                        },
-                        (_: Unit) ⇒ ()
+                    cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
+
+                    if (err.get() != null)
+                        throw new NCE("Error during work with ContextWord Server", err.get())
+
+                    val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
+
+                    val nonEmptySuggs = allSuggs.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
+
+                    val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[SuggestionResult]]
+
+                    nonEmptySuggs.
+                        foreach { case (elemId, elemSuggs) ⇒
+                            elemSuggs.
+                                map(sugg ⇒ (sugg, toStem(sugg.word))).
+                                groupBy { case (_, stem) ⇒ stem }.
+                                // Drops already defined.
+                                filter { case (stem, _) ⇒ !allSynsStems.contains(stem) }.
+                                map { case (_, group) ⇒
+                                    val seq = group.map { case (sugg, _) ⇒ sugg }.sortBy(-_.score)
+
+                                    // Drops repeated.
+                                    (seq.head, seq.length)
+                                }.
+                                toSeq.
+                                map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * cnt / elemSuggs.size) }.
+                                sortBy { case (_, _, sumFactor) ⇒ -sumFactor }.
+                                zipWithIndex.
+                                foreach { case ((sugg, cnt, _), _) ⇒
+                                    val seq =
+                                        res.get(elemId) match {
+                                            case Some(seq) ⇒ seq
+                                            case None ⇒
+                                                val buf = mutable.ArrayBuffer.empty[SuggestionResult]
+
+                                                res += elemId → buf
+
+                                                buf
+                                        }
+
+                                    seq += SuggestionResult(sugg.word, sugg.score, cnt)
+                                }
+                        }
+
+                    logger.whenDebugEnabled({
+                        logger.debug("Request information:")
+
+                        var i = 1
+
+                        debugs.groupBy(_._1.example).foreach { case (_, m) ⇒
+                            m.toSeq.sortBy(_._1.sentence).foreach { case (req, suggs) ⇒
+                                val s =
+                                    split(req.sentence).
+                                        zipWithIndex.map { case (w, i) ⇒ if (i == req.index) s"<<<$w>>>" else w }.
+                                        mkString(" ")
+
+                                logger.debug(
+                                    s"$i. " +
+                                        s"Request=$s, " +
+                                        s"suggestions=[${suggs.map(_.word).mkString(", ")}], " +
+                                        s"element=${req.elementId}"
+                                )
+
+                                i = i + 1
+                            }
+                        }
+                    })
+
+                    val resJs: util.Map[String, JList[util.HashMap[String, Any]]] =
+                        res.map { case (id, data) ⇒
+                            id → data.map(d ⇒ {
+                                val m = new util.HashMap[String, Any]()
+
+                                m.put("synonym", d.synonym)
+                                m.put("ctxWorldServerScore", d.ctxWorldServerScore)
+                                m.put("suggestedCount", d.suggestedCount)
+
+                                m
+                            }).asJava
+                        }.asJava
+
+                    NCInspection(
+                        errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = Some(Seq(resJs))
                     )
                 }
-
-                cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
-
-                if (err.get() != null)
-                    throw new NCE("Error during work with ContextWord Server", err.get())
-
-                val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
-
-                val nonEmptySuggs = allSuggs.asScala.map(p ⇒ p._1 → p._2.asScala).filter(_._2.nonEmpty)
-
-                val res = mutable.HashMap.empty[String, mutable.ArrayBuffer[SuggestionResult]]
-
-                nonEmptySuggs.
-                    foreach { case (elemId, elemSuggs) ⇒
-                        elemSuggs.
-                            map(sugg ⇒ (sugg, toStem(sugg.word))).
-                            groupBy { case (_, stem) ⇒ stem }.
-                            // Drops already defined.
-                            filter { case (stem, _) ⇒ !allSynsStems.contains(stem) }.
-                            map { case (_, group) ⇒
-                                val seq = group.map { case (sugg, _) ⇒ sugg }.sortBy(-_.score)
-
-                                // Drops repeated.
-                                (seq.head, seq.length)
-                            }.
-                            toSeq.
-                            map { case (sugg, cnt) ⇒ (sugg, cnt, sugg.score * cnt / elemSuggs.size) }.
-                            sortBy { case (_, _, sumFactor) ⇒ -sumFactor }.
-                            zipWithIndex.
-                            foreach { case ((sugg, cnt, _), _) ⇒
-                                val seq =
-                                    res.get(elemId) match {
-                                        case Some(seq) ⇒ seq
-                                        case None ⇒
-                                            val buf = mutable.ArrayBuffer.empty[SuggestionResult]
-
-                                            res += elemId → buf
-
-                                            buf
-                                    }
-
-                                seq += SuggestionResult(sugg.word, sugg.score, cnt)
-                            }
-                    }
-
-                logger.whenInfoEnabled({
-                    var i = 1
-
-                    debugs.groupBy(_._1.example).foreach { case (_, m) ⇒
-                        m.toSeq.sortBy(_._1.sentence).foreach { case (req, suggs) ⇒
-                            val s =
-                                split(req.sentence).
-                                    zipWithIndex.map { case (w, i) ⇒ if (i == req.index) s"<<<$w>>>" else w }.
-                                    mkString(" ")
-
-                            logger.info(
-                                s"$i. " +
-                                    s"Request=$s, " +
-                                    s"suggestions=[${suggs.map(_.word).mkString(", ")}], " +
-                                    s"element=${req.elementId}"
-                            )
-
-                            i = i + 1
-                        }
-                    }
-                })
-
-                val resJs: util.Map[String, JList[util.HashMap[String, Any]]] =
-                    res.map { case (id, data) ⇒
-                        id → data.map(d ⇒ {
-                            val m = new util.HashMap[String, Any]()
-
-                            m.put("synonym", d.synonym)
-                            m.put("ctxWorldServerScore", d.ctxWorldServerScore)
-                            m.put("suggestedCount", d.suggestedCount)
-
-                            m
-                        }).asJava
-                    }.asJava
-
-                NCInspection(
-                    warnings = if (warns.isEmpty) None else Some(warns),
-                    suggestions = Some(Seq(resJs))
-                )
             }
         }
 }

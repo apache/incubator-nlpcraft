@@ -73,7 +73,7 @@ import scala.util.{Failure, Success}
   */
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
-    private val TYPE_INSPECTION_RESP = new TypeToken[ util.Map[String, util.Map[String, AnyRef]]]() {}.getType
+    private val TYPE_INSPECTION_RESP = new TypeToken[util.Map[String, NCInspection]]() {}.getType
 
     // Type safe and eager configuration container.
     private[probe] object Config extends NCConfigurable {
@@ -706,15 +706,10 @@ object NCProbeManager extends NCService {
                     val promise = inspections.remove(probeMsg.data[String]("reqGuid"))
 
                     if (promise != null) {
-                        val respJs: util.Map[String, util.Map[String, AnyRef]] =
+                        val respJs: util.Map[String, NCInspection] =
                             GSON.fromJson(probeMsg.data[String]("resp"), TYPE_INSPECTION_RESP)
 
-                        val resp =
-                            respJs.asScala.map { case (k, v) ⇒
-                                NCInspectionType.withName(k.toUpperCase) → NCInspection.deserialize(v)
-                            }
-
-                        promise.success(resp)
+                        promise.success(respJs.asScala.map(p ⇒ NCInspectionType.withName(p._1) → p._2))
                     }
                 
                 case "P2S_ASK_RESULT" ⇒

@@ -23,7 +23,7 @@ import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.util.NCUtils
-import org.apache.nlpcraft.model.impl.{NCModelImpl, NCVariantImpl}
+import org.apache.nlpcraft.model.impl.{NCModelWrapper, NCVariantImpl}
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
@@ -126,7 +126,7 @@ class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCR
                         res.groups.find(_.termId == termId).flatMap(grp ⇒ Some(grp.tokens)).getOrElse(Nil).asJava
                 }
                 
-                if (!in.context.getModel.asInstanceOf[NCModelImpl].onMatchedIntent(intentMatch)) {
+                if (!in.context.getModel.asInstanceOf[NCModelWrapper].onMatchedIntent(intentMatch)) {
                     logger.info(
                         s"Model '${ctx.getModel.getId}' triggered rematching of intents " +
                         s"by intent '${res.intentId}' on variant #${res.variantIdx + 1}."

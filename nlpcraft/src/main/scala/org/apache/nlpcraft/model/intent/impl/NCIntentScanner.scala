@@ -425,7 +425,31 @@ object NCIntentScanner extends LazyLogging {
       */
     @throws[NCE]
     def scanIntentsSamples(mdl: NCModel): Map[String, Seq[String]] = {
+        val (res, warns) = validateIntentsSamples0(mdl)
+
+        warns.foreach(w ⇒ logger.warn(w))
+
+        res
+    }
+
+    /**
+      * Scans given model for intent samples.
+      *
+      * @param mdl Model to scan.
+      */
+    @throws[NCE]
+    def validateIntentsSamples(mdl: NCModel): Seq[String] = validateIntentsSamples0(mdl)._2
+
+    /**
+      * Scans given model for intent samples.
+      *
+      * @param mdl Model to scan.
+      */
+    @throws[NCE]
+    private def validateIntentsSamples0(mdl: NCModel): (Map[String, Seq[String]], Seq[String]) = {
         var annFound = false
+
+        val warns = mutable.ArrayBuffer.empty[String]
 
         val res =
             mdl.getClass.getDeclaredMethods.flatMap(method ⇒ {
@@ -448,8 +472,8 @@ object NCIntentScanner extends LazyLogging {
 
                     if (smpAnn != null) {
                         if (intAnn == null && refAnn == null) {
-                            logger.warn(s"@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations " +
-                                s"in method (ignoring): $mkMethodName")
+                            warns += s"@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations " +
+                                s"in method (ignoring): $mkMethodName"
 
                             None
                         }
@@ -457,7 +481,7 @@ object NCIntentScanner extends LazyLogging {
                             val samples = smpAnn.value().toList
 
                             if (samples.isEmpty) {
-                                logger.warn(s"@NCTestSample annotation is empty in method (ignoring): $mkMethodName")
+                                warns += s"@NCTestSample annotation is empty in method (ignoring): $mkMethodName"
 
                                 None
                             }
@@ -466,7 +490,7 @@ object NCIntentScanner extends LazyLogging {
                         }
                     }
                     else {
-                        logger.warn(s"@NCTestSample annotation is missing in method (ignoring): $mkMethodName")
+                        warns += s"@NCTestSample annotation is missing in method (ignoring): $mkMethodName"
 
                         None
                     }
@@ -476,8 +500,8 @@ object NCIntentScanner extends LazyLogging {
             }).toMap
 
         if (!annFound)
-            logger.warn(s"Model '${mdl.getId}' doesn't have any intents.")
-            
-        res
+            warns += s"Model '${mdl.getId}' doesn't have any intents."
+
+        (res, warns)
     }
 }

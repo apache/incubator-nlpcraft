@@ -17,45 +17,41 @@
 
 package org.apache.nlpcraft.common.inspections
 
-import java.util
 import scala.collection.JavaConverters._
 
 /**
-  * Note that suggestions and data can be simple type or java collections to be transfer between server and probe as JSON
+  * Note that 'suggestions' and 'data' must be simple type or java collections to be transfer between server and probe as JSON
   */
 case class NCInspection(
-    errors: Option[Seq[String]] = None,
-    warnings: Option[Seq[String]] = None,
-    suggestions: Option[Seq[AnyRef]] = None,
+    errors: java.util.List[String],
+    warnings: java.util.List[String],
+    suggestions: java.util.List[AnyRef],
 
     // Information for next inspection layer.
-    data: Option[AnyRef] = None
-) {
-    def serialize(): java.util.Map[String, AnyRef] = {
-        val m: util.Map[String, AnyRef] = new java.util.HashMap[String, AnyRef]
-
-        m.put("errors", errors.getOrElse(Seq.empty).asJava)
-        m.put("warnings", warnings.getOrElse(Seq.empty).asJava)
-        m.put("suggestions", suggestions.getOrElse(Seq.empty).asJava)
-        m.put("data", data.orNull)
-
-        m
-    }
-}
-
+    data: AnyRef = None
+)
 object NCInspection {
-    def deserialize(m: util.Map[String, AnyRef]): NCInspection = {
-        def getSeq(name: String): Option[Seq[String]] = {
-            val seq = m.get(name).asInstanceOf[java.util.List[String]]
+    def apply(
+        errors: Option[Seq[String]],
+        warnings: Option[Seq[String]],
+        suggestions: Option[Seq[AnyRef]],
+        data: Option[AnyRef]
+    ): NCInspection = {
+        def convert[T](optSeq: Option[Seq[T]]): java.util.List[T] = optSeq.getOrElse(Seq.empty).asJava
 
-            if (seq.isEmpty) None else Some(seq.asScala)
-        }
-
-        NCInspection(
-            errors = getSeq("errors"),
-            warnings = getSeq("warnings"),
-            suggestions = getSeq("suggestions"),
-            data = Option(m.get("data"))
+        new NCInspection(
+            errors = convert(errors),
+            warnings = convert(warnings),
+            suggestions = convert(suggestions),
+            data = data.orNull
         )
     }
+
+    def apply(
+        errors: Option[Seq[String]],
+        warnings: Option[Seq[String]],
+        suggestions: Option[Seq[AnyRef]]
+    ): NCInspection = apply(errors, warnings, suggestions, None)
+
+    def apply(): NCInspection  = NCInspection(None, None, None, None)
 }

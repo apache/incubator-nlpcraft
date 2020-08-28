@@ -20,15 +20,16 @@ package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspector}
 import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 object NCInspectorIntents extends NCService with NCInspector {
-    override def inspect(mdlId: String, data: Option[AnyRef], parent: Span = null): NCInspection =
+    override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
         startScopedSpan("inspect", parent) { _ ⇒
-            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: $mdlId")).model
-
-            NCInspection(
-                // TODO:
+            val warns = NCIntentScanner.validateIntentsSamples(
+                NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model.proxy
             )
+
+            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None, data = None)
         }
 }

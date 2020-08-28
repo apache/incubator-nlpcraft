@@ -26,7 +26,7 @@ import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCModel, NCRejection
  * @param proxy Mandatory model proxy.
  * @param solver Optional solver.
  */
-class NCModelImpl(val proxy: NCModel, val solver: NCIntentSolver) extends NCModel {
+class NCModelWrapper(val proxy: NCModel, val solver: NCIntentSolver) extends NCModel {
     require(proxy != null)
     
     override def getId: String = proxy.getId

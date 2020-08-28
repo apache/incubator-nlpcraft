@@ -45,7 +45,7 @@ import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.rest.NCRestManager
 import org.apache.nlpcraft.server.sql.NCSqlManager
-import org.apache.nlpcraft.server.model.NCServerInspectorManager
+import org.apache.nlpcraft.server.inspections.NCServerInspectorManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 

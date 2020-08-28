@@ -27,6 +27,7 @@ import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind._
 import org.apache.nlpcraft.probe.mgrs.deploy._
@@ -64,7 +65,7 @@ object NCModelManager extends NCService with DecorateAsScala {
     /**
       * @param mdl Model.
       */
-    private def addNewModel(mdl: NCModel): Unit = {
+    private def addNewModel(mdl: NCModelWrapper): Unit = {
         require(Thread.holdsLock(mux))
 
         checkModelConfig(mdl)
@@ -112,21 +113,10 @@ object NCModelManager extends NCService with DecorateAsScala {
 
                 val inspections = NCProbeInspectionManager.inspect(mdlId, NCInspectionType.values.toSeq)
 
-                inspections.foreach { case(_, inspection) ⇒
-                    inspection.errors match {
-                        case Some(errs) ⇒ errs.foreach(e ⇒ logger.error(s"Validation error [model=$mdlId, text=$e"))
-                        case None ⇒ // No-op.
-                    }
-
-                    inspection.warnings match {
-                        case Some(warns) ⇒ warns.foreach(w ⇒ logger.warn(s"Validation warning [model=$mdlId, text=$w"))
-                        case None ⇒ // No-op.
-                    }
-
-                    inspection.suggestions match {
-                        case Some(sugs) ⇒ sugs.foreach(s ⇒ logger.info(s"Validation suggestion [model=$mdlId, text=$s"))
-                        case None ⇒ // No-op.
-                    }
+                inspections.foreach { case(t, i) ⇒
+                    i.errors.asScala.foreach(p ⇒ logger.error(s"Validation error [model=$mdlId, type=$t, text=$p"))
+                    i.warnings.asScala.foreach(p ⇒ logger.warn(s"Validation warning [model=$mdlId, type=$t, text=$p"))
+                    i.suggestions.asScala.foreach(p ⇒ logger.info(s"Validation suggestion [model=$mdlId, type=$t, text=$p"))
                 }
             })
             
@@ -279,7 +269,7 @@ object NCModelManager extends NCService with DecorateAsScala {
       * @return Model decorator.
       */
     @throws[NCE]
-    private def verifyAndDecorate(mdl: NCModel, parser: NCMacroParser): NCModelDecorator = {
+    private def verifyAndDecorate(mdl: NCModelWrapper, parser: NCMacroParser): NCModelDecorator = {
         for (elm ← mdl.getElements)
             checkElement(mdl, elm)
 
@@ -551,7 +541,6 @@ object NCModelManager extends NCService with DecorateAsScala {
 
         NCModelDecorator(
             model = mdl,
-            NCIntentScanner.scanIntentsSamples(mdl).toMap,
             synonyms = mkFastAccessMap(filter(syns, dsl = false)),
             synonymsDsl = mkFastAccessMap(filter(syns, dsl = true)),
             additionalStopWordsStems = addStopWords,
