@@ -20,7 +20,6 @@ package org.apache.nlpcraft.model.tools.cmdline
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.common.version.NCVersion
-
 import scala.collection.mutable
 
 /**
@@ -110,8 +109,8 @@ object NCCommandLine extends App {
             ),
             examples = Seq(
                 Example(
-                    code = s"$$ $SCRIPT_NAME help repl",
-                    desc = "Displays help for 'repl' command."
+                    code = s"$$ $SCRIPT_NAME help -c=repl --cmd=ver",
+                    desc = "Displays help for 'repl' and 'version' commands."
                 ),
                 Example(
                     code = s"$$ $SCRIPT_NAME help -all",
@@ -130,14 +129,14 @@ object NCCommandLine extends App {
             params = Seq(
                 Parameter(
                     id = "semver",
-                    names = Seq("--semver", "-s"),
+                    names = Seq("--sem-ver", "-s"),
                     valueDesc = None,
                     optional = true,
                     desc = s"Display only the semantic version value, e.g. ${VER.version}."
                 ),
                 Parameter(
                     id = "reldate",
-                    names = Seq("--reldate", "-d"),
+                    names = Seq("--rel-date", "-d"),
                     valueDesc = None,
                     optional = true,
                     desc = s"Display only the release date, e.g. ${VER.date}."
@@ -154,6 +153,30 @@ object NCCommandLine extends App {
 
     private final val HELP_CMD = CMDS.find(_.id == "help").get
     private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
+
+    /**
+     *
+     * @param param Expected parameter.
+     * @param str String to parse.
+     * @return
+     */
+    private def getParamValue(param: Parameter, str: String): Option[String] = {
+        val arr = str.split("=")
+
+        if (arr.size != 2) {
+            error(s"Invalid parameter format: $str")
+
+            None
+        }
+        else if (!param.names.contains(arr.head)) {
+            error(s"Unknown parameter in: $str")
+
+            None
+
+        }
+        else
+            Some(arr.last)
+    }
 
     /**
      * @param cmd Command descriptor.
@@ -193,12 +216,20 @@ object NCCommandLine extends App {
                 lines += "PARAMETERS:"
 
                 for (param <- cmd.params) {
-                    var nameLine = s"$T___${param.names.mkString(", ")}"
-
                     if (param.valueDesc.isDefined)
-                        nameLine += s"=${param.valueDesc.get}"
-
-                    lines += nameLine
+                        lines += T___ + param.names.zip(Stream.continually(param.valueDesc.get)).map(t => s"${t._1}=${t._2}").mkString(", ")
+                    else
+                        lines += s"$T___${param.names.mkString(", ")}"
+//
+//
+//
+//
+//                    var nameLine = s"$T___${param.names.mkString(", ")}"
+//
+//                    if (param.valueDesc.isDefined)
+//                        nameLine += s"=${param.valueDesc.get}"
+//
+//                    lines += nameLine
 
                     if (param.optional)
                         lines += s"$T___${T___}Optional."
@@ -233,7 +264,8 @@ object NCCommandLine extends App {
             ))
 
             log(tbl.toString)
-        } else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
+        }
+        else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
             header()
 
             CMDS.foreach(cmd =>
@@ -244,27 +276,39 @@ object NCCommandLine extends App {
             )
 
             log(tbl.toString)
-        } else {
+        }
+        else { // Help for individual commands.
+            var err = false
+            val cmdParam = cmd.params.find(_.id == "cmd").get
+            val seen = mutable.Buffer.empty[String]
 
+            // At this point it should only be '--cmd' parameters.
             for (param <- params) {
-                var err = false
+                getParamValue(cmdParam, param) match {
+                    case Some(value) =>
+                        CMDS.find(_.names.contains(value)) match {
+                            case Some(c) =>
+                                if (!seen.contains(c.id)) {
+                                    tbl +/ (
+                                        "" -> c.names.mkString(", "),
+                                        "align:left, maxWidth:65" -> mkCmdLines(c)
+                                    )
 
-                CMDS.find(_.names.contains(param)) match {
-                    case Some(cmd) =>
-                        tbl +/ (
-                            "" -> cmd.names.mkString(", "),
-                            "align:left, maxWidth:65" -> mkCmdLines(cmd)
-                        )
-                    case None =>
-                        err = true
-                        error(s"Unknown command to get help for: $param")
+                                    seen += c.id
+                                }
+                            case None =>
+                                err = true
+                                error(s"Unknown command '$value' to get help for in: $param")
+                        }
+
+                    case None => err = true
                 }
+            }
 
-                if (!err) {
-                    header()
+            if (!err) {
+                header()
 
-                    log(tbl.toString)
-                }
+                log(tbl.toString)
             }
         }
     }
@@ -276,6 +320,8 @@ object NCCommandLine extends App {
      */
     private def cmdRepl(cmd: Command, params: Seq[String]): Unit = {
         title()
+
+        // TODO
     }
 
     /**
@@ -301,6 +347,10 @@ object NCCommandLine extends App {
         }
 
 
+    /**
+     *
+     * @param msg
+     */
     private def error(msg: String = ""): Unit = {
         // Make sure we exit with non-zero status.
         exitStatus = 1
@@ -308,8 +358,15 @@ object NCCommandLine extends App {
         System.err.println(s"ERROR: $msg")
     }
 
+    /**
+     *
+     * @param msg
+     */
     private def log(msg: String = ""): Unit = System.out.println(msg)
 
+    /**
+     *
+     */
     private def errorHelp(): Unit = SCRIPT match {
         // Running from *.{s|cmd} script.
         case Some(script) => error(s"Run '$script ${HELP_CMD.mainName}' to read the manual.")
