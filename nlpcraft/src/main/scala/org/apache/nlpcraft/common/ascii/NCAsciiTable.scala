@@ -25,6 +25,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable._
 import resource._
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 /**
  * `ASCII`-based table with minimal styling support.
@@ -33,9 +34,10 @@ class NCAsciiTable {
     /**
      * Cell style.
      */
-    private sealed case class Style(
+    private final case class Style(
         var leftPad: Int = 1, // >= 0
         var rightPad: Int = 1, // >= 0
+        var maxWidth: Int = Int.MaxValue, // > 0
         var align: String = "center" // center, left, right
         ) {
         /** Gets overall padding (left + right). */
@@ -57,7 +59,7 @@ class NCAsciiTable {
                 for (e ← sty.split(',')) {
                     val a = e.split(":")
 
-                    assume(a.length == 2, s"Invalid cell style: ${e.trim}")
+                    require(a.length == 2, s"Invalid cell style: ${e.trim}")
 
                     val a0 = a(0).trim
                     val a1 = a(1).trim
@@ -65,11 +67,17 @@ class NCAsciiTable {
                     a0 match {
                         case "leftPad" ⇒ cs.leftPad = a1.toInt
                         case "rightPad" ⇒ cs.rightPad = a1.toInt
-                        case "align" ⇒ cs.align = a1
+                        case "maxWidth" ⇒ cs.maxWidth = a1.toInt
+                        case "align" ⇒ cs.align = a1.toLowerCase
                         case _ ⇒ assert(assertion = false, s"Invalid style: ${e.trim}")
                     }
                 }
             }
+
+            require(cs.leftPad >= 0, "Style 'leftPad' must >= 0.")
+            require(cs.rightPad >= 0, "Style 'rightPad' must >= 0.")
+            require(cs.maxWidth > 0, "Style 'maxWidth' must > 0.")
+            require(cs.align == "center" || cs.align == "left" || cs.align == "right", "Style 'align' must be 'left', 'right' or 'center'.")
 
             cs
         }
@@ -77,8 +85,11 @@ class NCAsciiTable {
 
     /**
      * Cell holder.
+     *
+     * @param style
+     * @param lines Lines that are already cut up per `style`, if required.
      */
-    private sealed case class Cell(style: Style, lines: Seq[String]) {
+    private final case class Cell(style: Style, lines: Seq[String]) {
         // Cell's calculated width including padding.
         lazy val width: Int =
             if (height > 0)
@@ -97,8 +108,8 @@ class NCAsciiTable {
         top: Int = 0,
         right: Int = 0,
         bottom: Int = 0,
-        left: Int = 0) {
-    }
+        left: Int = 0
+    )
 
     // Table drawing symbols.
     private val HDR_HOR = "="
@@ -119,31 +130,28 @@ class NCAsciiTable {
     private var margin = Margin()
 
     /**
-     * Flag indicating whether or not to draw inside horizontal lines
+     * Global flag indicating whether or not to draw inside horizontal lines
      * between individual rows.
      */
     var insideBorder = false
 
     /**
-     * Flag indicating whether of not to automatically draw horizontal lines
+     * Global Flag indicating whether of not to automatically draw horizontal lines
      * for multiline rows.
      */
     var autoBorder = true
 
     /**
-     * Maximum width of the cell. If any line in the cell exceeds this width
-     * it will be cut in two or more lines.
-     *
-     * '''NOTE''': it doesn't include into account the padding. Only the actual
-     * string length is counted.
+     * If lines exceeds the style's maximum width it will be broken up
+     * either by nearest space (by whole words) or mid-word.
      */
-    var maxCellWidth: Int = Int.MaxValue
+    var breakUpByWords = true
 
-    /** Row style. */
-    var rowStyle: String = DFLT_ROW_STYLE
+    /** Default row style. */
+    var defaultRowStyle: String = DFLT_ROW_STYLE
 
-    /** Header style. */
-    var headerStyle: String = DFLT_HEADER_STYLE
+    /** Default header style. */
+    var defaultHeaderStyle: String = DFLT_HEADER_STYLE
 
     // Dash drawing.
     private def dash(ch: String, len: Int): String = (for (_ ← 1 to len) yield ch).mkString("")
@@ -157,8 +165,10 @@ class NCAsciiTable {
      * @param bottom Bottom margin.
      * @param left Left margin.
      */
-    def margin(top: Int = 0, right: Int = 0, bottom: Int = 0, left: Int = 0) {
+    def margin(top: Int = 0, right: Int = 0, bottom: Int = 0, left: Int = 0): NCAsciiTable = {
         margin = Margin(top, right, bottom, left)
+
+        this
     }
 
     /**
@@ -196,6 +206,24 @@ class NCAsciiTable {
     }
 
     /**
+     * Adds row (one or more row cells) with a given style.
+     *
+     * @param cells Row cells tuples (style, text). For multi-line cells - use `Seq(...)`.
+     */
+    def +/(cells: (String, Any)*): NCAsciiTable = {
+        startRow()
+
+        cells foreach {
+            case i if i._2.isInstanceOf[Iterable[_]] ⇒ addStyledRowCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
+            case a ⇒ addStyledRowCell(a._1, a._2)
+        }
+
+        endRow()
+
+        this
+    }
+
+    /**
       * Adds row.
       *
       * @param cells Row cells.
@@ -225,12 +253,38 @@ class NCAsciiTable {
     }
 
     /**
+     * Adds styled header (one or more header cells).
+     *
+     * @param cells Header cells tuples (style, text). For multi-line cells - use `Seq(...)`.
+     */
+    def #/(cells: (String, Any)*): NCAsciiTable = {
+        cells foreach {
+            case i if i._2.isInstanceOf[Iterable[_]] ⇒ addStyledHeaderCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
+            case a ⇒ addStyledHeaderCell(a._1, a._2)
+        }
+
+        this
+    }
+
+    /**
       * Adds headers.
       *
       * @param cells Header cells.
       */
     def addHeaders(cells: java.util.List[Any]): NCAsciiTable = {
-        cells.asScala.foreach(p ⇒ addHeaderCell(p))
+        cells.asScala.foreach(addHeaderCell(_))
+
+        this
+    }
+
+    /**
+     * Adds headers with the given `style`.
+     *
+     * @param style Style top use.
+     * @param cells Header cells.
+     */
+    def addStyledHeaders(style: String, cells: java.util.List[Any]): NCAsciiTable = {
+        cells.asScala.foreach(addHeaderCell(style, _))
 
         this
     }
@@ -242,23 +296,109 @@ class NCAsciiTable {
     }
 
     /**
-     * Adds single header cell.
+     *
+     * @param maxWidth
+     * @param lines
+     * @return
+     */
+    private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
+        lines.flatMap(line => {
+            if (line.isEmpty)
+                mutable.Buffer("")
+            else {
+                val buf = mutable.Buffer.empty[String]
+
+                var start = 0
+                var lastSpace = -1
+                var curr = 0
+                val len = line.length
+
+                while (curr < len) {
+                    if (curr - start > maxWidth) {
+                        val end = if (lastSpace == -1) curr else lastSpace + 1 /* Keep space at the end of the line. */
+
+                        buf += line.substring(start, end)
+                        start = end
+                    }
+
+                    if (line.charAt(curr) == ' ')
+                        lastSpace = curr
+
+                    curr += 1
+                }
+
+                if (start < len) {
+                    val lastLine = line.substring(start)
+
+                    if (lastLine.nonEmpty)
+                        buf += lastLine
+                }
+
+                buf
+            }
+        })
+
+    /**
+     *
+     * @param style
+     * @param lines
+     * @return
+     */
+    private def mkStyledCell(style: String, lines: Any*): Cell = {
+        val st = Style(style)
+        val strLines = lines.map(x)
+
+        Cell(
+            st,
+            if (breakUpByWords)
+                breakUpByNearestSpace(st.maxWidth, strLines)
+            else
+                (for (str ← strLines) yield str.grouped(st.maxWidth)).flatten
+        )
+    }
+
+    /**
+     * Adds single header cell with the default style..
      *
      * @param lines One or more cell lines.
      */
     def addHeaderCell(lines: Any*): NCAsciiTable = {
-        hdr :+= Cell(Style(headerStyle), (for (line ← lines) yield x(line).grouped(maxCellWidth)).flatten)
+        hdr :+= mkStyledCell(defaultHeaderStyle, lines: _*)
 
         this
     }
 
     /**
-     * Adds single row cell.
+     * Adds single row cell with the default style.
      *
      * @param lines One or more row cells. Multiple lines will be printed on separate lines.
      */
     def addRowCell(lines: Any*): NCAsciiTable = {
-        curRow :+= Cell(Style(rowStyle), (for (line ← lines) yield x(line).grouped(maxCellWidth)).flatten)
+        curRow :+= mkStyledCell(defaultRowStyle, lines: _*)
+
+        this
+    }
+
+    /**
+     * Adds single header cell with the default style..
+     *
+     * @param style Style to use.
+     * @param lines One or more cell lines.
+     */
+    def addStyledHeaderCell(style: String, lines: Any*): NCAsciiTable = {
+        hdr :+= mkStyledCell(if (style.trim.isEmpty) defaultHeaderStyle else style, lines: _*)
+
+        this
+    }
+
+    /**
+     * Adds single row cell with the default style.
+     *
+     * @param style Style to use.
+     * @param lines One or more row cells. Multiple lines will be printed on separate lines.
+     */
+    def addStyledRowCell(style: String, lines: Any*): NCAsciiTable = {
+        curRow :+= mkStyledCell(if (style.trim.isEmpty) defaultRowStyle else style, lines: _*)
 
         this
     }
@@ -279,9 +419,9 @@ class NCAsciiTable {
             case _ ⇒ throw new AssertionError(s"Invalid align option in: $sty")
         }
     }
-    
+
     override def toString: String = mkString
-    
+
     /**
      * Prepares output string.
      */
@@ -303,7 +443,7 @@ class NCAsciiTable {
                 colsNum = r.size
             else if (colsNum != r.size)
                 assert(assertion = false, "Table with uneven rows.")
-    
+
         assert(colsNum > 0, "No columns found.")
 
         // At this point all rows in the table have the
@@ -341,9 +481,12 @@ class NCAsciiTable {
         for (_ ← 0 until margin.top)
             tbl ++= " \n"
 
+        def mkAsciiLine(crs: String, cor: String): String =
+            s"${space(margin.left)}$crs${dash(cor, tableW)}$crs${space(margin.right)}\n"
+
         // Print header, if any.
         if (isHdr) {
-            tbl ++= s"${space(margin.left)}$HDR_CRS${dash(HDR_HOR, tableW)}$HDR_CRS${space(margin.right)}\n"
+            tbl ++= mkAsciiLine(HDR_CRS, HDR_HOR)
 
             for (i ← 0 until hdrH) {
                 // Left margin and '|'.
@@ -364,10 +507,10 @@ class NCAsciiTable {
                 tbl ++= s"${space(margin.right)}\n"
             }
 
-            tbl ++= s"${space(margin.left)}$HDR_CRS${dash(HDR_HOR, tableW)}$HDR_CRS${space(margin.right)}\n"
+            tbl ++= mkAsciiLine(HDR_CRS, HDR_HOR)
         }
         else
-            tbl ++= s"${space(margin.left)}$ROW_CRS${dash(ROW_HOR, tableW)}$ROW_CRS${space(margin.right)}\n"
+            tbl ++= mkAsciiLine(ROW_CRS, ROW_HOR)
 
         // Print rows, if any.
         if (rows.nonEmpty) {
@@ -461,7 +604,7 @@ class NCAsciiTable {
       * @param header Optional header.
       */
     def error(log: Logger, header: Option[String] = None): Unit = log.error(mkLogString(header))
-    
+
     /**
       * Renders this table to log as trace.
       *
@@ -482,23 +625,19 @@ class NCAsciiTable {
      *
      * @param path File path.
      */
-    def render(path: String): Unit =
-        try
-            managed(new PrintStream(path)) acquireAndGet { ps ⇒
-                ps.print(mkString)
-            }
-        catch {
-            case e: IOException ⇒ throw new NCE(s"Error writing file: $path", e)
-        }
+    def render(path: String): Unit = renderPrintStream(new PrintStream(path), path)
 
     /**
      * Renders this table to file.
      *
      * @param file File.
      */
-    def render(file: java.io.File): Unit =
+    def render(file: java.io.File): Unit = renderPrintStream(new PrintStream(file), file.getAbsolutePath)
+
+
+    private def renderPrintStream(f: => PrintStream, file: String): Unit =
         try
-            managed(new PrintStream(file)) acquireAndGet { ps ⇒
+            managed(f) acquireAndGet { ps ⇒
                 ps.print(mkString)
             }
         catch {

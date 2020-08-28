@@ -49,6 +49,19 @@ object NCSqlModelGeneratorImpl {
         toTable: String,
         toColumns: Seq[String]
     )
+
+    trait NamedEntity {
+        val nameLc: String
+        val elmNameLc: String
+
+        private val nameWs = elmNameLc.replaceAll("_", " ").split(" ").filter(_.nonEmpty).mkString(" ")
+
+        lazy val synonym =
+            if (elmNameLc == nameWs)
+                substituteMacros(elmNameLc)
+            else
+                s"{${substituteMacros(elmNameLc)}|${substituteMacros(removeSeqDups(nameWs))}}"
+    }
     
     // https://docs.oracle.com/javase/8/docs/api/java/sql/DatabaseMetaData.html#getColumns-java.lang.String-java.lang.String-java.lang.String-java.lang.String-
     case class Column(
@@ -57,17 +70,11 @@ object NCSqlModelGeneratorImpl {
         dataType: Int,
         isNullable: String,
         isPk: Boolean
-    ) {
+    ) extends NamedEntity {
         val nameLc = name.toLowerCase()
         val elmNameLc = elmName.toLowerCase()
-        private val nameWs = elmNameLc.replaceAll("_", " ").split(" ").filter(_.nonEmpty).mkString(" ")
-        
+
         lazy val isNull = isNullable == "YES"
-        lazy val synonym =
-            if (elmNameLc == nameWs)
-                substituteMacros(elmNameLc)
-            else
-                s"{${substituteMacros(elmNameLc)}|${substituteMacros(removeSeqDups(nameWs))}}"
     }
 
     case class Table(
@@ -75,16 +82,9 @@ object NCSqlModelGeneratorImpl {
         elmName: String, // Name with optionally removed prefix and suffix.
         joins: Seq[Join],
         columns: mutable.ArrayBuffer[Column] = mutable.ArrayBuffer.empty[Column]
-    ) {
+    ) extends NamedEntity {
         val nameLc = name.toLowerCase()
         val elmNameLc = elmName.toLowerCase()
-        private val nameWs = elmNameLc.replaceAll("_", " ").split(" ").filter(_.nonEmpty).mkString(" ")
-
-        lazy val synonym =
-            if (elmNameLc == nameWs)
-                substituteMacros(elmNameLc)
-            else
-                s"{${substituteMacros(elmNameLc)}|${substituteMacros(removeSeqDups(nameWs))}}"
     }
     
     case class ParametersHolder(
@@ -348,9 +348,9 @@ object NCSqlModelGeneratorImpl {
                     def forall(seq: Seq[Boolean], v: Boolean): Boolean = seq.forall(_ == v)
 
                     val typ =
-                        if (forall(fromColsNulls, true) && forall(toColsNulls, false))
+                        if (forall(fromColsNulls, v = true) && forall(toColsNulls, v = false))
                             NCSqlJoinType.LEFT
-                        else if (forall(fromColsNulls, false) && forall(toColsNulls, true))
+                        else if (forall(fromColsNulls, v = false) && forall(toColsNulls, v = true))
                             NCSqlJoinType.RIGHT
                         else
                             // Default value.

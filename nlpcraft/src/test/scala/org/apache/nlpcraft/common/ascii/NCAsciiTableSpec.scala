@@ -27,11 +27,12 @@ class NCAsciiTableSpec {
     def test() {
         val t = NCAsciiTable()
         
-        t.headerStyle = "leftPad: 10, rightPad: 5"
+        t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
 
         t.margin(5, 5, 5, 5)
 
-        t.maxCellWidth = 10
+        t.defaultHeaderStyle = s"${t.defaultHeaderStyle}, maxWidth=10"
+        t.defaultRowStyle = s"${t.defaultRowStyle}, maxWidth=10"
 
         t #= ("Header 1", Seq("Header 2.1", "Header 2.2"), "Header 3")
         t += ("Row 1", Seq("Row 2"), Seq("Row 3.1", "Row 3.2"))
@@ -45,11 +46,12 @@ class NCAsciiTableSpec {
     def testWithSequenceHeader() {
         val t = NCAsciiTable()
         
-        t.headerStyle = "leftPad: 10, rightPad: 5"
+        t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
 
         t.margin(5, 5, 5, 5)
 
-        t.maxCellWidth = 10
+        t.defaultHeaderStyle = s"${t.defaultHeaderStyle}, maxWidth=10"
+        t.defaultRowStyle = s"${t.defaultRowStyle}, maxWidth=10"
 
         t #= (Seq("Header 1", "Header 2", "Header 3", "Header 4"): _*)
         t += ("Column 1", "Column 2", "Column 3", "Column 4")
@@ -65,7 +67,7 @@ class NCAsciiTableSpec {
 
         val t = NCAsciiTable()
         
-        t.headerStyle = "leftPad: 10, rightPad: 5"
+        t.defaultHeaderStyle = "leftPad: 10, rightPad: 5"
 
         t #= (Seq("Header 1", "Header 2", "Header 3"): _*)
 
@@ -76,6 +78,6 @@ class NCAsciiTableSpec {
 
         val dur = System.currentTimeMillis() - start
 
-        println(s"Rendered in ${dur}msec.")
+        println(s"Rendered in ${dur}ms.")
     }
 }

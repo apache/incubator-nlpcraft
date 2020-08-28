@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -35,4 +35,5 @@ abort() {
 [ -x "$(command -v curl)" ] || abort "'curl' not found."
 [ -x "$(command -v python3)" ] || abort "'python3' not found."
 
+# shellcheck disable=SC2086
 curl -s -d "$2" -H 'Content-Type: application/json' http://localhost:8081/api/v1/$1 | python3 -m json.tool
