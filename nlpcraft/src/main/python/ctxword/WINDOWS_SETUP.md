@@ -24,7 +24,7 @@
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ### Windows Setup
-To set up `ctxword` module under Windows, you would need to repeat steps from `bin/install_dependencies.sh` script:
+To set up `ctxword` module under Windows, you would need to repeat steps from `src/main/python/ctxword/bin/install_dependencies.sh` script:
  1. Before starting, make sure you have the following installed:
     - `python3`
     - `pip3` (included with the latest versions of python3)
