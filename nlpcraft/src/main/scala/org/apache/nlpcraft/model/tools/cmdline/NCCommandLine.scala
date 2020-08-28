@@ -31,9 +31,11 @@ object NCCommandLine extends App {
 
     private final lazy val VER = NCVersion.getCurrent
     private final lazy val SCRIPT = NCUtils.sysEnv("NLPCRAFT_CLI_SCRIPT")
-    private final lazy val SCRIPT_NAME = SCRIPT.getOrElse("NLPCraft CLI")
+    private final lazy val SCRIPT_NAME = SCRIPT.getOrElse("<nlpcraft-cli>")
 
     private final val T___ = "    "
+
+    private var exitStatus = 0
 
     // Single CLI command.
     case class Command(
@@ -85,7 +87,7 @@ object NCCommandLine extends App {
         Command(
             id = "help",
             names = Seq("help", "?"),
-            synopsis = s"Displays manual page for $SCRIPT_NAME.",
+            synopsis = s"Displays manual page for '$SCRIPT_NAME'.",
             desc = Some(
                 s"By default, without '-all' or '-cmd' parameters, displays the abbreviated form of manual " +
                 s"only listing the commands without parameters or examples."
@@ -120,7 +122,7 @@ object NCCommandLine extends App {
         Command(
             id = "ver",
             names = Seq("version", "ver"),
-            synopsis = s"Displays full version of $SCRIPT_NAME runtime.",
+            synopsis = s"Displays full version of '$SCRIPT_NAME' runtime.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
             ),
@@ -160,7 +162,10 @@ object NCCommandLine extends App {
     private def cmdHelp(cmd: Command, params: Seq[String]): Unit = {
         title()
 
-        log(
+        /**
+         *
+         */
+        def header(): Unit = log(
             s"""|NAME
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
                 |
@@ -219,20 +224,31 @@ object NCCommandLine extends App {
 
         val tbl = NCAsciiTable().margin(left = 4)
 
-        if (params.isEmpty)  // Default - show abbreviated help.
+        if (params.isEmpty) { // Default - show abbreviated help.
+            header()
+
             CMDS.foreach(cmd => tbl +/ (
                 "" -> cmd.names.mkString(", "),
                 "align:left, maxWidth:65" -> cmd.synopsis
             ))
-        else if (cmd.isParamPresent("all", params)) // Show a full format help for all commands.
+
+            log(tbl.toString)
+        } else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
+            header()
+
             CMDS.foreach(cmd =>
                 tbl +/ (
                     "" -> cmd.names.mkString(", "),
                     "align:left, maxWidth:65" -> mkCmdLines(cmd)
                 )
             )
-        else
+
+            log(tbl.toString)
+        } else {
+
             for (param <- params) {
+                var err = false
+
                 CMDS.find(_.names.contains(param)) match {
                     case Some(cmd) =>
                         tbl +/ (
@@ -240,11 +256,17 @@ object NCCommandLine extends App {
                             "align:left, maxWidth:65" -> mkCmdLines(cmd)
                         )
                     case None =>
+                        err = true
                         error(s"Unknown command to get help for: $param")
                 }
-            }
 
-        log(tbl.toString)
+                if (!err) {
+                    header()
+
+                    log(tbl.toString)
+                }
+            }
+        }
     }
 
     /**
@@ -279,7 +301,13 @@ object NCCommandLine extends App {
         }
 
 
-    private def error(msg: String = ""): Unit = System.err.println(s"ERROR: $msg")
+    private def error(msg: String = ""): Unit = {
+        // Make sure we exit with non-zero status.
+        exitStatus = 1
+
+        System.err.println(s"ERROR: $msg")
+    }
+
     private def log(msg: String = ""): Unit = System.out.println(msg)
 
     private def errorHelp(): Unit = SCRIPT match {
@@ -303,8 +331,6 @@ object NCCommandLine extends App {
      * @param args
      */
     private def boot(args: Array[String]): Unit = {
-        var status = 0
-
         if (args.isEmpty)
             NCCommandLine.DFLT_CMD.body(DFLT_CMD, Seq.empty)
         else {
@@ -312,15 +338,14 @@ object NCCommandLine extends App {
 
             CMDS.find(_.extNames.contains(cmdName)) match {
                 case Some(cmd) => cmd.body(cmd, args.tail)
-                case None =>
-                    error(s"Unknown command: $cmdName")
-                    errorHelp()
-
-                    status = 1
+                case None => error(s"Unknown command: $cmdName")
             }
         }
 
-        sys.exit(status)
+        if (exitStatus != 0)
+            errorHelp()
+
+        sys.exit(exitStatus)
     }
 
     // Boot up.
