@@ -158,14 +158,14 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
-  /model/enhance:
+  /model/inspect:
     post:
       tags:
         - Model
-      summary: Model enchance suggestions for model.
+      summary: Model inspections.
       description: >-
-        TODO:
-      operationId: enhance
+        Inspections for given model.
+      operationId: inspect
       parameters:
         - in: body
           name: Payload body
@@ -176,6 +176,7 @@ paths:
             required:
               - acsTok
               - mdlId
+              - types
             properties:
               acsTok:
                 type: string
@@ -185,11 +186,12 @@ paths:
                 type: string
                 maxLength: 32
                 description: Data model ID for which elements synonyms will be suggested
-              minScore:
-                type: number
-                format: double
+              types:
+                type: array
+                items:
+                  type: string
                 description: >-
-                  Minimal score. Range from 0 to 1. Default 0.
+                  Inspections set. Possible values are: INSPECTION_MACROS, INSPECTION_SYNONYMS, INSPECTION_INTENTS, SUGGEST_SYNONYMS or ALL.
       responses:
         '200':
           description: Successful operation.
@@ -197,24 +199,16 @@ paths:
             type: object
             required:
               - status
-              - srvReqId
+              - result
             properties:
               status:
                 type: string
                 description: Status code of this operation
                 enum:
                   - API_OK
-              suggestions:
+              result:
                 type: object
-                description: Synonyms suggestions for given model
-                required:
-                  - acsTok
-                  - mdlId
-                properties:
-                  acsTok:
-                    type: string
-                    description: Access token obtain via '/signin' call
-                    maxLength: 256
+                description: Inspections data for given model
 
         '400':
           description: Failed operation.
