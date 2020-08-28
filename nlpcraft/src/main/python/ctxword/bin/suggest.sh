@@ -20,9 +20,33 @@
 # Simple Curl-based script for getting contextual related words suggestions for a single input sentence.
 # Example:
 #     $ bin/suggest.sh "what is the chance of rain tomorrow?" 5
-#     [["rain","snow","rainfall","precipitation","rains","flooding","storms","raining","sunshine","showers"]]
+#       % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                      Dload  Upload   Total   Spent    Left  Speed
+#     100   214  100   104  100   110    954   1009 --:--:-- --:--:-- --:--:--  1963
+#     [
+#         [
+#             "rain",
+#             "snow",
+#             "rainfall",
+#             "precipitation",
+#             "rains",
+#             "flooding",
+#             "storms",
+#             "raining",
+#             "sunshine",
+#             "showers"
+#         ]
+#     ]
 #
 # NOTE: You need to have REST server running (see 'start_server.sh' script in the same folder).
 #
 
-curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions
+abort() {
+  echo "$1"
+  exit 1
+}
+
+[ -x "$(command -v curl)" ] || abort "'curl' not found."
+[ -x "$(command -v python3)" ] || abort "'python3' not found."
+
+curl -d "{\"sentences\": [{\"text\": \"$1\", \"indexes\": [$2]}], \"simple\": true, \"limit\": 10}" -H 'Content-Type: application/json' http://localhost:5000/suggestions | python3 -m json.tool

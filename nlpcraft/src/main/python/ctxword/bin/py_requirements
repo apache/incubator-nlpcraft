@@ -18,4 +18,4 @@
 # Dependency list for 'ctxword' Python module.
 flask==1.1.2
 transformers==2.7.0
-torch==1.5.0
+torch==1.6.0

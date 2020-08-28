@@ -30,7 +30,7 @@ lock-in:
 
  * Download, Maven/Grape/Gradle/SBT, installation [instructions](https://nlpcraft.apache.org/download.html) 
  * Read [documentation](https://nlpcraft.apache.org/docs.html)
- * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
+ * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples)
  * Latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
