@@ -249,13 +249,17 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
 
                 if (noExElems.nonEmpty)
                     warns +=
-                        "Some elements don't have synonyms in intent samples, " +
+                        "Some elements don't have synonyms in their intent samples, " +
                          s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
 
                 val allReqsCnt = allReqs.map(_._2.size).sum
                 val allSynsCnt = elemSyns.map(_._2.size).sum
 
-                logger.info(s"Data prepared for ContextWord Server [examples=${examples.size}, synonyms=$allSynsCnt, requests=$allReqsCnt]")
+                logger.info(s"Data prepared. Request is going to execute on ContextWord Server " +
+                    s"[examples=${examples.size}, " +
+                    s"synonyms=$allSynsCnt, " +
+                    s"requests=$allReqsCnt]"
+                )
 
                 if (allReqsCnt == 0)
                     NCInspection(

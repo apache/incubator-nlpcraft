@@ -48,6 +48,8 @@ import scala.concurrent.Future
 import akka.http.scaladsl.coding.Coders
 import org.apache.nlpcraft.common.inspections.NCInspectionType
 
+import scala.concurrent.duration.DurationInt
+
 /**
   * REST API default implementation.
   */
@@ -1770,6 +1772,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     } ~
                     post {
                         encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
+                            withRequestTimeout(600.seconds) {
                             withRequestTimeoutResponse(_ ⇒ timeoutResp) {
                                 path(API / "signin") { withLatency(M_SIGNIN_LATENCY_MS, signin$) } ~
                                 path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
@@ -1813,7 +1816,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                         }
                                 }}
                             }
-                        }
+                        }}
                     }
                 )
             }
