@@ -61,7 +61,13 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         val samples =
             classes.
                 map(_.getDeclaredConstructor().newInstance()).
-                map(mdl ⇒ mdl.getId → NCIntentScanner.scanIntentsSamples(mdl).toMap).
+                map(mdl ⇒ {
+                    val res = NCIntentScanner.scanIntentsSamples(mdl)
+
+                    res.warnings.foreach(w ⇒ logger.warn(w))
+
+                    mdl.getId → res.samples.toMap
+                }).
                 toMap.
                 filter(_._2.nonEmpty)
 

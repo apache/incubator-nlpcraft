@@ -29,6 +29,8 @@ import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import scala.collection.JavaConverters._
 import scala.collection._
 
+case class NCIntentSamplesScanResult(samples: Map[String, Seq[String]], warnings: Seq[String])
+
 /**
   * Scanner for `NCIntent`, `NCIntentRef` and `NCIntentTerm` annotations.
   */
@@ -420,33 +422,11 @@ object NCIntentScanner extends LazyLogging {
 
     /**
       * Scans given model for intent samples.
-     *
-      * @param mdl Model to scan.
-      */
-    @throws[NCE]
-    def scanIntentsSamples(mdl: NCModel): Map[String, Seq[String]] = {
-        val (res, warns) = validateIntentsSamples0(mdl)
-
-        warns.foreach(w ⇒ logger.warn(w))
-
-        res
-    }
-
-    /**
-      * Scans given model for intent samples.
       *
       * @param mdl Model to scan.
       */
     @throws[NCE]
-    def validateIntentsSamples(mdl: NCModel): Seq[String] = validateIntentsSamples0(mdl)._2
-
-    /**
-      * Scans given model for intent samples.
-      *
-      * @param mdl Model to scan.
-      */
-    @throws[NCE]
-    private def validateIntentsSamples0(mdl: NCModel): (Map[String, Seq[String]], Seq[String]) = {
+    def scanIntentsSamples(mdl: NCModel): NCIntentSamplesScanResult = {
         var annFound = false
 
         val warns = mutable.ArrayBuffer.empty[String]
@@ -502,6 +482,6 @@ object NCIntentScanner extends LazyLogging {
         if (!annFound)
             warns += s"Model '${mdl.getId}' doesn't have any intents."
 
-        (res, warns)
+        NCIntentSamplesScanResult(res, warns)
     }
 }

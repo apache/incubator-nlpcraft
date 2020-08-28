@@ -36,7 +36,7 @@ object NCInspectorSynonymsSuggestions extends NCService with NCInspector {
 
             data.put("macros", mdl.getMacros)
             data.put("elementsSynonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
-            data.put("intentsSamples", NCIntentScanner.scanIntentsSamples(mdl.proxy).map(p ⇒ p._1 → p._2.asJava).asJava)
+            data.put("intentsSamples", NCIntentScanner.scanIntentsSamples(mdl.proxy).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
 
             NCInspection(errors = None, warnings = None, suggestions = None, data = Some(data))
         }
