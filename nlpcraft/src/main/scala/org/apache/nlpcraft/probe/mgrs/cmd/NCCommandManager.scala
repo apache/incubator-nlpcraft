@@ -18,19 +18,18 @@
 package org.apache.nlpcraft.probe.mgrs.cmd
 
 import java.io.Serializable
-import java.util
 
 import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
-import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
+import org.apache.nlpcraft.probe.mgrs.inspections.NCInspectionManager
+import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import scala.collection.JavaConverters._
@@ -93,25 +92,36 @@ object NCCommandManager extends NCService {
                             span
                     )
 
-                    case "S2P_MODEL_INSPECTION" ⇒
-                        val res =
-                            NCProbeInspectionManager.inspect(
-                                mdlId = msg.data[String]("mdlId"),
-                                types =
-                                    msg.data[java.util.List[String]]("types").
-                                    asScala.
-                                    map(p ⇒ NCInspectionType.withName(p.toUpperCase)),
-                                span
-                            )
+                    case "S2P_PROBE_INSPECTION" ⇒
+                        NCInspectionManager.inspect(
+                            mdlId = msg.data[String]("mdlId"),
+                            inspId = msg.data[String]("inspId"),
+                            args = msg.data[String]("args"),
+                            span
+                        ).collect {
+                            case res ⇒
+                                NCConnectionManager.send(
+                                    NCProbeMessage(
+                                        "P2S_PROBE_INSPECTION",
+                                        "reqGuid" → msg.getGuid,
+                                        "resp" → GSON.toJson(res)
+                                    ),
+                                    span
+                                )
+
+                        }(scala.concurrent.ExecutionContext.Implicits.global)
+
+                    case "S2P_MODEL_INFO" ⇒
+                        val res = NCModelManager.getModelTransferData(msg.data[String]("mdlId"))
 
                         NCConnectionManager.send(
-                                NCProbeMessage(
-                                    "P2S_MODEL_INSPECTION",
-                                    "reqGuid" → msg.getGuid,
-                                    "resp" → GSON.toJson(res.map(p ⇒ p._1.toString → p._2).asJava)
-                                ),
-                                span
-                            )
+                            NCProbeMessage(
+                                "P2S_MODEL_INFO",
+                                "reqGuid" → msg.getGuid,
+                                "resp" → GSON.toJson(res)
+                            ),
+                            span
+                        )
 
                     case _ ⇒
                         logger.error(s"Received unknown server message (you need to update the probe): ${msg.getType}")

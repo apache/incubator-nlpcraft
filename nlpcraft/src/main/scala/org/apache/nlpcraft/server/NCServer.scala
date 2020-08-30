@@ -24,16 +24,17 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.version._
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.geo.NCGeoManager
 import org.apache.nlpcraft.server.ignite.{NCIgniteInstance, NCIgniteRunner}
+import org.apache.nlpcraft.server.inspections.NCInspectionManager
 import org.apache.nlpcraft.server.lifecycle.NCServerLifecycleManager
 import org.apache.nlpcraft.server.nlp.core.NCNlpServerManager
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
@@ -45,7 +46,6 @@ import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.rest.NCRestManager
 import org.apache.nlpcraft.server.sql.NCSqlManager
-import org.apache.nlpcraft.server.inspections.NCServerInspectorManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 
@@ -123,7 +123,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 },
                 () ⇒ {
                     NCProbeManager.start(span)
-                    NCServerInspectorManager.start(span)
+                    NCInspectionManager.start(span)
                 },
                 () ⇒ NCFeedbackManager.start(span)
             )
@@ -148,7 +148,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 NCRestManager,
                 NCQueryManager,
                 NCFeedbackManager,
-                NCServerInspectorManager,
+                NCInspectionManager,
                 NCProbeManager,
                 NCCompanyManager,
                 NCUserManager,

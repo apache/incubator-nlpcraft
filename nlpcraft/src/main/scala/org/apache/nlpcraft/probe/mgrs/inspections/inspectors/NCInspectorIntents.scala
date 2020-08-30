@@ -18,7 +18,8 @@
 package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspector}
+import org.apache.nlpcraft.common.inspections.NCInspectionResult
+import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.{NCE, NCService}
@@ -27,42 +28,56 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
 import scala.collection._
+import scala.concurrent.Future
 
 // TODO:
 object NCInspectorIntents extends NCService with NCInspector {
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
-    override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
+    override def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
-            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
+            Future {
+                val now = System.currentTimeMillis()
 
-            val res = NCIntentScanner.scanIntentsSamples(mdl.proxy)
+                val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
-            val warns = mutable.ArrayBuffer.empty[String] ++ res.warnings
+                val res = NCIntentScanner.scanIntentsSamples(mdl.proxy)
 
-            val parser = new NCMacroParser
+                val warns = mutable.ArrayBuffer.empty[String] ++ res.warnings
 
-            mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+                val parser = new NCMacroParser
 
-            val allSyns: Set[Seq[String]] =
-                mdl.getElements.
-                    asScala.
-                    flatMap(_.getSynonyms.asScala.flatMap(parser.expand)).
-                    map(NCNlpPorterStemmer.stem).map(_.split(" ").toSeq).
-                    toSet
+                mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
 
-            res.samples.
-                flatMap { case (_, samples) ⇒ samples.map(_.toLowerCase) }.
-                // Note that we don't use system tokenizer, because ContextWordServer doesn't have this tokenizer.
-                // We just split examples words with spaces. Also we divide SEPARATORS as separated words.
-                map(s ⇒ s → SEPARATORS.foldLeft(s)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
-                foreach { case (s, sNorm) ⇒
-                    val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
+                val allSyns: Set[Seq[String]] =
+                    mdl.getElements.
+                        asScala.
+                        flatMap(_.getSynonyms.asScala.flatMap(parser.expand)).
+                        map(NCNlpPorterStemmer.stem).map(_.split(" ").toSeq).
+                        toSet
 
-                    if (!allSyns.exists(_.intersect(seq).nonEmpty))
-                        warns += s"Sample: '$s' doesn't contain synonyms"
-                }
+                res.samples.
+                    flatMap { case (_, samples) ⇒ samples.map(_.toLowerCase) }.
+                    // Note that we don't use system tokenizer, because ContextWordServer doesn't have this tokenizer.
+                    // We just split examples words with spaces. Also we divide SEPARATORS as separated words.
+                    map(s ⇒ s → SEPARATORS.foldLeft(s)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
+                    foreach { case (s, sNorm) ⇒
+                        val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
 
-            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None)
+                        if (!allSyns.exists(_.intersect(seq).nonEmpty))
+                            warns += s"Sample: '$s' doesn't contain synonyms"
+                    }
+
+                NCInspectionResultImpl(
+                    inspectionId = inspId,
+                    modelId = mdlId,
+                    inspectionArguments = None,
+                    durationMs = System.currentTimeMillis() - now,
+                    timestamp = now,
+                    errors = Seq.empty,
+                    warnings = warns,
+                    suggestions = Seq.empty
+                )
+            }(scala.concurrent.ExecutionContext.Implicits.global)
         }
 }

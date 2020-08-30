@@ -34,19 +34,18 @@ import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
-import org.apache.nlpcraft.server.inspections.NCServerInspectorManager
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.user.NCUserManager
 import spray.json.DefaultJsonProtocol._
-import spray.json.{JsValue, RootJsonFormat}
+import spray.json.{DeserializationException, JsObject, JsValue, RootJsonFormat}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import akka.http.scaladsl.coding.Coders
-import org.apache.nlpcraft.common.inspections.NCInspectionType
+import org.apache.nlpcraft.server.inspections.NCInspectionManager
 
 /**
   * REST API default implementation.
@@ -323,6 +322,30 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
     /**
       *
+      * @param js
+      * @param fn
+      */
+    @throws[InvalidField]
+    protected def convert[T](js: JsObject, fn: String, extractor: JsValue ⇒ T): T =
+        try
+            extractor(js.fields(fn))
+        catch {
+            case _: Exception ⇒ throw InvalidField(fn)
+        }
+
+    @throws[InvalidField]
+    protected def convertOpt[T](js: JsObject, fn: String, extractor: JsValue ⇒ T): Option[T] =
+        try
+            js.fields.get(fn) match {
+                case Some(v) ⇒ Some(extractor(v))
+                case None ⇒ None
+            }
+        catch {
+            case _: Exception ⇒ throw InvalidField(fn)
+        }
+
+    /**
+      *
       * @return
       */
     protected def signin$(): Route = {
@@ -411,19 +434,13 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     protected def ask$Sync(reqJs: JsValue, usrAgent: Option[String], rmtAddr: RemoteAddress): Future[String] = {
         val obj = reqJs.asJsObject()
 
-        def getOpt[T](name: String, convert: JsValue ⇒ T): Option[T] =
-            obj.fields.get(name) match {
-                case Some(v) ⇒ Some(convert(v))
-                case None ⇒ None
-            }
-
-        val acsTok = obj.fields("acsTok").convertTo[String]
-        val txt = obj.fields("txt").convertTo[String]
-        val mdlId = obj.fields("mdlId").convertTo[String]
-        val data = getOpt("data", (js: JsValue) ⇒ js.compactPrint)
-        val enableLog = getOpt("enableLog", (js: JsValue) ⇒ js.convertTo[Boolean])
-        val usrExtIdOpt = getOpt("usrExtId", (js: JsValue) ⇒ js.convertTo[String])
-        val usrIdOpt = getOpt("usrId", (js: JsValue) ⇒ js.convertTo[Long])
+        val acsTok: String = convert(obj, "acsTok", (js: JsValue) ⇒ js.convertTo[String])
+        val txt: String = convert(obj, "txt", (js: JsValue) ⇒ js.convertTo[String])
+        val mdlId: String = convert(obj, "mdlId", (js: JsValue) ⇒ js.convertTo[String])
+        val data: Option[String] = convertOpt(obj, "data", (js: JsValue) ⇒ js.compactPrint)
+        val enableLog: Option[Boolean] = convertOpt(obj, "enableLog", (js: JsValue) ⇒ js.convertTo[Boolean])
+        val usrExtIdOpt: Option[String] = convertOpt(obj, "usrExtId", (js: JsValue) ⇒ js.convertTo[String])
+        val usrIdOpt: Option[Long] = convertOpt(obj, "usrId", (js: JsValue) ⇒ js.convertTo[Long])
 
         startScopedSpan(
             "ask$Sync",
@@ -629,41 +646,24 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     protected def inspect$(reqJs: JsValue): Future[String] = {
         val obj = reqJs.asJsObject()
 
-        val acsTok = obj.fields("acsTok").convertTo[String]
-        val mdlId = obj.fields("mdlId").convertTo[String]
-        val types = obj.fields("types").convertTo[Seq[String]]
+        val acsTok: String = convert(obj, "acsTok", (js: JsValue) ⇒ js.convertTo[String])
+        val mdlId: String = convert(obj, "mdlId", (js: JsValue) ⇒ js.convertTo[String])
+        val inspId: String = convert(obj, "inspId", (js: JsValue) ⇒ js.convertTo[String])
+        val args: Option[String] = convertOpt(obj, "args", v ⇒ v.compactPrint)
 
         startScopedSpan("modelEnhance$", "mdlId" → mdlId, "acsTok" → acsTok) { span ⇒
             checkLength("acsTok", acsTok, 256)
             checkLength("mdlId", mdlId, 32)
-
-            val typesVals =
-                if (types.size == 1 && types.head.toLowerCase == "all")
-                    NCInspectionType.values.toSeq
-                else
-                    types.map(typ ⇒
-                        try
-                            NCInspectionType.withName(typ.toUpperCase)
-                        catch {
-                            case _: Exception ⇒ throw InvalidField("types")
-                        }
-                    )
+            checkLength("inspId", inspId, 32)
 
             val admin = authenticateAsAdmin(acsTok)
 
             if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == mdlId)))
                 throw new NCE(s"Probe not found for model: $mdlId")
 
-            NCServerInspectorManager.
-                inspect(mdlId, typesVals, span).collect {
-                    // We have to use GSON (not spray) here to serialize `result` field.
-                    case res ⇒
-                        GSON.toJson(
-                            Map(
-                                "status" → API_OK.toString,
-                                "result" → res.asJava
-                            ).asJava
-                    )
+            NCInspectionManager.inspect(mdlId, inspId, args.orNull, span).collect {
+                // We have to use GSON (not spray) here to serialize `result` field.
+                case res ⇒ GSON.toJson(Map("status" → API_OK.toString, "result" → res).asJava)
             }
         }
     }

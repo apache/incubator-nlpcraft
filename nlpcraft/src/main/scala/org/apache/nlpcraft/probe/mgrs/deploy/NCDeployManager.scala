@@ -23,12 +23,10 @@ import java.util.jar.{JarInputStream ⇒ JIS}
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
 import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.model.intent.impl.{NCIntentScanner, NCIntentSolver}
-import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
 import resource.managed
 
 import scala.collection.JavaConverters._

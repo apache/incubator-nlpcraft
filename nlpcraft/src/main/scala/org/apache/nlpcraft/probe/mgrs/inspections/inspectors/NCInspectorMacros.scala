@@ -18,26 +18,42 @@
 package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspector}
+import org.apache.nlpcraft.common.inspections.NCInspectionResult
+import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
+import scala.collection.Seq
+import scala.concurrent.Future
 
 // TODO:
 object NCInspectorMacros extends NCService with NCInspector {
-    override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
+    override def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
-            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
+            Future {
+                val now = System.currentTimeMillis()
 
-            val syns = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala)
+                val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
-            val warns =
-                mdl.getMacros.asScala.keys.
-                // TODO: is it valid check? (simple contains)
-                flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
-                toSeq
+                val syns = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala)
 
-            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None)
+                val warns =
+                    mdl.getMacros.asScala.keys.
+                        // TODO: is it valid check? (simple contains)
+                        flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
+                        toSeq
+
+                NCInspectionResultImpl(
+                    inspectionId = inspId,
+                    modelId = mdlId,
+                    inspectionArguments = None,
+                    durationMs = System.currentTimeMillis() - now,
+                    timestamp = now,
+                    errors = Seq.empty,
+                    warnings = warns,
+                    suggestions = Seq.empty
+                )
+            }(scala.concurrent.ExecutionContext.Implicits.global)
         }
 }

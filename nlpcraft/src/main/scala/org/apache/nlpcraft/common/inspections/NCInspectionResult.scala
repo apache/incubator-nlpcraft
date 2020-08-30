@@ -15,51 +15,55 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.inspections2
-
-import io.opencensus.trace.Span
+package org.apache.nlpcraft.common.inspections
 
 /**
- * Inspection descriptor.
+ *
  */
-trait NCInspection {
+trait NCInspectionResult {
     /**
-     * Globally unique, internal inspection ID.
      *
-     * @return
      */
-    def id(): String
+    def inspectionId(): String
 
     /**
-     * User-visible name of the inspection.
      *
-     * @return
      */
-    def name(): String
-
-    /**
-     * Short, one-line, description.
-     *
-     * @return
-     */
-    def synopsis(): String
+    def modelId(): String
 
     /**
      *
      * @return
      */
-    def parameters(): Seq[NCInspectionParameter]
-
-    /**
-     * Full description of this inspection additionally to the synopsis.
-     *
-     * @return
-     */
-    def description(): Option[String]
+    def inspectionArguments(): String
 
     /**
      *
      * @return
      */
-    def isServerSide: Boolean
+    def durationMs(): Long
+
+    /**
+     *
+     * @return
+     */
+    def timestamp(): Long
+
+    /**
+     *
+     * @return
+     */
+    def errors(): java.util.List[String]
+
+    /**
+     *
+     * @return
+     */
+    def warnings(): java.util.List[String]
+
+    /**
+     *
+     * @return
+     */
+    def suggestions(): java.util.List[AnyRef]
 }

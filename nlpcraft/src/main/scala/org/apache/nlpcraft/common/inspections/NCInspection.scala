@@ -17,40 +17,47 @@
 
 package org.apache.nlpcraft.common.inspections
 
-import scala.collection.JavaConverters._
-
 /**
-  * Note that 'suggestions' and 'data' must be simple type or java collections to be transfer between server and probe as JSON
-  */
-case class NCInspection(
-    errors: java.util.List[String],
-    warnings: java.util.List[String],
-    suggestions: java.util.List[AnyRef],
+ * Inspection descriptor.
+ */
+trait NCInspection {
+    /**
+     * Globally unique, internal inspection ID.
+     *
+     * @return
+     */
+    def id(): String
 
-    // Information for next inspection layer.
-    data: AnyRef = None
-)
-object NCInspection {
-    def apply(
-        errors: Option[Seq[String]],
-        warnings: Option[Seq[String]],
-        suggestions: Option[Seq[AnyRef]],
-        data: Option[AnyRef]
-    ): NCInspection = {
-        def convert[T](optSeq: Option[Seq[T]]): java.util.List[T] = optSeq.getOrElse(Seq.empty).asJava
+    /**
+     * User-visible name of the inspection.
+     *
+     * @return
+     */
+    def name(): String
 
-        NCInspection(
-            errors = convert(errors),
-            warnings = convert(warnings),
-            suggestions = convert(suggestions),
-            data = data.orNull
-        )
-    }
+    /**
+     * Short, one-line, description.
+     *
+     * @return
+     */
+    def synopsis(): String
 
-    def apply(errors: Option[Seq[String]], warnings: Option[Seq[String]], suggestions: Option[Seq[AnyRef]]): NCInspection =
-        apply(errors, warnings, suggestions, None)
+    /**
+     *
+     * @return
+     */
+    def parameters(): java.util.List[NCInspectionParameter]
 
-    def apply(data: AnyRef): NCInspection = apply(None, None, None, Some(data))
+    /**
+     * Full description of this inspection additionally to the synopsis.
+     *
+     * @return
+     */
+    def description(): String
 
-    def apply(): NCInspection  = NCInspection(None, None, None, None)
+    /**
+     *
+     * @return
+     */
+    def isServerSide: Boolean
 }

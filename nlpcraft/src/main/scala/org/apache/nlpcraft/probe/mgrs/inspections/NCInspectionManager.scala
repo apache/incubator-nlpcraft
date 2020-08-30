@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.inspections2
+package org.apache.nlpcraft.probe.mgrs.inspections
 
-import org.apache.nlpcraft.common.NCService
-import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.inspections2.NCInspectionResult
+import org.apache.nlpcraft.common.inspections.NCInspectionResult
+import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
+import org.apache.nlpcraft.probe.mgrs.inspections.inspectors.{NCInspectorIntents, NCInspectorMacros, NCInspectorSynonyms}
+
+import scala.concurrent.Future
 
 /**
  *
  */
 object NCInspectionManager extends NCService with NCOpenCensusModelStats {
+    private final val INSPECTORS =
+        Map(
+            "macros" → NCInspectorMacros,
+            "synonyms" → NCInspectorSynonyms,
+            "intents" → NCInspectorIntents
+        )
+
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        // TODO
+        INSPECTORS.values.foreach(_.start())
 
         super.start(parent)
     }
@@ -35,16 +45,21 @@ object NCInspectionManager extends NCService with NCOpenCensusModelStats {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
 
-        // TODO
+        INSPECTORS.values.foreach(_.stop())
     }
 
     /**
      *
      * @param mdlId Model ID.
      * @param inspId Inspection ID.
-     * @param inspArgs Inspection arguments as JSON string.
+     * @param args Inspection arguments.
      * @param parent Optional parent trace span.
-     * @return
      */
-    def inspect(mdlId: String, inspId: String, inspArgs: String, parent: Span = null): NCInspectionResult = ???
+    def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
+        startScopedSpan("inspect", parent, "modelId" → mdlId, "inspectionId" → inspId) { _ ⇒
+            INSPECTORS.get(inspId) match {
+                case Some(inspector) ⇒ inspector.inspect(mdlId, inspId, args)
+                case None ⇒ throw new NCE(s"Unsupported inspection: $inspId")
+            }
+        }
 }

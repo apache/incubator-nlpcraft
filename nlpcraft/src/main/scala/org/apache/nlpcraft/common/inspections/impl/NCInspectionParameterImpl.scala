@@ -15,45 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.inspections2
+package org.apache.nlpcraft.common.inspections.impl
 
-/**
- * Parameter descriptor for the inspection.
- */
-trait NCInspectionParameter {
-    /**
-     *
-     * @return
-     */
-    def id(): String
+import org.apache.nlpcraft.common.inspections.NCInspectionParameter
 
-    /**
-     *
-     * @return
-     */
-    def name(): String
-
-    /**
-     *
-     * @return
-     */
-    def value(): Option[String]
-
-    /**
-     *
-     * @return
-     */
-    def valueType(): Option[String]
-
-    /**
-     *
-     * @return
-     */
-    def synopsis(): String
-
-    /**
-     *
-     * @return
-     */
-    def description(): Option[String]
-}
+case class NCInspectionParameterImpl(
+    id: String,
+    name: String,
+    value: String,
+    valueType: String,
+    synopsis: String,
+    description: String
+) extends NCInspectionParameter

@@ -36,7 +36,7 @@ import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
 import org.apache.nlpcraft.probe.mgrs.deploy.NCDeployManager
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
+import org.apache.nlpcraft.probe.mgrs.inspections.NCInspectionManager
 import org.apache.nlpcraft.probe.mgrs.lifecycle.NCLifecycleManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
@@ -423,7 +423,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             NCNlpCoreManager.start(span)
             NCNumericManager.start(span)
             NCDeployManager.start(span)
-            NCProbeInspectionManager.start(span)
+            NCInspectionManager.start(span)
             NCModelManager.start(span)
             NCCommandManager.start(span)
             NCDictionaryManager.start(span)
@@ -463,7 +463,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             NCDictionaryManager.stop(span)
             NCCommandManager.stop(span)
             NCModelManager.stop(span)
-            NCProbeInspectionManager.stop(span)
+            NCInspectionManager.stop(span)
             NCDeployManager.stop(span)
             NCNumericManager.stop(span)
             NCNlpCoreManager.stop(span)

@@ -15,55 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.inspections2
+package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
-/**
- *
- */
-trait NCInspectionResult {
-    /**
-     *
-     */
-    def inspectionId();
+import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.inspections.NCInspectionResult
 
-    /**
-     *
-     */
-    def modelId();
+import scala.concurrent.Future
 
-    /**
-     *
-     * @return
-     */
-    def inspectionArguments(): String
-
-    /**
-     *
-     * @return
-     */
-    def durationMs(): Long
-
-    /**
-     *
-     * @return
-     */
-    def timestamp(): Long
-
-    /**
-     *
-     * @return
-     */
-    def errors(): java.util.List[String]
-
-    /**
-     *
-     * @return
-     */
-    def warnings(): java.util.List[String]
-
-    /**
-     *
-     * @return
-     */
-    def suggestions(): java.util.List[String]
+private[inspections] trait NCInspector {
+    def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult]
 }

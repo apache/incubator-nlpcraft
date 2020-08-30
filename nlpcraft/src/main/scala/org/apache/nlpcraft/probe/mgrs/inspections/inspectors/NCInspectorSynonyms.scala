@@ -18,47 +18,62 @@
 package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspector}
+import org.apache.nlpcraft.common.inspections.NCInspectionResult
+import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
+import scala.collection.{Seq, mutable}
+import scala.concurrent.Future
 
 // TODO:
 object NCInspectorSynonyms extends NCService with NCInspector {
     private final val TOO_MANY_SYNS = 10000
 
-    override def inspect(mdlId: String, prevLayerInspection: Option[NCInspection], parent: Span = null): NCInspection =
+    override def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
-            val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
+            Future {
+                val now = System.currentTimeMillis()
 
-            val warns = mutable.ArrayBuffer.empty[String]
+                val mdl = NCModelManager.getModel(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
 
-            val parser = new NCMacroParser()
+                val warns = mutable.ArrayBuffer.empty[String]
 
-            mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+                val parser = new NCMacroParser()
 
-            val mdlSyns = mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms.asScala.flatMap(parser.expand))
+                mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
 
-            mdlSyns.foreach { case (elemId, syns) ⇒
-                val size = syns.size
+                val mdlSyns = mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms.asScala.flatMap(parser.expand))
 
-                if (size == 0)
-                    warns += s"Element: '$elemId' doesn't have synonyms"
-                else if (size > TOO_MANY_SYNS)
-                    warns += s"Element: '$elemId' has too many synonyms: $size"
+                mdlSyns.foreach { case (elemId, syns) ⇒
+                    val size = syns.size
 
-                val others = mdlSyns.filter { case (othId, _) ⇒ othId != elemId}
+                    if (size == 0)
+                        warns += s"Element: '$elemId' doesn't have synonyms"
+                    else if (size > TOO_MANY_SYNS)
+                        warns += s"Element: '$elemId' has too many synonyms: $size"
 
-                val intersects =
-                    others.filter { case (_, othSyns) ⇒ othSyns.intersect(syns).nonEmpty }.toMap.keys.mkString(",")
+                    val others = mdlSyns.filter { case (othId, _) ⇒ othId != elemId }
 
-                if (intersects.nonEmpty)
-                    warns += s"Element: '$elemId' has same synonyms with '$intersects'"
-            }
+                    val intersects =
+                        others.filter { case (_, othSyns) ⇒ othSyns.intersect(syns).nonEmpty }.toMap.keys.mkString(",")
 
-            NCInspection(errors = None, warnings = if (warns.isEmpty) None else Some(warns), suggestions = None)
+                    if (intersects.nonEmpty)
+                        warns += s"Element: '$elemId' has same synonyms with '$intersects'"
+                }
+
+                NCInspectionResultImpl(
+                    inspectionId = inspId,
+                    modelId = mdlId,
+                    inspectionArguments = None,
+                    durationMs = System.currentTimeMillis() - now,
+                    timestamp = now,
+                    errors = Seq.empty,
+                    warnings = warns,
+                    suggestions = Seq.empty
+                )
+            }(scala.concurrent.ExecutionContext.Implicits.global)
         }
 }

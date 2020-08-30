@@ -17,25 +17,26 @@
 
 package org.apache.nlpcraft.probe.mgrs.model
 
+import java.util
 import java.util.regex.{Pattern, PatternSyntaxException}
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.util.NCUtils._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
-import org.apache.nlpcraft.common.inspections.NCInspectionType
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
+import org.apache.nlpcraft.common.util.NCUtils._
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind._
 import org.apache.nlpcraft.probe.mgrs.deploy._
-import org.apache.nlpcraft.probe.mgrs.inspections.NCProbeInspectionManager
+import org.apache.nlpcraft.probe.mgrs.inspections.NCInspectionManager
 import org.apache.nlpcraft.probe.mgrs.{NCModelDecorator, NCSynonym, NCSynonymChunk}
 
-import collection.convert.ImplicitConversions._
+import scala.collection.JavaConverters._
 import scala.collection.convert.DecorateAsScala
+import scala.collection.convert.ImplicitConversions._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.util.control.Exception._
@@ -51,6 +52,8 @@ object NCModelManager extends NCService with DecorateAsScala {
 
     // Access mutex.
     private final val mux = new Object()
+
+    private final val DFLT_INSPECTIONS = Seq("macros", "intents", "synonyms")
 
     /**
       *
@@ -108,18 +111,23 @@ object NCModelManager extends NCService with DecorateAsScala {
 
             tbl.info(logger, Some(s"Models deployed: ${models.size}\n"))
 
-            models.values.foreach(mdl ⇒ {
+            for (mdl ← models.values; insId ← DFLT_INSPECTIONS) {
                 val mdlId = mdl.model.getId
 
-                val inspections = NCProbeInspectionManager.inspect(mdlId, NCInspectionType.values.toSeq)
+                NCInspectionManager.inspect(mdlId, insId, null, parent).collect {
+                    case res ⇒
+                        res.errors().asScala.foreach(
+                            p ⇒ logger.error(s"Validation error [model=$mdlId, inspection=$insId, text=$p")
+                        )
+                        res.warnings().asScala.foreach(
+                            p ⇒ logger.warn(s"Validation warning [model=$mdlId, inspection=$insId, text=$p")
+                        )
+                        res.suggestions().asScala.foreach(
+                            p ⇒ logger.info(s"Validation suggestion [model=$mdlId, inspection=$insId, text=$p")
+                        )
+                }(scala.concurrent.ExecutionContext.Implicits.global)
+            }
 
-                inspections.foreach { case(t, i) ⇒
-                    i.errors.asScala.foreach(p ⇒ logger.error(s"Validation error [model=$mdlId, type=$t, text=$p"))
-                    i.warnings.asScala.foreach(p ⇒ logger.warn(s"Validation warning [model=$mdlId, type=$t, text=$p"))
-                    i.suggestions.asScala.foreach(p ⇒ logger.info(s"Validation suggestion [model=$mdlId, type=$t, text=$p"))
-                }
-            })
-            
             addTags(
                 span,
                 "deployedModels" → models.values.map(_.model.getId).mkString(",")
@@ -731,13 +739,32 @@ object NCModelManager extends NCService with DecorateAsScala {
 
     /**
       *
-      * @param id Model ID.
+      * @param mdlId Model ID.
       * @return
       */
-    def getModel(id: String, parent: Span = null): Option[NCModelDecorator] =
-        startScopedSpan("getModel", parent, "id" → id) { _ ⇒
+    def getModel(mdlId: String, parent: Span = null): Option[NCModelDecorator] =
+        startScopedSpan("getModel", parent, "modelId" → mdlId) { _ ⇒
             mux.synchronized {
-                models.get(id)
+                models.get(mdlId)
             }
+        }
+
+    /**
+      * Gets model data which can be transfered between probe and server.
+      *
+      * @param mdlId Model ID.
+      */
+    def getModelTransferData(mdlId: String, parent: Span = null): java.util.Map[String, Any] =
+        startScopedSpan("getModel", parent, "mdlId" → mdlId) { _ ⇒
+            val mdl = mux.synchronized { models.get(mdlId) }.
+                getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
+
+            val data = new util.HashMap[String, Any]()
+
+            data.put("macros", mdl.getMacros)
+            data.put("elementsSynonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
+            data.put("intentsSamples", NCIntentScanner.scanIntentsSamples(mdl.proxy).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
+
+            data
         }
 }

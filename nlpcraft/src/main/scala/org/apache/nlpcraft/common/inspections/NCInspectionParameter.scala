@@ -17,11 +17,43 @@
 
 package org.apache.nlpcraft.common.inspections
 
-object NCInspectionType extends Enumeration {
-    type NCInspectionType = Value
+/**
+ * Parameter descriptor for the inspection.
+ */
+trait NCInspectionParameter {
+    /**
+     *
+     * @return
+     */
+    def id(): String
 
-    val SUGGEST_SYNONYMS: Value = Value
-    val INSPECTION_MACROS: Value = Value
-    val INSPECTION_SYNONYMS: Value = Value
-    val INSPECTION_INTENTS: Value = Value
+    /**
+     *
+     * @return
+     */
+    def name(): String
+
+    /**
+     *
+     * @return
+     */
+    def value(): String
+
+    /**
+     *
+     * @return
+     */
+    def valueType(): String
+
+    /**
+     *
+     * @return
+     */
+    def synopsis(): String
+
+    /**
+     *
+     * @return
+     */
+    def description(): String
 }
