@@ -28,7 +28,7 @@ import scala.compat.Platform._
   * extend this class are typically called 'managers'.
   */
 abstract class NCService extends LazyLogging with NCOpenCensusTrace {
-    private val startMsec = currentTime
+    private val startMs = currentTime
 
     @volatile private var started = false
     
@@ -50,13 +50,12 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         
         started = true
 
-        val dur = s"[${currentTime - startMsec}ms]"
+        val dur = s"[${currentTime - startMs}ms]"
 
         logger.info(s"$clsName started $dur")
         
         addTags(currentSpan(),
-            "startDurationMs" → (currentTime - startMsec),
-            "state" → started
+            "startDurationMs" → (currentTime - startMs), "state" → started
         )
         
         this

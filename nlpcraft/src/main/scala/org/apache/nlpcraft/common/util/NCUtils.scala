@@ -1150,8 +1150,6 @@ object NCUtils extends LazyLogging {
 
         def DAYS: Int = v * 1000 * 60 * 60 * 24
 
-        def msecs: Int = MSECS
-
         def ms: Int = MS
 
         def secs: Int = SECS
@@ -1180,8 +1178,6 @@ object NCUtils extends LazyLogging {
         def HOURS: Long = v * 1000 * 60 * 60
 
         def DAYS: Long = v * 1000 * 60 * 60 * 24
-
-        def msecs: Long = MSECS
 
         def ms: Long = MS
 
