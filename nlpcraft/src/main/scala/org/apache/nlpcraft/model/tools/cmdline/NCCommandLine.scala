@@ -220,7 +220,7 @@ object NCCommandLine extends App {
                         lines += T___ + param.names.zip(Stream.continually(param.valueDesc.get)).map(t => s"${t._1}=${t._2}").mkString(", ")
                     else
                         lines += s"$T___${param.names.mkString(", ")}"
-                    
+
 
                     if (param.optional)
                         lines += s"$T___${T___}Optional."
