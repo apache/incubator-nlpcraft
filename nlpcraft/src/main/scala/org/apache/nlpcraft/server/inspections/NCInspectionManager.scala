@@ -42,11 +42,11 @@ object NCInspectionManager extends NCService {
                 isServerSide = false
             ),
             NCInspectionImpl(
-                id = "elements",
-                name = "elements",
-                synopsis = "elements",
+                id = "intents",
+                name = "intents",
+                synopsis = "intents",
                 parameters = Seq.empty,
-                description = "elements",
+                description = "intents",
                 isServerSide = false
             ),
             NCInspectionImpl(
@@ -58,11 +58,11 @@ object NCInspectionManager extends NCService {
                 isServerSide = false
             ),
             NCInspectionImpl(
-                id = "synonyms_suggestions",
-                name = "synonyms_suggestions",
-                synopsis = "synonyms_suggestions",
+                id = "suggestions",
+                name = "suggestions",
+                synopsis = "suggestions",
                 parameters = Seq.empty,
-                description = "synonyms_suggestions",
+                description = "suggestions",
                 isServerSide = true
             )
         )
@@ -91,7 +91,7 @@ object NCInspectionManager extends NCService {
      * @param args Inspection arguments .
      * @param parent Optional parent trace span.
      */
-    def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
+    def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         SRV_INSPECTORS.get(inspId) match {
             case Some(inspector) ⇒ inspector.inspect(mdlId, inspId, args, parent)
             case None ⇒ NCProbeManager.getProbeInspection(mdlId, inspId, args, parent)

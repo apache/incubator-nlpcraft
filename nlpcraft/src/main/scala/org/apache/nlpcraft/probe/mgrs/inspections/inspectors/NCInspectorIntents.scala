@@ -34,7 +34,7 @@ import scala.concurrent.Future
 object NCInspectorIntents extends NCService with NCInspector {
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
-    override def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
+    override def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             Future {
                 val now = System.currentTimeMillis()

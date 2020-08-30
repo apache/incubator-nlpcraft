@@ -661,7 +661,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == mdlId)))
                 throw new NCE(s"Probe not found for model: $mdlId")
 
-            NCInspectionManager.inspect(mdlId, inspId, args.orNull, span).collect {
+            NCInspectionManager.inspect(mdlId, inspId, args, span).collect {
                 // We have to use GSON (not spray) here to serialize `result` field.
                 case res ⇒ GSON.toJson(Map("status" → API_OK.toString, "result" → res).asJava)
             }
@@ -1692,7 +1692,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             val code = "NC_ERROR"
 
             // We have to log error reason because even general exceptions are not expected here.
-            logger.warn(s"Unexpected error: $errMsg", e)
+            logger.warn(s"Unexpected top level REST API error: $errMsg", e)
 
             completeError(StatusCodes.BadRequest, code, errMsg)
 

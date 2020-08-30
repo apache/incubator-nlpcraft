@@ -6,5 +6,5 @@ import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import scala.concurrent.Future
 
 private[inspections] trait NCInspector {
-    def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult]
+    def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult]
 }

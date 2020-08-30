@@ -37,7 +37,7 @@ object NCInspectionManager extends NCService with NCOpenCensusModelStats {
         )
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        INSPECTORS.values.foreach(_.start())
+        INSPECTORS.values.foreach(_.start(parent))
 
         super.start(parent)
     }
@@ -45,7 +45,7 @@ object NCInspectionManager extends NCService with NCOpenCensusModelStats {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
 
-        INSPECTORS.values.foreach(_.stop())
+        INSPECTORS.values.foreach(_.stop(parent))
     }
 
     /**
@@ -55,7 +55,7 @@ object NCInspectionManager extends NCService with NCOpenCensusModelStats {
      * @param args Inspection arguments.
      * @param parent Optional parent trace span.
      */
-    def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
+    def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId, "inspectionId" → inspId) { _ ⇒
             INSPECTORS.get(inspId) match {
                 case Some(inspector) ⇒ inspector.inspect(mdlId, inspId, args)

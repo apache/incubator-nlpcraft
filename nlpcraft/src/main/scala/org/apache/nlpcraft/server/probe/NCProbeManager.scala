@@ -148,7 +148,7 @@ object NCProbeManager extends NCService {
     @volatile private var isStopping: AtomicBoolean = _
 
     @volatile private var probeInspecs: ConcurrentHashMap[String, Promise[NCInspectionResult]] = _
-    @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[Map[String, AnyRef]]] = _
+    @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
 
     /**
       *
@@ -170,7 +170,7 @@ object NCProbeManager extends NCService {
         isStopping = new AtomicBoolean(false)
 
         probeInspecs = new ConcurrentHashMap[String, Promise[NCInspectionResult]]()
-        modelsInfo = new ConcurrentHashMap[String, Promise[Map[String, AnyRef]]]()
+        modelsInfo = new ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]]()
         
         pool = Executors.newFixedThreadPool(Config.poolSize)
         
@@ -693,11 +693,7 @@ object NCProbeManager extends NCService {
                 if (promise != null) {
                     val r: T = GSON.fromJson(probeMsg.data[String]("resp"), typ)
 
-                    println("+!r=" + r)
-
                     promise.success(r)
-
-                    println("+!r!!!=" + r)
                 }
             }
             
@@ -987,17 +983,20 @@ object NCProbeManager extends NCService {
       * @param parent
       * @return
       */
-    def getProbeInspection(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
+    def getProbeInspection(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId, "inspId" → inspId) { _ ⇒
-            probePromise(
-                parent,
-                mdlId,
-                probeInspecs,
-                "S2P_PROBE_INSPECTION",
-                "mdlId" → mdlId,
-                "inspId" → inspId,
-                "args" → GSON.toJson(args)
-            )
+            val m =
+                Map(
+                    "mdlId" → mdlId,
+                    "inspId" → inspId,
+                    "args" →
+                        (args match {
+                            case Some(a) ⇒ GSON.toJson(a)
+                            case None ⇒ null
+                        })
+                )
+
+            probePromise(parent, mdlId, probeInspecs, "S2P_PROBE_INSPECTION", m.filter(_._2 != null).toSeq :_*)
         }
 
     /**
@@ -1006,7 +1005,7 @@ object NCProbeManager extends NCService {
       * @param parent
       * @return
       */
-    def getModelInfo(mdlId: String, parent: Span = null): Future[Map[String, AnyRef]] =
+    def getModelInfo(mdlId: String, parent: Span = null): Future[java.util.Map[String, AnyRef]] =
         startScopedSpan("getModelInfo", parent, "modelId" → mdlId) { _ ⇒
             probePromise(
                 parent,
@@ -1023,18 +1022,18 @@ object NCProbeManager extends NCService {
       * @param mdlId
       * @param promises
       * @param msgId
-      * @param mdgParams
+      * @param msgParams
       */
     private def probePromise[T](
         parent: Span,
         mdlId: String,
         promises: ConcurrentHashMap[String, Promise[T]],
         msgId: String,
-        mdgParams: (String, Serializable)*
+        msgParams: (String, Serializable)*
     ): Future[T] =
         getProbeForModelId(mdlId) match {
             case Some(probe) ⇒
-                val msg = NCProbeMessage(msgId, mdgParams:_*)
+                val msg = NCProbeMessage(msgId, msgParams:_*)
 
                 val promise = Promise[T]()
 

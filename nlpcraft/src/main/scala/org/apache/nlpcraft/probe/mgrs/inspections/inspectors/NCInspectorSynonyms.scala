@@ -32,7 +32,7 @@ import scala.concurrent.Future
 object NCInspectorSynonyms extends NCService with NCInspector {
     private final val TOO_MANY_SYNS = 10000
 
-    override def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
+    override def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             Future {
                 val now = System.currentTimeMillis()

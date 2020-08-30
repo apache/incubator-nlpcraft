@@ -96,7 +96,7 @@ object NCCommandManager extends NCService {
                         NCInspectionManager.inspect(
                             mdlId = msg.data[String]("mdlId"),
                             inspId = msg.data[String]("inspId"),
-                            args = msg.data[String]("args"),
+                            args = msg.dataOpt[String]("args"),
                             span
                         ).collect {
                             case res ⇒

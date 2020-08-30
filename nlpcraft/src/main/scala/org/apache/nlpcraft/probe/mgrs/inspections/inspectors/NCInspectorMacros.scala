@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 // TODO:
 object NCInspectorMacros extends NCService with NCInspector {
-    override def inspect(mdlId: String, inspId: String, args: String, parent: Span = null): Future[NCInspectionResult] =
+    override def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             Future {
                 val now = System.currentTimeMillis()
