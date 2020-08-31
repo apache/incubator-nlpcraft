@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.probe.mgrs.model
 
 import java.util
-import java.util.concurrent.{ExecutorService, Executors}
 import java.util.regex.{Pattern, PatternSyntaxException}
 
 import io.opencensus.trace.Span
@@ -40,9 +39,8 @@ import scala.collection.convert.DecorateAsScala
 import scala.collection.convert.ImplicitConversions._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
-import scala.util.control.Exception._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.control.Exception._
 
 /**
   * Model manager.

@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.server.rest
 
+import akka.http.scaladsl.coding.Coders
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
@@ -33,6 +34,7 @@ import org.apache.nlpcraft.common.{NCE, NCException, U}
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
+import org.apache.nlpcraft.server.inspections.NCInspectionManager
 import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
@@ -44,10 +46,6 @@ import spray.json.{JsObject, JsValue, RootJsonFormat}
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import akka.http.scaladsl.coding.Coders
-import org.apache.nlpcraft.common.inspections.NCInspectionParameter
-import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager.logger
-import org.apache.nlpcraft.server.inspections.NCInspectionManager
 
 /**
   * REST API default implementation.
