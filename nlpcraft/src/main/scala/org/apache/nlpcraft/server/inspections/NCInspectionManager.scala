@@ -19,7 +19,7 @@ package org.apache.nlpcraft.server.inspections
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
-import org.apache.nlpcraft.common.inspections.impl.NCInspectionImpl
+import org.apache.nlpcraft.common.inspections.impl.{NCInspectionImpl, NCInspectionParameterImpl}
 import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspectionResult}
 import org.apache.nlpcraft.server.inspections.inspectors.NCInspectorSuggestions
 import org.apache.nlpcraft.server.probe.NCProbeManager
@@ -28,10 +28,11 @@ import scala.collection.Map
 import scala.concurrent.Future
 
 /**
- *
+ * TODO:
  */
 object NCInspectionManager extends NCService {
-    private final val INSPECTIONS: Seq[NCInspection] =
+    private final val INSPECTIONS: Seq[NCInspection] = {
+        // TODO:
         Seq(
             NCInspectionImpl(
                 id = "macros",
@@ -61,11 +62,21 @@ object NCInspectionManager extends NCService {
                 id = "suggestions",
                 name = "suggestions",
                 synopsis = "suggestions",
-                parameters = Seq.empty,
+                parameters = Seq(
+                    NCInspectionParameterImpl(
+                        id = "minScore",
+                        name = "minScore",
+                        value = "minScore",
+                        valueType = "double",
+                        synopsis = "minScore, range  between 0 and 1",
+                        description = "minScore"
+                    )
+                ),
                 description = "suggestions",
                 isServerSide = true
             )
         )
+    }
 
     private final val SRV_INSPECTORS =
         Map(

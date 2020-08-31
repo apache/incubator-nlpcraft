@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.makro.NCMacroParser
-import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
@@ -29,7 +29,7 @@ import scala.collection.{Seq, mutable}
 import scala.concurrent.Future
 
 // TODO:
-object NCInspectorSynonyms extends NCService with NCInspector {
+object NCInspectorSynonyms extends NCInspector {
     private final val TOO_MANY_SYNS = 10000
 
     override def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
@@ -74,6 +74,6 @@ object NCInspectorSynonyms extends NCService with NCInspector {
                     warnings = warns,
                     suggestions = Seq.empty
                 )
-            }(scala.concurrent.ExecutionContext.Implicits.global)
+            }(executor)
         }
 }

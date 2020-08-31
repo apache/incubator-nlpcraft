@@ -26,7 +26,7 @@ import org.apache.nlpcraft.probe.mgrs.inspections.inspectors.{NCInspectorIntents
 import scala.concurrent.Future
 
 /**
- *
+ * TODO:
  */
 object NCInspectionManager extends NCService with NCOpenCensusModelStats {
     private final val INSPECTORS =

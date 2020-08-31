@@ -18,9 +18,9 @@
 package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
-import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
@@ -28,7 +28,7 @@ import scala.collection.Seq
 import scala.concurrent.Future
 
 // TODO:
-object NCInspectorMacros extends NCService with NCInspector {
+object NCInspectorMacros extends NCInspector {
     override def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             Future {
@@ -40,7 +40,7 @@ object NCInspectorMacros extends NCService with NCInspector {
 
                 val warns =
                     mdl.getMacros.asScala.keys.
-                        // TODO: is it valid check? (simple contains)
+                        // TODO: is it valid check? (simple contains ?)
                         flatMap(m ⇒ if (syns.exists(_.contains(m))) None else Some(s"Macro is not used: $m")).
                         toSeq
 
@@ -54,6 +54,6 @@ object NCInspectorMacros extends NCService with NCInspector {
                     warnings = warns,
                     suggestions = Seq.empty
                 )
-            }(scala.concurrent.ExecutionContext.Implicits.global)
+            }(executor)
         }
 }

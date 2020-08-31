@@ -18,11 +18,11 @@
 package org.apache.nlpcraft.probe.mgrs.inspections.inspectors
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
-import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
@@ -31,7 +31,7 @@ import scala.collection._
 import scala.concurrent.Future
 
 // TODO:
-object NCInspectorIntents extends NCService with NCInspector {
+object NCInspectorIntents extends NCInspector {
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
     override def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
@@ -78,6 +78,6 @@ object NCInspectorIntents extends NCService with NCInspector {
                     warnings = warns,
                     suggestions = Seq.empty
                 )
-            }(scala.concurrent.ExecutionContext.Implicits.global)
+            }(executor)
         }
 }

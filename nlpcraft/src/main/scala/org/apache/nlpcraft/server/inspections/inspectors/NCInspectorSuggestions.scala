@@ -19,7 +19,7 @@ package org.apache.nlpcraft.server.inspections.inspectors
 
 import java.util
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
-import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, ExecutorService, Executors, TimeUnit}
+import java.util.concurrent._
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -30,21 +30,21 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
+import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils
-import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future, Promise}
+import scala.concurrent.{ExecutionContextExecutor, Future, Promise}
 
 // TODO: Possible parameter 'minScore' (double 0 .. 1)
-object NCInspectorSuggestions extends NCService with NCInspector {
+object NCInspectorSuggestions extends NCInspector {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20
@@ -62,9 +62,6 @@ object NCInspectorSuggestions extends NCService with NCInspector {
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
     }
-
-    @volatile private var pool: ExecutorService = _
-    @volatile private var executor: ExecutionContextExecutor = _
 
     private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
         (resp: HttpResponse) ⇒ {
@@ -88,9 +85,13 @@ object NCInspectorSuggestions extends NCService with NCInspector {
         }
 
     case class Suggestion(word: String, score: Double)
+
     case class RequestData(sentence: String, example: String, elementId: String, index: Int)
+
     case class RestRequestSentence(text: String, indexes: util.List[Int])
+
     case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, min_score: Double)
+
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
         require(
@@ -103,7 +104,6 @@ object NCInspectorSuggestions extends NCService with NCInspector {
         )
     }
 
-    // TODO:
     case class SuggestionResult(
         synonym: String,
         ctxWorldServerScore: Double,
@@ -111,7 +111,9 @@ object NCInspectorSuggestions extends NCService with NCInspector {
     )
 
     private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
+
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
+
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
 
     /**
@@ -455,15 +457,15 @@ object NCInspectorSuggestions extends NCService with NCInspector {
                                     )
                                 )
                             }
+                        }
                     }
-                }
-                catch {
-                    case e: NCE ⇒ promise.failure(e)
-                    case e: Throwable ⇒
-                        logger.warn("Unexpected error.", e)
+                    catch {
+                        case e: NCE ⇒ promise.failure(e)
+                        case e: Throwable ⇒
+                            logger.warn("Unexpected error.", e)
 
-                        promise.failure(e)
-                }
+                            promise.failure(e)
+                    }
                 case e: Throwable ⇒
                     logger.warn(s"Error getting model information: $mdlId", e)
 
@@ -473,20 +475,5 @@ object NCInspectorSuggestions extends NCService with NCInspector {
 
             promise.future
         }
-
-    override def start(parent: Span): NCService =
-        startScopedSpan("start", parent) { _ ⇒
-            pool = Executors.newCachedThreadPool()
-            executor = ExecutionContext.fromExecutor(pool)
-
-            super.start(parent)
-        }
-
-    override def stop(parent: Span): Unit =
-        startScopedSpan("stop", parent) { _ ⇒
-            super.stop(parent)
-
-            NCUtils.shutdownPools(pool)
-            executor = null
-        }
 }
+
