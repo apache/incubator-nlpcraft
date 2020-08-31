@@ -39,12 +39,14 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.user.NCUserManager
 import spray.json.DefaultJsonProtocol._
-import spray.json.{DeserializationException, JsObject, JsValue, RootJsonFormat}
+import spray.json.{JsObject, JsValue, RootJsonFormat}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import akka.http.scaladsl.coding.Coders
+import org.apache.nlpcraft.common.inspections.NCInspectionParameter
+import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager.logger
 import org.apache.nlpcraft.server.inspections.NCInspectionManager
 
 /**
@@ -664,6 +666,71 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             NCInspectionManager.inspect(mdlId, inspId, args, span).collect {
                 // We have to use GSON (not spray) here to serialize `result` field.
                 case res ⇒ GSON.toJson(Map("status" → API_OK.toString, "result" → res).asJava)
+            }
+        }
+    }
+
+    /**
+      *
+      * @return
+      */
+    protected def inspections$All(): Route = {
+        case class Req(
+            acsTok: String
+        )
+        case class Parameter(
+            id: String,
+            name: String,
+            value: String,
+            valueType: String,
+            synopsis: String,
+            description: String
+        )
+        case class Inspection(
+            id: String,
+            name: String,
+            synopsis: String,
+            parameters: Seq[Parameter],
+            description: String,
+            isServerSide: Boolean
+       )
+        case class Res(
+            status: String,
+            inspections: Seq[Inspection]
+        )
+
+        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
+        implicit val paramFmt: RootJsonFormat[Parameter] = jsonFormat6(Parameter)
+        implicit val inspFmt: RootJsonFormat[Inspection] = jsonFormat6(Inspection)
+        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+
+        entity(as[Req]) { req ⇒
+            startScopedSpan("inspections$All", "acsTok" → req.acsTok) { span ⇒
+                checkLength("acsTok", req.acsTok, 256)
+
+                authenticateAsAdmin(req.acsTok)
+
+                val inspections = NCInspectionManager.getInspections(span).map(i ⇒ Inspection(
+                    id = i.id(),
+                    name = i.name(),
+                    synopsis = i.synopsis(),
+                    parameters = i.parameters().asScala.map(p ⇒
+                        Parameter(
+                            id = p.id(),
+                            name = p.name(),
+                            value = p.value(),
+                            valueType = p.valueType(),
+                            synopsis = p.synopsis(),
+                            description = p.description()
+                        )
+                    ),
+                    description = i.description(),
+                    isServerSide = i.isServerSide
+                ))
+
+                complete {
+                    Res(API_OK, inspections)
+                }
             }
         }
     }
@@ -1794,14 +1861,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                 path(API / "feedback" / "delete") { withLatency(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
                                 path(API / "probe" / "all") { withLatency(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
                                 path(API / "ask") { withLatency(M_ASK_LATENCY_MS, ask$) } ~
-                                (path(API / "model" / "inspect") &
-                                    entity(as[JsValue])
-                                ) {
-                                    req ⇒
-                                        onSuccess(withLatency(M_MODEL_INSPECT_LATENCY_MS, inspect$(req))) {
-                                            js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
-                                        }
-                                } ~
                                 (path(API / "ask" / "sync") &
                                     entity(as[JsValue]) &
                                     optionalHeaderValueByName("User-Agent") &
@@ -1811,7 +1870,16 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                         onSuccess(withLatency(M_ASK_SYNC_LATENCY_MS, ask$Sync(req, userAgentOpt, rmtAddr))) {
                                             js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
                                         }
-                                }}
+                                }} ~
+                                (path(API / "model" / "inspect") &
+                                    entity(as[JsValue])
+                                    ) {
+                                    req ⇒
+                                        onSuccess(withLatency(M_MODEL_INSPECT_LATENCY_MS, inspect$(req))) {
+                                            js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
+                                        }
+                                } ~
+                                path(API / "model" / "inspections") { withLatency(M_MODEL_INSPECTIONS_LATENCY_MS, inspections$All) }
                             }
                         }
                     }

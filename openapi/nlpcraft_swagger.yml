@@ -176,7 +176,7 @@ paths:
             required:
               - acsTok
               - mdlId
-              - types
+              - inspId
             properties:
               acsTok:
                 type: string
@@ -186,12 +186,14 @@ paths:
                 type: string
                 maxLength: 32
                 description: Data model ID for which elements synonyms will be suggested
-              types:
-                type: array
-                items:
-                  type: string
+              inspId:
+                type: string
+                maxLength: 32
+                description: Inspection ID, currently supported are `macros`, `synonyms`, `intents` and `suggestions`
+              args:
+                type: object
                 description: >-
-                  Inspections set. Possible values are: INSPECTION_MACROS, INSPECTION_SYNONYMS, INSPECTION_INTENTS, SUGGEST_SYNONYMS or ALL.
+                  Inspection parameter. Currently supported `minScore` double value for `suggestions` inspection.
       responses:
         '200':
           description: Successful operation.
@@ -210,6 +212,104 @@ paths:
                 type: object
                 description: Inspections data for given model
 
+        '400':
+          description: Failed operation.
+          schema:
+            $ref: '#/definitions/Error'
+  /model/inspectons:
+    post:
+      tags:
+        - Models inspections
+      summary: Gets all models inspections.
+      description: >-
+        Gets all models inspections.. Administrative privileges required.
+      operationId: getAllInspections
+      parameters:
+        - in: body
+          name: Payload body
+          description: JSON request.
+          required: true
+          schema:
+            type: object
+            required:
+              - acsTok
+            properties:
+              acsTok:
+                maxLength: 256
+                description: Access token obtain via '/signin' call
+                type: string
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            type: object
+            required:
+              - status
+              - inspections
+            properties:
+              status:
+                type: string
+                description: Status code of this operation
+                enum:
+                  - API_OK
+              probes:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - name
+                    - synopsis
+                    - parameters
+                    - description
+                    - isServerSide
+                  properties:
+                    id:
+                      description: Inspection ID
+                      type: string
+                    name:
+                      description: Inspection name
+                      type: string
+                    synopsis:
+                      description: Inspection synopsis
+                      type: string
+                    parameters:
+                      description: Parameters
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - id
+                          - name
+                          - value
+                          - valueType
+                          - synopsis
+                          - description
+                        properties:
+                          id:
+                            description: Parameters ID
+                            type: string
+                          name:
+                            description: Parameters name
+                            type: string
+                          value:
+                            description: Parameters value
+                            type: string
+                          valueType:
+                            description: Parameters valueType
+                            type: string
+                          synopsis:
+                            description: Parameters synopsis
+                            type: string
+                          description:
+                            description: Parameters description
+                            type: string
+                    description:
+                      description: Inspection description
+                      type: string
+                    isServerSide:
+                      description: Inspection `is-Server-Side` flag
+                      type: boolean
         '400':
           description: Failed operation.
           schema:

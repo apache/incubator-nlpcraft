@@ -19,8 +19,7 @@ package org.apache.nlpcraft.server.inspections.inspectors
 
 import java.util
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
-import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, TimeUnit}
-import java.util.{List => JList}
+import java.util.concurrent.{ConcurrentHashMap, CopyOnWriteArrayList, CountDownLatch, ExecutorService, Executors, TimeUnit}
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -42,34 +41,56 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future, Promise}
 
-// TODO:
+// TODO: Possible parameter 'minScore' (double 0 .. 1)
 object NCInspectorSuggestions extends NCService with NCInspector {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20
+    private final val DFLT_MIN_SCORE = 0.0
 
     // For warnings.
     private final val MIN_CNT_INTENT = 5
     private final val MIN_CNT_MODEL = 20
 
+    private final val GSON = new Gson
+    private final val TYPE_RESP = new TypeToken[util.List[util.List[Suggestion]]]() {}.getType
+    private final val TYPE_ARGS = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
+    private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
+
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
-        val suggestionsMinScore: Int = getInt("nlpcraft.server.ctxword.suggestions.minScore")
-
-        @throws[NCE]
-        def check(): Unit =
-            if (suggestionsMinScore < 0 || suggestionsMinScore > 1)
-                throw new NCE("Invalid 'nlpcraft.server.ctxword.suggestions.minScore' parameter value. It should be double value between 0 and 1, inclusive")
     }
 
-    Config.check()
+    @volatile private var pool: ExecutorService = _
+    @volatile private var executor: ExecutionContextExecutor = _
+
+    private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
+        (resp: HttpResponse) ⇒ {
+            val code = resp.getStatusLine.getStatusCode
+            val e = resp.getEntity
+
+            val js = if (e != null) EntityUtils.toString(e) else null
+
+            if (js == null)
+                throw new RuntimeException(s"Unexpected empty response [code=$code]")
+
+            code match {
+                case 200 ⇒
+                    val data: util.List[util.List[Suggestion]] = GSON.fromJson(js, TYPE_RESP)
+
+                    data.asScala.map(p ⇒ if (p.isEmpty) Seq.empty else p.asScala.tail)
+
+                case 400 ⇒ throw new RuntimeException(js)
+                case _ ⇒ throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
+            }
+        }
 
     case class Suggestion(word: String, score: Double)
     case class RequestData(sentence: String, example: String, elementId: String, index: Int)
-    case class RestRequestSentence(text: String, indexes: JList[Int])
-    case class RestRequest(sentences: JList[RestRequestSentence], limit: Int, min_score: Double)
+    case class RestRequestSentence(text: String, indexes: util.List[Int])
+    case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, min_score: Double)
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
         require(
@@ -88,31 +109,6 @@ object NCInspectorSuggestions extends NCService with NCInspector {
         ctxWorldServerScore: Double,
         suggestedCount: Int
     )
-
-    private final val GSON = new Gson
-    private final val TYPE_RESP = new TypeToken[JList[JList[Suggestion]]]() {}.getType
-    private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
-
-    private final val HANDLER: ResponseHandler[Seq[Seq[Suggestion]]] =
-        (resp: HttpResponse) ⇒ {
-            val code = resp.getStatusLine.getStatusCode
-            val e = resp.getEntity
-
-            val js = if (e != null) EntityUtils.toString(e) else null
-
-            if (js == null)
-                throw new RuntimeException(s"Unexpected empty response [code=$code]")
-
-            code match {
-                case 200 ⇒
-                    val data: JList[JList[Suggestion]] = GSON.fromJson(js, TYPE_RESP)
-
-                    data.asScala.map(p ⇒ if (p.isEmpty) Seq.empty else p.asScala.tail)
-
-                case 400 ⇒ throw new RuntimeException(js)
-                case _ ⇒ throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
-            }
-        }
 
     private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
@@ -144,22 +140,43 @@ object NCInspectorSuggestions extends NCService with NCInspector {
             val promise = Promise[NCInspectionResult]()
 
             NCProbeManager.getModelInfo(mdlId, parent).collect {
-                case data ⇒
-                    println("data=" + data)
-                    println("args=" + args)
-
+                case m ⇒
                     try {
-                        val macrosJ = data.get("macros").asInstanceOf[util.Map[String, String]]
-                        val elementsSynonymsJ = data.get("elementsSynonyms").asInstanceOf[util.Map[String, util.List[String]]]
-                        val intentsSamplesJ = data.get("intentsSamples").asInstanceOf[util.Map[String, util.List[String]]]
+                        require(
+                            m.containsKey("macros") && m.containsKey("elementsSynonyms") && m.containsKey("intentsSamples")
+                        )
 
-                        require(macrosJ != null)
-                        require(elementsSynonymsJ != null)
-                        require(intentsSamplesJ != null)
+                        val macros = m.get("macros").
+                            asInstanceOf[util.Map[String, String]].asScala
+                        val elementsSynonyms = m.get("elementsSynonyms").
+                            asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
+                        val intentsSamples = m.get("intentsSamples").
+                            asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
 
-                        val macros = macrosJ.asScala
-                        val elementsSynonyms = elementsSynonymsJ.asScala.map(p ⇒ p._1 → p._2.asScala)
-                        val intentsSamples = intentsSamplesJ.asScala.map(p ⇒ p._1 → p._2.asScala)
+                        val minScore =
+                            args match {
+                                case Some(a) ⇒
+                                    val v =
+                                        try {
+                                            val m: util.Map[String, AnyRef] = GSON.fromJson(a, TYPE_ARGS)
+
+                                            val v = m.get("minScore")
+
+                                            if (v == null)
+                                                throw new NCE("Missed parameter: 'minScore'")
+
+                                            v.asInstanceOf[Double]
+                                        }
+                                        catch {
+                                            case e: Exception ⇒ throw new NCE("Invalid 'minScore' parameter", e)
+                                        }
+
+                                    if (v < 0 || v > 1)
+                                        throw new NCE("'minScore' parameter value must be between 0 and 1")
+
+                                    v
+                                case None ⇒ DFLT_MIN_SCORE
+                            }
 
                         def onError(err: String): Unit =
                             promise.success(
@@ -283,7 +300,7 @@ object NCInspectorSuggestions extends NCService with NCInspector {
                             if (allReqsCnt == 0)
                                 onError(s"Suggestions cannot be prepared: '$mdlId'. Samples don't contain synonyms")
                             else {
-                                val allSuggs = new ConcurrentHashMap[String, JList[Suggestion]]()
+                                val allSuggs = new ConcurrentHashMap[String, util.List[Suggestion]]()
                                 val cdl = new CountDownLatch(1)
                                 val debugs = mutable.HashMap.empty[RequestData, Seq[Suggestion]]
                                 val cnt = new AtomicInteger(0)
@@ -304,7 +321,7 @@ object NCInspectorSuggestions extends NCService with NCInspector {
                                                         RestRequest(
                                                             sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
                                                             // ContextWord server range is (0, 2), input range is (0, 1)
-                                                            min_score = Config.suggestionsMinScore * 2,
+                                                            min_score = minScore * 2,
                                                             // We set big limit value and in fact only minimal score is taken into account.
                                                             limit = MAX_LIMIT
                                                         )
@@ -411,13 +428,14 @@ object NCInspectorSuggestions extends NCService with NCInspector {
                                     }
                                 })
 
-                                val resJ: util.Map[String, JList[util.HashMap[String, Any]]] =
+                                val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
                                     res.map { case (id, data) ⇒
                                         id → data.map(d ⇒ {
                                             val m = new util.HashMap[String, Any]()
 
                                             m.put("synonym", d.synonym)
-                                            m.put("ctxWorldServerScore", d.ctxWorldServerScore)
+                                            // ContextWord server range is (0, 2)
+                                            m.put("ctxWorldServerScore", d.ctxWorldServerScore / 2)
                                             m.put("suggestedCount", d.suggestedCount)
 
                                             m
@@ -446,9 +464,29 @@ object NCInspectorSuggestions extends NCService with NCInspector {
 
                         promise.failure(e)
                 }
+                case e: Throwable ⇒
+                    logger.warn(s"Error getting model information: $mdlId", e)
 
-            }(scala.concurrent.ExecutionContext.Implicits.global)
+                    promise.failure(e)
+
+            }(executor)
 
             promise.future
+        }
+
+    override def start(parent: Span): NCService =
+        startScopedSpan("start", parent) { _ ⇒
+            pool = Executors.newCachedThreadPool()
+            executor = ExecutionContext.fromExecutor(pool)
+
+            super.start(parent)
+        }
+
+    override def stop(parent: Span): Unit =
+        startScopedSpan("stop", parent) { _ ⇒
+            super.stop(parent)
+
+            NCUtils.shutdownPools(pool)
+            executor = null
         }
 }

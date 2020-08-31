@@ -66,7 +66,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
     @volatile private var embeddedCbs: mutable.Set[EMBEDDED_CB] = _
     @volatile private var pool: ExecutorService = _
-    @volatile private var execCtxExecutor: ExecutionContextExecutor = _
+    @volatile private var executor: ExecutionContextExecutor = _
 
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.probe"
@@ -84,7 +84,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
         pool = Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
-        execCtxExecutor = ExecutionContext.fromExecutor(pool)
+        executor = ExecutionContext.fromExecutor(pool)
 
         super.start()
     }
@@ -96,7 +96,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         }
 
         U.shutdownPools(pool)
-        execCtxExecutor = null
+        executor = null
 
         super.stop()
     }
@@ -686,6 +686,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 finally
                     onFinish()
             }
-        )(execCtxExecutor)
+        )(executor)
     }
 }
