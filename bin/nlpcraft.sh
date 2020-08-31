@@ -64,7 +64,8 @@ checkJava() {
         RETCODE=$?
 
         if [ $RETCODE -ne 0 ]; then
-            echo "$0"", ERROR:"
+            echo "ERROR:"
+            echo "------"
             echo "JAVA_HOME environment variable is not found."
             echo "Please point JAVA_HOME variable to location of JDK 1.8 or later."
             echo "You can also download latest JDK at http://java.com/download"
@@ -81,10 +82,12 @@ checkJava() {
     javaMajorVersion "$JAVA"
 
     if [ "$version" -lt 8 ]; then
-        echo "$0, ERROR:"
+        echo "ERROR:"
+        echo "------"
         echo "The $version version of JAVA installed in JAVA_HOME=$JAVA_HOME is incompatible."
         echo "Please point JAVA_HOME variable to installation of JDK 1.8 or later."
         echo "You can also download latest JDK at http://java.com/download"
+
         exit 1
     fi
 }
@@ -113,6 +116,15 @@ case "${osname}" in
         SEP=";"
         ;;
 esac
+
+if ! [ -d "$BUILD_HOME" ]; then
+    echo "ERROR:"
+    echo "------"
+    echo "Folder '${INSTALL_HOME}\build' does not exist."
+    echo "This folder should contain NLPCraft JARs and is required to run this script."
+
+    exit 1
+fi
 
 # Build classpath.
 for file in "$BUILD_HOME"/*.jar

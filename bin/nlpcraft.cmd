@@ -28,7 +28,8 @@ if "%OS%" == "Windows_NT"  setlocal
 
 :: Check JAVA_HOME.
 if defined JAVA_HOME goto checkJdk
-    echo %0, ERROR:
+    echo ERROR:
+    echo ------
     echo JAVA_HOME environment variable is not found.
     echo Please point JAVA_HOME variable to location of JDK 1.8 or later.
     echo You can also download latest JDK at http://java.com/download.
@@ -37,7 +38,8 @@ goto :eof
 :checkJdk
 :: Check that JDK is where it should be.
 if exist "%JAVA_HOME%\bin\java.exe" goto checkJdkVersion
-    echo %0, ERROR:
+    echo ERROR:
+    echo ------
     echo JAVA is not found in JAVA_HOME=%JAVA_HOME%.
     echo Please point JAVA_HOME variable to installation of JDK 1.8 or later.
     echo You can also download latest JDK at http://java.com/download.
@@ -58,7 +60,8 @@ for /f "tokens=1,2 delims=." %%a in ("%JAVA_VER_STR%.x") do set MAJOR_JAVA_VER=%
 if %MAJOR_JAVA_VER% == 1 set MAJOR_JAVA_VER=%MINOR_JAVA_VER%
 
 if %MAJOR_JAVA_VER% LSS 8 (
-    echo %0, ERROR:
+    echo ERROR:
+    echo ------
     echo The version of JAVA installed in %JAVA_HOME% is incorrect.
     echo Please point JAVA_HOME variable to installation of JDK 1.8 or later.
     echo You can also download latest JDK at http://java.com/download.
@@ -80,6 +83,14 @@ popd
 
 :: Directory containing JARs.
 set BUILD_HOME=%INSTALL_HOME%\build
+
+if not exist "%BUILD_HOME%" (
+    echo ERROR:
+    echo ------
+    echo Folder '%INSTALL_HOME%\build' does not exist.
+    echo This folder should contain NLPCraft JARs and is required to run this script.
+	goto :eof
+)
 
 :: Build classpath.
 for %%f in ("%BUILD_HOME%"\*.jar) do ( set CP=%%f;!CP! )
