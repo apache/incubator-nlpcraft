@@ -29,8 +29,12 @@ object NCCommandLine extends App {
     private final val NAME = "Apache NLPCraft CLI"
 
     private final lazy val VER = NCVersion.getCurrent
-    private final lazy val SCRIPT = NCUtils.sysEnv("NLPCRAFT_CLI_SCRIPT")
-    private final lazy val SCRIPT_NAME = SCRIPT.getOrElse("<nlpcraft-cli>")
+    private final lazy val INSTALL_HOME = NCUtils.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(
+        assert(assertion = false, "System property 'NLPCRAFT_CLI_INSTALL_HOME' not defined.")
+    )
+    private final lazy val SCRIPT_NAME = NCUtils.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(
+        assert(assertion = false, "System property 'NLPCRAFT_CLI_SCRIPT' not defined.")
+    )
 
     private final val T___ = "    "
 
@@ -84,6 +88,50 @@ object NCCommandLine extends App {
     // All supported commands.
     private final val CMDS = Seq(
         Command(
+            id = "start-server",
+            names = Seq("start-server"),
+            synopsis = s"Starts REST server.",
+            desc = Some(
+                s"REST server is started in the external JVM process with both stdout and stderr piped out into log file."
+            ),
+            body = cmdStartServer,
+            params = Seq(
+                Parameter(
+                    id = "config",
+                    names = Seq("--config", "-c"),
+                    valueDesc = Some("{path}"),
+                    optional = true,
+                    desc =
+                        "Configuration absolute file path. Server will automatically look for 'nlpcraft.conf' " +
+                        "configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
+                        "different name or in different location use this parameter to provide an alternative path. " +
+                        "Note that the REST server and the data probe can use the same file for their configuration."
+                ),
+                Parameter(
+                    id = "igniteConfig",
+                    names = Seq("--ignite-config", "-i"),
+                    valueDesc = Some("{path}"),
+                    optional = true,
+                    desc =
+                        "Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
+                        "computing plane and a default distributed storage. REST server will automatically look for " +
+                        "'ignite.xml' configuration file in the same directory as NLPCraft JAR file. If the " +
+                        "configuration file has different name or in different location use this parameter to " +
+                        "provide an alternative path."
+                ),
+            ),
+            examples = Seq(
+                Example(
+                    code = s"$$ $SCRIPT_NAME start-server",
+                    desc = "Starts REST server with default configuration."
+                ),
+                Example(
+                    code = s"$$ $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf",
+                    desc = "Starts REST server with alternative configuration file."
+                )
+            )
+        ),
+        Command(
             id = "help",
             names = Seq("help", "?"),
             synopsis = s"Displays manual page for '$SCRIPT_NAME'.",
@@ -121,7 +169,7 @@ object NCCommandLine extends App {
         Command(
             id = "ver",
             names = Seq("version", "ver"),
-            synopsis = s"Displays full version of '$SCRIPT_NAME' runtime.",
+            synopsis = s"Displays full version of '$SCRIPT_NAME' script.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
             ),
@@ -149,7 +197,7 @@ object NCCommandLine extends App {
             synopsis = s"Starts '$SCRIPT_NAME' in interactive REPL mode.",
             body = cmdRepl
         )
-    )
+    ).sortBy(_.id)
 
     private final val HELP_CMD = CMDS.find(_.id == "help").get
     private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
@@ -176,6 +224,16 @@ object NCCommandLine extends App {
         }
         else
             Some(arr.last)
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param params Parameters, if any, for this command.
+     */
+    private def cmdStartServer(cmd: Command, params: Seq[String]): Unit = {
+        title()
+
+        // TODO
     }
 
     /**
@@ -358,12 +416,8 @@ object NCCommandLine extends App {
     /**
      *
      */
-    private def errorHelp(): Unit = SCRIPT match {
-        // Running from *.{s|cmd} script.
-        case Some(script) => error(s"Run '$script ${HELP_CMD.mainName}' to read the manual.")
-        // Running from IDE.
-        case None => error(s"Run the process with '${HELP_CMD.mainName}' parameter to read the manual.")
-    }
+    private def errorHelp(): Unit =
+        error(s"Run '$SCRIPT_NAME ${HELP_CMD.mainName}' to read the manual.")
 
     /**
      * Prints out the version and copyright title header.
