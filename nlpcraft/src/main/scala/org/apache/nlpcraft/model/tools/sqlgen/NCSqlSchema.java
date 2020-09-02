@@ -46,7 +46,7 @@ public interface NCSqlSchema {
      * Creates and returns collection of all SQL columns across all tables in given schema. It is
      * equivalent to:
      * <pre class="brush: java">
-     *     return getTables().stream().flatMap(t -> t.getColumns().stream()).collect(Collectors.toList());
+     *     return getTables().stream().flatMap(t -&gt; t.getColumns().stream()).collect(Collectors.toList());
      * </pre>
      *
      * @return Collection of all SQL columns across all tables in given schema.

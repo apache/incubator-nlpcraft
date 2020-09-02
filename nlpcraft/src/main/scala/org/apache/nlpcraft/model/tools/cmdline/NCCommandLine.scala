@@ -119,6 +119,15 @@ object NCCommandLine extends App {
                         "configuration file has different name or in different location use this parameter to " +
                         "provide an alternative path."
                 ),
+                Parameter(
+                    id = "outputPath",
+                    names = Seq("--output-path", "-o"),
+                    valueDesc = Some("{path}"),
+                    optional = true,
+                    desc =
+                        "File path for both REST server stdout and stderr output. If not provided, the REST server" +
+                        s"output will be piped into '$${USER_HOME}/.nlpcraft/server-output.txt' file."
+                )
             ),
             examples = Seq(
                 Example(
@@ -283,10 +292,11 @@ object NCCommandLine extends App {
                     if (param.optional)
                         lines += s"$T___${T___}Optional."
 
-                    val descLine = s"$T___$T___${param.desc}"
-
-                    lines += descLine
+                    lines += s"$T___$T___${param.desc}"
+                    lines += ""
                 }
+
+                lines.remove(lines.size - 1) // Remove last empty line.
             }
 
             if (cmd.examples.nonEmpty) {

@@ -33,7 +33,7 @@ public interface NCVariant extends List<NCToken> {
     /**
      * Utility method that returns all non-freeword tokens. It's equivalent to:
      * <pre class="brush: java">
-     *     return stream().filter(tok -> !tok.isFreeWord()).collect(Collectors.toList());
+     *     return stream().filter(tok -&gt; !tok.isFreeWord()).collect(Collectors.toList());
      * </pre>
      *
      * @return All non-freeword tokens.

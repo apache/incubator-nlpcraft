@@ -43,7 +43,7 @@ public interface NCIntentMatch extends Serializable {
     String getIntentId();
 
     /**
-     * Context of the user input query.
+     * Gets context of the user input query.
      *
      * @return Original query context.
      */

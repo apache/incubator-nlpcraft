@@ -85,13 +85,14 @@ public interface NCEmbeddedResult {
 
     /**
      * Gets optional error code. One of the following codes:
-     * <table class="dl-table" summary="">
-     *     <thead>
-     *         <tr>
-     *             <th>Code</th>
-     *             <th>Description</th>
-     *         </tr>
-     *     </thead>
+     * <table class="dl-table">
+     * <caption>Error codes.</caption>
+     * <thead>
+     *     <tr>
+     *         <th>Code</th>
+     *         <th>Description</th>
+     *     </tr>
+     * </thead>
      * <tbody>
      * <tr>
      *     <td><code>1</code></td>

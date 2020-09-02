@@ -28,45 +28,20 @@ public class NCMacroJson {
      * 
      */
     public NCMacroJson() {} // No-op.
-
-    /**
-     *
-     * @param name
-     * @param macro
-     */
     public NCMacroJson(String name, String macro) {
         this.name = name;
         this.macro = macro;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getName() {
         return name;
     }
-
-    /**
-     *
-     * @param name
-     */
     public void setName(String name) {
         this.name = name;
     }
-
-    /**
-     *
-     * @return
-     */
     public String getMacro() {
         return macro;
     }
-
-    /**
-     *
-     * @param macro
-     */
     public void setMacro(String macro) {
         this.macro = macro;
     }

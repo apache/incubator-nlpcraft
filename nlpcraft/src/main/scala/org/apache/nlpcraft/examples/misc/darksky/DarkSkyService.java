@@ -123,9 +123,9 @@ public class DarkSkyService {
 
     /**
      *
-     * @param lat
-     * @param lon
-     * @param d
+     * @param lat Latitude.
+     * @param lon Longitude.
+     * @param d Date.
      * @return
      */
     private Map<String, Object> get(double lat, double lon, Instant d) {
@@ -137,8 +137,8 @@ public class DarkSkyService {
 
     /**
      *
-     * @param url
-     * @return
+     * @param url REST endpoint URL.
+     * @return REST call result.
      */
     private Map<String, Object> get(String url) {
         // Ack.
@@ -162,13 +162,14 @@ public class DarkSkyService {
     /**
      * See https://darksky.net/dev/docs#response-format to extract fields.
      *
-     * @param lat
-     * @param lon
-     * @param from
-     * @param to
-     * @return
+     * @param lat Latitude.
+     * @param lon Longitude.
+     * @param from From date.
+     * @param to To date.
+     * @return List of REST call results.
+     * @throws DarkSkyException Thrown in case of any provider errors.
      */
-    public List<Map<String, Object>> getTimeMachine(double lat, double lon, Instant from, Instant to) {
+    public List<Map<String, Object>> getTimeMachine(double lat, double lon, Instant from, Instant to) throws DarkSkyException {
         assert from != null;
         assert to != null;
 
@@ -199,10 +200,10 @@ public class DarkSkyService {
     /**
      * See https://darksky.net/dev/docs#response-format to extract fields.
      *
-     * @param lat
-     * @param lon
-     * @return
-     * @throws DarkSkyException
+     * @param lat Latitude.
+     * @param lon Longitude.
+     * @return REST call result.
+     * @throws DarkSkyException Thrown in case of any provider errors.
      */
     public Map<String, Object> getCurrent(double lat, double lon) throws DarkSkyException {
         return get("https://api.darksky.net/forecast/" + key + '/' + lat + ',' + lon +

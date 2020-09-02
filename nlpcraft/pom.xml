@@ -28,7 +28,7 @@
         <groupId>org.apache.nlpcraft</groupId>
         <artifactId>nlpcraft-parent</artifactId>
         <version>0.6.2</version>
-        <relativePath>../</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>
@@ -282,6 +282,13 @@
                                 <argument>java</argument>
                                 <argument>-Xmx4G</argument>
                                 <argument>-Xms4G</argument>
+                                <argument>--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED</argument>
+                                <argument>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED</argument>
+                                <argument>--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED</argument>
+                                <argument>--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED</argument>
+                                <argument>--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED</argument>
+                                <argument>--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</argument>
+                                <argument>--illegal-access=permit</argument>
                                 <argument>-jar</argument>
                                 <argument>${project.build.directory}/${nlpcraft.all.deps.jar}</argument>
                                 <argument>-server</argument>
@@ -330,13 +337,13 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven.javadoc.plugin.ver}</version>
                 <configuration>
-                    <!-- Required as of JDK 8u121 -->
-                    <additionalOptions>--allow-script-in-comments, -Xdoclint:none</additionalOptions>
+                    <additionalOptions>--allow-script-in-comments</additionalOptions>
                     <javadocDirectory>${project.basedir}/../javadoc</javadocDirectory>
+                    <doclint>all</doclint>
                     <docfilessubdirs>true</docfilessubdirs>
                     <encoding>UTF-8</encoding>
-                    <failOnError>false</failOnError>
-                    <failOnWarning>false</failOnWarning>
+                    <failOnError>true</failOnError>
+                    <failOnWarnings>true</failOnWarnings>
                     <sourcepath>${project.basedir}/src/main/scala</sourcepath>
                     <stylesheetfile>${project.parent.basedir}/javadoc/stylesheet.css</stylesheetfile>
                     <bottom>
@@ -359,25 +366,25 @@
                             <link href="https://nlpcraft.apache.org/javadoc/resources/sh/styles/shCoreNLPCraft.css" rel="stylesheet" type="text/css" title="Style">
                             <link href="https://nlpcraft.apache.org/javadoc/resources/sh/styles/shThemeNLPCraft.css" rel="stylesheet" type="text/css" title="Style">
                             <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+                            <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
                             <script async defer src="https://buttons.github.io/buttons.js"></script>
                         ]]>
                     </top>
-                    <subpackages>
-                        org.apache.nlpcraft.model:org.apache.nlpcraft.probe.embedded
-                    </subpackages>
                     <excludePackageNames>
-                        org.apache.nlpcraft.model.intent.utils:org.apache.nlpcraft.model.impl:org.apache.nlpcraft.model.builder.parsing:org.apache.nlpcraft.model.builder.impl:org.apache.nlpcraft.model.intent.impl:org.apache.nlpcraft.model.intent.impl.antlr4
+                        org.apache.nlpcraft.common.*:org.apache.nlpcraft.common:org.apache.nlpcraft.examples.*:org.apache.nlpcraft.examples:org.apache.nlpcraft.model.impl:org.apache.nlpcraft.model.impl.json:org.apache.nlpcraft.model.intent.impl.antlr4:org.apache.nlpcraft.model.intent.utils:org.apache.nlpcraft.probe.mgrs.model.antlr4:org.apache.nlpcraft.server.mdo.impl
                     </excludePackageNames>
                     <groups>
                         <group>
                             <title>Data Model APIs</title>
                             <packages>
-                                org.apache.nlpcraft.model.opencensus:org.apache.nlpcraft.model.factories.basic:org.apache.nlpcraft.model.factories.spring:org.apache.nlpcraft.model:org.apache.nlpcraft.model.utils:org.apache.nlpcraft.model.intent:org.apache.nlpcraft.model.parsing
+                                org.apache.nlpcraft.model.factories.basic:org.apache.nlpcraft.model.factories.spring:org.apache.nlpcraft.model:org.apache.nlpcraft.model.intent:org.apache.nlpcraft.model.opencensus
                             </packages>
                         </group>
                         <group>
                             <title>Tools</title>
-                            <packages>org.apache.nlpcraft.probe.embedded:org.apache.nlpcraft.model.tools.sqlgen:org.apache.nlpcraft.model.tools.test</packages>
+                            <packages>
+                                org.apache.nlpcraft.model.tools.embedded:org.apache.nlpcraft.model.tools.sqlgen:org.apache.nlpcraft.model.tools.test
+                            </packages>
                         </group>
                     </groups>
                     <header>

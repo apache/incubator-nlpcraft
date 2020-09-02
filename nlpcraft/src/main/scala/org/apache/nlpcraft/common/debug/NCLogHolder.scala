@@ -19,7 +19,7 @@ package org.apache.nlpcraft.common.debug
 
 import java.util
 import com.google.gson.Gson
-import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common.util._
 import org.apache.nlpcraft.model._
 
 import scala.collection.JavaConverters._

@@ -40,7 +40,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * Note that this example uses class-based intent DSL to demonstrate its usage pattern.
  * Note also that it also returns intent ID together with execution result which can be used in testing.
  * <p>
- * See 'README.md' file in the same folder for running & testing instructions.
+ * See 'README.md' file in the same folder for running and testing instructions.
  */
 public class WeatherModel extends NCModelFileAdapter {
     // Please register your own account at https://darksky.net/dev/docs/libraries and

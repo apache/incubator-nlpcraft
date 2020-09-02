@@ -32,12 +32,12 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface NCMdoField {
     /**
-     * Whether or not to include into SQL CRUD operations.
+     * @return Whether or not to include into SQL CRUD operations.
      */                                                              
     boolean sql() default true;
 
     /**
-     * Whether or not to include into JSON export.
+     * @return Whether or not to include into JSON export.
      */
     boolean json() default true;
 
@@ -50,26 +50,28 @@ public @interface NCMdoField {
      * Converter function can have zero or one parameter only. If it has one parameter
      * the actual field value will be passed in to convert. Function should return a
      * new value to be used in JSON export.
+     *
+     * @return Optional function name to generate JSON value for the field.
      */
     String jsonConverter() default "";
 
     /**
-     * SQL column name. This is mandatory if 'table' is specified in 'NCMdoEntity' annotation.
+     * @return SQL column name. This is mandatory if 'table' is specified in 'NCMdoEntity' annotation.
      */
     String column() default "";
 
     /**
-     * Custom JSON field name to use instead of source code parameter name.
+     * @return Custom JSON field name to use instead of source code parameter name.
      */
     String jsonName() default "";
 
     /**
-     * Custom JDBC type to use instead of default JDBC type mapping.
+     * @return Custom JDBC type to use instead of default JDBC type mapping.
      */
     int jdbcType() default Integer.MIN_VALUE;
 
     /**
-     * Wether or not this field is a primary key.
+     * @return Whether or not this field is a primary key.
      */
     boolean pk() default false;
 }

@@ -20,7 +20,7 @@ package org.apache.nlpcraft
 import java.util.concurrent.Callable
 import java.util.function.{BiPredicate, Consumer, Supplier, Function ⇒ JFunction, Predicate ⇒ JPredicate}
 
-import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common.util._
 
 import scala.language.implicitConversions
 

@@ -36,14 +36,14 @@ public class NCCompanyImpl implements NCCompany {
 
     /**
      * 
-     * @param id
-     * @param name
-     * @param website
-     * @param country
-     * @param region
-     * @param address
-     * @param city
-     * @param postalCode
+     * @param id Id.
+     * @param name Name.
+     * @param website Website.
+     * @param country Country.
+     * @param region Region.
+     * @param address Address.
+     * @param city City.
+     * @param postalCode Postal code.
      */
     public NCCompanyImpl(
         long id,
@@ -65,43 +65,28 @@ public class NCCompanyImpl implements NCCompany {
         this.postalCode = postalCode;
     }
 
-    @Override
-    public long getId() {
+    @Override public long getId() {
         return id;
     }
-
-    @Override
-    public String getName() {
+    @Override public String getName() {
         return name;
     }
-
-    @Override
-    public Optional<String> getWebsite() {
+    @Override public Optional<String> getWebsite() {
         return website;
     }
-
-    @Override
-    public Optional<String> getCountry() {
+    @Override public Optional<String> getCountry() {
         return country;
     }
-
-    @Override
-    public Optional<String> getRegion() {
+    @Override public Optional<String> getRegion() {
         return region;
     }
-
-    @Override
-    public Optional<String> getCity() {
+    @Override public Optional<String> getCity() {
         return city;
     }
-
-    @Override
-    public Optional<String> getAddress() {
+    @Override public Optional<String> getAddress() {
         return address;
     }
-
-    @Override
-    public Optional<String> getPostalCode() {
+    @Override public Optional<String> getPostalCode() {
         return postalCode;
     }
 }

@@ -42,7 +42,7 @@ import java.util.function.*;
  * the processing flow is shortened:
  * <br>
  * <code>
- *     <b>JVM</b><sub>1</sub>(App) ⇒ <b>JVM</b><sub>2</sub>(REST Server) ⇒ <b>JVM</b><sub>1</sub>(Probe -> App)
+ *     <b>JVM</b><sub>1</sub>(App) ⇒ <b>JVM</b><sub>2</sub>(REST Server) ⇒ <b>JVM</b><sub>1</sub>(Probe ⇒ App)
  * </code>
  * <br>
  * In this case there are only 2 hops as both client application and the data probe (and the model) are hosted

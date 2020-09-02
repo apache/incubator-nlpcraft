@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.impl.json;
+package org.apache.nlpcraft.common;
+
+import org.apache.nlpcraft.common.util.*;
 
 /**
- * Parsing bean.
+ * Base NLPCraft exception.
  */
-public class NCValueJson {
-    private String name;
-    private String[] synonyms = new String[0];
-    private String valueLoader;
+public class NCException extends RuntimeException {
+    /**
+     * Creates new exception with given parameters.
+     *
+     * @param msg Error message.
+     * @param cause Optional cause of this exception.
+     */
+    public NCException(String msg, Throwable cause) {
+        super(msg, NCUtils.getOriginCause(cause));
+    }
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String[] getSynonyms() {
-        return synonyms;
-    }
-    public void setSynonyms(String[] synonyms) {
-        this.synonyms = synonyms;
-    }
-    public String getValueLoader() {
-        return valueLoader;
-    }
-    public void setValueLoader(String valueLoader) {
-        this.valueLoader = valueLoader;
+    /**
+     * Creates new exception with given error message.
+     *
+     * @param msg Error message.
+     */
+    public NCException(String msg) {
+        super(msg);
     }
 }

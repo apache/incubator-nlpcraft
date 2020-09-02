@@ -35,15 +35,15 @@ public class NCUserImpl implements NCUser {
     private final long signupTstamp;
 
     /**
-     * 
-     * @param id
-     * @param firstName
-     * @param lastName
-     * @param email
-     * @param avatarUrl
-     * @param props
-     * @param isAdmin
-     * @param signupTstamp
+     *
+     * @param id Id.
+     * @param firstName First name.
+     * @param lastName Last name.
+     * @param email Email.
+     * @param avatarUrl Avatar URL.
+     * @param props Additional properties.
+     * @param isAdmin Is admin flag.
+     * @param signupTstamp Signup timestamp.
      */
     public NCUserImpl(
         long id,

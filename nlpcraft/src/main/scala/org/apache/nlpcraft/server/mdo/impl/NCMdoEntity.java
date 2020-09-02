@@ -33,11 +33,15 @@ import java.lang.annotation.Target;
 public @interface NCMdoEntity {
     /**
      * Name of the SQL table, if any.
+     *
+     * @return Name of the SQL table.
      */
     String table() default "";
 
     /**
      * Whether or not SQL is supported.
+     *
+     * @return Whether or not SQL is supported.
      */
     boolean sql() default true;
 }

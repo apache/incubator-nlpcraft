@@ -20,7 +20,7 @@ package org.apache.nlpcraft.common.util;
 import java.util.*;
 
 /**
- * Copied & modified from: https://github.com/peet/hashids.java/blob/master/src/HashidsJava/Hashids.java
+ * Copied and modified from: https://github.com/peet/hashids.java/blob/master/src/HashidsJava/Hashids.java
  * Copyright (C) Peet Goddard 
  */
 public class NCIdGenerator {
@@ -45,7 +45,7 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param salt
+     * @param salt Salt seed.
      */
     NCIdGenerator(String salt) {
         this(salt, 0);
@@ -53,8 +53,8 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param salt
-     * @param minHashLen
+     * @param salt Salt seed.
+     * @param minHashLen Minimal hash length.
      */
     NCIdGenerator(String salt, int minHashLen) {
         this(salt, minHashLen, DEFAULT_ALPHABET);
@@ -62,9 +62,9 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param salt
-     * @param minHashLen
-     * @param alphabet
+     * @param salt Salt seed.
+     * @param minHashLen Minimal hash length.
+     * @param alphabet Alphabet.
      */
     NCIdGenerator(String salt, int minHashLen, String alphabet) {
         if (alphabet == null || alphabet.trim().isEmpty())
@@ -98,18 +98,22 @@ public class NCIdGenerator {
     }
 
     /**
+     * Encrypts one or more long values.
      *
-     * @param nums
-     * @return
+     * @param nums Long values to encrypt.
+     * @return Encrypted value (hash).
+     * @see #decrypt(String)
      */
     public String encrypt(long... nums) {
         return encode(nums, alphabet, salt, minHashLen);
     }
 
     /**
+     * Decrypts given hash into array of long.
      *
-     * @param hash
-     * @return
+     * @param hash Hash value to decrypt.
+     * @return Array of long values.
+     * @see #encrypt(long...)
      */
     public long[] decrypt(String hash) {
         return decode(hash);
@@ -209,9 +213,9 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param hash
-     * @param alphabet
-     * @return
+     * @param hash Hash to un-hash.
+     * @param alphabet Alphabet to use.
+     * @return Unhashed long value.
      */
     private long unhash(String hash, String alphabet) {
         long num = 0;
@@ -227,8 +231,8 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param hash
-     * @return
+     * @param hash Hash to decode.
+     * @return Array of longs.
      */
     private long[] decode(String hash) {
         List<Long> ret = new ArrayList<>();
@@ -282,9 +286,9 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param alphabet
-     * @param salt
-     * @return
+     * @param alphabet Alphabet to use.
+     * @param salt Salt seed.
+     * @return Shuffle result.
      */
     private static String consistentShuffle(String alphabet, String salt) {
         StringBuilder ret = new StringBuilder();
@@ -338,7 +342,7 @@ public class NCIdGenerator {
 
     /**
      *
-     * @return
+     * @return Salt seed.
      */
     public String getSalt() {
         return salt;
@@ -346,7 +350,7 @@ public class NCIdGenerator {
 
     /**
      *
-     * @return
+     * @return Alphabet in use.
      */
     public String getAlphabet() {
         return alphabet;
@@ -354,7 +358,7 @@ public class NCIdGenerator {
 
     /**
      *
-     * @return
+     * @return Minimal hash length.
      */
     public int getMinHashLength() {
         return minHashLen;
@@ -362,8 +366,8 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param longs
-     * @return
+     * @param longs List to map.
+     * @return Mapped list of longs.
      */
     private static long[] longListToPrimitiveArray(List<Long> longs) {
         long[] longArr = new long[longs.size()];
@@ -378,8 +382,8 @@ public class NCIdGenerator {
 
     /**
      *
-     * @param chars
-     * @return
+     * @param chars Characters to map.
+     * @return List of strings.
      */
     private static List<String> charArrayToStringList(char[] chars) {
         ArrayList<String> lst = new ArrayList<>(chars.length);

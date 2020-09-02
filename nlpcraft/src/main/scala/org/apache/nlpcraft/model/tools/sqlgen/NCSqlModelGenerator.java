@@ -19,7 +19,7 @@ package org.apache.nlpcraft.model.tools.sqlgen;
 
 import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.common.NCException;
-import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl;
+import org.apache.nlpcraft.model.tools.sqlgen.impl.*;
 
 /**
  * Command line utility to generate YAML/JSON NLPCraft model stub from given SQL RDBMS.

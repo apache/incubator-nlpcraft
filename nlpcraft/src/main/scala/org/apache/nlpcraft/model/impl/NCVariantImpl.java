@@ -27,7 +27,7 @@ public class NCVariantImpl extends ArrayList<NCToken> implements NCVariant {
     /**
      * Creates new variant with given tokens.
      * 
-     * @param c
+     * @param c Collection of tokens.
      */
     public NCVariantImpl(Collection<? extends NCToken> c) {
         super(c);
