@@ -23,7 +23,7 @@ import com.github.difflib.text.DiffRowGenerator
 import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.jakewharton.fliptables.FlipTable
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.examples.sql.db.SqlServer
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
@@ -83,6 +83,11 @@ class NCSqlExampleSpec {
 
     private def toPretty(s: String): util.List[String] = SqlFormatter.format(s).split("\n").toSeq.asJava
 
+    /**
+     *
+     * @param multiLineOut
+     * @param cases
+     */
     private def check(multiLineOut: Boolean, cases: Case*): Unit = {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
 
@@ -108,13 +113,11 @@ class NCSqlExampleSpec {
                                 if (multiLineOut) {
                                     val rows = DIFF.generateDiffRows(toPretty(expSqlNorm), toPretty(resSqlNorm)).asScala
 
-                                    val table =
-                                        FlipTable.of(
-                                            Array("Expected", "Real"),
-                                            rows.map(p ⇒ Array(p.getOldLine, p.getNewLine)).toArray
-                                        )
+                                    val tbl = NCAsciiTable("Expected", "Real")
 
-                                    errs += txt → s"Unexpected SQL:\n$table"
+                                    rows.foreach(r => tbl += (r.getOldLine, r.getNewLine))
+
+                                    errs += txt → s"Unexpected SQL:\n$tbl"
                                 }
                                 else {
                                     val rows = DIFF.generateDiffRows(Seq(expSqlNorm).asJava, Seq(resSqlNorm).asJava).asScala

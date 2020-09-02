@@ -672,13 +672,31 @@ object NCAsciiTable {
 
     /**
      * Creates new ASCII text table with all defaults.
+     *
+     * @return Newly created ASCII table.
      */
     def apply() = new NCAsciiTable
 
     /**
      * Creates new ASCII table with given header cells.
      *
-     * @param cells Header.
+     * @param hdrs Header.
+     * @return Newly created ASCII table.
      */
-    def apply(cells: Any*): NCAsciiTable = new NCAsciiTable #= (cells: _*)
+    def apply(hdrs: Any*): NCAsciiTable = new NCAsciiTable #= (hdrs: _*)
+
+    /**
+     * Creates new ASCII table with given headers and data.
+     *
+     * @param hdrs Headers.
+     * @param data Table data (sequence of rows).
+     * @return Newly created ASCII table.
+     */
+    def of(hdrs: Seq[Any], data: Seq[Seq[Any]]): NCAsciiTable = {
+        val tbl = new NCAsciiTable #= (hdrs: _*)
+
+        data.foreach(tbl += (_: _*))
+
+        tbl
+    }
 }

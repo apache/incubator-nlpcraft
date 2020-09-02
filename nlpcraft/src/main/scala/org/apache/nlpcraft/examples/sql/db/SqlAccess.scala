@@ -20,8 +20,8 @@ package org.apache.nlpcraft.examples.sql.db
 import java.sql.{Connection, PreparedStatement, SQLException}
 
 import com.github.vertical_blank.sqlformatter.SqlFormatter
-import com.jakewharton.fliptables.FlipTable
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.h2.jdbc.JdbcSQLException
 import org.h2.jdbcx.JdbcDataSource
 import resource.managed
@@ -79,7 +79,7 @@ object SqlAccess extends LazyLogging {
                     val cnt = md.getColumnCount
 
                     val cols = (1 to cnt).map(md.getColumnName)
-                    var rows = List.empty[Seq[String]]
+                    var rows = Seq.empty[Seq[String]]
 
                     while (rs.next)
                         rows :+= (1 to cnt).map(i ⇒ {
@@ -99,12 +99,15 @@ object SqlAccess extends LazyLogging {
 
                         logger.info(s"Execution result, first $LOG_ROWS lines...")
 
-                        var data = rows.take(LOG_ROWS).toArray.map(_.toArray)
+                        var data = rows.take(LOG_ROWS).map(_.toSeq)
 
                         if (rows.nonEmpty && rows.size > LOG_ROWS)
-                            data = data ++ Array(cols.indices.map(_ ⇒ "...").toArray)
+                            data ++= Seq(cols.indices.map(_ ⇒ "..."))
 
-                        logger.info(s"\n${FlipTable.of(cols.toArray, data)}")
+                        logger.info(s"\n${NCAsciiTable.of(
+                            cols,
+                            data
+                        )}")
                     }
 
                     SqlResult(cols, rows)

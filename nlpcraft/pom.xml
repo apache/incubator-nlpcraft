@@ -224,10 +224,6 @@
             <groupId>com.github.vertical-blank</groupId>
             <artifactId>sql-formatter</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.jakewharton.fliptables</groupId>
-            <artifactId>fliptables</artifactId>
-        </dependency>
 
         <!-- Test dependencies. -->
         <dependency>
