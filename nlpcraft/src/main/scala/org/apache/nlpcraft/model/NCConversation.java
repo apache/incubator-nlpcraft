@@ -66,7 +66,7 @@ public interface NCConversation {
     /**
      * Removes all tokens from the conversation STM. It is equivalent to:
      * <pre class="brush: java">
-     *     clearStm(tok -> true);
+     *     clearStm(tok -&gt; true);
      * </pre>
      */
     default void clearAllStm() {
@@ -89,7 +89,7 @@ public interface NCConversation {
     /**
      * Clears entire history of matched intents. It is equivalent to:
      * <pre class="brush: java">
-     *     clearDialog(id -> true);
+     *     clearDialog(id -&gt; true);
      * </pre>
      */
     default void clearAllDialog() {

@@ -31,7 +31,7 @@ import java.util.stream.*;
  * be enabled to run this example - see 'tokenProviders' section in server configuration.
  * Note also that this example is using class-based intent DSL (to demonstrate its usage).
  * <p>
- * See 'README.md' file in the same folder for running & testing instructions.
+ * See 'README.md' file in the same folder for running and testing instructions.
  */
 public class PhoneModel extends NCModelFileAdapter {
     /**

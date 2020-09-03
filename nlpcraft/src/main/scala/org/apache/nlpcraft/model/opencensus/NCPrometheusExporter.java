@@ -19,11 +19,11 @@ package org.apache.nlpcraft.model.opencensus;
 
 import io.opencensus.exporter.stats.prometheus.*;
 import io.prometheus.client.exporter.*;
+import org.apache.commons.math3.util.Pair;
 import org.apache.nlpcraft.common.*;
 import org.apache.nlpcraft.common.config.*;
 import org.apache.nlpcraft.model.*;
 import org.slf4j.*;
-import scala.*;
 import java.io.*;
 
 /**
@@ -56,17 +56,16 @@ import java.io.*;
  * </pre>
  * See <a target=_ href="https://nlpcraft.apache.org/server-and-probe.html">documentation</a> on how to configure probe life cycle
  * components, default values, etc.
- * <p>
  */
 public class NCPrometheusExporter implements NCLifecycle {
     private static class Config extends NCConfigurableJava {
         private static final String pre = "nlpcraft.probe.opencensus.prometheus";
 
         private final String namespace = getStringOrElse(pre + ".namespace", "nlpcraft-probe");
-        private final Tuple2<String, Integer> hostPort =
+        private final Pair<String, Integer> hostPort =
             getHostPortOrElse(pre + ".hostport", "localhost", 8889);
-        private final String host = hostPort._1;
-        private final int port = hostPort._2;
+        private final String host = hostPort.getFirst();
+        private final int port = hostPort.getSecond();
     }
 
     private static final Config cfg = new Config();

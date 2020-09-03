@@ -32,7 +32,7 @@ import static java.time.temporal.ChronoUnit.*;
  * "buzz me in an hour and 15 minutes", or "set my alarm for 30 secs". When the timers is up it will
  * simply print out "BEEP BEEP BEEP" in the probe console.
  * <p>
- * See 'README.md' file in the same folder for running & testing instructions.
+ * See 'README.md' file in the same folder for running and testing instructions.
  */
 public class AlarmModel extends NCModelFileAdapter {
     private static final DateTimeFormatter FMT =

@@ -38,7 +38,7 @@ import static java.time.format.FormatStyle.*;
  * This example answers the questions about current time, either local or at some city.
  * It provides YAML response with time and timezone information.
  * <p>
- * See 'README.md' file in the same folder for running & testing instructions.
+ * See 'README.md' file in the same folder for running and testing instructions.
  */
 public class TimeModel extends NCModelFileAdapter {
     // Medium data formatter.

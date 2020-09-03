@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common
+package org.apache.nlpcraft.probe.mgrs.nlp;
 
 /**
-  * Base NLPCraft (NC) exception.
-  *
-  * @param msg Error message.
-  * @param cause Optional cause.
-  */
-class NCException(msg: String, cause: Throwable = null) extends RuntimeException(msg, U.getOriginCause(cause)) {
-    /**
-      * Java-compatible constructor.
-      *
-      * @param msg Error message.
-      */
-    def this(msg: String) = {
-        this(msg, null)
-    }
+ * This is an ugly fix for Javadoc problem when dealing with mixed Java and Scala project.
+ * Javadoc reports an error if the given package doesn't have a single Java declaration in it.
+ * This fake class serves the purpose of fooling Javadoc...
+ */
+class __javadoc_fix {
 }

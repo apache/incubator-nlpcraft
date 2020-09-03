@@ -29,8 +29,8 @@ import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.concurrent.{ExecutorService, TimeUnit}
 import java.util.jar.JarFile
 import java.util.stream.Collectors
-import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
-import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
+import java.util.zip.{ZipInputStream, GZIPInputStream => GIS, GZIPOutputStream => GOS}
+import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar => C}
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.`type`.TypeReference
@@ -52,7 +52,7 @@ import scala.collection._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.io.Source
+import scala.io.{BufferedSource, Source}
 import scala.language.{implicitConversions, postfixOps}
 import scala.reflect.runtime.universe._
 import scala.sys.SystemProperties
@@ -93,75 +93,6 @@ object NCUtils extends LazyLogging {
 
         df
     }
-
-    // OS kinds.
-    private var win95 = false
-    private var win98 = false
-    private var winNt = false
-    private var winVista = false
-    private var win7 = false
-    private var win8 = false
-    private var unknownWin = false
-    private var win2k = false
-    private var winXp = false
-    private var win2003 = false
-    private var win2008 = false
-    private var unix = false
-    private var solaris = false
-    private var linux = false
-    private var netware = false
-    private var mac = false
-
-    // Unix suffixes.
-    private final val UNIX_SFX = Seq("ix", "inux", "olaris", "un", "ux", "sco", "bsd", "att")
-
-    detectOs()
-
-    // Detects current OS.
-    private def detectOs() {
-        val os = sys.props("os.name").toLowerCase
-
-        if (os.contains("win"))
-            if (os.contains("95")) win95 = true
-            else if (os.contains("98")) win98 = true
-            else if (os.contains("nt")) winNt = true
-            else if (os.contains("2000")) win2k = true
-            else if (os.contains("vista")) winVista = true
-            else if (os.contains("xp")) winXp = true
-            else if (os.contains("2003")) win2003 = true
-            else if (os.contains("2008")) win2008 = true
-            else if (os.contains("7")) win7 = true
-            else if (os.contains("8")) win8 = true
-            else unknownWin = true
-        else if (os.contains("netware")) netware = true
-        else if (os.contains("mac os")) mac = true
-        else {
-            unix = UNIX_SFX.exists(os.contains(_))
-
-            if (os.contains("olaris")) solaris = true
-            else if (os.contains("inux")) linux = true
-        }
-    }
-
-    // OS kinds.
-    lazy val isWindow95: Boolean = win95
-    lazy val isWindow98: Boolean = win98
-    lazy val isWindowNt: Boolean = winNt
-    lazy val isWindowsVista: Boolean = winVista
-    lazy val isWindows7: Boolean = win7
-    lazy val isWindows8: Boolean = win8
-    lazy val isUnknownWindows: Boolean = unknownWin
-    lazy val isWindows2k: Boolean = win2k
-    lazy val isWindowsXp: Boolean = winXp
-    lazy val isWindows2003: Boolean = win2003
-    lazy val isWindows2008: Boolean = win2008
-    lazy val isUnix: Boolean = unix
-    lazy val isSolaris: Boolean = solaris
-    lazy val isLinux: Boolean = linux
-    lazy val isNetware: Boolean = netware
-    lazy val isMac: Boolean = mac
-    lazy val isNix: Boolean = mac || linux || solaris || unix
-    lazy val isWindows: Boolean = win95 || win98 || winNt || winVista || win7 || win8 || win2k || winXp || win2003 || win2008
 
     private final val UTC = ZoneId.of("UTC")
 
@@ -385,31 +316,13 @@ object NCUtils extends LazyLogging {
         try
             managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
                 getAndLog(
-                    src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList,
+                    readLcTrimFilter(src),
                     f,
                     logger
                 )
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
-        }
-
-    /**
-      * Reads lines from given stream converting to lower case, trimming, and filtering
-      * out empty lines and comments (starting with '#').
-      *
-      * @param in Stream to read from.
-      * @param enc Encoding.
-      * @param log Logger to use.
-      */
-    @throws[NCE]
-    def readTextStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
-        try
-            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
-                src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList
-            }
-        catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read stream.", e)
+            case e: IOException ⇒ throw new NCE(s"Failed to read text file: ${f.getAbsolutePath}", e)
         }
 
     /**
@@ -425,13 +338,31 @@ object NCUtils extends LazyLogging {
         try
             managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src ⇒
                 getAndLog(
-                    src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList,
+                    readLcTrimFilter(src),
                     f,
                     log
                 )
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
+            case e: IOException ⇒ throw new NCE(s"Failed to read text GZIP file: ${f.getAbsolutePath}", e)
+        }
+
+    /**
+     * Reads lines from given stream converting to lower case, trimming, and filtering
+     * out empty lines and comments (starting with '#').
+     *
+     * @param in Stream to read from.
+     * @param enc Encoding.
+     * @param log Logger to use.
+     */
+    @throws[NCE]
+    def readTextStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
+        try
+            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
+                readLcTrimFilter(src)
+            }
+        catch {
+            case e: IOException ⇒ throw new NCE(s"Failed to read stream.", e)
         }
 
     /**
@@ -446,11 +377,19 @@ object NCUtils extends LazyLogging {
     def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
         try
             managed(Source.fromInputStream(new GIS(getStream(res)), enc)) acquireAndGet { src ⇒
-                src.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList
+                readLcTrimFilter(src)
             }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to read stream.", e)
         }
+
+    /**
+     *
+     * @param in
+     * @return
+     */
+    private def readLcTrimFilter(in: BufferedSource): List[String] =
+        in.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList
 
     /**
       * Reads lines from given file converting to lower case, trimming, and filtering
@@ -576,7 +515,7 @@ object NCUtils extends LazyLogging {
                 getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
             }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Failed to read file: ${f.getAbsolutePath}", e)
+            case e: IOException ⇒ throw new NCE(s"Failed to read GZIP file: ${f.getAbsolutePath}", e)
         }
 
     /**
@@ -760,14 +699,35 @@ object NCUtils extends LazyLogging {
         getClass.getClassLoader.getResourceAsStream(res) != null
 
     /**
-      * Serializes data from file.
+      * Serializes data.
       *
-      * @param path File path.
+      * @param obj Data.
       */
+    @throws[NCE]
+    def serialize(obj: Any): Array[Byte] = {
+        try {
+            managed(new ByteArrayOutputStream()) acquireAndGet { baos ⇒
+                manageOutput(baos) acquireAndGet { out ⇒
+                    out.writeObject(obj)
+                }
+
+                baos.toByteArray
+            }
+        }
+        catch {
+            case e: IOException ⇒ throw new NCE(s"Error serializing data: $obj", e)
+        }
+    }
+
+    /**
+     * Serializes data from file.
+     *
+     * @param path File path.
+     */
     @throws[NCE]
     def serializePath(path: String, obj: Any): Unit = {
         try {
-            managed(new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(path)))) acquireAndGet { out ⇒
+            manageOutput(new FileOutputStream(path)) acquireAndGet { out ⇒
                 out.writeObject(obj)
             }
 
@@ -779,44 +739,13 @@ object NCUtils extends LazyLogging {
     }
 
     /**
-      * Serializes data.
-      *
-      * @param obj Data.
-      */
-    @throws[NCE]
-    def serialize(obj: Any): Array[Byte] = {
-        try {
-            managed(new ByteArrayOutputStream()) acquireAndGet { baos ⇒
-                managed(new ObjectOutputStream(new BufferedOutputStream(baos))) acquireAndGet { out ⇒
-                    out.writeObject(obj)
-                }
-
-                baos.toByteArray
-            }
-        }
-        catch {
-            case e: IOException ⇒ throw new NCE(s"Error serialization data: $obj", e)
-        }
-    }
-
-    /**
       * Serializes data from file.
       *
       * @param file File.
       */
     @throws[NCE]
-    def serialize(file: File, obj: Any): Unit = {
-        try {
-            managed(new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) acquireAndGet { out ⇒
-                out.writeObject(obj)
-            }
-
-            logger.info(s"File $file is written.")
-        }
-        catch {
-            case e: IOException ⇒ throw new NCE(s"Error writing file: $file", e)
-        }
-    }
+    def serialize(file: File, obj: Any): Unit =
+        serializePath(file.getAbsolutePath, obj)
 
     /**
       * Deserializes data from file.
@@ -826,7 +755,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def deserializePath[T](path: String, log: Logger = logger): T =
         try {
-            val res = managed(new ObjectInputStream(new BufferedInputStream(new FileInputStream(path)))) acquireAndGet { in ⇒
+            val res = manageInput(new FileInputStream(path)) acquireAndGet { in ⇒
                 in.readObject().asInstanceOf[T]
             }
 
@@ -835,7 +764,7 @@ object NCUtils extends LazyLogging {
             res
         }
         catch {
-            case e: IOException ⇒ throw new NCE(s"Error reading file: $path", e)
+            case e: IOException ⇒ throw new NCE(s"Error reading path: $path", e)
         }
 
     /**
@@ -846,7 +775,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def deserialize[T](arr: Array[Byte]): T =
         try {
-            managed(new ObjectInputStream(new BufferedInputStream(new ByteArrayInputStream(arr)))) acquireAndGet { in ⇒
+            manageInput(new ByteArrayInputStream(arr)) acquireAndGet { in ⇒
                 in.readObject().asInstanceOf[T]
             }
         }
@@ -857,23 +786,25 @@ object NCUtils extends LazyLogging {
     /**
       * Deserializes data from file.
       *
-      * @param f File.
+      * @param file File.
       * @param log Logger.
       */
     @throws[NCE]
-    def deserialize[T](f: File, log: Logger = logger): T =
-        try {
-            val res = managed(new ObjectInputStream(new BufferedInputStream(new FileInputStream(f)))) acquireAndGet { in ⇒
-                in.readObject().asInstanceOf[T]
-            }
+    def deserialize[T](file: File, log: Logger = logger): T = deserializePath(file.getAbsolutePath, log)
 
-            log.trace(s"Read file: ${f.getAbsolutePath}")
+    /**
+     *
+     * @param in
+     */
+    private def manageInput(in: InputStream) =
+        managed(new ObjectInputStream(new BufferedInputStream(in)))
 
-            res
-        }
-        catch {
-            case e: IOException ⇒ throw new NCE(s"Error reading file: $f", e)
-        }
+    /**
+     *
+     * @param out
+     */
+    private def manageOutput(out: OutputStream) =
+        managed(new ObjectOutputStream(new BufferedOutputStream(out)))
 
     /**
       * Wrap string value.
@@ -1077,7 +1008,7 @@ object NCUtils extends LazyLogging {
     }
 
     /**
-      * Uncompresses given Base64-encoded previously compressed string.
+      * Decompresses given Base64-encoded previously compressed string.
       *
       * @param zipStr Compressed string.
       * @return Uncompressed string.
@@ -1191,9 +1122,9 @@ object NCUtils extends LazyLogging {
     }
 
     /**
-      * Sleeps number of msec properly handling exceptions.
+      * Sleeps number of milliseconds properly handling exceptions.
       *
-      * @param delay Number of msec to sleep.
+      * @param delay Number of milliseconds to sleep.
       */
     def sleep(delay: Long): Unit =
         try

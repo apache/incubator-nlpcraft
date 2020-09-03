@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 public class CitiesDataProvider {
     /**
-     * Creates and returns cities timezone map for all cities with a population > 15000 or capitals.
+     * Creates and returns cities timezone map for all cities with a population &gt; 15000 or capitals.
      *
      * @return Cities timezone map.
      */

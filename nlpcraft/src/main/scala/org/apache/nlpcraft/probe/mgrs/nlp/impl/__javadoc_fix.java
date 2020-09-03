@@ -15,32 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.impl.json;
+package org.apache.nlpcraft.probe.mgrs.nlp.impl;
 
 /**
- * Parsing bean.
+ * This is an ugly fix for Javadoc problem when dealing with mixed Java and Scala project.
+ * Javadoc reports an error if the given package doesn't have a single Java declaration in it.
+ * This fake class serves the purpose of fooling Javadoc...
  */
-public class NCValueJson {
-    private String name;
-    private String[] synonyms = new String[0];
-    private String valueLoader;
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String[] getSynonyms() {
-        return synonyms;
-    }
-    public void setSynonyms(String[] synonyms) {
-        this.synonyms = synonyms;
-    }
-    public String getValueLoader() {
-        return valueLoader;
-    }
-    public void setValueLoader(String valueLoader) {
-        this.valueLoader = valueLoader;
-    }
+class __javadoc_fix {
 }
+

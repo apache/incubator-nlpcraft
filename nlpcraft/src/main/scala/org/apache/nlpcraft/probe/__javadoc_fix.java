@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.config
+package org.apache.nlpcraft.probe;
 
 /**
-  * Quick adapter for usage in Java code.
-  */
-class NCConfigurableJava extends NCConfigurable {
-    // No-op.
+ * This is an ugly fix for Javadoc problem when dealing with mixed Java and Scala project.
+ * Javadoc reports an error if the given package doesn't have a single Java declaration in it.
+ * This fake class serves the purpose of fooling Javadoc...
+ */
+class __javadoc_fix {
 }

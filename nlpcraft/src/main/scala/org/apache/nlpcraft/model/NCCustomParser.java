@@ -43,7 +43,7 @@ public interface NCCustomParser extends NCLifecycle {
      * @param mdl Instance of data model this parser belongs to.
      * @param words Entire user input represented as a list of custom words.
      * @param elements List of already parsed and detected model elements at the point of this call.
-     * @return List of custom elements. List can be empty or {@link null} if no model elements detected.
+     * @return List of custom elements. List can be empty or {@code null} if no model elements detected.
      * @see NCModel#getParsers()
      */
     List<NCCustomElement> parse(NCRequest req, NCModelView mdl, List<NCCustomWord> words, List<NCCustomElement> elements);

@@ -28,6 +28,7 @@ public class TimeModelApp {
      * Main entry point.
      *
      * @param args Command like arguments (none required).
+     * @throws Exception Thrown in case of any errors.
      */
     public static void main(String[] args) throws Exception {
         // Start the data probe "in place" with 'TimeModel' model.

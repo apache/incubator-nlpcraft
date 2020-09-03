@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model;
 
 import org.apache.nlpcraft.common.NCException;
-import org.apache.nlpcraft.common.util.NCUtils;
+import org.apache.nlpcraft.common.util.*;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -27,7 +27,8 @@ import java.util.Collection;
  * Data model result returned from model intent callbacks. Result consists of the
  * text body and the type. The type is similar in notion to MIME types. The following is the list of supported
  * result types:
- * <table summary="" class="dl-table">
+ * <table class="dl-table">
+ *     <caption>Result types.</caption>
  *     <tr>
  *         <th>Result Type</th>
  *         <th>Factory Method</th>
@@ -226,7 +227,7 @@ public class NCResult implements Serializable {
     /**
      * Sets optional intent ID.
      *
-     * @param intentId
+     * @param intentId Intent ID to set for this result.
      */
     public void setIntentId(String intentId) {
         this.intentId = intentId;

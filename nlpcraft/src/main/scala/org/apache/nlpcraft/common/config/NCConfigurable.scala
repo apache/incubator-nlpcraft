@@ -20,13 +20,14 @@ package org.apache.nlpcraft.common.config
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.NCE
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
 /**
   * Mixin for configuration factory based on https://github.com/lightbend/config.
   */
-trait NCConfigurable extends LazyLogging {
+trait NCConfigurable {
     import NCConfigurable._
     
     // Accessor to the loaded config. It should reload config.
@@ -251,8 +252,10 @@ trait NCConfigurable extends LazyLogging {
       * @param errMsgs Optional error messages.
       */
     def abortWith(errMsgs: String*): Unit = {
+        val logger = LoggerFactory.getLogger(getClass)
+
         errMsgs.foreach(s ⇒ logger.error(s))
-        
+
         // Abort immediately.
         System.exit(1)
     }
@@ -260,7 +263,7 @@ trait NCConfigurable extends LazyLogging {
 
 object NCConfigurable extends LazyLogging {
     private var cfg: Config = _
-    
+
     /**
       * Initializes system-wide configuration singleton with given parameters. All specific implementations
       * of `NCConfigurable` trait will reuse this config instance.
@@ -336,5 +339,8 @@ object NCConfigurable extends LazyLogging {
             
             logger.info(s"Configuration successfully loaded as a merge of: ${lines.mkString("\n  + ", "\n  + ", "")}")
         }
+
+        // Set parsed configuration into Java shim.
+        NCConfigurableJava.setConfig(cfg)
     }
 }

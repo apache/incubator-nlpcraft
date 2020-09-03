@@ -34,7 +34,7 @@ class NCAsciiTable {
     /**
      * Cell style.
      */
-    private final case class Style(
+    private sealed case class Style(
         var leftPad: Int = 1, // >= 0
         var rightPad: Int = 1, // >= 0
         var maxWidth: Int = Int.MaxValue, // > 0
@@ -89,7 +89,7 @@ class NCAsciiTable {
      * @param style
      * @param lines Lines that are already cut up per `style`, if required.
      */
-    private final case class Cell(style: Style, lines: Seq[String]) {
+    private sealed case class Cell(style: Style, lines: Seq[String]) {
         // Cell's calculated width including padding.
         lazy val width: Int =
             if (height > 0)
@@ -112,12 +112,12 @@ class NCAsciiTable {
     )
 
     // Table drawing symbols.
-    private val HDR_HOR = "="
-    private val HDR_VER = "|"
-    private val HDR_CRS = "+"
-    private val ROW_HOR = "-"
-    private val ROW_VER = "|"
-    private val ROW_CRS = "+"
+    private val HDR_HOR = '='
+    private val HDR_VER = '|'
+    private val HDR_CRS = '+'
+    private val ROW_HOR = '-'
+    private val ROW_VER = '|'
+    private val ROW_CRS = '+'
 
     // Headers & rows.
     private var hdr = IndexedSeq.empty[Cell]
@@ -154,8 +154,8 @@ class NCAsciiTable {
     var defaultHeaderStyle: String = DFLT_HEADER_STYLE
 
     // Dash drawing.
-    private def dash(ch: String, len: Int): String = (for (_ ← 1 to len) yield ch).mkString("")
-    private def space(len: Int): String = dash(" ", len)
+    private def dash(ch: Char, len: Int): String = (for (_ ← 1 to len) yield ch).mkString("")
+    private def space(len: Int): String = dash(' ', len)
 
     /**
      * Sets table's margin.
@@ -214,8 +214,10 @@ class NCAsciiTable {
         startRow()
 
         cells foreach {
-            case i if i._2.isInstanceOf[Iterable[_]] ⇒ addStyledRowCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
-            case a ⇒ addStyledRowCell(a._1, a._2)
+            case i if i._2.isInstanceOf[Iterable[_]] ⇒
+                addStyledRowCell(i._1, i._2.asInstanceOf[Iterable[_]].iterator.toSeq: _*)
+            case a ⇒
+                addStyledRowCell(a._1, a._2)
         }
 
         endRow()
@@ -306,6 +308,8 @@ class NCAsciiTable {
             if (line.isEmpty)
                 mutable.Buffer("")
             else {
+                val leader = line.indexWhere(_ != ' ') // Number of leading spaces.
+
                 val buf = mutable.Buffer.empty[String]
 
                 var start = 0
@@ -313,11 +317,17 @@ class NCAsciiTable {
                 var curr = 0
                 val len = line.length
 
+                def addLine(line: String) =
+                    if (buf.isEmpty)
+                        buf += line
+                    else
+                        buf += (space(leader) + line)
+
                 while (curr < len) {
                     if (curr - start > maxWidth) {
                         val end = if (lastSpace == -1) curr else lastSpace + 1 /* Keep space at the end of the line. */
 
-                        buf += line.substring(start, end)
+                        addLine(line.substring(start, end))
                         start = end
                     }
 
@@ -330,8 +340,9 @@ class NCAsciiTable {
                 if (start < len) {
                     val lastLine = line.substring(start)
 
-                    if (lastLine.nonEmpty)
-                        buf += lastLine
+                    if (lastLine.nonEmpty) {
+                        addLine(lastLine)
+                    }
                 }
 
                 buf
@@ -412,7 +423,7 @@ class NCAsciiTable {
     private def aligned(txt: String, width: Int, sty: Style): String = {
         val d = width - txt.length
 
-        sty.align.trim match {
+        sty.align match {
             case "center" ⇒ space(d / 2) + txt + space(d / 2 + d % 2)
             case "left" ⇒ space(sty.leftPad) + txt + space(d - sty.leftPad)
             case "right" ⇒ space(d - sty.rightPad) + txt + space(sty.rightPad)
@@ -481,7 +492,13 @@ class NCAsciiTable {
         for (_ ← 0 until margin.top)
             tbl ++= " \n"
 
-        def mkAsciiLine(crs: String, cor: String): String =
+        /**
+         *
+         * @param crs
+         * @param cor
+         * @return
+         */
+        def mkAsciiLine(crs: Char, cor: Char): String =
             s"${space(margin.left)}$crs${dash(cor, tableW)}$crs${space(margin.right)}\n"
 
         // Print header, if any.
@@ -500,7 +517,7 @@ class NCAsciiTable {
                     else
                         tbl ++= space(colWs(j))
 
-                    tbl ++= HDR_VER // '|'
+                    tbl ++= s"$HDR_VER" // '|'
                 }
 
                 // Right margin.
@@ -546,7 +563,7 @@ class NCAsciiTable {
                         else
                             tbl ++= space(w)
 
-                        tbl ++= ROW_VER // '|'
+                        tbl ++= s"$ROW_VER" // '|'
                     }
 
                     // Right margin.
@@ -655,13 +672,31 @@ object NCAsciiTable {
 
     /**
      * Creates new ASCII text table with all defaults.
+     *
+     * @return Newly created ASCII table.
      */
     def apply() = new NCAsciiTable
 
     /**
      * Creates new ASCII table with given header cells.
      *
-     * @param cells Header.
+     * @param hdrs Header.
+     * @return Newly created ASCII table.
      */
-    def apply(cells: Any*): NCAsciiTable = new NCAsciiTable #= (cells: _*)
+    def apply(hdrs: Any*): NCAsciiTable = new NCAsciiTable #= (hdrs: _*)
+
+    /**
+     * Creates new ASCII table with given headers and data.
+     *
+     * @param hdrs Headers.
+     * @param data Table data (sequence of rows).
+     * @return Newly created ASCII table.
+     */
+    def of(hdrs: Seq[Any], data: Seq[Seq[Any]]): NCAsciiTable = {
+        val tbl = new NCAsciiTable #= (hdrs: _*)
+
+        data.foreach(tbl += (_: _*))
+
+        tbl
+    }
 }

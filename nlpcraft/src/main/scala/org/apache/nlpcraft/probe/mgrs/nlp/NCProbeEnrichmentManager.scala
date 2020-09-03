@@ -83,7 +83,9 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
+
         pool = Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
+
         executor = ExecutionContext.fromExecutor(pool)
 
         super.start()
@@ -96,6 +98,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         }
 
         U.shutdownPools(pool)
+
         executor = null
 
         super.stop()

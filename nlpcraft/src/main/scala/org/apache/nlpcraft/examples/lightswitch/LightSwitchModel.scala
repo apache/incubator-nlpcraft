@@ -29,7 +29,7 @@ import org.apache.nlpcraft.model.{NCIntentTerm, _}
   * You can easily modify intent callbacks to perform the actual light switching using
   * HomeKit or Arduino-based controllers.
   * <p>
-  * See 'README.md' file in the same folder for running & testing instructions.
+  * See 'README.md' file in the same folder for running and testing instructions.
   */
 class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/lightswitch/lightswitch_model.yaml") {
     /**
