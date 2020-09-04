@@ -36,6 +36,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.util.{Failure, Success}
 
 /**
   * Probe commands processor.
@@ -110,8 +111,8 @@ object NCCommandManager extends NCService {
                             inspId = msg.data[String]("inspId"),
                             args = msg.dataOpt[String]("args"),
                             span
-                        ).collect {
-                            case res ⇒
+                        ).onComplete {
+                            case Success(res) =>
                                 NCConnectionManager.send(
                                     NCProbeMessage(
                                         "P2S_PROBE_INSPECTION",
@@ -120,7 +121,8 @@ object NCCommandManager extends NCService {
                                     ),
                                     span
                                 )
-                            case e: Throwable ⇒ logger.error(s"Message cannot be processed: $msg", e)
+
+                            case Failure(e) => logger.error(s"Message cannot be processed: $msg", e)
                         }(executor)
 
                     case "S2P_MODEL_INFO" ⇒

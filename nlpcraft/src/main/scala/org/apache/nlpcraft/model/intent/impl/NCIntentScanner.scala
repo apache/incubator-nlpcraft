@@ -185,8 +185,7 @@ object NCIntentScanner extends LazyLogging {
       */
     @throws[NCE]
     private def invoke(m: Method, obj: Any, args: Array[AnyRef]): NCResult = {
-        // TODO: fix in Java 9+.
-        var flag = m.isAccessible
+        var flag = m.canAccess(obj)
 
         try {
             if (!flag) {

@@ -23,6 +23,7 @@ import java.util.regex.{Pattern, PatternSyntaxException}
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
+import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.util.NCUtils._
@@ -40,6 +41,7 @@ import scala.collection.convert.ImplicitConversions._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 import scala.util.control.Exception._
 
 /**
@@ -115,8 +117,8 @@ object NCModelManager extends NCService with DecorateAsScala {
             for (mdl ← models.values; insId ← DFLT_INSPECTIONS) {
                 val mdlId = mdl.model.getId
 
-                NCInspectionManager.inspect(mdlId, insId, null, parent).collect {
-                    case res ⇒
+                NCInspectionManager.inspect(mdlId, insId, null, parent).onComplete{
+                    case Success(res) =>
                         res.errors().asScala.foreach(
                             p ⇒ logger.error(s"Validation error [model=$mdlId, inspection=$insId, text=$p")
                         )
@@ -126,7 +128,8 @@ object NCModelManager extends NCService with DecorateAsScala {
                         res.suggestions().asScala.foreach(
                             p ⇒ logger.info(s"Validation suggestion [model=$mdlId, inspection=$insId, text=$p")
                         )
-                    case e: Throwable ⇒ logger.error(s"Error processing inspections: $mdlId", e)
+
+                    case Failure(e) => logger.error(s"Error processing inspections: $mdlId", e)
                 }
             }
 
@@ -752,7 +755,7 @@ object NCModelManager extends NCService with DecorateAsScala {
         }
 
     /**
-      * Gets model data which can be transfered between probe and server.
+      * Gets model data which can be transferred between probe and server.
       *
       * @param mdlId Model ID.
       */
