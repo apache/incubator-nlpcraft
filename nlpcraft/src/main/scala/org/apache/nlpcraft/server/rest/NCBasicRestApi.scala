@@ -488,6 +488,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      */
     protected def ask$Sync(): Route = {
         entity(as[JsValue]) { req ⇒
+            //noinspection DuplicatedCode
             val obj = req.asJsObject()
 
             val acsTok: String = convert(obj, "acsTok", (js: JsValue) ⇒ js.convertTo[String])
@@ -505,11 +506,13 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrExtId" → usrExtIdOpt.orNull,
                 "txt" → txt,
                 "mdlId" → mdlId) { span ⇒
-                checkLength("acsTok", acsTok)
-                checkLengthOpt("userExtId", data)
-                checkLength("mdlId", mdlId)
+                checkLength(
+                    "acsTok" -> acsTok,
+                    "usrExtId" -> usrExtIdOpt,
+                    "mdlId" -> mdlId,
+                    "txt" -> txt
+                )
 
-                checkLength("txt", txt, 1024)
                 checkLengthOpt("data", data, 512000)
 
                 val acsUsr = authenticate(acsTok)
@@ -548,10 +551,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      * @param fut
      * @return
      */
-    private def successWithJs(fut: Future[String]) =
-        onSuccess(fut) {
-            js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
-        }
+    private def successWithJs(fut: Future[String]) = onSuccess(fut) {
+        js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
+    }
 
     /**
       *
@@ -712,6 +714,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      */
     protected def inspect$(): Route = {
         entity(as[JsValue]) { req ⇒
+            //noinspection DuplicatedCode
             val obj = req.asJsObject()
 
             val acsTok: String = convert(obj, "acsTok", (js: JsValue) ⇒ js.convertTo[String])
