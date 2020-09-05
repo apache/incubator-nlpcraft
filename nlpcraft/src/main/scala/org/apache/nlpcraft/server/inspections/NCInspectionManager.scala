@@ -20,7 +20,7 @@ package org.apache.nlpcraft.server.inspections
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.inspections.impl.{NCInspectionImpl, NCInspectionParameterImpl}
-import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspectionResult}
+import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspectionResult, NCInspectionService}
 import org.apache.nlpcraft.server.inspections.inspectors.NCInspectorSuggestions
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
@@ -28,63 +28,59 @@ import scala.collection.Map
 import scala.concurrent.Future
 
 /**
- * TODO:
+ * Model inspection manager.
  */
 object NCInspectionManager extends NCService {
-    private final val INSPECTIONS: Seq[NCInspection] = {
-        // TODO:
-        Seq(
-            NCInspectionImpl(
-                id = "macros",
-                name = "macros",
-                synopsis = "macros",
-                parameters = Seq.empty,
-                description = "macros",
-                isServerSide = false
+    private final val ALL_INSPECTIONS: Seq[NCInspection] = Seq(
+        NCInspectionImpl(
+            id = "macros",
+            name = "macros",
+            synopsis = "macros",
+            parameters = Seq.empty,
+            description = "macros",
+            isServerSide = false
+        ),
+        NCInspectionImpl(
+            id = "intents",
+            name = "intents",
+            synopsis = "intents",
+            parameters = Seq.empty,
+            description = "intents",
+            isServerSide = false
+        ),
+        NCInspectionImpl(
+            id = "synonyms",
+            name = "synonyms",
+            synopsis = "synonyms",
+            parameters = Seq.empty,
+            description = "synonyms",
+            isServerSide = false
+        ),
+        NCInspectionImpl(
+            id = "suggestions",
+            name = "suggestions",
+            synopsis = "suggestions",
+            parameters = Seq(
+                NCInspectionParameterImpl(
+                    id = "minScore",
+                    name = "minScore",
+                    value = "minScore",
+                    valueType = "double",
+                    synopsis = "minScore, range  between 0 and 1",
+                    description = "minScore"
+                )
             ),
-            NCInspectionImpl(
-                id = "intents",
-                name = "intents",
-                synopsis = "intents",
-                parameters = Seq.empty,
-                description = "intents",
-                isServerSide = false
-            ),
-            NCInspectionImpl(
-                id = "synonyms",
-                name = "synonyms",
-                synopsis = "synonyms",
-                parameters = Seq.empty,
-                description = "synonyms",
-                isServerSide = false
-            ),
-            NCInspectionImpl(
-                id = "suggestions",
-                name = "suggestions",
-                synopsis = "suggestions",
-                parameters = Seq(
-                    NCInspectionParameterImpl(
-                        id = "minScore",
-                        name = "minScore",
-                        value = "minScore",
-                        valueType = "double",
-                        synopsis = "minScore, range  between 0 and 1",
-                        description = "minScore"
-                    )
-                ),
-                description = "suggestions",
-                isServerSide = true
-            )
+            description = "suggestions",
+            isServerSide = true
         )
-    }
+    )
 
-    private final val SRV_INSPECTORS =
-        Map(
-            "suggestions" → NCInspectorSuggestions
-        )
+    private final val SRV_INSPECTIONS = Map[String, NCInspectionService](
+        "suggestions" → NCInspectorSuggestions
+    )
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        SRV_INSPECTORS.values.foreach(_.start())
+        SRV_INSPECTIONS.values.foreach(_.start())
 
         super.start(parent)
     }
@@ -92,7 +88,7 @@ object NCInspectionManager extends NCService {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
 
-        SRV_INSPECTORS.values.foreach(_.stop(parent))
+        SRV_INSPECTIONS.values.foreach(_.stop(parent))
     }
 
     /**
@@ -103,15 +99,16 @@ object NCInspectionManager extends NCService {
      * @param parent Optional parent trace span.
      */
     def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
-        SRV_INSPECTORS.get(inspId) match {
-            case Some(inspector) ⇒ inspector.inspect(mdlId, inspId, args, parent)
-            case None ⇒ NCProbeManager.getProbeInspection(mdlId, inspId, args, parent)
+        SRV_INSPECTIONS.get(inspId) match {
+            case Some(insp) ⇒ insp.inspect(mdlId, inspId, args, parent)
+            case None ⇒ NCProbeManager.runInspection(mdlId, inspId, args, parent)
         }
+
     /**
      * Gets all supported server and probe inspections.
      *
      * @param parent
      * @return
      */
-    def getInspections(parent: Span = null): Seq[NCInspection] = INSPECTIONS
+    def allInspections(parent: Span = null): Seq[NCInspection] = ALL_INSPECTIONS
 }

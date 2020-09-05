@@ -784,7 +784,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 authenticateAsAdmin(req.acsTok)
 
-                val inspections = NCInspectionManager.getInspections(span).map(i ⇒ Inspection_Inspection$All(
+                val inspections = NCInspectionManager.allInspections(span).map(i ⇒ Inspection_Inspection$All(
                     id = i.id(),
                     name = i.name(),
                     synopsis = i.synopsis(),

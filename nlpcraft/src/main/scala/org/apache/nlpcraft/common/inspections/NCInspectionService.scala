@@ -1,28 +1,38 @@
-package org.apache.nlpcraft.server.inspections.inspectors
+package org.apache.nlpcraft.common.inspections
 
 import java.util.concurrent.{ExecutorService, Executors}
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
-import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.util.NCUtils
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 
-// TODO: duplicated with probe component (same API) etc - should we move it into common?
-private[inspections] trait NCInspector extends NCService {
+/**
+ * Base trait for inspection implementation.
+ */
+trait NCInspectionService extends NCService {
+    /** */
     @volatile private var pool: ExecutorService = _
-    @volatile protected var executor: ExecutionContextExecutor = _
+
+    /** */
+    @volatile private var executor: ExecutionContextExecutor = _
 
     /**
-      *
-      * @param mdlId
-      * @param inspId
-      * @param args
-      * @param parent
-      * @return
-      */
+     *
+     * @param mdlId
+     * @param inspId
+     * @param args
+     * @param parent
+     * @return
+     */
     def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult]
+
+    /**
+     *
+     * @return
+     */
+    def getExecutor = executor
 
     override def start(parent: Span): NCService =
         startScopedSpan("start", parent) { _ ⇒
@@ -37,6 +47,8 @@ private[inspections] trait NCInspector extends NCService {
             super.stop(parent)
 
             NCUtils.shutdownPools(pool)
+
+            pool = null
             executor = null
         }
 }

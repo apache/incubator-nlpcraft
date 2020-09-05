@@ -147,7 +147,7 @@ object NCProbeManager extends NCService {
     @volatile private var pool: ExecutorService = _
     @volatile private var isStopping: AtomicBoolean = _
 
-    @volatile private var probeInspecs: ConcurrentHashMap[String, Promise[NCInspectionResult]] = _
+    @volatile private var probeInsp: ConcurrentHashMap[String, Promise[NCInspectionResult]] = _
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
 
     /**
@@ -169,7 +169,7 @@ object NCProbeManager extends NCService {
     
         isStopping = new AtomicBoolean(false)
 
-        probeInspecs = new ConcurrentHashMap[String, Promise[NCInspectionResult]]()
+        probeInsp = new ConcurrentHashMap[String, Promise[NCInspectionResult]]()
         modelsInfo = new ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]]()
         
         pool = Executors.newFixedThreadPool(Config.poolSize)
@@ -210,7 +210,7 @@ object NCProbeManager extends NCService {
         U.stopThread(dnSrv)
         U.stopThread(upSrv)
 
-        probeInspecs = null
+        probeInsp = null
         modelsInfo = null
      
         super.stop()
@@ -412,6 +412,7 @@ object NCProbeManager extends NCService {
       */
     @throws[NCE]
     @throws[IOException]
+    //noinspection DuplicatedCode
     private def downLinkHandler(sock: NCSocket): Unit = {
         // Read header token hash message.
         val tokHash = sock.read[String]()
@@ -533,6 +534,7 @@ object NCProbeManager extends NCService {
       */
     @throws[NCE]
     @throws[IOException]
+    //noinspection DuplicatedCode
     private def upLinkHandler(sock: NCSocket): Unit = {
         // Read header probe token hash message.
         val tokHash = sock.read[String]()
@@ -700,7 +702,7 @@ object NCProbeManager extends NCService {
             typ match {
                 case "P2S_PING" ⇒ ()
 
-                case "P2S_PROBE_INSPECTION" ⇒ processPromise(probeInspecs, TYPE_INSPECTION_RESP)
+                case "P2S_PROBE_INSPECTION" ⇒ processPromise(probeInsp, TYPE_INSPECTION_RESP)
                 case "P2S_MODEL_INFO" ⇒ processPromise(modelsInfo, TYPE_MODEL_INFO_RESP)
                 case "P2S_ASK_RESULT" ⇒
                     val srvReqId = probeMsg.data[String]("srvReqId")
@@ -983,14 +985,14 @@ object NCProbeManager extends NCService {
       * @param parent
       * @return
       */
-    def getProbeInspection(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
-        startScopedSpan("inspect", parent, "modelId" → mdlId, "inspId" → inspId) { _ ⇒
+    def runInspection(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
+        startScopedSpan("runInspection", parent, "modelId" → mdlId, "inspId" → inspId) { _ ⇒
             val params = mutable.HashMap.empty[String, Serializable] ++ Map("mdlId" → mdlId, "inspId" → inspId)
 
             if (args.isDefined)
                 params += "args" → GSON.toJson(args.get)
 
-            probePromise(parent, mdlId, probeInspecs, "S2P_PROBE_INSPECTION", params.toSeq :_*)
+            probePromise(parent, mdlId, probeInsp, "S2P_PROBE_INSPECTION", params.toSeq :_*)
         }
 
     /**
@@ -1036,6 +1038,7 @@ object NCProbeManager extends NCService {
                 sendToProbe(probe.probeKey, msg, parent)
 
                 promise.future
+
             case None ⇒ throw new NCE(s"Probe not found for model: '$mdlId''")
         }
 }

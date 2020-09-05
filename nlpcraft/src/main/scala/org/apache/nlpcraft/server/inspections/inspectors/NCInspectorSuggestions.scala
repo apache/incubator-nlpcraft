@@ -32,7 +32,7 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.inspections.NCInspectionResult
+import org.apache.nlpcraft.common.inspections._
 import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
@@ -44,7 +44,7 @@ import scala.collection.{Seq, mutable}
 import scala.concurrent.{ExecutionContextExecutor, Future, Promise}
 
 // TODO: Possible parameter 'minScore' (double 0 .. 1)
-object NCInspectorSuggestions extends NCInspector {
+object NCInspectorSuggestions extends NCInspectionService {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20
@@ -471,7 +471,7 @@ object NCInspectorSuggestions extends NCInspector {
 
                     promise.failure(e)
 
-            }(executor)
+            }(getExecutor)
 
             promise.future
         }
