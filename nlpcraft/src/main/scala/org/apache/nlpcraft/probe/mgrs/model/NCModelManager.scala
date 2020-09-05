@@ -758,8 +758,10 @@ object NCModelManager extends NCService with DecorateAsScala {
       * Gets model data which can be transferred between probe and server.
       *
       * @param mdlId Model ID.
+      * @param parent
+      * @return
       */
-    def getModelTransferData(mdlId: String, parent: Span = null): java.util.Map[String, Any] =
+    def getModelInfo(mdlId: String, parent: Span = null): java.util.Map[String, Any] =
         startScopedSpan("getModel", parent, "mdlId" → mdlId) { _ ⇒
             val mdl = mux.synchronized { models.get(mdlId) }.
                 getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
@@ -767,8 +769,8 @@ object NCModelManager extends NCService with DecorateAsScala {
             val data = new util.HashMap[String, Any]()
 
             data.put("macros", mdl.getMacros)
-            data.put("elementsSynonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
-            data.put("intentsSamples", NCIntentScanner.scanIntentsSamples(mdl.proxy).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
+            data.put("synonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
+            data.put("samples", NCIntentScanner.scanIntentsSamples(mdl.proxy).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
 
             data
         }

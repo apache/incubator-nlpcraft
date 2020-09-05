@@ -126,7 +126,7 @@ object NCCommandManager extends NCService {
                         }(executor)
 
                     case "S2P_MODEL_INFO" ⇒
-                        val res = NCModelManager.getModelTransferData(msg.data[String]("mdlId"))
+                        val res = NCModelManager.getModelInfo(msg.data[String]("mdlId"))
 
                         NCConnectionManager.send(
                             NCProbeMessage(

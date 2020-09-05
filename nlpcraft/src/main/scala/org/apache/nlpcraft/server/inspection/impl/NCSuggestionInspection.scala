@@ -43,7 +43,9 @@ import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
 import scala.concurrent.{ExecutionContextExecutor, Future, Promise}
 
-// TODO: Possible parameter 'minScore' (double 0 .. 1)
+/**
+ * Synonym suggestion inspection.
+ */
 object NCSuggestionInspection extends NCInspectionService {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
@@ -85,13 +87,9 @@ object NCSuggestionInspection extends NCInspectionService {
         }
 
     case class Suggestion(word: String, score: Double)
-
-    case class RequestData(sentence: String, example: String, elementId: String, index: Int)
-
-    case class RestRequestSentence(text: String, indexes: util.List[Int])
-
-    case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, min_score: Double)
-
+    case class RequestData(sentence: String, ex: String, elmId: String, index: Int)
+    case class RestRequestSentence(txt: String, indexes: util.List[Int])
+    case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, minScore: Double)
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
         require(
@@ -103,17 +101,10 @@ object NCSuggestionInspection extends NCInspectionService {
             s"Unsupported symbols: $word"
         )
     }
-
-    case class SuggestionResult(
-        synonym: String,
-        ctxWorldServerScore: Double,
-        suggestedCount: Int
-    )
+    case class SuggestionResult(synonym: String, ctxWordSrvScore: Double, sgstCnt: Int)
 
     private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
-
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
-
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
 
     /**
@@ -150,9 +141,9 @@ object NCSuggestionInspection extends NCInspectionService {
 
                         val macros = m.get("macros").
                             asInstanceOf[util.Map[String, String]].asScala
-                        val elementsSynonyms = m.get("elementsSynonyms").
+                        val synonyms = m.get("synonyms").
                             asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
-                        val intentsSamples = m.get("intentsSamples").
+                        val samples = m.get("samples").
                             asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
 
                         val minScore =
@@ -170,13 +161,14 @@ object NCSuggestionInspection extends NCInspectionService {
                                             v.asInstanceOf[Double]
                                         }
                                         catch {
-                                            case e: Exception ⇒ throw new NCE("Invalid 'minScore' parameter", e)
+                                            case e: Exception ⇒ throw new NCE("Invalid 'minScore' parameter.", e)
                                         }
 
                                     if (v < 0 || v > 1)
-                                        throw new NCE("'minScore' parameter value must be between 0 and 1")
+                                        throw new NCE("'minScore' parameter value must be between 0 and 1.")
 
                                     v
+
                                 case None ⇒ DFLT_MIN_SCORE
                             }
 
@@ -194,32 +186,32 @@ object NCSuggestionInspection extends NCInspectionService {
                                 )
                             )
 
-                        if (intentsSamples.isEmpty)
+                        if (samples.isEmpty)
                             onError(s"Missed intents samples for: '$mdlId'")
                         else {
-                            val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured"))}/suggestions"
+                            val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured."))}/suggestions"
 
-                            val allSamplesCnt = intentsSamples.map { case (_, samples) ⇒ samples.size }.sum
+                            val allSamplesCnt = samples.map { case (_, samples) ⇒ samples.size }.sum
 
                             val warns = mutable.ArrayBuffer.empty[String]
 
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
                                     s"Model: '$mdlId' has too small intents samples count: $allSamplesCnt. " +
-                                        s"Potentially is can be not enough for suggestions service high quality work. " +
-                                        s"Try to increase their count at least to $MIN_CNT_MODEL."
+                                    s"Potentially is can be not enough for suggestions service high quality work. " +
+                                    s"Try to increase their count at least to $MIN_CNT_MODEL."
 
                             else {
                                 val ids =
-                                    intentsSamples.
+                                    samples.
                                         filter { case (_, samples) ⇒ samples.size < MIN_CNT_INTENT }.
                                         map { case (intentId, _) ⇒ intentId }
 
                                 if (ids.nonEmpty)
                                     warns +=
                                         s"Models '$mdlId' has intents: [${ids.mkString(", ")}] with too small intents samples count." +
-                                            s"Potentially it can be not enough for suggestions service high quality work. " +
-                                            s"Try to increase their count at least to $MIN_CNT_INTENT."
+                                        s"Potentially it can be not enough for suggestions service high quality work. " +
+                                        s"Try to increase their count at least to $MIN_CNT_INTENT."
                             }
 
                             val parser = new NCMacroParser()
@@ -229,7 +221,7 @@ object NCSuggestionInspection extends NCInspectionService {
                             // Note that we don't use system tokenizer, because ContextWordServer doesn't have this tokenizer.
                             // We just split examples words with spaces. Also we divide SEPARATORS as separated words.
                             val examples =
-                            intentsSamples.
+                            samples.
                                 flatMap { case (_, samples) ⇒ samples }.
                                 map(ex ⇒ SEPARATORS.foldLeft(ex)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
                                 map(ex ⇒ {
@@ -240,7 +232,7 @@ object NCSuggestionInspection extends NCInspectionService {
                                 toMap
 
                             val elemSyns =
-                                elementsSynonyms.map { case (elemId, syns) ⇒ elemId → syns.flatMap(parser.expand) }.
+                                synonyms.map { case (elemId, syns) ⇒ elemId → syns.flatMap(parser.expand) }.
                                     map { case (id, seq) ⇒ id → seq.map(txt ⇒ split(txt).map(p ⇒ Word(p, toStemWord(p)))) }
 
                             val allReqs =
@@ -267,8 +259,8 @@ object NCSuggestionInspection extends NCInspectionService {
                                                                     case _ ⇒ Seq(exampleWord)
                                                                 }
                                                         }.mkString(" "),
-                                                        example = exampleWords.mkString(" "),
-                                                        elementId = elemId,
+                                                        ex = exampleWords.mkString(" "),
+                                                        elmId = elemId,
                                                         index = idx
                                                     )
                                                 }
@@ -281,14 +273,14 @@ object NCSuggestionInspection extends NCInspectionService {
                                 }.filter(_._2.nonEmpty)
 
                             val noExElems =
-                                elementsSynonyms.
+                                synonyms.
                                     filter { case (elemId, syns) ⇒ syns.nonEmpty && !allReqs.contains(elemId) }.
                                     map { case (elemId, _) ⇒ elemId }
 
                             if (noExElems.nonEmpty)
                                 warns +=
                                     "Some elements don't have synonyms in their intent samples, " +
-                                        s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
+                                    s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
 
                             val allReqsCnt = allReqs.map(_._2.size).sum
                             val allSynsCnt = elemSyns.map(_._2.size).sum
@@ -323,7 +315,7 @@ object NCSuggestionInspection extends NCInspectionService {
                                                         RestRequest(
                                                             sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
                                                             // ContextWord server range is (0, 2), input range is (0, 1)
-                                                            min_score = minScore * 2,
+                                                            minScore = minScore * 2,
                                                             // We set big limit value and in fact only minimal score is taken into account.
                                                             limit = MAX_LIMIT
                                                         )
@@ -411,7 +403,7 @@ object NCSuggestionInspection extends NCInspectionService {
 
                                     var i = 1
 
-                                    debugs.groupBy(_._1.example).foreach { case (_, m) ⇒
+                                    debugs.groupBy(_._1.ex).foreach { case (_, m) ⇒
                                         m.toSeq.sortBy(_._1.sentence).foreach { case (req, suggs) ⇒
                                             val s =
                                                 split(req.sentence).
@@ -422,7 +414,7 @@ object NCSuggestionInspection extends NCInspectionService {
                                                 s"$i. " +
                                                     s"Request=$s, " +
                                                     s"suggestions=[${suggs.map(_.word).mkString(", ")}], " +
-                                                    s"element=${req.elementId}"
+                                                    s"element=${req.elmId}"
                                             )
 
                                             i = i + 1
@@ -437,8 +429,8 @@ object NCSuggestionInspection extends NCInspectionService {
 
                                             m.put("synonym", d.synonym)
                                             // ContextWord server range is (0, 2)
-                                            m.put("ctxWorldServerScore", d.ctxWorldServerScore / 2)
-                                            m.put("suggestedCount", d.suggestedCount)
+                                            m.put("ctxWorldServerScore", d.ctxWordSrvScore / 2)
+                                            m.put("suggestedCount", d.sgstCnt)
 
                                             m
                                         }).asJava
