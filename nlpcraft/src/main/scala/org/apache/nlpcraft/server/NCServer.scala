@@ -34,7 +34,7 @@ import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.geo.NCGeoManager
 import org.apache.nlpcraft.server.ignite.{NCIgniteInstance, NCIgniteRunner}
-import org.apache.nlpcraft.server.inspections.NCInspectionManager
+import org.apache.nlpcraft.server.inspection.NCInspectionManager
 import org.apache.nlpcraft.server.lifecycle.NCServerLifecycleManager
 import org.apache.nlpcraft.server.nlp.core.NCNlpServerManager
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager

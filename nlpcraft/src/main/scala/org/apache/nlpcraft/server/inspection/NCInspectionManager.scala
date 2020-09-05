@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.inspections
+package org.apache.nlpcraft.server.inspection
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.inspections.impl.{NCInspectionImpl, NCInspectionParameterImpl}
 import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspectionResult, NCInspectionService}
-import org.apache.nlpcraft.server.inspections.inspectors.NCInspectorSuggestions
+import org.apache.nlpcraft.server.inspection.impl.NCSuggestionInspection
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
 import scala.collection.Map
@@ -76,7 +76,7 @@ object NCInspectionManager extends NCService {
     )
 
     private final val SRV_INSPECTIONS = Map[String, NCInspectionService](
-        "suggestions" → NCInspectorSuggestions
+        "suggestions" → NCSuggestionInspection
     )
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒

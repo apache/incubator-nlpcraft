@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.inspections.inspectors
+package org.apache.nlpcraft.server.inspection.impl
 
 import java.util
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
@@ -44,7 +44,7 @@ import scala.collection.{Seq, mutable}
 import scala.concurrent.{ExecutionContextExecutor, Future, Promise}
 
 // TODO: Possible parameter 'minScore' (double 0 .. 1)
-object NCInspectorSuggestions extends NCInspectionService {
+object NCSuggestionInspection extends NCInspectionService {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20

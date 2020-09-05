@@ -34,7 +34,7 @@ import org.apache.nlpcraft.common.{NCE, NCException, U}
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
-import org.apache.nlpcraft.server.inspections.NCInspectionManager
+import org.apache.nlpcraft.server.inspection.NCInspectionManager
 import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
