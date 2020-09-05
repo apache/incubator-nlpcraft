@@ -325,7 +325,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     @throws[EmptyField]
     protected def checkLength(pairs: (String, Any)*): Unit = {
         pairs.foreach {
-            case (name, value: Some[_]) => checkLengthOpt(name, value)
+            case (name, value: Option[_]) => checkLengthOpt(name, value)
             case (name, value: String) => checkLength(name, value)
             case _ => assert(false)
         }
@@ -339,7 +339,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     @throws[TooLargeField]
     @throws[EmptyField]
     protected def checkAuth(acsTok: String, extUsrId: Option[String]): Unit = {
-        checkLength("ascTok", acsTok)
+        checkLength("acsTok" -> acsTok)
 
         if (extUsrId.isDefined)
             checkLength("extUsrId", extUsrId.get)
