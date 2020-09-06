@@ -577,8 +577,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             span.end()
         }
     
-        val mdl: NCModelWrapper = mdlDec.model.asInstanceOf[NCModelWrapper]
-        
+        val mdl: NCModelWrapper = mdlDec.model
+
         val solverIn = new NCIntentSolverInput(ctx)
 
         // Execute model query asynchronously.
