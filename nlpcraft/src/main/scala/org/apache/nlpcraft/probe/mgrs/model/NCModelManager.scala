@@ -23,7 +23,6 @@ import java.util.regex.{Pattern, PatternSyntaxException}
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
-import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.util.NCUtils._
@@ -95,7 +94,7 @@ object NCModelManager extends NCService with DecorateAsScala {
             NCDeployManager.getModels.foreach(addNewModel)
 
             if (models.isEmpty)
-                throw new NCException("No models deployed.")
+                throw new NCException("No models to deploy. Probe requires at least one data model to start.")
 
             val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms")
 
