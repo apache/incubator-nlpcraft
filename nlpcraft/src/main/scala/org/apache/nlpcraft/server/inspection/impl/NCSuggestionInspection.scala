@@ -42,6 +42,7 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
 import scala.concurrent.{Future, Promise}
+import scala.util.{Failure, Success}
 
 /**
  * Synonym suggestion inspection.
@@ -132,8 +133,8 @@ object NCSuggestionInspection extends NCInspectionService {
 
             val promise = Promise[NCInspectionResult]()
 
-            NCProbeManager.getModelInfo(mdlId, parent).collect {
-                case m: java.util.Map[String, AnyRef] ⇒
+            NCProbeManager.getModelInfo(mdlId, parent).onComplete {
+                case Success(m) ⇒
                     try {
                         require(
                             m.containsKey("macros") && m.containsKey("elementsSynonyms") && m.containsKey("intentsSamples")
@@ -429,6 +430,7 @@ object NCSuggestionInspection extends NCInspectionService {
 
                             promise.failure(e)
                     }
+                case Failure(e) ⇒ promise.failure(e)
             }(getExecutor)
 
             promise.future
