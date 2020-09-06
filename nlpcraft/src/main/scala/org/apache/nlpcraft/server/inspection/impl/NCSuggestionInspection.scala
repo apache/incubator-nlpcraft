@@ -133,7 +133,7 @@ object NCSuggestionInspection extends NCInspectionService {
             val promise = Promise[NCInspectionResult]()
 
             NCProbeManager.getModelInfo(mdlId, parent).collect {
-                case m ⇒
+                case m: java.util.Map[String, AnyRef] ⇒
                     try {
                         require(
                             m.containsKey("macros") && m.containsKey("elementsSynonyms") && m.containsKey("intentsSamples")
@@ -429,11 +429,6 @@ object NCSuggestionInspection extends NCInspectionService {
 
                             promise.failure(e)
                     }
-                case e: Throwable ⇒
-                    logger.warn(s"Error getting model information: $mdlId", e)
-
-                    promise.failure(e)
-
             }(getExecutor)
 
             promise.future
