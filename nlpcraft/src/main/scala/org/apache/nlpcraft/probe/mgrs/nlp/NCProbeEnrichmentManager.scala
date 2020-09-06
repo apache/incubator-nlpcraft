@@ -85,7 +85,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
 
         pool = Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
-
         executor = ExecutionContext.fromExecutor(pool)
 
         super.start()
@@ -100,6 +99,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         U.shutdownPools(pool)
 
         executor = null
+        pool = null
 
         super.stop()
     }

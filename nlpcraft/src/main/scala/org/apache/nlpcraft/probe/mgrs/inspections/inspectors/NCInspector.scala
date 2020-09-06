@@ -56,6 +56,8 @@ private[inspections] trait NCInspector extends NCService {
             super.stop(parent)
 
             NCUtils.shutdownPools(pool)
+
             executor = null
+            pool = null
         }
 }

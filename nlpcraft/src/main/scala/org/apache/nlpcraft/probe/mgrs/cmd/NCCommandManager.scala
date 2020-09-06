@@ -58,7 +58,9 @@ object NCCommandManager extends NCService {
         super.stop()
 
         NCUtils.shutdownPools(pool)
+
         executor = null
+        pool = null
     }
     
     /**
