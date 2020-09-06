@@ -519,17 +519,23 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 optionalHeaderValueByName("User-Agent") { usrAgent ⇒
                     extractClientIP { rmtAddr ⇒
+                        val fut = NCQueryManager.futureAsk(
+                            getUserId(acsUsr, usrIdOpt, usrExtIdOpt),
+                            txt,
+                            mdlId,
+                            usrAgent,
+                            getAddress(rmtAddr),
+                            data,
+                            enableLog.getOrElse(false),
+                            span
+                        )
+
+                        fut.failed.collect {
+                            case e ⇒ onError(e)
+                        }
+
                         successWithJs(
-                            NCQueryManager.futureAsk(
-                                getUserId(acsUsr, usrIdOpt, usrExtIdOpt),
-                                txt,
-                                mdlId,
-                                usrAgent,
-                                getAddress(rmtAddr),
-                                data,
-                                enableLog.getOrElse(false),
-                                span
-                            ).collect {
+                            fut.collect {
                                 // We have to use GSON (not spray) here to serialize `resBody` field.
                                 case res ⇒ GSON.toJson(
                                     Map(
@@ -549,10 +555,31 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     /**
      *
      * @param fut
-     * @return
      */
     private def successWithJs(fut: Future[String]) = onSuccess(fut) {
         js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
+    }
+
+    /**
+      *
+      * @param e
+      */
+    private def onError(e: Throwable): Unit = {
+        val errMsg = e.getLocalizedMessage
+        val code =
+            e match {
+                case _: NCE ⇒
+                    // We have to log error reason because even general exceptions are not expected here.
+                    logger.warn(s"Unexpected top level REST API error: $errMsg", e)
+
+                    StatusCodes.BadRequest
+                case _ ⇒
+                    logger.error(s"Unexpected system error: $errMsg", e)
+
+                    StatusCodes.InternalServerError
+            }
+
+        completeError(code, "NC_ERROR", errMsg)
     }
 
     /**
@@ -734,8 +761,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 if (!NCProbeManager.getAllProbes(admUsr.companyId, span).exists(_.models.exists(_.id == mdlId)))
                     throw new NCE(s"Probe not found for model: $mdlId")
 
+                val fut = NCInspectionManager.inspect(mdlId, inspId, args, span)
+
+                fut.failed.collect {
+                    case e ⇒ onError(e)
+                }
+
                 successWithJs(
-                    NCInspectionManager.inspect(mdlId, inspId, args, span).collect {
+                    fut.collect {
                         // We have to use GSON (not spray) here to serialize `result` field.
                         case res ⇒ GSON.toJson(Map("status" → API_OK.toString, "result" → res).asJava)
                     }
