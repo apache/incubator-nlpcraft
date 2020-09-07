@@ -203,13 +203,15 @@ private[rest] class NCRestSpec {
 
         checkStatus(resp)
 
-        val js = GSON.toJson(resp.asJava)
+        println(GSON.toJson(
+            Map(
+                "request-url" → url,
+                "params" → s"[${ps.map { case (k, v) ⇒ s"$k=$v" }.mkString(", ")}]",
+                "response" → resp.asJava
+            ).asJava
+        ))
 
-        println(s"Request [url=$url, params=[${ps.map { case (k, v) ⇒ s"$k=$v" }.mkString(", ")}]")
-        println("Response:")
-        println(js)
-
-        val ctx = JsonPath.parse(js)
+        val ctx = JsonPath.parse(GSON.toJson(resp.asJava))
 
         validations.foreach { case (field, validation) ⇒
             val v: Object =
