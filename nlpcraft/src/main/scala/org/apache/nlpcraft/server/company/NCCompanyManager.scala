@@ -167,15 +167,15 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
          
                     val n =
                         NCSqlManager.updateCompany(
-                            id,
-                            name,
-                            website,
-                            address,
-                            city,
-                            region,
-                            postalCode,
-                            country,
-                            span
+                            id = id,
+                            name = name,
+                            website = website,
+                            country = country,
+                            region = region,
+                            city = city,
+                            address = address,
+                            postalCode = postalCode,
+                            parent = span
                         )
          
                     if (n == 0)

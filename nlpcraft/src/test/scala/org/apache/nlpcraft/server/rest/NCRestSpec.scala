@@ -253,11 +253,30 @@ private[rest] class NCRestSpec {
       *
       * @param data
       * @param field
+      * @param expected
+      */
+    protected def containsStr(data: DataMap, field: String, expected: String): Boolean =
+        contains(data, field, (o: Object) ⇒ o.asInstanceOf[String], expected)
+
+    /**
+      *
+      * @param data
+      * @param field
       * @param extract
       * @param expected
       */
     protected def contains[T](data: DataMap, field: String, extract: Object ⇒ T, expected: T): Boolean =
         data.asScala.exists(p ⇒ extract(p.get(field)) == expected)
+
+    /**
+      *
+      * @param data
+      * @param field
+      * @param extract
+      * @param expected
+      */
+    protected def count[T](data: DataMap, field: String, extract: Object ⇒ T, expected: T): Int =
+        data.asScala.count(p ⇒ extract(p.get(field)) == expected)
 
     /**
       *

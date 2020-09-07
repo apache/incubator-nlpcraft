@@ -17,12 +17,24 @@
 
 package org.apache.nlpcraft.server.rest
 
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.{assertNotNull, assertTrue}
+import org.junit.jupiter.api.{BeforeEach, Test}
 
 class NCRestClearSpec extends NCRestSpec {
+    private var usrId: Long = 0
+
+    @BeforeEach
+    def setUp(): Unit = {
+        post("user/get")(("$.id", (id: Number) ⇒ usrId = id.longValue()))
+
+        assertTrue(usrId > 0)
+    }
+
     @Test
     def test(): Unit = {
         post("clear/conversation", "mdlId" → "nlpcraft.time.ex")()
+        post("clear/conversation", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
         post("clear/dialog", "mdlId" → "nlpcraft.time.ex")()
+        post("clear/dialog", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
     }
 }

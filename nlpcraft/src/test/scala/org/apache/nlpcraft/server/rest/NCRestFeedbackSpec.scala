@@ -18,12 +18,41 @@
 package org.apache.nlpcraft.server.rest
 
 import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{BeforeEach, Test}
 
 class NCRestFeedbackSpec extends NCRestSpec {
+    private var usrId: Long = 0
+
+    @BeforeEach
+    def setUp(): Unit = {
+        post("user/get")(("$.id", (id: Number) ⇒ usrId = id.longValue()))
+
+        assertTrue(usrId > 0)
+    }
+
+    /**
+      *
+      */
+    private def addFeedback(usrId: Option[java.lang.Long] = None, comment: Option[String] = None): Long = {
+        var fId: Long = 0
+
+        post("feedback/add",
+            "srvReqId" → rnd(),
+            "score" → 0.5,
+            "usrId" → usrId.orNull,
+            "comment" → comment.orNull
+        )(
+            ("$.id", (id: Number) ⇒ fId = id.longValue())
+        )
+
+        assertTrue(fId != 0)
+
+        fId
+    }
+
     @Test
     def test(): Unit = {
-        // Gets.
+        // Gets current state.
         post("feedback/all")()
 
         // Adds.
@@ -35,29 +64,36 @@ class NCRestFeedbackSpec extends NCRestSpec {
         // Deletes by id.
         post("feedback/delete", "id" → id)()
 
+        // Checks deleted.
+        post("feedback/all")(("$.feedback", (fs: DataMap) ⇒ assertFalse(containsLong(fs, "id", id))))
+
+        // Deletes all
+        post("feedback/delete")()
+
+        // Checks all deleted.
+        post("feedback/all")(("$.feedback", (feedbacks: DataMap) ⇒ assertTrue(feedbacks.isEmpty)))
+
         // Adds few.
-        addFeedback()
-        addFeedback()
+        addFeedback(usrId = Some(usrId))
+        addFeedback(comment = Some("comment"))
+        addFeedback(usrId = Some(usrId), comment = Some("comment"))
+
+        // Checks
+        post("feedback/all")(("$.feedback", (fs: DataMap) ⇒ {
+            assertEquals(3, fs.size())
+
+            // TODO: 3?
+            assertEquals(3, count(fs, "usrId", (o: Object) ⇒ o.asInstanceOf[Number].longValue(), usrId))
+            assertEquals(2, count(fs, "comment", (o: Object) ⇒ o.asInstanceOf[String], "comment"))
+        }))
 
         // Deletes all.
         post("feedback/delete")()
 
-        // Gets and checks.
+        // Checks all deleted.
         post("feedback/all")(("$.feedback", (feedbacks: DataMap) ⇒ assertTrue(feedbacks.isEmpty)))
     }
 
-    /**
-      *
-      */
-    private def addFeedback(): Long = {
-        var fId: Long = 0
-
-        post("feedback/add", "srvReqId" → rnd(), "score" → 0.5)(("$.id", (id: Number) ⇒ fId = id.longValue()))
-
-        assertTrue(fId != 0)
-
-        fId
-    }
 
     // TODO:
     // @Test
