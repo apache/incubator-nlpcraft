@@ -22,7 +22,7 @@ import java.util.UUID
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.jayway.jsonpath.JsonPath
+import com.jayway.jsonpath.{JsonPath, PathNotFoundException}
 import org.apache.http.client.ResponseHandler
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
@@ -212,7 +212,13 @@ private[rest] class NCRestSpec {
         val ctx = JsonPath.parse(js)
 
         validations.foreach { case (field, validation) ⇒
-            val v: Object = ctx.read(field)
+            val v: Object = {
+                try
+                    ctx.read(field)
+                catch {
+                    case _: PathNotFoundException ⇒ null
+                }
+            }
 
             println(s"Checked value [$field=$v]")
 

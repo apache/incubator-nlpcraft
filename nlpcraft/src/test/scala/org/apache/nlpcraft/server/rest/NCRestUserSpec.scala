@@ -17,8 +17,12 @@
 
 package org.apache.nlpcraft.server.rest
 
+import java.util
+
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
+
+import scala.collection.JavaConverters._
 
 class NCRestUserSpec extends NCRestSpec {
     @Test
@@ -33,12 +37,39 @@ class NCRestUserSpec extends NCRestSpec {
         post("user/get", "id" → id1)(("$.id", (id: Number) ⇒ assertEquals(id1, id.longValue())))
 
         // Updates.
-        post("user/update", "firstName" → "firstName", "lastName" → "lastName")()
+        var props: util.Map[String, String] = Map("k1" → "v1", "k2" → "v2").asJava
+
+        post(
+            "user/update",
+            "firstName" → "firstName",
+            "lastName" → "lastName",
+            "avatarUrl" → "avatarUrl",
+            "properties" → props
+        )()
 
         // Checks updated.
         post("user/get")(
-            ("$.firstName", (firstName: String) ⇒ assertEquals(firstName, "firstName")),
-            ("$.lastName", (lastName: String) ⇒ assertEquals(lastName, "lastName"))
+            ("$.firstName", (firstName: String) ⇒ assertEquals("firstName", firstName)),
+            ("$.lastName", (lastName: String) ⇒ assertEquals("lastName", lastName)),
+            ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals("avatarUrl", avatarUrl)),
+            ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(props, properties))
+        )
+
+        // Updates again.
+        props = Map.empty[String, String].asJava
+
+        post(
+            "user/update",
+            "firstName" → "firstName2",
+            "lastName" → "lastName2"
+        )()
+
+        // Checks updated.
+        post("user/get")(
+            ("$.firstName", (firstName: String) ⇒ assertEquals("firstName2", firstName)),
+            ("$.lastName", (lastName: String) ⇒ assertEquals("lastName2", lastName)),
+            ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals(null, avatarUrl)),
+            ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(null, properties))
         )
 
         // Updates (special cases).
