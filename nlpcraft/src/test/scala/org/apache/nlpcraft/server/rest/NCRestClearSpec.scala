@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test
 class NCRestClearSpec extends NCRestSpec {
     @Test
     def test(): Unit = {
-        post("clear/conversation", "mdlId" → "nlpcraft.weather.ex")()
-        post("clear/dialog", "mdlId" → "nlpcraft.weather.ex")()
+        post("clear/conversation", "mdlId" → "nlpcraft.time.ex")()
+        post("clear/dialog", "mdlId" → "nlpcraft.time.ex")()
     }
 }

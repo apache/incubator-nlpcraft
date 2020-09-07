@@ -17,16 +17,24 @@
 
 package org.apache.nlpcraft.server.rest
 
+import org.apache.nlpcraft.examples.time.TimeModel
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 import scala.collection.JavaConverters._
 
 class NCRestAskSpec extends NCRestSpec {
+    @BeforeEach
+    def setUp(): Unit = NCEmbeddedProbe.start(classOf[TimeModel])
+
+    @AfterEach
+    def tearDown(): Unit = NCEmbeddedProbe.stop()
+
     private def askAsync(): String = {
         var id: String = null
 
-        post("ask", "txt" → "LA weather", "mdlId" → "nlpcraft.weather.ex")(
+        post("ask", "txt" → "What's the local time?", "mdlId" → "nlpcraft.time.ex")(
             ("$.srvReqId", (srvReqId: String) ⇒ id = srvReqId)
         )
 
@@ -39,8 +47,8 @@ class NCRestAskSpec extends NCRestSpec {
     def testSync(): Unit = {
         post(
             "ask/sync",
-            "txt" → "LA weather",
-            "mdlId" → "nlpcraft.weather.ex"
+            "txt" → "What's the local time?",
+            "mdlId" → "nlpcraft.time.ex"
         )(("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status)))
     }
 

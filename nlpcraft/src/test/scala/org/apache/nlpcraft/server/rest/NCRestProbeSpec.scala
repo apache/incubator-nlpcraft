@@ -17,10 +17,18 @@
 
 package org.apache.nlpcraft.server.rest
 
+import org.apache.nlpcraft.examples.time.TimeModel
+import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 class NCRestProbeSpec extends NCRestSpec {
+    @BeforeEach
+    def setUp(): Unit = NCEmbeddedProbe.start(classOf[TimeModel])
+
+    @AfterEach
+    def tearDown(): Unit = NCEmbeddedProbe.stop()
+
     @Test
     def test(): Unit = {
         post("probe/all")(
