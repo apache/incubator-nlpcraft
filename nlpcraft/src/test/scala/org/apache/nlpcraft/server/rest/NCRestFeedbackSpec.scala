@@ -58,4 +58,11 @@ class NCRestFeedbackSpec extends NCRestSpec {
         // Gets and checks.
         post("feedback/all")(("$.feedback", (feedbacks: DataMap) ⇒ assertTrue(feedbacks.isEmpty)))
     }
+
+    // TODO:
+    // @Test
+    def testErrors(): Unit = {
+        // Too big score.
+        postError("feedback/add", 400, "srvReqId" → rnd(), "score" → 100)
+    }
 }
