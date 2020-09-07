@@ -36,12 +36,12 @@ object NCInspectionResultImpl {
     def apply(
         inspectionId: String,
         modelId: String,
-        inspectionArguments: Option[String],
+        inspectionArguments: Option[String] = None,
         durationMs: Long,
         timestamp: Long,
-        errors: Seq[String],
-        warnings: Seq[String],
-        suggestions: Seq[AnyRef]
+        errors: Seq[String] = Seq.empty,
+        warnings: Seq[String] = Seq.empty,
+        suggestions: Seq[AnyRef] = Seq.empty
     ): NCInspectionResultImpl =
         new NCInspectionResultImpl(
             inspectionId,

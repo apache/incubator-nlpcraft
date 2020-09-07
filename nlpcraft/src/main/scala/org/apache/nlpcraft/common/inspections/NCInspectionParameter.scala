@@ -25,12 +25,6 @@ trait NCInspectionParameter {
      *
      * @return
      */
-    def id(): String
-
-    /**
-     *
-     * @return
-     */
     def name(): String
 
     /**

@@ -21,23 +21,23 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.inspections.NCInspectionResult
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
-import org.apache.nlpcraft.probe.mgrs.inspections.inspectors.{NCInspectorIntents, NCInspectorMacros, NCInspectorSynonyms}
+import org.apache.nlpcraft.probe.mgrs.inspections.inspectors.{NCIntentsInspection, NCMacrosInspection, NCSynonymsInspection}
 
 import scala.concurrent.Future
 
 /**
- * TODO:
+ * Probe-side inspection manager.
  */
 object NCInspectionManager extends NCService with NCOpenCensusModelStats {
-    private final val INSPECTORS =
-        Map(
-            "macros" → NCInspectorMacros,
-            "synonyms" → NCInspectorSynonyms,
-            "intents" → NCInspectorIntents
+    private final val PROBE_INSPECTIONS =
+        Seq(
+            NCMacrosInspection,
+            NCSynonymsInspection,
+            NCIntentsInspection
         )
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        INSPECTORS.values.foreach(_.start(parent))
+        PROBE_INSPECTIONS.foreach(_.start(parent))
 
         super.start(parent)
     }
@@ -45,21 +45,26 @@ object NCInspectionManager extends NCService with NCOpenCensusModelStats {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
 
-        INSPECTORS.values.foreach(_.stop(parent))
+        PROBE_INSPECTIONS.foreach(_.stop(parent))
     }
 
     /**
      *
      * @param mdlId Model ID.
-     * @param inspId Inspection ID.
+     * @param inspName Inspection ID.
      * @param args Inspection arguments.
      * @param parent Optional parent trace span.
      */
-    def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
-        startScopedSpan("inspect", parent, "modelId" → mdlId, "inspectionId" → inspId) { _ ⇒
-            INSPECTORS.get(inspId) match {
-                case Some(inspector) ⇒ inspector.inspect(mdlId, inspId, args)
-                case None ⇒ throw new NCE(s"Unsupported inspection: $inspId")
+    def inspect(mdlId: String, inspName: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
+        startScopedSpan(
+            "inspect",
+            parent,
+            "modelId" → mdlId,
+            "inspName" → inspName,
+            "args" -> args.orNull) { _ ⇒
+            PROBE_INSPECTIONS.find(_.getName == inspName) match {
+                case Some(insp) ⇒ insp.inspect(mdlId, inspName, args)
+                case None ⇒ throw new NCE(s"Unsupported inspection: $inspName")
             }
         }
 }

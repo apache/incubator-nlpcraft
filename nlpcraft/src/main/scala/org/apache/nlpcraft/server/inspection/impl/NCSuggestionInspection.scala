@@ -127,7 +127,14 @@ object NCSuggestionInspection extends NCInspectionService {
         seq
     }
 
-    override def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
+
+    /**
+     *
+     * @return
+     */
+    override def getName: String = "suggestions"
+
+    override def inspect(mdlId: String, inspName: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             val now = System.currentTimeMillis()
 
@@ -176,7 +183,7 @@ object NCSuggestionInspection extends NCInspectionService {
                         def onError(err: String): Unit =
                             promise.success(
                                 NCInspectionResultImpl(
-                                    inspectionId = inspId,
+                                    inspectionId = inspName,
                                     modelId = mdlId,
                                     inspectionArguments = None,
                                     durationMs = System.currentTimeMillis() - now,
@@ -410,7 +417,7 @@ object NCSuggestionInspection extends NCInspectionService {
 
                                 promise.success(
                                     NCInspectionResultImpl(
-                                        inspectionId = inspId,
+                                        inspectionId = inspName,
                                         modelId = mdlId,
                                         inspectionArguments = None,
                                         durationMs = System.currentTimeMillis() - now,

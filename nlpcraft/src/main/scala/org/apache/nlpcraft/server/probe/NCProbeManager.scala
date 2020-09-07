@@ -980,14 +980,14 @@ object NCProbeManager extends NCService {
     /**
       *
       * @param mdlId
-      * @param inspId
+      * @param inspName
       * @param args
       * @param parent
       * @return
       */
-    def runInspection(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
-        startScopedSpan("runInspection", parent, "modelId" → mdlId, "inspId" → inspId) { _ ⇒
-            val params = mutable.HashMap.empty[String, Serializable] ++ Map("mdlId" → mdlId, "inspId" → inspId)
+    def runInspection(mdlId: String, inspName: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
+        startScopedSpan("runInspection", parent, "modelId" → mdlId, "inspName" → inspName) { _ ⇒
+            val params = mutable.HashMap.empty[String, Serializable] ++ Map("mdlId" → mdlId, "inspName" → inspName)
 
             if (args.isDefined)
                 params += "args" → GSON.toJson(args.get)

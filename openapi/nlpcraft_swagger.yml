@@ -176,7 +176,7 @@ paths:
             required:
               - acsTok
               - mdlId
-              - inspId
+              - inspName
             properties:
               acsTok:
                 type: string
@@ -186,7 +186,7 @@ paths:
                 type: string
                 maxLength: 32
                 description: ID of the model to perform given inspection on
-              inspId:
+              inspName:
                 type: string
                 maxLength: 32
                 description: Inspection ID

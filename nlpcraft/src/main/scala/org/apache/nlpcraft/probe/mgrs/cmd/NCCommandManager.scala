@@ -110,7 +110,7 @@ object NCCommandManager extends NCService {
                     case "S2P_PROBE_INSPECTION" ⇒
                         NCInspectionManager.inspect(
                             mdlId = msg.data[String]("mdlId"),
-                            inspId = msg.data[String]("inspId"),
+                            inspName = msg.data[String]("inspName"),
                             args = msg.dataOpt[String]("args"),
                             span
                         ).onComplete {

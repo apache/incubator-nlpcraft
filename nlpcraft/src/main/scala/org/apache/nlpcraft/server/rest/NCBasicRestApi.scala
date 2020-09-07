@@ -88,7 +88,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     private final val STD_FIELD_LENGTHS = Map[String, Int](
         "acsTok" -> 256,
         "mdlId" -> 32,
-        "inspId" -> 32,
+        "inspName" -> 32,
         "userExtId" -> 64,
         "extId" -> 64,
         "name" -> 64,
@@ -746,14 +746,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
             val acsTok: String = convert(obj, "acsTok", (js: JsValue) ⇒ js.convertTo[String])
             val mdlId: String = convert(obj, "mdlId", (js: JsValue) ⇒ js.convertTo[String])
-            val inspId: String = convert(obj, "inspId", (js: JsValue) ⇒ js.convertTo[String])
+            val inspName: String = convert(obj, "inspName", (js: JsValue) ⇒ js.convertTo[String])
             val args: Option[String] = convertOpt(obj, "args", v ⇒ v.compactPrint)
 
             startScopedSpan("modelEnhance$", "mdlId" → mdlId, "acsTok" → acsTok) { span ⇒
                 checkLength(
                     "acsTok" -> acsTok,
                     "mdlId" -> mdlId,
-                    "inspId" -> inspId
+                    "inspName" -> inspName
                 )
 
                 val admUsr = authenticateAsAdmin(acsTok)
@@ -761,7 +761,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 if (!NCProbeManager.getAllProbes(admUsr.companyId, span).exists(_.models.exists(_.id == mdlId)))
                     throw new NCE(s"Probe not found for model: $mdlId")
 
-                val fut = NCInspectionManager.inspect(mdlId, inspId, args, span)
+                val fut = NCInspectionManager.inspect(mdlId, inspName, args, span)
 
                 fut.failed.collect {
                     case e ⇒ onError(e)
@@ -786,7 +786,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             acsTok: String
         )
         case class Parameter_Inspection$All(
-            id: String,
             name: String,
             value: String,
             valueType: String,
@@ -794,7 +793,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             description: String
         )
         case class Inspection_Inspection$All(
-            id: String,
             name: String,
             synopsis: String,
             parameters: Seq[Parameter_Inspection$All],
@@ -807,8 +805,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         )
 
         implicit val reqFmt: RootJsonFormat[Req_Inspection$All] = jsonFormat1(Req_Inspection$All)
-        implicit val paramFmt: RootJsonFormat[Parameter_Inspection$All] = jsonFormat6(Parameter_Inspection$All)
-        implicit val inspFmt: RootJsonFormat[Inspection_Inspection$All] = jsonFormat6(Inspection_Inspection$All)
+        implicit val paramFmt: RootJsonFormat[Parameter_Inspection$All] = jsonFormat5(Parameter_Inspection$All)
+        implicit val inspFmt: RootJsonFormat[Inspection_Inspection$All] = jsonFormat5(Inspection_Inspection$All)
         implicit val resFmt: RootJsonFormat[Res_Inspection$All] = jsonFormat2(Res_Inspection$All)
 
         entity(as[Req_Inspection$All]) { req ⇒
@@ -818,12 +816,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 authenticateAsAdmin(req.acsTok)
 
                 val inspections = NCInspectionManager.allInspections(span).map(i ⇒ Inspection_Inspection$All(
-                    id = i.id(),
                     name = i.name(),
                     synopsis = i.synopsis(),
                     parameters = i.parameters().asScala.map(p ⇒
                         Parameter_Inspection$All(
-                            id = p.id(),
                             name = p.name(),
                             value = p.value(),
                             valueType = p.valueType(),

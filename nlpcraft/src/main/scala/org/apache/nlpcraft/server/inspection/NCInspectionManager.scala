@@ -28,12 +28,11 @@ import scala.collection.Map
 import scala.concurrent.Future
 
 /**
- * Model inspection manager.
+ * Server-side inspection manager.
  */
 object NCInspectionManager extends NCService {
     private final val ALL_INSPECTIONS: Seq[NCInspection] = Seq(
         NCInspectionImpl(
-            id = "macros",
             name = "macros",
             synopsis = "macros",
             parameters = Seq.empty,
@@ -41,7 +40,6 @@ object NCInspectionManager extends NCService {
             isServerSide = false
         ),
         NCInspectionImpl(
-            id = "intents",
             name = "intents",
             synopsis = "intents",
             parameters = Seq.empty,
@@ -49,7 +47,6 @@ object NCInspectionManager extends NCService {
             isServerSide = false
         ),
         NCInspectionImpl(
-            id = "synonyms",
             name = "synonyms",
             synopsis = "synonyms",
             parameters = Seq.empty,
@@ -57,12 +54,10 @@ object NCInspectionManager extends NCService {
             isServerSide = false
         ),
         NCInspectionImpl(
-            id = "suggestions",
             name = "suggestions",
             synopsis = "suggestions",
             parameters = Seq(
                 NCInspectionParameterImpl(
-                    id = "minScore",
                     name = "minScore",
                     value = "minScore",
                     valueType = "double",
@@ -94,14 +89,14 @@ object NCInspectionManager extends NCService {
     /**
      *
      * @param mdlId Model ID.
-     * @param inspId Inspection ID.
+     * @param inspName Inspection name.
      * @param args Inspection arguments .
      * @param parent Optional parent trace span.
      */
-    def inspect(mdlId: String, inspId: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
-        SRV_INSPECTIONS.get(inspId) match {
-            case Some(insp) ⇒ insp.inspect(mdlId, inspId, args, parent)
-            case None ⇒ NCProbeManager.runInspection(mdlId, inspId, args, parent)
+    def inspect(mdlId: String, inspName: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
+        SRV_INSPECTIONS.get(inspName) match {
+            case Some(insp) ⇒ insp.inspect(mdlId, inspName, args, parent)
+            case None ⇒ NCProbeManager.runInspection(mdlId, inspName, args, parent)
         }
 
     /**

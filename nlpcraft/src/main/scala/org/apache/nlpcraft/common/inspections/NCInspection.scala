@@ -22,14 +22,7 @@ package org.apache.nlpcraft.common.inspections
  */
 trait NCInspection {
     /**
-     * Globally unique, internal inspection ID.
-     *
-     * @return
-     */
-    def id(): String
-
-    /**
-     * User-visible name of the inspection.
+     * Globally unique, user-visible name of the inspection.
      *
      * @return
      */

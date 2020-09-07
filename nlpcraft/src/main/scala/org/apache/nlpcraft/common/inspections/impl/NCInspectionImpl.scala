@@ -22,7 +22,6 @@ import org.apache.nlpcraft.common.inspections.{NCInspection, NCInspectionParamet
 import scala.collection.JavaConverters.seqAsJavaListConverter
 
 case class NCInspectionImpl(
-    id: String,
     name: String,
     synopsis: String,
     parameters: java.util.List[NCInspectionParameter],
@@ -32,15 +31,13 @@ case class NCInspectionImpl(
 
 object NCInspectionImpl {
     def apply(
-        id: String,
         name: String,
         synopsis: String,
-        parameters: Seq[NCInspectionParameter],
+        parameters: Seq[NCInspectionParameter] = Seq.empty,
         description: String,
         isServerSide: Boolean,
     ) : NCInspectionImpl =
         NCInspectionImpl(
-            id,
             name,
             synopsis,
             parameters = parameters.asJava,

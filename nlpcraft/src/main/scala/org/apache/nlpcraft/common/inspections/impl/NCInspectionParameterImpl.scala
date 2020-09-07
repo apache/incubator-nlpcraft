@@ -20,7 +20,6 @@ package org.apache.nlpcraft.common.inspections.impl
 import org.apache.nlpcraft.common.inspections.NCInspectionParameter
 
 case class NCInspectionParameterImpl(
-    id: String,
     name: String,
     value: String,
     valueType: String,
