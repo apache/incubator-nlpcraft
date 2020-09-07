@@ -21,25 +21,6 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
 class NCRestUserSpec extends NCRestSpec {
-    private def addUser(): Long = {
-        var usrId: Long = 0
-
-        post(
-            "user/add",
-            "email" → s"${rnd()}@test.com",
-            "passwd" → "test",
-            "firstName" → "test",
-            "lastName" → "test",
-            "isAdmin" → false
-        )(
-            ("$.id", (id: Number) ⇒ usrId = id.longValue())
-        )
-
-        assertTrue(usrId != 0)
-
-        usrId
-    }
-
     @Test
     def test(): Unit = {
         // Checks own ID.
@@ -92,5 +73,24 @@ class NCRestUserSpec extends NCRestSpec {
             assertFalse(containsLong(users, "id", id2))
             assertFalse(containsLong(users, "id", id3))
         }))
+    }
+
+    private def addUser(): Long = {
+        var usrId: Long = 0
+
+        post(
+            "user/add",
+            "email" → s"${rnd()}@test.com",
+            "passwd" → "test",
+            "firstName" → "test",
+            "lastName" → "test",
+            "isAdmin" → false
+        )(
+            ("$.id", (id: Number) ⇒ usrId = id.longValue())
+        )
+
+        assertTrue(usrId != 0)
+
+        usrId
     }
 }

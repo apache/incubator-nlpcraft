@@ -21,19 +21,6 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
 class NCRestFeedbackSpec extends NCRestSpec {
-    /**
-      *
-      */
-    private def addFeedback(): Long = {
-        var fId: Long = 0
-
-        post("feedback/add", "srvReqId" → rnd(), "score" → 0.5)(("$.id", (id: Number) ⇒ fId = id.longValue()))
-
-        assertTrue(fId != 0)
-
-        fId
-    }
-
     @Test
     def test(): Unit = {
         // Gets.
@@ -57,6 +44,19 @@ class NCRestFeedbackSpec extends NCRestSpec {
 
         // Gets and checks.
         post("feedback/all")(("$.feedback", (feedbacks: DataMap) ⇒ assertTrue(feedbacks.isEmpty)))
+    }
+
+    /**
+      *
+      */
+    private def addFeedback(): Long = {
+        var fId: Long = 0
+
+        post("feedback/add", "srvReqId" → rnd(), "score" → 0.5)(("$.id", (id: Number) ⇒ fId = id.longValue()))
+
+        assertTrue(fId != 0)
+
+        fId
     }
 
     // TODO:

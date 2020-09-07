@@ -23,19 +23,22 @@ import java.util.UUID
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.jayway.jsonpath.JsonPath
-import org.apache.http.{HttpEntity, HttpResponse}
 import org.apache.http.client.ResponseHandler
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
+import org.apache.http.{HttpEntity, HttpResponse}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
 
 import scala.collection.JavaConverters._
 
-object NCRestSpec {
+private[rest] object NCRestSpec {
     private final val DFLT_BASEURL = "http://localhost:8081/api/v1/"
+    private final val DFLT_ADMIN_EMAIL = "admin@admin.com"
+    private final val DFLT_ADMIN_PSWD = "admin"
+
     private final val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
     private final val GSON = new GsonBuilder().setPrettyPrinting().create()
     private final val CLI = HttpClients.createDefault
@@ -54,19 +57,10 @@ object NCRestSpec {
 
     /**
       *
-      * @param code
-      * @param e
+      * @param expCode
+      * @tparam T
       * @return
       */
-    private def mkJs(code: Int, e: HttpEntity): String = {
-        val js = if (e != null) EntityUtils.toString(e) else null
-
-        if (js == null)
-            throw new RuntimeException(s"Unexpected empty response [code=$code]")
-
-        js
-    }
-
     private def mkErrorHandler[T](expCode: Int): ResponseHandler[Int] =
         (resp: HttpResponse) ⇒ {
             val code = resp.getStatusLine.getStatusCode
@@ -80,6 +74,20 @@ object NCRestSpec {
             code
         }
 
+    /**
+      *
+      * @param code
+      * @param e
+      * @return
+      */
+    private def mkJs(code: Int, e: HttpEntity): String = {
+        val js = if (e != null) EntityUtils.toString(e) else null
+
+        if (js == null)
+            throw new RuntimeException(s"Unexpected empty response [code=$code]")
+
+        js
+    }
 
     /**
       *
@@ -87,12 +95,15 @@ object NCRestSpec {
       * @param ps
       */
     private def post0(url: String, ps: (String, Any)*): Map[String, Object] = {
-        val post = preparePost(url, ps:_*)
+        val post = preparePost(url, ps: _*)
 
-        try
-            CLI.execute(post, HANDLER).asScala.toMap
-        finally
-            post.releaseConnection()
+        val m =
+            try
+                CLI.execute(post, HANDLER)
+            finally
+                post.releaseConnection()
+
+        m.asScala.toMap
     }
 
     /**
@@ -113,29 +124,34 @@ object NCRestSpec {
 
 import org.apache.nlpcraft.server.rest.NCRestSpec._
 
-class NCRestSpec {
+private[rest] class NCRestSpec {
+    type DataMap = java.util.List[java.util.Map[String, Object]]
+    type JList[T] = java.util.List[T]
+
     final val TYPE_MAP = new TypeToken[util.Map[String, Object]]() {}.getType
     final val TYPE_LIST_MAP = new TypeToken[util.List[util.Map[String, Object]]]() {}.getType
 
     private var acsTok: String = _
 
-    type DataMap = java.util.List[java.util.Map[String, Object]]
-    type JList[T] = java.util.List[T]
-
-    /**
-      *
-      * @param resp
-      */
-    private def checkStatus(resp: Map[String, Object]): Unit = {
-        assertTrue(resp.contains("status"))
-        assertEquals("API_OK", resp("status"))
-    }
-
     /**
       *
       */
     @BeforeEach
-    def signin(): Unit = acsTok = signin("admin@admin.com", "admin")
+    def signin(): Unit = acsTok = signin(DFLT_ADMIN_EMAIL, DFLT_ADMIN_PSWD)
+
+    /**
+      *
+      * @param email
+      * @param passwd
+      * @return
+      */
+    protected def signin(email: String, passwd: String): String = {
+        val tkn = post0("signin", "email" → email, "passwd" → passwd)("acsTok").asInstanceOf[String]
+
+        assertNotNull(tkn)
+
+        tkn
+    }
 
     /**
       *
@@ -156,16 +172,23 @@ class NCRestSpec {
 
     /**
       *
-      * @param email
-      * @param passwd
-      * @return
+      * @param resp
       */
-    protected def signin(email: String, passwd: String): String = {
-        val tkn = post0("signin", "email" → email, "passwd" → passwd)("acsTok").asInstanceOf[String]
+    private def checkStatus(resp: Map[String, Object]): Unit = {
+        assertTrue(resp.contains("status"))
+        assertEquals("API_OK", resp("status"))
+    }
 
-        assertNotNull(tkn)
+    /**
+      *
+      * @param url
+      * @param ps
+      * @param validations
+      */
+    protected def post[T](url: String, ps: (String, Any)*)(validations: (String, T ⇒ Unit)*): Unit = {
+        assertNotNull(acsTok)
 
-        tkn
+        post(url, acsTok, ps: _*)(validations: _*)
     }
 
     /**
@@ -176,7 +199,7 @@ class NCRestSpec {
       * @param validations
       */
     protected def post[T](url: String, tkn: String, ps: (String, Any)*)(validations: (String, T ⇒ Unit)*): Unit = {
-        val resp = post0(url, Seq("acsTok" → tkn) ++ ps:_*)
+        val resp = post0(url, Seq("acsTok" → tkn) ++ ps: _*)
 
         checkStatus(resp)
 
@@ -203,25 +226,13 @@ class NCRestSpec {
     /**
       *
       * @param url
-      * @param ps
-      * @param validations
-      */
-    protected def post[T](url: String, ps: (String, Any)*)(validations: (String, T ⇒ Unit)*): Unit = {
-        assertNotNull(acsTok)
-
-        post(url, acsTok, ps:_*)(validations:_*)
-    }
-
-    /**
-      *
-      * @param url
       * @param errCode
       * @param ps
       */
     protected def postError(url: String, errCode: Int, ps: (String, Any)*): Unit = {
         assertNotNull(acsTok)
 
-        val post = preparePost(url, Seq("acsTok" → acsTok) ++ ps:_*)
+        val post = preparePost(url, Seq("acsTok" → acsTok) ++ ps: _*)
 
         try
             CLI.execute(post, mkErrorHandler(errCode))
@@ -233,20 +244,20 @@ class NCRestSpec {
       *
       * @param data
       * @param field
-      * @param extract
       * @param expected
       */
-    protected def contains[T](data: DataMap, field: String, extract: Object ⇒ T, expected: T): Boolean =
-        data.asScala.exists(p ⇒ extract(p.get(field)) == expected)
+    protected def containsLong(data: DataMap, field: String, expected: Long): Boolean =
+        contains(data, field, (o: Object) ⇒ o.asInstanceOf[Number].longValue(), expected)
 
     /**
       *
       * @param data
       * @param field
+      * @param extract
       * @param expected
       */
-    protected def containsLong(data: DataMap, field: String, expected: Long): Boolean =
-        contains(data, field, (o: Object) ⇒ o.asInstanceOf[Number].longValue(), expected)
+    protected def contains[T](data: DataMap, field: String, extract: Object ⇒ T, expected: T): Boolean =
+        data.asScala.exists(p ⇒ extract(p.get(field)) == expected)
 
     /**
       *

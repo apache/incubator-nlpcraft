@@ -31,18 +31,6 @@ class NCRestAskSpec extends NCRestSpec {
     @AfterEach
     def tearDown(): Unit = NCEmbeddedProbe.stop()
 
-    private def askAsync(): String = {
-        var id: String = null
-
-        post("ask", "txt" → "What's the local time?", "mdlId" → "nlpcraft.time.ex")(
-            ("$.srvReqId", (srvReqId: String) ⇒ id = srvReqId)
-        )
-
-        assertNotNull(id)
-
-        id
-    }
-
     @Test
     def testSync(): Unit = {
         post(
@@ -86,5 +74,17 @@ class NCRestAskSpec extends NCRestSpec {
 
         // Checks empty states.
         post("check")(("$.states", (states: DataMap) ⇒ assertTrue(states.isEmpty)))
+    }
+
+    private def askAsync(): String = {
+        var id: String = null
+
+        post("ask", "txt" → "What's the local time?", "mdlId" → "nlpcraft.time.ex")(
+            ("$.srvReqId", (srvReqId: String) ⇒ id = srvReqId)
+        )
+
+        assertNotNull(id)
+
+        id
     }
 }
