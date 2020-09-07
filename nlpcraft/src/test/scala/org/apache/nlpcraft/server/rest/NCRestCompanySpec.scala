@@ -31,10 +31,10 @@ class NCRestCompanySpec extends NCRestSpec {
             compName = name
         }))
 
-        post("company/update", "webSite" → compName)()
-        post("company/get")(("$.name", (n: String) ⇒ assertEquals("newName", n)))
+        post("company/update", "name" → "newName")()
+        post("company/get")(("$.name", (name: String) ⇒ assertEquals("newName", name)))
         post("company/update", "name" → compName)()
-        post("company/get")(("$.name", (n: String) ⇒ assertEquals(compName, n)))
+        post("company/get")(("$.name", (name: String) ⇒ assertEquals(compName, name)))
     }
 
     @Test
@@ -110,24 +110,18 @@ class NCRestCompanySpec extends NCRestSpec {
 
         // Updates company.
         post("company/update", adminTkn,
-            "name" → compName,
-            "website" → "",
-            "country" → "",
-            "region" → "",
-            "city" → "",
-            "address" → "",
-            "postalCode" → "",
+            "name" → compName
         )()
 
         // Checks company fields.
         post("company/get", adminTkn)(
             ("$.name", (name: String) ⇒ assertEquals(compName, name)),
-            ("$.website", (website: String) ⇒ assertEquals("", website)),
-            ("$.country", (country: String) ⇒ assertEquals("", country)),
-            ("$.region", (region: String) ⇒ assertEquals("", region)),
-            ("$.city", (city: String) ⇒ assertEquals("", city)),
-            ("$.address", (address: String) ⇒ assertEquals("", address)),
-            ("$.postalCode", (postalCode: String) ⇒ assertEquals("", postalCode))
+            ("$.website", (website: String) ⇒ assertEquals(null, website)),
+            ("$.country", (country: String) ⇒ assertEquals(null, country)),
+            ("$.region", (region: String) ⇒ assertEquals(null, region)),
+            ("$.city", (city: String) ⇒ assertEquals(null, city)),
+            ("$.address", (address: String) ⇒ assertEquals(null, address)),
+            ("$.postalCode", (postalCode: String) ⇒ assertEquals(null, postalCode))
         )
 
         // Resets token.

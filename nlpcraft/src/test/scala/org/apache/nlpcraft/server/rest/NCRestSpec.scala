@@ -203,10 +203,12 @@ private[rest] class NCRestSpec {
 
         checkStatus(resp)
 
+        println("Checked POST:")
+
         println(GSON.toJson(
             Map(
-                "request-url" → url,
-                "params" → s"[${ps.map { case (k, v) ⇒ s"$k=$v" }.mkString(", ")}]",
+                "url" → url,
+                "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
                 "response" → resp.asJava
             ).asJava
         ))
@@ -228,6 +230,8 @@ private[rest] class NCRestSpec {
                 case _ ⇒ v.asInstanceOf[T]
             })
         }
+
+        println()
     }
 
     /**
