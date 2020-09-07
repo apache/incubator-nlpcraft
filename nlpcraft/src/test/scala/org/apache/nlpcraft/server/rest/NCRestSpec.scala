@@ -212,13 +212,12 @@ private[rest] class NCRestSpec {
         val ctx = JsonPath.parse(js)
 
         validations.foreach { case (field, validation) ⇒
-            val v: Object = {
+            val v: Object =
                 try
                     ctx.read(field)
                 catch {
                     case _: PathNotFoundException ⇒ null
                 }
-            }
 
             println(s"Checked value [$field=$v]")
 
