@@ -43,8 +43,8 @@ object NCSuspiciousNounsEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.model.getId,
+            "modelId" → mdl.wrapper.getId,
             "txt" → ns.text) { _ ⇒
-            ns.filter(t ⇒ mdl.suspiciousWordsStems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "suspNoun" → true))
+            ns.filter(t ⇒ mdl.suspWordsStems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "suspNoun" → true))
         }
 }

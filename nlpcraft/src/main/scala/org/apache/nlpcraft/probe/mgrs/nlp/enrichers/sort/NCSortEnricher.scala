@@ -418,7 +418,7 @@ object NCSortEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.model.getId,
+            "modelId" → mdl.wrapper.getId,
             "txt" → ns.text) { _ ⇒
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
 

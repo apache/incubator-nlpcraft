@@ -368,7 +368,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             case class Holder(enricher: NCProbeEnricher, getNotes: () ⇒ Seq[NCNlpSentenceNote])
 
             def get(name: String, e: NCProbeEnricher): Option[Holder] =
-                if (mdlDec.model.getEnabledBuiltInTokens.contains(name))
+                if (mdlDec.wrapper.getEnabledBuiltInTokens.contains(name))
                     Some(Holder(e, () ⇒ nlpSen.flatten.filter(_.noteType == name)))
                 else
                     None
@@ -493,7 +493,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val fltSenVars: Seq[(NCVariant, Int)] =
             senVars.
             zipWithIndex.
-            flatMap { case (variant, i) ⇒ if (mdlDec.model.onParsedVariant(variant)) Some(variant, i) else None }
+            flatMap { case (variant, i) ⇒ if (mdlDec.wrapper.onParsedVariant(variant)) Some(variant, i) else None }
 
         senVars = fltSenVars.map(_._1)
         val allVars = senVars.flatMap(_.asScala)
@@ -528,7 +528,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         // Create model query context.
         val ctx: NCContext = new NCContext {
             override lazy val getRequest: NCRequest = req
-            override lazy val getModel: NCModel = mdlDec.model
+            override lazy val getModel: NCModel = mdlDec.wrapper
             override lazy val getServerRequestId: String = srvReqId
 
             override lazy val getConversation: NCConversation = new NCConversation {
@@ -546,7 +546,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         
             logKey = U.mkLogHolderKey(srvReqId)
         
-            val meta = mdlDec.model.getMetadata
+            val meta = mdlDec.wrapper.getMetadata
         
             meta.synchronized {
                 meta.put(logKey, logHldr)
@@ -572,19 +572,19 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         
         def onFinish(): Unit = {
             if (logKey != null)
-                mdlDec.model.getMetadata.remove(logKey)
+                mdlDec.wrapper.getMetadata.remove(logKey)
             
             span.end()
         }
     
-        val mdl: NCModelWrapper = mdlDec.model
+        val mdl: NCModelWrapper = mdlDec.wrapper
 
         val solverIn = new NCIntentSolverInput(ctx)
 
         // Execute model query asynchronously.
         U.asFuture(
             _ ⇒ {
-                var res = mdlDec.model.onContext(ctx)
+                var res = mdlDec.wrapper.onContext(ctx)
     
                 start = System.currentTimeMillis()
     
@@ -627,7 +627,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         if (e.getCause != null)
                             logger.info(s"Rejection cause:", e.getCause)
     
-                        val res = mdlDec.model.onRejection(solverIn.intentMatch, e)
+                        val res = mdlDec.wrapper.onRejection(solverIn.intentMatch, e)
     
                         if (res != null)
                             respondWithResult(res, None)
@@ -656,7 +656,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     
                         logger.error(s"Unexpected error for server request ID: $srvReqId", e)
         
-                        val res = mdlDec.model.onError(ctx, e)
+                        val res = mdlDec.wrapper.onError(ctx, e)
         
                         if (res != null)
                             respondWithResult(res, None)
@@ -682,7 +682,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         "resBody" → res.getBody
                     )
                     
-                    val res0 = mdlDec.model.onResult(solverIn.intentMatch, res)
+                    val res0 = mdlDec.wrapper.onResult(solverIn.intentMatch, res)
 
                     respondWithResult(if (res0 != null) res0 else res, if (logHldr != null) Some(logHldr.toJson) else None)
                 }

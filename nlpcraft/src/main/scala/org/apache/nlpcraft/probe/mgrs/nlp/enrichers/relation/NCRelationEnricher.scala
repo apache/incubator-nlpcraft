@@ -141,7 +141,7 @@ object NCRelationEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.model.getId,
+            "modelId" → mdl.wrapper.getId,
             "txt" → ns.text) { _ ⇒
             // Tries to grab tokens direct way.
             // Example: A, B, C ⇒ ABC, AB, BC .. (AB will be processed first)

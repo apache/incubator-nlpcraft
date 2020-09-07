@@ -297,15 +297,15 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
-    def isComplex(mdl: NCModelDecorator): Boolean = mdl.synonymsDsl.nonEmpty || !mdl.model.getParsers.isEmpty
+    def isComplex(mdl: NCModelDecorator): Boolean = mdl.synsDsl.nonEmpty || !mdl.wrapper.getParsers.isEmpty
 
     @throws[NCE]
     override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.model.getId,
+            "modelId" → mdl.wrapper.getId,
             "txt" → ns.text) { span ⇒
-            val jiggleFactor = mdl.model.getJiggleFactor
+            val jiggleFactor = mdl.wrapper.getJiggleFactor
             val cache = mutable.HashSet.empty[Seq[Int]]
             val matches = ArrayBuffer.empty[ElementMatch]
 
@@ -352,7 +352,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                         var seq: Seq[Seq[Complex]] = null
 
                         // Attempt to match each element.
-                        for (elm ← mdl.elements.values if !alreadyMarked(toks, elm.getId)) {
+                        for (elm ← mdl.elms.values if !alreadyMarked(toks, elm.getId)) {
                             var found = false
 
                             def addMatch(
@@ -365,12 +365,12 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 }
 
                             // Optimization - plain synonyms can be used only on first iteration
-                            if (mdl.synonyms.nonEmpty && !ns.exists(_.isUser))
-                                for (syn ← fastAccess(mdl.synonyms, elm.getId, toks.length) if !found)
+                            if (mdl.syns.nonEmpty && !ns.exists(_.isUser))
+                                for (syn ← fastAccess(mdl.syns, elm.getId, toks.length) if !found)
                                     if (syn.isMatch(toks))
                                         addMatch(elm, toks, syn, Seq.empty)
 
-                            if (mdl.synonymsDsl.nonEmpty) {
+                            if (mdl.synsDsl.nonEmpty) {
                                 found = false
 
                                 if (collapsedSens == null)
@@ -379,7 +379,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 if (seq == null)
                                     seq = convert(ns, collapsedSens, toks)
 
-                                for (comb ← seq; syn ← fastAccess(mdl.synonymsDsl, elm.getId, comb.length) if !found)
+                                for (comb ← seq; syn ← fastAccess(mdl.synsDsl, elm.getId, comb.length) if !found)
                                     if (syn.isMatch(comb.map(_.data)))
                                         addMatch(elm, toks, syn, comb.filter(_.isToken).map(_.token))
                             }
@@ -392,7 +392,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
             startScopedSpan("jiggleProc", span,
                 "srvReqId" → ns.srvReqId,
-                "modelId" → mdl.model.getId,
+                "modelId" → mdl.wrapper.getId,
                 "txt" → ns.text) { _ ⇒
                 // Iterate over depth-limited permutations of the original sentence with and without stopwords.
                 jiggle(ns, jiggleFactor).foreach(procPerm)
@@ -413,7 +413,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             for ((m, idx) ← matches.zipWithIndex) {
                 if (DEEP_DEBUG)
                     logger.trace(
-                        s"Model '${mdl.model.getId}' element found (${idx + 1} of $matchCnt) [" +
+                        s"Model '${mdl.wrapper.getId}' element found (${idx + 1} of $matchCnt) [" +
                             s"elementId=${m.element.getId}, " +
                             s"synonym=${m.synonym}, " +
                             s"tokens=${tokString(m.tokens)}" +
@@ -429,14 +429,14 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 mark(ns, elem = elm, toks = m.tokens, direct = direct, syn = Some(syn), metaOpt = None, parts = m.parts)
             }
 
-            val parsers = mdl.model.getParsers
+            val parsers = mdl.wrapper.getParsers
 
             for (parser ← parsers.asScala) {
                 parser.onInit()
 
                 startScopedSpan("customParser", span,
                     "srvReqId" → ns.srvReqId,
-                    "modelId" → mdl.model.getId,
+                    "modelId" → mdl.wrapper.getId,
                     "txt" → ns.text) { _ ⇒
                     def to(t: NCNlpSentenceToken): NCCustomWord =
                         new NCCustomWord {
@@ -458,7 +458,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                     val res = parser.parse(
                         NCRequestImpl(senMeta, ns.srvReqId),
-                        mdl.model,
+                        mdl.wrapper,
                         ns.map(to).asJava,
                         ns.flatten.distinct.filter(!_.isNlp).map(n ⇒ {
                             val noteId = n.noteType
@@ -494,7 +494,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             if (!alreadyMarked(matchedToks, elemId))
                                 mark(
                                     ns,
-                                    elem = mdl.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
+                                    elem = mdl.elms.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
                                     toks = matchedToks,
                                     direct = true,
                                     syn = None,

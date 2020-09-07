@@ -452,7 +452,7 @@ object NCIntentScanner extends LazyLogging {
                     if (smpAnn != null) {
                         if (intAnn == null && refAnn == null) {
                             warns += s"@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations " +
-                                s"in method (ignoring): $mkMethodName"
+                                s"in callback: $mkMethodName"
 
                             None
                         }
@@ -460,7 +460,7 @@ object NCIntentScanner extends LazyLogging {
                             val samples = smpAnn.value().toList
 
                             if (samples.isEmpty) {
-                                warns += s"@NCTestSample annotation is empty in method (ignoring): $mkMethodName"
+                                warns += s"@NCTestSample annotation is empty in callback: $mkMethodName"
 
                                 None
                             }
@@ -469,7 +469,7 @@ object NCIntentScanner extends LazyLogging {
                         }
                     }
                     else {
-                        warns += s"@NCTestSample annotation is missing in method (ignoring): $mkMethodName"
+                        warns += s"@NCTestSample annotation is missing in callback: $mkMethodName"
 
                         None
                     }
@@ -479,7 +479,7 @@ object NCIntentScanner extends LazyLogging {
             }).toMap
 
         if (!annFound)
-            warns += s"Model '${mdl.getId}' doesn't have any intents."
+            warns += s"No intents found."
 
         NCIntentSamplesScanResult(res, warns)
     }

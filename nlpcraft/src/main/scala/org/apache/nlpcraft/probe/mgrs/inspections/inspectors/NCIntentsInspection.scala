@@ -29,12 +29,12 @@ import scala.collection._
 /**
  * Inspection for model's intents.
  */
-object NCIntentsInspection extends NCInspectionService {
+object NCIntentsInspection extends NCProbeInspection {
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
     override def getName: String = "intents"
 
-    override def bodyOnProbe(
+    override def body(
         mdl: NCModel,
         args: Option[String],
         suggs: mutable.Buffer[String],
@@ -64,7 +64,7 @@ object NCIntentsInspection extends NCInspectionService {
                     val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
 
                     if (!allSyns.exists(_.intersect(seq).nonEmpty))
-                        warns += s"Sample: '$s' doesn't contain synonyms"
+                        warns += s"Intent sample '$s' doesn't contain any direct synonyms."
             }
     }
 }

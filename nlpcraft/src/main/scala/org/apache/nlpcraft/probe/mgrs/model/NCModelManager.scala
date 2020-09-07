@@ -99,13 +99,13 @@ object NCModelManager extends NCService with DecorateAsScala {
             val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms")
 
             models.values.foreach(mdl ⇒ {
-                val synCnt = mdl.synonyms.values.flatMap(_.values).flatten.size
+                val synCnt = mdl.syns.values.flatMap(_.values).flatten.size
 
                 tbl += (
-                    mdl.model.getId,
-                    mdl.model.getName,
-                    mdl.model.getVersion,
-                    mdl.elements.keySet.size,
+                    mdl.wrapper.getId,
+                    mdl.wrapper.getName,
+                    mdl.wrapper.getVersion,
+                    mdl.elms.keySet.size,
                     synCnt
                 )
 
@@ -114,7 +114,7 @@ object NCModelManager extends NCService with DecorateAsScala {
             tbl.info(logger, Some(s"Models deployed: ${models.size}\n"))
 
             for (mdl ← models.values; insId ← DFLT_INSPECTIONS) {
-                val mdlId = mdl.model.getId
+                val mdlId = mdl.wrapper.getId
 
                 NCInspectionManager.inspect(mdlId, insId, null, parent).onComplete{
                     case Success(res) =>
@@ -134,7 +134,7 @@ object NCModelManager extends NCService with DecorateAsScala {
 
             addTags(
                 span,
-                "deployedModels" → models.values.map(_.model.getId).mkString(",")
+                "deployedModels" → models.values.map(_.wrapper.getId).mkString(",")
             )
         }
 
@@ -162,7 +162,7 @@ object NCModelManager extends NCService with DecorateAsScala {
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         mux.synchronized {
             if (models != null)
-                models.values.foreach(m ⇒ discardModel(m.model))
+                models.values.foreach(m ⇒ discardModel(m.wrapper))
         }
 
         super.stop()
@@ -552,13 +552,13 @@ object NCModelManager extends NCService with DecorateAsScala {
             })
 
         NCModelDecorator(
-            model = mdl,
-            synonyms = mkFastAccessMap(filter(syns, dsl = false)),
-            synonymsDsl = mkFastAccessMap(filter(syns, dsl = true)),
-            additionalStopWordsStems = addStopWords,
-            excludedStopWordsStems = exclStopWords,
-            suspiciousWordsStems = suspWords,
-            elements = mdl.getElements.map(elm ⇒ (elm.getId, elm)).toMap
+            wrapper = mdl,
+            syns = mkFastAccessMap(filter(syns, dsl = false)),
+            synsDsl = mkFastAccessMap(filter(syns, dsl = true)),
+            addStopWordsStems = addStopWords,
+            exclStopWordsStems = exclStopWords,
+            suspWordsStems = suspWords,
+            elms = mdl.getElements.map(elm ⇒ (elm.getId, elm)).toMap
         )
     }
 
@@ -763,7 +763,7 @@ object NCModelManager extends NCService with DecorateAsScala {
     def getModelInfo(mdlId: String, parent: Span = null): java.util.Map[String, Any] =
         startScopedSpan("getModel", parent, "mdlId" → mdlId) { _ ⇒
             val mdl = mux.synchronized { models.get(mdlId) }.
-                getOrElse(throw new NCE(s"Model not found: '$mdlId'")).model
+                getOrElse(throw new NCE(s"Model not found: '$mdlId'")).wrapper
 
             val data = new util.HashMap[String, Any]()
 

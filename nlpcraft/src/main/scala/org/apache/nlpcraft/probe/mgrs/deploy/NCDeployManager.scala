@@ -39,10 +39,6 @@ import scala.util.control.Exception._
   * Model deployment manager.
   */
 object NCDeployManager extends NCService with DecorateAsScala {
-    private final val CLS_SAMPLE = classOf[NCIntentSample]
-    private final val CLS_INTENT = classOf[NCIntent]
-    private final val CLS_INTENT_REF = classOf[NCIntentRef]
-
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:-_]*$"
 
     @volatile private var models: ArrayBuffer[NCModelWrapper] = _

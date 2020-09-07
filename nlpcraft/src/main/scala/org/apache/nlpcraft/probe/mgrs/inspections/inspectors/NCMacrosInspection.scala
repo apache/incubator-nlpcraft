@@ -26,10 +26,10 @@ import scala.collection.mutable
 /**
  * Inspection for model's macros.
  */
-object NCMacrosInspection extends NCInspectionService {
+object NCMacrosInspection extends NCProbeInspection {
     override def getName: String = "macros"
 
-    override def bodyOnProbe(
+    override def body(
         mdl: NCModel,
         args: Option[String],
         suggs: mutable.Buffer[String],

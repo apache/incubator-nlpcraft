@@ -55,8 +55,8 @@ object NCValidateManager extends NCService with LazyLogging {
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → mdl.model.getId) { _ ⇒
-            val model = mdl.model
+            "modelId" → mdl.wrapper.getId) { _ ⇒
+            val model = mdl.wrapper
             
             if (!model.isNotLatinCharsetAllowed && !ns.text.matches("""[\s\w\p{Punct}]+"""))
                 throw NCValidateException("ALLOW_NON_LATIN_CHARSET")
@@ -81,10 +81,10 @@ object NCValidateManager extends NCService with LazyLogging {
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → mdl.model.getId) { _ ⇒
+            "modelId" → mdl.wrapper.getId) { _ ⇒
             val types = ns.flatten.filter(!_.isNlp).map(_.noteType).distinct
             val overlapNotes = ns.map(tkn ⇒ types.flatMap(tp ⇒ tkn.getNotes(tp))).filter(_.size > 1).flatten
-            val model = mdl.model
+            val model = mdl.wrapper
             
             if (overlapNotes.nonEmpty)
                 throw NCValidateException("OVERLAP_NOTES")

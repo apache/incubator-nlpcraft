@@ -23,7 +23,7 @@ import java.util
 import org.apache.nlpcraft.common.TOK_META_ALIASES_KEY
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.model.impl.{NCModelWrapper, NCTokenImpl, NCVariantImpl}
-import org.apache.nlpcraft.model.{NCElement, NCModel, NCVariant}
+import org.apache.nlpcraft.model.{NCElement, NCVariant}
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
@@ -31,22 +31,22 @@ import scala.language.implicitConversions
 
 /**
   *
-  * @param model Decorated model.
-  * @param synonyms Fast-access synonyms map for first phase.
-  * @param synonymsDsl Fast-access synonyms map for second phase.
-  * @param additionalStopWordsStems Stemmatized additional stopwords.
-  * @param excludedStopWordsStems Stemmatized excluded stopwords.
-  * @param suspiciousWordsStems Stemmatized suspicious stopwords.
-  * @param elements Map of model elements.
+  * @param wrapper Decorated model.
+  * @param syns Fast-access synonyms map for first phase.
+  * @param synsDsl Fast-access synonyms map for second phase.
+  * @param addStopWordsStems Stemmatized additional stopwords.
+  * @param exclStopWordsStems Stemmatized excluded stopwords.
+  * @param suspWordsStems Stemmatized suspicious stopwords.
+  * @param elms Map of model elements.
   */
 case class NCModelDecorator(
-    model: NCModelWrapper,
-    synonyms: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
-    synonymsDsl: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
-    additionalStopWordsStems: Set[String],
-    excludedStopWordsStems: Set[String],
-    suspiciousWordsStems: Set[String],
-    elements: Map[String/*Element ID*/, NCElement]
+    wrapper: NCModelWrapper,
+    syns: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
+    synsDsl: Map[String/*Element ID*/, Map[Int/*Synonym length*/, Seq[NCSynonym]]], // Fast access map.
+    addStopWordsStems: Set[String],
+    exclStopWordsStems: Set[String],
+    suspWordsStems: Set[String],
+    elms: Map[String/*Element ID*/, NCElement]
 ) extends java.io.Serializable {
     /**
       * Makes variants for given sentences.
@@ -109,9 +109,9 @@ case class NCModelDecorator(
 
     override def toString: String = {
         s"Probe model decorator [" +
-            s"id=${model.getId}, " +
-            s"name=${model.getName}, " +
-            s"version=${model.getVersion}" +
+            s"id=${wrapper.getId}, " +
+            s"name=${wrapper.getName}, " +
+            s"version=${wrapper.getVersion}" +
         s"]"
     }
 }

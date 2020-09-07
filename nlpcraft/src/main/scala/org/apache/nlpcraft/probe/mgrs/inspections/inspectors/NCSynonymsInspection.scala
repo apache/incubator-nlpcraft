@@ -27,14 +27,14 @@ import scala.collection.mutable
 /**
  * Inspection for model's synonyms.
  */
-object NCSynonymsInspection extends NCInspectionService {
+object NCSynonymsInspection extends NCProbeInspection {
     // Pretty arbitrary number...
     // TODO: make it part of inspection configuration.
     private final val TOO_MANY_SYNS = 10000
 
     override def getName: String = "synonyms"
 
-    override def bodyOnProbe(
+    override def body(
         mdl: NCModel,
         args: Option[String],
         suggs: mutable.Buffer[String],

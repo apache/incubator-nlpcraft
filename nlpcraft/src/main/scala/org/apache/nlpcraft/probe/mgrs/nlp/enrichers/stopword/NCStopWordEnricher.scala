@@ -189,7 +189,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
                 (tok, idx) ← ns.zipWithIndex
                 if idx != max &&
                     !tok.isStopWord &&
-                    !mdl.excludedStopWordsStems.contains(tok.stem) &&
+                    !mdl.exclStopWordsStems.contains(tok.stem) &&
                     POSES.contains(tok.pos) &&
                     ns(idx + 1).isStopWord
             ) {
@@ -210,10 +210,10 @@ object NCStopWordEnricher extends NCProbeEnricher {
         def mark(stems: Set[String], f: Boolean): Unit =
             ns.filter(t ⇒ stems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "stopWord" → f))
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdl.model.getId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdl.wrapper.getId, "txt" → ns.text) { _ ⇒
 
-            mark(mdl.excludedStopWordsStems, f = false)
-            mark(mdl.additionalStopWordsStems, f = true)
+            mark(mdl.exclStopWordsStems, f = false)
+            mark(mdl.addStopWordsStems, f = true)
             processGeo(ns)
             processDate(ns)
             processNums(ns)

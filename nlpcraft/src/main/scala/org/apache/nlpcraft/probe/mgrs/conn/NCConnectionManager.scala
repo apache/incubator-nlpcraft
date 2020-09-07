@@ -229,7 +229,7 @@ object NCConnectionManager extends NCService {
                     "PROBE_HW_ADDR" → hwAddrs,
                     "PROBE_MODELS" →
                         NCModelManager.getAllModels().map(m ⇒ {
-                            val mdl = m.model
+                            val mdl = m.wrapper
 
                             // Model already validated.
 
