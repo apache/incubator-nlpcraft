@@ -109,9 +109,7 @@ class NCRestCompanySpec extends NCRestSpec {
         )
 
         // Updates company.
-        post("company/update", adminTkn,
-            "name" → compName
-        )()
+        post("company/update", adminTkn, "name" → compName)()
 
         // Checks company fields.
         post("company/get", adminTkn)(

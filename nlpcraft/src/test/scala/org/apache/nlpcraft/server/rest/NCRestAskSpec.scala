@@ -45,7 +45,9 @@ class NCRestAskSpec extends NCRestSpec {
             "ask/sync",
             "txt" → "What's the local time?",
             "mdlId" → "nlpcraft.time.ex"
-        )(("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status)))
+        )(
+            ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status))
+        )
 
         post(
             "ask/sync",
@@ -54,7 +56,9 @@ class NCRestAskSpec extends NCRestSpec {
             "usrId" → usrId,
             "data" → Map("k1" → "v1", "k1" → "v2").asJava,
             "mdlId" → "nlpcraft.time.ex"
-        )(("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status)))
+        )(
+            ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status))
+        )
     }
 
     @Test
@@ -74,9 +78,9 @@ class NCRestAskSpec extends NCRestSpec {
 
         // Asks.
         val id1 = askAsync()
-        val id2 = askAsync(enableLog = Some(true))
-        val id3 = askAsync(data = Some(Map[String, Any]("k1" → "v1", "k1" → "v2").asJava))
-        val id4 = askAsync(usrId = Some(usrId))
+        val id2 = askAsync()
+        val id3 = askAsync()
+        val id4 = askAsync()
 
         // Cancels two.
         post("cancel", "srvReqIds" → Set(id1, id2).asJava)()
@@ -95,21 +99,31 @@ class NCRestAskSpec extends NCRestSpec {
         post("check")(("$.states", (states: DataMap) ⇒ assertTrue(states.isEmpty)))
     }
 
-    private def askAsync(
-        enableLog: Option[java.lang.Boolean] = None,
-        usrId: Option[java.lang.Long] = None,
-        data: Option[java.util.Map[String, Any]] = None
-    ): String = {
+    @Test
+    def testParameters(): Unit = {
+        val m = Map("k1" → "v1", "k2" → 2).asJava
+
+        ask(sync = true, enableLog = None, usrId = None, data = Some(m))
+        ask(sync = true, enableLog = Some(true), usrId = None, data = Some(m))
+        ask(sync = true, enableLog = Some(false), usrId = Some(usrId), data = None)
+        ask(sync = true, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
+
+        ask(sync = false, enableLog = None, usrId = None, data = Some(m))
+        ask(sync = false, enableLog = Some(true), usrId = None, data = Some(m))
+        ask(sync = false, enableLog = Some(false), usrId = Some(usrId), data = None)
+        ask(sync = false, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
+    }
+
+    /**
+      *
+      */
+    private def askAsync(): String = {
         var id: String = null
 
         post(
             "ask",
             "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex",
-            "enableLog" → enableLog.orNull,
-            "usrId" → usrId.orNull,
-            "data" → data.orNull,
-
+            "mdlId" → "nlpcraft.time.ex"
         )(
             ("$.srvReqId", (srvReqId: String) ⇒ id = srvReqId)
         )
@@ -118,4 +132,27 @@ class NCRestAskSpec extends NCRestSpec {
 
         id
     }
+
+    /**
+      *
+      * @param enableLog
+      * @param usrId
+      * @param data
+      */
+    private def ask(
+        sync: Boolean,
+        enableLog: Option[java.lang.Boolean],
+        usrId: Option[java.lang.Long],
+        data: Option[java.util.Map[String, Any]]
+    ): Unit =
+        post(
+            if (sync) "ask/sync" else "ask",
+            "txt" → "What's the local time?",
+            "mdlId" → "nlpcraft.time.ex",
+            "enableLog" → enableLog.orNull,
+            "usrId" → usrId.orNull,
+            "data" → data.orNull
+        )(
+            ("$.status", (status: String) ⇒ assertEquals("API_OK", status))
+        )
 }

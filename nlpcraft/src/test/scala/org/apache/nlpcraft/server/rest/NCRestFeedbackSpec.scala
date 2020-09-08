@@ -82,7 +82,7 @@ class NCRestFeedbackSpec extends NCRestSpec {
         post("feedback/all")(("$.feedback", (fs: DataMap) ⇒ {
             assertEquals(3, fs.size())
 
-            // TODO: 3?
+            // 3 - because default userId used if parameter `usrId` is skipped in feedback.
             assertEquals(3, count(fs, "usrId", (o: Object) ⇒ o.asInstanceOf[Number].longValue(), usrId))
             assertEquals(2, count(fs, "comment", (o: Object) ⇒ o.asInstanceOf[String], "comment"))
         }))

@@ -223,7 +223,7 @@ private[rest] class NCRestSpec {
                     case _: PathNotFoundException ⇒ null
                 }
 
-            println(s"Checked value [$field=$v]")
+            println(s"Validating value [$field=$v]")
 
             validation(v match {
                 case arr: net.minidev.json.JSONArray ⇒ (0 until arr.size()).map(i ⇒ arr.get(i)).asJava.asInstanceOf[T]
