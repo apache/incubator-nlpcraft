@@ -81,12 +81,10 @@ private[rest] object NCRestSpec {
       * @return
       */
     private def mkJs(code: Int, e: HttpEntity): String = {
-        val js = if (e != null) EntityUtils.toString(e) else null
-
-        if (js == null)
+        if (e == null)
             throw new RuntimeException(s"Unexpected empty response [code=$code]")
 
-        js
+        EntityUtils.toString(e)
     }
 
     /**
@@ -120,6 +118,15 @@ private[rest] object NCRestSpec {
 
         post
     }
+
+    /**
+      *
+      * @param resp
+      */
+    private def checkStatus(resp: Map[String, Object]): Unit = {
+        assertTrue(resp.contains("status"))
+        assertEquals("API_OK", resp("status"))
+    }
 }
 
 import org.apache.nlpcraft.server.rest.NCRestSpec._
@@ -131,13 +138,13 @@ private[rest] class NCRestSpec {
     final val TYPE_MAP = new TypeToken[util.Map[String, Object]]() {}.getType
     final val TYPE_LIST_MAP = new TypeToken[util.List[util.Map[String, Object]]]() {}.getType
 
-    private var acsTok: String = _
+    private var tkn: String = _
 
     /**
       *
       */
     @BeforeEach
-    def signin(): Unit = acsTok = signin(DFLT_ADMIN_EMAIL, DFLT_ADMIN_PSWD)
+    def signin(): Unit = tkn = signin(DFLT_ADMIN_EMAIL, DFLT_ADMIN_PSWD)
 
     /**
       *
@@ -158,10 +165,10 @@ private[rest] class NCRestSpec {
       */
     @AfterEach
     def signout(): Unit =
-        if (acsTok != null) {
-            signout(acsTok)
+        if (tkn != null) {
+            signout(tkn)
 
-            acsTok = null
+            tkn = null
         }
 
     /**
@@ -172,23 +179,14 @@ private[rest] class NCRestSpec {
 
     /**
       *
-      * @param resp
-      */
-    private def checkStatus(resp: Map[String, Object]): Unit = {
-        assertTrue(resp.contains("status"))
-        assertEquals("API_OK", resp("status"))
-    }
-
-    /**
-      *
       * @param url
       * @param ps
       * @param validations
       */
     protected def post[T](url: String, ps: (String, Any)*)(validations: (String, T ⇒ Unit)*): Unit = {
-        assertNotNull(acsTok)
+        assertNotNull(tkn)
 
-        post(url, acsTok, ps: _*)(validations: _*)
+        post(url, tkn, ps: _*)(validations: _*)
     }
 
     /**
@@ -241,9 +239,9 @@ private[rest] class NCRestSpec {
       * @param ps
       */
     protected def postError(url: String, errCode: Int, ps: (String, Any)*): Unit = {
-        assertNotNull(acsTok)
+        assertNotNull(tkn)
 
-        val post = preparePost(url, Seq("acsTok" → acsTok) ++ ps: _*)
+        val post = preparePost(url, Seq("acsTok" → tkn) ++ ps: _*)
 
         try
             CLI.execute(post, mkErrorHandler(errCode))

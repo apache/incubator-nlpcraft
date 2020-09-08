@@ -32,6 +32,8 @@ class NCRestFeedbackSpec extends NCRestSpec {
 
     /**
       *
+      * @param usrId
+      * @param comment
       */
     private def addFeedback(usrId: Option[java.lang.Long] = None, comment: Option[String] = None): Long = {
         var fId: Long = 0

@@ -17,14 +17,14 @@
 
 package org.apache.nlpcraft.server.rest
 
-import java.util
-
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
 import scala.collection.JavaConverters._
 
 class NCRestUserSpec extends NCRestSpec {
+    private final val PROPS = Map("k1" → "v1", "k2" → "v2").asJava
+
     @Test
     def test(): Unit = {
         // Checks own ID.
@@ -37,14 +37,13 @@ class NCRestUserSpec extends NCRestSpec {
         post("user/get", "id" → id1)(("$.id", (id: Number) ⇒ assertEquals(id1, id.longValue())))
 
         // Updates.
-        var props: util.Map[String, String] = Map("k1" → "v1", "k2" → "v2").asJava
 
         post(
             "user/update",
             "firstName" → "firstName",
             "lastName" → "lastName",
             "avatarUrl" → "avatarUrl",
-            "properties" → props
+            "properties" → PROPS
         )()
 
         // Checks updated.
@@ -52,12 +51,10 @@ class NCRestUserSpec extends NCRestSpec {
             ("$.firstName", (firstName: String) ⇒ assertEquals("firstName", firstName)),
             ("$.lastName", (lastName: String) ⇒ assertEquals("lastName", lastName)),
             ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals("avatarUrl", avatarUrl)),
-            ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(props, properties))
+            ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(PROPS, properties))
         )
 
         // Updates again.
-        props = Map.empty[String, String].asJava
-
         post(
             "user/update",
             "firstName" → "firstName2",
@@ -106,22 +103,51 @@ class NCRestUserSpec extends NCRestSpec {
         }))
     }
 
-    private def addUser(): Long = {
+    @Test
+    def testParameters(): Unit = {
+        checkUser()
+        checkUser(isAdmin = true)
+        checkUser(isAdmin = true, avatarUrl = Some("http:/test.com"))
+        checkUser(isAdmin = true, avatarUrl = Some("http:/test.com"), props = Some(PROPS))
+    }
+
+    /**
+      *
+      * @param isAdmin
+      * @param avatarUrl
+      * @param props
+      */
+    private def addUser(
+        isAdmin: Boolean = false, avatarUrl: Option[String] = None, props: Option[java.util.Map[String, String]] = None
+    ): Long = {
         var usrId: Long = 0
 
         post(
             "user/add",
             "email" → s"${rnd()}@test.com",
             "passwd" → "test",
-            "firstName" → "test",
-            "lastName" → "test",
-            "isAdmin" → false
+            "firstName" → "firstName",
+            "lastName" → "lastName",
+            "isAdmin" → isAdmin,
+            "avatarUrl" → avatarUrl.orNull,
+            "properties" → props.orNull
         )(
             ("$.id", (id: Number) ⇒ usrId = id.longValue())
         )
 
-        assertTrue(usrId != 0)
+        assertTrue(usrId > 0)
 
         usrId
     }
+
+    /**
+      *
+      * @param isAdmin
+      * @param avatarUrl
+      * @param props
+      */
+    private def checkUser(
+        isAdmin: Boolean = false, avatarUrl: Option[String] = None, props: Option[java.util.Map[String, String]] = None
+    ): Unit = post("user/delete", "id" → addUser(isAdmin, avatarUrl, props))()
 }
+

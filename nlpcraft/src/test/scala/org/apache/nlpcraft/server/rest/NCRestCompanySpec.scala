@@ -25,11 +25,9 @@ class NCRestCompanySpec extends NCRestSpec {
     def testCurrentCompany(): Unit = {
         var compName: String = null
 
-        post("company/get")(("$.name", (name: String) ⇒ {
-            assertNotNull(name)
+        post("company/get")(("$.name", (name: String) ⇒ compName = name))
 
-            compName = name
-        }))
+        assertNotNull(compName)
 
         post("company/update", "name" → "newName")()
         post("company/get")(("$.name", (name: String) ⇒ assertEquals("newName", name)))
@@ -127,5 +125,94 @@ class NCRestCompanySpec extends NCRestSpec {
 
         // Deletes company.
         post("company/delete", adminTkn)()
+    }
+
+    def testParameters(): Unit = {
+        testCompany()
+        testCompany(website = Some("website"))
+        testCompany(
+            website = Some("website"),
+            country = Some("country")
+        )
+        testCompany(
+            website = Some("website"),
+            country = Some("country"),
+            region = Some("region")
+        )
+        testCompany(
+            website = Some("website"),
+            country = Some("country"),
+            region = Some("region"),
+            city = Some("city")
+        )
+        testCompany(
+            website = Some("website"),
+            country = Some("country"),
+            region = Some("region"),
+            city = Some("city"),
+            address = Some("address")
+        )
+        testCompany(
+            website = Some("website"),
+            country = Some("country"),
+            region = Some("region"),
+            city = Some("city"),
+            address = Some("address"),
+            postalCode = Some("postalCode")
+        )
+        testCompany(
+            website = Some("website"),
+            country = Some("country"),
+            region = Some("region"),
+            city = Some("city"),
+            address = Some("address"),
+            postalCode = Some("postalCode"),
+            adminAvatarUrl = Some("adminAvatarUrl")
+        )
+    }
+
+    /**
+      *
+      * @param website
+      * @param country
+      * @param region
+      * @param city
+      * @param address
+      * @param postalCode
+      * @param adminAvatarUrl
+      */
+    private def testCompany(
+        website: Option[String] = None,
+        country: Option[String] = None,
+        region: Option[String] = None,
+        city: Option[String] = None,
+        address: Option[String] = None,
+        postalCode: Option[String] = None,
+        adminAvatarUrl: Option[String] = None
+    ): Unit = {
+        val compName = rnd()
+
+        val adminEmail = s"$compName@test.com"
+        val adminPswd = "test"
+
+        post(
+            "company/add",
+            "name" → compName,
+            "website" → website.orNull,
+            "country" → country.orNull,
+            "region" → region.orNull,
+            "city" → city.orNull,
+            "address" → address.orNull,
+            "postalCode" → postalCode.orNull,
+            "adminEmail" → adminEmail,
+            "adminPasswd" → adminPswd,
+            "adminFirstName" → "firstName",
+            "adminLastName" → "lastName",
+            "adminAvatarUrl" → adminAvatarUrl.orNull
+        )(
+            ("$.adminId", (id: Number) ⇒ assertNotNull(id))
+        )
+
+        post("company/delete", signin(adminEmail, adminPswd))()
     }
 }

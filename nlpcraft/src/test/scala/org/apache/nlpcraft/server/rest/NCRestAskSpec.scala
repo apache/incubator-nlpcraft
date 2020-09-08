@@ -103,15 +103,15 @@ class NCRestAskSpec extends NCRestSpec {
     def testParameters(): Unit = {
         val m = Map("k1" → "v1", "k2" → 2).asJava
 
-        ask(sync = true, enableLog = None, usrId = None, data = Some(m))
-        ask(sync = true, enableLog = Some(true), usrId = None, data = Some(m))
-        ask(sync = true, enableLog = Some(false), usrId = Some(usrId), data = None)
-        ask(sync = true, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
+        testAsk(sync = true, enableLog = None, usrId = None, data = Some(m))
+        testAsk(sync = true, enableLog = Some(true), usrId = None, data = Some(m))
+        testAsk(sync = true, enableLog = Some(false), usrId = Some(usrId), data = None)
+        testAsk(sync = true, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
 
-        ask(sync = false, enableLog = None, usrId = None, data = Some(m))
-        ask(sync = false, enableLog = Some(true), usrId = None, data = Some(m))
-        ask(sync = false, enableLog = Some(false), usrId = Some(usrId), data = None)
-        ask(sync = false, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
+        testAsk(sync = false, enableLog = None, usrId = None, data = Some(m))
+        testAsk(sync = false, enableLog = Some(true), usrId = None, data = Some(m))
+        testAsk(sync = false, enableLog = Some(false), usrId = Some(usrId), data = None)
+        testAsk(sync = false, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
     }
 
     /**
@@ -139,12 +139,12 @@ class NCRestAskSpec extends NCRestSpec {
       * @param usrId
       * @param data
       */
-    private def ask(
+    private def testAsk(
         sync: Boolean,
         enableLog: Option[java.lang.Boolean],
         usrId: Option[java.lang.Long],
         data: Option[java.util.Map[String, Any]]
-    ): Unit =
+    ): Unit = {
         post(
             if (sync) "ask/sync" else "ask",
             "txt" → "What's the local time?",
@@ -155,4 +155,7 @@ class NCRestAskSpec extends NCRestSpec {
         )(
             ("$.status", (status: String) ⇒ assertEquals("API_OK", status))
         )
+
+        post("cancel")()
+    }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.server.rest
 
-import org.junit.jupiter.api.Assertions.{assertNotNull, assertTrue}
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.{BeforeEach, Test}
 
 class NCRestClearSpec extends NCRestSpec {
