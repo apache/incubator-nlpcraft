@@ -61,19 +61,19 @@ class NCRestFeedbackSpec extends NCRestSpec {
         val id = addFeedback()
 
         // Gets and checks.
-        post("feedback/all")(("$.feedback", (fs: DataMap) ⇒ assertTrue(containsLong(fs, "id", id))))
+        post("feedback/all")(("$.feedback", (fs: ResponseList) ⇒ assertTrue(containsLong(fs, "id", id))))
 
         // Deletes by id.
         post("feedback/delete", "id" → id)()
 
         // Checks deleted.
-        post("feedback/all")(("$.feedback", (fs: DataMap) ⇒ assertFalse(containsLong(fs, "id", id))))
+        post("feedback/all")(("$.feedback", (fs: ResponseList) ⇒ assertFalse(containsLong(fs, "id", id))))
 
         // Deletes all
         post("feedback/delete")()
 
         // Checks all deleted.
-        post("feedback/all")(("$.feedback", (feedbacks: DataMap) ⇒ assertTrue(feedbacks.isEmpty)))
+        post("feedback/all")(("$.feedback", (feedbacks: ResponseList) ⇒ assertTrue(feedbacks.isEmpty)))
 
         // Adds few.
         addFeedback(usrId = Some(usrId))
@@ -81,7 +81,7 @@ class NCRestFeedbackSpec extends NCRestSpec {
         addFeedback(usrId = Some(usrId), comment = Some("comment"))
 
         // Checks
-        post("feedback/all")(("$.feedback", (fs: DataMap) ⇒ {
+        post("feedback/all")(("$.feedback", (fs: ResponseList) ⇒ {
             assertEquals(3, fs.size())
 
             // 3 - because default userId used if parameter `usrId` is skipped in feedback.
@@ -93,7 +93,7 @@ class NCRestFeedbackSpec extends NCRestSpec {
         post("feedback/delete")()
 
         // Checks all deleted.
-        post("feedback/all")(("$.feedback", (feedbacks: DataMap) ⇒ assertTrue(feedbacks.isEmpty)))
+        post("feedback/all")(("$.feedback", (feedbacks: ResponseList) ⇒ assertTrue(feedbacks.isEmpty)))
     }
 
 

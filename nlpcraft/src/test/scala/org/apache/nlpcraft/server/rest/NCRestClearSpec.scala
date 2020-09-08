@@ -34,6 +34,7 @@ class NCRestClearSpec extends NCRestSpec {
     def test(): Unit = {
         post("clear/conversation", "mdlId" → "nlpcraft.time.ex")()
         post("clear/conversation", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
+
         post("clear/dialog", "mdlId" → "nlpcraft.time.ex")()
         post("clear/dialog", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
     }

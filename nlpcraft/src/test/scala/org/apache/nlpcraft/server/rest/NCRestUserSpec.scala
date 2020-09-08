@@ -75,20 +75,20 @@ class NCRestUserSpec extends NCRestSpec {
         post("user/passwd/reset", "id" → id1, "newPasswd" → "test1")()
 
         // Checks existed.
-        post("user/all")(("$.users", (users: DataMap) ⇒ assertTrue(containsLong(users, "id", id1))))
+        post("user/all")(("$.users", (users: ResponseList) ⇒ assertTrue(containsLong(users, "id", id1))))
 
         // Deletes.
         post("user/delete", "id" → id1)()
 
         // Checks not existed.
-        post("user/all")(("$.users", (users: DataMap) ⇒ assertFalse(containsLong(users, "id", id1))))
+        post("user/all")(("$.users", (users: ResponseList) ⇒ assertFalse(containsLong(users, "id", id1))))
 
         // Adds.
         val id2 = addUser()
         val id3 = addUser()
 
         // Checks existed.
-        post("user/all")(("$.users", (users: DataMap) ⇒ {
+        post("user/all")(("$.users", (users: ResponseList) ⇒ {
             assertTrue(containsLong(users, "id", id2))
             assertTrue(containsLong(users, "id", id3))
         }))
@@ -97,7 +97,7 @@ class NCRestUserSpec extends NCRestSpec {
         post("user/delete")()
 
         // Checks not existed.
-        post("user/all")(("$.users", (users: DataMap) ⇒ {
+        post("user/all")(("$.users", (users: ResponseList) ⇒ {
             assertFalse(containsLong(users, "id", id2))
             assertFalse(containsLong(users, "id", id3))
         }))

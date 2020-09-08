@@ -32,7 +32,7 @@ class NCRestProbeSpec extends NCRestSpec {
     @Test
     def test(): Unit = {
         post("probe/all")(
-            ("$.probes", (probes: DataMap) ⇒ assertFalse(probes.isEmpty)),
+            ("$.probes", (probes: ResponseList) ⇒ assertFalse(probes.isEmpty)),
             ("$.probes[:1].hostName", (names: JList[String]) ⇒ assertNotNull(names.get(0)))
         )
     }

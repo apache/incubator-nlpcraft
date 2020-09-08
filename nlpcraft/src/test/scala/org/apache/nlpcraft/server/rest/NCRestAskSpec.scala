@@ -68,13 +68,13 @@ class NCRestAskSpec extends NCRestSpec {
         askAsync()
 
         // Checks non empty states.
-        post("check")(("$.states", (states: DataMap) ⇒ assertFalse(states.isEmpty)))
+        post("check")(("$.states", (states: ResponseList) ⇒ assertFalse(states.isEmpty)))
 
         // Cancels all.
         post("cancel")()
 
         // Checks empty states.
-        post("check")(("$.states", (states: DataMap) ⇒ assertTrue(states.isEmpty)))
+        post("check")(("$.states", (states: ResponseList) ⇒ assertTrue(states.isEmpty)))
 
         // Asks.
         val id1 = askAsync()
@@ -86,7 +86,7 @@ class NCRestAskSpec extends NCRestSpec {
         post("cancel", "srvReqIds" → Set(id1, id2).asJava)()
 
         // Checks states.
-        post("check")(("$.states", (states: DataMap) ⇒ {
+        post("check")(("$.states", (states: ResponseList) ⇒ {
             assertEquals(2, states.size())
             assertEquals(Set(id3, id4), states.asScala.map(p ⇒ p.get("srvReqId").asInstanceOf[String]).toSet)
         }))
@@ -96,7 +96,7 @@ class NCRestAskSpec extends NCRestSpec {
         post("cancel", "srvReqIds" → Set(id4).asJava)()
 
         // Checks empty states.
-        post("check")(("$.states", (states: DataMap) ⇒ assertTrue(states.isEmpty)))
+        post("check")(("$.states", (states: ResponseList) ⇒ assertTrue(states.isEmpty)))
     }
 
     @Test

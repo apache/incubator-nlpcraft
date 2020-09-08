@@ -132,11 +132,9 @@ private[rest] object NCRestSpec {
 import org.apache.nlpcraft.server.rest.NCRestSpec._
 
 private[rest] class NCRestSpec {
-    type DataMap = java.util.List[java.util.Map[String, Object]]
+    type ResponseContent = java.util.Map[String, Object]
+    type ResponseList = java.util.List[ResponseContent]
     type JList[T] = java.util.List[T]
-
-    final val TYPE_MAP = new TypeToken[util.Map[String, Object]]() {}.getType
-    final val TYPE_LIST_MAP = new TypeToken[util.List[util.Map[String, Object]]]() {}.getType
 
     private var tkn: String = _
 
@@ -148,20 +146,6 @@ private[rest] class NCRestSpec {
 
     /**
       *
-      * @param email
-      * @param passwd
-      * @return
-      */
-    protected def signin(email: String, passwd: String): String = {
-        val tkn = post0("signin", "email" → email, "passwd" → passwd)("acsTok").asInstanceOf[String]
-
-        assertNotNull(tkn)
-
-        tkn
-    }
-
-    /**
-      *
       */
     @AfterEach
     def signout(): Unit =
@@ -170,6 +154,19 @@ private[rest] class NCRestSpec {
 
             tkn = null
         }
+
+    /**
+      *
+      * @param email
+      * @param passwd
+      */
+    protected def signin(email: String, passwd: String): String = {
+        val tkn = post0("signin", "email" → email, "passwd" → passwd)("acsTok").asInstanceOf[String]
+
+        assertNotNull(tkn)
+
+        tkn
+    }
 
     /**
       *
@@ -202,7 +199,6 @@ private[rest] class NCRestSpec {
         checkStatus(resp)
 
         println("Checked POST:")
-
         println(GSON.toJson(
             Map(
                 "url" → url,
@@ -255,7 +251,7 @@ private[rest] class NCRestSpec {
       * @param field
       * @param expected
       */
-    protected def containsLong(data: DataMap, field: String, expected: Long): Boolean =
+    protected def containsLong(data: ResponseList, field: String, expected: Long): Boolean =
         contains(data, field, (o: Object) ⇒ o.asInstanceOf[Number].longValue(), expected)
 
     /**
@@ -264,7 +260,7 @@ private[rest] class NCRestSpec {
       * @param field
       * @param expected
       */
-    protected def containsStr(data: DataMap, field: String, expected: String): Boolean =
+    protected def containsStr(data: ResponseList, field: String, expected: String): Boolean =
         contains(data, field, (o: Object) ⇒ o.asInstanceOf[String], expected)
 
     /**
@@ -274,7 +270,7 @@ private[rest] class NCRestSpec {
       * @param extract
       * @param expected
       */
-    protected def contains[T](data: DataMap, field: String, extract: Object ⇒ T, expected: T): Boolean =
+    protected def contains[T](data: ResponseList, field: String, extract: Object ⇒ T, expected: T): Boolean =
         data.asScala.exists(p ⇒ extract(p.get(field)) == expected)
 
     /**
@@ -284,12 +280,11 @@ private[rest] class NCRestSpec {
       * @param extract
       * @param expected
       */
-    protected def count[T](data: DataMap, field: String, extract: Object ⇒ T, expected: T): Int =
+    protected def count[T](data: ResponseList, field: String, extract: Object ⇒ T, expected: T): Int =
         data.asScala.count(p ⇒ extract(p.get(field)) == expected)
 
     /**
       *
-      * @return
       */
     protected def rnd(): String = UUID.randomUUID().toString
 }
