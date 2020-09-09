@@ -124,7 +124,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                     if (shouldBeAdmin && !usr.isAdmin)
                         throw AdminRequired(usr.email.get)
-                        
+
                     usr
             }
         }

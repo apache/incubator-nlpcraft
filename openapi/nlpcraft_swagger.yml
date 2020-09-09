@@ -164,7 +164,8 @@ paths:
         - Model
       summary: Runs model synonym suggestion tool.
       description: >-
-        Runs model synonym suggestion tool based on BERT and fasttext models. Administrative privileges required.
+        Runs model synonym suggestion tool that is based on BERT models and uses @NCIntentSample annotation.
+        Administrative privileges required.
       operationId: inspect
       parameters:
         - in: body
@@ -184,11 +185,12 @@ paths:
               mdlId:
                 type: string
                 maxLength: 32
-                description: ID of the model to perform given inspection on
-              args:
-                type: object
+                description: ID of the model to run synonym suggestion on
+              minScore:
+                type: number
+                format: double
                 description: >-
-                  Inspection parameters.
+                  Minimal score to include into the result (from 0 to 1, default is 0)
       responses:
         '200':
           description: Successful operation.
@@ -205,7 +207,7 @@ paths:
                   - API_OK
               result:
                 type: object
-                description: Inspections data for given model
+                description: Synonym suggestion result
 
         '400':
           description: Failed operation.
