@@ -227,7 +227,8 @@ object NCConnectionManager extends NCService {
                     "PROBE_HOST_ADDR" → localHost.getHostAddress,
                     "PROBE_HW_ADDR" → hwAddrs,
                     "PROBE_MODELS" →
-                        NCModelManager.getAllModels().map(mdl ⇒ {
+                        NCModelManager.getAllModelWrappers().map(wrapper ⇒ {
+                            val mdl = wrapper.proxy
 
                             // Model already validated.
 

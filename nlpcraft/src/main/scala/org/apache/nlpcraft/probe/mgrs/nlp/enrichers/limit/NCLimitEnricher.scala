@@ -25,7 +25,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.numeric.{NCNumeric, NCNumericManager}
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService}
-import org.apache.nlpcraft.model.impl.NCModelWrapper
+import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.JavaConverters._
@@ -239,7 +239,7 @@ object NCLimitEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.getId,
+            "modelId" → mdl.proxy.getId,
             "txt" → ns.text) { _ ⇒
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
             val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap

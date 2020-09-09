@@ -23,6 +23,7 @@ import java.util.Collections
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
@@ -119,9 +120,9 @@ private[nlpcraft] object NCTokenImpl {
 
         usrNotes.headOption match {
             case Some(usrNote) ⇒
-                require(mdl.elms.contains(usrNote.noteType), s"Element is not found: ${usrNote.noteType}")
+                require(mdl.elements.contains(usrNote.noteType), s"Element is not found: ${usrNote.noteType}")
 
-                val elm = mdl.elms(usrNote.noteType)
+                val elm = mdl.elements(usrNote.noteType)
 
                 val ancestors = mutable.ArrayBuffer.empty[String]
                 var prntId = elm.getParentId
@@ -130,7 +131,7 @@ private[nlpcraft] object NCTokenImpl {
                     ancestors += prntId
 
                     prntId = mdl.
-                        elms.
+                        elements.
                         getOrElse(prntId, throw new AssertionError(s"Element not found: $prntId")).
                         getParentId
                 }
@@ -141,7 +142,7 @@ private[nlpcraft] object NCTokenImpl {
                 elm.getMetadata.asScala.foreach { case (k, v) ⇒ md.put(k, v.asInstanceOf[java.io.Serializable]) }
 
                 new NCTokenImpl(
-                    mdl,
+                    mdl.proxy,
                     srvReqId = srvReqId,
                     id = elm.getId,
                     grps = elm.getGroups.asScala,
@@ -164,7 +165,7 @@ private[nlpcraft] object NCTokenImpl {
                 md.put("nlpcraft:nlp:freeword", !isStop && note.isNlp)
 
                 new NCTokenImpl(
-                    mdl,
+                    mdl.proxy,
                     srvReqId = srvReqId,
                     id = note.noteType, // Use NLP note type as synthetic element ID.
                     grps = Seq(note.noteType), // Use NLP note type as synthetic element group.

@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService}
-import org.apache.nlpcraft.model.impl.NCModelWrapper
+import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.JavaConverters._
@@ -141,7 +141,7 @@ object NCRelationEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.getId,
+            "modelId" → mdl.proxy.getId,
             "txt" → ns.text) { _ ⇒
             // Tries to grab tokens direct way.
             // Example: A, B, C ⇒ ABC, AB, BC .. (AB will be processed first)

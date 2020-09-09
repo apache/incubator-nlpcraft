@@ -23,9 +23,8 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
-import org.apache.nlpcraft.probe.mgrs.deploy._
+import org.apache.nlpcraft.probe.mgrs.deploy.{NCModelWrapper, _}
 
 import scala.collection.JavaConverters._
 import scala.collection.convert.DecorateAsScala
@@ -36,7 +35,7 @@ import scala.util.control.Exception._
   */
 object NCModelManager extends NCService with DecorateAsScala {
     // Deployed models keyed by their IDs.
-    @volatile private var models: Map[String, NCModelWrapper] = _
+    @volatile private var wrappers: Map[String, NCModelWrapper] = _
 
     // Access mutex.
     private final val mux = new Object()
@@ -47,30 +46,32 @@ object NCModelManager extends NCService with DecorateAsScala {
         val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms")
 
         mux.synchronized {
-            models = NCDeployManager.getModels.map(mdl ⇒ {
-                mdl.onInit()
+            wrappers = NCDeployManager.getModels.map(w ⇒ {
+                w.proxy.onInit()
 
-                mdl.proxy.getId → mdl
+                w.proxy.getId → w
             }).toMap
 
-            models.values.foreach(mdl ⇒ {
-                val synCnt = mdl.syns.values.flatMap(_.values).flatten.size
+            wrappers.values.foreach(w ⇒ {
+                val mdl = w.proxy
+
+                val synCnt = w.synonyms.values.flatMap(_.values).flatten.size
 
                 tbl += (
                     mdl.getId,
                     mdl.getName,
                     mdl.getVersion,
-                    mdl.elms.keySet.size,
+                    w.elements.keySet.size,
                     synCnt
                 )
             })
         }
 
-        tbl.info(logger, Some(s"Models deployed: ${models.size}\n"))
+        tbl.info(logger, Some(s"Models deployed: ${wrappers.size}\n"))
 
         addTags(
             span,
-            "deployedModels" → models.values.map(_.getId).mkString(",")
+            "deployedModels" → wrappers.values.map(_.proxy.getId).mkString(",")
         )
 
         super.start()
@@ -96,8 +97,8 @@ object NCModelManager extends NCService with DecorateAsScala {
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         mux.synchronized {
-            if (models != null)
-                models.values.foreach(m ⇒ discardModel(m))
+            if (wrappers != null)
+                wrappers.values.foreach(m ⇒ discardModel(m.proxy))
         }
 
         super.stop()
@@ -108,10 +109,10 @@ object NCModelManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getAllModels(parent: Span = null): List[NCModelWrapper] =
+    def getAllModelWrappers(parent: Span = null): List[NCModelWrapper] =
         startScopedSpan("getAllModels", parent) { _ ⇒
             mux.synchronized {
-                models.values.toList
+                wrappers.values.toList
             }
         }
 
@@ -120,10 +121,10 @@ object NCModelManager extends NCService with DecorateAsScala {
       * @param mdlId Model ID.
       * @return
       */
-    def getModel(mdlId: String, parent: Span = null): Option[NCModelWrapper] =
+    def getModelWrapper(mdlId: String, parent: Span = null): Option[NCModelWrapper] =
         startScopedSpan("getModel", parent, "modelId" → mdlId) { _ ⇒
             mux.synchronized {
-                models.get(mdlId)
+                wrappers.get(mdlId)
             }
         }
 
@@ -137,13 +138,14 @@ object NCModelManager extends NCService with DecorateAsScala {
       */
     def getModelInfo(mdlId: String, parent: Span = null): java.util.Map[String, Any] =
         startScopedSpan("getModel", parent, "mdlId" → mdlId) { _ ⇒
-            val mdl = mux.synchronized { models.get(mdlId) }.getOrElse(throw new NCE(s"Model not found: '$mdlId'"))
+            val w = mux.synchronized { wrappers.get(mdlId) }.getOrElse(throw new NCE(s"Model not found: '$mdlId'"))
+            val mdl = w.proxy
 
             val data = new util.HashMap[String, Any]()
 
             data.put("macros", mdl.getMacros)
             data.put("synonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
-            data.put("samples", NCIntentScanner.scanIntentsSamples(mdl.proxy).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
+            data.put("samples", NCIntentScanner.scanIntentsSamples(mdl).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
 
             data
         }

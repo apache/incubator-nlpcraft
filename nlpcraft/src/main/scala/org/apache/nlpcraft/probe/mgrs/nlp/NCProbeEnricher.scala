@@ -23,7 +23,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.{NCService, _}
-import org.apache.nlpcraft.model.impl.NCModelWrapper
+import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 
 import scala.collection.Map
 import scala.language.implicitConversions

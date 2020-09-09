@@ -22,7 +22,7 @@ import java.io.Serializable
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.common.nlp._
-import org.apache.nlpcraft.model.impl.NCModelWrapper
+import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.Map
@@ -43,7 +43,7 @@ object NCSuspiciousNounsEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.getId,
+            "modelId" → mdl.proxy.getId,
             "txt" → ns.text) { _ ⇒
             ns.filter(t ⇒ mdl.suspWordsStems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "suspNoun" → true))
         }

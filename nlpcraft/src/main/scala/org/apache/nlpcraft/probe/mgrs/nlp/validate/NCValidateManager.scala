@@ -22,7 +22,7 @@ import io.opencensus.trace.Span
 import org.apache.tika.langdetect.OptimaizeLangDetector
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.model.impl.NCModelWrapper
+import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 
 /**
  * Probe pre/post enrichment validator.
@@ -46,16 +46,17 @@ object NCValidateManager extends NCService with LazyLogging {
     
     /**
      *
-     * @param mdl Model decorator.
+     * @param w Model decorator.
      * @param ns Sentence to validate.
      * @param parent Parent tracing span.
      */
     @throws[NCValidateException]
-    def preValidate(mdl: NCModelWrapper, ns: NCNlpSentence, parent: Span = null): Unit =
+    def preValidate(w: NCModelWrapper, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → mdl.getId) { _ ⇒
+            "modelId" → w.proxy.getId) { _ ⇒
+            val mdl = w.proxy
 
             if (!mdl.isNotLatinCharsetAllowed && !ns.text.matches("""[\s\w\p{Punct}]+"""))
                 throw NCValidateException("ALLOW_NON_LATIN_CHARSET")
@@ -71,16 +72,17 @@ object NCValidateManager extends NCService with LazyLogging {
     
     /**
      *
-     * @param mdl Model decorator.
+     * @param w Model decorator.
      * @param ns Sentence to validate.
      * @param parent Optional parent span.
      */
     @throws[NCValidateException]
-    def postValidate(mdl: NCModelWrapper, ns: NCNlpSentence, parent: Span = null): Unit =
+    def postValidate(w: NCModelWrapper, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → mdl.getId) { _ ⇒
+            "modelId" → w.proxy.getId) { _ ⇒
+            val mdl = w.proxy
             val types = ns.flatten.filter(!_.isNlp).map(_.noteType).distinct
             val overlapNotes = ns.map(tkn ⇒ types.flatMap(tp ⇒ tkn.getNotes(tp))).filter(_.size > 1).flatten
 

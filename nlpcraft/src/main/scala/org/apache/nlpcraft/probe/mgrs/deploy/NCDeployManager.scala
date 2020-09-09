@@ -29,10 +29,9 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
-import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.model.intent.impl.{NCIntentScanner, NCIntentSolver}
 import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind.{DSL, REGEX, TEXT}
-import org.apache.nlpcraft.probe.mgrs.{NCSynonym, NCSynonymChunk}
+import org.apache.nlpcraft.probe.mgrs.{NCSynonym, NCSynonymChunk, deploy}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelSynonymDslCompiler
 import resource.managed
 
@@ -49,7 +48,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private final val TOKENS_PROVIDERS_PREFIXES = Set("nlpcraft:", "google:", "stanford:", "opennlp:", "spacy:")
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:-_]*$"
 
-    @volatile private var models: ArrayBuffer[NCModelWrapper] = _
+    @volatile private var wrappers: ArrayBuffer[NCModelWrapper] = _
     @volatile private var modelFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
@@ -143,7 +142,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val exclStopWords = checkAndStemmatize(mdl.getExcludedStopWords, "Excluded stopword")
         val suspWords = checkAndStemmatize(mdl.getSuspiciousWords, "Suspicious word")
 
-        checkStopwordsDups(addStopWords, exclStopWords)
+        // TODO: skh
+        //checkStopwordsDups(addStopWords, exclStopWords)
 
         val syns = mutable.HashSet.empty[SynonymHolder]
 
@@ -376,15 +376,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 mdl.getEnabledBuiltInTokens.asScala
         )
 
-        NCModelWrapper(
+        deploy.NCModelWrapper(
             proxy = mdl,
             solver = solver,
-            syns = mkFastAccessMap(filter(syns, dsl = false)),
-            synsDsl = mkFastAccessMap(filter(syns, dsl = true)),
+            synonyms = mkFastAccessMap(filter(syns, dsl = false)),
+            synonymsDsl = mkFastAccessMap(filter(syns, dsl = true)),
             addStopWordsStems = addStopWords,
             exclStopWordsStems = exclStopWords,
             suspWordsStems = suspWords,
-            elms = mdl.getElements.asScala.map(elm ⇒ (elm.getId, elm)).toMap
+            elements = mdl.getElements.asScala.map(elm ⇒ (elm.getId, elm)).toMap
         )
     }
 
@@ -419,7 +419,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param clsName Model class name.
       */
     @throws[NCE]
-    private def makeModel(clsName: String): NCModelWrapper =
+    private def makeModelWrapper(clsName: String): NCModelWrapper =
         try
             wrap(
                 makeModelFromSource(
@@ -515,7 +515,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         modelFactory = new NCBasicModelFactory
-        models = ArrayBuffer.empty[NCModelWrapper]
+        wrappers = ArrayBuffer.empty[NCModelWrapper]
 
         // Initialize model factory (if configured).
         Config.modelFactoryType match {
@@ -527,7 +527,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             case None ⇒ // No-op.
         }
 
-        models ++= Config.models.map(makeModel)
+        wrappers ++= Config.models.map(makeModelWrapper)
 
         Config.jarsFolder match {
             case Some(jarsFolder) ⇒
@@ -542,13 +542,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 val locJar = if (src == null) null else new File(src.getLocation.getPath)
 
                 for (jar ← scanJars(jarsFile) if jar != locJar)
-                    models ++= extractModels(jar)
+                    wrappers ++= extractModels(jar)
 
             case None ⇒ // No-op.
         }
 
         // Verify models' identities.
-        models.foreach(mdl ⇒ {
+        wrappers.foreach(w ⇒ {
+            val mdl = w.proxy
             val mdlName = mdl.getName
             val mdlId = mdl.getId
             val mdlVer = mdl.getVersion
@@ -577,7 +578,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
         })
 
-        if (U.containsDups(models.map(_.getId).toList))
+        if (U.containsDups(wrappers.map(_.proxy.getId).toList))
             throw new NCE("Duplicate model IDs detected.")
 
         super.start()
@@ -588,8 +589,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (modelFactory != null)
             modelFactory.terminate()
 
-        if (models != null)
-            models.clear()
+        if (wrappers != null)
+            wrappers.clear()
 
         super.stop()
     }
@@ -598,7 +599,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getModels: Seq[NCModelWrapper] = models
+    def getModels: Seq[NCModelWrapper] = wrappers
 
     /**
       * Permutes and drops duplicated.

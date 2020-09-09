@@ -315,16 +315,14 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 logger.info(s"REJECT response $msgName sent [srvReqId=$srvReqId, response=${errMsg.get}]")
         }
 
-        val mdl = NCModelManager
-            .getModel(mdlId, span)
-            .getOrElse(throw new NCE(s"Model not found: $mdlId"))
+        val w = NCModelManager.getModelWrapper(mdlId, span).getOrElse(throw new NCE(s"Model not found: $mdlId"))
 
         var errData: Option[(String, Int)] = None
 
         val validNlpSens =
             nlpSens.flatMap(nlpSen ⇒
                 try {
-                    NCValidateManager.preValidate(mdl, nlpSen, span)
+                    NCValidateManager.preValidate(w, nlpSen, span)
 
                     Some(nlpSen)
                 }
@@ -361,14 +359,14 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val sensSeq = validNlpSens.flatMap(nlpSen ⇒ {
             // Independent of references.
-            NCDictionaryEnricher.enrich(mdl, nlpSen, senMeta, span)
-            NCSuspiciousNounsEnricher.enrich(mdl, nlpSen, senMeta, span)
-            NCStopWordEnricher.enrich(mdl, nlpSen, senMeta, span)
+            NCDictionaryEnricher.enrich(w, nlpSen, senMeta, span)
+            NCSuspiciousNounsEnricher.enrich(w, nlpSen, senMeta, span)
+            NCStopWordEnricher.enrich(w, nlpSen, senMeta, span)
 
             case class Holder(enricher: NCProbeEnricher, getNotes: () ⇒ Seq[NCNlpSentenceNote])
 
             def get(name: String, e: NCProbeEnricher): Option[Holder] =
-                if (mdl.getEnabledBuiltInTokens.contains(name))
+                if (w.proxy.getEnabledBuiltInTokens.contains(name))
                     Some(Holder(e, () ⇒ nlpSen.flatten.filter(_.noteType == name)))
                 else
                     None
@@ -394,7 +392,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     def get(): Seq[NCNlpSentenceNote] = h.getNotes().sortBy(p ⇒ (p.tokenIndexes.head, p.noteType))
                     val notes1 = get()
 
-                    h → h.enricher.enrich(mdl, nlpSen, senMeta, span)
+                    h → h.enricher.enrich(w, nlpSen, senMeta, span)
 
                     val notes2 = get()
 
@@ -434,7 +432,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 }).toMap
 
                 // Loop has sense if model is complex (has user defined parsers or DSL based synonyms)
-                continue = NCModelEnricher.isComplex(mdl) && res.exists { case (_, same) ⇒ !same }
+                continue = NCModelEnricher.isComplex(w) && res.exists { case (_, same) ⇒ !same }
 
                 if (DEEP_DEBUG)
                     if (continue) {
@@ -464,7 +462,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         // Final validation before execution.
         try
-            sensSeq.foreach(NCValidateManager.postValidate(mdl, _, span))
+            sensSeq.foreach(NCValidateManager.postValidate(w, _, span))
         catch {
             case e: NCValidateException ⇒
                 val (errMsg, errCode) = getError(e.code)
@@ -487,13 +485,13 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val meta = mutable.HashMap.empty[String, Any] ++ senMeta
         val req = NCRequestImpl(meta, srvReqId)
 
-        var senVars = mdl.makeVariants(srvReqId, sensSeq)
+        var senVars = w.makeVariants(srvReqId, sensSeq)
 
         // Sentence variants can be filtered by model.
         val fltSenVars: Seq[(NCVariant, Int)] =
             senVars.
             zipWithIndex.
-            flatMap { case (variant, i) ⇒ if (mdl.onParsedVariant(variant)) Some(variant, i) else None }
+            flatMap { case (variant, i) ⇒ if (w.proxy.onParsedVariant(variant)) Some(variant, i) else None }
 
         senVars = fltSenVars.map(_._1)
         val allVars = senVars.flatMap(_.asScala)
@@ -528,7 +526,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         // Create model query context.
         val ctx: NCContext = new NCContext {
             override lazy val getRequest: NCRequest = req
-            override lazy val getModel: NCModel = mdl
+            override lazy val getModel: NCModel = w.proxy
             override lazy val getServerRequestId: String = srvReqId
 
             override lazy val getConversation: NCConversation = new NCConversation {
@@ -546,7 +544,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         
             logKey = U.mkLogHolderKey(srvReqId)
         
-            val meta = mdl.getMetadata
+            val meta = w.proxy.getMetadata
         
             meta.synchronized {
                 meta.put(logKey, logHldr)
@@ -572,7 +570,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         
         def onFinish(): Unit = {
             if (logKey != null)
-                mdl.getMetadata.remove(logKey)
+                w.proxy.getMetadata.remove(logKey)
             
             span.end()
         }
@@ -582,16 +580,16 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         // Execute model query asynchronously.
         U.asFuture(
             _ ⇒ {
-                var res = mdl.onContext(ctx)
+                var res = w.proxy.onContext(ctx)
     
                 start = System.currentTimeMillis()
     
-                if (res == null && mdl.solver != null)
+                if (res == null && w.solver != null)
                     startScopedSpan("intentMatching", span) { _ ⇒
-                        res = mdl.solver.solve(solverIn, span)
+                        res = w.solver.solve(solverIn, span)
                     }
                 
-                if (res == null && mdl.solver == null)
+                if (res == null && w.solver == null)
                     throw new IllegalStateException("No intents and no results from model callbacks.")
     
                 recordStats(M_USER_LATENCY_MS → (System.currentTimeMillis() - start))
@@ -625,7 +623,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         if (e.getCause != null)
                             logger.info(s"Rejection cause:", e.getCause)
     
-                        val res = mdl.onRejection(solverIn.intentMatch, e)
+                        val res = w.proxy.onRejection(solverIn.intentMatch, e)
     
                         if (res != null)
                             respondWithResult(res, None)
@@ -654,7 +652,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     
                         logger.error(s"Unexpected error for server request ID: $srvReqId", e)
         
-                        val res = mdl.onError(ctx, e)
+                        val res = w.proxy.onError(ctx, e)
         
                         if (res != null)
                             respondWithResult(res, None)
@@ -680,7 +678,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         "resBody" → res.getBody
                     )
                     
-                    val res0 = mdl.onResult(solverIn.intentMatch, res)
+                    val res0 = w.proxy.onResult(solverIn.intentMatch, res)
 
                     respondWithResult(if (res0 != null) res0 else res, if (logHldr != null) Some(logHldr.toJson) else None)
                 }

@@ -49,8 +49,8 @@ trait NCProbeInspection extends NCInspectionService {
                 val warns = mutable.Buffer.empty[String]
                 val suggs = mutable.Buffer.empty[String]
 
-                NCModelManager.getModel(mdlId) match {
-                    case Some(x) ⇒ body(x, args, suggs, warns, errs)
+                NCModelManager.getModelWrapper(mdlId) match {
+                    case Some(x) ⇒ body(x.proxy, args, suggs, warns, errs)
                     case None ⇒ errs += s"Model not found: $mdlId"
                 }
 

@@ -23,7 +23,7 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService, U}
-import org.apache.nlpcraft.model.impl.NCModelWrapper
+import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.annotation.tailrec
@@ -210,7 +210,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
         def mark(stems: Set[String], f: Boolean): Unit =
             ns.filter(t ⇒ stems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "stopWord" → f))
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdl.getId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdl.proxy.getId, "txt" → ns.text) { _ ⇒
 
             mark(mdl.exclStopWordsStems, f = false)
             mark(mdl.addStopWordsStems, f = true)
