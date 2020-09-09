@@ -906,23 +906,50 @@ object NCProbeManager extends NCService {
             }
         }
     }
-    
+
     /**
-      * Gets all active probes.
-      *
-      * @param compId
-      * @param parent Optional parent span.
-      */
+     *
+     * @param compId
+     * @return
+     */
+    private def getCompany(compId: Long): NCCompanyMdo =
+        NCCompanyManager.getCompany(compId).getOrElse(throw new NCE(s"Company mot found: $compId"))
+
+    /**
+     * Gets all active probes.
+     *
+     * @param compId Company ID for authentication purpose.
+     * @param parent Optional parent span.
+     */
     @throws[NCE]
     def getAllProbes(compId: Long, parent: Span = null): Seq[NCProbeMdo] =
         startScopedSpan("getAllProbes", parent, "compId" → compId) { _ ⇒
-            val comp = NCCompanyManager.getCompany(compId).getOrElse(throw new NCE(s"Company mot found: $compId"))
+            val authTok = getCompany(compId).authToken
          
             probes.synchronized {
-                probes.filter(_._1.probeToken == comp.authToken).values
-            }.map(_.probe).toSeq
+                probes.filter(_._1.probeToken == authTok).values
+            }
+            .map(_.probe)
+            .toSeq
         }
-    
+
+    /**
+     * Checks whether or not a data probe exists for given model.
+     *
+     * @param compId Company ID for authentication purpose.
+     * @param mdlId Model ID.
+     * @param parent Optional parent span.
+     * @return
+     */
+    def existsForModel(compId: Long, mdlId: String, parent: Span = null): Boolean =
+        startScopedSpan("existsForModel", parent, "compId" → compId, "mdlId" -> mdlId) { _ ⇒
+            val authTok = getCompany(compId).authToken
+
+            probes.synchronized {
+                probes.filter(_._1.probeToken == authTok).values.exists(_.probe.models.exists(_.id == mdlId))
+            }
+        }
+
     /**
       *
       * @param usrId User ID.

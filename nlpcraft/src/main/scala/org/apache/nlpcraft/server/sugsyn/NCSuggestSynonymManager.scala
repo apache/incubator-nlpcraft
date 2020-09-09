@@ -15,43 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.inspection.impl
-
-import java.util
-import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
-import java.util.concurrent._
+package org.apache.nlpcraft.server.sugsyn
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.opencensus.trace.Span
 import org.apache.http.HttpResponse
 import org.apache.http.client.ResponseHandler
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
-import org.apache.nlpcraft.common.NCE
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.inspections._
-import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
-import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
-import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future, Promise}
 import scala.util.{Failure, Success}
+import java.util
+import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
+import java.util.concurrent._
+
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClients
+import org.apache.nlpcraft.common.makro.NCMacroParser
 
 /**
- * Synonym suggestion inspection.
+ * Synonym suggestion manager.
  */
-object NCSuggestionInspection extends NCInspectionService {
+object NCSuggestSynonymManager extends NCService {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20
     private final val DFLT_MIN_SCORE = 0.0
+
+    @volatile private var pool: ExecutorService = _
+    @volatile private var executor: ExecutionContextExecutor = _
 
     // For warnings.
     private final val MIN_CNT_INTENT = 5
@@ -61,6 +61,15 @@ object NCSuggestionInspection extends NCInspectionService {
     private final val TYPE_RESP = new TypeToken[util.List[util.List[Suggestion]]]() {}.getType
     private final val TYPE_ARGS = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
+
+    case class NCSuggestSynonymResult(
+        modelId: String,
+        arguments: String,
+        durationMs: Long,
+        timestamp: Long,
+        error: String,
+        suggestions: java.util.List[AnyRef]
+    )
 
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
@@ -74,7 +83,9 @@ object NCSuggestionInspection extends NCInspectionService {
             val js = if (e != null) EntityUtils.toString(e) else null
 
             if (js == null)
-                throw new RuntimeException(s"Unexpected empty response [code=$code]")
+                throw new RuntimeException(s"Unexpected empty HTTP response from 'ctxword' server [" +
+                    s"code=$code" +
+                s"]")
 
             code match {
                 case 200 ⇒
@@ -83,7 +94,10 @@ object NCSuggestionInspection extends NCInspectionService {
                     data.asScala.map(p ⇒ if (p.isEmpty) Seq.empty else p.asScala.tail)
 
                 case 400 ⇒ throw new RuntimeException(js)
-                case _ ⇒ throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
+                case _ ⇒ throw new RuntimeException(s"Unexpected HTTP response from 'ctxword' server [" +
+                    s"code=$code, " +
+                    s"response=$js" +
+                s"]")
             }
         }
 
@@ -108,11 +122,27 @@ object NCSuggestionInspection extends NCInspectionService {
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
 
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        pool = Executors.newCachedThreadPool()
+        executor = ExecutionContext.fromExecutor(pool)
+
+        super.start(parent)
+    }
+
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+        super.stop(parent)
+
+        U.shutdownPools(pool)
+
+        pool = null
+        executor = null
+    }
+
     /**
-      *
-      * @param seq1
-      * @param seq2
-      */
+     *
+     * @param seq1
+     * @param seq2
+     */
     private def getAllSlices(seq1: Seq[String], seq2: Seq[String]): Seq[Int] = {
         val seq = mutable.Buffer.empty[Int]
 
@@ -127,18 +157,18 @@ object NCSuggestionInspection extends NCInspectionService {
         seq
     }
 
-
     /**
      *
+     * @param mdlId
+     * @param args
+     * @param parent
      * @return
      */
-    override def getName: String = "suggestions"
-
-    override def inspect(mdlId: String, inspName: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
+    def suggest(mdlId: String, args: Option[String], parent: Span = null): Future[NCSuggestSynonymResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             val now = System.currentTimeMillis()
 
-            val promise = Promise[NCInspectionResult]()
+            val promise = Promise[NCSuggestSynonymResult]()
 
             NCProbeManager.getModelInfo(mdlId, parent).onComplete {
                 case Success(m) ⇒
@@ -182,15 +212,13 @@ object NCSuggestionInspection extends NCInspectionService {
 
                         def onError(err: String): Unit =
                             promise.success(
-                                NCInspectionResultImpl(
-                                    inspectionId = inspName,
+                                NCSuggestSynonymResult(
                                     modelId = mdlId,
-                                    inspectionArguments = None,
+                                    arguments = args.orNull,
                                     durationMs = System.currentTimeMillis() - now,
                                     timestamp = now,
-                                    errors = Seq(err),
-                                    warnings = Seq.empty,
-                                    suggestions = Seq.empty
+                                    error = err,
+                                    suggestions = Seq.empty.asJava
                                 )
                             )
 
@@ -206,8 +234,8 @@ object NCSuggestionInspection extends NCInspectionService {
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
                                     s"Model '$mdlId' has too few intents samples: $allSamplesCnt. " +
-                                    s"It will negatively affect the quality of suggestions. " +
-                                    s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
+                                        s"It will negatively affect the quality of suggestions. " +
+                                        s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
 
                             else {
                                 val ids =
@@ -218,8 +246,8 @@ object NCSuggestionInspection extends NCInspectionService {
                                 if (ids.nonEmpty)
                                     warns +=
                                         s"Following model intent have too few samples: ${ids.mkString(", ")}. " +
-                                        s"It will negatively affect the quality of suggestions. " +
-                                        s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
+                                            s"It will negatively affect the quality of suggestions. " +
+                                            s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
                             }
 
                             val parser = new NCMacroParser()
@@ -287,13 +315,13 @@ object NCSuggestionInspection extends NCInspectionService {
                             if (noExElems.nonEmpty)
                                 warns +=
                                     "Some elements don't have synonyms in their intent samples, " +
-                                    s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
+                                        s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
 
                             val allReqsCnt = allReqs.map(_._2.size).sum
                             val allSynsCnt = elemSyns.map(_._2.size).sum
 
-                            logger.trace(s"Request is going to execute on 'ctxword' server " +
-                                s"[exs=${exs.size}, " +
+                            logger.trace(s"Request is going to execute on 'ctxword' server [" +
+                                s"exs=${exs.size}, " +
                                 s"syns=$allSynsCnt, " +
                                 s"reqs=$allReqsCnt" +
                             s"]")
@@ -310,7 +338,7 @@ object NCSuggestionInspection extends NCInspectionService {
                                 val err = new AtomicReference[Throwable]()
 
                                 for ((elemId, reqs) ← allReqs; batch ← reqs.sliding(BATCH_SIZE, BATCH_SIZE).map(_.toSeq)) {
-                                    NCUtils.asFuture(
+                                    U.asFuture(
                                         _ ⇒ {
                                             val post = new HttpPost(url)
 
@@ -408,7 +436,7 @@ object NCSuggestionInspection extends NCInspectionService {
 
                                             m.put("synonym", d.synonym)
                                             // ContextWord server range is (0, 2)
-                                            m.put("ctxWorldServerScore", d.ctxWordSrvScore / 2)
+                                            m.put("ctxWordServerScore", d.ctxWordSrvScore / 2)
                                             m.put("suggestedCount", d.sgstCnt)
 
                                             m
@@ -416,15 +444,13 @@ object NCSuggestionInspection extends NCInspectionService {
                                     }.asJava
 
                                 promise.success(
-                                    NCInspectionResultImpl(
-                                        inspectionId = inspName,
+                                    NCSuggestSynonymResult(
                                         modelId = mdlId,
-                                        inspectionArguments = None,
+                                        arguments = args.orNull,
                                         durationMs = System.currentTimeMillis() - now,
                                         timestamp = now,
-                                        errors = Seq.empty,
-                                        warnings = warns,
-                                        suggestions = Seq(resJ)
+                                        error = null,
+                                        suggestions = Seq(resJ.asInstanceOf[AnyRef]).asJava
                                     )
                                 )
                             }
@@ -438,9 +464,8 @@ object NCSuggestionInspection extends NCInspectionService {
                             promise.failure(e)
                     }
                 case Failure(e) ⇒ promise.failure(e)
-            }(getExecutor)
+            }(executor)
 
             promise.future
         }
 }
-

@@ -34,7 +34,6 @@ import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.geo.NCGeoManager
 import org.apache.nlpcraft.server.ignite.{NCIgniteInstance, NCIgniteRunner}
-import org.apache.nlpcraft.server.inspection.NCInspectionManager
 import org.apache.nlpcraft.server.lifecycle.NCServerLifecycleManager
 import org.apache.nlpcraft.server.nlp.core.NCNlpServerManager
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
@@ -46,6 +45,7 @@ import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.rest.NCRestManager
 import org.apache.nlpcraft.server.sql.NCSqlManager
+import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 
@@ -123,7 +123,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 },
                 () ⇒ {
                     NCProbeManager.start(span)
-                    NCInspectionManager.start(span)
+                    NCSuggestSynonymManager.start(span)
                 },
                 () ⇒ NCFeedbackManager.start(span)
             )
@@ -148,7 +148,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 NCRestManager,
                 NCQueryManager,
                 NCFeedbackManager,
-                NCInspectionManager,
+                NCSuggestSynonymManager,
                 NCProbeManager,
                 NCCompanyManager,
                 NCUserManager,

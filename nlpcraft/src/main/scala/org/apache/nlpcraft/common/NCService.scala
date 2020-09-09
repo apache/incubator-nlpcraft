@@ -52,7 +52,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
 
         val dur = s"[${currentTime - startMs}ms]"
 
-        logger.info(s"$clsName started $dur")
+        logger.info(s"+$clsName started $dur")
         
         addTags(currentSpan(),
             "startDurationMs" → (currentTime - startMs), "state" → started
@@ -74,6 +74,6 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
             "state" → started
         )
 
-        logger.info(s"$clsName stopped.")
+        logger.info(s"-$clsName stopped.")
     }
 }
