@@ -200,8 +200,8 @@ object NCSuggestSynonymManager extends NCService {
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
                                     s"Model '$mdlId' has too few intents samples: $allSamplesCnt. " +
-                                        s"It will negatively affect the quality of suggestions. " +
-                                        s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
+                                    s"It will negatively affect the quality of suggestions. " +
+                                    s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
 
                             else {
                                 val ids =
@@ -212,8 +212,8 @@ object NCSuggestSynonymManager extends NCService {
                                 if (ids.nonEmpty)
                                     warns +=
                                         s"Following model intent have too few samples: ${ids.mkString(", ")}. " +
-                                            s"It will negatively affect the quality of suggestions. " +
-                                            s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
+                                        s"It will negatively affect the quality of suggestions. " +
+                                        s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
                             }
 
                             val parser = new NCMacroParser()
