@@ -71,7 +71,7 @@ object NCGeoNamesGenerator extends App {
     )
     case class CityInfo(name: String, countryRegion: String, countryCode: String, population: Long)
 
-    // GEO name ID -> internal representation mapping.
+    // GEO name ID → internal representation mapping.
     private val ids = mutable.Map.empty[String, Location]
 
     private def read(path: String): Seq[String] = U.readPath(path, "UTF8").filter(!_.startsWith("#"))
@@ -181,7 +181,7 @@ object NCGeoNamesGenerator extends App {
         map.keySet
     }
 
-    // Produce a map of regions (countryCode + regCode -> region name)).
+    // Produce a map of regions (countryCode + regCode → region name)).
     private def processRegions(): mutable.Map[String, String] = {
         val map = mutable.Map.empty[String, String]
 
@@ -203,7 +203,7 @@ object NCGeoNamesGenerator extends App {
         map
     }
 
-    // Process cities. Produce map of CountryCode + RegionNr -> list of cities.
+    // Process cities. Produce map of CountryCode + RegionNr → list of cities.
     // Some cities do not have Region information. Some countries does not have
     // region breakdown.
     private def processCities(regCodes: mutable.Map[String, String], isoToNames: Map[String, String]):
@@ -307,7 +307,7 @@ object NCGeoNamesGenerator extends App {
                     ctrsToRegions += country → seq
             }
 
-        // Map of CountryCode + RegionNr -> list of cities.
+        // Map of CountryCode + RegionNr → list of cities.
         for ((countryIsoStr, regCities) ← regs) {
             val countryIso = countryIsoStr.substring(0, 2)
 

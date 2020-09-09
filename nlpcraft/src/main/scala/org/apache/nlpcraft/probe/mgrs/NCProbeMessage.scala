@@ -105,7 +105,7 @@ class NCProbeMessage(val typ: String) extends mutable.HashMap[String/*Name*/, Se
                 false
             else
                 t1._1.compare(t2._1) <= 0
-        }).map(t ⇒ s"${t._1} -> ${t._2}").mkString("{", ", ", "}")
+        }).map(t ⇒ s"${t._1} → ${t._2}").mkString("{", ", ", "}")
 }
 
 object NCProbeMessage {

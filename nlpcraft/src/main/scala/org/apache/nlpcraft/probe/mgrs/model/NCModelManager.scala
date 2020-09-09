@@ -117,7 +117,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                 val mdlId = mdl.wrapper.getId
 
                 NCInspectionManager.inspect(mdlId, insId, null, parent).onComplete{
-                    case Success(res) =>
+                    case Success(res) ⇒
                         res.errors().asScala.foreach(
                             p ⇒ logger.error(s"Validation error [model=$mdlId, inspection=$insId, text=$p")
                         )
@@ -128,7 +128,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                             p ⇒ logger.info(s"Validation suggestion [model=$mdlId, inspection=$insId, text=$p")
                         )
 
-                    case Failure(e) => logger.error(s"Error processing inspections: $mdlId", e)
+                    case Failure(e) ⇒ logger.error(s"Error processing inspections: $mdlId", e)
                 }
             }
 

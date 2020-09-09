@@ -59,17 +59,7 @@ object NCSuggestSynonymManager extends NCService {
 
     private final val GSON = new Gson
     private final val TYPE_RESP = new TypeToken[util.List[util.List[Suggestion]]]() {}.getType
-    private final val TYPE_ARGS = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
-
-    case class NCSuggestSynonymResult(
-        modelId: String,
-        arguments: String,
-        durationMs: Long,
-        timestamp: Long,
-        error: String,
-        suggestions: java.util.List[AnyRef]
-    )
 
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")
@@ -160,11 +150,11 @@ object NCSuggestSynonymManager extends NCService {
     /**
      *
      * @param mdlId
-     * @param args
+     * @param minScoreOpt
      * @param parent
      * @return
      */
-    def suggest(mdlId: String, args: Option[String], parent: Span = null): Future[NCSuggestSynonymResult] =
+    def suggest(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
         startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
             val now = System.currentTimeMillis()
 
@@ -184,37 +174,13 @@ object NCSuggestSynonymManager extends NCService {
                         val mdlExs = m.get("samples").
                             asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
 
-                        val minScore =
-                            args match {
-                                case Some(a) ⇒
-                                    val v =
-                                        try {
-                                            val m: util.Map[String, AnyRef] = GSON.fromJson(a, TYPE_ARGS)
-
-                                            val v = m.get("minScore")
-
-                                            if (v == null)
-                                                throw new NCE("Missed parameter: 'minScore'")
-
-                                            v.asInstanceOf[Double]
-                                        }
-                                        catch {
-                                            case e: Exception ⇒ throw new NCE("Invalid 'minScore' parameter.", e)
-                                        }
-
-                                    if (v < 0 || v > 1)
-                                        throw new NCE("'minScore' parameter value must be between 0 and 1.")
-
-                                    v
-
-                                case None ⇒ DFLT_MIN_SCORE
-                            }
+                        val minScore = minScoreOpt.getOrElse(DFLT_MIN_SCORE)
 
                         def onError(err: String): Unit =
                             promise.success(
                                 NCSuggestSynonymResult(
                                     modelId = mdlId,
-                                    arguments = args.orNull,
+                                    minScore = minScore,
                                     durationMs = System.currentTimeMillis() - now,
                                     timestamp = now,
                                     error = err,
@@ -446,7 +412,7 @@ object NCSuggestSynonymManager extends NCService {
                                 promise.success(
                                     NCSuggestSynonymResult(
                                         modelId = mdlId,
-                                        arguments = args.orNull,
+                                        minScore = minScore,
                                         durationMs = System.currentTimeMillis() - now,
                                         timestamp = now,
                                         error = null,

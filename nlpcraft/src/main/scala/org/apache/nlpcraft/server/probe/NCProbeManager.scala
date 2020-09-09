@@ -942,7 +942,7 @@ object NCProbeManager extends NCService {
      * @return
      */
     def existsForModel(compId: Long, mdlId: String, parent: Span = null): Boolean =
-        startScopedSpan("existsForModel", parent, "compId" → compId, "mdlId" -> mdlId) { _ ⇒
+        startScopedSpan("existsForModel", parent, "compId" → compId, "mdlId" → mdlId) { _ ⇒
             val authTok = getCompany(compId).authToken
 
             probes.synchronized {

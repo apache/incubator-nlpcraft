@@ -214,9 +214,9 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
                         val grps = gs.sorted
     
                         // Reversed iteration.
-                        // N : (A, B) -> registered.
-                        // N-1 : (C) -> registered.
-                        // N-2 : (A, B) or (A, B, X) etc -> deleted, because registered has less groups.
+                        // N : (A, B) → registered.
+                        // N-1 : (C) → registered.
+                        // N-2 : (A, B) or (A, B, X) etc → deleted, because registered has less groups.
                         registered.find(grps.containsSlice) match {
                             case Some(_) ⇒
                                 item.holders --= hs

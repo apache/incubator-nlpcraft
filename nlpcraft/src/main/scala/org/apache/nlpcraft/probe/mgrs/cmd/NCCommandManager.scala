@@ -114,7 +114,7 @@ object NCCommandManager extends NCService {
                             args = msg.dataOpt[String]("args"),
                             span
                         ).onComplete {
-                            case Success(res) =>
+                            case Success(res) ⇒
                                 NCConnectionManager.send(
                                     NCProbeMessage(
                                         "P2S_PROBE_INSPECTION",
@@ -124,7 +124,7 @@ object NCCommandManager extends NCService {
                                     span
                                 )
 
-                            case Failure(e) => logger.error(s"Message cannot be processed: $msg", e)
+                            case Failure(e) ⇒ logger.error(s"Message cannot be processed: $msg", e)
                         }(executor)
 
                     case "S2P_MODEL_INFO" ⇒

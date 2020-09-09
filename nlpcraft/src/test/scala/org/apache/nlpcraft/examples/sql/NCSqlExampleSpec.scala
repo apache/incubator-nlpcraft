@@ -115,7 +115,7 @@ class NCSqlExampleSpec {
 
                                     val tbl = NCAsciiTable("Expected", "Real")
 
-                                    rows.foreach(r => tbl += (r.getOldLine, r.getNewLine))
+                                    rows.foreach(r ⇒ tbl += (r.getOldLine, r.getNewLine))
 
                                     errs += txt → s"Unexpected SQL:\n$tbl"
                                 }

@@ -18,17 +18,20 @@
 package org.apache.nlpcraft.server.sugsyn
 
 /**
+ * Result of the model synonym suggestion tool.
  *
- * @param modelId
- * @param arguments
- * @param durationMs
- * @param timestamp
- * @param suggestions
+ * @param modelId ID of the model suggestion tool was running on.
+ * @param minScore Min score input parameter.
+ * @param durationMs Duration of the tool run.
+ * @param timestamp Timestamp of the tool run start.
+ * @param error Error message, or `null` if no errors occurred.
+ * @param suggestions List of synonym suggestion.
  */
 case class NCSuggestSynonymResult(
     modelId: String,
-    arguments: String,
+    minScore: Double,
     durationMs: Long,
     timestamp: Long,
+    error: String,
     suggestions: java.util.List[AnyRef]
 )

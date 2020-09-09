@@ -29,7 +29,7 @@ import org.apache.nlpcraft.common.U
  * Generator for US state names.
  */
 object NCGeoStateNamesGenerator extends App {
-    // Produce a map of regions (countryCode + regCode -> region name)).
+    // Produce a map of regions (countryCode + regCode → region name)).
     private def getStates(txtFile: String): Map[String, String] =
         U.readPath(txtFile, "UTF8").filter(!_.startsWith("#")).flatMap(line ⇒ {
             val seq = line.split("\t").toSeq

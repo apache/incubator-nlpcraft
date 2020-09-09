@@ -61,7 +61,7 @@ object NCInspectionManager extends NCService with NCOpenCensusModelStats {
             parent,
             "modelId" → mdlId,
             "inspName" → inspName,
-            "args" -> args.orNull) { _ ⇒
+            "args" → args.orNull) { _ ⇒
             PROBE_INSPECTIONS.find(_.getName == inspName) match {
                 case Some(insp) ⇒ insp.inspect(mdlId, inspName, args)
                 case None ⇒ throw new NCE(s"Unsupported inspection: $inspName")

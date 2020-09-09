@@ -29,8 +29,8 @@ import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.concurrent.{ExecutorService, TimeUnit}
 import java.util.jar.JarFile
 import java.util.stream.Collectors
-import java.util.zip.{ZipInputStream, GZIPInputStream => GIS, GZIPOutputStream => GOS}
-import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar => C}
+import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
+import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.`type`.TypeReference

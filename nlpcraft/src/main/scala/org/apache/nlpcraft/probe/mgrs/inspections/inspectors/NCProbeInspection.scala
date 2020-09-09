@@ -42,16 +42,16 @@ trait NCProbeInspection extends NCInspectionService {
             "inspect",
             parent,
             "modelId" → mdlId,
-            "inspName" -> inspName,
-            "args" -> args.orNull) { _ ⇒
+            "inspName" → inspName,
+            "args" → args.orNull) { _ ⇒
             Future {
                 val errs = mutable.Buffer.empty[String]
                 val warns = mutable.Buffer.empty[String]
                 val suggs = mutable.Buffer.empty[String]
 
                 NCModelManager.getModel(mdlId) match {
-                    case Some(x) => body(x.wrapper, args, suggs, warns, errs)
-                    case None => errs += s"Model not found: $mdlId"
+                    case Some(x) ⇒ body(x.wrapper, args, suggs, warns, errs)
+                    case None ⇒ errs += s"Model not found: $mdlId"
                 }
 
                 NCInspectionResultImpl(

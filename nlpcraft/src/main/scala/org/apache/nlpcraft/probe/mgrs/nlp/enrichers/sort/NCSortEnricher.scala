@@ -156,7 +156,7 @@ object NCSortEnricher extends NCProbeEnricher {
     }
 
     /**
-      * [Token] -> [NoteData]
+      * [Token] → [NoteData]
       * [Token(A, B), Token(A), Token(C, D), Token(C, D, X), Token(Z)] ⇒
       * [ [A (0, 1), C (2, 3), Z (4)], [A (0, 1), D (2, 3), Z (4) ] ]
       *

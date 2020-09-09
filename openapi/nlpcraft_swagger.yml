@@ -158,13 +158,13 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
-  /model/inspect:
+  /model/sugsyn:
     post:
       tags:
         - Model
-      summary: Performs model inspection.
+      summary: Runs model synonym suggestion tool.
       description: >-
-        Inspections for given model. Administrative privileges required.
+        Runs model synonym suggestion tool based on BERT and fasttext models. Administrative privileges required.
       operationId: inspect
       parameters:
         - in: body
@@ -176,7 +176,6 @@ paths:
             required:
               - acsTok
               - mdlId
-              - inspName
             properties:
               acsTok:
                 type: string
@@ -186,10 +185,6 @@ paths:
                 type: string
                 maxLength: 32
                 description: ID of the model to perform given inspection on
-              inspName:
-                type: string
-                maxLength: 32
-                description: Inspection ID
               args:
                 type: object
                 description: >-
@@ -212,104 +207,6 @@ paths:
                 type: object
                 description: Inspections data for given model
 
-        '400':
-          description: Failed operation.
-          schema:
-            $ref: '#/definitions/Error'
-  /model/inspecton/all:
-    post:
-      tags:
-        - Models inspections
-      summary: Gets all models inspections.
-      description: >-
-        Gets all models inspections available. Administrative privileges required.
-      operationId: getAllInspections
-      parameters:
-        - in: body
-          name: Payload body
-          description: JSON request.
-          required: true
-          schema:
-            type: object
-            required:
-              - acsTok
-            properties:
-              acsTok:
-                maxLength: 256
-                description: Access token obtain via '/signin' call
-                type: string
-      responses:
-        '200':
-          description: Successful operation.
-          schema:
-            type: object
-            required:
-              - status
-              - inspections
-            properties:
-              status:
-                type: string
-                description: Status code of this operation
-                enum:
-                  - API_OK
-              probes:
-                type: array
-                items:
-                  type: object
-                  required:
-                    - id
-                    - name
-                    - synopsis
-                    - parameters
-                    - description
-                    - isServerSide
-                  properties:
-                    id:
-                      description: Inspection ID
-                      type: string
-                    name:
-                      description: Inspection name
-                      type: string
-                    synopsis:
-                      description: Inspection synopsis
-                      type: string
-                    parameters:
-                      description: Parameters
-                      type: array
-                      items:
-                        type: object
-                        required:
-                          - id
-                          - name
-                          - value
-                          - valueType
-                          - synopsis
-                          - description
-                        properties:
-                          id:
-                            description: Parameter ID
-                            type: string
-                          name:
-                            description: Parameter name
-                            type: string
-                          value:
-                            description: Parameter value
-                            type: string
-                          valueType:
-                            description: Parameter value type
-                            type: string
-                          synopsis:
-                            description: Parameter synopsis
-                            type: string
-                          description:
-                            description: Parameter description
-                            type: string
-                    description:
-                      description: Inspection description
-                      type: string
-                    isServerSide:
-                      description: Whether inspection runs on the server or the data probe
-                      type: boolean
         '400':
           description: Failed operation.
           schema:
