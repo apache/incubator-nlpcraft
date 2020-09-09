@@ -22,7 +22,7 @@ import io.opencensus.trace.Span
 import org.apache.tika.langdetect.OptimaizeLangDetector
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
+import org.apache.nlpcraft.model.impl.NCModelWrapper
 
 /**
  * Probe pre/post enrichment validator.
@@ -51,22 +51,21 @@ object NCValidateManager extends NCService with LazyLogging {
      * @param parent Parent tracing span.
      */
     @throws[NCValidateException]
-    def preValidate(mdl: NCModelDecorator, ns: NCNlpSentence, parent: Span = null): Unit = 
+    def preValidate(mdl: NCModelWrapper, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → mdl.wrapper.getId) { _ ⇒
-            val model = mdl.wrapper
-            
-            if (!model.isNotLatinCharsetAllowed && !ns.text.matches("""[\s\w\p{Punct}]+"""))
+            "modelId" → mdl.getId) { _ ⇒
+
+            if (!mdl.isNotLatinCharsetAllowed && !ns.text.matches("""[\s\w\p{Punct}]+"""))
                 throw NCValidateException("ALLOW_NON_LATIN_CHARSET")
-            if (!model.isNonEnglishAllowed && !langFinder.detect(ns.text).isLanguage("en"))
+            if (!mdl.isNonEnglishAllowed && !langFinder.detect(ns.text).isLanguage("en"))
                 throw NCValidateException("ALLOW_NON_ENGLISH")
-            if (!model.isNoNounsAllowed && !ns.exists(_.pos.startsWith("n")))
+            if (!mdl.isNoNounsAllowed && !ns.exists(_.pos.startsWith("n")))
                 throw NCValidateException("ALLOW_NO_NOUNS")
-            if (model.getMinWords > ns.map(_.wordLength).sum)
+            if (mdl.getMinWords > ns.map(_.wordLength).sum)
                 throw NCValidateException("MIN_WORDS")
-            if (ns.size > model.getMaxTokens)
+            if (ns.size > mdl.getMaxTokens)
                 throw NCValidateException("MAX_TOKENS")
         }
     
@@ -77,30 +76,29 @@ object NCValidateManager extends NCService with LazyLogging {
      * @param parent Optional parent span.
      */
     @throws[NCValidateException]
-    def postValidate(mdl: NCModelDecorator, ns: NCNlpSentence, parent: Span = null): Unit =
+    def postValidate(mdl: NCModelWrapper, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → mdl.wrapper.getId) { _ ⇒
+            "modelId" → mdl.getId) { _ ⇒
             val types = ns.flatten.filter(!_.isNlp).map(_.noteType).distinct
             val overlapNotes = ns.map(tkn ⇒ types.flatMap(tp ⇒ tkn.getNotes(tp))).filter(_.size > 1).flatten
-            val model = mdl.wrapper
-            
+
             if (overlapNotes.nonEmpty)
                 throw NCValidateException("OVERLAP_NOTES")
-            if (!model.isNoUserTokensAllowed && !ns.exists(_.exists(!_.noteType.startsWith("nlpcraft:"))))
+            if (!mdl.isNoUserTokensAllowed && !ns.exists(_.exists(!_.noteType.startsWith("nlpcraft:"))))
                 throw NCValidateException("ALLOW_NO_USER_TOKENS")
-            if (!model.isSwearWordsAllowed && ns.exists(_.getNlpValueOpt[Boolean]("swear").getOrElse(false)))
+            if (!mdl.isSwearWordsAllowed && ns.exists(_.getNlpValueOpt[Boolean]("swear").getOrElse(false)))
                 throw NCValidateException("ALLOW_SWEAR_WORDS")
-            if (model.getMinNonStopwords > ns.count(!_.isStopWord))
+            if (mdl.getMinNonStopwords > ns.count(!_.isStopWord))
                 throw NCValidateException("MIN_NON_STOPWORDS")
-            if (model.getMinTokens > ns.size)
+            if (mdl.getMinTokens > ns.size)
                 throw NCValidateException("MIN_TOKENS")
-            if (model.getMaxUnknownWords < ns.count(t ⇒ t.isNlp && !t.isSynthetic && !t.isKnownWord))
+            if (mdl.getMaxUnknownWords < ns.count(t ⇒ t.isNlp && !t.isSynthetic && !t.isKnownWord))
                 throw NCValidateException("MAX_UNKNOWN_WORDS")
-            if (model.getMaxSuspiciousWords < ns.count(_.getNlpValueOpt[Boolean]("suspNoun").getOrElse(false)))
+            if (mdl.getMaxSuspiciousWords < ns.count(_.getNlpValueOpt[Boolean]("suspNoun").getOrElse(false)))
                 throw NCValidateException("MAX_SUSPICIOUS_WORDS")
-            if (model.getMaxFreeWords < ns.count(_.isNlp))
+            if (mdl.getMaxFreeWords < ns.count(_.isNlp))
                 throw NCValidateException("MAX_FREE_WORDS")
         }
 }

@@ -24,9 +24,10 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, _}
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
-import org.apache.nlpcraft.probe.mgrs.{NCModelDecorator, NCSynonym}
+import org.apache.nlpcraft.probe.mgrs.NCSynonym
 
 import scala.collection.JavaConverters._
 import scala.collection.convert.DecorateAsScala
@@ -297,15 +298,15 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
-    def isComplex(mdl: NCModelDecorator): Boolean = mdl.synsDsl.nonEmpty || !mdl.wrapper.getParsers.isEmpty
+    def isComplex(mdl: NCModelWrapper): Boolean = mdl.synsDsl.nonEmpty || !mdl.getParsers.isEmpty
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
+    override def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.wrapper.getId,
+            "modelId" → mdl.getId,
             "txt" → ns.text) { span ⇒
-            val jiggleFactor = mdl.wrapper.getJiggleFactor
+            val jiggleFactor = mdl.getJiggleFactor
             val cache = mutable.HashSet.empty[Seq[Int]]
             val matches = ArrayBuffer.empty[ElementMatch]
 
@@ -392,7 +393,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
             startScopedSpan("jiggleProc", span,
                 "srvReqId" → ns.srvReqId,
-                "modelId" → mdl.wrapper.getId,
+                "modelId" → mdl.getId,
                 "txt" → ns.text) { _ ⇒
                 // Iterate over depth-limited permutations of the original sentence with and without stopwords.
                 jiggle(ns, jiggleFactor).foreach(procPerm)
@@ -413,7 +414,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             for ((m, idx) ← matches.zipWithIndex) {
                 if (DEEP_DEBUG)
                     logger.trace(
-                        s"Model '${mdl.wrapper.getId}' element found (${idx + 1} of $matchCnt) [" +
+                        s"Model '${mdl.getId}' element found (${idx + 1} of $matchCnt) [" +
                             s"elementId=${m.element.getId}, " +
                             s"synonym=${m.synonym}, " +
                             s"tokens=${tokString(m.tokens)}" +
@@ -429,14 +430,14 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 mark(ns, elem = elm, toks = m.tokens, direct = direct, syn = Some(syn), metaOpt = None, parts = m.parts)
             }
 
-            val parsers = mdl.wrapper.getParsers
+            val parsers = mdl.getParsers
 
             for (parser ← parsers.asScala) {
                 parser.onInit()
 
                 startScopedSpan("customParser", span,
                     "srvReqId" → ns.srvReqId,
-                    "modelId" → mdl.wrapper.getId,
+                    "modelId" → mdl.getId,
                     "txt" → ns.text) { _ ⇒
                     def to(t: NCNlpSentenceToken): NCCustomWord =
                         new NCCustomWord {
@@ -458,7 +459,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                     val res = parser.parse(
                         NCRequestImpl(senMeta, ns.srvReqId),
-                        mdl.wrapper,
+                        mdl,
                         ns.map(to).asJava,
                         ns.flatten.distinct.filter(!_.isNlp).map(n ⇒ {
                             val noteId = n.noteType

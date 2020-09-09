@@ -23,7 +23,7 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService, U}
-import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
+import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.annotation.tailrec
@@ -176,12 +176,12 @@ object NCStopWordEnricher extends NCProbeEnricher {
     /**
       * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
       */
-    private def processCommonStops(mdl: NCModelDecorator, ns: NCNlpSentence): Unit = {
+    private def processCommonStops(mdl: NCModelWrapper, ns: NCNlpSentence): Unit = {
         /**
           * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
           */
         @tailrec
-        def processCommonStops0(mdl: NCModelDecorator, ns: NCNlpSentence): Unit = {
+        def processCommonStops0(mdl: NCModelWrapper, ns: NCNlpSentence): Unit = {
             val max = ns.size - 1
             var stop = true
 
@@ -206,11 +206,11 @@ object NCStopWordEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+    override def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
         def mark(stems: Set[String], f: Boolean): Unit =
             ns.filter(t ⇒ stems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "stopWord" → f))
 
-        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdl.wrapper.getId, "txt" → ns.text) { _ ⇒
+        startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdl.getId, "txt" → ns.text) { _ ⇒
 
             mark(mdl.exclStopWordsStems, f = false)
             mark(mdl.addStopWordsStems, f = true)

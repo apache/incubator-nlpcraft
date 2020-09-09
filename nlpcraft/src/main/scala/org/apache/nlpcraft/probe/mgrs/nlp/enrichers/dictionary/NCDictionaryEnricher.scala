@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict._
 import org.apache.nlpcraft.common.{NCService, _}
-import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
+import org.apache.nlpcraft.model.impl.NCModelWrapper
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.Map
@@ -54,10 +54,10 @@ object NCDictionaryEnricher extends NCProbeEnricher {
     }
     
     @throws[NCE]
-    override def enrich(mdl: NCModelDecorator, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
+    override def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.wrapper.getId,
+            "modelId" → mdl.getId,
             "txt" → ns.text) { _ ⇒
             ns.foreach(t ⇒ {
                 // Dictionary.

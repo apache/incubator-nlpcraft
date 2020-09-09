@@ -35,7 +35,6 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
@@ -228,8 +227,7 @@ object NCConnectionManager extends NCService {
                     "PROBE_HOST_ADDR" → localHost.getHostAddress,
                     "PROBE_HW_ADDR" → hwAddrs,
                     "PROBE_MODELS" →
-                        NCModelManager.getAllModels().map(m ⇒ {
-                            val mdl = m.wrapper
+                        NCModelManager.getAllModels().map(mdl ⇒ {
 
                             // Model already validated.
 
