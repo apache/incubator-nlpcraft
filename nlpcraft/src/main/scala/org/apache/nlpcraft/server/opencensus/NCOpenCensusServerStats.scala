@@ -31,8 +31,7 @@ import io.opencensus.stats._
 trait NCOpenCensusServerStats {
     val M_ASK_LATENCY_MS: MeasureLong = MeasureLong.create("ask_latency", "The latency of '/ask' REST call", "ms")
     val M_CHECK_LATENCY_MS: MeasureLong = MeasureLong.create("check_latency", "The latency of '/check' REST call", "ms")
-    val M_MODEL_INSPECT_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/inspect' REST call", "ms")
-    val M_MODEL_INSPECTION_ALL_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspection_all_latency", "The latency of '/model/inspection/all' REST call", "ms")
+    val M_MODEL_SUGSYN_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/inspect' REST call", "ms")
     val M_CANCEL_LATENCY_MS: MeasureLong = MeasureLong.create("cancel_latency", "The latency of '/cancel' REST call", "ms")
     val M_SIGNIN_LATENCY_MS: MeasureLong = MeasureLong.create("signin_latency", "The latency of '/signin' REST call", "ms")
     val M_SIGNOUT_LATENCY_MS: MeasureLong = MeasureLong.create("signout_latency", "The latency of '/signout' REST call", "ms")
@@ -113,6 +112,7 @@ trait NCOpenCensusServerStats {
             mkViews(M_COMPANY_UPDATE_LATENCY_MS, "company/update"),
             mkViews(M_COMPANY_TOKEN_LATENCY_MS, "company/token"),
             mkViews(M_COMPANY_DELETE_LATENCY_MS, "company/delete"),
+            mkViews(M_MODEL_SUGSYN_LATENCY_MS, "model/sugsyn"),
             mkViews(M_USER_ADD_LATENCY_MS, "user/add"),
             mkViews(M_USER_GET_LATENCY_MS, "user/get"),
             mkViews(M_USER_DELETE_LATENCY_MS, "user/delete"),

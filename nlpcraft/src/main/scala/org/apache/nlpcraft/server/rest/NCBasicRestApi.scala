@@ -739,7 +739,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      *
      * @return
      */
-    protected def inspect$(): Route = {
+    protected def sugsyn$(): Route = {
         entity(as[JsValue]) { req ⇒
             //noinspection DuplicatedCode
             val obj = req.asJsObject()
@@ -1957,8 +1957,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                 path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
                                 path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
                                 path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
-                                path(API / "model" / "inspect") { withMetric(M_MODEL_INSPECT_LATENCY_MS, inspect$) } ~
-                                path(API / "model" / "inspection" / "all") { withMetric(M_MODEL_INSPECTION_ALL_LATENCY_MS, inspection$All) } ~
+                                path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
                                 path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
                                 path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
                             }
