@@ -142,8 +142,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val exclStopWords = checkAndStemmatize(mdl.getExcludedStopWords, "Excluded stopword")
         val suspWords = checkAndStemmatize(mdl.getSuspiciousWords, "Suspicious word")
 
-        // TODO: skh
-        //checkStopwordsDups(addStopWords, exclStopWords)
+        checkStopwordsDups(addStopWords, exclStopWords)
 
         val syns = mutable.HashSet.empty[SynonymHolder]
 
