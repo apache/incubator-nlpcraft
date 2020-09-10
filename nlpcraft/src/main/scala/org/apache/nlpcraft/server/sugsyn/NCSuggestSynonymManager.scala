@@ -73,9 +73,7 @@ object NCSuggestSynonymManager extends NCService {
             val js = if (e != null) EntityUtils.toString(e) else null
 
             if (js == null)
-                throw new RuntimeException(s"Unexpected empty HTTP response from 'ctxword' server [" +
-                    s"code=$code" +
-                s"]")
+                throw new NCE(s"Unexpected empty HTTP response from 'ctxword' server [code=$code]")
 
             code match {
                 case 200 ⇒
@@ -83,25 +81,27 @@ object NCSuggestSynonymManager extends NCService {
 
                     data.asScala.map(p ⇒ if (p.isEmpty) Seq.empty else p.asScala.tail)
 
-                case 400 ⇒ throw new RuntimeException(js)
-                case _ ⇒ throw new RuntimeException(s"Unexpected HTTP response from 'ctxword' server [" +
+                case _ ⇒
+                    throw new NCE(
+                    s"Unexpected HTTP response from 'ctxword' server [" +
                     s"code=$code, " +
                     s"response=$js" +
-                s"]")
+                    s"]"
+                )
             }
         }
 
     case class Suggestion(word: String, score: Double)
     case class RequestData(sentence: String, ex: String, elmId: String, index: Int)
-    case class RestRequestSentence(txt: String, indexes: util.List[Int])
+    case class RestRequestSentence(text: String, indexes: util.List[Int])
     case class RestRequest(sentences: util.List[RestRequestSentence], limit: Int, minScore: Double)
     case class Word(word: String, stem: String) {
         require(!word.contains(" "), s"Word cannot contains spaces: $word")
         require(
             word.forall(ch ⇒
                 ch.isLetterOrDigit ||
-                    ch == '\'' ||
-                    SEPARATORS.contains(ch)
+                ch == '\'' ||
+                SEPARATORS.contains(ch)
             ),
             s"Unsupported symbols: $word"
         )
@@ -186,7 +186,8 @@ object NCSuggestSynonymManager extends NCService {
                                     durationMs = System.currentTimeMillis() - now,
                                     timestamp = now,
                                     error = err,
-                                    suggestions = Seq.empty.asJava
+                                    suggestions = Seq.empty.asJava,
+                                    warnings = Seq.empty.asJava
                                 )
                             )
 
@@ -201,7 +202,7 @@ object NCSuggestSynonymManager extends NCService {
 
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
-                                    s"Model '$mdlId' has too few intents samples: $allSamplesCnt. " +
+                                    s"Model has too few intents samples: $allSamplesCnt. " +
                                     s"It will negatively affect the quality of suggestions. " +
                                     s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
 
@@ -283,16 +284,18 @@ object NCSuggestSynonymManager extends NCService {
                             if (noExElems.nonEmpty)
                                 warns +=
                                     "Some elements don't have synonyms in their intent samples, " +
-                                        s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
+                                     s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
 
                             val allReqsCnt = allReqs.map(_._2.size).sum
                             val allSynsCnt = elemSyns.map(_._2.size).sum
 
-                            logger.trace(s"Request is going to execute on 'ctxword' server [" +
+                            logger.trace(
+                                s"Request is going to execute on 'ctxword' server [" +
                                 s"exs=${exs.size}, " +
                                 s"syns=$allSynsCnt, " +
                                 s"reqs=$allReqsCnt" +
-                            s"]")
+                                s"]"
+                            )
 
                             if (allReqsCnt == 0)
                                 onError(s"Suggestions cannot be generated for model: '$mdlId'")
@@ -418,7 +421,8 @@ object NCSuggestSynonymManager extends NCService {
                                         durationMs = System.currentTimeMillis() - now,
                                         timestamp = now,
                                         error = null,
-                                        suggestions = Seq(resJ.asInstanceOf[AnyRef]).asJava
+                                        suggestions = Seq(resJ.asInstanceOf[AnyRef]).asJava,
+                                        warnings = warns.asJava
                                     )
                                 )
                             }

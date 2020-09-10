@@ -81,7 +81,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
-
     @volatile private var wrappers: ArrayBuffer[NCModelData] = _
     @volatile private var modelFactory: NCModelFactory = _
 
@@ -149,7 +148,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         mdl.getMacros.asScala.keys.foreach(makro ⇒
             if (!allSyns.exists(_.contains(makro)))
-                logger.warn(s"Unused macro [modelId=$mdlId, makro=$makro]")
+                logger.warn(s"Unused macro [modelId=$mdlId, macro=$makro]")
         )
 
         // Scan for intent annotations in the model class.
@@ -188,6 +187,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkElementIdsDups(mdl)
         checkCyclicDependencies(mdl)
 
+        def checkAndStemmatize(jc: java.util.Set[String], name: String): Set[String] =
+            for (word: String ← jc.asScala.toSet) yield
+                if (hasWhitespace(word))
+                    throw new NCE(s"$name cannot have whitespace: '$word' for model: $mdlId")
+                else
+                    NCNlpCoreManager.stem(word)
+
         val addStopWords = checkAndStemmatize(mdl.getAdditionalStopWords, "Additional stopword")
         val exclStopWords = checkAndStemmatize(mdl.getExcludedStopWords, "Excluded stopword")
         val suspWords = checkAndStemmatize(mdl.getSuspiciousWords, "Suspicious word")
@@ -219,28 +225,30 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                         if (cnt > maxCnt)
                             throw new NCE(s"Too many synonyms detected [" +
-                                s"model=$mdlId, " +
+                                s"modelId=$mdlId, " +
                                 s"max=$maxCnt" +
                                 s"]")
 
                         if (value == null)
                             logger.trace(s"Synonym #${syns.size} added [" +
-                                s"model=$mdlId, " +
+                                s"modelId=$mdlId, " +
                                 s"elementId=$elmId, " +
                                 s"synonym=${chunks.mkString(" ")}" +
-                                s"]")
+                                s"]"
+                            )
                         else
                             logger.trace(s"Synonym #${syns.size} added [" +
-                                s"model=$mdlId, " +
+                                s"modelId=$mdlId, " +
                                 s"elementId=$elmId, " +
                                 s"synonym=${chunks.mkString(" ")}, " +
                                 s"value=$value" +
-                                s"]")
+                                s"]"
+                            )
                     }
                     else
                         logger.trace(
                             s"Synonym already added (ignoring) [" +
-                                s"model=$mdlId, " +
+                                s"modelId=$mdlId, " +
                                 s"elementId=$elmId, " +
                                 s"synonym=${chunks.mkString(" ")}, " +
                                 s"value=$value" +
@@ -256,15 +264,63 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             /**
               *
-              * @param id
+              * @param s
               * @return
               */
+            @throws[NCE]
+            def chunkSplit(s: String): Seq[NCSynonymChunk] = {
+                val x = s.trim()
+
+                val chunks = ListBuffer.empty[String]
+
+                var start = 0
+                var curr = 0
+                val len = x.length - (2 + 2) // 2 is a prefix/suffix length. Hack...
+
+                def splitUp(s: String): Seq[String] = s.split(" ").map(_.trim).filter(_.nonEmpty).toSeq
+
+                def processChunk(fix: String): Unit = {
+                    chunks ++= splitUp(x.substring(start, curr))
+
+                    x.indexOf(fix, curr + fix.length) match {
+                        case -1 ⇒ throw new NCE(s"Invalid synonym definition in: $x, model=$mdlId")
+                        case n ⇒
+                            chunks += x.substring(curr, n + fix.length)
+                            start = n + fix.length
+                            curr = start
+                    }
+                }
+
+                def isFix(fix: String): Boolean =
+                    x.charAt(curr) == fix.charAt(0) &&
+                        x.charAt(curr + 1) == fix.charAt(1)
+
+                while (curr < len) {
+                    if (isFix(REGEX_FIX))
+                        processChunk(REGEX_FIX)
+                    else if (isFix(DSL_FIX))
+                        processChunk(DSL_FIX)
+                    else
+                        curr += 1
+                }
+
+                chunks ++= splitUp(x.substring(start))
+
+                chunks.map(mkChunk)
+            }
+
+
+            /**
+              *
+              * @param id
+              */
+            @throws[NCE]
             def chunkIdSplit(id: String): Seq[NCSynonymChunk] = {
                 val chunks = chunkSplit(NCNlpCoreManager.tokenize(id).map(_.token).mkString(" "))
 
                 // IDs can only be simple strings.
                 if (chunks.exists(_.kind != TEXT))
-                    throw new NCE(s"Invalid ID: $id")
+                    throw new NCE(s"Invalid ID: $id for modelId: $mdlId")
 
                 chunks
             }
@@ -279,7 +335,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (U.containsDups(synsChunks.flatten))
                 logger.trace(s"Element synonyms duplicate (ignoring) [" +
-                    s"model=$mdlId, " +
+                    s"modelId=$mdlId, " +
                     s"elementId=$elmId, " +
                     s"synonym=${synsChunks.diff(synsChunks.distinct).distinct.map(_.mkString(",")).mkString(";")}" +
                     s"]"
@@ -296,7 +352,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (U.containsDups(valNames))
                 logger.trace(s"Element values names duplicate (ignoring) [" +
-                    s"model=$mdlId, " +
+                    s"modelId=$mdlId, " +
                     s"elementId=$elmId, " +
                     s"names=${valNames.diff(valNames.distinct).distinct.mkString(",")}" +
                     s"]"
@@ -329,7 +385,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                 if (U.containsDups(chunks.toList))
                     logger.trace(s"Element synonyms duplicate (ignoring) [" +
-                        s"model=$mdlId, " +
+                        s"modelId=$mdlId, " +
                         s"elementId=$elmId, " +
                         s"value=$valId, " +
                         s"synonym=${chunks.diff(chunks.distinct).distinct.map(_.mkString(",")).mkString(";")}" +
@@ -392,7 +448,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 syns.groupBy(p ⇒ (p.synonym.mkString(" "), p.synonym.isDirect)) if holders.size > 1 && isDirect
         ) {
             logger.trace(s"Duplicate synonym detected (ignoring) [" +
-                s"model=$mdlId, " +
+                s"modelId=$mdlId, " +
                 s"element=${
                     holders.map(
                         p ⇒ s"id=${p.elementId}${if (p.synonym.value == null) "" else s", value=${p.synonym.value}"}"
@@ -618,8 +674,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
         })
 
-        if (U.containsDups(wrappers.map(_.model.getId).toList))
-            throw new NCE("Duplicate model IDs detected.")
+        val ids = wrappers.map(_.model.getId).toList
+
+        if (U.containsDups(ids))
+            throw new NCE(s"Duplicate model IDs detected: ${ids.mkString(", ")}")
 
         super.start()
     }
@@ -681,19 +739,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
         }
 
     /**
-      *
-      * @param jc
-      * @param name
-      * @return
-      */
-    private def checkAndStemmatize(jc: java.util.Set[String], name: String): Set[String] =
-        for (word: String ← jc.asScala.toSet) yield
-            if (hasWhitespace(word))
-                throw new NCE(s"$name cannot have whitespace: '$word'")
-            else
-                NCNlpCoreManager.stem(word)
-
-    /**
       * Checks cyclic child-parent dependencies.
       *
       * @param mdl Model.
@@ -712,12 +757,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                     if (parentId != null) {
                         if (seen.contains(parentId))
-                            throw new NCE(s"Cyclic parent dependency starting at model element '${x.getId}'.")
+                            throw new NCE(s"Cyclic parent dependency starting at model element '${x.getId}', modelId: ${mdl.getId}.")
                         else {
                             seen += parentId
 
                             x = mdl.getElements.asScala.find(_.getId == parentId) getOrElse {
-                                throw new NCE(s"Unknown parent ID '$parentId' for model element '${x.getId}'.")
+                                throw new NCE(s"Unknown parent ID '$parentId' for model element '${x.getId}', modelId: ${mdl.getId}.")
 
                                 null
                             }
@@ -738,7 +783,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         for (id ← mdl.getElements.asScala.map(_.getId))
             if (ids.contains(id))
-                throw new NCE(s"Duplicate model element ID '$id'.")
+                throw new NCE(s"Duplicate model element ID '$id', modelId: ${mdl.getId}.")
             else
                 ids += id
     }
@@ -752,17 +797,17 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     private def checkElement(mdl: NCModel, elm: NCElement): Unit =
         if (elm.getId == null)
-            throw new NCE(s"Model element ID is not provided.'")
+            throw new NCE(s"Model element ID is not provided.', modelId: ${mdl.getId}.")
         else if (elm.getId.length == 0)
-            throw new NCE(s"Model element ID cannot be empty.'")
+            throw new NCE(s"Model element ID cannot be empty.', modelId: ${mdl.getId}.")
         else {
             val elmId = elm.getId
 
             if (elmId.toLowerCase.startsWith("nlpcraft:"))
-                throw new NCE(s"Model element '$elmId' type cannot start with 'nlpcraft:'.")
+                throw new NCE(s"Model element '$elmId' type cannot start with 'nlpcraft:', modelId: ${mdl.getId}.")
 
             if (hasWhitespace(elmId))
-                throw new NCE(s"Model element ID '$elmId' cannot have whitespaces.")
+                throw new NCE(s"Model element ID '$elmId' cannot have whitespaces, modelId: ${mdl.getId}.")
         }
 
     /**
@@ -772,9 +817,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private def checkModelConfig(mdl: NCModel): Unit = {
         def checkInt(v: Int, name: String, min: Int = 0, max: Int = Integer.MAX_VALUE): Unit =
             if (v < min)
-                throw new NCE(s"Invalid model configuration value '$name' [value=$v, min=$min]")
+                throw new NCE(s"Invalid model configuration value '$name' [value=$v, min=$min], modelId: ${mdl.getId}.")
             else if (v > max)
-                throw new NCE(s"Invalid model configuration value '$name' [value=$v, max=$min]")
+                throw new NCE(s"Invalid model configuration value '$name' [value=$v, max=$min], modelId: ${mdl.getId}.")
 
         checkInt(mdl.getMaxUnknownWords, "maxUnknownWords")
         checkInt(mdl.getMaxFreeWords, "maxFreeWords")
@@ -796,7 +841,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             )
 
         if (unsToks.nonEmpty)
-            throw new NCE(s"Invalid model 'enabledBuiltInTokens' token IDs: ${unsToks.mkString(", ")}")
+            throw new NCE(s"Invalid model 'enabledBuiltInTokens' token IDs: ${unsToks.mkString(", ")}, modelId: ${mdl.getId}.")
     }
 
     /**
@@ -807,6 +852,11 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     private def hasWhitespace(s: String): Boolean = s.exists(_.isWhitespace)
 
+    /**
+      *
+      * @param set
+      * @param dsl
+      */
     private def filter(set: mutable.HashSet[SynonymHolder], dsl: Boolean): Set[SynonymHolder] =
         set.toSet.filter(s ⇒ {
             val b = s.synonym.exists(_.kind == DSL)
@@ -872,52 +922,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private def startsAndEnds(fix: String, s: String): Boolean =
         s.startsWith(fix) && s.endsWith(fix)
 
-    /**
-      *
-      * @param s
-      * @return
-      */
-    @throws[NCE]
-    private def chunkSplit(s: String): Seq[NCSynonymChunk] = {
-        val x = s.trim()
-
-        val chunks = ListBuffer.empty[String]
-
-        var start = 0
-        var curr = 0
-        val len = x.length - (2 + 2) // 2 is a prefix/suffix length. Hack...
-
-        def splitUp(s: String): Seq[String] = s.split(" ").map(_.trim).filter(_.nonEmpty).toSeq
-
-        def processChunk(fix: String): Unit = {
-            chunks ++= splitUp(x.substring(start, curr))
-
-            x.indexOf(fix, curr + fix.length) match {
-                case -1 ⇒ throw new NCE(s"Invalid synonym definition in: $x")
-                case n ⇒
-                    chunks += x.substring(curr, n + fix.length)
-                    start = n + fix.length
-                    curr = start
-            }
-        }
-
-        def isFix(fix: String): Boolean =
-            x.charAt(curr) == fix.charAt(0) &&
-                x.charAt(curr + 1) == fix.charAt(1)
-
-        while (curr < len) {
-            if (isFix(REGEX_FIX))
-                processChunk(REGEX_FIX)
-            else if (isFix(DSL_FIX))
-                processChunk(DSL_FIX)
-            else
-                curr += 1
-        }
-
-        chunks ++= splitUp(x.substring(start))
-
-        chunks.map(mkChunk)
-    }
 
     @throws[NCE]
     private def checkSynonyms(mdl: NCModel, parser: NCMacroParser): Unit = {
@@ -931,7 +935,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
             if (size == 0)
                 logger.warn(s"Element '$elemId' doesn't have synonyms [modelId=$mdlId]")
             else if (size > Config.synonymsWarnValue)
-                logger.warn(s"Element '$elemId' has too many ($size) synonyms. Make sure this is truly necessary [modelId=$mdlId]")
+                logger.warn(
+                    s"Element '$elemId' has too many ($size) synonyms. " +
+                    s"Make sure this is truly necessary [modelId=$mdlId]"
+                )
 
             val others = mdlSyns.filter {
                 case (otherId, _) ⇒ otherId != elemId
@@ -985,14 +992,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
     /**
       *
       * @param m
-      * @param obj
+      * @param mdl
       * @param intent
       */
     @throws[NCE]
-    private def prepareCallback(m: Method, obj: Any, intent: NCDslIntent): Callback = {
+    private def prepareCallback(m: Method, mdl: NCModel, intent: NCDslIntent): Callback = {
         // Checks method result type.
         if (m.getReturnType != CLS_QRY_RES)
-            throw new NCE(s"@NCIntent error - unexpected result type ${class2Str(m.getReturnType)} for ${method2Str(m)}")
+            throw new NCE(s"@NCIntent error - unexpected result type ${class2Str(m.getReturnType)} for ${method2Str(m)}, model=${mdl.getId}")
 
         val allParamTypes = m.getParameterTypes.toSeq
 
@@ -1012,7 +1019,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // Checks tokens parameters annotations count.
         if (tokParamAnns.length != tokParamTypes.length)
-            throw new NCE(s"@NCIntent error - unexpected annotations count ${tokParamAnns.size} for ${method2Str(m)}")
+            throw new NCE(
+                s"@NCIntent error - unexpected annotations count ${tokParamAnns.size} for ${method2Str(m)}, " +
+                s"model=${mdl.getId}"
+            )
 
         // Gets terms identifiers.
         val termIds =
@@ -1026,10 +1036,16 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     annsTerms.length match {
                         case 1 ⇒ annsTerms.head.asInstanceOf[NCIntentTerm].value()
 
-                        case 0 ⇒ throw new NCE(s"@NCIntentTerm error - " +
-                            s"missed annotation ${class2Str(CLS_TERM)} for $mkArg")
-                        case _ ⇒ throw new NCE(s"@NCIntentTerm error - " +
-                            s"too many annotations ${class2Str(CLS_TERM)} for $mkArg")
+                        case 0 ⇒
+                            throw new NCE(
+                                s"@NCIntentTerm error - missed annotation ${class2Str(CLS_TERM)} for $mkArg, " +
+                                s"model=${mdl.getId}"
+                        )
+                        case _ ⇒
+                            throw new NCE(
+                                s"@NCIntentTerm error -too many annotations ${class2Str(CLS_TERM)} for $mkArg, " +
+                                s"model=${mdl.getId}"
+                            )
                     }
                 }
 
@@ -1041,29 +1057,32 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val invalidIds = termIds.filter(id ⇒ !intentTermIds.contains(id))
 
         if (invalidIds.nonEmpty)
-            throw new NCE(s"@NCIntentTerm error - invalid term identifiers '${invalidIds.mkString(", ")}' for ${method2Str(m)}")
+            throw new NCE(
+                s"@NCIntentTerm error - invalid term identifiers '${invalidIds.mkString(", ")}' for ${method2Str(m)}" +
+                s"model=${mdl.getId}"
+            )
 
         val paramGenTypes = getTokensSeq(m.getGenericParameterTypes)
 
         require(tokParamTypes.length == paramGenTypes.length)
 
         // Checks parameters.
-        checkTypes(m, tokParamTypes, paramGenTypes, ctxFirstParam)
+        checkTypes(mdl.getId, m, tokParamTypes, paramGenTypes, ctxFirstParam)
 
         // Checks limits.
         val allLimits = terms.map(t ⇒ t.getId → (t.getMin, t.getMax)).toMap
 
-        checkMinMax(m, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
+        checkMinMax(mdl.getId, m, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
         (ctx: NCIntentMatch) ⇒ {
             invoke(
                 m,
-                obj,
+                mdl,
                 (
                     (if (ctxFirstParam) Seq(ctx)
                     else Seq.empty) ++
-                        prepareParams(m, tokParamTypes, termIds.map(ctx.getTermTokens), ctxFirstParam)
+                        prepareParams(mdl.getId, m, tokParamTypes, termIds.map(ctx.getTermTokens), ctxFirstParam)
                     ).toArray
             )
         }
@@ -1072,12 +1091,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
     /**
       *
       * @param m
-      * @param obj
+      * @param mdl
       * @param args
       */
     @throws[NCE]
-    private def invoke(m: Method, obj: Any, args: Array[AnyRef]): NCResult = {
-        var flag = m.canAccess(obj)
+    private def invoke(m: Method, mdl: NCModel, args: Array[AnyRef]): NCResult = {
+        var flag = m.canAccess(mdl)
 
         try {
             if (!flag) {
@@ -1088,7 +1107,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             else
                 flag = false
 
-            m.invoke(obj, args: _*).asInstanceOf[NCResult]
+            m.invoke(mdl, args: _*).asInstanceOf[NCResult]
         }
         catch {
             case e: InvocationTargetException ⇒
@@ -1096,21 +1115,22 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     case e: NCIntentSkip ⇒ throw e
                     case e: NCRejection ⇒ throw e
                     case e: NCE ⇒ throw e
-                    case e: Throwable ⇒ throw new NCE(s"Invocation error in ${method2Str(m)}", e)
+                    case e: Throwable ⇒ throw new NCE(s"Invocation error in ${method2Str(m)}, model=${mdl.getId}", e)
                 }
-            case e: Throwable ⇒ throw new NCE(s"Invocation error in ${method2Str(m)}", e)
+            case e: Throwable ⇒ throw new NCE(s"Invocation error in ${method2Str(m)}, model=${mdl.getId}", e)
         }
         finally
             if (flag)
                 try
                     m.setAccessible(false)
                 catch {
-                    case e: SecurityException ⇒ throw new NCE(s"Access error in ${method2Str(m)}", e)
+                    case e: SecurityException ⇒ throw new NCE(s"Access error in ${method2Str(m)}, model=${mdl.getId}", e)
                 }
     }
 
     /**
       *
+      * @param mdlId
       * @param m
       * @param paramClss
       * @param argsList
@@ -1118,6 +1138,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     @throws[NCE]
     private def prepareParams(
+        mdlId: String,
         m: Method,
         paramClss: Seq[Class[_]],
         argsList: Seq[util.List[NCToken]],
@@ -1131,7 +1152,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Single token.
             if (paramCls == CLS_TOKEN) {
                 if (toksCnt != 1)
-                    throw new NCE(s"@NCIntentTerm error - expected single token, but found $toksCnt for $mkArg")
+                    throw new NCE(s"@NCIntentTerm error - expected single token, but found $toksCnt for $mkArg, model=$mdlId")
 
                 argList.get(0)
             }
@@ -1150,28 +1171,29 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 toksCnt match {
                     case 0 ⇒ None
                     case 1 ⇒ Some(argList.get(0))
-                    case _ ⇒ throw new NCE(s"@NCIntentTerm error - too many tokens $toksCnt for option $mkArg")
+                    case _ ⇒ throw new NCE(s"@NCIntentTerm error - too many tokens $toksCnt for option $mkArg, model=$mdlId")
                 }
             else if (paramCls == CLS_JAVA_OPT)
                 toksCnt match {
                     case 0 ⇒ util.Optional.empty()
                     case 1 ⇒ util.Optional.of(argList.get(0))
-                    case _ ⇒ throw new NCE(s"@NCIntentTerm error - too many tokens $toksCnt for optional $mkArg")
+                    case _ ⇒ throw new NCE(s"@NCIntentTerm error - too many tokens $toksCnt for optional $mkArg, model=$mdlId")
                 }
             else
-            // Arguments types already checked.
-                throw new AssertionError(s"Unexpected type $paramCls for $mkArg")
+                // Arguments types already checked.
+                throw new AssertionError(s"Unexpected type $paramCls for $mkArg, model=$mdlId")
         }
 
     /**
       *
+      * @param mdlId
       * @param m
       * @param paramCls
       * @param paramGenTypes
       * @param ctxFirstParam
       */
     @throws[NCE]
-    private def checkTypes(m: Method, paramCls: Seq[Class[_]], paramGenTypes: Seq[Type], ctxFirstParam: Boolean): Unit = {
+    private def checkTypes(mdlId: String, m: Method, paramCls: Seq[Class[_]], paramGenTypes: Seq[Type], ctxFirstParam: Boolean): Unit = {
         require(paramCls.length == paramGenTypes.length)
 
         paramCls.zip(paramGenTypes).zipWithIndex.foreach { case ((pClass, pGenType), i) ⇒
@@ -1185,7 +1207,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 val compType = pClass.getComponentType
 
                 if (compType != CLS_TOKEN)
-                    throw new NCE(s"@NCIntentTerm error - unexpected array element type ${class2Str(compType)} for $mkArg")
+                    throw new NCE(s"@NCIntentTerm error - unexpected array element type ${class2Str(compType)} for $mkArg, model=$mdlId")
             }
             // Tokens collection and optionals.
             else if (COMP_CLS.contains(pClass))
@@ -1196,7 +1218,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                         if (compTypes.length != 1)
                             throw new NCE(
-                                s"@NCIntentTerm error - unexpected generic types count ${compTypes.length} for $mkArg"
+                                s"@NCIntentTerm error - unexpected generic types count ${compTypes.length} for $mkArg, model=$mdlId"
                             )
 
                         val compType = compTypes.head
@@ -1207,33 +1229,34 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                                 if (genClass != CLS_TOKEN)
                                     throw new NCE(
-                                        s"@NCIntentTerm error - unexpected generic type ${class2Str(genClass)} for $mkArg"
+                                        s"@NCIntentTerm error - unexpected generic type ${class2Str(genClass)} for $mkArg, model=$mdlId"
                                     )
                             case _ ⇒
                                 throw new NCE(
-                                    s"@NCIntentTerm error - unexpected generic type ${compType.getTypeName} for $mkArg"
+                                    s"@NCIntentTerm error - unexpected generic type ${compType.getTypeName} for $mkArg, model=$mdlId"
                                 )
                         }
 
                     case _ ⇒ throw new NCE(
-                        s"@NCIntentTerm error - unexpected parameter type ${pGenType.getTypeName} for $mkArg"
+                        s"@NCIntentTerm error - unexpected parameter type ${pGenType.getTypeName} for $mkArg, model=$mdlId"
                     )
                 }
             // Other types.
             else
-                throw new NCE(s"@NCIntentTerm error - unexpected parameter type ${class2Str(pClass)} for $mkArg")
+                throw new NCE(s"@NCIntentTerm error - unexpected parameter type ${class2Str(pClass)} for $mkArg, model=$mdlId")
         }
     }
 
     /**
       *
+      * @param mdlId
       * @param m
       * @param paramCls
       * @param limits
       * @param ctxFirstParam
       */
     @throws[NCE]
-    private def checkMinMax(m: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)], ctxFirstParam: Boolean): Unit = {
+    private def checkMinMax(mdlId: String, m: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)], ctxFirstParam: Boolean): Unit = {
         require(paramCls.length == limits.length)
 
         paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) ⇒
@@ -1241,20 +1264,28 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             // Argument is single token but defined as not single token.
             if (cls == CLS_TOKEN && (min != 1 || max != 1))
-                throw new NCE(s"@NCIntentTerm error - term must have [1,1] quantifier for $mkArg " +
-                    s"because this argument is a single value.")
+                throw new NCE(
+                    s"@NCIntentTerm error - term must have [1,1] quantifier for $mkArg " +
+                    s"because this argument is a single value, model=$mdlId"
+                )
             // Argument is not single token but defined as single token.
             else if (cls != CLS_TOKEN && (min == 1 && max == 1))
-                throw new NCE(s"@NCIntentTerm error - term has [1,1] quantifier for $mkArg " +
-                    s"but this argument is not a single value.")
+                throw new NCE(
+                    s"@NCIntentTerm error - term has [1,1] quantifier for $mkArg " +
+                    s"but this argument is not a single value, model=$mdlId"
+                )
             // Argument is optional but defined as not optional.
             else if ((cls == CLS_SCALA_OPT || cls == CLS_JAVA_OPT) && (min != 0 || max != 1))
-                throw new NCE(s"@NCIntentTerm error - term must have [0,1] quantifier for $mkArg " +
-                    s"because this argument is optional.")
+                throw new NCE(
+                    s"@NCIntentTerm error - term must have [0,1] quantifier for $mkArg " +
+                    s"because this argument is optional, model=$mdlId"
+                )
             // Argument is not optional but defined as optional.
             else if ((cls != CLS_SCALA_OPT && cls != CLS_JAVA_OPT) && (min == 0 && max == 1))
-                throw new NCE(s"@NCIntentTerm error - term has [0,1] quantifier for $mkArg " +
-                    s"but this argument is not optional.")
+                throw new NCE(
+                    s"@NCIntentTerm error - term has [0,1] quantifier for $mkArg " +
+                    s"but this argument is not optional, model=$mdlId"
+                )
         }
     }
 
@@ -1270,7 +1301,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val refArr = m.getAnnotationsByType(CLS_INTENT_REF)
 
             if (clsArr.length > 1 || refArr.length > 1 || (clsArr.nonEmpty && refArr.nonEmpty))
-                throw new NCE(s"Only one @NCIntent or @NCIntentRef annotation is allowed in: ${method2Str(m)}")
+                throw new NCE(
+                    s"Only one @NCIntent or @NCIntentRef annotation is allowed in: ${method2Str(m)}, model=${mdl.getId}"
+                )
 
             val cls = m.getAnnotation(CLS_INTENT)
 
@@ -1290,17 +1323,28 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 .map(NCIntentDslCompiler.compile(_, mdl.getId))
 
                             U.getDups(compiledIntents.toSeq.map(_.id)) match {
-                                case ids if ids.nonEmpty ⇒ throw new NCE(s"Duplicate intent IDs found for model from '${adapter.getOrigin}': ${ids.mkString(",")}")
+                                case ids if ids.nonEmpty ⇒
+                                    throw new NCE(
+                                        s"Duplicate intent IDs found for model from " +
+                                        s"'${adapter.getOrigin}': ${ids.mkString(",")}, model=${mdl.getId}"
+                                    )
                                 case _ ⇒ ()
                             }
 
                             compiledIntents.find(_.id == refId) match {
                                 case Some(intent) ⇒ Some(intent, m)
-                                case None ⇒ throw new NCE(s"@IntentRef($refId) references unknown intent ID '$refId' in ${method2Str(m)}.")
+                                case None ⇒
+                                    throw new NCE(
+                                        s"@IntentRef($refId) references unknown intent ID '$refId' " +
+                                        s"in ${method2Str(m)}, model=${mdl.getId}"
+                                    )
                             }
 
-                        case _ ⇒ throw new NCE(s"@IntentRef annotation in ${method2Str(m)} can be used only " +
-                            s"for models extending 'NCModelFileAdapter'.")
+                        case _ ⇒
+                            throw new NCE(
+                                s"@IntentRef annotation in ${method2Str(m)} can be used only " +
+                                s"for models extending 'NCModelFileAdapter', model=${mdl.getId}"
+                            )
                     }
                 else
                     None
@@ -1308,8 +1352,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         })
             .map {
                 case (intent, m) ⇒ intent → prepareCallback(m, mdl, intent)
-            }
-            .toMap
+            }.toMap
 
     /**
       * Scans given model for intent samples.

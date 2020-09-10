@@ -26,6 +26,7 @@ package org.apache.nlpcraft.server.sugsyn
  * @param timestamp Timestamp of the tool run start.
  * @param error Error message, or `null` if no errors occurred.
  * @param suggestions List of synonym suggestion.
+ * @param warnings Warnings.
  */
 case class NCSuggestSynonymResult(
     modelId: String,
@@ -33,5 +34,6 @@ case class NCSuggestSynonymResult(
     durationMs: Long,
     timestamp: Long,
     error: String,
-    suggestions: java.util.List[AnyRef]
+    suggestions: java.util.List[AnyRef],
+    warnings: java.util.List[String]
 )
