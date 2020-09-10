@@ -941,12 +941,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 case (_, othSyns) ⇒ othSyns.intersect(syns).nonEmpty
             }.toMap.keys.mkString(",")
 
-
             if (cross.nonEmpty)
-                throw new NCE(s"Element has duplicate synonyms with elements '$cross' [modelId=$mdlId, elementId=$elemId]")
+                throw new NCE(s"Element has duplicate synonyms with element [modelId=$mdlId, elementId=$elemId, cross=$cross]")
         }
     }
-
 
     /**
       *

@@ -103,14 +103,14 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         super(proxy.getId(), proxy.getName(), proxy.getDescription());
 
         this.proxy = proxy;
-        this.suspWords = convert(proxy.getSuspiciousWords());
-        this.enabledToks = convert(proxy.getEnabledBuiltInTokens());
-        this.addStopwords = convert(proxy.getAdditionalStopwords());
-        this.exclStopwords = convert(proxy.getExcludedStopwords());
+        this.suspWords = convert(proxy.getSuspiciousWords(), null);
+        this.enabledToks = convert(proxy.getEnabledBuiltInTokens(), NCModelView.DFLT_ENABLED_BUILTIN_TOKENS);
+        this.addStopwords = convert(proxy.getAdditionalStopwords(), null);
+        this.exclStopwords = convert(proxy.getExcludedStopwords(), null);
         this.elems = convertElements(proxy.getElements());
         this.macros = convertMacros(proxy.getMacros());
         this.metadata = convertMeta(proxy.getMetadata());
-        this.intents = convert(proxy.getIntents());
+        this.intents = convert(proxy.getIntents(), null);
         this.parsers = convertParsers(proxy.getParsers());
 
         // NOTE: we can only test/check this at this point. Downstream - this information is lost.
@@ -208,8 +208,12 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
      * @param arr
      * @return
      */
-    private static Set<String> convert(String[] arr) {
-        return arr == null ? new HashSet<>(NCModelView.DFLT_ENABLED_BUILTIN_TOKENS) : new HashSet<>(Arrays.asList(arr));
+    private static Set<String> convert(String[] arr, Set<String> dflt) {
+        return arr != null ?
+            new HashSet<>(Arrays.asList(arr)) :
+            dflt != null ?
+                new HashSet<>(dflt) :
+                new HashSet<>();
     }
 
     /**
