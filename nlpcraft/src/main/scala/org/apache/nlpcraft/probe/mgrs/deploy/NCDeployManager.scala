@@ -50,6 +50,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // It should reload config.
         def modelFactoryType: Option[String] = getStringOpt(s"$pre.modelFactory.type")
         def modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
+        def model: Option[String] = getStringOpt(s"$pre.model")
         def models: Seq[String] = getStringList(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
     }
@@ -217,37 +218,44 @@ object NCDeployManager extends NCService with DecorateAsScala {
     
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        modelFactory = new NCBasicModelFactory
         models = ArrayBuffer.empty[NCModelWrapper]
 
-        // Initialize model factory (if configured).
-        Config.modelFactoryType match {
-            case Some(mft) ⇒
-                modelFactory = makeModelFactory(mft)
-    
-                modelFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
-                
-            case None ⇒ // No-op.
-        }
-        
-        models ++= Config.models.map(makeModel)
-        
-        Config.jarsFolder match {
-            case Some(jarsFolder) ⇒
-                val jarsFile = new File(jarsFolder)
-    
-                if (!jarsFile.exists())
-                    throw new NCE(s"JAR folder path '$jarsFolder' does not exist.")
-                if (!jarsFile.isDirectory)
-                    throw new NCE(s"JAR folder path '$jarsFolder' is not a directory.")
-    
-                val src = this.getClass.getProtectionDomain.getCodeSource
-                val locJar = if (src == null) null else new File(src.getLocation.getPath)
-    
-                for (jar ← scanJars(jarsFile) if jar != locJar)
-                    models ++= extractModels(jar)
-                
-            case None ⇒ // No-op.
+        Config.model match {
+            case Some(mdlClsName) ⇒
+                models += makeModel(mdlClsName)
+
+            case None ⇒
+                modelFactory = new NCBasicModelFactory
+
+                // Initialize model factory (if configured).
+                Config.modelFactoryType match {
+                    case Some(mft) ⇒
+                        modelFactory = makeModelFactory(mft)
+
+                        modelFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
+
+                    case None ⇒ // No-op.
+                }
+
+                models ++= Config.models.map(makeModel)
+
+                Config.jarsFolder match {
+                    case Some(jarsFolder) ⇒
+                        val jarsFile = new File(jarsFolder)
+
+                        if (!jarsFile.exists())
+                            throw new NCE(s"JAR folder path '$jarsFolder' does not exist.")
+                        if (!jarsFile.isDirectory)
+                            throw new NCE(s"JAR folder path '$jarsFolder' is not a directory.")
+
+                        val src = this.getClass.getProtectionDomain.getCodeSource
+                        val locJar = if (src == null) null else new File(src.getLocation.getPath)
+
+                        for (jar ← scanJars(jarsFile) if jar != locJar)
+                            models ++= extractModels(jar)
+
+                    case None ⇒ // No-op.
+                }
         }
 
         // Verify models' identities.

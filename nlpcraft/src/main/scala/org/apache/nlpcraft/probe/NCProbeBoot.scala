@@ -70,6 +70,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         var upLink: (String, Integer),
         var downLink: (String, Integer),
         var jarsFolder: Option[String],
+        var model: Option[String],
         var models: Seq[String],
         var lifecycle: Seq[String]
     ) {
@@ -90,6 +91,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             withValue(s"$prefix.token", fromAnyRef("3141592653589793")).
             withValue(s"$prefix.upLink", fromAnyRef("localhost:8201")).
             withValue(s"$prefix.downLink", fromAnyRef("localhost:8202")).
+            withValue(s"$prefix.model", fromAnyRef(null)).
             withValue(s"$prefix.models", fromIterable(Seq().asJava)).
             withValue(s"$prefix.lifecycle", fromIterable(Seq().asJava)).
             withValue(s"$prefix.resultMaxSizeBytes", fromAnyRef(1048576)).
@@ -142,6 +144,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val upLink: (String, Integer) = getHostPort(s"$prefix.upLink")
             val downLink: (String, Integer) = getHostPort(s"$prefix.downLink")
             val jarsFolder: Option[String] = getStringOpt(s"$prefix.jarsFolder")
+            val model: Option[String] = getStringOpt(s"$prefix.model")
             val models: Seq[String] = getStringList(s"$prefix.models")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
@@ -152,6 +155,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             Cfg.upLink,
             Cfg.downLink,
             Cfg.jarsFolder,
+            Cfg.model,
             Cfg.models,
             Cfg.lifecycle
         )
@@ -302,6 +306,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val upLink: (String, Integer) = getHostPort(upLinkStr)
             val dnLink: (String, Integer) = getHostPort(dnLinkStr)
             val jarsFolder: Option[String] = getStringOpt(s"$prefix.jarsFolder")
+            val model: Option[String] = getStringOpt(s"$prefix.model")
             val models: Seq[String] = mdlClasses.map(_.getName).toSeq
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
@@ -314,6 +319,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     Cfg.upLink,
                     Cfg.dnLink,
                     Cfg.jarsFolder,
+                    Cfg.model,
                     Cfg.models,
                     Cfg.lifecycle),
                     fut
@@ -366,15 +372,25 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         val tbl = NCAsciiTable()
         
         val ver = NCVersion.getCurrent
-        
+
         tbl += ("Probe ID", cfg.id)
         tbl += ("Probe Token", cfg.token)
         tbl += ("API Version", ver.version + ", " + ver.date.toString)
         tbl += ("Down-Link", cfg.downLinkString)
         tbl += ("Up-Link", cfg.upLinkString)
-        tbl += ("Models", cfg.models)
         tbl += ("Lifecycle", cfg.lifecycle)
-        tbl += ("JARs Folder", cfg.jarsFolder.getOrElse(""))
+
+        cfg.model match {
+            case Some(m) ⇒
+                tbl += ("Model", m)
+                tbl += ("Models" , "<ignored>")
+                tbl += ("JARs Folder", "<ignored>")
+
+            case None ⇒
+                tbl += ("Model", "<ignored>")
+                tbl += ("Models" , cfg.models)
+                tbl += ("JARs Folder", cfg.jarsFolder.getOrElse(""))
+        }
         
         tbl.info(logger, Some("Probe Configuration:"))
     }
@@ -414,6 +430,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "downlink" → cfg.downLinkString,
                 "relVer" → ver.version,
                 "relDate" → ver.date.toString,
+                "model" → cfg.model.getOrElse(""),
                 "models" → cfg.models.mkString(","),
                 "lifecycle" → cfg.lifecycle.mkString(","),
                 "jarFolder" → cfg.jarsFolder
