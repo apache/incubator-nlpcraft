@@ -38,8 +38,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             case None ⇒
                 logger.warn(s"System property '$PROP_MODELS' is not defined.")
 
-                // TODO:
-                false
+                true
         }
 
     @throws[Exception]
