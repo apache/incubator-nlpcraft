@@ -941,8 +941,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 case (_, othSyns) ⇒ othSyns.intersect(syns).nonEmpty
             }.toMap.keys.mkString(",")
 
-            if (cross.nonEmpty)
-                throw new NCE(s"Element has duplicate synonyms with element [modelId=$mdlId, elementId=$elemId, cross=$cross]")
+            if (cross.nonEmpty) {
+                val msg = s"Element has duplicate synonyms with element [modelId=$mdlId, elementId=$elemId, cross=$cross]"
+
+                // TODO: it it ok?
+                if (mdl.isDupSynonymsAllowed)
+                    logger.warn(msg)
+                else
+                    throw new NCE(msg)
+            }
         }
     }
 
