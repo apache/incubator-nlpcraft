@@ -108,12 +108,12 @@ object NCCommandManager extends NCService {
                     case "S2P_MODEL_INFO" ⇒
                         val mdlId = msg.data[String]("mdlId")
 
-                        val w = NCModelManager.getModelWrapper(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'"))
+                        val mdlData = NCModelManager.getModelData(mdlId)
 
-                        val macros = w.proxy.getMacros.asInstanceOf[Serializable]
-                        val syns = w.proxy.getElements.asScala.
+                        val macros = mdlData.model.getMacros.asInstanceOf[Serializable]
+                        val syns = mdlData.model.getElements.asScala.
                             map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]
-                        val samples = w.samples.map(p ⇒ p._1 → p._2.asJava).
+                        val samples = mdlData.samples.map(p ⇒ p._1 → p._2.asJava).
                             asJava.asInstanceOf[Serializable]
 
                         NCConnectionManager.send(

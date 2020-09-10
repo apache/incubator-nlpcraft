@@ -24,10 +24,9 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, _}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.{NCModelData, NCProbeEnricher}
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.NCSynonym
-import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 
 import scala.collection.JavaConverters._
 import scala.collection.convert.DecorateAsScala
@@ -298,15 +297,15 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
-    def isComplex(mdl: NCModelWrapper): Boolean = mdl.synonymsDsl.nonEmpty || !mdl.proxy.getParsers.isEmpty
+    def isComplex(mdl: NCModelData): Boolean = mdl.synonymsDsl.nonEmpty || !mdl.model.getParsers.isEmpty
 
     @throws[NCE]
-    override def enrich(w: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
+    override def enrich(mdlData: NCModelData, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → w.proxy.getId,
+            "modelId" → mdlData.model.getId,
             "txt" → ns.text) { span ⇒
-            val jiggleFactor = w.proxy.getJiggleFactor
+            val jiggleFactor = mdlData.model.getJiggleFactor
             val cache = mutable.HashSet.empty[Seq[Int]]
             val matches = ArrayBuffer.empty[ElementMatch]
 
@@ -353,7 +352,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                         var seq: Seq[Seq[Complex]] = null
 
                         // Attempt to match each element.
-                        for (elm ← w.elements.values if !alreadyMarked(toks, elm.getId)) {
+                        for (elm ← mdlData.elements.values if !alreadyMarked(toks, elm.getId)) {
                             var found = false
 
                             def addMatch(
@@ -366,21 +365,21 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 }
 
                             // Optimization - plain synonyms can be used only on first iteration
-                            if (w.synonyms.nonEmpty && !ns.exists(_.isUser))
-                                for (syn ← fastAccess(w.synonyms, elm.getId, toks.length) if !found)
+                            if (mdlData.synonyms.nonEmpty && !ns.exists(_.isUser))
+                                for (syn ← fastAccess(mdlData.synonyms, elm.getId, toks.length) if !found)
                                     if (syn.isMatch(toks))
                                         addMatch(elm, toks, syn, Seq.empty)
 
-                            if (w.synonymsDsl.nonEmpty) {
+                            if (mdlData.synonymsDsl.nonEmpty) {
                                 found = false
 
                                 if (collapsedSens == null)
-                                    collapsedSens = w.makeVariants(ns.srvReqId, ns.clone().collapse()).map(_.asScala)
+                                    collapsedSens = mdlData.makeVariants(ns.srvReqId, ns.clone().collapse()).map(_.asScala)
 
                                 if (seq == null)
                                     seq = convert(ns, collapsedSens, toks)
 
-                                for (comb ← seq; syn ← fastAccess(w.synonymsDsl, elm.getId, comb.length) if !found)
+                                for (comb ← seq; syn ← fastAccess(mdlData.synonymsDsl, elm.getId, comb.length) if !found)
                                     if (syn.isMatch(comb.map(_.data)))
                                         addMatch(elm, toks, syn, comb.filter(_.isToken).map(_.token))
                             }
@@ -393,7 +392,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
             startScopedSpan("jiggleProc", span,
                 "srvReqId" → ns.srvReqId,
-                "modelId" → w.proxy.getId,
+                "modelId" → mdlData.model.getId,
                 "txt" → ns.text) { _ ⇒
                 // Iterate over depth-limited permutations of the original sentence with and without stopwords.
                 jiggle(ns, jiggleFactor).foreach(procPerm)
@@ -414,7 +413,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             for ((m, idx) ← matches.zipWithIndex) {
                 if (DEEP_DEBUG)
                     logger.trace(
-                        s"Model '${w.proxy.getId}' element found (${idx + 1} of $matchCnt) [" +
+                        s"Model '${mdlData.model.getId}' element found (${idx + 1} of $matchCnt) [" +
                             s"elementId=${m.element.getId}, " +
                             s"synonym=${m.synonym}, " +
                             s"tokens=${tokString(m.tokens)}" +
@@ -430,14 +429,14 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 mark(ns, elem = elm, toks = m.tokens, direct = direct, syn = Some(syn), metaOpt = None, parts = m.parts)
             }
 
-            val parsers = w.proxy.getParsers
+            val parsers = mdlData.model.getParsers
 
             for (parser ← parsers.asScala) {
                 parser.onInit()
 
                 startScopedSpan("customParser", span,
                     "srvReqId" → ns.srvReqId,
-                    "modelId" → w.proxy.getId,
+                    "modelId" → mdlData.model.getId,
                     "txt" → ns.text) { _ ⇒
                     def to(t: NCNlpSentenceToken): NCCustomWord =
                         new NCCustomWord {
@@ -459,7 +458,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                     val res = parser.parse(
                         NCRequestImpl(senMeta, ns.srvReqId),
-                        w.proxy,
+                        mdlData.model,
                         ns.map(to).asJava,
                         ns.flatten.distinct.filter(!_.isNlp).map(n ⇒ {
                             val noteId = n.noteType
@@ -495,7 +494,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             if (!alreadyMarked(matchedToks, elemId))
                                 mark(
                                     ns,
-                                    elem = w.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
+                                    elem = mdlData.elements.getOrElse(elemId, throw new NCE(s"Custom model parser returned unknown element ID: $elemId")),
                                     toks = matchedToks,
                                     direct = true,
                                     syn = None,

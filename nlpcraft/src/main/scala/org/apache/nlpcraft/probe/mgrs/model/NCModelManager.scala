@@ -21,7 +21,8 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.probe.mgrs.deploy.{NCModelWrapper, _}
+import org.apache.nlpcraft.probe.mgrs.deploy._
+import org.apache.nlpcraft.probe.mgrs.nlp.NCModelData
 
 import scala.collection.convert.DecorateAsScala
 import scala.util.control.Exception._
@@ -31,7 +32,7 @@ import scala.util.control.Exception._
   */
 object NCModelManager extends NCService with DecorateAsScala {
     // Deployed models keyed by their IDs.
-    @volatile private var wrappers: Map[String, NCModelWrapper] = _
+    @volatile private var data: Map[String, NCModelData] = _
 
     // Access mutex.
     private final val mux = new Object()
@@ -41,14 +42,14 @@ object NCModelManager extends NCService with DecorateAsScala {
         val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms")
 
         mux.synchronized {
-            wrappers = NCDeployManager.getModels.map(w ⇒ {
-                w.proxy.onInit()
+            data = NCDeployManager.getModels.map(w ⇒ {
+                w.model.onInit()
 
-                w.proxy.getId → w
+                w.model.getId → w
             }).toMap
 
-            wrappers.values.foreach(w ⇒ {
-                val mdl = w.proxy
+            data.values.foreach(w ⇒ {
+                val mdl = w.model
 
                 val synCnt = w.synonyms.values.flatMap(_.values).flatten.size
 
@@ -62,11 +63,11 @@ object NCModelManager extends NCService with DecorateAsScala {
             })
         }
 
-        tbl.info(logger, Some(s"Models deployed: ${wrappers.size}\n"))
+        tbl.info(logger, Some(s"Models deployed: ${data.size}\n"))
 
         addTags(
             span,
-            "deployedModels" → wrappers.values.map(_.proxy.getId).mkString(",")
+            "deployedModels" → data.values.map(_.model.getId).mkString(",")
         )
 
         super.start()
@@ -92,8 +93,8 @@ object NCModelManager extends NCService with DecorateAsScala {
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         mux.synchronized {
-            if (wrappers != null)
-                wrappers.values.foreach(m ⇒ discardModel(m.proxy))
+            if (data != null)
+                data.values.foreach(m ⇒ discardModel(m.model))
         }
 
         super.stop()
@@ -103,11 +104,9 @@ object NCModelManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getAllModelWrappers(parent: Span = null): List[NCModelWrapper] =
+    def getAllModelsData(parent: Span = null): List[NCModelData] =
         startScopedSpan("getAllModels", parent) { _ ⇒
-            mux.synchronized {
-                wrappers.values.toList
-            }
+            mux.synchronized { data.values.toList }
         }
 
     /**
@@ -115,10 +114,8 @@ object NCModelManager extends NCService with DecorateAsScala {
       * @param mdlId Model ID.
       * @return
       */
-    def getModelWrapper(mdlId: String, parent: Span = null): Option[NCModelWrapper] =
+    def getModelData(mdlId: String, parent: Span = null): NCModelData =
         startScopedSpan("getModel", parent, "modelId" → mdlId) { _ ⇒
-            mux.synchronized {
-                wrappers.get(mdlId)
-            }
+            mux.synchronized { data.getOrElse(mdlId, throw new NCE(s"Model not found: $mdlId")) }
         }
 }

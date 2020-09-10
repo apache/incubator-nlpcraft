@@ -1,4 +1,4 @@
-package org.apache.nlpcraft.probe.mgrs.deploy
+package org.apache.nlpcraft.probe.mgrs.nlp
 
 import java.io.Serializable
 import java.util
@@ -15,7 +15,7 @@ import scala.collection.{Map, Seq, mutable}
 
 /**
   *
-  * @param proxy
+  * @param model
   * @param solver
   * @param synonyms
   * @param synonymsDsl
@@ -24,8 +24,8 @@ import scala.collection.{Map, Seq, mutable}
   * @param suspWordsStems
   * @param elements
   */
-case class NCModelWrapper(
-    proxy: NCModel,
+case class NCModelData(
+    model: NCModel,
     solver: NCIntentSolver,
     synonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCSynonym]]], // Fast access map.
     synonymsDsl: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCSynonym]]], // Fast access map.

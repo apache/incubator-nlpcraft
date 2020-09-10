@@ -23,7 +23,6 @@ import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.{NCService, _}
-import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
 
 import scala.collection.Map
 import scala.language.implicitConversions
@@ -36,11 +35,11 @@ abstract class NCProbeEnricher extends NCService with LazyLogging {
       *
       * Processes this NLP sentence.
       *
-      * @param mdl Model decorator.
+      * @param mdlData Model decorator.
       * @param ns NLP sentence to enrich.
       * @param senMeta Sentence metadata.
       * @param parent Span parent.
       */
     @throws[NCE]
-    def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span): Unit
+    def enrich(mdlData: NCModelData, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span): Unit
 }

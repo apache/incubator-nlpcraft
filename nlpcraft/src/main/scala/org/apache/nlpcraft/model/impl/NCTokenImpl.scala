@@ -23,7 +23,7 @@ import java.util.Collections
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
+import org.apache.nlpcraft.probe.mgrs.nlp.NCModelData
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
@@ -99,7 +99,7 @@ private[nlpcraft] class NCTokenImpl(
 }
 
 private[nlpcraft] object NCTokenImpl {
-    def apply(mdl: NCModelWrapper, srvReqId: String, tok: NCNlpSentenceToken): NCTokenImpl = {
+    def apply(mdl: NCModelData, srvReqId: String, tok: NCNlpSentenceToken): NCTokenImpl = {
         // nlpcraft:nlp and some optional (after collapsing).
         require(tok.size <= 2, s"Unexpected token [size=${tok.size}, token=$tok]")
 
@@ -142,7 +142,7 @@ private[nlpcraft] object NCTokenImpl {
                 elm.getMetadata.asScala.foreach { case (k, v) ⇒ md.put(k, v.asInstanceOf[java.io.Serializable]) }
 
                 new NCTokenImpl(
-                    mdl.proxy,
+                    mdl.model,
                     srvReqId = srvReqId,
                     id = elm.getId,
                     grps = elm.getGroups.asScala,
@@ -165,7 +165,7 @@ private[nlpcraft] object NCTokenImpl {
                 md.put("nlpcraft:nlp:freeword", !isStop && note.isNlp)
 
                 new NCTokenImpl(
-                    mdl.proxy,
+                    mdl.model,
                     srvReqId = srvReqId,
                     id = note.noteType, // Use NLP note type as synthetic element ID.
                     grps = Seq(note.noteType), // Use NLP note type as synthetic element group.

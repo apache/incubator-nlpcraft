@@ -22,8 +22,8 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
-import org.apache.nlpcraft.probe.mgrs.deploy.NCIntentScanner
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.
@@ -58,17 +58,10 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
 
     @throws[Exception]
     private def isValid(classes: Seq[Class[_ <: NCModel]]) = {
-        val samples =
-            classes.
-                map(_.getDeclaredConstructor().newInstance()).
-                map(mdl ⇒ mdl.getId → NCIntentScanner.scanSamples(mdl).toMap).
-                toMap.
-                filter(_._2.nonEmpty)
-
         NCEmbeddedProbe.start(classes: _*)
 
         try
-            process(samples)
+            process(NCModelManager.getAllModelsData().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
         finally
             NCEmbeddedProbe.stop()
     }

@@ -24,8 +24,7 @@ import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
-import org.apache.nlpcraft.probe.mgrs.deploy.NCModelWrapper
-import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
+import org.apache.nlpcraft.probe.mgrs.nlp.{NCModelData, NCProbeEnricher}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
@@ -415,10 +414,10 @@ object NCSortEnricher extends NCProbeEnricher {
         toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
     }
 
-    override def enrich(mdl: NCModelWrapper, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
+    override def enrich(mdlData: NCModelData, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdl.proxy.getId,
+            "modelId" → mdlData.model.getId,
             "txt" → ns.text) { _ ⇒
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
 
