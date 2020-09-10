@@ -81,7 +81,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     type Callback = Function[NCIntentMatch, NCResult]
 
-    @volatile private var wrappers: ArrayBuffer[NCModelData] = _
+    @volatile private var data: ArrayBuffer[NCModelData] = _
     @volatile private var modelFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
@@ -129,7 +129,36 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     @throws[NCE]
     private def wrap(mdl: NCModel): NCModelData = {
+        require(mdl != null)
+
         val mdlId = mdl.getId
+        val mdlName = mdl.getName
+        val mdlVer = mdl.getVersion
+
+        // Verify models' identities.
+
+        if (mdlId == null)
+            throw new NCE(s"Model ID is not provided: $mdlName")
+        if (mdlName == null)
+            throw new NCE(s"Model name is not provided: $mdlId")
+        if (mdlVer == null)
+            throw new NCE(s"Model version is not provided: $mdlId")
+        if (mdlName != null && mdlName.isEmpty)
+            throw new NCE(s"Model name cannot be empty string: $mdlId")
+        if (mdlId != null && mdlId.isEmpty)
+            throw new NCE(s"Model ID cannot be empty string: $mdlId")
+        if (mdlVer != null && mdlVer.length > 16)
+            throw new NCE(s"Model version cannot be empty string: $mdlId")
+        if (mdlName != null && mdlName.length > 64)
+            throw new NCE(s"Model name is too long (64 max): $mdlId")
+        if (mdlId != null && mdlId.length > 32)
+            throw new NCE(s"Model ID is too long (32 max): $mdlId")
+        if (mdlVer != null && mdlVer.length > 16)
+            throw new NCE(s"Model version is too long (16 max): $mdlId")
+
+        for (elm ← mdl.getElements.asScala)
+            if (!elm.getId.matches(ID_REGEX))
+                throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
 
         @throws[NCE]
         def checkCollection(name: String, col: Any): Unit =
@@ -606,7 +635,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         modelFactory = new NCBasicModelFactory
-        wrappers = ArrayBuffer.empty[NCModelData]
+        data = ArrayBuffer.empty[NCModelData]
 
         // Initialize model factory (if configured).
         Config.modelFactoryType match {
@@ -618,7 +647,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             case None ⇒ // No-op.
         }
 
-        wrappers ++= Config.models.map(makeModelWrapper)
+        data ++= Config.models.map(makeModelWrapper)
 
         Config.jarsFolder match {
             case Some(jarsFolder) ⇒
@@ -633,43 +662,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 val locJar = if (src == null) null else new File(src.getLocation.getPath)
 
                 for (jar ← scanJars(jarsFile) if jar != locJar)
-                    wrappers ++= extractModels(jar)
+                    data ++= extractModels(jar)
 
             case None ⇒ // No-op.
         }
 
-        // Verify models' identities.
-        wrappers.foreach(w ⇒ {
-            val mdl = w.model
-            val mdlName = mdl.getName
-            val mdlId = mdl.getId
-            val mdlVer = mdl.getVersion
-
-            if (mdlId == null)
-                throw new NCE(s"Model ID is not provided: $mdlName")
-            if (mdlName == null)
-                throw new NCE(s"Model name is not provided: $mdlId")
-            if (mdlVer == null)
-                throw new NCE(s"Model version is not provided: $mdlId")
-            if (mdlName != null && mdlName.isEmpty)
-                throw new NCE(s"Model name cannot be empty string: $mdlId")
-            if (mdlId != null && mdlId.isEmpty)
-                throw new NCE(s"Model ID cannot be empty string: $mdlId")
-            if (mdlVer != null && mdlVer.length > 16)
-                throw new NCE(s"Model version cannot be empty string: $mdlId")
-            if (mdlName != null && mdlName.length > 64)
-                throw new NCE(s"Model name is too long (64 max): $mdlId")
-            if (mdlId != null && mdlId.length > 32)
-                throw new NCE(s"Model ID is too long (32 max): $mdlId")
-            if (mdlVer != null && mdlVer.length > 16)
-                throw new NCE(s"Model version is too long (16 max): $mdlId")
-
-            for (elm ← mdl.getElements.asScala)
-                if (!elm.getId.matches(ID_REGEX))
-                    throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
-        })
-
-        val ids = wrappers.map(_.model.getId).toList
+        val ids = data.map(_.model.getId).toList
 
         if (U.containsDups(ids))
             throw new NCE(s"Duplicate model IDs detected: ${ids.mkString(", ")}")
@@ -682,8 +680,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (modelFactory != null)
             modelFactory.terminate()
 
-        if (wrappers != null)
-            wrappers.clear()
+        if (data != null)
+            data.clear()
 
         super.stop()
     }
@@ -692,7 +690,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getModels: Seq[NCModelData] = wrappers
+    def getModels: Seq[NCModelData] = data
 
     /**
       * Permutes and drops duplicated.
