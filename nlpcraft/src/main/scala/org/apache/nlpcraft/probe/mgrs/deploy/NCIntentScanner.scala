@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.impl
+package org.apache.nlpcraft.probe.mgrs.deploy
 
 import java.lang.reflect.{InvocationTargetException, Method, ParameterizedType, Type}
 import java.util
@@ -23,7 +23,10 @@ import java.util.function.Function
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.makro.NCMacroParser
+import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.intent.impl.NCIntentDslCompiler
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 
 import scala.collection.JavaConverters._
@@ -60,6 +63,8 @@ object NCIntentScanner extends LazyLogging {
         CLS_JAVA_LST,
         CLS_JAVA_OPT
     )
+
+    private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
     /**
       *
@@ -425,12 +430,10 @@ object NCIntentScanner extends LazyLogging {
       * @param mdl Model to scan.
       */
     @throws[NCE]
-    def scanIntentsSamples(mdl: NCModel): NCIntentSamplesScanResult = {
+    def scanSamples(mdl: NCModel): Map[String, Seq[String]] = {
         var annFound = false
 
-        val warns = mutable.ArrayBuffer.empty[String]
-
-        val res =
+        val samples =
             mdl.getClass.getDeclaredMethods.flatMap(method ⇒ {
                 def mkMethodName: String = s"${method.getDeclaringClass.getName}#${method.getName}(...)"
 
@@ -451,8 +454,9 @@ object NCIntentScanner extends LazyLogging {
 
                     if (smpAnn != null) {
                         if (intAnn == null && refAnn == null) {
-                            warns += s"@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations " +
-                                s"in callback: $mkMethodName"
+                            logger.warn(
+                                "@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations " +
+                                s"[modelId=${mdl.getId}, callback=$mkMethodName]")
 
                             None
                         }
@@ -460,7 +464,10 @@ object NCIntentScanner extends LazyLogging {
                             val samples = smpAnn.value().toList
 
                             if (samples.isEmpty) {
-                                warns += s"@NCTestSample annotation is empty in callback: $mkMethodName"
+                                logger.warn(
+                                    "@NCTestSample annotation is empty " +
+                                    s"[modelId=${mdl.getId}, callback=$mkMethodName]"
+                                )
 
                                 None
                             }
@@ -469,7 +476,10 @@ object NCIntentScanner extends LazyLogging {
                         }
                     }
                     else {
-                        warns += s"@NCTestSample annotation is missing in callback: $mkMethodName"
+                        logger.warn(
+                            "@NCTestSample annotation is missing " +
+                            s"[modelId=${mdl.getId}, callback=$mkMethodName]"
+                        )
 
                         None
                     }
@@ -479,8 +489,30 @@ object NCIntentScanner extends LazyLogging {
             }).toMap
 
         if (!annFound)
-            warns += s"No intents found."
+            logger.warn(s"No intents found [modelId=${mdl.getId}")
 
-        NCIntentSamplesScanResult(res, warns)
+        val parser = new NCMacroParser
+
+        mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+
+        val allSyns: Set[Seq[String]] =
+            mdl.getElements.
+                asScala.
+                flatMap(_.getSynonyms.asScala.flatMap(parser.expand)).
+                map(NCNlpPorterStemmer.stem).map(_.split(" ").toSeq).
+                toSet
+
+        samples.
+            flatMap { case (_, samples) ⇒ samples.map(_.toLowerCase) }.
+            map(s ⇒ s → SEPARATORS.foldLeft(s)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
+            foreach {
+                case (s, sNorm) ⇒
+                    val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
+
+                    if (!allSyns.exists(_.intersect(seq).nonEmpty))
+                        logger.warn(s"Intent sample doesn't contain any direct synonyms [modelId=${mdl.getId}, sample=$s]")
+            }
+
+        samples
     }
 }

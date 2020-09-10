@@ -20,9 +20,9 @@ package org.apache.nlpcraft.model.tools.test.impl
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.util.NCUtils
-import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
+import org.apache.nlpcraft.probe.mgrs.deploy.NCIntentScanner
 import org.apache.nlpcraft.model._
 
 /**
@@ -61,13 +61,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         val samples =
             classes.
                 map(_.getDeclaredConstructor().newInstance()).
-                map(mdl ⇒ {
-                    val res = NCIntentScanner.scanIntentsSamples(mdl)
-
-                    res.warnings.foreach(w ⇒ logger.warn(w))
-
-                    mdl.getId → res.samples.toMap
-                }).
+                map(mdl ⇒ mdl.getId → NCIntentScanner.scanSamples(mdl).toMap).
                 toMap.
                 filter(_._2.nonEmpty)
 

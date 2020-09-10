@@ -29,7 +29,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
-import org.apache.nlpcraft.model.intent.impl.{NCIntentScanner, NCIntentSolver}
+import org.apache.nlpcraft.model.intent.impl.NCIntentSolver
 import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind.{DSL, REGEX, TEXT}
 import org.apache.nlpcraft.probe.mgrs.{NCSynonym, NCSynonymChunk, deploy}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelSynonymDslCompiler
@@ -59,6 +59,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         def modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
         def models: Seq[String] = getStringList(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
+        // TODO: property name.
+        def synonymsWarnValue: Int = getInt(s"$pre.synonymsWarnValue")
     }
 
     /**
@@ -93,6 +95,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     @throws[NCE]
     private def wrap(mdl: NCModel): NCModelWrapper = {
+        val mdlId = mdl.getId
+
+        @throws[NCE]
+        def checkCollection(name: String, col: Any): Unit =
+            if (col == null)
+                throw new NCE(s"Collection can be empty but cannot be null [modelId=$mdlId, name=$name]")
+
         checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
         checkCollection("elements", mdl.getElements)
         checkCollection("enabledBuiltInTokens", mdl.getEnabledBuiltInTokens)
@@ -102,15 +111,22 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkCollection("macros", mdl.getMacros)
         checkCollection("metadata", mdl.getMetadata)
 
+        val allSyns = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala)
+
+        mdl.getMacros.asScala.keys.foreach(makro ⇒
+            if (!allSyns.exists(_.contains(makro)))
+                logger.warn(s"Unused macro [modelId=$mdlId, makro=$makro]")
+        )
+
         // Scan for intent annotations in the model class.
         val intents = NCIntentScanner.scan(mdl)
-
-        val mdlId = mdl.getId
 
         val parser = new NCMacroParser
 
         // Initialize macro parser.
         mdl.getMacros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
+
+        checkSynonyms(mdl, parser)
 
         var solver: NCIntentSolver = null
 
@@ -169,19 +185,19 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                         if (cnt > maxCnt)
                             throw new NCE(s"Too many synonyms detected [" +
-                                s"model=${mdl.getId}, " +
+                                s"model=$mdlId, " +
                                 s"max=$maxCnt" +
                                 s"]")
 
                         if (value == null)
                             logger.trace(s"Synonym #${syns.size} added [" +
-                                s"model=${mdl.getId}, " +
+                                s"model=$mdlId, " +
                                 s"elementId=$elmId, " +
                                 s"synonym=${chunks.mkString(" ")}" +
                                 s"]")
                         else
                             logger.trace(s"Synonym #${syns.size} added [" +
-                                s"model=${mdl.getId}, " +
+                                s"model=$mdlId, " +
                                 s"elementId=$elmId, " +
                                 s"synonym=${chunks.mkString(" ")}, " +
                                 s"value=$value" +
@@ -190,7 +206,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     else
                         logger.trace(
                             s"Synonym already added (ignoring) [" +
-                                s"model=${mdl.getId}, " +
+                                s"model=$mdlId, " +
                                 s"elementId=$elmId, " +
                                 s"synonym=${chunks.mkString(" ")}, " +
                                 s"value=$value" +
@@ -229,7 +245,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (U.containsDups(synsChunks.flatten))
                 logger.trace(s"Element synonyms duplicate (ignoring) [" +
-                    s"model=${mdl.getId}, " +
+                    s"model=$mdlId, " +
                     s"elementId=$elmId, " +
                     s"synonym=${synsChunks.diff(synsChunks.distinct).distinct.map(_.mkString(",")).mkString(";")}" +
                     s"]"
@@ -246,7 +262,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (U.containsDups(valNames))
                 logger.trace(s"Element values names duplicate (ignoring) [" +
-                    s"model=${mdl.getId}, " +
+                    s"model=$mdlId, " +
                     s"elementId=$elmId, " +
                     s"names=${valNames.diff(valNames.distinct).distinct.mkString(",")}" +
                     s"]"
@@ -279,7 +295,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                 if (U.containsDups(chunks.toList))
                     logger.trace(s"Element synonyms duplicate (ignoring) [" +
-                        s"model=${mdl.getId}, " +
+                        s"model=$mdlId, " +
                         s"elementId=$elmId, " +
                         s"value=$valId, " +
                         s"synonym=${chunks.diff(chunks.distinct).distinct.map(_.mkString(",")).mkString(";")}" +
@@ -317,9 +333,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // Check for DSl alias uniqueness.
         if (U.containsDups(allAliases)) {
             for (dupAlias ← allAliases.diff(allAliases.distinct))
-                logger.warn(s"Duplicate DSL alias '$dupAlias' found for model: ${mdl.getId}")
+                logger.warn(s"Duplicate DSL alias '$dupAlias' found for model: $mdlId")
 
-            throw new NCE(s"Duplicate DSL aliases found for model '${mdl.getId}'- check log messages.")
+            throw new NCE(s"Duplicate DSL aliases found for model '$mdlId'- check log messages.")
         }
 
         val idAliasDups =
@@ -331,9 +347,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // Check that DSL aliases don't intersect with element IDs.
         if (idAliasDups.nonEmpty) {
             for (dup ← idAliasDups)
-                logger.warn(s"Duplicate element ID and DSL alias '$dup' found for model: ${mdl.getId}")
+                logger.warn(s"Duplicate element ID and DSL alias '$dup' found for model: $mdlId")
 
-            throw new NCE(s"Duplicate element ID and DSL aliases found for model '${mdl.getId}'- check log messages.")
+            throw new NCE(s"Duplicate element ID and DSL aliases found for model '$mdlId'- check log messages.")
         }
 
         // Check for synonym dups across all elements.
@@ -342,7 +358,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 syns.groupBy(p ⇒ (p.synonym.mkString(" "), p.synonym.isDirect)) if holders.size > 1 && isDirect
         ) {
             logger.trace(s"Duplicate synonym detected (ignoring) [" +
-                s"model=${mdl.getId}, " +
+                s"model=$mdlId, " +
                 s"element=${
                     holders.map(
                         p ⇒ s"id=${p.elementId}${if (p.synonym.value == null) "" else s", value=${p.synonym.value}"}"
@@ -357,10 +373,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         if (foundDups) {
             if (!mdl.isDupSynonymsAllowed)
-                throw new NCE(s"Duplicated synonyms are not allowed for model '${mdl.getId}' - check trace messages.")
+                throw new NCE(s"Duplicated synonyms are not allowed for model '$mdlId' - check trace messages.")
 
-            logger.warn(s"Found duplicate synonyms - check trace logging for model: ${mdl.getId}")
-            logger.warn(s"Duplicates are allowed by '${mdl.getId}' model but large number may degrade the performance.")
+            logger.warn(s"Found duplicate synonyms - check trace logging for model: $mdlId")
+            logger.warn(s"Duplicates are allowed by '$mdlId' model but large number may degrade the performance.")
         }
 
         mdl.getMetadata.put(MDL_META_ALL_ALIASES_KEY, allAliases.toSet)
@@ -383,19 +399,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
             addStopWordsStems = addStopWords,
             exclStopWordsStems = exclStopWords,
             suspWordsStems = suspWords,
-            elements = mdl.getElements.asScala.map(elm ⇒ (elm.getId, elm)).toMap
+            elements = mdl.getElements.asScala.map(elm ⇒ (elm.getId, elm)).toMap,
+            samples = NCIntentScanner.scanSamples(mdl)
         )
     }
-
-    /**
-      *
-      * @param name
-      * @param col
-      */
-    @throws[NCE]
-    private def checkCollection(name: String, col: Any): Unit =
-        if (col == null)
-            throw new NCE(s"Collection '$name' can be empty but cannot be null.")
 
     /**
       *
@@ -876,5 +883,33 @@ object NCDeployManager extends NCService with DecorateAsScala {
         chunks ++= splitUp(x.substring(start))
 
         chunks.map(mkChunk)
+    }
+
+    @throws[NCE]
+    private def checkSynonyms(mdl: NCModel, parser: NCMacroParser): Unit = {
+        val mdlSyns = mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms.asScala.flatMap(parser.expand))
+
+        val mdlId = mdl.getId
+
+        mdlSyns.foreach { case (elemId, syns) ⇒
+            val size = syns.size
+
+            if (size == 0)
+                logger.warn(s"Element '$elemId' doesn't have synonyms [modelId=$mdlId]")
+            else if (size > Config.synonymsWarnValue)
+                logger.warn(s"Element '$elemId' has too many ($size) synonyms. Make sure this is truly necessary [modelId=$mdlId]")
+
+            val others = mdlSyns.filter {
+                case (otherId, _) ⇒ otherId != elemId
+            }
+
+            val cross = others.filter {
+                case (_, othSyns) ⇒ othSyns.intersect(syns).nonEmpty
+            }.toMap.keys.mkString(",")
+
+
+            if (cross.nonEmpty)
+                throw new NCE(s"Element has duplicate synonyms with elements '$cross' [modelId=$mdlId, elementId=$elemId]")
+        }
     }
 }

@@ -31,8 +31,6 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.crypto.NCCipher
-import org.apache.nlpcraft.common.inspections.NCInspectionResult
-import org.apache.nlpcraft.common.inspections.impl.NCInspectionResultImpl
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.socket.NCSocket
@@ -57,7 +55,6 @@ import scala.util.{Failure, Success}
   */
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
-    private final val TYPE_INSPECTION_RESP = new TypeToken[NCInspectionResultImpl]() {}.getType
     private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
 
     // Type safe and eager configuration container.
@@ -147,7 +144,6 @@ object NCProbeManager extends NCService {
     @volatile private var pool: ExecutorService = _
     @volatile private var isStopping: AtomicBoolean = _
 
-    @volatile private var probeInsp: ConcurrentHashMap[String, Promise[NCInspectionResult]] = _
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
 
     /**
@@ -169,7 +165,6 @@ object NCProbeManager extends NCService {
     
         isStopping = new AtomicBoolean(false)
 
-        probeInsp = new ConcurrentHashMap[String, Promise[NCInspectionResult]]()
         modelsInfo = new ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]]()
         
         pool = Executors.newFixedThreadPool(Config.poolSize)
@@ -210,7 +205,6 @@ object NCProbeManager extends NCService {
         U.stopThread(dnSrv)
         U.stopThread(upSrv)
 
-        probeInsp = null
         modelsInfo = null
      
         super.stop()
@@ -698,12 +692,17 @@ object NCProbeManager extends NCService {
                     promise.success(r)
                 }
             }
-            
+
             typ match {
                 case "P2S_PING" ⇒ ()
 
-                case "P2S_PROBE_INSPECTION" ⇒ processPromise(probeInsp, TYPE_INSPECTION_RESP)
-                case "P2S_MODEL_INFO" ⇒ processPromise(modelsInfo, TYPE_MODEL_INFO_RESP)
+                case "P2S_MODEL_INFO" ⇒
+                    val p = modelsInfo.remove(probeMsg.data[String]("reqGuid"))
+
+                    if (p != null)
+                        p.success(GSON.fromJson(probeMsg.data[String]("resp"), TYPE_MODEL_INFO_RESP))
+                    else
+                        logger.warn(s"Message ignored: $probeMsg")
                 case "P2S_ASK_RESULT" ⇒
                     val srvReqId = probeMsg.data[String]("srvReqId")
                     
@@ -1007,36 +1006,25 @@ object NCProbeManager extends NCService {
     /**
       *
       * @param mdlId
-      * @param inspName
-      * @param args
-      * @param parent
-      * @return
-      */
-    def runInspection(mdlId: String, inspName: String, args: Option[String], parent: Span = null): Future[NCInspectionResult] =
-        startScopedSpan("runInspection", parent, "modelId" → mdlId, "inspName" → inspName) { _ ⇒
-            val params = mutable.HashMap.empty[String, Serializable] ++ Map("mdlId" → mdlId, "inspName" → inspName)
-
-            if (args.isDefined)
-                params += "args" → GSON.toJson(args.get)
-
-            probePromise(parent, mdlId, probeInsp, "S2P_PROBE_INSPECTION", params.toSeq :_*)
-        }
-
-    /**
-      *
-      * @param mdlId
       * @param parent
       * @return
       */
     def getModelInfo(mdlId: String, parent: Span = null): Future[java.util.Map[String, AnyRef]] =
         startScopedSpan("getModelInfo", parent, "modelId" → mdlId) { _ ⇒
-            probePromise(
-                parent,
-                mdlId,
-                modelsInfo,
-                "S2P_MODEL_INFO",
-                "mdlId" → mdlId
-            )
+            getProbeForModelId(mdlId) match {
+                case Some(probe) ⇒
+                    val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" → mdlId)
+
+                    val p = Promise[java.util.Map[String, AnyRef]]()
+
+                    modelsInfo.put(msg.getGuid, p)
+
+                    sendToProbe(probe.probeKey, msg, parent)
+
+                    p.future
+
+                case None ⇒ throw new NCE(s"Probe not found for model: '$mdlId''")
+            }
         }
 
     /**

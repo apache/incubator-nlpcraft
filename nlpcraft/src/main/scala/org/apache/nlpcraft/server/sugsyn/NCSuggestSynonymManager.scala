@@ -164,7 +164,9 @@ object NCSuggestSynonymManager extends NCService {
                 case Success(m) ⇒
                     try {
                         require(
-                            m.containsKey("macros") && m.containsKey("elementsSynonyms") && m.containsKey("intentsSamples")
+                            m.containsKey("macros") &&
+                            m.containsKey("synonyms") &&
+                            m.containsKey("samples")
                         )
 
                         val mdlMacros = m.get("macros").

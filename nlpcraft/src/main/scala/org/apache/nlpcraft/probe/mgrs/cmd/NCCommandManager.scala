@@ -22,21 +22,19 @@ import java.util.concurrent.{ExecutorService, Executors}
 
 import com.google.gson.Gson
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.probe.mgrs.inspections.NCInspectionManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
-import scala.util.{Failure, Success}
 
 /**
   * Probe commands processor.
@@ -107,34 +105,28 @@ object NCCommandManager extends NCService {
                             span
                     )
 
-                    case "S2P_PROBE_INSPECTION" ⇒
-                        NCInspectionManager.inspect(
-                            mdlId = msg.data[String]("mdlId"),
-                            inspName = msg.data[String]("inspName"),
-                            args = msg.dataOpt[String]("args"),
-                            span
-                        ).onComplete {
-                            case Success(res) ⇒
-                                NCConnectionManager.send(
-                                    NCProbeMessage(
-                                        "P2S_PROBE_INSPECTION",
-                                        "reqGuid" → msg.getGuid,
-                                        "resp" → GSON.toJson(res)
-                                    ),
-                                    span
-                                )
-
-                            case Failure(e) ⇒ logger.error(s"Message cannot be processed: $msg", e)
-                        }(executor)
-
                     case "S2P_MODEL_INFO" ⇒
-                        val res = NCModelManager.getModelInfo(msg.data[String]("mdlId"))
+                        val mdlId = msg.data[String]("mdlId")
+
+                        val w = NCModelManager.getModelWrapper(mdlId).getOrElse(throw new NCE(s"Model not found: '$mdlId'"))
+
+                        val macros = w.proxy.getMacros.asInstanceOf[Serializable]
+                        val syns = w.proxy.getElements.asScala.
+                            map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]
+                        val samples = w.samples.map(p ⇒ p._1 → p._2.asJava).
+                            asJava.asInstanceOf[Serializable]
 
                         NCConnectionManager.send(
                             NCProbeMessage(
                                 "P2S_MODEL_INFO",
                                 "reqGuid" → msg.getGuid,
-                                "resp" → GSON.toJson(res)
+                                "resp" → GSON.toJson(
+                                    Map(
+                                        "macros" → macros,
+                                        "synonyms" → syns,
+                                        "samples" → samples
+                                    ).asJava
+                                )
                             ),
                             span
                         )

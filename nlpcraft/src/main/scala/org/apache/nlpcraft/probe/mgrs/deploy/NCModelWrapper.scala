@@ -11,7 +11,7 @@ import org.apache.nlpcraft.model.{NCElement, NCModel, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.NCSynonym
 
 import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
+import scala.collection.{Map, Seq, mutable}
 
 /**
   *
@@ -32,7 +32,8 @@ case class NCModelWrapper(
     addStopWordsStems: Set[String],
     exclStopWordsStems: Set[String],
     suspWordsStems: Set[String],
-    elements: Map[String /*Element ID*/ , NCElement]
+    elements: Map[String /*Element ID*/ , NCElement],
+    samples: Map[String, Seq[String]]
 ) {
     /**
       * Makes variants for given sentences.

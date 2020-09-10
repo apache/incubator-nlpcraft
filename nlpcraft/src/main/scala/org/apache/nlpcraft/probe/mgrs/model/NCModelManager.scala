@@ -17,16 +17,12 @@
 
 package org.apache.nlpcraft.probe.mgrs.model
 
-import java.util
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.impl.NCIntentScanner
 import org.apache.nlpcraft.probe.mgrs.deploy.{NCModelWrapper, _}
 
-import scala.collection.JavaConverters._
 import scala.collection.convert.DecorateAsScala
 import scala.util.control.Exception._
 
@@ -39,7 +35,6 @@ object NCModelManager extends NCService with DecorateAsScala {
 
     // Access mutex.
     private final val mux = new Object()
-
 
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
@@ -104,7 +99,6 @@ object NCModelManager extends NCService with DecorateAsScala {
         super.stop()
     }
 
-
     /**
       *
       * @return
@@ -126,27 +120,5 @@ object NCModelManager extends NCService with DecorateAsScala {
             mux.synchronized {
                 wrappers.get(mdlId)
             }
-        }
-
-    /**
-      * TODO:
-      * Gets model data which can be transferred between probe and server.
-      *
-      * @param mdlId Model ID.
-      * @param parent
-      * @return
-      */
-    def getModelInfo(mdlId: String, parent: Span = null): java.util.Map[String, Any] =
-        startScopedSpan("getModel", parent, "mdlId" → mdlId) { _ ⇒
-            val w = mux.synchronized { wrappers.get(mdlId) }.getOrElse(throw new NCE(s"Model not found: '$mdlId'"))
-            val mdl = w.proxy
-
-            val data = new util.HashMap[String, Any]()
-
-            data.put("macros", mdl.getMacros)
-            data.put("synonyms", mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava)
-            data.put("samples", NCIntentScanner.scanIntentsSamples(mdl).samples.map(p ⇒ p._1 → p._2.asJava).asJava)
-
-            data
         }
 }
