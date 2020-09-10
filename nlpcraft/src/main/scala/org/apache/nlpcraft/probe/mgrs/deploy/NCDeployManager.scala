@@ -21,7 +21,7 @@ import java.io._
 import java.lang.reflect.{InvocationTargetException, Method, ParameterizedType, Type}
 import java.util
 import java.util.function.Function
-import java.util.jar.{JarInputStream => JIS}
+import java.util.jar.JarInputStream
 import java.util.regex.{Pattern, PatternSyntaxException}
 
 import io.opencensus.trace.Span
@@ -53,8 +53,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private final val TOKENS_PROVIDERS_PREFIXES = Set("nlpcraft:", "google:", "stanford:", "opennlp:", "spacy:")
     private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:-_]*$"
 
-    type Callback = Function[NCIntentMatch, NCResult]
-
     private final val CLS_INTENT = classOf[NCIntent]
     private final val CLS_INTENT_REF = classOf[NCIntentRef]
     private final val CLS_TERM = classOf[NCIntentTerm]
@@ -81,6 +79,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
+    type Callback = Function[NCIntentMatch, NCResult]
+
     @volatile private var wrappers: ArrayBuffer[NCModelData] = _
     @volatile private var modelFactory: NCModelFactory = _
 
@@ -92,6 +92,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         def modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
         def models: Seq[String] = getStringList(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
+
         // TODO: property name.
         def synonymsWarnValue: Int = getInt(s"$pre.synonymsWarnValue")
     }
@@ -144,6 +145,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkCollection("macros", mdl.getMacros)
         checkCollection("metadata", mdl.getMetadata)
 
+        checkModelConfig(mdl)
+
         val allSyns = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala)
 
         mdl.getMacros.asScala.keys.foreach(makro ⇒
@@ -151,35 +154,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 logger.warn(s"Unused macro [modelId=$mdlId, macro=$makro]")
         )
 
-        // Scan for intent annotations in the model class.
-        val intents = scanIntents(mdl)
-
         val parser = new NCMacroParser
 
         // Initialize macro parser.
         mdl.getMacros.asScala.foreach(t ⇒ parser.addMacro(t._1, t._2))
 
         checkSynonyms(mdl, parser)
-
-        var solver: NCIntentSolver = null
-
-        if (intents.nonEmpty) {
-            // Check the uniqueness of intent IDs.
-            U.getDups(intents.keys.toSeq.map(_.id)) match {
-                case ids if ids.nonEmpty ⇒ throw new NCE(s"Duplicate intent IDs found for '$mdlId' model: ${ids.mkString(",")}")
-                case _ ⇒ ()
-            }
-
-            logger.info(s"Intents found in the model: $mdlId")
-
-            solver = new NCIntentSolver(
-                intents.toList.map(x ⇒ (x._1, (z: NCIntentMatch) ⇒ x._2.apply(z)))
-            )
-        }
-        else
-            logger.warn(s"Model has no intents: $mdlId")
-
-        checkModelConfig(mdl)
 
         for (elm ← mdl.getElements.asScala)
             checkElement(mdl, elm)
@@ -309,7 +289,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 chunks.map(mkChunk)
             }
 
-
             /**
               *
               * @param id
@@ -428,11 +407,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             throw new NCE(s"Duplicate DSL aliases found for model '$mdlId'- check log messages.")
         }
 
-        val idAliasDups =
-            mdl
-                .getElements.asScala
-                .map(_.getId)
-                .intersect(allAliases.toSet)
+        val idAliasDups = mdl.getElements.asScala.map(_.getId).intersect(allAliases.toSet)
 
         // Check that DSL aliases don't intersect with element IDs.
         if (idAliasDups.nonEmpty) {
@@ -480,6 +455,26 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 Set("nlpcraft:nlp") ++
                 mdl.getEnabledBuiltInTokens.asScala
         )
+
+        // Scan for intent annotations in the model class.
+        val intents = scanIntents(mdl)
+        var solver: NCIntentSolver = null
+
+        if (intents.nonEmpty) {
+            // Check the uniqueness of intent IDs.
+            U.getDups(intents.keys.toSeq.map(_.id)) match {
+                case ids if ids.nonEmpty ⇒ throw new NCE(s"Duplicate intent IDs found for '$mdlId' model: ${ids.mkString(",")}")
+                case _ ⇒ ()
+            }
+
+            logger.info(s"Intents found in the model: $mdlId")
+
+            solver = new NCIntentSolver(
+                intents.toList.map(x ⇒ (x._1, (z: NCIntentMatch) ⇒ x._2.apply(z)))
+            )
+        }
+        else
+            logger.warn(s"Model has no intents: $mdlId")
 
         NCModelData(
             model = mdl,
@@ -576,7 +571,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val classes = mutable.ArrayBuffer.empty[Class[_ <: NCModel]]
 
-        managed(new JIS(new BufferedInputStream(new FileInputStream(jarFile)))) acquireAndGet { in ⇒
+        managed(new JarInputStream(new BufferedInputStream(new FileInputStream(jarFile)))) acquireAndGet { in ⇒
             var entry = in.getNextJarEntry
 
             while (entry != null) {
@@ -937,7 +932,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             else if (size > Config.synonymsWarnValue)
                 logger.warn(
                     s"Element '$elemId' has too many ($size) synonyms. " +
-                    s"Make sure this is truly necessary [modelId=$mdlId]"
+                        s"Make sure this is truly necessary [modelId=$mdlId]"
                 )
 
             val others = mdlSyns.filter {
@@ -1021,7 +1016,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (tokParamAnns.length != tokParamTypes.length)
             throw new NCE(
                 s"@NCIntent error - unexpected annotations count ${tokParamAnns.size} for ${method2Str(m)}, " +
-                s"model=${mdl.getId}"
+                    s"model=${mdl.getId}"
             )
 
         // Gets terms identifiers.
@@ -1039,12 +1034,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         case 0 ⇒
                             throw new NCE(
                                 s"@NCIntentTerm error - missed annotation ${class2Str(CLS_TERM)} for $mkArg, " +
-                                s"model=${mdl.getId}"
-                        )
+                                    s"model=${mdl.getId}"
+                            )
                         case _ ⇒
                             throw new NCE(
                                 s"@NCIntentTerm error -too many annotations ${class2Str(CLS_TERM)} for $mkArg, " +
-                                s"model=${mdl.getId}"
+                                    s"model=${mdl.getId}"
                             )
                     }
                 }
@@ -1059,7 +1054,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (invalidIds.nonEmpty)
             throw new NCE(
                 s"@NCIntentTerm error - invalid term identifiers '${invalidIds.mkString(", ")}' for ${method2Str(m)}" +
-                s"model=${mdl.getId}"
+                    s"model=${mdl.getId}"
             )
 
         val paramGenTypes = getTokensSeq(m.getGenericParameterTypes)
@@ -1180,7 +1175,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     case _ ⇒ throw new NCE(s"@NCIntentTerm error - too many tokens $toksCnt for optional $mkArg, model=$mdlId")
                 }
             else
-                // Arguments types already checked.
+            // Arguments types already checked.
                 throw new AssertionError(s"Unexpected type $paramCls for $mkArg, model=$mdlId")
         }
 
@@ -1266,25 +1261,25 @@ object NCDeployManager extends NCService with DecorateAsScala {
             if (cls == CLS_TOKEN && (min != 1 || max != 1))
                 throw new NCE(
                     s"@NCIntentTerm error - term must have [1,1] quantifier for $mkArg " +
-                    s"because this argument is a single value, model=$mdlId"
+                        s"because this argument is a single value, model=$mdlId"
                 )
             // Argument is not single token but defined as single token.
             else if (cls != CLS_TOKEN && (min == 1 && max == 1))
                 throw new NCE(
                     s"@NCIntentTerm error - term has [1,1] quantifier for $mkArg " +
-                    s"but this argument is not a single value, model=$mdlId"
+                        s"but this argument is not a single value, model=$mdlId"
                 )
             // Argument is optional but defined as not optional.
             else if ((cls == CLS_SCALA_OPT || cls == CLS_JAVA_OPT) && (min != 0 || max != 1))
                 throw new NCE(
                     s"@NCIntentTerm error - term must have [0,1] quantifier for $mkArg " +
-                    s"because this argument is optional, model=$mdlId"
+                        s"because this argument is optional, model=$mdlId"
                 )
             // Argument is not optional but defined as optional.
             else if ((cls != CLS_SCALA_OPT && cls != CLS_JAVA_OPT) && (min == 0 && max == 1))
                 throw new NCE(
                     s"@NCIntentTerm error - term has [0,1] quantifier for $mkArg " +
-                    s"but this argument is not optional, model=$mdlId"
+                        s"but this argument is not optional, model=$mdlId"
                 )
         }
     }
@@ -1326,7 +1321,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 case ids if ids.nonEmpty ⇒
                                     throw new NCE(
                                         s"Duplicate intent IDs found for model from " +
-                                        s"'${adapter.getOrigin}': ${ids.mkString(",")}, model=${mdl.getId}"
+                                            s"'${adapter.getOrigin}': ${ids.mkString(",")}, model=${mdl.getId}"
                                     )
                                 case _ ⇒ ()
                             }
@@ -1336,14 +1331,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 case None ⇒
                                     throw new NCE(
                                         s"@IntentRef($refId) references unknown intent ID '$refId' " +
-                                        s"in ${method2Str(m)}, model=${mdl.getId}"
+                                            s"in ${method2Str(m)}, model=${mdl.getId}"
                                     )
                             }
 
                         case _ ⇒
                             throw new NCE(
                                 s"@IntentRef annotation in ${method2Str(m)} can be used only " +
-                                s"for models extending 'NCModelFileAdapter', model=${mdl.getId}"
+                                    s"for models extending 'NCModelFileAdapter', model=${mdl.getId}"
                             )
                     }
                 else
