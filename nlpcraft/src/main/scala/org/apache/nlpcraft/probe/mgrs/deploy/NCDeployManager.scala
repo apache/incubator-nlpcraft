@@ -35,7 +35,7 @@ import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
 import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentSolver}
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind.{DSL, REGEX, TEXT}
-import org.apache.nlpcraft.probe.mgrs.{NCSynonym, NCSynonymChunk, deploy}
+import org.apache.nlpcraft.probe.mgrs.{NCSynonym, NCSynonymChunk}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelSynonymDslCompiler
 import org.apache.nlpcraft.probe.mgrs.nlp.NCModelData
 import resource.managed
@@ -90,6 +90,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // It should reload config.
         def modelFactoryType: Option[String] = getStringOpt(s"$pre.modelFactory.type")
         def modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
+        def model: Option[String] = getStringOpt(s"$pre.model")
         def models: Seq[String] = getStringList(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
 
@@ -634,37 +635,44 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        modelFactory = new NCBasicModelFactory
         data = ArrayBuffer.empty[NCModelData]
 
-        // Initialize model factory (if configured).
-        Config.modelFactoryType match {
-            case Some(mft) ⇒
-                modelFactory = makeModelFactory(mft)
+        Config.model match {
+            case Some(mdlClsName) ⇒
+                data += makeModelWrapper(mdlClsName)
 
-                modelFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
+            case None ⇒
+                modelFactory = new NCBasicModelFactory
 
-            case None ⇒ // No-op.
-        }
+                // Initialize model factory (if configured).
+                Config.modelFactoryType match {
+                    case Some(mft) ⇒
+                        modelFactory = makeModelFactory(mft)
 
-        data ++= Config.models.map(makeModelWrapper)
+                        modelFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
 
-        Config.jarsFolder match {
-            case Some(jarsFolder) ⇒
-                val jarsFile = new File(jarsFolder)
+                    case None ⇒ // No-op.
+                }
 
-                if (!jarsFile.exists())
-                    throw new NCE(s"JAR folder path '$jarsFolder' does not exist.")
-                if (!jarsFile.isDirectory)
-                    throw new NCE(s"JAR folder path '$jarsFolder' is not a directory.")
+                data ++= Config.models.map(makeModelWrapper)
 
-                val src = this.getClass.getProtectionDomain.getCodeSource
-                val locJar = if (src == null) null else new File(src.getLocation.getPath)
+                Config.jarsFolder match {
+                    case Some(jarsFolder) ⇒
+                        val jarsFile = new File(jarsFolder)
 
-                for (jar ← scanJars(jarsFile) if jar != locJar)
-                    data ++= extractModels(jar)
+                        if (!jarsFile.exists())
+                            throw new NCE(s"JAR folder path '$jarsFolder' does not exist.")
+                        if (!jarsFile.isDirectory)
+                            throw new NCE(s"JAR folder path '$jarsFolder' is not a directory.")
 
-            case None ⇒ // No-op.
+                        val src = this.getClass.getProtectionDomain.getCodeSource
+                        val locJar = if (src == null) null else new File(src.getLocation.getPath)
+
+                        for (jar ← scanJars(jarsFile) if jar != locJar)
+                            data ++= extractModels(jar)
+
+                    case None ⇒ // No-op.
+                }
         }
 
         val ids = data.map(_.model.getId).toList
