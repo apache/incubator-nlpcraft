@@ -24,7 +24,7 @@ import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.util.NCUtils
-import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
@@ -111,10 +111,8 @@ object NCCommandManager extends NCService {
                         val mdlData = NCModelManager.getModelData(mdlId).getOrElse(throw new NCE(s"Model not found: $mdlId"))
 
                         val macros = mdlData.model.getMacros.asInstanceOf[Serializable]
-                        val syns = mdlData.model.getElements.asScala.
-                            map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]
-                        val samples = mdlData.samples.map(p ⇒ p._1 → p._2.asJava).
-                            asJava.asInstanceOf[Serializable]
+                        val syns = mdlData.model.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]
+                        val samples = mdlData.samples.map(p ⇒ p._1 → p._2.asJava).asJava.asInstanceOf[Serializable]
 
                         NCConnectionManager.send(
                             NCProbeMessage(

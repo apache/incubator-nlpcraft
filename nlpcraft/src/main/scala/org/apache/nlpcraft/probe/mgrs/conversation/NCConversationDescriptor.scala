@@ -84,15 +84,14 @@ case class NCConversationDescriptor(
             if (now - lastUpdateTstamp > updateTimeoutMs) {
                 stm.clear()
 
-                logger.info(s"Conversation reset by timeout [" +
+                logger.info(s"Conversation is reset by timeout [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
             }
             else if (attempt > maxDepth) {
                 stm.clear()
-
-                logger.info(s"Conversation reset after too many unsuccessful requests [" +
+                logger.info(s"Conversation is reset after too many unsuccessful requests [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -110,7 +109,7 @@ case class NCConversationDescriptor(
                         item.holders --= delHs
 
                         logger.info(
-                            s"Conversation stale tokens removed [" +
+                            s"Conversation overridden tokens removed [" +
                                 s"usrId=$usrId, " +
                                 s"mdlId=$mdlId, " +
                                 s"srvReqId=${item.srvReqId}, " +

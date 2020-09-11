@@ -21,9 +21,23 @@ import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
 import org.junit.jupiter.api.{Assertions, Test}
 
 /**
-  * JUnit wrapper for `NCTestAutoModelValidator` mode validator.
+  * JUnit example models validation.
   */
-class NCTestAutoModelValidatorSpec {
+class NCTestExampleModelsSpec {
     @Test
-    def test(): Unit = Assertions.assertTrue(NCTestAutoModelValidator.isValid(), "See error logs above.")
+    def test(): Unit = {
+        val models = "" +
+            "org.apache.nlpcraft.examples.alarm.AlarmModel," +
+            "org.apache.nlpcraft.examples.time.TimeModel," +
+            "org.apache.nlpcraft.examples.lightswitch.LightSwitchModel," +
+            "org.apache.nlpcraft.examples.echo.EchoModel," +
+            "org.apache.nlpcraft.examples.weather.WeatherModel," +
+            "org.apache.nlpcraft.examples.time.TimeModel"
+
+        // Instruct auto-validator what models to test.
+        System.setProperty("NLPCRAFT_TEST_MODELS", models)
+
+        // Start model auto-validator.
+        Assertions.assertTrue(NCTestAutoModelValidator.isValid(),"See error logs above.")
+    }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.tools
+package org.apache.nlpcraft.model.tools.sqlgen.impl
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test
 /**
  * SQL model engine test.
  */
-class NCSqlModelEngineSpec {
+class NCSqlModelGeneratorImplSpec {
     /**
-     * Copy of the private method from 'NCSqlModelEngine'.
+     * Copy of the private method from 'NCSqlModelGeneratorImpl'.
      *
      * @param s
      * @return
