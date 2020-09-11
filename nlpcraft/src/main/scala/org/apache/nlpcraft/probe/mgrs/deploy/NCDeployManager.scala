@@ -93,9 +93,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         def model: Option[String] = getStringOpt(s"$pre.model")
         def models: Seq[String] = getStringList(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
-
-        // TODO: property name.
-        def synonymsWarnValue: Int = getInt(s"$pre.synonymsWarnValue")
+        def maxSynonymCount: Int = getInt(s"$pre.maxSynonymCount")
     }
 
     /**
@@ -935,7 +933,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (size == 0)
                 logger.warn(s"Element '$elemId' doesn't have synonyms [modelId=$mdlId]")
-            else if (size > Config.synonymsWarnValue)
+            else if (size > Config.maxSynonymCount)
                 logger.warn(
                     s"Element '$elemId' has too many ($size) synonyms. " +
                         s"Make sure this is truly necessary [modelId=$mdlId]"

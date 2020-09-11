@@ -86,7 +86,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
             if (now - lastUpdateTstamp > CONV_CLEAR_DELAY) {
                 stm.clear()
 
-                logger.info(s"Conversation reset by timeout [" +
+                logger.info(s"Conversation is reset by timeout [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -94,7 +94,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
             else if (attempt > MAX_DEPTH) {
                 stm.clear()
         
-                logger.info(s"Conversation reset after too many unsuccessful requests [" +
+                logger.info(s"Conversation is reset after too many unsuccessful requests [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -112,7 +112,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
                         item.holders --= delHs
 
                         logger.info(
-                            s"Conversation stale tokens removed [" +
+                            s"Conversation overridden tokens removed [" +
                                 s"usrId=$usrId, " +
                                 s"mdlId=$mdlId, " +
                                 s"srvReqId=${item.srvReqId}, " +
