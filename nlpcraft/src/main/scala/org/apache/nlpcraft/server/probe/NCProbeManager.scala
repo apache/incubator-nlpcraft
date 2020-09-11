@@ -1026,34 +1026,4 @@ object NCProbeManager extends NCService {
                 case None ⇒ throw new NCE(s"Probe not found for model: '$mdlId''")
             }
         }
-
-    /**
-      *
-      * @param parent
-      * @param mdlId
-      * @param promises
-      * @param msgId
-      * @param msgParams
-      */
-    private def probePromise[T](
-        parent: Span,
-        mdlId: String,
-        promises: ConcurrentHashMap[String, Promise[T]],
-        msgId: String,
-        msgParams: (String, Serializable)*
-    ): Future[T] =
-        getProbeForModelId(mdlId) match {
-            case Some(probe) ⇒
-                val msg = NCProbeMessage(msgId, msgParams:_*)
-
-                val promise = Promise[T]()
-
-                promises.put(msg.getGuid, promise)
-
-                sendToProbe(probe.probeKey, msg, parent)
-
-                promise.future
-
-            case None ⇒ throw new NCE(s"Probe not found for model: '$mdlId''")
-        }
 }
