@@ -108,7 +108,7 @@ object NCCommandManager extends NCService {
                     case "S2P_MODEL_INFO" ⇒
                         val mdlId = msg.data[String]("mdlId")
 
-                        val mdlData = NCModelManager.getModelData(mdlId)
+                        val mdlData = NCModelManager.getModelData(mdlId).getOrElse(throw new NCE(s"Model not found: $mdlId"))
 
                         val macros = mdlData.model.getMacros.asInstanceOf[Serializable]
                         val syns = mdlData.model.getElements.asScala.

@@ -20,12 +20,12 @@ package org.apache.nlpcraft.probe.mgrs.dialogflow
 import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.NCService
-import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.config.NCConfigurable
+import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.duration._
 
 /**
  * Dialog flow manager.
@@ -34,33 +34,38 @@ object NCDialogFlowManager extends NCService {
     case class Key(usrId: Long, mdlId: String)
     case class Value(intent: String, tstamp: Long)
 
+    private object Config extends NCConfigurable {
+        def periodMs: Long = getInt(s"nlpcraft.probe.dialog.check.period.secs") * 1000
+
+        def check(): Unit =
+            if (periodMs <= 0)
+                abortWith(s"Value of 'nlpcraft.probe.conversation.check.period.secs' must be positive")
+    }
+
+    Config.check()
+
     @volatile private var flow: mutable.Map[Key, ArrayBuffer[Value]] = _
-    
-    // Check frequency and timeout.
-    private final val CHECK_PERIOD = 5.minutes.toMillis
-    private final val TIMEOUT = 1.hour.toMillis
-    
     @volatile private var gc: ScheduledExecutorService = _
-    
+
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         flow = mutable.HashMap.empty[Key, ArrayBuffer[Value]]
         gc = Executors.newSingleThreadScheduledExecutor
-    
-        gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), CHECK_PERIOD, CHECK_PERIOD, TimeUnit.MILLISECONDS)
-    
-        logger.info(s"Dialog flow manager GC started [checkPeriodMs=$CHECK_PERIOD, timeoutMs=$TIMEOUT]")
-    
+
+        gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), Config.periodMs, Config.periodMs, TimeUnit.MILLISECONDS)
+
+        logger.info(s"Dialog flow manager GC started [checkPeriodMs=${Config.periodMs}]")
+
         super.start()
     }
-    
+
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         U.shutdownPools(gc)
-    
+
         logger.info("Dialog flow manager GC stopped")
-    
+
         super.stop()
     }
-    
+
     /**
      * Adds matched (winning) intent to the dialog flow for the given user and model IDs.
      *
@@ -75,11 +80,11 @@ object NCDialogFlowManager extends NCService {
                     Value(intent, System.currentTimeMillis())
                 )
             }
-            
+
             logger.trace(s"Added to dialog flow [intent=$intent, userId=$usrId, modelId=$mdlId]")
         }
     }
-    
+
     /**
      * Gets sequence of intent ID sorted from oldest to newest (i.e. dialog flow) for given user and model IDs.
      *
@@ -94,19 +99,32 @@ object NCDialogFlowManager extends NCService {
             }
         }
     }
-    
+
     /**
-     * 
+     *
      */
-    private def clearForTimeout(): Unit = {
-        val ms = U.nowUtcMs() - TIMEOUT
-        
-        startScopedSpan("clearForTimeout", "checkPeriodMs" → CHECK_PERIOD, "timeoutMs" → TIMEOUT) { _ ⇒
-            flow.synchronized {
-                flow.values.foreach(arr ⇒  arr --= arr.filter(_.tstamp < ms))
+    private def clearForTimeout(): Unit =
+        startScopedSpan("clearForTimeout", "checkPeriodMs" → Config.periodMs) { _ ⇒
+            try
+                flow.synchronized {
+                    val delKeys = ArrayBuffer.empty[Key]
+
+                    for ((key, values) ← flow)
+                        NCModelManager.getModelData(key.mdlId) match {
+                            case Some(data) ⇒
+                                val ms = System.currentTimeMillis() -data.model.getDialogTimeout.toMillis
+
+                                values --= values.filter(_.tstamp < ms)
+
+                            case None ⇒ delKeys += key
+                        }
+
+                    flow --= delKeys
+                }
+            catch {
+                case e: Throwable ⇒ logger.error("Clean method unexpected error", e)
             }
         }
-    }
     
     /**
      * Clears dialog for given user and model IDs.

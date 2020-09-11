@@ -315,7 +315,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 logger.info(s"REJECT response $msgName sent [srvReqId=$srvReqId, response=${errMsg.get}]")
         }
 
-        val mdlData = NCModelManager.getModelData(mdlId, span)
+        val mdlData = NCModelManager.getModelData(mdlId, span).getOrElse(throw new NCE(s"Model not found: $mdlId"))
 
         var errData: Option[(String, Int)] = None
 

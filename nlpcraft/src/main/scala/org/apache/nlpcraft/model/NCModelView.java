@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model;
 
+import java.time.Duration;
 import java.util.*;
 
 /**
@@ -36,6 +37,36 @@ public interface NCModelView extends NCMetadata {
      * Default value returned from {@link #getJiggleFactor()} method.
      */
     int DFLT_JIGGLE_FACTOR = 2;
+
+    // TODO: comments
+    int DFLT_SUSP_MANY_SYNONYMS = 1000;
+    boolean DFLT_SUSP_MANY_SYNONYMS_ERROR = false;
+
+    Duration DFLT_CONV_USAGE_TIMEOUT = Duration.ofMinutes(60);
+    Duration DFLT_CONV_UPDATE_TIMEOUT = Duration.ofMinutes(5);
+    int DFLT_CONV_MAX_DEPTH = 3;
+
+    Duration DFLT_DIALOG_TIMEOUT = Duration.ofMinutes(60);
+
+    // TODO: comments, review and move to the end of file.
+    default int getSuspManySynonyms() {
+        return DFLT_SUSP_MANY_SYNONYMS;
+    }
+    default boolean isSuspManySynonymsError() {
+        return DFLT_SUSP_MANY_SYNONYMS_ERROR;
+    }
+    default Duration getConvUsageTimeout() {
+        return DFLT_CONV_USAGE_TIMEOUT;
+    }
+    default Duration getConvUpdateTimeout() {
+        return DFLT_CONV_UPDATE_TIMEOUT;
+    }
+    default int getConvMaxDepth() {
+        return DFLT_CONV_MAX_DEPTH;
+    }
+    default Duration getDialogTimeout() {
+        return DFLT_DIALOG_TIMEOUT;
+    }
 
     /**
      * Default value returned from {@link #getJiggleFactor()} method.

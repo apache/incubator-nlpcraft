@@ -93,9 +93,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
         def model: Option[String] = getStringOpt(s"$pre.model")
         def models: Seq[String] = getStringList(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
-
-        // TODO: property name.
-        def synonymsWarnValue: Int = getInt(s"$pre.synonymsWarnValue")
     }
 
     /**
@@ -132,50 +129,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private def wrap(mdl: NCModel): NCModelData = {
         require(mdl != null)
 
+        checkModelConfig(mdl)
+
         val mdlId = mdl.getId
-        val mdlName = mdl.getName
-        val mdlVer = mdl.getVersion
-
-        // Verify models' identities.
-
-        if (mdlId == null)
-            throw new NCE(s"Model ID is not provided: $mdlName")
-        if (mdlName == null)
-            throw new NCE(s"Model name is not provided: $mdlId")
-        if (mdlVer == null)
-            throw new NCE(s"Model version is not provided: $mdlId")
-        if (mdlName != null && mdlName.isEmpty)
-            throw new NCE(s"Model name cannot be empty string: $mdlId")
-        if (mdlId != null && mdlId.isEmpty)
-            throw new NCE(s"Model ID cannot be empty string: $mdlId")
-        if (mdlVer != null && mdlVer.length > 16)
-            throw new NCE(s"Model version cannot be empty string: $mdlId")
-        if (mdlName != null && mdlName.length > 64)
-            throw new NCE(s"Model name is too long (64 max): $mdlId")
-        if (mdlId != null && mdlId.length > 32)
-            throw new NCE(s"Model ID is too long (32 max): $mdlId")
-        if (mdlVer != null && mdlVer.length > 16)
-            throw new NCE(s"Model version is too long (16 max): $mdlId")
 
         for (elm ← mdl.getElements.asScala)
             if (!elm.getId.matches(ID_REGEX))
                 throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
-
-        @throws[NCE]
-        def checkCollection(name: String, col: Any): Unit =
-            if (col == null)
-                throw new NCE(s"Collection can be empty but cannot be null [modelId=$mdlId, name=$name]")
-
-        checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
-        checkCollection("elements", mdl.getElements)
-        checkCollection("enabledBuiltInTokens", mdl.getEnabledBuiltInTokens)
-        checkCollection("excludedStopWords", mdl.getExcludedStopWords)
-        checkCollection("parsers", mdl.getParsers)
-        checkCollection("suspiciousWords", mdl.getSuspiciousWords)
-        checkCollection("macros", mdl.getMacros)
-        checkCollection("metadata", mdl.getMetadata)
-
-        checkModelConfig(mdl)
 
         val allSyns = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala)
 
@@ -816,11 +776,36 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param mdl Model.
       */
     private def checkModelConfig(mdl: NCModel): Unit = {
+        val mdlId = mdl.getId
+
+        @throws[NCE]
+        def checkMandatoryString(value: String, name: String, maxLen: Int): Unit =
+            if (value == null)
+                throw new NCE(s"$name is not provided [modeId=$mdlId]")
+            else if (value.isEmpty)
+                throw new NCE(s"$name cannot be empty string [modeId=$mdlId]")
+            else if (value.length > maxLen)
+                throw new NCE(s"$name is too long ($maxLen max): $value [modeId=$mdlId]")
+
+        checkMandatoryString(mdl.getId, "Model ID", 32)
+        checkMandatoryString(mdl.getName, "Model name", 64)
+        checkMandatoryString(mdl.getVersion, "Model version", 16)
+
+        @throws[NCE]
+        def checkNotNull(value: AnyRef, name: String): Unit =
+            if (value == null)
+                throw new NCE(s"$name is not provided [modeId=$mdlId]")
+
+        checkNotNull(mdl.getConvUsageTimeout, "Conversation usage timeout")
+        checkNotNull(mdl.getConvUpdateTimeout, "Conversation update timeout")
+        checkNotNull(mdl.getDialogTimeout, "Dialog timeout")
+
+        @throws[NCE]
         def checkInt(v: Int, name: String, min: Int = 0, max: Int = Integer.MAX_VALUE): Unit =
             if (v < min)
-                throw new NCE(s"Invalid model configuration value '$name' [value=$v, min=$min], modelId: ${mdl.getId}.")
+                throw new NCE(s"Invalid model configuration value '$name' [value=$v, min=$min, modelId=$mdlId]")
             else if (v > max)
-                throw new NCE(s"Invalid model configuration value '$name' [value=$v, max=$min], modelId: ${mdl.getId}.")
+                throw new NCE(s"Invalid model configuration value '$name' [value=$v, max=$min, modelId=$mdlId]")
 
         checkInt(mdl.getMaxUnknownWords, "maxUnknownWords")
         checkInt(mdl.getMaxFreeWords, "maxFreeWords")
@@ -831,18 +816,34 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkInt(mdl.getMaxTokens, "maxTokens", max = 100)
         checkInt(mdl.getMaxWords, "maxWords", min = 1, max = 100)
         checkInt(mdl.getJiggleFactor, "jiggleFactor", max = 4)
+        checkInt(mdl.getSuspManySynonyms, "suspManySynonyms", min = 1)
+        checkInt(mdl.getConvMaxDepth, "convMaxDepth", min = 1)
+
+        @throws[NCE]
+        def checkCollection(name: String, col: Any): Unit =
+            if (col == null)
+                throw new NCE(s"Collection can be empty but cannot be null [modelId=$mdlId, name=$name]")
+
+        checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
+        checkCollection("elements", mdl.getElements)
+        checkCollection("enabledBuiltInTokens", mdl.getEnabledBuiltInTokens)
+        checkCollection("excludedStopWords", mdl.getExcludedStopWords)
+        checkCollection("parsers", mdl.getParsers)
+        checkCollection("suspiciousWords", mdl.getSuspiciousWords)
+        checkCollection("macros", mdl.getMacros)
+        checkCollection("metadata", mdl.getMetadata)
 
         val unsToks =
             mdl.getEnabledBuiltInTokens.asScala.filter(t ⇒
                 // 'stanford', 'google', 'opennlp', 'spacy' - any names, not validated.
                 t == null ||
-                    !TOKENS_PROVIDERS_PREFIXES.exists(typ ⇒ t.startsWith(typ)) ||
-                    // 'nlpcraft' names validated.
-                    (t.startsWith("nlpcraft:") && !NCModelView.DFLT_ENABLED_BUILTIN_TOKENS.contains(t))
+                !TOKENS_PROVIDERS_PREFIXES.exists(typ ⇒ t.startsWith(typ)) ||
+                // 'nlpcraft' names validated.
+                (t.startsWith("nlpcraft:") && !NCModelView.DFLT_ENABLED_BUILTIN_TOKENS.contains(t))
             )
 
         if (unsToks.nonEmpty)
-            throw new NCE(s"Invalid model 'enabledBuiltInTokens' token IDs: ${unsToks.mkString(", ")}, modelId: ${mdl.getId}.")
+            throw new NCE(s"Invalid model 'enabledBuiltInTokens' token IDs: ${unsToks.mkString(", ")} [modelId=${mdl.getId}]")
     }
 
     /**
@@ -935,11 +936,16 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (size == 0)
                 logger.warn(s"Element '$elemId' doesn't have synonyms [modelId=$mdlId]")
-            else if (size > Config.synonymsWarnValue)
-                logger.warn(
+            else if (size > mdl.getSuspManySynonyms) {
+                val msg =
                     s"Element '$elemId' has too many ($size) synonyms. " +
-                        s"Make sure this is truly necessary [modelId=$mdlId]"
-                )
+                    s"Make sure this is truly necessary [modelId=$mdlId]"
+
+                if (mdl.isSuspManySynonymsError)
+                    throw new NCE(msg)
+                else
+                    logger.warn(msg)
+            }
 
             val others = mdlSyns.filter {
                 case (otherId, _) ⇒ otherId != elemId

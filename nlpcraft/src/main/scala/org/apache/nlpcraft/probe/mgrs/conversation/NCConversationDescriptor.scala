@@ -29,19 +29,23 @@ import org.apache.nlpcraft.model._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.concurrent.duration._
 
 /**
   * Conversation as an ordered set of utterances.
   */
-case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogging with NCOpenCensusTrace {
+case class NCConversationDescriptor(
+    usrId: Long,
+    mdlId: String,
+    updateTimeoutMs: Long,
+    maxDepth: Int
+) extends LazyLogging with NCOpenCensusTrace {
     /**
      *
      * @param token
      * @param tokenTypeUsageTime
      */
     case class TokenHolder(token: NCToken, var tokenTypeUsageTime: Long = 0)
-    
+
     /**
      *
      * @param holders Tokens holders.
@@ -49,12 +53,6 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
      * @param tstamp Request timestamp. Used just for logging.
      */
     case class ConversationItem(holders: mutable.ArrayBuffer[TokenHolder], srvReqId: String, tstamp: Long)
-    
-    // After 5 mins pause between questions we clear the STM.
-    private final val CONV_CLEAR_DELAY = 5.minutes.toMillis
-
-    // If token is not used in last 3 requests, it is removed from the conversation.
-    private final val MAX_DEPTH = 3
 
     // Short-Term-Memory.
     private val stm = mutable.ArrayBuffer.empty[ConversationItem]
@@ -83,7 +81,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
             attempt += 1
 
             // Conversation cleared by timeout or when there are too much unsuccessful requests.
-            if (now - lastUpdateTstamp > CONV_CLEAR_DELAY) {
+            if (now - lastUpdateTstamp > updateTimeoutMs) {
                 stm.clear()
 
                 logger.info(s"Conversation reset by timeout [" +
@@ -91,16 +89,16 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
                     s"mdlId=$mdlId" +
                 s"]")
             }
-            else if (attempt > MAX_DEPTH) {
+            else if (attempt > maxDepth) {
                 stm.clear()
-        
+
                 logger.info(s"Conversation reset after too many unsuccessful requests [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
             }
             else {
-                val minUsageTime = now - CONV_CLEAR_DELAY
+                val minUsageTime = now - updateTimeoutMs
                 val toks = lastToks.flatten
 
                 for (item ← stm) {
@@ -177,7 +175,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
                 // Last used tokens processing.
                 lastToks += toks
     
-                val delCnt = lastToks.length - MAX_DEPTH
+                val delCnt = lastToks.length - maxDepth
     
                 if (delCnt > 0)
                     lastToks.remove(0, delCnt)
