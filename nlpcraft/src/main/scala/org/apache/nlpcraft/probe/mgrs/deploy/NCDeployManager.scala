@@ -90,7 +90,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         def modelFactoryType: Option[String] = getStringOpt(s"$pre.modelFactory.type")
         def modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
         def model: Option[String] = getStringOpt(s"$pre.model")
-        def models: Seq[String] = getStringList(s"$pre.models")
+        def models: String = getString(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
     }
 
@@ -137,7 +137,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         mdl.getMacros.asScala.keys.foreach(makro ⇒
             if (!allSyns.exists(_.contains(makro)))
-                logger.warn(s"Unused macro [mdlId=$mdlId, macro=$makro]")
+                logger.warn(s"Unused macro detected [mdlId=$mdlId, macro=$makro]")
         )
 
         val parser = new NCMacroParser
@@ -471,7 +471,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             )
         }
         else
-            logger.warn(s"Model has no defined intents [mdlId=$mdlId]")
+            logger.warn(s"Model has no intents [mdlId=$mdlId]")
 
         NCModelData(
             model = mdl,
@@ -621,7 +621,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     case None ⇒ // No-op.
                 }
 
-                data ++= Config.models.map(makeModelWrapper)
+                data ++= Config.models.split(",").map(_.trim).map(makeModelWrapper)
 
                 Config.jarsFolder match {
                     case Some(jarsFolder) ⇒
@@ -1490,9 +1490,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     None
             }).toMap
 
-        if (!annFound)
-            logger.warn(s"No intents found [mdlId=${mdl.getId}")
-
         val parser = new NCMacroParser
 
         mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
@@ -1512,9 +1509,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
 
                     if (!allSyns.exists(_.intersect(seq).nonEmpty))
-                        logger.warn(s"Intent sample doesn't contain any direct synonyms [" +
+                        logger.warn(s"@IntentSample sample doesn't contain any direct synonyms [" +
                             s"mdlId=$mdlId, " +
-                            s"sample=$s" +
+                            s"sample='$s'" +
                         s"]")
             }
 

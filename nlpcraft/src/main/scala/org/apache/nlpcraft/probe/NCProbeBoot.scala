@@ -69,12 +69,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         var upLink: (String, Integer),
         var downLink: (String, Integer),
         var jarsFolder: Option[String],
-        var model: Option[String],
-        var models: Seq[String],
+        var models: String,
         var lifecycle: Seq[String]
     ) {
-        def upLinkString = s"${upLink._1}:${upLink._2}"
-        def downLinkString = s"${downLink._1}:${downLink._2}"
+        lazy val upLinkString = s"${upLink._1}:${upLink._2}"
+        lazy val downLinkString = s"${downLink._1}:${downLink._2}"
+        lazy val modelsSeq: Seq[String] = models.split(",").map(_.trim)
     }
     
     private def mkDefault(): Config = {
@@ -143,8 +143,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val upLink: (String, Integer) = getHostPort(s"$prefix.upLink")
             val downLink: (String, Integer) = getHostPort(s"$prefix.downLink")
             val jarsFolder: Option[String] = getStringOpt(s"$prefix.jarsFolder")
-            val model: Option[String] = getStringOpt(s"$prefix.model")
-            val models: Seq[String] = getStringList(s"$prefix.models")
+            val models: String = getString(s"$prefix.models")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
         
@@ -154,7 +153,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             Cfg.upLink,
             Cfg.downLink,
             Cfg.jarsFolder,
-            Cfg.model,
             Cfg.models,
             Cfg.lifecycle
         )
@@ -305,8 +303,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val upLink: (String, Integer) = getHostPort(upLinkStr)
             val dnLink: (String, Integer) = getHostPort(dnLinkStr)
             val jarsFolder: Option[String] = getStringOpt(s"$prefix.jarsFolder")
-            val model: Option[String] = getStringOpt(s"$prefix.model")
-            val models: Seq[String] = mdlClasses.map(_.getName).toSeq
+            val models: String = mdlClasses.map(_.getName).mkString(",")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
     
@@ -318,7 +315,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     Cfg.upLink,
                     Cfg.dnLink,
                     Cfg.jarsFolder,
-                    Cfg.model,
                     Cfg.models,
                     Cfg.lifecycle),
                     fut
@@ -378,19 +374,9 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         tbl += ("Down-Link", cfg.downLinkString)
         tbl += ("Up-Link", cfg.upLinkString)
         tbl += ("Lifecycle", cfg.lifecycle)
+        tbl += ("Models" , cfg.modelsSeq)
+        tbl += ("JARs Folder", cfg.jarsFolder.getOrElse(""))
 
-        cfg.model match {
-            case Some(m) ⇒
-                tbl += ("Model", m)
-                tbl += ("Models" , "<ignored>")
-                tbl += ("JARs Folder", "<ignored>")
-
-            case None ⇒
-                tbl += ("Model", "<ignored>")
-                tbl += ("Models" , cfg.models)
-                tbl += ("JARs Folder", cfg.jarsFolder.getOrElse(""))
-        }
-        
         tbl.info(logger, Some("Probe Configuration:"))
     }
     
@@ -429,8 +415,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "downlink" → cfg.downLinkString,
                 "relVer" → ver.version,
                 "relDate" → ver.date.toString,
-                "model" → cfg.model.getOrElse(""),
-                "models" → cfg.models.mkString(","),
+                "models" → cfg.models,
                 "lifecycle" → cfg.lifecycle.mkString(","),
                 "jarFolder" → cfg.jarsFolder
             )
