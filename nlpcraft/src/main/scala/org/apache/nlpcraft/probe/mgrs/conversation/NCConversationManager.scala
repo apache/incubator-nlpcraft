@@ -37,7 +37,7 @@ object NCConversationManager extends NCService {
     private object Config extends NCConfigurable {
         private final val name = "nlpcraft.probe.convGcTimeoutMs"
 
-        def timeoutMs: Long = getInt("name")
+        def timeoutMs: Long = getInt(name)
 
         def check(): Unit =
             if (timeoutMs <= 0)
