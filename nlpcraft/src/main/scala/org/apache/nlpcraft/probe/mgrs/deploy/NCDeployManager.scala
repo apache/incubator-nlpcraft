@@ -89,7 +89,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // It should reload config.
         def modelFactoryType: Option[String] = getStringOpt(s"$pre.modelFactory.type")
         def modelFactoryProps: Option[Map[String, String]] = getMapOpt(s"$pre.modelFactory.properties")
-        def model: Option[String] = getStringOpt(s"$pre.model")
         def models: String = getString(s"$pre.models")
         def jarsFolder: Option[String] = getStringOpt(s"$pre.jarsFolder")
     }
@@ -604,42 +603,36 @@ object NCDeployManager extends NCService with DecorateAsScala {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         data = ArrayBuffer.empty[NCModelData]
 
-        Config.model match {
-            case Some(mdlClsName) ⇒
-                data += makeModelWrapper(mdlClsName)
+        modelFactory = new NCBasicModelFactory
 
-            case None ⇒
-                modelFactory = new NCBasicModelFactory
+        // Initialize model factory (if configured).
+        Config.modelFactoryType match {
+            case Some(mft) ⇒
+                modelFactory = makeModelFactory(mft)
 
-                // Initialize model factory (if configured).
-                Config.modelFactoryType match {
-                    case Some(mft) ⇒
-                        modelFactory = makeModelFactory(mft)
+                modelFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
 
-                        modelFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
+            case None ⇒ // No-op.
+        }
 
-                    case None ⇒ // No-op.
-                }
+        data ++= Config.models.split(",").map(_.trim).map(makeModelWrapper)
 
-                data ++= Config.models.split(",").map(_.trim).map(makeModelWrapper)
+        Config.jarsFolder match {
+            case Some(jarsFolder) ⇒
+                val jarsFile = new File(jarsFolder)
 
-                Config.jarsFolder match {
-                    case Some(jarsFolder) ⇒
-                        val jarsFile = new File(jarsFolder)
+                if (!jarsFile.exists())
+                    throw new NCE(s"Probe configuration JAR folder path does not exist: $jarsFolder")
+                if (!jarsFile.isDirectory)
+                    throw new NCE(s"Probe configuration JAR folder path is not a directory: $jarsFolder")
 
-                        if (!jarsFile.exists())
-                            throw new NCE(s"Probe configuration JAR folder path does not exist: $jarsFolder")
-                        if (!jarsFile.isDirectory)
-                            throw new NCE(s"Probe configuration JAR folder path is not a directory: $jarsFolder")
+                val src = this.getClass.getProtectionDomain.getCodeSource
+                val locJar = if (src == null) null else new File(src.getLocation.getPath)
 
-                        val src = this.getClass.getProtectionDomain.getCodeSource
-                        val locJar = if (src == null) null else new File(src.getLocation.getPath)
+                for (jar ← scanJars(jarsFile) if jar != locJar)
+                    data ++= extractModels(jar)
 
-                        for (jar ← scanJars(jarsFile) if jar != locJar)
-                            data ++= extractModels(jar)
-
-                    case None ⇒ // No-op.
-                }
+            case None ⇒ // No-op.
         }
 
         val ids = data.map(_.model.getId).toList
