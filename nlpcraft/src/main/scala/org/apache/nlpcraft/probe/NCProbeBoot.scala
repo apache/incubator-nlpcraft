@@ -163,7 +163,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param cfg Probe configuration.
       * @param fut
       */
-    private def start0(cfg: ProbeConfig, fut: CompletableFuture[Void]): Unit = {
+    private def start0(cfg: ProbeConfig, fut: CompletableFuture[Integer]): Unit = {
         probeThread = Thread.currentThread()
         
         asciiLogo()
@@ -175,7 +175,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
                 stop0()
 
-                fut.complete(null)
+                fut.complete(1)
             
             case _ ⇒ // Managers started OK.
                 shutdownHook = new Thread() {
@@ -188,7 +188,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
                 started = true
                 
-                fut.complete(null)
+                fut.complete(0)
                 
                 // Wait indefinitely.
                 while (started)
@@ -214,12 +214,9 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         }
         
         started = false
-        
-        if (probeThread != null) {
-            probeThread.interrupt()
-            probeThread.join()
-        }
-        
+
+        U.stopThread(probeThread)
+
         logger.info("Probe shutdown OK.")
     }
     
@@ -235,7 +232,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param cfgFile
       * @param fut
       */
-    private [probe] def start(cfgFile: String, fut: CompletableFuture[Void]): Unit = {
+    private [probe] def start(cfgFile: String, fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
         
         val cfg = initializeConfig(Array(s"-config=$cfgFile"), None)
@@ -252,7 +249,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private [probe] def start(
         mdlClasses: Array[java.lang.Class[_ <: NCModel]],
-        fut: CompletableFuture[Void]): Unit = {
+        fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
     
         import ConfigValueFactory._
@@ -285,7 +282,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         upLinkStr: String,
         dnLinkStr: String,
         mdlClasses: Array[java.lang.Class[_ <: NCModel]],
-        fut: CompletableFuture[Void]): Unit = {
+        fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
     
         object Cfg extends NCConfigurable {
@@ -328,7 +325,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param args
       * @param fut
       */
-    private [probe] def start(args: Array[String], fut: CompletableFuture[Void]): Unit =
+    private [probe] def start(args: Array[String], fut: CompletableFuture[Integer]): Unit =
         start0(initializeConfig(args, None), fut)
     
     /**

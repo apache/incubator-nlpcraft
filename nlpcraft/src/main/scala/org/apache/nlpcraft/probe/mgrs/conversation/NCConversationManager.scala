@@ -35,7 +35,7 @@ object NCConversationManager extends NCService {
     case class Value(conv: NCConversation, var tstamp: Long = 0)
 
     private object Config extends NCConfigurable {
-        private final val name = "nlpcraft.probe.convGcTimeoutMs1"
+        private final val name = "nlpcraft.probe.convGcTimeoutMs"
 
         def timeoutMs: Long = getInt(name)
 

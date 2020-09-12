@@ -414,10 +414,11 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                             diffRedundant.foreach { case (del, similar) ⇒
                                 if (DEEP_DEBUG)
-                                    logger.trace(
-                                        s"Redundant note removed, because similar exists " +
-                                        s"[note=$del, similar=$similar, type=$typ]"
-                                    )
+                                    logger.trace(s"Redundant note removed, because similar exists [" +
+                                        s"note=$del, " +
+                                        s"similar=$similar, " +
+                                        s"type=$typ" +
+                                    s"]")
 
                                 nlpSen.removeNote(del)
                             }
@@ -444,10 +445,15 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     if (continue) {
                         val changed = res.filter(!_._2).keys.map(_.getClass.getSimpleName).mkString(", ")
 
-                        logger.trace(s"Enrichment iteration finished - more needed [step=$step, changed=$changed]")
+                        logger.trace(s"Enrichment iteration finished - more needed [" +
+                            s"step=$step, " +
+                            s"changed=$changed" +
+                        s"]")
                     }
                     else
-                        logger.trace(s"Enrichment finished [step=$step]")
+                        logger.trace(s"Enrichment finished [" +
+                            s"step=$step" +
+                        s"]")
             }
 
             nlpSen.clone().collapse().

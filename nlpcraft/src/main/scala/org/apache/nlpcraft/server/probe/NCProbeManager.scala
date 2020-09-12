@@ -466,12 +466,12 @@ object NCProbeManager extends NCService {
                         case _: SocketTimeoutException | _: InterruptedException | _: InterruptedIOException ⇒ ()
                     
                         case _: EOFException ⇒
-                            logger.info(s"Probe closed downlink connection: $probeKey")
+                            logger.error(s"Probe closed downlink connection: $probeKey")
                         
                             t.interrupt()
                     
                         case e: Throwable ⇒
-                            logger.info(s"Error reading probe downlink socket (${e.getMessage}): $probeKey", e)
+                            logger.error(s"Error reading probe downlink socket (${e.getMessage}): $probeKey")
 
                             t.interrupt()
                     }
@@ -703,16 +703,6 @@ object NCProbeManager extends NCService {
             logger.error(s"Received message from unknown probe (ignoring): $probeKey]")
         else {
             val typ = probeMsg.getType
-
-            def processPromise[T](promises: ConcurrentHashMap[String, Promise[T]], typ: java.lang.reflect.Type): Unit = {
-                val promise = promises.remove(probeMsg.data[String]("reqGuid"))
-
-                if (promise != null) {
-                    val r: T = GSON.fromJson(probeMsg.data[String]("resp"), typ)
-
-                    promise.success(r)
-                }
-            }
 
             typ match {
                 case "P2S_PING" ⇒ ()

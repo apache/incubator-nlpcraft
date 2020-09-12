@@ -1155,18 +1155,19 @@ object NCUtils extends LazyLogging {
       *
       * @param ess Executor services.
       */
-    def shutdownPools(ess: ExecutorService*): Unit = {
-        val seq = ess.filter(_ != null)
+    def shutdownPools(ess: ExecutorService*): Unit =
+        if (ess != null) {
+            val seq = ess.filter(_ != null)
 
-        seq.foreach(_.shutdown())
-        seq.foreach(es ⇒
-            try
-                es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
-            catch {
-                case _: InterruptedException ⇒ () // Safely ignore.
-            }
-        )
-    }
+            seq.foreach(_.shutdown())
+            seq.foreach(es ⇒
+                try
+                    es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
+                catch {
+                    case _: InterruptedException ⇒ () // Safely ignore.
+                }
+            )
+        }
 
     /**
       * Gets full path for given file name in user's home folder.
