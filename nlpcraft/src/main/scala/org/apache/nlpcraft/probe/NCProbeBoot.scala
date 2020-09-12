@@ -171,17 +171,10 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         catching(classOf[Throwable]) either startManagers(cfg) match {
             case Left(e) ⇒ // Exception.
-                e match {
-                    case x: NCException ⇒
-                        logger.error(s"Failed to start probe.", x)
+                logger.error("Failed to start probe.", e)
 
-                        stopManagers()
+                stop0()
 
-                        logger.info("Managers stopped.")
-
-                    case x: Throwable ⇒ logger.error("Failed to start probe due to unexpected error.", x)
-                }
-                
                 fut.complete(null)
             
             case _ ⇒ // Managers started OK.
@@ -206,7 +199,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     }
         }
     
-        logger.info("Embedded probe thread stopped OK.")
+        logger.trace("Probe thread stopped OK.")
     }
     
     /**
@@ -227,7 +220,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             probeThread.join()
         }
         
-        logger.info("Embedded probe shutdown OK.")
+        logger.info("Probe shutdown OK.")
     }
     
     /**
@@ -235,7 +228,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private def checkStarted(): Unit = 
         if (started)
-            throw new NCException(s"Embedded probe has already been started (only one probe per JVM is allowed).")
+            throw new NCException(s"Probe has already been started (only one probe per JVM is allowed).")
     
     /**
       *

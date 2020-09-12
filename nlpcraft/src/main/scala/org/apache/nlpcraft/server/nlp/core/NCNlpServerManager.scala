@@ -46,7 +46,10 @@ object NCNlpServerManager extends NCService {
             val unsupported = tokenProviders.filter(t ⇒ !TOKEN_PROVIDERS.contains(t))
 
             if (unsupported.nonEmpty)
-                abortWith(s"Configuration '$prop' contains unsupported providers: ${unsupported.mkString(",")}")
+                throw new NCE(s"Configuration property contains unsupported token providers [" +
+                    s"name=$prop, " +
+                    s"unsupported=${unsupported.mkString(", ")}" +
+                s"]")
         }
     }
 

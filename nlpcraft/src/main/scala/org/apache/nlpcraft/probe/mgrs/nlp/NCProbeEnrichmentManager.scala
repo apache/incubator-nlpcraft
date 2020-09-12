@@ -76,7 +76,10 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         def check(): Unit =
             if (resultMaxSize <= 0)
-                abortWith(s"Value of '$pre.resultMaxSizeBytes' must be positive")
+                throw new NCE(s"Configuration property value must be > 0 [" +
+                    s"name=$pre.resultMaxSizeBytes, " +
+                    s"value=$resultMaxSize" +
+                s"]")
     }
 
     Config.check()

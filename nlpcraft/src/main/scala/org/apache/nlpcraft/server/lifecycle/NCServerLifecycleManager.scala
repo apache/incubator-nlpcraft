@@ -37,14 +37,9 @@ object NCServerLifecycleManager extends NCService {
           */
         def loadAndCheck(): Unit = {
             if (classes.distinct.size != classes.size)
-                abortWith(s"Configuration property '$prop' cannot have duplicates.")
+                throw new NCE(s"Configuration property cannot have duplicates [name=$prop]")
             
-            try
-                objects = classes.map(U.mkObject(_).asInstanceOf[NCServerLifecycle])
-            catch {
-                case e: NCE ⇒ abortWith(e.getMessage, e.getCause.getMessage)
-                case e: Throwable ⇒ abortWith(e.getMessage)
-            }
+            objects = classes.map(U.mkObject(_).asInstanceOf[NCServerLifecycle])
         }
     }
     

@@ -41,7 +41,7 @@ object NCDialogFlowManager extends NCService {
 
         def check(): Unit =
             if (timeoutMs <= 0)
-                abortWith(s"Configuration property '$name' must be >= 0.")
+                throw new NCE(s"Configuration property must be >= 0 [name=$name]")
     }
 
     Config.check()
@@ -84,7 +84,7 @@ object NCDialogFlowManager extends NCService {
                 )
             }
 
-            logger.trace(s"Added to dialog flow [intId=$intId, userId=$usrId, mdlId=$mdlId]")
+            logger.trace(s"Added to dialog flow [mdlId=$mdlId, intId=$intId, userId=$usrId]")
         }
     }
 

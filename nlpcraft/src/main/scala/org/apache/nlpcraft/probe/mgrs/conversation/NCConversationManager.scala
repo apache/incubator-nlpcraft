@@ -35,13 +35,13 @@ object NCConversationManager extends NCService {
     case class Value(conv: NCConversation, var tstamp: Long = 0)
 
     private object Config extends NCConfigurable {
-        private final val name = "nlpcraft.probe.convGcTimeoutMs"
+        private final val name = "nlpcraft.probe.convGcTimeoutMs1"
 
         def timeoutMs: Long = getInt(name)
 
         def check(): Unit =
             if (timeoutMs <= 0)
-                abortWith(s"Configuration property '$name' must be >= 0.")
+                throw new NCE(s"Configuration property must be >= 0 [name=$name]")
     }
 
     Config.check()

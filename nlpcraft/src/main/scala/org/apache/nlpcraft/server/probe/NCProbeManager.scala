@@ -76,18 +76,39 @@ object NCProbeManager extends NCService {
             val (_, dnPort) =  getDnHostPort
             val (_, upPort) =  getUpHostPort
 
+            val msg1 = "Configuration property must be >= 0 and <= 65535"
+            val msg2 = "Configuration property must be > 0"
+
             if (!(dnPort >= 0 && dnPort <= 65535))
-                abortWith(s"Configuration property '$pre.links.upLink' must be >= 0 and <= 65535: $dnPort")
+                throw new NCE(s"$msg1 [" +
+                    s"name=$pre.links.upLink, " +
+                    s"value=$dnPort" +
+                s"]")
             if (!(upPort >= 0 && upPort <= 65535))
-                abortWith(s"Configuration property '$pre.links.downLink' must be >= 0 and <= 65535: $upPort")
+                throw new NCE(s"$msg1 [" +
+                    s"name=$pre.links.downLink, " +
+                    s"value=$upPort" +
+                s"]")
             if (reconnectTimeoutMs <= 0)
-                abortWith(s"Configuration property '$pre.reconnectTimeoutMs' must be > 0: $reconnectTimeoutMs")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.reconnectTimeoutMs, " +
+                    s"value=$reconnectTimeoutMs" +
+                s"]")
             if (poolSize <= 0)
-                abortWith(s"Configuration property '$pre.poolSize' must be > 0: $poolSize")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.poolSize, " +
+                    s"value=$poolSize" +
+                s"]")
             if (soTimeoutMs <= 0)
-                abortWith(s"Configuration property '$pre.soTimeoutMs' must be > 0: $soTimeoutMs")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.soTimeoutMs, " +
+                    s"value=$soTimeoutMs" +
+                s"]")
             if (pingTimeoutMs <= 0)
-                abortWith(s"Configuration property '$pre.pingTimeoutMs' timeout must be > 0: $pingTimeoutMs")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.pingTimeoutMs, " +
+                    s"value=$pingTimeoutMs" +
+                s"]")
         }
     }
     

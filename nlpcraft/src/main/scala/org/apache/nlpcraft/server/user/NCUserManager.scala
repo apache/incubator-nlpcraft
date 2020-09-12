@@ -75,11 +75,20 @@ object NCUserManager extends NCService with NCIgniteInstance {
           */
         def check(): Unit = {
             if (pwdPoolBlowup <= 1)
-                abortWith(s"Configuration parameter '$pre.pwdPoolBlowup' must be > 1")
+                throw new NCE(s"Configuration parameter must be > 1 [" +
+                    s"name=$pre.pwdPoolBlowup, " +
+                    s"value=$pwdPoolBlowup" +
+                s"]")
             if (timeoutScannerFreqMins <= 0)
-                abortWith(s"Configuration parameter '$pre.timeoutScannerFreqMins' must be > 0")
+                throw new NCE(s"Configuration parameter must be > 0 [" +
+                    s"name=$pre.timeoutScannerFreqMins, " +
+                    s"value=$timeoutScannerFreqMins" +
+                s"]")
             if (accessTokenExpireTimeoutMins <= 0)
-                abortWith(s"Configuration parameter '$pre.accessTokenExpireTimeoutMins' must be > 0")
+                throw new NCE(s"Configuration parameter must be > 0 [" +
+                    s"name=$pre.accessTokenExpireTimeoutMins, " +
+                    s"value=$accessTokenExpireTimeoutMins" +
+                s"]")
         }
     }
 

@@ -74,13 +74,16 @@ object NCSql extends LazyLogging {
           */
         def check(): Unit = {
             if (minPoolSize > maxPoolSize)
-                abortWith(s"Configuration property '$pre.c3p0.pool.minSize' ($minPoolSize) must be <= '$pre.c3p0.pool.maxSize' ($maxPoolSize).")
+                throw new NCE(s"Configuration property '$pre.c3p0.pool.minSize' ($minPoolSize) must be <= '$pre.c3p0.pool.maxSize' ($maxPoolSize).")
             if (minPoolSize > initPoolSize)
-                abortWith(s"Configuration property '$pre.c3p0.pool.minSize' ($minPoolSize) must be <= '$pre.c3p0.pool.initSize' ($initPoolSize).")
+                throw new NCE(s"Configuration property '$pre.c3p0.pool.minSize' ($minPoolSize) must be <= '$pre.c3p0.pool.initSize' ($initPoolSize).")
             if (initPoolSize > maxPoolSize)
-                abortWith(s"Configuration property '$pre.c3p0.pool.initSize' ($initPoolSize) must be <= '$pre.c3p0.pool.maxSize' ($maxPoolSize).")
+                throw new NCE(s"Configuration property '$pre.c3p0.pool.initSize' ($initPoolSize) must be <= '$pre.c3p0.pool.maxSize' ($maxPoolSize).")
             if (acqInc <= 0)
-                abortWith(s"Configuration property '$pre.c3p0.pool.acquireIncrement' must be > 0: $acqInc")
+                throw new NCE(s"Configuration property must be > 0 [" +
+                    s"name=$pre.c3p0.pool.acquireIncrement, " +
+                    s"value=$acqInc" +
+                s"]")
         }
     }
 

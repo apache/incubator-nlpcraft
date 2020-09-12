@@ -50,11 +50,18 @@ object NCRestManager extends NCService {
           */
         def check(): Unit = {
             if (!(port > 0 && port < 65535))
-                abortWith(s"Configuration property port '$pre.port' must be > 0 and < 65535: $port")
+                throw new NCE(s"Configuration property must be > 0 and < 65535 [" +
+                    s"name=$pre.port, " +
+                    s"value=$port" +
+                s"]")
             if (host == null)
-                abortWith(s"Configuration property port '$pre.host' must be specified.")
+                throw new NCE(s"Configuration property must be specified [" +
+                    s"name=$pre.host" +
+                s"]")
             if (apiImpl == null)
-                abortWith(s"Configuration property port '$pre.apiImpl' must be specified (use 'org.apache.nlpcraft.server.rest.NCBasicRestApi' as default).")
+                throw new NCE(s"Configuration property must be specified (use 'org.apache.nlpcraft.server.rest.NCBasicRestApi' as default) [" +
+                    s"name=$pre.apiImpl" +
+                s"]")
         }
     }
 
