@@ -53,6 +53,7 @@ import java.util.stream.Collectors;
  * have sensible defaults. Most of the time only user {@link #setUser(String, String) credentials}
  * will have to be changed if not testing with default account.
  */
+@SuppressWarnings({"unused", "RedundantSuppression"})
 public class NCTestClientBuilder {
     /** Default public REST API URL (endpoint). */
     public static final String DFLT_BASEURL = "http://localhost:8081/api/v1/";
@@ -816,7 +817,7 @@ public class NCTestClientBuilder {
          * @throws IOException
          */
         @SafeVarargs
-        private final String post(String url, Pair<String, Object>... ps) throws NCTestClientException, IOException {
+        private String post(String url, Pair<String, Object>... ps) throws NCTestClientException, IOException {
             HttpPost post = new HttpPost(baseUrl + url);
 
             try {
@@ -996,7 +997,7 @@ public class NCTestClientBuilder {
             assert (resType != null && resBody != null) ^ errMsg != null;
 
             return new NCTestResult() {
-                private<T> Optional<String> convert(String s) {
+                private Optional<String> convert(String s) {
                     return s == null ? Optional.empty() : Optional.of(s);
                 }
 

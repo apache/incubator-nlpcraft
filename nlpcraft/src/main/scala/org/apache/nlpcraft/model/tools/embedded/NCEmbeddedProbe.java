@@ -70,14 +70,14 @@ import java.util.function.*;
  * </ul>
  */
 public class NCEmbeddedProbe {
-    private static int waitForFuture(CompletableFuture<Integer> fut) {
+    private static boolean waitForFuture(CompletableFuture<Integer> fut) {
         while (!fut.isDone())
             try {
-                fut.get();
+                return fut.get() == 0;
             }
             catch (InterruptedException | ExecutionException ignored) {}
 
-        return -1;
+        return false;
     }
 
     /**
@@ -88,9 +88,9 @@ public class NCEmbeddedProbe {
      *      that can be found in the current working directory or on the classpath as a class loader
      *      resource.
      * @throws NCException Thrown in case of any errors starting the data probe.
-     * @return Exit code from the probe.
+     * @return Whether or not probe started ok.
      */
-    public static int start(String cfgFile) {
+    public static boolean start(String cfgFile) {
         CompletableFuture<Integer> fut = new CompletableFuture<>();
 
         NCProbeBoot$.MODULE$.start(cfgFile, fut);
@@ -112,10 +112,10 @@ public class NCEmbeddedProbe {
      * 
      * @param mdlClasses One or more data model classes to be deployed by the embedded probe.
      * @throws NCException Thrown in case of any errors starting the data probe.
-     * @return Exit code from the probe.
+     * @return  Whether or not probe started ok.
      */
     @SafeVarargs
-    public static int start(Class<? extends NCModel>... mdlClasses) {
+    public static boolean start(Class<? extends NCModel>... mdlClasses) {
         checkModelClasses(mdlClasses);
 
         CompletableFuture<Integer> fut = new CompletableFuture<>();
@@ -134,10 +134,10 @@ public class NCEmbeddedProbe {
      * @param dnLink Probe down-link from the server.
      * @param mdlClasses One or more data model classes to be deployed by the embedded probe.
      * @throws NCException Thrown in case of any errors starting the data probe.
-     * @return Exit code from the probe.
+     * @return  Whether or not probe started ok.
      */
     @SafeVarargs
-    public static int start(
+    public static boolean start(
         String probeId,
         String tok,
         String upLink,

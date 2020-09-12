@@ -29,7 +29,7 @@ import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.version.NCVersion
-import org.apache.nlpcraft.common.{NCE, NCException, U}
+import org.apache.nlpcraft.common.{NCE, NCException, NCService, U}
 import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
@@ -49,6 +49,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNouns
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.compat.Platform.currentTime
 import scala.util.control.Exception.{catching, ignoring}
 
@@ -57,7 +58,9 @@ import scala.util.control.Exception.{catching, ignoring}
   */
 private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     private final val executionStart = System.currentTimeMillis()
-    
+
+    private val startedMgrs = mutable.Buffer.empty[NCService]
+
     @volatile private var started = false
     @volatile private var shutdownHook: Thread = _
     @volatile private var probeThread: Thread = _
@@ -91,7 +94,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             withValue(s"$prefix.upLink", fromAnyRef("localhost:8201")).
             withValue(s"$prefix.downLink", fromAnyRef("localhost:8202")).
             withValue(s"$prefix.model", fromAnyRef(null)).
-            withValue(s"$prefix.models", fromIterable(Seq().asJava)).
+            withValue(s"$prefix.models", fromAnyRef("")).
             withValue(s"$prefix.lifecycle", fromIterable(Seq().asJava)).
             withValue(s"$prefix.resultMaxSizeBytes", fromAnyRef(1048576)).
             withValue("nlpcraft.nlpEngine", fromAnyRef("opennlp"))
@@ -257,8 +260,10 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         val cfg = initializeConfig(
             Array.empty,
             Some(
-                ConfigFactory.empty()
-                    .withValue("nlpcraft.probe.models", fromIterable(mdlClasses.map(_.getName).toSeq.asJava))
+                ConfigFactory.empty().withValue(
+                    "nlpcraft.probe.models",
+                    fromAnyRef(mdlClasses.map(_.getName).mkString(","))
+                )
             )
         )
         
@@ -384,13 +389,13 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         tbl.info(logger)
     }
-    
+
     /**
       *
       * @return
       */
     private def startManagers(cfg: ProbeConfig): Unit = {
-        // Lifecycle callback.
+        // Lifecycle callback outside of tracing span.
         NCLifecycleManager.start()
         NCLifecycleManager.onInit()
         
@@ -410,25 +415,25 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "jarFolder" → cfg.jarsFolder
             )
 
-            NCExternalConfigManager.start(span)
-            NCNlpCoreManager.start(span)
-            NCNumericManager.start(span)
-            NCDeployManager.start(span)
-            NCModelManager.start(span)
-            NCCommandManager.start(span)
-            NCDictionaryManager.start(span)
-            NCStopWordEnricher.start(span)
-            NCModelEnricher.start(span)
-            NCLimitEnricher.start(span)
-            NCSortEnricher.start(span)
-            NCRelationEnricher.start(span)
-            NCSuspiciousNounsEnricher.start(span)
-            NCValidateManager.start(span)
-            NCDictionaryEnricher.start(span)
-            NCConversationManager.start(span)
-            NCProbeEnrichmentManager.start(span)
-            NCConnectionManager.start(span)
-            NCDialogFlowManager.start(span)
+            startedMgrs += NCExternalConfigManager.start(span)
+            startedMgrs += NCNlpCoreManager.start(span)
+            startedMgrs += NCNumericManager.start(span)
+            startedMgrs += NCDeployManager.start(span)
+            startedMgrs += NCModelManager.start(span)
+            startedMgrs += NCCommandManager.start(span)
+            startedMgrs += NCDictionaryManager.start(span)
+            startedMgrs += NCStopWordEnricher.start(span)
+            startedMgrs += NCModelEnricher.start(span)
+            startedMgrs += NCLimitEnricher.start(span)
+            startedMgrs += NCSortEnricher.start(span)
+            startedMgrs += NCRelationEnricher.start(span)
+            startedMgrs += NCSuspiciousNounsEnricher.start(span)
+            startedMgrs += NCValidateManager.start(span)
+            startedMgrs += NCDictionaryEnricher.start(span)
+            startedMgrs += NCConversationManager.start(span)
+            startedMgrs += NCProbeEnrichmentManager.start(span)
+            startedMgrs += NCConnectionManager.start(span)
+            startedMgrs += NCDialogFlowManager.start(span)
         }
     }
     
@@ -437,31 +442,11 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private def stopManagers(): Unit = {
         startScopedSpan("stopManagers") { span ⇒
-            // Order is important!
-            NCDialogFlowManager.stop(span)
-            NCConnectionManager.stop(span)
-            NCProbeEnrichmentManager.stop(span)
-            NCConversationManager.stop(span)
-            NCDictionaryEnricher.stop(span)
-            NCValidateManager.stop(span)
-            NCSuspiciousNounsEnricher.stop(span)
-            NCRelationEnricher.stop(span)
-            NCSortEnricher.stop(span)
-            NCLimitEnricher.stop(span)
-            NCModelEnricher.stop(span)
-            NCStopWordEnricher.stop(span)
-            NCDictionaryManager.stop(span)
-            NCCommandManager.stop(span)
-            NCModelManager.stop(span)
-            NCDeployManager.stop(span)
-            NCNumericManager.stop(span)
-            NCNlpCoreManager.stop(span)
-            NCExternalConfigManager.stop(span)
+            startedMgrs.reverseIterator.foreach(_.stop(span))
         }
         
-        // Lifecycle callback.
+        // Lifecycle callback outside of tracing span.
         NCLifecycleManager.onDiscard()
-        
         NCLifecycleManager.stop()
     }
 }
