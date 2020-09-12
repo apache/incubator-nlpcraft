@@ -79,7 +79,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field '$fn' value exceeded max length of $max.")
     case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field '$fn'")
     case class EmptyField(fn: String) extends InvalidArguments(s"API field '$fn' value cannot be empty.")
-    case class InvalidExternalUserId(extId: String) extends InvalidArguments(s"External user IS is invalid or unknown: $extId")
+    case class InvalidExternalUserId(extId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $extId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
 
     /*

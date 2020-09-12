@@ -39,9 +39,14 @@ public interface NCModelView extends NCMetadata {
     int DFLT_JIGGLE_FACTOR = 2;
 
     /**
-     * Default value for {@link #getMaxSynonymsThreshold()} method.
+     * Default value for {@link #getMaxElementSynonyms()} method.
      */
-    int DFLT_MAX_SYNONYMS_THRESHOLD = 1000;
+    int DFLT_MAX_ELEMENT_SYNONYMS = 1000;
+
+    /**
+     * Default value for {@link #getMaxTotalSynonyms()} method.
+     */
+    int DFLT_MAX_TOTAL_SYNONYMS = Integer.MAX_VALUE;
 
     /**
      * Default value for {@link #isMaxSynonymsThresholdError()} method.
@@ -137,11 +142,6 @@ public interface NCModelView extends NCMetadata {
      * Default value for {@link #isDupSynonymsAllowed()} method.
      */
     boolean DFLT_IS_DUP_SYNONYMS_ALLOWED = true;
-
-    /**
-     * Default value for {@link #getMaxTotalSynonyms()} method.
-     */
-    int DFLT_MAX_TOTAL_SYNONYMS = Integer.MAX_VALUE;
 
     /**
      * Default value for {@link #isNoUserTokensAllowed()} method.
@@ -618,6 +618,7 @@ public interface NCModelView extends NCMetadata {
      * </pre>
      *
      * @return Total number of synonyms allowed per model.
+     * @see #getMaxElementSynonyms()
      */
     default int getMaxTotalSynonyms() {
         return DFLT_MAX_TOTAL_SYNONYMS;
@@ -926,7 +927,7 @@ public interface NCModelView extends NCMetadata {
      * <p>
      * <b>Default</b>
      * <br>
-     * If not provided by the model the default value {@link #DFLT_MAX_SYNONYMS_THRESHOLD} will be used.
+     * If not provided by the model the default value {@link #DFLT_MAX_ELEMENT_SYNONYMS} will be used.
      * <p>
      * <b>JSON</b>
      * <br>
@@ -940,11 +941,12 @@ public interface NCModelView extends NCMetadata {
      * @return Maximum number of unique synonyms per model element after which either warning or
      *      error will be triggered.
      * @see #isMaxSynonymsThresholdError()
+     * @see #getMaxTotalSynonyms()
      */
-    default int getMaxSynonymsThreshold() { return DFLT_MAX_SYNONYMS_THRESHOLD; }
+    default int getMaxElementSynonyms() { return DFLT_MAX_ELEMENT_SYNONYMS; }
 
     /**
-     * Whether or not exceeding {@link #getMaxSynonymsThreshold()} will trigger a warning log or throwing an exception.
+     * Whether or not exceeding {@link #getMaxElementSynonyms()} will trigger a warning log or throwing an exception.
      * Note that throwing exception will prevent data probe from starting.
      * <p>
      * <b>Default</b>
@@ -960,9 +962,9 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Whether or not exceeding {@link #getMaxSynonymsThreshold()} will trigger a warning log or
+     * @return Whether or not exceeding {@link #getMaxElementSynonyms()} will trigger a warning log or
      *      throwing an exception.
-     * @see #getMaxSynonymsThreshold()
+     * @see #getMaxElementSynonyms()
      */
     default boolean isMaxSynonymsThresholdError() { return DFLT_MAX_SYNONYMS_THRESHOLD_ERROR; }
 
