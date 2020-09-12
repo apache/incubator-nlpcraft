@@ -113,8 +113,15 @@ object NCModelManager extends NCService with DecorateAsScala {
       *
       * @param mdlId Model ID.
       */
-    def getModelData(mdlId: String, parent: Span = null): Option[NCModelData] =
-        startScopedSpan("getModel", parent, "modelId" → mdlId) { _ ⇒
+    def getModelDataOpt(mdlId: String, parent: Span = null): Option[NCModelData] =
+        startScopedSpan("getModelOpt", parent, "modelId" → mdlId) { _ ⇒
             mux.synchronized { data.get(mdlId) }
         }
+
+    /**
+     *
+     * @param mdlId Model ID.
+     */
+    def getModelData(mdlId: String, parent: Span = null): NCModelData =
+        getModelDataOpt(mdlId, parent).getOrElse(throw new NCE(s"Model not found: $mdlId"))
 }

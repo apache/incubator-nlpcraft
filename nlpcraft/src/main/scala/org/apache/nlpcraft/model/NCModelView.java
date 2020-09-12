@@ -39,33 +39,39 @@ public interface NCModelView extends NCMetadata {
     int DFLT_JIGGLE_FACTOR = 2;
 
     // TODO: comments
-    int DFLT_SUSP_MANY_SYNONYMS = 1000;
-    boolean DFLT_SUSP_MANY_SYNONYMS_ERROR = false;
+    int DFLT_MAX_SYNONYMS_THRESHOLD = 1000;
 
-    Duration DFLT_CONV_USAGE_TIMEOUT = Duration.ofMinutes(60);
-    Duration DFLT_CONV_UPDATE_TIMEOUT = Duration.ofMinutes(5);
+    boolean DFLT_MAX_SYNONYMS_THRESHOLD_ERROR = false;
+
+    long DFLT_CONV_USAGE_TIMEOUT_MS = Duration.ofMinutes(60).toMillis();
+
+    long DFLT_CONV_UPDATE_TIMEOUT_MS = Duration.ofMinutes(5).toMillis();
+
     int DFLT_CONV_MAX_DEPTH = 3;
 
-    Duration DFLT_DIALOG_TIMEOUT = Duration.ofMinutes(60);
+    long DFLT_DIALOG_TIMEOUT_MS = Duration.ofMinutes(60).toMillis();
 
     // TODO: comments, review and move to the end of file.
-    default int getSuspManySynonyms() {
-        return DFLT_SUSP_MANY_SYNONYMS;
+    default int getMaxSynonymsThreshold() { return DFLT_MAX_SYNONYMS_THRESHOLD; }
+
+    default boolean isMaxSynonymsThresholdError() {
+        return DFLT_MAX_SYNONYMS_THRESHOLD_ERROR;
     }
-    default boolean isSuspManySynonymsError() {
-        return DFLT_SUSP_MANY_SYNONYMS_ERROR;
+
+    default long getConversationTimeout() {
+        return DFLT_CONV_USAGE_TIMEOUT_MS;
     }
-    default Duration getConvUsageTimeout() {
-        return DFLT_CONV_USAGE_TIMEOUT;
+
+    default long getConversationStmThreshold() {
+        return DFLT_CONV_UPDATE_TIMEOUT_MS;
     }
-    default Duration getConvUpdateTimeout() {
-        return DFLT_CONV_UPDATE_TIMEOUT;
-    }
-    default int getConvMaxDepth() {
+
+    default int getConversationMaxDepth() {
         return DFLT_CONV_MAX_DEPTH;
     }
-    default Duration getDialogTimeout() {
-        return DFLT_DIALOG_TIMEOUT;
+
+    default long getDialogTimeout() {
+        return DFLT_DIALOG_TIMEOUT_MS;
     }
 
     /**

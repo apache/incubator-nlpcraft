@@ -31,9 +31,9 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
-  * Conversation as an ordered set of utterances.
+  * An active conversation as an ordered set of utterances for the specific user and data model.
   */
-case class NCConversationDescriptor(
+case class NCConversation(
     usrId: Long,
     mdlId: String,
     updateTimeoutMs: Long,
@@ -91,6 +91,7 @@ case class NCConversationDescriptor(
             }
             else if (attempt > maxDepth) {
                 stm.clear()
+
                 logger.info(s"Conversation is reset after too many unsuccessful requests [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
@@ -219,7 +220,7 @@ case class NCConversationDescriptor(
                                 item.holders --= hs
     
                                 logger.info(
-                                    "Conversation tokens overridden by the \"group rule\" [" +
+                                    "Conversation tokens are overridden by the \"group rule\" [" +
                                         s"usrId=$usrId, " +
                                         s"mdlId=$mdlId, " +
                                         s"srvReqId=$srvReqId, " +
@@ -255,7 +256,7 @@ case class NCConversationDescriptor(
             tok.getServerRequestId
         ))
 
-        logger.info(s"Conversation tokens [usrId=$usrId, mdlId=$mdlId]:\n${tbl.toString()}")
+        logger.info(s"Conversation tokens [mdlId=$mdlId, usrId=$usrId]:\n${tbl.toString()}")
     }
 
     /**

@@ -796,16 +796,23 @@ object NCDeployManager extends NCService with DecorateAsScala {
             if (value == null)
                 throw new NCE(s"$name is not provided [modeId=$mdlId]")
 
-        checkNotNull(mdl.getConvUsageTimeout, "Conversation usage timeout")
-        checkNotNull(mdl.getConvUpdateTimeout, "Conversation update timeout")
-        checkNotNull(mdl.getDialogTimeout, "Dialog timeout")
+        checkLong(mdl.getConversationTimeout, "Conversation timeout")
+        checkLong(mdl.getConversationStmThreshold, "Conversation STM threshold")
+        checkLong(mdl.getDialogTimeout, "Dialog timeout")
 
         @throws[NCE]
-        def checkInt(v: Int, name: String, min: Int = 0, max: Int = Integer.MAX_VALUE): Unit =
+        def checkInt(v: Int, name: String, min: Int = 0, max: Int = Int.MaxValue): Unit =
             if (v < min)
-                throw new NCE(s"Invalid model configuration value '$name' [value=$v, min=$min, modelId=$mdlId]")
+                throw new NCE(s"Invalid 'int' model configuration value '$name' [value=$v, min=$min, modelId=$mdlId]")
             else if (v > max)
-                throw new NCE(s"Invalid model configuration value '$name' [value=$v, max=$min, modelId=$mdlId]")
+                throw new NCE(s"Invalid 'int' model configuration value '$name' [value=$v, max=$min, modelId=$mdlId]")
+
+        @throws[NCE]
+        def checkLong(v: Long, name: String, min: Long = 0L, max: Long = Long.MaxValue): Unit =
+            if (v < min)
+                throw new NCE(s"Invalid 'long' model configuration value '$name' [value=$v, min=$min, modelId=$mdlId]")
+            else if (v > max)
+                throw new NCE(s"Invalid 'long' model configuration value '$name' [value=$v, max=$min, modelId=$mdlId]")
 
         checkInt(mdl.getMaxUnknownWords, "maxUnknownWords")
         checkInt(mdl.getMaxFreeWords, "maxFreeWords")
@@ -816,8 +823,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkInt(mdl.getMaxTokens, "maxTokens", max = 100)
         checkInt(mdl.getMaxWords, "maxWords", min = 1, max = 100)
         checkInt(mdl.getJiggleFactor, "jiggleFactor", max = 4)
-        checkInt(mdl.getSuspManySynonyms, "suspManySynonyms", min = 1)
-        checkInt(mdl.getConvMaxDepth, "convMaxDepth", min = 1)
+        checkInt(mdl.getMaxSynonymsThreshold, "suspManySynonyms", min = 1)
+        checkInt(mdl.getConversationMaxDepth, "convMaxDepth", min = 1)
 
         @throws[NCE]
         def checkCollection(name: String, col: Any): Unit =
@@ -936,12 +943,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (size == 0)
                 logger.warn(s"Element '$elemId' doesn't have synonyms [modelId=$mdlId]")
-            else if (size > mdl.getSuspManySynonyms) {
+            else if (size > mdl.getMaxSynonymsThreshold) {
                 val msg =
                     s"Element '$elemId' has too many ($size) synonyms. " +
                     s"Make sure this is truly necessary [modelId=$mdlId]"
 
-                if (mdl.isSuspManySynonymsError)
+                if (mdl.isMaxSynonymsThresholdError)
                     throw new NCE(msg)
                 else
                     logger.warn(msg)

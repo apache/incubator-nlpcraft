@@ -32,14 +32,14 @@ import scala.collection.mutable.ArrayBuffer
   */
 object NCConversationManager extends NCService {
     case class Key(userId: Long, mdlId: String)
-    case class Value(conv: NCConversationDescriptor, var tstamp: Long = 0)
+    case class Value(conv: NCConversation, var tstamp: Long = 0)
 
     private object Config extends NCConfigurable {
         def periodMs: Long = getInt(s"nlpcraft.probe.conversation.check.period.secs") * 1000
 
         def check(): Unit =
             if (periodMs <= 0)
-                abortWith(s"Value of 'nlpcraft.probe.conversation.check.period.secs' must be positive")
+                abortWith(s"Value of 'nlpcraft.probe.conversation.check.period.secs' must be positive.")
     }
 
     Config.check()
@@ -53,7 +53,7 @@ object NCConversationManager extends NCService {
         
         gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), Config.periodMs, Config.periodMs, TimeUnit.MILLISECONDS)
         
-        logger.info(s"Conversation manager GC started [checkPeriodMs=${Config.periodMs}]")
+        logger.info(s"Conversation manager GC started [checkPeriodMs=${Config.periodMs}]") // TODO
 
         super.start()
     }
@@ -61,7 +61,7 @@ object NCConversationManager extends NCService {
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         U.shutdownPools(gc)
     
-        logger.info("Conversation manager GC stopped")
+        logger.info("Conversation manager GC stopped.")
 
         super.stop()
     }
@@ -76,10 +76,11 @@ object NCConversationManager extends NCService {
                     val delKeys = ArrayBuffer.empty[Key]
 
                     for ((key, value) ← convs)
-                        NCModelManager.getModelData(key.mdlId) match {
+                        NCModelManager.getModelDataOpt(key.mdlId) match {
                             case Some(data) ⇒
-                                if (value.tstamp < System.currentTimeMillis() -data.model.getConvUsageTimeout.toMillis)
+                                if (value.tstamp < System.currentTimeMillis() - data.model.getConversationTimeout)
                                     delKeys += key
+
                             case None ⇒ delKeys += key
                         }
 
@@ -98,14 +99,14 @@ object NCConversationManager extends NCService {
       * @param mdlId Model ID.
       * @return New or existing conversation.
       */
-    def getConversation(usrId: Long, mdlId: String, parent: Span = null): NCConversationDescriptor =
+    def getConversation(usrId: Long, mdlId: String, parent: Span = null): NCConversation =
         startScopedSpan("getConversation", parent, "usrId" → usrId, "modelId" → mdlId) { _ ⇒
-            val mdl = NCModelManager.getModelData(mdlId).getOrElse(throw new NCE(s"Model not found: $mdlId")).model
+            val mdl = NCModelManager.getModelData(mdlId).model
 
             convs.synchronized {
                 val v = convs.getOrElseUpdate(
                     Key(usrId, mdlId),
-                    Value(NCConversationDescriptor(usrId, mdlId, mdl.getConvUpdateTimeout.toMillis, mdl.getConvMaxDepth))
+                    Value(NCConversation(usrId, mdlId, mdl.getConversationStmThreshold, mdl.getConversationMaxDepth))
                 )
                 
                 v.tstamp = U.nowUtcMs()

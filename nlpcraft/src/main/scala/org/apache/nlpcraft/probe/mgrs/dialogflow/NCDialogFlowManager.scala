@@ -110,9 +110,9 @@ object NCDialogFlowManager extends NCService {
                     val delKeys = ArrayBuffer.empty[Key]
 
                     for ((key, values) ← flow)
-                        NCModelManager.getModelData(key.mdlId) match {
+                        NCModelManager.getModelDataOpt(key.mdlId) match {
                             case Some(data) ⇒
-                                val ms = System.currentTimeMillis() -data.model.getDialogTimeout.toMillis
+                                val ms = System.currentTimeMillis() -data.model.getDialogTimeout
 
                                 values --= values.filter(_.tstamp < ms)
 
