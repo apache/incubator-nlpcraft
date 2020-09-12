@@ -34,128 +34,117 @@ import java.util.*;
  */
 public interface NCModelView extends NCMetadata {
     /**
-     * Default value returned from {@link #getJiggleFactor()} method.
+     * Default value for {@link #getJiggleFactor()} method.
      */
     int DFLT_JIGGLE_FACTOR = 2;
 
-    // TODO: comments
+    /**
+     * Default value for {@link #getMaxSynonymsThreshold()} method.
+     */
     int DFLT_MAX_SYNONYMS_THRESHOLD = 1000;
 
+    /**
+     * Default value for {@link #isMaxSynonymsThresholdError()} method.
+     */
     boolean DFLT_MAX_SYNONYMS_THRESHOLD_ERROR = false;
 
-    long DFLT_CONV_USAGE_TIMEOUT_MS = Duration.ofMinutes(60).toMillis();
-
-    long DFLT_CONV_UPDATE_TIMEOUT_MS = Duration.ofMinutes(5).toMillis();
-
-    int DFLT_CONV_MAX_DEPTH = 3;
-
-    long DFLT_DIALOG_TIMEOUT_MS = Duration.ofMinutes(60).toMillis();
-
-    // TODO: comments, review and move to the end of file.
-    default int getMaxSynonymsThreshold() { return DFLT_MAX_SYNONYMS_THRESHOLD; }
-
-    default boolean isMaxSynonymsThresholdError() {
-        return DFLT_MAX_SYNONYMS_THRESHOLD_ERROR;
-    }
-
-    default long getConversationTimeout() {
-        return DFLT_CONV_USAGE_TIMEOUT_MS;
-    }
-
-    default long getConversationStmThreshold() {
-        return DFLT_CONV_UPDATE_TIMEOUT_MS;
-    }
-
-    default int getConversationMaxDepth() {
-        return DFLT_CONV_MAX_DEPTH;
-    }
-
-    default long getDialogTimeout() {
-        return DFLT_DIALOG_TIMEOUT_MS;
-    }
+    /**
+     * Default value for {@link #getConversationTimeout()} method.
+     */
+    long DFLT_CONV_TIMEOUT_MS = Duration.ofMinutes(60).toMillis();
 
     /**
-     * Default value returned from {@link #getJiggleFactor()} method.
+     * Default value for {@link #getConversationDepth()} method.
+     */
+    int DFLT_CONV_DEPTH = 3;
+
+    /**
+     * Default value for {@link #getDialogTimeout()} method.
+     */
+    long DFLT_DIALOG_TIMEOUT_MS = Duration.ofMinutes(60).toMillis();
+
+    /**
+     * Default value for {@link #getJiggleFactor()} method.
      */
     Map<String, Object> DFLT_METADATA = new HashMap<>();
 
     /**
-     * Default value returned from {@link #getMaxUnknownWords()} method.
+     * Default value for {@link #getMaxUnknownWords()} method.
      */
     int DFLT_MAX_UNKNOWN_WORDS = Integer.MAX_VALUE;
 
     /**
-     * Default value returned from {@link #getMaxFreeWords()} method.
+     * Default value for {@link #getMaxFreeWords()} method.
      */
     int DFLT_MAX_FREE_WORDS = Integer.MAX_VALUE;
 
     /**
-     * Default value returned from {@link #getMaxSuspiciousWords()} method.
+     * Default value for {@link #getMaxSuspiciousWords()} method.
      */
     int DFLT_MAX_SUSPICIOUS_WORDS = 0;
 
     /**
-     * Default value returned from {@link #getMinWords()} method.
+     * Default value for {@link #getMinWords()} method.
      */
     int DFLT_MIN_WORDS = 1;
 
     /**
-     * Default value returned from {@link #getMaxWords()} method.
+     * Default value for {@link #getMaxWords()} method.
      */
     int DFLT_MAX_WORDS = 50;
 
     /**
-     * Default value returned from {@link #getMinTokens()} method.
+     * Default value for {@link #getMinTokens()} method.
      */
     int DFLT_MIN_TOKENS = 0;
 
     /**
-     * Default value returned from {@link #getMaxTokens()} method.
+     * Default value for {@link #getMaxTokens()} method.
      */
     int DFLT_MAX_TOKENS = 50;
 
     /**
-     * Default value returned from {@link #getMinNonStopwords()} method.
+     * Default value for {@link #getMinNonStopwords()} method.
      */
     int DFLT_MIN_NON_STOPWORDS = 0;
 
     /**
-     * Default value returned from {@link #isNonEnglishAllowed()} method.
+     * Default value for {@link #isNonEnglishAllowed()} method.
      */
     boolean DFLT_IS_NON_ENGLISH_ALLOWED = true;
 
     /**
-     * Default value returned from {@link #isNotLatinCharsetAllowed()} method.
+     * Default value for {@link #isNotLatinCharsetAllowed()} method.
      */
     boolean DFLT_IS_NOT_LATIN_CHARSET_ALLOWED = false;
 
     /**
-     * Default value returned from {@link #isSwearWordsAllowed()} method.
+     * Default value for {@link #isSwearWordsAllowed()} method.
      */
     boolean DFLT_IS_SWEAR_WORDS_ALLOWED = false;
 
     /**
-     * Default value returned from {@link #isNoNounsAllowed()} method.
+     * Default value for {@link #isNoNounsAllowed()} method.
      */
     boolean DFLT_IS_NO_NOUNS_ALLOWED = true;
 
     /**
-     * Default value returned from {@link #isPermutateSynonyms()} method.
+     * Default value for {@link #isPermutateSynonyms()} method.
      */
     boolean DFLT_IS_PERMUTATE_SYNONYMS = true;
 
     /**
-     * Default value returned from {@link #isDupSynonymsAllowed()} method.
+     * Default value for {@link #isDupSynonymsAllowed()} method.
      */
     boolean DFLT_IS_DUP_SYNONYMS_ALLOWED = true;
 
     /**
-     * Default value returned from {@link #getMaxTotalSynonyms()} method.
+     * Default value for {@link #getMaxTotalSynonyms()} method.
      */
     int DFLT_MAX_TOTAL_SYNONYMS = Integer.MAX_VALUE;
 
     /**
-     * Default value returned from {@link #isNoUserTokensAllowed()} method.
+     * Default value for {@link #isNoUserTokensAllowed()} method.
      */
     boolean DFLT_IS_NO_USER_TOKENS_ALLOWED = true;
 
@@ -539,7 +528,7 @@ public interface NCModelView extends NCMetadata {
 
     /**
      * Whether or not to allow user input without a single noun. If {@code false} such user input
-     * will be automatically rejected. Typically for command or query-oriented models this should be set to
+     * will be automatically rejected. Typically for strict command or query-oriented models this should be set to
      * {@code false} as any command or query should have at least one noun subject. However, for conversational
      * models this can be set to {@code false} to allow for a smalltalk and one-liners.
      * <p>
@@ -927,4 +916,137 @@ public interface NCModelView extends NCMetadata {
     default Set<String> getEnabledBuiltInTokens() {
         return DFLT_ENABLED_BUILTIN_TOKENS;
     }
+
+    /**
+     * Gets maximum number of unique synonyms per model element after which either warning or error will be
+     * triggered. Note that there is no technical limit on how many synonyms a model element can have apart
+     * from memory consumption and performance considerations. However, in cases where synonyms are auto-generated
+     * (i.e. from database) this property can serve as a courtesy notification that a model element has too many
+     * synonyms. Also, in general, too many synonyms can potentially lead to a performance degradation.
+     * <p>
+     * <b>Default</b>
+     * <br>
+     * If not provided by the model the default value {@link #DFLT_MAX_SYNONYMS_THRESHOLD} will be used.
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>maxSynonymThreshold</code> property:
+     * <pre class="brush: js">
+     * {
+     *      "maxSynonymThreshold": 1000
+     * }
+     * </pre>
+     *
+     * @return Maximum number of unique synonyms per model element after which either warning or
+     *      error will be triggered.
+     * @see #isMaxSynonymsThresholdError()
+     */
+    default int getMaxSynonymsThreshold() { return DFLT_MAX_SYNONYMS_THRESHOLD; }
+
+    /**
+     * Whether or not exceeding {@link #getMaxSynonymsThreshold()} will trigger a warning log or throwing an exception.
+     * Note that throwing exception will prevent data probe from starting.
+     * <p>
+     * <b>Default</b>
+     * <br>
+     * If not provided by the model the default value {@link #DFLT_MAX_SYNONYMS_THRESHOLD_ERROR} will be used.
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>maxSynonymThresholdError</code> property:
+     * <pre class="brush: js">
+     * {
+     *      "maxSynonymThresholdError": true
+     * }
+     * </pre>
+     *
+     * @return Whether or not exceeding {@link #getMaxSynonymsThreshold()} will trigger a warning log or
+     *      throwing an exception.
+     * @see #getMaxSynonymsThreshold()
+     */
+    default boolean isMaxSynonymsThresholdError() { return DFLT_MAX_SYNONYMS_THRESHOLD_ERROR; }
+
+    /**
+     * Gets timeout in ms after which the unused conversation element is automatically "forgotten".
+     * <p>
+     * Just like in a normal human conversation if we talk about, say, "Chicago", and then don't mention it
+     * for certain period of time during further dialog, the conversation participants subconsciously "forget"
+     * about it and exclude it from conversation context. In other words, the term "Chicago" is no longer in
+     * conversation's short-term-memory.
+     * <p>
+     * Note that both conversation {@link #getConversationTimeout() timeout} and {@link #getConversationDepth() depth}
+     * combined define the expiration policy for the conversation management. These two properties allow to
+     * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
+     * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better
+     * supports fast-moving wide-ranged conversation.
+     * <p>
+     * <b>Default</b>
+     * <br>
+     * If not provided by the model the default value {@link #DFLT_CONV_TIMEOUT_MS} will be used.
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>conversationTimeout</code> property:
+     * <pre class="brush: js">
+     * {
+     *      "conversationTimeout": 300000
+     * }
+     * </pre>
+     *
+     * @return Timeout in ms after which the unused conversation element is automatically "forgotten".
+     * @see #getConversationDepth()
+     */
+    default long getConversationTimeout() { return DFLT_CONV_TIMEOUT_MS; }
+
+    /**
+     * Gets maximum number of requests after which the unused conversation element is automatically "forgotten".
+     * <p>
+     * Just like in a normal human conversation if we talk about, say, "Chicago", and then don't mention it
+     * for a certain number of utterances during further dialog, the conversation participants subconsciously "forget"
+     * about it and exclude it from conversation context. In other words, the term "Chicago" is no longer in
+     * conversation's short-term-memory.
+     * <p>
+     * Note that both conversation {@link #getConversationTimeout() timeout} and {@link #getConversationDepth() depth}
+     * combined define the expiration policy for the conversation management. These two properties allow to
+     * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
+     * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better
+     * supports fast-moving wide-ranged conversation.
+     * <p>
+     * <b>Default</b>
+     * <br>
+     * If not provided by the model the default value {@link #DFLT_CONV_DEPTH} will be used.
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>conversationDepth</code> property:
+     * <pre class="brush: js">
+     * {
+     *      "conversationDepth": 5
+     * }
+     * </pre>
+     *
+     * @return Maximum number of requests after which the unused conversation element is automatically "forgotten".
+     * @see #getConversationTimeout()
+     */
+    default int getConversationDepth() { return DFLT_CONV_DEPTH; }
+
+    /**
+     * Gets timeout in ms after which given user input is removed from dialog flow history.
+     * <p>
+     * <b>Default</b>
+     * <br>
+     * If not provided by the model the default value {@link #DFLT_DIALOG_TIMEOUT_MS} will be used.
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>dialogTimeout</code> property:
+     * <pre class="brush: js">
+     * {
+     *      "dialogTimeout": 300000
+     * }
+     * </pre>
+     *
+     * @return Timeout in ms after which given user input is removed from dialog flow history.
+     */
+    default long getDialogTimeout() { return DFLT_DIALOG_TIMEOUT_MS; }
 }

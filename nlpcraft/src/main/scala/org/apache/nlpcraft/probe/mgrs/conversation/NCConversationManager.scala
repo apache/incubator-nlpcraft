@@ -35,11 +35,13 @@ object NCConversationManager extends NCService {
     case class Value(conv: NCConversation, var tstamp: Long = 0)
 
     private object Config extends NCConfigurable {
-        def periodMs: Long = getInt(s"nlpcraft.probe.conversation.check.period.secs") * 1000
+        private final val name = "nlpcraft.probe.convGcTimeoutMs"
+
+        def timeoutMs: Long = getInt("name")
 
         def check(): Unit =
-            if (periodMs <= 0)
-                abortWith(s"Value of 'nlpcraft.probe.conversation.check.period.secs' must be positive.")
+            if (timeoutMs <= 0)
+                abortWith(s"Configuration property '$name' must be >= 0.")
     }
 
     Config.check()
@@ -49,18 +51,19 @@ object NCConversationManager extends NCService {
 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         gc = Executors.newSingleThreadScheduledExecutor
+
         convs = mutable.HashMap.empty[Key, Value]
-        
-        gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), Config.periodMs, Config.periodMs, TimeUnit.MILLISECONDS)
-        
-        logger.info(s"Conversation manager GC started [checkPeriodMs=${Config.periodMs}]") // TODO
+
+        gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), Config.timeoutMs, Config.timeoutMs, TimeUnit.MILLISECONDS)
+
+        logger.info(s"Conversation manager GC started, checking every ${Config.timeoutMs}ms.")
 
         super.start()
     }
 
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         U.shutdownPools(gc)
-    
+
         logger.info("Conversation manager GC stopped.")
 
         super.stop()
@@ -70,26 +73,21 @@ object NCConversationManager extends NCService {
       *
       */
     private def clearForTimeout(): Unit =
-        startScopedSpan("clearForTimeout", "checkPeriodMs" → Config.periodMs) { _ ⇒
-            try
-                convs.synchronized {
-                    val delKeys = ArrayBuffer.empty[Key]
+        startScopedSpan("clearForTimeout", "timeoutMs" → Config.timeoutMs) { _ ⇒
+            convs.synchronized {
+                val delKeys = ArrayBuffer.empty[Key]
 
-                    for ((key, value) ← convs)
-                        NCModelManager.getModelDataOpt(key.mdlId) match {
-                            case Some(data) ⇒
-                                if (value.tstamp < System.currentTimeMillis() - data.model.getConversationTimeout)
-                                    delKeys += key
+                for ((key, value) ← convs)
+                    NCModelManager.getModelDataOpt(key.mdlId) match {
+                        case Some(data) ⇒
+                            if (value.tstamp < System.currentTimeMillis() - data.model.getConversationTimeout)
+                                delKeys += key
 
-                            case None ⇒ delKeys += key
-                        }
+                        case None ⇒ delKeys += key
+                    }
 
-                    convs --= delKeys
-                }
-            catch {
-                case e: Throwable ⇒ logger.error("Clean method unexpected error", e)
+                convs --= delKeys
             }
-
         }
 
     /**
@@ -100,13 +98,13 @@ object NCConversationManager extends NCService {
       * @return New or existing conversation.
       */
     def getConversation(usrId: Long, mdlId: String, parent: Span = null): NCConversation =
-        startScopedSpan("getConversation", parent, "usrId" → usrId, "modelId" → mdlId) { _ ⇒
+        startScopedSpan("getConversation", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
             val mdl = NCModelManager.getModelData(mdlId).model
 
             convs.synchronized {
                 val v = convs.getOrElseUpdate(
                     Key(usrId, mdlId),
-                    Value(NCConversation(usrId, mdlId, mdl.getConversationStmThreshold, mdl.getConversationMaxDepth))
+                    Value(NCConversation(usrId, mdlId, mdl.getConversationTimeout, mdl.getConversationDepth))
                 )
                 
                 v.tstamp = U.nowUtcMs()

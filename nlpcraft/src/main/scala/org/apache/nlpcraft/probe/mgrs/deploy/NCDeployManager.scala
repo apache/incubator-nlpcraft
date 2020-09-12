@@ -824,7 +824,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkInt(mdl.getMaxWords, "maxWords", min = 1, max = 100)
         checkInt(mdl.getJiggleFactor, "jiggleFactor", max = 4)
         checkInt(mdl.getMaxSynonymsThreshold, "suspManySynonyms", min = 1)
-        checkInt(mdl.getConversationMaxDepth, "convMaxDepth", min = 1)
+        checkInt(mdl.getConversationDepth, "convMaxDepth", min = 1)
 
         @throws[NCE]
         def checkCollection(name: String, col: Any): Unit =

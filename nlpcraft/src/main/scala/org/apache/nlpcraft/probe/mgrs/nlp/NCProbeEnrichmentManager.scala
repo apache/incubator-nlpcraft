@@ -399,6 +399,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     var same = notes1 == notes2
 
                     if (!same) {
+                        // TODO
                         def squeeze(typ: String): Boolean = {
                             val diff = notes2.filter(n ⇒ !notes1.contains(n))
 
@@ -438,10 +439,10 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     if (continue) {
                         val changed = res.filter(!_._2).keys.map(_.getClass.getSimpleName).mkString(", ")
 
-                        logger.info(s"Enrichment iteration finished - more needed [step=$step, changed=$changed]")
+                        logger.trace(s"Enrichment iteration finished - more needed [step=$step, changed=$changed]")
                     }
                     else
-                        logger.info(s"Enrichment finished [step=$step]")
+                        logger.trace(s"Enrichment finished [step=$step]")
             }
 
             nlpSen.clone().collapse().

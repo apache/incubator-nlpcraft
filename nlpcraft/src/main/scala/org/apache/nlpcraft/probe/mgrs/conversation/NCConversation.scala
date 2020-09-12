@@ -31,7 +31,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
-  * An active conversation as an ordered set of utterances for the specific user and data model.
+  * An active conversation is an ordered set of utterances for the specific user and data model.
   */
 case class NCConversation(
     usrId: Long,
@@ -60,7 +60,7 @@ case class NCConversation(
 
     @volatile private var ctx: util.List[NCToken] = new util.ArrayList[NCToken]()
     @volatile private var lastUpdateTstamp = U.nowUtcMs()
-    @volatile private var attempt = 0
+    @volatile private var depth = 0
 
     /**
       *
@@ -72,13 +72,15 @@ case class NCConversation(
     }
 
     /**
-      * @param parent Optional parent span.
-      */
+     * Gets called on each input request for given user and model.
+     *
+     * @param parent Optional parent span.
+     */
     def updateTokens(parent: Span = null): Unit = startScopedSpan("updateTokens", parent) { _ ⇒
         val now = U.nowUtcMs()
 
         stm.synchronized {
-            attempt += 1
+            depth += 1
 
             // Conversation cleared by timeout or when there are too much unsuccessful requests.
             if (now - lastUpdateTstamp > updateTimeoutMs) {
@@ -89,10 +91,10 @@ case class NCConversation(
                     s"mdlId=$mdlId" +
                 s"]")
             }
-            else if (attempt > maxDepth) {
+            else if (depth > maxDepth) {
                 stm.clear()
 
-                logger.info(s"Conversation is reset after too many unsuccessful requests [" +
+                logger.info(s"Conversation is reset after reaching max depth [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -147,7 +149,7 @@ case class NCConversation(
             ctx = ctx.asScala.filter(tok ⇒ !p.test(tok)).asJava
         }
 
-        logger.info(s"Manually cleared conversation using token predicate.")
+        logger.info(s"Conversation is cleared using token predicate.")
     }
 
     /**
@@ -170,7 +172,7 @@ case class NCConversation(
     def addTokens(srvReqId: String, toks: Seq[NCToken], parent: Span = null): Unit =
         startScopedSpan("addTokens", parent, "srvReqId" → srvReqId) { _ ⇒
             stm.synchronized {
-                attempt = 0
+                depth = 0
     
                 // Last used tokens processing.
                 lastToks += toks
@@ -220,7 +222,7 @@ case class NCConversation(
                                 item.holders --= hs
     
                                 logger.info(
-                                    "Conversation tokens are overridden by the \"group rule\" [" +
+                                    "Conversation tokens are overridden [" +
                                         s"usrId=$usrId, " +
                                         s"mdlId=$mdlId, " +
                                         s"srvReqId=$srvReqId, " +
