@@ -395,14 +395,13 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     def get(): Seq[NCNlpSentenceNote] = h.getNotes().sortBy(p ⇒ (p.tokenIndexes.head, p.noteType))
                     val notes1 = get()
 
-                    h → h.enricher.enrich(mdlData, nlpSen, senMeta, span)
+                    h.enricher.enrich(mdlData, nlpSen, senMeta, span)
 
                     val notes2 = get()
 
                     var same = notes1 == notes2
 
                     if (!same) {
-                        // TODO
                         def squeeze(typ: String): Boolean = {
                             val diff = notes2.filter(n ⇒ !notes1.contains(n))
 
@@ -415,7 +414,10 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
                             diffRedundant.foreach { case (del, similar) ⇒
                                 if (DEEP_DEBUG)
-                                    logger.trace(s"Redundant note removed: $del, because similar exists: $similar")
+                                    logger.trace(
+                                        s"Redundant note removed, because similar exists " +
+                                        s"[note=$del, similar=$similar, type=$typ]"
+                                    )
 
                                 nlpSen.removeNote(del)
                             }
