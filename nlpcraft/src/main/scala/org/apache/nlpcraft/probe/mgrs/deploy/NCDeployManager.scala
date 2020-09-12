@@ -118,6 +118,18 @@ object NCDeployManager extends NCService with DecorateAsScala {
     /**
       *
       * @param mdl
+      */
+    private def checkMacros(mdl: NCModel): Unit = {
+        val macros = mdl.getMacros.asScala
+        val set = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala) ++ macros.values
+
+        for (makro ← macros.keys if !set.exists(_.contains(makro)))
+            logger.warn(s"Unused macro detected [mdlId=${mdl.getId}, macro=$makro]")
+    }
+
+    /**
+      *
+      * @param mdl
       * @return
       */
     @throws[NCE]
@@ -132,12 +144,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             if (!elm.getId.matches(ID_REGEX))
                 throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
 
-        val allSyns = mdl.getElements.asScala.flatMap(_.getSynonyms.asScala)
-
-        mdl.getMacros.asScala.keys.foreach(makro ⇒
-            if (!allSyns.exists(_.contains(makro)))
-                logger.warn(s"Unused macro detected [mdlId=$mdlId, macro=$makro]")
-        )
+        checkMacros(mdl)
 
         val parser = new NCMacroParser
 
