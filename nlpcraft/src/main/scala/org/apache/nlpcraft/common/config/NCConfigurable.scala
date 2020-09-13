@@ -234,23 +234,29 @@ trait NCConfigurable {
 
     /**
       * Gets mandatory configuration property.
+      * Note that processed parameter is CSV single string.
       *
       * @param name Full configuration property path (name).
       */
     def getStringList(name: String): Seq[String] = {
         checkMandatory(name)
 
-        hocon.getStringList(name).asScala
+        parseCsv(hocon.getString(name))
     }
 
     /**
       * Gets optional configuration property.
+      * Note that processed parameter is CSV single string.
       *
       * @param name Full configuration property path (name).
       */
-    def getStringListOpt(name: String): Option[Seq[String]] =
-        if (!hocon.hasPath(name)) None else Some(hocon.getStringList(name).asScala)
+    def getStringListOpt(name: String): Option[Seq[String]] = if (!hocon.hasPath(name)) None else Some(getStringList(name))
 
+    /**
+      *
+      * @param s
+      */
+    private def parseCsv(s: String): Seq[String] = s.split(",").map(_.trim).filter(_.nonEmpty)
 }
 
 object NCConfigurable extends LazyLogging {
@@ -270,7 +276,7 @@ object NCConfigurable extends LazyLogging {
       *   2. Use environment variables in a form of 'CONFIG_FORCE_x_y_z' to override configuration
       *      property 'x.y.z' from the file.
       * <p>
-      * Examples:
+      * Examples: TODO:
       *   CONFIG_FORCE_nlpcraft_server_rest_host=localhost
       *   CONFIG_FORCE_nlpcraft_server_lifecycle.0=org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverTraceExporter
       *   CONFIG_FORCE_nlpcraft_server_lifecycle.1=org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverStatsExporter
