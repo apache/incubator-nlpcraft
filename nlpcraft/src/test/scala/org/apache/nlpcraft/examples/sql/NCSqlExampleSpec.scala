@@ -85,10 +85,9 @@ class NCSqlExampleSpec {
 
     /**
      *
-     * @param multiLineOut
      * @param cases
      */
-    private def check(multiLineOut: Boolean, cases: Case*): Unit = {
+    private def check(cases: Case*): Unit = {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
 
         cases.
@@ -110,28 +109,13 @@ class NCSqlExampleSpec {
                             val resSqlNorm = normalize(m.asScala("sql").asInstanceOf[String])
 
                             if (resSqlNorm != expSqlNorm) {
-                                if (multiLineOut) {
-                                    val rows = DIFF.generateDiffRows(toPretty(expSqlNorm), toPretty(resSqlNorm)).asScala
+                                val rows = DIFF.generateDiffRows(toPretty(expSqlNorm), toPretty(resSqlNorm)).asScala
 
-                                    val tbl = NCAsciiTable("Expected", "Real")
+                                val tbl = NCAsciiTable("Expected", "Real")
 
-                                    rows.foreach(r => tbl += (r.getOldLine, r.getNewLine))
+                                rows.foreach(r ⇒ tbl += (r.getOldLine, r.getNewLine))
 
-                                    errs += txt → s"Unexpected SQL:\n$tbl"
-                                }
-                                else {
-                                    val rows = DIFF.generateDiffRows(Seq(expSqlNorm).asJava, Seq(resSqlNorm).asJava).asScala
-
-                                    require(rows.size == 1)
-
-                                    val row = rows.head
-
-                                    errs += txt →
-                                        s"""Unexpected SQL (expected vs real)
-                                           |${row.getOldLine}
-                                           |${row.getNewLine}
-                                        """.stripMargin
-                                }
+                                errs += txt → s"Unexpected SQL:\n$tbl"
                             }
                         }
                     }
@@ -154,7 +138,6 @@ class NCSqlExampleSpec {
     @Test
     def testConversation(): Unit = {
         check(
-            true,
             Case(
                 Seq(
                     "last year Exotic Liquids orders",
@@ -211,7 +194,6 @@ class NCSqlExampleSpec {
     @Test
     def test() {
         check(
-            true,
             Case(
                 Seq(
                     "order date, please!",

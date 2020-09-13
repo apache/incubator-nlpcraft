@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.server.rest
 
+import akka.http.scaladsl.coding.Coders
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
@@ -37,15 +38,14 @@ import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
-import org.apache.nlpcraft.server.model.NCEnhanceManager
+import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
 import org.apache.nlpcraft.server.user.NCUserManager
 import spray.json.DefaultJsonProtocol._
-import spray.json.{JsValue, RootJsonFormat}
+import spray.json.{JsObject, JsValue, RootJsonFormat}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import akka.http.scaladsl.coding.{Coders, Gzip, NoCoding}
 
 /**
   * REST API default implementation.
@@ -79,14 +79,41 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field '$fn' value exceeded max length of $max.")
     case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field '$fn'")
     case class EmptyField(fn: String) extends InvalidArguments(s"API field '$fn' value cannot be empty.")
-    case class InvalidExternalUserId(extId: String) extends InvalidArguments(s"External user IS is invalid or unknown: $extId")
+    case class InvalidExternalUserId(extId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $extId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
 
+    /*
+     * Maximum length specification for frequently used standard REST parameters,
+     */
+    private final val STD_FIELD_LENGTHS = Map[String, Int](
+        "acsTok" → 256,
+        "mdlId" → 32,
+        "userExtId" → 64,
+        "extId" → 64,
+        "name" → 64,
+        "passwd" → 64,
+        "email" → 64,
+        "txt" → 1024,
+        "website" → 256,
+        "country" → 32,
+        "region" → 512,
+        "city" → 512,
+        "address" → 512,
+        "postalCode" → 32,
+        "adminEmail" → 64,
+        "adminPasswd" → 64,
+        "adminFirstName" → 64,
+        "adminLastName" → 64,
+        "comment" → 1024,
+        "adminAvatarUrl" → 512000
+    )
+
     /**
-      *
-      * @param acsTkn Access token to check.
-      * @param shouldBeAdmin Admin flag.
-      */
+     *
+     * @param acsTkn Access token to check.
+     * @param shouldBeAdmin Admin flag.
+     * @return
+     */
     @throws[NCE]
     private def authenticate0(acsTkn: String, shouldBeAdmin: Boolean): NCUserMdo =
         startScopedSpan("authenticate0", "acsTkn" → acsTkn, "shouldBeAdmin" → shouldBeAdmin) { span ⇒
@@ -116,34 +143,34 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
     /**
       *
-      * @param connUser
+      * @param acsUsr
       * @param srvReqIdsOpt
-      * @param userIdOpt
-      * @param userExtIdOpt
+      * @param usrIdOpt
+      * @param usrExtIdOpt
       * @param span
       */
     @throws[AdminRequired]
     private def getRequests(
-        connUser: NCUserMdo,
+        acsUsr: NCUserMdo,
         srvReqIdsOpt: Option[Set[String]],
-        userIdOpt: Option[Long],
-        userExtIdOpt: Option[String],
+        usrIdOpt: Option[Long],
+        usrExtIdOpt: Option[String],
         span: Span
     ): Set[NCQueryStateMdo] = {
-        require(connUser.email.isDefined)
+        require(acsUsr.email.isDefined)
 
-        val userId = getUserId(connUser, userIdOpt, userExtIdOpt)
+        val userId = getUserId(acsUsr, usrIdOpt, usrExtIdOpt)
 
         val states = srvReqIdsOpt match {
             case Some(srvReqIds) ⇒
                 val states = NCQueryManager.getForServerRequestIds(srvReqIds, span)
 
-                if (userIdOpt.isDefined || userExtIdOpt.isDefined) states.filter(_.userId == userId) else states
+                if (usrIdOpt.isDefined || usrExtIdOpt.isDefined) states.filter(_.userId == userId) else states
             case None ⇒ NCQueryManager.getForUserId(userId, span)
         }
 
-        if (states.exists(_.companyId != connUser.companyId) || !connUser.isAdmin && states.exists(_.userId != connUser.id))
-            throw AdminRequired(connUser.email.get)
+        if (states.exists(_.companyId != acsUsr.companyId) || !acsUsr.isAdmin && states.exists(_.userId != acsUsr.id))
+            throw AdminRequired(acsUsr.email.get)
 
         states
     }
@@ -209,7 +236,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     /**
       * Checks operation permissions and gets user ID.
       *
-      * @param curUsr Currently signed in user.
+      * @param acsUsr Currently signed in user.
       * @param usrIdOpt User ID. Optional.
       * @param usrExtIdOpt User 'on-behalf-of' external ID. Optional.
       */
@@ -217,20 +244,20 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     @throws[InvalidUserId]
     @throws[InvalidExternalUserId]
     protected def getUserId(
-        curUsr: NCUserMdo,
+        acsUsr: NCUserMdo,
         usrIdOpt: Option[Long],
         usrExtIdOpt: Option[String]
     ): Long = {
-        require(curUsr.email.isDefined)
+        require(acsUsr.email.isDefined)
 
         val id1Opt = usrIdOpt match {
             case Some(userId) ⇒
-                if (!curUsr.isAdmin && userId != curUsr.id)
-                    throw AdminRequired(curUsr.email.get)
+                if (!acsUsr.isAdmin && userId != acsUsr.id)
+                    throw AdminRequired(acsUsr.email.get)
 
                 val usr = NCUserManager.getUserById(userId).getOrElse(throw InvalidUserId(userId))
 
-                if (usr.companyId != curUsr.companyId)
+                if (usr.companyId != acsUsr.companyId)
                     throw InvalidUserId(userId)
 
                 Some(userId)
@@ -240,10 +267,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         val id2Opt = usrExtIdOpt match {
             case Some(extId) ⇒
-                if (!curUsr.isAdmin)
-                    throw AdminRequired(curUsr.email.get)
+                if (!acsUsr.isAdmin)
+                    throw AdminRequired(acsUsr.email.get)
 
-                Some(NCUserManager.getOrInsertExternalUserId(curUsr.companyId, extId))
+                Some(NCUserManager.getOrInsertExternalUserId(acsUsr.companyId, extId))
 
             case None ⇒ None
         }
@@ -251,7 +278,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         if (id1Opt.isDefined && id2Opt.isDefined && id1Opt.get != id2Opt.get)
             throw new InvalidArguments("User ID and external user ID are inconsistent.")
 
-        id1Opt.getOrElse(id2Opt.getOrElse(curUsr.id))
+        id1Opt.getOrElse(id2Opt.getOrElse(acsUsr.id))
     }
 
     /**
@@ -273,40 +300,62 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @param name Field name.
       * @param v Field value.
-      * @param maxLen Maximum length.
+      * @param maxLen Optional maximum length. If not specified - the standard range for `name` will be used.
       */
     @throws[TooLargeField]
-    protected def checkLength(name: String, v: String, maxLen: Int): Unit =
-        if (v.length > maxLen)
-            throw TooLargeField(name, maxLen)
+    @throws[EmptyField]
+    protected def checkLength(name: String, v: String, maxLen: Int = -1): Unit = {
+        val max: Int = if (maxLen == -1)
+            STD_FIELD_LENGTHS.getOrElse(name, throw new AssertionError(s"Unknown standard REST field: $name"))
+        else
+            maxLen
+
+        if (v.length > max)
+            throw TooLargeField(name, max)
         else if (v.length < 1)
             throw EmptyField(name)
+    }
 
     /**
-      * Checks range of field value.
+     *
+     * @param pairs
+     */
+    @throws[TooLargeField]
+    @throws[EmptyField]
+    protected def checkLength(pairs: (String, Any)*): Unit = {
+        pairs.foreach {
+            case (name, value: Option[_]) ⇒ checkLengthOpt(name, value)
+            case (name, value: String) ⇒ checkLength(name, value)
+            case _ ⇒ assert(false)
+        }
+    }
+
+    /**
+     *
+     * @param acsTok
+     * @param extUsrId
+     */
+    @throws[TooLargeField]
+    @throws[EmptyField]
+    protected def checkAuth(acsTok: String, extUsrId: Option[String]): Unit = {
+        checkLength("acsTok" → acsTok)
+
+        if (extUsrId.isDefined)
+            checkLength("extUsrId", extUsrId.get)
+    }
+
+    /**
+      * Checks numeric range of field value.
       *
       * @param name Field name.
       * @param v Field value.
       * @param from Minimum from.
       * @param to Maximum to.
       */
-    @throws[TooLargeField]
+    @throws[OutOfRangeField]
     protected def checkRange(name: String, v: Double, from: Double, to: Double): Unit =
         if (v < from || v > to)
             throw OutOfRangeField(name, from, to)
-
-    /**
-      * Checks range of field value.
-      *
-      * @param name Field name.
-      * @param v Field value.
-      * @param from Minimum from.
-      * @param to Maximum to.
-      */
-    @throws[TooLargeField]
-    protected def checkRangeOpt(name: String, v: Option[Double], from: Double, to: Double): Unit =
-        if (v.isDefined)
-            checkRange(name, v.get, from, to)
 
     /**
       * Checks length of field value.
@@ -316,31 +365,63 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @param maxLen Maximum length.
       */
     @throws[TooLargeField]
-    protected def checkLengthOpt(name: String, v: Option[String], maxLen: Int): Unit =
+    @throws[EmptyField]
+    protected def checkLengthOpt(name: String, v: Option[_], maxLen: Int = -1): Unit =
         if (v.isDefined)
-            checkLength(name, v.get, maxLen)
+            checkLength(name, v.get.toString, maxLen)
+
+    /**
+      *
+      * @param js
+      * @param fn
+      */
+    @throws[InvalidField]
+    protected def convert[T](js: JsObject, fn: String, extractor: JsValue ⇒ T): T =
+        try
+            extractor(js.fields(fn))
+        catch {
+            case _: Exception ⇒ throw InvalidField(fn)
+        }
+
+    /**
+     *
+     * @param js
+     * @param fn
+     * @param extractor
+     * @tparam T
+     * @return
+     */
+    @throws[InvalidField]
+    protected def convertOpt[T](js: JsObject, fn: String, extractor: JsValue ⇒ T): Option[T] =
+        try
+            js.fields.get(fn) match {
+                case Some(v) ⇒ Some(extractor(v))
+                case None ⇒ None
+            }
+        catch {
+            case _: Exception ⇒ throw InvalidField(fn)
+        }
 
     /**
       *
       * @return
       */
     protected def signin$(): Route = {
-        case class Req(
+        case class Req$Signin$(
             email: String,
             passwd: String
         )
-        case class Res(
+        case class Res$Signin$(
             status: String,
             acsTok: String
         )
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat2(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Signin$] = jsonFormat2(Req$Signin$)
+        implicit val resFmt: RootJsonFormat[Res$Signin$] = jsonFormat2(Res$Signin$)
 
         // NOTE: no authentication requires on signin.
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Signin$]) { req ⇒
             startScopedSpan("signin$", "email" → req.email) { span ⇒
-                checkLength("email", req.email, 64)
-                checkLength("passwd", req.passwd, 64)
+                checkLength("email" → req.email, "passwd" → req.passwd)
 
                 NCUserManager.signin(
                     req.email,
@@ -349,7 +430,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 ) match {
                     case None ⇒ throw SignInFailure(req.email) // Email is unknown (user hasn't signed up).
                     case Some(acsTkn) ⇒ complete {
-                        Res(API_OK, acsTkn)
+                        Res$Signin$(API_OK, acsTkn)
                     }
                 }
             }
@@ -361,12 +442,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      * @return
      */
     protected def health$(): Route = {
-        case class Res(status: String)
+        case class Res$Health$(status: String)
 
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val resFmt: RootJsonFormat[Res$Health$] = jsonFormat1(Res$Health$)
 
         complete {
-            Res(API_OK)
+            Res$Health$(API_OK)
         }
     }
 
@@ -375,90 +456,129 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def signout$(): Route = {
-        case class Req(
+        case class Req$Signout$(
             acsTok: String
         )
-        case class Res(
+        case class Res$Signout$(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Signout$] = jsonFormat1(Req$Signout$)
+        implicit val resFmt: RootJsonFormat[Res$Signout$] = jsonFormat1(Res$Signout$)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Signout$]) { req ⇒
             startScopedSpan("signout$", "acsTok" → req.acsTok) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
+                checkLength("acsTok" → req.acsTok)
 
                 authenticate(req.acsTok)
 
                 NCUserManager.signout(req.acsTok, span)
 
                 complete {
-                    Res(API_OK)
+                    Res$Signout$(API_OK)
                 }
             }
         }
     }
 
     /**
-      *
-      * @param reqJs
-      * @param usrAgent
-      * @param rmtAddr
-      * @return
-      */
-    protected def ask$Sync(reqJs: JsValue, usrAgent: Option[String], rmtAddr: RemoteAddress): Future[String] = {
-        val obj = reqJs.asJsObject()
+     *
+     * @return
+     */
+    protected def ask$Sync(): Route = {
+        entity(as[JsValue]) { req ⇒
+            //noinspection DuplicatedCode
+            val obj = req.asJsObject()
 
-        def getOpt[T](name: String, convert: JsValue ⇒ T): Option[T] =
-            obj.fields.get(name) match {
-                case Some(v) ⇒ Some(convert(v))
-                case None ⇒ None
-            }
+            val acsTok: String = convert(obj, "acsTok", (js: JsValue) ⇒ js.convertTo[String])
+            val txt: String = convert(obj, "txt", (js: JsValue) ⇒ js.convertTo[String])
+            val mdlId: String = convert(obj, "mdlId", (js: JsValue) ⇒ js.convertTo[String])
+            val data: Option[String] = convertOpt(obj, "data", (js: JsValue) ⇒ js.compactPrint)
+            val enableLog: Option[Boolean] = convertOpt(obj, "enableLog", (js: JsValue) ⇒ js.convertTo[Boolean])
+            val usrExtIdOpt: Option[String] = convertOpt(obj, "usrExtId", (js: JsValue) ⇒ js.convertTo[String])
+            val usrIdOpt: Option[Long] = convertOpt(obj, "usrId", (js: JsValue) ⇒ js.convertTo[Long])
 
-        val acsTok = obj.fields("acsTok").convertTo[String]
-        val txt = obj.fields("txt").convertTo[String]
-        val mdlId = obj.fields("mdlId").convertTo[String]
-        val data = getOpt("data", (js: JsValue) ⇒ js.compactPrint)
-        val enableLog = getOpt("enableLog", (js: JsValue) ⇒ js.convertTo[Boolean])
-        val usrExtIdOpt = getOpt("usrExtId", (js: JsValue) ⇒ js.convertTo[String])
-        val usrIdOpt = getOpt("usrId", (js: JsValue) ⇒ js.convertTo[Long])
-
-        startScopedSpan(
-            "ask$Sync",
-            "acsTok" → acsTok,
-            "usrId" → usrIdOpt.orElse(null),
-            "usrExtId" → usrExtIdOpt.orNull,
-            "txt" → txt,
-            "mdlId" → mdlId) { span ⇒
-            checkLength("acsTok", acsTok, 256)
-            checkLength("txt", txt, 1024)
-            checkLength("mdlId", mdlId, 32)
-            checkLengthOpt("data", data, 512000)
-            checkLengthOpt("userExtId", data, 64)
-
-            val connUser = authenticate(acsTok)
-
-            NCQueryManager.futureAsk(
-                getUserId(connUser, usrIdOpt, usrExtIdOpt),
-                txt,
-                mdlId,
-                usrAgent,
-                getAddress(rmtAddr),
-                data,
-                enableLog.getOrElse(false),
-                span
-            ).collect {
-                // We have to use GSON (not spray) here to serialize `resBody` field.
-                case res ⇒ GSON.toJson(
-                    Map(
-                        "status" → API_OK.toString,
-                        "state" → queryStateToMap(res)
-                    )
-                    .asJava
+            startScopedSpan(
+                "ask$Sync",
+                "acsTok" → acsTok,
+                "usrId" → usrIdOpt.getOrElse(-1),
+                "usrExtId" → usrExtIdOpt.orNull,
+                "txt" → txt,
+                "mdlId" → mdlId) { span ⇒
+                checkLength(
+                    "acsTok" → acsTok,
+                    "usrExtId" → usrExtIdOpt,
+                    "mdlId" → mdlId,
+                    "txt" → txt
                 )
+
+                checkLengthOpt("data", data, 512000)
+
+                val acsUsr = authenticate(acsTok)
+
+                optionalHeaderValueByName("User-Agent") { usrAgent ⇒
+                    extractClientIP { rmtAddr ⇒
+                        val fut = NCQueryManager.futureAsk(
+                            getUserId(acsUsr, usrIdOpt, usrExtIdOpt),
+                            txt,
+                            mdlId,
+                            usrAgent,
+                            getAddress(rmtAddr),
+                            data,
+                            enableLog.getOrElse(false),
+                            span
+                        )
+
+                        fut.failed.collect {
+                            case e ⇒ onError(e)
+                        }
+
+                        successWithJs(
+                            fut.collect {
+                                // We have to use GSON (not spray) here to serialize `resBody` field.
+                                case res ⇒ GSON.toJson(
+                                    Map(
+                                        "status" → API_OK.toString,
+                                        "state" → queryStateToMap(res)
+                                    )
+                                    .asJava
+                                )
+                            }
+                        )
+                    }
+                }
             }
         }
+    }
+
+    /**
+     *
+     * @param fut
+     */
+    private def successWithJs(fut: Future[String]) = onSuccess(fut) {
+        js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
+    }
+
+    /**
+      *
+      * @param e
+      */
+    private def onError(e: Throwable): Unit = {
+        val errMsg = e.getLocalizedMessage
+        val code =
+            e match {
+                case _: NCE ⇒
+                    // We have to log error reason because even general exceptions are not expected here.
+                    logger.warn(s"Unexpected top level REST API error: $errMsg", e)
+
+                    StatusCodes.BadRequest
+                case _ ⇒
+                    logger.error(s"Unexpected system error: $errMsg", e)
+
+                    StatusCodes.InternalServerError
+            }
+
+        completeError(code, "NC_ERROR", errMsg)
     }
 
     /**
@@ -466,7 +586,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def ask$(): Route = {
-        case class Req(
+        case class Req$Ask$(
             acsTok: String,
             usrId: Option[Long],
             usrExtId: Option[String],
@@ -475,27 +595,23 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             data: Option[spray.json.JsValue],
             enableLog: Option[Boolean]
         )
-        case class Res(
+        case class Res$Ask$(
             status: String,
             srvReqId: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat7(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Ask$] = jsonFormat7(Req$Ask$)
+        implicit val resFmt: RootJsonFormat[Res$Ask$] = jsonFormat2(Res$Ask$)
 
-        entity(as[Req]) { req ⇒
-            //noinspection GetOrElseNull
+        entity(as[Req$Ask$]) { req ⇒
             startScopedSpan(
                 "ask$",
-                "usrId" → req.usrId.getOrElse(null),
+                "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull,
                 "acsTok" → req.acsTok,
                 "txt" → req.txt,
                 "mdlId" → req.mdlId) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("userExtId", req.usrExtId, 64)
-                checkLength("txt", req.txt, 1024)
-                checkLength("mdlId", req.mdlId, 32)
+                checkLength("acsTok" → req.acsTok, "userExtId" → req.usrExtId, "mdlId" → req.mdlId, "txt" → req.txt)
 
                 val dataJsOpt =
                     req.data match {
@@ -505,12 +621,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 checkLengthOpt("data", dataJsOpt, 512000)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
                 optionalHeaderValueByName("User-Agent") { usrAgent ⇒
                     extractClientIP { rmtAddr ⇒
                         val newSrvReqId = NCQueryManager.asyncAsk(
-                            getUserId(connUser, req.usrId, req.usrExtId),
+                            getUserId(acsUsr, req.usrId, req.usrExtId),
                             req.txt,
                             req.mdlId,
                             usrAgent,
@@ -521,7 +637,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         )
 
                         complete {
-                            Res(API_OK, newSrvReqId)
+                            Res$Ask$(API_OK, newSrvReqId)
                         }
                     }
                 }
@@ -534,37 +650,35 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def cancel$(): Route = {
-        case class Req(
+        case class Req$Cancel$(
             acsTok: String,
             usrId: Option[Long],
             usrExtId: Option[String],
             srvReqIds: Option[Set[String]]
         )
-        case class Res(
+        case class Res$Cancel$(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat4(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Cancel$] = jsonFormat4(Req$Cancel$)
+        implicit val resFmt: RootJsonFormat[Res$Cancel$] = jsonFormat1(Res$Cancel$)
 
-        entity(as[Req]) { req ⇒
-            //noinspection GetOrElseNull
+        entity(as[Req$Cancel$]) { req ⇒
             startScopedSpan("cancel$",
                 "acsTok" → req.acsTok,
-                "usrId" → req.usrId.getOrElse(null),
+                "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull,
                 "srvReqIds" → req.srvReqIds.getOrElse(Nil).mkString(",")) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("userExtId", req.usrExtId, 64)
+                checkLength("acsTok" → req.acsTok, "userExtId" → req.usrExtId)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                val srvReqs = getRequests(connUser, req.srvReqIds, req.usrId, req.usrExtId, span)
+                val srvReqs = getRequests(acsUsr, req.srvReqIds, req.usrId, req.usrExtId, span)
 
                 NCQueryManager.cancelForServerRequestIds(srvReqs.map(_.srvReqId), span)
 
                 complete {
-                    Res(API_OK)
+                    Res$Cancel$(API_OK)
                 }
             }
         }
@@ -575,31 +689,30 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def check$(): Route = {
-        case class Req(
+        case class Req$Check$(
             acsTok: String,
             usrId: Option[Long],
             usrExtId: Option[String],
             srvReqIds: Option[Set[String]],
             maxRows: Option[Int]
         )
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat5(Req)
 
-        entity(as[Req]) { req ⇒
-            //noinspection GetOrElseNull
+        implicit val reqFmt: RootJsonFormat[Req$Check$] = jsonFormat5(Req$Check$)
+
+        entity(as[Req$Check$]) { req ⇒
             startScopedSpan(
                 "check$",
-                "usrId" → req.usrId.getOrElse(null),
+                "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull,
                 "acsTok" → req.acsTok,
                 "srvReqIds" → req.srvReqIds.getOrElse(Nil).mkString(",")
             ) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("userExtId", req.usrExtId, 64)
+                checkLength("acsTok" → req.acsTok, "userExtId" → req.usrExtId)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
                 val states =
-                    getRequests(connUser, req.srvReqIds, req.usrId, req.usrExtId, span).
+                    getRequests(acsUsr, req.srvReqIds, req.usrId, req.usrExtId, span).
                     toSeq.sortBy(-_.createTstamp.getTime).
                     take(req.maxRows.getOrElse(Integer.MAX_VALUE))
 
@@ -622,56 +735,41 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     }
 
     /**
-      *
-      * @return
-      */
-    protected def modelEnhance$(): Route = {
-        case class Req(
-            acsTok: String,
-            mdlId: String,
-            minScore: Option[Double]
-        )
+     *
+     * @return
+     */
+    protected def sugsyn$(): Route = {
+        entity(as[JsValue]) { req ⇒
+            //noinspection DuplicatedCode
+            val obj = req.asJsObject()
 
-        case class Suggestion(
-            synonym: String,
-            score: Double,
-            suggestedCount: Int
-        )
+            val acsTok: String = convert(obj, "acsTok", (js: JsValue) ⇒ js.convertTo[String])
+            val mdlId: String = convert(obj, "mdlId", (js: JsValue) ⇒ js.convertTo[String])
+            val minScore: Option[Double] = convertOpt(obj, "minScore", v ⇒ v.compactPrint.toDouble)
 
-        case class Res(
-            status: String,
-            suggestions: Map[String, Seq[Suggestion]]
-        )
+            startScopedSpan("sugsyn$", "mdlId" → mdlId, "acsTok" → acsTok, "minScore" → minScore) { span ⇒
+                checkLength(
+                    "acsTok" → acsTok,
+                    "mdlId" → mdlId
+                )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat3(Req)
-        implicit val fbFmt: RootJsonFormat[Suggestion] = jsonFormat3(Suggestion)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+                val admUsr = authenticateAsAdmin(acsTok)
 
-        entity(as[Req]) { req ⇒
-            startScopedSpan(
-                "modelEnhance$",
-                "mdlId" → req.mdlId,
-                "minScore" → req.minScore.getOrElse(() ⇒ null),
-                "acsTok" → req.acsTok
-            ) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLength("mdlId", req.mdlId, 32)
-                checkRangeOpt("score", req.minScore, 0, 1)
+                if (!NCProbeManager.existsForModel(admUsr.companyId, mdlId, span))
+                    throw new NCE(s"Probe not found for model: $mdlId")
 
-                val admin = authenticateAsAdmin(req.acsTok)
+                val fut = NCSuggestSynonymManager.suggest(mdlId, minScore, span)
 
-                if (!NCProbeManager.getAllProbes(admin.companyId, span).exists(_.models.exists(_.id == req.mdlId)))
-                    throw new NCE(s"Probe not found for model: ${req.mdlId}")
-
-                val res: Map[String, Seq[Suggestion]] =
-                    NCEnhanceManager.enhance(req.mdlId, req.minScore, span).
-                        map { case (elemId, suggs) ⇒
-                            elemId → suggs.map(p ⇒ Suggestion(p.synonym, p.ctxWorldServerScore, p.suggestedCount))
-                        }.toMap
-
-                complete {
-                    Res(API_OK, res)
+                fut.failed.collect {
+                    case e ⇒ onError(e)
                 }
+
+                successWithJs(
+                    fut.collect {
+                        // We have to use GSON (not spray) here to serialize `result` field.
+                        case res ⇒ GSON.toJson(Map("status" → API_OK.toString, "result" → res).asJava)
+                    }
+                )
             }
         }
     }
@@ -681,37 +779,36 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def clear$Conversation(): Route = {
-        case class Req(
+        case class Req$Clear$Conversation(
             acsTok: String,
             mdlId: String,
             usrId: Option[Long],
             usrExtId: Option[String]
         )
-        case class Res(
+        case class Res$Clear$Conversation(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat4(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Clear$Conversation] = jsonFormat4(Req$Clear$Conversation)
+        implicit val resFmt: RootJsonFormat[Res$Clear$Conversation] = jsonFormat1(Res$Clear$Conversation)
 
-        entity(as[Req]) { req ⇒
-            //noinspection GetOrElseNull
-            startScopedSpan("clear$Conversation",
+        entity(as[Req$Clear$Conversation]) { req ⇒
+            startScopedSpan(
+                "clear$Conversation",
                 "acsTok" → req.acsTok,
                 "mdlId" → req.mdlId,
                 "usrExtId" → req.usrExtId.orNull,
-                "usrId" → req.usrId.getOrElse(null)) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("usrExtId", req.usrExtId, 64)
+                "usrId" → req.usrId.getOrElse(-1)) { span ⇒
+                    checkAuth(req.acsTok, req.usrExtId)
 
-                val connUser = authenticate(req.acsTok)
+                    val acsUsr = authenticate(req.acsTok)
 
-                NCProbeManager.clearConversation(getUserId(connUser, req.usrId, req.usrExtId), req.mdlId, span)
+                    NCProbeManager.clearConversation(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
 
-                complete {
-                    Res(API_OK)
+                    complete {
+                        Res$Clear$Conversation(API_OK)
+                    }
                 }
-            }
         }
     }
 
@@ -720,37 +817,36 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def clear$Dialog(): Route = {
-        case class Req(
+        case class Req$Clear$Dialog(
             acsTok: String,
             mdlId: String,
             usrId: Option[Long],
             usrExtId: Option[String]
         )
-        case class Res(
+        case class Res$Clear$Dialog(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat4(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Clear$Dialog] = jsonFormat4(Req$Clear$Dialog)
+        implicit val resFmt: RootJsonFormat[Res$Clear$Dialog] = jsonFormat1(Res$Clear$Dialog)
 
-        entity(as[Req]) { req ⇒
-            //noinspection GetOrElseNull
-            startScopedSpan("clear$Dialog",
+        entity(as[Req$Clear$Dialog]) { req ⇒
+            startScopedSpan(
+                "clear$Dialog",
                 "acsTok" → req.acsTok,
                 "mdlId" → req.mdlId,
                 "usrExtId" → req.usrExtId.orNull,
-                "usrId" → req.usrId.getOrElse(null)) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("userExtId", req.usrExtId, 64)
+                "usrId" → req.usrId.getOrElse(-1)) { span ⇒
+                    checkAuth(req.acsTok, req.usrExtId)
 
-                val connUser = authenticate(req.acsTok)
+                    val acsUsr = authenticate(req.acsTok)
 
-                NCProbeManager.clearDialog(getUserId(connUser, req.usrId, req.usrExtId), req.mdlId, span)
+                    NCProbeManager.clearDialog(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
 
-                complete {
-                    Res(API_OK)
+                    complete {
+                        Res$Clear$Dialog(API_OK)
+                    }
                 }
-            }
         }
     }
 
@@ -759,7 +855,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def company$Add(): Route = {
-        case class Req(
+        case class Req$Company$Add(
             acsTok: String,
             // New company.
             name: String,
@@ -776,30 +872,33 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             adminLastName: String,
             adminAvatarUrl: Option[String]
         )
-        case class Res(
+        case class Res$Company$Add(
             status: String,
             token: String,
             adminId: Long
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat13(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat3(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Company$Add] = jsonFormat13(Req$Company$Add)
+        implicit val resFmt: RootJsonFormat[Res$Company$Add] = jsonFormat3(Res$Company$Add)
 
-        entity(as[Req]) { req ⇒
+        //noinspection DuplicatedCod
+        entity(as[Req$Company$Add]) { req ⇒
             startScopedSpan("company$Add", "name" → req.name) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLength("name", req.name, 64)
-                checkLengthOpt("website", req.website, 256)
-                checkLengthOpt("country", req.country, 32)
-                checkLengthOpt("region", req.region, 512)
-                checkLengthOpt("city", req.city, 512)
-                checkLengthOpt("address", req.address, 512)
-                checkLengthOpt("postalCode", req.postalCode, 32)
-                checkLength("adminEmail", req.adminEmail, 64)
-                checkLength("adminPasswd", req.adminPasswd, 64)
-                checkLength("adminFirstName", req.adminFirstName, 64)
-                checkLength("adminLastName", req.adminLastName, 64)
-                checkLengthOpt("adminAvatarUrl", req.adminAvatarUrl, 512000)
+                checkLength(
+                    "acsTok" → req.acsTok,
+                    "name" → req.name,
+                    "website" → req.website,
+                    "country" → req.country,
+                    "region" → req.region,
+                    "city" → req.city,
+                    "address" → req.address,
+                    "postalCode" → req.postalCode,
+                    "adminEmail" → req.adminEmail,
+                    "adminPasswd" → req.adminPasswd,
+                    "adminFirstName" → req.adminFirstName,
+                    "adminLastName" → req.adminLastName,
+                    "adminAvatarUrl" → req.adminAvatarUrl
+                )
 
                 // Via REST only administrators of already created companies can create new companies.
                 authenticateAsAdmin(req.acsTok)
@@ -821,7 +920,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 )
 
                 complete {
-                    Res(API_OK, res.token, res.adminId)
+                    Res$Company$Add(API_OK, res.token, res.adminId)
                 }
             }
         }
@@ -832,10 +931,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def company$Get(): Route = {
-        case class Req(
+        case class Req$Company$Get(
             acsTok: String
         )
-        case class Res(
+        case class Res$Company$Get(
             status: String,
             id: Long,
             name: String,
@@ -847,22 +946,22 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             postalCode: Option[String]
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat9(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Company$Get] = jsonFormat1(Req$Company$Get)
+        implicit val resFmt: RootJsonFormat[Res$Company$Get] = jsonFormat9(Res$Company$Get)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Company$Get]) { req ⇒
             startScopedSpan("company$get", "acsTok" → req.acsTok) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
+                checkLength("acsTok" → req.acsTok)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                val company = NCCompanyManager.getCompany(connUser.companyId, span) match {
+                val company = NCCompanyManager.getCompany(acsUsr.companyId, span) match {
                     case Some(c) ⇒ c
-                    case None ⇒ throw InvalidOperation(s"Failed to find company with ID: ${connUser.companyId}")
+                    case None ⇒ throw InvalidOperation(s"Failed to find company with ID: ${acsUsr.companyId}")
                 }
 
                 complete {
-                    Res(API_OK,
+                    Res$Company$Get(API_OK,
                         company.id,
                         company.name,
                         company.website,
@@ -882,7 +981,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def company$Update(): Route = {
-        case class Req(
+        case class Req$Company$Update(
             // Caller.
             acsTok: String,
 
@@ -895,28 +994,29 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             address: Option[String],
             postalCode: Option[String]
         )
-        case class Res(
+        case class Res$Company$Update(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat8(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Company$Update] = jsonFormat8(Req$Company$Update)
+        implicit val resFmt: RootJsonFormat[Res$Company$Update] = jsonFormat1(Res$Company$Update)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Company$Update]) { req ⇒
             startScopedSpan("company$Update", "acsTok" → req.acsTok, "name" → req.name) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLength("name", req.name, 64)
-                checkLengthOpt("website", req.website, 256)
-                checkLengthOpt("country", req.country, 32)
-                checkLengthOpt("region", req.region, 512)
-                checkLengthOpt("city", req.city, 512)
-                checkLengthOpt("address", req.address, 512)
-                checkLengthOpt("postalCode", req.postalCode, 32)
+                checkLength("acsTok" → req.acsTok,
+                    "name" → req.name,
+                    "website" → req.website,
+                    "country" → req.country,
+                    "region" → req.region,
+                    "city" → req.city,
+                    "address" → req.address,
+                    "postalCode" → req.postalCode
+                )
 
-                val admin = authenticateAsAdmin(req.acsTok)
+                val admUsr = authenticateAsAdmin(req.acsTok)
 
                 NCCompanyManager.updateCompany(
-                    admin.companyId,
+                    admUsr.companyId,
                     req.name,
                     req.website,
                     req.country,
@@ -928,7 +1028,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 )
 
                 complete {
-                    Res(API_OK)
+                    Res$Company$Update(API_OK)
                 }
             }
         }
@@ -939,7 +1039,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def feedback$Add(): Route = {
-        case class Req(
+        case class Req$Feedback$Add(
             acsTok: String,
             usrId : Option[Long],
             usrExtId: Option[String],
@@ -947,40 +1047,43 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             score: Double,
             comment: Option[String]
         )
-        case class Res(
+        case class Res$Feedback$Add(
             status: String,
             id: Long
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat6(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Feedback$Add] = jsonFormat6(Req$Feedback$Add)
+        implicit val resFmt: RootJsonFormat[Res$Feedback$Add] = jsonFormat2(Res$Feedback$Add)
 
-        entity(as[Req]) { req ⇒
-            //noinspection GetOrElseNull
+        entity(as[Req$Feedback$Add]) { req ⇒
             startScopedSpan(
                 "feedback$Add",
-                "usrId" → req.usrId.getOrElse(null),
+                "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull,
                 "srvReqId" → req.srvReqId) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("userExtId", req.usrExtId, 64)
-                checkLength("srvReqId", req.srvReqId, 64)
+                checkLength(
+                    "acsTok" → req.acsTok,
+                    "userExtId" → req.usrExtId,
+                    "srvReqId" → req.srvReqId,
+                    "comment" → req.comment
+                )
+
+                // Special check for score range.
                 checkRange("score", req.score, 0, 1)
-                checkLengthOpt("comment", req.comment, 1024)
 
                 // Via REST only administrators of already created companies can create new companies.
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
                 val id = NCFeedbackManager.addFeedback(
                     req.srvReqId,
-                    getUserId(connUser, req.usrId, req.usrExtId),
+                    getUserId(acsUsr, req.usrId, req.usrExtId),
                     req.score,
                     req.comment,
                     span
                 )
 
                 complete {
-                    Res(API_OK, id)
+                    Res$Feedback$Add(API_OK, id)
                 }
             }
         }
@@ -991,26 +1094,26 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def feedback$Delete(): Route = {
-        case class Req(
+        case class Req$Feedback$Delete(
             acsTok: String,
-            // Deleted feedback ID.
+            // Feedback IDs to delete (optional).
             id: Option[Long]
         )
-        case class Res(
+        case class Res$Feedback$Delete(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat2(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Feedback$Delete] = jsonFormat2(Req$Feedback$Delete)
+        implicit val resFmt: RootJsonFormat[Res$Feedback$Delete] = jsonFormat1(Res$Feedback$Delete)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Feedback$Delete]) { req ⇒
             startScopedSpan("feedback$Delete") { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
+                checkLength("acsTok" → req.acsTok)
 
                 // Via REST only administrators of already created companies can create new companies.
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                require(connUser.email.isDefined)
+                require(acsUsr.email.isDefined)
 
                 req.id match {
                     case Some(id) ⇒
@@ -1022,22 +1125,22 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                         getOrElse(throw new NCE(s"Company not found for user: ${f.userId}")).
                                         companyId
 
-                                if (companyId != connUser.companyId || (f.userId != connUser.id && !connUser.isAdmin))
-                                    throw AdminRequired(connUser.email.get)
+                                if (companyId != acsUsr.companyId || (f.userId != acsUsr.id && !acsUsr.isAdmin))
+                                    throw AdminRequired(acsUsr.email.get)
 
                                 NCFeedbackManager.deleteFeedback(f.id, span)
                             case None ⇒ // No-op.
                         }
 
                     case None ⇒
-                        if (!connUser.isAdmin)
-                            throw AdminRequired(connUser.email.get)
+                        if (!acsUsr.isAdmin)
+                            throw AdminRequired(acsUsr.email.get)
 
-                        NCFeedbackManager.deleteAllFeedback(connUser.companyId, span)
+                        NCFeedbackManager.deleteAllFeedback(acsUsr.companyId, span)
                 }
 
                 complete {
-                    Res(API_OK)
+                    Res$Feedback$Delete(API_OK)
                 }
             }
         }
@@ -1048,13 +1151,13 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def feedback$All(): Route = {
-        case class Req(
+        case class Req$Feedback$All(
             acsTok: String,
             usrId: Option[Long],
             usrExtId: Option[String],
             srvReqId: Option[String]
         )
-        case class Feedback(
+        case class Feedback_Feedback$All(
             id: Long,
             srvReqId: String,
             usrId: Long,
@@ -1062,42 +1165,39 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             comment: Option[String],
             createTstamp: Long
         )
-        case class Res(
+        case class Res$Feedback$All(
             status: String,
-            feedback: Seq[Feedback]
+            feedback: Seq[Feedback_Feedback$All]
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat4(Req)
+        implicit val reqFmt: RootJsonFormat[Req$Feedback$All] = jsonFormat4(Req$Feedback$All)
+        implicit val fbFmt: RootJsonFormat[Feedback_Feedback$All] = jsonFormat6(Feedback_Feedback$All)
+        implicit val resFmt: RootJsonFormat[Res$Feedback$All] = jsonFormat2(Res$Feedback$All)
 
-        implicit val fbFmt: RootJsonFormat[Feedback] = jsonFormat6(Feedback)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
-
-        entity(as[Req]) { req ⇒
-            //noinspection GetOrElseNull
+        entity(as[Req$Feedback$All]) { req ⇒
             startScopedSpan(
                 "feedback$All",
-                "usrId" → req.usrId.getOrElse(null),
+                "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull
             ) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("srvReqId", req.srvReqId, 64)
-                checkLengthOpt("userExtId", req.usrExtId, 64)
+                checkAuth(req.acsTok, req.usrExtId)
+                checkLength("srvReqId" → req.srvReqId)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                require(connUser.email.isDefined)
+                require(acsUsr.email.isDefined)
 
                 val feedback =
                     NCFeedbackManager.getFeedback(
-                        connUser.companyId,
+                        acsUsr.companyId,
                         req.srvReqId,
                         if (req.usrId.isDefined || req.usrExtId.isDefined)
-                            Some(getUserId(connUser, req.usrId, req.usrExtId))
+                            Some(getUserId(acsUsr, req.usrId, req.usrExtId))
                         else
                             None,
                         span
                     ).map(f ⇒
-                        Feedback(
+                        Feedback_Feedback$All(
                             f.id,
                             f.srvReqId,
                             f.userId,
@@ -1107,11 +1207,11 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         )
                     )
 
-                if (!connUser.isAdmin && feedback.exists(_.usrId != connUser.id))
-                    throw AdminRequired(connUser.email.get)
+                if (!acsUsr.isAdmin && feedback.exists(_.usrId != acsUsr.id))
+                    throw AdminRequired(acsUsr.email.get)
 
                 complete {
-                    Res(API_OK, feedback)
+                    Res$Feedback$All(API_OK, feedback)
                 }
             }
         }
@@ -1122,27 +1222,28 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def company$Token$Reset(): Route = {
-        case class Req(
+        case class Req$Company$Token$Reset(
             // Caller.
             acsTok: String
         )
-        case class Res(
+        case class Res$Company$Token$Reset(
             status: String,
             token: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Company$Token$Reset] = jsonFormat1(Req$Company$Token$Reset)
+        implicit val resFmt: RootJsonFormat[Res$Company$Token$Reset] = jsonFormat2(Res$Company$Token$Reset)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Company$Token$Reset]) { req ⇒
             startScopedSpan("company$Token$Reset", "acsTok" → req.acsTok) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
+                checkLength("acsTok" → req.acsTok)
 
-                val admin = authenticateAsAdmin(req.acsTok)
-                val tkn = NCCompanyManager.resetToken(admin.companyId, span)
+                val admUsr = authenticateAsAdmin(req.acsTok)
+
+                val tkn = NCCompanyManager.resetToken(admUsr.companyId, span)
 
                 complete {
-                    Res(API_OK, tkn)
+                    Res$Company$Token$Reset(API_OK, tkn)
                 }
             }
         }
@@ -1153,27 +1254,27 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def company$Delete(): Route = {
-        case class Req(
+        case class Req$Company$Delete(
             // Caller.
             acsTok: String
         )
-        case class Res(
+        case class Res$Company$Delete(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Company$Delete] = jsonFormat1(Req$Company$Delete)
+        implicit val resFmt: RootJsonFormat[Res$Company$Delete] = jsonFormat1(Res$Company$Delete)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Company$Delete]) { req ⇒
             startScopedSpan("company$Delete", "acsTok" → req.acsTok) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
+                checkLength("acsTok" → req.acsTok)
 
-                val admin = authenticateAsAdmin(req.acsTok)
+                val admUSr = authenticateAsAdmin(req.acsTok)
 
-                NCCompanyManager.deleteCompany(admin.companyId, span)
+                NCCompanyManager.deleteCompany(admUSr.companyId, span)
 
                 complete {
-                    Res(API_OK)
+                    Res$Company$Delete(API_OK)
                 }
             }
         }
@@ -1184,7 +1285,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def user$Add(): Route = {
-        case class Req(
+        case class Req$User$Add(
             // Caller.
             acsTok: String,
 
@@ -1198,30 +1299,32 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             properties: Option[Map[String, String]],
             extId: Option[String]
         )
-        case class Res(
+        case class Res$User$Add(
             status: String,
             id: Long
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat9(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+        implicit val reqFmt: RootJsonFormat[Req$User$Add] = jsonFormat9(Req$User$Add)
+        implicit val resFmt: RootJsonFormat[Res$User$Add] = jsonFormat2(Res$User$Add)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$User$Add]) { req ⇒
             startScopedSpan("user$Add", "acsTok" → req.acsTok, "email" → req.email) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLength("email", req.email, 64)
-                checkLength("passwd", req.passwd, 64)
-                checkLength("firstName", req.firstName, 64)
-                checkLength("lastName", req.lastName, 64)
-                checkLengthOpt("avatarUrl", req.avatarUrl, 512000)
-                checkLengthOpt("extId", req.extId, 64)
+                checkLength(
+                    "acsTok" → req.acsTok,
+                    "email" → req.email,
+                    "passwd" → req.passwd,
+                    "firstName" → req.firstName,
+                    "lastName" → req.lastName,
+                    "avatarUrl" → req.avatarUrl,
+                    "extId" → req.extId
+                )
 
                 checkUserProperties(req.properties)
 
-                val admin = authenticateAsAdmin(req.acsTok)
+                val admUsr = authenticateAsAdmin(req.acsTok)
 
                 val id = NCUserManager.addUser(
-                    admin.companyId,
+                    admUsr.companyId,
                     req.email,
                     req.passwd,
                     req.firstName,
@@ -1234,7 +1337,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 )
 
                 complete {
-                    Res(API_OK, id)
+                    Res$User$Add(API_OK, id)
                 }
             }
         }
@@ -1245,7 +1348,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def user$Update(): Route = {
-        case class Req(
+        case class Req$User$Update(
             // Caller.
             acsTok: String,
 
@@ -1256,26 +1359,28 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             avatarUrl: Option[String],
             properties: Option[Map[String, String]]
         )
-        case class Res(
+        case class Res$User$Update(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat6(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$User$Update] = jsonFormat6(Req$User$Update)
+        implicit val resFmt: RootJsonFormat[Res$User$Update] = jsonFormat1(Res$User$Update)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$User$Update]) { req ⇒
             startScopedSpan("user$Update", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(() ⇒ null)) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLength("firstName", req.firstName, 64)
-                checkLength("lastName", req.lastName, 64)
-                checkLengthOpt("avatarUrl", req.avatarUrl, 512000)
+                checkLength(
+                    "acsTok" → req.acsTok,
+                    "firstName" → req.firstName,
+                    "lastName" → req.lastName,
+                    "avatarUrl" → req.avatarUrl
+                )
 
                 checkUserProperties(req.properties)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
                 NCUserManager.updateUser(
-                    getUserId(connUser, req.id, None),
+                    getUserId(acsUsr, req.id, None),
                     req.firstName,
                     req.lastName,
                     req.avatarUrl,
@@ -1284,7 +1389,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 )
 
                 complete {
-                    Res(API_OK)
+                    Res$User$Update(API_OK)
                 }
             }
         }
@@ -1295,26 +1400,26 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def user$Delete(): Route = {
-        case class Req(
+        case class Req$User$Delete(
             acsTok: String,
             id: Option[Long],
             extId: Option[String]
         )
-        case class Res(
+        case class Res$User$Delete(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat3(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$User$Delete] = jsonFormat3(Req$User$Delete)
+        implicit val resFmt: RootJsonFormat[Res$User$Delete] = jsonFormat1(Res$User$Delete)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$User$Delete]) { req ⇒
             startScopedSpan("user$Delete", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(() ⇒ null)) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
                 checkLengthOpt("extId", req.extId, 64)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                require(connUser.email.isDefined)
+                require(acsUsr.email.isDefined)
 
                 def delete(id: Long): Unit = {
                     NCUserManager.signoutAllSessions(id, span)
@@ -1325,31 +1430,31 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 // Deletes all users from company except initiator.
                 if (req.id.isEmpty && req.extId.isEmpty) {
-                    if (!connUser.isAdmin)
-                        throw AdminRequired(connUser.email.get)
+                    if (!acsUsr.isAdmin)
+                        throw AdminRequired(acsUsr.email.get)
 
                     NCUserManager.
-                        getAllUsers(connUser.companyId, span).
+                        getAllUsers(acsUsr.companyId, span).
                             keys.
-                            filter(_.id != connUser.id).
+                            filter(_.id != acsUsr.id).
                             map(_.id).
                             foreach(delete)
                 }
                 else {
-                    val delUsrId = getUserId(connUser, req.id, req.extId)
+                    val delUsrId = getUserId(acsUsr, req.id, req.extId)
 
                     // Tries to delete own account.
-                    if (delUsrId == connUser.id &&
-                        connUser.isAdmin &&
-                        !NCUserManager.isOtherAdminsExist(connUser.id)
+                    if (delUsrId == acsUsr.id &&
+                        acsUsr.isAdmin &&
+                        !NCUserManager.isOtherAdminsExist(acsUsr.id)
                     )
-                        throw InvalidOperation(s"Last admin user cannot be deleted: ${connUser.email.get}")
+                        throw InvalidOperation(s"Last admin user cannot be deleted: ${acsUsr.email.get}")
 
                     delete(delUsrId)
                 }
 
                 complete {
-                    Res(API_OK)
+                    Res$User$Delete(API_OK)
                 }
             }
         }
@@ -1360,37 +1465,37 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def user$Admin(): Route = {
-        case class Req(
+        case class Req$User$Admin(
             acsTok: String,
             id: Option[Long],
             admin: Boolean
         )
-        case class Res(
+        case class Res$User$Admin(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat3(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$User$Admin] = jsonFormat3(Req$User$Admin)
+        implicit val resFmt: RootJsonFormat[Res$User$Admin] = jsonFormat1(Res$User$Admin)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$User$Admin]) { req ⇒
             startScopedSpan("user$Admin", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(-1), "admin" → req.admin) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
 
-                val initiatorUsr = authenticateAsAdmin(req.acsTok)
-                val usrId = req.id.getOrElse(initiatorUsr.id)
+                val initUsr = authenticateAsAdmin(req.acsTok)
+                val usrId = req.id.getOrElse(initUsr.id)
 
                 // Self update.
                 if (
-                    usrId == initiatorUsr.id &&
+                    usrId == initUsr.id &&
                         !req.admin &&
-                        !NCUserManager.isOtherAdminsExist(initiatorUsr.id, span)
+                        !NCUserManager.isOtherAdminsExist(initUsr.id, span)
                 )
-                    throw InvalidOperation(s"Last admin user cannot lose admin privileges: ${initiatorUsr.email}")
+                    throw InvalidOperation(s"Last admin user cannot lose admin privileges: ${initUsr.email}")
 
                 NCUserManager.updateUserPermissions(usrId, req.admin, span)
 
                 complete {
-                    Res(API_OK)
+                    Res$User$Admin(API_OK)
                 }
             }
         }
@@ -1401,30 +1506,34 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def user$Password$Reset(): Route = {
-        case class Req(
+        case class Req$User$Password$Reset(
             // Caller.
             acsTok: String,
             id: Option[Long],
             newPasswd: String
         )
-        case class Res(
+        case class Res$User$Password$Reset(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat3(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat1(Res)
+        implicit val reqFmt: RootJsonFormat[Req$User$Password$Reset] = jsonFormat3(Req$User$Password$Reset)
+        implicit val resFmt: RootJsonFormat[Res$User$Password$Reset] = jsonFormat1(Res$User$Password$Reset)
 
-        entity(as[Req]) { req ⇒
-            startScopedSpan("user$Password$Reset", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(-1)) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLength("newPasswd", req.newPasswd, 64)
+        entity(as[Req$User$Password$Reset]) { req ⇒
+            startScopedSpan(
+                "user$Password$Reset",
+                "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(-1)) { span ⇒
+                checkLength(
+                    "acsTok" → req.acsTok,
+                    "newPasswd" → req.newPasswd
+                )
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                NCUserManager.resetPassword(getUserId(connUser, req.id, None), req.newPasswd, span)
+                NCUserManager.resetPassword(getUserId(acsUsr, req.id, None), req.newPasswd, span)
 
                 complete {
-                    Res(API_OK)
+                    Res$User$Password$Reset(API_OK)
                 }
             }
         }
@@ -1435,11 +1544,11 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def user$All(): Route = {
-        case class Req(
+        case class Req$User$All(
             // Caller.
             acsTok: String
         )
-        case class ResUser(
+        case class ResUser_User$All(
             id: Long,
             email: Option[String],
             extId: Option[String],
@@ -1450,24 +1559,24 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             companyId: Long,
             properties: Option[Map[String, String]]
         )
-        case class Res(
+        case class Res$User$All(
             status: String,
-            users: Seq[ResUser]
+            users: Seq[ResUser_User$All]
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
-        implicit val usrFmt: RootJsonFormat[ResUser] = jsonFormat9(ResUser)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+        implicit val reqFmt: RootJsonFormat[Req$User$All] = jsonFormat1(Req$User$All)
+        implicit val usrFmt: RootJsonFormat[ResUser_User$All] = jsonFormat9(ResUser_User$All)
+        implicit val resFmt: RootJsonFormat[Res$User$All] = jsonFormat2(Res$User$All)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$User$All]) { req ⇒
             startScopedSpan("user$All", "acsTok" → req.acsTok) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
+                checkLength("acsTok" → req.acsTok)
 
-                val admin = authenticateAsAdmin(req.acsTok)
+                val admUSr = authenticateAsAdmin(req.acsTok)
 
                 val usrLst =
-                    NCUserManager.getAllUsers(admin.companyId, span).map { case (u, props) ⇒
-                        ResUser(
+                    NCUserManager.getAllUsers(admUSr.companyId, span).map { case (u, props) ⇒
+                        ResUser_User$All(
                             u.id,
                             u.email,
                             u.extId,
@@ -1481,7 +1590,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     }.toSeq
 
                 complete {
-                    Res(API_OK, usrLst)
+                    Res$User$All(API_OK, usrLst)
                 }
             }
         }
@@ -1492,13 +1601,13 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def user$Get(): Route = {
-        case class Req(
+        case class Req$User$Get(
             // Caller.
             acsTok: String,
             id: Option[Long],
             extId: Option[String]
         )
-        case class Res(
+        case class Res$User$Get(
             status: String,
             id: Long,
             email: Option[String],
@@ -1510,35 +1619,33 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             properties: Option[Map[String, String]]
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat3(Req)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat9(Res)
+        implicit val reqFmt: RootJsonFormat[Req$User$Get] = jsonFormat3(Req$User$Get)
+        implicit val resFmt: RootJsonFormat[Res$User$Get] = jsonFormat9(Res$User$Get)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$User$Get]) { req ⇒
             startScopedSpan(
                 "user$Get", "acsTok" → req.acsTok, "id" → req.id.orElse(null), "extId" → req.extId.orNull
             ) { span ⇒
-                checkLength("acsTok", req.acsTok, 256)
-                checkLengthOpt("extId", req.extId, 64)
+                checkLength("acsTok" → req.acsTok, "extId" → req.extId)
 
-                val connUser = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
+                val usrId = getUserId(acsUsr, req.id, req.extId)
 
-                val userId = getUserId(connUser, req.id, req.extId)
+                if (acsUsr.id != usrId && !acsUsr.isAdmin)
+                    throw AdminRequired(acsUsr.email.get)
 
-                if (connUser.id != userId && !connUser.isAdmin)
-                    throw AdminRequired(connUser.email.get)
-
-                val user = NCUserManager.getUserById(userId, span).getOrElse(throw new NCE(s"User not found: $userId"))
-                val props = NCUserManager.getUserProperties(userId, span)
+                val usr = NCUserManager.getUserById(usrId, span).getOrElse(throw new NCE(s"User not found: $usrId"))
+                val props = NCUserManager.getUserProperties(usrId, span)
 
                 complete {
-                    Res(API_OK,
-                        user.id,
-                        user.email,
-                        user.extId,
-                        user.firstName,
-                        user.lastName,
-                        user.avatarUrl,
-                        user.isAdmin,
+                    Res$User$Get(API_OK,
+                        usr.id,
+                        usr.email,
+                        usr.extId,
+                        usr.firstName,
+                        usr.lastName,
+                        usr.avatarUrl,
+                        usr.isAdmin,
                         if (props.isEmpty) None else Some(props.map(p ⇒ p.property → p.value).toMap)
                     )
                 }
@@ -1551,16 +1658,16 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @return
       */
     protected def probe$All(): Route = {
-        case class Req(
+        case class Req$Probe$All(
             acsTok: String
         )
-        case class Model(
+        case class Model_Probe$All(
             id: String,
             name: String,
             version: String,
             enabledBuiltInTokens: Set[String]
         )
-        case class Probe(
+        case class Probe_Probe$All(
             probeToken: String,
             probeId: String,
             probeGuid: String,
@@ -1579,25 +1686,25 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             hostName: String,
             hostAddr: String,
             macAddr: String,
-            models: Set[Model]
+            models: Set[Model_Probe$All]
         )
-        case class Res(
+        case class Res$Probe$All(
             status: String,
-            probes: Seq[Probe]
+            probes: Seq[Probe_Probe$All]
         )
 
-        implicit val reqFmt: RootJsonFormat[Req] = jsonFormat1(Req)
-        implicit val mdlFmt: RootJsonFormat[Model] = jsonFormat4(Model)
-        implicit val probFmt: RootJsonFormat[Probe] = jsonFormat19(Probe)
-        implicit val resFmt: RootJsonFormat[Res] = jsonFormat2(Res)
+        implicit val reqFmt: RootJsonFormat[Req$Probe$All] = jsonFormat1(Req$Probe$All)
+        implicit val mdlFmt: RootJsonFormat[Model_Probe$All] = jsonFormat4(Model_Probe$All)
+        implicit val probFmt: RootJsonFormat[Probe_Probe$All] = jsonFormat19(Probe_Probe$All)
+        implicit val resFmt: RootJsonFormat[Res$Probe$All] = jsonFormat2(Res$Probe$All)
 
-        entity(as[Req]) { req ⇒
+        entity(as[Req$Probe$All]) { req ⇒
             startScopedSpan("probe$All", "acsTok" → req.acsTok) { span ⇒
                 checkLength("acsTok", req.acsTok, 256)
 
-                val admin = authenticateAsAdmin(req.acsTok)
+                val admUsr = authenticateAsAdmin(req.acsTok)
 
-                val probeLst = NCProbeManager.getAllProbes(admin.companyId, span).map(mdo ⇒ Probe(
+                val probeLst = NCProbeManager.getAllProbes(admUsr.companyId, span).map(mdo ⇒ Probe_Probe$All(
                     mdo.probeToken,
                     mdo.probeId,
                     mdo.probeGuid,
@@ -1616,7 +1723,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     mdo.hostName,
                     mdo.hostAddr,
                     mdo.macAddr,
-                    mdo.models.map(m ⇒ Model(
+                    mdo.models.map(m ⇒ Model_Probe$All(
                         m.id,
                         m.name,
                         m.version,
@@ -1625,7 +1732,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 ))
 
                 complete {
-                    Res(API_OK, probeLst)
+                    Res$Probe$All(API_OK, probeLst)
                 }
             }
         }
@@ -1657,7 +1764,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    override def getExceptionHandler: ExceptionHandler = ExceptionHandler {
+    def getExceptionHandler: ExceptionHandler = ExceptionHandler {
         case e: AccessTokenFailure ⇒
             val errMsg = e.getLocalizedMessage
             val code = "NC_INVALID_ACCESS_TOKEN"
@@ -1700,7 +1807,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             val code = "NC_ERROR"
 
             // We have to log error reason because even general exceptions are not expected here.
-            logger.warn(s"Unexpected error: $errMsg", e)
+            logger.warn(s"Unexpected top level REST API error: $errMsg", e)
 
             completeError(StatusCodes.BadRequest, code, errMsg)
 
@@ -1718,7 +1825,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    override def getRejectionHandler: RejectionHandler =
+    def getRejectionHandler: RejectionHandler =
         RejectionHandler.newBuilder().
             handle {
                 // It doesn't try to process all rejections special way.
@@ -1733,7 +1840,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @param f
       * @return
       */
-    private def withLatency(m: Measure, f: () ⇒ Route): Route = {
+    private def withMetric(m: Measure, f: () ⇒ Route): Route = {
         val start = System.currentTimeMillis()
 
         try
@@ -1745,75 +1852,55 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
     /**
       *
-      * @param m
-      * @param f
-      * @return
-      */
-    private def withLatency[T](m: Measure, f: Future[T]): Future[T] = {
-        val start = System.currentTimeMillis()
-
-        f.onComplete(_ ⇒ recordStats(m → (System.currentTimeMillis() - start)))
-
-        f
-    }
-
-    /**
-      *
       * @return
       */
     override def getRoute: Route = {
-        val timeoutResp =
-            HttpResponse(
-                StatusCodes.EnhanceYourCalm,
-                entity = "Unable to serve response within time limit, please enhance your calm."
-            )
-
-        corsHandler (
-            get {
-                withRequestTimeoutResponse(_ ⇒ timeoutResp) {
-                    path(API / "health") { health$() }
-                }
-            } ~
-            post {
-                encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
-                    withRequestTimeoutResponse(_ ⇒ timeoutResp) {
-                        path(API / "signin") { withLatency(M_SIGNIN_LATENCY_MS, signin$) } ~
-                        path(API / "signout") { withLatency(M_SIGNOUT_LATENCY_MS, signout$) } ~ {
-                        path(API / "cancel") { withLatency(M_CANCEL_LATENCY_MS, cancel$) } ~
-                        path(API / "check") { withLatency(M_CHECK_LATENCY_MS, check$) } ~
-                        path(API / "model"/ "enhance") { withLatency(M_MODEL_ENHANCE_LATENCY_MS, modelEnhance$) } ~
-                        path(API / "clear"/ "conversation") { withLatency(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
-                        path(API / "clear"/ "dialog") { withLatency(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
-                        path(API / "company"/ "add") { withLatency(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
-                        path(API / "company"/ "get") { withLatency(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
-                        path(API / "company" / "update") { withLatency(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
-                        path(API / "company" / "token" / "reset") { withLatency(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
-                        path(API / "company" / "delete") { withLatency(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
-                        path(API / "user" / "get") { withLatency(M_USER_GET_LATENCY_MS, user$Get) } ~
-                        path(API / "user" / "add") { withLatency(M_USER_ADD_LATENCY_MS, user$Add) } ~
-                        path(API / "user" / "update") { withLatency(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
-                        path(API / "user" / "delete") { withLatency(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
-                        path(API / "user" / "admin") { withLatency(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
-                        path(API / "user" / "passwd" / "reset") { withLatency(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
-                        path(API / "user" / "all") { withLatency(M_USER_ALL_LATENCY_MS, user$All) } ~
-                        path(API / "feedback"/ "add") { withLatency(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
-                        path(API / "feedback"/ "all") { withLatency(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
-                        path(API / "feedback" / "delete") { withLatency(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
-                        path(API / "probe" / "all") { withLatency(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
-                        path(API / "ask") { withLatency(M_ASK_LATENCY_MS, ask$) } ~
-                        (path(API / "ask" / "sync") &
-                            entity(as[JsValue]) &
-                            optionalHeaderValueByName("User-Agent") &
-                            extractClientIP
-                        ) {
-                            (req, userAgentOpt, rmtAddr) ⇒
-                                onSuccess(withLatency(M_ASK_SYNC_LATENCY_MS, ask$Sync(req, userAgentOpt, rmtAddr))) {
-                                    js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
-                                }
-                        }}
-                    }
-                }
-            }
+        val timeoutResp = HttpResponse(
+            StatusCodes.EnhanceYourCalm,
+            entity = "Unable to serve response within time limit, please enhance your calm."
         )
+
+        handleExceptions(getExceptionHandler) {
+            handleRejections(getRejectionHandler) {
+                corsHandler (
+                    get {
+                        withRequestTimeoutResponse(_ ⇒ timeoutResp) {
+                            path(API / "health") { health$() }
+                        }
+                    } ~
+                    post {
+                        encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
+                            withRequestTimeoutResponse(_ ⇒ timeoutResp) {
+                                path(API / "signin") { withMetric(M_SIGNIN_LATENCY_MS, signin$) } ~
+                                path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, signout$) } ~
+                                path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, cancel$) } ~
+                                path(API / "check") { withMetric(M_CHECK_LATENCY_MS, check$) } ~
+                                path(API / "clear"/ "conversation") { withMetric(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
+                                path(API / "clear"/ "dialog") { withMetric(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
+                                path(API / "company"/ "add") { withMetric(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
+                                path(API / "company"/ "get") { withMetric(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
+                                path(API / "company" / "update") { withMetric(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
+                                path(API / "company" / "token" / "reset") { withMetric(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
+                                path(API / "company" / "delete") { withMetric(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
+                                path(API / "user" / "get") { withMetric(M_USER_GET_LATENCY_MS, user$Get) } ~
+                                path(API / "user" / "add") { withMetric(M_USER_ADD_LATENCY_MS, user$Add) } ~
+                                path(API / "user" / "update") { withMetric(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
+                                path(API / "user" / "delete") { withMetric(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
+                                path(API / "user" / "admin") { withMetric(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
+                                path(API / "user" / "passwd" / "reset") { withMetric(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
+                                path(API / "user" / "all") { withMetric(M_USER_ALL_LATENCY_MS, user$All) } ~
+                                path(API / "feedback"/ "add") { withMetric(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
+                                path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
+                                path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
+                                path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
+                                path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
+                                path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
+                                path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
+                            }
+                        }
+                    }
+                )
+            }
+        }
     }
 }

@@ -23,7 +23,7 @@ import java.util.Collections
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.NCNlpSentenceToken
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.probe.mgrs.NCModelDecorator
+import org.apache.nlpcraft.probe.mgrs.nlp.NCModelData
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
@@ -99,7 +99,7 @@ private[nlpcraft] class NCTokenImpl(
 }
 
 private[nlpcraft] object NCTokenImpl {
-    def apply(mdl: NCModelDecorator, srvReqId: String, tok: NCNlpSentenceToken): NCTokenImpl = {
+    def apply(mdl: NCModelData, srvReqId: String, tok: NCNlpSentenceToken): NCTokenImpl = {
         // nlpcraft:nlp and some optional (after collapsing).
         require(tok.size <= 2, s"Unexpected token [size=${tok.size}, token=$tok]")
 

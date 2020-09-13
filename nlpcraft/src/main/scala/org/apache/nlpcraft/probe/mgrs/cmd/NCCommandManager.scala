@@ -18,28 +18,47 @@
 package org.apache.nlpcraft.probe.mgrs.cmd
 
 import java.io.Serializable
+import java.util.concurrent.{ExecutorService, Executors}
 
+import com.google.gson.Gson
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
+import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
-import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
+import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
+import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
+import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 /**
   * Probe commands processor.
   */
 object NCCommandManager extends NCService {
+    private final val GSON = new Gson()
+
+    @volatile private var pool: ExecutorService = _
+    @volatile private var executor: ExecutionContextExecutor = _
+
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        pool = Executors.newCachedThreadPool()
+        executor = ExecutionContext.fromExecutor(pool)
+
         super.start()
     }
     
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
+
+        NCUtils.shutdownPools(pool)
+
+        executor = null
+        pool = null
     }
     
     /**
@@ -84,8 +103,32 @@ object NCCommandManager extends NCService {
                             mdlId = msg.data[String]("mdlId"),
                             logEnable = msg.data[Boolean]("logEnable"),
                             span
-                     )
-    
+                    )
+
+                    case "S2P_MODEL_INFO" ⇒
+                        val mdlId = msg.data[String]("mdlId")
+
+                        val mdlData = NCModelManager.getModelData(mdlId)
+
+                        val macros = mdlData.model.getMacros.asInstanceOf[Serializable]
+                        val syns = mdlData.model.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]
+                        val samples = mdlData.samples.map(p ⇒ p._1 → p._2.asJava).asJava.asInstanceOf[Serializable]
+
+                        NCConnectionManager.send(
+                            NCProbeMessage(
+                                "P2S_MODEL_INFO",
+                                "reqGuid" → msg.getGuid,
+                                "resp" → GSON.toJson(
+                                    Map(
+                                        "macros" → macros,
+                                        "synonyms" → syns,
+                                        "samples" → samples
+                                    ).asJava
+                                )
+                            ),
+                            span
+                        )
+
                     case _ ⇒
                         logger.error(s"Received unknown server message (you need to update the probe): ${msg.getType}")
                 }

@@ -393,13 +393,13 @@ object NCSqlModelGeneratorImpl {
                 
                 println(
                     s"Output file already exist and override is disabled:\n" +
-                    s"  +--> using '${file.getName}' filename instead."
+                    s"  +-→ using '${file.getName}' filename instead."
                 )
             }
             else
                 println(
                     s"Existing file '${file.getName}' will be overridden:\n" +
-                    s"  +--> use '-z false' to disable override."
+                    s"  +-→ use '-z false' to disable override."
                 )
         }
 

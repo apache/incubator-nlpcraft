@@ -387,7 +387,7 @@ class NCMacroParser {
             val ms = m.get.toString()
             
             if (!macros.keySet.contains(ms))
-                throw new NCE(s"Unknown macro [match=$ms, txt=$txt]")
+                throw new NCE(s"Unknown macro [macro=$ms, txt=$txt]")
             
             // Expand all registered macros.
             for ((k, v) ← macros) s = s.replace(k, v)

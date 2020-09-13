@@ -23,8 +23,10 @@ import java.security.Key
 import java.util
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.{ExecutorService, Executors}
+import java.util.concurrent.{ConcurrentHashMap, ExecutorService, Executors}
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -45,13 +47,16 @@ import org.apache.nlpcraft.server.sql.NCSql
 import scala.collection.JavaConverters._
 import scala.collection.{Map, mutable}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
 /**
   * Probe manager.
   */
 object NCProbeManager extends NCService {
+    private final val GSON = new Gson()
+    private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
+
     // Type safe and eager configuration container.
     private[probe] object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.probe"
@@ -71,18 +76,39 @@ object NCProbeManager extends NCService {
             val (_, dnPort) =  getDnHostPort
             val (_, upPort) =  getUpHostPort
 
+            val msg1 = "Configuration property must be >= 0 and <= 65535"
+            val msg2 = "Configuration property must be > 0"
+
             if (!(dnPort >= 0 && dnPort <= 65535))
-                abortWith(s"Configuration property '$pre.links.upLink' must be >= 0 and <= 65535: $dnPort")
+                throw new NCE(s"$msg1 [" +
+                    s"name=$pre.links.upLink, " +
+                    s"value=$dnPort" +
+                s"]")
             if (!(upPort >= 0 && upPort <= 65535))
-                abortWith(s"Configuration property '$pre.links.downLink' must be >= 0 and <= 65535: $upPort")
+                throw new NCE(s"$msg1 [" +
+                    s"name=$pre.links.downLink, " +
+                    s"value=$upPort" +
+                s"]")
             if (reconnectTimeoutMs <= 0)
-                abortWith(s"Configuration property '$pre.reconnectTimeoutMs' must be > 0: $reconnectTimeoutMs")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.reconnectTimeoutMs, " +
+                    s"value=$reconnectTimeoutMs" +
+                s"]")
             if (poolSize <= 0)
-                abortWith(s"Configuration property '$pre.poolSize' must be > 0: $poolSize")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.poolSize, " +
+                    s"value=$poolSize" +
+                s"]")
             if (soTimeoutMs <= 0)
-                abortWith(s"Configuration property '$pre.soTimeoutMs' must be > 0: $soTimeoutMs")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.soTimeoutMs, " +
+                    s"value=$soTimeoutMs" +
+                s"]")
             if (pingTimeoutMs <= 0)
-                abortWith(s"Configuration property '$pre.pingTimeoutMs' timeout must be > 0: $pingTimeoutMs")
+                throw new NCE(s"$msg2 [" +
+                    s"name=$pre.pingTimeoutMs, " +
+                    s"value=$pingTimeoutMs" +
+                s"]")
         }
     }
     
@@ -99,6 +125,8 @@ object NCProbeManager extends NCService {
             s"probeGuid=$probeGuid, " +
             s"probeToken=$probeToken" +
             s"]"
+
+        def short: String = s"$probeId (guid:$probeGuid, tok:$probeToken)"
     }
     
     // Immutable probe holder.
@@ -138,7 +166,9 @@ object NCProbeManager extends NCService {
 
     @volatile private var pool: ExecutorService = _
     @volatile private var isStopping: AtomicBoolean = _
-    
+
+    @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
+
     /**
       *
       * @return
@@ -157,6 +187,8 @@ object NCProbeManager extends NCService {
         )
     
         isStopping = new AtomicBoolean(false)
+
+        modelsInfo = new ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]]()
         
         pool = Executors.newFixedThreadPool(Config.poolSize)
         
@@ -195,6 +227,8 @@ object NCProbeManager extends NCService {
         U.stopThread(pingSrv)
         U.stopThread(dnSrv)
         U.stopThread(upSrv)
+
+        modelsInfo = null
      
         super.stop()
     }
@@ -227,7 +261,7 @@ object NCProbeManager extends NCService {
                     case Some(holder) ⇒
                         holder.close()
             
-                        logger.info(s"Probe removed: $probeKey")
+                        logger.info(s"Probe removed: ${probeKey.short}")
 
                         // Clears unused models.
                         mdls --= mdls.keys.filter(id ⇒ !probes.exists { case (_, p) ⇒ p.probe.models.exists(_.id == id) })
@@ -236,7 +270,7 @@ object NCProbeManager extends NCService {
             case Some(hld) ⇒
                 hld.close()
                 
-                logger.info(s"Pending probe removed: $probeKey")
+                logger.info(s"Pending probe removed: ${probeKey.short}")
         }
 
     /**
@@ -260,14 +294,14 @@ object NCProbeManager extends NCService {
                     }
                     catch {
                         case _: EOFException ⇒
-                            logger.trace(s"Probe closed connection: $probeKey")
+                            logger.trace(s"Probe closed connection: ${probeKey.short}")
          
                             closeAndRemoveHolder(probeKey)
 
                         case e: Throwable ⇒
                             logger.error(s"Uplink socket error [" +
                                 s"sock=$sock, " +
-                                s"probeKey=$probeKey, " +
+                                s"probeKey=${probeKey.short}, " +
                                 s"probeMsg=$probeMsg" +
                                 s"error=${e.getLocalizedMessage}" +
                                 s"]")
@@ -277,7 +311,7 @@ object NCProbeManager extends NCService {
                 }
             else
                 logger.warn(s"Sending message to unknown probe (ignoring) [" +
-                    s"probeKey=$probeKey, " +
+                    s"probeKey=${probeKey.short}, " +
                     s"probeMsg=$probeMsg" +
                 s"]")
         }
@@ -395,6 +429,7 @@ object NCProbeManager extends NCService {
       */
     @throws[NCE]
     @throws[IOException]
+    //noinspection DuplicatedCode
     private def downLinkHandler(sock: NCSocket): Unit = {
         // Read header token hash message.
         val tokHash = sock.read[String]()
@@ -433,13 +468,13 @@ object NCProbeManager extends NCService {
                         case _: SocketTimeoutException | _: InterruptedException | _: InterruptedIOException ⇒ ()
                     
                         case _: EOFException ⇒
-                            logger.info(s"Probe closed downlink connection: $probeKey")
+                            logger.error(s"Probe closed downlink connection: ${probeKey.short}")
                         
                             t.interrupt()
                     
                         case e: Throwable ⇒
-                            logger.info(s"Error reading probe downlink socket (${e.getMessage}): $probeKey")
-                        
+                            logger.error(s"Error reading probe downlink socket (${e.getMessage}): ${probeKey.short}")
+
                             t.interrupt()
                     }
             }
@@ -516,6 +551,7 @@ object NCProbeManager extends NCService {
       */
     @throws[NCE]
     @throws[IOException]
+    //noinspection DuplicatedCode
     private def upLinkHandler(sock: NCSocket): Unit = {
         // Read header probe token hash message.
         val tokHash = sock.read[String]()
@@ -579,37 +615,25 @@ object NCProbeManager extends NCService {
                             String,
                             String,
                             String,
-                            java.util.Set[String],
-                            java.util.Map[String, String],
-                            java.util.Map[String, java.util.List[String]],
-                            java.util.Map[String, java.util.List[String]]
+                            java.util.Set[String]
                         )]]("PROBE_MODELS").
                         map {
                             case (
                                 mdlId,
                                 mdlName,
                                 mdlVer,
-                                enabledBuiltInToks,
-                                macros,
-                                elementsSynonyms,
-                                intentsSamples
+                                enabledBuiltInToks
                             ) ⇒
                                 require(mdlId != null)
                                 require(mdlName != null)
                                 require(mdlVer != null)
                                 require(enabledBuiltInToks != null)
-                                require(macros != null)
-                                require(elementsSynonyms != null)
-                                require(intentsSamples != null)
 
                                 NCProbeModelMdo(
                                     id = mdlId,
                                     name = mdlName,
                                     version = mdlVer,
-                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet,
-                                    macros = macros.asScala.toMap,
-                                    elementsSynonyms = elementsSynonyms.asScala.map(p ⇒ p._1 → p._2.asScala).toMap,
-                                    intentsSamples = intentsSamples.asScala.map(p ⇒ p._1 → p._2.asScala).toMap
+                                    enabledBuiltInTokens = enabledBuiltInToks.asScala.toSet
                                 )
                         }.toSet
 
@@ -678,13 +702,20 @@ object NCProbeManager extends NCService {
         }
         
         if (!knownProbe)
-            logger.error(s"Received message from unknown probe (ignoring): $probeKey]")
+            logger.error(s"Received message from unknown probe (ignoring): ${probeKey.short}]")
         else {
             val typ = probeMsg.getType
-            
+
             typ match {
                 case "P2S_PING" ⇒ ()
-                
+
+                case "P2S_MODEL_INFO" ⇒
+                    val p = modelsInfo.remove(probeMsg.data[String]("reqGuid"))
+
+                    if (p != null)
+                        p.success(GSON.fromJson(probeMsg.data[String]("resp"), TYPE_MODEL_INFO_RESP))
+                    else
+                        logger.warn(s"Message ignored: $probeMsg")
                 case "P2S_ASK_RESULT" ⇒
                     val srvReqId = probeMsg.data[String]("srvReqId")
                     
@@ -771,7 +802,11 @@ object NCProbeManager extends NCService {
         val probe = hol.probe
         
         tbl += (
-            probe.probeId,
+            Seq(
+                probe.probeId,
+                s"  uid: ${probe.probeGuid}",
+                s"  tok: ${probe.probeToken}"
+            ),
             s"${probe.osName} ver. ${probe.osVersion}",
             s"${probe.tmzAbbr}, ${probe.tmzId}",
             s"${probe.hostName} (${probe.hostAddr})",
@@ -887,23 +922,50 @@ object NCProbeManager extends NCService {
             }
         }
     }
-    
+
     /**
-      * Gets all active probes.
-      *
-      * @param compId
-      * @param parent Optional parent span.
-      */
+     *
+     * @param compId
+     * @return
+     */
+    private def getCompany(compId: Long): NCCompanyMdo =
+        NCCompanyManager.getCompany(compId).getOrElse(throw new NCE(s"Company mot found: $compId"))
+
+    /**
+     * Gets all active probes.
+     *
+     * @param compId Company ID for authentication purpose.
+     * @param parent Optional parent span.
+     */
     @throws[NCE]
     def getAllProbes(compId: Long, parent: Span = null): Seq[NCProbeMdo] =
         startScopedSpan("getAllProbes", parent, "compId" → compId) { _ ⇒
-            val comp = NCCompanyManager.getCompany(compId).getOrElse(throw new NCE(s"Company mot found: $compId"))
+            val authTok = getCompany(compId).authToken
          
             probes.synchronized {
-                probes.filter(_._1.probeToken == comp.authToken).values
-            }.map(_.probe).toSeq
+                probes.filter(_._1.probeToken == authTok).values
+            }
+            .map(_.probe)
+            .toSeq
         }
-    
+
+    /**
+     * Checks whether or not a data probe exists for given model.
+     *
+     * @param compId Company ID for authentication purpose.
+     * @param mdlId Model ID.
+     * @param parent Optional parent span.
+     * @return
+     */
+    def existsForModel(compId: Long, mdlId: String, parent: Span = null): Boolean =
+        startScopedSpan("existsForModel", parent, "compId" → compId, "mdlId" → mdlId) { _ ⇒
+            val authTok = getCompany(compId).authToken
+
+            probes.synchronized {
+                probes.filter(_._1.probeToken == authTok).values.exists(_.probe.models.exists(_.id == mdlId))
+            }
+        }
+
     /**
       *
       * @param usrId User ID.
@@ -950,12 +1012,35 @@ object NCProbeManager extends NCService {
       *
       * @param mdlId Model ID.
       * @param parent Optional parent span.
-      * @return
       */
     def getModel(mdlId: String, parent: Span = null): NCProbeModelMdo =
         startScopedSpan("getModel", parent, "modelId" → mdlId) { _ ⇒
             probes.synchronized {
                 mdls.getOrElse(mdlId, throw new NCE(s"Unknown model ID: $mdlId"))
+            }
+        }
+
+    /**
+      *
+      * @param mdlId
+      * @param parent
+      * @return
+      */
+    def getModelInfo(mdlId: String, parent: Span = null): Future[java.util.Map[String, AnyRef]] =
+        startScopedSpan("getModelInfo", parent, "modelId" → mdlId) { _ ⇒
+            getProbeForModelId(mdlId) match {
+                case Some(probe) ⇒
+                    val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" → mdlId)
+
+                    val p = Promise[java.util.Map[String, AnyRef]]()
+
+                    modelsInfo.put(msg.getGuid, p)
+
+                    sendToProbe(probe.probeKey, msg, parent)
+
+                    p.future
+
+                case None ⇒ throw new NCE(s"Probe not found for model: '$mdlId''")
             }
         }
 }

@@ -29,7 +29,7 @@ import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.version.NCVersion
-import org.apache.nlpcraft.common.{NCE, NCException, U}
+import org.apache.nlpcraft.common.{NCE, NCException, NCService, U}
 import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
@@ -49,6 +49,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNouns
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.compat.Platform.currentTime
 import scala.util.control.Exception.{catching, ignoring}
 
@@ -57,7 +58,9 @@ import scala.util.control.Exception.{catching, ignoring}
   */
 private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     private final val executionStart = System.currentTimeMillis()
-    
+
+    private val startedMgrs = mutable.Buffer.empty[NCService]
+
     @volatile private var started = false
     @volatile private var shutdownHook: Thread = _
     @volatile private var probeThread: Thread = _
@@ -69,11 +72,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         var upLink: (String, Integer),
         var downLink: (String, Integer),
         var jarsFolder: Option[String],
-        var models: Seq[String],
+        var models: String,
         var lifecycle: Seq[String]
     ) {
-        def upLinkString = s"${upLink._1}:${upLink._2}"
-        def downLinkString = s"${downLink._1}:${downLink._2}"
+        lazy val upLinkString = s"${upLink._1}:${upLink._2}"
+        lazy val downLinkString = s"${downLink._1}:${downLink._2}"
+        lazy val modelsSeq: Seq[String] = models.split(",").map(_.trim)
     }
     
     private def mkDefault(): Config = {
@@ -89,7 +93,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             withValue(s"$prefix.token", fromAnyRef("3141592653589793")).
             withValue(s"$prefix.upLink", fromAnyRef("localhost:8201")).
             withValue(s"$prefix.downLink", fromAnyRef("localhost:8202")).
-            withValue(s"$prefix.models", fromIterable(Seq().asJava)).
+            withValue(s"$prefix.model", fromAnyRef(null)).
+            withValue(s"$prefix.models", fromAnyRef("")).
             withValue(s"$prefix.lifecycle", fromIterable(Seq().asJava)).
             withValue(s"$prefix.resultMaxSizeBytes", fromAnyRef(1048576)).
             withValue("nlpcraft.nlpEngine", fromAnyRef("opennlp"))
@@ -141,7 +146,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val upLink: (String, Integer) = getHostPort(s"$prefix.upLink")
             val downLink: (String, Integer) = getHostPort(s"$prefix.downLink")
             val jarsFolder: Option[String] = getStringOpt(s"$prefix.jarsFolder")
-            val models: Seq[String] = getStringList(s"$prefix.models")
+            val models: String = getString(s"$prefix.models")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
         
@@ -161,7 +166,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param cfg Probe configuration.
       * @param fut
       */
-    private def start0(cfg: ProbeConfig, fut: CompletableFuture[Void]): Unit = {
+    private def start0(cfg: ProbeConfig, fut: CompletableFuture[Integer]): Unit = {
         probeThread = Thread.currentThread()
         
         asciiLogo()
@@ -169,18 +174,11 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         catching(classOf[Throwable]) either startManagers(cfg) match {
             case Left(e) ⇒ // Exception.
-                e match {
-                    case x: NCException ⇒
-                        logger.error(s"Failed to start probe.", x)
+                U.prettyError(logger, "Failed to start probe:", e)
 
-                        stopManagers()
+                stop0()
 
-                        logger.info("Managers stopped.")
-
-                    case x: Throwable ⇒ logger.error("Failed to start probe due to unexpected error.", x)
-                }
-                
-                fut.complete(null)
+                fut.complete(1)
             
             case _ ⇒ // Managers started OK.
                 shutdownHook = new Thread() {
@@ -193,7 +191,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
                 started = true
                 
-                fut.complete(null)
+                fut.complete(0)
                 
                 // Wait indefinitely.
                 while (started)
@@ -204,7 +202,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     }
         }
     
-        logger.info("Embedded probe thread stopped OK.")
+        logger.trace("Probe thread stopped OK.")
     }
     
     /**
@@ -219,13 +217,10 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         }
         
         started = false
-        
-        if (probeThread != null) {
-            probeThread.interrupt()
-            probeThread.join()
-        }
-        
-        logger.info("Embedded probe shutdown OK.")
+
+        U.stopThread(probeThread)
+
+        logger.info("Probe shutdown OK.")
     }
     
     /**
@@ -233,14 +228,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private def checkStarted(): Unit = 
         if (started)
-            throw new NCException(s"Embedded probe has already been started (only one probe per JVM is allowed).")
+            throw new NCException(s"Probe has already been started (only one probe per JVM is allowed).")
     
     /**
       *
       * @param cfgFile
       * @param fut
       */
-    private [probe] def start(cfgFile: String, fut: CompletableFuture[Void]): Unit = {
+    private [probe] def start(cfgFile: String, fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
         
         val cfg = initializeConfig(Array(s"-config=$cfgFile"), None)
@@ -257,7 +252,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private [probe] def start(
         mdlClasses: Array[java.lang.Class[_ <: NCModel]],
-        fut: CompletableFuture[Void]): Unit = {
+        fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
     
         import ConfigValueFactory._
@@ -265,8 +260,10 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         val cfg = initializeConfig(
             Array.empty,
             Some(
-                ConfigFactory.empty()
-                    .withValue("nlpcraft.probe.models", fromIterable(mdlClasses.map(_.getName).toSeq.asJava))
+                ConfigFactory.empty().withValue(
+                    "nlpcraft.probe.models",
+                    fromAnyRef(mdlClasses.map(_.getName).mkString(","))
+                )
             )
         )
         
@@ -290,7 +287,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         upLinkStr: String,
         dnLinkStr: String,
         mdlClasses: Array[java.lang.Class[_ <: NCModel]],
-        fut: CompletableFuture[Void]): Unit = {
+        fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
     
         object Cfg extends NCConfigurable {
@@ -301,7 +298,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val upLink: (String, Integer) = getHostPort(upLinkStr)
             val dnLink: (String, Integer) = getHostPort(dnLinkStr)
             val jarsFolder: Option[String] = getStringOpt(s"$prefix.jarsFolder")
-            val models: Seq[String] = mdlClasses.map(_.getName).toSeq
+            val models: String = mdlClasses.map(_.getName).mkString(",")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
     
@@ -333,7 +330,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param args
       * @param fut
       */
-    private [probe] def start(args: Array[String], fut: CompletableFuture[Void]): Unit =
+    private [probe] def start(args: Array[String], fut: CompletableFuture[Integer]): Unit =
         start0(initializeConfig(args, None), fut)
     
     /**
@@ -365,16 +362,16 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         val tbl = NCAsciiTable()
         
         val ver = NCVersion.getCurrent
-        
+
         tbl += ("Probe ID", cfg.id)
         tbl += ("Probe Token", cfg.token)
         tbl += ("API Version", ver.version + ", " + ver.date.toString)
         tbl += ("Down-Link", cfg.downLinkString)
         tbl += ("Up-Link", cfg.upLinkString)
-        tbl += ("Models", cfg.models)
         tbl += ("Lifecycle", cfg.lifecycle)
+        tbl += ("Models" , cfg.modelsSeq)
         tbl += ("JARs Folder", cfg.jarsFolder.getOrElse(""))
-        
+
         tbl.info(logger, Some("Probe Configuration:"))
     }
     
@@ -392,13 +389,13 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         tbl.info(logger)
     }
-    
+
     /**
       *
       * @return
       */
     private def startManagers(cfg: ProbeConfig): Unit = {
-        // Lifecycle callback.
+        // Lifecycle callback outside of tracing span.
         NCLifecycleManager.start()
         NCLifecycleManager.onInit()
         
@@ -413,30 +410,30 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "downlink" → cfg.downLinkString,
                 "relVer" → ver.version,
                 "relDate" → ver.date.toString,
-                "models" → cfg.models.mkString(","),
+                "models" → cfg.models,
                 "lifecycle" → cfg.lifecycle.mkString(","),
                 "jarFolder" → cfg.jarsFolder
             )
 
-            NCExternalConfigManager.start(span)
-            NCNlpCoreManager.start(span)
-            NCNumericManager.start(span)
-            NCDeployManager.start(span)
-            NCModelManager.start(span)
-            NCCommandManager.start(span)
-            NCDictionaryManager.start(span)
-            NCStopWordEnricher.start(span)
-            NCModelEnricher.start(span)
-            NCLimitEnricher.start(span)
-            NCSortEnricher.start(span)
-            NCRelationEnricher.start(span)
-            NCSuspiciousNounsEnricher.start(span)
-            NCValidateManager.start(span)
-            NCDictionaryEnricher.start(span)
-            NCConversationManager.start(span)
-            NCProbeEnrichmentManager.start(span)
-            NCConnectionManager.start(span)
-            NCDialogFlowManager.start(span)
+            startedMgrs += NCExternalConfigManager.start(span)
+            startedMgrs += NCNlpCoreManager.start(span)
+            startedMgrs += NCNumericManager.start(span)
+            startedMgrs += NCDeployManager.start(span)
+            startedMgrs += NCModelManager.start(span)
+            startedMgrs += NCCommandManager.start(span)
+            startedMgrs += NCDictionaryManager.start(span)
+            startedMgrs += NCStopWordEnricher.start(span)
+            startedMgrs += NCModelEnricher.start(span)
+            startedMgrs += NCLimitEnricher.start(span)
+            startedMgrs += NCSortEnricher.start(span)
+            startedMgrs += NCRelationEnricher.start(span)
+            startedMgrs += NCSuspiciousNounsEnricher.start(span)
+            startedMgrs += NCValidateManager.start(span)
+            startedMgrs += NCDictionaryEnricher.start(span)
+            startedMgrs += NCConversationManager.start(span)
+            startedMgrs += NCProbeEnrichmentManager.start(span)
+            startedMgrs += NCConnectionManager.start(span)
+            startedMgrs += NCDialogFlowManager.start(span)
         }
     }
     
@@ -445,31 +442,11 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private def stopManagers(): Unit = {
         startScopedSpan("stopManagers") { span ⇒
-            // Order is important!
-            NCDialogFlowManager.stop(span)
-            NCConnectionManager.stop(span)
-            NCProbeEnrichmentManager.stop(span)
-            NCConversationManager.stop(span)
-            NCDictionaryEnricher.stop(span)
-            NCValidateManager.stop(span)
-            NCSuspiciousNounsEnricher.stop(span)
-            NCRelationEnricher.stop(span)
-            NCSortEnricher.stop(span)
-            NCLimitEnricher.stop(span)
-            NCModelEnricher.stop(span)
-            NCStopWordEnricher.stop(span)
-            NCDictionaryManager.stop(span)
-            NCCommandManager.stop(span)
-            NCModelManager.stop(span)
-            NCDeployManager.stop(span)
-            NCNumericManager.stop(span)
-            NCNlpCoreManager.stop(span)
-            NCExternalConfigManager.stop(span)
+            startedMgrs.reverseIterator.foreach(_.stop(span))
         }
         
-        // Lifecycle callback.
+        // Lifecycle callback outside of tracing span.
         NCLifecycleManager.onDiscard()
-        
         NCLifecycleManager.stop()
     }
 }

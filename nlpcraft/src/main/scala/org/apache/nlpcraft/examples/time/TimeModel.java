@@ -87,6 +87,33 @@ public class TimeModel extends NCModelFileAdapter {
     }
 
     /**
+     * Callback on remote time intent match.
+     *
+     * @param cityTok Token for 'geo' term.
+     * @return Query result.
+     */
+    @NCIntent("intent=intent2 conv=true term={id=='x:time'} term(city)={id=='nlpcraft:city'}")
+    @NCIntentSample({
+        "What time is it now in New York City?",
+        "What's the current time in Moscow?",
+        "Show me time of the day in London.",
+        "Can you please give me the San Francisco's current date and time."
+    })
+    private NCResult onRemoteMatch(@NCIntentTerm("city") NCToken cityTok) {
+        String city = cityTok.meta("nlpcraft:city:city");
+        String cntry = cityTok.meta("nlpcraft:city:country");
+
+        CityData data = citiesData.get(new City(city, cntry));
+
+        if (data != null)
+            return mkResult(city, cntry, data.getTimezone(), data.getLatitude(), data.getLongitude());
+
+        // We don't have timezone mapping for parsed GEO location.
+        // Instead of defaulting to a local time - we reject with a specific error message for cleaner UX.
+        throw new NCRejection(String.format("No timezone mapping for %s, %s.", city, cntry));
+    }
+
+    /**
      * Callback on local time intent match.
      *
      * @param ctx Intent solver context.
@@ -118,32 +145,5 @@ public class TimeModel extends NCModelFileAdapter {
         return mkResult(
             geo.getCityName(), geo.getCountryName(), geo.getTimezoneName(), geo.getLatitude(), geo.getLongitude()
         );
-    }
-
-    /**
-     * Callback on remote time intent match.
-     *
-     * @param cityTok Token for 'geo' term.
-     * @return Query result.
-     */
-    @NCIntent("intent=intent2 term={id=='x:time'} term(city)={id=='nlpcraft:city'}")
-    @NCIntentSample({
-        "What time is it now in New York City?",
-        "What's the current time in Moscow?",
-        "Show me time of the day in London.",
-        "Can you please give me the San Francisco's current date and time."
-    })
-    private NCResult onRemoteMatch(@NCIntentTerm("city") NCToken cityTok) {
-        String city = cityTok.meta("nlpcraft:city:city");
-        String cntry = cityTok.meta("nlpcraft:city:country");
-
-        CityData data = citiesData.get(new City(city, cntry));
-
-        if (data != null)
-            return mkResult(city, cntry, data.getTimezone(), data.getLatitude(), data.getLongitude());
-
-        // We don't have timezone mapping for parsed GEO location.
-        // Instead of defaulting to a local time - we reject with a specific error message for cleaner UX.
-        throw new NCRejection(String.format("No timezone mapping for %s, %s.", city, cntry));
     }
 }

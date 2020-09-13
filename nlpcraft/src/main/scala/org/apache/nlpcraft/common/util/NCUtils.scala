@@ -29,8 +29,8 @@ import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.concurrent.{ExecutorService, TimeUnit}
 import java.util.jar.JarFile
 import java.util.stream.Collectors
-import java.util.zip.{ZipInputStream, GZIPInputStream => GIS, GZIPOutputStream => GOS}
-import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar => C}
+import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
+import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.`type`.TypeReference
@@ -162,7 +162,7 @@ object NCUtils extends LazyLogging {
     }
     catch {
         case _: InterruptedException ⇒ Thread.currentThread().interrupt()
-        case e: Throwable ⇒ logger.error("Unhandled exception caught.", e)
+        case e: Throwable ⇒ prettyError(logger, "Unhandled exception caught:", e)
     }
 
     /**
@@ -1081,8 +1081,6 @@ object NCUtils extends LazyLogging {
 
         def DAYS: Int = v * 1000 * 60 * 60 * 24
 
-        def msecs: Int = MSECS
-
         def ms: Int = MS
 
         def secs: Int = SECS
@@ -1112,8 +1110,6 @@ object NCUtils extends LazyLogging {
 
         def DAYS: Long = v * 1000 * 60 * 60 * 24
 
-        def msecs: Long = MSECS
-
         def ms: Long = MS
 
         def secs: Long = SECS
@@ -1135,7 +1131,7 @@ object NCUtils extends LazyLogging {
             Thread.sleep(delay)
         catch {
             case _: InterruptedException ⇒ Thread.currentThread().interrupt()
-            case e: Throwable ⇒ logger.error("Unhandled exception caught during sleep.", e)
+            case e: Throwable ⇒ prettyError(logger, "Unhandled exception caught during sleep:", e)
         }
 
     /**
@@ -1159,18 +1155,19 @@ object NCUtils extends LazyLogging {
       *
       * @param ess Executor services.
       */
-    def shutdownPools(ess: ExecutorService*): Unit = {
-        val seq = ess.filter(_ != null)
+    def shutdownPools(ess: ExecutorService*): Unit =
+        if (ess != null) {
+            val seq = ess.filter(_ != null)
 
-        seq.foreach(_.shutdown())
-        seq.foreach(es ⇒
-            try
-                es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
-            catch {
-                case _: InterruptedException ⇒ () // Safely ignore.
-            }
-        )
-    }
+            seq.foreach(_.shutdown())
+            seq.foreach(es ⇒
+                try
+                    es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
+                catch {
+                    case _: InterruptedException ⇒ () // Safely ignore.
+                }
+            )
+        }
 
     /**
       * Gets full path for given file name in user's home folder.
@@ -1325,6 +1322,39 @@ object NCUtils extends LazyLogging {
         case 0 ⇒ DEC_FMT0.format(num)
         case 1 ⇒ DEC_FMT1.format(num)
         case _ ⇒ DEC_FMT2.format(num)
+    }
+
+    /**
+     *
+     * @param logger
+     * @param title
+     * @param e
+     */
+    def prettyError(logger: Logger, title: String, e: Throwable): Unit = {
+        logger.error(title)
+
+        val INDENT = 2
+
+        var x = e
+        var indent = INDENT
+
+        while (x != null) {
+            var first = true
+
+            val msg = x.getLocalizedMessage
+
+            if (msg != null) {
+                x.getLocalizedMessage.split("\n").foreach(line ⇒ {
+                    logger.error(s"${" " * indent}${if (first) "+-" else "  "}${line.trim}")
+
+                    first = false
+                })
+
+                indent += INDENT
+            }
+
+            x = x.getCause
+        }
     }
 
     /**

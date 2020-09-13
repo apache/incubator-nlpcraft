@@ -34,7 +34,19 @@ import java.util.stream.*;
  * JSON/YAML file and then update it in the code. For example, a model can load its configuration
  * from JSON file and then add intents or synonyms loaded from a database to a certain model element.
  * To support this usage all getters return internal mutable sets or maps, i.e. you can modify them in your sub-class
- * constructors and those modifications will alter the model's configuration.
+ * constructors and those modifications will alter the model's configuration. The following getters return
+ * mutable collections that can be modified by the caller:
+ * <ul>
+ *     <li>{@link #getSuspiciousWords()}</li>
+ *     <li>{@link #getAdditionalStopWords()}</li>
+ *     <li>{@link #getIntents()}</li>
+ *     <li>{@link #getElements()}</li>
+ *     <li>{@link #getEnabledBuiltInTokens()}</li>
+ *     <li>{@link #getExcludedStopWords()}</li>
+ *     <li>{@link #getParsers()}</li>
+ *     <li>{@link #getMacros()}</li>
+ *     <li>{@link #getMetadata()}</li>
+ * </ul>
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
@@ -91,14 +103,14 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         super(proxy.getId(), proxy.getName(), proxy.getDescription());
 
         this.proxy = proxy;
-        this.suspWords = convert(proxy.getSuspiciousWords());
-        this.enabledToks = convert(proxy.getEnabledBuiltInTokens(), DFLT_ENABLED_BUILTIN_TOKENS);
-        this.addStopwords = convert(proxy.getAdditionalStopwords());
-        this.exclStopwords = convert(proxy.getExcludedStopwords());
+        this.suspWords = convert(proxy.getSuspiciousWords(), null);
+        this.enabledToks = convert(proxy.getEnabledBuiltInTokens(), NCModelView.DFLT_ENABLED_BUILTIN_TOKENS);
+        this.addStopwords = convert(proxy.getAdditionalStopwords(), null);
+        this.exclStopwords = convert(proxy.getExcludedStopwords(), null);
         this.elems = convertElements(proxy.getElements());
         this.macros = convertMacros(proxy.getMacros());
         this.metadata = convertMeta(proxy.getMetadata());
-        this.intents = convert(proxy.getIntents());
+        this.intents = convert(proxy.getIntents(), null);
         this.parsers = convertParsers(proxy.getParsers());
 
         // NOTE: we can only test/check this at this point. Downstream - this information is lost.
@@ -179,15 +191,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         
         throw new NCException("Unsupported model configuration file type (.yaml, .yml, .js or .json only): " + path);
     }
-    
-    /**
-     *
-     * @param arr
-     * @return
-     */
-    private static Set<String> convert(String[] arr) {
-        return arr == null ? new HashSet<>() : new HashSet<>(Arrays.asList(arr));
-    }
 
     /**
      *
@@ -203,11 +206,14 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     /**
      *
      * @param arr
-     * @param dflt
      * @return
      */
     private static Set<String> convert(String[] arr, Set<String> dflt) {
-        return arr == null ? new HashSet<>(dflt) : new HashSet<>(Arrays.asList(arr));
+        return arr != null ?
+            new HashSet<>(Arrays.asList(arr)) :
+            dflt != null ?
+                new HashSet<>(dflt) :
+                new HashSet<>();
     }
 
     /**

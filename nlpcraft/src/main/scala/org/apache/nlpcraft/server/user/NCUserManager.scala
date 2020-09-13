@@ -75,11 +75,20 @@ object NCUserManager extends NCService with NCIgniteInstance {
           */
         def check(): Unit = {
             if (pwdPoolBlowup <= 1)
-                abortWith(s"Configuration parameter '$pre.pwdPoolBlowup' must be > 1")
+                throw new NCE(s"Configuration parameter must be > 1 [" +
+                    s"name=$pre.pwdPoolBlowup, " +
+                    s"value=$pwdPoolBlowup" +
+                s"]")
             if (timeoutScannerFreqMins <= 0)
-                abortWith(s"Configuration parameter '$pre.timeoutScannerFreqMins' must be > 0")
+                throw new NCE(s"Configuration parameter must be > 0 [" +
+                    s"name=$pre.timeoutScannerFreqMins, " +
+                    s"value=$timeoutScannerFreqMins" +
+                s"]")
             if (accessTokenExpireTimeoutMins <= 0)
-                abortWith(s"Configuration parameter '$pre.accessTokenExpireTimeoutMins' must be > 0")
+                throw new NCE(s"Configuration parameter must be > 0 [" +
+                    s"name=$pre.accessTokenExpireTimeoutMins, " +
+                    s"value=$accessTokenExpireTimeoutMins" +
+                s"]")
         }
     }
 
@@ -145,9 +154,10 @@ object NCUserManager extends NCService with NCIgniteInstance {
                             case e: IllegalStateException ⇒
                                 // Attempt to hide possible race condition with Ignite on a shutdown.
                                 if (!e.getMessage.startsWith("Grid is in invalid state to perform this operation"))
-                                    logger.error("Error during timeout scanner process.", e)
+                                    U.prettyError(logger,"Error during timeout scanner process:", e)
 
-                            case e: Throwable ⇒ logger.error("Error during timeout scanner process.", e)
+                            case e: Throwable ⇒
+                                U.prettyError(logger,"Error during timeout scanner process:", e)
                         }
                 }
             },

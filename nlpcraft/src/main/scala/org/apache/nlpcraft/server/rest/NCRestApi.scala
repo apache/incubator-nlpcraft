@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.server.rest
 
-import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler, Route}
+import akka.http.scaladsl.server.Route
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
 
 /**
@@ -29,16 +29,4 @@ trait NCRestApi extends NCOpenCensusServerStats {
       * @return
       */
     def getRoute: Route
-
-    /**
-      *
-      * @return
-      */
-    def getExceptionHandler: ExceptionHandler
-
-    /**
-      *
-      * @return
-      */
-    def getRejectionHandler: RejectionHandler
 }

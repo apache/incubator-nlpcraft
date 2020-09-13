@@ -304,7 +304,7 @@ class NCAsciiTable {
      * @return
      */
     private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
-        lines.flatMap(line => {
+        lines.flatMap(line ⇒ {
             if (line.isEmpty)
                 mutable.Buffer("")
             else {
@@ -652,7 +652,7 @@ class NCAsciiTable {
     def render(file: java.io.File): Unit = renderPrintStream(new PrintStream(file), file.getAbsolutePath)
 
 
-    private def renderPrintStream(f: => PrintStream, file: String): Unit =
+    private def renderPrintStream(f: ⇒ PrintStream, file: String): Unit =
         try
             managed(f) acquireAndGet { ps ⇒
                 ps.print(mkString)

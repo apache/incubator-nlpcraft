@@ -70,13 +70,14 @@ import java.util.function.*;
  * </ul>
  */
 public class NCEmbeddedProbe {
-    private static void waitForFuture(CompletableFuture<?> fut) {
-        while (!fut.isDone()) {
+    private static boolean waitForFuture(CompletableFuture<Integer> fut) {
+        while (!fut.isDone())
             try {
-                fut.get();
+                return fut.get() == 0;
             }
             catch (InterruptedException | ExecutionException ignored) {}
-        }
+
+        return false;
     }
 
     /**
@@ -87,13 +88,14 @@ public class NCEmbeddedProbe {
      *      that can be found in the current working directory or on the classpath as a class loader
      *      resource.
      * @throws NCException Thrown in case of any errors starting the data probe.
+     * @return Whether or not probe started ok.
      */
-    public static void start(String cfgFile) {
-        CompletableFuture<Void> fut = new CompletableFuture<>();
+    public static boolean start(String cfgFile) {
+        CompletableFuture<Integer> fut = new CompletableFuture<>();
 
         NCProbeBoot$.MODULE$.start(cfgFile, fut);
 
-        waitForFuture(fut);
+        return waitForFuture(fut);
     }
 
     /**
@@ -110,16 +112,17 @@ public class NCEmbeddedProbe {
      * 
      * @param mdlClasses One or more data model classes to be deployed by the embedded probe.
      * @throws NCException Thrown in case of any errors starting the data probe.
+     * @return  Whether or not probe started ok.
      */
     @SafeVarargs
-    public static void start(Class<? extends NCModel>... mdlClasses) {
+    public static boolean start(Class<? extends NCModel>... mdlClasses) {
         checkModelClasses(mdlClasses);
 
-        CompletableFuture<Void> fut = new CompletableFuture<>();
+        CompletableFuture<Integer> fut = new CompletableFuture<>();
 
         NCProbeBoot$.MODULE$.start(mdlClasses, fut);
 
-        waitForFuture(fut);
+        return waitForFuture(fut);
     }
 
     /**
@@ -131,9 +134,10 @@ public class NCEmbeddedProbe {
      * @param dnLink Probe down-link from the server.
      * @param mdlClasses One or more data model classes to be deployed by the embedded probe.
      * @throws NCException Thrown in case of any errors starting the data probe.
+     * @return  Whether or not probe started ok.
      */
     @SafeVarargs
-    public static void start(
+    public static boolean start(
         String probeId,
         String tok,
         String upLink,
@@ -141,11 +145,11 @@ public class NCEmbeddedProbe {
         Class<? extends NCModel>... mdlClasses) {
         checkModelClasses(mdlClasses);
 
-        CompletableFuture<Void> fut = new CompletableFuture<>();
+        CompletableFuture<Integer> fut = new CompletableFuture<>();
 
         NCProbeBoot$.MODULE$.start(probeId, tok, upLink, dnLink, mdlClasses, fut);
 
-        waitForFuture(fut);
+        return waitForFuture(fut);
     }
 
     /**

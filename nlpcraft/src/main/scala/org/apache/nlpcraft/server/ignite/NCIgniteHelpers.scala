@@ -19,9 +19,7 @@ package org.apache.nlpcraft.server.ignite
 
 import java.util.UUID
 
-import javax.cache.Cache
 import org.apache.ignite.IgniteCache
-import org.apache.ignite.cache.query.{QueryCursor, SqlQuery}
 import org.apache.ignite.events.CacheEvent
 import org.apache.ignite.lang.{IgniteBiPredicate, IgnitePredicate}
 
@@ -128,43 +126,6 @@ object NCIgniteHelpers extends NCIgniteInstance {
         def -==(key: K): Option[V] = ic.getAndRemove(key) match {
             case v if v != null ⇒ Some(v)
             case null ⇒ None
-        }
-
-        /**
-         * SQL request to the cache.
-         *
-         * @param cls Type.
-         * @param clause SQL request.
-         * @param args Arguments for SQL request.
-         * @return
-         */
-        def select(cls: Class[_ <: V], clause: String, args: Any*): QueryCursor[Cache.Entry[K, V]] = {
-            assert(cls != null)
-            assert(clause != null)
-            assert(args != null)
-
-            // TODO: deprecated to what & how?
-            // TODO: Ignite is missing instructions on this migration.
-            // TODO: Perhaps - https://stackoverflow.com/questions/41309941/sqlquery-and-sqlfieldsquery
-            val qry = new SqlQuery[K, V](cls, clause)
-
-            if (args != null && args.nonEmpty)
-                qry.setArgs(args.map(_.asInstanceOf[AnyRef]): _*)
-
-            ic.query(qry)
-        }
-
-        /**
-         * SQL request to the cache.
-         *
-         * @param clause SQL request.
-         * @param args Arguments for SQL request.
-         **/
-        def select(clause: String, args: Any*)(implicit m: Manifest[V]): QueryCursor[Cache.Entry[K, V]] = {
-            assert(clause != null)
-            assert(args != null)
-
-            select(m.runtimeClass.asInstanceOf[Class[V]], clause, args: _*)
         }
     }
 }

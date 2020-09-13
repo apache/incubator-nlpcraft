@@ -62,7 +62,7 @@ object NCUnsdStatsService {
         // Caribbean
         "029" → Seq(NCUnsdStatsCountry("ANT", "Netherlands Antilles")),
         // Eastern Asia
-        "030" -> Seq(NCUnsdStatsCountry("TWN", "Taiwan")),
+        "030" → Seq(NCUnsdStatsCountry("TWN", "Taiwan")),
         // Southern Europe
         "039" → Seq(NCUnsdStatsCountry("XKX", "Kosovo"))
     )

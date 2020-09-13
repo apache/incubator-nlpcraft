@@ -48,9 +48,9 @@ object NCCommandLine extends App {
         desc: Option[String] = None,
         params: Seq[Parameter] = Seq.empty,
         examples: Seq[Example] = Seq.empty,
-        body: (Command, Seq[String]) => Unit
+        body: (Command, Seq[String]) ⇒ Unit
     ) {
-        final val extNames = names.flatMap(name => // Safeguard against "common" errors.
+        final val extNames = names.flatMap(name ⇒ // Safeguard against "common" errors.
             Seq(
                 name,
                 s"-$name",
@@ -282,9 +282,9 @@ object NCCommandLine extends App {
                 lines += ""
                 lines += "PARAMETERS:"
 
-                for (param <- cmd.params) {
+                for (param ← cmd.params) {
                     if (param.valueDesc.isDefined)
-                        lines += T___ + param.names.zip(Stream.continually(param.valueDesc.get)).map(t => s"${t._1}=${t._2}").mkString(", ")
+                        lines += T___ + param.names.zip(Stream.continually(param.valueDesc.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
                     else
                         lines += s"$T___${param.names.mkString(", ")}"
 
@@ -303,7 +303,7 @@ object NCCommandLine extends App {
                 lines += ""
                 lines += "EXAMPLES:"
 
-                for (ex <- cmd.examples) {
+                for (ex ← cmd.examples) {
                     lines += s"$T___${ex.code}"
                     lines += s"$T___$T___${ex.desc}"
                 }
@@ -317,9 +317,9 @@ object NCCommandLine extends App {
         if (params.isEmpty) { // Default - show abbreviated help.
             header()
 
-            CMDS.foreach(cmd => tbl +/ (
-                "" -> cmd.names.mkString(", "),
-                "align:left, maxWidth:65" -> cmd.synopsis
+            CMDS.foreach(cmd ⇒ tbl +/ (
+                "" → cmd.names.mkString(", "),
+                "align:left, maxWidth:65" → cmd.synopsis
             ))
 
             log(tbl.toString)
@@ -327,10 +327,10 @@ object NCCommandLine extends App {
         else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
             header()
 
-            CMDS.foreach(cmd =>
+            CMDS.foreach(cmd ⇒
                 tbl +/ (
-                    "" -> cmd.names.mkString(", "),
-                    "align:left, maxWidth:65" -> mkCmdLines(cmd)
+                    "" → cmd.names.mkString(", "),
+                    "align:left, maxWidth:65" → mkCmdLines(cmd)
                 )
             )
 
@@ -342,25 +342,25 @@ object NCCommandLine extends App {
             val seen = mutable.Buffer.empty[String]
 
             // At this point it should only be '--cmd' parameters.
-            for (param <- params) {
+            for (param ← params) {
                 getParamValue(cmdParam, param) match {
-                    case Some(value) =>
+                    case Some(value) ⇒
                         CMDS.find(_.names.contains(value)) match {
-                            case Some(c) =>
+                            case Some(c) ⇒
                                 if (!seen.contains(c.id)) {
                                     tbl +/ (
-                                        "" -> c.names.mkString(", "),
-                                        "align:left, maxWidth:65" -> mkCmdLines(c)
+                                        "" → c.names.mkString(", "),
+                                        "align:left, maxWidth:65" → mkCmdLines(c)
                                     )
 
                                     seen += c.id
                                 }
-                            case None =>
+                            case None ⇒
                                 err = true
                                 error(s"Unknown command '$value' to get help for in: $param")
                         }
 
-                    case None => err = true
+                    case None ⇒ err = true
                 }
             }
 
@@ -449,8 +449,8 @@ object NCCommandLine extends App {
             val cmdName = args.head
 
             CMDS.find(_.extNames.contains(cmdName)) match {
-                case Some(cmd) => cmd.body(cmd, args.tail)
-                case None => error(s"Unknown command: $cmdName")
+                case Some(cmd) ⇒ cmd.body(cmd, args.tail)
+                case None ⇒ error(s"Unknown command: $cmdName")
             }
         }
 

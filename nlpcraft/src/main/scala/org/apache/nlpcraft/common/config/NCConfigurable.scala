@@ -20,7 +20,6 @@ package org.apache.nlpcraft.common.config
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.NCE
-import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
@@ -39,7 +38,7 @@ trait NCConfigurable {
       */
     private def checkMandatory(name: String): Unit =
         if (!hocon.hasPath(name))
-            abortWith(s"Mandatory configuration property '$name' not found.")
+            throw new NCE(s"Mandatory configuration property not found: $name")
     
     /**
       * Gets mandatory configuration property.
@@ -125,15 +124,19 @@ trait NCConfigurable {
         val i = ep.indexOf(':')
     
         if (i <= 0)
-            abortWith(s"Invalid 'host:port' endpoint format: $ep")
+            throw new NCE(s"Invalid 'host:port' endpoint configuration property format [" +
+                s"name=$name, " +
+                s"endpoint=$ep" +
+            s"]")
             
         try
             ep.substring(0, i) → ep.substring(i + 1).toInt
         catch {
             case _: NumberFormatException ⇒
-                abortWith(s"Invalid 'host:port' endpoint port: $ep")
-                
-                throw new AssertionError()
+                throw new NCE(s"Invalid 'host:port' endpoint configuration property port [" +
+                    s"name=$name, " +
+                    s"endpoint=$ep" +
+                s"]")
         }
     }
     
@@ -180,9 +183,10 @@ trait NCConfigurable {
             f(v)
         catch {
             case _: Exception ⇒
-                abortWith(s"Configuration property '$name' cannot be extracted from value '$v'")
-    
-                throw new AssertionError()
+                throw new NCE(s"Configuration property cannot be extracted [" +
+                    s"name=$name, " +
+                    s"value='$v'" +
+                s"]")
         }
     }
     
@@ -198,9 +202,9 @@ trait NCConfigurable {
             hocon.getAnyRef(name).asInstanceOf[java.util.Map[K, V]].asScala.toMap
         catch {
             case e: ClassCastException ⇒
-                abortWith(s"Configuration property '$name' has unexpected type.", e.getMessage)
-    
-                throw new AssertionError()
+                throw new NCE(s"Configuration property has unexpected type (expecting 'java.util.Map') [" +
+                    s"name=$name" +
+                s"]", e)
         }
     }
     
@@ -247,18 +251,6 @@ trait NCConfigurable {
     def getStringListOpt(name: String): Option[Seq[String]] =
         if (!hocon.hasPath(name)) None else Some(hocon.getStringList(name).asScala)
 
-    /**
-      *
-      * @param errMsgs Optional error messages.
-      */
-    def abortWith(errMsgs: String*): Unit = {
-        val logger = LoggerFactory.getLogger(getClass)
-
-        errMsgs.foreach(s ⇒ logger.error(s))
-
-        // Abort immediately.
-        System.exit(1)
-    }
 }
 
 object NCConfigurable extends LazyLogging {

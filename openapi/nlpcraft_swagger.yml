@@ -158,14 +158,15 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
-  /model/enhance:
+  /model/sugsyn:
     post:
       tags:
         - Model
-      summary: Model enchance suggestions for model.
+      summary: Runs model synonym suggestion tool.
       description: >-
-        TODO:
-      operationId: enhance
+        Runs model synonym suggestion tool that is based on BERT models and uses @NCIntentSample annotation.
+        Administrative privileges required.
+      operationId: inspect
       parameters:
         - in: body
           name: Payload body
@@ -184,12 +185,12 @@ paths:
               mdlId:
                 type: string
                 maxLength: 32
-                description: Data model ID for which elements synonyms will be suggested
+                description: ID of the model to run synonym suggestion on
               minScore:
                 type: number
                 format: double
                 description: >-
-                  Minimal score. Range from 0 to 1. Default 0.
+                  Minimal score to include into the result (from 0 to 1, default is 0)
       responses:
         '200':
           description: Successful operation.
@@ -197,24 +198,16 @@ paths:
             type: object
             required:
               - status
-              - srvReqId
+              - result
             properties:
               status:
                 type: string
                 description: Status code of this operation
                 enum:
                   - API_OK
-              suggestions:
+              result:
                 type: object
-                description: Synonyms suggestions for given model
-                required:
-                  - acsTok
-                  - mdlId
-                properties:
-                  acsTok:
-                    type: string
-                    description: Access token obtain via '/signin' call
-                    maxLength: 256
+                description: Synonym suggestion result
 
         '400':
           description: Failed operation.
@@ -687,7 +680,7 @@ paths:
                   External 'on-behalf-of' ID of the user. Optional, caller
                   user ID used by default. Getting information for other users from the same company requires
                   administrative privileges. If both user ID and external 'on-behalf-of' user ID are provided
-                  they have to point to the same NLPCraft user. F
+                  they have to point to the same NLPCraft user.
                 maxLength: 64
       responses:
         '200':
@@ -712,7 +705,7 @@ paths:
                 description: User email
                 type: string
               extId:
-                description: User external ID
+                description: User external 'on-behalf-of' ID
                 type: string
               firstName:
                 description: User first or given name
@@ -1052,7 +1045,7 @@ paths:
                   type: string
               extId:
                 type: string
-                description: Optional user external ID. If this field defined, method tries to find and update existed technical user.
+                description: Optional user external 'on-behalf-of' ID. If this field defined, method tries to find and update existing user.
                 maxLength: 64
       responses:
         '200':
@@ -1402,11 +1395,11 @@ paths:
                 maxLength: 256
                 description: Access token obtain via '/signin' call
                 type: string
-              userId:
+              usrId:
                 description: User ID.
                 type: integer
                 format: int64
-              userExtId:
+              usrExtId:
                 maxLength: 64
                 description: External user ID. Note user with given ID will be created if missing
                 type: string

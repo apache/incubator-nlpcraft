@@ -19,9 +19,20 @@ package org.apache.nlpcraft.probe
 
 import java.util.concurrent.CompletableFuture
 
+import scala.util.control.Exception.ignoring
+
 /**
   * Data probe main app.
   */
 object NCProbe extends App {
-    NCProbeBoot.start(args, new CompletableFuture[Void])
+    val fut = new CompletableFuture[Integer]
+
+    NCProbeBoot.start(args, fut)
+
+    while (!fut.isDone)
+        ignoring(classOf[Exception]) {
+            fut.get();
+        }
+
+    System.exit(fut.get)
 }

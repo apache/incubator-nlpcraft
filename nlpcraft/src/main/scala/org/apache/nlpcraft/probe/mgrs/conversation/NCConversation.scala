@@ -29,19 +29,23 @@ import org.apache.nlpcraft.model._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.concurrent.duration._
 
 /**
-  * Conversation as an ordered set of utterances.
+  * An active conversation is an ordered set of utterances for the specific user and data model.
   */
-case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogging with NCOpenCensusTrace {
+case class NCConversation(
+    usrId: Long,
+    mdlId: String,
+    updateTimeoutMs: Long,
+    maxDepth: Int
+) extends LazyLogging with NCOpenCensusTrace {
     /**
      *
      * @param token
      * @param tokenTypeUsageTime
      */
     case class TokenHolder(token: NCToken, var tokenTypeUsageTime: Long = 0)
-    
+
     /**
      *
      * @param holders Tokens holders.
@@ -49,12 +53,6 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
      * @param tstamp Request timestamp. Used just for logging.
      */
     case class ConversationItem(holders: mutable.ArrayBuffer[TokenHolder], srvReqId: String, tstamp: Long)
-    
-    // After 5 mins pause between questions we clear the STM.
-    private final val CONV_CLEAR_DELAY = 5.minutes.toMillis
-
-    // If token is not used in last 3 requests, it is removed from the conversation.
-    private final val MAX_DEPTH = 3
 
     // Short-Term-Memory.
     private val stm = mutable.ArrayBuffer.empty[ConversationItem]
@@ -62,7 +60,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
 
     @volatile private var ctx: util.List[NCToken] = new util.ArrayList[NCToken]()
     @volatile private var lastUpdateTstamp = U.nowUtcMs()
-    @volatile private var attempt = 0
+    @volatile private var depth = 0
 
     /**
       *
@@ -74,33 +72,35 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
     }
 
     /**
-      * @param parent Optional parent span.
-      */
+     * Gets called on each input request for given user and model.
+     *
+     * @param parent Optional parent span.
+     */
     def updateTokens(parent: Span = null): Unit = startScopedSpan("updateTokens", parent) { _ ⇒
         val now = U.nowUtcMs()
 
         stm.synchronized {
-            attempt += 1
+            depth += 1
 
             // Conversation cleared by timeout or when there are too much unsuccessful requests.
-            if (now - lastUpdateTstamp > CONV_CLEAR_DELAY) {
+            if (now - lastUpdateTstamp > updateTimeoutMs) {
                 stm.clear()
 
-                logger.info(s"Conversation reset by timeout [" +
+                logger.info(s"Conversation is reset by timeout [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
             }
-            else if (attempt > MAX_DEPTH) {
+            else if (depth > maxDepth) {
                 stm.clear()
-        
-                logger.info(s"Conversation reset after too many unsuccessful requests [" +
+
+                logger.info(s"Conversation is reset after reaching max depth [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
             }
             else {
-                val minUsageTime = now - CONV_CLEAR_DELAY
+                val minUsageTime = now - updateTimeoutMs
                 val toks = lastToks.flatten
 
                 for (item ← stm) {
@@ -112,7 +112,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
                         item.holders --= delHs
 
                         logger.info(
-                            s"Conversation stale tokens removed [" +
+                            s"Conversation overridden tokens removed [" +
                                 s"usrId=$usrId, " +
                                 s"mdlId=$mdlId, " +
                                 s"srvReqId=${item.srvReqId}, " +
@@ -149,7 +149,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
             ctx = ctx.asScala.filter(tok ⇒ !p.test(tok)).asJava
         }
 
-        logger.info(s"Manually cleared conversation using token predicate.")
+        logger.info(s"Conversation is cleared using token predicate.")
     }
 
     /**
@@ -172,12 +172,12 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
     def addTokens(srvReqId: String, toks: Seq[NCToken], parent: Span = null): Unit =
         startScopedSpan("addTokens", parent, "srvReqId" → srvReqId) { _ ⇒
             stm.synchronized {
-                attempt = 0
+                depth = 0
     
                 // Last used tokens processing.
                 lastToks += toks
     
-                val delCnt = lastToks.length - MAX_DEPTH
+                val delCnt = lastToks.length - maxDepth
     
                 if (delCnt > 0)
                     lastToks.remove(0, delCnt)
@@ -214,15 +214,15 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
                         val grps = gs.sorted
     
                         // Reversed iteration.
-                        // N : (A, B) -> registered.
-                        // N-1 : (C) -> registered.
-                        // N-2 : (A, B) or (A, B, X) etc -> deleted, because registered has less groups.
+                        // N : (A, B) → registered.
+                        // N-1 : (C) → registered.
+                        // N-2 : (A, B) or (A, B, X) etc → deleted, because registered has less groups.
                         registered.find(grps.containsSlice) match {
                             case Some(_) ⇒
                                 item.holders --= hs
     
                                 logger.info(
-                                    "Conversation tokens overridden by the \"group rule\" [" +
+                                    "Conversation tokens are overridden [" +
                                         s"usrId=$usrId, " +
                                         s"mdlId=$mdlId, " +
                                         s"srvReqId=$srvReqId, " +
@@ -258,7 +258,7 @@ case class NCConversationDescriptor(usrId: Long, mdlId: String) extends LazyLogg
             tok.getServerRequestId
         ))
 
-        logger.info(s"Conversation tokens [usrId=$usrId, mdlId=$mdlId]:\n${tbl.toString()}")
+        logger.info(s"Conversation tokens [mdlId=$mdlId, usrId=$usrId]:\n${tbl.toString()}")
     }
 
     /**

@@ -166,7 +166,7 @@ object NCGeoManager extends NCService {
             }
         }
 
-        // Subcontinent name -> continent.
+        // Subcontinent name → continent.
         val subCont2ContMap = mutable.HashMap.empty[String, NCGeoContinent]
 
         // +====================+

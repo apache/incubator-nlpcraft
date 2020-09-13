@@ -73,7 +73,7 @@ class NCStmTestModelSpec {
      */
     @Test
     @throws[Exception]
-    private[stm] def test(): Unit = for (i <- 0 until 3) {
+    private[stm] def test(): Unit = for (i ← 0 until 3) {
         check("sale", "sale")
         check("best", "sale_best_employee")
         check("buy", "buy")

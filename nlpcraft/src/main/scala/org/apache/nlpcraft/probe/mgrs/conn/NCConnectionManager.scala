@@ -35,7 +35,6 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
@@ -228,10 +227,9 @@ object NCConnectionManager extends NCService {
                     "PROBE_HOST_ADDR" → localHost.getHostAddress,
                     "PROBE_HW_ADDR" → hwAddrs,
                     "PROBE_MODELS" →
-                        NCModelManager.getAllModels().map(m ⇒ {
-                            val mdl = m.model
+                        NCModelManager.getAllModelsData().map(wrapper ⇒ {
+                            val mdl = wrapper.model
 
-                            require(m.intentsSamples != null)
                             // Model already validated.
 
                             // util.HashSet created to avoid scala collections serialization error.
@@ -240,16 +238,7 @@ object NCConnectionManager extends NCService {
                                 mdl.getId,
                                 mdl.getName,
                                 mdl.getVersion,
-                                new util.HashSet[String](mdl.getEnabledBuiltInTokens),
-                                mdl.getMacros,
-                                new util.HashMap[String, util.List[String]](
-                                    mdl.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
-                                ),
-                                new util.HashMap[String, util.List[String]]
-                                    (m.intentsSamples.map {
-                                        case (intentId, samples)  ⇒
-                                            intentId → new util.ArrayList[String](samples.asJava) }.asJava
-                                    )
+                                new util.HashSet[String](mdl.getEnabledBuiltInTokens)
                             )
                         })
                 ), cryptoKey)
@@ -352,7 +341,8 @@ object NCConnectionManager extends NCService {
                         if (cause != null)
                             logger.error(msg, cause)
                         else
-                            logger.info(msg)
+                            logger.error(msg)
+
                         caller.interrupt() // Interrupt current calling thread.
                 
                         exitLatch.countDown()
@@ -366,7 +356,7 @@ object NCConnectionManager extends NCService {
                             catch {
                                 case _: InterruptedIOException | _: InterruptedException ⇒ ()
                                 case _: EOFException ⇒ exit(t, s"Uplink REST server connection closed.")
-                                case e: Exception ⇒ exit(t, s"Uplink connection failed: ${e.getMessage}", e)
+                                case e: Exception ⇒ exit(t, s"Uplink connection failed: ${e.getMessage}")
                             }
                     }
                     
@@ -401,7 +391,7 @@ object NCConnectionManager extends NCService {
                             catch {
                                 case _: InterruptedIOException | _: InterruptedException ⇒ ()
                                 case _: EOFException ⇒ exit(t, s"Downlink REST server connection closed.")
-                                case e: Exception ⇒ exit(t, s"Downlink connection failed: ${e.getMessage}", e)
+                                case e: Exception ⇒ exit(t, s"Downlink connection failed: ${e.getMessage}")
                             }
                     }
             
@@ -422,12 +412,12 @@ object NCConnectionManager extends NCService {
                     closeAll()
                     
                     if (!isStopping) {
-                        logger.info(s"REST server connection closed (retrying in ${RETRY_TIMEOUT / 1000}s).")
+                        logger.warn(s"REST server connection closed (retrying in ${RETRY_TIMEOUT / 1000}s).")
                     
                         timeout()
                     }
                     else
-                        logger.info(s"REST server connection closed.")
+                        logger.warn(s"REST server connection closed.")
                 }
                 catch {
                     case e: HandshakeError ⇒
@@ -459,7 +449,7 @@ object NCConnectionManager extends NCService {
                         closeAll()
                 
                         // Ack the error message.
-                        logger.error("Unexpected error establishing REST server connection (aborting).", e)
+                        U.prettyError(logger, "Unexpected error establishing REST server connection:", e)
                     
                         abort()
                 }

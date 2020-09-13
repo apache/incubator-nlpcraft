@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.deploy
-
-import org.apache.nlpcraft.model.NCModel
+package org.apache.nlpcraft.server.sugsyn
 
 /**
-  * Holder for the model and its intent samepls.
+ * Result of the model synonym suggestion tool.
  *
-  * @param model Model.
-  * @param intentSamples Map of intent samples.
-  */
-case class NCModelHolder(model: NCModel, intentSamples: Map[String, Seq[String]]) {
-    require(model != null)
-    require(intentSamples != null)
-}
+ * @param modelId ID of the model suggestion tool was running on.
+ * @param minScore Min score input parameter.
+ * @param durationMs Duration of the tool run.
+ * @param timestamp Timestamp of the tool run start.
+ * @param error Error message, or `null` if no errors occurred.
+ * @param suggestions List of synonym suggestion.
+ * @param warnings Warnings.
+ */
+case class NCSuggestSynonymResult(
+    modelId: String,
+    minScore: Double,
+    durationMs: Long,
+    timestamp: Long,
+    error: String,
+    suggestions: java.util.List[AnyRef],
+    warnings: java.util.List[String]
+)
