@@ -112,7 +112,7 @@ public class TimeModel extends NCModelFileAdapter {
         // Instead of defaulting to a local time - we reject with a specific error message for cleaner UX.
         throw new NCRejection(String.format("No timezone mapping for %s, %s.", city, cntry));
     }
-    
+
     /**
      * Callback on local time intent match.
      *

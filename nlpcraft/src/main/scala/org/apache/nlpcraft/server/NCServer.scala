@@ -169,7 +169,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 try
                     p.stop(span)
                 catch {
-                    case e: Exception ⇒ logger.warn("Error stopping manager.", e)
+                    case e: Exception ⇒ U.prettyError(logger, "Error stopping managers:", e)
                 }
             )
         }
@@ -235,11 +235,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     
         catching(classOf[Throwable]) either startManagers() match {
             case Left(e) ⇒ // Exception.
-                e match {
-                    case x: NCE ⇒ logger.error(s"Failed to start server.", x)
-                    case x: Throwable ⇒ logger.error("Failed to start server due to unexpected error.", x)
-                }
-            
+                U.prettyError(logger, "Failed to start server:", e)
+
                 System.exit(1)
         
             case _ ⇒ // Managers started OK.

@@ -449,7 +449,7 @@ object NCConnectionManager extends NCService {
                         closeAll()
                 
                         // Ack the error message.
-                        logger.error("Unexpected error establishing REST server connection (aborting).", e)
+                        U.prettyError(logger, "Unexpected error establishing REST server connection:", e)
                     
                         abort()
                 }

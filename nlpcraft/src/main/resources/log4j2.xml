@@ -19,7 +19,7 @@
 
 <Configuration status="INFO">
     <Properties>
-        <Property name="pattern">%d{MMM-dd|HH:mm:ss}|%-5p| %m%n</Property>
+        <Property name="pattern">%highlight{%d{MMM-dd|HH:mm:ss}|%level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF}| %m%n}</Property>
     </Properties>
     <Appenders>
         <Console name="stdout" target="SYSTEM_OUT">

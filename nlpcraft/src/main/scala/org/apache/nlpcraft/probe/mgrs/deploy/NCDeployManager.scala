@@ -26,6 +26,7 @@ import java.util.regex.{Pattern, PatternSyntaxException}
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer}
@@ -386,8 +387,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
         for (ldr ← valLdrs)
             ldr.onDiscard()
 
-        var foundDups = false
-
         val allAliases =
             syns
                 .flatMap(_.syn)
@@ -413,34 +412,33 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 s"dups=${idAliasDups.mkString(", ")}" +
             "]")
 
+        val dupSyns = mutable.Buffer.empty[(String, Seq[String], String)]
+
         // Check for synonym dups across all elements.
         for (
             ((syn, isDirect), holders) ←
                 syns.groupBy(p ⇒ (p.syn.mkString(" "), p.syn.isDirect)) if holders.size > 1 && isDirect
         ) {
-            val msg = s"Duplicate synonym detected (ignoring) [" +
-                s"mdlId=$mdlId, " +
-                s"elm=${
-                    holders.map(
-                        p ⇒ s"id=${p.elmId}${if (p.syn.value == null) "" else s", value=${p.syn.value}"}"
-                    ).mkString("(", ",", ")")
-                }, " +
-                s"syn=$syn" +
-            s"]"
-
-            if (mdl.isDupSynonymsAllowed)
-                logger.trace(msg)
-            else
-                logger.warn(msg)
-
-            foundDups = true
+            dupSyns.append((
+                mdlId,
+                holders.map(p ⇒ s"id=${p.elmId}${if (p.syn.value == null) "" else s", value=${p.syn.value}"}").toSeq,
+                syn
+            ))
         }
 
-        if (foundDups) {
-            if (mdl.isDupSynonymsAllowed) {
-                logger.warn(s"Found duplicate synonyms - check trace message [mdlId=$mdlId]")
-                logger.warn(s"Duplicates synonyms are allowed by '$mdlId' model but the large number may degrade the performance.")
-            }
+        if (dupSyns.nonEmpty) {
+            val tbl = NCAsciiTable("Model ID", "Elements", "Dup Synonym")
+
+            dupSyns.sortBy(_._1).foreach(row ⇒ tbl += (
+                row._1,
+                row._2,
+                row._3
+            ))
+
+            logger.warn(s"\nDup synonyms in '$mdlId' model:\n${tbl.toString}")
+
+            if (mdl.isDupSynonymsAllowed)
+                logger.warn(s"NOTE: '$mdlId' model allows dup synonyms but the large number may degrade the performance.")
             else
                 throw new NCE(s"Duplicated synonyms found and not allowed - check warning messages [mdlId=$mdlId]")
         }

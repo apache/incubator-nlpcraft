@@ -154,9 +154,10 @@ object NCUserManager extends NCService with NCIgniteInstance {
                             case e: IllegalStateException ⇒
                                 // Attempt to hide possible race condition with Ignite on a shutdown.
                                 if (!e.getMessage.startsWith("Grid is in invalid state to perform this operation"))
-                                    logger.error("Error during timeout scanner process.", e)
+                                    U.prettyError(logger,"Error during timeout scanner process:", e)
 
-                            case e: Throwable ⇒ logger.error("Error during timeout scanner process.", e)
+                            case e: Throwable ⇒
+                                U.prettyError(logger,"Error during timeout scanner process:", e)
                         }
                 }
             },

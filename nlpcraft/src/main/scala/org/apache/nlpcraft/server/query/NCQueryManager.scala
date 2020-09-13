@@ -75,7 +75,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                         }
                     }
                     catch {
-                        case e: Throwable ⇒ logger.error("Error processing cache events.", e)
+                        case e: Throwable ⇒ U.prettyError(logger,"Error processing cache events:", e)
                     }
                 ,
                 EventType.EVT_CACHE_OBJECT_PUT

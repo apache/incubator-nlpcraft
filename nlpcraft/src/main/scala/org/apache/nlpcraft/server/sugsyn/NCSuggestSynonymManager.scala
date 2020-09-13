@@ -431,7 +431,7 @@ object NCSuggestSynonymManager extends NCService {
                     catch {
                         case e: NCE ⇒ promise.failure(e)
                         case e: Throwable ⇒
-                            logger.warn("Unexpected error.", e)
+                            U.prettyError(logger, "Unexpected error:", e)
 
                             promise.failure(e)
                     }

@@ -172,7 +172,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             case e: Throwable ⇒
                 span.setStatus(Status.INTERNAL.withDescription(e.getMessage))
                 
-                logger.error("Failed to process request.", e)
+                U.prettyError(logger,"Failed to process request:", e)
             
                 val msg = NCProbeMessage("P2S_ASK_RESULT",
                     "srvReqId" → srvReqId,

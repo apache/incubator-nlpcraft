@@ -162,7 +162,7 @@ object NCUtils extends LazyLogging {
     }
     catch {
         case _: InterruptedException ⇒ Thread.currentThread().interrupt()
-        case e: Throwable ⇒ logger.error("Unhandled exception caught.", e)
+        case e: Throwable ⇒ prettyError(logger, "Unhandled exception caught:", e)
     }
 
     /**
@@ -1131,7 +1131,7 @@ object NCUtils extends LazyLogging {
             Thread.sleep(delay)
         catch {
             case _: InterruptedException ⇒ Thread.currentThread().interrupt()
-            case e: Throwable ⇒ logger.error("Unhandled exception caught during sleep.", e)
+            case e: Throwable ⇒ prettyError(logger, "Unhandled exception caught during sleep:", e)
         }
 
     /**
@@ -1322,6 +1322,29 @@ object NCUtils extends LazyLogging {
         case 0 ⇒ DEC_FMT0.format(num)
         case 1 ⇒ DEC_FMT1.format(num)
         case _ ⇒ DEC_FMT2.format(num)
+    }
+
+    /**
+     *
+     * @param logger
+     * @param title
+     * @param e
+     */
+    def prettyError(logger: Logger, title: String, e: Throwable): Unit = {
+        logger.error(title)
+
+        val INDENT = 2
+
+        var x = e
+        var indent = INDENT
+
+        while (x != null) {
+            logger.error(s"${" " * indent}+-${x.getLocalizedMessage}")
+
+            indent += INDENT
+
+            x = x.getCause
+        }
     }
 
     /**

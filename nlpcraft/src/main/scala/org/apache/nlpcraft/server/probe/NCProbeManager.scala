@@ -125,6 +125,8 @@ object NCProbeManager extends NCService {
             s"probeGuid=$probeGuid, " +
             s"probeToken=$probeToken" +
             s"]"
+
+        def short: String = s"$probeId (guid:$probeGuid, tok:$probeToken)"
     }
     
     // Immutable probe holder.
@@ -259,7 +261,7 @@ object NCProbeManager extends NCService {
                     case Some(holder) ⇒
                         holder.close()
             
-                        logger.info(s"Probe removed: $probeKey")
+                        logger.info(s"Probe removed: ${probeKey.short}")
 
                         // Clears unused models.
                         mdls --= mdls.keys.filter(id ⇒ !probes.exists { case (_, p) ⇒ p.probe.models.exists(_.id == id) })
@@ -268,7 +270,7 @@ object NCProbeManager extends NCService {
             case Some(hld) ⇒
                 hld.close()
                 
-                logger.info(s"Pending probe removed: $probeKey")
+                logger.info(s"Pending probe removed: ${probeKey.short}")
         }
 
     /**
@@ -292,14 +294,14 @@ object NCProbeManager extends NCService {
                     }
                     catch {
                         case _: EOFException ⇒
-                            logger.trace(s"Probe closed connection: $probeKey")
+                            logger.trace(s"Probe closed connection: ${probeKey.short}")
          
                             closeAndRemoveHolder(probeKey)
 
                         case e: Throwable ⇒
                             logger.error(s"Uplink socket error [" +
                                 s"sock=$sock, " +
-                                s"probeKey=$probeKey, " +
+                                s"probeKey=${probeKey.short}, " +
                                 s"probeMsg=$probeMsg" +
                                 s"error=${e.getLocalizedMessage}" +
                                 s"]")
@@ -309,7 +311,7 @@ object NCProbeManager extends NCService {
                 }
             else
                 logger.warn(s"Sending message to unknown probe (ignoring) [" +
-                    s"probeKey=$probeKey, " +
+                    s"probeKey=${probeKey.short}, " +
                     s"probeMsg=$probeMsg" +
                 s"]")
         }
@@ -466,12 +468,12 @@ object NCProbeManager extends NCService {
                         case _: SocketTimeoutException | _: InterruptedException | _: InterruptedIOException ⇒ ()
                     
                         case _: EOFException ⇒
-                            logger.error(s"Probe closed downlink connection: $probeKey")
+                            logger.error(s"Probe closed downlink connection: ${probeKey.short}")
                         
                             t.interrupt()
                     
                         case e: Throwable ⇒
-                            logger.error(s"Error reading probe downlink socket (${e.getMessage}): $probeKey")
+                            logger.error(s"Error reading probe downlink socket (${e.getMessage}): ${probeKey.short}")
 
                             t.interrupt()
                     }
@@ -700,7 +702,7 @@ object NCProbeManager extends NCService {
         }
         
         if (!knownProbe)
-            logger.error(s"Received message from unknown probe (ignoring): $probeKey]")
+            logger.error(s"Received message from unknown probe (ignoring): ${probeKey.short}]")
         else {
             val typ = probeMsg.getType
 
@@ -800,7 +802,11 @@ object NCProbeManager extends NCService {
         val probe = hol.probe
         
         tbl += (
-            probe.probeId,
+            Seq(
+                probe.probeId,
+                s"  uid: ${probe.probeGuid}",
+                s"  tok: ${probe.probeToken}"
+            ),
             s"${probe.osName} ver. ${probe.osVersion}",
             s"${probe.tmzAbbr}, ${probe.tmzId}",
             s"${probe.hostName} (${probe.hostAddr})",
