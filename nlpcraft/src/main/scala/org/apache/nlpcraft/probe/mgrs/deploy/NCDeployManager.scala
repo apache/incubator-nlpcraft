@@ -1467,7 +1467,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             None
                         }
                         else {
-                            val samples = smpAnn.value().toList
+                            var samples = smpAnn.value().toList
 
                             if (samples.isEmpty) {
                                 logger.warn(s"@NCTestSample annotation is empty [" +
@@ -1477,8 +1477,20 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                                 None
                             }
-                            else
+                            else {
+                                if (U.containsDups(samples)) {
+                                    logger.warn(s"@NCTestSample annotation has duplicates [" +
+                                        s"mdlId=$mdlId, " +
+                                        s"callback=$mkMethodName, " +
+                                        s"duplicates=${samples.groupBy(p ⇒ p).filter(_._2.size > 1).map(_._1).mkString(", ")}" +
+                                        s"]"
+                                    )
+
+                                    samples = samples.distinct
+                                }
+
                                 Some(mkIntentId() → samples)
+                            }
                         }
                     }
                     else {

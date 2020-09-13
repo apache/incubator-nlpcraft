@@ -132,7 +132,6 @@ public class WeatherModel extends NCModelFileAdapter {
     )
     @NCIntentSample({
         "What's the local weather forecast?",
-        "What's the local weather forecast?",
         "What's the weather in Moscow?",
         "What is the weather like outside?",
         "How's the weather?",
