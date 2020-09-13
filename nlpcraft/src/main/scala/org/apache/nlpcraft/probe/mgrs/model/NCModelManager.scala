@@ -21,8 +21,8 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.deploy._
-import org.apache.nlpcraft.probe.mgrs.nlp.NCModelData
 
 import scala.collection.convert.DecorateAsScala
 import scala.util.control.Exception._
@@ -32,14 +32,14 @@ import scala.util.control.Exception._
   */
 object NCModelManager extends NCService with DecorateAsScala {
     // Deployed models keyed by their IDs.
-    @volatile private var data: Map[String, NCModelData] = _
+    @volatile private var data: Map[String, NCProbeModel] = _
 
     // Access mutex.
     private final val mux = new Object()
 
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
-        val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms")
+        val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms", "Intents")
 
         mux.synchronized {
             data = NCDeployManager.getModels.map(w ⇒ {
@@ -58,7 +58,8 @@ object NCModelManager extends NCService with DecorateAsScala {
                     mdl.getName,
                     mdl.getVersion,
                     w.elements.keySet.size,
-                    synCnt
+                    synCnt,
+                    w.intents.size
                 )
             })
         }
@@ -104,7 +105,7 @@ object NCModelManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getAllModelsData(parent: Span = null): List[NCModelData] =
+    def getAllModels(parent: Span = null): List[NCProbeModel] =
         startScopedSpan("getAllModels", parent) { _ ⇒
             mux.synchronized { data.values.toList }
         }
@@ -113,8 +114,8 @@ object NCModelManager extends NCService with DecorateAsScala {
       *
       * @param mdlId Model ID.
       */
-    def getModelDataOpt(mdlId: String, parent: Span = null): Option[NCModelData] =
-        startScopedSpan("getModelOpt", parent, "modelId" → mdlId) { _ ⇒
+    def getModelOpt(mdlId: String, parent: Span = null): Option[NCProbeModel] =
+        startScopedSpan("getModelOpt", parent, "mdlId" → mdlId) { _ ⇒
             mux.synchronized { data.get(mdlId) }
         }
 
@@ -122,6 +123,6 @@ object NCModelManager extends NCService with DecorateAsScala {
      *
      * @param mdlId Model ID.
      */
-    def getModelData(mdlId: String, parent: Span = null): NCModelData =
-        getModelDataOpt(mdlId, parent).getOrElse(throw new NCE(s"Model not found: $mdlId"))
+    def getModel(mdlId: String, parent: Span = null): NCProbeModel =
+        getModelOpt(mdlId, parent).getOrElse(throw new NCE(s"Model not found: $mdlId"))
 }

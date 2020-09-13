@@ -22,7 +22,8 @@ import java.io.Serializable
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCE, NCService}
 import org.apache.nlpcraft.common.nlp._
-import org.apache.nlpcraft.probe.mgrs.nlp.{NCModelData, NCProbeEnricher}
+import org.apache.nlpcraft.probe.mgrs.NCProbeModel
+import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.collection.Map
 
@@ -39,11 +40,11 @@ object NCSuspiciousNounsEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdlData: NCModelData, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
+    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
-            "modelId" → mdlData.model.getId,
+            "mdlId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
-            ns.filter(t ⇒ mdlData.suspWordsStems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "suspNoun" → true))
+            ns.filter(t ⇒ mdl.suspWordsStems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "suspNoun" → true))
         }
 }

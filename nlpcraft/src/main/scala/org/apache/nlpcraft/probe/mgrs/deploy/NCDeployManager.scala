@@ -35,10 +35,9 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
 import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentSolver}
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
-import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind.{DSL, REGEX, TEXT}
-import org.apache.nlpcraft.probe.mgrs.{NCSynonym, NCSynonymChunk}
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{DSL, REGEX, TEXT}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelSynonymDslCompiler
-import org.apache.nlpcraft.probe.mgrs.nlp.NCModelData
 import resource.managed
 
 import scala.collection.JavaConverters._
@@ -81,7 +80,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     type Callback = Function[NCIntentMatch, NCResult]
 
-    @volatile private var data: ArrayBuffer[NCModelData] = _
+    @volatile private var data: ArrayBuffer[NCProbeModel] = _
     @volatile private var modelFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
@@ -99,7 +98,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param elmId Element ID.
       * @param syn Element synonym.
       */
-    case class SynonymHolder(elmId: String, syn: NCSynonym)
+    case class SynonymHolder(elmId: String, syn: NCProbeSynonym)
 
     /**
       * Gives a list of JAR files at given path.
@@ -134,7 +133,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @return
       */
     @throws[NCE]
-    private def wrap(mdl: NCModel): NCModelData = {
+    private def wrap(mdl: NCModel): NCProbeModel = {
         require(mdl != null)
 
         checkModelConfig(mdl)
@@ -198,11 +197,11 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 isElementId: Boolean,
                 isValueName: Boolean,
                 value: String,
-                chunks: Seq[NCSynonymChunk]): Unit = {
-                def add(chunks: Seq[NCSynonymChunk], isDirect: Boolean): Unit = {
+                chunks: Seq[NCProbeSynonymChunk]): Unit = {
+                def add(chunks: Seq[NCProbeSynonymChunk], isDirect: Boolean): Unit = {
                     val holder = SynonymHolder(
                         elmId = elmId,
-                        syn = NCSynonym(isElementId, isValueName, isDirect, value, chunks)
+                        syn = NCProbeSynonym(isElementId, isValueName, isDirect, value, chunks)
                     )
 
                     if (syns.add(holder)) {
@@ -247,7 +246,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
               * @return
               */
             @throws[NCE]
-            def chunkSplit(s: String): Seq[NCSynonymChunk] = {
+            def chunkSplit(s: String): Seq[NCProbeSynonymChunk] = {
                 val x = s.trim()
 
                 val chunks = ListBuffer.empty[String]
@@ -297,7 +296,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
               * @param id
               */
             @throws[NCE]
-            def chunkIdSplit(id: String): Seq[NCSynonymChunk] = {
+            def chunkIdSplit(id: String): Seq[NCProbeSynonymChunk] = {
                 val chunks = chunkSplit(NCNlpCoreManager.tokenize(id).map(_.token).mkString(" "))
 
                 // IDs can only be simple strings.
@@ -481,9 +480,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
         else
             logger.warn(s"Model has no intents [mdlId=$mdlId]")
 
-        NCModelData(
+        NCProbeModel(
             model = mdl,
             solver = solver,
+            intents = intents.keySet.toSeq,
             synonyms = mkFastAccessMap(filter(syns, dsl = false)),
             synonymsDsl = mkFastAccessMap(filter(syns, dsl = true)),
             addStopWordsStems = addStopWords.toSet,
@@ -515,7 +515,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param clsName Model class name.
       */
     @throws[NCE]
-    private def makeModelWrapper(clsName: String): NCModelData =
+    private def makeModelWrapper(clsName: String): NCProbeModel =
         try
             wrap(
                 makeModelFromSource(
@@ -532,7 +532,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param set
       * @return
       */
-    private def mkFastAccessMap(set: Set[SynonymHolder]): Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCSynonym]]] =
+    private def mkFastAccessMap(set: Set[SynonymHolder]): Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCProbeSynonym]]] =
         set
             .groupBy(_.elmId)
             .map {
@@ -571,7 +571,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param jarFile JAR file to extract from.
       */
     @throws[NCE]
-    private def extractModels(jarFile: File): Seq[NCModelData] = {
+    private def extractModels(jarFile: File): Seq[NCProbeModel] = {
         val clsLdr = Thread.currentThread().getContextClassLoader
 
         val classes = mutable.ArrayBuffer.empty[Class[_ <: NCModel]]
@@ -610,7 +610,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        data = ArrayBuffer.empty[NCModelData]
+        data = ArrayBuffer.empty[NCProbeModel]
 
         modelFactory = new NCBasicModelFactory
 
@@ -667,7 +667,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       *
       * @return
       */
-    def getModels: Seq[NCModelData] = data
+    def getModels: Seq[NCProbeModel] = data
 
     /**
       * Permutes and drops duplicated.
@@ -916,7 +916,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
      * @return
      */
     @throws[NCE]
-    private def mkChunk(mdlId: String, chunk: String): NCSynonymChunk = {
+    private def mkChunk(mdlId: String, chunk: String): NCProbeSynonymChunk = {
         def stripSuffix(fix: String, s: String): String = s.slice(fix.length, s.length - fix.length)
 
         // Regex synonym.
@@ -925,7 +925,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (ptrn.length > 0)
                 try
-                    NCSynonymChunk(kind = REGEX, origText = chunk, regex = Pattern.compile(ptrn))
+                    NCProbeSynonymChunk(kind = REGEX, origText = chunk, regex = Pattern.compile(ptrn))
                 catch {
                     case e: PatternSyntaxException ⇒
                         throw new NCE(s"Invalid regex synonym syntax detected [" +
@@ -944,13 +944,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val dsl = stripSuffix(DSL_FIX, chunk)
             val compUnit = NCModelSynonymDslCompiler.parse(dsl)
 
-            val x = NCSynonymChunk(alias = compUnit.alias, kind = DSL, origText = chunk, dslPred = compUnit.predicate)
+            val x = NCProbeSynonymChunk(alias = compUnit.alias, kind = DSL, origText = chunk, dslPred = compUnit.predicate)
 
             x
         }
         // Regular word.
         else
-            NCSynonymChunk(kind = TEXT, origText = chunk, wordStem = NCNlpCoreManager.stem(chunk))
+            NCProbeSynonymChunk(kind = TEXT, origText = chunk, wordStem = NCNlpCoreManager.stem(chunk))
     }
 
     /**
@@ -1075,14 +1075,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 }
             }
 
-
         if (U.containsDups(termIds))
-            throw new NCE(s"@NCIntentTerm values duplicated [" +
+            throw new NCE(s"Duplicate term IDs in @NCIntentTerm annotations [" +
                 s"mdlId=$mdlId, " +
-                s"duplicated=${U.getDups(termIds).mkString(", ")}, " +
+                s"dups=${U.getDups(termIds).mkString(", ")}, " +
                 s"callback=${method2Str(mtd)}" +
-                s"]"
-            )
+            s"]")
 
         val terms = intent.terms.toSeq
 
@@ -1490,9 +1488,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 logger.warn(s"@NCTestSample annotation has duplicates [" +
                                     s"mdlId=$mdlId, " +
                                     s"callback=$mkMethodName, " +
-                                    s"duplicated=${U.getDups(samples).mkString(", ")}" +
-                                    s"]"
-                                )
+                                    s"dups=${U.getDups(samples).mkString("'", ", ", "'")}" +
+                                s"]")
 
                                 Some(mkIntentId() → samples.distinct)
                             }

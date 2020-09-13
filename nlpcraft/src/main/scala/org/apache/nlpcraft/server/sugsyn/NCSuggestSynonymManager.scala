@@ -155,7 +155,7 @@ object NCSuggestSynonymManager extends NCService {
      * @return
      */
     def suggest(mdlId: String, minScoreOpt: Option[Double], parent: Span = null): Future[NCSuggestSynonymResult] =
-        startScopedSpan("inspect", parent, "modelId" → mdlId) { _ ⇒
+        startScopedSpan("inspect", parent, "mdlId" → mdlId) { _ ⇒
             val now = System.currentTimeMillis()
 
             val promise = Promise[NCSuggestSynonymResult]()

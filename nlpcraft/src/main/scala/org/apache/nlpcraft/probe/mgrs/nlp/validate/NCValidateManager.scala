@@ -22,7 +22,7 @@ import io.opencensus.trace.Span
 import org.apache.tika.langdetect.OptimaizeLangDetector
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.probe.mgrs.nlp.NCModelData
+import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 
 /**
  * Probe pre/post enrichment validator.
@@ -51,11 +51,11 @@ object NCValidateManager extends NCService with LazyLogging {
      * @param parent Parent tracing span.
      */
     @throws[NCValidateException]
-    def preValidate(w: NCModelData, ns: NCNlpSentence, parent: Span = null): Unit =
+    def preValidate(w: NCProbeModel, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → w.model.getId) { _ ⇒
+            "mdlId" → w.model.getId) { _ ⇒
             val mdl = w.model
 
             if (!mdl.isNotLatinCharsetAllowed && !ns.text.matches("""[\s\w\p{Punct}]+"""))
@@ -77,11 +77,11 @@ object NCValidateManager extends NCService with LazyLogging {
      * @param parent Optional parent span.
      */
     @throws[NCValidateException]
-    def postValidate(w: NCModelData, ns: NCNlpSentence, parent: Span = null): Unit =
+    def postValidate(w: NCProbeModel, ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("validate", parent,
             "srvReqId" → ns.srvReqId,
             "txt" → ns.text,
-            "modelId" → w.model.getId) { _ ⇒
+            "mdlId" → w.model.getId) { _ ⇒
             val mdl = w.model
             val types = ns.flatten.filter(!_.isNlp).map(_.noteType).distinct
             val overlapNotes = ns.map(tkn ⇒ types.flatMap(tp ⇒ tkn.getNotes(tp))).filter(_.size > 1).flatten

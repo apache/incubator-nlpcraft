@@ -20,7 +20,7 @@ package org.apache.nlpcraft.probe.mgrs
 /**
   * Synonym element type.
   */
-object NCSynonymChunkKind extends Enumeration {
+object NCProbeSynonymChunkKind extends Enumeration {
     type NCSynonymChunkKind = Value
     
     val TEXT: Value = Value // Simple word.

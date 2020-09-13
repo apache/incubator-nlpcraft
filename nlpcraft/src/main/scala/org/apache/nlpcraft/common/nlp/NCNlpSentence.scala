@@ -459,10 +459,12 @@ class NCNlpSentence(
     @transient
     private var hash: java.lang.Integer = _
 
-    private def calcHash(): Int = Seq(srvReqId, text, enabledBuiltInToks, tokens).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
+    private def calcHash(): Int =
+        Seq(srvReqId, text, enabledBuiltInToks, tokens).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
 
     // Deep copy.
-    override def clone(): NCNlpSentence = new NCNlpSentence(srvReqId, text, weight, enabledBuiltInToks, tokens.map(_.clone()))
+    override def clone(): NCNlpSentence =
+        new NCNlpSentence(srvReqId, text, weight, enabledBuiltInToks, tokens.map(_.clone()))
 
     /**
       * Utility method that gets set of notes for given note type collected from
@@ -481,6 +483,7 @@ class NCNlpSentence(
       */
     def removeNote(note: NCNlpSentenceNote): Unit = this.foreach(_.remove(note))
 
+    //noinspection HashCodeUsesVar
     override def hashCode(): Int = {
         if (hash == null)
             hash = calcHash()
@@ -597,7 +600,7 @@ class NCNlpSentence(
                     val nlpNotes = notes.filter(_.isNlp)
                     val userNotes = notes.filter(_.isUser)
 
-                    def get(seq: Seq[NCNlpSentenceNote], keys2Skip: String*): Seq[Map[String, java.io.Serializable]] =
+                    def get(seq: Seq[NCNlpSentenceNote]): Seq[Map[String, java.io.Serializable]] =
                         seq.map(p ⇒
                             // We have to delete some keys to have possibility to compare sentences.
                             p.clone().filter(_._1 != "direct")
