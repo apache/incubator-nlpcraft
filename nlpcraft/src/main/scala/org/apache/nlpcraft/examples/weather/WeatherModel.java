@@ -86,7 +86,7 @@ public class WeatherModel extends NCModelFileAdapter {
 
         Optional<GeoDataBean> geoOpt = geoMrg.get(ctx.getContext().getRequest());
 
-        if (!geoOpt.isPresent())
+        if (geoOpt.isEmpty())
             throw new NCRejection("City cannot be determined.");
 
         // Manually process request for local weather. We need to separate between 'local Moscow weather'
@@ -131,6 +131,7 @@ public class WeatherModel extends NCModelFileAdapter {
         "term(date)={id == 'nlpcraft:date'}?" // Optional date (overrides indicator words).
     )
     @NCIntentSample({
+        "What's the local weather forecast?",
         "What's the local weather forecast?",
         "What's the weather in Moscow?",
         "What is the weather like outside?",

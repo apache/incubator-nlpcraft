@@ -1339,7 +1339,13 @@ object NCUtils extends LazyLogging {
         var indent = INDENT
 
         while (x != null) {
-            logger.error(s"${" " * indent}+-${x.getLocalizedMessage}")
+            var first = true
+
+            x.getLocalizedMessage.split("\n").foreach(line ⇒ {
+                logger.error(s"${" " * indent}${if (first) "+-" else "  "}${line.trim}")
+
+                first = false
+            })
 
             indent += INDENT
 

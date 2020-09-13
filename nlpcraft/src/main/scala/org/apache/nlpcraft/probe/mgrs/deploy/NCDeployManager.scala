@@ -143,7 +143,11 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         for (elm ← mdl.getElements.asScala)
             if (!elm.getId.matches(ID_REGEX))
-                throw new NCE(s"Model element ID '${elm.getId}' does not match '$ID_REGEX' regex in: $mdlId")
+                throw new NCE(s"Model element ID does not match regex [" +
+                    s"mdlId=$mdlId, " +
+                    s"elmId=${elm.getId}, " +
+                    s"regex=$ID_REGEX" +
+                s"]")
 
         checkMacros(mdl)
 
@@ -786,8 +790,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (elmId.toLowerCase.startsWith("nlpcraft:"))
                 throw new NCE(s"Model element ID type cannot start with 'nlpcraft:' [" +
-                    s"elmId=$elmId, " +
-                    s"mdlId=${mdl.getId}" +
+                    s"mdlId=${mdl.getId}, " +
+                    s"elmId=$elmId" +
                 s"]")
 
             if (hasWhitespace(elmId))
@@ -1078,12 +1082,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val intentTermIds = terms.filter(_.getId != null).map(_.getId)
         val invalidIds = termIds.filter(id ⇒ !intentTermIds.contains(id))
 
-        if (invalidIds.nonEmpty)
-            throw new NCE(s"Unknown term IDs in @NCIntentTerm annotation [" +
+        if (invalidIds.nonEmpty) {
+            // Report only the first one for simplicity & clarity.
+            throw new NCE(s"Unknown term ID in @NCIntentTerm annotation [" +
                 s"mdlId=$mdlId, " +
-                s"ids='${invalidIds.mkString(", ")}', " +
+                s"id='${invalidIds.head}', " +
                 s"callback=${method2Str(mtd)}" +
             s"]")
+        }
 
         val paramGenTypes = getTokensSeq(mtd.getGenericParameterTypes)
 
