@@ -49,6 +49,7 @@ import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 
+import scala.collection.mutable
 import scala.compat.Platform.currentTime
 import scala.util.control.Exception.{catching, ignoring}
 
@@ -56,6 +57,8 @@ import scala.util.control.Exception.{catching, ignoring}
   * NLPCraft server app.
   */
 object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCensusTrace {
+    private val startedMgrs = mutable.Buffer.empty[NCService]
+
     /**
       * Prints ASCII-logo.
       */
@@ -85,51 +88,29 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
         // Lifecycle manager has to be started outside of the tracing span.
         NCServerLifecycleManager.start()
-        // Lifecycle callback.
         NCServerLifecycleManager.beforeStart()
     
         startScopedSpan("startManagers", "relVer" → ver.version, "relDate" → ver.date) { span ⇒
-            U.executeParallel(
-                () ⇒ NCExternalConfigManager.start(span),
-                () ⇒ NCWordNetManager.start(span),
-                () ⇒ NCDictionaryManager.start(span),
-                () ⇒ {
-                    NCTxManager.start(span)
-                    NCSqlManager.start(span)
-                    NCProcessLogManager.start(span)
-                }
-            )
-
-            U.executeParallel(
-                () ⇒ NCGeoManager.start(span),
-                () ⇒ {
-                    NCNlpCoreManager.start(span)
-                    NCNlpServerManager.start(span)
-                    NCNumericManager.start(span)
-                },
-                () ⇒ {
-                    NCSpellCheckManager.start(span)
-                    NCPreProcessManager.start(span)
-                }
-            )
-            
-            NCServerEnrichmentManager.start(span)
-    
-            U.executeParallel(
-                () ⇒ {
-                    // User manager called from companies manager.
-                    NCUserManager.start(span)
-                    NCCompanyManager.start(span)
-                },
-                () ⇒ {
-                    NCProbeManager.start(span)
-                    NCSuggestSynonymManager.start(span)
-                },
-                () ⇒ NCFeedbackManager.start(span)
-            )
-            
-            NCQueryManager.start(span)
-            NCRestManager.start(span)
+            startedMgrs += NCExternalConfigManager.start(span)
+            startedMgrs += NCWordNetManager.start(span)
+            startedMgrs += NCDictionaryManager.start(span)
+            startedMgrs += NCTxManager.start(span)
+            startedMgrs += NCSqlManager.start(span)
+            startedMgrs += NCProcessLogManager.start(span)
+            startedMgrs += NCGeoManager.start(span)
+            startedMgrs += NCNlpCoreManager.start(span)
+            startedMgrs += NCNlpServerManager.start(span)
+            startedMgrs += NCNumericManager.start(span)
+            startedMgrs += NCSpellCheckManager.start(span)
+            startedMgrs += NCPreProcessManager.start(span)
+            startedMgrs += NCServerEnrichmentManager.start(span)
+            startedMgrs += NCUserManager.start(span)
+            startedMgrs += NCCompanyManager.start(span)
+            startedMgrs += NCProbeManager.start(span)
+            startedMgrs += NCSuggestSynonymManager.start(span)
+            startedMgrs += NCFeedbackManager.start(span)
+            startedMgrs += NCQueryManager.start(span)
+            startedMgrs += NCRestManager.start(span)
     
             // Lifecycle callback.
             NCServerLifecycleManager.afterStart()
@@ -144,28 +125,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         NCServerLifecycleManager.beforeStop()
     
         startScopedSpan("stopManagers") { span ⇒
-            Seq(
-                NCRestManager,
-                NCQueryManager,
-                NCFeedbackManager,
-                NCSuggestSynonymManager,
-                NCProbeManager,
-                NCCompanyManager,
-                NCUserManager,
-                NCServerEnrichmentManager,
-                NCNumericManager,
-                NCNlpServerManager,
-                NCGeoManager,
-                NCPreProcessManager,
-                NCSpellCheckManager,
-                NCDictionaryManager,
-                NCWordNetManager,
-                NCProcessLogManager,
-                NCSqlManager,
-                NCTxManager,
-                NCNlpCoreManager,
-                NCExternalConfigManager
-            ).foreach(p ⇒
+            startedMgrs.reverse.foreach(p ⇒
                 try
                     p.stop(span)
                 catch {
@@ -176,7 +136,6 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         
         // Lifecycle callback.
         NCServerLifecycleManager.afterStop()
-    
         NCServerLifecycleManager.stop()
     }
     
@@ -236,6 +195,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         catching(classOf[Throwable]) either startManagers() match {
             case Left(e) ⇒ // Exception.
                 U.prettyError(logger, "Failed to start server:", e)
+
+                stopManagers()
 
                 System.exit(1)
         
