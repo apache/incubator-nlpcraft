@@ -335,7 +335,7 @@ object NCConfigurable extends LazyLogging {
             
             val lines = cfg.origin().description().split(",").drop(1).distinct
             
-            logger.info(s"Configuration successfully loaded as a merge of: ${lines.mkString("\n  + ", "\n  + ", "")}")
+            logger.info(s"NLPCraft configuration successfully loaded as a merge of: ${lines.mkString("\n  + ", "\n  + ", "")}")
         }
 
         // Set parsed configuration into Java shim.

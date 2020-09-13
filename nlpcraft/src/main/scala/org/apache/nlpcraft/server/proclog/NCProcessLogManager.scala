@@ -178,7 +178,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
         data: String,
         parent: Span = null
     ): Unit =
-        startScopedSpan("newEntry", parent, "srvReqId" → srvReqId, "usrId" → usrId, "modelId" → mdlId) { span ⇒
+        startScopedSpan("newEntry", parent, "srvReqId" → srvReqId, "usrId" → usrId, "mdlId" → mdlId) { span ⇒
             val id = logSeq.incrementAndGet()
 
             logLock.acquire()

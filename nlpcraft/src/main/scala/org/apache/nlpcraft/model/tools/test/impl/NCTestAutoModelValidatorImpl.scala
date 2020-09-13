@@ -61,7 +61,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         NCEmbeddedProbe.start(classes: _*)
 
         try
-            process(NCModelManager.getAllModelsData().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
+            process(NCModelManager.getAllModels().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
         finally
             NCEmbeddedProbe.stop()
     }

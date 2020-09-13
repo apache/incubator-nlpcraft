@@ -168,7 +168,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         startScopedSpan("solve",
             "srvReqId" → req.getServerRequestId,
             "userId" → req.getUser.getId,
-            "modelId" → ctx.getModel.getId,
+            "mdlId" → ctx.getModel.getId,
             "normText" → req.getNormalizedText) { _ ⇒
             val matches = mutable.ArrayBuffer.empty[MatchHolder]
 

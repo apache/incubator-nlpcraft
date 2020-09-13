@@ -71,7 +71,7 @@ object NCCommandManager extends NCService {
             "msgType" → msg.getType,
             "srvReqId" → msg.dataOpt[String]("srvReqId").getOrElse(""),
             "usrId" → msg.dataOpt[Long]("userId").getOrElse(-1),
-            "modelId" → msg.dataOpt[String]("mdlId").getOrElse("")) { span ⇒
+            "mdlId" → msg.dataOpt[String]("mdlId").getOrElse("")) { span ⇒
             if (msg.getType != "S2P_PING")
                 logger.trace(s"Probe server message received: $msg")
             
@@ -108,7 +108,7 @@ object NCCommandManager extends NCService {
                     case "S2P_MODEL_INFO" ⇒
                         val mdlId = msg.data[String]("mdlId")
 
-                        val mdlData = NCModelManager.getModelData(mdlId)
+                        val mdlData = NCModelManager.getModel(mdlId)
 
                         val macros = mdlData.model.getMacros.asInstanceOf[Serializable]
                         val syns = mdlData.model.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]

@@ -120,7 +120,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             "srvReqId" → srvReqId,
             "usrId" → usrId,
             "txt" → txt,
-            "modelId" → mdlId,
+            "mdlId" → mdlId,
             "enableLog" → enabledLog,
             "usrAgent" → usrAgent.orNull,
             "rmtAddr" → rmtAddr.orNull
@@ -164,7 +164,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             "srvReqId" → srvReqId,
             "usrId" → usrId,
             "txt" → txt,
-            "modelId" → mdlId,
+            "mdlId" → mdlId,
             "enableLog" → enabledLog,
             "usrAgent" → usrAgent.orNull,
             "rmtAddr" → rmtAddr.orNull) { span ⇒

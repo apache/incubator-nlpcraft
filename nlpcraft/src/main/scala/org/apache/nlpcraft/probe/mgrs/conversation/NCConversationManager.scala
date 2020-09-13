@@ -78,7 +78,7 @@ object NCConversationManager extends NCService {
                 val delKeys = ArrayBuffer.empty[Key]
 
                 for ((key, value) ← convs)
-                    NCModelManager.getModelDataOpt(key.mdlId) match {
+                    NCModelManager.getModelOpt(key.mdlId) match {
                         case Some(data) ⇒
                             if (value.tstamp < System.currentTimeMillis() - data.model.getConversationTimeout)
                                 delKeys += key
@@ -99,7 +99,7 @@ object NCConversationManager extends NCService {
       */
     def getConversation(usrId: Long, mdlId: String, parent: Span = null): NCConversation =
         startScopedSpan("getConversation", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
-            val mdl = NCModelManager.getModelData(mdlId).model
+            val mdl = NCModelManager.getModel(mdlId).model
 
             convs.synchronized {
                 val v = convs.getOrElseUpdate(
