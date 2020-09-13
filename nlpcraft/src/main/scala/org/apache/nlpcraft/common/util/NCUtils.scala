@@ -1209,13 +1209,13 @@ object NCUtils extends LazyLogging {
     /**
       * Checks duplicated elements in collection.
       *
-      * @param seq Collection.
+      * @param list Collection. Note, it should be list.
       * @param seen Checked elements.
       * @see #getDups
       */
     @annotation.tailrec
-    def containsDups[T](seq: Seq[T], seen: Set[T] = Set.empty[T]): Boolean =
-        seq match {
+    def containsDups[T](list: List[T], seen: Set[T] = Set.empty[T]): Boolean =
+        list match {
             case x :: xs ⇒ if (seen.contains(x)) true else containsDups(xs, seen + x)
             case _ ⇒ false
         }
@@ -1228,8 +1228,7 @@ object NCUtils extends LazyLogging {
       * @return
       * @see #containsDups
       */
-    def getDups[T](seq: Seq[T]): Set[T] =
-        seq.diff(seq.distinct).toSet
+    def getDups[T](seq: Seq[T]): Set[T] = seq.diff(seq.distinct).toSet
 
     /**
       * Gets a sequence without dups. It works by checking for dups first, before creating a new

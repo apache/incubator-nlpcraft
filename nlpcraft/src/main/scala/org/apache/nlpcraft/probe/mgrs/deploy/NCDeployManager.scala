@@ -318,7 +318,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Add straight element synonyms (dups printed as warnings).
             val synsChunks = for (syn ← elm.getSynonyms.asScala.flatMap(parser.expand)) yield chunkSplit(syn)
 
-            if (U.containsDups(synsChunks.flatten))
+            if (U.containsDups(synsChunks.flatten.toList))
                 logger.trace(s"Model element synonym dups found (ignoring) [" +
                     s"mdlId=$mdlId, " +
                     s"elmId=$elmId, " +
@@ -332,7 +332,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     (if (elm.getValueLoader != null) elm.getValueLoader.load(elm).asScala else Seq.empty)
 
             // Add value synonyms.
-            val valNames = vals.map(_.getName)
+            val valNames = vals.map(_.getName).toList
 
             if (U.containsDups(valNames))
                 logger.trace(s"Model element values names dups found (ignoring) [" +
@@ -1051,7 +1051,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             s"]")
 
         // Gets terms identifiers.
-        val termIds = tokParamAnns.zipWithIndex.map {
+        val termIds = tokParamAnns.toList.zipWithIndex.map {
             case (anns, idx) ⇒
                 def mkArg(): String = arg2Str(mtd, idx, ctxFirstParam)
 
@@ -1074,6 +1074,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         s"]")
                 }
             }
+
+
+        if (U.containsDups(termIds))
+            throw new NCE(s"@NCIntentTerm values duplicated [" +
+                s"mdlId=$mdlId, " +
+                s"duplicated=${U.getDups(termIds).mkString(", ")}, " +
+                s"callback=${method2Str(mtd)}" +
+                s"]"
+            )
 
         val terms = intent.terms.toSeq
 
@@ -1467,7 +1476,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             None
                         }
                         else {
-                            var samples = smpAnn.value().toList
+                            val samples = smpAnn.value().toList
 
                             if (samples.isEmpty) {
                                 logger.warn(s"@NCTestSample annotation is empty [" +
@@ -1477,20 +1486,18 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                                 None
                             }
-                            else {
-                                if (U.containsDups(samples)) {
-                                    logger.warn(s"@NCTestSample annotation has duplicates [" +
-                                        s"mdlId=$mdlId, " +
-                                        s"callback=$mkMethodName, " +
-                                        s"duplicates=${samples.groupBy(p ⇒ p).filter(_._2.size > 1).map(_._1).mkString(", ")}" +
-                                        s"]"
-                                    )
+                            else if (U.containsDups(samples)) {
+                                logger.warn(s"@NCTestSample annotation has duplicates [" +
+                                    s"mdlId=$mdlId, " +
+                                    s"callback=$mkMethodName, " +
+                                    s"duplicated=${U.getDups(samples).mkString(", ")}" +
+                                    s"]"
+                                )
 
-                                    samples = samples.distinct
-                                }
-
-                                Some(mkIntentId() → samples)
+                                Some(mkIntentId() → samples.distinct)
                             }
+                            else
+                                Some(mkIntentId() → samples)
                         }
                     }
                     else {
