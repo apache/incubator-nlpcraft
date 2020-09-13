@@ -36,8 +36,7 @@ embedded probe and starts it automatically:
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
     * **Environment variables:** 
-      * `CONFIG_FORCE_nlpcraft_server_tokenProviders.0=nlpcraft`
-      * `CONFIG_FORCE_nlpcraft_server_tokenProviders.1=google`
+      * `CONFIG_FORCE_nlpcraft_server_tokenProviders="nlpcraft, google"`
     * **Program arguments:** `-server`
  * Test using built-in model auto-validator:
     * **Main class:** `org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator`
@@ -47,7 +46,7 @@ If not using built-in test framework (i.e. not using embedded probe) you need to
  * Run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
-    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.phone.PhoneModel`
+    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models="org.apache.nlpcraft.examples.phone.PhoneModel"`
     * **Program arguments:** `-probe`
 
 ### Documentation  

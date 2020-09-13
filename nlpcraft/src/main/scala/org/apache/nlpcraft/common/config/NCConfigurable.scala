@@ -276,10 +276,9 @@ object NCConfigurable extends LazyLogging {
       *   2. Use environment variables in a form of 'CONFIG_FORCE_x_y_z' to override configuration
       *      property 'x.y.z' from the file.
       * <p>
-      * Examples: TODO:
-      *   CONFIG_FORCE_nlpcraft_server_rest_host=localhost
-      *   CONFIG_FORCE_nlpcraft_server_lifecycle.0=org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverTraceExporter
-      *   CONFIG_FORCE_nlpcraft_server_lifecycle.1=org.apache.nlpcraft.server.lifecycle.opencensus.NCStackdriverStatsExporter
+      * Examples:
+      *   CONFIG_FORCE_nlpcraft_server_rest_host="localhost"
+      *   CONFIG_FORCE_nlpcraft_server_models="com.mymodels.MyModel"
       *
       * @param overrideCfg Optional overriding configuration.
       * @param cfgFileOpt Optional file name.
