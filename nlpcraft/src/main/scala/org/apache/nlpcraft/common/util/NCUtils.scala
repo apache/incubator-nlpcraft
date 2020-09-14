@@ -43,6 +43,7 @@ import org.apache.commons.codec.binary.Base64
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.blowfish.NCBlowfishHasher
 import resource._
 
@@ -67,6 +68,8 @@ object NCUtils extends LazyLogging {
     final val DSL_FIX = "^^"
 
     final val DFLT_PROBE_TOKEN = "3141592653589793"
+
+    final val NL = System getProperty "line.separator"
 
     private val idGen = new NCIdGenerator(NCBlowfishHasher.salt(), 8)
 
@@ -488,7 +491,7 @@ object NCUtils extends LazyLogging {
                         logger.debug(s"Timer task executed [name=$name, execution-time=${System.currentTimeMillis() - now}]")
                     }
                     catch {
-                        case e: Throwable ⇒ logger.error(s"Error executing daily timer [name=$name]", e)
+                        case e: Throwable ⇒ prettyError(logger, s"Error executing daily '$name' timer:", e)
                     }
                 }
             },
@@ -900,7 +903,7 @@ object NCUtils extends LazyLogging {
                 }
                 catch {
                     case _: InterruptedException ⇒ logger.trace(s"Thread interrupted: $name")
-                    case e: Throwable ⇒ logger.error(s"Unexpected error during thread execution: $name", e)
+                    case e: Throwable ⇒ prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
                 }
                 finally
                     stopped = true
@@ -1353,7 +1356,7 @@ object NCUtils extends LazyLogging {
 
             if (msg != null) {
                 x.getLocalizedMessage.split("\n").foreach(line ⇒ {
-                    logger.error(s"${" " * indent}${if (first) "+-" else "  "}${line.trim}")
+                    logger.error(s"${" " * indent}${if (first) s"$ansiRedFg+-$ansiReset" else "  "}${line.trim}")
 
                     first = false
                 })
@@ -1364,6 +1367,18 @@ object NCUtils extends LazyLogging {
             x = x.getCause
         }
     }
+
+    /**
+     * Prints ASCII-logo.
+     */
+     def asciiLogo(): String =
+        raw"$ansiBlueFg    _   ____     $ansiCyanFg ______           ______   $ansiReset$NL" +
+        raw"$ansiBlueFg   / | / / /___  $ansiCyanFg/ ____/________ _/ __/ /_  $ansiReset$NL" +
+        raw"$ansiBlueFg  /  |/ / / __ \$ansiCyanFg/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
+        raw"$ansiBlueFg / /|  / / /_/ /$ansiCyanFg /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
+        raw"$ansiBlueFg/_/ |_/_/ .___/$ansiCyanFg\____/_/   \__,_/_/  \__/    $ansiReset$NL" +
+        raw"$ansiBlueFg       /_/                                  $ansiReset$NL"
+
 
     /**
       * Unzips file.

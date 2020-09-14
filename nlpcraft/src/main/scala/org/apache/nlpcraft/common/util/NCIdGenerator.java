@@ -33,23 +33,8 @@ public class NCIdGenerator {
 
     private String salt = "";
 
-    private ArrayList<Character> seps = new ArrayList<>();
-    private ArrayList<Character> guards = new ArrayList<>();
-
-    /**
-     *
-     */
-    NCIdGenerator() {
-        this("");
-    }
-
-    /**
-     *
-     * @param salt Salt seed.
-     */
-    NCIdGenerator(String salt) {
-        this(salt, 0);
-    }
+    private final ArrayList<Character> seps = new ArrayList<>();
+    private final ArrayList<Character> guards = new ArrayList<>();
 
     /**
      *

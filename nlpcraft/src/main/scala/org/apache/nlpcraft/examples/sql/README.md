@@ -45,7 +45,7 @@ If not using built-in test framework (i.e. not using embedded probe) you need to
  * To run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
     * **Main class:** `org.apache.nlpcraft.NCStart`
     * **VM arguments:** `-Dconfig.override_with_env_vars=true`
-    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models.0=org.apache.nlpcraft.examples.sql.SqlModel`
+    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models="org.apache.nlpcraft.examples.sql.SqlModel"`
     * **Program arguments:** `-probe`
     
     When running data probe standalone you need run H2 database sever manually (from command line or IDE):

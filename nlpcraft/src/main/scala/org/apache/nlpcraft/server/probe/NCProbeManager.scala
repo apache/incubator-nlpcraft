@@ -352,7 +352,12 @@ object NCProbeManager extends NCService {
                 }
                 catch {
                     case _: InterruptedException ⇒ logger.trace(s"Thread interrupted: $thName")
-                    case e: Throwable ⇒ logger.error(s"Unexpected error during thread execution: $thName", e)
+                    case e: Throwable ⇒
+                        U.prettyError(
+                            logger,
+                            s"Unexpected error during '$thName' thread execution:",
+                            e
+                        )
                 }
                 finally
                     stopped = true
@@ -758,7 +763,7 @@ object NCProbeManager extends NCService {
                     }
                     catch {
                         case e: Throwable ⇒
-                            logger.error(s"Failed to process probe message: $typ", e)
+                            U.prettyError(logger,s"Failed to process probe message: $typ", e)
         
                             NCQueryManager.setError(
                                 srvReqId,

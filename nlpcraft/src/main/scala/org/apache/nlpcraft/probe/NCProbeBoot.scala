@@ -47,6 +47,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -341,24 +342,18 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * Prints ASCII-logo.
       */
     private def asciiLogo() {
-        val NL = System getProperty "line.separator"
-        
         val ver = NCVersion.getCurrent
-        
-        val s = NL +
-            raw"    _   ____      ______           ______   $NL" +
-            raw"   / | / / /___  / ____/________ _/ __/ /_  $NL" +
-            raw"  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/  $NL" +
-            raw" / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $NL" +
-            raw"/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $NL" +
-            raw"       /_/                                  $NL$NL" +
-            s"Embedded Data Probe$NL" +
-            s"Version: ${ver.version}$NL" +
-            raw"${NCVersion.copyright}$NL"
-        
-        println(s)
+
+        println(
+            U.NL +
+            U.asciiLogo() +
+            s"${U.NL}" +
+            s"Embedded Data Probe${U.NL}" +
+            s"Version: $ansiBold${ver.version}${U.NL}$ansiReset" +
+            s"${NCVersion.copyright}${U.NL}"
+        )
     }
-    
+
     /**
       *
       */
@@ -367,7 +362,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         val ver = NCVersion.getCurrent
 
-        tbl += ("Probe ID", cfg.id)
+        tbl += ("Probe ID", s"$ansiReversed${cfg.id}$ansiReset")
         tbl += ("Probe Token", cfg.token)
         tbl += ("API Version", ver.version + ", " + ver.date.toString)
         tbl += ("Down-Link", cfg.downLinkString)
