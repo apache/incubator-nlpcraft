@@ -102,6 +102,6 @@ class NCRestFeedbackSpec extends NCRestSpec {
     // @Test
     def testErrors(): Unit = {
         // Too big score.
-        postError("feedback/add", 400, "srvReqId" → rnd(), "score" → 100)
+        postError("feedback/add", 400, "aa", "srvReqId" → rnd(), "score" → 100)
     }
 }

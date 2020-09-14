@@ -75,7 +75,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class NotImplemented() extends NCE("Not implemented.")
 
     class InvalidArguments(msg: String) extends NCE(msg)
-    case class OutOfRangeField(fn: String, from: Double, to: Double) extends InvalidArguments(s"API field `$fn` value is out of range ($from, $to).")
+    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field `$fn` value is out of range ($from, $to).")
     case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field `$fn` value exceeded max length of $max.")
     case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field `$fn`")
     case class EmptyField(fn: String) extends InvalidArguments(s"API field `$fn` value cannot be empty.")
@@ -301,6 +301,16 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     protected def authenticateAsAdmin(acsTkn: String): NCUserMdo = authenticate0(acsTkn, shouldBeAdmin = true)
 
     /**
+      *
+      * @param mdlId
+      * @param compId
+      */
+    @throws[InvalidField]
+    protected def checkModelId(mdlId: String, compId: Long): Unit =
+        if (!NCProbeManager.existsForModel(compId, mdlId))
+            throw InvalidField("mdlId")
+
+    /**
       * Checks length of field value.
       *
       * @param name Field name.
@@ -358,9 +368,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @param to Maximum to.
       */
     @throws[OutOfRangeField]
-    protected def checkRange(name: String, v: Double, from: Double, to: Double): Unit =
-        if (v < from || v > to)
+    protected def checkRange(name: String, v: Number, from: Number, to: Number): Unit = {
+        val vD = v.doubleValue()
+        val fromD = from.doubleValue()
+        val toD = to.doubleValue()
+
+        if (vD < fromD || vD > toD)
             throw OutOfRangeField(name, from, to)
+    }
 
     /**
       * Checks length of field value.
@@ -509,7 +524,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrId" → usrIdOpt.getOrElse(-1),
                 "usrExtId" → usrExtIdOpt.orNull,
                 "txt" → txt,
-                "mdlId" → mdlId) { span ⇒
+                "mdlId" → mdlId
+            ) { span ⇒
                 checkLength(
                     "acsTok" → acsTok,
                     "usrExtId" → usrExtIdOpt,
@@ -520,6 +536,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 checkLengthOpt("data", data, 512000)
 
                 val acsUsr = authenticate(acsTok)
+
+                checkModelId(mdlId, acsUsr.companyId)
 
                 optionalHeaderValueByName("User-Agent") { usrAgent ⇒
                     extractClientIP { rmtAddr ⇒
@@ -628,6 +646,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 val acsUsr = authenticate(req.acsTok)
 
+                checkModelId(req.mdlId, acsUsr.companyId)
+
                 optionalHeaderValueByName("User-Agent") { usrAgent ⇒
                     extractClientIP { rmtAddr ⇒
                         val newSrvReqId = NCQueryManager.asyncAsk(
@@ -714,6 +734,11 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             ) { span ⇒
                 checkLength("acsTok" → req.acsTok, "userExtId" → req.usrExtId)
 
+                req.maxRows match {
+                    case Some(maxRows) ⇒ checkRange("maxRows", maxRows, 1, java.lang.Integer.MAX_VALUE)
+                    case None ⇒ // No-op.
+                }
+
                 val acsUsr = authenticate(req.acsTok)
 
                 val states =
@@ -760,8 +785,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 val admUsr = authenticateAsAdmin(acsTok)
 
-                if (!NCProbeManager.existsForModel(admUsr.companyId, mdlId, span))
-                    throw new NCE(s"Probe not found for model: $mdlId")
+                checkModelId(mdlId, admUsr.companyId)
 
                 val fut = NCSuggestSynonymManager.suggest(mdlId, minScore, span)
 
@@ -808,6 +832,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                     val acsUsr = authenticate(req.acsTok)
 
+                    checkModelId(req.mdlId, acsUsr.companyId)
+
                     NCProbeManager.clearConversation(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
 
                     complete {
@@ -845,6 +871,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     checkAuth(req.acsTok, req.usrExtId)
 
                     val acsUsr = authenticate(req.acsTok)
+
+                    checkModelId(req.mdlId, acsUsr.companyId)
 
                     NCProbeManager.clearDialog(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
 

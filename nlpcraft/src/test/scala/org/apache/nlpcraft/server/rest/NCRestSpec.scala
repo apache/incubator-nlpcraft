@@ -55,24 +55,14 @@ private[rest] object NCRestSpec {
             }
         }
 
-    /**
-      *
-      * @param expCode
-      * @tparam T
-      * @return
-      */
-    private def mkErrorHandler[T](expCode: Int): ResponseHandler[Int] =
+    private final val ERR_HANDLER: ResponseHandler[Error] =
         (resp: HttpResponse) ⇒ {
             val code = resp.getStatusLine.getStatusCode
-            val js = mkJs(code, resp.getEntity)
 
-            if (expCode != code)
-                throw new RuntimeException(s"Unexpected response [expectedCode=$expCode, code=$code, js=$js]")
-
-            println(js)
-
-            code
+            Error(code, mkJs(code, resp.getEntity))
         }
+
+    case class Error(httpCode: Int, js: String)
 
     /**
       *
@@ -194,7 +184,7 @@ private[rest] class NCRestSpec {
       * @param validations
       */
     protected def post[T](url: String, tkn: String, ps: (String, Any)*)(validations: (String, T ⇒ Unit)*): Unit = {
-        val resp = post0(url, Seq("acsTok" → tkn) ++ ps: _*)
+        val resp = post0(url, addToken(tkn, ps): _*)
 
         checkStatus(resp)
 
@@ -231,18 +221,41 @@ private[rest] class NCRestSpec {
     /**
       *
       * @param url
+      * @param httpErrCode
       * @param errCode
       * @param ps
       */
-    protected def postError(url: String, errCode: Int, ps: (String, Any)*): Unit = {
+    protected def postError(url: String, httpErrCode: Int, errCode: String, ps: (String, Any)*): Unit = {
         assertNotNull(tkn)
 
-        val post = preparePost(url, Seq("acsTok" → tkn) ++ ps: _*)
+        val post = preparePost(url, addToken(tkn, ps): _*)
 
-        try
-            CLI.execute(post, mkErrorHandler(errCode))
-        finally
-            post.releaseConnection()
+        val err =
+            try
+                CLI.execute(post, ERR_HANDLER)
+            finally
+                post.releaseConnection()
+
+        println(s"Checked POST with expected error [httpErrCode=$httpErrCode, errorCode=$errCode]")
+        println(GSON.toJson(
+            Map(
+                "url" → url,
+                "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
+                "response" → Map("httpCode" → err.httpCode, "json" → GSON.fromJson(err.js, TYPE_RESP)).asJava
+            ).asJava
+        ))
+        println()
+
+        assertEquals(httpErrCode, err.httpCode)
+
+        val js = err.js
+
+        val m: java.util.Map[String, Object] = GSON.fromJson(js, TYPE_RESP)
+
+        assertEquals(
+            errCode,
+            m.asScala.getOrElse("code", () ⇒ throw new RuntimeException(s"Invalid response: $js")).asInstanceOf[String]
+        )
     }
 
     /**
@@ -287,4 +300,19 @@ private[rest] class NCRestSpec {
       *
       */
     protected def rnd(): String = UUID.randomUUID().toString
+
+    /**
+      *
+      * @param n
+      * @return
+      */
+    protected def mkString(n: Int, ch: Char = '*'): String = (0 to n).map(_ ⇒ ch).mkString
+
+    /**
+      *
+      * @param tkn
+      * @param ps
+      */
+    private def addToken(tkn: String, ps: Seq[(String, Any)]): Seq[(String, Any)] =
+        if (ps.exists(_._1 == "acsTok")) ps else Seq("acsTok" → tkn) ++ ps
 }

@@ -19,30 +19,25 @@ package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.examples.time.TimeModel
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Disabled, Test}
 
-class NCRestClearSpec extends NCRestSpec {
-    private var usrId: Long = 0
-
+// Enable it and run if context word server started.
+@Disabled
+class NCRestModelSpec extends NCRestSpec {
     @BeforeEach
-    def setUp(): Unit = {
-        NCEmbeddedProbe.start(classOf[TimeModel])
-
-        post("user/get")(("$.id", (id: Number) ⇒ usrId = id.longValue()))
-
-        assertTrue(usrId > 0)
-    }
+    def setUp(): Unit = NCEmbeddedProbe.start(classOf[TimeModel])
 
     @AfterEach
     def tearDown(): Unit = NCEmbeddedProbe.stop()
 
     @Test
     def test(): Unit = {
-        post("clear/conversation", "mdlId" → "nlpcraft.time.ex")()
-        post("clear/conversation", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
-
-        post("clear/dialog", "mdlId" → "nlpcraft.time.ex")()
-        post("clear/dialog", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
+        post("model/sugsyn", "mdlId" → "nlpcraft.time.ex")(
+            ("$.status", (status: String) ⇒ assertEquals("API_OK", status))
+        )
+        post("model/sugsyn", "mdlId" → "nlpcraft.time.ex", "minScore" → 0.5)(
+            ("$.status", (status: String) ⇒ assertEquals("API_OK", status))
+        )
     }
 }
