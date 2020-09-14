@@ -520,7 +520,7 @@ object NCProbeManager extends NCService {
                     "OS",
                     "Timezone",
                     "Host",
-                    "Models"
+                    "Models Deployed"
                 )
             
                 addProbeToTable(tbl, holder).info(logger, Some("New probe registered:"))
@@ -810,7 +810,7 @@ object NCProbeManager extends NCService {
             s"${probe.osName} ver. ${probe.osVersion}",
             s"${probe.tmzAbbr}, ${probe.tmzId}",
             s"${probe.hostName} (${probe.hostAddr})",
-            probe.models.map(m ⇒ s"ID: ${m.id}, ver.${m.version}").toSeq
+            probe.models.map(m ⇒ s"${m.id}, v${m.version}").toSeq
         )
         
         tbl
@@ -843,7 +843,7 @@ object NCProbeManager extends NCService {
         usrPropsOpt: Option[Map[String, String]],
         logEnable: Boolean,
         parent: Span = null): Unit = {
-        startScopedSpan("askProbe", parent, "srvReqId" → srvReqId, "usrId" → usr.id, "modelId" → mdlId, "txt" → txt) { span ⇒
+        startScopedSpan("askProbe", parent, "srvReqId" → srvReqId, "usrId" → usr.id, "mdlId" → mdlId, "txt" → txt) { span ⇒
             val userProps =
                 usrPropsOpt match {
                     case Some(props) ⇒
@@ -974,7 +974,7 @@ object NCProbeManager extends NCService {
       */
     @throws[NCE]
     def clearConversation(usrId: Long, mdlId: String, parent: Span = null): Unit =
-        startScopedSpan("clearConversation", parent, "usrId" → usrId, "modelId" → mdlId) { span ⇒
+        startScopedSpan("clearConversation", parent, "usrId" → usrId, "mdlId" → mdlId) { span ⇒
             val msg = NCProbeMessage("S2P_CLEAR_CONV",
                 "usrId" → usrId,
                 "mdlId" → mdlId
@@ -995,7 +995,7 @@ object NCProbeManager extends NCService {
      */
     @throws[NCE]
     def clearDialog(usrId: Long, mdlId: String, parent: Span = null): Unit =
-        startScopedSpan("clearDialog", parent, "usrId" → usrId, "modelId" → mdlId) { span ⇒
+        startScopedSpan("clearDialog", parent, "usrId" → usrId, "mdlId" → mdlId) { span ⇒
             val msg = NCProbeMessage("S2P_CLEAR_DLG",
                 "usrId" → usrId,
                 "mdlId" → mdlId
@@ -1014,7 +1014,7 @@ object NCProbeManager extends NCService {
       * @param parent Optional parent span.
       */
     def getModel(mdlId: String, parent: Span = null): NCProbeModelMdo =
-        startScopedSpan("getModel", parent, "modelId" → mdlId) { _ ⇒
+        startScopedSpan("getModel", parent, "mdlId" → mdlId) { _ ⇒
             probes.synchronized {
                 mdls.getOrElse(mdlId, throw new NCE(s"Unknown model ID: $mdlId"))
             }
@@ -1027,7 +1027,7 @@ object NCProbeManager extends NCService {
       * @return
       */
     def getModelInfo(mdlId: String, parent: Span = null): Future[java.util.Map[String, AnyRef]] =
-        startScopedSpan("getModelInfo", parent, "modelId" → mdlId) { _ ⇒
+        startScopedSpan("getModelInfo", parent, "mdlId" → mdlId) { _ ⇒
             getProbeForModelId(mdlId) match {
                 case Some(probe) ⇒
                     val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" → mdlId)

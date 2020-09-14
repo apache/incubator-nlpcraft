@@ -24,14 +24,14 @@ import java.util.function.Predicate;
  * Conversation container.
  * <p>
  * Conversation management is based on idea of a short-term-memory (STM). STM can be viewed as a condensed
- * short-term history of the user input for a given user and data model. Every submitted user request that wasn't
+ * short-term history of the input for a given user and data model. Every submitted user request that wasn't
  * rejected is added to the conversation STM as a list of {@link NCToken tokens}. Existing STM tokens belonging to
  * the same {@link NCElement#getGroups() group} will be overridden by the more recent tokens from the same group.
- * Note also that tokens in STM automatically expire (i.e. context is "forgotten") after a certain period of time
- * or based on other internal logic. Note that you should not rely on a specific expiration behavior as its logic
- * may be changed in the future.
+ * Note also that tokens in STM automatically expire (i.e. context is "forgotten") after a certain period of time.
  *
  * @see NCContext#getConversation()
+ * @see NCModelView#getConversationDepth()
+ * @see NCModelView#getConversationTimeout()
  */
 public interface NCConversation {
     /**

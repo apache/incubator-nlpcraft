@@ -1,63 +1,56 @@
-package org.apache.nlpcraft.probe.mgrs.nlp
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.nlpcraft.probe.mgrs
 
 import java.io.Serializable
 import java.util
 
 import org.apache.nlpcraft.common.TOK_META_ALIASES_KEY
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
+import org.apache.nlpcraft.model.NCVariant
 import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCVariantImpl}
-import org.apache.nlpcraft.model.intent.impl.NCIntentSolver
-import org.apache.nlpcraft.model.{NCElement, NCModel, NCVariant}
-import org.apache.nlpcraft.probe.mgrs.NCSynonym
 
 import scala.collection.JavaConverters._
-import scala.collection.{Map, Seq, mutable}
+import scala.collection.{Seq, mutable}
 
 /**
-  *
-  * @param model
-  * @param solver
-  * @param synonyms
-  * @param synonymsDsl
-  * @param addStopWordsStems
-  * @param exclStopWordsStems
-  * @param suspWordsStems
-  * @param elements
+  * Sentence to variants converter.
   */
-case class NCModelData(
-    model: NCModel,
-    solver: NCIntentSolver,
-    synonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCSynonym]]], // Fast access map.
-    synonymsDsl: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCSynonym]]], // Fast access map.
-    addStopWordsStems: Set[String],
-    exclStopWordsStems: Set[String],
-    suspWordsStems: Set[String],
-    elements: Map[String /*Element ID*/ , NCElement],
-    samples: Map[String, Seq[String]]
-) {
+object NCProbeVariants {
     /**
-      * Makes variants for given sentences.
+      * Makes variants for given sentences for given model.
       *
+      * @param mdl Probe model.
       * @param srvReqId Server request ID.
       * @param sens Sentences.
       */
-    def makeVariants(srvReqId: String, sens: Seq[NCNlpSentence]): Seq[NCVariant] = {
-        val seq = sens.map(_.toSeq.map(nlpTok ⇒ NCTokenImpl(this, srvReqId, nlpTok) → nlpTok))
+    def convert(srvReqId: String, mdl: NCProbeModel, sens: Seq[NCNlpSentence]): Seq[NCVariant] = {
+        val seq = sens.map(_.toSeq.map(nlpTok ⇒ NCTokenImpl(mdl, srvReqId, nlpTok) → nlpTok))
         val toks = seq.map(_.map { case (tok, _) ⇒ tok })
-
         case class Key(id: String, from: Int, to: Int)
-
+    
         val keys2Toks = toks.flatten.map(t ⇒ Key(t.getId, t.getStartCharIndex, t.getEndCharIndex) → t).toMap
         val partsKeys = mutable.HashSet.empty[Key]
-
         seq.flatten.foreach { case (tok, tokNlp) ⇒
             if (tokNlp.isUser) {
                 val userNotes = tokNlp.filter(_.isUser)
-
                 require(userNotes.size == 1)
-
                 val optList: Option[util.List[util.HashMap[String, Serializable]]] = userNotes.head.dataOpt("parts")
-
                 optList match {
                     case Some(list) ⇒
                         val keys =
@@ -69,14 +62,12 @@ case class NCModelData(
                                 )
                             )
                         val parts = keys.map(keys2Toks)
-
                         parts.zip(list.asScala).foreach { case (part, map) ⇒
                             map.get(TOK_META_ALIASES_KEY) match {
                                 case null ⇒ // No-op.
                                 case aliases ⇒ part.getMetadata.put(TOK_META_ALIASES_KEY, aliases.asInstanceOf[Object])
                             }
                         }
-
                         tok.setParts(parts)
                         partsKeys ++= keys
 
@@ -84,7 +75,7 @@ case class NCModelData(
                 }
             }
         }
-
+    
         //  We can't collapse parts earlier, because we need them here (setParts method, few lines above.)
         toks.filter(sen ⇒
             !sen.exists(t ⇒

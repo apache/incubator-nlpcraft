@@ -19,7 +19,7 @@ package org.apache.nlpcraft.probe.mgrs
 
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind._
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -32,12 +32,12 @@ import scala.collection.mutable.ArrayBuffer
   * @param isDirect Direct or permutated synonym flag.
   * @param value Optional value name if this is a value synonym.
   */
-class NCSynonym(
+class NCProbeSynonym(
     val isElementId: Boolean,
     val isValueName: Boolean,
     val isDirect: Boolean,
     val value: String = null
-) extends ArrayBuffer[NCSynonymChunk] with Ordered[NCSynonym] {
+) extends ArrayBuffer[NCProbeSynonymChunk] with Ordered[NCProbeSynonym] {
     require((isElementId && !isValueName && value == null) || !isElementId)
     require((isValueName && value != null) || !isValueName)
     
@@ -125,7 +125,7 @@ class NCSynonym(
     override def toString(): String = mkString(" ")
     
     // Orders synonyms from least to most significant.
-    override def compare(that: NCSynonym): Int = {
+    override def compare(that: NCProbeSynonym): Int = {
         def compareIsValueSynonym(): Int =
             isValueSynonym match {
                 case true if !that.isValueSynonym ⇒ 1
@@ -171,10 +171,10 @@ class NCSynonym(
             }
     }
     
-    override def canEqual(other: Any): Boolean = other.isInstanceOf[NCSynonym]
+    override def canEqual(other: Any): Boolean = other.isInstanceOf[NCProbeSynonym]
     
     override def equals(other: Any): Boolean = other match {
-        case that: NCSynonym ⇒
+        case that: NCProbeSynonym ⇒
             super.equals(that) &&
                 (that canEqual this) &&
                 isTextOnly == that.isTextOnly &&
@@ -203,7 +203,7 @@ class NCSynonym(
     }
 }
 
-object NCSynonym {
+object NCProbeSynonym {
     /**
       *
       * @param isElementId
@@ -213,8 +213,8 @@ object NCSynonym {
       * @param chunks
       * @return
       */
-    def apply(isElementId: Boolean, isValueName: Boolean, isDirect: Boolean, value: String, chunks: Seq[NCSynonymChunk]): NCSynonym = {
-        var syn = new NCSynonym(isElementId, isValueName, isDirect, value)
+    def apply(isElementId: Boolean, isValueName: Boolean, isDirect: Boolean, value: String, chunks: Seq[NCProbeSynonymChunk]): NCProbeSynonym = {
+        var syn = new NCProbeSynonym(isElementId, isValueName, isDirect, value)
         
         syn ++= chunks
         

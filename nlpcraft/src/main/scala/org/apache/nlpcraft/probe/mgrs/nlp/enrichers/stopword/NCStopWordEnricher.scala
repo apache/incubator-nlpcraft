@@ -23,7 +23,8 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceToken}
 import org.apache.nlpcraft.common.{NCE, NCService, U}
-import org.apache.nlpcraft.probe.mgrs.nlp.{NCModelData, NCProbeEnricher}
+import org.apache.nlpcraft.probe.mgrs.NCProbeModel
+import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
 import scala.annotation.tailrec
 import scala.collection.{Map, Seq}
@@ -175,12 +176,12 @@ object NCStopWordEnricher extends NCProbeEnricher {
     /**
       * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
       */
-    private def processCommonStops(mdl: NCModelData, ns: NCNlpSentence): Unit = {
+    private def processCommonStops(mdl: NCProbeModel, ns: NCNlpSentence): Unit = {
         /**
           * Marks as stopwords, words with POS from configured list, which also placed before another stop words.
           */
         @tailrec
-        def processCommonStops0(mdl: NCModelData, ns: NCNlpSentence): Unit = {
+        def processCommonStops0(mdl: NCProbeModel, ns: NCNlpSentence): Unit = {
             val max = ns.size - 1
             var stop = true
 
@@ -205,19 +206,19 @@ object NCStopWordEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdlData: NCModelData, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
         def mark(stems: Set[String], f: Boolean): Unit =
             ns.filter(t ⇒ stems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "stopWord" → f))
 
         startScopedSpan(
-            "enrich", parent, "srvReqId" → ns.srvReqId, "modelId" → mdlData.model.getId, "txt" → ns.text
+            "enrich", parent, "srvReqId" → ns.srvReqId, "mdlId" → mdl.model.getId, "txt" → ns.text
         ) { _ ⇒
-            mark(mdlData.exclStopWordsStems, f = false)
-            mark(mdlData.addStopWordsStems, f = true)
+            mark(mdl.exclStopWordsStems, f = false)
+            mark(mdl.addStopWordsStems, f = true)
             processGeo(ns)
             processDate(ns)
             processNums(ns)
-            processCommonStops(mdlData, ns)
+            processCommonStops(mdl, ns)
         }
     }
 }

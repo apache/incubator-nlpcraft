@@ -722,7 +722,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         rcvTstamp: Timestamp,
         data: String,
         parent: Span): Unit =
-        startScopedSpan("newProcessingLog", parent, "usrId" → id, "srvReqId" → srvReqId, "txt" → txt, "modelId" → mdlId) { _ ⇒
+        startScopedSpan("newProcessingLog", parent, "usrId" → id, "srvReqId" → srvReqId, "txt" → txt, "mdlId" → mdlId) { _ ⇒
             NCSql.insert(
                 """
                   |INSERT INTO proc_log (

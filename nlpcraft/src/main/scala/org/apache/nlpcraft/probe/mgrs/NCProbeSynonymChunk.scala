@@ -20,7 +20,7 @@ package org.apache.nlpcraft.probe.mgrs
 import java.util.regex.Pattern
 
 import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind._
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
 /**
  *
@@ -32,7 +32,7 @@ import org.apache.nlpcraft.probe.mgrs.NCSynonymChunkKind._
  * @param regex Optional regex expression to match on.
  * @param dslPred Optional DSL expression to match on.
  */
-case class NCSynonymChunk(
+case class NCProbeSynonymChunk(
     alias: String = null, // Not-null only for kind == DSL.
     kind: NCSynonymChunkKind,
     origText: String,
