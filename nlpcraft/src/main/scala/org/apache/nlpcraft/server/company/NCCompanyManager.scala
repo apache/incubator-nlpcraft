@@ -93,7 +93,11 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                     logger.info(s"Default admin user ($adminEmail/$adminPwd) created for default company: $compName")
                 }
                 catch {
-                    case e: NCE ⇒ logger.error(s"Failed to add default admin user: ${e.getLocalizedMessage}", e)
+                    case e: NCE ⇒ U.prettyError(
+                        logger,
+                        s"Failed to add default admin user: ${e.getLocalizedMessage}",
+                        e
+                    )
                 }
         }
 

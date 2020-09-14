@@ -291,7 +291,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 )
 
             case Failure(e: Throwable) ⇒
-                logger.error(s"System error processing query: ${e.getLocalizedMessage}", e)
+                U.prettyError(logger,s"System error processing query: ${e.getLocalizedMessage}", e)
 
                 setError(
                     srvReqId,

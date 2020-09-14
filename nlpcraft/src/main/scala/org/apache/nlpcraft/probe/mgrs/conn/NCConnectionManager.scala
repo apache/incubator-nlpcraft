@@ -339,7 +339,7 @@ object NCConnectionManager extends NCService {
                       */
                     def exit(caller: Thread, msg: String, cause: Exception = null): Unit = {
                         if (cause != null)
-                            logger.error(msg, cause)
+                            U.prettyError(logger, msg, cause)
                         else
                             logger.error(msg)
 

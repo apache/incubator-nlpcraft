@@ -20,6 +20,7 @@ package org.apache.nlpcraft.common
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.compat.Platform._
 
@@ -50,9 +51,9 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         
         started = true
 
-        val dur = s"[${currentTime - startMs}ms]"
+        val dur = s"$ansiGreenFg[${currentTime - startMs}ms]$ansiReset"
 
-        logger.info(s"+$clsName started $dur")
+        logger.info(s"$clsName started $dur")
         
         addTags(currentSpan(),
             "startDurationMs" → (currentTime - startMs), "state" → started
@@ -74,6 +75,6 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
             "state" → started
         )
 
-        logger.info(s"-$clsName stopped.")
+        logger.info(s"$clsName stopped.")
     }
 }

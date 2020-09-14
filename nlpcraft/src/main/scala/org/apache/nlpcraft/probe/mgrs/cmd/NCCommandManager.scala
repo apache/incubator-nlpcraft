@@ -23,7 +23,7 @@ import java.util.concurrent.{ExecutorService, Executors}
 import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
@@ -55,7 +55,7 @@ object NCCommandManager extends NCService {
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
 
-        NCUtils.shutdownPools(pool)
+        U.shutdownPools(pool)
 
         executor = null
         pool = null
@@ -133,7 +133,7 @@ object NCCommandManager extends NCService {
                         logger.error(s"Received unknown server message (you need to update the probe): ${msg.getType}")
                 }
             catch {
-                case e: Throwable ⇒ logger.error(s"Error while processing server message (ignoring): ${msg.getType}", e)
+                case e: Throwable ⇒ U.prettyError(logger, s"Error while processing server message (ignoring): ${msg.getType}", e)
             }
         }
 }

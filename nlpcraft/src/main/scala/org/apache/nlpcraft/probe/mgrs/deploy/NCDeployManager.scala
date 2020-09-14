@@ -438,7 +438,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 row._3
             ))
 
-            logger.warn(s"\nDup synonyms in '$mdlId' model:\n${tbl.toString}")
+            logger.warn(s"Dup synonyms in '$mdlId' model:\n${tbl.toString}")
 
             if (mdl.isDupSynonymsAllowed)
                 logger.warn(s"NOTE: '$mdlId' model allows dup synonyms but the large number may degrade the performance.")
