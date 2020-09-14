@@ -69,6 +69,8 @@ object NCUtils extends LazyLogging {
 
     final val DFLT_PROBE_TOKEN = "3141592653589793"
 
+    final val NL = System getProperty "line.separator"
+
     private val idGen = new NCIdGenerator(NCBlowfishHasher.salt(), 8)
 
     // Various decimal formats.
@@ -1356,6 +1358,18 @@ object NCUtils extends LazyLogging {
             x = x.getCause
         }
     }
+
+    /**
+     * Prints ASCII-logo.
+     */
+     def asciiLogo(): String =
+        raw"$ansiBlueFg    _   ____     $ansiCyanFg ______           ______   $ansiReset$NL" +
+        raw"$ansiBlueFg   / | / / /___  $ansiCyanFg/ ____/________ _/ __/ /_  $ansiReset$NL" +
+        raw"$ansiBlueFg  /  |/ / / __ \$ansiCyanFg/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
+        raw"$ansiBlueFg / /|  / / /_/ /$ansiCyanFg /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
+        raw"$ansiBlueFg/_/ |_/_/ .___/$ansiCyanFg\____/_/   \__,_/_/  \__/    $ansiReset$NL" +
+        raw"$ansiBlueFg       /_/                                  $ansiReset$NL"
+
 
     /**
       * Unzips file.
