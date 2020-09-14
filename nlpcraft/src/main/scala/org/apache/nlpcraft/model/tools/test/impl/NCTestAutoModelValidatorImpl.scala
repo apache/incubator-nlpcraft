@@ -19,11 +19,12 @@ package org.apache.nlpcraft.model.tools.test.impl
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
-import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.
@@ -33,7 +34,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
 
     @throws[Exception]
     def isValid: Boolean =
-        NCUtils.sysEnv(PROP_MODELS) match {
+        U.sysEnv(PROP_MODELS) match {
             case Some(p) ⇒ isValid(getClasses(p.split(",")))
             case None ⇒
                 logger.warn(s"System property '$PROP_MODELS' is not defined.")
@@ -114,7 +115,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             tbl += (
                 res.modelId,
                 res.intentId,
-                if (res.pass) "OK" else "FAIL",
+                if (res.pass) s"${ansiGreenFg}OK${ansiReset}" else s"${ansiRedFg}FAIL${ansiReset}",
                 res.text,
                 res.error.getOrElse("")
             )
@@ -125,7 +126,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         if (failCnt > 0)
             logger.error(s"Some model auto-validation failed - see details below...")
         
-        logger.info(s"\n\nModel auto-validation results: OK $passCnt, FAIL $failCnt:\n${tbl.toString}")
+        logger.info(s"\n\nModel auto-validation results: ${ansiGreenFg}OK${ansiReset} $passCnt, ${ansiRedFg}FAIL${ansiReset} $failCnt:\n${tbl.toString}")
         
         failCnt == 0
     }

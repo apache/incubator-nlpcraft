@@ -226,7 +226,7 @@ case class NCConversation(
                                         s"usrId=$usrId, " +
                                         s"mdlId=$mdlId, " +
                                         s"srvReqId=$srvReqId, " +
-                                        s"groups=${grps.mkString("[", ", ", "]")}, " +
+                                        s"groups=${grps.mkString(", ")}, " +
                                         s"toks=${hs.map(_.token).mkString("[", ", ", "]")}" +
                                     s"]"
                                 )
