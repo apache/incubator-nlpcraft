@@ -196,6 +196,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
                 started = true
                 
+                fut.complete(0)
+
                 // Wait indefinitely.
                 while (started)
                     try
@@ -203,8 +205,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     catch {
                         case _: InterruptedException ⇒ ()
                     }
-
-                fut.complete(0)
         }
     
         logger.trace("Probe thread stopped OK.")
