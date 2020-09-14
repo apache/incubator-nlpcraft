@@ -57,8 +57,8 @@
  * }
  * </pre>
  * <p>
- * You can also <b>auto-test</b> the same model by using <code>NCTestAutoModelValidator</code> class without any
- * additional coding utilizing <code>@NCIntentSample</code> annotation on the models' callback method. Add necessary classpath to:
+ * You can also <b>auto-test</b> the same model by using {@link org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator} class without any
+ * additional coding utilizing {@link org.apache.nlpcraft.model.NCIntentSample} annotation on the models' callback method. Add necessary classpath to:
  * <pre class="brush: plain">
  *     java -ea -DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.alarm.AlarmModel org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
  * </pre>
