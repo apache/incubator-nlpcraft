@@ -38,6 +38,7 @@
         "indicator"
       ],
       "synonyms": [
+        "A",
         "{history|past|previous}"
       ]
     },
@@ -48,6 +49,7 @@
         "indicator"
       ],
       "synonyms": [
+        "A",
         "{future|forecast|prognosis|prediction}"
       ]
     }

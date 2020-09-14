@@ -22,6 +22,7 @@ import java.util.concurrent.CountDownLatch
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
@@ -63,21 +64,16 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
       * Prints ASCII-logo.
       */
     private def asciiLogo() {
-        val NL = System getProperty "line.separator"
         val ver = NCVersion.getCurrent
-        
-        val s = NL +
-            raw"    _   ____      ______           ______   $NL" +
-            raw"   / | / / /___  / ____/________ _/ __/ /_  $NL" +
-            raw"  /  |/ / / __ \/ /   / ___/ __ `/ /_/ __/  $NL" +
-            raw" / /|  / / /_/ / /___/ /  / /_/ / __/ /_    $NL" +
-            raw"/_/ |_/_/ .___/\____/_/   \__,_/_/  \__/    $NL" +
-            raw"       /_/                                  $NL$NL" +
-            s"Server$NL" +
-            s"Version: ${ver.version}$NL" +
-            raw"${NCVersion.copyright}$NL"
-        
-        logger.info(s)
+
+        logger.info(
+            U.NL +
+            U.asciiLogo() +
+            s"${U.NL}" +
+            s"Server${U.NL}" +
+            s"Version: $ansiBold${ver.version}${U.NL}$ansiReset" +
+            s"${NCVersion.copyright}${U.NL}"
+        )
     }
 
     /**

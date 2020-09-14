@@ -23,6 +23,7 @@ import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable._
 import resource._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -93,7 +94,7 @@ class NCAsciiTable {
         // Cell's calculated width including padding.
         lazy val width: Int =
             if (height > 0)
-                style.padding + lines.max(Ordering.by[String, Int](_.length)).length
+                style.padding + lines.max(Ordering.by[String, Int](stripAnsi(_).length)).length
             else
                 style.padding
 
@@ -112,12 +113,12 @@ class NCAsciiTable {
     )
 
     // Table drawing symbols.
-    private val HDR_HOR = '='
-    private val HDR_VER = '|'
-    private val HDR_CRS = '+'
-    private val ROW_HOR = '-'
-    private val ROW_VER = '|'
-    private val ROW_CRS = '+'
+    private val HDR_HOR = s"$ansiCyanFg=$ansiReset"
+    private val HDR_VER = s"$ansiCyanFg|$ansiReset"
+    private val HDR_CRS = s"$ansiCyanFg+$ansiReset"
+    private val ROW_HOR = s"$ansiCyanFg-$ansiReset"
+    private val ROW_VER = s"$ansiCyanFg|$ansiReset"
+    private val ROW_CRS = s"$ansiCyanFg+$ansiReset"
 
     // Headers & rows.
     private var hdr = IndexedSeq.empty[Cell]
@@ -154,8 +155,8 @@ class NCAsciiTable {
     var defaultHeaderStyle: String = DFLT_HEADER_STYLE
 
     // Dash drawing.
-    private def dash(ch: Char, len: Int): String = (for (_ ← 1 to len) yield ch).mkString("")
-    private def space(len: Int): String = dash(' ', len)
+    private def dash(ch: String, len: Int): String = ch * len
+    private def space(len: Int): String = " " * len
 
     /**
      * Sets table's margin.
@@ -204,6 +205,14 @@ class NCAsciiTable {
 
         this
     }
+
+    /**
+     *
+     * @param s
+     * @return
+     */
+    private def stripAnsi(s: String): String =
+        s.replaceAll("\u001B\\[[;\\d]*m", "")
 
     /**
      * Adds row (one or more row cells) with a given style.
@@ -315,7 +324,7 @@ class NCAsciiTable {
                 var start = 0
                 var lastSpace = -1
                 var curr = 0
-                val len = line.length
+                val len = stripAnsi(line).length
 
                 def addLine(line: String) =
                     if (buf.isEmpty)
@@ -351,13 +360,17 @@ class NCAsciiTable {
 
     /**
      *
+     * @param hdr
      * @param style
      * @param lines
      * @return
      */
-    private def mkStyledCell(style: String, lines: Any*): Cell = {
+    private def mkStyledCell(hdr: Boolean, style: String, lines: Any*): Cell = {
         val st = Style(style)
-        val strLines = lines.map(x)
+        var strLines = lines.map(x)
+
+        if (hdr)
+            strLines = strLines.map(s ⇒ s"$ansiGreenFg$s$ansiReset")
 
         Cell(
             st,
@@ -374,7 +387,11 @@ class NCAsciiTable {
      * @param lines One or more cell lines.
      */
     def addHeaderCell(lines: Any*): NCAsciiTable = {
-        hdr :+= mkStyledCell(defaultHeaderStyle, lines: _*)
+        hdr :+= mkStyledCell(
+            true,
+            defaultHeaderStyle,
+            lines: _*
+        )
 
         this
     }
@@ -385,7 +402,11 @@ class NCAsciiTable {
      * @param lines One or more row cells. Multiple lines will be printed on separate lines.
      */
     def addRowCell(lines: Any*): NCAsciiTable = {
-        curRow :+= mkStyledCell(defaultRowStyle, lines: _*)
+        curRow :+= mkStyledCell(
+            false,
+            defaultRowStyle,
+            lines: _*
+        )
 
         this
     }
@@ -397,7 +418,11 @@ class NCAsciiTable {
      * @param lines One or more cell lines.
      */
     def addStyledHeaderCell(style: String, lines: Any*): NCAsciiTable = {
-        hdr :+= mkStyledCell(if (style.trim.isEmpty) defaultHeaderStyle else style, lines: _*)
+        hdr :+= mkStyledCell(
+            hdr = true,
+            if (style.trim.isEmpty) defaultHeaderStyle else style,
+            lines: _*
+        )
 
         this
     }
@@ -409,7 +434,11 @@ class NCAsciiTable {
      * @param lines One or more row cells. Multiple lines will be printed on separate lines.
      */
     def addStyledRowCell(style: String, lines: Any*): NCAsciiTable = {
-        curRow :+= mkStyledCell(if (style.trim.isEmpty) defaultRowStyle else style, lines: _*)
+        curRow :+= mkStyledCell(
+            false,
+            if (style.trim.isEmpty) defaultRowStyle else style,
+            lines: _*
+        )
 
         this
     }
@@ -421,7 +450,7 @@ class NCAsciiTable {
      * @param sty Style.
      */
     private def aligned(txt: String, width: Int, sty: Style): String = {
-        val d = width - txt.length
+        val d = width - stripAnsi(txt).length
 
         sty.align match {
             case "center" ⇒ space(d / 2) + txt + space(d / 2 + d % 2)
@@ -498,7 +527,7 @@ class NCAsciiTable {
          * @param cor
          * @return
          */
-        def mkAsciiLine(crs: Char, cor: Char): String =
+        def mkAsciiLine(crs: String, cor: String): String =
             s"${space(margin.left)}$crs${dash(cor, tableW)}$crs${space(margin.right)}\n"
 
         // Print header, if any.
