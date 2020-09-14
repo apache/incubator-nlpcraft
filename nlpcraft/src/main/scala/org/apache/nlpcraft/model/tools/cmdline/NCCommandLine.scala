@@ -17,10 +17,12 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
+import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.version.NCVersion
+
 import scala.collection.mutable
 
 /**
@@ -31,10 +33,10 @@ object NCCommandLine extends App {
 
     private final lazy val VER = NCVersion.getCurrent
     private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(
-        assert(assertion = false, "System property 'NLPCRAFT_CLI_INSTALL_HOME' not defined.")
+        SystemUtils.USER_DIR
     )
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(
-        assert(assertion = false, "System property 'NLPCRAFT_CLI_SCRIPT' not defined.")
+        s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}"
     )
 
     private final val T___ = "    "
@@ -258,13 +260,13 @@ object NCCommandLine extends App {
          */
         def header(): Unit = log(
             s"""|${U.asciiLogo()}
-                |${ansiBold}NAME${ansiReset}
+                |${ansiBold}NAME$ansiReset
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
                 |
-                |${ansiBold}USAGE${ansiReset}
+                |${ansiBold}USAGE$ansiReset
                 |$T___$SCRIPT_NAME [COMMAND] [PARAMETERS]
                 |
-                |${ansiBold}COMMANDS${ansiReset}""".stripMargin
+                |${ansiBold}COMMANDS$ansiReset""".stripMargin
         )
 
         /**
@@ -282,7 +284,7 @@ object NCCommandLine extends App {
 
             if (cmd.params.nonEmpty) {
                 lines += ""
-                lines += s"${ansiBold}PARAMETERS:${ansiReset}"
+                lines += s"${ansiBold}PARAMETERS:$ansiReset"
 
                 for (param ← cmd.params) {
                     val line =
@@ -291,7 +293,7 @@ object NCCommandLine extends App {
                         else
                             s"$T___${param.names.mkString(", ")}"
 
-                    lines += s"${ansiCyanFg}$line${ansiReset}"
+                    lines += s"$ansiCyanFg$line$ansiReset"
 
                     if (param.optional)
                         lines += s"$T___${T___}Optional."
@@ -305,7 +307,7 @@ object NCCommandLine extends App {
 
             if (cmd.examples.nonEmpty) {
                 lines += ""
-                lines += s"${ansiBold}EXAMPLES:${ansiReset}"
+                lines += s"${ansiBold}EXAMPLES:$ansiReset"
 
                 for (ex ← cmd.examples) {
                     lines += s"$T___${ex.code}"
