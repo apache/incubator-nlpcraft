@@ -1376,8 +1376,8 @@ object NCUtils extends LazyLogging {
         raw"$ansiBlueFg   / | / / /___  $ansiCyanFg/ ____/________ _/ __/ /_  $ansiReset$NL" +
         raw"$ansiBlueFg  /  |/ / / __ \$ansiCyanFg/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
         raw"$ansiBlueFg / /|  / / /_/ /$ansiCyanFg /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
-        raw"$ansiBlueFg/_/ |_/_/ .___/$ansiCyanFg\____/_/   \__,_/_/  \__/    $ansiReset$NL" +
-        raw"$ansiBlueFg       /_/                                  $ansiReset$NL"
+        raw"$ansiBold$ansiRedFg/_/ |_/_/ .___/${ansiRedFg}\____/_/   \__,_/_/  \__/      $ansiReset$NL" +
+        raw"$ansiBold$ansiRedFg       /_/                                              $ansiReset$NL"
 
 
     /**

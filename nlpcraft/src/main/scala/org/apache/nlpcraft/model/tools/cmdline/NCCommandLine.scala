@@ -18,7 +18,8 @@
 package org.apache.nlpcraft.model.tools.cmdline
 
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
-import org.apache.nlpcraft.common.util.NCUtils
+import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.version.NCVersion
 import scala.collection.mutable
 
@@ -29,10 +30,10 @@ object NCCommandLine extends App {
     private final val NAME = "Apache NLPCraft CLI"
 
     private final lazy val VER = NCVersion.getCurrent
-    private final lazy val INSTALL_HOME = NCUtils.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(
+    private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(
         assert(assertion = false, "System property 'NLPCRAFT_CLI_INSTALL_HOME' not defined.")
     )
-    private final lazy val SCRIPT_NAME = NCUtils.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(
+    private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(
         assert(assertion = false, "System property 'NLPCRAFT_CLI_SCRIPT' not defined.")
     )
 
@@ -256,13 +257,14 @@ object NCCommandLine extends App {
          *
          */
         def header(): Unit = log(
-            s"""|NAME
+            s"""|${U.asciiLogo()}
+                |${ansiBold}NAME${ansiReset}
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
                 |
-                |USAGE
+                |${ansiBold}USAGE${ansiReset}
                 |$T___$SCRIPT_NAME [COMMAND] [PARAMETERS]
                 |
-                |COMMANDS""".stripMargin
+                |${ansiBold}COMMANDS${ansiReset}""".stripMargin
         )
 
         /**
@@ -280,14 +282,16 @@ object NCCommandLine extends App {
 
             if (cmd.params.nonEmpty) {
                 lines += ""
-                lines += "PARAMETERS:"
+                lines += s"${ansiBold}PARAMETERS:${ansiReset}"
 
                 for (param ← cmd.params) {
-                    if (param.valueDesc.isDefined)
-                        lines += T___ + param.names.zip(Stream.continually(param.valueDesc.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
-                    else
-                        lines += s"$T___${param.names.mkString(", ")}"
+                    val line =
+                        if (param.valueDesc.isDefined)
+                            T___ + param.names.zip(Stream.continually(param.valueDesc.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
+                        else
+                            s"$T___${param.names.mkString(", ")}"
 
+                    lines += s"${ansiCyanFg}$line${ansiReset}"
 
                     if (param.optional)
                         lines += s"$T___${T___}Optional."
@@ -301,7 +305,7 @@ object NCCommandLine extends App {
 
             if (cmd.examples.nonEmpty) {
                 lines += ""
-                lines += "EXAMPLES:"
+                lines += s"${ansiBold}EXAMPLES:${ansiReset}"
 
                 for (ex ← cmd.examples) {
                     lines += s"$T___${ex.code}"
@@ -318,7 +322,7 @@ object NCCommandLine extends App {
             header()
 
             CMDS.foreach(cmd ⇒ tbl +/ (
-                "" → cmd.names.mkString(", "),
+                "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
                 "align:left, maxWidth:65" → cmd.synopsis
             ))
 
@@ -329,7 +333,7 @@ object NCCommandLine extends App {
 
             CMDS.foreach(cmd ⇒
                 tbl +/ (
-                    "" → cmd.names.mkString(", "),
+                    "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
                     "align:left, maxWidth:65" → mkCmdLines(cmd)
                 )
             )
@@ -349,7 +353,7 @@ object NCCommandLine extends App {
                             case Some(c) ⇒
                                 if (!seen.contains(c.id)) {
                                     tbl +/ (
-                                        "" → c.names.mkString(", "),
+                                        "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
                                         "align:left, maxWidth:65" → mkCmdLines(c)
                                     )
 
