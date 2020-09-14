@@ -75,10 +75,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class NotImplemented() extends NCE("Not implemented.")
 
     class InvalidArguments(msg: String) extends NCE(msg)
-    case class OutOfRangeField(fn: String, from: Double, to: Double) extends InvalidArguments(s"API field '$fn' value is out of range ($from, $to).")
-    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field '$fn' value exceeded max length of $max.")
-    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field '$fn'")
-    case class EmptyField(fn: String) extends InvalidArguments(s"API field '$fn' value cannot be empty.")
+    case class OutOfRangeField(fn: String, from: Double, to: Double) extends InvalidArguments(s"API field `$fn` value is out of range ($from, $to).")
+    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field `$fn` value exceeded max length of $max.")
+    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field `$fn`")
+    case class EmptyField(fn: String) extends InvalidArguments(s"API field `$fn` value cannot be empty.")
     case class InvalidExternalUserId(extId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $extId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
 
@@ -86,12 +86,16 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      * Maximum length specification for frequently used standard REST parameters,
      */
     private final val STD_FIELD_LENGTHS = Map[String, Int](
+        "srvReqId" → 32,
         "acsTok" → 256,
         "mdlId" → 32,
         "userExtId" → 64,
+        "firstName" → 64,
+        "lastName" → 64,
         "extId" → 64,
         "name" → 64,
         "passwd" → 64,
+        "newPasswd" → 64,
         "email" → 64,
         "txt" → 1024,
         "website" → 256,
@@ -105,6 +109,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         "adminFirstName" → 64,
         "adminLastName" → 64,
         "comment" → 1024,
+        "avatarUrl" → 512000,
         "adminAvatarUrl" → 512000
     )
 

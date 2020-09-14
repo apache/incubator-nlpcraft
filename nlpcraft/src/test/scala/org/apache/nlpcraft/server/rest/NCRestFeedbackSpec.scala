@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.server.rest
 
+import org.apache.nlpcraft.common.U
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{BeforeEach, Test}
 
@@ -39,7 +40,7 @@ class NCRestFeedbackSpec extends NCRestSpec {
         var fId: Long = 0
 
         post("feedback/add",
-            "srvReqId" → rnd(),
+            "srvReqId" → U.genGuid(),
             "score" → 0.5,
             "usrId" → usrId.orNull,
             "comment" → comment.orNull
