@@ -47,6 +47,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -354,7 +355,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         println(s)
     }
-    
+
     /**
       *
       */
@@ -363,7 +364,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         val ver = NCVersion.getCurrent
 
-        tbl += ("Probe ID", cfg.id)
+        tbl += ("Probe ID", s"$ansiBlackFg$ansiBlueBg${cfg.id}$ansiReset")
         tbl += ("Probe Token", cfg.token)
         tbl += ("API Version", ver.version + ", " + ver.date.toString)
         tbl += ("Down-Link", cfg.downLinkString)

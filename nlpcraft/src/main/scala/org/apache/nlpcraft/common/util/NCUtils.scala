@@ -43,6 +43,7 @@ import org.apache.commons.codec.binary.Base64
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.blowfish.NCBlowfishHasher
 import resource._
 
@@ -1344,7 +1345,7 @@ object NCUtils extends LazyLogging {
 
             if (msg != null) {
                 x.getLocalizedMessage.split("\n").foreach(line ⇒ {
-                    logger.error(s"${" " * indent}${if (first) "+-" else "  "}${line.trim}")
+                    logger.error(s"${" " * indent}${if (first) s"$ansiRedFg+-$ansiReset" else "  "}${line.trim}")
 
                     first = false
                 })
