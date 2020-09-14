@@ -662,7 +662,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             "errMsg" → e.getMessage
                         )
                     
-                        logger.error(s"Unexpected error for server request ID: $srvReqId", e)
+                        U.prettyError(logger,s"Unexpected error for server request ID: $srvReqId", e)
         
                         val res = mdl.model.onError(ctx, e)
         

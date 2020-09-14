@@ -57,6 +57,6 @@ trait NCIgniteExceptions {
       * @return Catcher.
       */
     protected def logIE(logger: Logger): Catcher[Unit] = {
-        case e: IgniteException ⇒ logger.error(s"Ignite error.", e)
+        case e: IgniteException ⇒ U.prettyError(logger, s"Ignite error.", e)
     }
 }

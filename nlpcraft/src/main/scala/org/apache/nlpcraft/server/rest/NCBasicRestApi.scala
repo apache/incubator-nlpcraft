@@ -573,7 +573,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                     StatusCodes.BadRequest
                 case _ ⇒
-                    logger.error(s"Unexpected system error: $errMsg", e)
+                    U.prettyError(logger,s"Unexpected system error: $errMsg", e)
 
                     StatusCodes.InternalServerError
             }
@@ -1816,7 +1816,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             val errMsg = e.getLocalizedMessage
             val code = "NC_ERROR"
 
-            logger.error(s"Unexpected system error: $errMsg", e)
+            U.prettyError(logger,s"Unexpected system error: $errMsg", e)
 
             completeError(StatusCodes.InternalServerError, code, errMsg)
     }

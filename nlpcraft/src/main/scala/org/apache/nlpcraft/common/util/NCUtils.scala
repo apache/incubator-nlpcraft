@@ -491,7 +491,7 @@ object NCUtils extends LazyLogging {
                         logger.debug(s"Timer task executed [name=$name, execution-time=${System.currentTimeMillis() - now}]")
                     }
                     catch {
-                        case e: Throwable ⇒ logger.error(s"Error executing daily timer [name=$name]", e)
+                        case e: Throwable ⇒ prettyError(logger, s"Error executing daily '$name' timer:", e)
                     }
                 }
             },
@@ -903,7 +903,7 @@ object NCUtils extends LazyLogging {
                 }
                 catch {
                     case _: InterruptedException ⇒ logger.trace(s"Thread interrupted: $name")
-                    case e: Throwable ⇒ logger.error(s"Unexpected error during thread execution: $name", e)
+                    case e: Throwable ⇒ prettyError(logger, s"Unexpected error during '$name' thread execution:", e)
                 }
                 finally
                     stopped = true
