@@ -238,6 +238,8 @@ class NCRestErrorsSpec extends NCRestSpec {
 
         // Missed fields.
         // TODO: different processing branches, as result - different errors handling.
+        // TODO: we can emulate akka rejections  - example: ("msg": "Bad request: MalformedRequestContentRejection(Object is missing required member \u0027txt\u0027,spray.json.DeserializationException: Object is missing required member \u0027txt\u0027)")
+        // It is actual for 'ask/sync' and 'model/sugn'
         postError("ask",
             400,
             "NC_ERROR",
