@@ -182,7 +182,11 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             
             case _ ⇒ // Managers started OK.
                 shutdownHook = new Thread() {
-                    override def run(): Unit = stop0()
+                    override def run(): Unit = {
+                        logger.info("Executing shutdown hook...")
+
+                        stop0()
+                    }
                 }
                 
                 Runtime.getRuntime.addShutdownHook(shutdownHook)
@@ -191,8 +195,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
                 started = true
                 
-                fut.complete(0)
-                
                 // Wait indefinitely.
                 while (started)
                     try
@@ -200,6 +202,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     catch {
                         case _: InterruptedException ⇒ ()
                     }
+
+                fut.complete(0)
         }
     
         logger.trace("Probe thread stopped OK.")
@@ -218,7 +222,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         started = false
 
-        U.stopThread(probeThread)
+        U.interruptThread(probeThread)
 
         logger.info("Probe shutdown OK.")
     }
@@ -442,7 +446,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private def stopManagers(): Unit = {
         startScopedSpan("stopManagers") { span ⇒
-            startedMgrs.reverseIterator.foreach(_.stop(span))
+            startedMgrs.synchronized {
+                try
+                    startedMgrs.reverseIterator.foreach(_.stop(span))
+                finally
+                    startedMgrs.clear()
+            }
         }
         
         // Lifecycle callback outside of tracing span.

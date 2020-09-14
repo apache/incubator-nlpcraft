@@ -1151,6 +1151,15 @@ object NCUtils extends LazyLogging {
         }
 
     /**
+     * Interrupts thread.
+     *
+     * @param t Thread.
+     */
+    def interruptThread(t: Thread): Unit =
+        if (t != null)
+            t.interrupt()
+
+    /**
       * Shuts down executor services and waits for their finish.
       *
       * @param ess Executor services.
