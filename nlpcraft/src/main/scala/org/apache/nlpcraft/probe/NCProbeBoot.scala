@@ -197,8 +197,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 started = true
 
                 fut.complete(0)
-                
-                fut.complete(0)
 
                 // Wait indefinitely.
                 while (started)
