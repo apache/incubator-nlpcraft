@@ -252,7 +252,7 @@ case class NCConversation(
 
         ctx.asScala.foreach(tok ⇒ tbl += (
             tok.getId,
-            tok.getGroups,
+            tok.getGroups.asScala,
             tok.normText,
             tok.getValue,
             tok.getServerRequestId

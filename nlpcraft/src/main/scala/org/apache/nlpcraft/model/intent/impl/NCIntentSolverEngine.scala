@@ -28,6 +28,7 @@ import org.apache.nlpcraft.model.intent.utils.{NCDslFlowItem, NCDslIntent, NCDsl
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import collection.convert.ImplicitConversions._
 import scala.collection.mutable
@@ -239,16 +240,29 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 )
 
             if (sorted.nonEmpty) {
-                val tbl = NCAsciiTable("Variant", "Intent", "Tokens")
+                val tbl = NCAsciiTable("Variant", "Intent", "Term Tokens")
     
                 sorted.foreach(m ⇒ {
                     val im = m.intentMatch
-    
-                    tbl += (
-                        s"#${m.variantIdx + 1}",
-                        im.intent.id,
-                        mkPickTokens(im)
-                    )
+
+                    if (m == sorted.head)
+                        tbl += (
+                            Seq(
+                                s"#${m.variantIdx + 1}",
+                                s"${ansiRedFg}<<best match>>$ansiReset"
+                            ),
+                            Seq(
+                                im.intent.id,
+                                s"${ansiRedFg}<<best match>>$ansiReset"
+                            ),
+                            mkPickTokens(im)
+                        )
+                    else
+                        tbl += (
+                            s"#${m.variantIdx + 1}",
+                            im.intent.id,
+                            mkPickTokens(im)
+                        )
 
                     if (logHldr != null)
                         logHldr.addIntent(
@@ -261,7 +275,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             ).toMap
                         )
                 })
-                tbl.info(logger, Some(s"Found matching intents (sorted from best to worst match):"))
+
+                tbl.info(logger, Some(s"Found matching intents (sorted from ${ansiRedFg}best$ansiReset to worst match):"))
             }
             else
                 logger.info("No matching intent found.")

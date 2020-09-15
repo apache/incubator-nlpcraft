@@ -257,10 +257,10 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 
                 logger.info(s"New request received " +
                     s"[txt='$txt0'" +
-                    s", usr=${usr.firstName} ${usr.lastName} (${usr.email})" +
+                    s", usrId=${usr.id}" +
                     s", mdlId=$mdlId" +
                     s", enabledBuiltInTokens=$toksStr" +
-                    s"]")
+                s"]")
     
                 // Enrich the user input and send it to the probe.
                 NCProbeManager.askProbe(
