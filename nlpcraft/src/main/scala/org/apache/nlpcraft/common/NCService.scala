@@ -51,7 +51,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
         
         started = true
 
-        val dur = s"$ansiGreenFg[${currentTime - startMs}ms]$ansiReset"
+        val dur = s"$ansiBlueFg[${currentTime - startMs}ms]$ansiReset"
 
         logger.info(s"$clsName started $dur")
         

@@ -115,10 +115,10 @@ class NCAsciiTable {
     // Table drawing symbols.
     private val HDR_HOR = s"$ansiCyanFg=$ansiReset"
     private val HDR_VER = s"$ansiCyanFg|$ansiReset"
-    private val HDR_CRS = s"$ansiCyanFg+$ansiReset"
+    private val HDR_CRS = s"$ansiBlueFg+$ansiReset"
     private val ROW_HOR = s"$ansiCyanFg-$ansiReset"
     private val ROW_VER = s"$ansiCyanFg|$ansiReset"
-    private val ROW_CRS = s"$ansiCyanFg+$ansiReset"
+    private val ROW_CRS = s"$ansiBlueFg+$ansiReset"
 
     // Headers & rows.
     private var hdr = IndexedSeq.empty[Cell]
@@ -370,7 +370,7 @@ class NCAsciiTable {
         var strLines = lines.map(x)
 
         if (hdr)
-            strLines = strLines.map(s ⇒ s"$ansiGreenFg$s$ansiReset")
+            strLines = strLines.map(s ⇒ s"$ansiBlueFg$s$ansiReset")
 
         Cell(
             st,
