@@ -488,7 +488,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
             "email" → email,
             "firstName" → firstName,
             "lastName" → lastName,
-            "exitId" → usrExtIdOpt.orNull,
+            "usrExtId" → usrExtIdOpt.orNull,
             "isAdmin" → isAdmin) { span ⇒
             val normEmail = U.normalizeEmail(email)
 
