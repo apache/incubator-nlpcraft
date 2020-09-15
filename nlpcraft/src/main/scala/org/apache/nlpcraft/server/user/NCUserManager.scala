@@ -524,7 +524,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                                         parent = span
                                     )
 
-                                logger.info(s"User converted [extId=$usrExtId, email=$email]")
+                                logger.info(s"User converted [usrExtId=$usrExtId, email=$email]")
 
                                 id
                             case None ⇒

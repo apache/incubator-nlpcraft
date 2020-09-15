@@ -98,27 +98,32 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      */
     private final val STD_FIELD_LENGTHS = Map[String, Int](
         "srvReqId" → 32,
-        "acsTok" → 256,
         "mdlId" → 32,
+        "country" → 32,
+        "postalCode" → 32,
+
         "usrExtId" → 64,
+        "name" → 64,
         "firstName" → 64,
         "lastName" → 64,
-        "name" → 64,
         "passwd" → 64,
         "newPasswd" → 64,
         "email" → 64,
-        "txt" → 1024,
-        "website" → 256,
-        "country" → 32,
-        "region" → 512,
-        "city" → 512,
-        "address" → 512,
-        "postalCode" → 32,
         "adminEmail" → 64,
         "adminPasswd" → 64,
         "adminFirstName" → 64,
         "adminLastName" → 64,
+
+        "website" → 256,
+        "acsTok" → 256,
+
+        "city" → 512,
+        "region" → 512,
+        "address" → 512,
+
+        "txt" → 1024,
         "comment" → 1024,
+
         "avatarUrl" → 512000,
         "adminAvatarUrl" → 512000
     )
@@ -362,7 +367,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      */
     @throws[TooLargeField]
     @throws[EmptyField]
-    protected def checkStandardLength(pairs: (String, Any)*): Unit =
+    protected def checkLength(pairs: (String, Any)*): Unit =
         pairs.foreach {
             case (name, value: Option[_]) ⇒ checkLengthOpt(name, value)
             case (name, value: String) ⇒ checkLength(name, value)
@@ -380,9 +385,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       */
     @throws[OutOfRangeField]
     protected def checkRange[T](name: String, v: T, from: T, to: T)(implicit e: T ⇒ Number): Unit = {
-        val vD = v.doubleValue()
+        val d = v.doubleValue()
 
-        if (vD < from.doubleValue() || vD > to.doubleValue())
+        if (d < from.doubleValue() || d > to.doubleValue())
             throw OutOfRangeField(name, from, to)
     }
 
@@ -450,7 +455,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         // NOTE: no authentication requires on signin.
         entity(as[Req$Signin$]) { req ⇒
             startScopedSpan("signin$", "email" → req.email) { span ⇒
-                checkStandardLength("email" → req.email, "passwd" → req.passwd)
+                checkLength("email" → req.email, "passwd" → req.passwd)
 
                 NCUserManager.signin(
                     req.email,
@@ -497,7 +502,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$Signout$]) { req ⇒
             startScopedSpan("signout$", "acsTok" → req.acsTok) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 authenticate(req.acsTok)
 
@@ -565,7 +570,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "acsTok" → req.acsTok,
                 "txt" → req.txt,
                 "mdlId" → req.mdlId) { span ⇒
-                checkStandardLength(
+                checkLength(
                     "acsTok" → req.acsTok, "usrExtId" → req.usrExtId, "mdlId" → req.mdlId, "txt" → req.txt
                 )
 
@@ -690,7 +695,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull,
                 "srvReqIds" → req.srvReqIds.getOrElse(Nil).mkString(",")) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
+                checkLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
 
                 val acsUsr = authenticate(req.acsTok)
 
@@ -728,7 +733,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "acsTok" → req.acsTok,
                 "srvReqIds" → req.srvReqIds.getOrElse(Nil).mkString(",")
             ) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
+                checkLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
                 checkRangeOpt("maxRows", req.maxRows, 1, java.lang.Integer.MAX_VALUE)
 
                 val acsUsr = authenticate(req.acsTok)
@@ -775,7 +780,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "acsTok" → req.acsTok,
                 "mdlId" → req.mdlId,
                 "minScore" → req.minScore.getOrElse(-1)) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok, "mdlId" → req.mdlId)
+                checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId)
                 checkRangeOpt("minScore", req.minScore, 0.0, 1.0)
 
                 val admUsr = authenticateAsAdmin(req.acsTok)
@@ -823,7 +828,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "mdlId" → req.mdlId,
                 "usrExtId" → req.usrExtId.orNull,
                 "usrId" → req.usrId.getOrElse(-1)) { span ⇒
-                    checkStandardLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
+                    checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
 
                     val acsUsr = authenticate(req.acsTok)
 
@@ -863,7 +868,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "mdlId" → req.mdlId,
                 "usrExtId" → req.usrExtId.orNull,
                 "usrId" → req.usrId.getOrElse(-1)) { span ⇒
-                    checkStandardLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
+                    checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
 
                     val acsUsr = authenticate(req.acsTok)
 
@@ -912,7 +917,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         //noinspection DuplicatedCod
         entity(as[Req$Company$Add]) { req ⇒
             startScopedSpan("company$Add", "name" → req.name) { span ⇒
-                checkStandardLength(
+                checkLength(
                     "acsTok" → req.acsTok,
                     "name" → req.name,
                     "website" → req.website,
@@ -979,7 +984,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$Company$Get]) { req ⇒
             startScopedSpan("company$get", "acsTok" → req.acsTok) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 val acsUsr = authenticate(req.acsTok)
 
@@ -1030,7 +1035,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$Company$Update]) { req ⇒
             startScopedSpan("company$Update", "acsTok" → req.acsTok, "name" → req.name) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok,
+                checkLength("acsTok" → req.acsTok,
                     "name" → req.name,
                     "website" → req.website,
                     "country" → req.country,
@@ -1088,7 +1093,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull,
                 "srvReqId" → req.srvReqId) { span ⇒
-                checkStandardLength(
+                checkLength(
                     "acsTok" → req.acsTok,
                     "usrExtId" → req.usrExtId,
                     "srvReqId" → req.srvReqId,
@@ -1133,7 +1138,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$Feedback$Delete]) { req ⇒
             startScopedSpan("feedback$Delete") { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 // Via REST only administrators of already created companies can create new companies.
                 val acsUsr = authenticate(req.acsTok)
@@ -1205,7 +1210,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrId" → req.usrId.getOrElse(-1),
                 "usrExtId" → req.usrExtId.orNull
             ) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok, "srvReqId" → req.srvReqId, "usrExtId" → req.usrExtId)
+                checkLength("acsTok" → req.acsTok, "srvReqId" → req.srvReqId, "usrExtId" → req.usrExtId)
 
                 val acsUsr = authenticate(req.acsTok)
 
@@ -1260,7 +1265,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$Company$Token$Reset]) { req ⇒
             startScopedSpan("company$Token$Reset", "acsTok" → req.acsTok) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 val admUsr = authenticateAsAdmin(req.acsTok)
 
@@ -1291,7 +1296,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$Company$Delete]) { req ⇒
             startScopedSpan("company$Delete", "acsTok" → req.acsTok) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 val admUSr = authenticateAsAdmin(req.acsTok)
 
@@ -1333,7 +1338,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$User$Add]) { req ⇒
             startScopedSpan("user$Add", "acsTok" → req.acsTok, "email" → req.email) { span ⇒
-                checkStandardLength(
+                checkLength(
                     "acsTok" → req.acsTok,
                     "email" → req.email,
                     "passwd" → req.passwd,
@@ -1392,7 +1397,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$User$Update]) { req ⇒
             startScopedSpan("user$Update", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(() ⇒ null)) { span ⇒
-                checkStandardLength(
+                checkLength(
                     "acsTok" → req.acsTok,
                     "firstName" → req.firstName,
                     "lastName" → req.lastName,
@@ -1440,7 +1445,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan(
                 "user$Delete", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(() ⇒ null)
             ) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
+                checkLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
 
                 val acsUsr = authenticate(req.acsTok)
 
@@ -1506,7 +1511,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan(
                 "user$Admin", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(-1), "admin" → req.admin
             ) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 val initUsr = authenticateAsAdmin(req.acsTok)
                 val usrId = req.id.getOrElse(initUsr.id)
@@ -1550,10 +1555,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan(
                 "user$Password$Reset",
                 "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(-1)) { span ⇒
-                checkStandardLength(
-                    "acsTok" → req.acsTok,
-                    "newPasswd" → req.newPasswd
-                )
+                checkLength("acsTok" → req.acsTok, "newPasswd" → req.newPasswd)
 
                 val acsUsr = authenticate(req.acsTok)
 
@@ -1597,7 +1599,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$User$All]) { req ⇒
             startScopedSpan("user$All", "acsTok" → req.acsTok) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 val admUSr = authenticateAsAdmin(req.acsTok)
 
@@ -1653,7 +1655,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan(
                 "user$Get", "acsTok" → req.acsTok, "id" → req.id.orElse(null), "usrExtId" → req.usrExtId.orNull
             ) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
+                checkLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
 
                 val acsUsr = authenticate(req.acsTok)
                 val usrId = getUserId(acsUsr, req.id, req.usrExtId)
@@ -1727,7 +1729,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$Probe$All]) { req ⇒
             startScopedSpan("probe$All", "acsTok" → req.acsTok) { span ⇒
-                checkStandardLength("acsTok" → req.acsTok)
+                checkLength("acsTok" → req.acsTok)
 
                 val admUsr = authenticateAsAdmin(req.acsTok)
 
