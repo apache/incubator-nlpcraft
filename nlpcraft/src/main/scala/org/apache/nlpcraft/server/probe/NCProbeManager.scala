@@ -400,9 +400,9 @@ object NCProbeManager extends NCService {
                                 fut.onComplete {
                                     case Success(_) ⇒ // No-op.
 
-                                    case Failure(e: NCE) ⇒ logger.warn(e.getMessage, e)
+                                    case Failure(e: NCE) ⇒ U.prettyError(logger, e.getMessage, e)
                                     case Failure(_: EOFException) ⇒ () // Just ignoring.
-                                    case Failure(e: Throwable) ⇒ logger.warn(s"Ignoring socket error: ${e.getLocalizedMessage}")
+                                    case Failure(e: Throwable) ⇒ U.prettyError(logger, s"Socket error:", e)
                                 }
                             }
                         }
@@ -416,7 +416,7 @@ object NCProbeManager extends NCService {
                                 val ms = Config.reconnectTimeoutMs
     
                                 // Server socket error must be logged.
-                                logger.warn(s"$name server error, re-starting in ${ms / 1000} sec.", e)
+                                U.prettyWarn(logger, s"$name server error, re-starting in ${ms / 1000} sec.", e)
                                 
                                 U.sleep(ms)
                             }

@@ -1341,8 +1341,27 @@ object NCUtils extends LazyLogging {
      * @param title
      * @param e
      */
-    def prettyError(logger: Logger, title: String, e: Throwable): Unit = {
-        logger.error(title)
+    def prettyError(logger: Logger, title: String, e: Throwable): Unit =
+        prettyErrorImpl(err = true, logger, title, e)
+
+    /**
+     *
+     * @param logger
+     * @param title
+     * @param e
+     */
+    def prettyWarn(logger: Logger, title: String, e: Throwable): Unit =
+        prettyErrorImpl(err = false, logger, title, e)
+
+    /**
+     *
+     * @param err Error or warning.
+     * @param logger
+     * @param title
+     * @param e
+     */
+    private def prettyErrorImpl(err: Boolean, logger: Logger, title: String, e: Throwable): Unit = {
+        if (err) logger.error(title) else logger.warn(title)
 
         val INDENT = 2
 
@@ -1356,7 +1375,9 @@ object NCUtils extends LazyLogging {
 
             if (msg != null) {
                 x.getLocalizedMessage.split("\n").foreach(line ⇒ {
-                    logger.error(s"${" " * indent}${if (first) s"$ansiRedFg+-$ansiReset" else "  "}${line.trim}")
+                    val msg = s"${" " * indent}${if (first) s"$ansiRedFg+-$ansiReset" else "  "}${line.trim}"
+
+                    if (err) logger.error(msg) else logger.warn(msg)
 
                     first = false
                 })
