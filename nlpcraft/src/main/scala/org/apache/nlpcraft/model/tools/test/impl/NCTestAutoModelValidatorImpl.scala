@@ -36,19 +36,14 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
     def isValid: Boolean =
         U.sysEnv(PROP_MODELS) match {
             case Some(p) ⇒ isValid(getClasses(p.split(",")))
-            case None ⇒
-                logger.warn(s"System property '$PROP_MODELS' is not defined.")
-
-                true
+            case None ⇒ throw new IllegalStateException(s"System property '$PROP_MODELS' is not defined.")
         }
 
     @throws[Exception]
-    def isValidForClass(claxx: Class[_ <: NCModel]): Boolean =
-        isValid(Seq(claxx))
+    def isValidForClass(claxx: Class[_ <: NCModel]): Boolean = isValid(Seq(claxx))
 
     @throws[Exception]
-    def isValidForModelIds(mdlIds: String): Boolean =
-        isValid(getClasses(mdlIds.split(",")))
+    def isValidForModelIds(mdlIds: String): Boolean = isValid(getClasses(mdlIds.split(",")))
     
     @throws[Exception]
     def isValidForModelIds(mdlIds: java.util.Collection[String]): Boolean =
@@ -115,7 +110,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             tbl += (
                 res.modelId,
                 res.intentId,
-                if (res.pass) s"${ansiGreenFg}OK${ansiReset}" else s"${ansiRedFg}FAIL${ansiReset}",
+                if (res.pass) s"${ansiGreenFg}OK$ansiReset" else s"${ansiRedFg}FAIL$ansiReset",
                 res.text,
                 res.error.getOrElse("")
             )
@@ -126,11 +121,12 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         if (failCnt > 0)
             logger.error(s"Some model auto-validation failed - see details below...")
         
-        logger.info(s"\n\nModel auto-validation results: ${ansiGreenFg}OK${ansiReset} $passCnt, ${ansiRedFg}FAIL${ansiReset} $failCnt:\n${tbl.toString}")
+        logger.info(s"\n\nModel auto-validation results: " +
+            s"${ansiGreenFg}OK$ansiReset $passCnt, ${ansiRedFg}FAIL$ansiReset $failCnt:\n${tbl.toString}"
+        )
         
         failCnt == 0
     }
-
 
     /**
       *
