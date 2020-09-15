@@ -23,26 +23,26 @@ import org.junit.jupiter.api.Test
 class NCRestErrorsSpec extends NCRestSpec {
     @Test
     def testSignin(): Unit = {
+        // Invalid value.
+        postError("signin", 401, "NC_SIGNIN_FAILURE", "email" → "email", "passwd" → "passwd")
+
+        // Invalid values.
+        postError("signin", 400, "NC_INVALID_FIELD", "email" → mkString(100), "passwd" → "passwd")
+
         // Missed field.
         postError("signin", 400, "NC_ERROR")
-
-        // Too long field.
-        postError("signin", 400, "NC_INVALID_FIELD", "email" → mkString(100), "passwd" → "x")
-
-        // Invalid value.
-        postError("signin", 401, "NC_SIGNIN_FAILURE", "email" → "x", "passwd" → "x")
     }
 
     @Test
     def testSignout(): Unit = {
-        // Invalid values.
-        postError("signout", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        // Authorization error.
+        postError("signout", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???")
     }
 
     @Test
     def testCancel(): Unit = {
         // Authorization error.
-        postError("cancel", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("cancel", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???")
 
         // Invalid values.
         postError("cancel", 400, "NC_INVALID_FIELD", "usrId" → -1)
@@ -51,7 +51,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     @Test
     def testCheck(): Unit = {
         // Authorization error.
-        postError("check", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("check", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???")
 
         // Invalid values.
         postError("check", 400, "NC_INVALID_FIELD", "usrId" → -1)
@@ -61,15 +61,15 @@ class NCRestErrorsSpec extends NCRestSpec {
     @Test
     def testClear(): Unit = {
         // Authorization error.
-        postError("clear/conversation", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED", "mdlId" → "nlpcraft.time.ex")
-        postError("clear/dialog", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED", "mdlId" → "nlpcraft.time.ex")
+        postError("clear/conversation", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???", "mdlId" → "nlpcraft.time.ex")
+        postError("clear/dialog", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???", "mdlId" → "nlpcraft.time.ex")
 
         // Invalid values.
         postError("clear/conversation", 400, "NC_INVALID_FIELD", "usrId" → -1, "mdlId" → "nlpcraft.time.ex")
         postError("clear/dialog", 400, "NC_INVALID_FIELD", "usrId" → -1, "mdlId" → "nlpcraft.time.ex")
 
-        postError("clear/conversation", 400, "NC_INVALID_FIELD",  "mdlId" → "UNKNOWN")
-        postError("clear/dialog", 400, "NC_INVALID_FIELD", "mdlId" → "UNKNOWN")
+        postError("clear/conversation", 400, "NC_INVALID_FIELD",  "mdlId" → "???")
+        postError("clear/dialog", 400, "NC_INVALID_FIELD", "mdlId" → "???")
 
     }
 
@@ -80,7 +80,7 @@ class NCRestErrorsSpec extends NCRestSpec {
             "company/add",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
+            "acsTok" → "???",
             "name" → "name",
             "website" → "website",
             "country" → "country",
@@ -94,6 +94,22 @@ class NCRestErrorsSpec extends NCRestSpec {
             "adminLastName" → "lastName",
             "adminAvatarUrl" → "avatarUrl"
         )
+        postError(
+            "company/update",
+            401,
+            "NC_INVALID_ACCESS_TOKEN",
+            "acsTok" → "???",
+            "name" → "name",
+            "website" → "website",
+            "country" → "country",
+            "region" → "region",
+            "city" → "city",
+            "address" → "address",
+            "postalCode" → "postalCode"
+        )
+        postError("company/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???")
+        postError("company/token/reset", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???")
+        postError("company/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???")
 
         // Invalid values.
         postError(
@@ -113,24 +129,77 @@ class NCRestErrorsSpec extends NCRestSpec {
             "adminLastName" → "lastName",
             "adminAvatarUrl" → "avatarUrl"
         )
+        postError(
+            "company/update",
+            400,
+            "NC_INVALID_FIELD",
+            "name" → mkString(100),
+            "website" → "website",
+            "country" → "country",
+            "region" → "region",
+            "city" → "city",
+            "address" → "address",
+            "postalCode" → "postalCode"
+        )
 
-        // TODO: add
+        // Missed fields.
+        postError("company/add", 400, "NC_ERROR")
+        postError("company/update", 400, "NC_ERROR")
     }
 
     @Test
     def testUser(): Unit = {
         // Authorization error.
-        postError("user/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("user/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???")
+        postError("user/add",
+            401,
+            "NC_INVALID_ACCESS_TOKEN",
+            "acsTok" → "???",
+            "email" → s"test@test.com",
+            "passwd" → "test",
+            "firstName" → "firstName",
+            "lastName" → "lastName",
+            "isAdmin" → false
+        )
         postError("user/update",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
+            "acsTok" → "???",
             "firstName" → "firstName",
             "lastName" → "lastName",
             "avatarUrl" → "avatarUrl"
         )
 
+        postError(
+            "user/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "???"
+        )
+        postError(
+            "user/admin",
+            401,
+            "NC_INVALID_ACCESS_TOKEN",
+            "acsTok" → "???",
+            "id" → 1,
+            "admin" → false
+        )
+        postError(
+            "user/passwd/reset",
+            401,
+            "NC_INVALID_ACCESS_TOKEN",
+            "acsTok" → "???",
+            "id" → 1,
+            "newPasswd" → "test1"
+        )
+
         // Invalid values.
+        postError("user/add",
+            400,
+            "NC_INVALID_FIELD",
+            "email" → s"test@test.com",
+            "passwd" → mkString(100),
+            "firstName" → "firstName",
+            "lastName" → "lastName",
+            "isAdmin" → false
+        )
         postError("user/update",
             400,
             "NC_INVALID_FIELD",
@@ -139,7 +208,9 @@ class NCRestErrorsSpec extends NCRestSpec {
             "avatarUrl" → "avatarUrl"
         )
 
-        // TODO: extend.
+        // Missed fields.
+        postError("user/add", 400, "NC_ERROR")
+        postError("user/update", 400, "NC_ERROR")
     }
 
     @Test
@@ -148,7 +219,7 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("feedback/add",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
+            "acsTok" → "???",
             "srvReqId" → U.genGuid(),
             "score" → 0.5
         )
@@ -174,7 +245,7 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("probe/all",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED"
+            "acsTok" → "???"
         )
     }
 
@@ -184,14 +255,14 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("ask",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
+            "acsTok" → "???",
             "txt" → "What's the local time?",
             "mdlId" → "nlpcraft.time.ex"
         )
         postError("ask/sync",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
+            "acsTok" → "???",
             "txt" → "What's the local time?",
             "mdlId" → "nlpcraft.time.ex"
         )
@@ -227,13 +298,13 @@ class NCRestErrorsSpec extends NCRestSpec {
             400,
             "NC_INVALID_FIELD",
             "txt" → "What's the local time?",
-            "mdlId" → "UNKNOWN"
+            "mdlId" → "???"
         )
         postError("ask/sync",
             400,
             "NC_INVALID_FIELD",
             "txt" → "What's the local time?",
-            "mdlId" → "UNKNOWN"
+            "mdlId" → "???"
         )
 
         // Missed fields.
@@ -255,7 +326,7 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("model/sugsyn",
             401,
             "NC_INVALID_ACCESS_TOKEN",
-            "acsTok" → "UNEXPECTED",
+            "acsTok" → "???",
             "mdlId" → "nlpcraft.time.ex"
         )
 

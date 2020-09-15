@@ -304,7 +304,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                     adminAvatarUrl,
                     isAdmin = true,
                     props = None,
-                    extIdOpt = None,
+                    usrExtIdOpt = None,
                     parent = span
                 )
     

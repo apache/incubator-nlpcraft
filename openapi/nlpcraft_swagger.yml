@@ -674,7 +674,7 @@ paths:
                   Getting information about other users from the same company requires administrative privileges. If
                   both user ID and external 'on-behalf-of' user ID are provided they have to point to the
                   same NLPCraft user.
-              extId:
+              usrExtId:
                 type: string
                 description: >-
                   External 'on-behalf-of' ID of the user. Optional, caller
@@ -704,7 +704,7 @@ paths:
               email:
                 description: User email
                 type: string
-              extId:
+              usrExtId:
                 description: User external 'on-behalf-of' ID
                 type: string
               firstName:
@@ -778,7 +778,7 @@ paths:
                     email:
                       description: User email
                       type: string
-                    extId:
+                    usrExtId:
                       description: User external 'on-behalf-of' ID
                       type: string
                     firstName:
@@ -889,7 +889,7 @@ paths:
                   and external 'on-behalf-of' user ID are provided they have to point to the same NLPCraft user.
                 type: integer
                 format: int64
-              extId:
+              usrExtId:
                 maxLength: 64
                 description: >-
                   External 'on-behalf-of' ID of the user to delete. Optional, caller
@@ -1043,7 +1043,7 @@ paths:
                 description: Additional user properties
                 additionalProperties:
                   type: string
-              extId:
+              usrExtId:
                 type: string
                 description: Optional user external 'on-behalf-of' ID. If this field defined, method tries to find and update existing user.
                 maxLength: 64

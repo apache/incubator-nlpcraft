@@ -60,13 +60,16 @@ class NCTimeModelSpec {
             assertTrue(res.getIntentId == id)
         }
 
+        // intent1 must be winner for `What's the local time?` question, because exact matching.
+        // Accumulated history (geo:city information) must be ignored.
+
         // 1. Without conversation.
         check("Show me time of the day in London.", "intent2")
         cli.clearConversation()
-        check(" What's the local time?", "intent1")
+        check("What's the local time?", "intent1")
 
         // 2. The same with conversation.
         check("Show me time of the day in London.", "intent2")
-        check(" What's the local time?", "intent1")
+        check("What's the local time?", "intent1")
     }
 }

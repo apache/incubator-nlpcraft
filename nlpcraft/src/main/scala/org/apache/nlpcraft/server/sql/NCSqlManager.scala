@@ -499,16 +499,16 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       * Gets user properties for given external ID.
       *
       * @param companyId Company ID.
-      * @param extUsrId External user ID.
+      * @param usrExtId External user ID.
       * @param parent Optional parent span.
       *
       * @return User ID.
       */
     @throws[NCE]
-    def getUserId(companyId: Long, extUsrId: String, parent: Span): Option[Long] =
-        startScopedSpan("getUserId", parent, "companyId" → companyId, "extUsrId" → extUsrId) { _ ⇒
+    def getUserId(companyId: Long, usrExtId: String, parent: Span): Option[Long] =
+        startScopedSpan("getUserId", parent, "companyId" → companyId, "usrExtId" → usrExtId) { _ ⇒
             NCSql.selectSingle[Long](
-                "SELECT id FROM nc_user WHERE company_id = ? AND ext_id = ?", companyId, extUsrId
+                "SELECT id FROM nc_user WHERE company_id = ? AND ext_id = ?", companyId, usrExtId
             )
         }
 
@@ -623,7 +623,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       *
       * @param id User's ID.
       * @param compId User's company ID.
-      * @param extId User's external ID. Optional.
+      * @param usrExtId User's external ID. Optional.
       * @param email User's normalized email. Optional.
       * @param firstName User's first name. Optional.
       * @param lastName User's last name. Optional.
@@ -637,7 +637,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
     def addUser(
         id: Long,
         compId: Long,
-        extId: Option[String],
+        usrExtId: Option[String],
         email: Option[String],
         firstName: Option[String],
         lastName: Option[String],
@@ -647,7 +647,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         propsOpt: Option[Map[String, String]],
         parent: Span
     ): Unit = {
-        require(extId.isDefined ^ email.isDefined)
+        require(usrExtId.isDefined ^ email.isDefined)
         require(email.isDefined || !isAdmin && firstName.isEmpty && lastName.isEmpty && avatarUrl.isEmpty && passwdSalt.isEmpty)
         require(email.isEmpty || firstName.isDefined && lastName.isDefined && passwdSalt.isDefined)
 
@@ -657,7 +657,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             "usrId" → id,
             "compId" → compId,
             "email" → email.orNull,
-            "username" → extId.orNull) { span ⇒
+            "usrExtId" → usrExtId.orNull) { span ⇒
             val now = U.nowUtcTs()
 
             // Insert user.
@@ -682,7 +682,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
                 compId,
                 firstName.orNull,
                 lastName.orNull,
-                extId.orNull,
+                usrExtId.orNull,
                 email.orNull,
                 passwdSalt.orNull,
                 avatarUrl.orNull,
