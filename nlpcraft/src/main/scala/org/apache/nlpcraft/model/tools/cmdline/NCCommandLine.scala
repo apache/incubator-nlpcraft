@@ -148,53 +148,9 @@ object NCCommandLine extends App {
             names = Seq("stop-server"),
             synopsis = s"Stops local REST server.",
             desc = Some(
-                s"Local REST server must be started via $SCRIPT_NAME or ."
+                s"Local REST server must be started via $SCRIPT_NAME or similar way."
             ),
-            body = cmdStartServer,
-            params = Seq(
-                Parameter(
-                    id = "config",
-                    names = Seq("--config", "-c"),
-                    valueDesc = Some("{path}"),
-                    optional = true,
-                    desc =
-                        "Configuration absolute file path. Server will automatically look for 'nlpcraft.conf' " +
-                            "configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                            "different name or in different location use this parameter to provide an alternative path. " +
-                            "Note that the REST server and the data probe can use the same file for their configuration."
-                ),
-                Parameter(
-                    id = "igniteConfig",
-                    names = Seq("--ignite-config", "-i"),
-                    valueDesc = Some("{path}"),
-                    optional = true,
-                    desc =
-                        "Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
-                            "computing plane and a default distributed storage. REST server will automatically look for " +
-                            "'ignite.xml' configuration file in the same directory as NLPCraft JAR file. If the " +
-                            "configuration file has different name or in different location use this parameter to " +
-                            "provide an alternative path."
-                ),
-                Parameter(
-                    id = "outputPath",
-                    names = Seq("--output-path", "-o"),
-                    valueDesc = Some("{path}"),
-                    optional = true,
-                    desc =
-                        "File path for both REST server stdout and stderr output. If not provided, the REST server" +
-                            s"output will be piped into '$${USER_HOME}/.nlpcraft/server-output.txt' file."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    code = s"$$ $SCRIPT_NAME start-server",
-                    desc = "Starts REST server with default configuration."
-                ),
-                Example(
-                    code = s"$$ $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf",
-                    desc = "Starts REST server with alternative configuration file."
-                )
-            )
+            body = cmdStopServer
         ),
         Command(
             id = "help",
@@ -296,6 +252,16 @@ object NCCommandLine extends App {
      * @param params Parameters, if any, for this command.
      */
     private def cmdStartServer(cmd: Command, params: Seq[String]): Unit = {
+        title()
+
+        // TODO
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param params Parameters, if any, for this command.
+     */
+    private def cmdStopServer(cmd: Command, params: Seq[String]): Unit = {
         title()
 
         // TODO

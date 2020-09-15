@@ -23,7 +23,7 @@ import java.security.Key
 import java.util
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.{ConcurrentHashMap, ExecutorService, Executors}
+import java.util.concurrent.ConcurrentHashMap
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -58,13 +58,12 @@ object NCProbeManager extends NCService {
     private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
 
     // Type safe and eager configuration container.
-    private[probe] object Config extends NCConfigurable {
+    private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.server.probe"
 
         def getDnHostPort: (String, Integer) = getHostPort(s"$pre.links.downLink")
         def getUpHostPort: (String, Integer) = getHostPort(s"$pre.links.upLink")
 
-        def poolSize: Int = getInt(s"$pre.poolSize")
         def reconnectTimeoutMs: Long = getLong(s"$pre.reconnectTimeoutMs")
         def pingTimeoutMs: Long = getLong(s"$pre.pingTimeoutMs")
         def soTimeoutMs: Int = getInt(s"$pre.soTimeoutMs")
@@ -73,8 +72,8 @@ object NCProbeManager extends NCService {
           *
           */
         def check(): Unit = {
-            val (_, dnPort) =  getDnHostPort
-            val (_, upPort) =  getUpHostPort
+            val (_, dnPort) = getDnHostPort
+            val (_, upPort) = getUpHostPort
 
             val msg1 = "Configuration property must be >= 0 and <= 65535"
             val msg2 = "Configuration property must be > 0"
@@ -93,11 +92,6 @@ object NCProbeManager extends NCService {
                 throw new NCE(s"$msg2 [" +
                     s"name=$pre.reconnectTimeoutMs, " +
                     s"value=$reconnectTimeoutMs" +
-                s"]")
-            if (poolSize <= 0)
-                throw new NCE(s"$msg2 [" +
-                    s"name=$pre.poolSize, " +
-                    s"value=$poolSize" +
                 s"]")
             if (soTimeoutMs <= 0)
                 throw new NCE(s"$msg2 [" +
@@ -124,7 +118,7 @@ object NCProbeManager extends NCService {
             s"probeId=$probeId, " +
             s"probeGuid=$probeGuid, " +
             s"probeToken=$probeToken" +
-            s"]"
+        s"]"
 
         def short: String = s"$probeId (guid:$probeGuid, tok:$probeToken)"
     }
@@ -164,7 +158,6 @@ object NCProbeManager extends NCService {
     // All probes pending complete handshake keyed by probe key.
     @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
 
-    @volatile private var pool: ExecutorService = _
     @volatile private var isStopping: AtomicBoolean = _
 
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
@@ -189,9 +182,7 @@ object NCProbeManager extends NCService {
         isStopping = new AtomicBoolean(false)
 
         modelsInfo = new ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]]()
-        
-        pool = Executors.newFixedThreadPool(Config.poolSize)
-        
+
         dnSrv = startServer("Downlink", dnHost, dnPort, downLinkHandler)
         upSrv = startServer("Uplink", upHost, upPort, upLinkHandler)
         
@@ -221,9 +212,7 @@ object NCProbeManager extends NCService {
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         isStopping = new AtomicBoolean(true)
-     
-        U.shutdownPools(pool)
-     
+
         U.stopThread(pingSrv)
         U.stopThread(dnSrv)
         U.stopThread(upSrv)
@@ -392,9 +381,10 @@ object NCProbeManager extends NCService {
                                     
                                     throw e
                             }
+
                             if (sock != null) {
                                 val fut = Future {
-                                    fn(NCSocket(sock, sock.getRemoteSocketAddress.toString))
+                                    fn(NCSocket(sock))
                                 }
 
                                 fut.onComplete {

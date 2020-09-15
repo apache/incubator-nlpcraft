@@ -63,6 +63,13 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     }
 
     /**
+     * Gets name of this service (as its class name).
+     *
+     * @return Name of this service.
+     */
+    def name: String = clsName
+
+    /**
       * Stops this service.
       *
       * @param parent Optional parent span.

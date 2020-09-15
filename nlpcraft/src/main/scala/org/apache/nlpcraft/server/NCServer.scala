@@ -125,7 +125,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 try
                     p.stop(span)
                 catch {
-                    case e: Exception ⇒ U.prettyError(logger, "Error stopping managers:", e)
+                    case e: Exception ⇒ U.prettyError(logger, s"Error stopping manager: ${p.name}", e)
                 }
             )
         }

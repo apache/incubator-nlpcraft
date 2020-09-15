@@ -29,9 +29,8 @@ import org.apache.nlpcraft.common.crypto.NCCipher
 /**
   * Socket wrapper that does optional encryption and uses HTTP POST protocol for sending and receiving.
   */
-case class NCSocket(socket: Socket, host: String, soTimeout: Int = 20000) extends LazyLogging {
+case class NCSocket(socket: Socket, soTimeout: Int = 20000) extends LazyLogging {
     require(socket != null)
-    require(host != null)
     require(soTimeout >= 0)
 
     socket.setSoTimeout(soTimeout)
@@ -153,5 +152,5 @@ object NCSocket {
      * @return
      */
     def apply(host: String, port: Integer): NCSocket =
-        new NCSocket(new Socket(host, port), host)
+        new NCSocket(new Socket(host, port))
 }
