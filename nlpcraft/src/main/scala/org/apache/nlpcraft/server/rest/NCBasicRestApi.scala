@@ -82,7 +82,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
 
-    case class AskHolder(
+    case class AskReqHolder(
         usrId: Long,
         txt: String,
         mdlId: String,
@@ -544,7 +544,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    private def ask0(process: AskHolder ⇒ Route): Route = {
+    private def ask0(process: AskReqHolder ⇒ Route): Route = {
         case class Req$Ask$(
             acsTok: String,
             usrId: Option[Long],
@@ -583,7 +583,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 optionalHeaderValueByName("User-Agent") { usrAgent ⇒
                     extractClientIP { rmtAddr ⇒
-                        process(AskHolder(
+                        process(AskReqHolder(
                             usrId = getUserId(acsUsr, req.usrId, req.usrExtId),
                             txt = req.txt,
                             mdlId = req.mdlId,
@@ -605,7 +605,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       */
     protected def ask$(): Route =
         ask0(
-            (h: AskHolder) ⇒ {
+            (h: AskReqHolder) ⇒ {
                 val newSrvReqId = NCQueryManager.asyncAsk(
                     h.usrId,
                     h.txt,
@@ -636,7 +636,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       */
     protected def ask$Sync(): Route =
         ask0(
-            (h: AskHolder) ⇒ {
+            (h: AskReqHolder) ⇒ {
                 val fut = NCQueryManager.futureAsk(
                     h.usrId,
                     h.txt,

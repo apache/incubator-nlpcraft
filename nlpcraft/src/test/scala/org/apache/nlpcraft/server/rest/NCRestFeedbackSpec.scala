@@ -31,28 +31,6 @@ class NCRestFeedbackSpec extends NCRestSpec {
         assertTrue(usrId > 0)
     }
 
-    /**
-      *
-      * @param usrId
-      * @param comment
-      */
-    private def addFeedback(usrId: Option[java.lang.Long] = None, comment: Option[String] = None): Long = {
-        var fId: Long = 0
-
-        post("feedback/add",
-            "srvReqId" → U.genGuid(),
-            "score" → 0.5,
-            "usrId" → usrId.orNull,
-            "comment" → comment.orNull
-        )(
-            ("$.id", (id: Number) ⇒ fId = id.longValue())
-        )
-
-        assertTrue(fId != 0)
-
-        fId
-    }
-
     @Test
     def test(): Unit = {
         // Gets current state.
@@ -97,6 +75,27 @@ class NCRestFeedbackSpec extends NCRestSpec {
         post("feedback/all")(("$.feedback", (feedbacks: ResponseList) ⇒ assertTrue(feedbacks.isEmpty)))
     }
 
+    /**
+      *
+      * @param usrId
+      * @param comment
+      */
+    private def addFeedback(usrId: Option[java.lang.Long] = None, comment: Option[String] = None): Long = {
+        var fId: Long = 0
+
+        post("feedback/add",
+            "srvReqId" → U.genGuid(),
+            "score" → 0.5,
+            "usrId" → usrId.orNull,
+            "comment" → comment.orNull
+        )(
+            ("$.id", (id: Number) ⇒ fId = id.longValue())
+        )
+
+        assertTrue(fId != 0)
+
+        fId
+    }
 
     // TODO:
     // @Test

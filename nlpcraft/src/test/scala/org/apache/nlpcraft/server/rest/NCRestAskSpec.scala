@@ -99,21 +99,6 @@ class NCRestAskSpec extends NCRestSpec {
         post("check")(("$.states", (states: ResponseList) ⇒ assertTrue(states.isEmpty)))
     }
 
-    @Test
-    def testParameters(): Unit = {
-        val m = Map("k1" → "v1", "k2" → 2).asJava
-
-        testAsk(sync = true, enableLog = None, usrId = None, data = Some(m))
-        testAsk(sync = true, enableLog = Some(true), usrId = None, data = Some(m))
-        testAsk(sync = true, enableLog = Some(false), usrId = Some(usrId), data = None)
-        testAsk(sync = true, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
-
-        testAsk(sync = false, enableLog = None, usrId = None, data = Some(m))
-        testAsk(sync = false, enableLog = Some(true), usrId = None, data = Some(m))
-        testAsk(sync = false, enableLog = Some(false), usrId = Some(usrId), data = None)
-        testAsk(sync = false, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
-    }
-
     /**
       *
       */
@@ -131,6 +116,21 @@ class NCRestAskSpec extends NCRestSpec {
         assertNotNull(id)
 
         id
+    }
+
+    @Test
+    def testParameters(): Unit = {
+        val m = Map("k1" → "v1", "k2" → 2).asJava
+
+        testAsk(sync = true, enableLog = None, usrId = None, data = Some(m))
+        testAsk(sync = true, enableLog = Some(true), usrId = None, data = Some(m))
+        testAsk(sync = true, enableLog = Some(false), usrId = Some(usrId), data = None)
+        testAsk(sync = true, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
+
+        testAsk(sync = false, enableLog = None, usrId = None, data = Some(m))
+        testAsk(sync = false, enableLog = Some(true), usrId = None, data = Some(m))
+        testAsk(sync = false, enableLog = Some(false), usrId = Some(usrId), data = None)
+        testAsk(sync = false, enableLog = Some(true), usrId = Some(usrId), data = Some(m))
     }
 
     /**

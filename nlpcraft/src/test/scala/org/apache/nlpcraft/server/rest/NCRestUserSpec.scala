@@ -105,14 +105,6 @@ class NCRestUserSpec extends NCRestSpec {
         finally
             post("user/delete")()
 
-    @Test
-    def testParameters(): Unit = {
-        checkUser()
-        checkUser(isAdmin = true)
-        checkUser(isAdmin = true, avatarUrl = Some("http:/test.com"))
-        checkUser(isAdmin = true, avatarUrl = Some("http:/test.com"), props = Some(PROPS))
-    }
-
     /**
       *
       * @param isAdmin
@@ -140,6 +132,14 @@ class NCRestUserSpec extends NCRestSpec {
         assertTrue(usrId > 0)
 
         usrId
+    }
+
+    @Test
+    def testParameters(): Unit = {
+        checkUser()
+        checkUser(isAdmin = true)
+        checkUser(isAdmin = true, avatarUrl = Some("http:/test.com"))
+        checkUser(isAdmin = true, avatarUrl = Some("http:/test.com"), props = Some(PROPS))
     }
 
     /**

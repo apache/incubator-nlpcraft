@@ -378,7 +378,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testAdminAccess(): Unit = {
+    def testErrorAdminAccess(): Unit = {
         // Adds `feedback` under admin.
         post("feedback/add", "srvReqId" → U.genGuid(), "score" → 0.5)()
 
@@ -414,7 +414,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testInvalidOperations(): Unit = {
+    def testErrorInvalidOperations(): Unit = {
         var curId: Long = 0
 
         post("user/get")(("$.id", (id: Number) ⇒ curId = id.longValue()))

@@ -62,8 +62,6 @@ private[rest] object NCRestSpec {
             Error(code, mkJs(code, resp.getEntity))
         }
 
-    case class Error(httpCode: Int, js: String)
-
     /**
       *
       * @param code
@@ -117,6 +115,8 @@ private[rest] object NCRestSpec {
         assertTrue(resp.contains("status"))
         assertEquals("API_OK", resp("status"))
     }
+
+    case class Error(httpCode: Int, js: String)
 }
 
 import org.apache.nlpcraft.server.rest.NCRestSpec._
@@ -136,17 +136,6 @@ private[rest] class NCRestSpec {
 
     /**
       *
-      */
-    @AfterEach
-    def signout(): Unit =
-        if (tkn != null) {
-            signout(tkn)
-
-            tkn = null
-        }
-
-    /**
-      *
       * @param email
       * @param passwd
       */
@@ -157,6 +146,17 @@ private[rest] class NCRestSpec {
 
         tkn
     }
+
+    /**
+      *
+      */
+    @AfterEach
+    def signout(): Unit =
+        if (tkn != null) {
+            signout(tkn)
+
+            tkn = null
+        }
 
     /**
       *
@@ -260,6 +260,14 @@ private[rest] class NCRestSpec {
 
     /**
       *
+      * @param tkn
+      * @param ps
+      */
+    private def addToken(tkn: String, ps: Seq[(String, Any)]): Seq[(String, Any)] =
+        if (ps.exists(_._1 == "acsTok")) ps else Seq("acsTok" → tkn) ++ ps
+
+    /**
+      *
       * @param data
       * @param field
       * @param expected
@@ -271,20 +279,20 @@ private[rest] class NCRestSpec {
       *
       * @param data
       * @param field
-      * @param expected
-      */
-    protected def containsStr(data: ResponseList, field: String, expected: String): Boolean =
-        contains(data, field, (o: Object) ⇒ o.asInstanceOf[String], expected)
-
-    /**
-      *
-      * @param data
-      * @param field
       * @param extract
       * @param expected
       */
     protected def contains[T](data: ResponseList, field: String, extract: Object ⇒ T, expected: T): Boolean =
         data.asScala.exists(p ⇒ extract(p.get(field)) == expected)
+
+    /**
+      *
+      * @param data
+      * @param field
+      * @param expected
+      */
+    protected def containsStr(data: ResponseList, field: String, expected: String): Boolean =
+        contains(data, field, (o: Object) ⇒ o.asInstanceOf[String], expected)
 
     /**
       *
@@ -307,12 +315,4 @@ private[rest] class NCRestSpec {
       * @return
       */
     protected def mkString(n: Int, ch: Char = '*'): String = (0 to n).map(_ ⇒ ch).mkString
-
-    /**
-      *
-      * @param tkn
-      * @param ps
-      */
-    private def addToken(tkn: String, ps: Seq[(String, Any)]): Seq[(String, Any)] =
-        if (ps.exists(_._1 == "acsTok")) ps else Seq("acsTok" → tkn) ++ ps
 }
