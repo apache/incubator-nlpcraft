@@ -18,11 +18,14 @@
 package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.common.U
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+
+import scala.collection.JavaConverters._
 
 class NCRestErrorsSpec extends NCRestSpec {
     @Test
-    def testSignin(): Unit = {
+    def testApiSignin(): Unit = {
         // Invalid value.
         postError("signin", 401, "NC_SIGNIN_FAILURE", "email" → "email", "passwd" → "passwd")
 
@@ -36,13 +39,13 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testSignout(): Unit = {
+    def testApiSignout(): Unit = {
         // Authorization error.
         postError("signout", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
     }
 
     @Test
-    def testCancel(): Unit = {
+    def testApiCancel(): Unit = {
         // Authorization error.
         postError("cancel", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
 
@@ -51,7 +54,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testCheck(): Unit = {
+    def testApiCheck(): Unit = {
         // Authorization error.
         postError("check", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
 
@@ -61,7 +64,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testClear(): Unit = {
+    def testApiClear(): Unit = {
         // Authorization error.
         postError(
             "clear/conversation",
@@ -88,12 +91,12 @@ class NCRestErrorsSpec extends NCRestSpec {
             "mdlId" → "nlpcraft.time.ex"
         )
 
-        postError("clear/conversation", 400, "NC_INVALID_FIELD",  "mdlId" → "UNEXPECTED")
+        postError("clear/conversation", 400, "NC_INVALID_FIELD", "mdlId" → "UNEXPECTED")
         postError("clear/dialog", 400, "NC_INVALID_FIELD", "mdlId" → "UNEXPECTED")
     }
 
     @Test
-    def testCompany(): Unit = {
+    def testApiCompany(): Unit = {
         // Authorization error.
         postError(
             "company/add",
@@ -169,7 +172,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testUser(): Unit = {
+    def testApiUser(): Unit = {
         // Authorization error.
         postError("user/get", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
         postError("user/add",
@@ -234,7 +237,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testFeedback(): Unit = {
+    def testApiFeedback(): Unit = {
         // Authorization error.
         postError("feedback/add",
             401,
@@ -243,6 +246,8 @@ class NCRestErrorsSpec extends NCRestSpec {
             "srvReqId" → U.genGuid(),
             "score" → 0.5
         )
+        postError("feedback/all", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
+        postError("feedback/delete", 401, "NC_INVALID_ACCESS_TOKEN", "acsTok" → "UNEXPECTED")
 
         // Invalid values.
         postError("feedback/add",
@@ -257,10 +262,18 @@ class NCRestErrorsSpec extends NCRestSpec {
             "srvReqId" → U.genGuid(),
             "score" → 10000
         )
+        postError("feedback/all",
+            400,
+            "NC_INVALID_FIELD",
+            "usrExtId" → mkString(100)
+        )
+
+        // Missed fields.
+        postError("feedback/add", 400, "NC_ERROR")
     }
 
     @Test
-    def testProbe(): Unit = {
+    def testApiProbe(): Unit = {
         // Authorization error.
         postError("probe/all",
             401,
@@ -270,7 +283,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testAsk(): Unit = {
+    def testApiAsk(): Unit = {
         // Authorization error.
         postError("ask",
             401,
@@ -341,7 +354,7 @@ class NCRestErrorsSpec extends NCRestSpec {
     }
 
     @Test
-    def testModel(): Unit = {
+    def testApiModel(): Unit = {
         // Authorization error.
         postError("model/sugsyn",
             401,
@@ -362,5 +375,63 @@ class NCRestErrorsSpec extends NCRestSpec {
             "mdlId" → "nlpcraft.time.ex",
             "minScore" → 1000
         )
+    }
+
+    @Test
+    def testAdminAccess(): Unit = {
+        // Adds `feedback` under admin.
+        post("feedback/add", "srvReqId" → U.genGuid(), "score" → 0.5)()
+
+        var notAdminId: Long = 0
+
+        val email = s"${rnd()}@test.com"
+        val pswd = "test"
+
+        post(
+            "user/add",
+            "email" → email,
+            "passwd" → pswd,
+            "firstName" → "firstName",
+            "lastName" → "lastName",
+            "isAdmin" → false,
+        )(
+            ("$.id", (id: Number) ⇒ notAdminId = id.longValue())
+        )
+
+        assertTrue(notAdminId > 0)
+
+        try {
+            val tkn = signin(email, pswd)
+
+            // Tries to read all company's feedbacks, but can't because admin's feedbacks found.
+            postError("feedback/all", 403, "NC_ADMIN_REQUIRED", "acsTok" → tkn)
+            postError("feedback/delete", 403, "NC_ADMIN_REQUIRED", "acsTok" → tkn)
+        }
+        finally {
+            post("user/delete", "id" → notAdminId)()
+            post("feedback/delete")()
+        }
+    }
+
+    @Test
+    def testInvalidOperations(): Unit = {
+        var curId: Long = 0
+
+        post("user/get")(("$.id", (id: Number) ⇒ curId = id.longValue()))
+
+        assertTrue(curId > 0)
+
+        // Deletes all users except current.
+        post("user/all")(("$.users", (users: ResponseList) ⇒ {
+            users.asScala.foreach(p ⇒ {
+                val id = p.asScala("id").asInstanceOf[Number].longValue()
+
+                if (id != curId)
+                    post("user/delete", "id" → id)()
+            })
+        }))
+
+        // Tries to reset admin privileges of single system user.
+        postError("user/admin", 403, "NC_INVALID_OPERATION", "admin" → false)
     }
 }

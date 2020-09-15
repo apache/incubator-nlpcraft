@@ -983,10 +983,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 val acsUsr = authenticate(req.acsTok)
 
-                val company = NCCompanyManager.getCompany(acsUsr.companyId, span) match {
-                    case Some(c) ⇒ c
-                    case None ⇒ throw InvalidOperation(s"Failed to find company with ID: ${acsUsr.companyId}")
-                }
+                val company = NCCompanyManager.
+                    getCompany(acsUsr.companyId, span).
+                    getOrElse(throw new NCE(s"Company not found: ${acsUsr.companyId}"))
 
                 complete {
                     Res$Company$Get(API_OK,

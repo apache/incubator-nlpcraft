@@ -64,69 +64,71 @@ class NCRestCompanySpec extends NCRestSpec {
 
         val adminTkn = signin(adminEmail, adminPswd)
 
-        // Checks company fields.
-        post("company/get", adminTkn)(
-            ("$.name", (name: String) ⇒ assertEquals(compName, name)),
-            ("$.website", (website: String) ⇒ assertEquals("website", website)),
-            ("$.country", (country: String) ⇒ assertEquals("country", country)),
-            ("$.region", (region: String) ⇒ assertEquals("region", region)),
-            ("$.city", (city: String) ⇒ assertEquals("city", city)),
-            ("$.address", (address: String) ⇒ assertEquals("address", address)),
-            ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode", postalCode))
-        )
+        try {
+            // Checks company fields.
+            post("company/get", adminTkn)(
+                ("$.name", (name: String) ⇒ assertEquals(compName, name)),
+                ("$.website", (website: String) ⇒ assertEquals("website", website)),
+                ("$.country", (country: String) ⇒ assertEquals("country", country)),
+                ("$.region", (region: String) ⇒ assertEquals("region", region)),
+                ("$.city", (city: String) ⇒ assertEquals("city", city)),
+                ("$.address", (address: String) ⇒ assertEquals("address", address)),
+                ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode", postalCode))
+            )
 
-        // Checks company's admin fields.
-        post("user/get", adminTkn)(
-            ("$.isAdmin", (isAdmin: Boolean) ⇒ assertTrue(isAdmin)),
-            ("$.email", (email: String) ⇒ assertEquals(adminEmail, email)),
-            ("$.firstName", (firstName: String) ⇒ assertEquals("firstName", firstName)),
-            ("$.lastName", (lastName: String) ⇒ assertEquals("lastName", lastName)),
-            ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals("avatarUrl", avatarUrl))
-        )
+            // Checks company's admin fields.
+            post("user/get", adminTkn)(
+                ("$.isAdmin", (isAdmin: Boolean) ⇒ assertTrue(isAdmin)),
+                ("$.email", (email: String) ⇒ assertEquals(adminEmail, email)),
+                ("$.firstName", (firstName: String) ⇒ assertEquals("firstName", firstName)),
+                ("$.lastName", (lastName: String) ⇒ assertEquals("lastName", lastName)),
+                ("$.avatarUrl", (avatarUrl: String) ⇒ assertEquals("avatarUrl", avatarUrl))
+            )
 
-        // Updates company.
-        post("company/update", adminTkn,
-            "name" → compName,
-            "website" → "website2",
-            "country" → "country2",
-            "region" → "region2",
-            "city" → "city2",
-            "address" → "address2",
-            "postalCode" → "postalCode2"
-        )()
+            // Updates company.
+            post("company/update", adminTkn,
+                "name" → compName,
+                "website" → "website2",
+                "country" → "country2",
+                "region" → "region2",
+                "city" → "city2",
+                "address" → "address2",
+                "postalCode" → "postalCode2"
+            )()
 
-        // Checks company fields.
-        post("company/get", adminTkn)(
-            ("$.name", (name: String) ⇒ assertEquals(compName, name)),
-            ("$.website", (website: String) ⇒ assertEquals("website2", website)),
-            ("$.country", (country: String) ⇒ assertEquals("country2", country)),
-            ("$.region", (region: String) ⇒ assertEquals("region2", region)),
-            ("$.city", (city: String) ⇒ assertEquals("city2", city)),
-            ("$.address", (address: String) ⇒ assertEquals("address2", address)),
-            ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode2", postalCode))
-        )
+            // Checks company fields.
+            post("company/get", adminTkn)(
+                ("$.name", (name: String) ⇒ assertEquals(compName, name)),
+                ("$.website", (website: String) ⇒ assertEquals("website2", website)),
+                ("$.country", (country: String) ⇒ assertEquals("country2", country)),
+                ("$.region", (region: String) ⇒ assertEquals("region2", region)),
+                ("$.city", (city: String) ⇒ assertEquals("city2", city)),
+                ("$.address", (address: String) ⇒ assertEquals("address2", address)),
+                ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode2", postalCode))
+            )
 
-        // Updates company.
-        post("company/update", adminTkn, "name" → compName)()
+            // Updates company.
+            post("company/update", adminTkn, "name" → compName)()
 
-        // Checks company fields.
-        post("company/get", adminTkn)(
-            ("$.name", (name: String) ⇒ assertEquals(compName, name)),
-            ("$.website", (website: String) ⇒ assertEquals(null, website)),
-            ("$.country", (country: String) ⇒ assertEquals(null, country)),
-            ("$.region", (region: String) ⇒ assertEquals(null, region)),
-            ("$.city", (city: String) ⇒ assertEquals(null, city)),
-            ("$.address", (address: String) ⇒ assertEquals(null, address)),
-            ("$.postalCode", (postalCode: String) ⇒ assertEquals(null, postalCode))
-        )
+            // Checks company fields.
+            post("company/get", adminTkn)(
+                ("$.name", (name: String) ⇒ assertEquals(compName, name)),
+                ("$.website", (website: String) ⇒ assertEquals(null, website)),
+                ("$.country", (country: String) ⇒ assertEquals(null, country)),
+                ("$.region", (region: String) ⇒ assertEquals(null, region)),
+                ("$.city", (city: String) ⇒ assertEquals(null, city)),
+                ("$.address", (address: String) ⇒ assertEquals(null, address)),
+                ("$.postalCode", (postalCode: String) ⇒ assertEquals(null, postalCode))
+            )
 
-        // Resets token.
-        post("company/token/reset", adminTkn)()
-
-        // Deletes company.
-        post("company/delete", adminTkn)()
+            // Resets token.
+            post("company/token/reset", adminTkn)()
+        }
+        finally
+            post("company/delete", adminTkn)()
     }
 
+    @Test
     def testParameters(): Unit = {
         testCompany()
         testCompany(website = Some("website"))
