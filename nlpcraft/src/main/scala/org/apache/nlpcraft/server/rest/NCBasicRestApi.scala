@@ -569,7 +569,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             e match {
                 case _: NCE ⇒
                     // We have to log error reason because even general exceptions are not expected here.
-                    logger.warn(s"Unexpected top level REST API error: $errMsg", e)
+                    U.prettyError(logger, s"Unexpected top level REST API error: $errMsg", e)
 
                     StatusCodes.BadRequest
                 case _ ⇒
@@ -1807,7 +1807,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             val code = "NC_ERROR"
 
             // We have to log error reason because even general exceptions are not expected here.
-            logger.warn(s"Unexpected top level REST API error: $errMsg", e)
+            U.prettyError(logger,s"Unexpected top level REST API error: $errMsg", e)
 
             completeError(StatusCodes.BadRequest, code, errMsg)
 
