@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.common.ascii
 
 import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 /**
  * Test for ASCII text table.
@@ -37,7 +38,18 @@ class NCAsciiTableSpec {
         t #= ("Header 1", Seq("Header 2.1", "Header 2.2"), "Header 3")
         t += ("Row 1", Seq("Row 2"), Seq("Row 3.1", "Row 3.2"))
         t += ("1234567890zxcvbnmasdASDFGHJKLQ", Seq("Row 2"), Seq("Row 3.1", "Row 3.2"))
-        t += (Seq("Row 31.1", "Row 31.2"), "Row 11", "Row 21")
+        t += (Seq(s"${ansiRedFg}Row 31.1$ansiReset", s"${ansiYellowFg}Row 31.2$ansiReset"), "Row 11", "Row 21")
+
+        t.render()
+    }
+
+    @Test
+    def testSmallTable(): Unit = {
+        val t = NCAsciiTable()
+
+        t.margin(top = 1, bottom = 1)
+
+        t += s"Small table with ANSI ${ansiBlueFg}code$ansiReset"
 
         t.render()
     }
@@ -61,7 +73,7 @@ class NCAsciiTableSpec {
 
     @Test
     def testWithVeryBigTable() {
-        val NUM = 1000
+        val NUM = 10000
 
         val start = System.currentTimeMillis()
 
@@ -72,7 +84,7 @@ class NCAsciiTableSpec {
         t #= (Seq("Header 1", "Header 2", "Header 3"): _*)
 
         for (i ← 0 to NUM)
-            t += (s"Value 1:$i", s"Value 2:$i", s"Value 3:$i")
+            t += (s"${ansiGreenFg}Value 1:$i$ansiReset", s"${ansiReversed}Value 2:$i$ansiReset", s"${ansiRedFg}Value 3:$i$ansiReset")
 
         t.render()
 

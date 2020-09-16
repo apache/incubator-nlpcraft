@@ -92,14 +92,10 @@ class NCAsciiTable {
      */
     private sealed case class Cell(style: Style, lines: Seq[String]) {
         // Cell's calculated width including padding.
-        lazy val width: Int =
-            if (height > 0)
-                style.padding + lines.max(Ordering.by[String, Int](stripAnsi(_).length)).length
-            else
-                style.padding
+        lazy val width: Int = style.padding + (if (height > 0) lines.map(stripAnsi(_).length).max else 0)
 
         // Gets height of the cell.
-        def height: Int = lines.length
+        lazy val height: Int = lines.length
     }
 
     /**
@@ -312,6 +308,7 @@ class NCAsciiTable {
      * @param lines
      * @return
      */
+    // TODO: https://issues.apache.org/jira/browse/NLPCRAFT-125
     private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
         lines.flatMap(line ⇒ {
             if (line.isEmpty)
@@ -324,19 +321,17 @@ class NCAsciiTable {
                 var start = 0
                 var lastSpace = -1
                 var curr = 0
-                val len = stripAnsi(line).length
+                val len = line.length
 
-                def addLine(line: String) =
-                    if (buf.isEmpty)
-                        buf += line
-                    else
-                        buf += (space(leader) + line)
+                def addLine(s: String): Unit =
+                    buf += (if (buf.isEmpty) s else space(leader) + s)
 
                 while (curr < len) {
                     if (curr - start > maxWidth) {
                         val end = if (lastSpace == -1) curr else lastSpace + 1 /* Keep space at the end of the line. */
 
                         addLine(line.substring(start, end))
+
                         start = end
                     }
 
@@ -349,7 +344,7 @@ class NCAsciiTable {
                 if (start < len) {
                     val lastLine = line.substring(start)
 
-                    if (lastLine.nonEmpty) {
+                    if (lastLine.trim.nonEmpty) {
                         addLine(lastLine)
                     }
                 }

@@ -145,7 +145,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         
         tbl.margin(top = 1, bottom = 1)
         
-        tbl += s"Server started $dur"
+        tbl += s"Server started $ansiBlueFg$dur$ansiReset"
         
         tbl.info(logger)
     }

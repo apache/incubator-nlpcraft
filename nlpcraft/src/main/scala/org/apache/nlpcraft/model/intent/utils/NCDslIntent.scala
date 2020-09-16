@@ -34,6 +34,14 @@ case class NCDslIntent(id: String, conv: Boolean, ordered: Boolean, flow: Array[
      *
      * @return Full intent string representation in text DSL format.
      */
-    def toDslString: String =
-        s"intent=$id conv=$conv ordered=$ordered flow='${flow.mkString(" >> ")}' ${terms.mkString(" ")}"
+    def toDslString: String = {
+        val convStr = if (conv) "" else " conv=false"
+        val orderedStr = if (!ordered) "" else " ordered=true"
+        val flowStr = flow.mkString(" >> ") match {
+            case s: String if s.nonEmpty ⇒ s" flow=$s"
+            case _ ⇒ ""
+        }
+
+        s"intent=$id$convStr$orderedStr$flowStr ${terms.mkString(" ")}"
+    }
 }

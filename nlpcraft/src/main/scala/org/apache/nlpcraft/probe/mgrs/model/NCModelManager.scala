@@ -59,7 +59,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                     mdl.getVersion,
                     w.elements.keySet.size,
                     synCnt,
-                    w.intents.size
+                    w.intents.map(_.toDslString)
                 )
             })
         }

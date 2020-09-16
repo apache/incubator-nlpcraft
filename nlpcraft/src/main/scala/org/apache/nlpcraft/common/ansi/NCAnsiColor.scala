@@ -47,9 +47,10 @@ trait NCAnsiColor {
     private final val INVISIBLE = "\u001b[8m"
 
     // Enabled by default.
+    // NOTE: it's not static as it can be changed at runtime.
     private final val PROP = "NLPCRAFT_ANSI_COLOR_DISABLED"
 
-    private def isEnabled: Boolean = !U.isSysEnvTrue(PROP)
+    def isEnabled: Boolean = !U.isSysEnvTrue(PROP)
 
     def ansiBlackFg: String = if (isEnabled) BLACK else ""
     def ansiBlackBg: String = if (isEnabled) BLACK_B else ""

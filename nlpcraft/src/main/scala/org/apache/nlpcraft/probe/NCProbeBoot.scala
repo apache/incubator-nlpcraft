@@ -368,7 +368,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         tbl += ("Down-Link", cfg.downLinkString)
         tbl += ("Up-Link", cfg.upLinkString)
         tbl += ("Lifecycle", cfg.lifecycle)
-        tbl += ("Models" , cfg.modelsSeq)
+        tbl += (s"Models (${cfg.modelsSeq.size})" , cfg.modelsSeq)
         tbl += ("JARs Folder", cfg.jarsFolder.getOrElse(""))
 
         tbl.info(logger, Some("Probe Configuration:"))
@@ -384,7 +384,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         tbl.margin(top = 1)
         
-        tbl += s"Probe started $dur"
+        tbl += s"Probe started $ansiBlueFg$dur$ansiReset"
         
         tbl.info(logger)
     }
