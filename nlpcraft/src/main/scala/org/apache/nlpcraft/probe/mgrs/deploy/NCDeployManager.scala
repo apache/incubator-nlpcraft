@@ -415,7 +415,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 s"dups=${idAliasDups.mkString(", ")}" +
             "]")
 
-        val dupSyns = mutable.Buffer.empty[(String, Seq[String], String)]
+        val dupSyns = mutable.Buffer.empty[(Seq[String], String)]
 
         // Check for synonym dups across all elements.
         for (
@@ -423,19 +423,17 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 syns.groupBy(p ⇒ (p.syn.mkString(" "), p.syn.isDirect)) if holders.size > 1 && isDirect
         ) {
             dupSyns.append((
-                mdlId,
                 holders.map(p ⇒ s"id=${p.elmId}${if (p.syn.value == null) "" else s", value=${p.syn.value}"}").toSeq,
                 syn
             ))
         }
 
         if (dupSyns.nonEmpty) {
-            val tbl = NCAsciiTable("Model ID", "Elements", "Dup Synonym")
+            val tbl = NCAsciiTable("Elements", "Dup Synonym")
 
-            dupSyns.sortBy(_._1).foreach(row ⇒ tbl += (
+            dupSyns.foreach(row ⇒ tbl += (
                 row._1,
-                row._2,
-                row._3
+                row._2
             ))
 
             logger.warn(s"Dup synonyms in '$mdlId' model:\n${tbl.toString}")
@@ -478,7 +476,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             )
         }
         else
-            logger.warn(s"Model has no intents [mdlId=$mdlId]")
+            logger.warn(s"Model has no intent: $mdlId")
 
         NCProbeModel(
             model = mdl,

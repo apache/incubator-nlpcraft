@@ -921,7 +921,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private NCRequestResultJson restAskSync(String txt) throws IOException, NCTestClientException {
-            log.info("'ask/sync' request '{}' sent for data model ID: {}", txt, mdlId);
+            log.info("'ask/sync' request '{}' sent for data model: {}", txt, mdlId);
 
             return
                 gson.fromJson(
@@ -942,7 +942,7 @@ public class NCTestClientBuilder {
          * @throws NCTestClientException Thrown in case of test client errors.
          */
         private String restAsk(String txt) throws IOException, NCTestClientException {
-            log.info("'ask' request '{}' sent for data model ID: {}", txt, mdlId);
+            log.info("'ask' request '{}' sent for data model: {}", txt, mdlId);
 
             Map<String, Object> m = gson.fromJson(post(
                 "ask",

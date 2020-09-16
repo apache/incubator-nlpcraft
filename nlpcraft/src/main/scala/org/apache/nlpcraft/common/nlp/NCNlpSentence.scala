@@ -62,7 +62,7 @@ object NCNlpSentence {
           * - compare is relation function linked to date element.
           * - x an y defined as 2 elements: date and num.
           * So, variants 'x (as num) and x (as date)'  and 'x (as date) and x (as num)'
-          * should't be excluded, but invalid relation should be deleted for these combinations.
+          * should not be excluded, but invalid relation should be deleted for these combinations.
           */
         types.size match {
             case 0 ⇒ throw new AssertionError(s"Unexpected empty types [notesType=$notesType]")
@@ -445,14 +445,12 @@ import org.apache.nlpcraft.common.nlp.NCNlpSentence._
   *
   * @param srvReqId Server request ID.
   * @param text Normalized text.
-  * @param weight Weight.
   * @param enabledBuiltInToks Enabled built-in tokens.
   * @param tokens Initial buffer.
   */
 class NCNlpSentence(
     val srvReqId: String,
     val text: String,
-    val weight: Double,
     val enabledBuiltInToks: Set[String],
     override val tokens: ArrayBuffer[NCNlpSentenceToken] = new ArrayBuffer[NCNlpSentenceToken](32)
 ) extends NCNlpSentenceTokenBuffer(tokens) with java.io.Serializable {
@@ -464,7 +462,7 @@ class NCNlpSentence(
 
     // Deep copy.
     override def clone(): NCNlpSentence =
-        new NCNlpSentence(srvReqId, text, weight, enabledBuiltInToks, tokens.map(_.clone()))
+        new NCNlpSentence(srvReqId, text, enabledBuiltInToks, tokens.map(_.clone()))
 
     /**
       * Utility method that gets set of notes for given note type collected from
@@ -705,9 +703,10 @@ class NCNlpSentence(
     override def equals(obj: Any): Boolean = obj match {
         case x: NCNlpSentence ⇒
             tokens == x.tokens &&
-                srvReqId == x.srvReqId &&
-                text == x.text &&
-                enabledBuiltInToks == x.enabledBuiltInToks
+            srvReqId == x.srvReqId &&
+            text == x.text &&
+            enabledBuiltInToks == x.enabledBuiltInToks
+
         case _ ⇒ false
     }
 }

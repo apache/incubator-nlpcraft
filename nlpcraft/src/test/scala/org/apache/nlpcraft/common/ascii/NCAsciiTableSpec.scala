@@ -73,7 +73,7 @@ class NCAsciiTableSpec {
 
     @Test
     def testWithVeryBigTable() {
-        val NUM = 10000
+        val NUM = 100
 
         val start = System.currentTimeMillis()
 

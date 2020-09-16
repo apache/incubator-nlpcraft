@@ -26,6 +26,7 @@ import java.util.function.Predicate
 import io.opencensus.trace.{Span, Status}
 import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
@@ -213,18 +214,19 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     ): Unit = {
         require(nlpSens.nonEmpty)
 
-        logger.info(
-            s"New sentences received [" +
-                s"txt='${nlpSens.head.text}', " +
-                s"count=${nlpSens.size}, " +
-                s"usrId=$usrId, " +
-                s"mdlId=$mdlId, " +
-                s"srvReqId=$srvReqId" +
-            s"]"
-        )
-        
         var start = System.currentTimeMillis()
-    
+
+        val tbl = NCAsciiTable("Text", "Model ID", "User ID", "Server Request ID")
+
+        tbl += (
+            nlpSens.map(_.text),
+            mdlId,
+            usrId,
+            srvReqId
+        )
+
+        logger.info(s"New sentence received:\n$tbl")
+        
         /**
           *
           * @param code Pre or post checker error code.
@@ -313,9 +315,9 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             NCConnectionManager.send(msg, span)
             
             if (errMsg.isEmpty)
-                logger.info(s"OK response $msgName sent [srvReqId=$srvReqId, type=${resType.getOrElse("")}]")
+                logger.info(s"OK result sent back to server [srvReqId=$srvReqId, type=${resType.getOrElse("")}]")
             else
-                logger.info(s"REJECT response $msgName sent [srvReqId=$srvReqId, response=${errMsg.get}]")
+                logger.info(s"REJECT response sent back to server [srvReqId=$srvReqId, response=${errMsg.get}]")
         }
 
         val mdl = NCModelManager.getModel(mdlId, span)
@@ -336,7 +338,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         if (errData.isEmpty)
                             errData = Some((errMsg, errCode))
 
-                        logger.error(s"Pre-enrichment validation [text=${nlpSen.text}, weight=${nlpSen.weight}, error=$errMsg]")
+                        logger.error(s"Pre-enrichment validation error [text=${nlpSen.text}, error=$errMsg]")
 
                         None
                 }
@@ -374,13 +376,12 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 else
                     None
 
-            val loopEnrichers =
-                Seq(
-                    Some(Holder(NCModelEnricher, () ⇒ nlpSen.flatten.filter(_.isUser))),
-                    get("nlpcraft:sort", NCSortEnricher),
-                    get("nlpcraft:limit", NCLimitEnricher),
-                    get("nlpcraft:relation", NCRelationEnricher)
-                ).flatten
+            val loopEnrichers = Seq(
+                Some(Holder(NCModelEnricher, () ⇒ nlpSen.flatten.filter(_.isUser))),
+                get("nlpcraft:sort", NCSortEnricher),
+                get("nlpcraft:limit", NCLimitEnricher),
+                get("nlpcraft:relation", NCRelationEnricher)
+            ).flatten
 
             var step = 0
             var continue = true
@@ -479,7 +480,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             case e: NCValidateException ⇒
                 val (errMsg, errCode) = getError(e.code)
 
-                logger.error(s"Post-enrichment validation: $errMsg ")
+                logger.error(s"Post-enrichment validation error: $errMsg")
 
                 respond(
                     None,

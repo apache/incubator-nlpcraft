@@ -248,17 +248,21 @@ case class NCConversation(
     private def ack(): Unit = {
         require(Thread.holdsLock(stm))
 
-        val tbl = NCAsciiTable("Token ID", "Groups", "Text", "Value", "From request")
+        if (ctx.isEmpty)
+            logger.info(s"Conversation context is empty for [mdlId=$mdlId, usrId=$usrId]")
+        else {
+            val tbl = NCAsciiTable("Token ID", "Groups", "Text", "Value", "From request")
 
-        ctx.asScala.foreach(tok ⇒ tbl += (
-            tok.getId,
-            tok.getGroups,
-            tok.normText,
-            tok.getValue,
-            tok.getServerRequestId
-        ))
+            ctx.asScala.foreach(tok ⇒ tbl += (
+                tok.getId,
+                tok.getGroups.asScala.mkString(", "),
+                tok.normText,
+                tok.getValue,
+                tok.getServerRequestId
+            ))
 
-        logger.info(s"Conversation tokens [mdlId=$mdlId, usrId=$usrId]:\n${tbl.toString()}")
+            logger.info(s"Conversation tokens [mdlId=$mdlId, usrId=$usrId]:\n${tbl.toString()}")
+        }
     }
 
     /**

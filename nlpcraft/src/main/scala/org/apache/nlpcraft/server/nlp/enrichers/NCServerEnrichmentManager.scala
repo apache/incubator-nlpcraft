@@ -43,7 +43,7 @@ import scala.util.control.Exception.catching
   */
 object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
     private object Config extends NCConfigurable {
-        def supportNlpCraft: Boolean = getStringList("nlpcraft.server.tokenProviders").contains("nlpcraft")
+        def isBuiltInEnrichers: Boolean = getStringList("nlpcraft.server.tokenProviders").contains("nlpcraft")
     }
 
     private final val CUSTOM_PREFIXES = Set("google:", "opennlp:", "stanford:", "spacy:")
@@ -53,7 +53,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
     // NOTE: this cache is independent from datasource.
     @volatile private var cache: IgniteCache[String, Holder] = _
-    
+
     private val HEADERS: Map[String, (Int, Seq[String])] =
         Seq(
             "nlpcraft:nlp" → Seq("origText", "index", "pos", "lemma", "stem", "bracketed", "quoted", "stopWord", "ne", "nne"),
@@ -97,7 +97,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         enabledBuiltInToks: Set[String],
         parent: Span = null): NCNlpSentence =
         startScopedSpan("process", parent, "srvReqId" → srvReqId, "txt" → normTxt) { span ⇒
-            val s = new NCNlpSentence(srvReqId, normTxt, 1, enabledBuiltInToks)
+            val s = new NCNlpSentence(srvReqId, normTxt, enabledBuiltInToks)
 
             // Server-side enrichment pipeline.
             // NOTE: order of enrichers is IMPORTANT.
@@ -105,7 +105,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             NCQuoteEnricher.enrich(s, span)
             NCStopWordEnricher.enrich(s, span)
 
-            if (Config.supportNlpCraft) {
+            if (Config.isBuiltInEnrichers) {
                 if (enabledBuiltInToks.contains("nlpcraft:date"))
                     NCDateEnricher.enrich(s, span)
 
@@ -141,7 +141,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         enabledBuiltInToks: Set[String],
         parent: Span = null): NCNlpSentence = {
         startScopedSpan("enrichPipeline", parent, "srvReqId" → srvReqId, "txt" → txt) { span ⇒
-            val normTxt = NCPreProcessManager.normalize(txt, true, span)
+            val normTxt = NCPreProcessManager.normalize(txt, spellCheck = true, span)
 
             if (normTxt != txt)
                 logger.info(s"Sentence normalized to: $normTxt")
@@ -164,7 +164,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             }
         }
     }
-    
+
     /**
       *
       * @param s NLP sentence to ASCII print.
@@ -195,17 +195,17 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                     )
                 )
         }
-        
+
         val headers = s.flatten.flatMap(mkNoteHeaders).distinct.sortBy(hdr ⇒ {
             val x = HEADERS.
                 find(p ⇒ isType(hdr.noteType, p._1)).
                 getOrElse(throw new NCE(s"Header not found for: ${hdr.noteType}"))._2
-            
+
             (x._1 * 100) + x._2.indexOf(hdr.noteName)
         })
 
         val tbl = NCAsciiTable(headers.map(_.header): _*)
-        
+
         def mkNoteValue(tok: NCNlpSentenceToken, hdr: Header): Seq[String] =
             tok.getNotes(hdr.noteType).filter(_.contains(hdr.noteName)).map(_(hdr.noteName).toString()).toSeq
 
@@ -243,12 +243,12 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         catching(wrapIE) {
             cache = ignite.cache[String, Holder]("sentence-cache")
         }
-        
+
         NCBaseNlpEnricher.start(span)
         NCStopWordEnricher.start(span)
         NCQuoteEnricher.start(span)
 
-        if (Config.supportNlpCraft) {
+        if (Config.isBuiltInEnrichers) {
             // These component can be started independently.
             U.executeParallel(
                 () ⇒ NCDateEnricher.start(span),
@@ -259,16 +259,16 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         }
 
         ners = NCNlpServerManager.getNers
-        supportedProviders = ners.keySet ++ (if (Config.supportNlpCraft) Set("nlpcraft") else Set.empty)
+        supportedProviders = ners.keySet ++ (if (Config.isBuiltInEnrichers) Set("nlpcraft") else Set.empty)
 
         super.start()
     }
-    
+
     /**
       * Stops this manager.
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
-        if (Config.supportNlpCraft) {
+        if (Config.isBuiltInEnrichers) {
             NCCoordinatesEnricher.stop(span)
             NCGeoEnricher.stop(span)
             NCNumericEnricher.stop(span)

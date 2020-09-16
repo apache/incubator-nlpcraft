@@ -26,6 +26,7 @@ import org.apache.nlpcraft.common.ascii._
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.collection.JavaConverters._
 import scala.collection._
@@ -66,6 +67,7 @@ object NCTokenLogger extends LazyLogging {
                 "pos",
                 "quoted",
                 "stopWord",
+                "freeword",
                 "dict",
                 "wordIndexes",
                 "direct",
@@ -212,11 +214,10 @@ object NCTokenLogger extends LazyLogging {
                     s"type=$t, indexes=[${mkIndexes("indexes")}], note=$note"
 
                 case "nlpcraft:sort" ⇒
-                    var s =
-                        mkStringOpt("subjnotes") match {
-                            case Some(subjnotes) ⇒ s"subjnotes=$subjnotes, subjindexes=${mkIndexes("subjindexes")}"
-                            case None ⇒ ""
-                        }
+                    var s = mkStringOpt("subjnotes") match {
+                        case Some(subjnotes) ⇒ s"subjnotes=$subjnotes, subjindexes=${mkIndexes("subjindexes")}"
+                        case None ⇒ ""
+                    }
 
                     mkStringOpt("bynotes") match {
                         case Some(bynotes) ⇒
@@ -375,8 +376,7 @@ object NCTokenLogger extends LazyLogging {
     def prepareTable(toks: Seq[NCToken]): NCAsciiTable = {
         val allFree = toks.forall(_.isFreeWord)
 
-        val headers =
-            mutable.ArrayBuffer.empty[String] ++
+        val headers = mutable.ArrayBuffer.empty[String] ++
             Seq(
                 "idx",
                 "origtext",
@@ -384,6 +384,7 @@ object NCTokenLogger extends LazyLogging {
                 "pos",
                 "quoted",
                 "stopword",
+                "freeword",
                 "wordindexes",
                 "direct",
                 "sparsity"
@@ -426,14 +427,23 @@ object NCTokenLogger extends LazyLogging {
                 (d * 1000).intValue / 1000.0
             }
 
+            val origTxtStr =
+                if (tok.isStopWord)
+                    s"$ansiRedFg${tok.origText}$ansiReset"
+                else if (tok.isFreeWord)
+                    s"$ansiYellowFg${tok.origText}$ansiReset"
+                else
+                    tok.origText
+
             val row =
                 Seq(
                     tok.index,
-                    tok.origText,
+                    origTxtStr,
                     tok.lemma,
                     tok.pos,
                     tok.isQuoted,
-                    tok.isStopWord,
+                    if (tok.isStopWord) s"${ansiRedFg}true$ansiReset" else "false",
+                    if (tok.isFreeWord) s"${ansiYellowFg}true$ansiReset" else "false",
                     s"[${tok.wordIndexes.mkString(",")}]",
                     tok.isDirect,
                     tok.sparsity
@@ -615,7 +625,7 @@ object NCTokenLogger extends LazyLogging {
                     row
                     ++
                     // Token data.
-                    Seq(if (tok.getId == "nlpcraft:nlp") "" else s"<<${tok.getId}>> $v") :_*
+                    Seq(if (tok.getId == "nlpcraft:nlp") "" else s"<<$ansiBlueFg${tok.getId}$ansiReset>> $v") :_*
                 )
             }
         })
