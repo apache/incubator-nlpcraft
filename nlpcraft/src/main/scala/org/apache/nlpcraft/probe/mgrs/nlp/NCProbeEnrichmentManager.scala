@@ -18,16 +18,15 @@
 package org.apache.nlpcraft.probe.mgrs.nlp
 
 import java.io.Serializable
-import java.time.LocalDateTime
 import java.util
-import java.util.{Date, Objects}
-import java.util.concurrent.{ExecutorService, Executors}
+import java.util.concurrent._
 import java.util.function.Predicate
+import java.util.{Date, Objects}
 
-import akka.http.scaladsl.model.DateTime
 import io.opencensus.trace.{Span, Status}
 import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
@@ -37,7 +36,6 @@ import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedResult
-import org.apache.nlpcraft.probe.mgrs.{NCProbeMessage, NCProbeVariants}
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
@@ -51,7 +49,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.probe.mgrs.{NCProbeMessage, NCProbeVariants}
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, _}
@@ -91,13 +89,29 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
 
-        pool = Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
+
+
+        pool = new ThreadPoolExecutor(
+            1,
+            Runtime.getRuntime.availableProcessors() * 8,
+            0L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue[Runnable],
+            Executors.defaultThreadFactory,
+            new RejectedExecutionHandler() {
+                override def rejectedExecution(r: Runnable, executor: ThreadPoolExecutor): Unit =
+                    if (isStarted)
+                        logger.warn("Task was rejected")
+            }
+        )
         executor = ExecutionContext.fromExecutor(pool)
 
         super.start()
     }
     
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        super.stop()
+
         mux.synchronized {
             if (embeddedCbs != null)
                 embeddedCbs.clear()
@@ -107,8 +121,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         executor = null
         pool = null
-
-        super.stop()
     }
 
     /**
