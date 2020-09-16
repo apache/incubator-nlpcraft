@@ -89,12 +89,10 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
 
-
-
         pool = new ThreadPoolExecutor(
-            1,
+           1,
             Runtime.getRuntime.availableProcessors() * 8,
-            0L,
+           0L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue[Runnable],
             Executors.defaultThreadFactory,
@@ -236,12 +234,12 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(_.text))
         tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
         tbl += (s"${ansiBlueFg}User ID$ansiReset", usrId)
-        tbl += (s"${ansiBlueFg}  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
-        tbl += (s"${ansiBlueFg}  Last Name$ansiReset", senMeta.getOrElse("LAST_NAME", ""))
-        tbl += (s"${ansiBlueFg}  Email$ansiReset", senMeta.getOrElse("EMAIL", ""))
-        tbl += (s"${ansiBlueFg}  Company Name$ansiReset", senMeta.getOrElse("COMPANY_NAME", ""))
-        tbl += (s"${ansiBlueFg}  Is Admin$ansiReset", senMeta.getOrElse("IS_ADMIN", ""))
-        tbl += (s"${ansiBlueFg}  Signup Date$ansiReset", new Date(java.lang.Long.parseLong(senMeta("SIGNUP_TSTAMP").toString)))
+        tbl += (s"$ansiBlueFg  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
+        tbl += (s"$ansiBlueFg  Last Name$ansiReset", senMeta.getOrElse("LAST_NAME", ""))
+        tbl += (s"$ansiBlueFg  Email$ansiReset", senMeta.getOrElse("EMAIL", ""))
+        tbl += (s"$ansiBlueFg  Company Name$ansiReset", senMeta.getOrElse("COMPANY_NAME", ""))
+        tbl += (s"$ansiBlueFg  Is Admin$ansiReset", senMeta.getOrElse("IS_ADMIN", ""))
+        tbl += (s"$ansiBlueFg  Signup Date$ansiReset", new Date(java.lang.Long.parseLong(senMeta("SIGNUP_TSTAMP").toString)))
         tbl += (s"${ansiBlueFg}User Agent$ansiReset", senMeta.getOrElse("USER_AGENT", ""))
         tbl += (s"${ansiBlueFg}Remote Address$ansiReset", senMeta.getOrElse("REMOTE_ADDR", ""))
         tbl += (s"${ansiBlueFg}Server Timestamp$ansiReset", new Date(java.lang.Long.parseLong(senMeta("RECEIVE_TSTAMP").toString)))
