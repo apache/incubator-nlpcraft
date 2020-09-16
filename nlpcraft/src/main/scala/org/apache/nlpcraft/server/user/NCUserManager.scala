@@ -465,7 +465,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       * @param avatarUrl
       * @param isAdmin
       * @param props
-      * @param extIdOpt
+      * @param usrExtIdOpt
       * @param parent Optional parent span.
       */
     @throws[NCE]
@@ -478,7 +478,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
         avatarUrl: Option[String],
         isAdmin: Boolean,
         props: Option[Map[String, String]],
-        extIdOpt: Option[String],
+        usrExtIdOpt: Option[String],
         parent: Span = null
     ): Long =
         startScopedSpan(
@@ -488,7 +488,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
             "email" → email,
             "firstName" → firstName,
             "lastName" → lastName,
-            "exitId" → extIdOpt.orNull,
+            "usrExtId" → usrExtIdOpt.orNull,
             "isAdmin" → isAdmin) { span ⇒
             val normEmail = U.normalizeEmail(email)
 
@@ -507,11 +507,11 @@ object NCUserManager extends NCService with NCIgniteInstance {
                         if (NCSqlManager.getUserByEmail(normEmail, span).isDefined)
                             throw new NCE(s"User with this email already exists: $normEmail")
 
-                        extIdOpt match {
-                            case Some(extId) ⇒
+                        usrExtIdOpt match {
+                            case Some(usrExtId) ⇒
                                 val id = NCSqlManager.
-                                    getUserId(compId, extId, span).
-                                    getOrElse(throw new NCE(s"User not found [companyId=$compId, extId=$extId]"))
+                                    getUserId(compId, usrExtId, span).
+                                    getOrElse(throw new NCE(s"User not found [companyId=$compId, extId=$usrExtId]"))
 
                                     NCSqlManager.updateUser(
                                         id = id,
@@ -524,7 +524,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                                         parent = span
                                     )
 
-                                logger.info(s"User converted [extId=$extId, email=$email]")
+                                logger.info(s"User converted [usrExtId=$usrExtId, email=$email]")
 
                                 id
                             case None ⇒
@@ -533,7 +533,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                                 NCSqlManager.addUser(
                                     id = newUsrId,
                                     compId = compId,
-                                    extId = None,
+                                    usrExtId = None,
                                     email = Some(normEmail),
                                     firstName = Some(firstName),
                                     lastName = Some(lastName),
@@ -591,24 +591,24 @@ object NCUserManager extends NCService with NCIgniteInstance {
       * If user with given external ID is missing, it creates a new one and returns its user ID.
       *
       * @param companyId Company ID.
-      * @param extUsrId External user ID.
+      * @param usrExtId External user ID.
       * @param parent Parent.
       */
     @throws[NCE]
-    def getOrInsertExternalUserId(companyId: Long, extUsrId: String, parent: Span = null): Long =
+    def getOrInsertExternalUserId(companyId: Long, usrExtId: String, parent: Span = null): Long =
         startScopedSpan(
             "getOrInsertExternalUserId",
             parent,
             "companyId" → companyId,
-            "extUsrId" → extUsrId) { span ⇒
+            "usrExtId" → usrExtId) { span ⇒
             NCSql.sql {
-                NCSqlManager.getUserId(companyId, extUsrId, span) match {
+                NCSqlManager.getUserId(companyId, usrExtId, span) match {
                     case Some(id) ⇒ id
                     case None ⇒
                         try {
                             userLock.acquire()
 
-                            NCSqlManager.getUserId(companyId, extUsrId, span) match {
+                            NCSqlManager.getUserId(companyId, usrExtId, span) match {
                                 case Some(id) ⇒ id
                                 case None ⇒
                                     val id = usersSeq.incrementAndGet()
@@ -616,7 +616,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                                     NCSqlManager.addUser(
                                         id,
                                         companyId,
-                                        extId = Some(extUsrId),
+                                        usrExtId = Some(usrExtId),
                                         email = None,
                                         firstName = None,
                                         lastName = None,
