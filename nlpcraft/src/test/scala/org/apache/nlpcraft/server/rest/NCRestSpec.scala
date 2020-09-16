@@ -40,7 +40,7 @@ private[rest] object NCRestSpec {
     private final val DFLT_ADMIN_PSWD = "admin"
 
     private final val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
-    private final val GSON = new GsonBuilder().setPrettyPrinting().create()
+    private final val GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     private final val CLI = HttpClients.createDefault
     private final val HANDLER: ResponseHandler[java.util.Map[String, Object]] =
         (resp: HttpResponse) ⇒ {
