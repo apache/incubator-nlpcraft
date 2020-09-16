@@ -249,11 +249,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         tbl += (
                             Seq(
                                 s"#${m.variantIdx + 1}",
-                                s"${ansiRedFg}<<best match>>$ansiReset"
+                                s"$ansiRedFg<<best match>>$ansiReset"
                             ),
                             Seq(
                                 im.intent.id,
-                                s"${ansiRedFg}<<best match>>$ansiReset"
+                                s"$ansiRedFg<<best match>>$ansiReset"
                             ),
                             mkPickTokens(im)
                         )
@@ -404,6 +404,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         // Check dialog flow first.
         if (!intent.flow.isEmpty && !matchFlow(intent.flow, hist)) {
             logger.info(s"Intent '$intentId' didn't match because of dialog flow $varStr.")
+
             None
         }
         else {
@@ -459,9 +460,17 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 None
             }
             else {
-                val exactMatch = !senToks.exists(tok ⇒ !tok.used && !tok.token.isFreeWord)
-            
-                intentW.setWeight(0, if (exactMatch) 1 else 0)
+                val exactMatch = !(senToks ++ convToks).exists(tok ⇒ !tok.used && !tok.token.isFreeWord)
+
+                val mainWeight =
+                    if (exactMatch && convToks.isEmpty)
+                        2
+                    else if (exactMatch)
+                        1
+                    else
+                        0
+
+                intentW.setWeight(0, mainWeight)
                 
                 Some(IntentMatch(
                     tokenGroups = intentGrps.toList,
