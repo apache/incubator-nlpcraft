@@ -362,14 +362,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         val ver = NCVersion.getCurrent
 
-        tbl += ("Probe ID", s"$ansiReversed${cfg.id}$ansiReset")
-        tbl += ("Probe Token", cfg.token)
-        tbl += ("API Version", ver.version + ", " + ver.date.toString)
-        tbl += ("Down-Link", cfg.downLinkString)
-        tbl += ("Up-Link", cfg.upLinkString)
-        tbl += ("Lifecycle", cfg.lifecycle)
-        tbl += (s"Models (${cfg.modelsSeq.size})" , cfg.modelsSeq)
-        tbl += ("JARs Folder", cfg.jarsFolder.getOrElse(""))
+        tbl += (s"${ansiBlueFg}Probe ID$ansiReset", s"$ansiReversed${cfg.id}$ansiReset")
+        tbl += (s"${ansiBlueFg}Probe Token$ansiReset", cfg.token)
+        tbl += (s"${ansiBlueFg}API Version$ansiReset", ver.version + ", " + ver.date.toString)
+        tbl += (s"${ansiBlueFg}Down-Link$ansiReset", cfg.downLinkString)
+        tbl += (s"${ansiBlueFg}Up-Link$ansiReset", cfg.upLinkString)
+        tbl += (s"${ansiBlueFg}Lifecycle$ansiReset", cfg.lifecycle)
+        tbl += (s"${ansiBlueFg}Models (${cfg.modelsSeq.size})$ansiReset" , cfg.modelsSeq)
+        tbl += (s"${ansiBlueFg}JARs Folder$ansiReset", cfg.jarsFolder.getOrElse(""))
 
         tbl.info(logger, Some("Probe Configuration:"))
     }

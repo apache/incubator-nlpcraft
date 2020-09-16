@@ -225,7 +225,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             srvReqId
         )
 
-        logger.info(s"New sentence received:\n$tbl")
+        logger.info(s"New request received:\n$tbl")
         
         /**
           *

@@ -37,9 +37,10 @@ class NCEnricherBaseSpec {
 
         getModelClass match {
             case Some(claxx) ⇒
-                println(s"Embedded probe is going to start with model [id=$mdlId, claxx=${claxx.getName}]")
+                println(s"Embedded probe is going to start with model [id=$mdlId, class=${claxx.getName}]")
 
                 NCEmbeddedProbe.start(claxx)
+
             case None ⇒
                 println(s"Probe should be already started as external process: $mdlId")
         }

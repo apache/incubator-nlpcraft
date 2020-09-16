@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 import io.opencensus.trace.Span
 import org.apache.ignite.IgniteCache
 import org.apache.ignite.events.{CacheEvent, EventType}
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.opencensus._
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode._
@@ -34,6 +35,7 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
@@ -248,20 +250,20 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         
         Future {
             startScopedSpan("future", parent, "srvReqId" → srvReqId) { span ⇒
+                val tbl = NCAsciiTable()
+
+                tbl += (s"${ansiBlueFg}Text$ansiReset", txt0)
+                tbl += (s"${ansiBlueFg}User ID$ansiReset", usr.id)
+                tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
+                tbl += (s"${ansiBlueFg}Agent$ansiReset", usrAgent.getOrElse("<n/a>"))
+                tbl += (s"${ansiBlueFg}Remote Address$ansiReset", rmtAddr.getOrElse("<n/a>"))
+                tbl += (s"${ansiBlueFg}Server Request ID$ansiReset", srvReqId)
+                tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))
+
+                logger.info(s"New request received:\n$tbl")
+
                 val enabledBuiltInToks = NCProbeManager.getModel(mdlId, span).enabledBuiltInTokens
                 
-                val toksStr = enabledBuiltInToks.toSeq.
-                    sortBy(t ⇒ (if (t.startsWith("nlpcraft:")) 0
-                    else 1, t)).
-                    mkString(",")
-                
-                logger.info(s"New request received " +
-                    s"[txt='$txt0'" +
-                    s", usrId=${usr.id}" +
-                    s", mdlId=$mdlId" +
-                    s", enabledBuiltInTokens=$toksStr" +
-                s"]")
-    
                 // Enrich the user input and send it to the probe.
                 NCProbeManager.askProbe(
                     srvReqId,
