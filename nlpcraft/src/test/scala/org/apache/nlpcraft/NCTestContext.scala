@@ -24,23 +24,29 @@ import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
-import org.junit.jupiter.api.{AfterEach, BeforeEach, TestInfo}
+import org.junit.jupiter.api.TestInstance.Lifecycle
+import org.junit.jupiter.api.{AfterEach, BeforeAll, BeforeEach, TestInfo, TestInstance}
 
 /**
   *
   */
+@TestInstance(Lifecycle.PER_CLASS)
 class NCTestContext {
     protected var cli: NCTestClient = _
+
+    private var probeStarted = false
 
     @BeforeEach
     @throws[NCException]
     @throws[IOException]
-    private def setUp(ti: TestInfo): Unit = {
+    private def beforeEach(ti: TestInfo): Unit = {
         if (ti.getTestMethod.isPresent) {
             val a = ti.getTestMethod.get().getAnnotation(classOf[NCTestContextModel])
 
             if (a != null) {
-                NCEmbeddedProbe.start(a.value().asInstanceOf[Class[NCModel]])
+                probeStarted = false
+                NCEmbeddedProbe.start(a.value())
+                probeStarted = true
 
                 cli = new NCTestClientBuilder().newBuilder.build
 
@@ -52,10 +58,20 @@ class NCTestContext {
     @AfterEach
     @throws[NCException]
     @throws[IOException]
-    private def tearDown(): Unit =
-        if (cli != null) {
+    private def afterEach(): Unit =
+        if (cli != null)
             cli.close()
 
+        if (probeStarted) {
             NCEmbeddedProbe.stop()
+
+            probeStarted = false
         }
+
+    @BeforeAll
+    @throws[NCException]
+    @throws[IOException]
+    private def beforeAll(ti: TestInfo): Unit = {
+        println("!!!ti=" + ti)
+    }
 }

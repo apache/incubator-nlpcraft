@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft;
 
+import org.apache.nlpcraft.model.NCModel;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -28,5 +30,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(value=RUNTIME)
 @Target(value=METHOD)
 public @interface NCTestContextModel {
-    Class value();
+    Class<? extends NCModel> value();
 }
