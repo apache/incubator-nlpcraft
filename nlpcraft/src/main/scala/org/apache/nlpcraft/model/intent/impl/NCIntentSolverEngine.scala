@@ -436,12 +436,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         // Term is missing. Stop further processing for this intent.
                         // This intent cannot be matched.
                         logger.trace(s"Term '$term' is missing for intent '$intentId' (stopping further processing).")
+
                         abort = true
                 }
             }
             
             if (abort) {
                 logger.info(s"Intent '$intentId' didn't match because of missing term $varStr.")
+
                 None
             }
             else if (senToks.exists(tok ⇒ !tok.used && tok.token.isUserDefined)) {
@@ -457,6 +459,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             }
             else if (!senToks.exists(tok ⇒ tok.used && !tok.conv)) {
                 logger.info(s"Intent '$intentId' didn't match because all tokens came from STM $varStr.")
+
                 None
             }
             else {
