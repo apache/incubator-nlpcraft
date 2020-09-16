@@ -15,36 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.conversation
+package org.apache.nlpcraft
 
 import java.io.IOException
 
-import org.apache.nlpcraft.{NCTestContext, NCTestContextModel}
 import org.apache.nlpcraft.common.NCException
-import org.apache.nlpcraft.examples.weather.WeatherModel
+import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
+import org.junit.jupiter.api.{AfterEach, BeforeEach, TestInfo}
 
 /**
-  * @see WeatherModel
+  *
   */
-class NCConversationSpec extends NCTestContext {
-    @Test
+class NCTestContext {
+    protected var cli: NCTestClient = _
+
+    @BeforeEach
     @throws[NCException]
     @throws[IOException]
-    @NCTestContextModel(value = classOf[WeatherModel])
-    private[conversation] def test(): Unit = {
-        assertTrue(cli.ask("What's the weather in Moscow?").isOk)
+    private def setUp(ti: TestInfo): Unit = {
+        if (ti.getTestMethod.isPresent) {
+            val a = ti.getTestMethod.get().getAnnotation(classOf[NCTestContextModel])
 
-        // Can be answered with conversation.
-        assertTrue(cli.ask("Chance of snow?").isOk)
-        assertTrue(cli.ask("Moscow").isOk)
+            if (a != null) {
+                NCEmbeddedProbe.start(a.value().asInstanceOf[Class[NCModel]])
 
-        cli.clearConversation()
+                cli = new NCTestClientBuilder().newBuilder.build
 
-        // Cannot be answered without conversation.
-        assertTrue(cli.ask("Moscow").isFailed)
+                cli.open(NCModelManager.getAllModels().head.model.getId)
+            }
+        }
     }
+
+    @AfterEach
+    @throws[NCException]
+    @throws[IOException]
+    private def tearDown(): Unit =
+        if (cli != null) {
+            cli.close()
+
+            NCEmbeddedProbe.stop()
+        }
 }
