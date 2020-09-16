@@ -18,13 +18,11 @@
 package org.apache.nlpcraft.probe.mgrs.cmd
 
 import java.io.Serializable
-import java.util.concurrent.{ExecutorService, Executors}
 
 import com.google.gson.Gson
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
-import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
@@ -34,7 +32,6 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 /**
   * Probe commands processor.
@@ -42,25 +39,6 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 object NCCommandManager extends NCService {
     private final val GSON = new Gson()
 
-    @volatile private var pool: ExecutorService = _
-    @volatile private var executor: ExecutionContextExecutor = _
-
-    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        pool = Executors.newCachedThreadPool()
-        executor = ExecutionContext.fromExecutor(pool)
-
-        super.start()
-    }
-    
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-
-        U.shutdownPools(pool)
-
-        executor = null
-        pool = null
-    }
-    
     /**
       *
       * @param msg Server message to process.
