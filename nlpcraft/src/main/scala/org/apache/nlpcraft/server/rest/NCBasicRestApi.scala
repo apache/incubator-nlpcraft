@@ -75,10 +75,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class NotImplemented() extends NCE("Not implemented.")
 
     class InvalidArguments(msg: String) extends NCE(msg)
-    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field `$fn` value is out of range ($from, $to).")
-    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field `$fn` value exceeded max length of $max.")
-    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field `$fn`")
-    case class EmptyField(fn: String) extends InvalidArguments(s"API field `$fn` value cannot be empty.")
+    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field '$fn' value is out of range ($from, $to).")
+    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field '$fn' value exceeded max length of $max.")
+    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field '$fn'")
+    case class EmptyField(fn: String) extends InvalidArguments(s"API field '$fn' value cannot be empty.")
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
 
@@ -330,7 +330,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @param name Field name.
       * @param v Field value.
-      * @param maxLen Optional maximum length. If not specified - the standard range for `name` will be used.
+      * @param maxLen Optional maximum length. If not specified - the standard range for 'name' will be used.
       */
     @throws[TooLargeField]
     @throws[EmptyField]
@@ -659,7 +659,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 successWithJs(
                     fut.collect {
-                        // We have to use GSON (not spray) here to serialize `resBody` field.
+                        // We have to use GSON (not spray) here to serialize 'resBody' field.
                         case res ⇒ GSON.toJson(
                             Map(
                                 "status" → API_OK.toString,
@@ -743,7 +743,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     toSeq.sortBy(-_.createTstamp.getTime).
                     take(req.maxRows.getOrElse(Integer.MAX_VALUE))
 
-                // We have to use GSON (not spray) here to serialize `resBody` field.
+                // We have to use GSON (not spray) here to serialize 'resBody' field.
                 val js = GSON.toJson(
                     Map(
                         "status" → API_OK.toString,
@@ -795,7 +795,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 successWithJs(
                     fut.collect {
-                        // We have to use GSON (not spray) here to serialize `result` field.
+                        // We have to use GSON (not spray) here to serialize 'result' field.
                         case res ⇒ GSON.toJson(Map("status" → API_OK.toString, "result" → res).asJava)
                     }
                 )
@@ -1858,7 +1858,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         RejectionHandler.newBuilder().
             handle {
                 // It doesn't try to process all rejections special way.
-                // There is only one reason to wrap rejections - use `cors` support in completeError() method.
+                // There is only one reason to wrap rejections - use 'cors' support in completeError() method.
                 // We assume that all rejection implementations have human readable toString() implementations.
                 case err ⇒ completeError(StatusCodes.BadRequest, "NC_ERROR", s"Bad request: $err")
             }.result
