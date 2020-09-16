@@ -18,11 +18,13 @@
 package org.apache.nlpcraft.probe.mgrs.nlp
 
 import java.io.Serializable
+import java.time.LocalDateTime
 import java.util
-import java.util.Objects
+import java.util.{Date, Objects}
 import java.util.concurrent.{ExecutorService, Executors}
 import java.util.function.Predicate
 
+import akka.http.scaladsl.model.DateTime
 import io.opencensus.trace.{Span, Status}
 import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
@@ -49,6 +51,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, _}
@@ -216,16 +219,23 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         var start = System.currentTimeMillis()
 
-        val tbl = NCAsciiTable("Text", "Model ID", "User ID", "Server Request ID")
+        val tbl = NCAsciiTable()
 
-        tbl += (
-            nlpSens.map(_.text),
-            mdlId,
-            usrId,
-            srvReqId
-        )
+        tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(_.text))
+        tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
+        tbl += (s"${ansiBlueFg}User ID$ansiReset", usrId)
+        tbl += (s"${ansiBlueFg}  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
+        tbl += (s"${ansiBlueFg}  Last Name$ansiReset", senMeta.getOrElse("LAST_NAME", ""))
+        tbl += (s"${ansiBlueFg}  Email$ansiReset", senMeta.getOrElse("EMAIL", ""))
+        tbl += (s"${ansiBlueFg}  Company Name$ansiReset", senMeta.getOrElse("COMPANY_NAME", ""))
+        tbl += (s"${ansiBlueFg}  Is Admin$ansiReset", senMeta.getOrElse("IS_ADMIN", ""))
+        tbl += (s"${ansiBlueFg}  Signup Date$ansiReset", new Date(java.lang.Long.parseLong(senMeta("SIGNUP_TSTAMP").toString)))
+        tbl += (s"${ansiBlueFg}User Agent$ansiReset", senMeta.getOrElse("USER_AGENT", ""))
+        tbl += (s"${ansiBlueFg}Remote Address$ansiReset", senMeta.getOrElse("REMOTE_ADDR", ""))
+        tbl += (s"${ansiBlueFg}Server Timestamp$ansiReset", new Date(java.lang.Long.parseLong(senMeta("RECEIVE_TSTAMP").toString)))
+        tbl += (s"${ansiBlueFg}Server Request ID$ansiReset", srvReqId)
 
-        logger.info(s"New request received:\n$tbl")
+        logger.info(s"New request received from server:\n$tbl")
         
         /**
           *
@@ -523,7 +533,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 NCTokenLogger.prepareTable(sen.asScala).
                     info(
                         logger,
-                        Some(s"Parsing variant #${i + 1} for: $txt")
+                        Some(s"Parsing variant #${i + 1} for: '$txt")
                     )
             }
         }
