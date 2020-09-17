@@ -31,6 +31,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(value=RUNTIME)
 @Target(value = {METHOD, TYPE})
 public @interface NCTestEnvironment {
+    /**
+     *
+     * @return
+     */
     Class<? extends NCModel> model();
+
+    /**
+     *
+     * @return
+     */
     boolean startClient() default false;
 }

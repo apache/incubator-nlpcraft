@@ -25,10 +25,9 @@ import org.junit.jupiter.api.Test
 @NCTestEnvironment(model = classOf[TimeModel], startClient = false)
 class NCRestProbeSpec extends NCRestSpec {
     @Test
-    def test(): Unit = {
+    def test(): Unit =
         post("probe/all")(
             ("$.probes", (probes: ResponseList) ⇒ assertFalse(probes.isEmpty)),
             ("$.probes[:1].hostName", (names: JList[String]) ⇒ assertNotNull(names.get(0)))
         )
-    }
 }

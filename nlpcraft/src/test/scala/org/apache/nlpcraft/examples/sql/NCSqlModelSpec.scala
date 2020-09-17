@@ -19,11 +19,12 @@ package org.apache.nlpcraft.examples.sql
 
 import java.util
 
+import org.apache.nlpcraft.NCTestEnvironment
 import org.apache.nlpcraft.examples.sql.db.SqlServer
 import org.apache.nlpcraft.model.NCElement
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCTestSortTokenType._
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestDateToken ⇒ dte, NCTestLimitToken ⇒ lim, NCTestNlpToken ⇒ nlp, NCTestSortToken ⇒ srt, NCTestUserToken ⇒ usr}
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestDateToken => dte, NCTestLimitToken => lim, NCTestNlpToken => nlp, NCTestSortToken => srt, NCTestUserToken => usr}
+import org.junit.jupiter.api.Test
 
 class NCSqlModelWrapper extends NCDefaultTestModel {
     private val delegate = new SqlModel()
@@ -32,24 +33,12 @@ class NCSqlModelWrapper extends NCDefaultTestModel {
     override def getMacros: util.Map[String, String] = delegate.getMacros
 }
 
+@NCTestEnvironment(model = classOf[NCSqlModelWrapper], startClient = true)
 class NCSqlModelSpec extends NCEnricherBaseSpec {
-    override def getModelClass: Option[Class[_ <: NCDefaultTestModel]] = Some(classOf[NCSqlModelWrapper])
-
-    @BeforeEach
-    override def setUp(): Unit = {
-        // org.apache.nlpcraft.examples.sql.SqlModel.SqlModel initialized via DB.
-        // (org.apache.nlpcraft.examples.sql.db.SqlValueLoader configured in its model yaml file.)
-        SqlServer.start()
-
-        super.setUp()
-    }
-
-    @AfterEach
-    override def tearDown(): Unit = {
-        super.tearDown()
-
-        SqlServer.stop()
-    }
+    // org.apache.nlpcraft.examples.sql.SqlModel.SqlModel initialized via DB.
+    // (org.apache.nlpcraft.examples.sql.db.SqlValueLoader configured in its model yaml file.)
+    override protected def preProbeStart(): Unit = SqlServer.start()
+    override protected def afterProbeStop(): Unit = SqlServer.stop()
 
     /**
       *
