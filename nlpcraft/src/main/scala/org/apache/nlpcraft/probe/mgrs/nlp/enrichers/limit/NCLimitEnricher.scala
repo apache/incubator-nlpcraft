@@ -144,8 +144,10 @@ object NCLimitEnricher extends NCProbeEnricher {
     private def isUserNotValue(n: NCNlpSentenceNote): Boolean = n.isUser && !n.contains("value")
 
     /**
-      * Starts this component.
-      */
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         // Note that single words only supported now in code.
         fuzzyNums = stemmatizeWords(Map(
@@ -202,12 +204,14 @@ object NCLimitEnricher extends NCProbeEnricher {
 
         techWords = (sortWords.keys ++ topWords ++ postWords ++ fuzzyNums.keySet).toSet
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-
         fuzzyNums = null
         sortWords = null
         topWords = null
@@ -215,6 +219,8 @@ object NCLimitEnricher extends NCProbeEnricher {
         macros = null
         limits = null
         techWords = null
+
+        ackStop()
     }
 
     /**

@@ -30,32 +30,41 @@ import scala.collection.JavaConverters._
   * Stanford NLP NER enricher.
   */
 object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteInstance {
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         // Should be started even if another NLP engine configured.
         if (!NCStanfordCoreManager.isStarted)
             NCStanfordCoreManager.start(span)
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
         if (NCStanfordCoreManager.isStarted)
             NCStanfordCoreManager.stop(span)
     
-        super.stop()
+        ackStop()
     }
     
     /**
      *
      * @param ns
-     * @param enabledBuiltInToks Set of enabled built-in token IDs.
+     * @param ebiTokens Set of enabled built-in token IDs.
      */
-    override def enrich(ns: NCNlpSentence, enabledBuiltInToks: Set[String], parent: Span = null): Unit =
+    override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             NCStanfordCoreManager.
                 annotate(ns.text).
                 entityMentions().asScala.
-                filter(e ⇒ enabledBuiltInToks.contains(e.entityType().toLowerCase)).
+                filter(e ⇒ ebiTokens.contains(e.entityType().toLowerCase)).
                 foreach(e ⇒ {
                     val offsets = e.charOffsets()
     

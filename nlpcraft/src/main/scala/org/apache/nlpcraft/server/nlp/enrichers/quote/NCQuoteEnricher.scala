@@ -30,14 +30,29 @@ import scala.collection._
  * Quote enricher.
  */
 object NCQuoteEnricher extends NCServerEnricher {
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
-    
+
+    /**
+     *
+     * @param ns NLP sentence to enrich.
+     * @param parent Optional parent span.
+     * @throws NCE
+     */
     @throws[NCE]
     override def enrich(ns: NCNlpSentence, parent: Span = null) {
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒

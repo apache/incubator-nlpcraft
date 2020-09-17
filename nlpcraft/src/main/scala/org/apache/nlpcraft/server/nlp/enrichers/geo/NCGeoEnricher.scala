@@ -76,15 +76,24 @@ object NCGeoEnricher extends NCServerEnricher {
     private def getGeoNotes(ns: NCNlpSentence): Set[NCNlpSentenceNote] = GEO_TYPES.flatMap(ns.getNotes)
     private def getGeoNotes(t: NCNlpSentenceToken): Set[NCNlpSentenceNote] = GEO_TYPES.flatMap(t.getNotes)
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-
         commons = null
         topUsa = null
         topWorld = null
         locations = null
+
+        ackStop()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         locations = NCGeoManager.getModel.synonyms
 
@@ -117,9 +126,15 @@ object NCGeoEnricher extends NCServerEnricher {
         topUsa = readCities(US_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
         topWorld = readCities(WORLD_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param ns NLP sentence to enrich.
+     * @param parent Optional parent span.
+     * @throws NCE
+     */
     @throws[NCE]
     override def enrich(ns: NCNlpSentence, parent: Span = null): Unit =
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒

@@ -32,6 +32,11 @@ import scala.collection.JavaConverters._
 object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteInstance {
     @volatile private var srv: LanguageServiceClient = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         try {
             srv = LanguageServiceClient.create()
@@ -53,17 +58,27 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
                 )
         }
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         if (srv != null)
             srv.close()
         
-        super.stop()
+        ackStop()
     }
 
-    override def enrich(ns: NCNlpSentence, enabledBuiltInTokens: Set[String], parent: Span = null): Unit =
+    /**
+     *
+     * @param ns
+     * @param ebiTokens Set of enabled built-in token IDs.
+     * @param parent Optional parent span.
+     */
+    override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             try {
                 val resp = ask(ns.text)
@@ -73,7 +88,7 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
                 resp.getEntitiesList.asScala.flatMap(e ⇒ {
                     val typLc = e.getType.toString.toLowerCase
     
-                    if (e.getMentionsList != null && enabledBuiltInTokens.contains(typLc)) {
+                    if (e.getMentionsList != null && ebiTokens.contains(typLc)) {
                         e.getMentionsList.asScala.flatMap(m ⇒ {
                             val span = m.getText
     

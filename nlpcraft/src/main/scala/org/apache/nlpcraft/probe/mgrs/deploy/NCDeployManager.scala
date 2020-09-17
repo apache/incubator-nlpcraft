@@ -81,7 +81,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     type Callback = Function[NCIntentMatch, NCResult]
 
     @volatile private var data: ArrayBuffer[NCProbeModel] = _
-    @volatile private var modelFactory: NCModelFactory = _
+    @volatile private var mdlFactory: NCModelFactory = _
 
     object Config extends NCConfigurable {
         private final val pre = "nlpcraft.probe"
@@ -225,7 +225,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     }
                     else
                         logger.trace(
-                            s"Synonym already added (ignoring) [" +
+                            s"Synonym already added (safely ignoring) [" +
                                 s"mdlId=$mdlId, " +
                                 s"elmId=$elmId, " +
                                 s"syn=${chunks.mkString(" ")}, " +
@@ -318,7 +318,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val synsChunks = for (syn ← elm.getSynonyms.asScala.flatMap(parser.expand)) yield chunkSplit(syn)
 
             if (U.containsDups(synsChunks.flatten.toList))
-                logger.trace(s"Model element synonym dups found (ignoring) [" +
+                logger.warn(s"Model element synonym dups found [" +
                     s"mdlId=$mdlId, " +
                     s"elmId=$elmId, " +
                     s"synonym=${synsChunks.diff(synsChunks.distinct).distinct.map(_.mkString(",")).mkString(";")}" +
@@ -334,7 +334,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val valNames = vals.map(_.getName).toList
 
             if (U.containsDups(valNames))
-                logger.trace(s"Model element values names dups found (ignoring) [" +
+                logger.warn(s"Model element values names dups found [" +
                     s"mdlId=$mdlId, " +
                     s"elmId=$elmId, " +
                     s"names=${valNames.diff(valNames.distinct).distinct.mkString(",")}" +
@@ -366,7 +366,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     })
 
                 if (U.containsDups(chunks.toList))
-                    logger.trace(s"Model element value synonyms dups found (ignoring) [" +
+                    logger.warn(s"Model element value synonyms dups found [" +
                         s"mdlId=$mdlId, " +
                         s"elmId=$elmId, " +
                         s"valId=$valId, " +
@@ -553,11 +553,11 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     @throws[NCE]
     private def makeModelFromSource(cls: Class[_ <: NCModel], src: String): NCModel =
-        catching(classOf[Throwable]) either modelFactory.mkModel(cls) match {
+        catching(classOf[Throwable]) either mdlFactory.mkModel(cls) match {
             case Left(e) ⇒
                 throw new NCE(s"Failed to instantiate model [" +
                     s"cls=${cls.getName}, " +
-                    s"factory=${modelFactory.getClass.getName}, " +
+                    s"factory=${mdlFactory.getClass.getName}, " +
                     s"src=$src" +
                 "]", e)
 
@@ -606,18 +606,24 @@ object NCDeployManager extends NCService with DecorateAsScala {
         )
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     * @return
+     */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         data = ArrayBuffer.empty[NCProbeModel]
 
-        modelFactory = new NCBasicModelFactory
+        mdlFactory = new NCBasicModelFactory
 
         // Initialize model factory (if configured).
         Config.modelFactoryType match {
             case Some(mft) ⇒
-                modelFactory = makeModelFactory(mft)
+                mdlFactory = makeModelFactory(mft)
 
-                modelFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
+                mdlFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
 
             case None ⇒ // No-op.
         }
@@ -647,18 +653,23 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (U.containsDups(ids))
             throw new NCE(s"Duplicate model IDs detected: ${ids.mkString(", ")}")
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     */
     @throws[NCE]
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        if (modelFactory != null)
-            modelFactory.terminate()
+        if (mdlFactory != null)
+            mdlFactory.terminate()
 
         if (data != null)
             data.clear()
 
-        super.stop()
+        ackStop()
     }
 
     /**

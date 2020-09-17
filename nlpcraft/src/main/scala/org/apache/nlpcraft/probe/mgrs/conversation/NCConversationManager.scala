@@ -49,6 +49,11 @@ object NCConversationManager extends NCService {
     @volatile private var convs: mutable.Map[Key, Value] = _
     @volatile private var gc: ScheduledExecutorService = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         gc = Executors.newSingleThreadScheduledExecutor
 
@@ -58,15 +63,19 @@ object NCConversationManager extends NCService {
 
         logger.info(s"Conversation manager GC started, checking every ${Config.timeoutMs}ms.")
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         U.shutdownPools(gc)
 
         logger.info("Conversation manager GC stopped.")
 
-        super.stop()
+        ackStop()
     }
 
     /**

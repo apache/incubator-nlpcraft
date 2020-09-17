@@ -32,16 +32,25 @@ import scala.util.control.Exception._
 object NCFeedbackManager extends NCService with NCIgniteInstance {
     @volatile private var seq: IgniteAtomicSequence = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         catching(wrapIE) {
             seq = NCSql.mkSeq(ignite, "feedbackSeq", "feedback", "id")
         }
 
-        super.start()
+        ackStart()
     }
 
     /**

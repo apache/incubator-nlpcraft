@@ -31,7 +31,6 @@ import scala.collection._
   * Generator of additional synonyms for geo names.
   */
 object NCGeoSyntheticNamesGenerator extends App {
-
     // Base synonym should be saved for console debug message.
     case class Holder(base: String, var entries: Set[NCGeoEntry])
 
@@ -42,7 +41,7 @@ object NCGeoSyntheticNamesGenerator extends App {
             throw new NCE(s"Couldn't delete file: $file")
 
         NCDictionaryManager.start()
-        NCGeoManager.start(false)
+        NCGeoManager.start()
 
         val hs = mutable.Map.empty[String, Holder]
 

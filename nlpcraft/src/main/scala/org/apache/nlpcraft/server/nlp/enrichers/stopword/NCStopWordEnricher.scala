@@ -645,6 +645,12 @@ object NCStopWordEnricher extends NCServerEnricher {
         }
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     * @return
+     */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         percents = Set(
@@ -674,10 +680,14 @@ object NCStopWordEnricher extends NCServerEnricher {
         stopWords = m(false)
         exceptions = m(true)
 
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
 }

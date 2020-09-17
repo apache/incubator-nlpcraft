@@ -45,27 +45,30 @@ object NCTxManager extends NCService with NCIgniteInstance {
       * @return
       */
     private var itx: IgniteTransactions = _
-    
+
     /**
-      * Stops this component.
-      */
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         // Close all still attached JDBC connections on stop.
         if (cons != null)
             cons.values.foreach(U.close)
         
-        super.stop()
+        ackStop()
     }
 
-
     /**
-      * Starts this component.
-      */
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         cons = mutable.HashMap.empty[IgniteUuid, Connection]
+
         itx = ignite.transactions()
 
-        super.start()
+        ackStart()
     }
 
     /**
@@ -106,14 +109,8 @@ object NCTxManager extends NCService with NCIgniteInstance {
     def attach(con: Connection): Unit = {
         val x = tx()
         
-        if (x != null) {
-            val xid = x.xid()
-    
-            cons.synchronized {
-                if (!cons.contains(xid))
-                    cons += xid → con
-            }
-        }
+        if (x != null)
+            attach(x, con)
     }
 
     /**

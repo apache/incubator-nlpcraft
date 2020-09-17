@@ -239,6 +239,11 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             foreach { case (typ, toks) ⇒ ners(typ).enrich(ns, toks) }
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         catching(wrapIE) {
             cache = ignite.cache[String, Holder]("sentence-cache")
@@ -261,12 +266,13 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         ners = NCNlpServerManager.getNers
         supportedProviders = ners.keySet ++ (if (Config.isBuiltInEnrichers) Set("nlpcraft") else Set.empty)
 
-        super.start()
+        ackStart()
     }
 
     /**
-      * Stops this manager.
-      */
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
         if (Config.isBuiltInEnrichers) {
             NCCoordinatesEnricher.stop(span)
@@ -281,7 +287,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
         
         cache = null
         
-        super.stop()
+        ackStop()
     }
 
     /**

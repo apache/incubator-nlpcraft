@@ -163,9 +163,10 @@ object NCProbeManager extends NCService {
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
 
     /**
-      *
-      * @return
-      */
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         probes = mutable.HashMap.empty[ProbeKey, ProbeHolder]
         mdls = mutable.HashMap.empty[String, NCProbeModelMdo]
@@ -204,12 +205,13 @@ object NCProbeManager extends NCService {
         
         pingSrv.start()
         
-        super.start()
+        ackStart()
     }
-    
+
     /**
-      *
-      */
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         isStopping = new AtomicBoolean(true)
 
@@ -219,7 +221,7 @@ object NCProbeManager extends NCService {
 
         modelsInfo = null
      
-        super.stop()
+        ackStop()
     }
 
     /**

@@ -22,7 +22,9 @@ import java.util.{Calendar ⇒ C}
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentenceNote ⇒ Note}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken ⇒ Token}
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
@@ -61,7 +63,7 @@ object NCDateEnricher extends NCServerEnricher {
 
     // Function's data holder.
     case class F(
-        tokens: Seq[NCNlpSentenceToken],
+        tokens: Seq[Token],
         body: String,
         isFull: Boolean,
         var isProcessed: Boolean = false) {
@@ -86,7 +88,7 @@ object NCDateEnricher extends NCServerEnricher {
     case class CRD(
         from: F,
         to: F,
-        dash: Seq[NCNlpSentenceToken]
+        dash: Seq[Token]
     )
 
     case class CR(
@@ -100,23 +102,29 @@ object NCDateEnricher extends NCServerEnricher {
 
     // Time holder.
     case class T(
-        tokens: Seq[NCNlpSentenceToken],
+        tokens: Seq[Token],
         body: Option[String]
     )
 
     // Time period holder.
     case class TP(
-        tokens: Seq[NCNlpSentenceToken],
+        tokens: Seq[Token],
         body: String
     )
-    
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-    }
-    
+
     /**
-      * Starts manager.
-      */
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStop()
+    }
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         def read(res: String): LHM_SS = {
             startScopedSpan("read", span, "res" → res) { _ ⇒
@@ -133,14 +141,13 @@ object NCDateEnricher extends NCServerEnricher {
             }
         }
 
-        val file =
-            Config.style match {
-                case MDY ⇒ "parts_mdy.txt.gz"
-                case DMY ⇒ "parts_dmy.txt.gz"
-                case YMD ⇒ "parts_ymd.txt.gz"
+        val file = Config.style match {
+            case MDY ⇒ "parts_mdy.txt.gz"
+            case DMY ⇒ "parts_dmy.txt.gz"
+            case YMD ⇒ "parts_ymd.txt.gz"
 
-                case _  ⇒ throw new AssertionError(s"Unexpected format type: ${Config.style}")
-            }
+            case _  ⇒ throw new AssertionError(s"Unexpected format type: ${Config.style}")
+        }
 
         var p1: LHM_SS = null
         var p2: LHM_SS = null
@@ -153,11 +160,17 @@ object NCDateEnricher extends NCServerEnricher {
 
         cacheParts = p1 ++ p2
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param ns NLP sentence to enrich.
+     * @param parent Optional parent span.
+     * @throws NCE
+     */
     @throws[NCE]
-    override def enrich(ns: NCNlpSentence, parent: Span = null) {
+    override def enrich(ns: Sentence, parent: Span = null) {
         // This stage must not be 1st enrichment stage.
         assume(ns.nonEmpty)
         
@@ -197,8 +210,8 @@ object NCDateEnricher extends NCServerEnricher {
                 buf
             }
     
-            def isDash(toks: Seq[NCNlpSentenceToken]): Boolean = {
-                def isDashChar(t: NCNlpSentenceToken): Boolean = t.origText.forall(ch ⇒ DASHES.contains(ch) || DASHES_LIKE.contains(ch))
+            def isDash(toks: Seq[Token]): Boolean = {
+                def isDashChar(t: Token): Boolean = t.origText.forall(ch ⇒ DASHES.contains(ch) || DASHES_LIKE.contains(ch))
         
                 toks.exists(isDashChar) && toks.forall(t ⇒ t.isStopWord || isDashChar(t))
             }
@@ -235,7 +248,7 @@ object NCDateEnricher extends NCServerEnricher {
                 buf
             }
     
-            def withBefore(tokens: Seq[NCNlpSentenceToken], lenBefore: Int) =
+            def withBefore(tokens: Seq[Token], lenBefore: Int) =
                 ns.take(tokens.head.index).filter(!_.isStopWord).takeRight(lenBefore) ++ tokens
     
             /*
@@ -302,15 +315,15 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def mkBetweenPrepositions(seq: Seq[(String, String)]): Seq[(P, P)] = seq.map(t ⇒ P(t._1) → P(t._2))
 
-    private def areSuitableTokens(buf: mutable.Buffer[Set[NCNlpSentenceToken]], toks: Seq[NCNlpSentenceToken]): Boolean =
+    private def areSuitableTokens(buf: mutable.Buffer[Set[Token]], toks: Seq[Token]): Boolean =
         toks.forall(t ⇒ !t.isQuoted && !t.isBracketed) && !buf.exists(_.exists(toks.contains))
 
-    private def findDates(ns: NCNlpSentence): Seq[F] = {
-        val buf = mutable.Buffer.empty[Set[NCNlpSentenceToken]]
+    private def findDates(ns: Sentence): Seq[F] = {
+        val buf = mutable.Buffer.empty[Set[Token]]
         val res = mutable.Buffer.empty[F]
 
         for (toks ← ns.tokenMixWithStopWords()) {
-            def process(toks: Seq[NCNlpSentenceToken]): Unit = {
+            def process(toks: Seq[Token]): Unit = {
                 if (areSuitableTokens(buf, toks)) {
                     val s = toks.map(_.normText).mkString(" ")
 
@@ -350,8 +363,8 @@ object NCDateEnricher extends NCServerEnricher {
       * @param toks
       * @return
       */
-    private def mkNote(range: NCDateRange, from: Int, to: Int, toks: Seq[NCNlpSentenceToken]): NCNlpSentenceNote =
-        NCNlpSentenceNote(
+    private def mkNote(range: NCDateRange, from: Int, to: Int, toks: Seq[Token]): Note =
+        Note(
             toks.map(_.index),
             "nlpcraft:date",
             "from" → range.from,
@@ -363,7 +376,7 @@ object NCDateEnricher extends NCServerEnricher {
         body: String,
         fromIncl: Boolean,
         toIncl: Boolean,
-        tokens: Seq[NCNlpSentenceToken],
+        tokens: Seq[Token],
         base: Long) {
         val note = mkNote(
             NCDateParser.calculate(body, base, fromIncl, toIncl).mkInclusiveDateRange,
@@ -377,15 +390,15 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def mark(processed: F*): Unit = processed.foreach(_.isProcessed = true)
 
-    private def collapse(ns: NCNlpSentence) {
+    private def collapse(ns: Sentence) {
         removeDuplicates(ns)
         collapsePeriods(ns)
         removeDuplicates(ns)
     }
 
-    private def isValidRange(n: NCNlpSentenceNote): Boolean = n("from").asInstanceOf[Long] < n("to").asInstanceOf[Long]
+    private def isValidRange(n: Note): Boolean = n("from").asInstanceOf[Long] < n("to").asInstanceOf[Long]
 
-    private def collapsePeriods(ns: NCNlpSentence) {
+    private def collapsePeriods(ns: Sentence) {
         // a) Months and years.
         // 1. "m", "m"... "y, m" → fix year for firsts; try to union all.
         // Example: January, February of 2009.
@@ -421,10 +434,10 @@ object NCDateEnricher extends NCServerEnricher {
         // Example: Monday, Tuesday.
         
         for (neighbours ← findNeighbours(ns, andSupport = true)) {
-            val buf = mutable.Buffer.empty[Seq[NCNlpSentenceNote]]
+            val buf = mutable.Buffer.empty[Seq[Note]]
 
             // Creates all neighbours' sequences starting from longest.
-            val combs: Seq[Seq[NCNlpSentenceNote]] = (2 to neighbours.length).reverse.flatMap(i ⇒ neighbours.sliding(i))
+            val combs: Seq[Seq[Note]] = (2 to neighbours.length).reverse.flatMap(i ⇒ neighbours.sliding(i))
 
             for (comb ← combs if !buf.exists(p ⇒ p.exists(p ⇒ comb.contains(p)))) {
                 val first = comb.head
@@ -434,8 +447,8 @@ object NCDateEnricher extends NCServerEnricher {
 
                 def fixField(
                     field: Int,
-                    seq: Seq[NCNlpSentenceNote],
-                    base: NCNlpSentenceNote,
+                    seq: Seq[Note],
+                    base: Note,
                     isBefore: Boolean = false,
                     isAfter: Boolean = false) = {
                     val r = mkDateRange(base)
@@ -507,13 +520,13 @@ object NCDateEnricher extends NCServerEnricher {
     }
 
     private def compressNotes(
-        ns: NCNlpSentence,
-        notes: Seq[NCNlpSentenceNote],
-        before: Option[NCNlpSentenceNote] = None,
-        after: Option[NCNlpSentenceNote] = None): Boolean = {
+        ns: Sentence,
+        notes: Seq[Note],
+        before: Option[Note] = None,
+        after: Option[Note] = None): Boolean = {
 
         if (nearRanges(notes)) {
-            def getSeq(optH: Option[NCNlpSentenceNote]): Seq[NCNlpSentenceNote] =
+            def getSeq(optH: Option[Note]): Seq[Note] =
                 optH match {
                     case Some(h) ⇒ Seq(h)
                     case None ⇒ Seq.empty
@@ -541,12 +554,12 @@ object NCDateEnricher extends NCServerEnricher {
     }
 
     private def compressAndRemoveNotes(
-        ns: NCNlpSentence,
-        seq: Seq[NCNlpSentenceNote],
-        before: Option[NCNlpSentenceNote] = None,
-        after: Option[NCNlpSentenceNote] = None) {
+        ns: Sentence,
+        seq: Seq[Note],
+        before: Option[Note] = None,
+        after: Option[Note] = None) {
         if (!compressNotes(ns, seq, before, after)) {
-            def remove(nOpt: Option[NCNlpSentenceNote]): Unit =
+            def remove(nOpt: Option[Note]): Unit =
                 nOpt match {
                     case Some(h) ⇒ ns.removeNote(h)
                     case None ⇒ // No-op.
@@ -557,10 +570,10 @@ object NCDateEnricher extends NCServerEnricher {
         }
     }
 
-    private def findNeighbours(ns: NCNlpSentence, andSupport: Boolean): Seq[Seq[NCNlpSentenceNote]] = {
+    private def findNeighbours(ns: Sentence, andSupport: Boolean): Seq[Seq[Note]] = {
         val hs = ns.getNotes("nlpcraft:date").sortBy(_.tokenFrom)
 
-        case class Wrapper(holder: NCNlpSentenceNote, var group: Int)
+        case class Wrapper(holder: Note, var group: Int)
 
         val wrappers = hs.map(Wrapper(_, 0))
 
@@ -591,7 +604,7 @@ object NCDateEnricher extends NCServerEnricher {
         hs.groupBy(grouped(_)).toSeq.sortBy(_._1).map(_._2).filter(_.size > 1)
     }
 
-    private def removeDuplicates(ns: NCNlpSentence): Unit = {
+    private def removeDuplicates(ns: Sentence): Unit = {
         val notes = findNeighbours(ns, andSupport = false).flatMap(g ⇒ {
             case class H(from: Long, to: Long) {
                 override def equals(obj: scala.Any): Boolean = obj match {
@@ -603,10 +616,10 @@ object NCDateEnricher extends NCServerEnricher {
             }
 
             // Neighbours grouped by equal date ranges.
-            val grouped: Map[H, Seq[NCNlpSentenceNote]] = g.groupBy(h ⇒ H(h("from").asInstanceOf[Long], h("to").asInstanceOf[Long]))
+            val grouped: Map[H, Seq[Note]] = g.groupBy(h ⇒ H(h("from").asInstanceOf[Long], h("to").asInstanceOf[Long]))
 
             // Groups ordered to keep node with maximum information (max periods count in date).
-            val hs: Iterable[Seq[NCNlpSentenceNote]] =
+            val hs: Iterable[Seq[Note]] =
                 grouped.map(_._2.sortBy(h ⇒ -h("periods").asInstanceOf[java.util.List[String]].asScala.length))
 
             // First holder will be kept in group, others (tail) should be deleted.
@@ -624,7 +637,7 @@ object NCDateEnricher extends NCServerEnricher {
         c
     }
 
-    private def mkSumRange(notes: Seq[NCNlpSentenceNote]): NCDateRange =
+    private def mkSumRange(notes: Seq[Note]): NCDateRange =
         notes.size match {
             case 0 ⇒ throw new AssertionError("Unexpected empty notes")
             case 1 ⇒ mkDateRange(notes.head)
@@ -639,17 +652,13 @@ object NCDateEnricher extends NCServerEnricher {
                     mkDateRange(notes.head, notes.last) // Summary.
         }
 
-    private def mkDateRange(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): NCDateRange =
-        NCDateRange(n1("from").asInstanceOf[Long], n2("to").asInstanceOf[Long])
-
-    private def mkDateRange(n: NCNlpSentenceNote): NCDateRange = mkDateRange(n, n)
+    private def mkDateRange(n1: Note, n2: Note): NCDateRange = NCDateRange(n1("from").asInstanceOf[Long], n2("to").asInstanceOf[Long])
+    private def mkDateRange(n: Note): NCDateRange = mkDateRange(n, n)
     private def getField(d: Long, field: Int): Int = mkCalendar(d).get(field)
-    private def equalHolder(h: NCNlpSentenceNote, ps: String*): Boolean =
-        h("periods").asInstanceOf[java.util.List[String]].asScala.sorted == ps.sorted
-    private def equalHolders(hs: Seq[NCNlpSentenceNote], ps: String*): Boolean = hs.forall(equalHolder(_, ps: _*))
+    private def equalHolder(h: Note, ps: String*): Boolean = h("periods").asInstanceOf[java.util.List[String]].asScala.sorted == ps.sorted
+    private def equalHolders(hs: Seq[Note], ps: String*): Boolean = hs.forall(equalHolder(_, ps: _*))
     private def getPrevious[T](s: T, seq: Seq[T]): T = seq(seq.indexOf(s) - 1)
-
-    private def nearRanges(ns: Seq[NCNlpSentenceNote]): Boolean =
+    private def nearRanges(ns: Seq[Note]): Boolean =
         ns.forall(
             n ⇒ if (n == ns.head) true else getPrevious(n, ns)("to").asInstanceOf[Long] == n("from").asInstanceOf[Long]
         )
