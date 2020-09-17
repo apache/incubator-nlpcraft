@@ -211,7 +211,7 @@ object NCSuggestSynonymManager extends NCService {
 
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
-                                    s"Model has too few intents samples: $allSamplesCnt. " +
+                                    s"Model has too few ($allSamplesCnt) intents samples. " +
                                     s"It will negatively affect the quality of suggestions. " +
                                     s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
 
