@@ -32,13 +32,29 @@ object NCLifecycleManager extends NCService {
         def lifecycle: Seq[String] = getStringList("nlpcraft.probe.lifecycle")
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     * @return
+     */
     @throws[NCE]
-    override def start(parent: Span = null): NCService = {
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         beans = Config.lifecycle.map(U.mkObject(_).asInstanceOf[NCLifecycle])
     
-        super.start()
+        ackStart()
     }
-    
+
+
+    /**
+     * Stops this service.
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
+        ackStop()
+    }
+
     /**
       * Called before any other probe managers are started.
       * Default implementation is a no-op.

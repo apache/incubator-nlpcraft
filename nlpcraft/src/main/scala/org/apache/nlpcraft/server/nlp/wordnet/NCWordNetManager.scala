@@ -65,16 +65,26 @@ object NCWordNetManager extends NCService {
             Seq.empty[String]
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     * @return
+     */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         dic =  Dictionary.getDefaultResourceInstance
         morph = dic.getMorphologicalProcessor
 
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     /**

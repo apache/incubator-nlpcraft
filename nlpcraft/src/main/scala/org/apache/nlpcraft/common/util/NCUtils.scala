@@ -1371,19 +1371,20 @@ object NCUtils extends LazyLogging {
         while (x != null) {
             var first = true
 
-            val msg = x.getLocalizedMessage
+            var msg = x.getLocalizedMessage
 
-            if (msg != null) {
-                x.getLocalizedMessage.split("\n").foreach(line ⇒ {
-                    val msg = s"${" " * indent}${if (first) s"$ansiRedFg+-$ansiReset" else "  "}${line.trim}"
+            if (msg == null)
+                msg = cleanClassName(x.getClass)
 
-                    if (err) logger.error(msg) else logger.warn(msg)
+            msg.split("\n").foreach(line ⇒ {
+                val msg = s"${" " * indent}${if (first) s"$ansiRedFg+-$ansiReset" else "  "}${line.trim}"
 
-                    first = false
-                })
+                if (err) logger.error(msg) else logger.warn(msg)
 
-                indent += INDENT
-            }
+                first = false
+            })
+
+            indent += INDENT
 
             x = x.getCause
         }

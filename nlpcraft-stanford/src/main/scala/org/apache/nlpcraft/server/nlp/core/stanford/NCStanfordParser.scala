@@ -33,19 +33,28 @@ import scala.collection.Seq
   * Stanford NLP parser implementation.
   */
 object NCStanfordParser extends NCService with NCNlpParser with NCIgniteInstance {
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         // Should be started even if another NLP engine configured.
         if (!NCStanfordCoreManager.isStarted)
             NCStanfordCoreManager.start(span)
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
         if (NCStanfordCoreManager.isStarted)
             NCStanfordCoreManager.stop(span)
 
-        super.stop()
+        ackStop()
     }
 
     override def parse(normTxt: String, parent: Span = null): Seq[NCNlpWord] =

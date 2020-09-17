@@ -36,8 +36,10 @@ object NCStanfordCoreManager extends NCService with NCIgniteInstance {
     @volatile private var cache: IgniteCache[String, CoreDocument] = _
 
     /**
-      * Starts this component.
-      */
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = {
         val p = new Properties()
 
@@ -51,13 +53,17 @@ object NCStanfordCoreManager extends NCService with NCIgniteInstance {
             cache = ignite.cache[String, CoreDocument]("stanford-cache")
         }
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = {
         cache = null
 
-        super.stop()
+        ackStop()
     }
 
     /**

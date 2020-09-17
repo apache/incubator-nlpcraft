@@ -480,10 +480,15 @@ object NCSortEnricher extends NCProbeEnricher {
             }
         }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         // Single words.
-        sort =
-            Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle").map(NCNlpCoreManager.stem)
+        sort = Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle")
+            .map(NCNlpCoreManager.stem)
 
         // Single words.
         // Cannot be same as in SORT.
@@ -514,16 +519,20 @@ object NCSortEnricher extends NCProbeEnricher {
 
         validate()
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-
         sort = null
         by = null
         order = null
         stemAnd = null
         maskWords = null
+
+        ackStop()
     }
 }

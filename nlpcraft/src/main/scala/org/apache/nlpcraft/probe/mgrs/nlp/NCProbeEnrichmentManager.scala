@@ -18,13 +18,11 @@
 package org.apache.nlpcraft.probe.mgrs.nlp
 
 import java.io.Serializable
-import java.time.LocalDateTime
 import java.util
 import java.util.{Date, Objects}
 import java.util.concurrent.{ExecutorService, Executors}
 import java.util.function.Predicate
 
-import akka.http.scaladsl.model.DateTime
 import io.opencensus.trace.{Span, Status}
 import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
@@ -88,15 +86,25 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
     Config.check()
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
 
         pool = Executors.newFixedThreadPool(8 * Runtime.getRuntime.availableProcessors())
+
         executor = ExecutionContext.fromExecutor(pool)
 
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         mux.synchronized {
             if (embeddedCbs != null)
@@ -106,16 +114,17 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         U.shutdownPools(pool)
 
         executor = null
+
         pool = null
 
-        super.stop()
+        ackStop()
     }
 
     /**
       *
       * @param cb Callback.
       */
-    private [probe] def addEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
+    private[probe] def addEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
         mux.synchronized {
             embeddedCbs.add(cb)
         }
@@ -125,7 +134,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
       *
       * @param cb Callback.
       */
-    private [probe] def removeEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
+    private[probe] def removeEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
         mux.synchronized {
             embeddedCbs.remove(cb)
         }
@@ -224,12 +233,12 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(_.text))
         tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
         tbl += (s"${ansiBlueFg}User ID$ansiReset", usrId)
-        tbl += (s"${ansiBlueFg}  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
-        tbl += (s"${ansiBlueFg}  Last Name$ansiReset", senMeta.getOrElse("LAST_NAME", ""))
-        tbl += (s"${ansiBlueFg}  Email$ansiReset", senMeta.getOrElse("EMAIL", ""))
-        tbl += (s"${ansiBlueFg}  Company Name$ansiReset", senMeta.getOrElse("COMPANY_NAME", ""))
-        tbl += (s"${ansiBlueFg}  Is Admin$ansiReset", senMeta.getOrElse("IS_ADMIN", ""))
-        tbl += (s"${ansiBlueFg}  Signup Date$ansiReset", new Date(java.lang.Long.parseLong(senMeta("SIGNUP_TSTAMP").toString)))
+        tbl += (s"$ansiBlueFg  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
+        tbl += (s"$ansiBlueFg  Last Name$ansiReset", senMeta.getOrElse("LAST_NAME", ""))
+        tbl += (s"$ansiBlueFg  Email$ansiReset", senMeta.getOrElse("EMAIL", ""))
+        tbl += (s"$ansiBlueFg  Company Name$ansiReset", senMeta.getOrElse("COMPANY_NAME", ""))
+        tbl += (s"$ansiBlueFg  Is Admin$ansiReset", senMeta.getOrElse("IS_ADMIN", ""))
+        tbl += (s"$ansiBlueFg  Signup Date$ansiReset", new Date(java.lang.Long.parseLong(senMeta("SIGNUP_TSTAMP").toString)))
         tbl += (s"${ansiBlueFg}User Agent$ansiReset", senMeta.getOrElse("USER_AGENT", ""))
         tbl += (s"${ansiBlueFg}Remote Address$ansiReset", senMeta.getOrElse("REMOTE_ADDR", ""))
         tbl += (s"${ansiBlueFg}Server Timestamp$ansiReset", new Date(java.lang.Long.parseLong(senMeta("RECEIVE_TSTAMP").toString)))

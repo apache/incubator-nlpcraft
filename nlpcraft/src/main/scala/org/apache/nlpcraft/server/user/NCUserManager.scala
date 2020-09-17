@@ -94,6 +94,10 @@ object NCUserManager extends NCService with NCIgniteInstance {
 
     Config.check()
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         if (scanner != null)
             scanner.cancel()
@@ -103,9 +107,14 @@ object NCUserManager extends NCService with NCIgniteInstance {
         tokenSigninCache = null
         idSigninCache = null
 
-        super.stop()
+        ackStop()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         addTags(
             span,
@@ -170,7 +179,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
         logger.info(s"Access tokens will be scanned for timeout every ${Config.timeoutScannerFreqMins}m.")
         logger.info(s"Access tokens inactive for >= ${Config.accessTokenExpireTimeoutMins}m will be invalidated.")
 
-        super.start()
+        ackStart()
     }
 
     /**

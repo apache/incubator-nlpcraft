@@ -69,6 +69,11 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
 
     @volatile private var url: String = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         url = Config.proxyUrl
 
@@ -96,19 +101,23 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
 
         logger.info(s"spaCy proxy connected: $url")
 
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     /**
       *
       * @param ns
-      * @param enabledBuiltInToks Set of enabled built-in token IDs.
+      * @param ebiTokens Set of enabled built-in token IDs.
       */
-    override def enrich(ns: NCNlpSentence, enabledBuiltInToks: Set[String], parent: Span = null): Unit =
+    override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             val resp = getSync(Http().singleRequest(HttpRequest(uri = s"$url?text=${URLEncoder.encode(ns.text, "UTF-8")}")))
     
@@ -125,7 +134,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
                             spans.foreach(span ⇒ {
                                 val nerLc = span.ner.toLowerCase
     
-                                if (enabledBuiltInToks.contains(nerLc)) {
+                                if (ebiTokens.contains(nerLc)) {
                                     val t1Opt = ns.find(_.startCharIndex == span.from)
                                     val t2Opt = ns.find(_.endCharIndex == span.from + span.text.length)
     

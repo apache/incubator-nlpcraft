@@ -43,7 +43,12 @@ object NCSpellCheckManager extends NCService {
             s.capitalize
         else
             s // Full lower case by default.
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         dict = U.extractYamlString(
             NCExternalConfigManager.getContent(SPELL, RESOURCE),
@@ -54,13 +59,17 @@ object NCSpellCheckManager extends NCService {
 
         logger.debug(s"Spell checker dictionary loaded: ${dict.size} entries")
 
-        super.start()
+        ackStart()
     }
-    
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         dict = null
+
+        ackStop()
     }
     
     /**

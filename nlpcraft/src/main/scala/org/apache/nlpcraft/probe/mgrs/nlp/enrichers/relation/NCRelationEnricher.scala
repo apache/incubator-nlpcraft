@@ -63,8 +63,10 @@ object NCRelationEnricher extends NCProbeEnricher {
     private var ALL_FUNC_STEMS: Set[String] = _
 
     /**
-      * Starts this component.
-      */
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         val macros = NCMacroParser()
 
@@ -111,11 +113,15 @@ object NCRelationEnricher extends NCProbeEnricher {
 
         ALL_FUNC_STEMS = FUNCS.flatMap(_.allStems).toSet
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
 
     /**

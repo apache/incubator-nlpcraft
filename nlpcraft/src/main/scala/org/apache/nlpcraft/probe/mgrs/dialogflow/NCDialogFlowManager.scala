@@ -49,6 +49,11 @@ object NCDialogFlowManager extends NCService {
     @volatile private var flow: mutable.Map[Key, ArrayBuffer[Value]] = _
     @volatile private var gc: ScheduledExecutorService = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         flow = mutable.HashMap.empty[Key, ArrayBuffer[Value]]
 
@@ -58,15 +63,19 @@ object NCDialogFlowManager extends NCService {
 
         logger.info(s"Dialog flow manager GC started, checking every ${Config.timeoutMs}ms.")
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         U.shutdownPools(gc)
 
         logger.info("Dialog flow manager GC stopped.")
 
-        super.stop()
+        ackStop()
     }
 
     /**

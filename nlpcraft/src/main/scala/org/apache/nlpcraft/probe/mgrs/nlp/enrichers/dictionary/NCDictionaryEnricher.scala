@@ -38,19 +38,24 @@ object NCDictionaryEnricher extends NCProbeEnricher {
     @volatile private var swearWords: Set[String] = _
 
     /**
-      * Starts this component.
-      */
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        swearWords =
-            U.readTextResource(s"badfilter/swear_words.txt", "UTF-8", logger).
-                map(NCNlpCoreManager.stem).
-                toSet
+        swearWords = U.readTextResource(s"badfilter/swear_words.txt", "UTF-8", logger).
+            map(NCNlpCoreManager.stem).
+            toSet
 
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     @throws[NCE]

@@ -156,13 +156,24 @@ object NCExternalConfigManager extends NCService {
         val downTypes = m.asScala
 
         if (downTypes.nonEmpty) {
-            U.executeParallel(downTypes.values.toSeq.map(d ⇒ () ⇒ clearDir(d)): _*)
+            U.executeParallel(
+                downTypes.values.toSeq.map(d ⇒ () ⇒ clearDir(d)): _*
+            )
             U.executeParallel(
                 downTypes.keys.toSeq.flatMap(t ⇒ FILES(t).toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
             )
         }
 
-        super.start(parent)
+        ackStart()
+    }
+
+    /**
+     * Stops this service.
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span): Unit = startScopedSpan("atop", parent) { _ ⇒
+        ackStop()
     }
 
     /**

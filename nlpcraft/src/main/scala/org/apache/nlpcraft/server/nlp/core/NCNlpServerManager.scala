@@ -60,6 +60,11 @@ object NCNlpServerManager extends NCService {
     private val isOpenNer: Boolean = Config.support("opennlp")
     private val isSpacyNer: Boolean = Config.support("spacy")
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         addTags(span,
             "stanfordNer" → isStanfordNer,
@@ -112,9 +117,13 @@ object NCNlpServerManager extends NCService {
     
         logger.info(s"Enabled built-in NERs: ${Config.tokenProviders.mkString(", ")}")
     
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         if (ners != null)
             ners.values.foreach(_.stop())
@@ -122,7 +131,7 @@ object NCNlpServerManager extends NCService {
         if (parser != null && parser.isStarted)
             parser.stop()
 
-        super.stop()
+        ackStop()
     }
 
     /**

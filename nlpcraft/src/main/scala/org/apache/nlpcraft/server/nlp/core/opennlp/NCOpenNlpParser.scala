@@ -41,6 +41,11 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
     @volatile private var lemmatizer: DictionaryLemmatizer = _
     @volatile private var cache: IgniteCache[String, Array[String]] = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         require(NCOpenNlpTokenizer.isStarted)
 
@@ -63,15 +68,25 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
             cache = ignite.cache[String, Array[String]]("opennlp-cache")
         }
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         cache = null
 
-        super.stop()
+        ackStop()
     }
 
+    /**
+     *
+     * @param normTxt Normalized text.
+     * @param parent Optional parent span.
+     * @return Parsed words.
+     */
     override def parse(normTxt: String, parent: Span = null): Seq[NCNlpWord] =
         startScopedSpan("parse", parent, "normTxt" → normTxt) { _ ⇒
             // Can be optimized.
