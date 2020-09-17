@@ -173,7 +173,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     throw new NCE(s"Model property cannot contain a string with whitespaces [" +
                         s"mdlId=$mdlId, " +
                         s"name=$name, " +
-                        s"word=$word" +
+                        s"word='$word'" +
                     s"]")
                 else
                     NCNlpCoreManager.stem(word)
@@ -301,7 +301,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                 // IDs can only be simple strings.
                 if (chunks.exists(_.kind != TEXT))
-                    throw new NCE(s"Invalid ID format [" +
+                    throw new NCE(s"Invalid element or value ID format [" +
                         s"mdlId=$mdlId, " +
                         s"id=$id" +
                     s"]")
@@ -309,95 +309,83 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 chunks
             }
 
-            // Add element ID as a synonyms (dups ignored).
-            val idChunks = Seq(chunkIdSplit(elmId))
+            // Add element ID as a synonyms.
+            Seq(chunkIdSplit(elmId))
+                .distinct
+                .foreach(chunks ⇒ addSynonym(
+                    isElementId = true,
+                    isValueName = false,
+                    null,
+                    chunks
+                ))
 
-            idChunks.distinct.foreach(ch ⇒ addSynonym(isElementId = true, isValueName = false, null, ch))
-
-            // Add straight element synonyms (dups printed as warnings).
-            val synsChunks = for (syn ← elm.getSynonyms.asScala.flatMap(parser.expand)) yield chunkSplit(syn)
-
-            if (U.containsDups(synsChunks.flatten.toList))
-                logger.warn(s"Model element synonym dups found [" +
-                    s"mdlId=$mdlId, " +
-                    s"elmId=$elmId, " +
-                    s"synonym=${synsChunks.diff(synsChunks.distinct).distinct.map(_.mkString(",")).mkString(";")}" +
-                s"]")
-
-            synsChunks.distinct.foreach(ch ⇒ addSynonym(isElementId = false, isValueName = false, null, ch))
+            // Add straight element synonyms.
+            (for (syn ← elm.getSynonyms.asScala.flatMap(parser.expand)) yield chunkSplit(syn))
+                .distinct
+                .foreach(chunks ⇒ addSynonym(
+                    isElementId = false,
+                    isValueName = false,
+                    null,
+                    chunks
+                ))
 
             val vals =
                 (if (elm.getValues != null) elm.getValues.asScala else Seq.empty) ++
-                    (if (elm.getValueLoader != null) elm.getValueLoader.load(elm).asScala else Seq.empty)
+                (if (elm.getValueLoader != null) elm.getValueLoader.load(elm).asScala else Seq.empty)
 
             // Add value synonyms.
-            val valNames = vals.map(_.getName).toList
-
-            if (U.containsDups(valNames))
-                logger.warn(s"Model element values names dups found [" +
-                    s"mdlId=$mdlId, " +
-                    s"elmId=$elmId, " +
-                    s"names=${valNames.diff(valNames.distinct).distinct.mkString(",")}" +
-                s"]")
-
             for (v ← vals.map(p ⇒ p.getName → p).toMap.values) {
-                val valId = v.getName
+                val valName = v.getName
                 val valSyns = v.getSynonyms.asScala
 
-                val idChunks = Seq(chunkIdSplit(valId))
+                val nameChunks = Seq(chunkIdSplit(valName))
 
-                // Add value name as a synonyms (dups ignored)
-                idChunks.distinct.foreach(ch ⇒ addSynonym(isElementId = false, isValueName = true, valId, ch))
+                // Add value name as a synonyms.
+                nameChunks.distinct.foreach(chunks ⇒ addSynonym(
+                    isElementId = false,
+                    isValueName = true,
+                    valName,
+                    chunks
+                ))
 
-                // Add straight value synonyms (dups printed as warnings)
                 var skippedOneLikeName = false
 
-                val chunks =
-                    valSyns.flatMap(parser.expand).flatMap(valSyn ⇒ {
-                        val valSyns = chunkSplit(valSyn)
+                val chunks = valSyns.flatMap(parser.expand).flatMap(valSyn ⇒ {
+                    val valSyns = chunkSplit(valSyn)
 
-                        if (idChunks.contains(valSyns) && !skippedOneLikeName) {
-                            skippedOneLikeName = true
+                    if (nameChunks.contains(valSyns) && !skippedOneLikeName) {
+                        skippedOneLikeName = true
 
-                            None
-                        }
-                        else
-                            Some(valSyns)
-                    })
+                        None
+                    }
+                    else
+                        Some(valSyns)
+                })
 
-                if (U.containsDups(chunks.toList))
-                    logger.warn(s"Model element value synonyms dups found [" +
-                        s"mdlId=$mdlId, " +
-                        s"elmId=$elmId, " +
-                        s"valId=$valId, " +
-                        s"synonym=${chunks.diff(chunks.distinct).distinct.map(_.mkString(",")).mkString(";")}" +
-                    s"]")
-
-                chunks.distinct.foreach(ch ⇒ addSynonym(isElementId = false, isValueName = false, valId, ch))
+                chunks.distinct.foreach(chunks ⇒ addSynonym(
+                    isElementId = false,
+                    isValueName = false,
+                    valName,
+                    chunks
+                ))
             }
         }
 
-        val valLdrs = mutable.HashSet.empty[NCValueLoader]
-
+        // Discard value loaders.
         for (elm ← mdl.getElements.asScala) {
             val ldr = elm.getValueLoader
 
             if (ldr != null)
-                valLdrs += ldr
+                ldr.onDiscard()
         }
 
-        // Discard value loaders, if any.
-        for (ldr ← valLdrs)
-            ldr.onDiscard()
-
-        val allAliases =
-            syns
-                .flatMap(_.syn)
-                .groupBy(_.origText)
-                .map(x ⇒ (x._1, x._2.map(_.alias).filter(_ != null)))
-                .values
-                .flatten
-                .toList
+        val allAliases = syns
+            .flatMap(_.syn)
+            .groupBy(_.origText)
+            .map(x ⇒ (x._1, x._2.map(_.alias).filter(_ != null)))
+            .values
+            .flatten
+            .toList
 
         // Check for DSl alias uniqueness.
         if (U.containsDups(allAliases))
@@ -973,7 +961,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val dups = adds.intersect(excls)
 
         if (dups.nonEmpty)
-            throw new NCE(s"Duplicate stems detected in additional and excluded stopwords [" +
+            throw new NCE(s"Duplicate stems detected between additional and excluded stopwords [" +
                 s"mdlId=$mdlId, " +
                 s"dups=${dups.mkString(",")}" +
             s"]")

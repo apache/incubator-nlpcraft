@@ -29,7 +29,7 @@ import scala.collection.mutable.ArrayBuffer
   *     In this case chunks contain the element ID.
   * @param isValueName Is this an implicit value name synonym?
   *     In this case chunks contain value name.
-  * @param isDirect Direct or permutated synonym flag.
+  * @param isDirect Direct or permuted synonym flag.
   * @param value Optional value name if this is a value synonym.
   */
 class NCProbeSynonym(
@@ -115,6 +115,7 @@ class NCProbeSynonym(
                             r.matcher(get0((t: Token) ⇒ t.origText, (w: Word) ⇒ w.origText)).matches() ||
                             r.matcher(get0((t: Token) ⇒ t.normText, (w: Word) ⇒ w.normText)).matches()
                         case DSL ⇒ get0((t: Token) ⇒ chunk.dslPred.apply(t), (_: Word) ⇒ false)
+
                         case _ ⇒ throw new AssertionError()
                     }
             }
@@ -130,6 +131,7 @@ class NCProbeSynonym(
             isValueSynonym match {
                 case true if !that.isValueSynonym ⇒ 1
                 case false if that.isValueSynonym ⇒ -1
+
                 case _ ⇒ 0
             }
         
@@ -140,6 +142,7 @@ class NCProbeSynonym(
                 case true if !that.isElementId ⇒ 1
                 case false if that.isElementId ⇒ -1
                 case true if that.isElementId ⇒ 0
+
                 case _ ⇒ // None are element IDs.
                     if (length > that.length)
                         1

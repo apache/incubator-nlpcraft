@@ -48,7 +48,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     def start(parent: Span = null): NCService =
         // Make sure this is not called by subclass.
-        throw new AssertionError()
+        throw new AssertionError(s"NCService#start() should not be called directly in '${U.cleanClassName(getClass)}' service.")
 
     /**
       * Stops this service.
@@ -58,7 +58,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     def stop(parent: Span = null): Unit =
         // Make sure this is not called by subclass.
-        throw new AssertionError()
+        throw new AssertionError(s"NCService#stop() should not be called directly in '${U.cleanClassName(getClass)}' service.")
 
     /**
      * Gets name of this service (as its class name).

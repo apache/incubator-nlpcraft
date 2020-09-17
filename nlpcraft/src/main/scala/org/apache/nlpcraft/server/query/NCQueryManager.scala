@@ -267,7 +267,9 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 tbl += (s"${ansiBlueFg}Agent$ansiReset", usrAgent.getOrElse("<n/a>"))
                 tbl += (s"${ansiBlueFg}Remote Address$ansiReset", rmtAddr.getOrElse("<n/a>"))
                 tbl += (s"${ansiBlueFg}Server Request ID$ansiReset", srvReqId)
-                tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))
+
+                // TODO: need to pretty print data JSON
+                // tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))
 
                 logger.info(s"New request received:\n$tbl")
 
