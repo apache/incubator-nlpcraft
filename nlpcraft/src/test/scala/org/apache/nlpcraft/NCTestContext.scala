@@ -17,61 +17,100 @@
 
 package org.apache.nlpcraft
 
-import java.io.IOException
-
-import org.apache.nlpcraft.common.NCException
-import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.junit.jupiter.api.TestInstance.Lifecycle
-import org.junit.jupiter.api.{AfterEach, BeforeAll, BeforeEach, TestInfo, TestInstance}
+import org.junit.jupiter.api._
 
 /**
   *
   */
 @TestInstance(Lifecycle.PER_CLASS)
-class NCTestContext {
-    protected var cli: NCTestClient = _
+abstract class NCTestContext {
+    private final val MDL_CLASS = classOf[NCTestEnvironment]
 
+    private var cli: NCTestClient = _
     private var probeStarted = false
 
     @BeforeEach
-    @throws[NCException]
-    @throws[IOException]
-    private def beforeEach(ti: TestInfo): Unit = {
-        if (ti.getTestMethod.isPresent) {
-            val a = ti.getTestMethod.get().getAnnotation(classOf[NCTestContextModel])
+    @throws[Exception]
+    private def beforeEach(info: TestInfo): Unit = start0(() ⇒ getMethodAnnotation(info))
 
-            if (a != null) {
-                probeStarted = false
-                NCEmbeddedProbe.start(a.value())
-                probeStarted = true
-
-                cli = new NCTestClientBuilder().newBuilder.build
-
-                cli.open(NCModelManager.getAllModels().head.model.getId)
-            }
-        }
-    }
+    @BeforeAll
+    @throws[Exception]
+    private def beforeAll(info: TestInfo): Unit = start0(() ⇒ getClassAnnotation(info))
 
     @AfterEach
-    @throws[NCException]
-    @throws[IOException]
-    private def afterEach(): Unit =
-        if (cli != null)
+    @throws[Exception]
+    private def afterEach(info: TestInfo): Unit =
+        if (getMethodAnnotation(info).isDefined)
+            stop0()
+
+    @AfterAll
+    @throws[Exception]
+    private def afterAll(info: TestInfo): Unit =
+        if (getClassAnnotation(info).isDefined)
+            stop0()
+
+    private def getClassAnnotation(info: TestInfo) =
+        if (info.getTestClass.isPresent) Option(info.getTestClass.get().getAnnotation(MDL_CLASS)) else None
+
+    private def getMethodAnnotation(info: TestInfo): Option[NCTestEnvironment] =
+        if (info.getTestMethod.isPresent) Option(info.getTestMethod.get().getAnnotation(MDL_CLASS)) else None
+
+    @throws[Exception]
+    private def start0(extract: () ⇒ Option[NCTestEnvironment]): Unit =
+        extract() match {
+            case Some(ann) ⇒
+                if (probeStarted || cli != null)
+                    throw new IllegalStateException(
+                        "Model already initialized. " +
+                        s"Note that '@${classOf[NCTestEnvironment].getSimpleName}' can be set for class or method, " +
+                        s"but not both of them."
+                    )
+
+                preProbeStart()
+
+                probeStarted = false
+
+                NCEmbeddedProbe.start(ann.model())
+
+                probeStarted = true
+
+                if (ann.startClient()) {
+                    cli = new NCTestClientBuilder().newBuilder.build
+
+                    cli.open(NCModelManager.getAllModels().head.model.getId)
+                }
+            case None ⇒ // No-op.
+        }
+
+    @throws[Exception]
+    private def stop0(): Unit = {
+        if (cli != null) {
             cli.close()
+
+            cli = null
+        }
 
         if (probeStarted) {
             NCEmbeddedProbe.stop()
 
             probeStarted = false
-        }
 
-    @BeforeAll
-    @throws[NCException]
-    @throws[IOException]
-    private def beforeAll(ti: TestInfo): Unit = {
-        println("!!!ti=" + ti)
+            afterProbeStop()
+        }
+    }
+
+    protected def preProbeStart(): Unit = { }
+
+    protected def afterProbeStop(): Unit = { }
+
+    final protected def getClient: NCTestClient = {
+        if (cli == null)
+            throw new IllegalStateException("Client is not started.")
+
+        cli
     }
 }

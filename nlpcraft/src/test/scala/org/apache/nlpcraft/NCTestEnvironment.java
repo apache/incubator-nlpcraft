@@ -24,11 +24,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
 @Retention(value=RUNTIME)
-@Target(value=METHOD)
-public @interface NCTestContextModel {
-    Class<? extends NCModel> value();
+@Target(value = {METHOD, TYPE})
+public @interface NCTestEnvironment {
+    Class<? extends NCModel> model();
+    boolean startClient() default false;
 }

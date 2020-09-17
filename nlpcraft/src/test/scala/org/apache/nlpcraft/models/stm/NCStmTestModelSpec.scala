@@ -19,39 +19,15 @@ package org.apache.nlpcraft.models.stm
 
 import java.io.IOException
 
-import org.apache.nlpcraft.common.NCException
-import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
 /**
  *
  */
-class NCStmTestModelSpec {
-    private var cli: NCTestClient = _
-
-    @BeforeEach
-    @throws[NCException]
-    @throws[IOException]
-    private[stm] def setUp(): Unit = {
-        NCEmbeddedProbe.start(classOf[NCStmTestModel])
-
-        cli = new NCTestClientBuilder().newBuilder.build
-
-        cli.open("nlpcraft.stm.test") // See phone_model.json
-    }
-
-    @AfterEach
-    @throws[NCException]
-    @throws[IOException]
-    private[stm] def tearDown(): Unit = {
-        if (cli != null)
-            cli.close()
-
-        NCEmbeddedProbe.stop()
-    }
-
+@NCTestEnvironment(model = classOf[NCStmTestModel], startClient = true)
+class NCStmTestModelSpec extends NCTestContext {
     /**
      * @param req
      * @param expResp
@@ -59,7 +35,7 @@ class NCStmTestModelSpec {
      */
     @throws[IOException]
     private def check(req: String, expResp: String): Unit = {
-        val res = cli.ask(req)
+        val res = getClient.ask(req)
 
         assertTrue(res.isOk)
         assertTrue(res.getResult.isPresent)

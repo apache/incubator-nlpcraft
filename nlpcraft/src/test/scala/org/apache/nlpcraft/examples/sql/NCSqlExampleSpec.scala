@@ -25,19 +25,19 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.examples.sql.db.SqlServer
-import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
 import scala.collection.JavaConverters._
-import scala.compat.java8.OptionConverters._
+import scala.compat.java8.OptionConverters.RichOptionalGeneric
 
 /**
   * SQL model test.
   *
   * @see SqlModel
   */
-class NCSqlExampleSpec {
+@NCTestEnvironment(model = classOf[SqlModel], startClient = true)
+class NCSqlExampleSpec extends NCTestContext {
     private val GSON = new Gson
     private val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
     private val NORM = Seq("\n", "\r", "\t")
@@ -48,30 +48,10 @@ class NCSqlExampleSpec {
         newTag((_: java.lang.Boolean) ⇒ "**").
         build
 
-    private var client: NCTestClient = _
-
     case class Case(texts: Seq[String], sql: String)
 
-    @BeforeEach
-    def setUp(): Unit = {
-        SqlServer.start()
-
-        NCEmbeddedProbe.start(classOf[SqlModel])
-
-        client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
-
-        client.open("sql.model.id")
-    }
-
-    @AfterEach
-    def tearDown(): Unit = {
-        if (client != null)
-            client.close()
-
-        NCEmbeddedProbe.stop()
-
-        SqlServer.stop()
-    }
+    override protected def preProbeStart(): Unit = SqlServer.start()
+    override protected def afterProbeStop(): Unit = SqlServer.stop()
 
     private def normalize(s: String): String =
         NORM.
@@ -90,11 +70,13 @@ class NCSqlExampleSpec {
     private def check(cases: Case*): Unit = {
         val errs = collection.mutable.LinkedHashMap.empty[String, String]
 
+        val cli = getClient
+
         cases.
             flatMap(c ⇒ c.texts.map(t ⇒ t → normalize(c.sql))).
             foreach {
                 case (txt, expSqlNorm) ⇒
-                    val res = client.ask(txt)
+                    val res = cli.ask(txt)
 
                     if (res.isOk) {
                         require(res.getResult.asScala.isDefined)
