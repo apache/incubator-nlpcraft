@@ -17,47 +17,14 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
-import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.NCTestContext
 import org.junit.jupiter.api.Assertions.{assertTrue, fail}
-import org.junit.jupiter.api.{AfterEach, BeforeEach}
 import org.scalatest.Assertions
 
 /**
   * Enrichers tests utility base class.
   */
-class NCEnricherBaseSpec {
-    private var client: NCTestClient = _
-
-    def getModelClass: Option[Class[_ <: NCDefaultTestModel]] = Some(classOf[NCDefaultTestModel])
-
-    @BeforeEach
-    protected def setUp(): Unit = {
-        val mdlId = NCDefaultTestModel.ID
-
-        getModelClass match {
-            case Some(claxx) ⇒
-                println(s"Embedded probe is going to start with model [id=$mdlId, class=${claxx.getName}]")
-
-                NCEmbeddedProbe.start(claxx)
-
-            case None ⇒
-                println(s"Probe should be already started as external process: $mdlId")
-        }
-
-        client = new NCTestClientBuilder().newBuilder.setResponseLog(false).build
-
-        client.open(mdlId)
-    }
-
-    @AfterEach
-    protected def tearDown(): Unit = {
-        if (client != null)
-            client.close()
-
-        NCEmbeddedProbe.stop()
-    }
-
+abstract class NCEnricherBaseSpec extends NCTestContext {
     /**
       * Checks single variant.
       *
@@ -65,7 +32,9 @@ class NCEnricherBaseSpec {
       * @param expToks Expected tokens.
       */
     protected def checkExists(txt: String, expToks: NCTestToken*): Unit = {
-        val res = client.ask(txt)
+        val cli = getClient
+
+        val res = cli.ask(txt)
 
         if (res.isFailed)
             fail(s"Result failed [" +
@@ -95,7 +64,9 @@ class NCEnricherBaseSpec {
       * @param expToks
       */
     protected def checkAll(txt: String, expToks: Seq[NCTestToken]*): Unit = {
-        val res = client.ask(txt)
+        val cli = getClient
+
+        val res = cli.ask(txt)
 
         if (res.isFailed)
             fail(s"Result failed [" +
