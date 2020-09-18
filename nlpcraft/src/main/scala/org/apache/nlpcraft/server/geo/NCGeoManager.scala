@@ -80,32 +80,26 @@ object NCGeoManager extends NCService {
     case class YamlTopCity(name: String, region: String, country: String)
 
     /**
-      * Starts manager.
-      */
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     * @return
+     */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         model = readAndConstructModel(true)
 
-        super.start()
+        ackStart()
     }
 
     /**
-      * Starts manager. Method is public for generator.
-      */
-    @throws[NCE]
-    def start(extended: Boolean): NCService = {
-        model = readAndConstructModel(extended)
-
-        super.start()
-    }
-
-    /**
-      * Stops this component.
-      */
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         model = null
 
-        super.stop()
+        ackStop()
     }
 
     /**

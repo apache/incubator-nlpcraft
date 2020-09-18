@@ -112,20 +112,29 @@ object NCSuggestSynonymManager extends NCService {
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         pool = Executors.newCachedThreadPool()
         executor = ExecutionContext.fromExecutor(pool)
 
-        super.start(parent)
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop(parent)
-
         U.shutdownPools(pool)
 
         pool = null
         executor = null
+
+        ackStop()
     }
 
     /**

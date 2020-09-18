@@ -81,13 +81,22 @@ object NCPreProcessManager extends NCService {
             "you're" → "you are",
             "you've" → "you have"
         ).map(p ⇒ p._1 → p._2.split(' ').toSeq)
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     /**

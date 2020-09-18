@@ -19,7 +19,6 @@ package org.apache.nlpcraft.probe.mgrs.nlp
 
 import java.io.Serializable
 
-import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.{NCService, _}
@@ -31,7 +30,7 @@ import scala.language.implicitConversions
 /**
  * Base class for NLP enricher.
  */
-abstract class NCProbeEnricher extends NCService with LazyLogging {
+abstract class NCProbeEnricher extends NCService {
     /**
       *
       * Processes this NLP sentence.

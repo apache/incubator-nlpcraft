@@ -30,18 +30,27 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 object NCValidateManager extends NCService with LazyLogging {
     // Create new language finder singleton.
     @volatile private var langFinder: OptimaizeLangDetector = _
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         langFinder = new OptimaizeLangDetector()
         
         // Initialize language finder.
         langFinder.loadModels()
         
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     /**

@@ -17,19 +17,21 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
 
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCEnricherBaseSpec, NCTestLimitToken ⇒ lim, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.NCTestEnvironment
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestLimitToken => lim, NCTestUserToken => usr}
 import org.junit.jupiter.api.Test
 
 /**
   * Limit enricher test.
   */
+@NCTestEnvironment(model = classOf[NCDefaultTestModel], startClient = true)
 class NCEnricherLimitSpec extends NCEnricherBaseSpec {
     /**
       *
       * @throws Exception
       */
     @Test
-    def test(): Unit = {
+    def test(): Unit =
         runBatch(
             _ ⇒ checkExists(
                 "top A",
@@ -52,5 +54,4 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
                 usr(text = "A B", id = "AB")
             )
         )
-    }
 }

@@ -43,7 +43,7 @@ object NCDictionaryManager extends NCService {
     @volatile private var full: Set[String] = _
     @volatile private var dicts: Map[NCDictionaryType, Set[String]] = _
     
-    override def start(parent: Span): NCService = startScopedSpan("start", parent, "dictionaries" → dictFiles.values.mkString(",")) { _ ⇒
+    override def start(parent: Span = null): NCService = startScopedSpan("start", parent, "dicts" → dictFiles.values.mkString(",")) { _ ⇒
         dicts = dictFiles.map(p ⇒ {
             val wordType = p._1
             val path = p._2
@@ -70,11 +70,15 @@ object NCDictionaryManager extends NCService {
         // Read summary dictionary.
         full = dicts.flatMap(_._2).toSet
         
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
 
     /**

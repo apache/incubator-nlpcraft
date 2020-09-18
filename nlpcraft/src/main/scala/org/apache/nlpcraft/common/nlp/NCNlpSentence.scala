@@ -401,12 +401,12 @@ object NCNlpSentence {
             filter(_.isNlp).
             foreach(n ⇒ ns.fixNote(n, "stopWord" → false))
 
-        val nsNotes: Map[String, Seq[Int]] = ns.tokens.flatten.map(p ⇒ p.noteType → p.tokenIndexes).toMap
+        val all = ns.tokens.flatten
+        val nsNotes: Map[String, Seq[Int]] = all.map(p ⇒ p.noteType → p.tokenIndexes).toMap
 
         for (
-            t ← ns.tokens;
-            stopReason ← t.stopsReasons
-            if nsNotes.getOrElse(stopReason.noteType, Seq.empty) == stopReason.tokenIndexes
+            t ← ns.tokens; stopReason ← t.stopsReasons
+                if all.contains(stopReason) && nsNotes.getOrElse(stopReason.noteType, Seq.empty) == stopReason.tokenIndexes
         )
             ns.fixNote(t.getNlpNote, "stopWord" → true)
 
@@ -422,16 +422,16 @@ object NCNlpSentence {
                 fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
 
         if (res)
-        // Validation (all indexes calculated well)
-        require(
-            !ns.flatten.
+            // Validation (all indexes calculated well)
+            require(
+                !ns.flatten.
                 exists(n ⇒ ns.filter(_.wordIndexes.exists(n.wordIndexes.contains)).exists(t ⇒ !t.contains(n))),
-            s"Invalid sentence:\n" +
-                ns.map(t ⇒
+                    s"Invalid sentence:\n" +
+                    ns.map(t ⇒
                     // Human readable invalid sentence for debugging.
                     s"${t.origText}{index:${t.index}}[${t.map(n ⇒ s"${n.noteType}, {range:${n.tokenFrom}-${n.tokenTo}}").mkString("|")}]"
-                ).mkString("\n")
-        )
+                    ).mkString("\n")
+            )
 
         res
     }

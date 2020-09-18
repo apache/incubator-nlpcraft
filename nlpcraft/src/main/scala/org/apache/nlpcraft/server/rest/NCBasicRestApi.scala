@@ -21,7 +21,7 @@ import akka.http.scaladsl.coding.Coders
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.{`Access-Control-Allow-Credentials`, `Access-Control-Allow-Headers`, `Access-Control-Allow-Methods`, `Access-Control-Allow-Origin`}
+import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.Directives.{entity, _}
 import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler, Route}
 import com.google.gson.Gson
@@ -75,10 +75,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class NotImplemented() extends NCE("Not implemented.")
 
     class InvalidArguments(msg: String) extends NCE(msg)
-    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field '$fn' value is out of range ($from, $to).")
-    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field '$fn' value exceeded max length of $max.")
-    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field '$fn'")
-    case class EmptyField(fn: String) extends InvalidArguments(s"API field '$fn' value cannot be empty.")
+    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field `$fn` value is out of range ($from, $to).")
+    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field `$fn` value exceeded max length of $max.")
+    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field `$fn`")
+    case class EmptyField(fn: String) extends InvalidArguments(s"API field `$fn` value cannot be empty.")
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
 
@@ -865,8 +865,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan(
                 "clear$Dialog",
                 "acsTok" → req.acsTok,
-                "mdlId" → req.mdlId,
                 "usrExtId" → req.usrExtId.orNull,
+                "mdlId" → req.mdlId,
                 "usrId" → req.usrId.getOrElse(-1)) { span ⇒
                     checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
 
@@ -1396,7 +1396,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         implicit val resFmt: RootJsonFormat[Res$User$Update] = jsonFormat1(Res$User$Update)
 
         entity(as[Req$User$Update]) { req ⇒
-            startScopedSpan("user$Update", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(() ⇒ null)) { span ⇒
+            startScopedSpan("user$Update", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(-1)) { span ⇒
                 checkLength(
                     "acsTok" → req.acsTok,
                     "firstName" → req.firstName,
@@ -1443,7 +1443,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         entity(as[Req$User$Delete]) { req ⇒
             startScopedSpan(
-                "user$Delete", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(() ⇒ null)
+                "user$Delete", "acsTok" → req.acsTok, "usrId" → req.id.getOrElse(-1)
             ) { span ⇒
                 checkLength("acsTok" → req.acsTok, "usrExtId" → req.usrExtId)
 

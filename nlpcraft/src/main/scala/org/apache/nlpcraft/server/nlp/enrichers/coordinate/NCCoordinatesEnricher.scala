@@ -50,19 +50,28 @@ object NCCoordinatesEnricher extends NCServerEnricher {
 
     private final val SEPS = Seq(",", ";", "and")
     private final val EQUALS = Seq("=", "==", "is", "are", "equal")
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         latStems = Seq("lat", "latitude").map(NCNlpCoreManager.stem)
         lonStems = Seq("lon", "longitude").map(NCNlpCoreManager.stem)
 
-        super.start()
+        ackStart()
     }
-    
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         latStems = null
         lonStems = null
+
+        ackStop()
     }
     
     /**

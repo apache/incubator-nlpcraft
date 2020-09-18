@@ -71,6 +71,19 @@ object NCSortEnricher extends NCProbeEnricher {
             "ORDER SORT BY x" → TYPE_BY
         )
 
+    private final val SORT_WORDS = Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle")
+    private final val BY_WORDS = Seq("by", "on", "with")
+    private final val ASC_WORDS = Seq(
+        "top down" → false,
+        "bottom up" → true,
+        "ascending" → true,
+        "asc" → true,
+        "descending" → false,
+        "desc" → false,
+        "{in|by|from} {top down|descending} {order|way|fashion|*}" → false,
+        "{in|by|from} {bottom up|ascending} {order|way|fashion|*}" → true
+    )
+
     case class NoteData(note: String, indexes: Seq[Int]) {
         // Added for debug reasons.
         override def toString: String = s"NoteData [note=$note, indexes=[${indexes.mkString(",")}]]"
@@ -91,6 +104,15 @@ object NCSortEnricher extends NCProbeEnricher {
     ) {
         require(main.nonEmpty)
         require(subjSeq.nonEmpty || bySeq.nonEmpty)
+
+        // Special case. Same elements found without ASC flag. Should be skipped as already processed.
+        def isSubCase(m: Match): Boolean =
+            // Stops skipped.
+            asc.isDefined &&
+            m.asc.isEmpty &&
+            main == m.main &&
+            subjSeq == m.subjSeq &&
+            bySeq == m.bySeq
 
         // Added for debug reasons.
         override def toString: String = {
@@ -421,58 +443,63 @@ object NCSortEnricher extends NCProbeEnricher {
             "mdlId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
+            val matches = mutable.ArrayBuffer.empty[Match]
 
             for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks)) {
                 tryToMatch(toks) match {
-                    case Some(m) ⇒
-                        def addNotes(
-                            params: ArrayBuffer[(String, Any)],
-                            seq: Seq[NoteData],
-                            notesName: String,
-                            idxsName: String
-                        ): ArrayBuffer[(String, Any)] = {
-                            params += notesName → seq.map(_.note).asJava
-                            params += idxsName → seq.map(_.indexes.asJava).asJava
+                    case Some(m)  ⇒
+                        if (!matches.exists(_.isSubCase(m))) {
+                            def addNotes(
+                                params: ArrayBuffer[(String, Any)],
+                                seq: Seq[NoteData],
+                                notesName: String,
+                                idxsName: String
+                            ): ArrayBuffer[(String, Any)] = {
+                                params += notesName → seq.map(_.note).asJava
+                                params += idxsName → seq.map(_.indexes.asJava).asJava
 
-                            params
-                        }
-
-                        def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
-                            val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
-
-                            if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
-                                notes += note
-
-                                m.main.foreach(_.add(note))
-                                m.stop.foreach(_.addStopReason(note))
+                                params
                             }
-                        }
 
-                        def mkParams(): mutable.ArrayBuffer[(String, Any)] = {
-                            val params = mutable.ArrayBuffer.empty[(String, Any)]
+                            def mkNote(params: ArrayBuffer[(String, Any)]): Unit = {
+                                val note = NCNlpSentenceNote(m.main.map(_.index), TOK_ID, params: _*)
 
-                            if (m.asc.isDefined)
-                                params += "asc" → m.asc.get
+                                if (!notes.exists(n ⇒ ns.notesEqualOrSimilar(n, note))) {
+                                    notes += note
 
-                            params
-                        }
+                                    m.main.foreach(_.add(note))
+                                    m.stop.foreach(_.addStopReason(note))
 
-                        if (m.subjSeq.nonEmpty)
-                            for (subj ← m.subjSeq) {
-                                def addSubj(): ArrayBuffer[(String, Any)] =
-                                    addNotes(mkParams(), subj, "subjnotes", "subjindexes")
-
-                                if (m.bySeq.nonEmpty)
-                                    for (by ← m.bySeq)
-                                        mkNote(addNotes(addSubj(), by, "bynotes", "byindexes"))
-                                else
-                                    mkNote(addSubj())
+                                    matches += m
+                                }
                             }
-                        else {
-                            require(m.bySeq.nonEmpty)
 
-                            for (by ← m.bySeq)
-                                mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
+                            def mkParams(): mutable.ArrayBuffer[(String, Any)] = {
+                                val params = mutable.ArrayBuffer.empty[(String, Any)]
+
+                                if (m.asc.isDefined)
+                                    params += "asc" → m.asc.get
+
+                                params
+                            }
+
+                            if (m.subjSeq.nonEmpty)
+                                for (subj ← m.subjSeq) {
+                                    def addSubj(): ArrayBuffer[(String, Any)] =
+                                        addNotes(mkParams(), subj, "subjnotes", "subjindexes")
+
+                                    if (m.bySeq.nonEmpty)
+                                        for (by ← m.bySeq)
+                                            mkNote(addNotes(addSubj(), by, "bynotes", "byindexes"))
+                                    else
+                                        mkNote(addSubj())
+                                }
+                            else {
+                                require(m.bySeq.nonEmpty)
+
+                                for (by ← m.bySeq)
+                                    mkNote(addNotes(mkParams(), by, "bynotes", "byindexes"))
+                            }
                         }
 
                     case None ⇒ // No-op.
@@ -480,14 +507,18 @@ object NCSortEnricher extends NCProbeEnricher {
             }
         }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         // Single words.
-        sort =
-            Seq("sort", "rank", "classify", "order", "arrange", "organize", "segment", "shuffle").map(NCNlpCoreManager.stem)
+        sort = SORT_WORDS.map(NCNlpCoreManager.stem)
 
         // Single words.
         // Cannot be same as in SORT.
-        by = Seq("by", "on", "with").map(NCNlpCoreManager.stem)
+        by = BY_WORDS.map(NCNlpCoreManager.stem)
 
         // Multiple words.
         // Cannot be same as in SORT and BY.
@@ -495,35 +526,28 @@ object NCSortEnricher extends NCProbeEnricher {
         order = {
             val p = NCMacroParser()
 
-            Seq(
-                "top down" → false,
-                "bottom up" → true,
-                "ascending" → true,
-                "asc" → true,
-                "descending" → false,
-                "desc" → false,
-                "{in|by|from} {top down|descending} {order|way|fashion|*}" → false,
-                "{in|by|from} {bottom up|ascending} {order|way|fashion|*}" → true
-            ).flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
+            ASC_WORDS.flatMap { case (txt, asc) ⇒ p.expand(txt).map(p ⇒ NCNlpCoreManager.stem(p) → asc ) }
         }
 
         stemAnd = NCNlpCoreManager.stem("and")
-
-        maskWords =
-            (sort ++ by ++ order.map(_._1)).flatMap(_.split(" ")).map(_.trim).filter(_.nonEmpty).distinct
+        maskWords = (sort ++ by ++ order.map(_._1)).flatMap(_.split(" ")).map(_.trim).filter(_.nonEmpty).distinct
 
         validate()
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-
         sort = null
         by = null
         order = null
         stemAnd = null
         maskWords = null
+
+        ackStop()
     }
 }

@@ -46,21 +46,19 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
       * @param parent Optional parent span.
       */
     @throws[NCE]
-    def start(parent: Span = null): NCService = {
-        require(!started)
-        
-        started = true
+    def start(parent: Span = null): NCService =
+        // Make sure this is not called by subclass.
+        throw new AssertionError(s"NCService#start() should not be called directly in '${U.cleanClassName(getClass)}' service.")
 
-        val dur = s"$ansiBlueFg[${currentTime - startMs}ms]$ansiReset"
-
-        logger.info(s"$clsName started $dur")
-        
-        addTags(currentSpan(),
-            "startDurationMs" → (currentTime - startMs), "state" → started
-        )
-        
-        this
-    }
+    /**
+      * Stops this service.
+      *
+      * @param parent Optional parent span.
+      */
+    @throws[NCE]
+    def stop(parent: Span = null): Unit =
+        // Make sure this is not called by subclass.
+        throw new AssertionError(s"NCService#stop() should not be called directly in '${U.cleanClassName(getClass)}' service.")
 
     /**
      * Gets name of this service (as its class name).
@@ -70,14 +68,31 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     def name: String = clsName
 
     /**
-      * Stops this service.
-      *
-      * @param parent Optional parent span.
-      */
-    @throws[NCE]
-    def stop(parent: Span = null): Unit = {
+     * Acks started service. Should be called at the end of the `start()` method.
+     */
+    protected def ackStart(): NCService = {
+        require(!started)
+
+        started = true
+
+        val dur = s"$ansiBlueFg[${currentTime - startMs}ms]$ansiReset"
+
+        addTags(
+            currentSpan(),
+            "startDurationMs" → (currentTime - startMs), "state" → started
+        )
+
+        logger.info(s"$clsName started $dur")
+
+        this
+    }
+
+    /**
+     * Acks stopped service. Should be called at the end of the `stop()` method.
+     */
+    protected def ackStop(): Unit = {
         started = false
-    
+
         addTags(currentSpan(),
             "state" → started
         )

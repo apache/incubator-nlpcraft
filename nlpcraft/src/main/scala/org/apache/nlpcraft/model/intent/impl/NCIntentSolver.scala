@@ -27,7 +27,7 @@ import org.apache.nlpcraft.model.impl.NCVariantImpl
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import scala.collection.JavaConverters._
 
 /**
@@ -151,7 +151,7 @@ class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 if (cbRes.getIntentId == null)
                     cbRes.setIntentId(res.intentId)
                     
-                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the **winning match**.")
+                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the $ansiRedFg<<best match>>.$ansiReset")
 
                 NCDialogFlowManager.addMatchedIntent(res.intentId, req.getUser.getId, ctx.getModel.getId, span)
                 

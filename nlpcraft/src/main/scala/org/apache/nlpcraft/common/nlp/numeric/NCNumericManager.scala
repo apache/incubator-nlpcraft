@@ -117,9 +117,13 @@ object NCNumericManager extends NCService {
         else
             None
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
@@ -262,7 +266,7 @@ object NCNumericManager extends NCService {
         unitsStem = hs.map(p ⇒ p.stem → NCNumericUnit(p.name, p.unitType)).toMap
         maxSynWords = (unitsOrigs ++ unitsStem).keySet.map(_.split(" ").length).max
         
-        super.start()
+        ackStart()
     }
 
     /**

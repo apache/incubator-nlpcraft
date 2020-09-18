@@ -276,7 +276,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         )
                 })
 
-                tbl.info(logger, Some(s"Found matching intents (sorted from ${ansiRedFg}best$ansiReset to worst match):"))
+                tbl.info(logger, Some(s"Found matching intents (sorted ${ansiRedFg}best$ansiReset to worst):"))
             }
             else
                 logger.info("No matching intent found.")

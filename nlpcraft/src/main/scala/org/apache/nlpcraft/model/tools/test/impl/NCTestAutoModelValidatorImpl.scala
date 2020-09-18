@@ -118,10 +118,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         val passCnt = results.count(_.pass)
         val failCnt = results.count(!_.pass)
         
-        if (failCnt > 0)
-            logger.error(s"Some model auto-validation failed - see details below...")
-        
-        logger.info(s"\n\nModel auto-validation results: " +
+        logger.info(s"Model auto-validation results: " +
             s"${ansiGreenFg}OK$ansiReset $passCnt, ${ansiRedFg}FAIL$ansiReset $failCnt:\n${tbl.toString}"
         )
         

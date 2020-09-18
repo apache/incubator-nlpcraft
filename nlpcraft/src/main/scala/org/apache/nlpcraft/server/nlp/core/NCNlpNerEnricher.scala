@@ -28,8 +28,8 @@ trait NCNlpNerEnricher extends NCService {
     /**
       *
       * @param ns
-      * @param enabledBuiltInTokens Set of enabled built-in token IDs.
+      * @param ebiTokens Set of enabled built-in (EBI) token IDs.
       * @param parent Optional parent span.
       */
-    def enrich(ns: NCNlpSentence, enabledBuiltInTokens: Set[String], parent: Span = null)
+    def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null)
 }
