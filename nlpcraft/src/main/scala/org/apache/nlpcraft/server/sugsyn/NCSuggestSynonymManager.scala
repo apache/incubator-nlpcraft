@@ -106,7 +106,7 @@ object NCSuggestSynonymManager extends NCService {
             s"Unsupported symbols: $word"
         )
     }
-    case class SuggestionResult(synonym: String, factor: Double)
+    case class SuggestionResult(synonym: String, score: Double)
 
     private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
@@ -408,7 +408,7 @@ object NCSuggestSynonymManager extends NCService {
 
                                 val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
                                     res.map { case (id, data) ⇒
-                                        val factors = data.map(_.factor)
+                                        val factors = data.map(_.score)
 
                                         val min = factors.min
                                         val max = factors.max
@@ -419,14 +419,14 @@ object NCSuggestSynonymManager extends NCService {
 
                                         def normalize(v: Double): Double = (v - min) / delta
 
-                                        val norm = data.map(s ⇒ SuggestionResult(s.synonym, normalize(s.factor))).
-                                            filter(_.factor >= minScore)
+                                        val norm = data.map(s ⇒ SuggestionResult(s.synonym, normalize(s.score))).
+                                            filter(_.score >= minScore)
 
                                         id → norm.map(d ⇒ {
                                             val m = new util.HashMap[String, Any]()
 
                                             m.put("synonym", d.synonym.toLowerCase)
-                                            m.put("factor", d.factor)
+                                            m.put("score", d.score)
 
                                             m
                                         }).asJava

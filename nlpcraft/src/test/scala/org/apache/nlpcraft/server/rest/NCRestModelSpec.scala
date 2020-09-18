@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{Disabled, Test}
 
 // Enable it and run if context word server started.
-@Disabled
+//@Disabled
 @NCTestEnvironment(model = classOf[AlarmModel], startClient = false)
 class NCRestModelSpec extends NCRestSpec {
     @Test
