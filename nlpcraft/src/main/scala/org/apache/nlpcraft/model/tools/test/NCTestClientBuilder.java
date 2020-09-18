@@ -687,10 +687,7 @@ public class NCTestClientBuilder {
             try {
                 switch (type) {
                     case "html": return Jsoup.parseBodyFragment(body).outerHtml();
-                    case "text":
-                    case "yaml":
-                    case "json": // JSON already configured for pretty printing.
-                        return org.apache.nlpcraft.common.util.NCUtils.colorJson(body);
+                    case "json": return org.apache.nlpcraft.common.util.NCUtils.colorJson(body);
 
                     default: return body;
                 }
