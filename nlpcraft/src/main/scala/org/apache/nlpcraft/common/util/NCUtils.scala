@@ -1423,24 +1423,22 @@ object NCUtils extends LazyLogging {
         val buf = mutable.Buffer.empty[String]
 
         var inQuotes = false
-        var isValue = false
 
         for (ch ← json) {
             ch match {
-                case ':' ⇒ buf += s"$ansiGreenFg:$ansiReset"; isValue = true
-                case '[' | ']' | '{' | '}' | ',' ⇒ buf += s"$ansiBold$ansiYellowFg$ch$ansiReset"
-                case '"' ⇒ inQuotes = !inQuotes; buf += s"$ansiBlueFg$ch$ansiReset"
-                case _ ⇒
-                    if (inQuotes && isValue)
-                        buf += s"$ansiGreenFg$ch$ansiReset"
-                    else if (inQuotes && !isValue)
-                        buf += s"$ansiCyanFg$ch$ansiReset"
+                case ':' if !inQuotes ⇒ buf += s"$ansiBold$ansiRedFg:$ansiReset"
+                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf += s"$ansiBold$ansiYellowFg$ch$ansiReset"
+                case ',' if !inQuotes ⇒ buf += s"$ansiBold$ansiGreenFg$ch$ansiReset"
+                case '"' ⇒
+                    if (inQuotes)
+                        buf += s"$ansiReset$ansiBlueFg$ch$ansiReset"
                     else
-                        buf += s"$ch"
-            }
+                        buf += s"$ansiBlueFg$ch$ansiCyanFg"
 
-            if (ch == ',' && !inQuotes)
-                isValue = false
+                    inQuotes = !inQuotes
+
+                case _ ⇒ buf += s"$ch"
+            }
         }
 
         buf.mkString

@@ -424,12 +424,16 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 row._2
             ))
 
-            logger.warn(s"Dup synonyms in '$mdlId' model:\n${tbl.toString}")
+            if (mdl.isDupSynonymsAllowed) {
+                logger.trace(s"Duplicate synonyms found in '$mdlId' model:\n${tbl.toString}")
 
-            if (mdl.isDupSynonymsAllowed)
-                logger.warn(s"NOTE: '$mdlId' model allows dup synonyms but the large number may degrade the performance.")
-            else
+                logger.warn(s"Duplicate synonyms found in '$mdlId' model - turn on TRACE logging to see them.")
+                logger.warn(s"Model '$mdlId' allows duplicate synonyms but the large number may degrade the performance.")
+            } else {
+                logger.warn(s"Duplicate synonyms found in '$mdlId' model:\n${tbl.toString}")
+
                 throw new NCE(s"Duplicated synonyms found and not allowed - check warning messages [mdlId=$mdlId]")
+            }
         }
 
         mdl.getMetadata.put(MDL_META_ALL_ALIASES_KEY, allAliases.toSet)
