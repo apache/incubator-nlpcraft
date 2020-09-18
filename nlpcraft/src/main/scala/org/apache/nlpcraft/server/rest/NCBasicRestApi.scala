@@ -81,6 +81,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     case class EmptyField(fn: String) extends InvalidArguments(s"API field `$fn` value cannot be empty.")
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
+    case class InvalidModelId(id: String) extends InvalidArguments(s"Model ID is invalid or unknown: $id")
 
     case class AskReqHolder(
         usrId: Long,
@@ -323,7 +324,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     @throws[InvalidField]
     protected def checkModelId(mdlId: String, compId: Long): Unit =
         if (!NCProbeManager.existsForModel(compId, mdlId))
-            throw InvalidField("mdlId")
+            throw InvalidModelId("mdlId")
 
     /**
       * Checks length of field value.

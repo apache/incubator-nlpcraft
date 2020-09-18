@@ -57,7 +57,7 @@ public class AlarmModel extends NCModelFileAdapter {
         "Buzz me in an hour and 15mins",
         "Set my alarm for 30s"
     })
-    private NCResult onMatch(
+    NCResult onMatch(
         NCIntentMatch ctx,
         @NCIntentTerm("nums") List<NCToken> numToks
     ) {

@@ -1676,12 +1676,13 @@ object NCUtils extends LazyLogging {
       * @param bodies
       * @param ec
       */
-    def executeParallel(bodies: (() ⇒ Any)*)(implicit ec: ExecutionContext = global): Unit =
+    def executeParallel(bodies: (() ⇒ Any)*)(implicit ec: ExecutionContext = global): Unit = {
         bodies.map(body ⇒ {
             Future {
                 body()
             }(ec)
-        }).foreach(f ⇒ Await.result(f, Duration.Inf))
+        }).foreach(Await.result(_, Duration.Inf))
+    }
 
     /**
       *

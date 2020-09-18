@@ -67,6 +67,9 @@ public class NCTestAutoModelValidator {
      */
     public static void main(String[] args) throws Exception {
         NCTestAutoModelValidatorImpl.isValid();
+
+        // TODO: uncomment once the hanging on exit is fixed.
+        // System.exit(NCTestAutoModelValidatorImpl.isValid() ? 0 : 1);
     }
 
     /**

@@ -172,7 +172,7 @@ object NCExternalConfigManager extends NCService {
      *
      * @param parent Optional parent span.
      */
-    override def stop(parent: Span): Unit = startScopedSpan("atop", parent) { _ ⇒
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         ackStop()
     }
 

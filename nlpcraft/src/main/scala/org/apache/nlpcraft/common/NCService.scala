@@ -71,7 +71,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
      * Acks started service. Should be called at the end of the `start()` method.
      */
     protected def ackStart(): NCService = {
-        require(!started)
+        assert(!started, s"Service '$name' is already started.")
 
         started = true
 
