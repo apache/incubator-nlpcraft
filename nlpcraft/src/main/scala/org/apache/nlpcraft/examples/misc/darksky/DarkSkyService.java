@@ -189,7 +189,7 @@ public class DarkSkyService {
                     return p.get();
                 }
                 catch (ExecutionException | InterruptedException e) {
-                    throw new DarkSkyException("Error execution weather request.", e);
+                    throw new DarkSkyException("Error executing weather request.", e);
                 }
             }).
             sorted(Comparator.comparing(Pair::getLeft)).

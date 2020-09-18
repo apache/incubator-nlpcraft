@@ -1420,28 +1420,28 @@ object NCUtils extends LazyLogging {
      * @return
      */
     def colorJson(json: String): String = {
-        val buf = mutable.Buffer.empty[String]
+        val buf = new StringBuilder
 
         var inQuotes = false
 
         for (ch ← json) {
             ch match {
-                case ':' if !inQuotes ⇒ buf += s"$ansiBold$ansiRedFg:$ansiReset"
-                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf += s"$ansiBold$ansiYellowFg$ch$ansiReset"
-                case ',' if !inQuotes ⇒ buf += s"$ansiBold$ansiGreenFg$ch$ansiReset"
+                case ':' if !inQuotes ⇒ buf ++= s"$ansiRedFg:$ansiReset"
+                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf ++= s"$ansiYellowFg$ch$ansiReset"
+                case ',' if !inQuotes ⇒ buf ++= s"$ansiGreenFg$ch$ansiReset"
                 case '"' ⇒
                     if (inQuotes)
-                        buf += s"$ansiReset$ansiBlueFg$ch$ansiReset"
+                        buf ++= s"$ansiBlueFg$ch$ansiReset"
                     else
-                        buf += s"$ansiBlueFg$ch$ansiCyanFg"
+                        buf ++= s"$ansiBlueFg$ch$ansiCyanFg"
 
                     inQuotes = !inQuotes
 
-                case _ ⇒ buf += s"$ch"
+                case _ ⇒ buf ++= s"$ch"
             }
         }
 
-        buf.mkString
+        buf.toString()
     }
 
     /**

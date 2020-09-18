@@ -32,6 +32,7 @@ import org.apache.http.{HttpEntity, HttpResponse}
 import org.apache.nlpcraft.NCTestContext
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
+import org.apache.nlpcraft.common._
 
 import scala.collection.JavaConverters._
 
@@ -190,13 +191,15 @@ private[rest] class NCRestSpec extends NCTestContext {
         checkStatus(resp)
 
         println("Checked POST:")
-        println(GSON.toJson(
-            Map(
-                "url" → url,
-                "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
-                "response" → resp.asJava
-            ).asJava
-        ))
+        println(U.colorJson(
+            GSON.toJson(
+                Map(
+                    "url" → url,
+                    "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
+                    "response" → resp.asJava
+                ).asJava
+            ))
+        )
 
         val ctx = JsonPath.parse(GSON.toJson(resp.asJava))
 

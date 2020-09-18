@@ -30,8 +30,7 @@ class NCTestExampleModelsSpec {
             "org.apache.nlpcraft.examples.alarm.AlarmModel," +
             "org.apache.nlpcraft.examples.time.TimeModel," +
             "org.apache.nlpcraft.examples.lightswitch.LightSwitchModel," +
-            "org.apache.nlpcraft.examples.echo.EchoModel," +
-            "org.apache.nlpcraft.examples.weather.WeatherModel"
+            "org.apache.nlpcraft.examples.echo.EchoModel"
 
         // Instruct auto-validator what models to test.
         System.setProperty("NLPCRAFT_TEST_MODELS", models)

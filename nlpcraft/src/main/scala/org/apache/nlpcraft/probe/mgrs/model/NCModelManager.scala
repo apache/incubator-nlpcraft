@@ -23,6 +23,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.deploy._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.collection.convert.DecorateAsScala
 import scala.util.control.Exception._
@@ -45,7 +46,7 @@ object NCModelManager extends NCService with DecorateAsScala {
      */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
-        val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms", "Intents")
+        val tbl = NCAsciiTable("Model", "Intents")
 
         mux.synchronized {
             data = NCDeployManager.getModels.map(w ⇒ {
@@ -58,16 +59,22 @@ object NCModelManager extends NCService with DecorateAsScala {
                 val mdl = w.model
 
                 val synCnt = w.synonyms.values.flatMap(_.values).flatten.size
+                val elmCnt = w.elements.keySet.size
 
                 tbl += (
-                    mdl.getId,
-                    mdl.getName,
-                    mdl.getVersion,
-                    w.elements.keySet.size,
-                    synCnt,
+                    Seq(
+                        s"${mdl.getName}",
+                        s"ID: $ansiBold${mdl.getId}$ansiReset, ver: ${mdl.getVersion}",
+                        s"Elements: $elmCnt" + (if (elmCnt == 0) s" $ansiRedFg(!)$ansiReset" else ""),
+                        s"Synonyms: $synCnt" + (if (synCnt == 0) s" $ansiRedFg(!)$ansiReset" else "")
+                    ),
                     w.intents
                         .map(_.toDslString)
-                        .flatMap(s ⇒ s.replaceAll(" term", "\n  term").split("\n"))
+                        .flatMap(s ⇒
+                            s
+                            .replaceAll("intent=", s"${ansiGreenFg}intent$ansiReset=")
+                            .replaceAll(" term", s"\n  ${ansiCyanFg}term$ansiReset").split("\n")
+                        )
                 )
             })
         }
