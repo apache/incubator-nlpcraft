@@ -249,11 +249,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         tbl += (
                             Seq(
                                 s"#${m.variantIdx + 1}",
-                                s"${ansiRedFg}<<best match>>$ansiReset"
+                                s"$ansiRedFg<<best match>>$ansiReset"
                             ),
                             Seq(
                                 im.intent.id,
-                                s"${ansiRedFg}<<best match>>$ansiReset"
+                                s"$ansiRedFg<<best match>>$ansiReset"
                             ),
                             mkPickTokens(im)
                         )
@@ -404,6 +404,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         // Check dialog flow first.
         if (!intent.flow.isEmpty && !matchFlow(intent.flow, hist)) {
             logger.info(s"Intent '$intentId' didn't match because of dialog flow $varStr.")
+
             None
         }
         else {
@@ -435,12 +436,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         // Term is missing. Stop further processing for this intent.
                         // This intent cannot be matched.
                         logger.trace(s"Term '$term' is missing for intent '$intentId' (stopping further processing).")
+
                         abort = true
                 }
             }
             
             if (abort) {
-                logger.info(s"Intent '$intentId' didn't match because of missing term $varStr.")
+                logger.info(s"Intent '$intentId' didn't match because of unmatched term $varStr.")
+
                 None
             }
             else if (senToks.exists(tok ⇒ !tok.used && tok.token.isUserDefined)) {
@@ -455,13 +458,27 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 None
             }
             else if (!senToks.exists(tok ⇒ tok.used && !tok.conv)) {
-                logger.info(s"Intent '$intentId' didn't match because all tokens came from STM $varStr.")
+                logger.info(s"Intent '$intentId' didn't match because all its matched tokens came from STM $varStr.")
+
                 None
             }
             else {
+                // Exact match calculation DOES NOT include tokens from conversation, if any.
                 val exactMatch = !senToks.exists(tok ⇒ !tok.used && !tok.token.isFreeWord)
-            
-                intentW.setWeight(0, if (exactMatch) 1 else 0)
+
+                val mainWeight = {
+                    // Best weight if the match is exact and conversation WAS NOT used.
+                    if (exactMatch && convToks.isEmpty)
+                        2
+                    // Second best weight if the match is exact and conversation WAS used.
+                    else if (exactMatch)
+                        1
+                    // Third best (i.e. worst) weight if match WAS NOT EXACT.
+                    else
+                        0
+                }
+
+                intentW.setWeight(0, mainWeight)
                 
                 Some(IntentMatch(
                     tokenGroups = intentGrps.toList,
