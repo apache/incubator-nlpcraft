@@ -408,19 +408,25 @@ object NCSuggestSynonymManager extends NCService {
 
                                 val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
                                     res.map { case (id, data) ⇒
-                                        val factors = data.map(_.score)
+                                        val norm =
+                                            if (data.nonEmpty) {
+                                                val factors = data.map(_.score)
 
-                                        val min = factors.min
-                                        val max = factors.max
-                                        var delta = max - min
+                                                val min = factors.min
+                                                val max = factors.max
+                                                var delta = max - min
 
-                                        if (delta == 0)
-                                            delta = max
+                                                if (delta == 0)
+                                                    delta = max
 
-                                        def normalize(v: Double): Double = (v - min) / delta
+                                                def normalize(v: Double): Double = (v - min) / delta
 
-                                        val norm = data.map(s ⇒ SuggestionResult(s.synonym, normalize(s.score))).
-                                            filter(_.score >= minScore)
+                                                data.
+                                                    map(s ⇒ SuggestionResult(s.synonym, normalize(s.score))).
+                                                    filter(_.score >= minScore)
+                                            }
+                                            else
+                                                Seq.empty
 
                                         id → norm.map(d ⇒ {
                                             val m = new util.HashMap[String, Any]()
