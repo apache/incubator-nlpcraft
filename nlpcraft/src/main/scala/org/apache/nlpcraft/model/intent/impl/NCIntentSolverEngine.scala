@@ -442,7 +442,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             }
             
             if (abort) {
-                logger.info(s"Intent '$intentId' didn't match because of missing term $varStr.")
+                logger.info(s"Intent '$intentId' didn't match because of unmatched term $varStr.")
 
                 None
             }
@@ -458,20 +458,25 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 None
             }
             else if (!senToks.exists(tok ⇒ tok.used && !tok.conv)) {
-                logger.info(s"Intent '$intentId' didn't match because all tokens came from STM $varStr.")
+                logger.info(s"Intent '$intentId' didn't match because all its matched tokens came from STM $varStr.")
 
                 None
             }
             else {
-                val exactMatch = !(senToks ++ convToks).exists(tok ⇒ !tok.used && !tok.token.isFreeWord)
+                // Exact match calculation DOES NOT include tokens from conversation, if any.
+                val exactMatch = !senToks.exists(tok ⇒ !tok.used && !tok.token.isFreeWord)
 
-                val mainWeight =
+                val mainWeight = {
+                    // Best weight if the match is exact and conversation WAS NOT used.
                     if (exactMatch && convToks.isEmpty)
                         2
+                    // Second best weight if the match is exact and conversation WAS used.
                     else if (exactMatch)
                         1
+                    // Third best (i.e. worst) weight if match WAS NOT EXACT.
                     else
                         0
+                }
 
                 intentW.setWeight(0, mainWeight)
                 

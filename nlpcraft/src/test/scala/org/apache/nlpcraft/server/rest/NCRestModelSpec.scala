@@ -18,20 +18,20 @@
 package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.examples.time.TimeModel
+import org.apache.nlpcraft.examples.alarm.AlarmModel
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{Disabled, Test}
 
 // Enable it and run if context word server started.
-@Disabled
-@NCTestEnvironment(model = classOf[TimeModel], startClient = false)
+//@Disabled
+@NCTestEnvironment(model = classOf[AlarmModel], startClient = false)
 class NCRestModelSpec extends NCRestSpec {
     @Test
     def test(): Unit = {
-        post("model/sugsyn", "mdlId" → "nlpcraft.time.ex")(
+        post("model/sugsyn", "mdlId" → "nlpcraft.alarm.ex")(
             ("$.status", (status: String) ⇒ assertEquals("API_OK", status))
         )
-        post("model/sugsyn", "mdlId" → "nlpcraft.time.ex", "minScore" → 0.5)(
+        post("model/sugsyn", "mdlId" → "nlpcraft.alarm.ex", "minScore" → 0.5)(
             ("$.status", (status: String) ⇒ assertEquals("API_OK", status))
         )
     }

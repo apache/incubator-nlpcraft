@@ -223,7 +223,7 @@ object NCSuggestSynonymManager extends NCService {
 
                                 if (ids.nonEmpty)
                                     warns +=
-                                        s"Following model intent have too few samples: ${ids.mkString(", ")}. " +
+                                        s"Following model intent have too few samples (${ids.mkString(", ")}). " +
                                         s"It will negatively affect the quality of suggestions. " +
                                         s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
                             }
@@ -298,13 +298,11 @@ object NCSuggestSynonymManager extends NCService {
                             val allReqsCnt = allReqs.map(_._2.size).sum
                             val allSynsCnt = elemSyns.map(_._2.size).sum
 
-                            logger.trace(
-                                s"Request is going to execute on 'ctxword' server [" +
+                            logger.trace(s"Request is going to execute on 'ctxword' server [" +
                                 s"exs=${exs.size}, " +
                                 s"syns=$allSynsCnt, " +
                                 s"reqs=$allReqsCnt" +
-                                s"]"
-                            )
+                            s"]")
 
                             if (allReqsCnt == 0)
                                 onError(s"Suggestions cannot be generated for model: '$mdlId'")
@@ -369,7 +367,7 @@ object NCSuggestSynonymManager extends NCService {
                                 cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
 
                                 if (err.get() != null)
-                                    throw new NCE("Error during work with ContextWordServer", err.get())
+                                    throw new NCE("Error during work with 'ContextWordServer'.", err.get())
 
                                 val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
