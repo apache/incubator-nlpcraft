@@ -26,7 +26,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.sql.Timestamp
 import java.text.{DecimalFormat, DecimalFormatSymbols}
 import java.time.{Instant, ZoneId, ZonedDateTime}
-import java.util.concurrent.{ExecutorService, TimeUnit}
+import java.util.concurrent.{ExecutorService, Executors, LinkedBlockingQueue, RejectedExecutionHandler, ThreadPoolExecutor, TimeUnit}
 import java.util.jar.JarFile
 import java.util.stream.Collectors
 import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
@@ -1445,6 +1445,25 @@ object NCUtils extends LazyLogging {
 
         buf.mkString
     }
+
+    /**
+     *
+     * @param threadNum
+     * @return
+     */
+    def mkThreadPool(threadNum: Int = Runtime.getRuntime.availableProcessors()): ThreadPoolExecutor =
+        new ThreadPoolExecutor(
+            1,
+            threadNum,
+            0L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue[Runnable],
+            Executors.defaultThreadFactory,
+            new RejectedExecutionHandler() {
+                // Ignore rejections.
+                override def rejectedExecution(r: Runnable, exec: ThreadPoolExecutor): Unit = ()
+            }
+        )
 
     /**
       * Unzips file.
