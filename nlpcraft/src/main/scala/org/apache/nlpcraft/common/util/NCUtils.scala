@@ -1371,15 +1371,26 @@ object NCUtils extends LazyLogging {
         while (x != null) {
             var first = true
 
-            var msg = x.getLocalizedMessage
+            var errMsg = x.getLocalizedMessage
 
-            if (msg == null)
-                msg = cleanClassName(x.getClass)
+            if (errMsg == null)
+                errMsg = "<<null>>"
+
+            val trace = x.getStackTrace.find(!_.getClassName.startsWith("scala.")).getOrElse(x.getStackTrace.head)
+
+            val fileName = trace.getFileName
+            val lineNum = trace.getLineNumber
+
+            val msg =
+                if (fileName == null || lineNum < 0)
+                    errMsg
+                else
+                    s"$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line ⇒ {
-                val msg = s"${" " * indent}${if (first) s"$ansiRedFg+-$ansiReset" else "  "}${line.trim}"
+                val s = s"${" " * indent}${if (first) s"$ansiRedFg+- $ansiReset" else "  "}${line.trim}"
 
-                if (err) logger.error(msg) else logger.warn(msg)
+                if (err) logger.error(s) else logger.warn(s)
 
                 first = false
             })
@@ -1398,9 +1409,42 @@ object NCUtils extends LazyLogging {
         raw"$ansiBlueFg   / | / / /___  $ansiCyanFg/ ____/________ _/ __/ /_  $ansiReset$NL" +
         raw"$ansiBlueFg  /  |/ / / __ \$ansiCyanFg/ /   / ___/ __ `/ /_/ __/  $ansiReset$NL" +
         raw"$ansiBlueFg / /|  / / /_/ /$ansiCyanFg /___/ /  / /_/ / __/ /_    $ansiReset$NL" +
-        raw"$ansiBold$ansiRedFg/_/ |_/_/ .___/${ansiRedFg}\____/_/   \__,_/_/  \__/      $ansiReset$NL" +
+        raw"$ansiBold$ansiRedFg/_/ |_/_/ .___/$ansiRedFg\____/_/   \__,_/_/  \__/      $ansiReset$NL" +
         raw"$ansiBold$ansiRedFg       /_/                                              $ansiReset$NL"
 
+
+    /**
+     * ANSI color JSON string.
+     *
+     * @param json JSON string to color.
+     * @return
+     */
+    def colorJson(json: String): String = {
+        val buf = mutable.Buffer.empty[String]
+
+        var inQuotes = false
+        var isValue = false
+
+        for (ch ← json) {
+            ch match {
+                case ':' ⇒ buf += s"$ansiGreenFg:$ansiReset"; isValue = true
+                case '[' | ']' | '{' | '}' | ',' ⇒ buf += s"$ansiBold$ansiYellowFg$ch$ansiReset"
+                case '"' ⇒ inQuotes = !inQuotes; buf += s"$ansiBlueFg$ch$ansiReset"
+                case _ ⇒
+                    if (inQuotes && isValue)
+                        buf += s"$ansiGreenFg$ch$ansiReset"
+                    else if (inQuotes && !isValue)
+                        buf += s"$ansiCyanFg$ch$ansiReset"
+                    else
+                        buf += s"$ch"
+            }
+
+            if (ch == ',' && !inQuotes)
+                isValue = false
+        }
+
+        buf.mkString
+    }
 
     /**
       * Unzips file.
