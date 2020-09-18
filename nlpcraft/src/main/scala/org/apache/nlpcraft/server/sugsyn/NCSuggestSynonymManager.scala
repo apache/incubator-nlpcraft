@@ -191,7 +191,7 @@ object NCSuggestSynonymManager extends NCService {
                             promise.success(
                                 NCSuggestSynonymResult(
                                     modelId = mdlId,
-                                    minScore = 0,
+                                    minScore = minScore,
                                     durationMs = System.currentTimeMillis() - now,
                                     timestamp = now,
                                     error = err,
@@ -326,8 +326,7 @@ object NCSuggestSynonymManager extends NCService {
                                                     GSON.toJson(
                                                         RestRequest(
                                                             sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
-                                                            // 'ctxword'' server range is (0, 2), input range is (0, 1)
-                                                            minScore = minScore * 2,
+                                                            minScore = 0,
                                                             limit = MAX_LIMIT
                                                         )
                                                     ),
