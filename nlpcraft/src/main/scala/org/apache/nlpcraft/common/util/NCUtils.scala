@@ -26,7 +26,8 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.sql.Timestamp
 import java.text.{DecimalFormat, DecimalFormatSymbols}
 import java.time.{Instant, ZoneId, ZonedDateTime}
-import java.util.concurrent.{ExecutorService, Executors, LinkedBlockingQueue, RejectedExecutionHandler, ThreadPoolExecutor, TimeUnit}
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.{ExecutorService, LinkedBlockingQueue, RejectedExecutionHandler, ThreadFactory, ThreadPoolExecutor, TimeUnit}
 import java.util.jar.JarFile
 import java.util.stream.Collectors
 import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
@@ -1446,17 +1447,23 @@ object NCUtils extends LazyLogging {
 
     /**
      *
+     * @param namePrefix
      * @param threadNum
      * @return
      */
-    def mkThreadPool(threadNum: Int = Runtime.getRuntime.availableProcessors()): ThreadPoolExecutor =
+    def mkThreadPool(namePrefix: String, threadNum: Int = Runtime.getRuntime.availableProcessors() * 8): ThreadPoolExecutor =
         new ThreadPoolExecutor(
             1,
             threadNum,
             0L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue[Runnable],
-            Executors.defaultThreadFactory,
+            new ThreadFactory {
+                val thNum = new AtomicInteger(1)
+
+                override def newThread(r: Runnable): Thread =
+                    new Thread(r, s"pool-$namePrefix-thread-${thNum.getAndIncrement()}");
+            },
             new RejectedExecutionHandler() {
                 // Ignore rejections.
                 override def rejectedExecution(r: Runnable, exec: ThreadPoolExecutor): Unit = ()

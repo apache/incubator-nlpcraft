@@ -130,7 +130,6 @@ object NCSuggestSynonymManager extends NCService {
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         U.shutdownPools(pool)
-
         pool = null
         executor = null
 

@@ -71,7 +71,10 @@ public class DarkSkyService {
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").withZone(ZoneId.systemDefault());
 
     // Can be configured.
-    private final ExecutorService pool = NCUtils.mkThreadPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService pool = NCUtils.mkThreadPool(
+        "darksky",
+        Runtime.getRuntime().availableProcessors() * 8
+    );
 
     /**
      *
