@@ -106,7 +106,7 @@ object NCSuggestSynonymManager extends NCService {
             s"Unsupported symbols: $word"
         )
     }
-    case class SuggestionResult(synonym: String, ctxWordSrvScore: Double, sgstCnt: Int)
+    case class SuggestionResult(synonym: String, factor: Double)
 
     private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
@@ -191,7 +191,7 @@ object NCSuggestSynonymManager extends NCService {
                             promise.success(
                                 NCSuggestSynonymResult(
                                     modelId = mdlId,
-                                    minScore = minScore,
+                                    minScore = 0,
                                     durationMs = System.currentTimeMillis() - now,
                                     timestamp = now,
                                     error = err,
@@ -387,13 +387,13 @@ object NCSuggestSynonymManager extends NCService {
                                             val seq = group.map { case (sgst, _) ⇒ sgst }.sortBy(-_.score)
 
                                             // Drops repeated.
-                                            (seq.head, seq.length)
+                                            (seq.head.word, seq.length, seq.map(_.score).sum / seq.size)
                                         }.
                                         toSeq.
-                                        map { case (sgst, cnt) ⇒ (sgst, cnt, sgst.score * cnt / elemSgsts.size) }.
+                                        map { case (sgst, cnt, score) ⇒ (sgst, cnt, score * cnt / elemSgsts.size) }.
                                         sortBy { case (_, _, sumFactor) ⇒ -sumFactor }.
                                         zipWithIndex.
-                                        foreach { case ((sgst, cnt, _), _) ⇒
+                                        foreach { case ((word, _, sumFactor), _) ⇒
                                             val seq =
                                                 res.get(elemId) match {
                                                     case Some(seq) ⇒ seq
@@ -405,19 +405,31 @@ object NCSuggestSynonymManager extends NCService {
                                                         buf
                                                 }
 
-                                            seq += SuggestionResult(sgst.word, sgst.score, cnt)
+                                            seq += SuggestionResult(word, sumFactor)
                                         }
                                 }
 
                                 val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
                                     res.map { case (id, data) ⇒
-                                        id → data.map(d ⇒ {
+                                        val factors = data.map(_.factor)
+
+                                        val min = factors.min
+                                        val max = factors.max
+                                        var delta = max - min
+
+                                        if (delta == 0)
+                                            delta = max
+
+                                        def normalize(v: Double): Double = (v - min) / delta
+
+                                        val norm = data.map(s ⇒ SuggestionResult(s.synonym, normalize(s.factor))).
+                                            filter(_.factor >= minScore)
+
+                                        id → norm.map(d ⇒ {
                                             val m = new util.HashMap[String, Any]()
 
-                                            m.put("synonym", d.synonym)
-                                            // ContextWord server range is (0, 2)
-                                            m.put("ctxWordServerScore", d.ctxWordSrvScore / 2)
-                                            m.put("suggestedCount", d.sgstCnt)
+                                            m.put("synonym", d.synonym.toLowerCase)
+                                            m.put("factor", d.factor)
 
                                             m
                                         }).asJava
