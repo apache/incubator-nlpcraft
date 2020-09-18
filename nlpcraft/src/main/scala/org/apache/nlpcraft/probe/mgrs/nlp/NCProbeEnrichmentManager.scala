@@ -230,7 +230,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val tbl = NCAsciiTable()
 
-        tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(_.text))
+        tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(s ⇒ s"$ansiBold$ansiGreenFg${s.text}$ansiReset"))
         tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
         tbl += (s"${ansiBlueFg}User ID$ansiReset", usrId)
         tbl += (s"$ansiBlueFg  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
@@ -542,7 +542,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 NCTokenLogger.prepareTable(sen.asScala).
                     info(
                         logger,
-                        Some(s"Parsing variant #${i + 1} for: '$txt'")
+                        Some(s"Parsing variant #${i + 1} of ${senVars.size} (sorted best to worst) for: '$txt'")
                     )
             }
         }

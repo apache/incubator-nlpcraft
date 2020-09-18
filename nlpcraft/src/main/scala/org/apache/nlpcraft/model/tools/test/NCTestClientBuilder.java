@@ -32,6 +32,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.nlpcraft.common.util.NCUtils;
 import org.jsoup.Jsoup;
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe;
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedResult;
@@ -655,8 +656,14 @@ public class NCTestClientBuilder {
                 assert res.getResultType().isPresent() && res.getResult().isPresent();
 
                 if (respLog) {
-                    log.info("'ask' request '{}' answered successfully with '{}' result:\n{}", txt,
-                        res.getResultType().get(), mkPrettyString(res.getResultType().get(), res.getResult().get()));
+                    log.info("'ask' request '{}' answered successfully with '{}' result:\n{}",
+                        txt,
+                        res.getResultType().get(),
+                        mkPrettyString(
+                            res.getResultType().get(),
+                            res.getResult().get()
+                        )
+                    );
                 }
             }
             else {
@@ -684,7 +691,7 @@ public class NCTestClientBuilder {
                     case "text":
                     case "yaml":
                     case "json": // JSON already configured for pretty printing.
-                        return body;
+                        return NCUtils.colorJson(body);
 
                     default: return body;
                 }

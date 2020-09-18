@@ -1385,7 +1385,7 @@ object NCUtils extends LazyLogging {
                 if (fileName == null || lineNum < 0)
                     errMsg
                 else
-                    s"$errMsg ${ansiCyanFg}->$ansiReset ($fileName:$lineNum)"
+                    s"$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line ⇒ {
                 val s = s"${" " * indent}${if (first) s"$ansiRedFg+- $ansiReset" else "  "}${line.trim}"
@@ -1412,6 +1412,39 @@ object NCUtils extends LazyLogging {
         raw"$ansiBold$ansiRedFg/_/ |_/_/ .___/$ansiRedFg\____/_/   \__,_/_/  \__/      $ansiReset$NL" +
         raw"$ansiBold$ansiRedFg       /_/                                              $ansiReset$NL"
 
+
+    /**
+     * ANSI color JSON string.
+     *
+     * @param json JSON string to color.
+     * @return
+     */
+    def colorJson(json: String): String = {
+        val buf = mutable.Buffer.empty[String]
+
+        var inQuotes = false
+        var isValue = false
+
+        for (ch ← json) {
+            ch match {
+                case ':' ⇒ buf += s"$ansiGreenFg:$ansiReset"; isValue = true
+                case '[' | ']' | '{' | '}' | ',' ⇒ buf += s"$ansiBold$ansiYellowFg$ch$ansiReset"
+                case '"' ⇒ inQuotes = !inQuotes; buf += s"$ansiBlueFg$ch$ansiReset"
+                case _ ⇒
+                    if (inQuotes && isValue)
+                        buf += s"$ansiGreenFg$ch$ansiReset"
+                    else if (inQuotes && !isValue)
+                        buf += s"$ansiCyanFg$ch$ansiReset"
+                    else
+                        buf += s"$ch"
+            }
+
+            if (ch == ',' && !inQuotes)
+                isValue = false
+        }
+
+        buf.mkString
+    }
 
     /**
       * Unzips file.
