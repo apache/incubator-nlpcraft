@@ -269,7 +269,7 @@ class NCMacroParser {
                         else {
                             if (!isEscape)
                                 ch match {
-                                    case '|' | '*' | '}' ⇒ throw new NCE(s"Suspicious '$ch' at pos $i in: $s")
+                                    case '|' | '*' | '}' ⇒ throw new NCE(s"Suspicious '$ch' at pos $i in: '$s'")
                                     case '{' ⇒ found = true // Found start of the option group.
                                     case _ ⇒
                                 }
