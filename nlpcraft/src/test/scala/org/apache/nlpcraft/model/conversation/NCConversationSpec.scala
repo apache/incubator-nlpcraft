@@ -21,42 +21,21 @@ import java.io.IOException
 
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.examples.weather.WeatherModel
-import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
 /**
   * @see WeatherModel
   */
-class NCConversationSpec {
-    private var cli: NCTestClient = _
-
-    @BeforeEach
-    @throws[NCException]
-    @throws[IOException]
-    private[conversation] def setUp(): Unit = {
-        NCEmbeddedProbe.start(classOf[WeatherModel])
-
-        cli = new NCTestClientBuilder().newBuilder.build
-
-        cli.open("nlpcraft.weather.ex") // See weather_model.json
-    }
-
-    @AfterEach
-    @throws[NCException]
-    @throws[IOException]
-    private[conversation] def tearDown(): Unit = {
-        if (cli != null)
-            cli.close()
-
-        NCEmbeddedProbe.stop()
-    }
-
+@NCTestEnvironment(model = classOf[WeatherModel], startClient = true)
+class NCConversationSpec extends NCTestContext {
     @Test
     @throws[NCException]
     @throws[IOException]
     private[conversation] def test(): Unit = {
+        val cli = getClient
+
         assertTrue(cli.ask("What's the weather in Moscow?").isOk)
 
         // Can be answered with conversation.

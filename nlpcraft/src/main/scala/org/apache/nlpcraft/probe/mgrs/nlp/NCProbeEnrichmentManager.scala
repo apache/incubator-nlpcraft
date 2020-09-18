@@ -86,27 +86,25 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
     Config.check()
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
 
-        pool = new ThreadPoolExecutor(
-           1,
-            Runtime.getRuntime.availableProcessors() * 8,
-           0L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue[Runnable],
-            Executors.defaultThreadFactory,
-            new RejectedExecutionHandler() {
-                override def rejectedExecution(r: Runnable, executor: ThreadPoolExecutor): Unit =
-                    if (isStarted)
-                        logger.warn("Task was rejected")
-            }
-        )
+        pool = U.mkThreadPool()
+
         executor = ExecutionContext.fromExecutor(pool)
 
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         super.stop()
 
@@ -118,14 +116,17 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         U.shutdownPools(pool)
 
         executor = null
+
         pool = null
+
+        ackStop()
     }
 
     /**
       *
       * @param cb Callback.
       */
-    private [probe] def addEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
+    private[probe] def addEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
         mux.synchronized {
             embeddedCbs.add(cb)
         }
@@ -135,7 +136,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
       *
       * @param cb Callback.
       */
-    private [probe] def removeEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
+    private[probe] def removeEmbeddedCallback(cb: EMBEDDED_CB): Unit = {
         mux.synchronized {
             embeddedCbs.remove(cb)
         }
@@ -231,7 +232,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val tbl = NCAsciiTable()
 
-        tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(_.text))
+        tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(s ⇒ s"$ansiBold$ansiGreenFg${s.text}$ansiReset"))
         tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
         tbl += (s"${ansiBlueFg}User ID$ansiReset", usrId)
         tbl += (s"$ansiBlueFg  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
@@ -543,7 +544,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 NCTokenLogger.prepareTable(sen.asScala).
                     info(
                         logger,
-                        Some(s"Parsing variant #${i + 1} for: '$txt")
+                        Some(s"Parsing variant #${i + 1} of ${senVars.size} (sorted best to worst) for: '$txt'")
                     )
             }
         }

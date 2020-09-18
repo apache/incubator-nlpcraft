@@ -37,6 +37,12 @@ object NCModelManager extends NCService with DecorateAsScala {
     // Access mutex.
     private final val mux = new Object()
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     * @return
+     */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         val tbl = NCAsciiTable("Model ID", "Name", "Ver.", "Elements", "Synonyms", "Intents")
@@ -71,7 +77,19 @@ object NCModelManager extends NCService with DecorateAsScala {
             "deployedModels" → data.values.map(_.model.getId).mkString(",")
         )
 
-        super.start()
+        ackStart()
+    }
+
+    /**
+     * Stops this component.
+     */
+    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        mux.synchronized {
+            if (data != null)
+                data.values.foreach(m ⇒ discardModel(m.model))
+        }
+
+        ackStop()
     }
 
     /**
@@ -87,18 +105,6 @@ object NCModelManager extends NCService with DecorateAsScala {
 
             mdl.onDiscard()
         }
-    }
-
-    /**
-      * Stops this component.
-      */
-    override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        mux.synchronized {
-            if (data != null)
-                data.values.foreach(m ⇒ discardModel(m.model))
-        }
-
-        super.stop()
     }
 
     /**

@@ -29,6 +29,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.apache.http.{HttpEntity, HttpResponse}
+import org.apache.nlpcraft.NCTestContext
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
 
@@ -121,7 +122,7 @@ private[rest] object NCRestSpec {
 
 import org.apache.nlpcraft.server.rest.NCRestSpec._
 
-private[rest] class NCRestSpec {
+private[rest] class NCRestSpec extends NCTestContext {
     type ResponseContent = java.util.Map[String, Object]
     type ResponseList = java.util.List[ResponseContent]
     type JList[T] = java.util.List[T]

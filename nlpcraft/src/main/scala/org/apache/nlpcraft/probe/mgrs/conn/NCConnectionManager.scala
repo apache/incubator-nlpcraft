@@ -462,7 +462,7 @@ object NCConnectionManager extends NCService {
         // Only return when probe successfully connected to the server.
         ctrlLatch.await()
      
-        super.start()
+        ackStart()
     }
     
     /**
@@ -473,6 +473,6 @@ object NCConnectionManager extends NCService {
     
         U.stopThread(ctrlThread)
         
-        super.stop()
+        ackStop()
     }
 }

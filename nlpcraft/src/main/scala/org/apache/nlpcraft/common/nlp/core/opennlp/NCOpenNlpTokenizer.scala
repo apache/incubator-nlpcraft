@@ -34,22 +34,37 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
 
     @volatile private var tokenizer: Tokenizer = _
 
-    override def start(parent: Span): NCService = {
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         tokenizer = managed(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) acquireAndGet { in ⇒
             new TokenizerME(new TokenizerModel(in))
         }
 
-        super.start(parent)
+        ackStart()
     }
 
-    override def stop(parent: Span): Unit = {
+    /**
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
         tokenizer = null
 
-        super.stop(parent)
+        ackStop()
     }
 
+    /**
+     *
+     * @param sen Sentence
+     * @return
+     */
     override def tokenize(sen: String): Seq[NCNlpCoreToken] =
         this.synchronized {
             tokenizer.tokenizePos(sen)
-        }.toSeq.map(s ⇒ NCNlpCoreToken(s.getCoveredText(sen).toString, s.getStart, s.getEnd, s.length()))
+        }
+        .toSeq.map(s ⇒ NCNlpCoreToken(s.getCoveredText(sen).toString, s.getStart, s.getEnd, s.length()))
 }

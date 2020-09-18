@@ -52,7 +52,12 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
     @volatile private var asyncAsks: ConcurrentHashMap[String, Promise[NCQueryStateMdo]] = _
     
     private final val MAX_WORDS = 100
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         asyncAsks = new ConcurrentHashMap[String/*Server request ID*/, Promise[NCQueryStateMdo]]()
 
@@ -86,11 +91,15 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         
         require(cache != null)
         
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     /**
@@ -258,7 +267,9 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 tbl += (s"${ansiBlueFg}Agent$ansiReset", usrAgent.getOrElse("<n/a>"))
                 tbl += (s"${ansiBlueFg}Remote Address$ansiReset", rmtAddr.getOrElse("<n/a>"))
                 tbl += (s"${ansiBlueFg}Server Request ID$ansiReset", srvReqId)
-                tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))
+
+                // TODO: need to pretty print data JSON
+                // tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))
 
                 logger.info(s"New request received:\n$tbl")
 

@@ -39,6 +39,11 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
     @volatile private var nerFinders: Map[NameFinderME, String] = _
     @volatile private var cache: IgniteCache[String, Array[String]] = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         require(NCOpenNlpTokenizer.isStarted)
 
@@ -71,16 +76,26 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
             cache = ignite.cache[String, Array[String]]("opennlp-cache")
         }
 
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         cache = null
     
-        super.stop()
+        ackStop()
     }
 
-    override def enrich(ns: NCNlpSentence, enabledBuiltInToks: Set[String], parent: Span = null): Unit =
+    /**
+     *
+     * @param ns
+     * @param ebiTokens
+     * @param parent Optional parent span.
+     */
+    override def enrich(ns: NCNlpSentence, ebiTokens: Set[String], parent: Span = null): Unit =
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             val normTxt = ns.text
     
@@ -105,7 +120,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
                 this.
                     synchronized {
                         val res = nerFinders.
-                            filter { case (_, tokName) ⇒ enabledBuiltInToks.contains(tokName)}.
+                            filter { case (_, tokName) ⇒ ebiTokens.contains(tokName)}.
                             flatMap {
                                 case (finder, name) ⇒
                                     finder.find(words).map(p ⇒ Holder(p.getStart, p.getEnd - 1, name, p.getProb))
@@ -117,7 +132,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
                     }.toSeq
     
             hs.
-                filter(h ⇒ enabledBuiltInToks.contains(h.name)).
+                filter(h ⇒ ebiTokens.contains(h.name)).
                 foreach(h ⇒ {
                     val t1 = ns.find(_.index == h.start)
                     val t2 = ns.find(_.index == h.end)

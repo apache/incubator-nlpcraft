@@ -36,6 +36,11 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
     @volatile private var logSeq: IgniteAtomicSequence = _
     @volatile private var logLock: IgniteSemaphore = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         catching(wrapIE) {
             logSeq = NCSql.mkSeq(ignite, "logSeq", "proc_log", "id")
@@ -43,11 +48,15 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
             logLock = ignite.semaphore("logSemaphore", 1, true, true)
         }
      
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     /**

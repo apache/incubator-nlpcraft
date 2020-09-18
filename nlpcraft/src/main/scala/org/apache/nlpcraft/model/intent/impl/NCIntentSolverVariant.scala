@@ -82,11 +82,11 @@ case class NCIntentSolverVariant(tokens: util.List[NCToken]) extends Ordered[NCI
 
     override def toString: String =
         s"Variant [" +
-        s"userToks=$userToks" +
+            s"userToks=$userToks" +
             s", wordCnt=$wordCnt" +
-        s", totalUserDirect=$totalUserDirect" +
+            s", totalUserDirect=$totalUserDirect" +
             s", avgWordsPerTok=$avgWordsPerTok" +
-        s", sparsity=$totalSparsity" +
+            s", sparsity=$totalSparsity" +
             s", toks=$tokens" +
         "]"
 }

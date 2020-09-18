@@ -52,8 +52,11 @@ object NCSqlManager extends NCService with NCIgniteInstance {
     @volatile private var usersPropsSeq: IgniteAtomicSequence = _
 
     /**
-      * Starts manager.
-      */
+     *
+     * @param parent Optional parent span.
+     * @throws NCE
+     * @return
+     */
     @throws[NCE]
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { span ⇒
         addTags(span, "isIgniteDb" → NCSql.isIgniteDb)
@@ -65,14 +68,15 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             usersPropsSeq = NCSql.mkSeq(ignite, "usersPropsSeq", "nc_user_property", "id")
         }
      
-        super.start()
+        ackStart()
     }
 
     /**
-      * Stop manager.
-      */
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
 
     /**

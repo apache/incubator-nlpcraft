@@ -40,6 +40,24 @@ object NCCommandManager extends NCService {
     private final val GSON = new Gson()
 
     /**
+     * Starts this service.
+     *
+     * @param parent Optional parent span.
+     */
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStart()
+    }
+
+    /**
+     * Stops this service.
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStop()
+    }
+
+    /**
       *
       * @param msg Server message to process.
       * @param parent Optional parent span.

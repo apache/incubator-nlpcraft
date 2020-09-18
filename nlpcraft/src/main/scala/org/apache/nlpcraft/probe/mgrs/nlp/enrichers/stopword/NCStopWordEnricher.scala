@@ -48,19 +48,22 @@ object NCStopWordEnricher extends NCProbeEnricher {
     @volatile private var geoKindStops: Map[String, Seq[String]] = _
     @volatile private var numPrefixStops:Seq[String] = _
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        geoPreWords=
-            // NOTE: stemmatisation is done already by generator.
-            U.readTextResource(s"context/geo_pre_words.txt", "UTF-8", logger).
-                map(_.split(" ").toSeq).sortBy(-_.size)
+        // NOTE: stemmatization is done already by generator.
+        geoPreWords = U.readTextResource(s"context/geo_pre_words.txt", "UTF-8", logger).
+            map(_.split(" ").toSeq).sortBy(-_.size)
 
-        geoKindStops =
-            Map(
-                "nlpcraft:city" → Seq("city", "town"),
-                "nlpcraft:country" → Seq("country", "land", "countryside", "area", "territory"),
-                "nlpcraft:region" → Seq("region", "area", "state", "county", "district", "ground", "territory"),
-                "nlpcraft:continent" → Seq("continent", "land", "area")
-            ).map(p ⇒ p._1 → p._2.map(NCNlpCoreManager.stem))
+        geoKindStops = Map(
+            "nlpcraft:city" → Seq("city", "town"),
+            "nlpcraft:country" → Seq("country", "land", "countryside", "area", "territory"),
+            "nlpcraft:region" → Seq("region", "area", "state", "county", "district", "ground", "territory"),
+            "nlpcraft:continent" → Seq("continent", "land", "area")
+        ).map(p ⇒ p._1 → p._2.map(NCNlpCoreManager.stem))
 
         numPrefixStops = Seq(
             "is",
@@ -76,15 +79,19 @@ object NCStopWordEnricher extends NCProbeEnricher {
             "must be"
         ).map(NCNlpCoreManager.stem)
 
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         geoPreWords = null
         geoKindStops = null
         numPrefixStops = null
 
-        super.stop()
+        ackStop()
     }
 
     /**

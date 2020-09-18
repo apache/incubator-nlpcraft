@@ -39,6 +39,11 @@ object NCNlpCoreManager extends NCService {
       */
     def getEngine: String = Config.engine
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         // NOTE: DO NOT confuse this with token providers.
         if (!SUPPORTED_NLP_ENGINES.contains(Config.engine))
@@ -60,16 +65,20 @@ object NCNlpCoreManager extends NCService {
 
         tokenizer.start()
 
-        super.start()
+        ackStart()
     }
-    
-    override def stop(parent: Span): Unit = {
-        if (tokenizer != null)
-            tokenizer.stop(parent)
 
-        startScopedSpan("stop", parent)(_ ⇒ super.stop())
+    /**
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) {span ⇒
+        if (tokenizer != null)
+            tokenizer.stop(span)
+
+        ackStop()
     }
-    
+
     /**
       * Stems given word or a sequence of words which will be tokenized before.
       *

@@ -31,12 +31,21 @@ import scala.collection.Map
   * Suspicious words enricher.
   */
 object NCSuspiciousNounsEnricher extends NCProbeEnricher {
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        super.start()
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
 
     @throws[NCE]

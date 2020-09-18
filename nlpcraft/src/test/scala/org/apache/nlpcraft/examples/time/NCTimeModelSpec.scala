@@ -20,39 +20,18 @@ package org.apache.nlpcraft.examples.time
 import java.io.IOException
 
 import org.apache.nlpcraft.common.NCException
-import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
-class NCTimeModelSpec {
-    private var cli: NCTestClient = _
-
-    @BeforeEach
-    @throws[NCException]
-    @throws[IOException]
-    private[time] def setUp(): Unit = {
-        NCEmbeddedProbe.start(classOf[TimeModel])
-
-        cli = new NCTestClientBuilder().newBuilder.build
-
-        cli.open("nlpcraft.time.ex")
-    }
-
-    @AfterEach
-    @throws[NCException]
-    @throws[IOException]
-    private[time] def tearDown(): Unit = {
-        if (cli != null)
-            cli.close()
-
-        NCEmbeddedProbe.stop()
-    }
-
+@NCTestEnvironment(model = classOf[TimeModel], startClient = true)
+class NCTimeModelSpec extends NCTestContext {
     @Test
     @throws[NCException]
     @throws[IOException]
     private[time] def testIntentsPriorities(): Unit = {
+        val cli = getClient
+
         def check(txt: String, id: String): Unit = {
             val res = cli.ask(txt)
 

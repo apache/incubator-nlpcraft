@@ -106,26 +106,35 @@ object NCSuggestSynonymManager extends NCService {
             s"Unsupported symbols: $word"
         )
     }
-    case class SuggestionResult(synonym: String, ctxWordSrvScore: Double, sgstCnt: Int)
+    case class SuggestionResult(synonym: String, factor: Double)
 
     private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
 
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         pool = Executors.newCachedThreadPool()
         executor = ExecutionContext.fromExecutor(pool)
 
-        super.start(parent)
+        ackStart()
     }
 
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop(parent)
-
         U.shutdownPools(pool)
 
         pool = null
         executor = null
+
+        ackStop()
     }
 
     /**
@@ -202,7 +211,7 @@ object NCSuggestSynonymManager extends NCService {
 
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
-                                    s"Model has too few intents samples: $allSamplesCnt. " +
+                                    s"Model has too few ($allSamplesCnt) intents samples. " +
                                     s"It will negatively affect the quality of suggestions. " +
                                     s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
 
@@ -214,7 +223,7 @@ object NCSuggestSynonymManager extends NCService {
 
                                 if (ids.nonEmpty)
                                     warns +=
-                                        s"Following model intent have too few samples: ${ids.mkString(", ")}. " +
+                                        s"Following model intent have too few samples (${ids.mkString(", ")}). " +
                                         s"It will negatively affect the quality of suggestions. " +
                                         s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
                             }
@@ -289,13 +298,11 @@ object NCSuggestSynonymManager extends NCService {
                             val allReqsCnt = allReqs.map(_._2.size).sum
                             val allSynsCnt = elemSyns.map(_._2.size).sum
 
-                            logger.trace(
-                                s"Request is going to execute on 'ctxword' server [" +
+                            logger.trace(s"Request is going to execute on 'ctxword' server [" +
                                 s"exs=${exs.size}, " +
                                 s"syns=$allSynsCnt, " +
                                 s"reqs=$allReqsCnt" +
-                                s"]"
-                            )
+                            s"]")
 
                             if (allReqsCnt == 0)
                                 onError(s"Suggestions cannot be generated for model: '$mdlId'")
@@ -319,8 +326,7 @@ object NCSuggestSynonymManager extends NCService {
                                                     GSON.toJson(
                                                         RestRequest(
                                                             sentences = batch.map(p ⇒ RestRequestSentence(p.sentence, Seq(p.index).asJava)).asJava,
-                                                            // 'ctxword'' server range is (0, 2), input range is (0, 1)
-                                                            minScore = minScore * 2,
+                                                            minScore = 0,
                                                             limit = MAX_LIMIT
                                                         )
                                                     ),
@@ -360,7 +366,7 @@ object NCSuggestSynonymManager extends NCService {
                                 cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
 
                                 if (err.get() != null)
-                                    throw new NCE("Error during work with ContextWordServer", err.get())
+                                    throw new NCE("Error during work with 'ContextWordServer'.", err.get())
 
                                 val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
@@ -378,13 +384,13 @@ object NCSuggestSynonymManager extends NCService {
                                             val seq = group.map { case (sgst, _) ⇒ sgst }.sortBy(-_.score)
 
                                             // Drops repeated.
-                                            (seq.head, seq.length)
+                                            (seq.head.word, seq.length, seq.map(_.score).sum / seq.size)
                                         }.
                                         toSeq.
-                                        map { case (sgst, cnt) ⇒ (sgst, cnt, sgst.score * cnt / elemSgsts.size) }.
+                                        map { case (sgst, cnt, score) ⇒ (sgst, cnt, score * cnt / elemSgsts.size) }.
                                         sortBy { case (_, _, sumFactor) ⇒ -sumFactor }.
                                         zipWithIndex.
-                                        foreach { case ((sgst, cnt, _), _) ⇒
+                                        foreach { case ((word, _, sumFactor), _) ⇒
                                             val seq =
                                                 res.get(elemId) match {
                                                     case Some(seq) ⇒ seq
@@ -396,19 +402,31 @@ object NCSuggestSynonymManager extends NCService {
                                                         buf
                                                 }
 
-                                            seq += SuggestionResult(sgst.word, sgst.score, cnt)
+                                            seq += SuggestionResult(word, sumFactor)
                                         }
                                 }
 
                                 val resJ: util.Map[String, util.List[util.HashMap[String, Any]]] =
                                     res.map { case (id, data) ⇒
-                                        id → data.map(d ⇒ {
+                                        val factors = data.map(_.factor)
+
+                                        val min = factors.min
+                                        val max = factors.max
+                                        var delta = max - min
+
+                                        if (delta == 0)
+                                            delta = max
+
+                                        def normalize(v: Double): Double = (v - min) / delta
+
+                                        val norm = data.map(s ⇒ SuggestionResult(s.synonym, normalize(s.factor))).
+                                            filter(_.factor >= minScore)
+
+                                        id → norm.map(d ⇒ {
                                             val m = new util.HashMap[String, Any]()
 
-                                            m.put("synonym", d.synonym)
-                                            // ContextWord server range is (0, 2)
-                                            m.put("ctxWordServerScore", d.ctxWordSrvScore / 2)
-                                            m.put("suggestedCount", d.sgstCnt)
+                                            m.put("synonym", d.synonym.toLowerCase)
+                                            m.put("factor", d.factor)
 
                                             m
                                         }).asJava

@@ -15,19 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.rest
+package org.apache.nlpcraft;
 
-import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.examples.time.TimeModel
-import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.model.NCModel;
 
-@NCTestEnvironment(model = classOf[TimeModel], startClient = false)
-class NCRestProbeSpec extends NCRestSpec {
-    @Test
-    def test(): Unit =
-        post("probe/all")(
-            ("$.probes", (probes: ResponseList) ⇒ assertFalse(probes.isEmpty)),
-            ("$.probes[:1].hostName", (names: JList[String]) ⇒ assertNotNull(names.get(0)))
-        )
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Documented
+@Retention(value=RUNTIME)
+@Target(value = {METHOD, TYPE})
+public @interface NCTestEnvironment {
+    /**
+     *
+     * @return
+     */
+    Class<? extends NCModel> model();
+
+    /**
+     *
+     * @return
+     */
+    boolean startClient() default false;
 }

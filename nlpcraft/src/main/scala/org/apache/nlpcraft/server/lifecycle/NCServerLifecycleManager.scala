@@ -44,23 +44,32 @@ object NCServerLifecycleManager extends NCService {
     }
     
     Config.loadAndCheck()
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         if (Config.objects.isEmpty)
             logger.info("No lifecycle components configured.")
         else {
-            val tbl = NCAsciiTable("Class Name")
+            val tbl = NCAsciiTable("Class")
      
             Config.classes.foreach(tbl += _)
      
-            tbl.info(logger, Some(s"Following lifecycle components configured:"))
+            tbl.info(logger, Some(s"Configured lifecycle components:"))
         }
      
-        super.start()
+        ackStart()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
+        ackStop()
     }
     
     /**
