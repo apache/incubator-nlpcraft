@@ -241,13 +241,17 @@ private[rest] class NCRestSpec extends NCTestContext {
                 post.releaseConnection()
 
         println(s"Checked POST with expected error [httpErrCode=$httpErrCode, errorCode=$errCode]")
-        println(GSON.toJson(
-            Map(
-                "url" → url,
-                "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
-                "response" → Map("httpCode" → err.httpCode, "json" → GSON.fromJson(err.js, TYPE_RESP)).asJava
-            ).asJava
-        ))
+        println(
+            U.colorJson(
+                GSON.toJson(
+                    Map(
+                        "url" → url,
+                        "params" → new java.util.HashMap[String, Any](ps.toMap.asJava),
+                        "response" → Map("httpCode" → err.httpCode, "json" → GSON.fromJson(err.js, TYPE_RESP)).asJava
+                    ).asJava
+                )
+            )
+        )
         println()
 
         assertEquals(httpErrCode, err.httpCode)
