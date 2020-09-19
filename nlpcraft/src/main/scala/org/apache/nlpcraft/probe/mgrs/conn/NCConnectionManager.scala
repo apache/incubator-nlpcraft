@@ -417,7 +417,7 @@ object NCConnectionManager extends NCService {
                         timeout()
                     }
                     else
-                        logger.warn(s"REST server connection closed.")
+                        logger.info(s"REST server connection closed.")
                 }
                 catch {
                     case e: HandshakeError ⇒

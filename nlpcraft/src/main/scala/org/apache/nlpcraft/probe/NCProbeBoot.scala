@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture
 
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
 import com.typesafe.scalalogging.LazyLogging
+import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
@@ -435,7 +436,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             startedMgrs += NCDialogFlowManager.start(span)
         }
     }
-    
+
+    private def stopManager(mgr: NCService, span: Span): Unit =
+        try
+            mgr.stop(span)
+        catch {
+            case e: Throwable ⇒ U.prettyError(logger, s"Failed to stop manager: ${mgr.name}", e)
+        }
+
     /**
       *
       */
@@ -443,14 +451,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         startScopedSpan("stopManagers") { span ⇒
             startedMgrs.synchronized {
                 try
-                    startedMgrs.reverseIterator.foreach(_.stop(span))
+                    startedMgrs.reverseIterator.foreach(stopManager(_, span))
                 finally
                     startedMgrs.clear()
             }
+
+            // Lifecycle callback outside of tracing span.
+            NCLifecycleManager.onDiscard()
+            stopManager(NCLifecycleManager, span)
         }
-        
-        // Lifecycle callback outside of tracing span.
-        NCLifecycleManager.onDiscard()
-        NCLifecycleManager.stop()
     }
 }

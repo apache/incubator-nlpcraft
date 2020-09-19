@@ -1164,22 +1164,19 @@ object NCUtils extends LazyLogging {
             t.interrupt()
 
     /**
-      * Shuts down executor services and waits for their finish.
+      * Shuts down executor service and waits for its finish.
       *
-      * @param ess Executor services.
+      * @param es Executor service.
       */
-    def shutdownPools(ess: ExecutorService*): Unit =
-        if (ess != null) {
-            val seq = ess.filter(_ != null)
+    def shutdownPools(es: ExecutorService): Unit =
+        if (es != null) {
+            es.shutdown()
 
-            seq.foreach(_.shutdown())
-            seq.foreach(es ⇒
-                try
-                    es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
-                catch {
-                    case _: InterruptedException ⇒ () // Safely ignore.
-                }
-            )
+            try
+                es.awaitTermination(Long.MaxValue, TimeUnit.MILLISECONDS)
+            catch {
+                case _: InterruptedException ⇒ () // Safely ignore.
+            }
         }
 
     /**

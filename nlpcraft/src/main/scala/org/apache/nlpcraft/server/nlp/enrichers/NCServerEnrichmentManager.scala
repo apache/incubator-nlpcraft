@@ -56,7 +56,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
     private val HEADERS: Map[String, (Int, Seq[String])] =
         Seq(
-            "nlpcraft:nlp" → Seq("origText", "index", "pos", "lemma", "stem", "bracketed", "quoted", "stopWord", "ne", "nne"),
+            "nlpcraft:nlp" → Seq("origText", "index", "pos", "lemma", "stem", "bracketed", "quoted", "stopWord"),
             "nlpcraft:continent" → Seq("continent"),
             "nlpcraft:subcontinent" → Seq("continent", "subcontinent"),
             "nlpcraft:country" → Seq("country"),
@@ -121,7 +121,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
             ner(s, enabledBuiltInToks)
 
-            prepareAsciiTable(s).info(logger, Some(s"Sentence enriched: $normTxt"))
+            prepareAsciiTable(s).info(logger, Some(s"Sentence enriched: '$normTxt'"))
 
             cache += normTxt → Holder(s, enabledBuiltInToks)
 
@@ -152,7 +152,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
                 cache(normTxt) match {
                     case Some(h) ⇒
                         if (h.enabledBuiltInTokens == normEnabledBuiltInToks) {
-                            prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): $normTxt"))
+                            prepareAsciiTable(h.sentence).info(logger, Some(s"Sentence enriched (from cache): '$normTxt'"))
 
                             h.sentence
                         }
@@ -206,8 +206,18 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
 
         val tbl = NCAsciiTable(headers.map(_.header): _*)
 
+        /**
+         *
+         * @param tok
+         * @param hdr
+         * @return
+         */
         def mkNoteValue(tok: NCNlpSentenceToken, hdr: Header): Seq[String] =
-            tok.getNotes(hdr.noteType).filter(_.contains(hdr.noteName)).map(_(hdr.noteName).toString()).toSeq
+            tok
+                .getNotes(hdr.noteType)
+                .filter(_.contains(hdr.noteName))
+                .map(_(hdr.noteName).toString())
+                .toSeq
 
         for (tok ← s)
             tbl += (headers.map(mkNoteValue(tok, _)): _*)

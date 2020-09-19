@@ -105,8 +105,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        super.stop()
-
         mux.synchronized {
             if (embeddedCbs != null)
                 embeddedCbs.clear()
