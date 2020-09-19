@@ -120,7 +120,7 @@ object NCProbeManager extends NCService {
             s"probeToken=$probeToken" +
         s"]"
 
-        def short: String = s"$probeId (guid:$probeGuid, tok:$probeToken)"
+        def short: String = s"$probeId [guid=$probeGuid, tok=$probeToken]"
     }
     
     // Immutable probe holder.
@@ -801,7 +801,7 @@ object NCProbeManager extends NCService {
         tbl += (
             Seq(
                 probe.probeId,
-                s"  uid: ${probe.probeGuid}",
+                s"  guid: ${probe.probeGuid}",
                 s"  tok: ${probe.probeToken}"
             ),
             s"${probe.osName} ver. ${probe.osVersion}",
