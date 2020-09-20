@@ -57,8 +57,14 @@
  * }
  * </pre>
  * <p>
- * You can also <b>auto-test</b> the same model by using {@link org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator} class without any
- * additional coding utilizing {@link org.apache.nlpcraft.model.NCIntentSample} annotation on the models' callback method. Add necessary classpath to:
+ * You can also automatically <b>verify</b> the same model by using {@link org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator} class without any
+ * additional coding utilizing {@link org.apache.nlpcraft.model.NCIntentSample} annotation on the models' callback method.
+ * This automatic model validation consists of starting an embedded probe with a given model, scanning
+ * for {@link org.apache.nlpcraft.model.NCIntentSample} annotations and their corresponding callback methods,
+ * submitting each sample input sentences from {@link org.apache.nlpcraft.model.NCIntentSample} annotation and checking
+ * that resulting intent matches the intent the sample was attached to.
+ * <p>
+ * Add necessary classpath and run the following command:
  * <pre class="brush: plain">
  *     java -ea -DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.alarm.AlarmModel org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
  * </pre>
