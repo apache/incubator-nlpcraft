@@ -1895,12 +1895,13 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 corsHandler (
                     get {
                         withRequestTimeoutResponse(_ ⇒ timeoutResp) {
-                            path(API / "health") { health$() }
+                            path(API / "health") { health$() } // Also duplicated for POST.
                         }
                     } ~
                     post {
                         encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
                             withRequestTimeoutResponse(_ ⇒ timeoutResp) {
+                                path(API / "health") { health$() } // Duplicate for POST.
                                 path(API / "signin") { withMetric(M_SIGNIN_LATENCY_MS, signin$) } ~
                                 path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, signout$) } ~
                                 path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, cancel$) } ~

@@ -29,6 +29,7 @@ import io.opencensus.stats._
   * OpenCensus stats instrumentation.
   */
 trait NCOpenCensusServerStats {
+    val M_HEALTH_MS: MeasureLong = MeasureLong.create("health_latency", "The latency of '/health' REST call", "ms")
     val M_ASK_LATENCY_MS: MeasureLong = MeasureLong.create("ask_latency", "The latency of '/ask' REST call", "ms")
     val M_CHECK_LATENCY_MS: MeasureLong = MeasureLong.create("check_latency", "The latency of '/check' REST call", "ms")
     val M_MODEL_SUGSYN_LATENCY_MS: MeasureLong = MeasureLong.create("model_inspect_latency", "The latency of '/model/inspect' REST call", "ms")
@@ -99,12 +100,13 @@ trait NCOpenCensusServerStats {
         }
         
         val views = List(
+            mkViews(M_HEALTH_MS, "health"),
             mkViews(M_ASK_LATENCY_MS, "ask"),
+            mkViews(M_ASK_SYNC_LATENCY_MS, "ask/sync"),
             mkViews(M_CANCEL_LATENCY_MS, "cancel"),
             mkViews(M_CHECK_LATENCY_MS, "check"),
             mkViews(M_SIGNIN_LATENCY_MS, "signin"),
             mkViews(M_SIGNOUT_LATENCY_MS, "signout"),
-            mkViews(M_ASK_SYNC_LATENCY_MS, "ask/sync"),
             mkViews(M_CLEAR_CONV_LATENCY_MS, "clear/conversation"),
             mkViews(M_CLEAR_DIALOG_LATENCY_MS, "clear/dialog"),
             mkViews(M_COMPANY_ADD_LATENCY_MS, "company/add"),
@@ -123,6 +125,7 @@ trait NCOpenCensusServerStats {
             mkViews(M_FEEDBACK_ADD_LATENCY_MS, "feedback/add"),
             mkViews(M_FEEDBACK_DELETE_LATENCY_MS, "feedback/delete"),
             mkViews(M_FEEDBACK_GET_LATENCY_MS, "feedback/get"),
+            mkViews(M_MODEL_SUGSYN_LATENCY_MS, "model/sugsyn"),
             mkViews(M_PROBE_ALL_LATENCY_MS, "probe/all"),
             
             // Special views for round trip metrics. 
