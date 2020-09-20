@@ -17,12 +17,13 @@
 
 package org.apache.nlpcraft.common.ansi
 
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 
 /**
  * Scala 2.13 shim for `scala.io.AnsiColor`.
  */
-trait NCAnsiColor {
+trait NCAnsiColor extends LazyLogging {
     private final val BLACK = "\u001b[30m"
     private final val RED = "\u001b[31m"
     private final val GREEN = "\u001b[32m"
@@ -76,4 +77,7 @@ trait NCAnsiColor {
     def ansiInvisible: String = if (isEnabled) INVISIBLE else ""
 }
 
-object NCAnsiColor extends NCAnsiColor { }
+object NCAnsiColor extends NCAnsiColor {
+    if (isEnabled)
+        logger.info(s"${U.bgRainbow("ANSI coloring")} ${U.fgRainbow("is enabled")}. Use '-D${ansiCyanFg}NLPCRAFT_ANSI_COLOR_DISABLED${ansiReset}=true' to disable it.")
+}

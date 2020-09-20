@@ -74,6 +74,26 @@ object NCUtils extends LazyLogging {
 
     private val idGen = new NCIdGenerator(NCBlowfishHasher.salt(), 8)
 
+    private lazy val ANSI_FG_COLORS = Seq(
+        ansiRedFg,
+        ansiGreenFg,
+        ansiBlueFg,
+        ansiYellowFg,
+        ansiWhiteFg,
+        ansiBlackFg,
+        ansiCyanFg
+    )
+    private lazy val ANSI_BG_COLORS = Seq(
+        ansiRedBg,
+        ansiGreenBg,
+        ansiBlueBg,
+        ansiYellowBg,
+        ansiWhiteBg,
+        ansiBlackBg,
+        ansiCyanBg
+    )
+    private lazy val ANSI_COLORS = for (fg ← ANSI_FG_COLORS; bg ← ANSI_BG_COLORS) yield s"$fg$bg"
+
     // Various decimal formats.
     private final val DEC_FMT0 = mkDecimalFormat("#0")
     private final val DEC_FMT1 = mkDecimalFormat("#0.0")
@@ -1410,6 +1430,52 @@ object NCUtils extends LazyLogging {
         raw"$ansiBold$ansiRedFg/_/ |_/_/ .___/$ansiRedFg\____/_/   \__,_/_/  \__/      $ansiReset$NL" +
         raw"$ansiBold$ansiRedFg       /_/                                              $ansiReset$NL"
 
+    /**
+     *
+     * @param s
+     * @return
+     */
+    def fgRainbow(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_FG_COLORS, addOn)
+
+    /**
+     *
+     * @param s
+     * @return
+     */
+    def bgRainbow(s: String, addOn: String = ""): String = rainbowImpl(s, ANSI_BG_COLORS, addOn)
+
+    /**
+     *
+     * @param s
+     * @return
+     */
+    def rainbow(s: String, addOn: String = ""): String = randomRainbowImpl(s, ANSI_COLORS, addOn)
+
+    /**
+     *
+     * @param s
+     * @param colors
+     * @param addOn
+     * @return
+     */
+    private def randomRainbowImpl(s: String, colors: Seq[String], addOn: String): String =
+        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) ⇒ {
+            buf ++= s"${colors(RND.nextInt(colors.size))}$addOn${zip._1}"
+        })
+        .toString + ansiReset
+
+    /**
+     *
+     * @param s
+     * @param colors
+     * @param addOn
+     * @return
+     */
+    private def rainbowImpl(s: String, colors: Seq[String], addOn: String): String =
+        s.zipWithIndex.foldLeft(new StringBuilder())((buf, zip) ⇒ {
+            buf ++= s"${colors(zip._2 % colors.size)}$addOn${zip._1}"
+        })
+        .toString + ansiReset
 
     /**
      * ANSI color JSON string.
@@ -1459,7 +1525,7 @@ object NCUtils extends LazyLogging {
                 val thNum = new AtomicInteger(1)
 
                 override def newThread(r: Runnable): Thread =
-                    new Thread(r, s"pool-$namePrefix-thread-${thNum.getAndIncrement()}");
+                    new Thread(r, s"pool-$namePrefix-thread-${thNum.getAndIncrement()}")
             },
             new RejectedExecutionHandler() {
                 // Ignore rejections.
