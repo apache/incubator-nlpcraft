@@ -25,7 +25,7 @@
 body {
     background-color:#ffffff;
     color:#353833;
-    font-family: "Roboto Mono", Helvetica, Arial, sans-serif;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
     font-size:14px;
     margin:0;
     padding:0;
@@ -41,7 +41,7 @@ iframe {
     border:none;
 }
 a:link, a:visited {
-    text-decoration: underline dotted #999999;
+    text-decoration: none;
     color:#4A6782;
 }
 a[href]:hover, a[href]:focus {
@@ -117,12 +117,12 @@ sup {
  */
 .clear {
     clear:both;
-    height:0px;
+    height:0;
     overflow:hidden;
 }
 .aboutLanguage {
     float:right;
-    padding:0px 21px;
+    padding:0 21px;
     font-size:11px;
     z-index:200;
     margin-top:-9px;
@@ -168,11 +168,10 @@ sup {
     background-color:#4D7A97;
     color:#FFFFFF;
     float:left;
-    padding:0;
     width:100%;
     clear:right;
     height:2.8em;
-    padding-top:10px;
+    padding: 10px 0 0;
     overflow:hidden;
     font-size:12px;
 }
@@ -181,11 +180,10 @@ sup {
     background-color:#4D7A97;
     color:#FFFFFF;
     float:left;
-    padding:0;
     width:100%;
     clear:right;
     height:2.8em;
-    padding-top:10px;
+    padding: 10px 0 0;
     overflow:hidden;
     font-size:12px;
 }
@@ -317,7 +315,7 @@ ul.blockList ul.blockList li.blockList h3 {
     margin:15px 0;
 }
 ul.blockList li.blockList h2 {
-    padding:0px 0 20px 0;
+    padding:0 0 20px 0;
 }
 /*
  * Styles for page layout containers.
@@ -352,9 +350,9 @@ ul.blockList li.blockList h2 {
     color:#4E4E4E;
 }
 .contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
-    margin:5px 0 10px 0px;
+    margin:5px 0 10px 0;
     font-size:14px;
-    font-family:"Roboto Mono", Georgia, "Times New Roman", Times, serif;
+    font-family: Verdana, Georgia, "Times New Roman", Times, serif;
 }
 .serializedFormContainer dl.nameValue dt {
     margin-left:1px;
@@ -400,7 +398,7 @@ ul.blockList li.blockList, ul.blockListLast li.blockList {
     line-height:1.4;
 }
 ul.blockList ul.blockList li.blockList, ul.blockList ul.blockListLast li.blockList {
-    padding:0px 20px 5px 10px;
+    padding:0 20px 5px 10px;
     border:1px solid #ededed;
     background-color:#f8f8f8;
 }
@@ -436,7 +434,7 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
     border-bottom:1px solid #EEE;
 }
 .overviewSummary, .memberSummary, .requiresSummary, .packagesSummary, .providesSummary, .usesSummary  {
-    padding:0px;
+    padding:0;
 }
 .overviewSummary caption, .memberSummary caption, .typeSummary caption,
 .useSummary caption, .constantsSummary caption, .deprecatedSummary caption,
@@ -448,10 +446,8 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
     font-weight:bold;
     clear:none;
     overflow:hidden;
-    padding:0px;
-    padding-top:10px;
-    padding-left:1px;
-    margin:0px;
+    padding: 10px 0 0 1px;
+    margin:0;
     white-space:pre;
 }
 .overviewSummary caption a:link, .memberSummary caption a:link, .typeSummary caption a:link,
@@ -481,10 +477,7 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
 .requiresSummary caption span, .packagesSummary caption span, .providesSummary caption span,
 .usesSummary caption span {
     white-space:nowrap;
-    padding-top:5px;
-    padding-left:12px;
-    padding-right:12px;
-    padding-bottom:7px;
+    padding: 5px 12px 7px;
     display:inline-block;
     float:left;
     background-color:#F8981D;
@@ -519,9 +512,9 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
 .packagesSummary caption span.tableTab, .packagesSummary caption span.activeTableTab,
 .overviewSummary caption span.tableTab, .overviewSummary caption span.activeTableTab,
 .typeSummary caption span.tableTab, .typeSummary caption span.activeTableTab {
-    padding-top:0px;
-    padding-left:0px;
-    padding-right:0px;
+    padding-top:0;
+    padding-left:0;
+    padding-right:0;
     background-image:none;
     float:none;
     display:inline;
@@ -560,13 +553,13 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
 .useSummary td, .constantsSummary td, .deprecatedSummary td,
 .requiresSummary td, .packagesSummary td, .providesSummary td, .usesSummary td {
     text-align:left;
-    padding:0px 0px 12px 10px;
+    padding:0 0 12px 10px;
 }
 th.colFirst, th.colSecond, th.colLast, th.colConstructorName, th.colDeprecatedItemName, .useSummary th,
 .constantsSummary th, .packagesSummary th, td.colFirst, td.colSecond, td.colLast, .useSummary td,
 .constantsSummary td {
     vertical-align:top;
-    padding-right:0px;
+    padding-right:0;
     padding-top:8px;
     padding-bottom:3px;
 }
@@ -641,10 +634,10 @@ ul.blockList ul.blockList ul.blockList li.blockList h3 {
 }
 div.block {
     font-size:14px;
-    font-family:"Roboto Mono", Georgia, "Times New Roman", Times, serif;
+    font-family: Verdana, Georgia, "Times New Roman", Times, serif;
 }
 td.colLast div {
-    padding-top:0px;
+    padding-top:0;
 }
 td.colLast a {
     padding-bottom:3px;
@@ -663,7 +656,7 @@ h1.hidden {
 }
 .block {
     display:block;
-    margin:3px 10px 2px 0px;
+    margin:3px 10px 2px 0;
     color:#474747;
 }
 .deprecatedLabel, .descfrmTypeLabel, .implementationLabel, .memberNameLabel, .memberNameLink,
@@ -677,7 +670,7 @@ h1.hidden {
 }
 .deprecationBlock {
     font-size:14px;
-    font-family:"Roboto Mono", Georgia, "Times New Roman", Times, serif;
+    font-family: Verdana, Georgia, "Times New Roman", Times, serif;
     border-style:solid;
     border-width:thin;
     border-radius:10px;
@@ -691,7 +684,7 @@ div.block div.block span.interfaceName {
     font-style:normal;
 }
 div.contentContainer ul.blockList li.blockList h2 {
-    padding-bottom:0px;
+    padding-bottom:0;
 }
 /*
  * Styles for IFRAME.
@@ -740,13 +733,12 @@ div.contentContainer ul.blockList li.blockList h2 {
     border-left:1px solid #000;
 }
 .rightIframe {
-    margin:0;
     padding:0;
     height:100%;
     right:30px;
     width:100%;
     overflow:visible;
-    margin-bottom:30px;
+    margin: 0 0 30px;
 }
 /*
  * Styles specific to HTML5 elements.
@@ -808,7 +800,7 @@ ul.ui-autocomplete  li {
     position:relative;
     left:-4px;
     top:-4px;
-    font-size:0px;
+    font-size:0;
 }
 .watermark {
     color:#545454;
