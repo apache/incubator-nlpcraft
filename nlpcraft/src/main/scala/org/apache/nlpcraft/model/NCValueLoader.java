@@ -20,7 +20,10 @@ package org.apache.nlpcraft.model;
 import java.util.Set;
 
 /**
- * Dynamic value loader that can be used by JSON/YAML model declarations.
+ * Dynamic value loader that can be used by model elements to dynamically load or create their values. Note that
+ * the primary use case for this interface is the dynamic value loading for the models defines in JSON/YAML
+ * presentation. However, it's not technically limited to that use case only, and this interface can be
+ * set programmatically when model elements are created programmatically too.
  * <p>
  * <b>JSON</b>
  * <br>
