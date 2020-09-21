@@ -73,7 +73,7 @@ object NCSuggestSynonymManager extends NCService {
             val js = if (e != null) EntityUtils.toString(e) else null
 
             if (js == null)
-                throw new NCE(s"Unexpected empty HTTP response from 'ctxword' server [code=$code]")
+                throw new NCE(s"Unexpected empty HTTP response from `ctxword` server [code=$code]")
 
             code match {
                 case 200 ⇒
@@ -83,7 +83,7 @@ object NCSuggestSynonymManager extends NCService {
 
                 case _ ⇒
                     throw new NCE(
-                    s"Unexpected HTTP response from 'ctxword' server [" +
+                    s"Unexpected HTTP response from `ctxword` server [" +
                     s"code=$code, " +
                     s"response=$js" +
                     s"]"
@@ -200,7 +200,7 @@ object NCSuggestSynonymManager extends NCService {
                             )
 
                         if (mdlExs.isEmpty)
-                            onError(s"Missed intents samples for: '$mdlId'")
+                            onError(s"Missed intents samples for: `$mdlId``")
                         else {
                             val url = s"${Config.urlOpt.getOrElse(throw new NCE("Context word server is not configured."))}/suggestions"
 
@@ -365,7 +365,7 @@ object NCSuggestSynonymManager extends NCService {
                                 cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
 
                                 if (err.get() != null)
-                                    throw new NCE("Error during work with 'ContextWordServer'.", err.get())
+                                    throw new NCE("Error during work with `ContextWordServer`.", err.get())
 
                                 val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
