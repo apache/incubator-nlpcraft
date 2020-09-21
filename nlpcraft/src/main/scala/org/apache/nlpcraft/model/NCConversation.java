@@ -51,6 +51,8 @@ public interface NCConversation {
     /**
      * Gets IDs for the previously matched intents sorted from oldest to newest for the current
      * user and data model.
+     *
+     * @return IDs for the previously matched intents.
      */
     List<String> getDialogFlow();
 
