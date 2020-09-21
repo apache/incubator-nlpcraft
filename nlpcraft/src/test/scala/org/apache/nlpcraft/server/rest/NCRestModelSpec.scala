@@ -41,7 +41,8 @@ class NCRestModelSpec extends NCRestSpec {
 
                 assertTrue(scores.nonEmpty)
                 assertTrue(scores.forall(s ⇒ s >= 0 && s <= 1))
-                assertTrue(scores.exists(_ > 0.5))
+                assertTrue(scores.exists(_ >= 0.5))
+                assertTrue(scores.exists(_ <= 0.5))
             })
         )
         post("model/sugsyn", "mdlId" → "nlpcraft.alarm.ex", "minScore" → 0.5)(
