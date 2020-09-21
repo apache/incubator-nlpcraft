@@ -97,7 +97,6 @@ class NCRestFeedbackSpec extends NCRestSpec {
         fId
     }
 
-    // TODO:
     // @Test
     def testErrors(): Unit = {
         // Too big score.

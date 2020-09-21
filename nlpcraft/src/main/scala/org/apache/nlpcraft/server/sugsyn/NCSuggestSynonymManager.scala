@@ -365,7 +365,7 @@ object NCSuggestSynonymManager extends NCService {
                                 cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
 
                                 if (err.get() != null)
-                                    throw new NCE("Error during work with 'ContextWordServer'.", err.get())
+                                    throw new NCE("Error during work with 'ctxword' server.", err.get())
 
                                 val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
