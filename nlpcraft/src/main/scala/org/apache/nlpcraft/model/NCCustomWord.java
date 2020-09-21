@@ -54,7 +54,7 @@ public interface NCCustomWord {
 
     /**
      * Gets Penn Treebank POS tag for this word. Note that additionally to standard Penn Treebank POS
-     * tags NLPCraft introduces {@code '---'} synthetic tag to indicate a POS tag for multiword part.
+     * tags NLPCraft introduces {@code '---'} synthetic tag to indicate a POS tag for multi-word part.
      * Learn more at <a href="http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html">http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html</a>
      *
      * @return Penn Treebank POS tag for this word.

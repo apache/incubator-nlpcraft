@@ -49,6 +49,12 @@ public interface NCConversation {
     List<NCToken> getTokens();
 
     /**
+     * Gets IDs for the previously matched intents sorted from oldest to newest for the current
+     * user and data model.
+     */
+    List<String> getDialogFlow();
+
+    /**
      * Removes all tokens satisfying given predicate from the conversation STM.
      * This is particularly useful when the logic processing the user input makes an implicit
      * assumption not present in the user input itself. Such assumption may alter the conversation (without
