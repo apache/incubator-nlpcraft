@@ -980,7 +980,7 @@ public interface NCModelView extends NCMetadata {
      * combined define the expiration policy for the conversation management. These two properties allow to
      * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
      * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better
-     * supports fast-moving wide-ranged conversation that may cover multiple topics.
+     * supports fast-moving wide-ranging conversation that may cover multiple topics.
      * <p>
      * <b>Default</b>
      * <br>
@@ -1012,7 +1012,7 @@ public interface NCModelView extends NCMetadata {
      * combined define the expiration policy for the conversation management. These two properties allow to
      * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
      * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better
-     * supports fast-moving wide-ranged conversation that may cover multiple topics.
+     * supports fast-moving wide-ranging conversation that may cover multiple topics.
      * <p>
      * <b>Default</b>
      * <br>
