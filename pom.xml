@@ -76,7 +76,7 @@
 
         <!-- Versions. -->
         <ignite.ver>2.8.1</ignite.ver>
-        <gridgain.agent.ver>2.8.1.0</gridgain.agent.ver>
+        <gridgain.agent.ver>2.8.1.2</gridgain.agent.ver>
         <scala.plugin.ver>4.3.1</scala.plugin.ver>
         <log4j.ver>2.12.0</log4j.ver>
         <scala.ver>${scala.base}.11</scala.ver>
@@ -602,7 +602,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.gridgain</groupId>
-                    <artifactId>gridgain-control-center-agent</artifactId>
+                    <artifactId>control-center-agent</artifactId>
                     <version>${gridgain.agent.ver}</version>
                 </dependency>
             </dependencies>
