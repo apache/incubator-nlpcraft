@@ -278,4 +278,9 @@ case class NCConversation(
             new util.ArrayList[NCToken](toks.asJava)
         }
     }
+
+    /**
+      *
+      */
+    def getUserData: util.Map[String, Object] = data
 }

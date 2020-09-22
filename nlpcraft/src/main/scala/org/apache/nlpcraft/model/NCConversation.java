@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -83,4 +84,16 @@ public interface NCConversation {
      * @param filter Dialog flow filter based on IDs of previously matched intents.
      */
     void clearDialog(Predicate<String/* Intent ID. */> filter);
+
+    /**
+     * Gets modifiable user data container that can be to store user data in the conversation.
+     * Note that this data will expire the same as other elements in the conversation (i.e. tokens and
+     * previously matched intents).
+     * <p>
+     * Note that you should obtain the user data container on every intent callback invocation to make
+     * sure that expiration policy takes an effect. Do not cache the returned object elsewhere.
+     *
+     * @return Mutable user data container. The returned map is safe for concurrent modifications.
+     */
+    Map<String, Object> getUserData();
 }
