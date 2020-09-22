@@ -95,7 +95,7 @@ object NCConversationManager extends NCService {
                     }
 
                 if (del) {
-                    value.conv.getData.clear()
+                    value.conv.getUserData.clear()
 
                     delKeys += key
                 }

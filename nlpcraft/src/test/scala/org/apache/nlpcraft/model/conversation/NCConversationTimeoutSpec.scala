@@ -60,26 +60,26 @@ class NCTimeoutSpecModel extends NCModel {
 
         step match {
             case 0 ⇒
-                assertTrue(conv.getData.isEmpty)
+                assertTrue(conv.getUserData.isEmpty)
                 assertTrue(conv.getDialogFlow.isEmpty)
 
-                conv.getData.put("key", "value")
+                conv.getUserData.put("key", "value")
 
-                saveData = conv.getData
+                saveData = conv.getUserData
 
             case 1 ⇒
-                assertFalse(conv.getData.isEmpty)
-                assertEquals(saveData, conv.getData)
-                assertEquals("value", conv.getData.getOrDefault("key", "-"))
+                assertFalse(conv.getUserData.isEmpty)
+                assertEquals(saveData, conv.getUserData)
+                assertEquals("value", conv.getUserData.getOrDefault("key", "-"))
                 assertFalse(conv.getDialogFlow.isEmpty)
 
             case 2 ⇒
-                assertTrue(conv.getData.isEmpty)
+                assertTrue(conv.getUserData.isEmpty)
                 assertTrue(saveData.isEmpty)
                 assertTrue(conv.getDialogFlow.isEmpty)
 
             case 3 ⇒
-                assertTrue(conv.getData.isEmpty)
+                assertTrue(conv.getUserData.isEmpty)
                 assertFalse(conv.getDialogFlow.isEmpty)
 
             case _ ⇒ require(false)
