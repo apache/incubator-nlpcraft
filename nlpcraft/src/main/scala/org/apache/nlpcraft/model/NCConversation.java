@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -83,4 +84,11 @@ public interface NCConversation {
      * @param filter Dialog flow filter based on IDs of previously matched intents.
      */
     void clearDialog(Predicate<String/* Intent ID. */> filter);
+
+    /**
+     * // TODO:
+     * Gets synchronized user data map, which will be automatically cleared after model timeout.
+     * @return Data.
+     */
+    Map<String, Object> getData();
 }

@@ -17,15 +17,11 @@
 
 package org.apache.nlpcraft.probe.mgrs.dialogflow
 
-import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
-
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
+import scala.collection._
 
 /**
  * Dialog flow manager.
@@ -34,20 +30,9 @@ object NCDialogFlowManager extends NCService {
     case class Key(usrId: Long, mdlId: String)
     case class Value(intent: String, tstamp: Long)
 
-    private object Config extends NCConfigurable {
-        private final val name = "nlpcraft.probe.dialogGcTimeoutMs"
+    private final val flow = mutable.HashMap.empty[Key, mutable.ArrayBuffer[Value]]
 
-        def timeoutMs: Long = getInt(name)
-
-        def check(): Unit =
-            if (timeoutMs <= 0)
-                throw new NCE(s"Configuration property must be >= 0 [name=$name]")
-    }
-
-    Config.check()
-
-    @volatile private var flow: mutable.Map[Key, ArrayBuffer[Value]] = _
-    @volatile private var gc: ScheduledExecutorService = _
+    @volatile private var gc: Thread = _
 
     /**
      *
@@ -55,13 +40,23 @@ object NCDialogFlowManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        flow = mutable.HashMap.empty[Key, ArrayBuffer[Value]]
+        gc =
+            U.mkThread("dialog-flow-manager-gc") { t ⇒
+                while (!t.isInterrupted)
+                    try
+                        flow.synchronized {
+                            val sleepTime = clearForTimeout() - System.currentTimeMillis()
 
-        gc = Executors.newSingleThreadScheduledExecutor
+                            if (sleepTime > 0)
+                                flow.wait(sleepTime)
+                        }
+                    catch {
+                        case _: InterruptedException ⇒ // No-op.
+                        case e: Throwable ⇒ logger.error(s"Unexpected error for: ${t.getName}", e)
+                    }
+            }
 
-        gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), Config.timeoutMs, Config.timeoutMs, TimeUnit.MILLISECONDS)
-
-        logger.info(s"Dialog flow manager GC started, checking every ${Config.timeoutMs}ms.")
+        gc.start()
 
         ackStart()
     }
@@ -71,7 +66,11 @@ object NCDialogFlowManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        U.shutdownPools(gc)
+        U.stopThread(gc)
+
+        gc = null
+
+        flow.clear()
 
         logger.info("Dialog flow manager GC stopped.")
 
@@ -88,9 +87,11 @@ object NCDialogFlowManager extends NCService {
     def addMatchedIntent(intId: String, usrId: Long, mdlId: String, parent: Span = null): Unit = {
         startScopedSpan("addMatchedIntent", parent, "usrId" → usrId, "mdlId" → mdlId, "intId" → intId) { _ ⇒
             flow.synchronized {
-                flow.getOrElseUpdate(Key(usrId, mdlId), ArrayBuffer.empty[Value]).append(
+                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[Value]).append(
                     Value(intId, System.currentTimeMillis())
                 )
+
+                flow.notifyAll()
             }
 
             logger.trace(s"Added to dialog flow [mdlId=$mdlId, intId=$intId, userId=$usrId]")
@@ -107,30 +108,46 @@ object NCDialogFlowManager extends NCService {
     def getDialogFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[String] =
         startScopedSpan("getDialogFlow", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
             flow.synchronized {
-                flow.getOrElseUpdate(Key(usrId, mdlId), ArrayBuffer.empty[Value]).map(_.intent)
+                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[Value]).map(_.intent)
             }
         }
 
     /**
-     *
+     *  Gets next clearing time.
      */
-    private def clearForTimeout(): Unit =
-        startScopedSpan("clearForTimeout", "timeoutMs" → Config.timeoutMs) { _ ⇒
-            flow.synchronized {
-                val delKeys = ArrayBuffer.empty[Key]
+    private def clearForTimeout(): Long =
+        startScopedSpan("clearForTimeout") { _ ⇒
+            require(Thread.holdsLock(flow))
 
-                for ((key, values) ← flow)
-                    NCModelManager.getModelOpt(key.mdlId) match {
-                        case Some(data) ⇒
-                            val ms = System.currentTimeMillis() - data.model.getConversationTimeout
+            val now = System.currentTimeMillis()
+            val delKeys = mutable.HashSet.empty[Key]
+            val timeouts = mutable.HashMap.empty[String, Long]
 
-                            values --= values.filter(_.tstamp < ms)
+            for ((key, values) ← flow)
+                NCModelManager.getModelOpt(key.mdlId) match {
+                    case Some(mdl) ⇒
+                        val ms = now - mdl.model.getConversationTimeout
 
-                        case None ⇒ delKeys += key
-                    }
+                        values --= values.filter(_.tstamp < ms)
 
-                flow --= delKeys
-            }
+                        timeouts += mdl.model.getId → mdl.model.getConversationTimeout
+
+                        // https://github.com/scala/bug/issues/10151
+                        // Scala bug workaround.
+                        ()
+                    case None ⇒ delKeys += key
+                }
+
+            delKeys ++= flow.filter(_._2.isEmpty).keySet
+
+            flow --= delKeys
+
+            val times = (for ((key, values) ← flow) yield values.map(v ⇒ v.tstamp + timeouts(key.mdlId))).flatten
+
+            if (times.nonEmpty)
+                times.min
+            else
+                Long.MaxValue
         }
     
     /**
@@ -144,6 +161,8 @@ object NCDialogFlowManager extends NCService {
         startScopedSpan("clear", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
             flow.synchronized {
                 flow -= Key(usrId, mdlId)
+
+                flow.notifyAll()
             }
         }
     
@@ -161,6 +180,8 @@ object NCDialogFlowManager extends NCService {
 
             flow.synchronized {
                 flow(key) = flow(key).filterNot(v ⇒ pred(v.intent))
+
+                flow.notifyAll()
             }
         }
 }
