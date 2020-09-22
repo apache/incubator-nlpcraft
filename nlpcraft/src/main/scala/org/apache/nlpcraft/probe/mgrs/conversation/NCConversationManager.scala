@@ -17,15 +17,11 @@
 
 package org.apache.nlpcraft.probe.mgrs.conversation
 
-import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection._
-import scala.collection.mutable.ArrayBuffer
 
 /**
   * Conversation manager.
@@ -34,20 +30,9 @@ object NCConversationManager extends NCService {
     case class Key(userId: Long, mdlId: String)
     case class Value(conv: NCConversation, var tstamp: Long = 0)
 
-    private object Config extends NCConfigurable {
-        private final val name = "nlpcraft.probe.convGcTimeoutMs"
+    private final val convs: mutable.Map[Key, Value] = mutable.HashMap.empty[Key, Value]
 
-        def timeoutMs: Long = getInt(name)
-
-        def check(): Unit =
-            if (timeoutMs <= 0)
-                throw new NCE(s"Configuration property must be >= 0 [name=$name]")
-    }
-
-    Config.check()
-
-    @volatile private var convs: mutable.Map[Key, Value] = _
-    @volatile private var gc: ScheduledExecutorService = _
+    @volatile private var gc: Thread = _
 
     /**
      *
@@ -55,13 +40,23 @@ object NCConversationManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        gc = Executors.newSingleThreadScheduledExecutor
+        gc =
+            U.mkThread("conversation-manager-gc") { t ⇒
+                while (!t.isInterrupted)
+                    try
+                        convs.synchronized {
+                            val sleepTime = clearForTimeout() - System.currentTimeMillis()
 
-        convs = mutable.HashMap.empty[Key, Value]
+                            if (sleepTime > 0)
+                                convs.wait(sleepTime)
+                        }
+                    catch {
+                        case _: InterruptedException ⇒ // No-op.
+                        case e: Throwable ⇒ logger.error(s"Unexpected error for: ${t.getName}", e)
+                    }
+            }
 
-        gc.scheduleWithFixedDelay(() ⇒ clearForTimeout(), Config.timeoutMs, Config.timeoutMs, TimeUnit.MILLISECONDS)
-
-        logger.info(s"Conversation manager GC started, checking every ${Config.timeoutMs}ms.")
+        gc.start()
 
         ackStart()
     }
@@ -71,7 +66,11 @@ object NCConversationManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        U.shutdownPools(gc)
+        U.stopThread(gc)
+
+        gc = null
+
+        convs.clear()
 
         logger.info("Conversation manager GC stopped.")
 
@@ -79,24 +78,35 @@ object NCConversationManager extends NCService {
     }
 
     /**
-      *
+      * Gets next clearing time.
       */
-    private def clearForTimeout(): Unit =
-        startScopedSpan("clearForTimeout", "timeoutMs" → Config.timeoutMs) { _ ⇒
-            convs.synchronized {
-                val delKeys = ArrayBuffer.empty[Key]
+    private def clearForTimeout(): Long =
+        startScopedSpan("clearForTimeout") { _ ⇒
+            require(Thread.holdsLock(convs))
 
-                for ((key, value) ← convs)
+            val now = System.currentTimeMillis()
+            val delKeys = mutable.HashSet.empty[Key]
+
+            for ((key, value) ← convs) {
+                val del =
                     NCModelManager.getModelOpt(key.mdlId) match {
-                        case Some(data) ⇒
-                            if (value.tstamp < System.currentTimeMillis() - data.model.getConversationTimeout)
-                                delKeys += key
-
-                        case None ⇒ delKeys += key
+                        case Some(mdl) ⇒ value.tstamp < now - mdl.model.getConversationTimeout
+                        case None ⇒ true
                     }
 
-                convs --= delKeys
+                if (del) {
+                    value.conv.getData.clear()
+
+                    delKeys += key
+                }
             }
+
+            convs --= delKeys
+
+            if (convs.nonEmpty)
+                convs.values.map(v ⇒ v.tstamp + v.conv.timeoutMs).min
+            else
+                Long.MaxValue
         }
 
     /**
@@ -115,10 +125,12 @@ object NCConversationManager extends NCService {
                     Key(usrId, mdlId),
                     Value(NCConversation(usrId, mdlId, mdl.getConversationTimeout, mdl.getConversationDepth))
                 )
-                
+
                 v.tstamp = U.nowUtcMs()
-                
-                v
-            }.conv
+
+                convs.notifyAll()
+
+                v.conv
+            }
         }
 }

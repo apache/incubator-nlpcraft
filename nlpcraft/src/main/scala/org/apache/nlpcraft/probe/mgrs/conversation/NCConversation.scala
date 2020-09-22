@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.conversation
 
 import java.util
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Predicate
 
 import com.typesafe.scalalogging.LazyLogging
@@ -36,9 +37,11 @@ import scala.collection.mutable
 case class NCConversation(
     usrId: Long,
     mdlId: String,
-    updateTimeoutMs: Long,
+    timeoutMs: Long,
     maxDepth: Int
 ) extends LazyLogging with NCOpenCensusTrace {
+    private final val data = new ConcurrentHashMap[String, Object]()
+
     /**
      *
      * @param token
@@ -83,7 +86,7 @@ case class NCConversation(
             depth += 1
 
             // Conversation cleared by timeout or when there are too much unsuccessful requests.
-            if (now - lastUpdateTstamp > updateTimeoutMs) {
+            if (now - lastUpdateTstamp > timeoutMs) {
                 stm.clear()
 
                 logger.info(s"Conversation is reset by timeout [" +
@@ -100,7 +103,7 @@ case class NCConversation(
                 s"]")
             }
             else {
-                val minUsageTime = now - updateTimeoutMs
+                val minUsageTime = now - timeoutMs
                 val toks = lastToks.flatten
 
                 for (item ← stm) {
