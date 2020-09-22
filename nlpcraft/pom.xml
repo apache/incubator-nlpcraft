@@ -321,6 +321,12 @@
                 <configuration>
                     <!-- Skips all tests on phase `test`. -->
                     <skip>true</skip>
+                    <systemProperties>
+                        <property>
+                            <name>NLPCRAFT_TEST_MAVEN_ENV</name>
+                            <value>true</value>
+                        </property>
+                    </systemProperties>
                 </configuration>
                 <executions>
                     <!-- All tests are defined as integration. -->
@@ -336,6 +342,10 @@
                             <includes>
                                 <include>**/*.*</include>
                             </includes>
+                            <excludes>
+                                <exclude>**/NCConversationSpec.*</exclude>
+                                <exclude>**/NCDateGeneratorSpec.*</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>

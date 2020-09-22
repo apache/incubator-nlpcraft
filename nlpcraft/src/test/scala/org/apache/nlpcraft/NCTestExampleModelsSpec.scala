@@ -26,11 +26,16 @@ import org.junit.jupiter.api.{Assertions, Test}
 class NCTestExampleModelsSpec {
     @Test
     def test(): Unit = {
-        val models = "" +
+        var models = "" +
             "org.apache.nlpcraft.examples.alarm.AlarmModel," +
             "org.apache.nlpcraft.examples.time.TimeModel," +
             "org.apache.nlpcraft.examples.lightswitch.LightSwitchModel," +
             "org.apache.nlpcraft.examples.echo.EchoModel"
+
+        val maven = System.getProperty("NLPCRAFT_TEST_MAVEN_ENV")
+
+        if (maven == null || maven.toLowerCase != "true")
+            models = s"$models,org.apache.nlpcraft.examples.weather.WeatherModel"
 
         // Instruct auto-validator what models to test.
         System.setProperty("NLPCRAFT_TEST_MODELS", models)

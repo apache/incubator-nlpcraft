@@ -26,18 +26,17 @@ import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 import org.apache.nlpcraft.server.nlp.enrichers.date.tools.NCDateGenerator.LHM_SS
 import org.apache.nlpcraft.server.nlp.enrichers.date.{NCDateParser, NCDateRange}
 import org.junit.jupiter.api.Assertions.{assertTrue, fail}
-import org.junit.jupiter.api.{Disabled, Test}
+import org.junit.jupiter.api.Test
 
 import scala.collection.JavaConverters._
 import scala.collection._
-import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
+import scala.collection.mutable.{LinkedHashMap => LHM}
 import scala.language.implicitConversions
 
 /**
  * Tests for dates templates generators.
  * Excluded from suite because added for manual testing.
  */
-@Disabled
 class NCDateGeneratorSpec  {
     private def print(
         f: LHM[String, String] ⇒ Unit, cnt: Int = 500, asc: Boolean = true, keys2Check: Option[Seq[String]] = None
