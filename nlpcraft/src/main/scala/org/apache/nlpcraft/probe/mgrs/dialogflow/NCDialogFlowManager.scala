@@ -122,7 +122,7 @@ object NCDialogFlowManager extends NCService {
                 for ((key, values) ← flow)
                     NCModelManager.getModelOpt(key.mdlId) match {
                         case Some(data) ⇒
-                            val ms = System.currentTimeMillis() - data.model.getDialogTimeout
+                            val ms = System.currentTimeMillis() - data.model.getConversationTimeout
 
                             values --= values.filter(_.tstamp < ms)
 

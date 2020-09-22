@@ -72,16 +72,6 @@ public interface NCConversation {
     void clearStm(Predicate<NCToken> filter);
 
     /**
-     * Removes all tokens from the conversation STM. It is equivalent to:
-     * <pre class="brush: java">
-     *     clearStm(tok -&gt; true);
-     * </pre>
-     */
-    default void clearAllStm() {
-        clearStm(tok -> true);
-    }
-
-    /**
      * Clears history of matched intents using given intent predicate.
      * <p>
      * History of matched intents (i.e. the dialog flow) can be used in intent definition as part of its
@@ -93,14 +83,4 @@ public interface NCConversation {
      * @param filter Dialog flow filter based on IDs of previously matched intents.
      */
     void clearDialog(Predicate<String/* Intent ID. */> filter);
-
-    /**
-     * Clears entire history of matched intents. It is equivalent to:
-     * <pre class="brush: java">
-     *     clearDialog(id -&gt; true);
-     * </pre>
-     */
-    default void clearAllDialog() {
-        clearDialog(id -> true);
-    }
 }

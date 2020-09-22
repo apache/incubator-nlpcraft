@@ -852,7 +852,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkMandatoryString(mdl.getVersion, "version", 16)
 
         checkNum(mdl.getConversationTimeout, "conversationTimeout")
-        checkNum(mdl.getDialogTimeout, "dialogTimeout")
         checkNum(mdl.getMaxUnknownWords, "maxUnknownWords")
         checkNum(mdl.getMaxFreeWords, "maxFreeWords")
         checkNum(mdl.getMaxSuspiciousWords, "maxSuspiciousWords")

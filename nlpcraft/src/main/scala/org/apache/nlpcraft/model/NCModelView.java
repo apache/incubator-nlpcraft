@@ -64,11 +64,6 @@ public interface NCModelView extends NCMetadata {
     int DFLT_CONV_DEPTH = 3;
 
     /**
-     * Default value for {@link #getDialogTimeout()} method.
-     */
-    long DFLT_DIALOG_TIMEOUT_MS = Duration.ofMinutes(60).toMillis();
-
-    /**
      * Default value for {@link #getJiggleFactor()} method.
      */
     Map<String, Object> DFLT_METADATA = new HashMap<>();
@@ -1031,24 +1026,4 @@ public interface NCModelView extends NCMetadata {
      * @see #getConversationTimeout()
      */
     default int getConversationDepth() { return DFLT_CONV_DEPTH; }
-
-    /**
-     * Gets timeout in ms after which given user input is removed from dialog flow history.
-     * <p>
-     * <b>Default</b>
-     * <br>
-     * If not provided by the model the default value {@link #DFLT_DIALOG_TIMEOUT_MS} will be used.
-     * <p>
-     * <b>JSON</b>
-     * <br>
-     * If using JSON/YAML model presentation this is set by <code>dialogTimeout</code> property:
-     * <pre class="brush: js">
-     * {
-     *      "dialogTimeout": 300000
-     * }
-     * </pre>
-     *
-     * @return Timeout in ms after which given user input is removed from dialog flow history.
-     */
-    default long getDialogTimeout() { return DFLT_DIALOG_TIMEOUT_MS; }
 }

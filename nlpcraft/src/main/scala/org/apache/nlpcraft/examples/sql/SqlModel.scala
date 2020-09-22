@@ -62,12 +62,12 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     /**
       * Converts execution error to JSON.
       *
-      * @param error Error text.
+      * @param err Error text.
       */
-    private def toJson(error: String): String = {
+    private def toJson(err: String): String = {
         val m = new java.util.HashMap[String, Any]()
 
-        m.put("error", error)
+        m.put("error", err)
 
         GSON.toJson(m)
     }
@@ -112,7 +112,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     }
     
     /**
-      * Find any first column token in the given token or its constittuent tokens.
+      * Find any first column token in the given token or its constituent tokens.
       *
       * @param tok Token.
       * @return Column token or throws exception.
@@ -424,7 +424,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
             val ok = toks.forall(isValue) || toks.forall(isColumn) || toks.size == 1 && isDate(toks.head)
 
             if (!ok) {
-                m.getContext.getConversation.clearAllStm()
+                m.getContext.getConversation.clearStm(_ ⇒ true)
 
                 logger.info("Conversation reset, trying without conversation.")
             }
