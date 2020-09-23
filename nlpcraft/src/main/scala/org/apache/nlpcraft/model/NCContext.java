@@ -45,7 +45,8 @@ public interface NCContext extends Serializable {
 
     /**
      * Gets globally unique ID of the current request. Server request is defined as a processing of
-     * a one user input sentence.
+     * a one user input sentence. Note that the model can be accessed (i.e. intents can be matched) multiple times
+     * during the processing of a single request, and therefore multiple contexts may return the same server request ID.
      *
      * @return Server request ID.
      */
@@ -66,7 +67,7 @@ public interface NCContext extends Serializable {
     NCRequest getRequest();
 
     /**
-     * Gets current conversation.
+     * Gets current conversation for the query's user and data model.
      *
      * @return Current conversation.
      */

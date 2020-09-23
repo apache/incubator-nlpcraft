@@ -22,13 +22,18 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * Conversation container.
+ * Conversation container for specific user and data model.
  * <p>
  * Conversation management is based on idea of a short-term-memory (STM). STM can be viewed as a condensed
  * short-term history of the input for a given user and data model. Every submitted user request that wasn't
  * rejected is added to the conversation STM as a list of {@link NCToken tokens}. Existing STM tokens belonging to
  * the same {@link NCElement#getGroups() group} will be overridden by the more recent tokens from the same group.
- * Note also that tokens in STM automatically expire (i.e. context is "forgotten") after a certain period of time.
+ * Note also that tokens in STM automatically expire (i.e. context is "forgotten") after a certain period of time and/or
+ * based on the depth of the conversation since the last mention.
+ * <p>
+ * You can also maintain user state-machine between requests using method {@link #getUserData()}. This
+ * method returns mutable thread-safe container that can hold any arbitrary user data while supporting the same
+ * expiration logic as the rest of the conversation elements (i.e. tokens and previously matched intent IDs).
  *
  * @see NCContext#getConversation()
  * @see NCModelView#getConversationDepth()
@@ -86,14 +91,14 @@ public interface NCConversation {
     void clearDialog(Predicate<String/* Intent ID. */> filter);
 
     /**
-     * Gets modifiable user data container that can be to store user data in the conversation.
-     * Note that this data will expire the same as other elements in the conversation (i.e. tokens and
+     * Gets modifiable user data container that can be used to store user data in the conversation.
+     * Note that this data will expire the same way as other elements in the conversation (i.e. tokens and
      * previously matched intents).
      * <p>
      * Note that you should obtain the user data container on every intent callback invocation to make
      * sure that expiration policy takes an effect. Do not cache the returned object elsewhere.
      *
-     * @return Mutable user data container. The returned map is safe for concurrent modifications.
+     * @return Mutable and thread-safe user data container.
      */
     Map<String, Object> getUserData();
 }
