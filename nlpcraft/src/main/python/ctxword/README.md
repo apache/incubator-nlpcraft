@@ -31,7 +31,7 @@ models and Facebook's [FastText](https://fasttext.cc/) library.
 ### Dependencies
 To install necessary dependency:
  * **Linux/MacOS**: run `src/main/python/ctxword/bin/install_dependencies.sh` script.  
- * **Windows**: read `WINDOWS_SETUP.md` file for manual installation.
+ * **Windows**: read `src\main\python\ctxword\bin\WINDOWS_SETUP.md` file for manual installation.
 
 ### Start REST Server
 To start 'ctxword' module REST server:
@@ -42,7 +42,7 @@ then download this library and compress it which will take a several minutes and
 available memory. Subsequent starts will skip this step, and the server will start much faster.
 
 ### REST API
-Once the REST server is started you can issue REST calls to get suggestions for the contextual related words.
+Once the REST server starts you can issue REST calls to get suggestions for the contextual related words.
 REST server provides a single `application/json` endpoint:
  
 ##### `/suggestions` (POST)
@@ -103,4 +103,4 @@ $ bin/suggest.sh "what is the chance of rain tomorrow?" 5
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 
-<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
+<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">

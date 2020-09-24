@@ -372,7 +372,7 @@
                                 <span style="font-size: larger">Copyright &#169; {currentYear} Apache Software Foundation</span>
                                 <br/>
                                 <br/>
-                                <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
+                                <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">
                             </center>
                         ]]>
                     </bottom>

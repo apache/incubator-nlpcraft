@@ -43,6 +43,6 @@ lock-in:
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 
-<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="">
+<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">
 
 

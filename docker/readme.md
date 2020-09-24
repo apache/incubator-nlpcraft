@@ -56,6 +56,6 @@ than allocated by default to the docker containers. Set memory value to 8G (`-m 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 
-<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px">
+<img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">
 
 
