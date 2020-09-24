@@ -30,12 +30,12 @@ models and Facebook's [FastText](https://fasttext.cc/) library.
 
 ### Dependencies
 To install necessary dependency:
- * **Linux/MacOS**: run `src/main/python/ctxword/bin/install_dependencies.sh` script.  
- * **Windows**: read `src\main\python\ctxword\bin\WINDOWS_SETUP.md` file for manual installation.
+ * **Linux/MacOS**: run `nlpcraft/src/main/python/ctxword/bin/install_dependencies.sh` script.  
+ * **Windows**: read `nlpcraft\src\main\python\ctxword\bin\WINDOWS_SETUP.md` file for manual installation.
 
 ### Start REST Server
 To start 'ctxword' module REST server:
- * Run `src/main/python/ctxword/bin/start_server.{sh|cmd}` script.  
+ * Run `nlpcrat/src/main/python/ctxword/bin/start_server.{sh|cmd}` script.  
  
 NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
 then download this library and compress it which will take a several minutes and may require 10 GB+ of 
@@ -76,7 +76,7 @@ Here's the sample request and response JSON objects:
    - `[["word1", "word2", "word3"]]`
  
 ### `suggest.{sh|cmd}`
-You can use Curl-based `src/main/python/ctxword/bin/suggest.{sh|cmd}` scripts for the suggestion processing of single sentences from the command line.
+You can use Curl-based `nlpcraft/src/main/python/ctxword/bin/suggest.{sh|cmd}` scripts for the suggestion processing of single sentences from the command line.
 Following call returns list of contextual suggestions for the 5th word (counting from zero) in the given sentence: 
 
 ```
