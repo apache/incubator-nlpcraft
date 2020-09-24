@@ -24,6 +24,8 @@ import org.apache.nlpcraft.common._
  * Scala 2.13 shim for `scala.io.AnsiColor`.
  */
 trait NCAnsiColor extends LazyLogging {
+    import NCAnsiColor._
+
     private final val BLACK = "\u001b[30m"
     private final val RED = "\u001b[31m"
     private final val GREEN = "\u001b[32m"
@@ -46,10 +48,6 @@ trait NCAnsiColor extends LazyLogging {
     private final val BLINK = "\u001b[5m"
     private final val REVERSED = "\u001b[7m"
     private final val INVISIBLE = "\u001b[8m"
-
-    // Enabled by default.
-    // NOTE: it's not static as it can be changed at runtime.
-    private final val PROP = "NLPCRAFT_ANSI_COLOR_DISABLED"
 
     def isEnabled: Boolean = !U.isSysEnvTrue(PROP)
 
@@ -78,6 +76,24 @@ trait NCAnsiColor extends LazyLogging {
 }
 
 object NCAnsiColor extends NCAnsiColor {
-    if (isEnabled)
-        logger.info(s"${U.bgRainbow("ANSI coloring")} ${U.fgRainbow("is enabled")}. Use '-D${ansiCyanFg}NLPCRAFT_ANSI_COLOR_DISABLED${ansiReset}=true' to disable it.")
+    // Enabled by default.
+    // NOTE: it's not static as it can be changed at runtime.
+    private final val PROP = "NLPCRAFT_ANSI_COLOR_DISABLED"
+
+    /**
+     *
+     * @param f
+     */
+    def setEnabled(f: Boolean): Unit =
+        System.setProperty(PROP, (!f).toString)
+
+    /**
+     *
+     */
+    def ackStatus(): Unit =
+        if (isEnabled)
+            logger.info(
+                s"${U.bgRainbow("ANSI coloring")} ${U.fgRainbow("is enabled")}. " +
+                s"Use '-D${ansiCyanFg}NLPCRAFT_ANSI_COLOR_DISABLED$ansiReset=true' to disable it."
+            )
 }

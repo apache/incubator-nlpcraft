@@ -60,13 +60,15 @@ object NCModelManager extends NCService with DecorateAsScala {
 
                 val synCnt = w.synonyms.values.flatMap(_.values).flatten.size
                 val elmCnt = w.elements.keySet.size
+                val intentCnt = w.intents.size
 
                 tbl += (
                     Seq(
                         s"${mdl.getName}",
                         s"ID: $ansiBold${mdl.getId}$ansiReset, ver: ${mdl.getVersion}",
                         s"Elements: $elmCnt" + (if (elmCnt == 0) s" $ansiRedFg(!)$ansiReset" else ""),
-                        s"Synonyms: $synCnt" + (if (synCnt == 0) s" $ansiRedFg(!)$ansiReset" else "")
+                        s"Synonyms: $synCnt" + (if (synCnt == 0) s" $ansiRedFg(!)$ansiReset" else ""),
+                        s"Intents: $intentCnt" + (if (intentCnt == 0) s" $ansiRedFg(!)$ansiReset" else "")
                     ),
                     w.intents
                         .map(_.toDslString)

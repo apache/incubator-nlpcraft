@@ -22,6 +22,7 @@ import java.util.concurrent.CountDownLatch
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor
 import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -154,7 +155,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
       *
       * @return
       */
-    private def setParameters(): Unit = {
+    private def setSysProps(): Unit = {
         System.setProperty("java.net.preferIPv4Stack", "true")
     }
 
@@ -162,7 +163,9 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
       *
       */
     private def start(): Unit = {
-        setParameters()
+        NCAnsiColor.ackStatus()
+
+        setSysProps()
 
         NCConfigurable.initialize(
             None, // No overrides.

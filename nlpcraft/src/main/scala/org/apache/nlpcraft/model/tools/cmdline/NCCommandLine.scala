@@ -20,6 +20,7 @@ package org.apache.nlpcraft.model.tools.cmdline
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiColor
 import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.version.NCVersion
 
@@ -144,6 +145,15 @@ object NCCommandLine extends App {
             )
         ),
         Command(
+            id = "no-ansi",
+            names = Seq("no-ansi"),
+            synopsis = s"Disables usage of ANSI escape codes (colors & terminal controls).",
+            desc = Some(
+                s"This is a special command that can be combined with any other commands."
+            ),
+            body = cmdNoAnsi
+        ),
+        Command(
             id = "stop-server",
             names = Seq("stop-server"),
             synopsis = s"Stops local REST server.",
@@ -222,6 +232,7 @@ object NCCommandLine extends App {
 
     private final val HELP_CMD = CMDS.find(_.id == "help").get
     private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
+    private final val NO_ANSI_CMD = CMDS.find(_.id ==  "no-ansi").get
 
     /**
      *
@@ -265,6 +276,14 @@ object NCCommandLine extends App {
         title()
 
         // TODO
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param params Parameters, if any, for this command.
+     */
+    private def cmdNoAnsi(cmd: Command, params: Seq[String]): Unit = {
+        NCAnsiColor.setEnabled(false)
     }
 
     /**
@@ -374,7 +393,7 @@ object NCCommandLine extends App {
                             case Some(c) ⇒
                                 if (!seen.contains(c.id)) {
                                     tbl +/ (
-                                        "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
+                                        "" → c.names.mkString(ansiGreenFg, ", ", ansiReset),
                                         "align:left, maxWidth:65" → mkCmdLines(c)
                                     )
 
@@ -458,7 +477,7 @@ object NCCommandLine extends App {
      * Prints out the version and copyright title header.
      */
     private def title(): Unit = {
-        log(s"$NAME ver. ${VER.version}, rel. ${VER.date}")
+        log(s"$NAME ver. ${VER.version}")
         log(NCVersion.copyright)
         log()
     }
@@ -469,12 +488,20 @@ object NCCommandLine extends App {
      */
     private def boot(args: Array[String]): Unit = {
         if (args.isEmpty)
-            NCCommandLine.DFLT_CMD.body(DFLT_CMD, Seq.empty)
+            DFLT_CMD.body(DFLT_CMD, Seq.empty)
         else {
-            val cmdName = args.head
+            // Handle 'no-ansi' command right away and remove it from the list.
+            args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
+                case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty)
+                case None ⇒ ()
+            }
+
+            val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg))
+
+            val cmdName = xargs.head
 
             CMDS.find(_.extNames.contains(cmdName)) match {
-                case Some(cmd) ⇒ cmd.body(cmd, args.tail)
+                case Some(cmd) ⇒ cmd.body(cmd, xargs.tail)
                 case None ⇒ error(s"Unknown command: $cmdName")
             }
         }
