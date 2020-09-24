@@ -95,8 +95,8 @@ public interface NCConversation {
      * Note that this data will expire the same way as other elements in the conversation (i.e. tokens and
      * previously matched intents).
      * <p>
-     * Note that you should obtain the user data container on every intent callback invocation to make
-     * sure that expiration policy takes an effect. Do not cache the returned object elsewhere.
+     * Note that you should not cache or clone the data from this container because it won't be properly expired
+     * in that case. You can, however, cache the return reference itself, if required.
      *
      * @return Mutable and thread-safe user data container.
      */
