@@ -30,12 +30,15 @@ models and Facebook's [FastText](https://fasttext.cc/) library.
 
 ### Dependencies
 To install necessary dependency:
- * **Linux/MacOS**: run `nlpcraft/src/main/python/ctxword/bin/install_dependencies.sh` script.  
+ * **Linux/MacOS**: 
+   * `$ cd nlpcraft/src/main/python/ctxword`
+   * `$ bin/install_dependencies.sh` 
  * **Windows**: read `nlpcraft\src\main\python\ctxword\bin\WINDOWS_SETUP.md` file for manual installation.
 
 ### Start REST Server
 To start 'ctxword' module REST server:
- * Run `nlpcrat/src/main/python/ctxword/bin/start_server.{sh|cmd}` script.  
+ * `$ cd nlpcrat/src/main/python/ctxword`
+ * `$ bin/start_server.{sh|cmd}` 
  
 NOTE: on the 1st start the server will try to load compressed BERT model which is not yet available. It will
 then download this library and compress it which will take a several minutes and may require 10 GB+ of 
