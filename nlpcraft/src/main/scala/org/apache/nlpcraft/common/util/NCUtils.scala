@@ -1406,7 +1406,7 @@ object NCUtils extends LazyLogging {
                     s"$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line ⇒ {
-                val s = s"${" " * indent}${if (first) s"$ansiRedFg+- $ansiReset" else "  "}${line.trim}"
+                val s = s"${" " * indent}${if (first) ansiRed("+- ") else "  "}${line.trim}"
 
                 if (err) logger.error(s) else logger.warn(s)
 
@@ -1490,12 +1490,12 @@ object NCUtils extends LazyLogging {
 
         for (ch ← json) {
             ch match {
-                case ':' if !inQuotes ⇒ buf ++= s"$ansiRedFg:$ansiReset"
-                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf ++= s"$ansiYellowFg$ch$ansiReset"
-                case ',' if !inQuotes ⇒ buf ++= s"$ansiGreenFg$ch$ansiReset"
+                case ':' if !inQuotes ⇒ buf ++= ansiRed(":")
+                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf ++= ansiYellow(s"$ch")
+                case ',' if !inQuotes ⇒ buf ++= ansiGreen(s"$ch")
                 case '"' ⇒
                     if (inQuotes)
-                        buf ++= s"$ansiBlueFg$ch$ansiReset"
+                        buf ++= ansiBlue(s"$ch")
                     else
                         buf ++= s"$ansiBlueFg$ch$ansiCyanFg"
 

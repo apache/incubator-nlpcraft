@@ -249,11 +249,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         tbl += (
                             Seq(
                                 s"#${m.variantIdx + 1}",
-                                s"$ansiRedFg<<best match>>$ansiReset"
+                                ansiRed("<<best match")
                             ),
                             Seq(
                                 im.intent.id,
-                                s"$ansiRedFg<<best match>>$ansiReset"
+                                ansiRed("<<best match")
                             ),
                             mkPickTokens(im)
                         )
@@ -276,7 +276,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         )
                 })
 
-                tbl.info(logger, Some(s"Found matching intents (sorted ${ansiRedFg}best$ansiReset to worst):"))
+                tbl.info(logger, Some(s"Found matching intents (sorted ${ansiRed("best")} to worst):"))
             }
             else
                 logger.info("No matching intent found.")

@@ -66,10 +66,7 @@ public class NCTestAutoModelValidator {
      *      output will be printed out to the configured logger.
      */
     public static void main(String[] args) throws Exception {
-        NCTestAutoModelValidatorImpl.isValid();
-
-        // TODO: uncomment once the hanging on exit is fixed.
-        // System.exit(NCTestAutoModelValidatorImpl.isValid() ? 0 : 1);
+        System.exit(NCTestAutoModelValidatorImpl.isValid() ? 0 : 1);
     }
 
     /**

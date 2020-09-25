@@ -43,6 +43,7 @@ import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.sql.NCSql
+import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 
 import scala.collection.JavaConverters._
 import scala.collection.{Map, mutable}
@@ -465,12 +466,12 @@ object NCProbeManager extends NCService {
                         case _: SocketTimeoutException | _: InterruptedException | _: InterruptedIOException ⇒ ()
                     
                         case _: EOFException ⇒
-                            logger.error(s"Probe closed downlink connection: ${probeKey.short}")
+                            logger.info(s"Probe closed downlink connection: ${probeKey.short}")
                         
                             t.interrupt()
                     
                         case e: Throwable ⇒
-                            logger.error(s"Error reading probe downlink socket (${e.getMessage}): ${probeKey.short}")
+                            U.prettyError(logger, s"Error reading downlink socket for probe: ${probeKey.short}", e)
 
                             t.interrupt()
                     }
@@ -801,13 +802,13 @@ object NCProbeManager extends NCService {
         tbl += (
             Seq(
                 probe.probeId,
-                s"  guid: ${probe.probeGuid}",
-                s"  tok: ${probe.probeToken}"
+                s"  ${ansiCyan("guid")}: ${probe.probeGuid}",
+                s"  ${ansiCyan("tok")}: ${probe.probeToken}"
             ),
             s"${probe.osName} ver. ${probe.osVersion}",
             s"${probe.tmzAbbr}, ${probe.tmzId}",
             s"${probe.hostName} (${probe.hostAddr})",
-            probe.models.map(m ⇒ s"${m.id}, v${m.version}").toSeq
+            probe.models.map(m ⇒ s"${ansiBlue(m.id)}, v${m.version}").toSeq
         )
         
         tbl

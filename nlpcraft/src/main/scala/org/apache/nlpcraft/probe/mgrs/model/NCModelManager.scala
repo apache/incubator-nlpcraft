@@ -66,16 +66,16 @@ object NCModelManager extends NCService with DecorateAsScala {
                     Seq(
                         s"${mdl.getName}",
                         s"ID: $ansiBold${mdl.getId}$ansiReset, ver: ${mdl.getVersion}",
-                        s"Elements: $elmCnt" + (if (elmCnt == 0) s" $ansiRedFg(!)$ansiReset" else ""),
-                        s"Synonyms: $synCnt" + (if (synCnt == 0) s" $ansiRedFg(!)$ansiReset" else ""),
-                        s"Intents: $intentCnt" + (if (intentCnt == 0) s" $ansiRedFg(!)$ansiReset" else "")
+                        s"Elements: $elmCnt" + (if (elmCnt == 0) s" ${ansiRed("(!)")}" else ""),
+                        s"Synonyms: $synCnt" + (if (synCnt == 0) s" ${ansiRed("(!)")}" else ""),
+                        s"Intents: $intentCnt" + (if (intentCnt == 0) s" ${ansiRed("(!)")}" else "")
                     ),
                     w.intents
                         .map(_.toDslString)
                         .flatMap(s ⇒
                             s
-                            .replaceAll("intent=", s"${ansiGreenFg}intent$ansiReset=")
-                            .replaceAll(" term", s"\n  ${ansiCyanFg}term$ansiReset").split("\n")
+                            .replaceAll("intent=", s"${ansiGreen("intent")}=")
+                            .replaceAll(" term", s"\n  ${ansiCyan("term")}").split("\n")
                         )
                 )
             })

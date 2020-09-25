@@ -73,6 +73,14 @@ trait NCAnsiColor extends LazyLogging {
     def ansiReversed: String = if (isEnabled) REVERSED else ""
     def ansiBlink: String = if (isEnabled) BLINK else ""
     def ansiInvisible: String = if (isEnabled) INVISIBLE else ""
+
+    def ansiGreen(s: String): String = s"$ansiGreenFg$s$ansiReset"
+    def ansiRed(s: String): String = s"$ansiRedFg$s$ansiReset"
+    def ansiCyan(s: String): String = s"$ansiCyanFg$s$ansiReset"
+    def ansiYellow(s: String): String = s"$ansiYellowFg$s$ansiReset"
+    def ansiBlack(s: String): String = s"$ansiBlackFg$s$ansiReset"
+    def ansiWhite(s: String): String = s"$ansiWhiteFg$s$ansiReset"
+    def ansiBlue(s: String): String = s"$ansiBlueFg$s$ansiReset"
 }
 
 object NCAnsiColor extends NCAnsiColor {

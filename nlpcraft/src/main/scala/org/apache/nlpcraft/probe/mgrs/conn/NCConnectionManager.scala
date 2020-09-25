@@ -319,7 +319,7 @@ object NCConnectionManager extends NCService {
             
             while (!t.isInterrupted)
                 try {
-                    logger.info(s"Establishing REST server connection to [" +
+                    logger.info(s"Connecting to REST server [" +
                         s"uplink=${Config.upLinkString}, " +
                         s"downlink=${Config.downLinkString}" +
                         s"]")
@@ -356,7 +356,7 @@ object NCConnectionManager extends NCService {
                             catch {
                                 case _: InterruptedIOException | _: InterruptedException ⇒ ()
                                 case _: EOFException ⇒ exit(t, s"Uplink REST server connection closed.")
-                                case e: Exception ⇒ exit(t, s"Uplink connection failed: ${e.getMessage}")
+                                case e: Exception ⇒ exit(t, s"Uplink connection failed.", e)
                             }
                     }
                     
@@ -391,7 +391,7 @@ object NCConnectionManager extends NCService {
                             catch {
                                 case _: InterruptedIOException | _: InterruptedException ⇒ ()
                                 case _: EOFException ⇒ exit(t, s"Downlink REST server connection closed.")
-                                case e: Exception ⇒ exit(t, s"Downlink connection failed: ${e.getMessage}")
+                                case e: Exception ⇒ exit(t, s"Downlink connection failed.", e)
                             }
                     }
             
@@ -402,7 +402,7 @@ object NCConnectionManager extends NCService {
                     // Indicate that server connection is established.
                     ctrlLatch.countDown()
                     
-                    logger.info("REST server connection established.")
+                    logger.info("REST server connected.")
                     
                     // Wait until probe connection is closed.
                     while (!t.isInterrupted && exitLatch.getCount > 0) U.ignoreInterrupt {
@@ -412,7 +412,7 @@ object NCConnectionManager extends NCService {
                     closeAll()
                     
                     if (!isStopping) {
-                        logger.warn(s"REST server connection closed (retrying in ${RETRY_TIMEOUT / 1000}s).")
+                        logger.warn(s"REST server connection closed (retry in ${RETRY_TIMEOUT / 1000}s).")
                     
                         timeout()
                     }
@@ -424,24 +424,18 @@ object NCConnectionManager extends NCService {
                         // Clean up.
                         closeAll()
                     
-                        if (e.getMessage != null)
-                            logger.error(e.getMessage)
-                
                         // Ack the handshake error message.
-                        logger.error(s"Failed during REST server connection handshake (aborting).")
+                        U.prettyError(logger, s"Failed REST server connection handshake (aborting).", e)
                     
                         abort()
             
                     case e: IOException ⇒
                         // Clean up.
                         closeAll()
-                
-                        // Ack the IO error message.
-                        if (e.getMessage != null)
-                            logger.error(s"Failed to establish REST server connection (retrying in ${RETRY_TIMEOUT / 1000}s): ${e.getMessage}")
-                        else
-                            logger.error(s"Failed to establish REST server connection (retrying in ${RETRY_TIMEOUT / 1000}s).")
-                    
+
+                        // Ack the error message.
+                        U.prettyError(logger, s"Failed to connect to REST server (retry in ${RETRY_TIMEOUT / 1000}s).", e)
+
                         timeout()
             
                     case e: Exception ⇒
@@ -449,7 +443,7 @@ object NCConnectionManager extends NCService {
                         closeAll()
                 
                         // Ack the error message.
-                        U.prettyError(logger, "Unexpected error establishing REST server connection:", e)
+                        U.prettyError(logger, "Unexpected error connecting to REST server.", e)
                     
                         abort()
                 }

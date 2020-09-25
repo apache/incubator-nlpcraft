@@ -367,7 +367,7 @@ object NCCommandLine extends App {
                         else
                             s"$T___${param.names.mkString(", ")}"
 
-                    lines += s"$ansiCyanFg$line$ansiReset"
+                    lines += ansiCyan(line)
 
                     if (param.optional)
                         lines += s"$T___${T___}Optional."
@@ -494,7 +494,7 @@ object NCCommandLine extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        System.err.println(s"${ansiRedFg}ERR:$ansiReset $msg")
+        System.err.println(s"${ansiRed("ERR")} $msg")
     }
 
     /**
@@ -507,13 +507,13 @@ object NCCommandLine extends App {
      *
      * @param msg
      */
-    private def confirm(msg: String): Unit = System.out.println(s"${ansiGreenFg}>$ansiReset $msg")
+    private def confirm(msg: String): Unit = System.out.println(s"${ansiGreen(">")} $msg")
 
     /**
      *
      */
     private def errorHelp(): Unit =
-        error(s"Run '$ansiCyanFg$SCRIPT_NAME ${HELP_CMD.mainName}$ansiReset' to read the manual.")
+        error(s"Run '${ansiCyan("$SCRIPT_NAME ${HELP_CMD.mainName")}' to read the manual.")
 
     /**
      * Prints out the version and copyright title header.

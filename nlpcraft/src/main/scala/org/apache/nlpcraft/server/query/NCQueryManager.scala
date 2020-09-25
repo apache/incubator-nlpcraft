@@ -261,7 +261,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             startScopedSpan("future", parent, "srvReqId" → srvReqId) { span ⇒
                 val tbl = NCAsciiTable()
 
-                tbl += (s"${ansiBlueFg}Text$ansiReset", s"$ansiGreenFg$txt0$ansiReset")
+                tbl += (s"${ansiBlueFg}Text$ansiReset", ansiGreen(txt0))
                 tbl += (s"${ansiBlueFg}User ID$ansiReset", usr.id)
                 tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
                 tbl += (s"${ansiBlueFg}Agent$ansiReset", usrAgent.getOrElse("<n/a>"))

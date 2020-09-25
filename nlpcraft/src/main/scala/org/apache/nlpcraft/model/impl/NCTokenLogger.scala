@@ -429,9 +429,9 @@ object NCTokenLogger extends LazyLogging {
 
             val origTxtStr =
                 if (tok.isStopWord)
-                    s"$ansiRedFg${tok.origText}$ansiReset"
+                    ansiRed(tok.origText)
                 else if (tok.isFreeWord)
-                    s"$ansiYellowFg${tok.origText}$ansiReset"
+                    ansiYellow(tok.origText)
                 else
                     tok.origText
 

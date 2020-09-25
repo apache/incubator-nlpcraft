@@ -227,7 +227,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val tbl = NCAsciiTable()
 
-        tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(s ⇒ s"$ansiBold$ansiGreenFg${s.text}$ansiReset"))
+        tbl += (s"${ansiBlueFg}Text$ansiReset", nlpSens.map(s ⇒ s"$ansiBold${ansiGreen(s.text)}"))
         tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
         tbl += (s"${ansiBlueFg}User ID$ansiReset", usrId)
         tbl += (s"$ansiBlueFg  First Name$ansiReset", senMeta.getOrElse("FIRST_NAME", ""))
