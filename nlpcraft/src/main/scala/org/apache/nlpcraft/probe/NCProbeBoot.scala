@@ -48,7 +48,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable

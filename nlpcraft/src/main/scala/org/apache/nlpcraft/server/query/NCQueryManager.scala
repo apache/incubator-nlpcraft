@@ -35,7 +35,7 @@ import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}

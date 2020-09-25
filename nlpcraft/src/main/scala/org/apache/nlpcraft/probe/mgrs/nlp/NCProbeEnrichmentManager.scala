@@ -26,7 +26,7 @@ import java.util.{Date, Objects}
 import io.opencensus.trace.{Span, Status}
 import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder

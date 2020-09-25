@@ -24,8 +24,8 @@ import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsiColor
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
@@ -168,7 +168,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
       *
       */
     private def start(): Unit = {
-        NCAnsiColor.ackStatus()
+        NCAnsi.ackStatus()
 
         setSysProps()
 

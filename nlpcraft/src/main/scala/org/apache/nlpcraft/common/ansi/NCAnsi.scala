@@ -21,10 +21,10 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 
 /**
- * Scala 2.13 shim for `scala.io.AnsiColor`.
+ * Scala 2.13 shim for `scala.io.AnsiColor` + more functionality.
  */
-trait NCAnsiColor extends LazyLogging {
-    import NCAnsiColor._
+sealed trait NCAnsi extends LazyLogging {
+    import NCAnsi._
 
     private final val BLACK = "\u001b[30m"
     private final val RED = "\u001b[31m"
@@ -83,7 +83,7 @@ trait NCAnsiColor extends LazyLogging {
     def ansiBlue(s: String): String = s"$ansiBlueFg$s$ansiReset"
 }
 
-object NCAnsiColor extends NCAnsiColor {
+object NCAnsi extends NCAnsi {
     // Enabled by default.
     // NOTE: it's not static as it can be changed at runtime.
     private final val PROP = "NLPCRAFT_ANSI_COLOR_DISABLED"

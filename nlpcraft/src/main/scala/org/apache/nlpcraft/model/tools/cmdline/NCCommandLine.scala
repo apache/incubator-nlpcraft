@@ -22,8 +22,8 @@ import java.io.{File, FileInputStream, ObjectInputStream}
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsiColor
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.version.NCVersion
 import resource.managed
 
@@ -319,7 +319,7 @@ object NCCommandLine extends App {
      * @param params Parameters, if any, for this command.
      */
     private def cmdNoAnsi(cmd: Command, params: Seq[String]): Unit = {
-        NCAnsiColor.setEnabled(false)
+        NCAnsi.setEnabled(false)
     }
 
     /**

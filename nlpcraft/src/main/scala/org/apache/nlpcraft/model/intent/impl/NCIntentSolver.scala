@@ -27,7 +27,7 @@ import org.apache.nlpcraft.model.impl.NCVariantImpl
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 import scala.collection.JavaConverters._
 
 /**

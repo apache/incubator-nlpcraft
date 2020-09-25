@@ -22,8 +22,8 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.probe.NCProbe
 import org.apache.nlpcraft.server.NCServer
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsiColor
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 /**
   * Server or probe command line starter.

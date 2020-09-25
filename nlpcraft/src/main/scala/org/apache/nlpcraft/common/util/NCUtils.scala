@@ -44,7 +44,7 @@ import org.apache.commons.codec.binary.Base64
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.blowfish.NCBlowfishHasher
 import resource._
 

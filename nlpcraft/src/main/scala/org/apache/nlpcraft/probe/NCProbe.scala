@@ -19,7 +19,7 @@ package org.apache.nlpcraft.probe
 
 import java.util.concurrent.CompletableFuture
 
-import org.apache.nlpcraft.common.ansi.NCAnsiColor
+import org.apache.nlpcraft.common.ansi.NCAnsi
 
 import scala.util.control.Exception.ignoring
 
@@ -29,7 +29,7 @@ import scala.util.control.Exception.ignoring
 object NCProbe extends App {
     val fut = new CompletableFuture[Integer]
 
-    NCAnsiColor.ackStatus()
+    NCAnsi.ackStatus()
 
     NCProbeBoot.start(args, fut)
 

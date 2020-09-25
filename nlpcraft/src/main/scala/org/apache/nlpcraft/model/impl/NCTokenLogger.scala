@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.ascii._
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
-import org.apache.nlpcraft.common.ansi.NCAnsiColor._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.JavaConverters._
 import scala.collection._
