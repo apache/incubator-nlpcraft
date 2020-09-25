@@ -17,10 +17,12 @@
 
 package org.apache.nlpcraft.server
 
+import java.io.{File, FileInputStream, FileOutputStream, IOException, ObjectInputStream, ObjectOutputStream}
 import java.util.concurrent.CountDownLatch
 
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsiColor
 import org.apache.nlpcraft.common.ansi.NCAnsiColor._
@@ -50,6 +52,7 @@ import org.apache.nlpcraft.server.sql.NCSqlManager
 import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
+import resource.managed
 
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
@@ -59,6 +62,8 @@ import scala.util.control.Exception.{catching, ignoring}
   * NLPCraft server app.
   */
 object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCensusTrace {
+    private final val PID_PATH = ".nlpcraft/server_pid"
+
     private val startedMgrs = mutable.Buffer.empty[NCService]
 
     /**
@@ -188,6 +193,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         )
         
         asciiLogo()
+
+        storePid()
         
         val lifecycle = new CountDownLatch(1)
     
@@ -216,6 +223,43 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                     lifecycle.await()
                 }
         }
+    }
+
+    /**
+     *
+     */
+    private def storePid(): Unit = {
+        val path = new File(SystemUtils.getUserHome, PID_PATH)
+
+        /**
+         *
+         */
+        def storeInUserHome() =
+            try {
+                managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
+                    stream.writeLong(ProcessHandle.current().pid())
+                    stream.flush()
+                }
+
+                logger.info(s"PID stored in: ${path.getAbsolutePath}")
+            }
+            catch {
+                case e: IOException ⇒ U.prettyError(logger, "Failed to store server PID.", e)
+            }
+
+        if (path.exists())
+            catching(classOf[IOException]) either {
+                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readLong() }
+            } match {
+                case Left(e) ⇒ U.prettyError(logger, s"Failed to read existing PID from: ${path.getAbsolutePath}", e)
+                case Right(pid) ⇒
+                    if (ProcessHandle.of(pid).isPresent)
+                        logger.error(s"Cannot store PID file as another local server detected [existing-pid=$pid]")
+                    else
+                        storeInUserHome()
+            }
+        else
+            storeInUserHome()
     }
 
     NCIgniteRunner.runWith(

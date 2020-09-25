@@ -77,7 +77,7 @@ object NCCommandLine extends App {
     }
     // Single command's example.
     case class Example(
-        code: String,
+        usage: String,
         desc: String
     )
     // Single command's parameter.
@@ -135,11 +135,11 @@ object NCCommandLine extends App {
             ),
             examples = Seq(
                 Example(
-                    code = s"$$ $SCRIPT_NAME start-server",
+                    usage = s"$$ $SCRIPT_NAME start-server",
                     desc = "Starts REST server with default configuration."
                 ),
                 Example(
-                    code = s"$$ $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf",
+                    usage = s"$$ $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf",
                     desc = "Starts REST server with alternative configuration file."
                 )
             )
@@ -151,7 +151,13 @@ object NCCommandLine extends App {
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
             ),
-            body = cmdNoAnsi
+            body = cmdNoAnsi,
+            examples = Seq(
+                Example(
+                    usage = s"$$ $SCRIPT_NAME help -c=repl no-ansi",
+                    desc = "Displays help for 'repl' commands without using ANSI escape sequences."
+                )
+            )
         ),
         Command(
             id = "stop-server",
@@ -188,11 +194,11 @@ object NCCommandLine extends App {
             ),
             examples = Seq(
                 Example(
-                    code = s"$$ $SCRIPT_NAME help -c=repl --cmd=ver",
+                    usage = s"$$ $SCRIPT_NAME help -c=repl --cmd=ver",
                     desc = "Displays help for 'repl' and 'version' commands."
                 ),
                 Example(
-                    code = s"$$ $SCRIPT_NAME help -all",
+                    usage = s"$$ $SCRIPT_NAME help -all",
                     desc = "Displays help for all commands."
                 )
             )
@@ -348,7 +354,7 @@ object NCCommandLine extends App {
                 lines += s"${ansiBold}EXAMPLES:$ansiReset"
 
                 for (ex ← cmd.examples) {
-                    lines += s"$T___${ex.code}"
+                    lines += s"$T___${ex.usage}"
                     lines += s"$T___$T___${ex.desc}"
                 }
             }
