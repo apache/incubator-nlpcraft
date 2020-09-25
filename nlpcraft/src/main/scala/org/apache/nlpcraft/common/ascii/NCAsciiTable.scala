@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.common.ascii
 
 import java.io.{IOException, PrintStream}
+import java.util.regex.Pattern
 
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
@@ -32,6 +33,8 @@ import scala.collection.mutable
  * `ASCII`-based table with minimal styling support.
  */
 class NCAsciiTable {
+    private final val ANSI_SEQ = Pattern.compile("\u001B\\[[;\\d]*m")
+
     /**
      * Cell style.
      */
@@ -40,7 +43,7 @@ class NCAsciiTable {
         var rightPad: Int = 1, // >= 0
         var maxWidth: Int = Int.MaxValue, // > 0
         var align: String = "center" // center, left, right
-        ) {
+    ) {
         /** Gets overall padding (left + right). */
         def padding: Int = leftPad + rightPad
     }
@@ -152,15 +155,16 @@ class NCAsciiTable {
 
     // Dash drawing.
     private def dash(ch: String, len: Int): String = ch * len
+
     private def space(len: Int): String = " " * len
 
     /**
      * Sets table's margin.
      *
-     * @param top Top margin.
-     * @param right Right margin.
+     * @param top    Top margin.
+     * @param right  Right margin.
      * @param bottom Bottom margin.
-     * @param left Left margin.
+     * @param left   Left margin.
      */
     def margin(top: Int = 0, right: Int = 0, bottom: Int = 0, left: Int = 0): NCAsciiTable = {
         margin = Margin(top, right, bottom, left)
@@ -208,7 +212,7 @@ class NCAsciiTable {
      * @return
      */
     private def stripAnsi(s: String): String =
-        s.replaceAll("\u001B\\[[;\\d]*m", "")
+        ANSI_SEQ.matcher(s).replaceAll("")
 
     /**
      * Adds row (one or more row cells) with a given style.
@@ -231,10 +235,10 @@ class NCAsciiTable {
     }
 
     /**
-      * Adds row.
-      *
-      * @param cells Row cells.
-      */
+     * Adds row.
+     *
+     * @param cells Row cells.
+     */
     def addRow(cells: java.util.List[Any]): NCAsciiTable = {
         startRow()
 
@@ -274,10 +278,10 @@ class NCAsciiTable {
     }
 
     /**
-      * Adds headers.
-      *
-      * @param cells Header cells.
-      */
+     * Adds headers.
+     *
+     * @param cells Header cells.
+     */
     def addHeaders(cells: java.util.List[Any]): NCAsciiTable = {
         cells.asScala.foreach(addHeaderCell(_))
 

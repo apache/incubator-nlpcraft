@@ -46,6 +46,7 @@ object NCCommandLine extends App {
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(
         s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}"
     )
+    private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
 
     private final val T___ = "    "
 
@@ -142,11 +143,11 @@ object NCCommandLine extends App {
             ),
             examples = Seq(
                 Example(
-                    usage = s"$$ $SCRIPT_NAME start-server",
+                    usage = s"$PROMPT $SCRIPT_NAME start-server",
                     desc = "Starts REST server with default configuration."
                 ),
                 Example(
-                    usage = s"$$ $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf",
+                    usage = s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf",
                     desc = "Starts REST server with alternative configuration file."
                 )
             )
@@ -161,7 +162,37 @@ object NCCommandLine extends App {
             body = cmdNoAnsi,
             examples = Seq(
                 Example(
-                    usage = s"$$ $SCRIPT_NAME help -c=repl no-ansi",
+                    usage = s"$PROMPT $SCRIPT_NAME help -c=repl no-ansi",
+                    desc = "Displays help for 'repl' commands without using ANSI escape sequences."
+                )
+            )
+        ),
+        Command(
+            id = "ping-server",
+            names = Seq("ping-server"),
+            synopsis = s"Pings REST server.",
+            desc = Some(
+                s"REST server is pinged using '/health' REST call to check its live status."
+            ),
+            body = cmdPingServer,
+            params = Seq(
+                Parameter(
+                    id = "endpoint",
+                    names = Seq("--endpoint", "-e"),
+                    valueDesc = Some("{url}"),
+                    optional = true,
+                    desc = "Set of commands to show the manual for. Can be used multiple times."
+                ),
+                Parameter(
+                    id = "all",
+                    names = Seq("--all", "-a"),
+                    optional = true,
+                    desc = "Flag to show full manual for all commands."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = s"$PROMPT $SCRIPT_NAME help -c=repl no-ansi",
                     desc = "Displays help for 'repl' commands without using ANSI escape sequences."
                 )
             )
@@ -190,7 +221,7 @@ object NCCommandLine extends App {
                     names = Seq("--cmd", "-c"),
                     valueDesc = Some("{cmd}"),
                     optional = true,
-                    desc = "Set of commands to show the manual for."
+                    desc = "Set of commands to show the manual for. Can be used multiple times."
                 ),
                 Parameter(
                     id = "all",
@@ -201,11 +232,11 @@ object NCCommandLine extends App {
             ),
             examples = Seq(
                 Example(
-                    usage = s"$$ $SCRIPT_NAME help -c=repl --cmd=ver",
+                    usage = s"$PROMPT $SCRIPT_NAME help -c=repl --cmd=ver",
                     desc = "Displays help for 'repl' and 'version' commands."
                 ),
                 Example(
-                    usage = s"$$ $SCRIPT_NAME help -all",
+                    usage = s"$PROMPT $SCRIPT_NAME help -all",
                     desc = "Displays help for all commands."
                 )
             )
@@ -243,7 +274,7 @@ object NCCommandLine extends App {
         )
     ).sortBy(_.id)
 
-    private final val HELP_CMD = CMDS.find(_.id == "help").get
+    private final val HELP_CMD = CMDS.find(_.id ==  "help").get
     private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
     private final val NO_ANSI_CMD = CMDS.find(_.id ==  "no-ansi").get
 
@@ -276,6 +307,16 @@ object NCCommandLine extends App {
      * @param params Parameters, if any, for this command.
      */
     private def cmdStartServer(cmd: Command, params: Seq[String]): Unit = {
+        title()
+
+        // TODO
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param params Parameters, if any, for this command.
+     */
+    private def cmdPingServer(cmd: Command, params: Seq[String]): Unit = {
         title()
 
         // TODO
@@ -334,13 +375,13 @@ object NCCommandLine extends App {
          */
         def header(): Unit = log(
             s"""|${U.asciiLogo()}
-                |${ansiBold}NAME$ansiReset
+                |${ansiBold("NAME")}"
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
                 |
-                |${ansiBold}USAGE$ansiReset
+                |${ansiBold("USAGE")}
                 |$T___$SCRIPT_NAME [COMMAND] [PARAMETERS]
                 |
-                |${ansiBold}COMMANDS$ansiReset""".stripMargin
+                |${ansiBold("COMMANDS")}""".stripMargin
         )
 
         /**
@@ -358,7 +399,7 @@ object NCCommandLine extends App {
 
             if (cmd.params.nonEmpty) {
                 lines += ""
-                lines += s"${ansiBold}PARAMETERS:$ansiReset"
+                lines += s"${ansiBold("PARAMETERS")}"
 
                 for (param ← cmd.params) {
                     val line =
@@ -381,10 +422,10 @@ object NCCommandLine extends App {
 
             if (cmd.examples.nonEmpty) {
                 lines += ""
-                lines += s"${ansiBold}EXAMPLES:$ansiReset"
+                lines += s"${ansiBold("EXAMPLES")}"
 
                 for (ex ← cmd.examples) {
-                    lines += s"$T___${ex.usage}"
+                    lines += ansiYellow(s"$T___${ex.usage}")
                     lines += s"$T___$T___${ex.desc}"
                 }
             }
@@ -513,7 +554,7 @@ object NCCommandLine extends App {
      *
      */
     private def errorHelp(): Unit =
-        error(s"Run '${ansiCyan("$SCRIPT_NAME ${HELP_CMD.mainName")}' to read the manual.")
+        error(s"Run '${ansiCyan(SCRIPT_NAME + " " + HELP_CMD.mainName)}' to read the manual.")
 
     /**
      * Prints out the version and copyright title header.

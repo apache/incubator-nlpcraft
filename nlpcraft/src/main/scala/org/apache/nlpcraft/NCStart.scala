@@ -56,7 +56,7 @@ object NCStart extends App with LazyLogging {
                 U.NL +
                 U.asciiLogo() +
                 s"${U.NL}" +
-                s"Version: $ansiBold${ver.version}${U.NL}$ansiReset" +
+                s"Version: ${ansiBold(ver.version)}${U.NL}" +
                 s"${NCVersion.copyright}${U.NL}"
             )
             

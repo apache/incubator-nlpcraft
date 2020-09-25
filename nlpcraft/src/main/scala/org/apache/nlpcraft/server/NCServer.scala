@@ -77,7 +77,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             U.asciiLogo() +
             s"${U.NL}" +
             s"Server${U.NL}" +
-            s"Version: $ansiBold${ver.version}${U.NL}$ansiReset" +
+            s"Version: ${ansiBold(ver.version)}${U.NL}" +
             s"${NCVersion.copyright}${U.NL}"
         )
     }

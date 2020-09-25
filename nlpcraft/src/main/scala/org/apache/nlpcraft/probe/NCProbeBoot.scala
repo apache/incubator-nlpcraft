@@ -350,7 +350,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             U.asciiLogo() +
             s"${U.NL}" +
             s"Embedded Data Probe${U.NL}" +
-            s"Version: $ansiBold${ver.version}${U.NL}$ansiReset" +
+            s"Version: ${ansiBold(ver.version)}${U.NL}" +
             s"${NCVersion.copyright}${U.NL}"
         )
     }
