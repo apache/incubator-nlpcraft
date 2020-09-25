@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.common.version
 
-import java.time.LocalDate
+import java.time.{LocalDate, Year}
 
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
@@ -27,7 +27,9 @@ import org.apache.nlpcraft.common._
   * release the new version will be added to this object manually.
   */
 object NCVersion extends LazyLogging {
-    final val copyright = s"Copyright (C) 2020 Apache Software Foundation"
+    final val year = Year.now().toString
+    final val copyright = s"Copyright (C) $year Apache Software Foundation"
+    final val copyrightShort = s"(C) $year ASF"
     
     /**
       *

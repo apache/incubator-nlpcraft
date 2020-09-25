@@ -17,20 +17,27 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
+import java.io.{File, FileInputStream, ObjectInputStream}
+
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsiColor
 import org.apache.nlpcraft.common.ansi.NCAnsiColor._
 import org.apache.nlpcraft.common.version.NCVersion
+import resource.managed
 
 import scala.collection.mutable
+import scala.compat.java8.OptionConverters._
+import scala.util.Try
 
 /**
  * 'nlpcraft' script entry point.
  */
 object NCCommandLine extends App {
     private final val NAME = "Apache NLPCraft CLI"
+
+    private final val SRV_PID_PATH = ".nlpcraft/server_pid"
 
     private final lazy val VER = NCVersion.getCurrent
     private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(
@@ -281,7 +288,30 @@ object NCCommandLine extends App {
     private def cmdStopServer(cmd: Command, params: Seq[String]): Unit = {
         title()
 
-        // TODO
+        val path = new File(SystemUtils.getUserHome, SRV_PID_PATH)
+        var pid = -1L
+
+        if (path.exists())
+            pid =
+                Try {
+                    managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readLong() }
+                }
+                .getOrElse(-1L)
+
+        if (pid == -1)
+            error("Cannot detect locally running server.")
+        else {
+            ProcessHandle.of(pid).asScala match {
+                case Some(ph) ⇒
+                    if (ph.destroy())
+                        confirm("Local server has been stopped.")
+                    else
+                        error(s"Unable to stop the local server [pid=$pid]")
+
+
+                case None ⇒ error("Cannot find locally running server.")
+            }
+        }
     }
 
     /**
@@ -440,16 +470,16 @@ object NCCommandLine extends App {
      */
     private def cmdVersion(cmd: Command, params: Seq[String]): Unit =
         if (params.isEmpty)
-            title()
+            confirm(s"$NAME ver. ${VER.version}, released on ${VER.date}")
         else {
             val isS = cmd.isParamPresent("semver", params)
             val isD = cmd.isParamPresent("reldate", params)
 
             if (isS || isD) {
                 if (isS)
-                    log(s"${VER.version}")
+                    confirm(s"${VER.version}")
                 if (isD)
-                    log(s"${VER.date}")
+                    confirm(s"${VER.date}")
             }
             else
                 error(s"Invalid parameters for command '${cmd.mainName}': ${params.mkString(", ")}")
@@ -464,7 +494,7 @@ object NCCommandLine extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        System.err.println(s"ERROR: $msg")
+        System.err.println(s"${ansiRedFg}ERR:$ansiReset $msg")
     }
 
     /**
@@ -475,16 +505,21 @@ object NCCommandLine extends App {
 
     /**
      *
+     * @param msg
+     */
+    private def confirm(msg: String): Unit = System.out.println(s"${ansiGreenFg}>$ansiReset $msg")
+
+    /**
+     *
      */
     private def errorHelp(): Unit =
-        error(s"Run '$SCRIPT_NAME ${HELP_CMD.mainName}' to read the manual.")
+        error(s"Run '$ansiCyanFg$SCRIPT_NAME ${HELP_CMD.mainName}$ansiReset' to read the manual.")
 
     /**
      * Prints out the version and copyright title header.
      */
     private def title(): Unit = {
         log(s"$NAME ver. ${VER.version}")
-        log(NCVersion.copyright)
         log()
     }
 

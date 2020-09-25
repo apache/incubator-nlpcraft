@@ -241,7 +241,9 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                     stream.flush()
                 }
 
-                logger.info(s"PID stored in: ${path.getAbsolutePath}")
+                path.deleteOnExit()
+
+                logger.trace(s"PID stored in: ${path.getAbsolutePath}")
             }
             catch {
                 case e: IOException ⇒ U.prettyError(logger, "Failed to store server PID.", e)
