@@ -85,7 +85,7 @@ object NCCommandLine extends App {
     }
     // Single command's example.
     case class Example(
-        usage: String,
+        usage: Seq[String],
         desc: String
     )
     // Single command's parameter.
@@ -111,7 +111,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "config",
                     names = Seq("--config", "-c"),
-                    valueDesc = Some("{path}"),
+                    valueDesc = Some("path"),
                     optional = true,
                     desc =
                         "Configuration absolute file path. Server will automatically look for 'nlpcraft.conf' " +
@@ -122,7 +122,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "igniteConfig",
                     names = Seq("--ignite-config", "-i"),
-                    valueDesc = Some("{path}"),
+                    valueDesc = Some("path"),
                     optional = true,
                     desc =
                         "Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
@@ -134,7 +134,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "outputPath",
                     names = Seq("--output-path", "-o"),
-                    valueDesc = Some("{path}"),
+                    valueDesc = Some("path"),
                     optional = true,
                     desc =
                         "File path for both REST server stdout and stderr output. If not provided, the REST server" +
@@ -143,11 +143,11 @@ object NCCommandLine extends App {
             ),
             examples = Seq(
                 Example(
-                    usage = s"$PROMPT $SCRIPT_NAME start-server",
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server"),
                     desc = "Starts REST server with default configuration."
                 ),
                 Example(
-                    usage = s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf",
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
                     desc = "Starts REST server with alternative configuration file."
                 )
             )
@@ -162,7 +162,7 @@ object NCCommandLine extends App {
             body = cmdNoAnsi,
             examples = Seq(
                 Example(
-                    usage = s"$PROMPT $SCRIPT_NAME help -c=repl no-ansi",
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=repl no-ansi"),
                     desc = "Displays help for 'repl' commands without using ANSI escape sequences."
                 )
             )
@@ -179,21 +179,33 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "endpoint",
                     names = Seq("--endpoint", "-e"),
-                    valueDesc = Some("{url}"),
+                    valueDesc = Some("url"),
                     optional = true,
-                    desc = "Set of commands to show the manual for. Can be used multiple times."
+                    desc =
+                        "REST server endpoint in 'http{s}://hostname:port' format. " +
+                        "Default value is https://localhost:8081"
                 ),
                 Parameter(
-                    id = "all",
-                    names = Seq("--all", "-a"),
+                    id = "number",
+                    names = Seq("--number", "-n"),
+                    valueDesc = Some("num"),
                     optional = true,
-                    desc = "Flag to show full manual for all commands."
+                    desc =
+                        "Number of pings to perform. Must be an integer > 0."
                 )
             ),
             examples = Seq(
                 Example(
-                    usage = s"$PROMPT $SCRIPT_NAME help -c=repl no-ansi",
-                    desc = "Displays help for 'repl' commands without using ANSI escape sequences."
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME ping-server"),
+                    desc = "Pings REST server one time."
+                ),
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME ping-server ",
+                        s"    --endpoint=https://localhost:1234 ",
+                        s"    -n=10"
+                    ),
+                    desc = "Pings REST server at 'https://localhost:1234' endpoint 10 times."
                 )
             )
         ),
@@ -219,7 +231,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "cmd",
                     names = Seq("--cmd", "-c"),
-                    valueDesc = Some("{cmd}"),
+                    valueDesc = Some("cmd"),
                     optional = true,
                     desc = "Set of commands to show the manual for. Can be used multiple times."
                 ),
@@ -232,11 +244,11 @@ object NCCommandLine extends App {
             ),
             examples = Seq(
                 Example(
-                    usage = s"$PROMPT $SCRIPT_NAME help -c=repl --cmd=ver",
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=repl --cmd=ver"),
                     desc = "Displays help for 'repl' and 'version' commands."
                 ),
                 Example(
-                    usage = s"$PROMPT $SCRIPT_NAME help -all",
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -all"),
                     desc = "Displays help for all commands."
                 )
             )
@@ -375,7 +387,7 @@ object NCCommandLine extends App {
          */
         def header(): Unit = log(
             s"""|${U.asciiLogo()}
-                |${ansiBold("NAME")}"
+                |${ansiBold("NAME")}
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
                 |
                 |${ansiBold("USAGE")}
@@ -399,7 +411,7 @@ object NCCommandLine extends App {
 
             if (cmd.params.nonEmpty) {
                 lines += ""
-                lines += s"${ansiBold("PARAMETERS")}"
+                lines += ansiBold("PARAMETERS")
 
                 for (param ← cmd.params) {
                     val line =
@@ -422,10 +434,10 @@ object NCCommandLine extends App {
 
             if (cmd.examples.nonEmpty) {
                 lines += ""
-                lines += s"${ansiBold("EXAMPLES")}"
+                lines += ansiBold("EXAMPLES")
 
                 for (ex ← cmd.examples) {
-                    lines += ansiYellow(s"$T___${ex.usage}")
+                    lines ++= ex.usage.map(s ⇒ ansiYellow(s"$T___$s"))
                     lines += s"$T___$T___${ex.desc}"
                 }
             }
@@ -440,7 +452,7 @@ object NCCommandLine extends App {
 
             CMDS.foreach(cmd ⇒ tbl +/ (
                 "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
-                "align:left, maxWidth:65" → cmd.synopsis
+                "align:left, maxWidth:85" → cmd.synopsis
             ))
 
             log(tbl.toString)
@@ -451,7 +463,7 @@ object NCCommandLine extends App {
             CMDS.foreach(cmd ⇒
                 tbl +/ (
                     "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
-                    "align:left, maxWidth:65" → mkCmdLines(cmd)
+                    "align:left, maxWidth:85" → mkCmdLines(cmd)
                 )
             )
 
@@ -471,7 +483,7 @@ object NCCommandLine extends App {
                                 if (!seen.contains(c.id)) {
                                     tbl +/ (
                                         "" → c.names.mkString(ansiGreenFg, ", ", ansiReset),
-                                        "align:left, maxWidth:65" → mkCmdLines(c)
+                                        "align:left, maxWidth:85" → mkCmdLines(c)
                                     )
 
                                     seen += c.id
