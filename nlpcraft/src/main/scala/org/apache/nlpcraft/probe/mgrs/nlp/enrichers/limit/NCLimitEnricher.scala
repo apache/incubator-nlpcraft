@@ -149,6 +149,8 @@ object NCLimitEnricher extends NCProbeEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         // Note that single words only supported now in code.
         fuzzyNums = stemmatizeWords(Map(
             "few" → 3,
@@ -204,7 +206,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
         techWords = (sortWords.keys ++ topWords ++ postWords ++ fuzzyNums.keySet).toSet
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -212,6 +214,8 @@ object NCLimitEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         fuzzyNums = null
         sortWords = null
         topWords = null
@@ -220,7 +224,7 @@ object NCLimitEnricher extends NCProbeEnricher {
         limits = null
         techWords = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**

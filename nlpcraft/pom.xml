@@ -283,8 +283,8 @@
                         <configuration>
                             <!--
                                 Depending on the console config and how maven is run this will produce the output with ANSI colors.
-                                To strip out ANSI escape sequences from the log file, run the following:
-                                $ cat server-xxxxx.log | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | sed "s/\x0f//g"
+                                To strip out ANSI escape sequences from the log file, see the following:
+                                https://stackoverflow.com/questions/17998978/removing-colors-from-output
                             -->
                             <name>server</name>
                             <healthcheckUrl>http://localhost:8081/api/v1/health</healthcheckUrl>

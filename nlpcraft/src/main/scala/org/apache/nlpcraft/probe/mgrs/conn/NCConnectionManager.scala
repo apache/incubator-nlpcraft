@@ -50,10 +50,7 @@ object NCConnectionManager extends NCService {
 
     // Internal probe GUID.
     @volatile private var probeGuid: String = _
-    
-    // Internal semaphores.
-    private val stopSem = new AtomicInteger(1)
-    
+
     private final val sysProps: Properties = System.getProperties
     private final val localHost: InetAddress = InetAddress.getLocalHost
     @volatile private var hwAddrs: String = _
@@ -75,16 +72,6 @@ object NCConnectionManager extends NCService {
         def downLinkString = s"${downLink._1}:${downLink._2}"
     }
 
-    /**
-      *
-      */
-    protected def isStopping: Boolean = stopSem.intValue() == 0
-    
-    /**
-      *
-      */
-    protected def setStopping(): Unit = stopSem.set(0)
-    
     /**
       * Schedules message for sending to the server.
       *
@@ -279,9 +266,10 @@ object NCConnectionManager extends NCService {
         require(NCCommandManager.isStarted)
         require(NCModelManager.isStarted)
 
+        ackStarting()
+
         probeGuid = U.genGuid()
         dnLinkQueue = mutable.Queue.empty[Serializable]
-        stopSem.set(1)
 
         val ctrlLatch = new CountDownLatch(1)
      
@@ -456,17 +444,17 @@ object NCConnectionManager extends NCService {
         // Only return when probe successfully connected to the server.
         ctrlLatch.await()
      
-        ackStart()
+        ackStarted()
     }
     
     /**
       *
       */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        setStopping()
-    
+        ackStopping()
+
         U.stopThread(ctrlThread)
         
-        ackStop()
+        ackStopped()
     }
 }

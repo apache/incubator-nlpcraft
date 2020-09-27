@@ -99,6 +99,8 @@ object NCUserManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         if (scanner != null)
             scanner.cancel()
 
@@ -107,7 +109,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
         tokenSigninCache = null
         idSigninCache = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**
@@ -116,6 +118,8 @@ object NCUserManager extends NCService with NCIgniteInstance {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         addTags(
             span,
             "pwdPoolBlowup" → Config.pwdPoolBlowup,
@@ -179,7 +183,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
         logger.info(s"Access tokens will be scanned for timeout every ${Config.timeoutScannerFreqMins}m.")
         logger.info(s"Access tokens inactive for >= ${Config.accessTokenExpireTimeoutMins}m will be invalidated.")
 
-        ackStart()
+        ackStarted()
     }
 
     /**

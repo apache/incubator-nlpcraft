@@ -50,6 +50,8 @@ object NCSpellCheckManager extends NCService {
      * @return
      */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         dict = U.extractYamlString(
             NCExternalConfigManager.getContent(SPELL, RESOURCE),
             RESOURCE,
@@ -59,7 +61,7 @@ object NCSpellCheckManager extends NCService {
 
         logger.debug(s"Spell checker dictionary loaded: ${dict.size} entries")
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -67,9 +69,11 @@ object NCSpellCheckManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         dict = null
 
-        ackStop()
+        ackStopped()
     }
     
     /**

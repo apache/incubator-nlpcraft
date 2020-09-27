@@ -92,12 +92,14 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
 
         pool = U.mkThreadPool("probe-enrichment")
         executor = ExecutionContext.fromExecutor(pool)
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -105,6 +107,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         mux.synchronized {
             if (embeddedCbs != null)
                 embeddedCbs.clear()
@@ -114,7 +118,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         executor = null
         pool = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**

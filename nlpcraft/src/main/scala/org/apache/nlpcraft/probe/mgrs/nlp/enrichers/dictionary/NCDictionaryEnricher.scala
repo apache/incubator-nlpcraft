@@ -43,11 +43,13 @@ object NCDictionaryEnricher extends NCProbeEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         swearWords = U.readTextResource(s"badfilter/swear_words.txt", "UTF-8", logger).
             map(NCNlpCoreManager.stem).
             toSet
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -55,7 +57,8 @@ object NCDictionaryEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
     
     @throws[NCE]

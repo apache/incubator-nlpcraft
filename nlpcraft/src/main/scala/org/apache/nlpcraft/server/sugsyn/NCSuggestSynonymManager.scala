@@ -118,10 +118,12 @@ object NCSuggestSynonymManager extends NCService {
      * @return
      */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         pool = Executors.newCachedThreadPool()
         executor = ExecutionContext.fromExecutor(pool)
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -129,11 +131,13 @@ object NCSuggestSynonymManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         U.shutdownPools(pool)
         pool = null
         executor = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**

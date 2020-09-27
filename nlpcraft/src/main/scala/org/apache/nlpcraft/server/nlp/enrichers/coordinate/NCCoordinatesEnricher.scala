@@ -57,10 +57,12 @@ object NCCoordinatesEnricher extends NCServerEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         latStems = Seq("lat", "latitude").map(NCNlpCoreManager.stem)
         lonStems = Seq("lon", "longitude").map(NCNlpCoreManager.stem)
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -68,10 +70,12 @@ object NCCoordinatesEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         latStems = null
         lonStems = null
 
-        ackStop()
+        ackStopped()
     }
     
     /**

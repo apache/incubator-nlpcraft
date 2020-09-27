@@ -78,9 +78,11 @@ object NCBaseNlpEnricher extends NCServerEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         parser = NCNlpServerManager.getParser
         
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -88,7 +90,8 @@ object NCBaseNlpEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**

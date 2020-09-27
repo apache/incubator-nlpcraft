@@ -606,6 +606,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
      */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         data = ArrayBuffer.empty[NCProbeModel]
 
         mdlFactory = new NCBasicModelFactory
@@ -645,7 +647,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (U.containsDups(ids))
             throw new NCE(s"Duplicate model IDs detected: ${ids.mkString(", ")}")
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -655,13 +657,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
      */
     @throws[NCE]
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         if (mdlFactory != null)
             mdlFactory.terminate()
 
         if (data != null)
             data.clear()
 
-        ackStop()
+        ackStopped()
     }
 
     /**

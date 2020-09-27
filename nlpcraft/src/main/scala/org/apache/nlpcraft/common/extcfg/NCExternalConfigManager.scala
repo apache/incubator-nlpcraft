@@ -145,6 +145,8 @@ object NCExternalConfigManager extends NCService {
       * @param parent Optional parent span.
       */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         require(NCExternalConfigType.values.forall(FILES.contains))
 
         val m = new ConcurrentHashMap[NCResourceType, File]
@@ -164,7 +166,7 @@ object NCExternalConfigManager extends NCService {
             )
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -173,7 +175,8 @@ object NCExternalConfigManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**

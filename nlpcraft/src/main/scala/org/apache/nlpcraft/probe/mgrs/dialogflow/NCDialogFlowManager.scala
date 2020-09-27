@@ -40,25 +40,26 @@ object NCDialogFlowManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        gc =
-            U.mkThread("dialog-flow-manager-gc") { t ⇒
-                while (!t.isInterrupted)
-                    try
-                        flow.synchronized {
-                            val sleepTime = clearForTimeout() - System.currentTimeMillis()
+        ackStarting()
 
-                            if (sleepTime > 0)
-                                flow.wait(sleepTime)
-                        }
-                    catch {
-                        case _: InterruptedException ⇒ // No-op.
-                        case e: Throwable ⇒ logger.error(s"Unexpected error for: ${t.getName}", e)
+        gc = U.mkThread("dialog-flow-manager-gc") { t ⇒
+            while (!t.isInterrupted)
+                try
+                    flow.synchronized {
+                        val sleepTime = clearForTimeout() - System.currentTimeMillis()
+
+                        if (sleepTime > 0)
+                            flow.wait(sleepTime)
                     }
-            }
+                catch {
+                    case _: InterruptedException ⇒ // No-op.
+                    case e: Throwable ⇒ U.prettyError(logger, s"Unexpected error for thread: ${t.getName}", e)
+                }
+        }
 
         gc.start()
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -66,15 +67,15 @@ object NCDialogFlowManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         U.stopThread(gc)
 
         gc = null
 
         flow.clear()
 
-        logger.info("Dialog flow manager GC stopped.")
-
-        ackStop()
+        ackStopped()
     }
 
     /**

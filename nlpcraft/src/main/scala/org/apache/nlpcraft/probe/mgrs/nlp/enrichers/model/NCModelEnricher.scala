@@ -106,7 +106,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        ackStart()
+        ackStarting()
+        ackStarted()
     }
 
     /**
@@ -114,7 +115,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**

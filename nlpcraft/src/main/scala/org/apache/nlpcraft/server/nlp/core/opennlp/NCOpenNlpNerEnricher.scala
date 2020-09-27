@@ -45,6 +45,8 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         require(NCOpenNlpTokenizer.isStarted)
 
         val m = collection.mutable.HashMap.empty[NameFinderME, String]
@@ -76,7 +78,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
             cache = ignite.cache[String, Array[String]]("opennlp-cache")
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -84,9 +86,11 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         cache = null
     
-        ackStop()
+        ackStopped()
     }
 
     /**

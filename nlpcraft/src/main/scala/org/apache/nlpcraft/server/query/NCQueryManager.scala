@@ -59,6 +59,8 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         asyncAsks = new ConcurrentHashMap[String/*Server request ID*/, Promise[NCQueryStateMdo]]()
 
         catching(wrapIE) {
@@ -91,7 +93,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         
         require(cache != null)
         
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -99,7 +101,8 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
     
     /**

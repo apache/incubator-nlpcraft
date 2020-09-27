@@ -51,11 +51,13 @@ object NCTxManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         // Close all still attached JDBC connections on stop.
         if (cons != null)
             cons.values.foreach(U.close)
         
-        ackStop()
+        ackStopped()
     }
 
     /**
@@ -64,11 +66,13 @@ object NCTxManager extends NCService with NCIgniteInstance {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         cons = mutable.HashMap.empty[IgniteUuid, Connection]
 
         itx = ignite.transactions()
 
-        ackStart()
+        ackStarted()
     }
 
     /**

@@ -37,7 +37,8 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**
@@ -46,11 +47,13 @@ object NCFeedbackManager extends NCService with NCIgniteInstance {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         catching(wrapIE) {
             seq = NCSql.mkSeq(ignite, "feedbackSeq", "feedback", "id")
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**

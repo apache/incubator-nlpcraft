@@ -60,7 +60,8 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**
@@ -69,6 +70,8 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         catching(wrapIE) {
             compSeq = NCSql.mkSeq(ignite, "compSeq", "nc_company", "id")
         }
@@ -110,7 +113,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                 }
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**

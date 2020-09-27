@@ -75,6 +75,8 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         url = Config.proxyUrl
 
         if (url.last == '/')
@@ -101,7 +103,7 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
 
         logger.info(s"spaCy proxy connected: $url")
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -109,7 +111,8 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
     
     /**

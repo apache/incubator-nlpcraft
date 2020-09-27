@@ -51,6 +51,8 @@ object NCServerLifecycleManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         if (Config.objects.isEmpty)
             logger.info("No lifecycle components configured.")
         else {
@@ -61,7 +63,7 @@ object NCServerLifecycleManager extends NCService {
             tbl.info(logger, Some(s"Configured lifecycle components:"))
         }
      
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -69,7 +71,8 @@ object NCServerLifecycleManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
     
     /**

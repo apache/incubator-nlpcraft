@@ -73,6 +73,8 @@ object NCRestManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         val url = s"${Config.host}:${Config.port}"
         val api: NCRestApi = U.mkObject(Config.apiImpl)
         
@@ -88,7 +90,7 @@ object NCRestManager extends NCService {
             case Failure(_) ⇒ logger.info(s"REST server failed to start on '$url'.")
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -96,9 +98,11 @@ object NCRestManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         if (bindFut != null)
             bindFut.flatMap(_.unbind()).onComplete(_ ⇒ SYSTEM.terminate())
 
-        ackStop()
+        ackStopped()
     }
 }
