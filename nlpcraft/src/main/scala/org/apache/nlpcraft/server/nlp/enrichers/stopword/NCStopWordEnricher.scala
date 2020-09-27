@@ -531,7 +531,9 @@ object NCStopWordEnricher extends NCServerEnricher {
     }
 
     @throws[NCE]
-    override def enrich(ns: NCNlpSentence, parent: Span = null) {
+    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
+        require(isStarted)
+
         // This stage must not be 1st enrichment stage.
         assume(ns.nonEmpty)
     

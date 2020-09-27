@@ -246,7 +246,9 @@ object NCLimitEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
+    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -281,6 +283,7 @@ object NCLimitEnricher extends NCProbeEnricher {
                     case None ⇒ // No-op.
                 }
         }
+    }
 
     /**
       *

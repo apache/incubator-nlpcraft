@@ -437,7 +437,9 @@ object NCSortEnricher extends NCProbeEnricher {
         toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
     }
 
-    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
+    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -506,6 +508,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 }
             }
         }
+    }
 
     /**
      *

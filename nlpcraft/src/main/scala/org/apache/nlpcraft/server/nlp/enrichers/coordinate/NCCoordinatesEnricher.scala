@@ -181,31 +181,33 @@ object NCCoordinatesEnricher extends NCServerEnricher {
       */
     private def hasStem(toks: Seq[NCNlpSentenceToken], stems: Seq[String]): Boolean = toks.exists(t ⇒ stems.contains(t.stem))
     
-    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit =
+    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             val nums = NCNumericManager.find(ns).sortBy(_.tokens.head.index)
-            
+
             if (nums.size >= 2) {
                 val markers = mutable.Buffer.empty[Seq[NCNlpSentenceToken]]
-        
+
                 def areSuitableTokens(toks: Seq[NCNlpSentenceToken]): Boolean =
                     toks.forall(t ⇒ !t.isQuoted && !t.isBracketed) && !markers.exists(_.exists(t ⇒ toks.contains(t)))
-        
+
                 for (toks ← ns.tokenMixWithStopWords() if areSuitableTokens(toks) && MARKERS_STEMS.contains(toks.map(_.stem).mkString(" ")))
                     markers += toks
-                
+
                 val allMarkers = markers.flatten
                 val buf = mutable.Buffer.empty[NCNlpSentenceToken]
-                
+
                 for (pair ← nums.sliding(2) if !buf.exists(t ⇒ pair.flatMap(_.tokens).contains(t))) {
                     var lat = pair.head
                     var lon = pair.last
-                
+
                     val between = ns.slice(lat.tokens.last.index + 1, lon.tokens.head.index)
                     val before = getBefore(ns, ns.take(lat.tokens.head.index), markers)
-                
+
                     val after = getAfter(ns, ns.drop(lon.tokens.last.index + 1), markers)
-                
+
                     if (hasStem(before, lonStems) && hasStem(between, latStems) ||
                         hasStem(between, lonStems) && hasStem(after, latStems) ||
                         !inRange(lat, 90) && inRange(lat, 180)
@@ -216,25 +218,25 @@ object NCCoordinatesEnricher extends NCServerEnricher {
                     }
                     if (inRange(lat, 90) && inRange(lon, 180) && (markers.nonEmpty || similar2Coordinates(lat, lon))) {
                         val normBetween = between.diff(allMarkers)
-                        
+
                         if (normBetween.isEmpty ||
                             normBetween.forall(
                                 t ⇒ t.isEmpty || t.pos == "IN" || SEPS.contains(t.normText) || EQUALS.contains(t.normText))
                         ) {
                             val extra = (before ++ after ++ between).sortBy(_.index)
-                        
+
                             if (markers.exists(extra.containsSlice) || similar2Coordinates(lat, lon)) {
                                 val toks = (lat.tokens ++ lon.tokens ++ extra ++ markers.flatten).distinct.sortBy(_.index)
-                        
+
                                 val note = NCNlpSentenceNote(
                                     toks.map(_.index),
                                     "nlpcraft:coordinate",
                                     "latitude" → lat.value,
                                     "longitude" → lon.value
                                 )
-                        
+
                                 toks.foreach(_.add(note))
-                        
+
                                 buf ++= toks
                             }
                         }
@@ -242,4 +244,5 @@ object NCCoordinatesEnricher extends NCServerEnricher {
                 }
             }
         }
+    }
 }

@@ -174,6 +174,8 @@ object NCDateEnricher extends NCServerEnricher {
      */
     @throws[NCE]
     override def enrich(ns: Sentence, parent: Span = null) {
+        require(isStarted)
+
         // This stage must not be 1st enrichment stage.
         assume(ns.nonEmpty)
         

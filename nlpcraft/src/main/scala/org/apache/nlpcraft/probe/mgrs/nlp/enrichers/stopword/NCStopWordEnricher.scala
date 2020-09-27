@@ -218,6 +218,8 @@ object NCStopWordEnricher extends NCProbeEnricher {
 
     @throws[NCE]
     override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+        require(isStarted)
+
         def mark(stems: Set[String], f: Boolean): Unit =
             ns.filter(t ⇒ stems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "stopWord" → f))
 

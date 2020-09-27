@@ -140,7 +140,9 @@ object NCGeoEnricher extends NCServerEnricher {
      * @throws NCE
      */
     @throws[NCE]
-    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit =
+    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             // This stage must not be 1st enrichment stage.
             assume(ns.nonEmpty)
@@ -294,6 +296,7 @@ object NCGeoEnricher extends NCServerEnricher {
 
             collapse(ns)
         }
+    }
 
     private def getValue(note: NCNlpSentenceNote, key: String): String = note(key).asInstanceOf[String]
     private def getValueOpt(note: NCNlpSentenceNote, key: String): Option[String] = note.get(key) match {
