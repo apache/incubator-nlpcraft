@@ -297,6 +297,7 @@
                                 <argument>--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</argument>
                                 <argument>--illegal-access=permit</argument>
                                 <argument>-DNLPCRAFT_ANSI_COLOR_DISABLED=true</argument>
+                                <argument>-Dstyle.color=never</argument>
                                 <argument>-Djdk.tls.client.protocols=TLSv1.2</argument>
                                 <argument>-jar</argument>
                                 <argument>${project.build.directory}/${nlpcraft.all.deps.jar}</argument>
