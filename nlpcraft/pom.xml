@@ -281,6 +281,11 @@
                             <goal>start</goal>
                         </goals>
                         <configuration>
+                            <!--
+                                Depending on the console config and how maven is run this will produce the output with ANSI colors.
+                                To strip out ANSI escape sequences from the log file, run the following:
+                                $ cat server-xxxxx.log | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | sed "s/\x0f//g"
+                            -->
                             <name>server</name>
                             <healthcheckUrl>http://localhost:8081/api/v1/health</healthcheckUrl>
                             <waitAfterLaunch>180</waitAfterLaunch>
@@ -296,8 +301,7 @@
                                 <argument>--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED</argument>
                                 <argument>--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</argument>
                                 <argument>--illegal-access=permit</argument>
-                                <argument>-DNLPCRAFT_ANSI_COLOR_DISABLED=true</argument>
-                                <argument>-Dstyle.color=never</argument>
+                                <argument>-DNLPCRAFT_ANSI_COLOR_DISABLED=true</argument> <!-- Remove ANSI at least from NLPCraft output. -->
                                 <argument>-Djdk.tls.client.protocols=TLSv1.2</argument>
                                 <argument>-jar</argument>
                                 <argument>${project.build.directory}/${nlpcraft.all.deps.jar}</argument>
