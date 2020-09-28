@@ -288,7 +288,7 @@
                             -->
                             <name>server</name>
                             <healthcheckUrl>http://localhost:8081/api/v1/health</healthcheckUrl>
-                            <waitAfterLaunch>180</waitAfterLaunch>
+                            <waitAfterLaunch>600</waitAfterLaunch>
                             <processLogFile>${project.build.directory}/server-${timestamp}.log</processLogFile>
                             <arguments>
                                 <argument>java</argument>
