@@ -64,7 +64,9 @@ object NCCommandManager extends NCService {
       * @param msg Server message to process.
       * @param parent Optional parent span.
       */
-    def processServerMessage(msg: NCProbeMessage, parent: Span = null): Unit =
+    def processServerMessage(msg: NCProbeMessage, parent: Span = null): Unit = {
+        require(isStarted)
+        
         startScopedSpan("processServerMessage", parent,
             "msgType" → msg.getType,
             "srvReqId" → msg.dataOpt[String]("srvReqId").getOrElse(""),
@@ -134,4 +136,5 @@ object NCCommandManager extends NCService {
                 case e: Throwable ⇒ U.prettyError(logger, s"Error while processing server message (ignoring): ${msg.getType}", e)
             }
         }
+    }
 }
