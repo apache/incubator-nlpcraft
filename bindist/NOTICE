@@ -6,5 +6,8 @@ The Apache Software Foundation (http://www.apache.org/).
 
 File org.apache.nlpcraft.common.util.NCIdGenerator.java.
 Based on https://github.com/peet/hashids.java
-Licensed under MIT license.
 Copyright (C) 2012 Ivan Akimov
+
+File org.apache.nlpcraft.common.blowfish.NCBlowfishHasher.java.
+Based on https://github.com/jeremyh/jBCrypt/blob/master/src/main/java/org/mindrot/BCrypt.java
+Copyright (C) 2006 Damien Miller <djm@mindrot.org>
