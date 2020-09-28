@@ -17,9 +17,14 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
-import java.io.{File, FileInputStream, ObjectInputStream}
+import java.io.{File, FileInputStream, IOException, ObjectInputStream}
 
+import com.google.gson._
 import org.apache.commons.lang3.SystemUtils
+import org.apache.http.client.ResponseHandler
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClients
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsi
@@ -30,6 +35,7 @@ import resource.managed
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
 import scala.util.Try
+import scala.collection.JavaConverters._
 
 /**
  * 'nlpcraft' script entry point.
@@ -52,6 +58,8 @@ object NCCommandLine extends App {
 
     private var exitStatus = 0
 
+    private val gson = new GsonBuilder().setPrettyPrinting().create
+
     // Single CLI command.
     case class Command(
         id: String,
@@ -60,7 +68,7 @@ object NCCommandLine extends App {
         desc: Option[String] = None,
         params: Seq[Parameter] = Seq.empty,
         examples: Seq[Example] = Seq.empty,
-        body: (Command, Seq[String]) ⇒ Unit
+        body: (Command, Seq[Argument]) ⇒ Unit
     ) {
         final val extNames = names.flatMap(name ⇒ // Safeguard against "common" errors.
             Seq(
@@ -76,12 +84,19 @@ object NCCommandLine extends App {
 
         /**
          *
-         * @param paramId
-         * @param cliParams
+         * @param name
          * @return
          */
-        def isParamPresent(paramId: String, cliParams: Seq[String]): Boolean =
-            params.find(_.id == paramId).get.names.intersect(cliParams).nonEmpty
+        def findParameterByName(name: String): Option[Parameter] =
+            params.find(_.names.contains(name))
+
+        /**
+         *
+         * @param id
+         * @return
+         */
+        def findParameterById(id: String): Option[Parameter] =
+            params.find(_.id == id)
     }
     // Single command's example.
     case class Example(
@@ -92,9 +107,15 @@ object NCCommandLine extends App {
     case class Parameter(
         id: String,
         names: Seq[String],
-        valueDesc: Option[String] = None,
+        value: Option[String] = None,
         optional: Boolean = false, // Mandatory by default.
         desc: String
+    )
+
+    // Parsed command line argument.
+    case class Argument(
+        parameter: Parameter, // Formal parameter this argument refers to.
+        value: Option[String]
     )
 
     // All supported commands.
@@ -111,7 +132,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "config",
                     names = Seq("--config", "-c"),
-                    valueDesc = Some("path"),
+                    value = Some("path"),
                     optional = true,
                     desc =
                         "Configuration absolute file path. Server will automatically look for 'nlpcraft.conf' " +
@@ -122,7 +143,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "igniteConfig",
                     names = Seq("--ignite-config", "-i"),
-                    valueDesc = Some("path"),
+                    value = Some("path"),
                     optional = true,
                     desc =
                         "Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
@@ -134,7 +155,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "outputPath",
                     names = Seq("--output-path", "-o"),
-                    valueDesc = Some("path"),
+                    value = Some("path"),
                     optional = true,
                     desc =
                         "File path for both REST server stdout and stderr output. If not provided, the REST server" +
@@ -179,7 +200,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "endpoint",
                     names = Seq("--endpoint", "-e"),
-                    valueDesc = Some("url"),
+                    value = Some("url"),
                     optional = true,
                     desc =
                         "REST server endpoint in 'http{s}://hostname:port' format. " +
@@ -188,7 +209,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "number",
                     names = Seq("--number", "-n"),
-                    valueDesc = Some("num"),
+                    value = Some("num"),
                     optional = true,
                     desc =
                         "Number of pings to perform. Must be an integer > 0."
@@ -231,7 +252,7 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "cmd",
                     names = Seq("--cmd", "-c"),
-                    valueDesc = Some("cmd"),
+                    value = Some("cmd"),
                     optional = true,
                     desc = "Set of commands to show the manual for. Can be used multiple times."
                 ),
@@ -265,14 +286,14 @@ object NCCommandLine extends App {
                 Parameter(
                     id = "semver",
                     names = Seq("--sem-ver", "-s"),
-                    valueDesc = None,
+                    value = None,
                     optional = true,
                     desc = s"Display only the semantic version value, e.g. ${VER.version}."
                 ),
                 Parameter(
                     id = "reldate",
                     names = Seq("--rel-date", "-d"),
-                    valueDesc = None,
+                    value = None,
                     optional = true,
                     desc = s"Display only the release date, e.g. ${VER.date}."
                 )
@@ -291,34 +312,10 @@ object NCCommandLine extends App {
     private final val NO_ANSI_CMD = CMDS.find(_.id ==  "no-ansi").get
 
     /**
-     *
-     * @param param Expected parameter.
-     * @param str String to parse.
-     * @return
-     */
-    private def getParamValue(param: Parameter, str: String): Option[String] = {
-        val arr = str.split("=")
-
-        if (arr.size != 2) {
-            error(s"Invalid parameter format: $str")
-
-            None
-        }
-        else if (!param.names.contains(arr.head)) {
-            error(s"Unknown parameter in: $str")
-
-            None
-
-        }
-        else
-            Some(arr.last)
-    }
-
-    /**
      * @param cmd Command descriptor.
-     * @param params Parameters, if any, for this command.
+     * @param args Arguments, if any, for this command.
      */
-    private def cmdStartServer(cmd: Command, params: Seq[String]): Unit = {
+    private def cmdStartServer(cmd: Command, args: Seq[Argument]): Unit = {
         title()
 
         // TODO
@@ -326,19 +323,25 @@ object NCCommandLine extends App {
 
     /**
      * @param cmd Command descriptor.
-     * @param params Parameters, if any, for this command.
+     * @param args Arguments, if any, for this command.
      */
-    private def cmdPingServer(cmd: Command, params: Seq[String]): Unit = {
+    private def cmdPingServer(cmd: Command, args: Seq[Argument]): Unit = {
         title()
+
+        var endpoint = "https://localhost:8081"
+        var num = 1
+
+        val endpointParam = cmd.params.find(_.id == "endpoint").get
+        val numberParam = cmd.params.find(_.id == "number").get
 
         // TODO
     }
 
     /**
      * @param cmd Command descriptor.
-     * @param params Parameters, if any, for this command.
+     * @param args Arguments, if any, for this command.
      */
-    private def cmdStopServer(cmd: Command, params: Seq[String]): Unit = {
+    private def cmdStopServer(cmd: Command, args: Seq[Argument]): Unit = {
         title()
 
         val path = new File(SystemUtils.getUserHome, SRV_PID_PATH)
@@ -357,7 +360,7 @@ object NCCommandLine extends App {
             ProcessHandle.of(pid).asScala match {
                 case Some(ph) ⇒
                     if (ph.destroy())
-                        confirm("Local server has been stopped.")
+                        `>`("Local server has been stopped.")
                     else
                         error(s"Unable to stop the local server [pid=$pid]")
 
@@ -369,17 +372,17 @@ object NCCommandLine extends App {
 
     /**
      * @param cmd Command descriptor.
-     * @param params Parameters, if any, for this command.
+     * @param args Arguments, if any, for this command.
      */
-    private def cmdNoAnsi(cmd: Command, params: Seq[String]): Unit = {
+    private def cmdNoAnsi(cmd: Command, args: Seq[Argument]): Unit = {
         NCAnsi.setEnabled(false)
     }
 
     /**
      * @param cmd Command descriptor.
-     * @param params Parameters, if any, for this command.
+     * @param args Arguments, if any, for this command.
      */
-    private def cmdHelp(cmd: Command, params: Seq[String]): Unit = {
+    private def cmdHelp(cmd: Command, args: Seq[Argument]): Unit = {
         title()
 
         /**
@@ -415,8 +418,8 @@ object NCCommandLine extends App {
 
                 for (param ← cmd.params) {
                     val line =
-                        if (param.valueDesc.isDefined)
-                            T___ + param.names.zip(Stream.continually(param.valueDesc.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
+                        if (param.value.isDefined)
+                            T___ + param.names.zip(Stream.continually(param.value.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
                         else
                             s"$T___${param.names.mkString(", ")}"
 
@@ -447,7 +450,7 @@ object NCCommandLine extends App {
 
         val tbl = NCAsciiTable().margin(left = 4)
 
-        if (params.isEmpty) { // Default - show abbreviated help.
+        if (args.isEmpty) { // Default - show abbreviated help.
             header()
 
             CMDS.foreach(cmd ⇒ tbl +/ (
@@ -457,7 +460,7 @@ object NCCommandLine extends App {
 
             log(tbl.toString)
         }
-        else if (cmd.isParamPresent("all", params)) { // Show a full format help for all commands.
+        else if (args.size == 1 && args.head.parameter.id == "all") { // Show a full format help for all commands.
             header()
 
             CMDS.foreach(cmd ⇒
@@ -471,29 +474,24 @@ object NCCommandLine extends App {
         }
         else { // Help for individual commands.
             var err = false
-            val cmdParam = cmd.params.find(_.id == "cmd").get
             val seen = mutable.Buffer.empty[String]
 
-            // At this point it should only be '--cmd' parameters.
-            for (param ← params) {
-                getParamValue(cmdParam, param) match {
-                    case Some(value) ⇒
-                        CMDS.find(_.names.contains(value)) match {
-                            case Some(c) ⇒
-                                if (!seen.contains(c.id)) {
-                                    tbl +/ (
-                                        "" → c.names.mkString(ansiGreenFg, ", ", ansiReset),
-                                        "align:left, maxWidth:85" → mkCmdLines(c)
-                                    )
+            for (arg ← args) {
+                val cmdName = arg.value.get
 
-                                    seen += c.id
-                                }
-                            case None ⇒
-                                err = true
-                                error(s"Unknown command '$value' to get help for in: $param")
+                CMDS.find(_.names.contains(cmdName)) match {
+                    case Some(c) ⇒
+                        if (!seen.contains(c.id)) {
+                            tbl +/ (
+                                "" → c.names.mkString(ansiGreenFg, ", ", ansiReset),
+                                "align:left, maxWidth:85" → mkCmdLines(c)
+                            )
+
+                            seen += c.id
                         }
-
-                    case None ⇒ err = true
+                    case None ⇒
+                        err = true
+                        error(s"Unknown command to get help for: $cmdName")
                 }
             }
 
@@ -508,9 +506,9 @@ object NCCommandLine extends App {
     /**
      *
      * @param cmd Command descriptor.
-     * @param params Parameters, if any, for this command.
+     * @param args Arguments, if any, for this command.
      */
-    private def cmdRepl(cmd: Command, params: Seq[String]): Unit = {
+    private def cmdRepl(cmd: Command, args: Seq[Argument]): Unit = {
         title()
 
         // TODO
@@ -519,23 +517,23 @@ object NCCommandLine extends App {
     /**
      *
      * @param cmd Command descriptor.
-     * @param params Parameters, if any, for this command.
+     * @param args Arguments, if any, for this command.
      */
-    private def cmdVersion(cmd: Command, params: Seq[String]): Unit =
-        if (params.isEmpty)
-            confirm(s"$NAME ver. ${VER.version}, released on ${VER.date}")
+    private def cmdVersion(cmd: Command, args: Seq[Argument]): Unit =
+        if (args.isEmpty)
+            `>`(s"$NAME ver. ${VER.version}, released on ${VER.date}")
         else {
-            val isS = cmd.isParamPresent("semver", params)
-            val isD = cmd.isParamPresent("reldate", params)
+            val isS = args.exists(_.parameter.id == "semver")
+            val isD = args.exists(_.parameter.id == "reldate")
 
             if (isS || isD) {
                 if (isS)
-                    confirm(s"${VER.version}")
+                    `>`(s"${VER.version}")
                 if (isD)
-                    confirm(s"${VER.date}")
+                    `>`(s"${VER.date}")
             }
             else
-                error(s"Invalid parameters for command '${cmd.mainName}': ${params.mkString(", ")}")
+                error(s"Invalid parameters for command '${cmd.mainName}': ${args.mkString(", ")}")
         }
 
 
@@ -560,7 +558,13 @@ object NCCommandLine extends App {
      *
      * @param msg
      */
-    private def confirm(msg: String): Unit = System.out.println(s"${ansiGreen(">")} $msg")
+    private def `>`(msg: String): Unit = System.out.println(s"${ansiGreen(">")} $msg")
+
+    /**
+     *
+     * @param msg
+     */
+    private def `>>`(msg: String): Unit = System.out.print(s"${ansiGreen(">")} $msg")
 
     /**
      *
@@ -575,6 +579,55 @@ object NCCommandLine extends App {
         log(s"$NAME ver. ${VER.version}")
         log()
     }
+
+    /**
+     * Posts REST request.
+     *
+     * @param url
+     * @param resp
+     * @param jsParams
+     * @return
+     * @throws IOException
+     */
+    private def post[T](url: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
+        val post = new HttpPost(url)
+
+        post.setHeader("Content-Type", "application/json")
+        post.setEntity(new StringEntity(gson.toJson(jsParams.filter(_._2 != null).toMap.asJava), "UTF-8"))
+
+        try
+            HttpClients.createDefault().execute(post, resp)
+        finally
+            post.releaseConnection()
+    }
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @return
+     */
+    private def processParameters(cmd: Command, args: Seq[String]): Seq[Argument] =
+        args.map { arg ⇒
+            val parts = arg.split("=")
+
+            def mkError() = new IllegalArgumentException(s"Invalid parameter: ${ansiCyan(arg)}")
+
+            if (parts.size > 2)
+                throw mkError()
+
+            val name = if (parts.size == 1) arg else parts(0)
+            val value = if (parts.size == 1) None else Some(parts(1))
+
+            cmd.findParameterByName(name) match {
+                case None ⇒ throw mkError()
+                case Some(param) ⇒
+                    if ((param.value.isDefined && value.isEmpty) || (param.value.isEmpty && value.isDefined))
+                        throw mkError()
+
+                    Argument(param, value)
+            }
+        }
 
     /**
      *
@@ -595,7 +648,13 @@ object NCCommandLine extends App {
             val cmdName = xargs.head
 
             CMDS.find(_.extNames.contains(cmdName)) match {
-                case Some(cmd) ⇒ cmd.body(cmd, xargs.tail)
+                case Some(cmd) ⇒
+                    try
+                        cmd.body(cmd, processParameters(cmd, xargs.tail))
+                    catch {
+                        case e: IllegalArgumentException ⇒ error(e.getLocalizedMessage)
+                    }
+
                 case None ⇒ error(s"Unknown command: $cmdName")
             }
         }

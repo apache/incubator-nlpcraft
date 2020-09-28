@@ -814,13 +814,13 @@ public class NCTestClientBuilder {
         /**
          *
          * @param url
-         * @param ps
+         * @param params
          * @return
          * @throws NCTestClientException
          * @throws IOException
          */
         @SafeVarargs
-        private String post(String url, Pair<String, Object>... ps) throws NCTestClientException, IOException {
+        private String post(String url, Pair<String, Object>... params) throws NCTestClientException, IOException {
             HttpPost post = new HttpPost(baseUrl + url);
 
             try {
@@ -828,7 +828,7 @@ public class NCTestClientBuilder {
                     post.setConfig(reqCfg);
 
                 StringEntity entity = new StringEntity(
-                    gson.toJson(Arrays.stream(ps).
+                    gson.toJson(Arrays.stream(params).
                         filter(p -> p.getValue() != null).
                         collect(Collectors.toMap(Pair::getKey, Pair::getValue))),
                     "UTF-8"
