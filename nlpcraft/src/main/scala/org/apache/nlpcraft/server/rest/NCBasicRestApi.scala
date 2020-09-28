@@ -1887,7 +1887,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     override def getRoute: Route = {
         val timeoutResp = HttpResponse(
             StatusCodes.EnhanceYourCalm,
-            entity = "Unable to serve response within time limit, please enhance your calm."
+            entity = "Unable to serve response within time limit."
         )
 
         handleExceptions(getExceptionHandler) {

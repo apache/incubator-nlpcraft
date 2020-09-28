@@ -21,9 +21,12 @@ import java.io.{File, FileInputStream, IOException, ObjectInputStream}
 import java.net.URL
 
 import com.google.gson._
+import javax.net.ssl.SSLException
 import org.apache.commons.lang3.SystemUtils
+import org.apache.http.HttpResponse
 import org.apache.http.client.ResponseHandler
-import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.{HttpGet, HttpPost}
+import org.apache.http.client.utils.URIBuilder
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
@@ -37,6 +40,7 @@ import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
 import scala.util.Try
 import scala.collection.JavaConverters._
+import scala.compat.Platform.currentTime
 
 /**
  * 'nlpcraft' script entry point.
@@ -205,7 +209,7 @@ object NCCommandLine extends App {
                     optional = true,
                     desc =
                         "REST server endpoint in 'http{s}://hostname:port' format. " +
-                        "Default value is https://localhost:8081"
+                        "Default value is http://localhost:8081"
                 ),
                 Parameter(
                     id = "number",
@@ -224,10 +228,10 @@ object NCCommandLine extends App {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME ping-server ",
-                        s"    --endpoint=https://localhost:1234 ",
+                        s"    --endpoint=http://localhost:1234 ",
                         s"    -n=10"
                     ),
-                    desc = "Pings REST server at 'https://localhost:1234' endpoint 10 times."
+                    desc = "Pings REST server at 'http://localhost:1234' endpoint 10 times."
                 )
             )
         ),
@@ -327,9 +331,9 @@ object NCCommandLine extends App {
     private def cmdPingServer(cmd: Command, args: Seq[Argument]): Unit = {
         val endpoint = args.find(_.parameter.id == "endpoint") match {
             case Some(arg) ⇒ new URL(arg.value.get).toURI.toString
-            case None ⇒ "https://localhost:8081"
+            case None ⇒ "http://localhost:8081"
         }
-        var num = args.find(_.parameter.id == "number") match {
+        val num = args.find(_.parameter.id == "number") match {
             case Some(arg) ⇒
                 try
                     Integer.parseInt(arg.value.get)
@@ -343,24 +347,50 @@ object NCCommandLine extends App {
         var i = 0
 
         while (i < num) {
-            `>>`(s"Pinging ${ansiBlue(endpoint)} ")
+            `>>`(s"Pinging REST server at ${ansiBlue(endpoint)} ")
 
-            val spinner = new NCAnsiSpinner()
+            val spinner = new NCAnsiSpinner(
+                System.out,
+                ansiCyanFg,
+                // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
+                NCAnsi.isEnabled && U.sysEnv("NLPCRAFT_CLI").isDefined
+            )
 
             spinner.start()
 
+            val startMs = currentTime
+
+            try
+                httpGet(endpoint, "health", new ResponseHandler[Int]() {
+                    override def handleResponse(resp: HttpResponse): Int = resp.getStatusLine.getStatusCode
+                }) match {
+                    case 200 ⇒
+                        spinner.stop()
+
+                        log(ansiGreen("OK") + " " + ansiCyan(s"[${currentTime - startMs}ms]"))
+
+                    case code: Int ⇒
+                        spinner.stop()
+
+                        log(ansiRed("FAIL") + s" [HTTP $ansiYellowFg$code$ansiReset]")
+                }
+            catch {
+                case _: SSLException ⇒
+                    spinner.stop()
+
+                    log(ansiRed("FAIL") + s" ${ansiYellow("[SSL error]")}")
+
+                case _: IOException ⇒
+                    spinner.stop()
+
+                    log(ansiRed("FAIL") + s" ${ansiYellow("[I/O error]")}")
+            }
+
             i += 1
+
+            // Pause between pings.
+            Thread.sleep(1000)
         }
-
-        Thread.sleep(100000)
-
-
-
-
-
-
-
-        // TODO
     }
 
     /**
@@ -608,16 +638,26 @@ object NCCommandLine extends App {
     }
 
     /**
-     * Posts REST request.
      *
-     * @param url
+     * @param baseUrl
+     * @param cmd
+     * @return
+     */
+    private def prepUrl(baseUrl: String, cmd: String): String =
+        if (baseUrl.endsWith("/")) s"${baseUrl}api/v1/$cmd" else s"$baseUrl/api/v1/$cmd"
+
+    /**
+     * Posts HTTP POST request.
+     *
+     * @param baseUrl Base endpoint URL.
+     * @param cmd REST call command.
      * @param resp
      * @param jsParams
      * @return
      * @throws IOException
      */
-    private def post[T](url: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
-        val post = new HttpPost(url)
+    private def httpPost[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
+        val post = new HttpPost(prepUrl(baseUrl, cmd))
 
         post.setHeader("Content-Type", "application/json")
         post.setEntity(new StringEntity(gson.toJson(jsParams.filter(_._2 != null).toMap.asJava), "UTF-8"))
@@ -626,6 +666,29 @@ object NCCommandLine extends App {
             HttpClients.createDefault().execute(post, resp)
         finally
             post.releaseConnection()
+    }
+
+    /**
+     * Posts HTTP GET request.
+     *
+     * @param baseUrl Base endpoint URL.
+     * @param cmd REST call command.
+     * @param resp
+     * @param jsParams
+     * @return
+     * @throws IOException
+     */
+    private def httpGet[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
+        val bldr = new URIBuilder(prepUrl(baseUrl, cmd))
+
+        jsParams.foreach(p ⇒ bldr.setParameter(p._1, p._2.toString))
+
+        val get = new HttpGet(bldr.build())
+
+        try
+            HttpClients.createDefault().execute(get, resp)
+        finally
+            get.releaseConnection()
     }
 
     /**
@@ -693,6 +756,8 @@ object NCCommandLine extends App {
 
         if (exitStatus != 0)
             errorHelp()
+
+        log()
 
         sys.exit(exitStatus)
     }

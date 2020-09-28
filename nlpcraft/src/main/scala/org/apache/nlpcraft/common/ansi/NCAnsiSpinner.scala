@@ -25,42 +25,38 @@ import org.apache.nlpcraft.common._
 /**
  *
  */
-class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanFg) {
+class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanFg, useAnsi: Boolean = true) {
     @volatile var thread: Thread = _
-
-    final val IS_ANSI = NCAnsi.isEnabled
 
     final val SPIN_CHARS = Seq('-', '\\', '|', '/')
     final val SPIN_CHARS_SIZE = SPIN_CHARS.size
 
+    var frame = 0
+
     /**
      *
      */
-    def start(): Unit = {
-        thread =  U.mkThread("ansi-spinner") { t ⇒
-            var i = 0
-
-            if (IS_ANSI)
+    def start(): Unit =
+        if (useAnsi) {
+            thread =  U.mkThread("ansi-spinner") { t ⇒
                 out.print(s"$ansiCursorHide")
 
-            while (!t.isInterrupted) {
-                if (IS_ANSI) {
-                    if (i > 0)
+                while (!t.isInterrupted) {
+                    if (frame > 0)
                         out.print(s"$ansiCursorLeft$ansiClearLineAfter")
 
-                    out.print(s"$ansiColor${SPIN_CHARS(i % SPIN_CHARS_SIZE)}$ansiReset")
+                    out.print(s"$ansiColor${SPIN_CHARS(frame % SPIN_CHARS_SIZE)}$ansiReset")
 
-                    i += 1
+                    frame += 1
+
+                    Thread.sleep(200)
                 }
-                else
-                    out.print(".")
-
-                Thread.sleep(if (IS_ANSI) 200 else 1000)
             }
-        }
 
-        thread.start()
-    }
+            thread.start()
+        }
+        else
+            out.print("... ")
 
     /**
      *
@@ -68,7 +64,7 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
     def stop(): Unit = {
         U.stopThread(thread)
 
-        if (IS_ANSI)
+        if (useAnsi && frame > 0)
             out.print(s"$ansiCursorLeft$ansiClearLineAfter$ansiCursorShow")
     }
 }

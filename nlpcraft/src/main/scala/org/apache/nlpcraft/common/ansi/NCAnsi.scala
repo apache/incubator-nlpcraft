@@ -70,7 +70,6 @@ sealed trait NCAnsi extends LazyLogging {
     private final val CURSOR_HIDE = "\u001b[?25l"
     private final val CURSOR_SHOW = "\u001b[?25h"
 
-
     def isEnabled: Boolean = !U.isSysEnvTrue(PROP)
 
     // Color functions.
