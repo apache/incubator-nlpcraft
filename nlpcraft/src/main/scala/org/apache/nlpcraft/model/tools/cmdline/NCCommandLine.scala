@@ -28,7 +28,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsi
+import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.version.NCVersion
 import resource.managed
@@ -340,7 +340,19 @@ object NCCommandLine extends App {
             case None ⇒ 1
         }
 
+        var i = 0
 
+        while (i < num) {
+            `>>`(s"Pinging ${ansiBlue(endpoint)} ")
+
+            val spinner = new NCAnsiSpinner()
+
+            spinner.start()
+
+            i += 1
+        }
+
+        Thread.sleep(100000)
 
 
 

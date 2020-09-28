@@ -61,11 +61,19 @@ sealed trait NCAnsi extends LazyLogging {
     // Cursor moves.
     private final val CURSOR_UP = "\u001b[1A"
     private final val CURSOR_DOWN = "\u001b[1B"
-    private final val CURSOR_LEFT = "\u001b[1C"
-    private final val CURSOR_RIGHT = "\u001b[1D"
+    private final val CURSOR_LEFT = "\u001b[1D"
+    private final val CURSOR_RIGHT = "\u001b[1C"
+    private final val CURSOR_POS_SAVE= "\u001b[s"
+    private final val CURSOR_POS_RESTORE = "\u001b[u"
+    private final val CURSOR_LINE_HOME = "\u001b[0G"
+    private final val CURSOR_SCREEN_HOME = "\u001b[H"
+    private final val CURSOR_HIDE = "\u001b[?25l"
+    private final val CURSOR_SHOW = "\u001b[?25h"
+
 
     def isEnabled: Boolean = !U.isSysEnvTrue(PROP)
 
+    // Color functions.
     def ansiBlackFg: String = if (isEnabled) BLACK else ""
     def ansiBlackBg: String = if (isEnabled) BLACK_B else ""
     def ansiRedFg: String = if (isEnabled) RED else ""
@@ -97,6 +105,26 @@ sealed trait NCAnsi extends LazyLogging {
     def ansiWhite(s: String): String = s"$ansiWhiteFg$s$ansiReset"
     def ansiBlue(s: String): String = s"$ansiBlueFg$s$ansiReset"
     def ansiBold(s: String): String = s"$ansiBold$s$ansiReset"
+
+    // Erase functions.
+    def ansiClearScreen: String = if (isEnabled) CLEAR_SCREEN else ""
+    def ansiClearScreenAfter: String = if (isEnabled) CLEAR_SCREEN_AFTER else ""
+    def ansiClearScreenBefore: String = if (isEnabled) CLEAR_SCREEN_BEFORE else ""
+    def ansiClearLine: String = if (isEnabled) CLEAR_LINE else ""
+    def ansiClearLineAfter: String = if (isEnabled) CLEAR_LINE_AFTER else ""
+    def ansiClearLineBefore: String = if (isEnabled) CLEAR_LINE_BEFORE else ""
+
+    // Cursor movement functions.
+    def ansiCursorUp: String = if (isEnabled) CURSOR_UP else ""
+    def ansiCursorDown: String = if (isEnabled) CURSOR_DOWN else ""
+    def ansiCursorLeft: String = if (isEnabled) CURSOR_LEFT else ""
+    def ansiCursorRight: String = if (isEnabled) CURSOR_RIGHT else ""
+    def ansiCursorLineHome: String = if (isEnabled) CURSOR_LINE_HOME else ""
+    def ansiCursorScreenHome: String = if (isEnabled) CURSOR_SCREEN_HOME else ""
+    def ansiCursorPosSave: String = if (isEnabled) CURSOR_POS_SAVE else ""
+    def ansiCursorPosRestore: String = if (isEnabled) CURSOR_POS_RESTORE else ""
+    def ansiCursorShow: String = if (isEnabled) CURSOR_SHOW else ""
+    def ansiCursorHide: String = if (isEnabled) CURSOR_HIDE else ""
 }
 
 object NCAnsi extends NCAnsi {

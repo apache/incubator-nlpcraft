@@ -31,7 +31,7 @@ if defined JAVA_HOME goto checkJdk
     echo ERROR:
     echo ------
     echo JAVA_HOME environment variable is not found.
-    echo Please point JAVA_HOME variable to location of JDK 1.8 or later.
+    echo Please point JAVA_HOME variable to location of JDK 11 or later.
     echo You can also download latest JDK at http://java.com/download.
 goto :eof
 
@@ -41,7 +41,7 @@ if exist "%JAVA_HOME%\bin\java.exe" goto checkJdkVersion
     echo ERROR:
     echo ------
     echo JAVA is not found in JAVA_HOME=%JAVA_HOME%.
-    echo Please point JAVA_HOME variable to installation of JDK 1.8 or later.
+    echo Please point JAVA_HOME variable to installation of JDK 11 or later.
     echo You can also download latest JDK at http://java.com/download.
 goto :eof
 
@@ -59,11 +59,11 @@ set JAVA_VER_STR=%JAVA_VER_STR:"=%
 for /f "tokens=1,2 delims=." %%a in ("%JAVA_VER_STR%.x") do set MAJOR_JAVA_VER=%%a& set MINOR_JAVA_VER=%%b
 if %MAJOR_JAVA_VER% == 1 set MAJOR_JAVA_VER=%MINOR_JAVA_VER%
 
-if %MAJOR_JAVA_VER% LSS 8 (
+if %MAJOR_JAVA_VER% LSS 11 (
     echo ERROR:
     echo ------
     echo The version of JAVA installed in %JAVA_HOME% is incorrect.
-    echo Please point JAVA_HOME variable to installation of JDK 1.8 or later.
+    echo Please point JAVA_HOME variable to installation of JDK 11 or later.
     echo You can also download latest JDK at http://java.com/download.
 	goto :eof
 )
