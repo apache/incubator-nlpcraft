@@ -49,6 +49,8 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         require(NCOpenNlpTokenizer.isStarted)
 
+        ackStarting()
+
         U.executeParallel(
             () ⇒ {
                 tagger =
@@ -68,7 +70,7 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
             cache = ignite.cache[String, Array[String]]("opennlp-cache")
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -76,9 +78,11 @@ object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance 
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         cache = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**

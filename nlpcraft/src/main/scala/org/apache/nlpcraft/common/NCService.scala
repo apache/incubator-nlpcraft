@@ -29,16 +29,18 @@ import scala.compat.Platform._
   * extend this class are typically called 'managers'.
   */
 abstract class NCService extends LazyLogging with NCOpenCensusTrace {
-    private val startMs = currentTime
+    @volatile private var timeStampMs = -1L
 
     @volatile private var started = false
+    @volatile private var starting = false
+    @volatile private var stopping = false
     
     private final val clsName = U.cleanClassName(getClass)
     
-    /**
-      * Checks if this service is started.
-      */
-    def isStarted: Boolean = started
+    def isStarted: Boolean = started && !stopping && !starting
+    def isStopped: Boolean = !started && !stopping && !starting
+    def isStarting: Boolean = starting
+    def isStopping: Boolean = stopping
 
     /**
       * Starts this service.
@@ -48,7 +50,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     def start(parent: Span = null): NCService =
         // Make sure this is not called by subclass.
-        throw new AssertionError(s"NCService#start() should not be called directly in '${U.cleanClassName(getClass)}' service.")
+        throw new AssertionError(s"NCService#start() should not be called directly in '$name' service.")
 
     /**
       * Stops this service.
@@ -58,7 +60,7 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     def stop(parent: Span = null): Unit =
         // Make sure this is not called by subclass.
-        throw new AssertionError(s"NCService#stop() should not be called directly in '${U.cleanClassName(getClass)}' service.")
+        throw new AssertionError(s"NCService#stop() should not be called directly in '$name' service.")
 
     /**
      * Gets name of this service (as its class name).
@@ -68,21 +70,62 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     def name: String = clsName
 
     /**
+     * Acks the beginning of this service startup.
+     *
+     * @return This instance.
+     */
+    protected def ackStarting(): NCService = {
+        starting = true
+        timeStampMs = currentTime
+
+        logger.trace("$name staring...")
+
+        addTags(currentSpan(),
+            "state" → "starting"
+        )
+
+        this
+    }
+
+    /**
+     * Acks the beginning of this service shutdown.
+     *
+     * @return This instance.
+     */
+    protected def ackStopping(): NCService = {
+        stopping = true
+        timeStampMs = currentTime
+
+        logger.trace("$name stopping...")
+
+        addTags(currentSpan(),
+            "state" → "stopping"
+        )
+
+        this
+    }
+
+    /**
      * Acks started service. Should be called at the end of the `start()` method.
      */
-    protected def ackStart(): NCService = {
+    protected def ackStarted(): NCService = {
         assert(!started, s"Service '$name' is already started.")
+        assert(timeStampMs != -1, "Method 'NCService#ackStarting()' wasn't called.")
 
+        starting = false
         started = true
-
-        val dur = s"$ansiBlueFg[${currentTime - startMs}ms]$ansiReset"
 
         addTags(
             currentSpan(),
-            "startDurationMs" → (currentTime - startMs), "state" → started
+            "startDurationMs" → (currentTime - timeStampMs),
+            "state" → "started"
         )
 
-        logger.info(s"$clsName started $dur")
+        val dur = s"$ansiBlueFg[${currentTime - timeStampMs}ms]$ansiReset"
+
+        logger.info(s"$name started $dur")
+
+        timeStampMs = -1L
 
         this
     }
@@ -90,13 +133,19 @@ abstract class NCService extends LazyLogging with NCOpenCensusTrace {
     /**
      * Acks stopped service. Should be called at the end of the `stop()` method.
      */
-    protected def ackStop(): Unit = {
+    protected def ackStopped(): Unit = {
+        assert(timeStampMs != -1, "Method 'NCService#ackStopping()' wasn't called.")
+
+        stopping = false
         started = false
 
         addTags(currentSpan(),
-            "state" → started
+            "stopDurationMs" → (currentTime - timeStampMs),
+            "state" → "stopped"
         )
 
-        logger.info(s"$clsName stopped.")
+        logger.info(s"$name stopped.")
+
+        timeStampMs = -1L
     }
 }

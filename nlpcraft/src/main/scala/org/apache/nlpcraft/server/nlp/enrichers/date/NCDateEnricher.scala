@@ -117,7 +117,8 @@ object NCDateEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**
@@ -126,6 +127,8 @@ object NCDateEnricher extends NCServerEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         def read(res: String): LHM_SS = {
             startScopedSpan("read", span, "res" → res) { _ ⇒
                 val m: LHM_SS = new LHM_SS()
@@ -160,7 +163,7 @@ object NCDateEnricher extends NCServerEnricher {
 
         cacheParts = p1 ++ p2
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -171,6 +174,8 @@ object NCDateEnricher extends NCServerEnricher {
      */
     @throws[NCE]
     override def enrich(ns: Sentence, parent: Span = null) {
+        require(isStarted)
+
         // This stage must not be 1st enrichment stage.
         assume(ns.nonEmpty)
         

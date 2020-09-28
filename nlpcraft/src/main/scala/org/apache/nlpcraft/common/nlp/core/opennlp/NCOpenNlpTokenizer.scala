@@ -40,11 +40,13 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
      * @return
      */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         tokenizer = managed(NCExternalConfigManager.getStream(OPENNLP, RESOURCE)) acquireAndGet { in ⇒
             new TokenizerME(new TokenizerModel(in))
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -52,9 +54,11 @@ object NCOpenNlpTokenizer extends NCNlpTokenizer {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
+        ackStopping()
+
         tokenizer = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**

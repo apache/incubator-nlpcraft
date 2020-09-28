@@ -159,8 +159,6 @@ object NCProbeManager extends NCService {
     // All probes pending complete handshake keyed by probe key.
     @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
 
-    @volatile private var isStopping: AtomicBoolean = _
-
     @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
 
     /**
@@ -169,6 +167,8 @@ object NCProbeManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         probes = mutable.HashMap.empty[ProbeKey, ProbeHolder]
         mdls = mutable.HashMap.empty[String, NCProbeModelMdo]
         pending = mutable.HashMap.empty[ProbeKey, ProbeHolder]
@@ -180,8 +180,6 @@ object NCProbeManager extends NCService {
             "uplink" → s"$upHost:$upPort",
             "downlink" → s"$dnHost:$dnPort"
         )
-    
-        isStopping = new AtomicBoolean(false)
 
         modelsInfo = new ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]]()
 
@@ -206,7 +204,7 @@ object NCProbeManager extends NCService {
         
         pingSrv.start()
         
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -214,7 +212,7 @@ object NCProbeManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        isStopping = new AtomicBoolean(true)
+        ackStopping()
 
         U.stopThread(pingSrv)
         U.stopThread(dnSrv)
@@ -222,7 +220,7 @@ object NCProbeManager extends NCService {
 
         modelsInfo = null
      
-        ackStop()
+        ackStopped()
     }
 
     /**
@@ -402,7 +400,7 @@ object NCProbeManager extends NCService {
                     }
                     catch {
                         case e: Exception ⇒
-                            if (!isStopping.get) {
+                            if (!isStopping) {
                                 // Release socket asap.
                                 U.close(srv)
                                 

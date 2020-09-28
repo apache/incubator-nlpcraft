@@ -123,10 +123,18 @@ object NCNumericManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
-    
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         genNums = mapResource("numeric/numeric.txt", "utf-8", logger, {
             _.filter(s ⇒ !s.isEmpty && !s.trim.startsWith("#")).
             map(_.split("=")).
@@ -266,7 +274,7 @@ object NCNumericManager extends NCService {
         unitsStem = hs.map(p ⇒ p.stem → NCNumericUnit(p.name, p.unitType)).toMap
         maxSynWords = (unitsOrigs ++ unitsStem).keySet.map(_.split(" ").length).max
         
-        ackStart()
+        ackStarted()
     }
 
     /**

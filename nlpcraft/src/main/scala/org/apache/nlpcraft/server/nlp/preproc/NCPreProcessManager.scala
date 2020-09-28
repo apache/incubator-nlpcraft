@@ -88,7 +88,8 @@ object NCPreProcessManager extends NCService {
      * @return
      */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        ackStart()
+        ackStarting()
+        ackStarted()
     }
 
     /**
@@ -96,7 +97,8 @@ object NCPreProcessManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
     
     /**

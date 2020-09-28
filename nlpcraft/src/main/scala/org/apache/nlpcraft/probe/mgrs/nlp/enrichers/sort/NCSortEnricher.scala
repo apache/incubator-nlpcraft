@@ -437,7 +437,9 @@ object NCSortEnricher extends NCProbeEnricher {
         toks.length == toks2.length || toks.count(isImportant) == toks2.count(isImportant)
     }
 
-    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit =
+    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -506,6 +508,7 @@ object NCSortEnricher extends NCProbeEnricher {
                 }
             }
         }
+    }
 
     /**
      *
@@ -513,6 +516,8 @@ object NCSortEnricher extends NCProbeEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         // Single words.
         sort = SORT_WORDS.map(NCNlpCoreManager.stem)
 
@@ -534,7 +539,7 @@ object NCSortEnricher extends NCProbeEnricher {
 
         validate()
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -542,12 +547,14 @@ object NCSortEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         sort = null
         by = null
         order = null
         stemAnd = null
         maskWords = null
 
-        ackStop()
+        ackStopped()
     }
 }

@@ -36,7 +36,8 @@ object NCQuoteEnricher extends NCServerEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        ackStart()
+        ackStarting()
+        ackStarted()
     }
 
     /**
@@ -44,7 +45,8 @@ object NCQuoteEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**
@@ -54,7 +56,9 @@ object NCQuoteEnricher extends NCServerEnricher {
      * @throws NCE
      */
     @throws[NCE]
-    override def enrich(ns: NCNlpSentence, parent: Span = null) {
+    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             // Clone input sentence.
             val copy = ns.clone()

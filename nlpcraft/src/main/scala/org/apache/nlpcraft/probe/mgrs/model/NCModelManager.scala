@@ -46,6 +46,8 @@ object NCModelManager extends NCService with DecorateAsScala {
      */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         val tbl = NCAsciiTable("Model", "Intents")
 
         mux.synchronized {
@@ -88,19 +90,21 @@ object NCModelManager extends NCService with DecorateAsScala {
             "deployedModels" → data.values.map(_.model.getId).mkString(",")
         )
 
-        ackStart()
+        ackStarted()
     }
 
     /**
      * Stops this component.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         mux.synchronized {
             if (data != null)
                 data.values.foreach(m ⇒ discardModel(m.model))
         }
 
-        ackStop()
+        ackStopped()
     }
 
     /**

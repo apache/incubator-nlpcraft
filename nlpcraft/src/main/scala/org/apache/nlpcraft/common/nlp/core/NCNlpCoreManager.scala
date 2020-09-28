@@ -45,6 +45,8 @@ object NCNlpCoreManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         // NOTE: DO NOT confuse this with token providers.
         if (!SUPPORTED_NLP_ENGINES.contains(Config.engine))
             throw new NCE(s"Unsupported NLP engine: ${Config.engine}")
@@ -65,7 +67,7 @@ object NCNlpCoreManager extends NCService {
 
         tokenizer.start()
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -73,10 +75,12 @@ object NCNlpCoreManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) {span ⇒
+        ackStopping()
+
         if (tokenizer != null)
             tokenizer.stop(span)
 
-        ackStop()
+        ackStopped()
     }
 
     /**

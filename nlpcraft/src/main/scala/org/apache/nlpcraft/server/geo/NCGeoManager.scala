@@ -87,9 +87,11 @@ object NCGeoManager extends NCService {
      */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         model = readAndConstructModel(true)
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -97,9 +99,11 @@ object NCGeoManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         model = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**

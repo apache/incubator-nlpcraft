@@ -81,12 +81,14 @@ object NCGeoEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         commons = null
         topUsa = null
         topWorld = null
         locations = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**
@@ -95,6 +97,8 @@ object NCGeoEnricher extends NCServerEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         locations = NCGeoManager.getModel.synonyms
 
         // GEO names matched with common english words and user defined exception GEO names.
@@ -126,7 +130,7 @@ object NCGeoEnricher extends NCServerEnricher {
         topUsa = readCities(US_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
         topWorld = readCities(WORLD_TOP_PATH).map(city ⇒ glue(city.name, city.region)).toSet
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -136,7 +140,9 @@ object NCGeoEnricher extends NCServerEnricher {
      * @throws NCE
      */
     @throws[NCE]
-    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit =
+    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             // This stage must not be 1st enrichment stage.
             assume(ns.nonEmpty)
@@ -290,6 +296,7 @@ object NCGeoEnricher extends NCServerEnricher {
 
             collapse(ns)
         }
+    }
 
     private def getValue(note: NCNlpSentenceNote, key: String): String = note(key).asInstanceOf[String]
     private def getValueOpt(note: NCNlpSentenceNote, key: String): Option[String] = note.get(key) match {

@@ -42,13 +42,15 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
      * @return
      */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         catching(wrapIE) {
             logSeq = NCSql.mkSeq(ignite, "logSeq", "proc_log", "id")
 
             logLock = ignite.semaphore("logSemaphore", 1, true, true)
         }
      
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -56,7 +58,8 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
     
     /**

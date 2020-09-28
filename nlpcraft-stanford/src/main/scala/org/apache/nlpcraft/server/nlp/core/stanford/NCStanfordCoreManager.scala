@@ -41,6 +41,8 @@ object NCStanfordCoreManager extends NCService with NCIgniteInstance {
      * @return
      */
     override def start(parent: Span = null): NCService = {
+        ackStarting()
+
         val p = new Properties()
 
         p.setProperty("customAnnotatorClass.nctokenize", classOf[NCStanfordAnnotator].getName)
@@ -53,7 +55,7 @@ object NCStanfordCoreManager extends NCService with NCIgniteInstance {
             cache = ignite.cache[String, CoreDocument]("stanford-cache")
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -61,9 +63,11 @@ object NCStanfordCoreManager extends NCService with NCIgniteInstance {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = {
+        ackStopping()
+
         cache = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**

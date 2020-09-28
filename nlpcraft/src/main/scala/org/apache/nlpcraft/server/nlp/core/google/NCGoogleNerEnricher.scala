@@ -38,6 +38,8 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         try {
             srv = LanguageServiceClient.create()
 
@@ -58,7 +60,7 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
                 )
         }
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -66,10 +68,12 @@ object NCGoogleNerEnricher extends NCService with NCNlpNerEnricher with NCIgnite
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         if (srv != null)
             srv.close()
         
-        ackStop()
+        ackStopped()
     }
 
     /**

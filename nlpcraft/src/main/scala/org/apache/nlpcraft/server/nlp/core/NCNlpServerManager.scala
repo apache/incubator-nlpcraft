@@ -66,6 +66,8 @@ object NCNlpServerManager extends NCService {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         addTags(span,
             "stanfordNer" → isStanfordNer,
             "googleNer" → isGoogleNer,
@@ -117,7 +119,7 @@ object NCNlpServerManager extends NCService {
     
         logger.info(s"Enabled built-in NERs: ${Config.tokenProviders.mkString(", ")}")
     
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -125,13 +127,15 @@ object NCNlpServerManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         if (ners != null)
             ners.values.foreach(_.stop())
 
         if (parser != null && parser.isStarted)
             parser.stop()
 
-        ackStop()
+        ackStopped()
     }
 
     /**

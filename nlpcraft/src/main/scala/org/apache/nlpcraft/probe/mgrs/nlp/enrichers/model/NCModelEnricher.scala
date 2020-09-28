@@ -106,7 +106,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        ackStart()
+        ackStarting()
+        ackStarted()
     }
 
     /**
@@ -114,7 +115,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**
@@ -309,7 +311,9 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
     def isComplex(mdl: NCProbeModel): Boolean = mdl.synonymsDsl.nonEmpty || !mdl.model.getParsers.isEmpty
 
     @throws[NCE]
-    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
+    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -516,4 +520,5 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 parser.onDiscard()
             }
         }
+    }
 }

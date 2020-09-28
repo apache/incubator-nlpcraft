@@ -37,12 +37,14 @@ object NCValidateManager extends NCService with LazyLogging {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         langFinder = new OptimaizeLangDetector()
         
         // Initialize language finder.
         langFinder.loadModels()
         
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -50,7 +52,8 @@ object NCValidateManager extends NCService with LazyLogging {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
     
     /**

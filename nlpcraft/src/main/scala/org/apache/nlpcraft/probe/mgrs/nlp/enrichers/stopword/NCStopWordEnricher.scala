@@ -54,6 +54,8 @@ object NCStopWordEnricher extends NCProbeEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         // NOTE: stemmatization is done already by generator.
         geoPreWords = U.readTextResource(s"context/geo_pre_words.txt", "UTF-8", logger).
             map(_.split(" ").toSeq).sortBy(-_.size)
@@ -79,7 +81,7 @@ object NCStopWordEnricher extends NCProbeEnricher {
             "must be"
         ).map(NCNlpCoreManager.stem)
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -87,11 +89,13 @@ object NCStopWordEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+
         geoPreWords = null
         geoKindStops = null
         numPrefixStops = null
 
-        ackStop()
+        ackStopped()
     }
 
     /**
@@ -214,6 +218,8 @@ object NCStopWordEnricher extends NCProbeEnricher {
 
     @throws[NCE]
     override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+        require(isStarted)
+
         def mark(stems: Set[String], f: Boolean): Unit =
             ns.filter(t ⇒ stems.contains(t.stem)).foreach(t ⇒ ns.fixNote(t.getNlpNote, "stopWord" → f))
 

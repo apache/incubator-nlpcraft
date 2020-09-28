@@ -179,7 +179,8 @@ object NCNumericEnricher extends NCServerEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
-        ackStart()
+        ackStarting()
+        ackStarted()
     }
 
     /**
@@ -187,7 +188,8 @@ object NCNumericEnricher extends NCServerEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     private def mkMap(seq: Seq[String], c: T): Map[String, P] =
@@ -237,7 +239,9 @@ object NCNumericEnricher extends NCServerEnricher {
      * @throws NCE
      */
     @throws[NCE]
-    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit =
+    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent, "srvReqId" → ns.srvReqId, "txt" → ns.text) { _ ⇒
             val nums = NCNumericManager.find(ns)
     
@@ -436,4 +440,5 @@ object NCNumericEnricher extends NCServerEnricher {
             }
     
         }
+    }
 }

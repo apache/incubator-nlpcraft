@@ -45,7 +45,8 @@ object NCCommandManager extends NCService {
      * @param parent Optional parent span.
      */
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        ackStart()
+        ackStarting()
+        ackStarted()
     }
 
     /**
@@ -54,7 +55,8 @@ object NCCommandManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**
@@ -62,7 +64,9 @@ object NCCommandManager extends NCService {
       * @param msg Server message to process.
       * @param parent Optional parent span.
       */
-    def processServerMessage(msg: NCProbeMessage, parent: Span = null): Unit =
+    def processServerMessage(msg: NCProbeMessage, parent: Span = null): Unit = {
+        require(isStarted)
+        
         startScopedSpan("processServerMessage", parent,
             "msgType" → msg.getType,
             "srvReqId" → msg.dataOpt[String]("srvReqId").getOrElse(""),
@@ -132,4 +136,5 @@ object NCCommandManager extends NCService {
                 case e: Throwable ⇒ U.prettyError(logger, s"Error while processing server message (ignoring): ${msg.getType}", e)
             }
         }
+    }
 }

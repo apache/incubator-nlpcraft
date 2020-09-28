@@ -40,9 +40,11 @@ object NCLifecycleManager extends NCService {
      */
     @throws[NCE]
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         beans = Config.lifecycle.map(U.mkObject(_).asInstanceOf[NCLifecycle])
     
-        ackStart()
+        ackStarted()
     }
 
 
@@ -52,7 +54,8 @@ object NCLifecycleManager extends NCService {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span): Unit = startScopedSpan("start", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**

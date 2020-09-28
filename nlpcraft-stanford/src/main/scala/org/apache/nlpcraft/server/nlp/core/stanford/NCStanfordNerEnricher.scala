@@ -36,11 +36,13 @@ object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgni
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
+        ackStarting()
+
         // Should be started even if another NLP engine configured.
         if (!NCStanfordCoreManager.isStarted)
             NCStanfordCoreManager.start(span)
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -48,10 +50,12 @@ object NCStanfordNerEnricher extends NCService with NCNlpNerEnricher with NCIgni
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { span ⇒
+        ackStopping()
+
         if (NCStanfordCoreManager.isStarted)
             NCStanfordCoreManager.stop(span)
     
-        ackStop()
+        ackStopped()
     }
     
     /**

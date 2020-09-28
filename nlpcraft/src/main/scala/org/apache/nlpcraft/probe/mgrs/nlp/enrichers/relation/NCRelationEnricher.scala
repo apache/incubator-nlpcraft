@@ -68,6 +68,8 @@ object NCRelationEnricher extends NCProbeEnricher {
      * @return
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+
         val macros = NCMacroParser()
 
         FUNCS = {
@@ -113,7 +115,7 @@ object NCRelationEnricher extends NCProbeEnricher {
 
         ALL_FUNC_STEMS = FUNCS.flatMap(_.allStems).toSet
 
-        ackStart()
+        ackStarted()
     }
 
     /**
@@ -121,7 +123,8 @@ object NCRelationEnricher extends NCProbeEnricher {
      * @param parent Optional parent span.
      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStop()
+        ackStopping()
+        ackStopped()
     }
 
     /**
@@ -144,7 +147,9 @@ object NCRelationEnricher extends NCProbeEnricher {
     }
 
     @throws[NCE]
-    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit =
+    override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
+        require(isStarted)
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -176,6 +181,7 @@ object NCRelationEnricher extends NCProbeEnricher {
                     case None ⇒ // No-op.
                 }
         }
+    }
 
     /**
       *
