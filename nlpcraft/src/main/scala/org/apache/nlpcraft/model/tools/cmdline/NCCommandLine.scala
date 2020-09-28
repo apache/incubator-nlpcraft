@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.tools.cmdline
 
 import java.io.{File, FileInputStream, IOException, ObjectInputStream}
+import java.net.URL
 
 import com.google.gson._
 import org.apache.commons.lang3.SystemUtils
@@ -316,8 +317,6 @@ object NCCommandLine extends App {
      * @param args Arguments, if any, for this command.
      */
     private def cmdStartServer(cmd: Command, args: Seq[Argument]): Unit = {
-        title()
-
         // TODO
     }
 
@@ -326,13 +325,28 @@ object NCCommandLine extends App {
      * @param args Arguments, if any, for this command.
      */
     private def cmdPingServer(cmd: Command, args: Seq[Argument]): Unit = {
-        title()
+        val endpoint = args.find(_.parameter.id == "endpoint") match {
+            case Some(arg) ⇒ new URL(arg.value.get).toURI.toString
+            case None ⇒ "https://localhost:8081"
+        }
+        var num = args.find(_.parameter.id == "number") match {
+            case Some(arg) ⇒
+                try
+                    Integer.parseInt(arg.value.get)
+                catch {
+                    case _ :Exception ⇒ throw new IllegalArgumentException(s"Invalid number of pings: ${arg.value.get}")
+                }
 
-        var endpoint = "https://localhost:8081"
-        var num = 1
+            case None ⇒ 1
+        }
 
-        val endpointParam = cmd.params.find(_.id == "endpoint").get
-        val numberParam = cmd.params.find(_.id == "number").get
+
+
+
+
+
+
+
 
         // TODO
     }
@@ -342,8 +356,6 @@ object NCCommandLine extends App {
      * @param args Arguments, if any, for this command.
      */
     private def cmdStopServer(cmd: Command, args: Seq[Argument]): Unit = {
-        title()
-
         val path = new File(SystemUtils.getUserHome, SRV_PID_PATH)
         var pid = -1L
 
@@ -383,8 +395,6 @@ object NCCommandLine extends App {
      * @param args Arguments, if any, for this command.
      */
     private def cmdHelp(cmd: Command, args: Seq[Argument]): Unit = {
-        title()
-
         /**
          *
          */
@@ -509,8 +519,6 @@ object NCCommandLine extends App {
      * @param args Arguments, if any, for this command.
      */
     private def cmdRepl(cmd: Command, args: Seq[Argument]): Unit = {
-        title()
-
         // TODO
     }
 
@@ -521,7 +529,12 @@ object NCCommandLine extends App {
      */
     private def cmdVersion(cmd: Command, args: Seq[Argument]): Unit =
         if (args.isEmpty)
-            `>`(s"$NAME ver. ${VER.version}, released on ${VER.date}")
+            log((
+                new NCAsciiTable
+                    += ("Version:", ansiCyan(VER.version))
+                    += ("Release date:", ansiCyan(VER.date.toString))
+                ).toString
+            )
         else {
             val isS = args.exists(_.parameter.id == "semver")
             val isD = args.exists(_.parameter.id == "reldate")
@@ -545,7 +558,9 @@ object NCCommandLine extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        System.err.println(s"${ansiRed("ERR")} $msg")
+        val msg2 = if (msg.head.isLower) msg.head.toUpper + msg.tail else msg
+
+        System.err.println(s"${ansiRed("ERR")} $msg2")
     }
 
     /**
@@ -634,14 +649,19 @@ object NCCommandLine extends App {
      * @param args
      */
     private def boot(args: Array[String]): Unit = {
-        if (args.isEmpty)
+        if (args.isEmpty) {
+            title()
+
             DFLT_CMD.body(DFLT_CMD, Seq.empty)
+        }
         else {
             // Handle 'no-ansi' command right away and remove it from the list.
             args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
                 case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty)
                 case None ⇒ ()
             }
+
+            title()
 
             val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg))
 
@@ -652,7 +672,7 @@ object NCCommandLine extends App {
                     try
                         cmd.body(cmd, processParameters(cmd, xargs.tail))
                     catch {
-                        case e: IllegalArgumentException ⇒ error(e.getLocalizedMessage)
+                        case e: Exception ⇒ error(e.getLocalizedMessage)
                     }
 
                 case None ⇒ error(s"Unknown command: $cmdName")

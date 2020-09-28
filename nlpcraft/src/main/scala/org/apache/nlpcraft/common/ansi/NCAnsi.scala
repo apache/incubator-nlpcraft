@@ -26,6 +26,7 @@ import org.apache.nlpcraft.common._
 sealed trait NCAnsi extends LazyLogging {
     import NCAnsi._
 
+    // Colors.
     private final val BLACK = "\u001b[30m"
     private final val RED = "\u001b[31m"
     private final val GREEN = "\u001b[32m"
@@ -48,6 +49,20 @@ sealed trait NCAnsi extends LazyLogging {
     private final val BLINK = "\u001b[5m"
     private final val REVERSED = "\u001b[7m"
     private final val INVISIBLE = "\u001b[8m"
+
+    // Erase functions.
+    private final val CLEAR_SCREEN = "\u001b[J"
+    private final val CLEAR_SCREEN_AFTER = "\u001b[0J"
+    private final val CLEAR_SCREEN_BEFORE = "\u001b[1J"
+    private final val CLEAR_LINE = "\u001b[K"
+    private final val CLEAR_LINE_AFTER = "\u001b[0K"
+    private final val CLEAR_LINE_BEFORE = "\u001b[1K"
+
+    // Cursor moves.
+    private final val CURSOR_UP = "\u001b[1A"
+    private final val CURSOR_DOWN = "\u001b[1B"
+    private final val CURSOR_LEFT = "\u001b[1C"
+    private final val CURSOR_RIGHT = "\u001b[1D"
 
     def isEnabled: Boolean = !U.isSysEnvTrue(PROP)
 
