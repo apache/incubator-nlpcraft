@@ -104,6 +104,8 @@ set JVM_OPTS= ^
     -XX:+UseG1GC ^
     -XX:MaxMetaspaceSize=256m ^
     -DNLPCRAFT_CLI= ^
+    -DNLPCRAFT_CLI_CP="%CP%" ^
+    -DNLPCRAFT_CLI_JAVA="%JAVA_HOME%\bin\java.exe" ^
     -DNLPCRAFT_CLI_SCRIPT="%SCRIPT_NAME%" ^
     -DNLPCRAFT_CLI_INSTALL_HOME="%INSTALL_HOME%"
 

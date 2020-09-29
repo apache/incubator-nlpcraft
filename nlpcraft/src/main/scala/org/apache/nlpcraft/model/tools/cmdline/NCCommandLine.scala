@@ -34,6 +34,10 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.version.NCVersion
+import java.lang.ProcessBuilder
+import java.lang.ProcessBuilder.Redirect
+import java.lang.management.ManagementFactory
+
 import resource.managed
 
 import scala.collection.mutable
@@ -51,8 +55,17 @@ object NCCommandLine extends App {
     private final val SRV_PID_PATH = ".nlpcraft/server_pid"
 
     private final lazy val VER = NCVersion.getCurrent
+    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(
+        new File(
+            SystemUtils.getJavaHome,
+            s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}"
+        ).getAbsolutePath
+    )
     private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(
         SystemUtils.USER_DIR
+    )
+    private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(
+        ManagementFactory.getRuntimeMXBean.getClassPath
     )
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(
         s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}"
@@ -158,13 +171,13 @@ object NCCommandLine extends App {
                         "provide an alternative path."
                 ),
                 Parameter(
-                    id = "outputPath",
+                    id = "output",
                     names = Seq("--output-path", "-o"),
                     value = Some("path"),
                     optional = true,
                     desc =
                         "File path for both REST server stdout and stderr output. If not provided, the REST server" +
-                        s"output will be piped into '$${USER_HOME}/.nlpcraft/server-output.txt' file."
+                        s"output will be piped into '$${USER_HOME}/.nlpcraft/server-output-xxx.txt' file."
                 )
             ),
             examples = Seq(
@@ -321,7 +334,53 @@ object NCCommandLine extends App {
      * @param args Arguments, if any, for this command.
      */
     private def cmdStartServer(cmd: Command, args: Seq[Argument]): Unit = {
-        // TODO
+        val cfgPath = args.find(_.parameter.id == "config")
+        val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
+        val output = args.find(_.parameter.id == "output") match {
+            case Some(arg) ⇒ new File(arg.value.get)
+            case None ⇒ new File(SystemUtils.getUserHome, s".nlpcraft/server-output-${currentTime}.txt")
+        }
+
+        val pb = new ProcessBuilder(
+            JAVA,
+            "-ea",
+            "-Xms2048m",
+            "-XX:+UseG1GC",
+            "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
+            "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+            "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
+            "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+            "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+            "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED",
+            "--illegal-access=permit",
+            "-DNLPCRAFT_ANSI_COLOR_DISABLED=true",
+            "-cp",
+            s""""${JAVA_CP}"""",
+            "org.apache.nlpcraft.NCStart",
+            "-server",
+            cfgPath match {
+                case Some(path) ⇒ s"-config=$path"
+                case None ⇒ ""
+            },
+            igniteCfgPath match {
+                case Some(path) ⇒ s"-igniteConfig=$path"
+                case None ⇒ ""
+            },
+        )
+
+        pb.directory(new File(INSTALL_HOME))
+        pb.redirectErrorStream(true)
+        pb.redirectOutput(Redirect.appendTo(output))
+
+        try {
+            pb.start()
+
+            `>`(s"REST server started, output redirected to ${ansiCyan(output.getAbsolutePath)}")
+            `>`(s"Use ${ansiGreen("stop-server")} command to stop it.")
+        }
+        catch {
+            case e: Exception ⇒ error(s"REST server failed to start: ${ansiYellow(e.getLocalizedMessage)}")
+        }
     }
 
     /**

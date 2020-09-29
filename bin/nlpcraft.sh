@@ -92,18 +92,6 @@ checkJava() {
     fi
 }
 
-MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCommandLine
-JVM_OPTS="\
-    -ea \
-    -Xms1g \
-    -Xmx1g \
-    -server \
-    -XX:+UseG1GC \
-    -XX:MaxMetaspaceSize=256m \
-    -DNLPCRAFT_CLI= \
-    -DNLPCRAFT_CLI_SCRIPT=$SCRIPT_NAME \
-    -DNLPCRAFT_CLI_INSTALL_HOME=$INSTALL_HOME"
-
 osname=$(uname)
 
 # OS specific classpath separator.
@@ -135,6 +123,20 @@ done
 
 # Check Java version.
 checkJava
+
+MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCommandLine
+JVM_OPTS="\
+    -ea \
+    -Xms1g \
+    -Xmx1g \
+    -server \
+    -XX:+UseG1GC \
+    -XX:MaxMetaspaceSize=256m \
+    -DNLPCRAFT_CLI= \
+    -DNLPCRAFT_CLI_CP=$CP \
+    -DNLPCRAFT_CLI_JAVA=$JAVA \
+    -DNLPCRAFT_CLI_SCRIPT=$SCRIPT_NAME \
+    -DNLPCRAFT_CLI_INSTALL_HOME=$INSTALL_HOME"
 
 case $osname in
     Darwin*)
