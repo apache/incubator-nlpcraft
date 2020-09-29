@@ -28,7 +28,8 @@ import org.h2.tools.Server
  * H2 database server. Starts standalone H2 TCP instance and loads up demo database from `northwind.sql`.
  */
 object SqlServer extends LazyLogging {
-    private final val H2_PORT: Int = 9092
+    // This post is not used according to https://www.wikiwand.com/en/List_of_TCP_and_UDP_port_numbers
+    private final val H2_PORT: Int = 9093
     private final val H2_BASEDIR = new File(System.getProperty("user.home"), "nlpcraft-examples/h2").getAbsolutePath
 
     private final val SRV_PARAMS = Seq(
