@@ -34,7 +34,6 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.version.NCVersion
-import java.lang.ProcessBuilder
 import java.lang.ProcessBuilder.Redirect
 import java.lang.management.ManagementFactory
 
@@ -338,7 +337,7 @@ object NCCommandLine extends App {
         val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
         val output = args.find(_.parameter.id == "output") match {
             case Some(arg) ⇒ new File(arg.value.get)
-            case None ⇒ new File(SystemUtils.getUserHome, s".nlpcraft/server-output-${currentTime}.txt")
+            case None ⇒ new File(SystemUtils.getUserHome, s".nlpcraft/server-output-$currentTime.txt")
         }
 
         val pb = new ProcessBuilder(
@@ -355,7 +354,7 @@ object NCCommandLine extends App {
             "--illegal-access=permit",
             "-DNLPCRAFT_ANSI_COLOR_DISABLED=true",
             "-cp",
-            s""""${JAVA_CP}"""",
+            s""""$JAVA_CP"""",
             "org.apache.nlpcraft.NCStart",
             "-server",
             cfgPath match {
@@ -468,17 +467,17 @@ object NCCommandLine extends App {
                 .getOrElse(-1L)
 
         if (pid == -1)
-            error("Cannot detect locally running server.")
+            error("Cannot detect locally running REST server.")
         else {
             ProcessHandle.of(pid).asScala match {
                 case Some(ph) ⇒
                     if (ph.destroy())
-                        `>`("Local server has been stopped.")
+                        `>`(s"Local REST server (pid ${ansiCyan(pid.toString)}) has been stopped.")
                     else
-                        error(s"Unable to stop the local server [pid=$pid]")
+                        error(s"Failed to stop the local REST server (pid ${ansiCyan(pid.toString)}).")
 
 
-                case None ⇒ error("Cannot find locally running server.")
+                case None ⇒ error("Cannot find locally running REST server.")
             }
         }
     }
@@ -661,7 +660,7 @@ object NCCommandLine extends App {
 
         val msg2 = if (msg.head.isLower) msg.head.toUpper + msg.tail else msg
 
-        System.err.println(s"${ansiRed("ERR")} $msg2")
+        System.err.println(s"${ansiRed("ERR:")} $msg2")
     }
 
     /**
