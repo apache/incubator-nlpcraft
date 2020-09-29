@@ -354,7 +354,7 @@ object NCCommandLine extends App {
             "--illegal-access=permit",
             "-DNLPCRAFT_ANSI_COLOR_DISABLED=true",
             "-cp",
-            s""""$JAVA_CP"""",
+            s"$JAVA_CP",
             "org.apache.nlpcraft.NCStart",
             "-server",
             cfgPath match {
@@ -374,7 +374,7 @@ object NCCommandLine extends App {
         try {
             pb.start()
 
-            `>`(s"REST server started, output redirected to ${ansiCyan(output.getAbsolutePath)}")
+            `>`(s"REST server is starting, output redirected to ${ansiCyan(output.getAbsolutePath)}")
             `>`(s"Use ${ansiGreen("stop-server")} command to stop it.")
         }
         catch {
