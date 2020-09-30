@@ -741,7 +741,7 @@ object NCSqlModelGeneratorImpl {
         v.toLowerCase match {
             case "true" ⇒ true
             case "false" ⇒ false
-            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value in: $name $v")
+            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $name $v")
         }
         
     /**

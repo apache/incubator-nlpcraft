@@ -19,7 +19,6 @@ package org.apache.nlpcraft.model.intent.impl
 
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.util.NCUtils
@@ -27,7 +26,7 @@ import org.apache.nlpcraft.model.impl.NCVariantImpl
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.common.ansi.NCAnsi._
+import org.apache.nlpcraft.common._
 import scala.collection.JavaConverters._
 
 /**
@@ -151,7 +150,7 @@ class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 if (cbRes.getIntentId == null)
                     cbRes.setIntentId(res.intentId)
                     
-                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the ${ansiRed("<<best match>>")}")
+                logger.info(s"Intent '${res.intentId}' for variant #${res.variantIdx + 1} selected as the ${r("<<best match>>")}")
 
                 NCDialogFlowManager.addMatchedIntent(res.intentId, req.getUser.getId, ctx.getModel.getId, span)
                 
@@ -164,7 +163,7 @@ class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 case e: NCIntentSkip ⇒
                     // No-op - just skipping this result.
                     e.getMessage match {
-                        case s if s != null ⇒ logger.info(s"Selected intent '${res.intentId}' skipped due to: $s")
+                        case s if s != null ⇒ logger.info(s"Selected intent '${res.intentId}' skipped: $s")
                         case _ ⇒ logger.info(s"Selected intent '${res.intentId}' skipped.")
                     }
             }

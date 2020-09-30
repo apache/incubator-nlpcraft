@@ -36,9 +36,9 @@ import scala.util.control.Exception._
 sealed case class NCMdoEntityAnnotationException(c: Class[_])
     extends NCE(s"Annotated MDO doesn't have 'NCMdoEntity' annotation: $c")
 sealed case class NCMdoFieldAnnotationException(c: Class[_])
-    extends NCE(s"Not all main constructor parameters have 'NCMdoField' annotation in: $c")
+    extends NCE(s"Not all main constructor parameters have 'NCMdoField' annotation: $c")
 sealed case class NCMdoSqlNotSupportedException(c: Class[_])
-    extends NCE(s"SQL is not supported in: $c")
+    extends NCE(s"SQL is not supported: $c")
 sealed case class NCMdoJsonConverterException(msg: String, c: Class[_], mtdName: String)
     extends NCE(s"$msg [name=$mtdName, class=$c]")
 sealed case class NCMdoMissingGetterException(a: NCMdoField, c: Class[_])
@@ -148,21 +148,21 @@ object NCAnnotatedMdo {
                     val col = param.ann.column
 
                     if (col == "")
-                        throw NCMdoCheckException(s"SQL column is not specified in: $param.ann")
+                        throw NCMdoCheckException(s"SQL column is not specified: $param.ann")
 
                     if (uniqCols.contains(col))
-                        throw NCMdoCheckException(s"Duplicate SQL column in: $param.ann")
+                        throw NCMdoCheckException(s"Duplicate SQL column: $param.ann")
                     else
                         uniqCols = uniqCols :+ col
 
                     if (param.ann.pk() && pkFound)
-                        throw NCMdoCheckException(s"Duplicate SQL primary key in: $param.ann")
+                        throw NCMdoCheckException(s"Duplicate SQL primary key: $param.ann")
                     else
                         pkFound = true
                 }
 
                 if (uniqJsons.contains(param.jsonName))
-                    throw NCMdoCheckException(s"Duplicate JSON name in: $param.ann")
+                    throw NCMdoCheckException(s"Duplicate JSON name: $param.ann")
                 else
                     uniqJsons = uniqJsons :+ param.jsonName
             }

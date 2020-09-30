@@ -264,12 +264,12 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             startScopedSpan("future", parent, "srvReqId" → srvReqId) { span ⇒
                 val tbl = NCAsciiTable()
 
-                tbl += (s"${ansiBlueFg}Text$ansiReset", ansiGreen(txt0))
-                tbl += (s"${ansiBlueFg}User ID$ansiReset", usr.id)
-                tbl += (s"${ansiBlueFg}Model ID$ansiReset", mdlId)
-                tbl += (s"${ansiBlueFg}Agent$ansiReset", usrAgent.getOrElse("<n/a>"))
-                tbl += (s"${ansiBlueFg}Remote Address$ansiReset", rmtAddr.getOrElse("<n/a>"))
-                tbl += (s"${ansiBlueFg}Server Request ID$ansiReset", srvReqId)
+                tbl += (s"${b("Text$ansiReset")}", g(txt0))
+                tbl += (s"${b("User ID$ansiReset")}", usr.id)
+                tbl += (s"${b("Model ID$ansiReset")}", mdlId)
+                tbl += (s"${b("Agent$ansiReset")}", usrAgent.getOrElse("<n/a>"))
+                tbl += (s"${b("Remote Address$ansiReset")}", rmtAddr.getOrElse("<n/a>"))
+                tbl += (s"${b("Server Request ID$ansiReset")}", srvReqId)
 
                 // TODO: need to pretty print data JSON
                 // tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))
@@ -298,7 +298,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             case Success(_) ⇒ // No-op.
 
             case Failure(e: NCE) ⇒
-                logger.error(s"Query processing failed due to: ${e.getLocalizedMessage}")
+                logger.error(s"Query processing failed: ${e.getLocalizedMessage}")
 
                 setError(
                     srvReqId,

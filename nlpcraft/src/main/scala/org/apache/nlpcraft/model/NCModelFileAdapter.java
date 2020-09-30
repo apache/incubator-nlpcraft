@@ -157,7 +157,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
             throw new NCException("Malformed model configuration URI: " + uri.toString(), e);
         }
         catch (IOException e) {
-            throw new NCException("Failed to read model configuration from: " + uri.toString(), e);
+            throw new NCException("Failed to read model configuration: " + uri.toString(), e);
         }
     }
     
@@ -177,7 +177,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                 return mapper.readValue(in, NCModelJson.class);
             }
             catch (Exception e) {
-                throw new NCException("Failed to load YAML from: " + path, e);
+                throw new NCException("Failed to load YAML: " + path, e);
             }
         }
         else if (pathLow.endsWith("js") || pathLow.endsWith("json")) {
@@ -185,7 +185,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                 return GSON.fromJson(reader, NCModelJson.class);
             }
             catch (Exception e) {
-                throw new NCException("Failed to load JSON from: " + path, e);
+                throw new NCException("Failed to load JSON: " + path, e);
             }
         }
         

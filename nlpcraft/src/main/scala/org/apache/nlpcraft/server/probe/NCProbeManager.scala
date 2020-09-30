@@ -360,7 +360,7 @@ object NCProbeManager extends NCService {
 
                         srv.bind(new InetSocketAddress(host, port))
                         
-                        logger.info(s"$name server is listening on '$host:$port'")
+                        logger.info(s"$name connection is on '$host:$port'")
                         
                         srv.setSoTimeout(Config.soTimeoutMs)
                         
@@ -800,13 +800,13 @@ object NCProbeManager extends NCService {
         tbl += (
             Seq(
                 probe.probeId,
-                s"  ${ansiCyan("guid")}: ${probe.probeGuid}",
-                s"  ${ansiCyan("tok")}: ${probe.probeToken}"
+                s"  ${c("guid")}: ${probe.probeGuid}",
+                s"  ${c("tok")}: ${probe.probeToken}"
             ),
             s"${probe.osName} ver. ${probe.osVersion}",
             s"${probe.tmzAbbr}, ${probe.tmzId}",
             s"${probe.hostName} (${probe.hostAddr})",
-            probe.models.map(m ⇒ s"${ansiBlue(m.id)}, v${m.version}").toSeq
+            probe.models.map(m ⇒ s"${b(m.id)}, v${m.version}").toSeq
         )
         
         tbl

@@ -112,7 +112,7 @@ class NCMacroParser {
         val last = s.length() - 1
         
         if (s.head != '{' || s.charAt(last) != '}')
-            throw new NCE(s"Invalid option group in: $txt")
+            throw new NCE(s"Invalid option group: $txt")
         
         s = s.substring(1, last) // Trim out opening '{' and closing '}'.
         
@@ -151,9 +151,9 @@ class NCMacroParser {
                 }
                 
                 if (depth != 0)
-                    throw new NCE(s"Uneven curly brackets in: $txt")
+                    throw new NCE(s"Uneven curly brackets: $txt")
                 if (isEscape)
-                    throw new NCE(s"Incomplete '\\' escape usage in: $txt")
+                    throw new NCE(s"Incomplete '\\' escape usage: $txt")
                 
                 if (!found)
                     Some(Token(s.substring(0), ""))
@@ -189,7 +189,7 @@ class NCMacroParser {
         def procMarker(fix: String): Option[Token] = {
             if (s.startsWith(fix))
                 s.substring(fix.length).indexOf(fix) match {
-                    case -1 ⇒ throw new NCE(s"Uneven '$fix' marker in: $s")
+                    case -1 ⇒ throw new NCE(s"Uneven '$fix' marker: $s")
                     case i ⇒
                         val tail = i + 2 * fix.length
     
@@ -222,7 +222,7 @@ class NCMacroParser {
                     val i = s.substring(DSL_FIX.length).indexOf(DSL_FIX)
                     
                     if (i == -1)
-                        throw new NCE(s"Uneven '$DSL_FIX' marker in: $s")
+                        throw new NCE(s"Uneven '$DSL_FIX' marker: $s")
                     
                     val tail = i + 2 * DSL_FIX.length
         
@@ -252,9 +252,9 @@ class NCMacroParser {
                     }
                     
                     if (depth != 0 || !found)
-                        throw new NCE(s"Uneven curly brackets in: $s")
+                        throw new NCE(s"Uneven curly brackets: $s")
                     if (isEscape)
-                        throw new NCE(s"Incomplete '\\' escape usage in: $s")
+                        throw new NCE(s"Incomplete '\\' escape usage: $s")
                     
                     Some(Token(s.substring(0, i), s.substring(i)))
                 }
@@ -269,7 +269,7 @@ class NCMacroParser {
                         else {
                             if (!isEscape)
                                 ch match {
-                                    case '|' | '*' | '}' ⇒ throw new NCE(s"Suspicious '$ch' at pos $i in: '$s'")
+                                    case '|' | '*' | '}' ⇒ throw new NCE(s"Suspicious '$ch' at pos $i: '$s'")
                                     case '{' ⇒ found = true // Found start of the option group.
                                     case _ ⇒
                                 }
@@ -281,7 +281,7 @@ class NCMacroParser {
                     }
                     
                     if (isEscape)
-                        throw new NCE(s"Incomplete '\\' escape usage in: $s")
+                        throw new NCE(s"Incomplete '\\' escape usage: $s")
     
                     if (!found)
                         Some(Token(s.substring(0), ""))
@@ -398,7 +398,7 @@ class NCMacroParser {
         
         // Check for potentially invalid macros syntax.
         if (BROKEN_MACRO_REGEX1.findFirstIn(s).isDefined || BROKEN_MACRO_REGEX2.findFirstIn(s).isDefined)
-            throw new NCE(s"Likely invalid macro in: $txt")
+            throw new NCE(s"Likely invalid macro: $txt")
         
         U.distinct(expand0(s).toList map trimDupSpaces map processEscapes)
     }
@@ -410,9 +410,9 @@ class NCMacroParser {
       */
     private def checkName(name: String): Unit = {
         if (name.head != '<')
-            throw new NCE(s"Missing macro '<' opening in: $name")
+            throw new NCE(s"Missing macro '<' opening: $name")
         if (name.reverse.head != '>')
-            throw new NCE(s"Missing macro '>' closing in: $name")
+            throw new NCE(s"Missing macro '>' closing: $name")
     }
     
     /**

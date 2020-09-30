@@ -94,7 +94,7 @@ object NCSqlSchemaBuilderImpl {
                         extraTables = extra,
                         defaultDate = defDateOpt match {
                             case Some(defDate) ⇒
-                                def error() = throw new NCException(s"Invalid default date declaration in: $defDate")
+                                def error() = throw new NCException(s"Invalid default date declaration: $defDate")
 
                                 val pair = defDate.split("\\.")
 
@@ -111,7 +111,7 @@ object NCSqlSchemaBuilderImpl {
 
                     dfltSort.
                         foreach(s ⇒ {
-                            def error() = throw new NCException(s"Invalid default sort declaration in: $s")
+                            def error() = throw new NCException(s"Invalid default sort declaration: $s")
 
                             var pair = s.split("\\.")
 

@@ -63,7 +63,7 @@ object NCStart extends App with LazyLogging {
             for (msg ← msgs)
                 logger.error(msg)
     
-            logger.info(ansiGreen("Usage:"))
+            logger.info(g("Usage:"))
             logger.info("  Use '-server' argument to start server.")
             logger.info("  Use '-probe' argument to start probe.")
 

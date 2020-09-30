@@ -112,12 +112,12 @@ class NCAsciiTable {
     )
 
     // Table drawing symbols.
-    private val HDR_HOR = ansiCyan("=")
-    private val HDR_VER = ansiCyan("|")
-    private val HDR_CRS = ansiBlue("+")
-    private val ROW_HOR = ansiCyan("-")
-    private val ROW_VER = ansiCyan("|")
-    private val ROW_CRS = ansiBlue("+")
+    private val HDR_HOR = c("=")
+    private val HDR_VER = c("|")
+    private val HDR_CRS = c("+")
+    private val ROW_HOR = c("-")
+    private val ROW_VER = c("|")
+    private val ROW_CRS = c("+")
 
     // Headers & rows.
     private var hdr = IndexedSeq.empty[Cell]
@@ -455,7 +455,7 @@ class NCAsciiTable {
             case "center" ⇒ space(d / 2) + txt + space(d / 2 + d % 2)
             case "left" ⇒ space(sty.leftPad) + txt + space(d - sty.leftPad)
             case "right" ⇒ space(d - sty.rightPad) + txt + space(sty.rightPad)
-            case _ ⇒ throw new AssertionError(s"Invalid align option in: $sty")
+            case _ ⇒ throw new AssertionError(s"Invalid align option: $sty")
         }
     }
 

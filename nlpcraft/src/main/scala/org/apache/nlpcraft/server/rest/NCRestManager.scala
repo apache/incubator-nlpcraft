@@ -24,6 +24,7 @@ import akka.stream.Materializer
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success}
@@ -86,8 +87,8 @@ object NCRestManager extends NCService {
         bindFut = Http().newServerAt(Config.host, Config.port).bind(Route.toFunction(api.getRoute))
 
         bindFut.onComplete {
-            case Success(_) ⇒ logger.info(s"REST server is listening on '$url'.")
-            case Failure(_) ⇒ logger.info(s"REST server failed to start on '$url'.")
+            case Success(_) ⇒ logger.info(s"REST server is on '${c(url)}'.")
+            case Failure(_) ⇒ logger.info(s"REST server failed to start on '${c(url)}'.")
         }
 
         ackStarted()

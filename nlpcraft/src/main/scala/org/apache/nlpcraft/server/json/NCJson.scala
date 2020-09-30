@@ -130,9 +130,9 @@ object NCJson {
     private type NCJ = NCJsonException
 
     // Specific control flow exceptions.
-    case class InvalidJson(js: String) extends NCJ(s"Malformed JSON syntax in: $js") with LazyLogging {
+    case class InvalidJson(js: String) extends NCJ(s"Malformed JSON syntax: $js") with LazyLogging {
         // Log right away.
-        logger.error(s"Malformed JSON syntax in: $js")
+        logger.error(s"Malformed JSON syntax: $js")
     }
 
     case class InvalidJsonField(fn: String, cause: Throwable) extends NCJ(s"Invalid '$fn' JSON field <" +

@@ -96,14 +96,14 @@ sealed trait NCAnsi extends LazyLogging {
     def ansiBlink: String = if (isEnabled) BLINK else ""
     def ansiInvisible: String = if (isEnabled) INVISIBLE else ""
 
-    def ansiGreen(s: String): String = s"$ansiGreenFg$s$ansiReset"
-    def ansiRed(s: String): String = s"$ansiRedFg$s$ansiReset"
-    def ansiCyan(s: String): String = s"$ansiCyanFg$s$ansiReset"
-    def ansiYellow(s: String): String = s"$ansiYellowFg$s$ansiReset"
-    def ansiBlack(s: String): String = s"$ansiBlackFg$s$ansiReset"
-    def ansiWhite(s: String): String = s"$ansiWhiteFg$s$ansiReset"
-    def ansiBlue(s: String): String = s"$ansiBlueFg$s$ansiReset"
-    def ansiBold(s: String): String = s"$ansiBold$s$ansiReset"
+    def ansiGreen(s: Any): String = s"$ansiGreenFg${s.toString}$ansiReset"
+    def ansiRed(s: Any): String = s"$ansiRedFg${s.toString}$ansiReset"
+    def ansiCyan(s: Any): String = s"$ansiCyanFg${s.toString}s$ansiReset"
+    def ansiYellow(s: Any): String = s"$ansiYellowFg${s.toString}$ansiReset"
+    def ansiBlack(s: Any): String = s"$ansiBlackFg${s.toString}s$ansiReset"
+    def ansiWhite(s: Any): String = s"$ansiWhiteFg${s.toString}$ansiReset"
+    def ansiBlue(s: Any): String = s"$ansiBlueFg${s.toString}$ansiReset"
+    def ansiBold(s: Any): String = s"$ansiBold${s.toString}$ansiReset"
 
     // Erase functions.
     def ansiClearScreen: String = if (isEnabled) CLEAR_SCREEN else ""

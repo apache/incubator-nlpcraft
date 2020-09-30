@@ -20,11 +20,10 @@ package org.apache.nlpcraft.model.intent.impl
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
-import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser}
 import org.apache.nlpcraft.model.intent.utils.{NCDslFlowItem, NCDslIntent, NCDslTerm, NCDslTokenPredicate}
-import org.apache.nlpcraft.common.ansi.NCAnsi._
+import org.apache.nlpcraft.common._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -330,9 +329,9 @@ object NCIntentDslCompiler extends LazyLogging {
             e: RecognitionException): Unit = {
             
             val errMsg = s"Intent DSL syntax error at line $line:$charPos - $msg\n" +
-                s"  |- ${ansiCyan("Model:")}  $mdlId\n" +
-                s"  |- ${ansiCyan("Intent:")} $dsl\n" +
-                s"  +- ${ansiCyan("Error:")}  ${makeCharPosPointer(dsl.length, charPos)}"
+                s"  |- ${c("Model:")}  $mdlId\n" +
+                s"  |- ${c("Intent:")} $dsl\n" +
+                s"  +- ${c("Error:")}  ${makeCharPosPointer(dsl.length, charPos)}"
             
             throw new NCE(errMsg)
         }

@@ -533,7 +533,7 @@ object NCGeoNamesGenerator extends App {
             usTop
         )
 
-        println(s"Files generated OK in: $outDir.")
+        println(s"Files generated OK: $outDir.")
     }
 
     // Input files.

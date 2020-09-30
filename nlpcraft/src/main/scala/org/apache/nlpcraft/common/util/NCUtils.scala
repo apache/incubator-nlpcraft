@@ -1490,12 +1490,12 @@ object NCUtils extends LazyLogging {
 
         for (ch ← json) {
             ch match {
-                case ':' if !inQuotes ⇒ buf ++= ansiRed(":")
-                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf ++= ansiYellow(s"$ch")
-                case ',' if !inQuotes ⇒ buf ++= ansiGreen(s"$ch")
+                case ':' if !inQuotes ⇒ buf ++= r(":")
+                case '[' | ']' | '{' | '}' if !inQuotes ⇒ buf ++= y(s"$ch")
+                case ',' if !inQuotes ⇒ buf ++= g(s"$ch")
                 case '"' ⇒
                     if (inQuotes)
-                        buf ++= ansiBlue(s"$ch")
+                        buf ++= b(s"$ch")
                     else
                         buf ++= s"$ansiBlueFg$ch$ansiCyanFg"
 

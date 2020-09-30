@@ -48,7 +48,7 @@ import scala.compat.Platform.currentTime
 /**
  * 'nlpcraft' script entry point.
  */
-object NCCommandLine extends App {
+object NCCli extends App {
     private final val NAME = "Apache NLPCraft CLI"
 
     private final val SRV_PID_PATH = ".nlpcraft/server_pid"
@@ -374,11 +374,11 @@ object NCCommandLine extends App {
         try {
             pb.start()
 
-            `>`(s"REST server is starting, output redirected to ${ansiCyan(output.getAbsolutePath)}")
-            `>`(s"Use ${ansiGreen("stop-server")} command to stop it.")
+            `>`(s"REST server is starting, output redirected to ${c(output.getAbsolutePath)}")
+            `>`(s"Use ${g("stop-server")} command to stop it.")
         }
         catch {
-            case e: Exception ⇒ error(s"REST server failed to start: ${ansiYellow(e.getLocalizedMessage)}")
+            case e: Exception ⇒ error(s"REST server failed to start: ${y(e.getLocalizedMessage)}")
         }
     }
 
@@ -405,7 +405,7 @@ object NCCommandLine extends App {
         var i = 0
 
         while (i < num) {
-            `>>`(s"Pinging REST server at ${ansiBlue(endpoint)} ")
+            `>>`(s"Pinging REST server at ${b(endpoint)} ")
 
             val spinner = new NCAnsiSpinner(
                 System.out,
@@ -425,23 +425,23 @@ object NCCommandLine extends App {
                     case 200 ⇒
                         spinner.stop()
 
-                        log(ansiGreen("OK") + " " + ansiCyan(s"[${currentTime - startMs}ms]"))
+                        log(g("OK") + " " + c(s"[${currentTime - startMs}ms]"))
 
                     case code: Int ⇒
                         spinner.stop()
 
-                        log(ansiRed("FAIL") + s" [HTTP $ansiYellowFg$code$ansiReset]")
+                        log(r("FAIL") + s" [HTTP ${y(code.toString)}]")
                 }
             catch {
                 case _: SSLException ⇒
                     spinner.stop()
 
-                    log(ansiRed("FAIL") + s" ${ansiYellow("[SSL error]")}")
+                    log(r("FAIL") + s" ${y("[SSL error]")}")
 
                 case _: IOException ⇒
                     spinner.stop()
 
-                    log(ansiRed("FAIL") + s" ${ansiYellow("[I/O error]")}")
+                    log(r("FAIL") + s" ${y("[I/O error]")}")
             }
 
             i += 1
@@ -472,9 +472,9 @@ object NCCommandLine extends App {
             ProcessHandle.of(pid).asScala match {
                 case Some(ph) ⇒
                     if (ph.destroy())
-                        `>`(s"Local REST server (pid ${ansiCyan(pid.toString)}) has been stopped.")
+                        `>`(s"Local REST server (pid ${c(pid.toString)}) has been stopped.")
                     else
-                        error(s"Failed to stop the local REST server (pid ${ansiCyan(pid.toString)}).")
+                        error(s"Failed to stop the local REST server (pid ${c(pid.toString)}).")
 
 
                 case None ⇒ error("Cannot find locally running REST server.")
@@ -533,7 +533,7 @@ object NCCommandLine extends App {
                         else
                             s"$T___${param.names.mkString(", ")}"
 
-                    lines += ansiCyan(line)
+                    lines += c(line)
 
                     if (param.optional)
                         lines += s"$T___${T___}Optional."
@@ -550,7 +550,7 @@ object NCCommandLine extends App {
                 lines += ansiBold("EXAMPLES")
 
                 for (ex ← cmd.examples) {
-                    lines ++= ex.usage.map(s ⇒ ansiYellow(s"$T___$s"))
+                    lines ++= ex.usage.map(s ⇒ y(s"$T___$s"))
                     lines += s"$T___$T___${ex.desc}"
                 }
             }
@@ -631,8 +631,8 @@ object NCCommandLine extends App {
         if (args.isEmpty)
             log((
                 new NCAsciiTable
-                    += ("Version:", ansiCyan(VER.version))
-                    += ("Release date:", ansiCyan(VER.date.toString))
+                    += ("Version:", c(VER.version))
+                    += ("Release date:", c(VER.date.toString))
                 ).toString
             )
         else {
@@ -660,7 +660,7 @@ object NCCommandLine extends App {
 
         val msg2 = if (msg.head.isLower) msg.head.toUpper + msg.tail else msg
 
-        System.err.println(s"${ansiRed("ERR:")} $msg2")
+        System.err.println(s"${r("ERR:")} $msg2")
     }
 
     /**
@@ -673,19 +673,19 @@ object NCCommandLine extends App {
      *
      * @param msg
      */
-    private def `>`(msg: String): Unit = System.out.println(s"${ansiGreen(">")} $msg")
+    private def `>`(msg: String): Unit = System.out.println(s"${g(">")} $msg")
 
     /**
      *
      * @param msg
      */
-    private def `>>`(msg: String): Unit = System.out.print(s"${ansiGreen(">")} $msg")
+    private def `>>`(msg: String): Unit = System.out.print(s"${g(">")} $msg")
 
     /**
      *
      */
     private def errorHelp(): Unit =
-        error(s"Run '${ansiCyan(SCRIPT_NAME + " " + HELP_CMD.mainName)}' to read the manual.")
+        error(s"Run '${c(SCRIPT_NAME + " " + HELP_CMD.mainName)}' to read the manual.")
 
     /**
      * Prints out the version and copyright title header.
@@ -759,7 +759,7 @@ object NCCommandLine extends App {
         args.map { arg ⇒
             val parts = arg.split("=")
 
-            def mkError() = new IllegalArgumentException(s"Invalid parameter: ${ansiCyan(arg)}")
+            def mkError() = new IllegalArgumentException(s"Invalid parameter: ${c(arg)}")
 
             if (parts.size > 2)
                 throw mkError()

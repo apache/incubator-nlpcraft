@@ -110,7 +110,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             tbl += (
                 res.modelId,
                 res.intentId,
-                if (res.pass) ansiGreen("OK") else ansiRed("FAIL"),
+                if (res.pass) g("OK") else r("FAIL"),
                 res.text,
                 res.error.getOrElse("")
             )
@@ -119,7 +119,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         val failCnt = results.count(!_.pass)
         
         logger.info(s"Model auto-validation results: " +
-            s"${ansiGreen("OK")} $passCnt, ${ansiRed("FAIL")} $failCnt:\n${tbl.toString}"
+            s"${g("OK")} $passCnt, ${r("FAIL")} $failCnt:\n${tbl.toString}"
         )
         
         failCnt == 0

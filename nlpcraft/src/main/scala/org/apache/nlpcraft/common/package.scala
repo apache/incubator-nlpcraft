@@ -19,7 +19,7 @@ package org.apache.nlpcraft
 
 import java.util.concurrent.Callable
 import java.util.function.{BiPredicate, Consumer, Supplier, Function ⇒ JFunction, Predicate ⇒ JPredicate}
-
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.util._
 
 import scala.language.implicitConversions
@@ -40,6 +40,15 @@ package object common {
     final val MDL_META_ALL_GRP_IDS_KEY = "__NLPCRAFT_MDL_META_ALL_GRP_IDS"
     final val MDL_META_ALL_ALIASES_KEY = "__NLPCRAFT_MDL_META_ALL_ALIASES"
     final val TOK_META_ALIASES_KEY = "__NLPCRAFT_TOK_META_ALIASES"
+
+    // Real foreground color shortcuts...
+    def g(s: Any): String = s"$ansiGreenFg${s.toString}$ansiReset"
+    def r(s: Any): String = s"$ansiRedFg${s.toString}$ansiReset"
+    def c(s: Any): String = s"$ansiCyanFg${s.toString}$ansiReset"
+    def y(s: Any): String = s"$ansiYellowFg${s.toString}$ansiReset"
+    def w(s: Any): String = s"$ansiWhiteFg${s.toString}$ansiReset"
+    def b(s: Any): String = s"$ansiBlueFg${s.toString}$ansiReset"
+    def k(s: Any): String = s"$ansiBlackFg${s.toString}$ansiReset"
     
     /**
      * 
@@ -47,9 +56,7 @@ package object common {
      * @tparam T
      * @return
      */
-    implicit def toJavaConsumer[T](f: T ⇒ Unit): Consumer[T] = new Consumer[T] {
-        override def accept(t: T): Unit = f(t)
-    }
+    implicit def toJavaConsumer[T](f: T ⇒ Unit): Consumer[T] = (t: T) => f(t)
     
     /**
       *
@@ -57,9 +64,7 @@ package object common {
       * @tparam A
       * @return
       */
-    implicit def toJavaSupplier[A](f: () ⇒ A): Supplier[A] = new Supplier[A] {
-        override def get(): A = f()
-    }
+    implicit def toJavaSupplier[A](f: () ⇒ A): Supplier[A] = () => f()
     
     /**
       *
@@ -68,9 +73,7 @@ package object common {
       * @tparam B
       * @return
       */
-    implicit def toJavaFunction[A, B](f: A ⇒ B): JFunction[A, B] = new JFunction[A, B] {
-        override def apply(a: A): B = f(a)
-    }
+    implicit def toJavaFunction[A, B](f: A ⇒ B): JFunction[A, B] = (a: A) => f(a)
     
     /**
       *
@@ -78,9 +81,7 @@ package object common {
       * @tparam A
       * @return
       */
-    implicit def toJavaPredicate[A](f: A ⇒ Boolean): JPredicate[A] = new JPredicate[A] {
-        override def test(a: A): Boolean = f(a)
-    }
+    implicit def toJavaPredicate[A](f: A ⇒ Boolean): JPredicate[A] = (a: A) => f(a)
     
     /**
       *
@@ -89,9 +90,7 @@ package object common {
       * @tparam B
       * @return
       */
-    implicit def toJavaBiPredicate[A, B](predicate: (A, B) ⇒ Boolean): BiPredicate[A, B] = new BiPredicate[A, B] {
-        override def test(a: A, b: B): Boolean = predicate(a, b)
-    }
+    implicit def toJavaBiPredicate[A, B](predicate: (A, B) ⇒ Boolean): BiPredicate[A, B] = (a: A, b: B) => predicate(a, b)
     
     /**
       * @param f Lambda to convert.
@@ -107,7 +106,5 @@ package object common {
       * @return Callable object.
       */
     implicit def toCallable[R](f: () ⇒ R): Callable[R] =
-        new Callable[R] {
-            override def call(): R = f()
-        }
+        () => f()
 }

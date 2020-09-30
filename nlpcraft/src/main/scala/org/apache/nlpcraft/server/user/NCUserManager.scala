@@ -30,6 +30,7 @@ import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.mdo.{NCUserMdo, NCUserPropertyMdo}
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.tx.NCTxManager
+import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.JavaConverters._
 import scala.util.control.Exception._
@@ -180,8 +181,9 @@ object NCUserManager extends NCService with NCIgniteInstance {
 
         userLock = ignite.semaphore("userSemaphore", 1, true, true)
 
-        logger.info(s"Access tokens will be scanned for timeout every ${Config.timeoutScannerFreqMins}m.")
-        logger.info(s"Access tokens inactive for >= ${Config.accessTokenExpireTimeoutMins}m will be invalidated.")
+        logger.info(s"REST access tokens:")
+        logger.info(s"  ${c("+-")} scanned for timeout every ${Config.timeoutScannerFreqMins}m.")
+        logger.info(s"  ${c("+-")} invalidated if inactive for >= ${Config.accessTokenExpireTimeoutMins}m.")
 
         ackStarted()
     }

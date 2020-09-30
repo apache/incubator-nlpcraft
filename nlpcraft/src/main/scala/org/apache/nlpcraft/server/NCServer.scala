@@ -34,6 +34,7 @@ import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.version._
+import org.apache.nlpcraft.model.tools.cmdline.NCCliServerBeacon
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.geo.NCGeoManager
@@ -62,7 +63,7 @@ import scala.util.control.Exception.{catching, ignoring}
   * NLPCraft server app.
   */
 object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCensusTrace {
-    private final val PID_PATH = ".nlpcraft/server_pid"
+    private final val BEACON_PATH = ".nlpcraft/server_beacon"
 
     private val startedMgrs = mutable.Buffer.empty[NCService]
 
@@ -194,8 +195,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         
         asciiLogo()
 
-        storePid()
-        
+        storeBeacon()
+
         val lifecycle = new CountDownLatch(1)
     
         catching(classOf[Throwable]) either startManagers() match {
@@ -228,40 +229,65 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     /**
      *
      */
-    private def storePid(): Unit = {
-        val path = new File(SystemUtils.getUserHome, PID_PATH)
+    private def storeBeacon(): Unit = {
+        val path = new File(SystemUtils.getUserHome, BEACON_PATH)
 
         /**
          *
          */
-        def storeInUserHome() =
+        def storeInUserHome() = {
+            final object Config extends NCConfigurable {
+                final private val pre = "nlpcraft.server"
+
+                lazy val restHost = getString(s"$pre.rest.host")
+                lazy val restPort = getInt(s"$pre.rest.port")
+                lazy val upLink =  getString(s"$pre.probe.links.upLink")
+                lazy val downLink =  getString(s"$pre.probe.links.downLink")
+                lazy val jdbcUrl =  getString(s"$pre.database.jdbc.url")
+            }
+
             try {
                 managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
-                    stream.writeLong(ProcessHandle.current().pid())
+                    stream.writeObject(NCCliServerBeacon(
+                        pid = ProcessHandle.current().pid(),
+                        jdbcUrl = Config.jdbcUrl,
+                        restEndpoint = s"${Config.restHost}:${Config.restPort}",
+                        upLink = Config.upLink,
+                        downLink = Config.downLink
+                    ))
                     stream.flush()
                 }
 
+                // Make sure beacon is deleted when server process exits.
                 path.deleteOnExit()
 
-                logger.trace(s"PID stored in: ${path.getAbsolutePath}")
+                logger.info(s"Server beacon saved: ${path.getAbsolutePath}")
             }
             catch {
-                case e: IOException ⇒ U.prettyError(logger, "Failed to store server PID.", e)
+                case e: IOException ⇒ U.prettyError(logger, "Failed to save server beacon.", e)
             }
+        }
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readLong() }
+                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readObject() }
             } match {
-                case Left(e) ⇒ U.prettyError(logger, s"Failed to read existing PID from: ${path.getAbsolutePath}", e)
-                case Right(pid) ⇒
-                    if (ProcessHandle.of(pid).isPresent)
-                        logger.error(s"Cannot store PID file as another local server detected [existing-pid=$pid]")
-                    else
+                case Left(e) ⇒ U.prettyError(logger, s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
+                case Right(rawObj) ⇒
+                    val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
+
+                    if (ProcessHandle.of(beacon.pid).isPresent)
+                        logger.error(s"Cannot save server beacon file as another live local server detected [pid=${beacon.pid}]")
+                    else {
+                        logger.trace(s"Overriding server beacon for a phantom process [pid=${beacon.pid}]")
+
                         storeInUserHome()
+                    }
             }
-        else
+        else {
+            // No existing beacon file detected.
             storeInUserHome()
+        }
     }
 
     NCIgniteRunner.runWith(

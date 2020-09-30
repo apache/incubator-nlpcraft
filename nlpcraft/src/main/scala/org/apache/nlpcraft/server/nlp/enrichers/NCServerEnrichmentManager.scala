@@ -144,7 +144,7 @@ object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
             val normTxt = NCPreProcessManager.normalize(txt, spellCheck = true, span)
 
             if (normTxt != txt)
-                logger.info(s"Sentence normalized to: $normTxt")
+                logger.info(s"Sentence normalized: $normTxt")
 
             val normEnabledBuiltInToks = enabledBuiltInToks.map(_.toLowerCase)
 

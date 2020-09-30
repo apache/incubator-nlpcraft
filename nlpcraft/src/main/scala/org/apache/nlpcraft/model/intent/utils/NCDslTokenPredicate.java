@@ -79,13 +79,13 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
         // Assert?
         if (param == null || (param.charAt(0) != '~' && !PARAMS.contains(param)))
             throw new IllegalArgumentException(String.format(
-                "Invalid token predicate DSL parameter ('%s') in: %s %s %s",
+                "Invalid token predicate DSL parameter ('%s'): %s %s %s",
                 param, param, op, value));
 
         // Assert?
         if (op == null || !OPS.contains(op))
             throw new IllegalArgumentException(String.format(
-                "Invalid token predicate DSL operation ('%s') in: %s %s %s",
+                "Invalid token predicate DSL operation ('%s'): %s %s %s",
                 op, param, op, value));
 
         this.parts = new ArrayList<>(parts);
@@ -370,7 +370,7 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
             String str = param.substring(1);
 
             if (str.isEmpty())
-                throw new IllegalArgumentException(String.format("Token predicate DSL empty meta parameter name in: %s %s %s",
+                throw new IllegalArgumentException(String.format("Token predicate DSL empty meta parameter name: %s %s %s",
                     param, op, valueStr));
 
             String[] parts = str.split("[\\[\\]]");
@@ -387,7 +387,7 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
 
                     if (strIdx.isEmpty())
                         throw new IllegalArgumentException(
-                            String.format("Token predicate DSL meta parameter empty index in: %s %s %s", param, op,
+                            String.format("Token predicate DSL meta parameter empty index: %s %s %s", param, op,
                                 valueStr));
                     else if (obj instanceof java.util.List) {
                         try {
@@ -395,7 +395,7 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
                         }
                         catch (NumberFormatException e) {
                             throw new IllegalArgumentException(String.format(
-                                "Invalid token predicate DSL meta parameter index ('%s') for java.util.List value (integer only) in: %s %s %s",
+                                "Invalid token predicate DSL meta parameter index ('%s') for java.util.List value (integer only): %s %s %s",
                                 strIdx, param, op, valueStr),
                                 e);
                         }
@@ -411,7 +411,7 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
             }
             else
                 throw new IllegalArgumentException(String.format(
-                    "Invalid token predicate DSL meta parameter in: %s %s %s", param, op, valueStr));
+                    "Invalid token predicate DSL meta parameter: %s %s %s", param, op, valueStr));
         }
         else
             switch (param) {
@@ -425,7 +425,7 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
                 case "parent": lval = tok.getParentId() == null ? null : tok.getParentId().trim(); break;
 
                 default: throw new IllegalArgumentException(String.format(
-                    "Invalid token predicate DSL parameter ('%s') in: %s %s %s",
+                    "Invalid token predicate DSL parameter ('%s'): %s %s %s",
                     param, param, op, valueStr));
             }
 
@@ -439,12 +439,12 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
                 param.equals("id") ||
                 param.equals("parent")) &&
                 !NCDslTokenChecker.isValidElementId(tok, (String)rval))
-                throw new IllegalArgumentException(String.format("Attempt to check unknown element ID '%s' in: %s %s %s",
+                throw new IllegalArgumentException(String.format("Attempt to check unknown element ID '%s': %s %s %s",
                     rval, param, op, valueStr));
 
             if ((param.equals("groups")) &&
                 !NCDslTokenChecker.isValidGroup(tok, (String)rval))
-                throw new IllegalArgumentException(String.format("Attempt to check unknown group ID '%s' in: %s %s %s",
+                throw new IllegalArgumentException(String.format("Attempt to check unknown group ID '%s': %s %s %s",
                     rval, param, op, valueStr));
 
             validated = true;
