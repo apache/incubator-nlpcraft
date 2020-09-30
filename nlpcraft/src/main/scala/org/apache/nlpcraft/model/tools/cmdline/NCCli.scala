@@ -41,7 +41,6 @@ import resource.managed
 
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
-import scala.util.Try
 import scala.collection.JavaConverters._
 import scala.compat.Platform.currentTime
 
@@ -51,24 +50,13 @@ import scala.compat.Platform.currentTime
 object NCCli extends App {
     private final val NAME = "Apache NLPCraft CLI"
 
-    private final val SRV_PID_PATH = ".nlpcraft/server_pid"
+    private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
 
     private final lazy val VER = NCVersion.getCurrent
-    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(
-        new File(
-            SystemUtils.getJavaHome,
-            s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}"
-        ).getAbsolutePath
-    )
-    private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(
-        SystemUtils.USER_DIR
-    )
-    private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(
-        ManagementFactory.getRuntimeMXBean.getClassPath
-    )
-    private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(
-        s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}"
-    )
+    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome,s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
+    private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
+    private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
+    private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
     private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
 
     private final val T___ = "    "
@@ -374,8 +362,8 @@ object NCCli extends App {
         try {
             pb.start()
 
-            `>`(s"REST server is starting, output redirected to ${c(output.getAbsolutePath)}")
-            `>`(s"Use ${g("stop-server")} command to stop it.")
+            logln(s"REST server is starting, output redirected to ${c(output.getAbsolutePath)}")
+            logln(s"Use ${g("stop-server")} command to stop it.")
         }
         catch {
             case e: Exception ⇒ error(s"REST server failed to start: ${y(e.getLocalizedMessage)}")
@@ -405,7 +393,7 @@ object NCCli extends App {
         var i = 0
 
         while (i < num) {
-            `>>`(s"Pinging REST server at ${b(endpoint)} ")
+            log(s"Pinging REST server at ${b(endpoint)} ")
 
             val spinner = new NCAnsiSpinner(
                 System.out,
@@ -425,23 +413,23 @@ object NCCli extends App {
                     case 200 ⇒
                         spinner.stop()
 
-                        log(g("OK") + " " + c(s"[${currentTime - startMs}ms]"))
+                        logln(g("OK") + " " + c(s"[${currentTime - startMs}ms]"))
 
                     case code: Int ⇒
                         spinner.stop()
 
-                        log(r("FAIL") + s" [HTTP ${y(code.toString)}]")
+                        logln(r("FAIL") + s" [HTTP ${y(code.toString)}]")
                 }
             catch {
                 case _: SSLException ⇒
                     spinner.stop()
 
-                    log(r("FAIL") + s" ${y("[SSL error]")}")
+                    logln(r("FAIL") + s" ${y("[SSL error]")}")
 
                 case _: IOException ⇒
                     spinner.stop()
 
-                    log(r("FAIL") + s" ${y("[I/O error]")}")
+                    logln(r("FAIL") + s" ${y("[I/O error]")}")
             }
 
             i += 1
@@ -452,33 +440,49 @@ object NCCli extends App {
     }
 
     /**
+     *
+     * @return
+     */
+    private def loadServerBeacon(): Option[NCCliServerBeacon] = {
+        val path = new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
+
+        if (path.exists())
+            try {
+                val rawObj = managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet {
+                    _.readObject()
+                }
+
+                Some(rawObj.asInstanceOf[NCCliServerBeacon])
+            }
+            catch {
+                case _: Exception ⇒ None
+            }
+        else
+            None
+    }
+
+    /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      */
     private def cmdStopServer(cmd: Command, args: Seq[Argument]): Unit = {
-        val path = new File(SystemUtils.getUserHome, SRV_PID_PATH)
-        var pid = -1L
+        loadServerBeacon() match {
+            case Some(beacon) ⇒
+                val pid = beacon.pid
 
-        if (path.exists())
-            pid =
-                Try {
-                    managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readLong() }
+                ProcessHandle.of(pid).asScala match {
+                    case Some(ph) ⇒
+                        if (ph.destroy())
+                            logln(s"Local REST server (pid ${c(pid.toString)}) has been stopped.")
+                        else
+                            error(s"Failed to stop the local REST server (pid ${c(pid.toString)}).")
+
+
+                    case None ⇒ error("Cannot find locally running REST server.")
                 }
-                .getOrElse(-1L)
 
-        if (pid == -1)
-            error("Cannot detect locally running REST server.")
-        else {
-            ProcessHandle.of(pid).asScala match {
-                case Some(ph) ⇒
-                    if (ph.destroy())
-                        `>`(s"Local REST server (pid ${c(pid.toString)}) has been stopped.")
-                    else
-                        error(s"Failed to stop the local REST server (pid ${c(pid.toString)}).")
-
-
-                case None ⇒ error("Cannot find locally running REST server.")
-            }
+            case None ⇒
+                error("Cannot detect locally running REST server.")
         }
     }
 
@@ -498,7 +502,7 @@ object NCCli extends App {
         /**
          *
          */
-        def header(): Unit = log(
+        def header(): Unit = logln(
             s"""|${U.asciiLogo()}
                 |${ansiBold("NAME")}
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
@@ -568,7 +572,7 @@ object NCCli extends App {
                 "align:left, maxWidth:85" → cmd.synopsis
             ))
 
-            log(tbl.toString)
+            logln(tbl.toString)
         }
         else if (args.size == 1 && args.head.parameter.id == "all") { // Show a full format help for all commands.
             header()
@@ -580,7 +584,7 @@ object NCCli extends App {
                 )
             )
 
-            log(tbl.toString)
+            logln(tbl.toString)
         }
         else { // Help for individual commands.
             var err = false
@@ -608,7 +612,7 @@ object NCCli extends App {
             if (!err) {
                 header()
 
-                log(tbl.toString)
+                logln(tbl.toString)
             }
         }
     }
@@ -629,7 +633,7 @@ object NCCli extends App {
      */
     private def cmdVersion(cmd: Command, args: Seq[Argument]): Unit =
         if (args.isEmpty)
-            log((
+            logln((
                 new NCAsciiTable
                     += ("Version:", c(VER.version))
                     += ("Release date:", c(VER.date.toString))
@@ -641,9 +645,9 @@ object NCCli extends App {
 
             if (isS || isD) {
                 if (isS)
-                    `>`(s"${VER.version}")
+                    logln(s"${VER.version}")
                 if (isD)
-                    `>`(s"${VER.date}")
+                    logln(s"${VER.date}")
             }
             else
                 error(s"Invalid parameters for command '${cmd.mainName}': ${args.mkString(", ")}")
@@ -667,19 +671,13 @@ object NCCli extends App {
      *
      * @param msg
      */
-    private def log(msg: String = ""): Unit = System.out.println(msg)
+    private def logln(msg: String = ""): Unit = System.out.println(msg)
 
     /**
      *
      * @param msg
      */
-    private def `>`(msg: String): Unit = System.out.println(s"${g(">")} $msg")
-
-    /**
-     *
-     * @param msg
-     */
-    private def `>>`(msg: String): Unit = System.out.print(s"${g(">")} $msg")
+    private def log(msg: String = ""): Unit = System.out.print(msg)
 
     /**
      *
@@ -691,8 +689,8 @@ object NCCli extends App {
      * Prints out the version and copyright title header.
      */
     private def title(): Unit = {
-        log(s"$NAME ver. ${VER.version}")
-        log()
+        logln(s"$NAME ver. ${VER.version}")
+        logln()
     }
 
     /**
@@ -815,7 +813,7 @@ object NCCli extends App {
         if (exitStatus != 0)
             errorHelp()
 
-        log()
+        logln()
 
         sys.exit(exitStatus)
     }
