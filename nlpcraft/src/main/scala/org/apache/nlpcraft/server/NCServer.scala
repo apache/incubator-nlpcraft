@@ -235,7 +235,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         /**
          *
          */
-        def storeInUserHome() = {
+        def save() = {
             final object Config extends NCConfigurable {
                 final private val pre = "nlpcraft.server"
 
@@ -278,7 +278,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
                     logger.trace(s"Overriding failed server beacon: ${path.getAbsolutePath}")
 
-                    storeInUserHome()
+                    save()
 
                 case Right(rawObj) ⇒
                     val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
@@ -288,12 +288,12 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                     else {
                         logger.trace(s"Overriding server beacon for a phantom process [pid=${beacon.pid}]")
 
-                        storeInUserHome()
+                        save()
                     }
             }
         else
             // No existing beacon file detected.
-            storeInUserHome()
+            save()
     }
 
     NCIgniteRunner.runWith(

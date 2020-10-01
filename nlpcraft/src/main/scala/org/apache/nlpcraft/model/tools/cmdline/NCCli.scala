@@ -62,6 +62,10 @@ object NCCli extends App {
     private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
 
     private final val T___ = "    "
+    private val OPEN_BRK = Seq('[', '{', '(', '<')
+    private val CLOSE_BRK = Seq(']', '}', ')', '>')
+    // Pair for each open or close bracket.
+    private val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap
 
     private var exitStatus = 0
 
@@ -666,7 +670,14 @@ object NCCli extends App {
             else {
                 val line = rawLine.trim()
 
-                logln(s"\nEntered: $line")
+                try {
+                    val args = splitBySpace(line)
+
+                    logln(args.mkString(", "))
+                }
+                catch {
+                    case e: SplitError ⇒ logln(s"Error around index ${e.index}")
+                }
             }
         }
     }
@@ -790,6 +801,83 @@ object NCCli extends App {
             HttpClients.createDefault().execute(get, resp)
         finally
             get.releaseConnection()
+    }
+
+    case class SplitError(index: Int) extends Exception
+
+    /**
+     * Splits given string by spaces taking into an account double and single quotes,
+     * and checking for uneven <>, {}, [], () pairs.
+     *
+     * @param line
+     * @return
+     */
+    @throws[SplitError]
+    private def splitBySpace(line: String): Seq[String] = {
+        val lines = mutable.Buffer.empty[String]
+        val buf = new StringBuilder
+        var stack = List.empty[Char]
+        var escape = false
+        var index = 0
+
+        def head: Char = stack.headOption.getOrElse(Char.MinValue)
+
+        for (ch ← line) {
+            if (ch.isWhitespace && !stack.contains('"') && !stack.contains('\'') && !escape) {
+                if (buf.nonEmpty) {
+                    lines += buf.toString()
+                    buf.clear()
+                }
+            }
+            else if (ch == '\\') {
+                if (escape)
+                    buf += ch
+                else
+                    // SKip '\'.
+                    escape = true
+            }
+            else if (ch == '"' || ch == '\'') {
+                if (!escape) {
+                    if (!stack.contains(ch))
+                        stack ::= ch // Push.
+                    else if (head == ch)
+                        stack = stack.tail // Pop.
+                    else
+                        throw SplitError(index)
+                }
+
+                buf += ch
+            }
+            else if (OPEN_BRK.contains(ch)) {
+                stack ::= ch // Push.
+
+                buf += ch
+            }
+            else if (CLOSE_BRK.contains(ch)) {
+                if (head != BRK_PAIR(ch))
+                    throw SplitError(index)
+
+                stack = stack.tail // Pop.
+
+                buf += ch
+            }
+            else
+                buf += ch
+
+            // Drop escape flag.
+            if (escape && ch != '\\')
+                escape = false
+
+            index += 1
+        }
+
+        if (stack.nonEmpty)
+            throw SplitError(index)
+
+        if (buf.nonEmpty)
+            lines += buf.toString()
+
+        lines.map(_.trim)
     }
 
     /**
