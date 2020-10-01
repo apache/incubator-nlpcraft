@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
-import java.io.{File, FileInputStream, IOException, ObjectInputStream}
+import java.io.{BufferedReader, File, FileInputStream, IOException, InputStreamReader, ObjectInputStream}
 import java.net.URL
 
 import com.google.gson._
@@ -623,7 +623,30 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      */
     private def cmdRepl(cmd: Command, args: Seq[Argument]): Unit = {
-        // TODO
+        logln(s"Type ${c("help")} or ${c("help -c=repl")} to get help.")
+        logln(s"Type ${c("quit")} to exit.")
+
+        val in = new BufferedReader(new InputStreamReader(System.in))
+
+        val QUITS = Seq(
+            "quit", "exit", "/q", "\\q"
+        )
+
+        var exit = false
+
+        while (!exit) {
+            log(s"${g(">")} ")
+
+            val rawLine = in.readLine()
+
+            if (rawLine == null || QUITS.contains(rawLine.trim))
+                exit = true
+            else {
+                val line = rawLine.trim()
+
+                logln(s"\nEntered: $line")
+            }
+        }
     }
 
     /**
@@ -776,44 +799,50 @@ object NCCli extends App {
         }
 
     /**
+     * Processes a single command defined by the given arguments.
      *
      * @param args
+     * @param repl Whether or not called from 'repl' command.
      */
-    private def boot(args: Array[String]): Unit = {
-        if (args.isEmpty) {
-            title()
-
-            DFLT_CMD.body(DFLT_CMD, Seq.empty)
+    private def doCommand(args: Seq[String], repl: Boolean = false): Unit = {
+        // Process 'no-ansi' command first, if any, and remove it from the list.
+        args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
+            case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty)
+            case None ⇒ ()
         }
-        else {
-            // Handle 'no-ansi' command right away and remove it from the list.
-            args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
-                case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty)
-                case None ⇒ ()
-            }
 
-            title()
+        // Remove 'no-ansi' command from the argument list, if any.
+        val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg))
 
-            val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg))
+        val cmd = xargs.head
 
-            val cmdName = xargs.head
-
-            CMDS.find(_.extNames.contains(cmdName)) match {
-                case Some(cmd) ⇒
+        CMDS.find(_.extNames.contains(cmd)) match {
+            case Some(cmd) ⇒
+                if (!(repl && cmd.id == "repl")) // Don't call 'repl' from 'repl'.
                     try
                         cmd.body(cmd, processParameters(cmd, xargs.tail))
                     catch {
                         case e: Exception ⇒ error(e.getLocalizedMessage)
                     }
 
-                case None ⇒ error(s"Unknown command: $cmdName")
-            }
+            case None ⇒ error(s"Unknown command: $cmd")
         }
+    }
+
+    /**
+     *
+     * @param args
+     */
+    private def boot(args: Array[String]): Unit = {
+        title()
+
+        if (args.isEmpty)
+            DFLT_CMD.body(DFLT_CMD, Seq.empty)
+        else
+            doCommand(args.toSeq)
 
         if (exitStatus != 0)
             errorHelp()
-
-        logln()
 
         sys.exit(exitStatus)
     }
