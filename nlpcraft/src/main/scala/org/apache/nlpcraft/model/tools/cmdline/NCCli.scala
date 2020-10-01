@@ -195,7 +195,22 @@ object NCCli extends App {
             examples = Seq(
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=repl no-ansi"),
-                    desc = "Displays help for 'repl' commands without using ANSI escape sequences."
+                    desc = "Displays help for 'repl' commands without using ANSI color and escape sequences."
+                )
+            )
+        ),
+        Command(
+            id = "ansi",
+            names = Seq("ansi"),
+            synopsis = s"Enables usage of ANSI escape codes (colors & terminal controls).",
+            desc = Some(
+                s"This is a special command that can be combined with any other commands."
+            ),
+            body = cmdAnsi,
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=repl ansi"),
+                    desc = "Displays help for 'repl' commands with ANSI color and escape sequences."
                 )
             )
         ),
@@ -321,6 +336,7 @@ object NCCli extends App {
     private final val HELP_CMD = CMDS.find(_.id ==  "help").get
     private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
     private final val NO_ANSI_CMD = CMDS.find(_.id ==  "no-ansi").get
+    private final val ANSI_CMD = CMDS.find(_.id ==  "ansi").get
 
     /**
      * @param cmd Command descriptor.
@@ -399,7 +415,7 @@ object NCCli extends App {
         var i = 0
 
         while (i < num) {
-            log(s"Pinging REST server at ${b(endpoint)} ")
+            log(s"(${i + 1} of $num) pinging REST server at ${b(endpoint)} ")
 
             val spinner = new NCAnsiSpinner(
                 System.out,
@@ -501,13 +517,20 @@ object NCCli extends App {
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      */
+    private def cmdAnsi(cmd: Command, args: Seq[Argument]): Unit = {
+        NCAnsi.setEnabled(true)
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     */
     private def cmdHelp(cmd: Command, args: Seq[Argument]): Unit = {
         /**
          *
          */
         def header(): Unit = logln(
-            s"""|${U.asciiLogo()}
-                |${ansiBold("NAME")}
+            s"""|${ansiBold("NAME")}
                 |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
                 |
                 |${ansiBold("USAGE")}
@@ -671,12 +694,18 @@ object NCCli extends App {
                 val line = rawLine.trim()
 
                 try {
-                    val args = splitBySpace(line)
-
-                    logln(args.mkString(", "))
+                    doCommand(splitBySpace(line), repl = true)
                 }
                 catch {
-                    case e: SplitError ⇒ logln(s"Error around index ${e.index}")
+                    case e: SplitError ⇒
+                        val idx = e.index
+                        val lineX = line.substring(0, idx) + r(line.substring(idx, idx + 1) ) + line.substring(idx + 1)
+                        val dashX = c("-" * idx) + r("^") + c("-" * (line.length - idx - 1))
+
+                        error(s"Uneven quotes or brackets:")
+                        error(s"  ${r("+-")} $lineX")
+                        error(s"  ${r("+-")} $dashX")
+
                 }
             }
         }
@@ -720,7 +749,7 @@ object NCCli extends App {
 
         val msg2 = if (msg.head.isLower) msg.head.toUpper + msg.tail else msg
 
-        System.err.println(s"${r("ERR:")} $msg2")
+        System.out.println(s"${y("ERR:")} $msg2")
     }
 
     /**
@@ -745,6 +774,7 @@ object NCCli extends App {
      * Prints out the version and copyright title header.
      */
     private def title(): Unit = {
+        logln(U.asciiLogo())
         logln(s"$NAME ver. ${VER.version}")
         logln()
     }
@@ -807,7 +837,7 @@ object NCCli extends App {
 
     /**
      * Splits given string by spaces taking into an account double and single quotes,
-     * and checking for uneven <>, {}, [], () pairs.
+     * '\' escaping as well as checking for uneven <>, {}, [], () pairs.
      *
      * @param line
      * @return
@@ -820,7 +850,7 @@ object NCCli extends App {
         var escape = false
         var index = 0
 
-        def head: Char = stack.headOption.getOrElse(Char.MinValue)
+        def stackHead: Char = stack.headOption.getOrElse(Char.MinValue)
 
         for (ch ← line) {
             if (ch.isWhitespace && !stack.contains('"') && !stack.contains('\'') && !escape) {
@@ -840,7 +870,7 @@ object NCCli extends App {
                 if (!escape) {
                     if (!stack.contains(ch))
                         stack ::= ch // Push.
-                    else if (head == ch)
+                    else if (stackHead == ch)
                         stack = stack.tail // Pop.
                     else
                         throw SplitError(index)
@@ -854,7 +884,7 @@ object NCCli extends App {
                 buf += ch
             }
             else if (CLOSE_BRK.contains(ch)) {
-                if (head != BRK_PAIR(ch))
+                if (stackHead != BRK_PAIR(ch))
                     throw SplitError(index)
 
                 stack = stack.tail // Pop.
@@ -872,7 +902,7 @@ object NCCli extends App {
         }
 
         if (stack.nonEmpty)
-            throw SplitError(index)
+            throw SplitError(index - 1)
 
         if (buf.nonEmpty)
             lines += buf.toString()
@@ -914,28 +944,35 @@ object NCCli extends App {
      * @param args
      * @param repl Whether or not called from 'repl' command.
      */
-    private def doCommand(args: Seq[String], repl: Boolean = false): Unit = {
+    private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         // Process 'no-ansi' command first, if any, and remove it from the list.
         args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
             case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty)
             case None ⇒ ()
         }
+        // Process 'ansi' command first, if any, and remove it from the list.
+        args.find(arg ⇒ ANSI_CMD.names.contains(arg)) match {
+            case Some(_) ⇒ ANSI_CMD.body(ANSI_CMD, Seq.empty)
+            case None ⇒ ()
+        }
 
         // Remove 'no-ansi' command from the argument list, if any.
-        val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg))
+        val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg) && !ANSI_CMD.names.contains(arg))
 
-        val cmd = xargs.head
+        if (xargs.nonEmpty) {
+            val cmd = xargs.head
 
-        CMDS.find(_.extNames.contains(cmd)) match {
-            case Some(cmd) ⇒
-                if (!(repl && cmd.id == "repl")) // Don't call 'repl' from 'repl'.
-                    try
-                        cmd.body(cmd, processParameters(cmd, xargs.tail))
-                    catch {
-                        case e: Exception ⇒ error(e.getLocalizedMessage)
-                    }
+            CMDS.find(_.extNames.contains(cmd)) match {
+                case Some(cmd) ⇒
+                    if (!(repl && cmd.id == "repl")) // Don't call 'repl' from 'repl'.
+                        try
+                            cmd.body(cmd, processParameters(cmd, xargs.tail))
+                        catch {
+                            case e: Exception ⇒ error(e.getLocalizedMessage)
+                        }
 
-            case None ⇒ error(s"Unknown command: $cmd")
+                case None ⇒ error(s"Unknown command: ${c(cmd)}")
+            }
         }
     }
 
@@ -949,7 +986,7 @@ object NCCli extends App {
         if (args.isEmpty)
             DFLT_CMD.body(DFLT_CMD, Seq.empty)
         else
-            doCommand(args.toSeq)
+            doCommand(args.toSeq, repl = false)
 
         if (exitStatus != 0)
             errorHelp()
