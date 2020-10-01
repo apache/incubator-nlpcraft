@@ -29,6 +29,7 @@ case class NCCliServerBeacon(
     jdbcUrl: String,
     restEndpoint: String,
     upLink: String,
-    downLink: String
+    downLink: String,
+    startMs: Long
 )
 

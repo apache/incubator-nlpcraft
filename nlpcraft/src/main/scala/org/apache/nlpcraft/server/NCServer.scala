@@ -253,7 +253,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                         jdbcUrl = Config.jdbcUrl,
                         restEndpoint = s"${Config.restHost}:${Config.restPort}",
                         upLink = Config.upLink,
-                        downLink = Config.downLink
+                        downLink = Config.downLink,
+                        startMs = currentTime
                     ))
                     stream.flush()
                 }
@@ -272,7 +273,13 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             catching(classOf[IOException]) either {
                 managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readObject() }
             } match {
-                case Left(e) ⇒ U.prettyError(logger, s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
+                case Left(e) ⇒
+                    U.prettyError(logger, s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
+
+                    logger.trace(s"Overriding failed server beacon: ${path.getAbsolutePath}")
+
+                    storeInUserHome()
+
                 case Right(rawObj) ⇒
                     val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
 
@@ -284,10 +291,9 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                         storeInUserHome()
                     }
             }
-        else {
+        else
             // No existing beacon file detected.
             storeInUserHome()
-        }
     }
 
     NCIgniteRunner.runWith(

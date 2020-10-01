@@ -36,6 +36,8 @@ import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.version.NCVersion
 import java.lang.ProcessBuilder.Redirect
 import java.lang.management.ManagementFactory
+import java.text.DateFormat
+import java.util.Date
 
 import resource.managed
 
@@ -440,26 +442,29 @@ object NCCli extends App {
     }
 
     /**
+     * Loads server beacon file and return its data and its corresponding process handle.
      *
      * @return
      */
-    private def loadServerBeacon(): Option[NCCliServerBeacon] = {
-        val path = new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
-
-        if (path.exists())
-            try {
-                val rawObj = managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet {
-                    _.readObject()
-                }
-
-                Some(rawObj.asInstanceOf[NCCliServerBeacon])
+    private def loadServerBeacon(): Option[(NCCliServerBeacon, ProcessHandle)] =
+        try {
+            val rawObj = managed(
+                new ObjectInputStream(
+                    new FileInputStream(
+                        new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
+                    )
+                )
+            ) acquireAndGet {
+                _.readObject()
             }
-            catch {
-                case _: Exception ⇒ None
-            }
-        else
-            None
-    }
+
+            val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
+
+            ProcessHandle.of(beacon.pid).asScala.map(beacon → _)
+        }
+        catch {
+            case _: Exception ⇒ None
+        }
 
     /**
      * @param cmd Command descriptor.
@@ -467,19 +472,13 @@ object NCCli extends App {
      */
     private def cmdStopServer(cmd: Command, args: Seq[Argument]): Unit = {
         loadServerBeacon() match {
-            case Some(beacon) ⇒
+            case Some((beacon, ph)) ⇒
                 val pid = beacon.pid
 
-                ProcessHandle.of(pid).asScala match {
-                    case Some(ph) ⇒
-                        if (ph.destroy())
-                            logln(s"Local REST server (pid ${c(pid.toString)}) has been stopped.")
-                        else
-                            error(s"Failed to stop the local REST server (pid ${c(pid.toString)}).")
-
-
-                    case None ⇒ error("Cannot find locally running REST server.")
-                }
+                if (ph.destroy())
+                    logln(s"Local REST server (pid ${c(pid.toString)}) has been stopped.")
+                else
+                    error(s"Failed to stop the local REST server (pid ${c(pid.toString)}).")
 
             case None ⇒
                 error("Cannot detect locally running REST server.")
@@ -619,10 +618,33 @@ object NCCli extends App {
 
     /**
      *
+     * @param beacon
+     * @return
+     */
+    private def mkServerBeaconTable(beacon: NCCliServerBeacon): NCAsciiTable = {
+        val tbl = new NCAsciiTable
+
+        tbl += ("PID", s"${g(beacon.pid)}")
+        tbl += ("JDBC URL", s"${g(beacon.jdbcUrl)}")
+        tbl += ("REST endpoint", s"${g(beacon.restEndpoint)}")
+        tbl += ("Uplink", s"${g(beacon.upLink)}")
+        tbl += ("Downlink", s"${g(beacon.downLink)}")
+        tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
+
+        tbl
+    }
+
+    /**
+     *
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      */
     private def cmdRepl(cmd: Command, args: Seq[Argument]): Unit = {
+        loadServerBeacon() match {
+            case Some((beacon, _)) ⇒ logln(s"Local REST server detected:\n${mkServerBeaconTable(beacon).toString}")
+            case None ⇒ ()
+        }
+
         logln(s"Type ${c("help")} or ${c("help -c=repl")} to get help.")
         logln(s"Type ${c("quit")} to exit.")
 
