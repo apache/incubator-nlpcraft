@@ -601,7 +601,7 @@ object NCCli extends App {
 
             if (i < num)
                 // Pause between pings.
-                Thread.sleep(1000)
+                Thread.sleep(500.ms)
         }
     }
 
