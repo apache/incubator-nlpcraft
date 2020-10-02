@@ -199,7 +199,7 @@ object NCCli extends App {
             id = "get-server",
             names = Seq("get-server"),
             synopsis = s"Basic information about locally running REST server.",
-            body = cmdServerInfo
+            body = cmdGetServer
         ),
         Command(
             id = "no-ansi",
@@ -429,12 +429,17 @@ object NCCli extends App {
         val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
         val noWait = args.exists(_.parameter.id == "noWait")
         val output = args.find(_.parameter.id == "output") match {
-            case Some(arg) ⇒ new File(arg.value.get)
+            case Some(arg) ⇒ new File(stripQuotes(arg.value.get))
             case None ⇒ new File(SystemUtils.getUserHome, s".nlpcraft/server-output-$currentTime.txt")
         }
 
         checkFilePath(cfgPath)
         checkFilePath(igniteCfgPath)
+
+        loadServerBeacon() match {
+            case Some((b, _)) ⇒ throw new IllegalStateException(s"Existing local server (pid ${c(b.pid)}) detected.")
+            case None ⇒ ()
+        }
 
         val pb = new ProcessBuilder(
             JAVA,
@@ -506,8 +511,8 @@ object NCCli extends App {
                     error(s"Check output for errors: ${c(output.getAbsolutePath)}")
                 }
                 else {
-                    logln()
-                    logln(s"Server has started:\n${mkServerBeaconTable(beacon)}")
+                    logln(g("[OK]"))
+                    logln(mkServerBeaconTable(beacon).toString)
                 }
             }
 
@@ -594,8 +599,9 @@ object NCCli extends App {
 
             i += 1
 
-            // Pause between pings.
-            Thread.sleep(1000)
+            if (i < num)
+                // Pause between pings.
+                Thread.sleep(1000)
         }
     }
 
@@ -635,9 +641,9 @@ object NCCli extends App {
                 val pid = beacon.pid
 
                 if (ph.destroy())
-                    logln(s"Local REST server (pid ${c(pid.toString)}) has been stopped.")
+                    logln(s"Local REST server (pid ${c(pid)}) has been stopped.")
                 else
-                    error(s"Failed to stop the local REST server (pid ${c(pid.toString)}).")
+                    error(s"Failed to stop the local REST server (pid ${c(pid)}).")
 
             case None ⇒
                 error("Cannot detect locally running REST server.")
@@ -813,7 +819,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdServerInfo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private def cmdGetServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some((beacon, _)) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ error(s"Cannot detect local REST server.")
@@ -1156,9 +1162,6 @@ object NCCli extends App {
             DFLT_CMD.body(DFLT_CMD, Seq.empty, false)
         else
             doCommand(args.toSeq, repl = false)
-
-        if (IS_SCRIPT)
-            logln()
 
         sys.exit(exitStatus)
     }
