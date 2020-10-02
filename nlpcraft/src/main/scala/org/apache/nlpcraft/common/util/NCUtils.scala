@@ -1047,19 +1047,12 @@ object NCUtils extends LazyLogging {
       */
     implicit class IntMemoryUnits(v: Int) {
         def TB: Int = v * 1024 * 1024 * 1024 * 1024
-
         def GB: Int = v * 1024 * 1024 * 1024
-
         def MB: Int = v * 1024 * 1024
-
         def KB: Int = v * 1024
-
         def tb: Int = TB
-
         def gb: Int = GB
-
         def mb: Int = MB
-
         def kb: Int = KB
     }
 
@@ -1070,19 +1063,12 @@ object NCUtils extends LazyLogging {
       */
     implicit class LongMemoryUnits(v: Long) {
         def TB: Long = v * 1024 * 1024 * 1024 * 1024
-
         def GB: Long = v * 1024 * 1024 * 1024
-
         def MB: Long = v * 1024 * 1024
-
         def KB: Long = v * 1024
-
         def tb: Long = TB
-
         def gb: Long = GB
-
         def mb: Long = MB
-
         def kb: Long = KB
     }
 
@@ -1094,25 +1080,15 @@ object NCUtils extends LazyLogging {
       */
     implicit class IntTimeUnits(v: Int) {
         def MSECS: Int = v
-
         def MS: Int = v
-
         def SECS: Int = v * 1000
-
         def MINS: Int = v * 1000 * 60
-
         def HOURS: Int = v * 1000 * 60 * 60
-
         def DAYS: Int = v * 1000 * 60 * 60 * 24
-
         def ms: Int = MS
-
         def secs: Int = SECS
-
         def mins: Int = MINS
-
         def hours: Int = HOURS
-
         def days: Int = DAYS
     }
 

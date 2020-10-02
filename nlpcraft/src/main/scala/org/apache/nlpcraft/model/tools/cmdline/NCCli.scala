@@ -39,12 +39,14 @@ import java.lang.management.ManagementFactory
 import java.text.DateFormat
 import java.util.Date
 
+import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
 import resource.managed
 
 import scala.collection.mutable
 import scala.compat.java8.OptionConverters._
 import scala.collection.JavaConverters._
 import scala.compat.Platform.currentTime
+import scala.util.Try
 
 /**
  * 'nlpcraft' script entry point.
@@ -136,7 +138,8 @@ object NCCli extends App {
             names = Seq("start-server"),
             synopsis = s"Starts local REST server.",
             desc = Some(
-                s"REST server is started in the external JVM process with both stdout and stderr piped out into log file."
+                s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
+                s"Command will block until the server is started unless ${y("--no-wait")} parameter is used."
             ),
             body = cmdStartServer,
             params = Seq(
@@ -146,10 +149,10 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        "Configuration absolute file path. Server will automatically look for 'nlpcraft.conf' " +
-                        "configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                        "different name or in different location use this parameter to provide an alternative path. " +
-                        "Note that the REST server and the data probe can use the same file for their configuration."
+                        s"Configuration absolute file path. Server will automatically look for ${y("nlpcraft.conf")} " +
+                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
+                        s"different name or in different location use this parameter to provide an alternative path. " +
+                        s"Note that the REST server and the data probe can use the same file for their configuration."
                 ),
                 Parameter(
                     id = "igniteConfig",
@@ -157,11 +160,11 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        "Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
-                        "computing plane and a default distributed storage. REST server will automatically look for " +
-                        "'ignite.xml' configuration file in the same directory as NLPCraft JAR file. If the " +
-                        "configuration file has different name or in different location use this parameter to " +
-                        "provide an alternative path."
+                        s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
+                        s"computing plane and a default distributed storage. REST server will automatically look for " +
+                        s"${y("ignite.xml")} configuration file in the same directory as NLPCraft JAR file. If the " +
+                        s"configuration file has different name or in different location use this parameter to " +
+                        s"provide an alternative path."
                 ),
                 Parameter(
                     id = "output",
@@ -170,7 +173,14 @@ object NCCli extends App {
                     optional = true,
                     desc =
                         "File path for both REST server stdout and stderr output. If not provided, the REST server" +
-                        s"output will be piped into '$${USER_HOME}/.nlpcraft/server-output-xxx.txt' file."
+                        s"output will be piped into ${y("${USER_HOME}/.nlpcraft/server-output-xxx.txt")}' file."
+                ),
+                Parameter(
+                    id = "noWait",
+                    names = Seq("--no-wait"),
+                    optional = true,
+                    desc =
+                        s"Instructs command not to wait for the server startup and return immediately."
                 )
             ),
             examples = Seq(
@@ -183,6 +193,12 @@ object NCCli extends App {
                     desc = "Starts REST server with alternative configuration file."
                 )
             )
+        ),
+        Command(
+            id = "get-server",
+            names = Seq("get-server"),
+            synopsis = s"Basic information about locally running REST server.",
+            body = cmdServerInfo
         ),
         Command(
             id = "no-ansi",
@@ -339,6 +355,42 @@ object NCCli extends App {
     private final val ANSI_CMD = CMDS.find(_.id ==  "ansi").get
 
     /**
+     *
+     * @param endpoint
+     * @return
+     */
+    private def restHealth(endpoint: String): Int =
+        httpGet(endpoint, "health", new ResponseHandler[Int]() {
+            override def handleResponse(resp: HttpResponse): Int = resp.getStatusLine.getStatusCode
+        })
+
+    /**
+     *
+     * @param pathOpt
+     */
+    private def checkFilePath(pathOpt: Option[Argument]): Unit = {
+        if (pathOpt.isDefined) {
+            val file = new File(pathOpt.get.value.get)
+
+            if (!file.exists() || !file.isFile)
+                throw new IllegalArgumentException(s"File not found: ${file.getAbsolutePath}")
+        }
+    }
+
+    /**
+     *
+     * @param pathOpt
+     */
+    private def checkDirPath(pathOpt: Option[Argument]): Unit = {
+        if (pathOpt.isDefined) {
+            val file = new File(pathOpt.get.value.get)
+
+            if (!file.exists() || !file.isDirectory)
+                throw new IllegalArgumentException(s"Directory not found: ${file.getAbsolutePath}")
+        }
+    }
+
+    /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
@@ -346,10 +398,14 @@ object NCCli extends App {
     private def cmdStartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val cfgPath = args.find(_.parameter.id == "config")
         val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
+        val noWait = args.exists(_.parameter.id == "noWait")
         val output = args.find(_.parameter.id == "output") match {
             case Some(arg) ⇒ new File(arg.value.get)
             case None ⇒ new File(SystemUtils.getUserHome, s".nlpcraft/server-output-$currentTime.txt")
         }
+
+        checkFilePath(cfgPath)
+        checkFilePath(igniteCfgPath)
 
         val pb = new ProcessBuilder(
             JAVA,
@@ -369,11 +425,11 @@ object NCCli extends App {
             "org.apache.nlpcraft.NCStart",
             "-server",
             cfgPath match {
-                case Some(path) ⇒ s"-config=$path"
+                case Some(path) ⇒ s"-config=${path.value.get}"
                 case None ⇒ ""
             },
             igniteCfgPath match {
-                case Some(path) ⇒ s"-igniteConfig=$path"
+                case Some(path) ⇒ s"-igniteConfig=${path.value.get}"
                 case None ⇒ ""
             },
         )
@@ -383,15 +439,76 @@ object NCCli extends App {
         pb.redirectOutput(Redirect.appendTo(output))
 
         try {
+            val startMs = currentTime
+
             pb.start()
 
-            logln(s"REST server is starting, output redirected to ${c(output.getAbsolutePath)}")
-            logln(s"Use ${g("stop-server")} command to stop it.")
+            logln(s"Server output: ${c(output.getAbsolutePath)}")
+
+            if (noWait)
+                logln(s"Server is starting...")
+            else {
+                log(s"Server is starting ")
+
+                val timeout = currentTime + 5.mins
+
+                def getServerBeacon = loadServerBeacon().map(_._1).orNull
+
+                var beacon = getServerBeacon
+                var online = false
+
+                val spinner = mkSpinner()
+
+                spinner.start()
+
+                while (currentTime < timeout && !online) {
+                    if (beacon == null)
+                        beacon = getServerBeacon
+                    else
+                        online = Try(restHealth("http://" + beacon.restEndpoint) == 200).getOrElse(false)
+
+                    if (!online)
+                        Thread.sleep(2.secs)
+                }
+
+                spinner.stop()
+
+                if (!online) {
+                    logln()
+                    error(s"Cannot detect live server.")
+                }
+                else {
+                    val dur = currentTime - startMs
+
+                    logln()
+                    logln(s"Server is started ${c(s"[${dur / 1000}s]")}")
+                }
+            }
+
+            val tbl = new NCAsciiTable()
+
+            tbl += (s"${g("stop-server")}", "Start the server.")
+            tbl += (s"${g("ping-server")}", "Ping the server.")
+            tbl += (s"${g("get-server")}", "Get server information.")
+
+            logln(s"Handy commands:\n${tbl.toString}")
         }
         catch {
-            case e: Exception ⇒ error(s"REST server failed to start: ${y(e.getLocalizedMessage)}")
+            case e: Exception ⇒ error(s"Server failed to start: ${y(e.getLocalizedMessage)}")
         }
     }
+
+    /**
+     * Makes default spinner.
+     *
+     * @return
+     */
+    private def mkSpinner() = new NCAnsiSpinner(
+        System.out,
+        ansiCyanFg,
+        // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
+        NCAnsi.isEnabled && U.sysEnv("NLPCRAFT_CLI").isDefined
+    )
 
     /**
      * @param cmd Command descriptor.
@@ -419,21 +536,14 @@ object NCCli extends App {
         while (i < num) {
             log(s"(${i + 1} of $num) pinging REST server at ${b(endpoint)} ")
 
-            val spinner = new NCAnsiSpinner(
-                System.out,
-                ansiCyanFg,
-                // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
-                NCAnsi.isEnabled && U.sysEnv("NLPCRAFT_CLI").isDefined
-            )
+            val spinner = mkSpinner()
 
             spinner.start()
 
             val startMs = currentTime
 
             try
-                httpGet(endpoint, "health", new ResponseHandler[Int]() {
-                    override def handleResponse(resp: HttpResponse): Int = resp.getStatusLine.getStatusCode
-                }) match {
+                restHealth(endpoint) match {
                     case 200 ⇒
                         spinner.stop()
 
@@ -676,6 +786,19 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private def cmdServerInfo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        loadServerBeacon() match {
+            case Some((beacon, _)) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
+            case None ⇒ error(s"Cannot detect local REST server.")
+        }
+    }
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private def cmdRepl(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some((beacon, _)) ⇒ logln(s"Local REST server detected:\n${mkServerBeaconTable(beacon).toString}")
@@ -796,7 +919,7 @@ object NCCli extends App {
      * @param cmd
      * @return
      */
-    private def prepUrl(baseUrl: String, cmd: String): String =
+    private def prepRestUrl(baseUrl: String, cmd: String): String =
         if (baseUrl.endsWith("/")) s"${baseUrl}api/v1/$cmd" else s"$baseUrl/api/v1/$cmd"
 
     /**
@@ -810,7 +933,7 @@ object NCCli extends App {
      * @throws IOException
      */
     private def httpPost[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
-        val post = new HttpPost(prepUrl(baseUrl, cmd))
+        val post = new HttpPost(prepRestUrl(baseUrl, cmd))
 
         post.setHeader("Content-Type", "application/json")
         post.setEntity(new StringEntity(gson.toJson(jsParams.filter(_._2 != null).toMap.asJava), "UTF-8"))
@@ -832,7 +955,7 @@ object NCCli extends App {
      * @throws IOException
      */
     private def httpGet[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
-        val bldr = new URIBuilder(prepUrl(baseUrl, cmd))
+        val bldr = new URIBuilder(prepRestUrl(baseUrl, cmd))
 
         jsParams.foreach(p ⇒ bldr.setParameter(p._1, p._2.toString))
 
