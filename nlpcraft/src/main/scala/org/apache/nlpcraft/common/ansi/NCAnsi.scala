@@ -26,7 +26,9 @@ import org.apache.nlpcraft.common._
 sealed trait NCAnsi extends LazyLogging {
     import NCAnsi._
 
-    // Colors.
+    private final val RESET = "\u001b[0m"
+
+    // Colors &effects.
     private final val BLACK = "\u001b[30m"
     private final val RED = "\u001b[31m"
     private final val GREEN = "\u001b[32m"
@@ -43,7 +45,6 @@ sealed trait NCAnsi extends LazyLogging {
     private final val MAGENTA_B = "\u001b[45m"
     private final val CYAN_B = "\u001b[46m"
     private final val WHITE_B = "\u001b[47m"
-    private final val RESET = "\u001b[0m"
     private final val BOLD = "\u001b[1m"
     private final val UNDERLINED = "\u001b[4m"
     private final val BLINK = "\u001b[5m"

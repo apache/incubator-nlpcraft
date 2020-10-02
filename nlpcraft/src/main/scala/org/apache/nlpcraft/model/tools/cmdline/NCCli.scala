@@ -40,6 +40,12 @@ import java.text.DateFormat
 import java.util.Date
 
 import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
+import org.jline.reader.impl.DefaultParser
+import org.jline.terminal.TerminalBuilder
+import org.jline.reader.LineReader
+import org.jline.reader.LineReaderBuilder
+import org.jline.reader.impl.DefaultParser.Bracket
+
 import resource.managed
 
 import scala.collection.mutable
@@ -849,10 +855,27 @@ object NCCli extends App {
 
         var exit = false
 
+        val term = TerminalBuilder.builder()
+            .system(true)
+            .build();
+
+        val parser = new DefaultParser()
+
+        parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
+
+        val reader = LineReaderBuilder
+            .builder
+            .terminal(term)
+//            .completer(completer)
+            .parser(parser)
+            .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
+            .variable(LineReader.INDENTATION, 2)
+            .build
+
         while (!exit) {
             log(s"${g(">")} ")
 
-            val rawLine = in.readLine()
+            val rawLine = reader.readLine()
 
             if (rawLine == null || QUITS.contains(rawLine.trim))
                 exit = true

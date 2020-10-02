@@ -129,6 +129,7 @@
         <diff.utils.ver>4.7</diff.utils.ver>
         <vertical.blank.ver>1.0.1</vertical.blank.ver>
         <fliptables.ver>1.1.0</fliptables.ver>
+        <jline.ver>3.16.0</jline.ver>
 
         <!--
             Following libraries versions are compatible:
@@ -192,6 +193,12 @@
                 <groupId>io.opencensus</groupId>
                 <artifactId>opencensus-exporter-trace-zipkin</artifactId>
                 <version>${opencensus.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.ver}</version>
             </dependency>
 
             <dependency>

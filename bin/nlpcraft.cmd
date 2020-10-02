@@ -22,27 +22,25 @@
 :: See https://github.com/apache/ignite for more details.
 ::
 
+:: NOTE: ANSI colors sequences used by default.
+
 Setlocal EnableDelayedExpansion
 
 if "%OS%" == "Windows_NT"  setlocal
 
 :: Check JAVA_HOME.
 if defined JAVA_HOME goto checkJdk
-    echo ERROR:
-    echo ------
-    echo JAVA_HOME environment variable is not found.
-    echo Please point JAVA_HOME variable to location of JDK 11 or later.
-    echo You can also download latest JDK at http://java.com/download.
+    echo [31mERR:[0m JAVA_HOME environment variable is not found.
+    echo [31mERR:[0m Please point JAVA_HOME variable to location of JDK 11 or later.
+    echo [31mERR:[0m You can also download latest JDK at http://java.com/download.
 goto :eof
 
 :checkJdk
 :: Check that JDK is where it should be.
 if exist "%JAVA_HOME%\bin\java.exe" goto checkJdkVersion
-    echo ERROR:
-    echo ------
-    echo JAVA is not found in JAVA_HOME=%JAVA_HOME%.
-    echo Please point JAVA_HOME variable to installation of JDK 11 or later.
-    echo You can also download latest JDK at http://java.com/download.
+    echo [31mERR:[0m JAVA is not found in  [36m'%JAVA_HOME%'[0m.
+    echo [31mERR:[0m Please point JAVA_HOME variable to installation of JDK 11 or later.
+    echo [31mERR:[0m You can also download latest JDK at http://java.com/download.
 goto :eof
 
 :checkJdkVersion
@@ -60,11 +58,9 @@ for /f "tokens=1,2 delims=." %%a in ("%JAVA_VER_STR%.x") do set MAJOR_JAVA_VER=%
 if %MAJOR_JAVA_VER% == 1 set MAJOR_JAVA_VER=%MINOR_JAVA_VER%
 
 if %MAJOR_JAVA_VER% LSS 11 (
-    echo ERROR:
-    echo ------
-    echo The version of JAVA installed in %JAVA_HOME% is incorrect.
-    echo Please point JAVA_HOME variable to installation of JDK 11 or later.
-    echo You can also download latest JDK at http://java.com/download.
+    echo [31mERR:[0m The version [36m%MAJOR_JAVA_VER%[0m of JAVA installed in [36m'%JAVA_HOME%'[0m is incompatible.
+    echo [31mERR:[0m Please point JAVA_HOME variable to installation of JDK 11 or later.
+    echo [31mERR:[0m You can also download latest JDK at http://java.com/download.
 	goto :eof
 )
 
@@ -81,19 +77,25 @@ pushd "%SCRIPT_HOME%"\..
 set INSTALL_HOME=%CD%
 popd
 
-:: Directory containing JARs.
-set BUILD_HOME=%INSTALL_HOME%\build
+:: Directories containing JARs:
+::   'build' - JARs from binary distribution.
+::   'dev' - JARs from built sources by 'mvn clean package'.
+set BUILD_JARS=%INSTALL_HOME%\build
+set DEV_JARS=%INSTALL_HOME%\nlpcraft\target
 
-if not exist "%BUILD_HOME%" (
-    echo ERROR:
-    echo ------
-    echo Folder '%INSTALL_HOME%\build' does not exist.
-    echo This folder should contain NLPCraft JARs and is required to run this script.
-	goto :eof
+if not exist "%BUILD_JARS%" (
+    if not exist "%DEV_JARS%" (
+        echo [31mERR:[0m Cannot find JARs for NLPCraft in either of these folders:
+        echo [31mERR:[0m   [33m+-[0m %BUILD_JARS%
+        echo [31mERR:[0m   [33m+-[0m %DEV_JARS%
+        goto :eof
+    )
 )
 
 :: Build classpath.
-for %%f in ("%BUILD_HOME%"\*.jar) do ( set CP=%%f;!CP! )
+:: NOTE: JARs from 'build' override JARs from 'dev'.
+for %%f in ("%DEV_JARS%"\*-all-deps.jar) do ( set CP=%%f;!CP! )
+for %%f in ("%BUILD_JARS%"\*-all-deps.jar) do ( set CP=%%f;!CP! )
 
 set MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCli
 set JVM_OPTS= ^

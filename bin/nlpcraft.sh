@@ -25,8 +25,11 @@ SCRIPT_NAME="$(basename "$0")"
 # NLPCraft installation home.
 INSTALL_HOME="$(dirname "$SCRIPT_HOME")"
 
-# Directory containing JARs.
-BUILD_HOME="$INSTALL_HOME/build"
+# Directories containing JARs:
+#   'build' - JARs from binary distribution.
+#   'dev' - JARs from built sources by 'mvn clean package'.
+BUILD_JARS="$INSTALL_HOME/build"
+DEV_JARS="$INSTALL_HOME/nlpcraft/target"
 
 # Mac OS specific support to display correct name in the dock.
 if [ "${DOCK_OPTS:-}" == "" ]; then
@@ -64,11 +67,9 @@ checkJava() {
         RETCODE=$?
 
         if [ $RETCODE -ne 0 ]; then
-            echo "ERROR:"
-            echo "------"
-            echo "JAVA_HOME environment variable is not found."
-            echo "Please point JAVA_HOME variable to location of JDK 11 or later."
-            echo "You can also download latest JDK at http://java.com/download"
+            echo "\e[31mERR:\e[0m JAVA_HOME environment variable is not found."
+            echo "\e[31mERR:\e[0m Please point JAVA_HOME variable to location of JDK 11 or later."
+            echo "\e[31mERR:\e[0m You can also download latest JDK at http://java.com/download"
 
             exit 1
         fi
@@ -82,11 +83,9 @@ checkJava() {
     javaMajorVersion "$JAVA"
 
     if [ "$version" -lt 11 ]; then
-        echo "ERROR:"
-        echo "------"
-        echo "The $version version of JAVA installed in JAVA_HOME=$JAVA_HOME is incompatible."
-        echo "Please point JAVA_HOME variable to installation of JDK 11 or later."
-        echo "You can also download latest JDK at http://java.com/download"
+        echo "\e[31mERR:\e[0m The version \e[36m$version\e[0m of JAVA installed in \e[36m'$JAVA_HOME'\e[0m is incompatible."
+        echo "\e[31mERR:\e[0m Please point JAVA_HOME variable to installation of JDK 11 or later."
+        echo "\e[31mERR:\e[0m You can also download latest JDK at http://java.com/download"
 
         exit 1
     fi
@@ -106,17 +105,21 @@ case "${osname}" in
         ;;
 esac
 
-if ! [ -d "$BUILD_HOME" ]; then
-    echo "ERROR:"
-    echo "------"
-    echo "Folder '${INSTALL_HOME}\build' does not exist."
-    echo "This folder should contain NLPCraft JARs and is required to run this script."
+if ! [ -d "$BUILD_JARS" ] && ! [ -d "$DEV_JARS" ]; then
+    echo "\e[31mERR:\e[0m Cannot find JARs for NLPCraft in either of these folders:"
+    echo "\e[31mERR:\e[0m   \e[33m+-\e[0m $BUILD_JARS"
+    echo "\e[31mERR:\e[0m   \e[33m+-\e[0m $DEV_JARS"
 
     exit 1
 fi
 
 # Build classpath.
-for file in "$BUILD_HOME"/*.jar
+# NOTE: JARs from 'build' override JARs from 'dev'.
+for file in "$DEV_JARS"/*-all-deps.jar
+do
+    CP=$CP$SEP$file
+done
+for file in "$BUILD_JARS"/*-all-deps.jar
 do
     CP=$CP$SEP$file
 done
