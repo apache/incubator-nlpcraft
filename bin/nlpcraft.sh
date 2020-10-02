@@ -124,7 +124,7 @@ done
 # Check Java version.
 checkJava
 
-MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCommandLine
+MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCli
 JVM_OPTS="\
     -ea \
     -Xms1g \

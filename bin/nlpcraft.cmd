@@ -95,7 +95,7 @@ if not exist "%BUILD_HOME%" (
 :: Build classpath.
 for %%f in ("%BUILD_HOME%"\*.jar) do ( set CP=%%f;!CP! )
 
-set MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCommandLine
+set MAIN_CLASS=org.apache.nlpcraft.model.tools.cmdline.NCCli
 set JVM_OPTS= ^
     -ea ^
     -Xms1g ^
