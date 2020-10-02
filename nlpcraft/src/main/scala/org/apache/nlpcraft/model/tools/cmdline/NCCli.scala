@@ -62,6 +62,7 @@ object NCCli extends App {
     private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
     private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
+    private final lazy val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
 
     private final val T___ = "    "
     private val OPEN_BRK = Seq('[', '{', '(', '<')
@@ -532,7 +533,7 @@ object NCCli extends App {
         System.out,
         ansiCyanFg,
         // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
-        NCAnsi.isEnabled && U.sysEnv("NLPCRAFT_CLI").isDefined
+        NCAnsi.isEnabled && IS_SCRIPT
     )
 
     /**
@@ -1155,6 +1156,9 @@ object NCCli extends App {
             DFLT_CMD.body(DFLT_CMD, Seq.empty, false)
         else
             doCommand(args.toSeq, repl = false)
+
+        if (IS_SCRIPT)
+            logln()
 
         sys.exit(exitStatus)
     }
