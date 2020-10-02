@@ -16,6 +16,10 @@
 # limitations under the License.
 #
 
+#
+# NOTE: this script uses ANSI color sequences by default.
+#
+
 # Absolute directory path of this script.
 SCRIPT_HOME="$(dirname "$(readlink -f "$0")")"
 
@@ -67,9 +71,9 @@ checkJava() {
         RETCODE=$?
 
         if [ $RETCODE -ne 0 ]; then
-            echo "\e[31mERR:\e[0m JAVA_HOME environment variable is not found."
-            echo "\e[31mERR:\e[0m Please point JAVA_HOME variable to location of JDK 11 or later."
-            echo "\e[31mERR:\e[0m You can also download latest JDK at http://java.com/download"
+            echo -e "\e[31mERR:\e[0m JAVA_HOME environment variable is not found."
+            echo -e "\e[31mERR:\e[0m Please point JAVA_HOME variable to location of JDK 11 or later."
+            echo -e "\e[31mERR:\e[0m You can also download latest JDK at http://java.com/download"
 
             exit 1
         fi
@@ -83,9 +87,9 @@ checkJava() {
     javaMajorVersion "$JAVA"
 
     if [ "$version" -lt 11 ]; then
-        echo "\e[31mERR:\e[0m The version \e[36m$version\e[0m of JAVA installed in \e[36m'$JAVA_HOME'\e[0m is incompatible."
-        echo "\e[31mERR:\e[0m Please point JAVA_HOME variable to installation of JDK 11 or later."
-        echo "\e[31mERR:\e[0m You can also download latest JDK at http://java.com/download"
+        echo -e "\e[31mERR:\e[0m The version \e[36m$version\e[0m of JAVA installed in \e[36m'$JAVA_HOME'\e[0m is incompatible."
+        echo -e "\e[31mERR:\e[0m Please point JAVA_HOME variable to installation of JDK 11 or later."
+        echo -e "\e[31mERR:\e[0m You can also download latest JDK at http://java.com/download"
 
         exit 1
     fi
@@ -106,9 +110,9 @@ case "${osname}" in
 esac
 
 if ! [ -d "$BUILD_JARS" ] && ! [ -d "$DEV_JARS" ]; then
-    echo "\e[31mERR:\e[0m Cannot find JARs for NLPCraft in either of these folders:"
-    echo "\e[31mERR:\e[0m   \e[33m+-\e[0m $BUILD_JARS"
-    echo "\e[31mERR:\e[0m   \e[33m+-\e[0m $DEV_JARS"
+    echo -e "\e[31mERR:\e[0m Cannot find JARs for NLPCraft in either of these folders:"
+    echo -e "\e[31mERR:\e[0m   \e[33m+-\e[0m $BUILD_JARS"
+    echo -e "\e[31mERR:\e[0m   \e[33m+-\e[0m $DEV_JARS"
 
     exit 1
 fi
