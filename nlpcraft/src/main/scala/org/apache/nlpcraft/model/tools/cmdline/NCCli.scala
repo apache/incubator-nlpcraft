@@ -356,6 +356,34 @@ object NCCli extends App {
 
     /**
      *
+     * @param s
+     * @return
+     */
+    private def stripQuotes(s: String): String = {
+        var x = s
+        var found = true
+
+        while (found) {
+            found = false
+
+            if (x.startsWith("\"") && x.endsWith("\"")) {
+                found = true
+
+                x = x.substring(1, x.length - 1)
+            }
+
+            if (x.startsWith("'") && x.endsWith("'")) {
+                found = true
+
+                x = x.substring(1, x.length - 1)
+            }
+        }
+
+        x
+    }
+
+    /**
+     *
      * @param endpoint
      * @return
      */
@@ -370,10 +398,10 @@ object NCCli extends App {
      */
     private def checkFilePath(pathOpt: Option[Argument]): Unit = {
         if (pathOpt.isDefined) {
-            val file = new File(pathOpt.get.value.get)
+            val file = new File(stripQuotes(pathOpt.get.value.get))
 
             if (!file.exists() || !file.isFile)
-                throw new IllegalArgumentException(s"File not found: ${file.getAbsolutePath}")
+                throw new IllegalArgumentException(s"File not found: ${c(file.getAbsolutePath)}")
         }
     }
 
@@ -383,10 +411,10 @@ object NCCli extends App {
      */
     private def checkDirPath(pathOpt: Option[Argument]): Unit = {
         if (pathOpt.isDefined) {
-            val file = new File(pathOpt.get.value.get)
+            val file = new File(stripQuotes(pathOpt.get.value.get))
 
             if (!file.exists() || !file.isDirectory)
-                throw new IllegalArgumentException(s"Directory not found: ${file.getAbsolutePath}")
+                throw new IllegalArgumentException(s"Directory not found: ${c(file.getAbsolutePath)}")
         }
     }
 
@@ -425,11 +453,11 @@ object NCCli extends App {
             "org.apache.nlpcraft.NCStart",
             "-server",
             cfgPath match {
-                case Some(path) ⇒ s"-config=${path.value.get}"
+                case Some(path) ⇒ s"-config=${stripQuotes(path.value.get)}"
                 case None ⇒ ""
             },
             igniteCfgPath match {
-                case Some(path) ⇒ s"-igniteConfig=${path.value.get}"
+                case Some(path) ⇒ s"-igniteConfig=${stripQuotes(path.value.get)}"
                 case None ⇒ ""
             },
         )
@@ -450,14 +478,12 @@ object NCCli extends App {
             else {
                 log(s"Server is starting ")
 
-                val timeout = currentTime + 5.mins
-
                 def getServerBeacon = loadServerBeacon().map(_._1).orNull
 
                 var beacon = getServerBeacon
                 var online = false
-
                 val spinner = mkSpinner()
+                val timeout = currentTime + 5.mins
 
                 spinner.start()
 
@@ -468,7 +494,7 @@ object NCCli extends App {
                         online = Try(restHealth("http://" + beacon.restEndpoint) == 200).getOrElse(false)
 
                     if (!online)
-                        Thread.sleep(2.secs)
+                        Thread.sleep(2.secs) // Check every 2 secs.
                 }
 
                 spinner.stop()
@@ -476,18 +502,17 @@ object NCCli extends App {
                 if (!online) {
                     logln()
                     error(s"Cannot detect live server.")
+                    error(s"Check output for errors: ${c(output.getAbsolutePath)}")
                 }
                 else {
-                    val dur = currentTime - startMs
-
                     logln()
-                    logln(s"Server is started ${c(s"[${dur / 1000}s]")}")
+                    logln(s"Server has started:\n${mkServerBeaconTable(beacon)}")
                 }
             }
 
             val tbl = new NCAsciiTable()
 
-            tbl += (s"${g("stop-server")}", "Start the server.")
+            tbl += (s"${g("stop-server")}", "Stop the server.")
             tbl += (s"${g("ping-server")}", "Ping the server.")
             tbl += (s"${g("get-server")}", "Get server information.")
 
@@ -749,7 +774,8 @@ object NCCli extends App {
                         }
                     case None ⇒
                         err = true
-                        error(s"Unknown command to get help for: $cmdName")
+
+                        unknownCommand(cmdName)
                 }
             }
 
@@ -805,8 +831,8 @@ object NCCli extends App {
             case None ⇒ ()
         }
 
-        logln(s"Type ${c("help")} or ${c("help -c=repl")} to get help.")
-        logln(s"Type ${c("quit")} to exit.")
+        logln(s"Type '${c("?")}' or '${c("? -c=repl")}' to get help.")
+        logln(s"Type '${c("quit")}' to exit.")
 
         val in = new BufferedReader(new InputStreamReader(System.in))
 
@@ -901,8 +927,10 @@ object NCCli extends App {
     /**
      *
      */
-    private def errorHelp(): Unit =
-        error(s"Run '${c(SCRIPT_NAME + " " + HELP_CMD.mainName)}' to read the manual.")
+    private def unknownCommand(cmd: String): Unit = {
+        error(s"Unknown command: ${y(cmd)}")
+        error(s"Use '${c("?")}' command to read the manual.")
+    }
 
     /**
      * Prints out the version and copyright title header.
@@ -1025,8 +1053,12 @@ object NCCli extends App {
 
                 buf += ch
             }
-            else
+            else {
+                if (escape)
+                    buf += '\\' // Put back '\'.
+
                 buf += ch
+            }
 
             // Drop escape flag.
             if (escape && ch != '\\')
@@ -1098,6 +1130,8 @@ object NCCli extends App {
 
             CMDS.find(_.extNames.contains(cmd)) match {
                 case Some(cmd) ⇒
+                    exitStatus = 0
+
                     if (!(repl && cmd.id == "repl")) // Don't call 'repl' from 'repl'.
                         try
                             cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
@@ -1105,7 +1139,7 @@ object NCCli extends App {
                             case e: Exception ⇒ error(e.getLocalizedMessage)
                         }
 
-                case None ⇒ error(s"Unknown command: ${c(cmd)}")
+                case None ⇒ unknownCommand(cmd)
             }
         }
     }
@@ -1121,9 +1155,6 @@ object NCCli extends App {
             DFLT_CMD.body(DFLT_CMD, Seq.empty, false)
         else
             doCommand(args.toSeq, repl = false)
-
-        if (exitStatus != 0)
-            errorHelp()
 
         sys.exit(exitStatus)
     }
