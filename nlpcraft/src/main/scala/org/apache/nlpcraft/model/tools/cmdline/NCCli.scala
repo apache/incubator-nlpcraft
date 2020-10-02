@@ -42,10 +42,8 @@ import java.util.Date
 import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.TerminalBuilder
-import org.jline.reader.LineReader
-import org.jline.reader.LineReaderBuilder
+import org.jline.reader.{EndOfFileException, LineReader, LineReaderBuilder, UserInterruptException}
 import org.jline.reader.impl.DefaultParser.Bracket
-
 import resource.managed
 
 import scala.collection.mutable
@@ -857,6 +855,7 @@ object NCCli extends App {
 
         val term = TerminalBuilder.builder()
             .system(true)
+            .dumb(true)
             .build();
 
         val parser = new DefaultParser()
@@ -868,14 +867,18 @@ object NCCli extends App {
             .terminal(term)
 //            .completer(completer)
             .parser(parser)
-            .variable(LineReader.SECONDARY_PROMPT_PATTERN, "%M%P > ")
+            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g(">>")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
 
         while (!exit) {
-            log(s"${g(">")} ")
-
-            val rawLine = reader.readLine()
+            val rawLine =
+                try
+                    reader.readLine(s"${g(">")} ")
+                catch {
+                    case _: UserInterruptException ⇒ null
+                    case _: EndOfFileException ⇒ null
+                }
 
             if (rawLine == null || QUITS.contains(rawLine.trim))
                 exit = true
@@ -894,7 +897,6 @@ object NCCli extends App {
                         error(s"Uneven quotes or brackets:")
                         error(s"  ${r("+-")} $lineX")
                         error(s"  ${r("+-")} $dashX")
-
                 }
             }
         }
