@@ -79,7 +79,7 @@ object NCCli extends App {
         desc: Option[String] = None,
         params: Seq[Parameter] = Seq.empty,
         examples: Seq[Example] = Seq.empty,
-        body: (Command, Seq[Argument]) ⇒ Unit
+        body: (Command, Seq[Argument], Boolean) ⇒ Unit
     ) {
         final val extNames = names.flatMap(name ⇒ // Safeguard against "common" errors.
             Seq(
@@ -341,8 +341,9 @@ object NCCli extends App {
     /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not running from REPL.
      */
-    private def cmdStartServer(cmd: Command, args: Seq[Argument]): Unit = {
+    private def cmdStartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val cfgPath = args.find(_.parameter.id == "config")
         val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
         val output = args.find(_.parameter.id == "output") match {
@@ -395,8 +396,9 @@ object NCCli extends App {
     /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def cmdPingServer(cmd: Command, args: Seq[Argument]): Unit = {
+    private def cmdPingServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val endpoint = args.find(_.parameter.id == "endpoint") match {
             case Some(arg) ⇒ new URL(arg.value.get).toURI.toString
             case None ⇒ "http://localhost:8081"
@@ -489,8 +491,9 @@ object NCCli extends App {
     /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def cmdStopServer(cmd: Command, args: Seq[Argument]): Unit = {
+    private def cmdStopServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some((beacon, ph)) ⇒
                 val pid = beacon.pid
@@ -508,24 +511,27 @@ object NCCli extends App {
     /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def cmdNoAnsi(cmd: Command, args: Seq[Argument]): Unit = {
+    private def cmdNoAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         NCAnsi.setEnabled(false)
     }
 
     /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def cmdAnsi(cmd: Command, args: Seq[Argument]): Unit = {
+    private def cmdAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         NCAnsi.setEnabled(true)
     }
 
     /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def cmdHelp(cmd: Command, args: Seq[Argument]): Unit = {
+    private def cmdHelp(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         /**
          *
          */
@@ -588,10 +594,11 @@ object NCCli extends App {
             lines
         }
 
-        val tbl = NCAsciiTable().margin(left = 4)
+        val tbl = NCAsciiTable().margin(left = if (repl) 0 else 4)
 
         if (args.isEmpty) { // Default - show abbreviated help.
-            header()
+            if (!repl)
+                header()
 
             CMDS.foreach(cmd ⇒ tbl +/ (
                 "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
@@ -601,7 +608,8 @@ object NCCli extends App {
             logln(tbl.toString)
         }
         else if (args.size == 1 && args.head.parameter.id == "all") { // Show a full format help for all commands.
-            header()
+            if (!repl)
+                header()
 
             CMDS.foreach(cmd ⇒
                 tbl +/ (
@@ -636,7 +644,8 @@ object NCCli extends App {
             }
 
             if (!err) {
-                header()
+                if (!repl)
+                    header()
 
                 logln(tbl.toString)
             }
@@ -665,8 +674,9 @@ object NCCli extends App {
      *
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def cmdRepl(cmd: Command, args: Seq[Argument]): Unit = {
+    private def cmdRepl(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some((beacon, _)) ⇒ logln(s"Local REST server detected:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ ()
@@ -715,8 +725,9 @@ object NCCli extends App {
      *
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def cmdVersion(cmd: Command, args: Seq[Argument]): Unit =
+    private def cmdVersion(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         if (args.isEmpty)
             logln((
                 new NCAsciiTable
@@ -947,12 +958,12 @@ object NCCli extends App {
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         // Process 'no-ansi' command first, if any, and remove it from the list.
         args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
-            case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty)
+            case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty, repl)
             case None ⇒ ()
         }
         // Process 'ansi' command first, if any, and remove it from the list.
         args.find(arg ⇒ ANSI_CMD.names.contains(arg)) match {
-            case Some(_) ⇒ ANSI_CMD.body(ANSI_CMD, Seq.empty)
+            case Some(_) ⇒ ANSI_CMD.body(ANSI_CMD, Seq.empty, repl)
             case None ⇒ ()
         }
 
@@ -966,7 +977,7 @@ object NCCli extends App {
                 case Some(cmd) ⇒
                     if (!(repl && cmd.id == "repl")) // Don't call 'repl' from 'repl'.
                         try
-                            cmd.body(cmd, processParameters(cmd, xargs.tail))
+                            cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
                         catch {
                             case e: Exception ⇒ error(e.getLocalizedMessage)
                         }
@@ -984,7 +995,7 @@ object NCCli extends App {
         title()
 
         if (args.isEmpty)
-            DFLT_CMD.body(DFLT_CMD, Seq.empty)
+            DFLT_CMD.body(DFLT_CMD, Seq.empty, false)
         else
             doCommand(args.toSeq, repl = false)
 
