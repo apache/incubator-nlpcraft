@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.model.tools.cmdline
 
 import java.io.{File, FileInputStream, IOException, ObjectInputStream}
-import java.net.URL
 
 import com.google.gson._
 import javax.net.ssl.SSLException
@@ -183,11 +182,11 @@ object NCCli extends App {
             examples = Seq(
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-server"),
-                    desc = "Starts REST server with default configuration."
+                    desc = "Starts local  server with default configuration."
                 ),
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
-                    desc = "Starts REST server with alternative configuration file."
+                    desc = "Starts local REST server with alternative configuration file."
                 )
             )
         ),
@@ -226,42 +225,27 @@ object NCCli extends App {
         ),
         Command(
             name = "ping-server",
-            synopsis = s"Pings REST server.",
+            synopsis = s"Pings local REST server.",
             desc = Some(
-                s"REST server is pinged using '/health' REST call to check its live status."
+                s"REST server is pinged using '/health' REST call to check its online status."
             ),
             body = cmdPingServer,
             params = Seq(
-                Parameter(
-                    id = "endpoint",
-                    names = Seq("--endpoint", "-e"),
-                    value = Some("url"),
-                    optional = true,
-                    desc =
-                        "REST server endpoint in 'http{s}://hostname:port' format. " +
-                        "Default value is http://localhost:8081"
-                ),
                 Parameter(
                     id = "number",
                     names = Seq("--number", "-n"),
                     value = Some("num"),
                     optional = true,
                     desc =
-                        "Number of pings to perform. Must be an integer > 0."
+                        "Number of pings to perform. Must be a number > 0. Default is 1."
                 )
             ),
             examples = Seq(
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME ping-server"),
-                    desc = "Pings REST server one time."
-                ),
-                Example(
                     usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME ping-server ",
-                        s"    --endpoint=http://localhost:1234 ",
-                        s"    -n=10"
+                        s"$PROMPT $SCRIPT_NAME ping-server -n=10"
                     ),
-                    desc = "Pings REST server at 'http://localhost:1234' endpoint 10 times."
+                    desc = "Pings local REST server 10 times."
                 )
             )
         ),
@@ -549,13 +533,11 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdPingServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val endpoint = args.find(_.parameter.id == "endpoint") match {
-            case Some(arg) ⇒ new URL(arg.value.get).toURI.toString
-            case None ⇒ loadServerBeacon() match {
-                case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
-                case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
-            }
+        val endpoint = loadServerBeacon() match {
+            case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
+            case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
         }
+
         val num = args.find(_.parameter.id == "number") match {
             case Some(arg) ⇒
                 try
@@ -564,7 +546,7 @@ object NCCli extends App {
                     case _ :Exception ⇒ throw new IllegalArgumentException(s"Invalid number of pings: ${arg.value.get}")
                 }
 
-            case None ⇒ 1
+            case None ⇒ 1 // Default.
         }
 
         var i = 0
@@ -911,7 +893,7 @@ object NCCli extends App {
                                 names.map(name ⇒ mkCandidate(if (hasVal) name + "=" else name, name,null, !hasVal))
                             })
                             .asJava
-                        
+
                         case None ⇒ Seq.empty[Candidate].asJava
                     })
                 }
