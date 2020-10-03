@@ -46,6 +46,7 @@ import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.TerminalBuilder
 import org.jline.reader.{Candidate, EndOfFileException, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser.Bracket
+import org.jline.reader.impl.history.DefaultHistory
 import org.jline.widget.AutosuggestionWidgets
 import resource.managed
 
@@ -874,7 +875,7 @@ object NCCli extends App {
         val parser = new DefaultParser()
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
-        parser.setRegexCommand("*")
+        parser.setEofOnUnclosedQuote(true)
 
         val completer = new Completer {
             private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
@@ -929,6 +930,7 @@ object NCCli extends App {
             .terminal(term)
             .completer(completer)
             .parser(parser)
+            .history(new DefaultHistory())
             .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g("\u2026\u25b6")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
@@ -944,7 +946,6 @@ object NCCli extends App {
         new AutosuggestionWidgets(reader).enable()
 
         logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
-        logln()
 
         var exit = false
 
@@ -963,7 +964,7 @@ object NCCli extends App {
                 val srvStr = bo(s"${if (state.isServer) s"ON " else s"OFF "}")
                 val acsTokStr = bo(s"${state.accessToken.getOrElse("")} ")
 
-                reader.printAbove(rb(s" server: $srvStr") + wb(k(s" acsTok: $acsTokStr")))
+                reader.printAbove("\n" + bb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
                 reader.readLine(s"${g("\u25b6")} ")
             }
             catch {
