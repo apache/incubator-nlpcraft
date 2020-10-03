@@ -83,6 +83,13 @@ object NCCli extends App {
 
     private val gson = new GsonBuilder().setPrettyPrinting().create
 
+    case class State(
+        var isServer: Boolean,
+        var accessToken: Option[String]
+    )
+
+    private val state = State(isServer = false, None)
+
     // Single CLI command.
     case class Command(
         name: String,
@@ -595,23 +602,24 @@ object NCCli extends App {
     }
 
     /**
-     * Loads server beacon file and return its data and its corresponding process handle.
+     * Loads and returns server beacon file.
      *
      * @return
      */
-    private def loadServerBeacon(): Option[NCCliServerBeacon] =
-        try {
-            val rawObj = managed(
-                new ObjectInputStream(
-                    new FileInputStream(
-                        new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
+    private def loadServerBeacon(): Option[NCCliServerBeacon] = {
+        val beacon = try {
+            val beacon = (
+                managed(
+                    new ObjectInputStream(
+                        new FileInputStream(
+                            new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
+                        )
                     )
-                )
-            ) acquireAndGet {
-                _.readObject()
-            }
-
-            val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
+                ) acquireAndGet {
+                    _.readObject()
+                }
+            )
+            .asInstanceOf[NCCliServerBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
                 case Some(ph) ⇒
@@ -628,6 +636,12 @@ object NCCli extends App {
         catch {
             case _: Exception ⇒ None
         }
+
+        state.isServer = beacon.isDefined
+
+        beacon
+    }
+
     /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
@@ -930,10 +944,20 @@ object NCCli extends App {
 
         var exit = false
 
+        val pinger = U.mkThread("repl-server-pinger") { _ ⇒
+            loadServerBeacon()
+
+            Thread.sleep(10.secs)
+        }
+
+        pinger.start()
+
         while (!exit) {
+            val prompt = if (state.isServer) s"${y("\u26a1 ")}${g("\u25b6")} " else s"${g("\u25b6")} "
+
             val rawLine =
                 try
-                    reader.readLine(s"${g("\u25b6")} ")
+                    reader.readLine(prompt)
                 catch {
                     case _: PatternSyntaxException ⇒ "" // Guard against JLine hiccups.
                     case _: UserInterruptException ⇒ "" // Ignore.
@@ -961,6 +985,8 @@ object NCCli extends App {
                     }
             }
         }
+
+        U.stopThread(pinger)
 
         // Save command history.
         ignoring(classOf[IOException]) {
