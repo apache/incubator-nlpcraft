@@ -57,7 +57,7 @@ import scala.util.Try
 import scala.util.control.Exception.ignoring
 
 /**
- * 'nlpcraft' script entry point.
+ * NLPCraft CLI.
  */
 object NCCli extends App {
     private final val NAME = "Apache NLPCraft CLI"
@@ -342,6 +342,7 @@ object NCCli extends App {
     private final val NO_ANSI_CMD = CMDS.find(_.name ==  "no-ansi").get
     private final val ANSI_CMD = CMDS.find(_.name ==  "ansi").get
     private final val QUIT_CMD = CMDS.find(_.name ==  "quit").get
+    private final val HELP_CMD = CMDS.find(_.name ==  "help").get
 
     /**
      *
@@ -434,6 +435,7 @@ object NCCli extends App {
             "-ea",
             "-Xms2048m",
             "-XX:+UseG1GC",
+            // Required by Ignite 2.x running on JDK 11+.
             "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
             "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
             "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
@@ -441,7 +443,7 @@ object NCCli extends App {
             "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
             "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED",
             "--illegal-access=permit",
-            "-DNLPCRAFT_ANSI_COLOR_DISABLED=true",
+            "-DNLPCRAFT_ANSI_COLOR_DISABLED=true", // No ANSI colors for text log output to the file.
             "-cp",
             s"$JAVA_CP",
             "org.apache.nlpcraft.NCStart",
@@ -896,6 +898,10 @@ object NCCli extends App {
 
                         case None ⇒ Seq.empty[Candidate].asJava
                     })
+
+                    // For 'help' - add additional auto-completion candidates.
+                    if (cmd == HELP_CMD.name)
+                        candidates.addAll(CMDS.map(c ⇒ s"--cmd=${c.name}").map(s ⇒ mkCandidate(s, s, null, completed = true)).asJava)
                 }
             }
         }
