@@ -30,6 +30,7 @@ case class NCCliServerBeacon(
     restEndpoint: String,
     upLink: String,
     downLink: String,
-    startMs: Long
+    startMs: Long,
+    @transient var ph: ProcessHandle = null
 )
 

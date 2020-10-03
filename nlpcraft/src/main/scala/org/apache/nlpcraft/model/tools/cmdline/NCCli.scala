@@ -38,6 +38,7 @@ import java.lang.ProcessBuilder.Redirect
 import java.lang.management.ManagementFactory
 import java.text.DateFormat
 import java.util.Date
+import java.util.regex.PatternSyntaxException
 
 import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
 import org.jline.builtins.Completers.TreeCompleter
@@ -55,6 +56,7 @@ import scala.compat.java8.OptionConverters._
 import scala.collection.JavaConverters._
 import scala.compat.Platform.currentTime
 import scala.util.Try
+import scala.util.control.Exception.ignoring
 
 /**
  * 'nlpcraft' script entry point.
@@ -63,6 +65,7 @@ object NCCli extends App {
     private final val NAME = "Apache NLPCraft CLI"
 
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
+    private final val HIST_PATH = ".nlpcraft/cli_history"
 
     private final lazy val VER = NCVersion.getCurrent
     private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome,s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
@@ -292,7 +295,7 @@ object NCCli extends App {
         ),
         Command(
             id = "help",
-            names = Seq("help", "?"),
+            names = Seq("help"),
             synopsis = s"Displays manual page for '$SCRIPT_NAME'.",
             desc = Some(
                 s"By default, without '-all' or '-cmd' parameters, displays the abbreviated form of manual " +
@@ -354,6 +357,12 @@ object NCCli extends App {
             id = "repl",
             names = Seq("repl"),
             synopsis = s"Starts '$SCRIPT_NAME' in interactive REPL mode.",
+            desc = Some(
+                s"REPL mode supports all the same commands as command line mode. " +
+                s"REPL is the default mode for when '$SCRIPT_NAME' is started without parameters. " +
+                s"In REPL mode you need to put values that can have spaces (like JSON or file paths) " +
+                s"inside of single or double quotes both of which can be escaped using '\\' character, when necessary."
+            ),
             body = cmdRepl
         )
     ).sortBy(_.id)
@@ -449,7 +458,7 @@ object NCCli extends App {
         checkFilePath(igniteCfgPath)
 
         loadServerBeacon() match {
-            case Some((b, _)) ⇒ throw new IllegalStateException(s"Existing local server (pid ${c(b.pid)}) detected.")
+            case Some(b) ⇒ throw new IllegalStateException(s"Existing local server (pid ${c(b.pid)}) detected.")
             case None ⇒ ()
         }
 
@@ -494,7 +503,7 @@ object NCCli extends App {
             else {
                 log(s"Server is starting ")
 
-                def getServerBeacon = loadServerBeacon().map(_._1).orNull
+                def getServerBeacon = loadServerBeacon().orNull
 
                 var beacon = getServerBeacon
                 var online = false
@@ -559,7 +568,10 @@ object NCCli extends App {
     private def cmdPingServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val endpoint = args.find(_.parameter.id == "endpoint") match {
             case Some(arg) ⇒ new URL(arg.value.get).toURI.toString
-            case None ⇒ "http://localhost:8081"
+            case None ⇒ loadServerBeacon() match {
+                case Some(beacon) ⇒ s"https://${beacon.restEndpoint}"
+                case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
+            }
         }
         val num = args.find(_.parameter.id == "number") match {
             case Some(arg) ⇒
@@ -620,7 +632,7 @@ object NCCli extends App {
      *
      * @return
      */
-    private def loadServerBeacon(): Option[(NCCliServerBeacon, ProcessHandle)] =
+    private def loadServerBeacon(): Option[NCCliServerBeacon] =
         try {
             val rawObj = managed(
                 new ObjectInputStream(
@@ -634,7 +646,17 @@ object NCCli extends App {
 
             val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
 
-            ProcessHandle.of(beacon.pid).asScala.map(beacon → _)
+            ProcessHandle.of(beacon.pid).asScala match {
+                case Some(ph) ⇒
+                    beacon.ph = ph
+
+                    Some(beacon)
+                case None ⇒
+                    // Attempt to clean up stale beacon file.
+                    new File(SystemUtils.getUserHome, SRV_BEACON_PATH).delete()
+
+                    None
+            }
         }
         catch {
             case _: Exception ⇒ None
@@ -647,10 +669,10 @@ object NCCli extends App {
      */
     private def cmdStopServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
-            case Some((beacon, ph)) ⇒
+            case Some(beacon) ⇒
                 val pid = beacon.pid
 
-                if (ph.destroy())
+                if (beacon.ph.destroy())
                     logln(s"Local REST server (pid ${c(pid)}) has been stopped.")
                 else
                     error(s"Failed to stop the local REST server (pid ${c(pid)}).")
@@ -831,7 +853,7 @@ object NCCli extends App {
      */
     private def cmdGetServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
-            case Some((beacon, _)) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
+            case Some(beacon) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ error(s"Cannot detect local REST server.")
         }
     }
@@ -844,11 +866,11 @@ object NCCli extends App {
      */
     private def cmdRepl(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
-            case Some((beacon, _)) ⇒ logln(s"Local REST server detected:\n${mkServerBeaconTable(beacon).toString}")
+            case Some(beacon) ⇒ logln(s"Local REST server detected:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ ()
         }
 
-        logln(s"Type '${c("?")}' or '${c("? -c=repl")}' to get help.")
+        logln(s"Type '${c("help")}' or '${c("help -c=repl")}' to get help.")
         logln(s"Type '${c("quit")}' to exit.")
 
         val QUITS = Seq(
@@ -857,7 +879,10 @@ object NCCli extends App {
 
         var exit = false
 
+        val appName = s"$NAME ver. ${VER.version}"
+
         val term = TerminalBuilder.builder()
+            .name(appName)
             .system(true)
             .dumb(true)
             .jansi(true)
@@ -866,6 +891,7 @@ object NCCli extends App {
         val parser = new DefaultParser()
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
+        parser.setRegexCommand("*")
 
         //val cmdNames = CMDS.flatMap(_.names)
 
@@ -879,12 +905,21 @@ object NCCli extends App {
 
         val reader = LineReaderBuilder
             .builder
+            .appName(appName)
             .terminal(term)
-//            .completer(completer)
+            .completer(completer)
             .parser(parser)
-//            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g(">>")} ")
+            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g(">>")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
+
+        reader.setOpt(LineReader.Option.AUTO_FRESH_LINE)
+        reader.unsetOpt(LineReader.Option.INSERT_TAB)
+        reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION)
+        reader.setVariable(
+            LineReader.HISTORY_FILE,
+            new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
+        )
 
         new AutosuggestionWidgets(reader).enable()
 
@@ -893,7 +928,8 @@ object NCCli extends App {
                 try
                     reader.readLine(s"${g(">")} ")
                 catch {
-                    case _: UserInterruptException ⇒ null
+                    case _: PatternSyntaxException ⇒ "" // Guard against JLine hiccups.
+                    case _: UserInterruptException ⇒ "" // Ignore.
                     case _: EndOfFileException ⇒ null
                 }
 
@@ -902,20 +938,26 @@ object NCCli extends App {
             else {
                 val line = rawLine.trim()
 
-                try {
-                    doCommand(splitBySpace(line), repl = true)
-                }
-                catch {
-                    case e: SplitError ⇒
-                        val idx = e.index
-                        val lineX = line.substring(0, idx) + r(line.substring(idx, idx + 1) ) + line.substring(idx + 1)
-                        val dashX = c("-" * idx) + r("^") + c("-" * (line.length - idx - 1))
+                if (line.nonEmpty)
+                    try {
+                        doCommand(splitBySpace(line), repl = true)
+                    }
+                    catch {
+                        case e: SplitError ⇒
+                            val idx = e.index
+                            val lineX = line.substring(0, idx) + r(line.substring(idx, idx + 1) ) + line.substring(idx + 1)
+                            val dashX = c("-" * idx) + r("^") + c("-" * (line.length - idx - 1))
 
-                        error(s"Uneven quotes or brackets:")
-                        error(s"  ${r("+-")} $lineX")
-                        error(s"  ${r("+-")} $dashX")
-                }
+                            error(s"Uneven quotes or brackets:")
+                            error(s"  ${r("+-")} $lineX")
+                            error(s"  ${r("+-")} $dashX")
+                    }
             }
+        }
+
+        // Save command history.
+        ignoring(classOf[IOException]) {
+            reader.getHistory.save()
         }
     }
 
@@ -978,7 +1020,7 @@ object NCCli extends App {
      */
     private def unknownCommand(cmd: String): Unit = {
         error(s"Unknown command: ${y(cmd)}")
-        error(s"Use '${c("?")}' command to read the manual.")
+        error(s"Use '${c("help")}' command to read the manual.")
     }
 
     /**
@@ -1154,24 +1196,32 @@ object NCCli extends App {
         }
 
     /**
+     *
+     * @param args
+     * @param repl
+     */
+    private def processAnsi(args: Seq[String], repl: Boolean): Unit = {
+        args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
+            case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty, repl)
+            case None ⇒ ()
+        }
+        args.find(arg ⇒ ANSI_CMD.names.contains(arg)) match {
+            case Some(_) ⇒ ANSI_CMD.body(ANSI_CMD, Seq.empty, repl)
+            case None ⇒ ()
+        }
+    }
+
+    /**
      * Processes a single command defined by the given arguments.
      *
      * @param args
      * @param repl Whether or not called from 'repl' command.
      */
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
-        // Process 'no-ansi' command first, if any, and remove it from the list.
-        args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
-            case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty, repl)
-            case None ⇒ ()
-        }
-        // Process 'ansi' command first, if any, and remove it from the list.
-        args.find(arg ⇒ ANSI_CMD.names.contains(arg)) match {
-            case Some(_) ⇒ ANSI_CMD.body(ANSI_CMD, Seq.empty, repl)
-            case None ⇒ ()
-        }
+        // Process 'no-ansi' and 'ansi' commands first.
+        processAnsi(args, repl)
 
-        // Remove 'no-ansi' command from the argument list, if any.
+        // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
         val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg) && !ANSI_CMD.names.contains(arg))
 
         if (xargs.nonEmpty) {
@@ -1198,6 +1248,9 @@ object NCCli extends App {
      * @param args
      */
     private def boot(args: Array[String]): Unit = {
+        // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
+        processAnsi(args, repl = false)
+
         title()
 
         if (args.isEmpty)
