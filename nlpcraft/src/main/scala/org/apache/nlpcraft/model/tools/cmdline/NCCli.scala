@@ -829,10 +829,20 @@ object NCCli extends App {
         val tbl = new NCAsciiTable
 
         tbl += ("PID", s"${g(beacon.pid)}")
-        tbl += ("JDBC URL", s"${g(beacon.dbUrl)}")
+        tbl += ("Database URL", s"${g(beacon.dbUrl)}")
+        tbl += ("  Driver", s"${g(beacon.dbDriver)}")
+        tbl += ("  Pool min", s"${g(beacon.dbPoolMin)}")
+        tbl += ("  Pool init", s"${g(beacon.dbPoolInit)}")
+        tbl += ("  Pool max", s"${g(beacon.dbPoolMax)}")
+        tbl += ("  Pool increment", s"${g(beacon.dbPoolInc)}")
+        tbl += ("  Reset on start", s"${g(beacon.dbInit)}")
         tbl += ("REST endpoint", s"${g(beacon.restEndpoint)}")
-        tbl += ("Uplink", s"${g(beacon.upLink)}")
-        tbl += ("Downlink", s"${g(beacon.downLink)}")
+        tbl += ("Probe uplink", s"${g(beacon.upLink)}")
+        tbl += ("Probe downlink", s"${g(beacon.downLink)}")
+        tbl += ("Token providers", s"${g(beacon.tokenProviders)}")
+        tbl += ("NLP engine", s"${g(beacon.nlpEngine)}")
+        tbl += ("External config URL", s"${g(beacon.extConfigUrl)}")
+        tbl += ("Beacon file path", s"${g(beacon.filePath)}")
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
         tbl
@@ -964,7 +974,7 @@ object NCCli extends App {
                 val srvStr = bo(s"${if (state.isServer) s"ON " else s"OFF "}")
                 val acsTokStr = bo(s"${state.accessToken.getOrElse("")} ")
 
-                reader.printAbove("\n" + bb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
+                reader.printAbove("\n" + rb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
                 reader.readLine(s"${g("\u25b6")} ")
             }
             catch {
@@ -976,7 +986,7 @@ object NCCli extends App {
             if (rawLine == null || QUIT_CMD.name == rawLine.trim)
                 exit = true
             else {
-                val line = rawLine.trim()
+                val line = rawLine.trim().replace("\n", "").replace("\t", "")
 
                 if (line.nonEmpty)
                     try {
