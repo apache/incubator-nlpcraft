@@ -824,7 +824,7 @@ object NCCli extends App {
     private def mkServerBeaconTable(beacon: NCCliServerBeacon): NCAsciiTable = {
         val tbl = new NCAsciiTable
 
-        tbl += (s"PID${y("\u26a1")}", s"${g(beacon.pid)}")
+        tbl += (s"PID ${y("\u26a1")}", s"${g(beacon.pid)}")
         tbl += ("JDBC URL", s"${g(beacon.jdbcUrl)}")
         tbl += ("REST endpoint", s"${g(beacon.restEndpoint)}")
         tbl += ("Uplink", s"${g(beacon.upLink)}")
