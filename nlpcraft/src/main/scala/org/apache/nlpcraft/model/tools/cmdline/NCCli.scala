@@ -37,17 +37,16 @@ import org.apache.nlpcraft.common.version.NCVersion
 import java.lang.ProcessBuilder.Redirect
 import java.lang.management.ManagementFactory
 import java.text.DateFormat
+import java.util
 import java.util.Date
 import java.util.regex.PatternSyntaxException
 
 import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
-import org.jline.builtins.Completers.TreeCompleter
-import org.jline.builtins.Completers.TreeCompleter.node
+import org.jline.reader.Completer
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.TerminalBuilder
-import org.jline.reader.{EndOfFileException, LineReader, LineReaderBuilder, UserInterruptException}
+import org.jline.reader.{Candidate, EndOfFileException, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser.Bracket
-import org.jline.reader.impl.completer.AggregateCompleter
 import org.jline.widget.AutosuggestionWidgets
 import resource.managed
 
@@ -87,26 +86,13 @@ object NCCli extends App {
 
     // Single CLI command.
     case class Command(
-        id: String,
-        names: Seq[String],
+        name: String,
         synopsis: String,
         desc: Option[String] = None,
         params: Seq[Parameter] = Seq.empty,
         examples: Seq[Example] = Seq.empty,
         body: (Command, Seq[Argument], Boolean) ⇒ Unit
     ) {
-        final val extNames = names.flatMap(name ⇒ // Safeguard against "common" errors.
-            Seq(
-                name,
-                s"-$name",
-                s"--$name",
-                s"/$name",
-                s"\\$name"
-            )
-        )
-
-        final val mainName = names.head
-
         /**
          *
          * @param name
@@ -146,8 +132,7 @@ object NCCli extends App {
     // All supported commands.
     private final val CMDS = Seq(
         Command(
-            id = "start-server",
-            names = Seq("start-server"),
+            name = "start-server",
             synopsis = s"Starts local REST server.",
             desc = Some(
                 s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
@@ -207,15 +192,13 @@ object NCCli extends App {
             )
         ),
         Command(
-            id = "get-server",
-            names = Seq("get-server"),
+            name = "get-server",
             synopsis = s"Basic information about locally running REST server.",
             body = cmdGetServer
         ),
         Command(
-            id = "no-ansi",
-            names = Seq("no-ansi"),
-            synopsis = s"Disables usage of ANSI escape codes (colors & terminal controls).",
+            name = "no-ansi",
+            synopsis = s"Disables usage of ANSI escape codes for colors & terminal controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
             ),
@@ -228,9 +211,8 @@ object NCCli extends App {
             )
         ),
         Command(
-            id = "ansi",
-            names = Seq("ansi"),
-            synopsis = s"Enables usage of ANSI escape codes (colors & terminal controls).",
+            name = "ansi",
+            synopsis = s"Enables usage of ANSI escape codes for colors & terminal controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
             ),
@@ -243,8 +225,7 @@ object NCCli extends App {
             )
         ),
         Command(
-            id = "ping-server",
-            names = Seq("ping-server"),
+            name = "ping-server",
             synopsis = s"Pings REST server.",
             desc = Some(
                 s"REST server is pinged using '/health' REST call to check its live status."
@@ -285,8 +266,7 @@ object NCCli extends App {
             )
         ),
         Command(
-            id = "stop-server",
-            names = Seq("stop-server"),
+            name = "stop-server",
             synopsis = s"Stops local REST server.",
             desc = Some(
                 s"Local REST server must be started via $SCRIPT_NAME or similar way."
@@ -294,8 +274,12 @@ object NCCli extends App {
             body = cmdStopServer
         ),
         Command(
-            id = "help",
-            names = Seq("help"),
+            name = "quit",
+            synopsis = s"Quits REPL session when in REPL mode.",
+            body = cmdQuit
+        ),
+        Command(
+            name = "help",
             synopsis = s"Displays manual page for '$SCRIPT_NAME'.",
             desc = Some(
                 s"By default, without '-all' or '-cmd' parameters, displays the abbreviated form of manual " +
@@ -329,8 +313,7 @@ object NCCli extends App {
             )
         ),
         Command(
-            id = "ver",
-            names = Seq("version", "ver"),
+            name = "version",
             synopsis = s"Displays full version of '$SCRIPT_NAME' script.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
@@ -354,8 +337,7 @@ object NCCli extends App {
             )
         ),
         Command(
-            id = "repl",
-            names = Seq("repl"),
+            name = "repl",
             synopsis = s"Starts '$SCRIPT_NAME' in interactive REPL mode.",
             desc = Some(
                 s"REPL mode supports all the same commands as command line mode. " +
@@ -365,16 +347,17 @@ object NCCli extends App {
             ),
             body = cmdRepl
         )
-    ).sortBy(_.id)
+    ).sortBy(_.name)
 
     require(
-        U.getDups(CMDS.flatMap(_.names)).isEmpty,
+        U.getDups(CMDS.map(_.name)).isEmpty,
         "Dup commands."
     )
 
-    private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
-    private final val NO_ANSI_CMD = CMDS.find(_.id ==  "no-ansi").get
-    private final val ANSI_CMD = CMDS.find(_.id ==  "ansi").get
+    private final val DFLT_CMD = CMDS.find(_.name ==  "repl").get
+    private final val NO_ANSI_CMD = CMDS.find(_.name ==  "no-ansi").get
+    private final val ANSI_CMD = CMDS.find(_.name ==  "ansi").get
+    private final val QUIT_CMD = CMDS.find(_.name ==  "quit").get
 
     /**
      *
@@ -661,6 +644,14 @@ object NCCli extends App {
         catch {
             case _: Exception ⇒ None
         }
+    /**
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdQuit(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        // No-op.
+    }
 
     /**
      * @param cmd Command descriptor.
@@ -775,7 +766,7 @@ object NCCli extends App {
                 header()
 
             CMDS.foreach(cmd ⇒ tbl +/ (
-                "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
+                "" → s"${g(cmd.name)}",
                 "align:left, maxWidth:85" → cmd.synopsis
             ))
 
@@ -787,7 +778,7 @@ object NCCli extends App {
 
             CMDS.foreach(cmd ⇒
                 tbl +/ (
-                    "" → cmd.names.mkString(ansiGreenFg, ", ", ansiReset),
+                    "" → s"${g(cmd.name)}",
                     "align:left, maxWidth:85" → mkCmdLines(cmd)
                 )
             )
@@ -801,15 +792,15 @@ object NCCli extends App {
             for (arg ← args) {
                 val cmdName = arg.value.get
 
-                CMDS.find(_.names.contains(cmdName)) match {
+                CMDS.find(_.name.contains(cmdName)) match {
                     case Some(c) ⇒
-                        if (!seen.contains(c.id)) {
+                        if (!seen.contains(c.name)) {
                             tbl +/ (
-                                "" → c.names.mkString(ansiGreenFg, ", ", ansiReset),
+                                "" → s"${g(cmd.name)}",
                                 "align:left, maxWidth:85" → mkCmdLines(c)
                             )
 
-                            seen += c.id
+                            seen += c.name
                         }
                     case None ⇒
                         err = true
@@ -870,15 +861,6 @@ object NCCli extends App {
             case None ⇒ ()
         }
 
-        logln(s"Type '${c("help")}' or '${c("help -c=repl")}' to get help.")
-        logln(s"Type '${c("quit")}' to exit.")
-
-        val QUITS = Seq(
-            "quit", "exit", "/q", "\\q"
-        )
-
-        var exit = false
-
         val appName = s"$NAME ver. ${VER.version}"
 
         val term = TerminalBuilder.builder()
@@ -893,15 +875,29 @@ object NCCli extends App {
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
         parser.setRegexCommand("*")
 
-        //val cmdNames = CMDS.flatMap(_.names)
+        val completer = new Completer {
+            private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
 
-        val completer = new AggregateCompleter(
-            new TreeCompleter(
-                CMDS.flatMap(cmd ⇒ cmd.names.map(name ⇒
-                    node(Seq(name) ++ cmd.params.flatMap(_.names).map(node(_)): _*)
-                )):_*
-            )
-        )
+            override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
+                val words = line.words().asScala
+
+                if (words.isEmpty || !cmds.map(_._1).contains(words.head))
+                    candidates.addAll(cmds.map(n ⇒ {
+                        val name = n._1
+                        val desc = n._2.substring(0, n._2.length - 1) // Remove last '.'.
+
+                        new Candidate(
+                            name,
+                            name,
+                            null,
+                            desc,
+                            null,
+                            null,
+                            true
+                        )
+                    }).asJava)
+            }
+        }
 
         val reader = LineReaderBuilder
             .builder
@@ -923,6 +919,11 @@ object NCCli extends App {
 
         new AutosuggestionWidgets(reader).enable()
 
+        logln(s"Hit '${c("TAB")}' or type '${c("help")}' to get help.")
+        logln(s"Type '${c("quit")}' to exit.")
+
+        var exit = false
+
         while (!exit) {
             val rawLine =
                 try
@@ -933,7 +934,7 @@ object NCCli extends App {
                     case _: EndOfFileException ⇒ null
                 }
 
-            if (rawLine == null || QUITS.contains(rawLine.trim))
+            if (rawLine == null || QUIT_CMD.name.contains(rawLine.trim))
                 exit = true
             else {
                 val line = rawLine.trim()
@@ -986,7 +987,7 @@ object NCCli extends App {
                     logln(s"${VER.date}")
             }
             else
-                error(s"Invalid parameters for command '${cmd.mainName}': ${args.mkString(", ")}")
+                error(s"Invalid parameters for command '${cmd.name}': ${args.mkString(", ")}")
         }
 
 
@@ -1201,11 +1202,11 @@ object NCCli extends App {
      * @param repl
      */
     private def processAnsi(args: Seq[String], repl: Boolean): Unit = {
-        args.find(arg ⇒ NO_ANSI_CMD.names.contains(arg)) match {
+        args.find(arg ⇒ NO_ANSI_CMD.name.contains(arg)) match {
             case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty, repl)
             case None ⇒ ()
         }
-        args.find(arg ⇒ ANSI_CMD.names.contains(arg)) match {
+        args.find(arg ⇒ ANSI_CMD.name.contains(arg)) match {
             case Some(_) ⇒ ANSI_CMD.body(ANSI_CMD, Seq.empty, repl)
             case None ⇒ ()
         }
@@ -1222,16 +1223,16 @@ object NCCli extends App {
         processAnsi(args, repl)
 
         // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
-        val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.names.contains(arg) && !ANSI_CMD.names.contains(arg))
+        val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.name.contains(arg) && !ANSI_CMD.name.contains(arg))
 
         if (xargs.nonEmpty) {
             val cmd = xargs.head
 
-            CMDS.find(_.extNames.contains(cmd)) match {
+            CMDS.find(_.name == cmd) match {
                 case Some(cmd) ⇒
                     exitStatus = 0
 
-                    if (!(repl && cmd.id == "repl")) // Don't call 'repl' from 'repl'.
+                    if (!(repl && cmd.name == "repl")) // Don't call 'repl' from 'repl'.
                         try
                             cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
                         catch {
