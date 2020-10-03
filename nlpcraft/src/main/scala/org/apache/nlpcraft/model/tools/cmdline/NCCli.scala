@@ -878,6 +878,17 @@ object NCCli extends App {
         val completer = new Completer {
             private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
 
+            /**
+             *
+             * @param id
+             * @param disp
+             * @param desc
+             * @param completed
+             * @return
+             */
+            private def mkCandidate(id: String, disp: String, desc: String, completed: Boolean): Candidate =
+                new Candidate(id, disp, null, desc, null, null, completed)
+
             override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
                 val words = line.words().asScala
 
@@ -886,37 +897,21 @@ object NCCli extends App {
                         val name = n._1
                         val desc = n._2.substring(0, n._2.length - 1) // Remove last '.'.
 
-                        new Candidate(
-                            name,
-                            name,
-                            null,
-                            desc,
-                            null,
-                            null,
-                            true
-                        )
+                        mkCandidate(name, name, desc, completed = true)
                     }).asJava)
                 else {
                     val cmd = words.head
 
                     candidates.addAll(CMDS.find(_.name == cmd) match {
-                        case Some(c) ⇒ {
+                        case Some(c) ⇒
                             c.params.flatMap(param ⇒ {
                                 val hasVal = param.value.isDefined
                                 val names = param.names.filter(_.startsWith("--")) // Skip shorthands from auto-completion.
 
-                                names.map(name ⇒ new Candidate(
-                                    if (hasVal) name + "=" else name,
-                                    name,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    !hasVal
-                                ))
+                                names.map(name ⇒ mkCandidate(if (hasVal) name + "=" else name, name,null, !hasVal))
                             })
                             .asJava
-                        }
+                        
                         case None ⇒ Seq.empty[Candidate].asJava
                     })
                 }
