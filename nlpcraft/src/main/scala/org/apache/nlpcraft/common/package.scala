@@ -42,7 +42,6 @@ package object common {
     final val TOK_META_ALIASES_KEY = "__NLPCRAFT_TOK_META_ALIASES"
 
     // Real foreground color shortcuts...
-    def i(s: Any): String = s"$ansiReversed${s.toString}$ansiReset"
     def g(s: Any): String = s"$ansiGreenFg${s.toString}$ansiReset"
     def r(s: Any): String = s"$ansiRedFg${s.toString}$ansiReset"
     def c(s: Any): String = s"$ansiCyanFg${s.toString}$ansiReset"
@@ -50,7 +49,20 @@ package object common {
     def w(s: Any): String = s"$ansiWhiteFg${s.toString}$ansiReset"
     def b(s: Any): String = s"$ansiBlueFg${s.toString}$ansiReset"
     def k(s: Any): String = s"$ansiBlackFg${s.toString}$ansiReset"
-    
+
+    // Real background color shortcuts...
+    def gb(s: Any): String = s"$ansiGreenBg${s.toString}$ansiReset"
+    def rb(s: Any): String = s"$ansiRedBg${s.toString}$ansiReset"
+    def cb(s: Any): String = s"$ansiCyanBg${s.toString}$ansiReset"
+    def yb(s: Any): String = s"$ansiYellowBg${s.toString}$ansiReset"
+    def wb(s: Any): String = s"$ansiWhiteBg${s.toString}$ansiReset"
+    def bb(s: Any): String = s"$ansiBlueBg${s.toString}$ansiReset"
+    def kb(s: Any): String = s"$ansiBlackBg${s.toString}$ansiReset"
+
+    // Real color effect shortcuts...
+    def rv(s: Any): String = s"$ansiReversed${s.toString}$ansiReset"
+    def bo(s: Any): String = s"$ansiBold${s.toString}$ansiReset"
+
     /**
      * 
      * @param f

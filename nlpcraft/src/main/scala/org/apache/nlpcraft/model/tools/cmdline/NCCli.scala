@@ -506,7 +506,7 @@ object NCCli extends App {
                     error(s"Check output for errors: ${c(output.getAbsolutePath)}")
                 }
                 else {
-                    logln(g("[OK]"))
+                    logln(g("OK"))
                     logln(mkServerBeaconTable(beacon).toString)
                 }
             }
@@ -827,7 +827,7 @@ object NCCli extends App {
     private def mkServerBeaconTable(beacon: NCCliServerBeacon): NCAsciiTable = {
         val tbl = new NCAsciiTable
 
-        tbl += (s"PID", s"${g(beacon.pid)} ${b("[s]")}")
+        tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("JDBC URL", s"${g(beacon.jdbcUrl)}")
         tbl += ("REST endpoint", s"${g(beacon.restEndpoint)}")
         tbl += ("Uplink", s"${g(beacon.upLink)}")
@@ -943,7 +943,8 @@ object NCCli extends App {
 
         new AutosuggestionWidgets(reader).enable()
 
-        logln(s"Hit ${i(" tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
+        logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
+        logln()
 
         var exit = false
 
@@ -958,16 +959,18 @@ object NCCli extends App {
         pinger.start()
 
         while (!exit) {
-            val prompt = if (state.isServer) s"${b("[s]")}${g("\u25b6")} " else s"${g("\u25b6")} "
+            val rawLine = try {
+                val srvStr = bo(s"${if (state.isServer) s"ON " else s"OFF "}")
+                val acsTokStr = bo(s"${state.accessToken.getOrElse("")} ")
 
-            val rawLine =
-                try
-                    reader.readLine(prompt)
-                catch {
-                    case _: PatternSyntaxException ⇒ "" // Guard against JLine hiccups.
-                    case _: UserInterruptException ⇒ "" // Ignore.
-                    case _: EndOfFileException ⇒ null
-                }
+                reader.printAbove(rb(s" server: $srvStr") + wb(k(s" acsTok: $acsTokStr")))
+                reader.readLine(s"${g("\u25b6")} ")
+            }
+            catch {
+                case _: PatternSyntaxException ⇒ "" // Guard against JLine hiccups.
+                case _: UserInterruptException ⇒ "" // Ignore.
+                case _: EndOfFileException ⇒ null
+            }
 
             if (rawLine == null || QUIT_CMD.name == rawLine.trim)
                 exit = true
