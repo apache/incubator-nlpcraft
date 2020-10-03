@@ -661,9 +661,12 @@ object NCCli extends App {
             case Some(beacon) ⇒
                 val pid = beacon.pid
 
-                if (beacon.ph.destroy())
+                if (beacon.ph.destroy()) {
                     logln(s"Local REST server (pid ${c(pid)}) has been stopped.")
-                else
+
+                    // Update state right away.
+                    state.isServer = false
+                } else
                     error(s"Failed to stop the local REST server (pid ${c(pid)}).")
 
             case None ⇒
@@ -955,7 +958,7 @@ object NCCli extends App {
         pinger.start()
 
         while (!exit) {
-            val prompt = if (state.isServer) s"${y("\uD83D\uDCBB")}${g("\u25b6")} " else s"${g("\u25b6")} "
+            val prompt = if (state.isServer) s"${y("\u2699 ")}${g("\u25b6")} " else s"${g("\u25b6")} "
 
             val rawLine =
                 try
