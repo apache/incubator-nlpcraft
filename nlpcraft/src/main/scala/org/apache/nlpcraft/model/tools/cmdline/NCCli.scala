@@ -824,7 +824,7 @@ object NCCli extends App {
     private def mkServerBeaconTable(beacon: NCCliServerBeacon): NCAsciiTable = {
         val tbl = new NCAsciiTable
 
-        tbl += (s"PID ${y("\u26a1")}", s"${g(beacon.pid)}")
+        tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("JDBC URL", s"${g(beacon.jdbcUrl)}")
         tbl += ("REST endpoint", s"${g(beacon.restEndpoint)}")
         tbl += ("Uplink", s"${g(beacon.upLink)}")
@@ -944,16 +944,18 @@ object NCCli extends App {
 
         var exit = false
 
-        val pinger = U.mkThread("repl-server-pinger") { _ ⇒
-            loadServerBeacon()
+        val pinger = U.mkThread("repl-server-pinger") { t ⇒
+            while (!t.isInterrupted) {
+                loadServerBeacon()
 
-            Thread.sleep(10.secs)
+                Thread.sleep(10.secs)
+            }
         }
 
         pinger.start()
 
         while (!exit) {
-            val prompt = if (state.isServer) s"${y("\u26a1")}${g("\u25b6")} " else s"${g("\u25b6")} "
+            val prompt = if (state.isServer) s"${y("\uD83D\uDCBB")}${g("\u25b6")} " else s"${g("\u25b6")} "
 
             val rawLine =
                 try
