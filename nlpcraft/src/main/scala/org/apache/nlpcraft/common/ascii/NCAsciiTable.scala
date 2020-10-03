@@ -609,7 +609,9 @@ class NCAsciiTable {
         for (_ ← 1 to margin.bottom)
             tbl ++= s" \n"
 
-        tbl.toString()
+        val res = tbl.toString
+
+        res.substring(0, res.length - 1)
     }
 
     /**

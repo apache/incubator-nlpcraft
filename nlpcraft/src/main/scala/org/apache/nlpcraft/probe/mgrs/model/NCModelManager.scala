@@ -83,7 +83,7 @@ object NCModelManager extends NCService with DecorateAsScala {
             })
         }
 
-        tbl.info(logger, Some(s"Models deployed: ${data.size}\n"))
+        tbl.info(logger, Some(s"Models deployed: ${data.size}"))
 
         addTags(
             span,

@@ -264,12 +264,12 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             startScopedSpan("future", parent, "srvReqId" → srvReqId) { span ⇒
                 val tbl = NCAsciiTable()
 
-                tbl += (s"${b("Text$ansiReset")}", g(txt0))
-                tbl += (s"${b("User ID$ansiReset")}", usr.id)
-                tbl += (s"${b("Model ID$ansiReset")}", mdlId)
-                tbl += (s"${b("Agent$ansiReset")}", usrAgent.getOrElse("<n/a>"))
-                tbl += (s"${b("Remote Address$ansiReset")}", rmtAddr.getOrElse("<n/a>"))
-                tbl += (s"${b("Server Request ID$ansiReset")}", srvReqId)
+                tbl += (s"${b("Text")}", rv(txt0))
+                tbl += (s"${b("User ID")}", usr.id)
+                tbl += (s"${b("Model ID")}", mdlId)
+                tbl += (s"${b("Agent")}", usrAgent.getOrElse("<n/a>"))
+                tbl += (s"${b("Remote Address")}", rmtAddr.getOrElse("<n/a>"))
+                tbl += (s"${b("Server Request ID")}", srvReqId)
 
                 // TODO: need to pretty print data JSON
                 // tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))

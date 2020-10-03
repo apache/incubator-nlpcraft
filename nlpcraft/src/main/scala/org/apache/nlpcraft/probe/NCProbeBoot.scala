@@ -383,7 +383,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         val tbl = NCAsciiTable()
         
-        tbl.margin(top = 1)
+        tbl.margin(bottom = 1, top = 1)
         
         tbl += s"Probe started $ansiBlueFg$dur$ansiReset"
         
