@@ -552,7 +552,7 @@ object NCCli extends App {
         val endpoint = args.find(_.parameter.id == "endpoint") match {
             case Some(arg) ⇒ new URL(arg.value.get).toURI.toString
             case None ⇒ loadServerBeacon() match {
-                case Some(beacon) ⇒ s"https://${beacon.restEndpoint}"
+                case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
                 case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
             }
         }
@@ -896,6 +896,30 @@ object NCCli extends App {
                             true
                         )
                     }).asJava)
+                else {
+                    val cmd = words.head
+
+                    candidates.addAll(CMDS.find(_.name == cmd) match {
+                        case Some(c) ⇒ {
+                            c.params.flatMap(param ⇒ {
+                                val hasVal = param.value.isDefined
+                                val names = param.names.filter(_.startsWith("--")) // Skip shorthands from auto-completion.
+
+                                names.map(name ⇒ new Candidate(
+                                    if (hasVal) name + "=" else name,
+                                    name,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    !hasVal
+                                ))
+                            })
+                            .asJava
+                        }
+                        case None ⇒ Seq.empty[Candidate].asJava
+                    })
+                }
             }
         }
 
@@ -905,7 +929,7 @@ object NCCli extends App {
             .terminal(term)
             .completer(completer)
             .parser(parser)
-            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g(">>")} ")
+            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g("\u2026\u25b6")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
 
@@ -919,22 +943,21 @@ object NCCli extends App {
 
         new AutosuggestionWidgets(reader).enable()
 
-        logln(s"Hit '${c("TAB")}' or type '${c("help")}' to get help.")
-        logln(s"Type '${c("quit")}' to exit.")
+        logln(s"Hit ${i(" tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
 
         var exit = false
 
         while (!exit) {
             val rawLine =
                 try
-                    reader.readLine(s"${g(">")} ")
+                    reader.readLine(s"${g("\u25b6")} ")
                 catch {
                     case _: PatternSyntaxException ⇒ "" // Guard against JLine hiccups.
                     case _: UserInterruptException ⇒ "" // Ignore.
                     case _: EndOfFileException ⇒ null
                 }
 
-            if (rawLine == null || QUIT_CMD.name.contains(rawLine.trim))
+            if (rawLine == null || QUIT_CMD.name == rawLine.trim)
                 exit = true
             else {
                 val line = rawLine.trim()

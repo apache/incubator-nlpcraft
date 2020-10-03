@@ -42,6 +42,7 @@ package object common {
     final val TOK_META_ALIASES_KEY = "__NLPCRAFT_TOK_META_ALIASES"
 
     // Real foreground color shortcuts...
+    def i(s: Any): String = s"$ansiReversed${s.toString}$ansiReset"
     def g(s: Any): String = s"$ansiGreenFg${s.toString}$ansiReset"
     def r(s: Any): String = s"$ansiRedFg${s.toString}$ansiReset"
     def c(s: Any): String = s"$ansiCyanFg${s.toString}$ansiReset"
