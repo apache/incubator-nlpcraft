@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
-import java.io.{BufferedReader, File, FileInputStream, IOException, InputStreamReader, ObjectInputStream}
+import java.io.{File, FileInputStream, IOException, ObjectInputStream}
 import java.net.URL
 
 import com.google.gson._
@@ -40,10 +40,14 @@ import java.text.DateFormat
 import java.util.Date
 
 import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
+import org.jline.builtins.Completers.TreeCompleter
+import org.jline.builtins.Completers.TreeCompleter.node
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.TerminalBuilder
 import org.jline.reader.{EndOfFileException, LineReader, LineReaderBuilder, UserInterruptException}
 import org.jline.reader.impl.DefaultParser.Bracket
+import org.jline.reader.impl.completer.AggregateCompleter
+import org.jline.widget.AutosuggestionWidgets
 import resource.managed
 
 import scala.collection.mutable
@@ -354,7 +358,11 @@ object NCCli extends App {
         )
     ).sortBy(_.id)
 
-    private final val HELP_CMD = CMDS.find(_.id ==  "help").get
+    require(
+        U.getDups(CMDS.flatMap(_.names)).isEmpty,
+        "Dup commands."
+    )
+
     private final val DFLT_CMD = CMDS.find(_.id ==  "repl").get
     private final val NO_ANSI_CMD = CMDS.find(_.id ==  "no-ansi").get
     private final val ANSI_CMD = CMDS.find(_.id ==  "ansi").get
@@ -477,8 +485,6 @@ object NCCli extends App {
         pb.redirectOutput(Redirect.appendTo(output))
 
         try {
-            val startMs = currentTime
-
             pb.start()
 
             logln(s"Server output: ${c(output.getAbsolutePath)}")
@@ -845,8 +851,6 @@ object NCCli extends App {
         logln(s"Type '${c("?")}' or '${c("? -c=repl")}' to get help.")
         logln(s"Type '${c("quit")}' to exit.")
 
-        val in = new BufferedReader(new InputStreamReader(System.in))
-
         val QUITS = Seq(
             "quit", "exit", "/q", "\\q"
         )
@@ -856,20 +860,33 @@ object NCCli extends App {
         val term = TerminalBuilder.builder()
             .system(true)
             .dumb(true)
-            .build();
+            .jansi(true)
+            .build()
 
         val parser = new DefaultParser()
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
+
+        //val cmdNames = CMDS.flatMap(_.names)
+
+        val completer = new AggregateCompleter(
+            new TreeCompleter(
+                CMDS.flatMap(cmd ⇒ cmd.names.map(name ⇒
+                    node(Seq(name) ++ cmd.params.flatMap(_.names).map(node(_)): _*)
+                )):_*
+            )
+        )
 
         val reader = LineReaderBuilder
             .builder
             .terminal(term)
 //            .completer(completer)
             .parser(parser)
-            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g(">>")} ")
+//            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g(">>")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
+
+        new AutosuggestionWidgets(reader).enable()
 
         while (!exit) {
             val rawLine =

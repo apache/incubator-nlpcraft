@@ -130,6 +130,7 @@
         <vertical.blank.ver>1.0.1</vertical.blank.ver>
         <fliptables.ver>1.1.0</fliptables.ver>
         <jline.ver>3.16.0</jline.ver>
+        <jansi.ver>1.18</jansi.ver>
 
         <!--
             Following libraries versions are compatible:
@@ -199,6 +200,12 @@
                 <groupId>org.jline</groupId>
                 <artifactId>jline</artifactId>
                 <version>${jline.ver}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>${jansi.ver}</version>
             </dependency>
 
             <dependency>
