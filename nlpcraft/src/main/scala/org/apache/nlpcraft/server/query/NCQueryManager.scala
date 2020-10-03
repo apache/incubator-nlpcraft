@@ -269,7 +269,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 tbl += (s"${b("Model ID")}", mdlId)
                 tbl += (s"${b("Agent")}", usrAgent.getOrElse("<n/a>"))
                 tbl += (s"${b("Remote Address")}", rmtAddr.getOrElse("<n/a>"))
-                tbl += (s"${b("Server Request ID")}", srvReqId)
+                tbl += (s"${b("Server Request ID")}", rv(g(srvReqId)))
 
                 // TODO: need to pretty print data JSON
                 // tbl += (s"${ansiBlueFg}Data$ansiReset", data.getOrElse(""))

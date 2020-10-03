@@ -49,6 +49,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 import org.apache.nlpcraft.common.ansi.NCAnsi._
+import org.apache.nlpcraft.common._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -385,7 +386,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         
         tbl.margin(bottom = 1, top = 1)
         
-        tbl += s"Probe started $ansiBlueFg$dur$ansiReset"
+        tbl += s"Probe started ${b(dur)}"
         
         tbl.info(logger)
     }

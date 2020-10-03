@@ -20,17 +20,39 @@ package org.apache.nlpcraft.model.tools.cmdline
 /**
  *
  * @param pid
+ * @param dbUrl
+ * @param dbDriver
+ * @param dbPoolMin
+ * @param dbPoolMax
+ * @param dbPoolInit
+ * @param dbPoolInc
+ * @param initDb
  * @param restEndpoint
  * @param upLink
  * @param downLink
+ * @param startMs
+ * @param nlpEngine
+ * @param tokenProviders
+ * @param extConfigUrl
+ * @param ph
  */
 case class NCCliServerBeacon(
     pid: Long,
-    jdbcUrl: String,
+    dbUrl: String,
+    dbDriver: String,
+    dbPoolMin: Int,
+    dbPoolMax: Int,
+    dbPoolInit: Int,
+    dbPoolInc: Int,
+    dbInit: Boolean,
     restEndpoint: String,
     upLink: String,
     downLink: String,
     startMs: Long,
+    nlpEngine: String,
+    tokenProviders: String,
+    extConfigUrl: String,
+    filePath: String,
     @transient var ph: ProcessHandle = null
 )
 

@@ -26,7 +26,6 @@ import java.util.{Date, Objects}
 import io.opencensus.trace.{Span, Status}
 import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
@@ -231,7 +230,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         val tbl = NCAsciiTable()
 
-        tbl += (s"${b("Text")}", nlpSens.map(s ⇒ g(s.text)))
+        tbl += (s"${b("Text")}", nlpSens.map(s ⇒ rv(s.text)))
         tbl += (s"${b("Model ID")}", mdlId)
         tbl += (s"${b("User ID")}", usrId)
         tbl += (s"${b("  First Name")}", senMeta.getOrElse("FIRST_NAME", ""))
@@ -243,7 +242,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         tbl += (s"${b("User Agent")}", senMeta.getOrElse("USER_AGENT", ""))
         tbl += (s"${b("Remote Address")}", senMeta.getOrElse("REMOTE_ADDR", ""))
         tbl += (s"${b("Server Timestamp")}", new Date(java.lang.Long.parseLong(senMeta("RECEIVE_TSTAMP").toString)))
-        tbl += (s"${b("Server Request ID")}", srvReqId)
+        tbl += (s"${b("Server Request ID")}", rv(g(srvReqId)))
 
         logger.info(s"New request received from server:\n$tbl")
         

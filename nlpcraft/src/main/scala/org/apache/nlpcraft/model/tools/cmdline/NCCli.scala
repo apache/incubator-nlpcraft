@@ -829,7 +829,7 @@ object NCCli extends App {
         val tbl = new NCAsciiTable
 
         tbl += ("PID", s"${g(beacon.pid)}")
-        tbl += ("JDBC URL", s"${g(beacon.jdbcUrl)}")
+        tbl += ("JDBC URL", s"${g(beacon.dbUrl)}")
         tbl += ("REST endpoint", s"${g(beacon.restEndpoint)}")
         tbl += ("Uplink", s"${g(beacon.upLink)}")
         tbl += ("Downlink", s"${g(beacon.downLink)}")

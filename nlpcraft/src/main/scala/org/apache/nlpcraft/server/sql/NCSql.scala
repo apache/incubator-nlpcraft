@@ -25,7 +25,6 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.ignite.{Ignite, IgniteAtomicSequence, IgniteJdbcThinDriver}
 import org.apache.ignite.transactions.Transaction
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.server.tx.NCTxManager
 import resource._
@@ -121,18 +120,7 @@ object NCSql extends LazyLogging {
         ds
     }
 
-    val tbl = new NCAsciiTable
-
-    tbl += ("JDBC URL", Config.url)
-    tbl += ("JDBC driver", Config.driver)
-    tbl += ("C3P0 pool", s"" +
-        s"min=${b(Config.minPoolSize)}, " +
-        s"ini=${b(Config.initPoolSize)}, " +
-        s"max=${b(Config.maxPoolSize)}, " +
-        s"inc=${b(Config.acqInc)}"
-    )
-
-    logger.info(s"Data source initialized:\n${tbl.toString}")
+    logger.trace(s"Data source initialized.")
 
     /**
      * Wraps database error.

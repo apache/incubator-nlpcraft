@@ -152,7 +152,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         
         tbl.margin(top = 1, bottom = 1)
         
-        tbl += s"Server started $ansiBlueFg$dur$ansiReset"
+        tbl += s"Server started ${b(dur)}"
         
         tbl.info(logger)
     }
@@ -195,8 +195,6 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         
         asciiLogo()
 
-        storeBeacon()
-
         val lifecycle = new CountDownLatch(1)
     
         catching(classOf[Throwable]) either startManagers() match {
@@ -208,6 +206,9 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 System.exit(1)
         
             case _ ⇒ // Managers started OK.
+                // Store beacon file once all managers started OK.
+                storeBeacon()
+
                 ackStart()
 
                 Runtime.getRuntime.addShutdownHook(new Thread() {
@@ -239,21 +240,42 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             final object Config extends NCConfigurable {
                 final private val pre = "nlpcraft.server"
 
+                lazy val pid = ProcessHandle.current().pid()
                 lazy val restHost = getString(s"$pre.rest.host")
                 lazy val restPort = getInt(s"$pre.rest.port")
                 lazy val upLink =  getString(s"$pre.probe.links.upLink")
                 lazy val downLink =  getString(s"$pre.probe.links.downLink")
-                lazy val jdbcUrl =  getString(s"$pre.database.jdbc.url")
+                lazy val dbUrl =  getString(s"$pre.database.jdbc.url")
+                lazy val dbDriver =  getString(s"$pre.database.jdbc.driver")
+                lazy val dbPoolMin =  getInt(s"$pre.database.c3p0.pool.minSize")
+                lazy val dbPoolMax =  getInt(s"$pre.database.c3p0.pool.maxSize")
+                lazy val dbPoolInit =  getInt(s"$pre.database.c3p0.pool.initSize")
+                lazy val dbPoolInc =  getInt(s"$pre.database.c3p0.pool.acquireIncrement")
+                lazy val dbInit =  getBool(s"$pre.database.igniteDbInitialize")
+                lazy val tokProviders =  getString(s"$pre.tokenProviders")
+                lazy val nlpEngine =  getString("nlpcraft.nlpEngine")
+                lazy val extCfgUrl =  getString("nlpcraft.extConfig.extUrl")
+                lazy val restEndpoint = s"${Config.restHost}:${Config.restPort}"
             }
 
             try {
                 managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
                     stream.writeObject(NCCliServerBeacon(
-                        pid = ProcessHandle.current().pid(),
-                        jdbcUrl = Config.jdbcUrl,
-                        restEndpoint = s"${Config.restHost}:${Config.restPort}",
+                        pid = Config.pid,
+                        dbUrl = Config.dbUrl,
+                        dbDriver = Config.dbDriver,
+                        dbPoolMin = Config.dbPoolMin,
+                        dbPoolMax = Config.dbPoolMax,
+                        dbPoolInit = Config.dbPoolInit,
+                        dbPoolInc = Config.dbPoolInc,
+                        dbInit = Config.dbInit,
+                        restEndpoint = Config.restEndpoint,
                         upLink = Config.upLink,
                         downLink = Config.downLink,
+                        tokenProviders = Config.tokProviders,
+                        nlpEngine = Config.nlpEngine,
+                        extConfigUrl = Config.extCfgUrl,
+                        filePath = path.getAbsolutePath,
                         startMs = currentTime
                     ))
                     stream.flush()
@@ -262,7 +284,25 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 // Make sure beacon is deleted when server process exits.
                 path.deleteOnExit()
 
-                logger.info(s"Server beacon saved: ${path.getAbsolutePath}")
+                val tbl = NCAsciiTable()
+
+                tbl += (s"${b("PID")}", Config.pid)
+                tbl += (s"${b("Database URL")}", Config.dbUrl)
+                tbl += (s"${b("  Driver")}", Config.dbDriver)
+                tbl += (s"${b("  Pool min")}", Config.dbPoolMin)
+                tbl += (s"${b("  Pool init")}", Config.dbPoolInit)
+                tbl += (s"${b("  Pool max")}", Config.dbPoolMax)
+                tbl += (s"${b("  Pool increment")}", Config.dbPoolInc)
+                tbl += (s"${b("  Reset on start")}", Config.dbInit)
+                tbl += (s"${b("REST endpoint")}", Config.restEndpoint)
+                tbl += (s"${b("Probe uplink")}", Config.upLink)
+                tbl += (s"${b("Probe downlink")}", Config.downLink)
+                tbl += (s"${b("Token providers")}", Config.tokProviders)
+                tbl += (s"${b("NLP engine")}", Config.nlpEngine)
+                tbl += (s"${b("External config URL")}", Config.extCfgUrl)
+                tbl += (s"${b("Beacon file path")}", path.getAbsolutePath)
+
+                logger.info(s"Sever configuration:\n$tbl")
             }
             catch {
                 case e: IOException ⇒ U.prettyError(logger, "Failed to save server beacon.", e)
@@ -274,8 +314,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readObject() }
             } match {
                 case Left(e) ⇒
-                    U.prettyError(logger, s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
-
+                    logger.trace(s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
                     logger.trace(s"Overriding failed server beacon: ${path.getAbsolutePath}")
 
                     save()
