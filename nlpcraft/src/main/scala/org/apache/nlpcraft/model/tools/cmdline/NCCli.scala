@@ -143,6 +143,46 @@ object NCCli extends App {
     // All supported commands.
     private final val CMDS = Seq(
         Command(
+            name = "rest",
+            synopsis = s"Issues REST call to locally running REST server.",
+            desc = Some(
+                s"All NLPCraft REST API uses HTTP POST and JSON parameters ('Content-Type: application/json' header). " +
+                s"To issue the REST call you need to supply path and parameters. In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
+                s"auto-completion candidates for commonly used paths and JSON payload components."
+            ),
+            body = cmdRest,
+            params = Seq(
+                Parameter(
+                    id = "config",
+                    names = Seq("--path", "-p"),
+                    value = Some("path"),
+                    desc =
+                        s"REST path, e.g. ${y("'/signin'")} or ${y("'/ask/sync'")}. " +
+                        s"See more details at https://nlpcraft.apache.org/using-rest.html"
+                ),
+                Parameter(
+                    id = "json",
+                    names = Seq("--json", "-j"),
+                    value = Some("'json'"),
+                    desc =
+                        s"REST call parameters as JSON object. Since standard JSON only supports double " +
+                        s"quotes the entire JSON string should be enclosed in single quotes. You can " +
+                        s"find full OpenAPI specification for NLPCraft REST API at " +
+                        s"https://nlpcraft.apache.org/using-rest.html"
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME rest ",
+                        "  -p=/signin",
+                        "  -j='{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}'"
+                    ),
+                    desc = s"Issues ${y("/signin")} REST call with given JSON payload."
+                )
+            )
+        ),
+        Command(
             name = "start-server",
             synopsis = s"Starts local REST server.",
             desc = Some(
@@ -194,7 +234,7 @@ object NCCli extends App {
             examples = Seq(
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-server"),
-                    desc = "Starts local  server with default configuration."
+                    desc = "Starts local server with default configuration."
                 ),
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
@@ -878,6 +918,16 @@ object NCCli extends App {
             case Some(beacon) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ error(s"Cannot detect local REST server.")
         }
+    }
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        // TODO
     }
 
     /**
