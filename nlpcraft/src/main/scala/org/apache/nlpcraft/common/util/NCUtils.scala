@@ -29,6 +29,7 @@ import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{ExecutorService, LinkedBlockingQueue, RejectedExecutionHandler, ThreadFactory, ThreadPoolExecutor, TimeUnit}
 import java.util.jar.JarFile
+import java.util.regex.Pattern
 import java.util.stream.Collectors
 import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
 import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
@@ -65,6 +66,8 @@ import scala.util.{Failure, Success}
   * Project-wide, global utilities ans miscellaneous functions.
   */
 object NCUtils extends LazyLogging {
+    private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
+
     final val REGEX_FIX = "//"
     final val DSL_FIX = "^^"
 
@@ -138,6 +141,15 @@ object NCUtils extends LazyLogging {
       * Gets now in UTC timezone in SQL Timestamp representation.
       */
     def nowUtcTs(): Timestamp = new Timestamp(Instant.now().toEpochMilli)
+
+    /**
+     * Strips ANSI escape sequences from the given string.
+     *
+     * @param s
+     * @return
+     */
+    def stripAnsi(s: String): String =
+        ANSI_SEQ.matcher(s).replaceAll("")
 
     /**
       * Escapes given string for JSON according to RFC 4627 http://www.ietf.org/rfc/rfc4627.txt.

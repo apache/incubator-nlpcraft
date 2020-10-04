@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.common.ascii
 
 import java.io.{IOException, PrintStream}
-import java.util.regex.Pattern
 
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
@@ -33,8 +32,6 @@ import scala.collection.mutable
  * `ASCII`-based table with minimal styling support.
  */
 class NCAsciiTable {
-    private final val ANSI_SEQ = Pattern.compile("\u001B\\[[;\\d]*m")
-
     /**
      * Cell style.
      */
@@ -95,7 +92,7 @@ class NCAsciiTable {
      */
     private sealed case class Cell(style: Style, lines: Seq[String]) {
         // Cell's calculated width including padding.
-        lazy val width: Int = style.padding + (if (height > 0) lines.map(stripAnsi(_).length).max else 0)
+        lazy val width: Int = style.padding + (if (height > 0) lines.map(U.stripAnsi(_).length).max else 0)
 
         // Gets height of the cell.
         lazy val height: Int = lines.length
@@ -205,14 +202,6 @@ class NCAsciiTable {
 
         this
     }
-
-    /**
-     *
-     * @param s
-     * @return
-     */
-    private def stripAnsi(s: String): String =
-        ANSI_SEQ.matcher(s).replaceAll("")
 
     /**
      * Adds row (one or more row cells) with a given style.
@@ -449,7 +438,7 @@ class NCAsciiTable {
      * @param sty Style.
      */
     private def aligned(txt: String, width: Int, sty: Style): String = {
-        val d = width - stripAnsi(txt).length
+        val d = width - U.stripAnsi(txt).length
 
         sty.align match {
             case "center" ⇒ space(d / 2) + txt + space(d / 2 + d % 2)

@@ -486,6 +486,7 @@ object NCCli extends App {
                 var online = false
                 val spinner = mkSpinner()
                 val timeout = currentTime + 5.mins
+                val warnTimeout = currentTime + 1.secs
 
                 spinner.start()
 
@@ -495,8 +496,12 @@ object NCCli extends App {
                     else
                         online = Try(restHealth("http://" + beacon.restEndpoint) == 200).getOrElse(false)
 
-                    if (!online)
+                    if (!online) {
+                        if (currentTime > warnTimeout)
+                            spinner.setRightPrompt(s" ${r("(taking too long - check logs)")}")
+
                         Thread.sleep(2.secs) // Check every 2 secs.
+                    }
                 }
 
                 spinner.stop()

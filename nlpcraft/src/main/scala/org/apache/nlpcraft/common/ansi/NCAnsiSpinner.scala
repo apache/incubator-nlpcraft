@@ -18,9 +18,11 @@
 package org.apache.nlpcraft.common.ansi
 
 import java.io.PrintStream
+import java.util.Random
 
 import NCAnsi._
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsiSpinner.RND
 
 /**
  *
@@ -28,10 +30,49 @@ import org.apache.nlpcraft.common._
 class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanFg, useAnsi: Boolean = true) {
     @volatile var thread: Thread = _
 
-    final val SPIN_CHARS = Seq('-', '\\', '|', '/')
-    final val SPIN_CHARS_SIZE = SPIN_CHARS.size
+    final val SPIN_CHAR_SETS = Seq(
+        Seq('-', '\\', '|', '/'),
+        Seq('.', 'o', 'O', '@', '*'),
+        Seq('←', '↖', '↑', '↗', '→', '↘', '↓', '↙'),
+        Seq('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▁'),
+        Seq('▖', '▘', '▝', '▗'),
+        Seq('┤', '┘', '┴', '└', '├', '┌', '┬', '┐'),
+        Seq('◢', '◣', '◤', '◥'),
+        Seq('◰', '◳', '◲', '◱'),
+        Seq('◴', '◷', '◶', '◵'),
+        Seq('◐', '◓', '◑', '◒'),
+        Seq('◡', '⊙', '◠', '⊙'),
+        Seq('⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'),
+        Seq('⠁', '⠂', '⠄', '⡀', '⢀', '⠠', '⠐', '⠈')
+    )
 
-    var frame = 0
+    private val SPIN_CHARS = SPIN_CHAR_SETS(RND.nextInt(SPIN_CHAR_SETS.size))
+    private var rightPrompt = ""
+    private var leftPrompt = ""
+    private var lastLength = 0
+    private var frame = 0
+
+    /**
+     *
+     * @param p
+     */
+    def setRightPrompt(p: String): Unit =
+        this.rightPrompt = if (p == null) "" else p
+
+    /**
+     *
+     * @param p
+     */
+    def setLeftPrompt(p: String): Unit =
+        this.leftPrompt = if (p == null) "" else p
+
+    /**
+     *
+     */
+    private def clean(): Unit = {
+        out.print(ansiCursorLeft * lastLength)
+        out.print(ansiClearLineAfter)
+    }
 
     /**
      *
@@ -39,13 +80,15 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
     def start(): Unit =
         if (useAnsi) {
             thread =  U.mkThread("ansi-spinner") { t ⇒
-                out.print(s"$ansiCursorHide")
+                out.print(ansiCursorHide)
 
                 while (!t.isInterrupted) {
                     if (frame > 0)
-                        out.print(s"$ansiCursorLeft$ansiClearLineAfter")
+                        clean()
 
-                    out.print(s"$ansiColor${SPIN_CHARS(frame % SPIN_CHARS_SIZE)}$ansiReset")
+                    out.print(s"$leftPrompt$ansiColor${SPIN_CHARS(frame % SPIN_CHARS.size)}$ansiReset$rightPrompt")
+
+                    lastLength = U.stripAnsi(leftPrompt).length + 1 + U.stripAnsi(rightPrompt).length
 
                     frame += 1
 
@@ -64,7 +107,13 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
     def stop(): Unit = {
         U.stopThread(thread)
 
-        if (useAnsi && frame > 0)
-            out.print(s"$ansiCursorLeft$ansiClearLineAfter$ansiCursorShow")
+        if (useAnsi && frame > 0) {
+            clean()
+            out.print(ansiCursorShow)
+        }
     }
+}
+
+object NCAnsiSpinner {
+    private val RND = new Random()
 }
