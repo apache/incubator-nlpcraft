@@ -1051,22 +1051,27 @@ object NCCli extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        val msg2 = if (msg.head.isLower) msg.head.toUpper + msg.tail else msg
-
-        term.writer().println(s"${y("ERR:")} $msg2")
+        term.writer().println(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+        term.flush()
     }
 
     /**
      *
      * @param msg
      */
-    private def logln(msg: String = ""): Unit = term.writer().println(msg)
+    private def logln(msg: String = ""): Unit = {
+        term.writer().println(msg)
+        term.flush()
+    }
 
     /**
      *
      * @param msg
      */
-    private def log(msg: String = ""): Unit = term.writer().print(msg)
+    private def log(msg: String = ""): Unit = {
+        term.writer().print(msg)
+        term.flush()
+    }
 
     /**
      *

@@ -71,6 +71,7 @@ class NCAnsiSpinner(out: PrintWriter, ansiColor: String = ansiCyanFg, useAnsi: B
     private def clean(): Unit = {
         out.print(ansiCursorLeft * lastLength)
         out.print(ansiClearLineAfter)
+        out.flush()
     }
 
     /**
@@ -86,12 +87,14 @@ class NCAnsiSpinner(out: PrintWriter, ansiColor: String = ansiCyanFg, useAnsi: B
 
                 // Hide cursor to avoid blinking.
                 out.print(ansiCursorHide)
+                out.flush()
 
                 while (!t.isInterrupted) {
                     if (frame > 0)
                         clean()
 
                     out.print(s"$prefix$ansiColor${chars(frame % chars.size)}$ansiReset$suffix")
+                    out.flush()
 
                     lastLength = U.stripAnsi(prefix).length + 1 + U.stripAnsi(suffix).length
 
@@ -117,6 +120,7 @@ class NCAnsiSpinner(out: PrintWriter, ansiColor: String = ansiCyanFg, useAnsi: B
 
             // Show cursor.
             out.print(ansiCursorShow)
+            out.flush()
         }
     }
 }
