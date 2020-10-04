@@ -597,15 +597,22 @@ object NCCli extends App {
     )
 
     /**
+     *
+     * @return
+     */
+    private def getRestEndpointFromBeacon: String =
+        loadServerBeacon() match {
+            case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
+            case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
+        }
+
+    /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
     private def cmdPingServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val endpoint = loadServerBeacon() match {
-            case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
-            case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
-        }
+        val endpoint = getRestEndpointFromBeacon
 
         val num = args.find(_.parameter.id == "number") match {
             case Some(arg) ⇒
@@ -927,7 +934,7 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        // TODO
+        val endpoint = getRestEndpointFromBeacon
     }
 
     /**
