@@ -25,6 +25,7 @@ import resource.managed
 
 /**
  * Pipe filter to remove ANSI escape sequences.
+ * Used by 'start-server' command of NLPCraft CLI.
  */
 object NCCliAnsiBleach extends App {
     managed(
@@ -42,6 +43,8 @@ object NCCliAnsiBleach extends App {
             line = in.readLine()
         }
     }
+
+    // NOTE: IO exceptions are thrown and they will stop the app (by design).
 
     System.exit(0)
 }

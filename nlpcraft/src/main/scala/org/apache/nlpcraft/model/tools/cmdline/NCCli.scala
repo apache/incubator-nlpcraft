@@ -485,6 +485,7 @@ object NCCli extends App {
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
+            // Start the 'server | bleach' process pipeline.
             ProcessBuilder.startPipeline(Seq(srvPb, bleachPb).asJava)
 
             logln(s"Server output > ${c(output.getAbsolutePath)}")
