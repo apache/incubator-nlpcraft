@@ -31,19 +31,19 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
     @volatile var thread: Thread = _
 
     final val SPIN_CHAR_SETS = Seq(
-        Seq('-', '\\', '|', '/'),
-        Seq('.', 'o', 'O', '@', '*'),
-        Seq('←', '↖', '↑', '↗', '→', '↘', '↓', '↙'),
-        Seq('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▁'),
-        Seq('▖', '▘', '▝', '▗'),
-        Seq('┤', '┘', '┴', '└', '├', '┌', '┬', '┐'),
-        Seq('◢', '◣', '◤', '◥'),
-        Seq('◰', '◳', '◲', '◱'),
-        Seq('◴', '◷', '◶', '◵'),
-        Seq('◐', '◓', '◑', '◒'),
-        Seq('◡', '⊙', '◠', '⊙'),
-        Seq('⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'),
-        Seq('⠁', '⠂', '⠄', '⡀', '⢀', '⠠', '⠐', '⠈')
+//        Seq('-', '\\', '|', '/'),
+//        Seq('.', 'o', 'O', '@', '*'),
+//        Seq('←', '↖', '↑', '↗', '→', '↘', '↓', '↙'),
+//        Seq('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▁'),
+//        Seq('▖', '▘', '▝', '▗'),
+//        Seq('┤', '┘', '┴', '└', '├', '┌', '┬', '┐'),
+        Seq('\u25E2', '\u25E3', '\u25E4', '\u25E5')
+//        Seq('◰', '◳', '◲', '◱'),
+//        Seq('◴', '◷', '◶', '◵'),
+//        Seq('◐', '◓', '◑', '◒'),
+//        Seq('◡', '⊙', '◠', '⊙'),
+//        Seq('⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'),
+//        Seq('⠁', '⠂', '⠄', '⡀', '⢀', '⠠', '⠐', '⠈')
     )
 
     private val SPIN_CHARS = SPIN_CHAR_SETS(RND.nextInt(SPIN_CHAR_SETS.size))
@@ -83,8 +83,8 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
                 out.print(ansiCursorHide)
 
                 while (!t.isInterrupted) {
-                    if (frame > 0)
-                        clean()
+//                    if (frame > 0)
+//                        clean()
 
                     out.print(s"$leftPrompt$ansiColor${SPIN_CHARS(frame % SPIN_CHARS.size)}$ansiReset$rightPrompt")
 

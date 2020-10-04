@@ -486,7 +486,7 @@ object NCCli extends App {
                 var online = false
                 val spinner = mkSpinner()
                 val timeout = currentTime + 5.mins
-                val warnTimeout = currentTime + 1.secs
+                val warnTimeout = currentTime + 60.secs
 
                 spinner.start()
 
