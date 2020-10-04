@@ -442,7 +442,7 @@ object NCCli extends App {
             case None ⇒ ()
         }
 
-        val pb = new ProcessBuilder(
+        val srvPb = new ProcessBuilder(
             JAVA,
             "-ea",
             "-Xms2048m",
@@ -470,14 +470,24 @@ object NCCli extends App {
             },
         )
 
-        pb.directory(new File(INSTALL_HOME))
-        pb.redirectErrorStream(true)
-        pb.redirectOutput(Redirect.appendTo(output))
+        srvPb.directory(new File(INSTALL_HOME))
+        srvPb.redirectErrorStream(true)
+
+        val bleachPb = new ProcessBuilder(
+            JAVA,
+            "-ea",
+            "-cp",
+            s"$JAVA_CP",
+            "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
+        )
+
+        bleachPb.directory(new File(INSTALL_HOME))
+        bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
-            pb.start()
+            ProcessBuilder.startPipeline(Seq(srvPb, bleachPb).asJava)
 
-            logln(s"Server output: ${c(output.getAbsolutePath)}")
+            logln(s"Server output > ${c(output.getAbsolutePath)}")
 
             if (noWait)
                 logln(s"Server is starting...")
@@ -1039,7 +1049,7 @@ object NCCli extends App {
                     logln(s"${VER.date}")
             }
             else
-                error(s"Invalid parameters for command '${cmd.name}': ${args.mkString(", ")}")
+                error(s"Invalid parameters: ${args.mkString(", ")}")
         }
 
 
