@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.common.ansi
 
-import java.io.PrintStream
+import java.io.PrintWriter
 import java.util.Random
 
 import NCAnsi._
@@ -27,28 +27,27 @@ import org.apache.nlpcraft.common.ansi.NCAnsiSpinner.RND
 /**
  *
  */
-class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanFg, useAnsi: Boolean = true) {
+class NCAnsiSpinner(out: PrintWriter, ansiColor: String = ansiCyanFg, useAnsi: Boolean = true) {
     @volatile var thread: Thread = _
 
     final val SPIN_CHAR_SETS = Seq(
-//        Seq('-', '\\', '|', '/'),
-//        Seq('.', 'o', 'O', '@', '*'),
-//        Seq('←', '↖', '↑', '↗', '→', '↘', '↓', '↙'),
-//        Seq('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▁'),
-//        Seq('▖', '▘', '▝', '▗'),
-//        Seq('┤', '┘', '┴', '└', '├', '┌', '┬', '┐'),
-        Seq('\u25E2', '\u25E3', '\u25E4', '\u25E5')
-//        Seq('◰', '◳', '◲', '◱'),
-//        Seq('◴', '◷', '◶', '◵'),
-//        Seq('◐', '◓', '◑', '◒'),
-//        Seq('◡', '⊙', '◠', '⊙'),
-//        Seq('⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'),
-//        Seq('⠁', '⠂', '⠄', '⡀', '⢀', '⠠', '⠐', '⠈')
+        Seq('-', '\\', '|', '/'),
+        Seq('.', 'o', 'O', '@', '*'),
+        Seq('←', '↖', '↑', '↗', '→', '↘', '↓', '↙'),
+        Seq('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▁'),
+        Seq('▖', '▘', '▝', '▗'),
+        Seq('┤', '┘', '┴', '└', '├', '┌', '┬', '┐'),
+        Seq('◢', '◣', '◤', '◥'),
+        Seq('◰', '◳', '◲', '◱'),
+        Seq('◴', '◷', '◶', '◵'),
+        Seq('◐', '◓', '◑', '◒'),
+        Seq('◡', '⊙', '◠', '⊙'),
+        Seq('⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'),
+        Seq('⠁', '⠂', '⠄', '⡀', '⢀', '⠠', '⠐', '⠈')
     )
 
-    private val SPIN_CHARS = SPIN_CHAR_SETS(RND.nextInt(SPIN_CHAR_SETS.size))
-    private var rightPrompt = ""
-    private var leftPrompt = ""
+    private var suffix = ""
+    private var prefix = ""
     private var lastLength = 0
     private var frame = 0
 
@@ -56,15 +55,15 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
      *
      * @param p
      */
-    def setRightPrompt(p: String): Unit =
-        this.rightPrompt = if (p == null) "" else p
+    def setSuffix(p: String): Unit =
+        this.suffix = if (p == null) "" else p
 
     /**
      *
      * @param p
      */
-    def setLeftPrompt(p: String): Unit =
-        this.leftPrompt = if (p == null) "" else p
+    def setPrefix(p: String): Unit =
+        this.prefix = if (p == null) "" else p
 
     /**
      *
@@ -80,15 +79,21 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
     def start(): Unit =
         if (useAnsi) {
             thread =  U.mkThread("ansi-spinner") { t ⇒
+                frame = 0
+                lastLength = 0
+
+                val chars = SPIN_CHAR_SETS(RND.nextInt(SPIN_CHAR_SETS.size))
+
+                // Hide cursor to avoid blinking.
                 out.print(ansiCursorHide)
 
                 while (!t.isInterrupted) {
-//                    if (frame > 0)
-//                        clean()
+                    if (frame > 0)
+                        clean()
 
-                    out.print(s"$leftPrompt$ansiColor${SPIN_CHARS(frame % SPIN_CHARS.size)}$ansiReset$rightPrompt")
+                    out.print(s"$prefix$ansiColor${chars(frame % chars.size)}$ansiReset$suffix")
 
-                    lastLength = U.stripAnsi(leftPrompt).length + 1 + U.stripAnsi(rightPrompt).length
+                    lastLength = U.stripAnsi(prefix).length + 1 + U.stripAnsi(suffix).length
 
                     frame += 1
 
@@ -109,6 +114,8 @@ class NCAnsiSpinner(out: PrintStream = System.out, ansiColor: String = ansiCyanF
 
         if (useAnsi && frame > 0) {
             clean()
+
+            // Show cursor.
             out.print(ansiCursorShow)
         }
     }

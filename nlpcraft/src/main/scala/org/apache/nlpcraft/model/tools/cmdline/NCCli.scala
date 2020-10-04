@@ -43,7 +43,7 @@ import java.util.regex.PatternSyntaxException
 import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
 import org.jline.reader.Completer
 import org.jline.reader.impl.DefaultParser
-import org.jline.terminal.TerminalBuilder
+import org.jline.terminal.{Terminal, TerminalBuilder}
 import org.jline.reader.{Candidate, EndOfFileException, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser.Bracket
 import org.jline.reader.impl.history.DefaultHistory
@@ -82,7 +82,11 @@ object NCCli extends App {
 
     private var exitStatus = 0
 
+    private var term: Terminal = _
+
     private val gson = new GsonBuilder().setPrettyPrinting().create
+
+    case class SplitError(index: Int) extends Exception
 
     case class State(
         var isServer: Boolean,
@@ -480,9 +484,7 @@ object NCCli extends App {
             else {
                 log(s"Server is starting ")
 
-                def getServerBeacon = loadServerBeacon().orNull
-
-                var beacon = getServerBeacon
+                var beacon = loadServerBeacon().orNull
                 var online = false
                 val spinner = mkSpinner()
                 val timeout = currentTime + 5.mins
@@ -492,13 +494,14 @@ object NCCli extends App {
 
                 while (currentTime < timeout && !online) {
                     if (beacon == null)
-                        beacon = getServerBeacon
+                        beacon = loadServerBeacon().orNull
                     else
                         online = Try(restHealth("http://" + beacon.restEndpoint) == 200).getOrElse(false)
 
                     if (!online) {
                         if (currentTime > warnTimeout)
-                            spinner.setRightPrompt(s" ${r("(taking too long - check logs)")}")
+                            // Warn if it's taking too long.
+                            spinner.setSuffix(s" ${r("(taking too long - check logs)")}")
 
                         Thread.sleep(2.secs) // Check every 2 secs.
                     }
@@ -536,7 +539,7 @@ object NCCli extends App {
      * @return
      */
     private def mkSpinner() = new NCAnsiSpinner(
-        System.out,
+        term.writer(),
         ansiCyanFg,
         // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
         NCAnsi.isEnabled && IS_SCRIPT
@@ -880,13 +883,6 @@ object NCCli extends App {
 
         val appName = s"$NAME ver. ${VER.version}"
 
-        val term = TerminalBuilder.builder()
-            .name(appName)
-            .system(true)
-            .dumb(true)
-            .jansi(true)
-            .build()
-
         val parser = new DefaultParser()
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
@@ -1057,20 +1053,20 @@ object NCCli extends App {
 
         val msg2 = if (msg.head.isLower) msg.head.toUpper + msg.tail else msg
 
-        System.out.println(s"${y("ERR:")} $msg2")
+        term.writer().println(s"${y("ERR:")} $msg2")
     }
 
     /**
      *
      * @param msg
      */
-    private def logln(msg: String = ""): Unit = System.out.println(msg)
+    private def logln(msg: String = ""): Unit = term.writer().println(msg)
 
     /**
      *
      * @param msg
      */
-    private def log(msg: String = ""): Unit = System.out.print(msg)
+    private def log(msg: String = ""): Unit = term.writer().print(msg)
 
     /**
      *
@@ -1142,8 +1138,6 @@ object NCCli extends App {
         finally
             get.releaseConnection()
     }
-
-    case class SplitError(index: Int) extends Exception
 
     /**
      * Splits given string by spaces taking into an account double and single quotes,
@@ -1305,6 +1299,14 @@ object NCCli extends App {
      * @param args
      */
     private def boot(args: Array[String]): Unit = {
+        // Initialize OS-aware terminal.
+        term = TerminalBuilder.builder()
+            .name(NAME)
+            .system(true)
+            .dumb(true)
+            .jansi(true)
+            .build()
+
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
         processAnsi(args, repl = false)
 
