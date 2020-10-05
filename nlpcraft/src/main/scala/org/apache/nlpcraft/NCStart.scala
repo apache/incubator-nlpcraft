@@ -22,8 +22,8 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.probe.NCProbe
 import org.apache.nlpcraft.server.NCServer
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.NCAnsi
 import org.apache.nlpcraft.common.ansi.NCAnsi._
+import org.apache.nlpcraft.model.tools.cmdline.NCCli
 
 /**
   * Server or probe command line starter.
@@ -37,6 +37,7 @@ object NCStart extends App with LazyLogging {
 
         val isSrv = seq.indexWhere(_ == "-server") >= 0
         val isPrb = seq.indexWhere(_ == "-probe") >= 0
+        val isCli = seq.indexWhere(_ == "-cli") >= 0
 
         /**
           *
@@ -66,18 +67,19 @@ object NCStart extends App with LazyLogging {
             logger.info(g("Usage:"))
             logger.info("  Use '-server' argument to start server.")
             logger.info("  Use '-probe' argument to start probe.")
+            logger.info("  Use '-cli' argument to start CLI.")
 
             System.exit(1)
         }
 
-        if (!isSrv && !isPrb)
-            error("Either '-server' or '-probe' argument must be provided.")
-        else if (isSrv && isPrb)
-            error("Only one '-server' or '-probe' argument must be provided.")
+        if (!isSrv && !isPrb && !isCli)
+            error("Either '-server', '-probe' or '-cli' argument must be provided.")
         else if (isPrb)
             NCProbe.main(removeParam("-probe"))
         else if (isSrv)
             NCServer.main(removeParam("-server"))
+        else if (isCli)
+            NCCli.main(removeParam("-cli"))
     }
 
     execute()

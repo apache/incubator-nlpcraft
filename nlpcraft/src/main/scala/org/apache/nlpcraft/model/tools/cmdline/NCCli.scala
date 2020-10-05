@@ -150,6 +150,7 @@ object NCCli extends App {
         value: Option[String]
     )
 
+    //noinspection DuplicatedCode
     // All supported commands.
     private final val CMDS = Seq(
         Command(
@@ -188,7 +189,30 @@ object NCCli extends App {
                         "  -p=/signin",
                         "  -j='{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}'"
                     ),
-                    desc = s"Issues ${y("/signin")} REST call with given JSON payload."
+                    desc = s"Issues ${y("'/signin'")} REST call with given JSON payload."
+                )
+            )
+        ),
+        Command(
+            name = "less-server",
+            synopsis = s"Tails the local REST server log.",
+            desc = Some(
+                s"Only works for the server started via this script."
+            ),
+            body = cmdLessServer,
+            params = Seq(
+                Parameter(
+                    id = "lines",
+                    names = Seq("--lines", "-l"),
+                    value = Some("num"),
+                    desc =
+                        s"Number of the server log lines from the end to display. Default is 10."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME less-server --lines=20 "),
+                    desc = s"Prints last 20 lines from the local server log."
                 )
             )
         ),
@@ -197,7 +221,7 @@ object NCCli extends App {
             synopsis = s"Starts local REST server.",
             desc = Some(
                 s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the server is started unless ${y("--no-wait")} parameter is used."
+                s"Command will block until the server is started unless ${y("'--no-wait'")} parameter is used."
             ),
             body = cmdStartServer,
             params = Seq(
@@ -207,7 +231,7 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Configuration absolute file path. Server will automatically look for ${y("nlpcraft.conf")} " +
+                        s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the REST server and the data probe can use the same file for their configuration."
@@ -220,7 +244,7 @@ object NCCli extends App {
                     desc =
                         s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
                         s"computing plane and a default distributed storage. REST server will automatically look for " +
-                        s"${y("ignite.xml")} configuration file in the same directory as NLPCraft JAR file. If the " +
+                        s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path."
                 ),
@@ -244,7 +268,58 @@ object NCCli extends App {
             )
         ),
         Command(
-            name = "get-server",
+            name = "restart-server",
+            synopsis = s"Restarts local REST server.",
+            desc = Some(
+                s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
+                s"corresponding parameters. If there is no locally running REST server the ${y("'stop-server'")} command is ignored."
+            ),
+            body = cmdRestartServer,
+            params = Seq(
+                Parameter(
+                    id = "config",
+                    names = Seq("--config", "-c"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
+                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
+                        s"different name or in different location use this parameter to provide an alternative path. " +
+                        s"Note that the REST server and the data probe can use the same file for their configuration."
+                ),
+                Parameter(
+                    id = "igniteConfig",
+                    names = Seq("--ignite-config", "-i"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
+                        s"computing plane and a default distributed storage. REST server will automatically look for " +
+                        s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
+                        s"configuration file has different name or in different location use this parameter to " +
+                        s"provide an alternative path."
+                ),
+                Parameter(
+                    id = "noWait",
+                    names = Seq("--no-wait"),
+                    optional = true,
+                    desc =
+                        s"Instructs command not to wait for the server startup and return immediately."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server"),
+                    desc = "Starts local server with default configuration."
+                ),
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
+                    desc = "Starts local REST server with alternative configuration file."
+                )
+            )
+        ),
+        Command(
+            name = "info-server",
             synopsis = s"Basic information about locally running REST server.",
             body = cmdGetServer
         ),
@@ -280,7 +355,7 @@ object NCCli extends App {
             name = "ping-server",
             synopsis = s"Pings local REST server.",
             desc = Some(
-                s"REST server is pinged using '/health' REST call to check its online status."
+                s"REST server is pinged using ${y("'/health'")} REST call to check its online status."
             ),
             body = cmdPingServer,
             params = Seq(
@@ -306,7 +381,7 @@ object NCCli extends App {
             name = "stop-server",
             synopsis = s"Stops local REST server.",
             desc = Some(
-                s"Local REST server must be started via $SCRIPT_NAME or similar way."
+                s"Local REST server must be started via ${y(s"'$SCRIPT_NAME''")} or other compatible way."
             ),
             body = cmdStopServer
         ),
@@ -317,9 +392,9 @@ object NCCli extends App {
         ),
         Command(
             name = "help",
-            synopsis = s"Displays manual page for '$SCRIPT_NAME'.",
+            synopsis = s"Displays manual page for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
-                s"By default, without '-all' or '-cmd' parameters, displays the abbreviated form of manual " +
+                s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
                 s"only listing the commands without parameters or examples."
             ),
             body = cmdHelp,
@@ -351,7 +426,7 @@ object NCCli extends App {
         ),
         Command(
             name = "version",
-            synopsis = s"Displays full version of '$SCRIPT_NAME' script.",
+            synopsis = s"Displays full version of ${y(s"'$SCRIPT_NAME'")} script.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
             ),
@@ -375,10 +450,10 @@ object NCCli extends App {
         ),
         Command(
             name = "repl",
-            synopsis = s"Starts '$SCRIPT_NAME' in interactive REPL mode.",
+            synopsis = s"Starts ${y(s"'$SCRIPT_NAME'")} in interactive REPL mode.",
             desc = Some(
                 s"REPL mode supports all the same commands as command line mode. " +
-                s"REPL is the default mode for when '$SCRIPT_NAME' is started without parameters. " +
+                s"REPL is the default mode for when ${y(s"'$SCRIPT_NAME'")} is started without parameters. " +
                 s"In REPL mode you need to put values that can have spaces (like JSON or file paths) " +
                 s"inside of single or double quotes both of which can be escaped using '\\' character, when necessary."
             ),
@@ -396,6 +471,8 @@ object NCCli extends App {
     private final val ANSI_CMD = CMDS.find(_.name ==  "ansi").get
     private final val QUIT_CMD = CMDS.find(_.name ==  "quit").get
     private final val HELP_CMD = CMDS.find(_.name ==  "help").get
+    private final val STOP_SRV_CMD = CMDS.find(_.name ==  "stop-server").get
+    private final val START_SRV_CMD = CMDS.find(_.name ==  "start-server").get
 
     /**
      *
@@ -551,9 +628,9 @@ object NCCli extends App {
                 val tbl = new NCAsciiTable()
 
                 tbl += (s"${g("stop-server")}", "Stop the server.")
-                tbl += (s"${g("get-server")}", "Get server information.")
+                tbl += (s"${g("info-server")}", "Get server information.")
                 tbl += (s"${g("restart-server")}", "Restart the server.")
-                tbl += (s"${g("less-server")}", "Tail server log.")
+                tbl += (s"${g("less-server")}", "Tail the server log.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
@@ -638,6 +715,15 @@ object NCCli extends App {
             case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
             case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
         }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdLessServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+
+    }
 
     /**
      * @param cmd Command descriptor.
@@ -760,13 +846,25 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private def cmdRestartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (loadServerBeacon().isDefined)
+            STOP_SRV_CMD.body(STOP_SRV_CMD, Seq.empty, repl)
+
+        START_SRV_CMD.body(START_SRV_CMD, args, repl)
+    }
+
+    /**
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private def cmdStopServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some(beacon) ⇒
                 val pid = beacon.pid
 
                 if (beacon.ph.destroy()) {
-                    logln(s"Local REST server (pid ${c(pid)}) has been stopped.")
+                    logln(s"Server (pid ${c(pid)}) has been stopped.")
 
                     // Update state right away.
                     replState.isServerOnline = false
@@ -901,7 +999,7 @@ object NCCli extends App {
                     case Some(c) ⇒
                         if (!seen.contains(c.name)) {
                             tbl +/ (
-                                "" → s"${g(cmd.name)}",
+                                "" → s"${g(c.name)}",
                                 "align:left, maxWidth:85" → mkCmdLines(c)
                             )
 
@@ -982,7 +1080,7 @@ object NCCli extends App {
      */
     private def cmdRepl(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
-            case Some(beacon) ⇒ logln(s"Local REST server detected:\n${mkServerBeaconTable(beacon).toString}")
+            case Some(beacon) ⇒ logln(s"Server detected:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ ()
         }
 
