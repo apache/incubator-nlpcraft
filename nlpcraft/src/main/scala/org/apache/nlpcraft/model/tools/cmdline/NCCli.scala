@@ -66,6 +66,35 @@ object NCCli extends App {
     //noinspection RegExpRedundantEscape\
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
 
+    // TODO: this needs to be loaded dynamically from OpenAPI spec.
+    private final val REST_PATHS = Seq(
+        "signin",
+        "signout",
+        "cancel",
+        "check",
+        "clear",
+        "clear",
+        "company/add",
+        "company/get",
+        "company/update",
+        "company/token/reset",
+        "company/delete",
+        "user/get",
+        "user/add",
+        "user/update",
+        "user/delete",
+        "user/admin",
+        "user/passwd/reset",
+        "user/all",
+        "feedback/add",
+        "feedback/all",
+        "feedback/delete",
+        "probe/all",
+        "model/sugsyn",
+        "ask",
+        "ask/sync",        
+    )
+
     // Number of server services that need to be started + 1 for log marker.
     // Used for progress bar functionality.
     // +==================================================================+
@@ -98,6 +127,10 @@ object NCCli extends App {
 
     case class SplitError(index: Int) extends Exception
     case class NoLocalServer() extends IllegalStateException(s"Cannot detect locally running REST server.")
+    case class MissingParameter(cmd: Command, paramId: String) extends IllegalArgumentException(
+        s"Missing mandatory parameter: ${c(cmd.params.find(_.id == paramId).get.names.head)}. " +
+        s"Type ${c("help --cmd=")}${c(cmd.name)} to get help."
+    )
 
     case class ReplState(
         var isServerOnline: Boolean = false,
@@ -166,11 +199,12 @@ object NCCli extends App {
             body = cmdRest,
             params = Seq(
                 Parameter(
-                    id = "config",
+                    id = "path",
                     names = Seq("--path", "-p"),
                     value = Some("path"),
                     desc =
-                        s"REST path, e.g. ${y("'/signin'")} or ${y("'/ask/sync'")}. " +
+                        s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
+                        s"Note that you don't need supply '/' at the beginning." +
                         s"See more details at https://nlpcraft.apache.org/using-rest.html"
                 ),
                 Parameter(
@@ -188,10 +222,10 @@ object NCCli extends App {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME rest ",
-                        "  -p=/signin",
+                        "  -p=signin",
                         "  -j='{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}'"
                     ),
-                    desc = s"Issues ${y("'/signin'")} REST call with given JSON payload."
+                    desc = s"Issues ${y("'signin'")} REST call with given JSON payload."
                 )
             )
         ),
@@ -1112,7 +1146,12 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path"))
+        val json = args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json"))
+
         val endpoint = getRestEndpointFromBeacon
+
+        httpPost()
     }
 
     /**
@@ -1348,15 +1387,28 @@ object NCCli extends App {
      * @param baseUrl Base endpoint URL.
      * @param cmd REST call command.
      * @param resp
-     * @param jsParams
+     * @param json Set of object pairs to be converted into JSON representation.
      * @return
      * @throws IOException
      */
-    private def httpPost[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
+    private def httpPost[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], json: (String, AnyRef)*): T =
+        httpPost(baseUrl, cmd, resp, gson.toJson(json.filter(_._2 != null).toMap.asJava))
+
+    /**
+     * Posts HTTP POST request.
+     *
+     * @param baseUrl Base endpoint URL.
+     * @param cmd REST call command.
+     * @param resp
+     * @param json JSON string.
+     * @return
+     * @throws IOException
+     */
+    private def httpPost[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], json: String): T = {
         val post = new HttpPost(prepRestUrl(baseUrl, cmd))
 
         post.setHeader("Content-Type", "application/json")
-        post.setEntity(new StringEntity(gson.toJson(jsParams.filter(_._2 != null).toMap.asJava), "UTF-8"))
+        post.setEntity(new StringEntity(json, "UTF-8"))
 
         try
             HttpClients.createDefault().execute(post, resp)
