@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
-import java.io.{File, FileInputStream, IOException, ObjectInputStream}
-
 import com.google.gson._
 import javax.net.ssl.SSLException
 import org.apache.commons.lang3.SystemUtils
@@ -30,7 +28,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiSpinner}
+import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.version.NCVersion
 import java.lang.ProcessBuilder.Redirect
@@ -38,9 +36,10 @@ import java.lang.management.ManagementFactory
 import java.text.DateFormat
 import java.util
 import java.util.Date
-import java.util.regex.PatternSyntaxException
+import java.io._
+import java.util.regex.{Pattern, PatternSyntaxException}
 
-import org.apache.nlpcraft.common.util.NCUtils.IntTimeUnits
+import org.apache.commons.io.input.{Tailer, TailerListenerAdapter}
 import org.jline.reader.Completer
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.{Terminal, TerminalBuilder}
@@ -63,8 +62,18 @@ import scala.util.control.Exception.ignoring
 object NCCli extends App {
     private final val NAME = "Apache NLPCraft CLI"
 
+    //noinspection RegExpRedundantEscape\
+    private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
+
+    // Number of server services that need to be started.
+    // Used for progress bar functionality.
+    // +==================================================================+
+    // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
+    // +==================================================================+
+    private final val NUM_SRV_SERVICES = 30
+
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
-    private final val HIST_PATH = ".nlpcraft/cli_history"
+    private final val HIST_PATH = ".nlpcraft/.cli_history"
 
     private final lazy val VER = NCVersion.getCurrent
     private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome,s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
@@ -88,12 +97,13 @@ object NCCli extends App {
 
     case class SplitError(index: Int) extends Exception
 
-    case class State(
-        var isServer: Boolean,
-        var accessToken: Option[String]
+    case class ReplState(
+        var isServerOnline: Boolean = false,
+        var accessToken: Option[String] = None,
+        var serverOutput: Option[File] = None
     )
 
-    private val state = State(isServer = false, None)
+    private val replState = ReplState()
 
     // Single CLI command.
     case class Command(
@@ -213,15 +223,6 @@ object NCCli extends App {
                         s"${y("ignite.xml")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path."
-                ),
-                Parameter(
-                    id = "output",
-                    names = Seq("--output-path", "-o"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        "File path for both REST server stdout and stderr output. If not provided, the REST server" +
-                        s"output will be piped into ${y("${USER_HOME}/.nlpcraft/server-output-xxx.txt")}' file."
                 ),
                 Parameter(
                     id = "noWait",
@@ -469,18 +470,23 @@ object NCCli extends App {
         val cfgPath = args.find(_.parameter.id == "config")
         val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
         val noWait = args.exists(_.parameter.id == "noWait")
-        val output = args.find(_.parameter.id == "output") match {
-            case Some(arg) ⇒ new File(stripQuotes(arg.value.get))
-            case None ⇒ new File(SystemUtils.getUserHome, s".nlpcraft/server-output-$currentTime.txt")
-        }
 
         checkFilePath(cfgPath)
         checkFilePath(igniteCfgPath)
 
+        // Ensure that there isn't another local server running.
         loadServerBeacon() match {
             case Some(b) ⇒ throw new IllegalStateException(s"Existing local server (pid ${c(b.pid)}) detected.")
             case None ⇒ ()
         }
+
+        val logTstamp = currentTime
+
+        // Server log redirect.
+        val output = new File(SystemUtils.getUserHome, s".nlpcraft/server_log_$logTstamp.txt")
+
+        // Store in REPL state right away.
+        replState.serverOutput = Some(output)
 
         val srvPb = new ProcessBuilder(
             JAVA,
@@ -525,76 +531,103 @@ object NCCli extends App {
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
-            // Start the 'server | bleach' process pipeline.
-            ProcessBuilder.startPipeline(Seq(srvPb, bleachPb).asJava)
+            // Start the 'server | bleach > server log output' process pipeline.
+            val procs = ProcessBuilder.startPipeline(Seq(srvPb, bleachPb).asJava)
 
-            logln(s"Server output > ${c(output.getAbsolutePath)}")
+            val srvPid = procs.get(0).pid()
 
-            if (noWait)
-                logln(s"Server is starting...")
-            else {
-                log(s"Server is starting ")
-
-                var beacon = loadServerBeacon().orNull
-                var online = false
-                val spinner = mkSpinner()
-                val timeout = currentTime + 5.mins
-                val warnTimeout = currentTime + 60.secs
-
-                spinner.start()
-
-                while (currentTime < timeout && !online) {
-                    if (beacon == null)
-                        beacon = loadServerBeacon().orNull
-                    else
-                        online = Try(restHealth("http://" + beacon.restEndpoint) == 200).getOrElse(false)
-
-                    if (!online) {
-                        if (currentTime > warnTimeout)
-                            // Warn if it's taking too long.
-                            spinner.setSuffix(s" ${r("(taking too long - check logs)")}")
-
-                        Thread.sleep(2.secs) // Check every 2 secs.
-                    }
-                }
-
-                spinner.stop()
-
-                if (!online) {
-                    logln()
-                    error(s"Cannot detect live server.")
-                    error(s"Check output for errors: ${c(output.getAbsolutePath)}")
-                }
-                else {
-                    logln(g("OK"))
-                    logln(mkServerBeaconTable(beacon).toString)
-                }
+            // Store mapping file between PID and timestamp (once we have server PID).
+            // Note that the same timestamp is used in server log file.
+            ignoring(classOf[IOException]) {
+                new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
-            val tbl = new NCAsciiTable()
+            logln(s"Server output ⇒ ${c(output.getAbsolutePath)}")
 
-            tbl += (s"${g("stop-server")}", "Stop the server.")
-            tbl += (s"${g("ping-server")}", "Ping the server.")
-            tbl += (s"${g("get-server")}", "Get server information.")
+            /**
+             *
+             */
+            def showTip(): Unit = {
+                val tbl = new NCAsciiTable()
 
-            logln(s"Handy commands:\n${tbl.toString}")
+                tbl += (s"${g("stop-server")}", "Stop the server.")
+                tbl += (s"${g("get-server")}", "Get server information.")
+                tbl += (s"${g("restart-server")}", "Restart the server.")
+                tbl += (s"${g("less-server")}", "Tail server log.")
+                tbl += (s"${g("ping-server")}", "Ping the server.")
+
+                logln(s"Handy commands:\n${tbl.toString}")
+            }
+
+            if (noWait) {
+                logln(s"Server is starting...")
+
+                showTip()
+            }
+            else {
+                val progressBar = new NCAnsiProgressBar(
+                    term.writer(),
+                    NUM_SRV_SERVICES,
+                    15,
+                    true,
+                    // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
+                    NCAnsi.isEnabled && IS_SCRIPT
+                )
+
+                log(s"Server is starting ")
+
+                progressBar.start()
+
+                U.mkThread("server-start-progress-bar") { _ ⇒
+                    Tailer.create(
+                        replState.serverOutput.get,
+                        new TailerListenerAdapter {
+                            override def handle(line: String): Unit =
+                                if (TAILER_PTRN.matcher(line).matches())
+                                    progressBar.ticked()
+                        },
+                        500.ms
+                    )
+                }
+                .start()
+
+                var beacon: NCCliServerBeacon = null
+                var online = false
+                val endOfWait = currentTime + 3.mins // We try for 3 mins max.
+
+                while (currentTime < endOfWait && !online) {
+                    if (progressBar.completed) {
+                        // First, load the beacon, if any.
+                        if (beacon == null)
+                            beacon = loadServerBeacon().orNull
+
+                        // Once beacon is loaded, ensure that REST endpoint is live.
+                        if (beacon != null)
+                            online = Try(restHealth("http://" + beacon.restEndpoint) == 200).getOrElse(false)
+                    }
+
+                    if (!online)
+                        Thread.sleep(2.secs) // Check every 2 secs.
+                }
+
+                progressBar.stop()
+
+                if (!online) {
+                    logln(r(" [Error]"))
+                    error(s"Failed to start server, check output for errors.")
+                }
+                else {
+                    logln(g(" [OK]"))
+                    logln(mkServerBeaconTable(beacon).toString)
+
+                    showTip()
+                }
+            }
         }
         catch {
             case e: Exception ⇒ error(s"Server failed to start: ${y(e.getLocalizedMessage)}")
         }
     }
-
-    /**
-     * Makes default spinner.
-     *
-     * @return
-     */
-    private def mkSpinner() = new NCAnsiSpinner(
-        term.writer(),
-        ansiCyanFg,
-        // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
-        NCAnsi.isEnabled && IS_SCRIPT
-    )
 
     /**
      *
@@ -630,7 +663,11 @@ object NCCli extends App {
         while (i < num) {
             log(s"(${i + 1} of $num) pinging REST server at ${b(endpoint)} ")
 
-            val spinner = mkSpinner()
+            val spinner = new NCAnsiSpinner(
+                term.writer(),
+                // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
+                NCAnsi.isEnabled && IS_SCRIPT
+            )
 
             spinner.start()
 
@@ -704,7 +741,7 @@ object NCCli extends App {
             case _: Exception ⇒ None
         }
 
-        state.isServer = beacon.isDefined
+        replState.isServerOnline = beacon.isDefined
 
         beacon
     }
@@ -732,7 +769,7 @@ object NCCli extends App {
                     logln(s"Local REST server (pid ${c(pid)}) has been stopped.")
 
                     // Update state right away.
-                    state.isServer = false
+                    replState.isServerOnline = false
                 } else
                     error(s"Failed to stop the local REST server (pid ${c(pid)}).")
 
@@ -1040,8 +1077,8 @@ object NCCli extends App {
 
         while (!exit) {
             val rawLine = try {
-                val srvStr = bo(s"${if (state.isServer) s"ON " else s"OFF "}")
-                val acsTokStr = bo(s"${state.accessToken.getOrElse("")} ")
+                val srvStr = bo(s"${if (replState.isServerOnline) s"ON " else s"OFF "}")
+                val acsTokStr = bo(s"${replState.accessToken.getOrElse("")} ")
 
                 reader.printAbove("\n" + rb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
                 reader.readLine(s"${g("\u25b6")} ")
@@ -1146,7 +1183,7 @@ object NCCli extends App {
      */
     private def unknownCommand(cmd: String): Unit = {
         error(s"Unknown command: ${y(cmd)}")
-        error(s"Use '${c("help")}' command to read the manual.")
+        error(s"Type '${c("help")}' to read the manual.")
     }
 
     /**

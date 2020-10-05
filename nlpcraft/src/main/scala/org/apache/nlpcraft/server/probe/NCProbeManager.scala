@@ -360,7 +360,7 @@ object NCProbeManager extends NCService {
 
                         srv.bind(new InetSocketAddress(host, port))
                         
-                        logger.info(s"$name connection is on '$host:$port'")
+                        logger.trace(s"$name connection is on '$host:$port'")
                         
                         srv.setSoTimeout(Config.soTimeoutMs)
                         
