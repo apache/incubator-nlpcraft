@@ -38,9 +38,10 @@ import java.util
 import java.util.Date
 import java.io._
 import java.nio.charset.StandardCharsets
-import java.util.regex.{Pattern, PatternSyntaxException}
+import java.util.regex.Pattern
 
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
+import org.apache.http.util.EntityUtils
 import org.jline.reader.Completer
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.{Terminal, TerminalBuilder}
@@ -128,8 +129,14 @@ object NCCli extends App {
     case class SplitError(index: Int) extends Exception
     case class NoLocalServer() extends IllegalStateException(s"Cannot detect locally running REST server.")
     case class MissingParameter(cmd: Command, paramId: String) extends IllegalArgumentException(
-        s"Missing mandatory parameter: ${c(cmd.params.find(_.id == paramId).get.names.head)}. " +
-        s"Type ${c("help --cmd=")}${c(cmd.name)} to get help."
+        s"Missing mandatory parameter: $ansiCyanFg${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$ansiReset. " +
+        s"Type $ansiCyanFg${"'help --cmd="}${c(cmd.name) + "'"}$ansiReset to get help."
+    )
+    case class HttpError(httpCode: Int) extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
+
+    case class HttpRestResponse(
+        code: Int,
+        data: String
     )
 
     case class ReplState(
@@ -1146,12 +1153,34 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path"))
-        val json = args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json"))
+        val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
+        val rawJson = args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get
 
+        if (!REST_PATHS.contains(path))
+            throw new IllegalArgumentException(s"Unknown REST path: $path")
+
+        val json = stripQuotes(rawJson)
         val endpoint = getRestEndpointFromBeacon
 
-        httpPost()
+        val handler = new ResponseHandler[HttpRestResponse] {
+            override def handleResponse(resp: HttpResponse): HttpRestResponse = {
+                val status = resp.getStatusLine
+
+                HttpRestResponse(
+                    status.getStatusCode,
+                    Option(EntityUtils.toString(resp.getEntity)).getOrElse(
+                        throw new IllegalStateException(s"Unexpected REST error: ${status.getReasonPhrase}")
+                    )
+                )
+            }
+        }
+
+        val resp = httpPost(endpoint, path, handler, json)
+
+        val code = if (resp.code == 200) g("200") else r(resp.code)
+
+        logln(s"HTTP $code")
+        logln(resp.data)
     }
 
     /**
@@ -1163,12 +1192,12 @@ object NCCli extends App {
             case None ⇒ ()
         }
 
-        val appName = s"$NAME ver. ${VER.version}"
-
         val parser = new DefaultParser()
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
         parser.setEofOnUnclosedQuote(true)
+        parser.setRegexCommand("")
+        parser.setRegexVariable("")
 
         val completer = new Completer {
             private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
@@ -1219,7 +1248,7 @@ object NCCli extends App {
 
         val reader = LineReaderBuilder
             .builder
-            .appName(appName)
+            .appName("NLPCraft")
             .terminal(term)
             .completer(completer)
             .parser(parser)
@@ -1261,9 +1290,9 @@ object NCCli extends App {
                 reader.readLine(s"${g("\u25b6")} ")
             }
             catch {
-                case _: PatternSyntaxException ⇒ "" // Guard against JLine hiccups.
                 case _: UserInterruptException ⇒ "" // Ignore.
                 case _: EndOfFileException ⇒ null
+                case e: Exception ⇒ e.printStackTrace(); "" // Guard against JLine hiccups.
             }
 
             if (rawLine == null || QUIT_CMD.name == rawLine.trim)
@@ -1359,8 +1388,10 @@ object NCCli extends App {
      *
      */
     private def unknownCommand(cmd: String): Unit = {
-        error(s"Unknown command: ${y(cmd)}")
-        error(s"Type '${c("help")}' to read the manual.")
+        val c2 = y(s"'$cmd'")
+        val h2 = c(s"'help'")
+
+        error(s"Unknown command $c2, type $h2 to get help.")
     }
 
     /**
@@ -1380,19 +1411,6 @@ object NCCli extends App {
      */
     private def prepRestUrl(baseUrl: String, cmd: String): String =
         if (baseUrl.endsWith("/")) s"${baseUrl}api/v1/$cmd" else s"$baseUrl/api/v1/$cmd"
-
-    /**
-     * Posts HTTP POST request.
-     *
-     * @param baseUrl Base endpoint URL.
-     * @param cmd REST call command.
-     * @param resp
-     * @param json Set of object pairs to be converted into JSON representation.
-     * @return
-     * @throws IOException
-     */
-    private def httpPost[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], json: (String, AnyRef)*): T =
-        httpPost(baseUrl, cmd, resp, gson.toJson(json.filter(_._2 != null).toMap.asJava))
 
     /**
      * Posts HTTP POST request.
