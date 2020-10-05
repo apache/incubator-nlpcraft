@@ -333,8 +333,8 @@ object NCCli extends App {
             body = cmdNoAnsi,
             examples = Seq(
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=repl no-ansi"),
-                    desc = "Displays help for 'repl' commands without using ANSI color and escape sequences."
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=rest no-ansi"),
+                    desc = s"Displays help for ${y("'rest'")} commands without using ANSI color and escape sequences."
                 )
             )
         ),
@@ -347,8 +347,8 @@ object NCCli extends App {
             body = cmdAnsi,
             examples = Seq(
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=repl ansi"),
-                    desc = "Displays help for 'repl' commands with ANSI color and escape sequences."
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=rest ansi"),
+                    desc = s"Displays help for ${y("'rest'")} commands with ANSI color and escape sequences."
                 )
             )
         ),
@@ -388,7 +388,7 @@ object NCCli extends App {
         ),
         Command(
             name = "quit",
-            synopsis = s"Quits REPL session when in REPL mode.",
+            synopsis = s"Quits REPL when in REPL mode.",
             body = cmdQuit
         ),
         Command(
@@ -416,8 +416,8 @@ object NCCli extends App {
             ),
             examples = Seq(
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=repl --cmd=ver"),
-                    desc = "Displays help for 'repl' and 'version' commands."
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=rest --cmd=version"),
+                    desc = s"Displays help for ${y("'rest'")} and ${y("'version'")} commands."
                 ),
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME help -all"),
@@ -448,17 +448,6 @@ object NCCli extends App {
                     desc = s"Display only the release date, e.g. ${VER.date}."
                 )
             )
-        ),
-        Command(
-            name = "repl",
-            synopsis = s"Starts ${y(s"'$SCRIPT_NAME'")} in interactive REPL mode.",
-            desc = Some(
-                s"REPL mode supports all the same commands as command line mode. " +
-                s"REPL is the default mode for when ${y(s"'$SCRIPT_NAME'")} is started without parameters. " +
-                s"In REPL mode you need to put values that can have spaces (like JSON or file paths) " +
-                s"inside of single or double quotes both of which can be escaped using '\\' character, when necessary."
-            ),
-            body = cmdRepl
         )
     ).sortBy(_.name)
 
@@ -467,7 +456,6 @@ object NCCli extends App {
         "Dup commands."
     )
 
-    private final val DFLT_CMD = CMDS.find(_.name ==  "repl").get
     private final val NO_ANSI_CMD = CMDS.find(_.name ==  "no-ansi").get
     private final val ANSI_CMD = CMDS.find(_.name ==  "ansi").get
     private final val QUIT_CMD = CMDS.find(_.name ==  "quit").get
@@ -925,10 +913,15 @@ object NCCli extends App {
          */
         def header(): Unit = logln(
             s"""|${ansiBold("NAME")}
-                |$T___$SCRIPT_NAME - command line interface to control NLPCraft.
+                |$T___${y(s"'$SCRIPT_NAME'")} - command line interface to control NLPCraft.
                 |
                 |${ansiBold("USAGE")}
-                |$T___$SCRIPT_NAME [COMMAND] [PARAMETERS]
+                |$T___${y(s"'$SCRIPT_NAME'")} [COMMAND] [PARAMETERS]
+                |
+                |${T___}Without any arguments the script starts in REPL mode. The REPL mode supports all
+                |${T___}the same commands as command line mode. In REPL mode you need to put values that
+                |${T___}can have spaces (like JSON or file paths) inside of single or double quotes both
+                |${T___}of which can be escaped using '\\' character.
                 |
                 |${ansiBold("COMMANDS")}""".stripMargin
         )
@@ -1093,11 +1086,8 @@ object NCCli extends App {
 
     /**
      *
-     * @param cmd Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
      */
-    private def cmdRepl(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private def readEvalPrintLoop(): Unit = {
         loadServerBeacon() match {
             case Some(beacon) ⇒ logln(s"Server detected:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ ()
@@ -1195,7 +1185,7 @@ object NCCli extends App {
         while (!exit) {
             val rawLine = try {
                 val srvStr = bo(s"${if (replState.isServerOnline) s"ON " else s"OFF "}")
-                val acsTokStr = bo(s"${replState.accessToken.getOrElse("")} ")
+                val acsTokStr = bo(s"${replState.accessToken.getOrElse("<signed off>")} ")
 
                 reader.printAbove("\n" + rb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
                 reader.readLine(s"${g("\u25b6")} ")
@@ -1493,7 +1483,7 @@ object NCCli extends App {
      * Processes a single command defined by the given arguments.
      *
      * @param args
-     * @param repl Whether or not called from 'repl' command.
+     * @param repl Whether or not called from 'repl' mode.
      */
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         // Process 'no-ansi' and 'ansi' commands first.
@@ -1509,12 +1499,11 @@ object NCCli extends App {
                 case Some(cmd) ⇒
                     exitStatus = 0
 
-                    if (!(repl && cmd.name == "repl")) // Don't call 'repl' from 'repl'.
-                        try
-                            cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
-                        catch {
-                            case e: Exception ⇒ error(e.getLocalizedMessage)
-                        }
+                    try
+                        cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
+                    catch {
+                        case e: Exception ⇒ error(e.getLocalizedMessage)
+                    }
 
                 case None ⇒ unknownCommand(cmd)
             }
@@ -1540,7 +1529,7 @@ object NCCli extends App {
         title()
 
         if (args.isEmpty)
-            DFLT_CMD.body(DFLT_CMD, Seq.empty, false)
+            readEvalPrintLoop()
         else
             doCommand(args.toSeq, repl = false)
 
