@@ -37,9 +37,10 @@ import java.text.DateFormat
 import java.util
 import java.util.Date
 import java.io._
+import java.nio.charset.StandardCharsets
 import java.util.regex.{Pattern, PatternSyntaxException}
 
-import org.apache.commons.io.input.{Tailer, TailerListenerAdapter}
+import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
 import org.jline.reader.Completer
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.{Terminal, TerminalBuilder}
@@ -322,7 +323,7 @@ object NCCli extends App {
         Command(
             name = "info-server",
             synopsis = s"Basic information about locally running REST server.",
-            body = cmdGetServer
+            body = cmdInfoServer
         ),
         Command(
             name = "no-ansi",
@@ -644,19 +645,18 @@ object NCCli extends App {
 
                 progressBar.start()
 
-                U.mkThread("server-start-progress-bar") { _ ⇒
-                    Tailer.create(
-                        replState.serverOutput.get,
-                        new TailerListenerAdapter {
-                            override def handle(line: String): Unit = {
-                                if (line.endsWith(U.LOG_MARKER) || TAILER_PTRN.matcher(line).matches())
-                                    progressBar.ticked()
-                            }
-                        },
-                        500.ms
-                    )
-                }
-                .start()
+                val tailer = Tailer.create(
+                    replState.serverOutput.get,
+                    new TailerListenerAdapter {
+                        override def handle(line: String): Unit = {
+                            if (line.endsWith(U.LOG_MARKER) || TAILER_PTRN.matcher(line).matches())
+                                progressBar.ticked()
+                        }
+                    },
+                    500.ms
+                )
+
+                U.mkThread("server-start-progress-bar") { _ ⇒ tailer }.start()
 
                 var beacon: NCCliServerBeacon = null
                 var online = false
@@ -677,11 +677,13 @@ object NCCli extends App {
                         Thread.sleep(2.secs) // Check every 2 secs.
                 }
 
+                tailer.stop()
+
                 progressBar.stop()
 
                 if (!online) {
                     logln(r(" [Error]"))
-                    error(s"Failed to start server, check output for errors.")
+                    error(s"Timed out starting server, check output for errors.")
                 }
                 else {
                     logln(g(" [OK]"))
@@ -712,8 +714,34 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdLessServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val lines = args.find(_.parameter.id == "lines") match {
+            case Some(arg) ⇒
+                try
+                    Integer.parseInt(arg.value.get)
+                catch {
+                    case _ :Exception ⇒ throw new IllegalArgumentException(s"Invalid number of lines: ${arg.value.get}")
+                }
+
+            case None ⇒ 10 // Default.
+        }
+
         loadServerBeacon() match {
-            case Some(beacon) ⇒ System.out.println(s"Log path: ${beacon.logPath}")
+            case Some(beacon) ⇒
+                try
+                    managed(new ReversedLinesFileReader(new File(beacon.logPath), StandardCharsets.UTF_8)) acquireAndGet { in ⇒
+                        var tail = List.empty[String]
+
+                        for (_ ← 0 to lines)
+                            tail ::= in.readLine()
+
+                        logln(bb(w(s"+---< Last $ansiBlackFg$lines$ansiWhiteFg log lines >---")))
+                        tail.foreach(line ⇒ logln(s"${bb(w("|"))} $line"))
+                        logln(bb(w(s"+---< Last $ansiBlackFg$lines$ansiWhiteFg log lines >---")))
+                    }
+                catch {
+                    case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
+                }
+
             case None ⇒ throw NoLocalServer()
         }
     }
@@ -816,8 +844,8 @@ object NCCli extends App {
                     if (files.size == 1) {
                         val split = files(0).getName.split("_")
 
-                        if (split.size == 2) {
-                            val logFile = new File(SystemUtils.getUserHome, s".nlpcraft/server_log_${split(2)}.txt")
+                        if (split.size == 4) {
+                            val logFile = new File(SystemUtils.getUserHome, s".nlpcraft/server_log_${split(3)}.txt")
 
                             if (logFile.exists())
                                 beacon.logPath = logFile.getAbsolutePath
@@ -1042,6 +1070,8 @@ object NCCli extends App {
     private def mkServerBeaconTable(beacon: NCCliServerBeacon): NCAsciiTable = {
         val tbl = new NCAsciiTable
 
+        val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
+
         tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("Database URL", s"${g(beacon.dbUrl)}")
         tbl += ("  Driver", s"${g(beacon.dbDriver)}")
@@ -1056,6 +1086,7 @@ object NCCli extends App {
         tbl += ("Token providers", s"${g(beacon.tokenProviders)}")
         tbl += ("NLP engine", s"${g(beacon.nlpEngine)}")
         tbl += ("External config URL", s"${g(beacon.extConfigUrl)}")
+        tbl += ("Log file", logPath)
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
         tbl
@@ -1067,7 +1098,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdGetServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private def cmdInfoServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some(beacon) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
             case None ⇒ throw NoLocalServer()
