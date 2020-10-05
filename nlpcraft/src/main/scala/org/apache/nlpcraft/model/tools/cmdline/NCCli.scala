@@ -735,7 +735,7 @@ object NCCli extends App {
                             tail ::= in.readLine()
 
                         logln(bb(w(s"+----< ${ansiBlackFg}Last $lines server log lines $ansiWhiteFg>---")))
-                        tail.foreach(line ⇒ logln(s"${bb(w("|"))}  $line"))
+                        tail.foreach(line ⇒ logln(s"${bb(w("| "))}  $line"))
                         logln(bb(w(s"+----< ${ansiBlackFg}Last $lines server log lines $ansiWhiteFg>---")))
                     }
                 catch {
