@@ -275,7 +275,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                         tokenProviders = Config.tokProviders,
                         nlpEngine = Config.nlpEngine,
                         extConfigUrl = Config.extCfgUrl,
-                        filePath = path.getAbsolutePath,
+                        beaconPath = path.getAbsolutePath,
                         startMs = currentTime
                     ))
                     stream.flush()
@@ -300,7 +300,6 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 tbl += (s"${b("Token providers")}", Config.tokProviders)
                 tbl += (s"${b("NLP engine")}", Config.nlpEngine)
                 tbl += (s"${b("External config URL")}", Config.extCfgUrl)
-                tbl += (s"${b("Beacon file path")}", path.getAbsolutePath)
 
                 logger.info(s"Sever configuration:\n$tbl")
             }
@@ -334,6 +333,8 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             // No existing beacon file detected.
             save()
     }
+
+    logger.info(U.LOG_MARKER)
 
     NCIgniteRunner.runWith(
         args.find(_.startsWith("-igniteConfig=")) match {

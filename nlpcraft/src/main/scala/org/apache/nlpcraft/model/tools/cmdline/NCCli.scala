@@ -65,12 +65,12 @@ object NCCli extends App {
     //noinspection RegExpRedundantEscape\
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
 
-    // Number of server services that need to be started.
+    // Number of server services that need to be started + 1 for log marker.
     // Used for progress bar functionality.
     // +==================================================================+
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
-    private final val NUM_SRV_SERVICES = 30
+    private final val NUM_SRV_SERVICES = 30/*services*/ + 1/*log marker*/
 
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
     private final val HIST_PATH = ".nlpcraft/.cli_history"
@@ -96,6 +96,7 @@ object NCCli extends App {
     private val gson = new GsonBuilder().setPrettyPrinting().create
 
     case class SplitError(index: Int) extends Exception
+    case class NoLocalServer() extends IllegalStateException(s"Cannot detect locally running REST server.")
 
     case class ReplState(
         var isServerOnline: Boolean = false,
@@ -553,7 +554,7 @@ object NCCli extends App {
 
         // Ensure that there isn't another local server running.
         loadServerBeacon() match {
-            case Some(b) ⇒ throw new IllegalStateException(s"Existing local server (pid ${c(b.pid)}) detected.")
+            case Some(b) ⇒ throw new IllegalStateException(s"Existing server (pid ${c(b.pid)}) detected.")
             case None ⇒ ()
         }
 
@@ -659,9 +660,10 @@ object NCCli extends App {
                     Tailer.create(
                         replState.serverOutput.get,
                         new TailerListenerAdapter {
-                            override def handle(line: String): Unit =
-                                if (TAILER_PTRN.matcher(line).matches())
+                            override def handle(line: String): Unit = {
+                                if (line.endsWith(U.LOG_MARKER) || TAILER_PTRN.matcher(line).matches())
                                     progressBar.ticked()
+                            }
                         },
                         500.ms
                     )
@@ -713,7 +715,7 @@ object NCCli extends App {
     private def getRestEndpointFromBeacon: String =
         loadServerBeacon() match {
             case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
-            case None ⇒ throw new IllegalStateException(s"Cannot detect locally running REST server.")
+            case None ⇒ throw NoLocalServer()
         }
 
     /**
@@ -722,7 +724,10 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdLessServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-
+        loadServerBeacon() match {
+            case Some(beacon) ⇒ System.out.println(s"Log path: ${beacon.logPath}")
+            case None ⇒ throw NoLocalServer()
+        }
     }
 
     /**
@@ -815,6 +820,22 @@ object NCCli extends App {
                 case Some(ph) ⇒
                     beacon.ph = ph
 
+                    val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles(new FilenameFilter {
+                        override def accept(dir: File, name: String): Boolean =
+                            name.startsWith(s".pid_$ph")
+                    })
+
+                    if (files.size == 1) {
+                        val split = files(0).getName.split("_")
+
+                        if (split.size == 2) {
+                            val logFile = new File(SystemUtils.getUserHome, s".nlpcraft/server_log_${split(2)}.txt")
+
+                            if (logFile.exists())
+                                beacon.logPath = logFile.getAbsolutePath
+                        }
+                    }
+
                     Some(beacon)
                 case None ⇒
                     // Attempt to clean up stale beacon file.
@@ -871,8 +892,7 @@ object NCCli extends App {
                 } else
                     error(s"Failed to stop the local REST server (pid ${c(pid)}).")
 
-            case None ⇒
-                error("Cannot detect locally running REST server.")
+            case None ⇒ throw NoLocalServer()
         }
     }
 
@@ -1043,7 +1063,6 @@ object NCCli extends App {
         tbl += ("Token providers", s"${g(beacon.tokenProviders)}")
         tbl += ("NLP engine", s"${g(beacon.nlpEngine)}")
         tbl += ("External config URL", s"${g(beacon.extConfigUrl)}")
-        tbl += ("Beacon file path", s"${g(beacon.filePath)}")
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
         tbl
@@ -1058,7 +1077,7 @@ object NCCli extends App {
     private def cmdGetServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some(beacon) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
-            case None ⇒ error(s"Cannot detect local REST server.")
+            case None ⇒ throw NoLocalServer()
         }
     }
 

@@ -53,8 +53,6 @@ object NCNlpCoreManager extends NCService {
         
         addTags(span, "nlpEngine" → Config.engine)
       
-        logger.info(s"NLP engine configured: ${Config.engine}")
-      
         val factory: NCNlpTokenizerFactory =
             Config.engine match {
                 case "stanford" ⇒ U.mkObject("org.apache.nlpcraft.common.nlp.core.stanford.NCStanfordTokenizerFactory")

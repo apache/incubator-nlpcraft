@@ -34,6 +34,8 @@ package org.apache.nlpcraft.model.tools.cmdline
  * @param nlpEngine
  * @param tokenProviders
  * @param extConfigUrl
+ * @param beaconPath
+ * @param logPath
  * @param ph
  */
 case class NCCliServerBeacon(
@@ -52,7 +54,8 @@ case class NCCliServerBeacon(
     nlpEngine: String,
     tokenProviders: String,
     extConfigUrl: String,
-    filePath: String,
+    beaconPath: String,
+    @transient var logPath: String = null,
     @transient var ph: ProcessHandle = null
 )
 

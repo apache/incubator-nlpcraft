@@ -83,7 +83,7 @@ class NCAnsiProgressBar(
         if (useAnsi) {
             clean()
 
-            val bar = Math.round((tick.toFloat / totalTicks.toFloat) * dispSize)
+            val bar = if (tick == 1) 1 else Math.round((tick.toFloat / totalTicks.toFloat) * dispSize)
 
             out.print(PB_LEFT)
             for (i ← 0 until dispSize)
@@ -91,7 +91,7 @@ class NCAnsiProgressBar(
             out.print(PB_RIGHT)
             out.flush()
         }
-        else if (tick % (totalTicks / dispSize) == 0) {
+        else if (tick == 1 || tick % (totalTicks / dispSize) == 0) {
             out.print(NON_ANSI_CHAR)
             out.flush()
         }

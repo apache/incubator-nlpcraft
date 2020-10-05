@@ -117,8 +117,6 @@ object NCNlpServerManager extends NCService {
         // These component can be started independently.
         U.executeParallel(ners.values.map(ner ⇒ () ⇒ ner.start()).toSeq: _*)
     
-        logger.info(s"Enabled built-in NERs: ${Config.tokenProviders.mkString(", ")}")
-    
         ackStarted()
     }
 
