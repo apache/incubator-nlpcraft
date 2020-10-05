@@ -734,9 +734,9 @@ object NCCli extends App {
                         for (_ ← 0 to lines)
                             tail ::= in.readLine()
 
-                        logln(bb(w(s"+---< Last $ansiBlackFg$lines$ansiWhiteFg server log lines >---")))
-                        tail.foreach(line ⇒ logln(s"${bb(w("|"))} $line"))
-                        logln(bb(w(s"+---< Last $ansiBlackFg$lines$ansiWhiteFg server log lines >---")))
+                        logln(bb(w(s"+----< ${ansiBlackFg}Last $lines server log lines $ansiWhiteFg>---")))
+                        tail.foreach(line ⇒ logln(s"${bb(w("|"))}  $line"))
+                        logln(bb(w(s"+----< ${ansiBlackFg}Last $lines server log lines $ansiWhiteFg>---")))
                     }
                 catch {
                     case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
