@@ -1262,8 +1262,8 @@ object NCCli extends App {
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
         parser.setEofOnUnclosedQuote(true)
-//        parser.regexCommand("")
-//        parser.regexVariable("")
+        parser.regexCommand("")
+        parser.regexVariable("")
         parser.setEscapeChars(null)
 
         val completer = new Completer {
