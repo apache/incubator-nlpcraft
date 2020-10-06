@@ -19,6 +19,7 @@ package org.apache.nlpcraft.common.ansi
 
 import java.io.PrintWriter
 
+import org.apache.nlpcraft.common._
 import NCAnsi._
 import org.apache.nlpcraft.common.ansi.NCAnsiProgressBar._
 
@@ -42,10 +43,10 @@ class NCAnsiProgressBar(
     @volatile private var tick = 0
 
     //noinspection ZeroIndexToHead
-    private final val PB_LEFT = s"$ansiBlueFg${CHAR_SET(0)}$ansiReset"
-    private final val PB_RIGHT = s"$ansiBlueFg${CHAR_SET(3)}$ansiReset"
-    private final val PB_EMPTY =s"$ansiWhiteFg${CHAR_SET(2)}$ansiReset"
-    private final val PB_FULL = s"$ansiRedFg$ansiBold${CHAR_SET(1)}$ansiReset"
+    private final val PB_LEFT = s"$B${CHAR_SET(0)}$RST"
+    private final val PB_RIGHT = s"$B${CHAR_SET(3)}$RST"
+    private final val PB_EMPTY =s"$W${CHAR_SET(2)}$RST"
+    private final val PB_FULL = s"$R$BO${CHAR_SET(1)}$RST"
 
     /**
      *
@@ -62,7 +63,7 @@ class NCAnsiProgressBar(
     def start(): Unit = {
         tick = 0
 
-        if (useAnsi) {
+        if (useAnsi) out.synchronized {
             // Hide cursor to avoid blinking.
             out.print(ansiCursorHide)
 
@@ -80,20 +81,22 @@ class NCAnsiProgressBar(
     def ticked(): Unit = {
         tick += 1
 
-        if (useAnsi) {
-            clean()
+        out.synchronized {
+            if (useAnsi) {
+                clean()
 
-            val bar = if (tick == 1) 1 else Math.round((tick.toFloat / totalTicks.toFloat) * dispSize)
+                val bar = if (tick == 1) 1 else Math.round((tick.toFloat / totalTicks.toFloat) * dispSize)
 
-            out.print(PB_LEFT)
-            for (i ← 0 until dispSize)
-                out.print(if (i < bar) PB_FULL else PB_EMPTY)
-            out.print(PB_RIGHT)
-            out.flush()
-        }
-        else if (tick == 1 || tick % (totalTicks / dispSize) == 0) {
-            out.print(NON_ANSI_CHAR)
-            out.flush()
+                out.print(PB_LEFT)
+                for (i ← 0 until dispSize)
+                    out.print(if (i < bar) PB_FULL else PB_EMPTY)
+                out.print(PB_RIGHT)
+                out.flush()
+            }
+            else if (tick == 1 || tick % (totalTicks / dispSize) == 0) {
+                out.print(NON_ANSI_CHAR)
+                out.flush()
+            }
         }
     }
 
@@ -109,7 +112,7 @@ class NCAnsiProgressBar(
      * Stops progress bar.
      */
     def stop(): Unit = {
-        if (useAnsi && clearOnComplete) {
+        if (useAnsi && clearOnComplete) out.synchronized {
             clean()
 
             // Show cursor.

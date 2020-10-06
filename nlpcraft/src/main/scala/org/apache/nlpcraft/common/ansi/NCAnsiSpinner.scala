@@ -73,11 +73,13 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
                 out.flush()
 
                 while (!t.isInterrupted) {
-                    if (frame > 0)
-                        clean()
+                    out.synchronized {
+                        if (frame > 0)
+                            clean()
 
-                    out.print(s"$prefix$ansiCyanFg${CHAR_SET(frame % CHAR_SET.size)}$ansiReset$suffix")
-                    out.flush()
+                        out.print(s"$prefix$ansiCyanFg${CHAR_SET(frame % CHAR_SET.size)}$ansiReset$suffix")
+                        out.flush()
+                    }
 
                     lastLength = U.stripAnsi(prefix).length + 1 + U.stripAnsi(suffix).length
 
@@ -89,7 +91,7 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
 
             thread.start()
         }
-        else {
+        else out.synchronized {
             out.print("... ")
             out.flush()
         }
@@ -100,7 +102,7 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
     def stop(): Unit = {
         U.stopThread(thread)
 
-        if (useAnsi && frame > 0) {
+        if (useAnsi && frame > 0) out.synchronized {
             clean()
 
             // Show cursor.

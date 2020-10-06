@@ -946,6 +946,15 @@ object NCUtils extends LazyLogging {
         }
 
     /**
+     * Makes thread.
+     *
+     * @param name Name.
+     * @param body Thread body.
+     */
+    def mkThread(name: String, body: Runnable): Thread =
+        mkThread(name) { _ ⇒ body.run() }
+
+    /**
       * System-wide process of normalizing emails (trim & lower case).
       *
       * @param email Email to normalize.

@@ -38,16 +38,19 @@ import java.util
 import java.util.Date
 import java.io._
 import java.nio.charset.StandardCharsets
+import java.nio.file.Paths
 import java.util.regex.Pattern
 
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
 import org.apache.http.util.EntityUtils
+import org.jline.builtins.Commands
 import org.jline.reader.Completer
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.{Terminal, TerminalBuilder}
 import org.jline.reader.{Candidate, EndOfFileException, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser.Bracket
 import org.jline.reader.impl.history.DefaultHistory
+import org.jline.utils.InfoCmp.Capability
 import org.jline.widget.AutosuggestionWidgets
 import resource.managed
 
@@ -69,32 +72,33 @@ object NCCli extends App {
 
     // TODO: this needs to be loaded dynamically from OpenAPI spec.
     private final val REST_PATHS = Seq(
-        "signin",
-        "signout",
-        "cancel",
-        "check",
-        "clear",
-        "clear",
-        "company/add",
-        "company/get",
-        "company/update",
-        "company/token/reset",
-        "company/delete",
-        "user/get",
-        "user/add",
-        "user/update",
-        "user/delete",
-        "user/admin",
-        "user/passwd/reset",
-        "user/all",
-        "feedback/add",
-        "feedback/all",
-        "feedback/delete",
-        "probe/all",
-        "model/sugsyn",
-        "ask",
-        "ask/sync",        
+        "clear/conversation" -> "Clears conversation STM",
+        "clear/dialog" -> "Clears dialog flow",
+        "model/sugsyn" -> "Runs model synonym suggestion tool",
+        "check" -> "Gets status and result of submitted requests",
+        "cancel" -> "Cancels a question",
+        "ask" -> "Asks a question",
+        "ask/sync" -> "Asks a question in synchronous mode",
+        "user/get" -> "Gets current user information",
+        "user/all" -> "Gets all users",
+        "user/update" -> "Updates regular user",
+        "user/delete" -> "Deletes user",
+        "user/admin" -> "Updates user admin permissions",
+        "user/passwd/reset" -> "Resets password for the user",
+        "user/add" -> "Adds new user",
+        "company/get" -> "Gets current user company information",
+        "company/add" -> "Adds new company",
+        "company/update" -> "Updates company data",
+        "company/delete" -> "Deletes company",
+        "company/token/reset" -> "Resets company probe auth token",
+        "feedback/add" -> "Adds feedback",
+        "feedback/delete" -> "Deletes feedback",
+        "feedback/all" -> "Gets all feedback",
+        "signin" -> "Signs in and obtains new access token",
+        "signout" -> "Signs out and releases access token",
+        "probe/all" -> "Gets all probes"
     )
+    .sortBy(_._1)
 
     // Number of server services that need to be started + 1 for log marker.
     // Used for progress bar functionality.
@@ -129,8 +133,8 @@ object NCCli extends App {
     case class SplitError(index: Int) extends Exception
     case class NoLocalServer() extends IllegalStateException(s"Cannot detect locally running REST server.")
     case class MissingParameter(cmd: Command, paramId: String) extends IllegalArgumentException(
-        s"Missing mandatory parameter: $ansiCyanFg${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$ansiReset. " +
-        s"Type $ansiCyanFg${"'help --cmd="}${c(cmd.name) + "'"}$ansiReset to get help."
+        s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
+        s"type $C${"'help --cmd="}${c(cmd.name) + "'"}$RST to get help."
     )
     case class HttpError(httpCode: Int) extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
 
@@ -211,8 +215,9 @@ object NCCli extends App {
                     value = Some("path"),
                     desc =
                         s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
-                        s"Note that you don't need supply '/' at the beginning." +
-                        s"See more details at https://nlpcraft.apache.org/using-rest.html"
+                        s"Note that you don't need supply '/' at the beginning. " +
+                        s"See more details at https://nlpcraft.apache.org/using-rest.html " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible REST paths."
                 ),
                 Parameter(
                     id = "json",
@@ -367,6 +372,32 @@ object NCCli extends App {
             body = cmdInfoServer
         ),
         Command(
+            name = "cls",
+            synopsis = s"Clears terminal screen.",
+            body = cmdCls
+        ),
+        Command(
+            name = "nano",
+            synopsis = s"Runs built-in ${y("'nano'")} editor.",
+            body = cmdNano,
+            params = Seq(
+                Parameter(
+                    id = "file",
+                    names = Seq("--file", "-f"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"File to open with built-in ${y("'nano'")} editor. Relative paths will based off user home directory."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME nano -f=my_model.yml"),
+                    desc = s"Opens ${y("'my_model.yml'")} file in built-in nano editor."
+                )
+            )
+        ),
+        Command(
             name = "no-ansi",
             synopsis = s"Disables usage of ANSI escape codes for colors & terminal controls.",
             desc = Some(
@@ -502,6 +533,7 @@ object NCCli extends App {
     private final val ANSI_CMD = CMDS.find(_.name ==  "ansi").get
     private final val QUIT_CMD = CMDS.find(_.name ==  "quit").get
     private final val HELP_CMD = CMDS.find(_.name ==  "help").get
+    private final val REST_CMD = CMDS.find(_.name ==  "rest").get
     private final val STOP_SRV_CMD = CMDS.find(_.name ==  "stop-server").get
     private final val START_SRV_CMD = CMDS.find(_.name ==  "start-server").get
 
@@ -697,7 +729,7 @@ object NCCli extends App {
                     500.ms
                 )
 
-                U.mkThread("server-start-progress-bar") { _ ⇒ tailer }.start()
+                U.mkThread("server-start-progress-bar", tailer).start()
 
                 var beacon: NCCliServerBeacon = null
                 var online = false
@@ -775,9 +807,9 @@ object NCCli extends App {
                         for (_ ← 0 to lines)
                             tail ::= in.readLine()
 
-                        logln(bb(w(s"+----< ${ansiBlackFg}Last $lines server log lines $ansiWhiteFg>---")))
+                        logln(bb(w(s"+----< ${K}Last $lines server log lines $W>---")))
                         tail.foreach(line ⇒ logln(s"${bb(w("| "))}  $line"))
-                        logln(bb(w(s"+----< ${ansiBlackFg}Last $lines server log lines $ansiWhiteFg>---")))
+                        logln(bb(w(s"+----< ${K}Last $lines server log lines $W>---")))
                     }
                 catch {
                     case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
@@ -1152,14 +1184,38 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private def cmdCls(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        term.puts(Capability.clear_screen)
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdNano(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        Commands.nano(term,
+            System.out,
+            System.err,
+            Paths.get(""),
+            Array(args.map(_.value.get): _*)
+        )
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
         val rawJson = args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get
 
-        if (!REST_PATHS.contains(path))
-            throw new IllegalArgumentException(s"Unknown REST path: $path")
+        // TODO: verify JSON
 
-        val json = stripQuotes(rawJson)
+        if (!REST_PATHS.exists(_._1 == path))
+            throw new IllegalArgumentException(s"Unknown REST path $C'$path'$RST, type ${c("'help --cmd=rest'")} to get help.")
+
         val endpoint = getRestEndpointFromBeacon
 
         val handler = new ResponseHandler[HttpRestResponse] {
@@ -1175,12 +1231,24 @@ object NCCli extends App {
             }
         }
 
-        val resp = httpPost(endpoint, path, handler, json)
+        val resp = httpPost(endpoint, path, handler, stripQuotes(rawJson))
 
-        val code = if (resp.code == 200) g("200") else r(resp.code)
+        // Ack HTTP response code.
+        logln(s"HTTP ${if (resp.code == 200) g("200") else r(resp.code)}")
 
-        logln(s"HTTP $code")
-        logln(resp.data)
+        if (resp.code == 200) {
+            if (path == "signin") {
+                // TODO
+            }
+            else if (path == "signout") {
+                // TODO
+            }
+        }
+
+        if (resp.code == 200 || resp.code == 400)
+            logln(resp.data) // TODO
+        else
+            logln(resp.data)
     }
 
     /**
@@ -1196,8 +1264,6 @@ object NCCli extends App {
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
         parser.setEofOnUnclosedQuote(true)
-        parser.setRegexCommand("")
-        parser.setRegexVariable("")
 
         val completer = new Completer {
             private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
@@ -1210,8 +1276,8 @@ object NCCli extends App {
              * @param completed
              * @return
              */
-            private def mkCandidate(id: String, disp: String, desc: String, completed: Boolean): Candidate =
-                new Candidate(id, disp, null, desc, null, null, completed)
+            private def mkCandidate(id: String, disp: String, grp: String, desc: String, completed: Boolean): Candidate =
+                new Candidate(id, disp, grp, desc, null, null, completed)
 
             override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
                 val words = line.words().asScala
@@ -1221,7 +1287,13 @@ object NCCli extends App {
                         val name = n._1
                         val desc = n._2.substring(0, n._2.length - 1) // Remove last '.'.
 
-                        mkCandidate(name, name, desc, completed = true)
+                        mkCandidate(
+                            id = name,
+                            disp = name,
+                            grp = null,
+                            desc = desc,
+                            completed = true
+                        )
                     }).asJava)
                 else {
                     val cmd = words.head
@@ -1232,7 +1304,13 @@ object NCCli extends App {
                                 val hasVal = param.value.isDefined
                                 val names = param.names.filter(_.startsWith("--")) // Skip shorthands from auto-completion.
 
-                                names.map(name ⇒ mkCandidate(if (hasVal) name + "=" else name, name,null, !hasVal))
+                                names.map(name ⇒ mkCandidate(
+                                    id = if (hasVal) name + "=" else name,
+                                    disp = name,
+                                    grp = null,
+                                    desc = null,
+                                    completed = !hasVal)
+                                )
                             })
                             .asJava
 
@@ -1241,7 +1319,21 @@ object NCCli extends App {
 
                     // For 'help' - add additional auto-completion candidates.
                     if (cmd == HELP_CMD.name)
-                        candidates.addAll(CMDS.map(c ⇒ s"--cmd=${c.name}").map(s ⇒ mkCandidate(s, s, null, completed = true)).asJava)
+                        candidates.addAll(CMDS.map(c ⇒ s"--cmd=${c.name}").map(s ⇒
+                            mkCandidate(
+                                id = s,
+                                disp = s,
+                                grp = null,
+                                desc = null,
+                                completed = true
+                            ))
+                            .asJava
+                        )
+
+                    // For 'rest' - add additional auto-completion candidates.
+                    if (cmd == REST_CMD.name) {
+
+                    }
                 }
             }
         }
@@ -1292,7 +1384,7 @@ object NCCli extends App {
             catch {
                 case _: UserInterruptException ⇒ "" // Ignore.
                 case _: EndOfFileException ⇒ null
-                case e: Exception ⇒ e.printStackTrace(); "" // Guard against JLine hiccups.
+                case e: Exception ⇒ "" // Guard against JLine hiccups.
             }
 
             if (rawLine == null || QUIT_CMD.name == rawLine.trim)
@@ -1388,7 +1480,7 @@ object NCCli extends App {
      *
      */
     private def unknownCommand(cmd: String): Unit = {
-        val c2 = y(s"'$cmd'")
+        val c2 = c(s"'$cmd'")
         val h2 = c(s"'help'")
 
         error(s"Unknown command $c2, type $h2 to get help.")
@@ -1620,6 +1712,8 @@ object NCCli extends App {
         term = TerminalBuilder.builder()
             .name(NAME)
             .system(true)
+            .nativeSignals(true)
+            .signalHandler(Terminal.SignalHandler.SIG_IGN)
             .dumb(true)
             .jansi(true)
             .build()

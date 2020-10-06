@@ -41,27 +41,40 @@ package object common {
     final val MDL_META_ALL_ALIASES_KEY = "__NLPCRAFT_MDL_META_ALL_ALIASES"
     final val TOK_META_ALIASES_KEY = "__NLPCRAFT_TOK_META_ALIASES"
 
-    // Real foreground color shortcuts...
-    def g(s: Any): String = s"$ansiGreenFg${s.toString}$ansiReset"
-    def r(s: Any): String = s"$ansiRedFg${s.toString}$ansiReset"
-    def c(s: Any): String = s"$ansiCyanFg${s.toString}$ansiReset"
-    def y(s: Any): String = s"$ansiYellowFg${s.toString}$ansiReset"
-    def w(s: Any): String = s"$ansiWhiteFg${s.toString}$ansiReset"
-    def b(s: Any): String = s"$ansiBlueFg${s.toString}$ansiReset"
-    def k(s: Any): String = s"$ansiBlackFg${s.toString}$ansiReset"
-
-    // Real background color shortcuts...
-    def gb(s: Any): String = s"$ansiGreenBg${s.toString}$ansiReset"
-    def rb(s: Any): String = s"$ansiRedBg${s.toString}$ansiReset"
-    def cb(s: Any): String = s"$ansiCyanBg${s.toString}$ansiReset"
-    def yb(s: Any): String = s"$ansiYellowBg${s.toString}$ansiReset"
-    def wb(s: Any): String = s"$ansiWhiteBg${s.toString}$ansiReset"
-    def bb(s: Any): String = s"$ansiBlueBg${s.toString}$ansiReset"
-    def kb(s: Any): String = s"$ansiBlackBg${s.toString}$ansiReset"
+    def G: String = ansiGreenFg
+    def R: String = ansiRedFg
+    def C: String = ansiCyanFg
+    def Y: String = ansiYellowFg
+    def W: String = ansiWhiteFg
+    def B: String = ansiBlueFg
+    def BO: String = ansiBold
+    def K: String = ansiBlackFg
+    def GB: String = ansiGreenBg
+    def RB: String = ansiRedBg
+    def CB: String = ansiCyanBg
+    def YB: String = ansiYellowBg
+    def WB: String = ansiWhiteBg
+    def BB: String = ansiBlueBg
+    def KB: String = ansiBlackBg
+    def RST: String = ansiReset
+    def g(s: Any): String = s"$G${s.toString}$RST"
+    def r(s: Any): String = s"$R${s.toString}$RST"
+    def c(s: Any): String = s"$C${s.toString}$RST"
+    def y(s: Any): String = s"$Y${s.toString}$RST"
+    def w(s: Any): String = s"$W${s.toString}$RST"
+    def b(s: Any): String = s"$B${s.toString}$RST"
+    def k(s: Any): String = s"$K${s.toString}$RST"
+    def gb(s: Any): String = s"$GB${s.toString}$RST"
+    def rb(s: Any): String = s"$RB${s.toString}$RST"
+    def cb(s: Any): String = s"$CB${s.toString}$RST"
+    def yb(s: Any): String = s"$YB${s.toString}$RST"
+    def wb(s: Any): String = s"$WB${s.toString}$RST"
+    def bb(s: Any): String = s"$BB${s.toString}$RST"
+    def kb(s: Any): String = s"$KB${s.toString}$RST"
 
     // Real color effect shortcuts...
-    def rv(s: Any): String = s"$ansiReversed${s.toString}$ansiReset"
-    def bo(s: Any): String = s"$ansiBold${s.toString}$ansiReset"
+    def rv(s: Any): String = s"$ansiReversed${s.toString}$RST"
+    def bo(s: Any): String = s"$ansiBold${s.toString}$RST"
 
     /**
      * Pimps integers with KB, MB, GB units of measure.
