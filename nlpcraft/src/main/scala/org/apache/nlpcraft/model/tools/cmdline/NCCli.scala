@@ -1196,7 +1196,8 @@ object NCCli extends App {
             System.out,
             System.err,
             Paths.get(""),
-            Array(args.map(_.value.get): _*)
+            Array("--syntax=xml", "C:\\Users\\Nikita Ivanov\\Documents\\GitHub\\incubator-nlpcraft\\assembly.xml")
+            //Array(args.map(_.value.get).map(s ⇒ stripQuotes(s)): _*)
         )
 
     /**
@@ -1262,9 +1263,9 @@ object NCCli extends App {
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
         parser.setEofOnUnclosedQuote(true)
-        parser.regexCommand("")
-        parser.regexVariable("")
-        parser.setEscapeChars(Array.empty)
+//        parser.regexCommand("")
+//        parser.regexVariable("")
+        parser.setEscapeChars(null)
 
         val completer = new Completer {
             private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
@@ -1352,13 +1353,15 @@ object NCCli extends App {
 
         reader.setOpt(LineReader.Option.AUTO_FRESH_LINE)
         reader.unsetOpt(LineReader.Option.INSERT_TAB)
+        reader.unsetOpt(LineReader.Option.BRACKETED_PASTE)
         reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION)
         reader.setVariable(
             LineReader.HISTORY_FILE,
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
         )
 
-        new AutosuggestionWidgets(reader).enable()
+        // NOTE: 'enable' currently doesn't work on.
+        new AutosuggestionWidgets(reader).disable()
 
         logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
 
@@ -1385,7 +1388,7 @@ object NCCli extends App {
             catch {
                 case _: UserInterruptException ⇒ "" // Ignore.
                 case _: EndOfFileException ⇒ null
-                case e: Exception ⇒ "" // Guard against JLine hiccups.
+                case _: Exception ⇒ "" // Guard against JLine hiccups.
             }
 
             if (rawLine == null || QUIT_CMD.name == rawLine.trim)
