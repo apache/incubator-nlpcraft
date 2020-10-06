@@ -51,7 +51,6 @@ import org.jline.reader.{Candidate, EndOfFileException, LineReader, LineReaderBu
 import org.jline.reader.impl.DefaultParser.Bracket
 import org.jline.reader.impl.history.DefaultHistory
 import org.jline.utils.InfoCmp.Capability
-import org.jline.widget.AutosuggestionWidgets
 import resource.managed
 
 import scala.collection.mutable
@@ -67,7 +66,7 @@ import scala.util.control.Exception.ignoring
 object NCCli extends App {
     private final val NAME = "Apache NLPCraft CLI"
 
-    //noinspection RegExpRedundantEscape\
+    //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
 
     // TODO: this needs to be loaded dynamically from OpenAPI spec.
@@ -100,12 +99,12 @@ object NCCli extends App {
     )
     .sortBy(_._1)
 
-    // Number of server services that need to be started + 1 for log marker.
+    // Number of server services that need to be started + 1 progress start.
     // Used for progress bar functionality.
     // +==================================================================+
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
-    private final val NUM_SRV_SERVICES = 30/*services*/ + 1/*log marker*/
+    private final val NUM_SRV_SERVICES = 30/*services*/ + 1/*progress start*/
 
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
     private final val HIST_PATH = ".nlpcraft/.cli_history"
@@ -242,8 +241,8 @@ object NCCli extends App {
             )
         ),
         Command(
-            name = "less-server",
-            synopsis = s"Tails the local REST server log.",
+            name = "tail-server",
+            synopsis = s"Shows last N lines for the local REST server log.",
             desc = Some(
                 s"Only works for the server started via this script."
             ),
@@ -254,12 +253,12 @@ object NCCli extends App {
                     names = Seq("--lines", "-l"),
                     value = Some("num"),
                     desc =
-                        s"Number of the server log lines from the end to display. Default is 10."
+                        s"Number of the server log lines from the end to display. Default is 20."
                 )
             ),
             examples = Seq(
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME less-server --lines=20 "),
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME tail-server --lines=20 "),
                     desc = s"Prints last 20 lines from the local server log."
                 )
             )
@@ -380,6 +379,9 @@ object NCCli extends App {
             name = "nano",
             synopsis = s"Runs built-in ${y("'nano'")} editor.",
             body = cmdNano,
+            desc = Some(
+                s"Note that built-in ${y("'nano'")} editor uses system settings for syntax highlighting."
+            ),
             params = Seq(
                 Parameter(
                     id = "file",
@@ -387,13 +389,51 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"File to open with built-in ${y("'nano'")} editor. Relative paths will based off user home directory."
+                        s"File to open with built-in ${y("'nano'")} editor. Relative paths will based off the current directory."
+                ),
+                Parameter(
+                    id = "server-log",
+                    names = Seq("--server-log", "-s"),
+                    optional = true,
+                    desc =
+                        s"Opens up built-in ${y("'nano'")} editor for currently running local REST server log."
                 )
             ),
             examples = Seq(
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME nano -f=my_model.yml"),
-                    desc = s"Opens ${y("'my_model.yml'")} file in built-in nano editor."
+                    desc = s"Opens ${y("'my_model.yml'")} file in built-in ${y("'nano'")} editor."
+                )
+            )
+        ),
+        Command(
+            name = "less",
+            synopsis = s"Runs built-in ${y("'less'")} command.",
+            body = cmdLess,
+            desc = Some(
+                s"Note that built-in ${y("'less'")} command uses system settings for syntax highlighting."
+            ),
+            params = Seq(
+                Parameter(
+                    id = "file",
+                    names = Seq("--file", "-f"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"File to open with built-in ${y("'less'")} commands. Relative paths will based off the current directory."
+                ),
+                Parameter(
+                    id = "server-log",
+                    names = Seq("--server-log", "-s"),
+                    optional = true,
+                    desc =
+                        s"Opens up built-in ${y("'less'")} command for currently running local REST server log."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME less --server-log"),
+                    desc = s"Opens locally run REST server log using built-in ${y("'less'")} command."
                 )
             )
         ),
@@ -693,8 +733,10 @@ object NCCli extends App {
                 tbl += (s"${g("stop-server")}", "Stop the server.")
                 tbl += (s"${g("info-server")}", "Get server information.")
                 tbl += (s"${g("restart-server")}", "Restart the server.")
-                tbl += (s"${g("less-server")}", "Tail the server log.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
+                tbl += (s"${g("tail-server")}", "Tail the server log.")
+                tbl += (s"${g("nano --server-log")}", s"Built-in ${y("'nano'")} for full server log.")
+                tbl += (s"${g("less --server-log")}", s"Built-in ${y("'less'")} on server log.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
             }
@@ -718,11 +760,19 @@ object NCCli extends App {
 
                 progressBar.start()
 
+                // Tick progress bar "almost" right away to indicate the progress start.
+                new Thread(() => {
+                    Thread.sleep(1.secs)
+
+                    progressBar.ticked()
+                })
+                .start()
+
                 val tailer = Tailer.create(
                     replState.serverOutput.get,
                     new TailerListenerAdapter {
                         override def handle(line: String): Unit = {
-                            if (line.endsWith(U.LOG_MARKER) || TAILER_PTRN.matcher(line).matches())
+                            if (TAILER_PTRN.matcher(line).matches())
                                 progressBar.ticked()
                         }
                     },
@@ -793,7 +843,7 @@ object NCCli extends App {
                     case _ :Exception ⇒ throw new IllegalArgumentException(s"Invalid number of lines: ${arg.value.get}")
                 }
 
-            case None ⇒ 10 // Default.
+            case None ⇒ 20 // Default.
         }
 
         loadServerBeacon() match {
@@ -1205,6 +1255,21 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private def cmdLess(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        Commands.less(term,
+            System.in,
+            System.out,
+            System.err,
+            Paths.get(""),
+            Array(args.map(_.value.get).map(s ⇒ stripQuotes(s)): _*)
+        )
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
         val rawJson = args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get
@@ -1358,9 +1423,6 @@ object NCCli extends App {
             LineReader.HISTORY_FILE,
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
         )
-
-        // NOTE: 'enable' currently doesn't work on.
-        //new AutosuggestionWidgets(reader).disable()
 
         logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
 

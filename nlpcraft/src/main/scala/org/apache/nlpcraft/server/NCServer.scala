@@ -334,8 +334,6 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             save()
     }
 
-    logger.info(U.LOG_MARKER)
-
     NCIgniteRunner.runWith(
         args.find(_.startsWith("-igniteConfig=")) match {
             case None ⇒ null // Will use default on the classpath 'ignite.xml'.

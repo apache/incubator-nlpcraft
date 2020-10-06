@@ -75,8 +75,6 @@ object NCUtils extends LazyLogging {
 
     final val NL = System getProperty "line.separator"
 
-    final val LOG_MARKER = "d[-_-]b"
-
     private val idGen = new NCIdGenerator(NCBlowfishHasher.salt(), 8)
 
     private lazy val ANSI_FG_COLORS = Seq(
