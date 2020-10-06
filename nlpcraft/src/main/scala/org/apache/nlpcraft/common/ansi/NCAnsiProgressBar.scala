@@ -41,6 +41,8 @@ class NCAnsiProgressBar(
     require(dispSize <= totalTicks)
 
     @volatile private var tick = 0
+    
+    private final val mux = new Object()
 
     //noinspection ZeroIndexToHead
     private final val PB_LEFT = s"$B${CHAR_SET(0)}$RST"
@@ -63,7 +65,7 @@ class NCAnsiProgressBar(
     def start(): Unit = {
         tick = 0
 
-        if (useAnsi) out.synchronized {
+        if (useAnsi) mux.synchronized {
             // Hide cursor to avoid blinking.
             out.print(ansiCursorHide)
 
@@ -79,9 +81,9 @@ class NCAnsiProgressBar(
      * Ticks progress bar one tick at a time.
      */
     def ticked(): Unit = {
-        tick += 1
+        mux.synchronized {
+            tick += 1
 
-        out.synchronized {
             if (useAnsi) {
                 clean()
 
@@ -112,7 +114,7 @@ class NCAnsiProgressBar(
      * Stops progress bar.
      */
     def stop(): Unit = {
-        if (useAnsi && clearOnComplete) out.synchronized {
+        if (useAnsi && clearOnComplete) mux.synchronized {
             clean()
 
             // Show cursor.

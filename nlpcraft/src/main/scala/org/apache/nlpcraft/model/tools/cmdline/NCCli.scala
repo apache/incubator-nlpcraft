@@ -729,8 +729,6 @@ object NCCli extends App {
                     500.ms
                 )
 
-                U.mkThread("server-start-progress-bar", tailer).start()
-
                 var beacon: NCCliServerBeacon = null
                 var online = false
                 val endOfWait = currentTime + 3.mins // We try for 3 mins max.
@@ -1264,6 +1262,9 @@ object NCCli extends App {
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
         parser.setEofOnUnclosedQuote(true)
+        parser.regexCommand("")
+        parser.regexVariable("")
+        parser.setEscapeChars(Array.empty)
 
         val completer = new Completer {
             private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)

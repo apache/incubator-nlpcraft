@@ -36,6 +36,8 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
     @volatile private var lastLength = 0
     @volatile private var frame = 0
 
+    private final val mux = new Object()
+
     /**
      *
      * @param p
@@ -73,7 +75,7 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
                 out.flush()
 
                 while (!t.isInterrupted) {
-                    out.synchronized {
+                    mux.synchronized {
                         if (frame > 0)
                             clean()
 
@@ -91,7 +93,7 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
 
             thread.start()
         }
-        else out.synchronized {
+        else mux.synchronized {
             out.print("... ")
             out.flush()
         }
@@ -102,7 +104,7 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
     def stop(): Unit = {
         U.stopThread(thread)
 
-        if (useAnsi && frame > 0) out.synchronized {
+        if (useAnsi && frame > 0) mux.synchronized {
             clean()
 
             // Show cursor.
