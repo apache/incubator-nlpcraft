@@ -1196,8 +1196,7 @@ object NCCli extends App {
             System.out,
             System.err,
             Paths.get(""),
-            Array("--syntax=xml", "C:\\Users\\Nikita Ivanov\\Documents\\GitHub\\incubator-nlpcraft\\assembly.xml")
-            //Array(args.map(_.value.get).map(s ⇒ stripQuotes(s)): _*)
+            Array(args.map(_.value.get).map(s ⇒ stripQuotes(s)): _*)
         )
 
     /**
