@@ -1360,7 +1360,7 @@ object NCCli extends App {
         )
 
         // NOTE: 'enable' currently doesn't work on.
-        new AutosuggestionWidgets(reader).disable()
+        //new AutosuggestionWidgets(reader).disable()
 
         logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
 
