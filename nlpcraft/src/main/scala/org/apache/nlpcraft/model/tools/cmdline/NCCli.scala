@@ -130,12 +130,13 @@ object NCCli extends App {
     private val gson = new GsonBuilder().setPrettyPrinting().create
 
     case class SplitError(index: Int) extends Exception
-    case class NoLocalServer() extends IllegalStateException(s"Cannot detect locally running REST server.")
+    case class NoLocalServer() extends IllegalStateException(s"Local REST server not found.")
     case class MissingParameter(cmd: Command, paramId: String) extends IllegalArgumentException(
         s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
         s"type $C${"'help --cmd="}${c(cmd.name) + "'"}$RST to get help."
     )
     case class HttpError(httpCode: Int) extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
+    case class TooManyArguments() extends IllegalArgumentException("Too many arguments.")
 
     case class HttpRestResponse(
         code: Int,
@@ -735,8 +736,8 @@ object NCCli extends App {
                 tbl += (s"${g("restart-server")}", "Restart the server.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
                 tbl += (s"${g("tail-server")}", "Tail the server log.")
-                tbl += (s"${g("nano --server-log")}", s"Built-in ${y("'nano'")} for full server log.")
-                tbl += (s"${g("less --server-log")}", s"Built-in ${y("'less'")} on server log.")
+                tbl += (s"${g("nano -s")}", s"Run ${y("'nano'")} for server log.")
+                tbl += (s"${g("less -s")}", s"Run ${y("'less'")} for server log.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
             }
@@ -1240,13 +1241,40 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdNano(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private def cmdNano(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (args.size > 1)
+            throw TooManyArguments()
+
+        val nanoArgs = {
+            if (args.isEmpty)
+                Array.empty[String]
+            else if (args.head.parameter.id == "file") {
+                val path = new File(stripQuotes(args.head.value.get))
+
+                if (!path.exists())
+                    throw new IllegalArgumentException(s"File not found: ${c(path.getAbsolutePath)}")
+                if (!path.isFile)
+                    throw new IllegalArgumentException(s"Path is not a file: ${c(path.getAbsolutePath)}")
+
+                Array(path.getAbsolutePath)
+            }
+            else {
+                require(args.head.parameter.id == "server-log")
+
+                loadServerBeacon() match {
+                    case Some(beacon) ⇒ Array(beacon.logPath)
+                    case None ⇒ throw NoLocalServer()
+                }
+            }
+        }
+
         Commands.nano(term,
             System.out,
             System.err,
             Paths.get(""),
-            Array(args.map(_.value.get).map(s ⇒ stripQuotes(s)): _*)
+            nanoArgs
         )
+    }
 
     /**
      *
