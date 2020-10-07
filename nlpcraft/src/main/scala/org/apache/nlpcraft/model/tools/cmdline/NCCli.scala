@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
-import com.google.gson._
 import javax.net.ssl.SSLException
 import org.apache.commons.lang3.SystemUtils
 import org.apache.http.HttpResponse
@@ -126,8 +125,6 @@ object NCCli extends App {
     private var exitStatus = 0
 
     private var term: Terminal = _
-
-    private val gson = new GsonBuilder().setPrettyPrinting().create
 
     case class SplitError(index: Int)
         extends Exception
@@ -620,9 +617,7 @@ object NCCli extends App {
      * @return
      */
     private def restHealth(endpoint: String): Int =
-        httpGet(endpoint, "health", new ResponseHandler[Int]() {
-            override def handleResponse(resp: HttpResponse): Int = resp.getStatusLine.getStatusCode
-        })
+        httpGet(endpoint, "health", mkHttpHandler(_.getStatusLine.getStatusCode))
 
     /**
      *
@@ -1329,6 +1324,14 @@ object NCCli extends App {
 
     /**
      *
+     * @param body
+     * @return
+     */
+    private def mkHttpHandler[T](body: HttpResponse ⇒ T): ResponseHandler[T] =
+        (resp: HttpResponse) => body(resp)
+
+    /**
+     *
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
@@ -1337,7 +1340,7 @@ object NCCli extends App {
         val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
         val rawJson = stripQuotes(args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get)
 
-        if (!U.isJsonValid(rawJson))
+        if (!U.isValidJson(rawJson))
             throw MalformedJson()
 
         if (!REST_PATHS.exists(_._1 == path))
@@ -1345,37 +1348,35 @@ object NCCli extends App {
 
         val endpoint = getRestEndpointFromBeacon
 
-        val handler = new ResponseHandler[HttpRestResponse] {
-            override def handleResponse(resp: HttpResponse): HttpRestResponse = {
-                val status = resp.getStatusLine
+        val resp = httpPost(endpoint, path, mkHttpHandler(resp ⇒ {
+            val status = resp.getStatusLine
 
-                HttpRestResponse(
-                    status.getStatusCode,
-                    Option(EntityUtils.toString(resp.getEntity)).getOrElse(
-                        throw new IllegalStateException(s"Unexpected REST error: ${status.getReasonPhrase}")
-                    )
+            HttpRestResponse(
+                status.getStatusCode,
+                Option(EntityUtils.toString(resp.getEntity)).getOrElse(
+                    throw new IllegalStateException(s"Unexpected REST error: ${status.getReasonPhrase}")
                 )
-            }
-        }
-
-        val resp = httpPost(endpoint, path, handler, stripQuotes(rawJson))
+            )
+        }), stripQuotes(rawJson))
 
         // Ack HTTP response code.
         logln(s"HTTP ${if (resp.code == 200) g("200") else r(resp.code)}")
 
-        if (resp.code == 200) {
-            if (path == "signin") {
-                // TODO
-            }
-            else if (path == "signout") {
-                // TODO
-            }
+        if (U.isValidJson(resp.data))
+            logln(U.colorJson(U.prettyJson(resp.data)))
+        else {
+            if (resp.code == 200)
+                logln(s"HTTP response: ${resp.data}")
+            else
+                error(s"HTTP error: ${resp.data}")
         }
 
-        if (resp.code == 200 || resp.code == 400)
-            logln(U.colorJson(U.prettyJson(resp.data))) // TODO
-        else
-            logln(resp.data)
+        if (resp.code == 200) {
+            if (path == "signin")
+                replState.accessToken = Some(U.getJsonStringField(resp.data, "acsTok"))
+            else if (path == "signout")
+                replState.accessToken = None
+        }
     }
 
     /**
@@ -1393,7 +1394,6 @@ object NCCli extends App {
         parser.setEofOnUnclosedQuote(true)
         parser.regexCommand("")
         parser.regexVariable("")
-        parser.setEscapeChars(null)
 
         val completer = new Completer {
             private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
@@ -1475,7 +1475,7 @@ object NCCli extends App {
             .completer(completer)
             .parser(parser)
             .history(new DefaultHistory())
-            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g("\u2026\u25b6")} ")
+            .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g("...>")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
 
@@ -1505,10 +1505,10 @@ object NCCli extends App {
         while (!exit) {
             val rawLine = try {
                 val srvStr = bo(s"${if (replState.isServerOnline) s"ON " else s"OFF "}")
-                val acsTokStr = bo(s"${replState.accessToken.getOrElse("<signed off>")} ")
+                val acsTokStr = bo(s"${replState.accessToken.getOrElse("<signed out>")} ")
 
                 reader.printAbove("\n" + rb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
-                reader.readLine(s"${g("\u25b6")} ")
+                reader.readLine(s"${g(">")} ")
             }
             catch {
                 case _: UserInterruptException ⇒ "" // Ignore.

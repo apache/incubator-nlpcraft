@@ -25,7 +25,6 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsi
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
@@ -78,7 +77,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             U.asciiLogo() +
             s"${U.NL}" +
             s"Server${U.NL}" +
-            s"Version: ${ansiBold(ver.version)}${U.NL}" +
+            s"Version: ${bo(ver.version)}${U.NL}" +
             s"${NCVersion.copyright}${U.NL}"
         )
     }

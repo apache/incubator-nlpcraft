@@ -30,7 +30,6 @@ import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.mdo.{NCUserMdo, NCUserPropertyMdo}
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.tx.NCTxManager
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.JavaConverters._
 import scala.util.control.Exception._

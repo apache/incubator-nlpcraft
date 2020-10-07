@@ -1426,19 +1426,49 @@ object NCUtils extends LazyLogging {
 
     /**
      *
-     * @param jsStr
+     * @param json
      * @return
      */
-    def prettyJson(jsStr: String): String =
-        GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(jsStr))
+    def prettyJson(json: String): String =
+        GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
 
     /**
      *
-     * @param jsStr
+     * @param json
      * @return
      */
-    def isJsonValid(jsStr: String): Boolean =
-        scala.util.Try(GSON.getAdapter(classOf[JsonElement]).fromJson(jsStr)).isSuccess
+    def isValidJson(json: String): Boolean =
+        scala.util.Try(GSON.getAdapter(classOf[JsonElement]).fromJson(json)).isSuccess
+
+    /**
+     *
+     * @param json
+     * @param field
+     * @return
+     */
+    @throws[Exception]
+    def getJsonStringField(json: String, field: String): String =
+        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsString
+
+    /**
+     *
+     * @param json
+     * @param field
+     * @return
+     */
+    @throws[Exception]
+    def getJsonIntField(json: String, field: String): Int =
+        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsInt
+
+    /**
+     *
+     * @param json
+     * @param field
+     * @return
+     */
+    @throws[Exception]
+    def getJsonBooleanField(json: String, field: String): Boolean =
+        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
 
     /**
      *

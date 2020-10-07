@@ -1855,14 +1855,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    def getRejectionHandler: RejectionHandler =
-        RejectionHandler.newBuilder().
-            handle {
-                // It doesn't try to process all rejections special way.
-                // There is only one reason to wrap rejections - use 'cors' support in completeError() method.
-                // We assume that all rejection implementations have human readable toString() implementations.
-                case err ⇒ completeError(StatusCodes.BadRequest, "NC_ERROR", s"Bad request: $err")
-            }.result
+    def getRejectionHandler: RejectionHandler = RejectionHandler.newBuilder().
+        handle {
+            // It doesn't try to process all rejections special way.
+            // There is only one reason to wrap rejections - use 'cors' support in completeError() method.
+            // We assume that all rejection implementations have human readable toString() implementations.
+            case err ⇒ completeError(StatusCodes.BadRequest, "NC_ERROR", s"Bad request: $err")
+        }
+        .result
 
     /**
       *

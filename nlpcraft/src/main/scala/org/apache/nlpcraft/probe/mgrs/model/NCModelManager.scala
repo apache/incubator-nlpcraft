@@ -23,7 +23,6 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.deploy._
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.convert.DecorateAsScala
 import scala.util.control.Exception._
@@ -67,7 +66,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                 tbl += (
                     Seq(
                         s"${mdl.getName}",
-                        s"ID: ${ansiBold(mdl.getId)}, ver: ${mdl.getVersion}",
+                        s"ID: ${bo(mdl.getId)}, ver: ${mdl.getVersion}",
                         s"Elements: $elmCnt" + (if (elmCnt == 0) s" ${r("(!)")}" else ""),
                         s"Synonyms: $synCnt" + (if (synCnt == 0) s" ${r("(!)")}" else ""),
                         s"Intents: $intentCnt" + (if (intentCnt == 0) s" ${r("(!)")}" else "")

@@ -118,23 +118,6 @@ class NCAnsiSpinner(out: PrintWriter, useAnsi: Boolean = true) {
  *
  */
 object NCAnsiSpinner {
-    // Set of UNICODE charset options for the spinner.
-    private final val SPIN_CHAR_SETS = Seq(
-        Seq('-', '\\', '|', '/'),
-        Seq('.', 'o', 'O', '@', '*'),
-        Seq('←', '↖', '↑', '↗', '→', '↘', '↓', '↙'),
-        Seq('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▁'),
-        Seq('▖', '▘', '▝', '▗'),
-        Seq('┤', '┘', '┴', '└', '├', '┌', '┬', '┐'),
-        Seq('◢', '◣', '◤', '◥'),
-        Seq('◰', '◳', '◲', '◱'),
-        Seq('◴', '◷', '◶', '◵'),
-        Seq('◐', '◓', '◑', '◒'),
-        Seq('◡', '⊙', '◠', '⊙'),
-        Seq('⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'),
-        Seq('⠁', '⠂', '⠄', '⡀', '⢀', '⠠', '⠐', '⠈')
-    )
-
     // An active charset to use.
-    private final val CHAR_SET = SPIN_CHAR_SETS.head
+    private final val CHAR_SET = Seq('-', '\\', '|', '/')
 }

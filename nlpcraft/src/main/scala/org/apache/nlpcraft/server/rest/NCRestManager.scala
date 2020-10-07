@@ -24,7 +24,6 @@ import akka.stream.Materializer
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCService, _}
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success}

@@ -28,7 +28,6 @@ import org.apache.nlpcraft.model.intent.utils.{NCDslFlowItem, NCDslIntent, NCDsl
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import collection.convert.ImplicitConversions._
 import scala.collection.mutable

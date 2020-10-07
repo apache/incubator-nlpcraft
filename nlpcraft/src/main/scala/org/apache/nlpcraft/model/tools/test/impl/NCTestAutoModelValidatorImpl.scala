@@ -24,7 +24,6 @@ import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.

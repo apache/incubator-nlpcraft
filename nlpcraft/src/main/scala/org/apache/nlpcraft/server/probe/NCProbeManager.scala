@@ -22,7 +22,6 @@ import java.net.{InetSocketAddress, ServerSocket, Socket, SocketTimeoutException
 import java.security.Key
 import java.util
 import java.util.Collections
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.ConcurrentHashMap
 
 import com.google.gson.Gson
@@ -43,7 +42,6 @@ import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.sql.NCSql
-import org.apache.nlpcraft.common.ansi.NCAnsi._
 
 import scala.collection.JavaConverters._
 import scala.collection.{Map, mutable}

@@ -128,18 +128,7 @@ class NCAnsiProgressBar(
  *
  */
 object NCAnsiProgressBar{
-    // Set of UNICODE charsets options for the progress bar.
-    private final val PB_CHAR_SETS = Seq(
-        Seq('[', '=', '.', ']'),
-        Seq('/', '▰', '▱', '/'),
-        Seq('[', '▰', '▱', ']'),
-        Seq('[', '◼', '◽', ']'),
-        Seq('[', '█', '_', ']'),
-        Seq('[', '▰', '.', ']')
-    )
-
-    private final val NON_ANSI_CHAR = '='
-
     // Active charset to use.
-    private val CHAR_SET = PB_CHAR_SETS(5)
+    private final val NON_ANSI_CHAR = '='
+    private val CHAR_SET = Seq('[', '=', '.', ']')
 }
