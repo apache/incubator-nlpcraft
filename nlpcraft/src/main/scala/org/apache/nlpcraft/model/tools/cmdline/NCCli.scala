@@ -140,6 +140,8 @@ object NCCli extends App {
         )
     case class HttpError(httpCode: Int)
         extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
+    case class MalformedJson()
+        extends IllegalStateException("Malformed JSON.")
     case class TooManyArguments(cmd: Command)
         extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
     case class NotEnoughArguments(cmd: Command)
@@ -1333,9 +1335,10 @@ object NCCli extends App {
      */
     private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
-        val rawJson = args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get
+        val rawJson = stripQuotes(args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get)
 
-        // TODO: verify JSON
+        if (!U.isJsonValid(rawJson))
+            throw MalformedJson()
 
         if (!REST_PATHS.exists(_._1 == path))
             throw new IllegalArgumentException(s"Unknown REST path $C'$path'$RST, type ${c("'help --cmd=rest'")} to get help.")
@@ -1370,7 +1373,7 @@ object NCCli extends App {
         }
 
         if (resp.code == 200 || resp.code == 400)
-            logln(resp.data) // TODO
+            logln(U.colorJson(U.prettyJson(resp.data))) // TODO
         else
             logln(resp.data)
     }

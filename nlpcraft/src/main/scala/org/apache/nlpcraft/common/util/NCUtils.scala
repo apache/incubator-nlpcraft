@@ -39,7 +39,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.google.gson.Gson
+import com.google.gson.{GsonBuilder, JsonElement}
 import com.typesafe.scalalogging.{LazyLogging, Logger}
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.codec.digest.DigestUtils
@@ -60,7 +60,7 @@ import scala.language.{implicitConversions, postfixOps}
 import scala.reflect.runtime.universe._
 import scala.sys.SystemProperties
 import scala.util.control.Exception.ignoring
-import scala.util.{Failure, Success}
+import scala.util._
 
 /**
   * Project-wide, global utilities ans miscellaneous functions.
@@ -104,14 +104,12 @@ object NCUtils extends LazyLogging {
 
     private final lazy val DEC_FMT_SYMS = new DecimalFormatSymbols(Locale.US)
 
-    private final lazy val GSON = new Gson()
-    private final lazy val YAML = {
-        new ObjectMapper(new YAMLFactory).
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).
-            registerModule(new DefaultScalaModule()).
-            setSerializationInclusion(Include.NON_NULL).
-            setSerializationInclusion(Include.NON_EMPTY)
-    }
+    private final lazy val GSON = new GsonBuilder().setPrettyPrinting().create()
+    private final lazy val YAML = new ObjectMapper(new YAMLFactory).
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).
+        registerModule(new DefaultScalaModule()).
+        setSerializationInclusion(Include.NON_NULL).
+        setSerializationInclusion(Include.NON_EMPTY)
 
     private def mkDecimalFormat(ptrn: String) = {
         val df = new DecimalFormat(ptrn, DEC_FMT_SYMS)
@@ -1421,8 +1419,26 @@ object NCUtils extends LazyLogging {
             }
         }
 
+        buf.append(RST)
+
         buf.toString()
     }
+
+    /**
+     *
+     * @param jsStr
+     * @return
+     */
+    def prettyJson(jsStr: String): String =
+        GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(jsStr))
+
+    /**
+     *
+     * @param jsStr
+     * @return
+     */
+    def isJsonValid(jsStr: String): Boolean =
+        scala.util.Try(GSON.getAdapter(classOf[JsonElement]).fromJson(jsStr)).isSuccess
 
     /**
      *
