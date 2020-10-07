@@ -247,7 +247,7 @@ object NCCli extends App {
             desc = Some(
                 s"Only works for the server started via this script."
             ),
-            body = cmdLessServer,
+            body = cmdTailServer,
             params = Seq(
                 Parameter(
                     id = "lines",
@@ -412,21 +412,20 @@ object NCCli extends App {
             synopsis = s"Runs built-in ${y("'less'")} command.",
             body = cmdLess,
             desc = Some(
-                s"Note that built-in ${y("'less'")} command uses system settings for syntax highlighting."
+                s"Note that built-in ${y("'less'")} command uses system settings for syntax highlighting. Note " +
+                s"that either ${y("'--file'")} or ${y("'--server-log'")} parameter must be provided (but not both)."
             ),
             params = Seq(
                 Parameter(
                     id = "file",
                     names = Seq("--file", "-f"),
                     value = Some("path"),
-                    optional = true,
                     desc =
                         s"File to open with built-in ${y("'less'")} commands. Relative paths will based off the current directory."
                 ),
                 Parameter(
                     id = "server-log",
                     names = Seq("--server-log", "-s"),
-                    optional = true,
                     desc =
                         s"Opens up built-in ${y("'less'")} command for currently running local REST server log."
                 )
@@ -831,11 +830,21 @@ object NCCli extends App {
         }
 
     /**
+     *
+     * @return
+     */
+    private def getServerLogFromBeacon: String =
+        loadServerBeacon() match {
+            case Some(beacon) ⇒ beacon.logPath
+            case None ⇒ throw NoLocalServer()
+        }
+
+    /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdLessServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private def cmdTailServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val lines = args.find(_.parameter.id == "lines") match {
             case Some(arg) ⇒
                 try
@@ -1245,35 +1254,44 @@ object NCCli extends App {
         if (args.size > 1)
             throw TooManyArguments()
 
-        val nanoArgs = {
-            if (args.isEmpty)
-                Array.empty[String]
-            else if (args.head.parameter.id == "file") {
-                val path = new File(stripQuotes(args.head.value.get))
-
-                if (!path.exists())
-                    throw new IllegalArgumentException(s"File not found: ${c(path.getAbsolutePath)}")
-                if (!path.isFile)
-                    throw new IllegalArgumentException(s"Path is not a file: ${c(path.getAbsolutePath)}")
-
-                Array(path.getAbsolutePath)
-            }
-            else {
-                require(args.head.parameter.id == "server-log")
-
-                loadServerBeacon() match {
-                    case Some(beacon) ⇒ Array(beacon.logPath)
-                    case None ⇒ throw NoLocalServer()
-                }
-            }
-        }
-
         Commands.nano(term,
             System.out,
             System.err,
             Paths.get(""),
-            nanoArgs
+            nanoLessArgs(args)
         )
+    }
+
+    /**
+     * Checks that given path denotes a regular existing file.
+     *
+     * @param path
+     * @return Absolute file path.
+     */
+    private def ensureFileExists(path: String): String = {
+        val file = new File(path)
+
+        if (!file.exists())
+            throw new IllegalArgumentException(s"File not found: ${c(file.getAbsolutePath)}")
+        if (!file.isFile)
+            throw new IllegalArgumentException(s"Path is not a file: ${c(file.getAbsolutePath)}")
+
+        file.getCanonicalPath
+    }
+
+    /**
+     *
+     * @param args
+     * @return
+     */
+    private def nanoLessArgs(args: Seq[Argument]): Array[String] = {
+        if (args.head.parameter.id == "file")
+            Array(ensureFileExists(stripQuotes(args.head.value.get)))
+        else {
+            require(args.head.parameter.id == "server-log")
+
+            Array(getServerLogFromBeacon)
+        }
     }
 
     /**
@@ -1282,14 +1300,18 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdLess(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private def cmdLess(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (args.size > 1)
+            throw TooManyArguments()
+
         Commands.less(term,
             System.in,
             System.out,
             System.err,
             Paths.get(""),
-            Array(args.map(_.value.get).map(s ⇒ stripQuotes(s)): _*)
+            nanoLessArgs(args)
         )
+    }
 
     /**
      *
