@@ -129,14 +129,21 @@ object NCCli extends App {
 
     private val gson = new GsonBuilder().setPrettyPrinting().create
 
-    case class SplitError(index: Int) extends Exception
-    case class NoLocalServer() extends IllegalStateException(s"Local REST server not found.")
-    case class MissingParameter(cmd: Command, paramId: String) extends IllegalArgumentException(
-        s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-        s"type $C${"'help --cmd="}${c(cmd.name) + "'"}$RST to get help."
-    )
-    case class HttpError(httpCode: Int) extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
-    case class TooManyArguments() extends IllegalArgumentException("Too many arguments.")
+    case class SplitError(index: Int)
+        extends Exception
+    case class NoLocalServer()
+        extends IllegalStateException(s"Local REST server not found.")
+    case class MissingParameter(cmd: Command, paramId: String)
+        extends IllegalArgumentException(
+            s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
+            s"type $C'help --cmd=${cmd.name}'$RST to get help."
+        )
+    case class HttpError(httpCode: Int)
+        extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
+    case class TooManyArguments(cmd: Command)
+        extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
+    case class NotEnoughArguments(cmd: Command)
+        extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
     case class HttpRestResponse(
         code: Int,
@@ -1252,7 +1259,7 @@ object NCCli extends App {
      */
     private def cmdNano(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         if (args.size > 1)
-            throw TooManyArguments()
+            throw TooManyArguments(cmd)
 
         Commands.nano(term,
             System.out,
@@ -1301,8 +1308,10 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdLess(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (args.size > 1)
-            throw TooManyArguments()
+        if (args.isEmpty)
+            throw NotEnoughArguments(cmd)
+        else if  (args.size > 1)
+            throw TooManyArguments(cmd)
 
         Commands.less(term,
             System.in,
