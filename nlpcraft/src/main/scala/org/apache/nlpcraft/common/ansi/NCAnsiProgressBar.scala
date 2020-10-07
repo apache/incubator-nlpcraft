@@ -135,7 +135,7 @@ object NCAnsiProgressBar{
         Seq('[', '▰', '▱', ']'),
         Seq('[', '◼', '◽', ']'),
         Seq('[', '█', '_', ']'),
-        Seq('⟦', '▰', '.', '⟧')
+        Seq('[', '▰', '.', ']')
     )
 
     private final val NON_ANSI_CHAR = '='

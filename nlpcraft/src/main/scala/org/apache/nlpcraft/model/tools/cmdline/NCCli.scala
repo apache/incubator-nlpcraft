@@ -722,7 +722,7 @@ object NCCli extends App {
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
-            logln(s"Server output ⇒ ${c(output.getAbsolutePath)}")
+            logln(s"Server output > ${c(output.getAbsolutePath)}")
 
             /**
              *
@@ -1016,7 +1016,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdStopServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private def cmdStopServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         loadServerBeacon() match {
             case Some(beacon) ⇒
                 val pid = beacon.pid
@@ -1031,7 +1031,6 @@ object NCCli extends App {
 
             case None ⇒ throw NoLocalServer()
         }
-    }
 
     /**
      * @param cmd Command descriptor.
