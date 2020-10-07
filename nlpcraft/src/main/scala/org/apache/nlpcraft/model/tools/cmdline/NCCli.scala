@@ -1041,6 +1041,9 @@ object NCCli extends App {
                 if (beacon.ph.destroy()) {
                     logln(s"Server (pid ${c(pid)}) has been stopped.")
 
+                    // Attempt to delete beacon file right away.
+                    new File(beacon.beaconPath).delete()
+
                     // Update state right away.
                     replState.isServerOnline = false
                 } else
