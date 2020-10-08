@@ -54,7 +54,7 @@ object NCServerLifecycleManager extends NCService {
         ackStarting()
 
         if (Config.objects.isEmpty)
-            logger.info("No lifecycle components configured.")
+            logger.trace("No lifecycle components configured.")
         else {
             val tbl = NCAsciiTable("Class")
      

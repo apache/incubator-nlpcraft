@@ -35,6 +35,10 @@ package org.apache.nlpcraft.model.tools.cmdline
  * @param tokenProviders
  * @param extConfigUrl
  * @param beaconPath
+ * @param restApi
+ * @param extConfigCheckMd5
+ * @param acsToksScanMins
+ * @param acsToksExpireMins
  * @param logPath
  * @param ph
  */
@@ -55,6 +59,10 @@ case class NCCliServerBeacon(
     tokenProviders: String,
     extConfigUrl: String,
     beaconPath: String,
+    restApi: String,
+    extConfigCheckMd5: Boolean,
+    acsToksScanMins: Int,
+    acsToksExpireMins: Int,
     @transient var logPath: String = null,
     @transient var ph: ProcessHandle = null
 )

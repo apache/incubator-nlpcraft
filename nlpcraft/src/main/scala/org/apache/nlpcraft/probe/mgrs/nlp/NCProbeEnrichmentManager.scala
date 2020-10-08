@@ -232,7 +232,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         tbl += (s"${b("Text")}", nlpSens.map(s ⇒ rv(s.text)))
         tbl += (s"${b("Model ID")}", mdlId)
-        tbl += (s"${b("User ID")}", usrId)
+        tbl += (s"${b("User:")}", "")
+        tbl += (s"${b("  ID")}", usrId)
         tbl += (s"${b("  First Name")}", senMeta.getOrElse("FIRST_NAME", ""))
         tbl += (s"${b("  Last Name")}", senMeta.getOrElse("LAST_NAME", ""))
         tbl += (s"${b("  Email")}", senMeta.getOrElse("EMAIL", ""))

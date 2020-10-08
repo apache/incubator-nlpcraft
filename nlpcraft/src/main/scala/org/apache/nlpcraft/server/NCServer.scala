@@ -241,6 +241,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
                 lazy val pid = ProcessHandle.current().pid()
                 lazy val restHost = getString(s"$pre.rest.host")
+                lazy val restApi = getString(s"$pre.rest.apiImpl")
                 lazy val restPort = getInt(s"$pre.rest.port")
                 lazy val upLink =  getString(s"$pre.probe.links.upLink")
                 lazy val downLink =  getString(s"$pre.probe.links.downLink")
@@ -252,8 +253,11 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 lazy val dbPoolInc =  getInt(s"$pre.database.c3p0.pool.acquireIncrement")
                 lazy val dbInit =  getBool(s"$pre.database.igniteDbInitialize")
                 lazy val tokProviders =  getString(s"$pre.tokenProviders")
+                lazy val acsToksScanMins =  getInt(s"$pre.user.timeoutScannerFreqMins")
+                lazy val acsToksExpireMins =  getInt(s"$pre.user.accessTokenExpireTimeoutMins")
                 lazy val nlpEngine =  getString("nlpcraft.nlpEngine")
                 lazy val extCfgUrl =  getString("nlpcraft.extConfig.extUrl")
+                lazy val extCfgCheckMd5 =  getBool("nlpcraft.extConfig.checkMd5")
                 lazy val restEndpoint = s"${Config.restHost}:${Config.restPort}"
             }
 
@@ -269,11 +273,15 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                         dbPoolInc = Config.dbPoolInc,
                         dbInit = Config.dbInit,
                         restEndpoint = Config.restEndpoint,
+                        restApi = Config.restApi,
                         upLink = Config.upLink,
                         downLink = Config.downLink,
                         tokenProviders = Config.tokProviders,
                         nlpEngine = Config.nlpEngine,
                         extConfigUrl = Config.extCfgUrl,
+                        extConfigCheckMd5 = Config.extCfgCheckMd5,
+                        acsToksScanMins = Config.acsToksScanMins,
+                        acsToksExpireMins = Config.acsToksExpireMins,
                         beaconPath = path.getAbsolutePath,
                         startMs = currentTime
                     ))
@@ -286,19 +294,28 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 val tbl = NCAsciiTable()
 
                 tbl += (s"${b("PID")}", Config.pid)
-                tbl += (s"${b("Database URL")}", Config.dbUrl)
-                tbl += (s"${b("  Driver")}", Config.dbDriver)
+                tbl += (s"${b("Database:")}", "")
+                tbl += (s"${b("  JDBC URL")}", Config.dbUrl)
+                tbl += (s"${b("  JDBC Driver")}", Config.dbDriver)
                 tbl += (s"${b("  Pool min")}", Config.dbPoolMin)
                 tbl += (s"${b("  Pool init")}", Config.dbPoolInit)
                 tbl += (s"${b("  Pool max")}", Config.dbPoolMax)
                 tbl += (s"${b("  Pool increment")}", Config.dbPoolInc)
                 tbl += (s"${b("  Reset on start")}", Config.dbInit)
-                tbl += (s"${b("REST endpoint")}", Config.restEndpoint)
-                tbl += (s"${b("Probe uplink")}", Config.upLink)
-                tbl += (s"${b("Probe downlink")}", Config.downLink)
+                tbl += (s"${b("REST:")}", "")
+                tbl += (s"${b("  Endpoint")}", Config.restEndpoint)
+                tbl += (s"${b("  API provider")}", Config.restApi)
+                tbl += (s"${b("Probe:")}", "")
+                tbl += (s"${b("  Uplink")}", Config.upLink)
+                tbl += (s"${b("  Downlink")}", Config.downLink)
                 tbl += (s"${b("Token providers")}", Config.tokProviders)
                 tbl += (s"${b("NLP engine")}", Config.nlpEngine)
-                tbl += (s"${b("External config URL")}", Config.extCfgUrl)
+                tbl += (s"${b("Access tokens:")}", "")
+                tbl += (s"${b("  Scan frequency")}", s"${Config.acsToksScanMins} mins")
+                tbl += (s"${b("  Expiration timeout")}", s"${Config.acsToksExpireMins} mins")
+                tbl += (s"${b("External config:")}", "")
+                tbl += (s"${b("  URL")}", Config.extCfgUrl)
+                tbl += (s"${b("  Check MD5")}", Config.extCfgCheckMd5)
 
                 logger.info(s"Sever configuration:\n$tbl")
             }

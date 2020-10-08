@@ -180,10 +180,6 @@ object NCUserManager extends NCService with NCIgniteInstance {
 
         userLock = ignite.semaphore("userSemaphore", 1, true, true)
 
-        logger.info(s"REST access tokens:")
-        logger.info(s"  ${c("+-")} scanned for timeout every ${Config.timeoutScannerFreqMins}m.")
-        logger.info(s"  ${c("+-")} invalidated if inactive for >= ${Config.accessTokenExpireTimeoutMins}m.")
-
         ackStarted()
     }
 
