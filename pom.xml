@@ -641,6 +641,7 @@
                                 <exclude>.gitignore</exclude>
                                 <exclude>build</exclude>
                                 <exclude>.idea/**/*</exclude>
+                                <exclude>external/**/*</exclude>
                                 <exclude>javadoc/**/*</exclude>
                                 <exclude>.git/**/*</exclude>
                                 <exclude>venv</exclude>
