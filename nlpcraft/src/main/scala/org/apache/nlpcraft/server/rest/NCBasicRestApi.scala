@@ -505,7 +505,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             startScopedSpan("signout$", "acsTok" → req.acsTok) { span ⇒
                 checkLength("acsTok" → req.acsTok)
 
-                authenticate(req.acsTok)
+                val usr = authenticate(req.acsTok)
+
+                for (mdlId ← NCProbeManager.getAllProbes(usr.companyId, span).flatMap(_.models.map(_.id))) {
+                    NCProbeManager.clearConversation(usr.id, mdlId, span)
+                    NCProbeManager.clearDialog(usr.id, mdlId, span)
+                }
 
                 NCUserManager.signout(req.acsTok, span)
 
