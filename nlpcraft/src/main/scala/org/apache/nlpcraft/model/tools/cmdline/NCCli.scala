@@ -68,35 +68,40 @@ object NCCli extends App {
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
 
+    case class RestCall(
+        path: String,
+        desc: String,
+        group: String
+    )
+
     // TODO: this needs to be loaded dynamically from OpenAPI spec.
     private final val REST_PATHS = Seq(
-        "clear/conversation" -> "Clears conversation STM",
-        "clear/dialog" -> "Clears dialog flow",
-        "model/sugsyn" -> "Runs model synonym suggestion tool",
-        "check" -> "Gets status and result of submitted requests",
-        "cancel" -> "Cancels a question",
-        "ask" -> "Asks a question",
-        "ask/sync" -> "Asks a question in synchronous mode",
-        "user/get" -> "Gets current user information",
-        "user/all" -> "Gets all users",
-        "user/update" -> "Updates regular user",
-        "user/delete" -> "Deletes user",
-        "user/admin" -> "Updates user admin permissions",
-        "user/passwd/reset" -> "Resets password for the user",
-        "user/add" -> "Adds new user",
-        "company/get" -> "Gets current user company information",
-        "company/add" -> "Adds new company",
-        "company/update" -> "Updates company data",
-        "company/delete" -> "Deletes company",
-        "company/token/reset" -> "Resets company probe auth token",
-        "feedback/add" -> "Adds feedback",
-        "feedback/delete" -> "Deletes feedback",
-        "feedback/all" -> "Gets all feedback",
-        "signin" -> "Signs in and obtains new access token",
-        "signout" -> "Signs out and releases access token",
-        "probe/all" -> "Gets all probes"
+        RestCall("clear/conversation", "Clears conversation STM", "Asking"),
+        RestCall("clear/dialog", "Clears dialog flow", "Asking"),
+        RestCall("model/sugsyn", "Runs model synonym suggestion tool", "Tools"),
+        RestCall("check", "Gets status and result of submitted requests", "Asking"),
+        RestCall("cancel", "Cancels a question", "Asking"),
+        RestCall("ask", "Asks a question", "Asking"),
+        RestCall("ask/sync", "Asks a question in synchronous mode", "Asking"),
+        RestCall("user/get", "Gets current user information", "User"),
+        RestCall("user/all", "Gets all users", "User"),
+        RestCall("user/update", "Updates regular user", "User"),
+        RestCall("user/delete", "Deletes user", "User"),
+        RestCall("user/admin", "Updates user admin permissions", "User"),
+        RestCall("user/passwd/reset", "Resets password for the user", "User"),
+        RestCall("user/add", "Adds new user", "User"),
+        RestCall("company/get", "Gets current user company information", "Company"),
+        RestCall("company/add", "Adds new company", "Company"),
+        RestCall("company/update", "Updates company data", "Company"),
+        RestCall("company/delete", "Deletes company", "Company"),
+        RestCall("company/token/reset", "Resets company probe auth token", "Company"),
+        RestCall("feedback/add", "Adds feedback", "Asking"),
+        RestCall("feedback/delete", "Deletes feedback", "Asking"),
+        RestCall("feedback/all", "Gets all feedback", "Asking"),
+        RestCall("signin", "Signs in and obtains new access token", "Authentication"),
+        RestCall("signout", "Signs out and releases access token", "Authentication"),
+        RestCall("probe/all", "Gets all probes", "Probe")
     )
-    .sortBy(_._1)
 
     // Number of server services that need to be started + 1 progress start.
     // Used for progress bar functionality.
@@ -1160,13 +1165,13 @@ object NCCli extends App {
             if (!repl)
                 header()
 
-            CMDS.groupBy(_.group).foreach(entry ⇒ {
+            CMDS.groupBy(_.group).toSeq.sortBy(_._1).foreach(entry ⇒ {
                 val grp = entry._1
                 val grpCmds = entry._2
 
                 val tbl = NCAsciiTable().margin(left = if (repl) 0 else 4)
 
-                grpCmds.foreach(cmd ⇒ tbl +/ (
+                grpCmds.sortBy(_.name).foreach(cmd ⇒ tbl +/ (
                     "" → s"${g(cmd.name)}",
                     "align:left, maxWidth:85" → cmd.synopsis
                 ))

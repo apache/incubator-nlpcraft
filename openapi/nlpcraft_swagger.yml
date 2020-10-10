@@ -158,10 +158,27 @@ paths:
           description: Failed operation.
           schema:
             $ref: '#/definitions/Error'
+  /health:
+    get:
+      tags:
+        - Tools
+      summary: Health ping.
+      description: >-
+        Pings server for HTTP 200 code.
+      operationId: health
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            $ref: '#/definitions/Ok'
+        '400':
+          description: Failed operation.
+          schema:
+            $ref: '#/definitions/Error'
   /model/sugsyn:
     post:
       tags:
-        - Model
+        - Tools
       summary: Runs model synonym suggestion tool.
       description: >-
         Runs model synonym suggestion tool that is based on BERT models and uses @NCIntentSample annotation.
@@ -648,7 +665,7 @@ paths:
   /user/get:
     post:
       tags:
-        - Users
+        - User
       summary: Gets current user information.
       description: Gets current user information.
       operationId: getUser
@@ -731,7 +748,7 @@ paths:
   /user/all:
     post:
       tags:
-        - Users
+        - User
       summary: Gets all users.
       description: Gets all users for the current user company. Administrative privileges required.
       operationId: getAllUsers
@@ -756,7 +773,7 @@ paths:
             type: object
             required:
               - status
-              - users
+              - User
             properties:
               status:
                 type: string
@@ -805,7 +822,7 @@ paths:
   /user/update:
     post:
       tags:
-        - Users
+        - User
       summary: Updates regular user.
       description: >-
         Updates user with given ID or the current user with given parameters.
@@ -862,7 +879,7 @@ paths:
   /user/delete:
     post:
       tags:
-        - Users
+        - User
       summary: Deletes user.
       description: >-
         Deletes user with given ID or the current user.
@@ -909,7 +926,7 @@ paths:
   /user/admin:
     post:
       tags:
-        - Users
+        - User
       summary: Updates user admin permissions.
       description: >-
         Updates user's permissions with given ID or the current user.
@@ -950,7 +967,7 @@ paths:
   /user/passwd/reset:
     post:
       tags:
-        - Users
+        - User
       summary: Resets password for the user.
       description: >-
         Resets the password for the user. Note that NLPCraft doesn't store password in reversible way
@@ -993,7 +1010,7 @@ paths:
   /user/add:
     post:
       tags:
-        - Users
+        - User
       summary: Adds new user.
       description: Adds new user with given parameters to the company of the admin caller. Administrative privileges required.
       operationId: addUser
@@ -1072,7 +1089,7 @@ paths:
   /company/get:
     post:
       tags:
-        - Companies
+        - Company
       summary: Gets current user company information.
       description: Gets current user company information.
       operationId: getCompany
@@ -1137,7 +1154,7 @@ paths:
   /company/add:
     post:
       tags:
-        - Companies
+        - Company
       summary: Adds new company.
       description: >-
         Adds new company with given parameters.
@@ -1238,7 +1255,7 @@ paths:
   /company/update:
     post:
       tags:
-        - Companies
+        - Company
       summary: Updates company data.
       description: >-
         Updates company data with given parameters.
@@ -1299,7 +1316,7 @@ paths:
   /company/delete:
     post:
       tags:
-        - Companies
+        - Company
       summary: Deletes company.
       description: >-
         Deletes company.
@@ -1331,7 +1348,7 @@ paths:
   /company/token/reset:
     post:
       tags:
-        - Companies
+        - Company
       summary: Resets company probe authentication token.
       description: >-
         Sets and returns new company probe authentication token.
@@ -1375,7 +1392,7 @@ paths:
   /feedback/add:
     post:
       tags:
-        - Feedbacks
+        - Asking
       summary: Adds feedback.
       description: Adds feedback for processed user request.
       operationId: addFeedback
@@ -1440,7 +1457,7 @@ paths:
   /feedback/delete:
     post:
       tags:
-        - Feedbacks
+        - Asking
       summary: Deletes feedback.
       description: >-
         Deletes feedback for given record ID.
@@ -1477,7 +1494,7 @@ paths:
   /feedback/all:
     post:
       tags:
-        - Feedbacks
+        - Asking
       summary: Gets feedback.
       description:  >-
         Gets all request feedback records.
@@ -1657,7 +1674,7 @@ paths:
   /probe/all:
     post:
       tags:
-        - Data Probes
+        - Probe
       summary: Gets all probes.
       description: >-
         Gets metadata for all active (currently connected) probes. Administrative privileges required.
