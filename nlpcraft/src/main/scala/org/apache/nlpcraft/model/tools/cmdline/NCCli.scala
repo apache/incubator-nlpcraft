@@ -160,6 +160,7 @@ object NCCli extends App {
     // Single CLI command.
     case class Command(
         name: String,
+        group: String,
         synopsis: String,
         desc: Option[String] = None,
         params: Seq[Parameter] = Seq.empty,
@@ -207,7 +208,8 @@ object NCCli extends App {
     private final val CMDS = Seq(
         Command(
             name = "rest",
-            synopsis = s"Issues REST call to locally running REST server.",
+            group = "Rest API",
+            synopsis = s"Issues REST call to local REST server.",
             desc = Some(
                 s"All NLPCraft REST API uses HTTP POST and JSON parameters ('Content-Type: application/json' header). " +
                 s"To issue the REST call you need to supply path and parameters. In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
@@ -249,7 +251,8 @@ object NCCli extends App {
         ),
         Command(
             name = "tail-server",
-            synopsis = s"Shows last N lines for the local REST server log.",
+            group = "Server Ops",
+            synopsis = s"Shows last N lines from the local REST server log.",
             desc = Some(
                 s"Only works for the server started via this script."
             ),
@@ -272,6 +275,7 @@ object NCCli extends App {
         ),
         Command(
             name = "start-server",
+            group = "Server Ops",
             synopsis = s"Starts local REST server.",
             desc = Some(
                 s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
@@ -323,10 +327,11 @@ object NCCli extends App {
         ),
         Command(
             name = "restart-server",
+            group = "Server Ops",
             synopsis = s"Restarts local REST server.",
             desc = Some(
                 s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
-                s"corresponding parameters. If there is no locally running REST server the ${y("'stop-server'")} command is ignored."
+                s"corresponding parameters. If there is no local REST server the ${y("'stop-server'")} command is ignored."
             ),
             body = cmdRestartServer,
             params = Seq(
@@ -374,16 +379,19 @@ object NCCli extends App {
         ),
         Command(
             name = "info-server",
-            synopsis = s"Basic information about locally running REST server.",
+            group = "Server Ops",
+            synopsis = s"Info about local REST server.",
             body = cmdInfoServer
         ),
         Command(
             name = "cls",
+            group = "REPL",
             synopsis = s"Clears terminal screen.",
             body = cmdCls
         ),
         Command(
             name = "nano",
+            group = "REPL",
             synopsis = s"Runs built-in ${y("'nano'")} editor.",
             body = cmdNano,
             desc = Some(
@@ -415,6 +423,7 @@ object NCCli extends App {
         ),
         Command(
             name = "less",
+            group = "REPL",
             synopsis = s"Runs built-in ${y("'less'")} command.",
             body = cmdLess,
             desc = Some(
@@ -445,7 +454,8 @@ object NCCli extends App {
         ),
         Command(
             name = "no-ansi",
-            synopsis = s"Disables usage of ANSI escape codes for colors & terminal controls.",
+            group = "REPL",
+            synopsis = s"Disables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
             ),
@@ -459,7 +469,8 @@ object NCCli extends App {
         ),
         Command(
             name = "ansi",
-            synopsis = s"Enables usage of ANSI escape codes for colors & terminal controls.",
+            group = "REPL",
+            synopsis = s"Enables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
             ),
@@ -473,6 +484,7 @@ object NCCli extends App {
         ),
         Command(
             name = "ping-server",
+            group = "Server Ops",
             synopsis = s"Pings local REST server.",
             desc = Some(
                 s"REST server is pinged using ${y("'/health'")} REST call to check its online status."
@@ -499,6 +511,7 @@ object NCCli extends App {
         ),
         Command(
             name = "stop-server",
+            group = "Server Ops",
             synopsis = s"Stops local REST server.",
             desc = Some(
                 s"Local REST server must be started via ${y(s"'$SCRIPT_NAME''")} or other compatible way."
@@ -507,12 +520,14 @@ object NCCli extends App {
         ),
         Command(
             name = "quit",
+            group = "REPL",
             synopsis = s"Quits REPL when in REPL mode.",
             body = cmdQuit
         ),
         Command(
             name = "help",
-            synopsis = s"Displays manual page for ${y(s"'$SCRIPT_NAME'")}.",
+            group = "REPL",
+            synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
                 s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
                 s"only listing the commands without parameters or examples."
@@ -546,6 +561,7 @@ object NCCli extends App {
         ),
         Command(
             name = "version",
+            group = "REPL",
             synopsis = s"Displays full version of ${y(s"'$SCRIPT_NAME'")} script.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
@@ -1140,22 +1156,29 @@ object NCCli extends App {
             lines
         }
 
-        val tbl = NCAsciiTable().margin(left = if (repl) 0 else 4)
-
         if (args.isEmpty) { // Default - show abbreviated help.
             if (!repl)
                 header()
 
-            CMDS.foreach(cmd ⇒ tbl +/ (
-                "" → s"${g(cmd.name)}",
-                "align:left, maxWidth:85" → cmd.synopsis
-            ))
+            CMDS.groupBy(_.group).foreach(entry ⇒ {
+                val grp = entry._1
+                val grpCmds = entry._2
 
-            logln(tbl.toString)
+                val tbl = NCAsciiTable().margin(left = if (repl) 0 else 4)
+
+                grpCmds.foreach(cmd ⇒ tbl +/ (
+                    "" → s"${g(cmd.name)}",
+                    "align:left, maxWidth:85" → cmd.synopsis
+                ))
+
+                logln(s"\n$grp:\n${tbl.toString}")
+            })
         }
         else if (args.size == 1 && args.head.parameter.id == "all") { // Show a full format help for all commands.
             if (!repl)
                 header()
+
+            val tbl = NCAsciiTable().margin(left = if (repl) 0 else 4)
 
             CMDS.foreach(cmd ⇒
                 tbl +/ (
@@ -1169,6 +1192,8 @@ object NCCli extends App {
         else { // Help for individual commands.
             var err = false
             val seen = mutable.Buffer.empty[String]
+
+            val tbl = NCAsciiTable().margin(left = if (repl) 0 else 4)
 
             for (arg ← args) {
                 val cmdName = arg.value.get
@@ -1227,11 +1252,11 @@ object NCCli extends App {
         tbl += ("Token providers", s"${g(beacon.tokenProviders)}")
         tbl += ("NLP engine", s"${g(beacon.nlpEngine)}")
         tbl += ("Access tokens:", "")
-        tbl += ("  Scan frequency", s"${beacon.acsToksScanMins} mins")
-        tbl += ("  Expiration timeout", s"${beacon.acsToksExpireMins} mins")
+        tbl += ("  Scan frequency", s"$G${beacon.acsToksScanMins} mins$RST")
+        tbl += ("  Expiration timeout", s"$G${beacon.acsToksExpireMins} mins$RST")
         tbl += ("External config:", "")
-        tbl += ("  URL", s"${beacon.extConfigUrl}")
-        tbl += ("  Check MD5",s"${beacon.extConfigCheckMd5}")
+        tbl += ("  URL", s"${g(beacon.extConfigUrl)}")
+        tbl += ("  Check MD5",s"${g(beacon.extConfigCheckMd5)}")
         tbl += ("Log file", logPath)
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
@@ -1405,7 +1430,7 @@ object NCCli extends App {
         parser.regexVariable("")
 
         val completer = new Completer {
-            private val cmds = CMDS.map(c ⇒ c.name → c.synopsis)
+            private val cmds = CMDS.map(c ⇒ (c.name, c.synopsis, c.group))
 
             /**
              *
@@ -1425,11 +1450,12 @@ object NCCli extends App {
                     candidates.addAll(cmds.map(n ⇒ {
                         val name = n._1
                         val desc = n._2.substring(0, n._2.length - 1) // Remove last '.'.
+                        val grp = n._3
 
                         mkCandidate(
                             id = name,
                             disp = name,
-                            grp = null,
+                            grp = grp,
                             desc = desc,
                             completed = true
                         )

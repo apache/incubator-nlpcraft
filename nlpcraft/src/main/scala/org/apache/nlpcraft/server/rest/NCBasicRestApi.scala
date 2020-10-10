@@ -68,7 +68,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      * General control exception.
      * Note that these classes must be public because scala 2.11 internal errors (compilations problems).
      */
-    case class AccessTokenFailure(acsTkn: String) extends NCE(s"Unknown access token: $acsTkn")
+    case class AccessTokenFailure(acsTkn: String) extends NCE(s"Unknown access token.")
     case class SignInFailure(email: String) extends NCE(s"Invalid or unknown user credentials for user with: $email")
     case class AdminRequired(email: String) extends NCE(s"Admin privileges required for user with: $email")
     case class InvalidOperation(email: String) extends NCE(s"Invalid operation.")
