@@ -216,9 +216,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private def stop0(): Unit = {
         ignoring(classOf[Throwable]) {
-            if (shutdownHook != null)
-                Runtime.getRuntime.removeShutdownHook(shutdownHook)
-            
             stopManagers()
         }
         
@@ -327,10 +324,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * 
       */
-    private [probe] def stop(): Unit = 
+    private [probe] def stop(): Unit = {
+        if (shutdownHook != null)
+            Runtime.getRuntime.removeShutdownHook(shutdownHook)
+
         if (started)
             stop0()
-    
+    }
+
     /**
       *
       * @param args
