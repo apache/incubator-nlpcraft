@@ -1382,7 +1382,7 @@ object NCCli extends App {
         if (!U.isValidJson(rawJson))
             throw MalformedJson()
 
-        if (!REST_PATHS.exists(_._1 == path))
+        if (!REST_PATHS.exists(_.path == path))
             throw new IllegalArgumentException(s"Unknown REST path $C'$path'$RST, type ${c("'help --cmd=rest'")} to get help.")
 
         val endpoint = getRestEndpointFromBeacon
