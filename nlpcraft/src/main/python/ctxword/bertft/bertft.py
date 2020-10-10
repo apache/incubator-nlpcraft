@@ -22,7 +22,7 @@ from pathlib import Path
 
 import fasttext.util
 import torch
-from transformers import AutoModelWithLMHead, AutoTokenizer
+from transformers import AutoModelForMaskedLM, AutoTokenizer, AutoModelForSequenceClassification
 
 from .utils import ROOT_DIR
 
@@ -80,7 +80,10 @@ class Pipeline:
         self.log.info("Loading bert")
         # ~3 GB
         self.tokenizer = AutoTokenizer.from_pretrained("roberta-large")
-        self.model = AutoModelWithLMHead.from_pretrained("roberta-large")
+        self.model = AutoModelForMaskedLM.from_pretrained("roberta-large")
+
+        self.classification_tokenizer = AutoTokenizer.from_pretrained("bert-base-cased-finetuned-mrpc")
+        self.classification_model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased-finetuned-mrpc")
 
         if self.use_cuda:
             self.model.cuda()
@@ -113,7 +116,7 @@ class Pipeline:
                 (map(lambda x: self.replace_with_mask(x[0], x[1:]), input_data))
             )
 
-            encoded = tokenizer.batch_encode_plus(list(map(lambda x: x[1], sentences)), pad_to_max_length=True)
+            encoded = tokenizer.batch_encode_plus(list(map(lambda x: x[1], sentences)), padding='longest')
             input_ids = torch.tensor(encoded['input_ids'], device=self.device)
             attention_mask = torch.tensor(encoded['attention_mask'], device=self.device)
 
@@ -206,6 +209,21 @@ class Pipeline:
             result.append((target, " ".join(seqlst)))
 
         return result
+
+    def sentence_similarity(self, s1, s2):
+        with torch.no_grad():
+            tokenizer = self.classification_tokenizer
+            model = self.classification_model
+
+            classes = ["not paraphrase", "is paraphrase"]
+
+            tokens = tokenizer(s1, s2, return_tensors="pt")
+
+            classification_logits = model(**tokens)[0]
+
+            results = torch.softmax(classification_logits, dim=1).tolist()[0]
+
+            print(results[1])
 
     def print_time(self, start, message):
         current = time.time()
