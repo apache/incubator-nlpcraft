@@ -278,6 +278,21 @@
 
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven.clean.plugin.ver}</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${user.home}/.nlpcraft</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.bazaarvoice.maven.plugins</groupId>
                 <artifactId>process-exec-maven-plugin</artifactId>
                 <version>${maven.bazaarvoice.plugin.ver}</version>

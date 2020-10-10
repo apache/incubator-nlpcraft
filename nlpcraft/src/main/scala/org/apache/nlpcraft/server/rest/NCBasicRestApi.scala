@@ -23,7 +23,7 @@ import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.Directives.{entity, _}
-import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler, Route}
+import akka.http.scaladsl.server._
 import com.google.gson.Gson
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.stats.Measure
@@ -68,17 +68,17 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      * General control exception.
      * Note that these classes must be public because scala 2.11 internal errors (compilations problems).
      */
-    case class AccessTokenFailure(acsTkn: String) extends NCE(s"Unknown access token.")
-    case class SignInFailure(email: String) extends NCE(s"Invalid or unknown user credentials for user with: $email")
-    case class AdminRequired(email: String) extends NCE(s"Admin privileges required for user with: $email")
+    case class AccessTokenFailure(acsTkn: String) extends NCE(s"Unknown access token: $acsTkn")
+    case class SignInFailure(email: String) extends NCE(s"Invalid or unknown user credentials: $email")
+    case class AdminRequired(email: String) extends NCE(s"Admin privileges required: $email")
     case class InvalidOperation(email: String) extends NCE(s"Invalid operation.")
     case class NotImplemented() extends NCE("Not implemented.")
 
     class InvalidArguments(msg: String) extends NCE(msg)
-    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field `$fn` value is out of range ($from, $to).")
-    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field `$fn` value exceeded max length of $max.")
-    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field `$fn`")
-    case class EmptyField(fn: String) extends InvalidArguments(s"API field `$fn` value cannot be empty.")
+    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field ($fn) value is out of range ($from, $to).")
+    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field ($fn) value exceeded max length of $max.")
+    case class InvalidField(fn: String) extends InvalidArguments(s"API invalid field: $fn")
+    case class EmptyField(fn: String) extends InvalidArguments(s"API field cannot be empty: $fn")
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
     case class InvalidModelId(id: String) extends InvalidArguments(s"Unknown model ID: $id")
@@ -130,11 +130,11 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     )
 
     /**
-     *
-     * @param acsTkn Access token to check.
-     * @param shouldBeAdmin Admin flag.
-     * @return
-     */
+      *
+      * @param acsTkn Access token to check.
+      * @param shouldBeAdmin Admin flag.
+      * @return
+      */
     @throws[NCE]
     private def authenticate0(acsTkn: String, shouldBeAdmin: Boolean): NCUserMdo =
         startScopedSpan("authenticate0", "acsTkn" → acsTkn, "shouldBeAdmin" → shouldBeAdmin) { span ⇒
@@ -340,8 +340,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             if (maxLen == -1)
                 STD_FIELD_LENGTHS.
                     getOrElse(name, throw new AssertionError(s"Unknown standard REST field: $name"))
-        else
-            maxLen
+            else
+                maxLen
 
         if (v.length > max)
             throw TooLargeField(name, max)
@@ -363,9 +363,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             checkLength(name, v.get.toString, maxLen)
 
     /**
-     *
-     * @param pairs
-     */
+      *
+      * @param pairs
+      */
     @throws[TooLargeField]
     @throws[EmptyField]
     protected def checkLength(pairs: (String, Any)*): Unit =
@@ -419,13 +419,13 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         }
 
     /**
-     *
-     * @param js
-     * @param fn
-     * @param extractor
-     * @tparam T
-     * @return
-     */
+      *
+      * @param js
+      * @param fn
+      * @param extractor
+      * @tparam T
+      * @return
+      */
     @throws[InvalidField]
     protected def convertOpt[T](js: JsObject, fn: String, extractor: JsValue ⇒ T): Option[T] =
         try
@@ -473,9 +473,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     }
 
     /**
-     *
-     * @return
-     */
+      *
+      * @return
+      */
     protected def health$(): Route = {
         case class Res$Health$(status: String)
 
@@ -522,9 +522,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     }
 
     /**
-     *
-     * @param fut
-     */
+      *
+      * @param fut
+      */
     private def successWithJs(fut: Future[String]): Route = onSuccess(fut) {
         js ⇒ complete(HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, js)))
     }
@@ -746,8 +746,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                 val states =
                     getRequests(acsUsr, req.srvReqIds, req.usrId, req.usrExtId, span).
-                    toSeq.sortBy(-_.createTstamp.getTime).
-                    take(req.maxRows.getOrElse(Integer.MAX_VALUE))
+                        toSeq.sortBy(-_.createTstamp.getTime).
+                        take(req.maxRows.getOrElse(Integer.MAX_VALUE))
 
                 // We have to use GSON (not spray) here to serialize 'resBody' field.
                 val js = GSON.toJson(
@@ -755,7 +755,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         "status" → API_OK.toString,
                         "states" → states.map(queryStateToMap).asJava
                     )
-                    .asJava
+                        .asJava
                 )
 
                 complete(
@@ -834,18 +834,18 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "mdlId" → req.mdlId,
                 "usrExtId" → req.usrExtId.orNull,
                 "usrId" → req.usrId.getOrElse(-1)) { span ⇒
-                    checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
+                checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
 
-                    val acsUsr = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                    checkModelId(req.mdlId, acsUsr.companyId)
+                checkModelId(req.mdlId, acsUsr.companyId)
 
-                    NCProbeManager.clearConversation(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
+                NCProbeManager.clearConversation(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
 
-                    complete {
-                        Res$Clear$Conversation(API_OK)
-                    }
+                complete {
+                    Res$Clear$Conversation(API_OK)
                 }
+            }
         }
     }
 
@@ -874,18 +874,18 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 "usrExtId" → req.usrExtId.orNull,
                 "mdlId" → req.mdlId,
                 "usrId" → req.usrId.getOrElse(-1)) { span ⇒
-                    checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
+                checkLength("acsTok" → req.acsTok, "mdlId" → req.mdlId, "usrExtId" → req.usrExtId)
 
-                    val acsUsr = authenticate(req.acsTok)
+                val acsUsr = authenticate(req.acsTok)
 
-                    checkModelId(req.mdlId, acsUsr.companyId)
+                checkModelId(req.mdlId, acsUsr.companyId)
 
-                    NCProbeManager.clearDialog(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
+                NCProbeManager.clearDialog(getUserId(acsUsr, req.usrId, req.usrExtId), req.mdlId, span)
 
-                    complete {
-                        Res$Clear$Dialog(API_OK)
-                    }
+                complete {
+                    Res$Clear$Dialog(API_OK)
                 }
+            }
         }
     }
 
@@ -1471,10 +1471,10 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
                     NCUserManager.
                         getAllUsers(acsUsr.companyId, span).
-                            keys.
-                            filter(_.id != acsUsr.id).
-                            map(_.id).
-                            foreach(delete)
+                        keys.
+                        filter(_.id != acsUsr.id).
+                        map(_.id).
+                        foreach(delete)
                 }
                 else {
                     val delUsrId = getUserId(acsUsr, req.id, req.usrExtId)
@@ -1860,14 +1860,35 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       *
       * @return
       */
-    def getRejectionHandler: RejectionHandler = RejectionHandler.newBuilder().
-        handle {
-            // It doesn't try to process all rejections special way.
-            // There is only one reason to wrap rejections - use 'cors' support in completeError() method.
-            // We assume that all rejection implementations have human readable toString() implementations.
-            case err ⇒ completeError(StatusCodes.BadRequest, "NC_ERROR", s"Bad request: $err")
-        }
-        .result
+    def getRejectionHandler: RejectionHandler = {
+        def complete(err: String): Route = completeError(StatusCodes.BadRequest, "NC_ERROR", err)
+
+        RejectionHandler.newBuilder().
+            handle {
+                case _: UnsupportedRequestContentTypeRejection ⇒ complete("Unsupported content type.")
+                case _: SchemeRejection ⇒ complete("Unsupported scheme.")
+                case _: UnsatisfiableRangeRejection ⇒ complete("Invalid range.")
+                case _: TransformationRejection ⇒ complete("Transformation error.")
+                case _: MalformedRequestContentRejection ⇒ complete("Malformed content or missing data.")
+                case _: AuthenticationFailedRejection ⇒ complete("Authentication error.")
+                case _: TooManyRangesRejection ⇒ complete("Too many ranges.")
+                case err: MissingFormFieldRejection ⇒ complete(s"Missing form field: ${err.fieldName}")
+                case _: UnacceptedResponseContentTypeRejection ⇒ complete(s"Unsupported response content type.")
+                case _: MethodRejection ⇒ complete(s"Invalid method.")
+                case _: UnacceptedResponseEncodingRejection ⇒ complete(s"Unsupported response encoding.")
+                case _: UnsupportedRequestEncodingRejection ⇒ complete(s"Unsupported request encoding.")
+                case err: MissingCookieRejection ⇒ complete(s"Missing cookie: ${err.cookieName}'")
+                case err: InvalidRequiredValueForQueryParamRejection ⇒ complete(s"Invalid parameter value: ${err.parameterName}")
+                case _: UnsupportedWebSocketSubprotocolRejection ⇒ complete(s"Unsupported web socket sub-protocol.")
+                case _: CircuitBreakerOpenRejection ⇒ complete(s"Circuit breaker error.")
+                case _: MissingHeaderRejection ⇒ complete(s"Missing header.")
+                case err: MissingQueryParamRejection ⇒ complete(s"Missing parameter: ${err.parameterName}")
+                case _: InvalidOriginRejection ⇒ complete(s"Invalid origin.")
+
+                // Common case.
+                case err: Rejection ⇒ complete(s"Bad request.")
+            }.result
+    }
 
     /**
       *
@@ -1903,38 +1924,38 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                             path(API / "health") { health$() } // Also duplicated for POST.
                         }
                     } ~
-                    post {
-                        encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
-                            withRequestTimeoutResponse(_ ⇒ timeoutResp) {
-                                path(API / "health") { health$() } // Duplicate for POST.
-                                path(API / "signin") { withMetric(M_SIGNIN_LATENCY_MS, signin$) } ~
-                                path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, signout$) } ~
-                                path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, cancel$) } ~
-                                path(API / "check") { withMetric(M_CHECK_LATENCY_MS, check$) } ~
-                                path(API / "clear"/ "conversation") { withMetric(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
-                                path(API / "clear"/ "dialog") { withMetric(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
-                                path(API / "company"/ "add") { withMetric(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
-                                path(API / "company"/ "get") { withMetric(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
-                                path(API / "company" / "update") { withMetric(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
-                                path(API / "company" / "token" / "reset") { withMetric(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
-                                path(API / "company" / "delete") { withMetric(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
-                                path(API / "user" / "get") { withMetric(M_USER_GET_LATENCY_MS, user$Get) } ~
-                                path(API / "user" / "add") { withMetric(M_USER_ADD_LATENCY_MS, user$Add) } ~
-                                path(API / "user" / "update") { withMetric(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
-                                path(API / "user" / "delete") { withMetric(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
-                                path(API / "user" / "admin") { withMetric(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
-                                path(API / "user" / "passwd" / "reset") { withMetric(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
-                                path(API / "user" / "all") { withMetric(M_USER_ALL_LATENCY_MS, user$All) } ~
-                                path(API / "feedback"/ "add") { withMetric(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
-                                path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
-                                path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
-                                path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
-                                path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
-                                path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
-                                path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
+                        post {
+                            encodeResponseWith(Coders.NoCoding, Coders.Gzip) {
+                                withRequestTimeoutResponse(_ ⇒ timeoutResp) {
+                                    path(API / "health") { health$() } // Duplicate for POST.
+                                    path(API / "signin") { withMetric(M_SIGNIN_LATENCY_MS, signin$) } ~
+                                        path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, signout$) } ~
+                                        path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, cancel$) } ~
+                                        path(API / "check") { withMetric(M_CHECK_LATENCY_MS, check$) } ~
+                                        path(API / "clear"/ "conversation") { withMetric(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
+                                        path(API / "clear"/ "dialog") { withMetric(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
+                                        path(API / "company"/ "add") { withMetric(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
+                                        path(API / "company"/ "get") { withMetric(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
+                                        path(API / "company" / "update") { withMetric(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
+                                        path(API / "company" / "token" / "reset") { withMetric(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
+                                        path(API / "company" / "delete") { withMetric(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
+                                        path(API / "user" / "get") { withMetric(M_USER_GET_LATENCY_MS, user$Get) } ~
+                                        path(API / "user" / "add") { withMetric(M_USER_ADD_LATENCY_MS, user$Add) } ~
+                                        path(API / "user" / "update") { withMetric(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
+                                        path(API / "user" / "delete") { withMetric(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
+                                        path(API / "user" / "admin") { withMetric(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
+                                        path(API / "user" / "passwd" / "reset") { withMetric(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
+                                        path(API / "user" / "all") { withMetric(M_USER_ALL_LATENCY_MS, user$All) } ~
+                                        path(API / "feedback"/ "add") { withMetric(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
+                                        path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
+                                        path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
+                                        path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
+                                        path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
+                                        path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
+                                        path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
+                                }
                             }
                         }
-                    }
                 )
             }
         }

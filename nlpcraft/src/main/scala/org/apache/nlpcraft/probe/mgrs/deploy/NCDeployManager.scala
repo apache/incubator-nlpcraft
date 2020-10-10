@@ -1445,7 +1445,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param mdl Model to scan.
       */
     @throws[NCE]
-    private def scanSamples(mdl: NCModel): Map[String, Seq[String]] = {
+    private def scanSamples(mdl: NCModel): Map[String, Seq[Seq[String]]] = {
         var annFound = false
         val mdlId = mdl.getId
 
@@ -1453,11 +1453,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
             mdl.getClass.getDeclaredMethods.flatMap(mtd ⇒ {
                 def mkMethodName: String = s"${mtd.getDeclaringClass.getName}#${mtd.getName}(...)"
 
-                val smpAnn = mtd.getAnnotation(CLS_SAMPLE)
+                val smpAnns = mtd.getAnnotationsByType(CLS_SAMPLE)
+
+                require(smpAnns != null)
+
                 val intAnn = mtd.getAnnotation(CLS_INTENT)
                 val refAnn = mtd.getAnnotation(CLS_INTENT_REF)
 
-                if (smpAnn != null || intAnn != null || refAnn != null) {
+                if (smpAnns.nonEmpty || intAnn != null || refAnn != null) {
                     annFound = true
 
                     def mkIntentId(): String =
@@ -1468,7 +1471,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         else
                             throw new AssertionError()
 
-                    if (smpAnn != null) {
+                    if (smpAnns.nonEmpty) {
                         if (intAnn == null && refAnn == null) {
                             logger.warn(s"`@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations [" +
                                 s"mdlId=$mdlId, " +
@@ -1478,9 +1481,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             None
                         }
                         else {
-                            val samples = smpAnn.value().toList
+                            val samples = smpAnns.toSeq.map(_.value().toSeq)
 
-                            if (samples.isEmpty) {
+                            if (samples.exists(_.isEmpty)) {
                                 logger.warn(s"@NCTestSample annotation is empty [" +
                                     s"mdlId=$mdlId, " +
                                     s"callback=$mkMethodName" +
@@ -1488,14 +1491,16 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                                 None
                             }
-                            else if (U.containsDups(samples)) {
+                            else if (U.containsDups(samples.flatten.toList)) {
                                 logger.warn(s"@NCTestSample annotation has duplicates [" +
                                     s"mdlId=$mdlId, " +
                                     s"callback=$mkMethodName, " +
                                     s"dups=${U.getDups(samples).mkString("'", ", ", "'")}" +
                                 s"]")
 
-                                Some(mkIntentId() → samples.distinct)
+                                // Samples is list of list. Duplicates cannot be inside one list,
+                                // but possible between different lists.
+                                Some(mkIntentId() → samples.map(_.distinct).distinct)
                             }
                             else
                                 Some(mkIntentId() → samples)
@@ -1525,18 +1530,25 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 map(NCNlpPorterStemmer.stem).map(_.split(" ").toSeq).
                 toSet
 
+        case class Case(modelId: String, sample: String)
+
+        val processed = mutable.HashSet.empty[Case]
+
         samples.
-            flatMap { case (_, samples) ⇒ samples.map(_.toLowerCase) }.
+            flatMap { case (_, samples) ⇒ samples.flatten.map(_.toLowerCase) }.
             map(s ⇒ s → SEPARATORS.foldLeft(s)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
             foreach {
                 case (s, sNorm) ⇒
-                    val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
+                    if (processed.add(Case(mdlId, s))) {
+                        val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
 
-                    if (!allSyns.exists(_.intersect(seq).nonEmpty))
-                        logger.warn(s"@IntentSample sample doesn't contain any direct synonyms [" +
-                            s"mdlId=$mdlId, " +
-                            s"sample='$s'" +
-                        s"]")
+                        if (!allSyns.exists(_.intersect(seq).nonEmpty))
+                            logger.warn(s"@IntentSample sample doesn't contain any direct synonyms [" +
+                                s"mdlId=$mdlId, " +
+                                s"sample='$s'" +
+                                s"]")
+                    }
+
             }
 
         samples

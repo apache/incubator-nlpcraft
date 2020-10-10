@@ -120,6 +120,7 @@
         <maven.source.plugin.ver>3.0.1</maven.source.plugin.ver>
         <maven.gpg.plugin.ver>1.6</maven.gpg.plugin.ver>
         <maven.bazaarvoice.plugin.ver>0.9</maven.bazaarvoice.plugin.ver>
+        <maven.clean.plugin.ver>3.1.0</maven.clean.plugin.ver>
         <apache.rat.plugin.ver>0.13</apache.rat.plugin.ver>
         <org.antlr4.ver>4.8</org.antlr4.ver>
         <akka.http.2.12.ver>10.2.0</akka.http.2.12.ver>
