@@ -207,6 +207,7 @@ object NCCli extends App {
         names: Seq[String],
         value: Option[String] = None,
         optional: Boolean = false, // Mandatory by default.
+        synthetic: Boolean = false,
         desc: String
     )
 
@@ -222,11 +223,12 @@ object NCCli extends App {
         Command(
             name = "rest",
             group = "REST Commands",
-            synopsis = s"Issues REST call to local REST server.",
+            synopsis = s"REST call in a convenient way for command line mode.",
             desc = Some(
-                s"All NLPCraft REST API uses HTTP POST and JSON parameters ('Content-Type: application/json' header). " +
-                s"To issue the REST call you need to supply path and parameters. In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
-                s"auto-completion candidates for commonly used paths and JSON payload components."
+                s"When using this command you supply all call parameters as a single ${y("'--json'")} parameter with a JSON string. " +
+                s"In REPL mode, you can hit ${rv(" Tab ")} to see auto-suggestion and auto-completion candidates for " +
+                s"commonly used paths. However, ${y("'call'")} command provides more convenient way to issue REST " +
+                s"calls when in REPL mode."
             ),
             body = cmdRest,
             params = Seq(
@@ -259,6 +261,57 @@ object NCCli extends App {
                         "  -j='{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}'"
                     ),
                     desc = s"Issues ${y("'signin'")} REST call with given JSON payload."
+                )
+            )
+        ),
+        Command(
+            name = "call",
+            group = "REST Commands",
+            synopsis = s"REST call in a convenient way for REPL mode.",
+            desc = Some(
+                s"When using this command you supply all call parameters separately through their own parameters named " +
+                s"after their counterparts in REST specification. " +
+                s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
+                s"auto-completion candidates for commonly used paths and call parameters."
+            ),
+            body = cmdRest,
+            params = Seq(
+                Parameter(
+                    id = "path",
+                    names = Seq("--path", "-p"),
+                    value = Some("path"),
+                    desc =
+                        s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
+                        s"Note that you don't need supply '/' at the beginning. " +
+                        s"See more details at https://nlpcraft.apache.org/using-rest.html " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible REST paths."
+                ),
+                Parameter(
+                    id = "xxx",
+                    names = Seq("-xxx"),
+                    value = Some("value"),
+                    optional = true,
+                    synthetic = true,
+                    desc =
+                        s"${y("'xxx'")} name corresponds to the REST call parameter that can be found at https://nlpcraft.apache.org/using-rest.html " +
+                        s"The value of this parameter should be a valid JSON value using valid JSON syntax. You can have " +
+                        s"as many ${y("'-xxx=value'")} parameters as requires by the ${y("'--path'")} parameter. " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible parameters and their values."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME call ",
+                        "  -p=signin",
+                        "  -email=admin@admin.com",
+                        "  -passwd=admin"
+                    ),
+                    desc =
+                        s"Issues ${y("'signin'")} REST call with given JSON payload provided as a set of parameters. " +
+                        s"Note that ${y("'-email'")} and ${y("'-passwd'")} parameters correspond to the REST call " +
+                        s"specification for  ${y("'/signin'")} path."
+
                 )
             )
         ),
@@ -1211,7 +1264,7 @@ object NCCli extends App {
             for (arg ← args) {
                 val cmdName = arg.value.get
 
-                CMDS.find(_.name.contains(cmdName)) match {
+                CMDS.find(_.name == cmdName) match {
                     case Some(c) ⇒
                         if (!seen.contains(c.name)) {
                             tbl +/ (
@@ -1583,7 +1636,11 @@ object NCCli extends App {
             if (rawLine == null || QUIT_CMD.name == rawLine.trim)
                 exit = true
             else {
-                val line = rawLine.trim().replace("\n", "").replace("\t", "")
+                val line = rawLine
+                    .trim()
+                    .replace("\n", "")
+                    .replace("\t", " ")
+                    .trim()
 
                 if (line.nonEmpty)
                     try {
@@ -1855,11 +1912,11 @@ object NCCli extends App {
      * @param repl
      */
     private def processAnsi(args: Seq[String], repl: Boolean): Unit = {
-        args.find(arg ⇒ NO_ANSI_CMD.name.contains(arg)) match {
+        args.find(_ == NO_ANSI_CMD.name) match {
             case Some(_) ⇒ NO_ANSI_CMD.body(NO_ANSI_CMD, Seq.empty, repl)
             case None ⇒ ()
         }
-        args.find(arg ⇒ ANSI_CMD.name.contains(arg)) match {
+        args.find(_ == ANSI_CMD.name) match {
             case Some(_) ⇒ ANSI_CMD.body(ANSI_CMD, Seq.empty, repl)
             case None ⇒ ()
         }
@@ -1876,7 +1933,7 @@ object NCCli extends App {
         processAnsi(args, repl)
 
         // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
-        val xargs = args.filter(arg ⇒ !NO_ANSI_CMD.name.contains(arg) && !ANSI_CMD.name.contains(arg))
+        val xargs = args.filter(arg ⇒ arg != NO_ANSI_CMD.name && arg != ANSI_CMD.name)
 
         if (xargs.nonEmpty) {
             val cmd = xargs.head
