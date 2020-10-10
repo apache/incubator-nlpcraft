@@ -221,7 +221,7 @@ object NCCli extends App {
     private final val CMDS = Seq(
         Command(
             name = "rest",
-            group = "Rest Commands",
+            group = "REST Commands",
             synopsis = s"Issues REST call to local REST server.",
             desc = Some(
                 s"All NLPCraft REST API uses HTTP POST and JSON parameters ('Content-Type: application/json' header). " +
