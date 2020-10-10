@@ -75,7 +75,7 @@ object NCCli extends App {
     )
 
     // TODO: this needs to be loaded dynamically from OpenAPI spec.
-    private final val REST_PATHS = Seq(
+    private final val REST_CMDS = Seq(
         RestCall("clear/conversation", "Clears conversation STM", "Asking"),
         RestCall("clear/dialog", "Clears dialog flow", "Asking"),
         RestCall("model/sugsyn", "Runs model synonym suggestion tool", "Tools"),
@@ -177,7 +177,7 @@ object NCCli extends App {
          * @param name
          * @return
          */
-        def findParameterByName(name: String): Option[Parameter] =
+        def findParameterByNameOpt(name: String): Option[Parameter] =
             params.find(_.names.contains(name))
 
         /**
@@ -185,8 +185,16 @@ object NCCli extends App {
          * @param id
          * @return
          */
-        def findParameterById(id: String): Option[Parameter] =
+        def findParameterByIdOpt(id: String): Option[Parameter] =
             params.find(_.id == id)
+
+        /**
+         *
+         * @param id
+         * @return
+         */
+        def findParameterById(id: String): Parameter =
+            findParameterByIdOpt(id).get
     }
     // Single command's example.
     case class Example(
@@ -213,7 +221,7 @@ object NCCli extends App {
     private final val CMDS = Seq(
         Command(
             name = "rest",
-            group = "Rest API",
+            group = "Rest Commands",
             synopsis = s"Issues REST call to local REST server.",
             desc = Some(
                 s"All NLPCraft REST API uses HTTP POST and JSON parameters ('Content-Type: application/json' header). " +
@@ -256,7 +264,7 @@ object NCCli extends App {
         ),
         Command(
             name = "tail-server",
-            group = "Server Ops",
+            group = "Server Commands",
             synopsis = s"Shows last N lines from the local REST server log.",
             desc = Some(
                 s"Only works for the server started via this script."
@@ -280,7 +288,7 @@ object NCCli extends App {
         ),
         Command(
             name = "start-server",
-            group = "Server Ops",
+            group = "Server Commands",
             synopsis = s"Starts local REST server.",
             desc = Some(
                 s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
@@ -332,7 +340,7 @@ object NCCli extends App {
         ),
         Command(
             name = "restart-server",
-            group = "Server Ops",
+            group = "Server Commands",
             synopsis = s"Restarts local REST server.",
             desc = Some(
                 s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
@@ -384,19 +392,19 @@ object NCCli extends App {
         ),
         Command(
             name = "info-server",
-            group = "Server Ops",
+            group = "Server Commands",
             synopsis = s"Info about local REST server.",
             body = cmdInfoServer
         ),
         Command(
             name = "cls",
-            group = "REPL",
+            group = "REPL Commands",
             synopsis = s"Clears terminal screen.",
             body = cmdCls
         ),
         Command(
             name = "nano",
-            group = "REPL",
+            group = "REPL Commands",
             synopsis = s"Runs built-in ${y("'nano'")} editor.",
             body = cmdNano,
             desc = Some(
@@ -428,7 +436,7 @@ object NCCli extends App {
         ),
         Command(
             name = "less",
-            group = "REPL",
+            group = "REPL Commands",
             synopsis = s"Runs built-in ${y("'less'")} command.",
             body = cmdLess,
             desc = Some(
@@ -459,7 +467,7 @@ object NCCli extends App {
         ),
         Command(
             name = "no-ansi",
-            group = "REPL",
+            group = "REPL Commands",
             synopsis = s"Disables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
@@ -474,7 +482,7 @@ object NCCli extends App {
         ),
         Command(
             name = "ansi",
-            group = "REPL",
+            group = "REPL Commands",
             synopsis = s"Enables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
@@ -489,7 +497,7 @@ object NCCli extends App {
         ),
         Command(
             name = "ping-server",
-            group = "Server Ops",
+            group = "Server Commands",
             synopsis = s"Pings local REST server.",
             desc = Some(
                 s"REST server is pinged using ${y("'/health'")} REST call to check its online status."
@@ -516,7 +524,7 @@ object NCCli extends App {
         ),
         Command(
             name = "stop-server",
-            group = "Server Ops",
+            group = "Server Commands",
             synopsis = s"Stops local REST server.",
             desc = Some(
                 s"Local REST server must be started via ${y(s"'$SCRIPT_NAME''")} or other compatible way."
@@ -525,13 +533,13 @@ object NCCli extends App {
         ),
         Command(
             name = "quit",
-            group = "REPL",
-            synopsis = s"Quits REPL when in REPL mode.",
+            group = "REPL Commands",
+            synopsis = s"Quits REPL mode.",
             body = cmdQuit
         ),
         Command(
             name = "help",
-            group = "REPL",
+            group = "REPL Commands",
             synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
                 s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
@@ -566,7 +574,7 @@ object NCCli extends App {
         ),
         Command(
             name = "version",
-            group = "REPL",
+            group = "REPL Commands",
             synopsis = s"Displays full version of ${y(s"'$SCRIPT_NAME'")} script.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
@@ -1176,7 +1184,7 @@ object NCCli extends App {
                     "align:left, maxWidth:85" → cmd.synopsis
                 ))
 
-                logln(s"\n$grp:\n${tbl.toString}")
+                logln(s"\n$B$grp:$RST\n${tbl.toString}")
             })
         }
         else if (args.size == 1 && args.head.parameter.id == "all") { // Show a full format help for all commands.
@@ -1382,7 +1390,7 @@ object NCCli extends App {
         if (!U.isValidJson(rawJson))
             throw MalformedJson()
 
-        if (!REST_PATHS.exists(_.path == path))
+        if (!REST_CMDS.exists(_.path == path))
             throw new IllegalArgumentException(s"Unknown REST path $C'$path'$RST, type ${c("'help --cmd=rest'")} to get help.")
 
         val endpoint = getRestEndpointFromBeacon
@@ -1455,7 +1463,7 @@ object NCCli extends App {
                     candidates.addAll(cmds.map(n ⇒ {
                         val name = n._1
                         val desc = n._2.substring(0, n._2.length - 1) // Remove last '.'.
-                        val grp = n._3
+                        val grp = s"${n._3}:"
 
                         mkCandidate(
                             id = name,
@@ -1477,7 +1485,7 @@ object NCCli extends App {
                                 names.map(name ⇒ mkCandidate(
                                     id = if (hasVal) name + "=" else name,
                                     disp = name,
-                                    grp = null,
+                                    grp = "Parameters:",
                                     desc = null,
                                     completed = !hasVal)
                                 )
@@ -1499,10 +1507,26 @@ object NCCli extends App {
                             ))
                             .asJava
                         )
-
                     // For 'rest' - add additional auto-completion candidates.
-                    if (cmd == REST_CMD.name) {
+                    else if (cmd == REST_CMD.name) {
+                        val pathParam = REST_CMD.findParameterById("path")
+                        val hasPathAlready = words.exists(w ⇒ pathParam.names.exists(x ⇒ w.startsWith(x)))
 
+                        if (!hasPathAlready)
+                            candidates.addAll(
+                                REST_CMDS.map(cmd ⇒ {
+                                    val name = s"--path=${cmd.path}"
+
+                                    mkCandidate(
+                                        id = name,
+                                        disp = name,
+                                        grp = s"REST ${cmd.group}:",
+                                        desc = cmd.desc,
+                                        completed = true
+                                    )
+                                })
+                                .asJava
+                            )
                     }
                 }
             }
@@ -1815,7 +1839,7 @@ object NCCli extends App {
             val name = if (parts.size == 1) arg else parts(0)
             val value = if (parts.size == 1) None else Some(parts(1))
 
-            cmd.findParameterByName(name) match {
+            cmd.findParameterByNameOpt(name) match {
                 case None ⇒ throw mkError()
                 case Some(param) ⇒
                     if ((param.value.isDefined && value.isEmpty) || (param.value.isEmpty && value.isDefined))
