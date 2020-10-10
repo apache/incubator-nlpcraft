@@ -44,9 +44,9 @@ import static java.lang.annotation.RetentionPolicy.*;
  * @see NCModel#onMatchedIntent(NCIntentMatch)
  * @see NCTestAutoModelValidator
  */
-@Documented
 @Retention(value=RUNTIME)
 @Target(value=METHOD)
+@Repeatable(NCIntentSample.NCIntentSampleList.class)
 public @interface NCIntentSample {
     /**
      * Gets a list of user input samples that should match corresponding intent. This annotation should be
@@ -55,4 +55,19 @@ public @interface NCIntentSample {
      * @return Set of user input examples that should match corresponding intent.
      */
     String[] value();
+
+    /**
+     * Grouping annotation required for when more than one {@link NCIntentSample} annotation is attached to the
+     * callback.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(value=METHOD)
+    @interface NCIntentSampleList {
+        /**
+         * Gets the list of all {@link NCIntentSample} annotations attached to the callback.
+         *
+         * @return List of all {@link NCIntentSample} annotations attached to the callback.
+         */
+        NCIntentSample[] value();
+    }
 }

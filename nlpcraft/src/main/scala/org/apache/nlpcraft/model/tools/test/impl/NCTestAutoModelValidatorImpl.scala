@@ -66,7 +66,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
       * @param samples
       * @return
       */
-    private def process(samples: Map[/*Model ID*/String, Map[String/*Intent ID*/, Seq[String]/*Samples*/]]): Boolean = {
+    private def process(samples: Map[/*Model ID*/String, Map[String/*Intent ID*/, Seq[Seq[String]]/*Samples*/]]): Boolean = {
         case class Result(
             modelId: String,
             intentId: String,
@@ -74,37 +74,36 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             pass: Boolean,
             error: Option[String]
         )
-        
+
         val results = samples.flatMap { case (mdlId, samples) ⇒
-            val cli = new NCTestClientBuilder().newBuilder.build
-    
-            cli.open(mdlId)
-    
-            try {
-                def ask(intentId: String, txt: String): Result = {
-                    val res = cli.ask(txt)
-            
-                    if (res.isFailed)
-                        Result(mdlId, intentId, txt, pass = false, Some(res.getResultError.get()))
-                    else if (intentId != res.getIntentId)
-                        Result(mdlId, intentId, txt, pass = false, Some(s"Unexpected intent ID '${res.getIntentId}'"))
-                    else
-                        Result(mdlId, intentId, txt, pass = true, None)
+            def ask(intentId: String, txts: Seq[String]): Seq[Result] = {
+                val cli = new NCTestClientBuilder().newBuilder.build
+
+                try {
+                    cli.open(mdlId)
+
+                    txts.map (txt ⇒ {
+                        val res = cli.ask(txt)
+
+                        if (res.isFailed)
+                            Result(mdlId, intentId, txt, pass = false, Some(res.getResultError.get()))
+                        else if (intentId != res.getIntentId)
+                            Result(mdlId, intentId, txt, pass = false, Some(s"Unexpected intent ID '${res.getIntentId}'"))
+                        else
+                            Result(mdlId, intentId, txt, pass = true, None)
+                    })
                 }
-                
-                for ((intentId, seq) ← samples; txt ← seq) yield ask(intentId, txt)
+                finally
+                    cli.close()
             }
-            finally
-                cli.close()
-        }.toList
-        
-        // Sort for better output.
-        results.sortBy(res ⇒ (res.modelId, res.intentId))
-    
+
+            for ((intentId, seq) ← samples; txts ← seq)  yield ask(intentId, txts)
+        }.flatten.toList
+
         val tbl = NCAsciiTable()
-    
+
         tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error")
-        
+
         for (res ← results)
             tbl += (
                 res.modelId,
