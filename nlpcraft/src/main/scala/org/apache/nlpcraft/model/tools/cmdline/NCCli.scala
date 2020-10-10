@@ -68,6 +68,52 @@ object NCCli extends App {
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
 
+    // Number of server services that need to be started + 1 progress start.
+    // Used for progress bar functionality.
+    // +==================================================================+
+    // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
+    // +==================================================================+
+    private final val NUM_SRV_SERVICES = 30/*services*/ + 1/*progress start*/
+
+    private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
+    private final val HIST_PATH = ".nlpcraft/.cli_history"
+
+    private final lazy val VER = NCVersion.getCurrent
+    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome,s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
+    private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
+    private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
+    private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
+    private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
+    private final lazy val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
+
+    private final val T___ = "    "
+    private val OPEN_BRK = Seq('[', '{', '(', '<')
+    private val CLOSE_BRK = Seq(']', '}', ')', '>')
+    // Pair for each open or close bracket.
+    private val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap
+
+    private var exitStatus = 0
+
+    private var term: Terminal = _
+
+    case class SplitError(index: Int)
+        extends Exception
+    case class NoLocalServer()
+        extends IllegalStateException(s"Local REST server not found.")
+    case class MissingParameter(cmd: Command, paramId: String)
+        extends IllegalArgumentException(
+            s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
+            s"type $C'help --cmd=${cmd.name}'$RST to get help."
+        )
+    case class HttpError(httpCode: Int)
+        extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
+    case class MalformedJson()
+        extends IllegalStateException("Malformed JSON.")
+    case class TooManyArguments(cmd: Command)
+        extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
+    case class NotEnoughArguments(cmd: Command)
+        extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
+
     case class RestCall(
         path: String,
         desc: String,
@@ -369,52 +415,6 @@ object NCCli extends App {
             )
         )
     )
-
-    // Number of server services that need to be started + 1 progress start.
-    // Used for progress bar functionality.
-    // +==================================================================+
-    // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
-    // +==================================================================+
-    private final val NUM_SRV_SERVICES = 30/*services*/ + 1/*progress start*/
-
-    private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
-    private final val HIST_PATH = ".nlpcraft/.cli_history"
-
-    private final lazy val VER = NCVersion.getCurrent
-    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome,s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
-    private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
-    private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
-    private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
-    private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
-    private final lazy val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
-
-    private final val T___ = "    "
-    private val OPEN_BRK = Seq('[', '{', '(', '<')
-    private val CLOSE_BRK = Seq(']', '}', ')', '>')
-    // Pair for each open or close bracket.
-    private val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap
-
-    private var exitStatus = 0
-
-    private var term: Terminal = _
-
-    case class SplitError(index: Int)
-        extends Exception
-    case class NoLocalServer()
-        extends IllegalStateException(s"Local REST server not found.")
-    case class MissingParameter(cmd: Command, paramId: String)
-        extends IllegalArgumentException(
-            s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-            s"type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-    case class HttpError(httpCode: Int)
-        extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
-    case class MalformedJson()
-        extends IllegalStateException("Malformed JSON.")
-    case class TooManyArguments(cmd: Command)
-        extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
-    case class NotEnoughArguments(cmd: Command)
-        extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
     case class HttpRestResponse(
         code: Int,
