@@ -105,6 +105,16 @@ object NCCli extends App {
             s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
             s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
+    case class InvalidParameter(cmd: Command, paramId: String)
+        extends IllegalArgumentException(
+            s"Invalid parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
+            s"type $C'help --cmd=${cmd.name}'$RST to get help."
+        )
+    case class InvalidJsonParameter(cmd: Command, param: String)
+        extends IllegalArgumentException(
+            s"Invalid JSON parameter: $C${"'$param'"}$RST, " +
+                s"type $C'help --cmd=${cmd.name}'$RST to get help."
+        )
     case class HttpError(httpCode: Int)
         extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
     case class MalformedJson()
@@ -1204,7 +1214,7 @@ object NCCli extends App {
                 try
                     Integer.parseInt(arg.value.get)
                 catch {
-                    case _ :Exception ⇒ throw new IllegalArgumentException(s"Invalid number of lines: ${arg.value.get}")
+                    case _ :Exception ⇒ throw InvalidParameter(cmd, lines)
                 }
 
             case None ⇒ 20 // Default.
@@ -1244,7 +1254,7 @@ object NCCli extends App {
                 try
                     Integer.parseInt(arg.value.get)
                 catch {
-                    case _ :Exception ⇒ throw new IllegalArgumentException(s"Invalid number of pings: ${arg.value.get}")
+                    case _ :Exception ⇒ throw InvalidParameter(cmd, "number")
                 }
 
             case None ⇒ 1 // Default.
@@ -1719,6 +1729,14 @@ object NCCli extends App {
         val path = normArgs.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
 
         checkRestPath(path)
+
+        val first = true
+
+        for (arg ← synthArgs) {
+            val jsName = arg.value.getOrElse(throw InvalidJsonParameter(cmd, ""))
+        }
+
+
     }
 
     /**
