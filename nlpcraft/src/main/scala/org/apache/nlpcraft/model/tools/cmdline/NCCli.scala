@@ -102,17 +102,17 @@ object NCCli extends App {
         extends IllegalStateException(s"Local REST server not found.")
     case class MissingParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
-            s"Missing mandatory parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
+            s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
             s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
     case class InvalidParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
-            s"Invalid parameter: $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
+            s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
             s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
     case class InvalidJsonParameter(cmd: Command, param: String)
         extends IllegalArgumentException(
-            s"Invalid JSON parameter: $C${"'$param'"}$RST, " +
+            s"Invalid JSON parameter $C${"'" + param + "'"}$RST, " +
                 s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
     case class HttpError(httpCode: Int)
@@ -1214,7 +1214,7 @@ object NCCli extends App {
                 try
                     Integer.parseInt(arg.value.get)
                 catch {
-                    case _ :Exception ⇒ throw InvalidParameter(cmd, lines)
+                    case _ :Exception ⇒ throw InvalidParameter(cmd, "lines")
                 }
 
             case None ⇒ 20 // Default.
@@ -1710,33 +1710,49 @@ object NCCli extends App {
 
     /**
      *
-     * @param path
-     */
-    private def checkRestPath(path: String): Unit =
-        if (!REST_SPEC.exists(_.path == path))
-            throw new IllegalArgumentException(s"Unknown REST path $C'$path'$RST, type ${c("'help --cmd=rest'")} to get help.")
-
-    /**
-     *
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
     private def cmdCall(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val normArgs = args.filter(_.parameter != null)
-        val synthArgs = args.filter(_.parameter == null)
+        val normArgs = args.filter(!_.parameter.synthetic)
+        val synthArgs = args.filter(_.parameter.synthetic)
 
         val path = normArgs.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
 
-        checkRestPath(path)
-
-        val first = true
+        var first = true
+        val buf = new StringBuilder()
 
         for (arg ← synthArgs) {
-            val jsName = arg.value.getOrElse(throw InvalidJsonParameter(cmd, ""))
+            val jsName = arg.parameter.id
+
+            REST_SPEC.find(_.path == path) match {
+                case Some(call) ⇒ call.params.find(_.name == jsName) match {
+                    case Some(param) ⇒
+                        if (!first)
+                            buf ++= ","
+
+                        first = false
+
+                        buf ++= "\"" + jsName +"\":"
+
+                        val value = arg.value.getOrElse(throw InvalidJsonParameter(cmd, arg.parameter.names.head))
+
+                        param.kind match {
+                            case STRING ⇒ buf ++= "\"" + U.escapeJson(stripQuotes(value)) + "\""
+                            case OBJECT | ARRAY ⇒ buf ++= stripQuotes(value)
+                            case BOOLEAN | NUMERIC ⇒ buf ++= value
+                        }
+
+                    case None ⇒ throw InvalidJsonParameter(cmd, jsName)
+                }
+                case None ⇒ throw InvalidParameter(cmd, "path")
+            }
         }
 
+        val json = s"{${buf.toString()}}"
 
+        httpRest(cmd, path, json)
     }
 
     /**
@@ -1747,12 +1763,23 @@ object NCCli extends App {
      */
     private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
-        val rawJson = stripQuotes(args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get)
+        val json = stripQuotes(args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get)
 
-        if (!U.isValidJson(rawJson))
+        httpRest(cmd, path, json)
+    }
+
+    /**
+     *
+     * @param cmd
+     * @param path
+     * @param json
+     */
+    private def httpRest(cmd: Command, path: String, json: String): Unit = {
+        if (!U.isValidJson(json))
             throw MalformedJson()
 
-        checkRestPath(path)
+        if (!REST_SPEC.exists(_.path == path))
+            throw InvalidParameter(cmd, "path")
 
         val endpoint = getRestEndpointFromBeacon
 
@@ -1765,7 +1792,7 @@ object NCCli extends App {
                     throw new IllegalStateException(s"Unexpected REST error: ${status.getReasonPhrase}")
                 )
             )
-        }), stripQuotes(rawJson))
+        }), json)
 
         // Ack HTTP response code.
         logln(s"HTTP ${if (resp.code == 200) g("200") else r(resp.code)}")
@@ -2201,14 +2228,20 @@ object NCCli extends App {
             if (parts.size > 2)
                 throw mkError()
 
-            val name = if (parts.size == 1) arg else parts(0)
-            val value = if (parts.size == 1) None else Some(parts(1))
+            val name = if (parts.size == 1) arg.trim else parts(0).trim
+            val value = if (parts.size == 1) None else Some(parts(1).trim)
             val hasSynth = cmd.params.exists(_.synthetic)
 
             cmd.findParameterByNameOpt(name) match {
                 case None ⇒
                     if (hasSynth)
-                        Argument(null, value) // Synthetic argument (name is unspecified).
+                        Argument(Parameter(
+                            id = name.substring(1), // Remove single '-' from the beginning.
+                            names = Seq(name),
+                            value = value,
+                            synthetic = true,
+                            desc = null
+                        ), value) // Synthetic argument.
                     else
                         throw mkError()
 
