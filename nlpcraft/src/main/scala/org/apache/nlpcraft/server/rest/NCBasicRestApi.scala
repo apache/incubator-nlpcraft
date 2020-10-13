@@ -1838,7 +1838,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         // General exception.
         case e: NCException ⇒
-            val errMsg = e.getLocalizedMessage
+            val errMsg = "Unexpected system error."
             val code = "NC_ERROR"
 
             // We have to log error reason because even general exceptions are not expected here.
@@ -1848,7 +1848,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
         // Unexpected errors.
         case e: Throwable ⇒
-            val errMsg = e.getLocalizedMessage
+            val errMsg = "Unexpected system error."
             val code = "NC_ERROR"
 
             U.prettyError(logger,s"Unexpected system error: $errMsg", e)
@@ -1886,7 +1886,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 case _: InvalidOriginRejection ⇒ complete(s"Invalid origin.")
 
                 // Common case.
-                case err: Rejection ⇒ complete(s"Bad request.")
+                case _: Rejection ⇒ complete(s"Bad request.")
             }.result
     }
 

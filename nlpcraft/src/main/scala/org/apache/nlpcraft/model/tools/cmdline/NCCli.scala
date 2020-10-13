@@ -1711,7 +1711,7 @@ object NCCli extends App {
 
         state.probes.foreach(addProbeToTable(tbl, _))
 
-        logln(s"Connected probes:\n${tbl.toString}")
+        logln(s"Connected probes (${state.probes.size}):\n${tbl.toString}")
     }
 
     /**
