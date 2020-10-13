@@ -1950,14 +1950,13 @@ object NCCli extends App {
 
             /**
              *
-             * @param id
              * @param disp
              * @param desc
              * @param completed
              * @return
              */
-            private def mkCandidate(id: String, disp: String, grp: String, desc: String, completed: Boolean): Candidate =
-                new Candidate(id, disp, grp, desc, null, null, completed)
+            private def mkCandidate(disp: String, grp: String, desc: String, completed: Boolean): Candidate =
+                new Candidate(disp, disp, grp, desc, null, null, completed)
 
             override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
                 val words = line.words().asScala
@@ -1969,7 +1968,6 @@ object NCCli extends App {
                         val grp = s"${n._3}:"
 
                         mkCandidate(
-                            id = name,
                             disp = name,
                             grp = grp,
                             desc = desc,
@@ -1991,12 +1989,11 @@ object NCCli extends App {
                                 val names = param.names.filter(_.startsWith("--")) // Skip shorthands from auto-completion.
 
                                 names.map(name ⇒ mkCandidate(
-                                    id = if (hasVal) name + "=" else name,
-                                    disp = name,
+                                    disp = if (hasVal) name + "=" else name,
                                     grp = if (param.optional) OPTIONAL_GRP else MANDATORY_GRP,
                                     desc = null,
-                                    completed = !hasVal)
-                                )
+                                    completed = !hasVal
+                                ))
                             })
                             .asJava
 
@@ -2007,7 +2004,6 @@ object NCCli extends App {
                     if (cmd == HELP_CMD.name)
                         candidates.addAll(CMDS.map(c ⇒ s"--cmd=${c.name}").map(s ⇒
                             mkCandidate(
-                                id = s,
                                 disp = s,
                                 grp = CMDS_GRP,
                                 desc = null,
@@ -2027,7 +2023,6 @@ object NCCli extends App {
                                     val name = s"--path=${cmd.path}"
 
                                     mkCandidate(
-                                        id = name,
                                         disp = name,
                                         grp = s"REST ${cmd.group}:",
                                         desc = cmd.desc,
@@ -2051,7 +2046,6 @@ object NCCli extends App {
                                         candidates.addAll(
                                             spec.params.map(param ⇒ {
                                                 mkCandidate(
-                                                    id = s"-${param.name}=",
                                                     disp = s"-${param.name}",
                                                     grp = if (param.optional) OPTIONAL_GRP else MANDATORY_GRP,
                                                     desc = null,
@@ -2065,7 +2059,6 @@ object NCCli extends App {
                                         if (spec.params.exists(_.name == "acsTok") && state.accessToken.isDefined)
                                             candidates.add(
                                                 mkCandidate(
-                                                    id = s"-acsTok=${state.accessToken.get}",
                                                     disp = s"-acsTok=${state.accessToken.get}",
                                                     grp = MANDATORY_GRP,
                                                     desc = null,
@@ -2078,8 +2071,7 @@ object NCCli extends App {
                                             candidates.addAll(
                                                 state.probes.flatMap(_.models.toList).map(mdl ⇒ {
                                                     mkCandidate(
-                                                        id = s"-mdlId=${mdl.name}",
-                                                        disp = s"-mdlId=${mdl.name}",
+                                                        disp = s"-mdlId=${mdl.id}",
                                                         grp = MANDATORY_GRP,
                                                         desc = null,
                                                         completed = true
@@ -2092,7 +2084,6 @@ object NCCli extends App {
                                         if (path == "signin") {
                                             candidates.add(
                                                 mkCandidate(
-                                                    id = "-email=admin@admin.com",
                                                     disp = "-email=admin@admin.com",
                                                     grp = DFTL_USER_GRP,
                                                     desc = null,
@@ -2101,7 +2092,6 @@ object NCCli extends App {
                                             )
                                             candidates.add(
                                                 mkCandidate(
-                                                    id = "-passwd=admin",
                                                     disp = "-passwd=admin",
                                                     grp = DFTL_USER_GRP,
                                                     desc = null,
