@@ -162,11 +162,11 @@ object NCCli extends App {
     case class NotEnoughArguments(cmd: Command)
         extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
-    case class RestCall(
+    case class RestSpec(
         path: String,
         desc: String,
         group: String,
-        params: Seq[RestCallParameter]
+        params: Seq[RestSpecParameter]
     )
 
     sealed trait JsonType
@@ -176,7 +176,7 @@ object NCCli extends App {
     case object OBJECT extends JsonType
     case object ARRAY extends JsonType
 
-    case class RestCallParameter(
+    case class RestSpecParameter(
         name: String,
         kind: JsonType,
         optional: Boolean = false // Mandatory by default.
@@ -185,281 +185,281 @@ object NCCli extends App {
     //noinspection DuplicatedCode
     // TODO: this needs to be loaded dynamically from OpenAPI spec.
     private final val REST_SPEC = Seq(
-        RestCall(
+        RestSpec(
             path = "clear/conversation",
             desc = "Clears conversation STM",
             group = "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "mdlId", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "mdlId", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "clear/dialog",
             "Clears dialog flow",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "mdlId", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "mdlId", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "model/sugsyn",
             "Runs model synonym suggestion tool",
             "Tools",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "mdlId", kind = STRING),
-                RestCallParameter(name = "minScore", kind = NUMERIC)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "mdlId", kind = STRING),
+                RestSpecParameter(name = "minScore", kind = NUMERIC)
             )
         ),
-        RestCall(
+        RestSpec(
             "check",
             "Gets status and result of submitted requests",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestCallParameter(name = "srvReqIds", kind = ARRAY, optional = true),
-                RestCallParameter(name = "maxRows", kind = NUMERIC, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
+                RestSpecParameter(name = "srvReqIds", kind = ARRAY, optional = true),
+                RestSpecParameter(name = "maxRows", kind = NUMERIC, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "cancel",
             "Cancels a question",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestCallParameter(name = "srvReqIds", kind = ARRAY, optional = true),
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
+                RestSpecParameter(name = "srvReqIds", kind = ARRAY, optional = true),
             )
         ),
-        RestCall(
+        RestSpec(
             "ask",
             "Asks a question",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestCallParameter(name = "txt", kind = STRING),
-                RestCallParameter(name = "mdlId", kind = STRING),
-                RestCallParameter(name = "data", kind = OBJECT, optional = true),
-                RestCallParameter(name = "enableLog", kind = BOOLEAN, optional = true),
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
+                RestSpecParameter(name = "txt", kind = STRING),
+                RestSpecParameter(name = "mdlId", kind = STRING),
+                RestSpecParameter(name = "data", kind = OBJECT, optional = true),
+                RestSpecParameter(name = "enableLog", kind = BOOLEAN, optional = true),
             )
         ),
-        RestCall(
+        RestSpec(
             "ask/sync",
             "Asks a question in synchronous mode",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestCallParameter(name = "txt", kind = STRING),
-                RestCallParameter(name = "mdlId", kind = STRING),
-                RestCallParameter(name = "data", kind = OBJECT, optional = true),
-                RestCallParameter(name = "enableLog", kind = BOOLEAN, optional = true),
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
+                RestSpecParameter(name = "txt", kind = STRING),
+                RestSpecParameter(name = "mdlId", kind = STRING),
+                RestSpecParameter(name = "data", kind = OBJECT, optional = true),
+                RestSpecParameter(name = "enableLog", kind = BOOLEAN, optional = true),
             )
         ),
-        RestCall(
+        RestSpec(
             "user/get",
             "Gets current user information",
             "User",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "id", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "id", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "user/all",
             "Gets all users",
             "User",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "acsTok", kind = STRING),
             )
         ),
-        RestCall(
+        RestSpec(
             "user/update",
             "Updates regular user",
             "User",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "firstName", kind = STRING),
-                RestCallParameter(name = "lastName", kind = STRING),
-                RestCallParameter(name = "id", kind = STRING, optional = true),
-                RestCallParameter(name = "avatarUrl", kind = STRING, optional = true),
-                RestCallParameter(name = "properties", kind = OBJECT, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "firstName", kind = STRING),
+                RestSpecParameter(name = "lastName", kind = STRING),
+                RestSpecParameter(name = "id", kind = STRING, optional = true),
+                RestSpecParameter(name = "avatarUrl", kind = STRING, optional = true),
+                RestSpecParameter(name = "properties", kind = OBJECT, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "user/delete",
             "Deletes user",
             "User",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "id", kind = STRING, optional = true),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "id", kind = STRING, optional = true),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "user/admin",
             "Updates user admin permissions",
             "User",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "id", kind = STRING, optional = true),
-                RestCallParameter(name = "isAdmin", kind = BOOLEAN)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "id", kind = STRING, optional = true),
+                RestSpecParameter(name = "isAdmin", kind = BOOLEAN)
             )
         ),
-        RestCall(
+        RestSpec(
             "user/passwd/reset",
             "Resets password for the user",
             "User",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "id", kind = STRING, optional = true),
-                RestCallParameter(name = "newPasswd", kind = STRING)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "id", kind = STRING, optional = true),
+                RestSpecParameter(name = "newPasswd", kind = STRING)
             )
         ),
-        RestCall(
+        RestSpec(
             "user/add",
             "Adds new user",
             "User",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "firstName", kind = STRING),
-                RestCallParameter(name = "lastName", kind = STRING),
-                RestCallParameter(name = "email", kind = STRING),
-                RestCallParameter(name = "passwd", kind = STRING),
-                RestCallParameter(name = "isAdmin", kind = BOOLEAN),
-                RestCallParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestCallParameter(name = "avatarUrl", kind = STRING, optional = true),
-                RestCallParameter(name = "properties", kind = OBJECT, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "firstName", kind = STRING),
+                RestSpecParameter(name = "lastName", kind = STRING),
+                RestSpecParameter(name = "email", kind = STRING),
+                RestSpecParameter(name = "passwd", kind = STRING),
+                RestSpecParameter(name = "isAdmin", kind = BOOLEAN),
+                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
+                RestSpecParameter(name = "avatarUrl", kind = STRING, optional = true),
+                RestSpecParameter(name = "properties", kind = OBJECT, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "company/get",
             "Gets current user company information",
             "Company",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "acsTok", kind = STRING),
             )
         ),
-        RestCall(
+        RestSpec(
             "company/add",
             "Adds new company",
             "Company",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "name", kind = STRING),
-                RestCallParameter(name = "website", kind = STRING, optional = true),
-                RestCallParameter(name = "country", kind = STRING, optional = true),
-                RestCallParameter(name = "region", kind = STRING, optional = true),
-                RestCallParameter(name = "city", kind = STRING, optional = true),
-                RestCallParameter(name = "address", kind = STRING, optional = true),
-                RestCallParameter(name = "postalCode", kind = STRING, optional = true),
-                RestCallParameter(name = "adminEmail", kind = STRING),
-                RestCallParameter(name = "adminPasswd", kind = STRING),
-                RestCallParameter(name = "adminFirstName", kind = STRING),
-                RestCallParameter(name = "adminLastName", kind = STRING),
-                RestCallParameter(name = "adminAvatarUrl", kind = STRING, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "name", kind = STRING),
+                RestSpecParameter(name = "website", kind = STRING, optional = true),
+                RestSpecParameter(name = "country", kind = STRING, optional = true),
+                RestSpecParameter(name = "region", kind = STRING, optional = true),
+                RestSpecParameter(name = "city", kind = STRING, optional = true),
+                RestSpecParameter(name = "address", kind = STRING, optional = true),
+                RestSpecParameter(name = "postalCode", kind = STRING, optional = true),
+                RestSpecParameter(name = "adminEmail", kind = STRING),
+                RestSpecParameter(name = "adminPasswd", kind = STRING),
+                RestSpecParameter(name = "adminFirstName", kind = STRING),
+                RestSpecParameter(name = "adminLastName", kind = STRING),
+                RestSpecParameter(name = "adminAvatarUrl", kind = STRING, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "company/update",
             "Updates company data",
             "Company",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "name", kind = STRING),
-                RestCallParameter(name = "website", kind = STRING, optional = true),
-                RestCallParameter(name = "country", kind = STRING, optional = true),
-                RestCallParameter(name = "region", kind = STRING, optional = true),
-                RestCallParameter(name = "city", kind = STRING, optional = true),
-                RestCallParameter(name = "address", kind = STRING, optional = true),
-                RestCallParameter(name = "postalCode", kind = STRING, optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "name", kind = STRING),
+                RestSpecParameter(name = "website", kind = STRING, optional = true),
+                RestSpecParameter(name = "country", kind = STRING, optional = true),
+                RestSpecParameter(name = "region", kind = STRING, optional = true),
+                RestSpecParameter(name = "city", kind = STRING, optional = true),
+                RestSpecParameter(name = "address", kind = STRING, optional = true),
+                RestSpecParameter(name = "postalCode", kind = STRING, optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "company/delete",
             "Deletes company",
             "Company",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "acsTok", kind = STRING),
             )
         ),
-        RestCall(
+        RestSpec(
             "company/token/reset",
             "Resets company probe auth token",
             "Company",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "acsTok", kind = STRING),
             )
         ),
-        RestCall(
+        RestSpec(
             "feedback/add",
             "Adds feedback",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "extUsrId", kind = STRING, optional = true),
-                RestCallParameter(name = "comment", kind = STRING, optional = true),
-                RestCallParameter(name = "srvReqId", kind = STRING),
-                RestCallParameter(name = "score", kind = STRING)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "extUsrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "comment", kind = STRING, optional = true),
+                RestSpecParameter(name = "srvReqId", kind = STRING),
+                RestSpecParameter(name = "score", kind = STRING)
             )
         ),
-        RestCall(
+        RestSpec(
             "feedback/delete",
             "Deletes feedback",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "id", kind = NUMERIC)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "id", kind = NUMERIC)
             )
         ),
-        RestCall(
+        RestSpec(
             "feedback/all",
             "Gets all feedback",
             "Asking",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
-                RestCallParameter(name = "usrId", kind = STRING, optional = true),
-                RestCallParameter(name = "extUsrId", kind = STRING, optional = true),
-                RestCallParameter(name = "srvReqId", kind = STRING,  optional = true)
+                RestSpecParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "extUsrId", kind = STRING, optional = true),
+                RestSpecParameter(name = "srvReqId", kind = STRING,  optional = true)
             )
         ),
-        RestCall(
+        RestSpec(
             "signin",
             "Signs in and obtains new access token",
             "Authentication",
             params = Seq(
-                RestCallParameter(name = "email", kind = STRING),
-                RestCallParameter(name = "passwd", kind = STRING)
+                RestSpecParameter(name = "email", kind = STRING),
+                RestSpecParameter(name = "passwd", kind = STRING)
             )
         ),
-        RestCall(
+        RestSpec(
             "signout",
             "Signs out and releases access token",
             "Authentication",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "acsTok", kind = STRING),
             )
         ),
-        RestCall(
+        RestSpec(
             "probe/all",
             "Gets all probes",
             "Probe",
             params = Seq(
-                RestCallParameter(name = "acsTok", kind = STRING),
+                RestSpecParameter(name = "acsTok", kind = STRING),
             )
         )
     )
@@ -605,7 +605,7 @@ object NCCli extends App {
                 ),
                 Parameter(
                     id = "xxx",
-                    names = Seq("-xxx"),
+                    names = Seq("--xxx"),
                     value = Some("value"),
                     optional = true,
                     synthetic = true,
@@ -613,7 +613,7 @@ object NCCli extends App {
                         s"${y("'xxx'")} name corresponds to the REST call parameter that can be found at https://nlpcraft.apache.org/using-rest.html " +
                         s"The value of this parameter should be a valid JSON value using valid JSON syntax. Note that strings " +
                         s"don't have to be in double quotes. JSON objects and arrays should be specified as a JSON string in single quotes. You can have " +
-                        s"as many ${y("'-xxx=value'")} parameters as requires by the ${y("'--path'")} parameter. " +
+                        s"as many ${y("'--xxx=value'")} parameters as requires by the ${y("'--path'")} parameter. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible parameters and their values."
                 )
             ),
@@ -621,26 +621,24 @@ object NCCli extends App {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME call -p=signin",
-                        "  -email=admin@admin.com",
-                        "  -passwd=admin"
+                        "  --email=admin@admin.com",
+                        "  --passwd=admin"
                     ),
                     desc =
                         s"Issues ${y("'signin'")} REST call with given JSON payload provided as a set of parameters. " +
-                        s"Note that ${y("'-email'")} and ${y("'-passwd'")} parameters correspond to the REST call " +
+                        s"Note that ${y("'--email'")} and ${y("'--passwd'")} parameters correspond to the REST call " +
                         s"specification for ${y("'/signin'")} path."
-
                 ),
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME call --path=ask/sync",
-                        "  -acsTok=qwerty123456",
-                        "  -mdlId=my.model.id",
-                        "  -data='{\"data1\": true, \"data2\": 123, \"data3\": \"some text\"}'",
-                        "  -enableLog=false"
+                        "  --acsTok=qwerty123456",
+                        "  --mdlId=my.model.id",
+                        "  --data='{\"data1\": true, \"data2\": 123, \"data3\": \"some text\"}'",
+                        "  --enableLog=false"
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
-
                 )
             )
         ),
@@ -1838,25 +1836,27 @@ object NCCli extends App {
             val jsName = arg.parameter.id
 
             REST_SPEC.find(_.path == path) match {
-                case Some(call) ⇒ call.params.find(_.name == jsName) match {
-                    case Some(param) ⇒
-                        if (!first)
-                            buf ++= ","
+                case Some(spec) ⇒
+                    spec.params.find(_.name == jsName) match {
+                        case Some(param) ⇒
+                            if (!first)
+                                buf ++= ","
 
-                        first = false
+                            first = false
 
-                        buf ++= "\"" + jsName +"\":"
+                            buf ++= "\"" + jsName +"\":"
 
-                        val value = arg.value.getOrElse(throw InvalidJsonParameter(cmd, arg.parameter.names.head))
+                            val value = arg.value.getOrElse(throw InvalidJsonParameter(cmd, arg.parameter.names.head))
 
-                        param.kind match {
-                            case STRING ⇒ buf ++= "\"" + U.escapeJson(stripQuotes(value)) + "\""
-                            case OBJECT | ARRAY ⇒ buf ++= stripQuotes(value)
-                            case BOOLEAN | NUMERIC ⇒ buf ++= value
-                        }
+                            param.kind match {
+                                case STRING ⇒ buf ++= "\"" + U.escapeJson(stripQuotes(value)) + "\""
+                                case OBJECT | ARRAY ⇒ buf ++= stripQuotes(value)
+                                case BOOLEAN | NUMERIC ⇒ buf ++= value
+                            }
 
-                    case None ⇒ throw InvalidJsonParameter(cmd, jsName)
-                }
+                        case None ⇒ throw InvalidJsonParameter(cmd, jsName)
+                    }
+
                 case None ⇒ throw InvalidParameter(cmd, "path")
             }
         }
@@ -1973,7 +1973,7 @@ object NCCli extends App {
 
                     candidates.addAll(CMDS.find(_.name == cmd) match {
                         case Some(c) ⇒
-                            c.params.flatMap(param ⇒ {
+                            c.params.filter(!_.synthetic).flatMap(param ⇒ {
                                 val hasVal = param.value.isDefined
                                 val names = param.names.filter(_.startsWith("--")) // Skip shorthands from auto-completion.
 
@@ -2035,7 +2035,7 @@ object NCCli extends App {
                                         candidates.addAll(
                                             spec.params.map(param ⇒ {
                                                 mkCandidate(
-                                                    disp = s"-${param.name}",
+                                                    disp = s"--${param.name}",
                                                     grp = if (param.optional) OPTIONAL_GRP else MANDATORY_GRP,
                                                     desc = null,
                                                     completed = false
@@ -2048,7 +2048,7 @@ object NCCli extends App {
                                         if (spec.params.exists(_.name == "acsTok") && state.accessToken.isDefined)
                                             candidates.add(
                                                 mkCandidate(
-                                                    disp = s"-acsTok=${state.accessToken.get}",
+                                                    disp = s"--acsTok=${state.accessToken.get}",
                                                     grp = MANDATORY_GRP,
                                                     desc = null,
                                                     completed = true
@@ -2060,7 +2060,7 @@ object NCCli extends App {
                                             candidates.addAll(
                                                 state.probes.flatMap(_.models.toList).map(mdl ⇒ {
                                                     mkCandidate(
-                                                        disp = s"-mdlId=${mdl.id}",
+                                                        disp = s"--mdlId=${mdl.id}",
                                                         grp = MANDATORY_GRP,
                                                         desc = null,
                                                         completed = true
@@ -2073,7 +2073,7 @@ object NCCli extends App {
                                         if (path == "signin") {
                                             candidates.add(
                                                 mkCandidate(
-                                                    disp = "-email=admin@admin.com",
+                                                    disp = "--email=admin@admin.com",
                                                     grp = DFTL_USER_GRP,
                                                     desc = null,
                                                     completed = true
@@ -2081,7 +2081,7 @@ object NCCli extends App {
                                             )
                                             candidates.add(
                                                 mkCandidate(
-                                                    disp = "-passwd=admin",
+                                                    disp = "--passwd=admin",
                                                     grp = DFTL_USER_GRP,
                                                     desc = null,
                                                     completed = true
@@ -2100,8 +2100,6 @@ object NCCli extends App {
         }
 
         class ReplHistory extends DefaultHistory {
-            private var lastLine: String = _
-
             /**
              *
              * @param time
@@ -2481,7 +2479,7 @@ object NCCli extends App {
                 case None ⇒
                     if (hasSynth)
                         Argument(Parameter(
-                            id = name.substring(1), // Remove single '-' from the beginning.
+                            id = name.substring(2), // Remove single '--' from the beginning.
                             names = Seq(name),
                             value = value,
                             synthetic = true,
