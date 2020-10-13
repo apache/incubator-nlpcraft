@@ -38,6 +38,7 @@ import java.util.Date
 import java.io._
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
+import java.time.Instant
 import java.util.regex.Pattern
 
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
@@ -472,6 +473,7 @@ object NCCli extends App {
         var isServerOnline: Boolean = false,
         var accessToken: Option[String] = None,
         var serverLog: Option[File] = None,
+        var lastOkInput: Option[String] = None,
         var probes: List[Probe] = Nil // List of connected probes.
     )
 
@@ -828,12 +830,14 @@ object NCCli extends App {
                     id = "file",
                     names = Seq("--file", "-f"),
                     value = Some("path"),
+                    optional = true,
                     desc =
                         s"File to open with built-in ${y("'less'")} commands. Relative paths will based off the current directory."
                 ),
                 Parameter(
                     id = "server-log",
                     names = Seq("--server-log", "-s"),
+                    optional = true,
                     desc =
                         s"Opens up built-in ${y("'less'")} command for currently running local REST server log."
                 )
@@ -1631,7 +1635,7 @@ object NCCli extends App {
                     case None ⇒
                         err = true
 
-                        unknownCommand(cmdName)
+                        errorUnknownCommand(cmdName)
                 }
             }
 
@@ -2095,13 +2099,37 @@ object NCCli extends App {
             }
         }
 
+        class ReplHistory extends DefaultHistory {
+            private var lastLine: String = _
+
+            /**
+             *
+             * @param time
+             * @param line
+             */
+            override def add(time: Instant, line: String): Unit = {
+                // No-op.
+            }
+
+            /**
+             *
+             */
+            def submitLastLine(): Unit =
+                state.lastOkInput match {
+                    case Some(line) ⇒ super.add(Instant.now(), line)
+                    case None ⇒ ()
+                }
+        }
+
+        val hist = new ReplHistory()
+
         val reader = LineReaderBuilder
             .builder
             .appName("NLPCraft")
             .terminal(term)
             .completer(completer)
             .parser(parser)
-            .history(new DefaultHistory())
+            .history(hist)
             .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g("...>")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
@@ -2155,9 +2183,13 @@ object NCCli extends App {
                 if (line.nonEmpty)
                     try {
                         doCommand(splitBySpace(line), repl = true)
+
+                        state.lastOkInput = if (exitStatus == 0) Some(line) else None
                     }
                     catch {
                         case e: SplitError ⇒
+                            state.lastOkInput = None
+
                             val idx = e.index
                             val lineX = line.substring(0, idx) + r(line.substring(idx, idx + 1) ) + line.substring(idx + 1)
                             val dashX = c("-" * idx) + r("^") + c("-" * (line.length - idx - 1))
@@ -2167,6 +2199,8 @@ object NCCli extends App {
                             error(s"  ${r("+-")} $dashX")
                     }
             }
+
+            hist.submitLastLine()
         }
 
         U.stopThread(pinger)
@@ -2239,7 +2273,7 @@ object NCCli extends App {
     /**
      *
      */
-    private def unknownCommand(cmd: String): Unit = {
+    private def errorUnknownCommand(cmd: String): Unit = {
         val c2 = c(s"'$cmd'")
         val h2 = c(s"'help'")
 
@@ -2486,6 +2520,7 @@ object NCCli extends App {
      * @param args
      * @param repl Whether or not called from 'repl' mode.
      */
+    @throws[Exception]
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         // Process 'no-ansi' and 'ansi' commands first.
         processAnsi(args, repl)
@@ -2498,6 +2533,7 @@ object NCCli extends App {
 
             CMDS.find(_.name == cmd) match {
                 case Some(cmd) ⇒
+                    // Reset error code.
                     exitStatus = 0
 
                     try
@@ -2506,7 +2542,7 @@ object NCCli extends App {
                         case e: Exception ⇒ error(e.getLocalizedMessage)
                     }
 
-                case None ⇒ unknownCommand(cmd)
+                case None ⇒ errorUnknownCommand(cmd)
             }
         }
     }
