@@ -324,7 +324,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     @throws[InvalidField]
     protected def checkModelId(mdlId: String, compId: Long): Unit =
         if (!NCProbeManager.existsForModel(compId, mdlId))
-            throw InvalidModelId("mdlId")
+            throw InvalidModelId(mdlId)
 
     /**
       * Checks length of field value.
