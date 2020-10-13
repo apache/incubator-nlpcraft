@@ -1224,6 +1224,9 @@ object NCCli extends App {
                     logln(g(" [OK]"))
                     logServerInfo(beacon)
 
+                    if (state.accessToken.isDefined)
+                        logln(s"Signed in with default '${c("admin@admin.com")}' user.")
+
                     showTip()
                 }
             }
@@ -1418,7 +1421,7 @@ object NCCli extends App {
                 val baseUrl = "http://" + beacon.restEndpoint
 
                 // Attempt to signin with the default account.
-                if (autoSignIn && state.accessToken.isEmpty) {
+                if (autoSignIn && state.accessToken.isEmpty)
                     httpPostResponseJson(
                         baseUrl,
                         "signin",
@@ -1426,10 +1429,6 @@ object NCCli extends App {
                         case Some(json) ⇒ state.accessToken = Option(Try(U.getJsonStringField(json, "acsTok")).getOrElse(null))
                         case None ⇒ ()
                     }
-
-                    if (state.accessToken.isDefined)
-                        logln(s"REST server signed in with default '${c("admin@admin.com")}' user.")
-                }
 
                 // Attempt to get all connected probes if successfully signed in prior.
                 if (state.accessToken.isDefined)
@@ -1707,8 +1706,10 @@ object NCCli extends App {
                         s"  ${c("tok")}: ${probe.probeToken}"
                     ),
                     DurationFormatUtils.formatDurationHMS(currentTime - probe.startTstamp),
-                    s"${probe.osName} ver. ${probe.osVersion}",
-                    s"${probe.hostName} (${probe.hostAddr})",
+                    Seq(
+                        s"${probe.hostName} (${probe.hostAddr})",
+                        s"${probe.osName} ver. ${probe.osVersion}"
+                    ),
                     probe.models.toList.map(m ⇒ s"${b(m.id)}, v${m.version}")
                 )
 
@@ -1718,8 +1719,7 @@ object NCCli extends App {
             tbl #= (
                 "Probe ID",
                 "Uptime",
-                "OS",
-                "Host",
+                "Host / OS",
                 "Models Deployed"
             )
 
@@ -1935,6 +1935,9 @@ object NCCli extends App {
             case None ⇒ ()
         }
 
+        if (state.accessToken.isDefined)
+            logln(s"REST server signed in with default '${c("admin@admin.com")}' user.")
+
         val parser = new DefaultParser()
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
@@ -1976,6 +1979,11 @@ object NCCli extends App {
                 else {
                     val cmd = words.head
 
+                    val OPTIONAL_GRP = "Optional:"
+                    val MANDATORY_GRP = "Mandatory:"
+                    val DFTL_USER_GRP = "Default user:"
+                    val CMDS_GRP = "Commands:"
+
                     candidates.addAll(CMDS.find(_.name == cmd) match {
                         case Some(c) ⇒
                             c.params.flatMap(param ⇒ {
@@ -1985,7 +1993,7 @@ object NCCli extends App {
                                 names.map(name ⇒ mkCandidate(
                                     id = if (hasVal) name + "=" else name,
                                     disp = name,
-                                    grp = "Parameters:",
+                                    grp = if (param.optional) OPTIONAL_GRP else MANDATORY_GRP,
                                     desc = null,
                                     completed = !hasVal)
                                 )
@@ -1995,20 +2003,21 @@ object NCCli extends App {
                         case None ⇒ Seq.empty[Candidate].asJava
                     })
 
-                    // For 'help' - add additional auto-completion candidates.
+                    // For 'help' - add additional auto-completion/suggestion candidates.
                     if (cmd == HELP_CMD.name)
                         candidates.addAll(CMDS.map(c ⇒ s"--cmd=${c.name}").map(s ⇒
                             mkCandidate(
                                 id = s,
                                 disp = s,
-                                grp = null,
+                                grp = CMDS_GRP,
                                 desc = null,
                                 completed = true
                             ))
                             .asJava
                         )
-                    // For 'rest' - add additional auto-completion candidates.
-                    else if (cmd == REST_CMD.name) {
+
+                    // For 'rest' or 'call' - add '--path' auto-completion/suggestion candidates.
+                    if (cmd == REST_CMD.name || cmd == CALL_CMD.name) {
                         val pathParam = REST_CMD.findParameterById("path")
                         val hasPathAlready = words.exists(w ⇒ pathParam.names.exists(x ⇒ w.startsWith(x)))
 
@@ -2027,6 +2036,85 @@ object NCCli extends App {
                                 })
                                 .asJava
                             )
+                    }
+
+                    // For 'call' - add additional auto-completion/suggestion candidates.
+                    if (cmd == CALL_CMD.name) {
+                        val pathParam = CALL_CMD.findParameterById("path")
+
+                        words.find(w ⇒ pathParam.names.exists(x ⇒ w.startsWith(x))) match {
+                            case Some(p) ⇒
+                                val path = p.substring(p.indexOf('=') + 1)
+
+                                REST_SPEC.find(_.path == path) match {
+                                    case Some(spec) ⇒
+                                        candidates.addAll(
+                                            spec.params.map(param ⇒ {
+                                                mkCandidate(
+                                                    id = s"-${param.name}=",
+                                                    disp = s"-${param.name}",
+                                                    grp = if (param.optional) OPTIONAL_GRP else MANDATORY_GRP,
+                                                    desc = null,
+                                                    completed = false
+                                                )
+                                            })
+                                            .asJava
+                                        )
+
+                                        // Add 'acsTok' auto-suggestion.
+                                        if (spec.params.exists(_.name == "acsTok") && state.accessToken.isDefined)
+                                            candidates.add(
+                                                mkCandidate(
+                                                    id = s"-acsTok=${state.accessToken.get}",
+                                                    disp = s"-acsTok=${state.accessToken.get}",
+                                                    grp = MANDATORY_GRP,
+                                                    desc = null,
+                                                    completed = true
+                                                )
+                                            )
+
+                                        // Add 'mdlId' auto-suggestion.
+                                        if (spec.params.exists(_.name == "mdlId") && state.probes.nonEmpty)
+                                            candidates.addAll(
+                                                state.probes.flatMap(_.models.toList).map(mdl ⇒ {
+                                                    mkCandidate(
+                                                        id = s"-mdlId=${mdl.name}",
+                                                        disp = s"-mdlId=${mdl.name}",
+                                                        grp = MANDATORY_GRP,
+                                                        desc = null,
+                                                        completed = true
+                                                    )
+                                                })
+                                                .asJava
+                                            )
+
+                                        // Add default 'email' and 'passwd' auto-suggestion for 'signin' path.
+                                        if (path == "signin") {
+                                            candidates.add(
+                                                mkCandidate(
+                                                    id = "-email=admin@admin.com",
+                                                    disp = "-email=admin@admin.com",
+                                                    grp = DFTL_USER_GRP,
+                                                    desc = null,
+                                                    completed = true
+                                                )
+                                            )
+                                            candidates.add(
+                                                mkCandidate(
+                                                    id = "-passwd=admin",
+                                                    disp = "-passwd=admin",
+                                                    grp = DFTL_USER_GRP,
+                                                    desc = null,
+                                                    completed = true
+                                                )
+                                            )
+                                        }
+
+                                    case None ⇒ ()
+                                }
+
+                            case None ⇒ ()
+                        }
                     }
                 }
             }
