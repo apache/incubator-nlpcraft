@@ -1043,19 +1043,6 @@ object NCCli extends App {
     }
 
     /**
-     *
-     * @param pathOpt
-     */
-    private def checkDirPath(pathOpt: Option[Argument]): Unit = {
-        if (pathOpt.isDefined) {
-            val file = new File(stripQuotes(pathOpt.get.value.get))
-
-            if (!file.exists() || !file.isDirectory)
-                throw new IllegalArgumentException(s"Directory not found: ${c(file.getAbsolutePath)}")
-        }
-    }
-
-    /**
      * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
@@ -1224,10 +1211,10 @@ object NCCli extends App {
                     logln(g(" [OK]"))
                     logServerInfo(beacon)
 
+                    showTip()
+
                     if (state.accessToken.isDefined)
                         logln(s"Signed in with default '${c("admin@admin.com")}' user.")
-
-                    showTip()
                 }
             }
         }
@@ -1695,38 +1682,36 @@ object NCCli extends App {
 
         logln(s"Local REST server:\n${tbl.toString}")
 
-        if (state.probes.nonEmpty) {
-            tbl = new NCAsciiTable
+        tbl = new NCAsciiTable
 
-            def addProbeToTable(tbl: NCAsciiTable, probe: Probe): NCAsciiTable = {
-                tbl += (
-                    Seq(
-                        probe.probeId,
-                        s"  ${c("guid")}: ${probe.probeGuid}",
-                        s"  ${c("tok")}: ${probe.probeToken}"
-                    ),
-                    DurationFormatUtils.formatDurationHMS(currentTime - probe.startTstamp),
-                    Seq(
-                        s"${probe.hostName} (${probe.hostAddr})",
-                        s"${probe.osName} ver. ${probe.osVersion}"
-                    ),
-                    probe.models.toList.map(m ⇒ s"${b(m.id)}, v${m.version}")
-                )
-
-                tbl
-            }
-
-            tbl #= (
-                "Probe ID",
-                "Uptime",
-                "Host / OS",
-                "Models Deployed"
+        def addProbeToTable(tbl: NCAsciiTable, probe: Probe): NCAsciiTable = {
+            tbl += (
+                Seq(
+                    probe.probeId,
+                    s"  ${c("guid")}: ${probe.probeGuid}",
+                    s"  ${c("tok")}: ${probe.probeToken}"
+                ),
+                DurationFormatUtils.formatDurationHMS(currentTime - probe.startTstamp),
+                Seq(
+                    s"${probe.hostName} (${probe.hostAddr})",
+                    s"${probe.osName} ver. ${probe.osVersion}"
+                ),
+                probe.models.toList.map(m ⇒ s"${b(m.id)}, v${m.version}")
             )
 
-            state.probes.foreach(addProbeToTable(tbl, _))
-
-            logln(s"Connected probes:\n${tbl.toString}")
+            tbl
         }
+
+        tbl #= (
+            "Probe ID",
+            "Uptime",
+            "Host / OS",
+            "Models Deployed"
+        )
+
+        state.probes.foreach(addProbeToTable(tbl, _))
+
+        logln(s"Connected probes:\n${tbl.toString}")
     }
 
     /**

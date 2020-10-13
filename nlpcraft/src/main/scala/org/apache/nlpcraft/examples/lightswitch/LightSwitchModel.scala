@@ -67,6 +67,6 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         // Add HomeKit, Arduino or other integration here.
 
         // By default - just return a descriptive action string.
-        NCResult.text(s"Lights '$status' in '${locations.toLowerCase}'.")
+        NCResult.text(s"Lights are [$status] in [${locations.toLowerCase}].")
     }
 }
