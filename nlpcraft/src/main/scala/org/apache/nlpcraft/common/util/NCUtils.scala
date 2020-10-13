@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.common.util
 
 import java.io._
+import java.lang.reflect.Type
 import java.math.RoundingMode
 import java.net._
 import java.nio.charset.Charset
@@ -1459,6 +1460,24 @@ object NCUtils extends LazyLogging {
     @throws[Exception]
     def getJsonIntField(json: String, field: String): Int =
         GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsInt
+
+    /**
+     *
+     * @param json
+     * @tparam T
+     * @return
+     */
+    def jsonToObject[T](json: String, typ: Type): T =
+        GSON.fromJson(json, typ)
+
+    /**
+     *
+     * @param json
+     * @tparam T
+     * @return
+     */
+    def jsonToObject[T](json: String, cls: Class[T]): T =
+        GSON.fromJson(json, cls)
 
     /**
      *

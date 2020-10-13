@@ -41,6 +41,7 @@ import java.nio.file.Paths
 import java.util.regex.Pattern
 
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
+import org.apache.commons.lang3.time.DurationFormatUtils
 import org.apache.http.util.EntityUtils
 import org.jline.builtins.Commands
 import org.jline.reader.Completer
@@ -95,6 +96,42 @@ object NCCli extends App {
     private var exitStatus = 0
 
     private var term: Terminal = _
+
+    // See NCProbeMdo.
+    case class Probe(
+        probeToken: String,
+        probeId: String,
+        probeGuid: String,
+        probeApiVersion: String,
+        probeApiDate: String,
+        osVersion: String,
+        osName: String,
+        osArch: String,
+        startTstamp: Long,
+        tmzId: String,
+        tmzAbbr: String,
+        tmzName: String,
+        userName: String,
+        javaVersion: String,
+        javaVendor: String,
+        hostName: String,
+        hostAddr: String,
+        macAddr: String,
+        models: Array[ProbeModel]
+    )
+
+    // See NCProbeModelMdo.
+    case class ProbeModel(
+        id: String,
+        name: String,
+        version: String,
+        enabledBuiltInTokens: Array[String]
+    )
+
+    case class ProbeAllResponse(
+        probes: Array[Probe],
+        status: String
+    )
 
     case class SplitError(index: Int)
         extends Exception
@@ -434,10 +471,11 @@ object NCCli extends App {
     case class ReplState(
         var isServerOnline: Boolean = false,
         var accessToken: Option[String] = None,
-        var serverOutput: Option[File] = None
+        var serverLog: Option[File] = None,
+        var probes: List[Probe] = Nil // List of connected probes.
     )
 
-    private val replState = ReplState()
+    @volatile private var state = ReplState()
 
     // Single CLI command.
     case class Command(
@@ -499,7 +537,7 @@ object NCCli extends App {
     private final val CMDS = Seq(
         Command(
             name = "rest",
-            group = "REST Commands",
+            group = "2. REST Commands",
             synopsis = s"REST call in a convenient way for command line mode.",
             desc = Some(
                 s"When using this command you supply all call parameters as a single ${y("'--json'")} parameter with a JSON string. " +
@@ -543,11 +581,11 @@ object NCCli extends App {
         ),
         Command(
             name = "call",
-            group = "REST Commands",
+            group = "2. REST Commands",
             synopsis = s"REST call in a convenient way for REPL mode.",
             desc = Some(
                 s"When using this command you supply all call parameters separately through their own parameters named " +
-                s"after their counterparts in REST specification. " +
+                s"after their corresponding parameters in REST specification. " +
                 s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
                 s"auto-completion candidates for commonly used paths and call parameters."
             ),
@@ -571,7 +609,8 @@ object NCCli extends App {
                     synthetic = true,
                     desc =
                         s"${y("'xxx'")} name corresponds to the REST call parameter that can be found at https://nlpcraft.apache.org/using-rest.html " +
-                        s"The value of this parameter should be a valid JSON value using valid JSON syntax. You can have " +
+                        s"The value of this parameter should be a valid JSON value using valid JSON syntax. Note that strings " +
+                        s"don't have to be in double quotes. JSON objects and arrays should be specified as a JSON string in single quotes. You can have " +
                         s"as many ${y("'-xxx=value'")} parameters as requires by the ${y("'--path'")} parameter. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible parameters and their values."
                 )
@@ -579,22 +618,33 @@ object NCCli extends App {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME call ",
-                        "  -p=signin",
+                        s"$PROMPT $SCRIPT_NAME call -p=signin",
                         "  -email=admin@admin.com",
                         "  -passwd=admin"
                     ),
                     desc =
                         s"Issues ${y("'signin'")} REST call with given JSON payload provided as a set of parameters. " +
                         s"Note that ${y("'-email'")} and ${y("'-passwd'")} parameters correspond to the REST call " +
-                        s"specification for  ${y("'/signin'")} path."
+                        s"specification for ${y("'/signin'")} path."
+
+                ),
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME call --path=ask/sync",
+                        "  -acsTok=qwerty123456",
+                        "  -mdlId=my.model.id",
+                        "  -data='{\"data1\": true, \"data2\": 123, \"data3\": \"some text\"}'",
+                        "  -enableLog=false"
+                    ),
+                    desc =
+                        s"Issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
 
                 )
             )
         ),
         Command(
             name = "tail-server",
-            group = "Server Commands",
+            group = "1. Server Commands",
             synopsis = s"Shows last N lines from the local REST server log.",
             desc = Some(
                 s"Only works for the server started via this script."
@@ -618,7 +668,7 @@ object NCCli extends App {
         ),
         Command(
             name = "start-server",
-            group = "Server Commands",
+            group = "1. Server Commands",
             synopsis = s"Starts local REST server.",
             desc = Some(
                 s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
@@ -670,7 +720,7 @@ object NCCli extends App {
         ),
         Command(
             name = "restart-server",
-            group = "Server Commands",
+            group = "1. Server Commands",
             synopsis = s"Restarts local REST server.",
             desc = Some(
                 s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
@@ -722,19 +772,19 @@ object NCCli extends App {
         ),
         Command(
             name = "info-server",
-            group = "Server Commands",
+            group = "1. Server Commands",
             synopsis = s"Info about local REST server.",
             body = cmdInfoServer
         ),
         Command(
             name = "cls",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Clears terminal screen.",
             body = cmdCls
         ),
         Command(
             name = "nano",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Runs built-in ${y("'nano'")} editor.",
             body = cmdNano,
             desc = Some(
@@ -766,7 +816,7 @@ object NCCli extends App {
         ),
         Command(
             name = "less",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Runs built-in ${y("'less'")} command.",
             body = cmdLess,
             desc = Some(
@@ -797,7 +847,7 @@ object NCCli extends App {
         ),
         Command(
             name = "no-ansi",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Disables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
@@ -812,7 +862,7 @@ object NCCli extends App {
         ),
         Command(
             name = "ansi",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Enables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
@@ -827,7 +877,7 @@ object NCCli extends App {
         ),
         Command(
             name = "ping-server",
-            group = "Server Commands",
+            group = "1. Server Commands",
             synopsis = s"Pings local REST server.",
             desc = Some(
                 s"REST server is pinged using ${y("'/health'")} REST call to check its online status."
@@ -854,7 +904,7 @@ object NCCli extends App {
         ),
         Command(
             name = "stop-server",
-            group = "Server Commands",
+            group = "1. Server Commands",
             synopsis = s"Stops local REST server.",
             desc = Some(
                 s"Local REST server must be started via ${y(s"'$SCRIPT_NAME''")} or other compatible way."
@@ -863,13 +913,13 @@ object NCCli extends App {
         ),
         Command(
             name = "quit",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Quits REPL mode.",
             body = cmdQuit
         ),
         Command(
             name = "help",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
                 s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
@@ -904,7 +954,7 @@ object NCCli extends App {
         ),
         Command(
             name = "version",
-            group = "REPL Commands",
+            group = "3. REPL Commands",
             synopsis = s"Displays full version of ${y(s"'$SCRIPT_NAME'")} script.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
@@ -1030,7 +1080,7 @@ object NCCli extends App {
         val output = new File(SystemUtils.getUserHome, s".nlpcraft/server_log_$logTstamp.txt")
 
         // Store in REPL state right away.
-        replState.serverOutput = Some(output)
+        state.serverLog = Some(output)
 
         val srvPb = new ProcessBuilder(
             JAVA,
@@ -1133,7 +1183,7 @@ object NCCli extends App {
                 .start()
 
                 val tailer = Tailer.create(
-                    replState.serverOutput.get,
+                    state.serverLog.get,
                     new TailerListenerAdapter {
                         override def handle(line: String): Unit = {
                             if (TAILER_PTRN.matcher(line).matches())
@@ -1151,7 +1201,7 @@ object NCCli extends App {
                     if (progressBar.completed) {
                         // First, load the beacon, if any.
                         if (beacon == null)
-                            beacon = loadServerBeacon().orNull
+                            beacon = loadServerBeacon(autoSignIn = true).orNull
 
                         // Once beacon is loaded, ensure that REST endpoint is live.
                         if (beacon != null)
@@ -1172,7 +1222,7 @@ object NCCli extends App {
                 }
                 else {
                     logln(g(" [OK]"))
-                    logln(mkServerBeaconTable(beacon).toString)
+                    logServerInfo(beacon)
 
                     showTip()
                 }
@@ -1310,10 +1360,11 @@ object NCCli extends App {
     /**
      * Loads and returns server beacon file.
      *
+     * @param autoSignIn
      * @return
      */
-    private def loadServerBeacon(): Option[NCCliServerBeacon] = {
-        val beacon = try {
+    private def loadServerBeacon(autoSignIn: Boolean = false): Option[NCCliServerBeacon] = {
+        val beaconOpt = try {
             val beacon = (
                 managed(
                     new ObjectInputStream(
@@ -1331,6 +1382,7 @@ object NCCli extends App {
                 case Some(ph) ⇒
                     beacon.ph = ph
 
+                    // See if we can detect server log if server was started by this script.
                     val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles(new FilenameFilter {
                         override def accept(dir: File, name: String): Boolean =
                             name.startsWith(s".pid_$ph")
@@ -1359,9 +1411,45 @@ object NCCli extends App {
             case _: Exception ⇒ None
         }
 
-        replState.isServerOnline = beacon.isDefined
+        beaconOpt match {
+            case Some(beacon) ⇒
+                state.isServerOnline = true
 
-        beacon
+                val baseUrl = "http://" + beacon.restEndpoint
+
+                // Attempt to signin with the default account.
+                if (autoSignIn && state.accessToken.isEmpty) {
+                    httpPostResponseJson(
+                        baseUrl,
+                        "signin",
+                        "{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}") match {
+                        case Some(json) ⇒ state.accessToken = Option(Try(U.getJsonStringField(json, "acsTok")).getOrElse(null))
+                        case None ⇒ ()
+                    }
+
+                    if (state.accessToken.isDefined)
+                        logln(s"REST server signed in with default '${c("admin@admin.com")}' user.")
+                }
+
+                // Attempt to get all connected probes if successfully signed in prior.
+                if (state.accessToken.isDefined)
+                    httpPostResponseJson(
+                        baseUrl,
+                        "probe/all",
+                        "{\"acsTok\": \"" + state.accessToken.get + "\"}") match {
+                        case Some(json) ⇒ state.probes =
+                            Try(
+                                U.jsonToObject[ProbeAllResponse](json, classOf[ProbeAllResponse]).probes.toList
+                            ).getOrElse(Nil)
+                        case None ⇒ ()
+                    }
+
+            case None ⇒
+                // Reset REPL state.
+                state = ReplState()
+        }
+
+        beaconOpt
     }
 
     /**
@@ -1395,14 +1483,16 @@ object NCCli extends App {
             case Some(beacon) ⇒
                 val pid = beacon.pid
 
+                // TODO: signout if previously signed in.
+
                 if (beacon.ph.destroy()) {
                     logln(s"Server (pid ${c(pid)}) has been stopped.")
 
                     // Attempt to delete beacon file right away.
                     new File(beacon.beaconPath).delete()
 
-                    // Update state right away.
-                    replState.isServerOnline = false
+                    // Reset REPL state right away.
+                    state = ReplState()
                 } else
                     error(s"Failed to stop the local REST server (pid ${c(pid)}).")
 
@@ -1573,8 +1663,8 @@ object NCCli extends App {
      * @param beacon
      * @return
      */
-    private def mkServerBeaconTable(beacon: NCCliServerBeacon): NCAsciiTable = {
-        val tbl = new NCAsciiTable
+    private def logServerInfo(beacon: NCCliServerBeacon): Unit = {
+        var tbl = new NCAsciiTable
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
 
@@ -1604,7 +1694,39 @@ object NCCli extends App {
         tbl += ("Log file", logPath)
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
-        tbl
+        logln(s"Local REST server:\n${tbl.toString}")
+
+        if (state.probes.nonEmpty) {
+            tbl = new NCAsciiTable
+
+            def addProbeToTable(tbl: NCAsciiTable, probe: Probe): NCAsciiTable = {
+                tbl += (
+                    Seq(
+                        probe.probeId,
+                        s"  ${c("guid")}: ${probe.probeGuid}",
+                        s"  ${c("tok")}: ${probe.probeToken}"
+                    ),
+                    DurationFormatUtils.formatDurationHMS(currentTime - probe.startTstamp),
+                    s"${probe.osName} ver. ${probe.osVersion}",
+                    s"${probe.hostName} (${probe.hostAddr})",
+                    probe.models.toList.map(m ⇒ s"${b(m.id)}, v${m.version}")
+                )
+
+                tbl
+            }
+
+            tbl #= (
+                "Probe ID",
+                "Uptime",
+                "OS",
+                "Host",
+                "Models Deployed"
+            )
+
+            state.probes.foreach(addProbeToTable(tbl, _))
+
+            logln(s"Connected probes:\n${tbl.toString}")
+        }
     }
 
     /**
@@ -1615,7 +1737,7 @@ object NCCli extends App {
      */
     private def cmdInfoServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
-            case Some(beacon) ⇒ logln(s"Local REST server:\n${mkServerBeaconTable(beacon).toString}")
+            case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ throw NoLocalServer()
         }
     }
@@ -1781,18 +1903,8 @@ object NCCli extends App {
         if (!REST_SPEC.exists(_.path == path))
             throw InvalidParameter(cmd, "path")
 
-        val endpoint = getRestEndpointFromBeacon
-
-        val resp = httpPost(endpoint, path, mkHttpHandler(resp ⇒ {
-            val status = resp.getStatusLine
-
-            HttpRestResponse(
-                status.getStatusCode,
-                Option(EntityUtils.toString(resp.getEntity)).getOrElse(
-                    throw new IllegalStateException(s"Unexpected REST error: ${status.getReasonPhrase}")
-                )
-            )
-        }), json)
+        // Make the REST call.
+        val resp = httpPostResponse(getRestEndpointFromBeacon, path, json)
 
         // Ack HTTP response code.
         logln(s"HTTP ${if (resp.code == 200) g("200") else r(resp.code)}")
@@ -1808,9 +1920,9 @@ object NCCli extends App {
 
         if (resp.code == 200) {
             if (path == "signin")
-                replState.accessToken = Some(U.getJsonStringField(resp.data, "acsTok"))
+                state.accessToken = Some(U.getJsonStringField(resp.data, "acsTok"))
             else if (path == "signout")
-                replState.accessToken = None
+                state.accessToken = None
         }
     }
 
@@ -1818,8 +1930,8 @@ object NCCli extends App {
      *
      */
     private def readEvalPrintLoop(): Unit = {
-        loadServerBeacon() match {
-            case Some(beacon) ⇒ logln(s"Server detected:\n${mkServerBeaconTable(beacon).toString}")
+        loadServerBeacon(autoSignIn = true) match {
+            case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ ()
         }
 
@@ -1956,8 +2068,8 @@ object NCCli extends App {
 
         while (!exit) {
             val rawLine = try {
-                val srvStr = bo(s"${if (replState.isServerOnline) s"ON " else s"OFF "}")
-                val acsTokStr = bo(s"${replState.accessToken.getOrElse("<signed out>")} ")
+                val srvStr = bo(s"${if (state.isServerOnline) s"ON " else s"OFF "}")
+                val acsTokStr = bo(s"${state.accessToken.getOrElse("<signed out>")} ")
 
                 reader.printAbove("\n" + rb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
                 reader.readLine(s"${g(">")} ")
@@ -2112,17 +2224,53 @@ object NCCli extends App {
     }
 
     /**
+     *
+     * @param endpoint
+     * @param path
+     * @param json
+     * @return
+     */
+    private def httpPostResponse(endpoint: String, path: String, json: String): HttpRestResponse =
+        httpPost(endpoint, path, mkHttpHandler(resp ⇒ {
+            val status = resp.getStatusLine
+
+            HttpRestResponse(
+                status.getStatusCode,
+                Option(EntityUtils.toString(resp.getEntity)).getOrElse(
+                    throw new IllegalStateException(s"Unexpected REST error: ${status.getReasonPhrase}")
+                )
+            )
+        }), json)
+
+    /**
+     *
+     * @param endpoint
+     * @param path
+     * @param json
+     * @return
+     */
+    private def httpPostResponseJson(endpoint: String, path: String, json: String): Option[String] =
+        httpPost(endpoint, path, mkHttpHandler(resp ⇒ {
+            val status = resp.getStatusLine
+
+            if (status.getStatusCode == 200)
+                Option(EntityUtils.toString(resp.getEntity))
+            else
+                None
+        }), json)
+
+    /**
      * Posts HTTP GET request.
      *
-     * @param baseUrl Base endpoint URL.
-     * @param cmd REST call command.
+     * @param endpoint Base endpoint URL.
+     * @param path REST call command.
      * @param resp
      * @param jsParams
      * @return
      * @throws IOException
      */
-    private def httpGet[T](baseUrl: String, cmd: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
-        val bldr = new URIBuilder(prepRestUrl(baseUrl, cmd))
+    private def httpGet[T](endpoint: String, path: String, resp: ResponseHandler[T], jsParams: (String, AnyRef)*): T = {
+        val bldr = new URIBuilder(prepRestUrl(endpoint, path))
 
         jsParams.foreach(p ⇒ bldr.setParameter(p._1, p._2.toString))
 
