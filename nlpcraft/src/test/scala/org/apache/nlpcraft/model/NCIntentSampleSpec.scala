@@ -6,6 +6,7 @@ import org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator
 import org.junit.jupiter.api.Test
 
 import scala.collection.JavaConverters._
+import scala.language.implicitConversions
 
 /**
   * Sample annotation test model.

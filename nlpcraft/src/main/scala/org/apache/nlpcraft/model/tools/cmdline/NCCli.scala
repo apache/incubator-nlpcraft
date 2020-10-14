@@ -38,19 +38,18 @@ import java.util.Date
 import java.io._
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
-import java.time.Instant
 import java.util.regex.Pattern
 
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.apache.http.util.EntityUtils
 import org.jline.builtins.Commands
-import org.jline.reader.Completer
+import org.jline.reader.{Candidate, Completer, EndOfFileException, Highlighter, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser
 import org.jline.terminal.{Terminal, TerminalBuilder}
-import org.jline.reader.{Candidate, EndOfFileException, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser.Bracket
 import org.jline.reader.impl.history.DefaultHistory
+import org.jline.utils.AttributedString
 import org.jline.utils.InfoCmp.Capability
 import resource.managed
 
@@ -69,6 +68,8 @@ object NCCli extends App {
 
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
+    private final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
+    private final val CMD_PARAM = Pattern.compile("(\\s--?[\\w-]+)([= ]?)")
 
     // Number of server services that need to be started + 1 progress start.
     // Used for progress bar functionality.
@@ -142,6 +143,10 @@ object NCCli extends App {
         extends IllegalArgumentException(
             s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
             s"type $C'help --cmd=${cmd.name}'$RST to get help."
+        )
+    case class MissingMandatoryJsonParameters(cmd: Command, path: String)
+        extends IllegalArgumentException(
+            s"Missing mandatory JSON parameter for $C${"'" + cmd.name + s" --path=$path'"}$RST, type $C'help --cmd=${cmd.name}'$RST to get help."
         )
     case class InvalidParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
@@ -473,7 +478,6 @@ object NCCli extends App {
         var isServerOnline: Boolean = false,
         var accessToken: Option[String] = None,
         var serverLog: Option[File] = None,
-        var lastOkInput: Option[String] = None,
         var probes: List[Probe] = Nil // List of connected probes.
     )
 
@@ -1832,38 +1836,40 @@ object NCCli extends App {
         var first = true
         val buf = new StringBuilder()
 
+        val spec = REST_SPEC.find(_.path == path).getOrElse(throw InvalidParameter(cmd, "path"))
+
+        var mandatoryParams = spec.params.filter(!_.optional)
+
         for (arg ← synthArgs) {
             val jsName = arg.parameter.id
 
-            REST_SPEC.find(_.path == path) match {
-                case Some(spec) ⇒
-                    spec.params.find(_.name == jsName) match {
-                        case Some(param) ⇒
-                            if (!first)
-                                buf ++= ","
+            spec.params.find(_.name == jsName) match {
+                case Some(param) ⇒
+                    mandatoryParams = mandatoryParams.filter(_.name != jsName)
 
-                            first = false
+                    if (!first)
+                        buf ++= ","
 
-                            buf ++= "\"" + jsName +"\":"
+                    first = false
 
-                            val value = arg.value.getOrElse(throw InvalidJsonParameter(cmd, arg.parameter.names.head))
+                    buf ++= "\"" + jsName + "\":"
 
-                            param.kind match {
-                                case STRING ⇒ buf ++= "\"" + U.escapeJson(stripQuotes(value)) + "\""
-                                case OBJECT | ARRAY ⇒ buf ++= stripQuotes(value)
-                                case BOOLEAN | NUMERIC ⇒ buf ++= value
-                            }
+                    val value = arg.value.getOrElse(throw InvalidJsonParameter(cmd, arg.parameter.names.head))
 
-                        case None ⇒ throw InvalidJsonParameter(cmd, jsName)
+                    param.kind match {
+                        case STRING ⇒ buf ++= "\"" + U.escapeJson(stripQuotes(value)) + "\""
+                        case OBJECT | ARRAY ⇒ buf ++= stripQuotes(value)
+                        case BOOLEAN | NUMERIC ⇒ buf ++= value
                     }
 
-                case None ⇒ throw InvalidParameter(cmd, "path")
+                case None ⇒ throw InvalidJsonParameter(cmd, jsName)
             }
         }
 
-        val json = s"{${buf.toString()}}"
+        if (mandatoryParams.nonEmpty)
+            throw MissingMandatoryJsonParameters(cmd, path)
 
-        httpRest(cmd, path, json)
+        httpRest(cmd, path, s"{${buf.toString()}}")
     }
 
     /**
@@ -2099,27 +2105,21 @@ object NCCli extends App {
             }
         }
 
-        class ReplHistory extends DefaultHistory {
-            /**
-             *
-             * @param time
-             * @param line
-             */
-            override def add(time: Instant, line: String): Unit = {
-                // No-op.
-            }
+        class ReplHighlighter extends Highlighter {
+            override def highlight(reader: LineReader, buffer: String): AttributedString =
+                AttributedString.fromAnsi(
+                    CMD_NAME.matcher(
+                        CMD_PARAM.matcher(
+                            buffer
+                        )
+                        .replaceAll(c("$1") + "$2")
+                    )
+                    .replaceAll(bo(g("$1")) + "$2")
+                )
 
-            /**
-             *
-             */
-            def submitLastLine(): Unit =
-                state.lastOkInput match {
-                    case Some(line) ⇒ super.add(Instant.now(), line)
-                    case None ⇒ ()
-                }
+            override def setErrorPattern(errorPattern: Pattern): Unit = ()
+            override def setErrorIndex(errorIndex: Int): Unit = ()
         }
-
-        val hist = new ReplHistory()
 
         val reader = LineReaderBuilder
             .builder
@@ -2127,7 +2127,8 @@ object NCCli extends App {
             .terminal(term)
             .completer(completer)
             .parser(parser)
-            .history(hist)
+            .highlighter(new ReplHighlighter())
+            .history(new DefaultHistory())
             .variable(LineReader.SECONDARY_PROMPT_PATTERN, s"${g("...>")} ")
             .variable(LineReader.INDENTATION, 2)
             .build
@@ -2179,15 +2180,10 @@ object NCCli extends App {
                     .trim()
 
                 if (line.nonEmpty)
-                    try {
+                    try 
                         doCommand(splitBySpace(line), repl = true)
-
-                        state.lastOkInput = if (exitStatus == 0) Some(line) else None
-                    }
                     catch {
                         case e: SplitError ⇒
-                            state.lastOkInput = None
-
                             val idx = e.index
                             val lineX = line.substring(0, idx) + r(line.substring(idx, idx + 1) ) + line.substring(idx + 1)
                             val dashX = c("-" * idx) + r("^") + c("-" * (line.length - idx - 1))
@@ -2197,8 +2193,6 @@ object NCCli extends App {
                             error(s"  ${r("+-")} $dashX")
                     }
             }
-
-            hist.submitLastLine()
         }
 
         U.stopThread(pinger)
@@ -2474,6 +2468,9 @@ object NCCli extends App {
             val name = if (parts.size == 1) arg.trim else parts(0).trim
             val value = if (parts.size == 1) None else Some(parts(1).trim)
             val hasSynth = cmd.params.exists(_.synthetic)
+
+            if (name.endsWith("=")) // Missing value or extra '='.
+                throw mkError()
 
             cmd.findParameterByNameOpt(name) match {
                 case None ⇒
