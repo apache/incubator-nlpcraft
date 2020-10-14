@@ -69,7 +69,7 @@ object NCCli extends App {
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
     private final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
-    private final val CMD_PARAM = Pattern.compile("(\\s--?[\\w-]+)([= ]?)")
+    private final val CMD_PARAM = Pattern.compile("(\\s)(--?[\\w-]+)")
 
     // Number of server services that need to be started + 1 progress start.
     // Used for progress bar functionality.
@@ -2112,7 +2112,7 @@ object NCCli extends App {
                         CMD_PARAM.matcher(
                             buffer
                         )
-                        .replaceAll(c("$1") + "$2")
+                        .replaceAll("$1" + c("$2"))
                     )
                     .replaceAll(bo(g("$1")) + "$2")
                 )
@@ -2180,7 +2180,7 @@ object NCCli extends App {
                     .trim()
 
                 if (line.nonEmpty)
-                    try 
+                    try
                         doCommand(splitBySpace(line), repl = true)
                     catch {
                         case e: SplitError ⇒
