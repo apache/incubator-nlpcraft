@@ -152,7 +152,10 @@ case class NCConversation(
             ctx = ctx.asScala.filter(tok ⇒ !p.test(tok)).asJava
         }
 
-        logger.info(s"Conversation is cleared using token predicate.")
+        logger.info(s"Conversation is cleared using token predicate [" +
+            s"usrId=$usrId, " +
+            s"mdlId=$mdlId" +
+        s"]")
     }
 
     /**
@@ -252,7 +255,10 @@ case class NCConversation(
         require(Thread.holdsLock(stm))
 
         if (ctx.isEmpty)
-            logger.info(s"Conversation context is empty for [mdlId=$mdlId, usrId=$usrId]")
+            logger.info(s"Conversation context is empty for [" +
+                s"mdlId=$mdlId, " +
+                s"usrId=$usrId" +
+            s"]")
         else {
             val tbl = NCAsciiTable("Token ID", "Groups", "Text", "Value", "From request")
 
@@ -264,7 +270,10 @@ case class NCConversation(
                 tok.getServerRequestId
             ))
 
-            logger.info(s"Conversation tokens [mdlId=$mdlId, usrId=$usrId]:\n${tbl.toString()}")
+            logger.info(s"Conversation tokens [" +
+                s"mdlId=$mdlId, " +
+                s"usrId=$usrId" +
+            s"]:\n${tbl.toString()}")
         }
     }
 
