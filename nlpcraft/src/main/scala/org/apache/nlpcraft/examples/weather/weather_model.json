@@ -42,6 +42,16 @@
       ]
     },
     {
+      "id": "wt:curr",
+      "description": "Current indicator.",
+      "groups": [
+        "indicator"
+      ],
+      "synonyms": [
+        "{current|today|now|right now}"
+      ]
+    },
+    {
       "id": "wt:fcast",
       "description": "Forecast (future) indicator.",
       "groups": [

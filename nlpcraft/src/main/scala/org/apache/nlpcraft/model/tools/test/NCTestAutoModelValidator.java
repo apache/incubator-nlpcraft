@@ -28,7 +28,12 @@ import java.util.*;
  * sentences from {@link NCIntentSample} annotation and checking that resulting intent matches the intent the sample
  * was attached to.
  * <p>
- * Note that this class can be used in two modes:
+ * Note that there can be more than one {@link NCIntentSample} annotation attached to the intent callback. Each such
+ * annotation will trigger conversation STM reset before its samples will be submitted. This gives an opportunity
+ * to test samples both with and without conversational context as well as the same sample but with multiple different
+ * conversation contexts.
+ * <p>
+ * This class can be used in two modes:
  * <ul>
  *     <li>
  *         As a standalone application supplying model classes using <code>NLPCRAFT_TEST_MODELS</code> system property.
