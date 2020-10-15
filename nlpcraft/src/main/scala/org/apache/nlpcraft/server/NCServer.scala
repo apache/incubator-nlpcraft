@@ -350,6 +350,12 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             save()
     }
 
+    // Check version.
+    new Thread() {
+        override def run(): Unit = U.getUrlDocument("https://nlpcraft.apache.org/vercheck/server.html")
+    }
+    .start()
+
     NCIgniteRunner.runWith(
         args.find(_.startsWith("-igniteConfig=")) match {
             case None ⇒ null // Will use default on the classpath 'ignite.xml'.

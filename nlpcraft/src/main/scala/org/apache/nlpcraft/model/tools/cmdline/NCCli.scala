@@ -2547,6 +2547,12 @@ object NCCli extends App {
      * @param args
      */
     private def boot(args: Array[String]): Unit = {
+        // Check version.
+        new Thread() {
+            override def run(): Unit = U.getUrlDocument("https://nlpcraft.apache.org/vercheck/cli.html")
+        }
+        .start()
+
         // Initialize OS-aware terminal.
         term = TerminalBuilder.builder()
             .name(NAME)

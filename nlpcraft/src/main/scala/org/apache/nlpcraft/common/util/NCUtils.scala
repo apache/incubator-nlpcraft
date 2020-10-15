@@ -48,6 +48,8 @@ import org.apache.commons.io.IOUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.blowfish.NCBlowfishHasher
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import resource._
 
 import scala.annotation.tailrec
@@ -1255,6 +1257,12 @@ object NCUtils extends LazyLogging {
                 a.close()
             }
 
+    /**
+     *
+     * @param url
+     */
+    def getUrlDocument(url: String): Option[Document] =
+        Option(scala.util.Try { Jsoup.connect(url).get() } getOrElse null)
 
     /**
       * Formats given double number with provided precision.

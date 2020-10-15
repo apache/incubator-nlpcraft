@@ -169,6 +169,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param fut
       */
     private def start0(cfg: ProbeConfig, fut: CompletableFuture[Integer]): Unit = {
+        // Check version.
+        new Thread() {
+            override def run(): Unit = U.getUrlDocument("https://nlpcraft.apache.org/vercheck/probe.html")
+        }
+        .start()
+
         probeThread = Thread.currentThread()
         
         asciiLogo()
