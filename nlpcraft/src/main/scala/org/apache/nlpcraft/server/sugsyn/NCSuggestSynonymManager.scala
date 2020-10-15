@@ -186,7 +186,8 @@ object NCSuggestSynonymManager extends NCService {
                         val mdlSyns = m.get("synonyms").
                             asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
                         val mdlExs = m.get("samples").
-                            asInstanceOf[util.Map[String, util.List[String]]].asScala.map(p ⇒ p._1 → p._2.asScala)
+                            asInstanceOf[util.Map[String, util.List[util.List[String]]]].asScala.
+                            map(p ⇒ p._1 → p._2.asScala.flatMap(_.asScala.toSeq).distinct)
 
                         val minScore = minScoreOpt.getOrElse(DFLT_MIN_SCORE)
 
@@ -237,6 +238,7 @@ object NCSuggestSynonymManager extends NCService {
 
                             // Note that we don't use system tokenizer, because 'ctxword' module' doesn't have this tokenizer.
                             // We split examples words by spaces. We also treat separator as separate words.
+
                             val exs = mdlExs.
                                 flatMap { case (_, samples) ⇒ samples }.
                                 map(ex ⇒ SEPARATORS.foldLeft(ex)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).

@@ -112,7 +112,7 @@ object NCCommandManager extends NCService {
 
                         val macros = mdlData.model.getMacros.asInstanceOf[Serializable]
                         val syns = mdlData.model.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]
-                        val samples = mdlData.samples.map(p ⇒ p._1 → p._2.asJava).asJava.asInstanceOf[Serializable]
+                        val samples = mdlData.samples.map(p ⇒ p._1 → p._2.map(_.asJava).asJava).asJava.asInstanceOf[Serializable]
 
                         NCConnectionManager.send(
                             NCProbeMessage(
