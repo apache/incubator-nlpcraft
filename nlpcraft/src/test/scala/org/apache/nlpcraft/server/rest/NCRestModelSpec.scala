@@ -24,8 +24,9 @@ import org.junit.jupiter.api.{Disabled, Test}
 
 import scala.collection.JavaConverters._
 
-// Enable it and run if context word server started.
-@Disabled
+/**
+  * Note that context word server should be started.
+  */
 @NCTestEnvironment(model = classOf[AlarmModel], startClient = false)
 class NCRestModelSpec extends NCRestSpec {
     @Test
