@@ -586,6 +586,60 @@ object NCCli extends App {
             )
         ),
         Command(
+            name = "signin",
+            group = "2. REST Commands",
+            synopsis = s"Wrapper for REST ${c("/signin")} call.",
+            desc = Some(
+                s"If no arguments provided, it signs in with the " +
+                s"default 'admin@admin.com' user account. NOTE: please make sure to remove this account when " +
+                s"running in production."
+            ),
+            body = cmdSignIn,
+            params = Seq(
+                Parameter(
+                    id = "email",
+                    names = Seq("--email", "-e"),
+                    value = Some("email"),
+                    optional = true,
+                    desc =
+                        s"Email of the user. If not provided, 'admin@admin.com' will be used."
+                ),
+                Parameter(
+                    id = "passwd",
+                    names = Seq("--passwd", "-p"),
+                    value = Some("****"),
+                    optional = true,
+                    desc =
+                        s"User password to sign in. If not provided, the default password will be used."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME signin"
+                    ),
+                    desc = s"Signs in with the default ${c("admin@admin.com")} user account."
+                )
+            )
+        ),
+        Command(
+            name = "signout",
+            group = "2. REST Commands",
+            synopsis = s"Wrapper for REST ${c("/signout")} call.",
+            desc = Some(
+                s"Signs out currently signed in user."
+            ),
+            body = cmdSignOut,
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME signout"
+                    ),
+                    desc = s"Signs out currently signed in user, if any."
+                )
+            )
+        ),
+        Command(
             name = "call",
             group = "2. REST Commands",
             synopsis = s"REST call in a convenient way for REPL mode.",
@@ -1827,6 +1881,40 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private def cmdSignIn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (state.accessToken.nonEmpty)
+            error("Already signed in.")
+        else {
+            val email = args.find(_.parameter.id == "email").getOrElse("admin@admin.com")
+            val passwd = args.find(_.parameter.id == "passwd").getOrElse("admin")
+        }
+    }
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdSignOut(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (state.accessToken.isEmpty)
+            error("Not signed in.")
+        else
+            httpRest(
+                cmd,
+                "signout",
+                s"""
+                   |{"acsTok": "${state.accessToken.getOrElse("")}"}
+                   |""".stripMargin
+            )
+    }
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private def cmdCall(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val normArgs = args.filter(!_.parameter.synthetic)
         val synthArgs = args.filter(_.parameter.synthetic)
@@ -2549,7 +2637,9 @@ object NCCli extends App {
     private def boot(args: Array[String]): Unit = {
         // Check version.
         new Thread() {
-            override def run(): Unit = U.getUrlDocument("https://nlpcraft.apache.org/vercheck/cli.html")
+            override def run(): Unit = {
+                System.out.println(U.getUrlDocument("https://nlpcraft.apache.org/vercheck/cli.html"))
+            }
         }
         .start()
 
