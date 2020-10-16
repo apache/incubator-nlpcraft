@@ -68,17 +68,17 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      * General control exception.
      * Note that these classes must be public because scala 2.11 internal errors (compilations problems).
      */
-    case class AccessTokenFailure(acsTkn: String) extends NCE(s"Unknown access token: $acsTkn")
-    case class SignInFailure(email: String) extends NCE(s"Invalid or unknown user credentials: $email")
+    case class AccessTokenFailure(acsTkn: String) extends NCE(s"Unknown or expired access token: $acsTkn")
+    case class SignInFailure(email: String) extends NCE(s"Invalid or unknown user email: $email")
     case class AdminRequired(email: String) extends NCE(s"Admin privileges required: $email")
     case class InvalidOperation(email: String) extends NCE(s"Invalid operation.")
     case class NotImplemented() extends NCE("Not implemented.")
 
     class InvalidArguments(msg: String) extends NCE(msg)
-    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"API field ($fn) value is out of range ($from, $to).")
-    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"API field ($fn) value exceeded max length of $max.")
-    case class InvalidField(fn: String) extends InvalidArguments(s"API field invalid: $fn")
-    case class EmptyField(fn: String) extends InvalidArguments(s"API field cannot be empty: $fn")
+    case class OutOfRangeField(fn: String, from: Number, to: Number) extends InvalidArguments(s"Parameter ($fn) value is out of range ($from, $to).")
+    case class TooLargeField(fn: String, max: Int) extends InvalidArguments(s"Parameter ($fn) value exceeded max length of $max.")
+    case class InvalidField(fn: String) extends InvalidArguments(s"Parameter invalid: $fn")
+    case class EmptyField(fn: String) extends InvalidArguments(s"Parameter cannot be empty: $fn")
     case class InvalidExternalUserId(usrExtId: String) extends InvalidArguments(s"External user ID is invalid or unknown: $usrExtId")
     case class InvalidUserId(id: Long) extends InvalidArguments(s"User ID is invalid or unknown: $id")
     case class InvalidModelId(id: String) extends InvalidArguments(s"Unknown model ID: $id")

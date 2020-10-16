@@ -352,7 +352,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
     // Check version.
     new Thread() {
-        override def run(): Unit = U.getUrlDocument("https://nlpcraft.apache.org/vercheck/server.html")
+        override def run(): Unit = U.gaScreenView("server")
     }
     .start()
 

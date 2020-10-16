@@ -48,9 +48,13 @@ import org.apache.commons.io.IOUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.blowfish.NCBlowfishHasher
+import org.apache.nlpcraft.common.version.NCVersion
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import resource._
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -1263,6 +1267,38 @@ object NCUtils extends LazyLogging {
      */
     def getUrlDocument(url: String): Option[Document] =
         Option(scala.util.Try { Jsoup.connect(url).get() } getOrElse null)
+
+    /**
+     * Records GA screen view event. Ignores any errors.
+     *
+     * @param cd Content description for GA measurement protocol.
+     */
+    def gaScreenView(cd: String): Unit =
+        try
+            HttpClient.newHttpClient.send(
+                HttpRequest.newBuilder()
+                    .uri(
+                        URI.create("http://www.google-analytics.com/collect")
+                    )
+                    .POST(
+                        HttpRequest.BodyPublishers.ofString(
+                            s"v=1&" +
+                                s"t=screenview&" +
+                                s"tid=UA-180663034-1&" + // 'nlpcraft.apache.org' web property.
+                                s"cid=555&" + // Hide any user information (anonymous user).
+                                s"aip=&" + // Hide user IP (anonymization).
+                                s"an=nlpcraft&" +
+                                s"av=${NCVersion.getCurrent.version}&" +
+                                s"aid=org.apache.nlpcraft&" +
+                                s"cd=$cd"
+                        )
+                    )
+                    .build(),
+                HttpResponse.BodyHandlers.ofString()
+            )
+        catch {
+            case _: Exception ⇒ () // Ignore.
+        }
 
     /**
       * Formats given double number with provided precision.

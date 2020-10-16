@@ -1885,8 +1885,19 @@ object NCCli extends App {
         if (state.accessToken.nonEmpty)
             error("Already signed in.")
         else {
-            val email = args.find(_.parameter.id == "email").getOrElse("admin@admin.com")
-            val passwd = args.find(_.parameter.id == "passwd").getOrElse("admin")
+            val email = args.find(_.parameter.id == "email").flatMap(_.value).getOrElse("admin@admin.com")
+            val passwd = args.find(_.parameter.id == "passwd").flatMap(_.value).getOrElse("admin")
+
+            httpRest(
+                cmd,
+                "signin",
+                s"""
+                   |{
+                   |"email": "$email",
+                   |"passwd": "$passwd"
+                   |}
+                   |""".stripMargin
+            )
         }
     }
 
@@ -2635,10 +2646,9 @@ object NCCli extends App {
      * @param args
      */
     private def boot(args: Array[String]): Unit = {
-        // Check version.
         new Thread() {
             override def run(): Unit = {
-                System.out.println(U.getUrlDocument("https://nlpcraft.apache.org/vercheck/cli.html"))
+                U.gaScreenView("cli")
             }
         }
         .start()
