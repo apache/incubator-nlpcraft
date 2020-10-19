@@ -136,6 +136,7 @@ object NCDialogFlowManager extends NCService {
                         // https://github.com/scala/bug/issues/10151
                         // Scala bug workaround.
                         ()
+
                     case None ⇒ delKeys += key
                 }
 
@@ -152,7 +153,7 @@ object NCDialogFlowManager extends NCService {
         }
     
     /**
-     * Clears dialog for given user and model IDs.
+     * Clears dialog history for given user and model IDs.
      *
      * @param usrId User ID.
      * @param mdlId Model ID.
@@ -165,10 +166,15 @@ object NCDialogFlowManager extends NCService {
 
                 flow.notifyAll()
             }
+
+            logger.trace(s"Dialog history is cleared [" +
+                s"usrId=$usrId, " +
+                s"mdlId=$mdlId" +
+            s"]")
         }
     
     /**
-     * Clears dialog for given use, model IDs and predicate.
+     * Clears dialog history for given user, model IDs and predicate.
      *
      * @param usrId User ID.
      * @param mdlId Model ID.
@@ -184,5 +190,10 @@ object NCDialogFlowManager extends NCService {
 
                 flow.notifyAll()
             }
+
+            logger.trace(s"Dialog history is cleared [" +
+                s"usrId=$usrId, " +
+                s"mdlId=$mdlId" +
+            s"]")
         }
 }

@@ -156,7 +156,7 @@ object NCCli extends App {
     case class InvalidJsonParameter(cmd: Command, param: String)
         extends IllegalArgumentException(
             s"Invalid JSON parameter $C${"'" + param + "'"}$RST, " +
-                s"type $C'help --cmd=${cmd.name}'$RST to get help."
+            s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
     case class HttpError(httpCode: Int)
         extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
@@ -691,12 +691,65 @@ object NCCli extends App {
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME call --path=ask/sync",
                         "  --acsTok=qwerty123456",
+                        "  --txt=\"User request\"",
                         "  --mdlId=my.model.id",
                         "  --data='{\"data1\": true, \"data2\": 123, \"data3\": \"some text\"}'",
                         "  --enableLog=false"
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
+                )
+            )
+        ),
+        Command(
+            name = "ask",
+            group = "2. REST Commands",
+            synopsis = s"Wrapper for REST ${c("/ask/sync")} call.",
+            desc = Some(
+                s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
+                s"it requires user to be signed in. REPL session keeps the currently active access " +
+                s"token after user signed in. For command line mode, use ${c("'rest'")} command with " +
+                s"corresponding parameters."
+            ),
+            body = cmdAsk,
+            params = Seq(
+                Parameter(
+                    id = "mdlId",
+                    names = Seq("--mdlId"),
+                    value = Some("model.id"),
+                    desc =
+                        s"ID of the data model to send the request to. " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
+                ),
+                Parameter(
+                    id = "txt",
+                    names = Seq("--txt"),
+                    value = Some("txt"),
+                    desc =
+                        s"Text of the question."
+                ),
+                Parameter(
+                    id = "data",
+                    names = Seq("--data"),
+                    value = Some("'{}'"),
+                    optional = true,
+                    desc = s"Additional JSON data with maximum JSON length of 512000 bytes. Default is ${c("'null'")}."
+                ),
+                Parameter(
+                    id = "enableLog",
+                    names = Seq("--enableLog"),
+                    value = Some("true|false"),
+                    optional = true,
+                    desc = s"Flag to enable detailed processing log to be returned with the result. Default is ${c("'false'")}."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"""> ask --txt="User request" --mdlId=my.model.id"""
+                    ),
+                    desc =
+                        s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
                 )
             )
         ),
@@ -1050,6 +1103,7 @@ object NCCli extends App {
     private final val HELP_CMD = CMDS.find(_.name ==  "help").get
     private final val REST_CMD = CMDS.find(_.name ==  "rest").get
     private final val CALL_CMD = CMDS.find(_.name ==  "call").get
+    private final val ASK_CMD = CMDS.find(_.name ==  "ask").get
     private final val STOP_SRV_CMD = CMDS.find(_.name ==  "stop-server").get
     private final val START_SRV_CMD = CMDS.find(_.name ==  "start-server").get
 
@@ -1636,6 +1690,9 @@ object NCCli extends App {
             lines
         }
 
+        def helpHelp(): Unit =
+           logln(s"\nType ${c("help --cmd=xxx")} to get help for ${c("xxx")} command.")
+
         if (args.isEmpty) { // Default - show abbreviated help.
             if (!repl)
                 header()
@@ -1653,6 +1710,8 @@ object NCCli extends App {
 
                 logln(s"\n$B$grp:$RST\n${tbl.toString}")
             })
+
+            helpHelp()
         }
         else if (args.size == 1 && args.head.parameter.id == "all") { // Show a full format help for all commands.
             if (!repl)
@@ -1668,6 +1727,8 @@ object NCCli extends App {
             )
 
             logln(tbl.toString)
+
+            helpHelp()
         }
         else { // Help for individual commands.
             var err = false
@@ -1881,23 +1942,62 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdSignIn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (state.accessToken.nonEmpty)
-            error("Already signed in.")
-        else {
-            val email = args.find(_.parameter.id == "email").flatMap(_.value).getOrElse("admin@admin.com")
-            val passwd = args.find(_.parameter.id == "passwd").flatMap(_.value).getOrElse("admin")
+    private def cmdSignIn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        state.accessToken match {
+            case None ⇒
+                val email = args.find(_.parameter.id == "email").flatMap(_.value).getOrElse("admin@admin.com")
+                val passwd = args.find(_.parameter.id == "passwd").flatMap(_.value).getOrElse("admin")
 
-            httpRest(
-                cmd,
-                "signin",
-                s"""
-                   |{
-                   |"email": "$email",
-                   |"passwd": "$passwd"
-                   |}
-                   |""".stripMargin
-            )
+                httpRest(
+                    cmd,
+                    "signin",
+                    s"""
+                       |{
+                       |    "email": ${jsonQuote(email)},
+                       |    "passwd": ${jsonQuote(passwd)}
+                       |}
+                       |""".stripMargin
+                )
+
+            case Some(_) ⇒  error(s"Already signed in. See ${c("'signout'")} command.")
+        }
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdSignOut(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        state.accessToken match {
+            case Some(acsTok) ⇒
+                httpRest(
+                    cmd,
+                    "signout",
+                    s"""
+                       |{"acsTok": ${jsonQuote(acsTok)}}
+                       |""".stripMargin
+                )
+
+            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+        }
+
+    /**
+     * Quotes given string in double quotes unless it is already quoted as such.
+     *
+     * @param s
+     * @return
+     */
+    private def jsonQuote(s: String): String = {
+        if (s == null)
+            null
+        else {
+            val ss = s.trim()
+
+            if (ss.startsWith("\"") && ss.endsWith("\""))
+                ss
+            else
+                s""""$ss""""
         }
     }
 
@@ -1907,18 +2007,30 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdSignOut(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (state.accessToken.isEmpty)
-            error("Not signed in.")
-        else
-            httpRest(
-                cmd,
-                "signout",
-                s"""
-                   |{"acsTok": "${state.accessToken.getOrElse("")}"}
-                   |""".stripMargin
-            )
-    }
+    private def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        state.accessToken match {
+            case Some(acsTok) ⇒
+                val mdlId = args.find(_.parameter.id == "mdlId").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "mdlId"))
+                val txt = args.find(_.parameter.id == "txt").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "txt"))
+                val data = args.find(_.parameter.id == "data").flatMap(_.value).orNull
+                val enableLog = args.find(_.parameter.id == "enableLog").flatMap(_.value).getOrElse(false)
+
+                httpRest(
+                    cmd,
+                    "ask/sync",
+                    s"""
+                       |{
+                       |    "acsTok": ${jsonQuote(acsTok)},
+                       |    "mdlId": ${jsonQuote(mdlId)},
+                       |    "txt": ${jsonQuote(txt)},
+                       |    "data": ${jsonQuote(data)},
+                       |    "enableLog": $enableLog
+                       |}
+                       |""".stripMargin
+                )
+
+            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+        }
 
     /**
      *
@@ -2126,6 +2238,20 @@ object NCCli extends App {
                                 .asJava
                             )
                     }
+
+                    // For 'ask' - add additional auto-completion/suggestion candidates.
+                    if (cmd == ASK_CMD.name)
+                        candidates.addAll(
+                            state.probes.flatMap(_.models.toList).map(mdl ⇒ {
+                                mkCandidate(
+                                    disp = s"--mdlId=${mdl.id}",
+                                    grp = MANDATORY_GRP,
+                                    desc = null,
+                                    completed = true
+                                )
+                            })
+                            .asJava
+                        )
 
                     // For 'call' - add additional auto-completion/suggestion candidates.
                     if (cmd == CALL_CMD.name) {

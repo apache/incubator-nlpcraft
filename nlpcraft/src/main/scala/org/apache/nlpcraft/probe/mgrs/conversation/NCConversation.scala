@@ -89,7 +89,7 @@ case class NCConversation(
             if (now - lastUpdateTstamp > timeoutMs) {
                 stm.clear()
 
-                logger.info(s"Conversation is reset by timeout [" +
+                logger.trace(s"Conversation is reset by timeout [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -97,7 +97,7 @@ case class NCConversation(
             else if (depth > maxDepth) {
                 stm.clear()
 
-                logger.info(s"Conversation is reset after reaching max depth [" +
+                logger.trace(s"Conversation is reset after reaching max depth [" +
                     s"usrId=$usrId, " +
                     s"mdlId=$mdlId" +
                 s"]")
@@ -114,7 +114,7 @@ case class NCConversation(
                     if (delHs.nonEmpty) {
                         item.holders --= delHs
 
-                        logger.info(
+                        logger.trace(
                             s"Conversation overridden tokens removed [" +
                                 s"usrId=$usrId, " +
                                 s"mdlId=$mdlId, " +
@@ -142,21 +142,22 @@ case class NCConversation(
       * @param p Java-side predicate.
       * @param parent Optional parent span.
       */
-    def clearTokens(p: Predicate[NCToken], parent: Span = null): Unit = startScopedSpan("clearTokens", parent) { _ ⇒
-        stm.synchronized {
-            for (item ← stm)
-                item.holders --= item.holders.filter(h ⇒ p.test(h.token))
+    def clearTokens(p: Predicate[NCToken], parent: Span = null): Unit =
+        startScopedSpan("clearTokens", parent) { _ ⇒
+            stm.synchronized {
+                for (item ← stm)
+                    item.holders --= item.holders.filter(h ⇒ p.test(h.token))
 
-            squeezeTokens()
+                squeezeTokens()
 
-            ctx = ctx.asScala.filter(tok ⇒ !p.test(tok)).asJava
+                ctx = ctx.asScala.filter(tok ⇒ !p.test(tok)).asJava
+            }
+
+            logger.trace(s"Conversation is cleared [" +
+                s"usrId=$usrId, " +
+                s"mdlId=$mdlId" +
+            s"]")
         }
-
-        logger.info(s"Conversation is cleared using token predicate [" +
-            s"usrId=$usrId, " +
-            s"mdlId=$mdlId" +
-        s"]")
-    }
 
     /**
       * Clears all tokens from this conversation satisfying given predicate.
@@ -200,7 +201,7 @@ case class NCConversation(
                         lastUpdateTstamp
                     )
     
-                    logger.info(
+                    logger.trace(
                         s"Added new tokens to the conversation [" +
                             s"usrId=$usrId, " +
                             s"mdlId=$mdlId, " +
@@ -227,7 +228,7 @@ case class NCConversation(
                             case Some(_) ⇒
                                 item.holders --= hs
     
-                                logger.info(
+                                logger.trace(
                                     "Conversation tokens are overridden [" +
                                         s"usrId=$usrId, " +
                                         s"mdlId=$mdlId, " +
@@ -255,7 +256,7 @@ case class NCConversation(
         require(Thread.holdsLock(stm))
 
         if (ctx.isEmpty)
-            logger.info(s"Conversation context is empty for [" +
+            logger.trace(s"Conversation context is empty for [" +
                 s"mdlId=$mdlId, " +
                 s"usrId=$usrId" +
             s"]")
@@ -270,7 +271,7 @@ case class NCConversation(
                 tok.getServerRequestId
             ))
 
-            logger.info(s"Conversation tokens [" +
+            logger.trace(s"Conversation tokens [" +
                 s"mdlId=$mdlId, " +
                 s"usrId=$usrId" +
             s"]:\n${tbl.toString()}")

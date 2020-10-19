@@ -765,16 +765,24 @@ object NCProbeManager extends NCService {
             }
         }
     }
-    
+
+    /**
+     *
+     * @param modelId
+     * @return
+     */
+    private def getProbesForModelId(modelId: String): Iterable[ProbeHolder] =
+        probes.synchronized {
+            probes.values.filter(_.probe.models.exists(mdl ⇒ mdl.id == modelId))
+        }
+
     /**
       *
-      * @param modelId
+      * @param mdlId
       * @return
       */
-    private def getProbeForModelId(modelId: String): Option[ProbeHolder] = {
-        val candidates = probes.synchronized {
-            probes.values.filter(_.probe.models.exists(_.id == modelId)).toSeq
-        }
+    private def getProbeForModelId(mdlId: String): Option[ProbeHolder] = {
+        val candidates = getProbesForModelId(mdlId).toList
         
         val sz = candidates.size
         
@@ -975,10 +983,7 @@ object NCProbeManager extends NCService {
             )
     
             // Send to all probes.
-            probes.synchronized {
-                probes.values
-            }
-            .map(_.probeKey).foreach(sendToProbe(_, msg, span))
+            getProbesForModelId(mdlId).map(_.probeKey).foreach(sendToProbe(_, msg, span))
         }
     
     /**
@@ -996,10 +1001,7 @@ object NCProbeManager extends NCService {
             )
             
             // Send to all probes.
-            probes.synchronized {
-                probes.values
-            }
-            .map(_.probeKey).foreach(sendToProbe(_, msg, span))
+            getProbesForModelId(mdlId).map(_.probeKey).foreach(sendToProbe(_, msg, span))
         }
 
     /**

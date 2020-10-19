@@ -1269,12 +1269,23 @@ object NCUtils extends LazyLogging {
         Option(scala.util.Try { Jsoup.connect(url).get() } getOrElse null)
 
     /**
-     * Records GA screen view event. Ignores any errors.
+     * Records anonymous GA screen view event. Ignores any errors.
      *
      * @param cd Content description for GA measurement protocol.
      */
     def gaScreenView(cd: String): Unit =
-        try
+        try {
+            val anonym = NetworkInterface.getByInetAddress(InetAddress.getLocalHost) match {
+                case null ⇒ 555
+                case nif ⇒
+                    val addr = nif.getHardwareAddress
+
+                    if (addr == null)
+                        555
+                    else
+                        addr.mkString(",").hashCode
+            }
+
             HttpClient.newHttpClient.send(
                 HttpRequest.newBuilder()
                     .uri(
@@ -1285,7 +1296,7 @@ object NCUtils extends LazyLogging {
                             s"v=1&" +
                                 s"t=screenview&" +
                                 s"tid=UA-180663034-1&" + // 'nlpcraft.apache.org' web property.
-                                s"cid=555&" + // Hide any user information (anonymous user).
+                                s"cid=$anonym&" + // Hide any user information (anonymous user).
                                 s"aip=&" + // Hide user IP (anonymization).
                                 s"an=nlpcraft&" +
                                 s"av=${NCVersion.getCurrent.version}&" +
@@ -1296,6 +1307,7 @@ object NCUtils extends LazyLogging {
                     .build(),
                 HttpResponse.BodyHandlers.ofString()
             )
+        }
         catch {
             case _: Exception ⇒ () // Ignore.
         }
