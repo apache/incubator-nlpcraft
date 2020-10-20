@@ -82,7 +82,7 @@ When using NLPCraft you will be dealing with three main components:
 ## Example
 As a quick example let's consider a very simple implementation for NLI-powered light switch. Our app should understand something like 
 ``Turn the lights off in the entire house`` or ``Switch on the illumination in the master bedroom closet``. You can easily 
-modify intent callbacks to perform the actual light switching using HomeKit or Arduino-based controllers.
+modify intent callbacks in the model implementation below to perform the actual light switching using HomeKit or Arduino-based controllers.
 
 ### Add NLPCraft
 Add NLPCraft dependency to your project:
@@ -98,7 +98,8 @@ Add NLPCraft dependency to your project:
 NOTE: **0.7.0** should be the latest NLPCraft version.
 
 ### Define Data Model
-Declare the static part of the data model using YAML which we will later load in our Scala-based model implementation:
+Declare the static part of the data model using YAML which we will later load in our model implementation. You can declare entire
+model in the code - but doing it with JSON or YAML is more productive:
 ```yaml
 id: "nlpcraft.lightswitch.ex"
 name: "Light Switch Example Model"
@@ -141,7 +142,8 @@ intents:
 ```
 
 ### Model Implementation
-Create intent callbacks (Scala in this example) in model implementation:
+Once we have model declaration we can provide implementation for intent callbacks. We'll use Scala to 
+implement the data model, but you can use any JVM-based language like Java, Groovy, or Kotlin:
 ```scala
 package org.apache.nlpcraft.examples.lightswitch
  
@@ -181,12 +183,14 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
 }
 ```
 NOTES:
- - We are loading our static model declaration that we've defined above using `NCModelFileAdapter`.       
+ - We are loading our static model declaration that we've defined above using `NCModelFileAdapter` base class.       
  - Annotation `@NCIntentRef` references the intent defined in our YAML model definition.  
  - We use `@NCIntentSample` to provide sample sentences that should satisfy this intent. These 
  samples are used for model auto-testing and synonyms analysis.
  
-[Learn more >](http://nlpcraft.apache.org/examples/light_switch.html)
+Done! 👌 
+
+[Learn more about this example >](http://nlpcraft.apache.org/examples/light_switch.html)
  
 ## Copyright
 Copyright (C) 2020 Apache Software Foundation
