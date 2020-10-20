@@ -64,15 +64,21 @@ NLPCraft natively integrates with 3rd party libraries for base NLP processing an
 <a target=_ href="https://stanfordnlp.github.io/CoreNLP"><img src="https://nlpcraft.apache.org/images/corenlp-logo.gif" height="48px" alt=""></a>
 <a target=_ href="https://spacy.io"><img src="https://nlpcraft.apache.org/images/spacy-logo.png" height="32px" alt=""></a>
 
+[Learn more >](https://nlpcraft.apache.org/docs.html)  
+
 ## How It Works
+When using NLPCraft you will be dealing with three main components:
+
 <img src="https://nlpcraft.apache.org/images/homepage-fig1.1.png" alt="ASF Logo">
 
 **Data model** specifies how to interpret user input, how to query a data source, and how to format the result back. Developers use model-as-a-code approach to build models using any JVM language like Java, Scala, Groovy or Kotlin.
 
-**Data probe** is a DMZ-deployed application designed to securely deploy and manage data models. Each probe can manage multiple models and you can have many probes.
+**Data probe** is a DMZ-deployed application designed to securely deploy and manage data models. Each probe can manage multiple models, and you can have many probes.
 
 **REST server** provides REST endpoint for user applications to securely query data sources using NLI via data models deployed in data probes.
                     
+[Learn more >](https://nlpcraft.apache.org/docs.html)          
+          
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 
