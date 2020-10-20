@@ -53,12 +53,17 @@ NLPCraft focuses on processing English language delivering the ease of use and u
 ### Java-First
 REST API and Java-based implementation natively support world's largest ecosystem of development tools, programming languages and services.
 
-#### Model-As-A-Code
+### Model-As-A-Code
 Model-as-a-code convention natively supports any system development life cycle tools and frameworks in Java eco-system.
 
 ### Out-Of-The-Box Integration
 NLPCraft natively integrates with 3rd party libraries for base NLP processing and named entity recognition:
 
+<a target=_ href="https://opennlp.apache.org"><img src="https://nlpcraft.apache.org/images/opennlp-logo.png" height="32px" alt=""></a>
+<a target=_ href="https://cloud.google.com/natural-language/"><img src="https://nlpcraft.apache.org/images/google-cloud-logo-small.png" height="32px" alt=""></a>
+<a target=_ href="https://stanfordnlp.github.io/CoreNLP"><img src="https://nlpcraft.apache.org/images/corenlp-logo.gif" height="48px" alt=""></a>
+<a target=_ href="https://spacy.io"><img src="https://nlpcraft.apache.org/images/spacy-logo.png" height="32px" alt=""></a>
+                    
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 
