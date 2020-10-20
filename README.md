@@ -25,8 +25,7 @@
 
 ## What is Apache NLPCraft?
 [Apache NLPCraft](https://nlpcraft.apache.org/) is an open source library for adding a natural language interface to any applications. 
-NLPCraft is free and easy to use, it securely works with any private data source, and has no hardware or software 
-lock-in:
+Based on semantic modelling it allows rapid implementation and requires no model training or pre-existing text corpora:
 
  * Download, Maven/Grape/Gradle/SBT, installation [instructions](https://nlpcraft.apache.org/download.html) 
  * Read [documentation](https://nlpcraft.apache.org/docs.html)
@@ -36,9 +35,29 @@ lock-in:
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
-  
-## Other Projects
-- [Apache NLPCraft Java Client](https://github.com/apache/incubator-nlpcraft-java-client) - Native Java client for NLPCraft REST API.
+ 
+## Why Natural Language?
+Natural Language Interface (NLI) enables users to explore any type of data sources using natural language augmenting existing UI/UX with fidelity and simplicity of a familiar spoken language.
+There is no learning curve, no special rules or UI to master, no cumbersome syntax or terms to remember - just a natural language that your users already speak.
+ 
+## Key Features
+### Semantic Modeling
+Advanced semantic modelling and intent-based matching enables deterministic natural language understanding without requiring deep learning training or pre-existing text corpora.
+
+### Any Data Source
+Any data source, device, or service - public or private. From databases and SaaS systems, to smart home devices, voice assistants and chatbots.
+ 
+### English Focused
+NLPCraft focuses on processing English language delivering the ease of use and unparalleled comprehension for the language spoken by more than a billion people.
+
+### Java-First
+REST API and Java-based implementation natively support world's largest ecosystem of development tools, programming languages and services.
+
+#### Model-As-A-Code
+Model-as-a-code convention natively supports any system development life cycle tools and frameworks in Java eco-system.
+
+### Out-Of-The-Box Integration
+NLPCraft natively integrates with 3rd party libraries for base NLP processing and named entity recognition:
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
