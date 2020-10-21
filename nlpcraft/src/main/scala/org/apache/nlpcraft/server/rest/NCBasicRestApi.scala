@@ -531,16 +531,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
 
     /**
       *
-      * @param e
-      */
-    private def onError(e: Throwable): Unit = {
-        U.prettyError(logger,s"Unexpected system error.", e)
-
-        completeError(StatusCodes.InternalServerError, "NC_ERROR", e.getLocalizedMessage)
-    }
-
-    /**
-      *
       * @return
       */
     private def ask0(process: AskReqHolder ⇒ Route): Route = {
@@ -646,10 +636,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     h.enabledLog,
                     h.parent
                 )
-
-                fut.failed.collect {
-                    case e ⇒ onError(e)
-                }
 
                 successWithJs(
                     fut.collect {
@@ -782,10 +768,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                 checkModelId(req.mdlId, admUsr.companyId)
 
                 val fut = NCSuggestSynonymManager.suggest(req.mdlId, req.minScore, span)
-
-                fut.failed.collect {
-                    case e ⇒ onError(e)
-                }
 
                 successWithJs(
                     fut.collect {
