@@ -534,21 +534,9 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @param e
       */
     private def onError(e: Throwable): Unit = {
-        val errMsg = e.getLocalizedMessage
-        val code =
-            e match {
-                case _: NCE ⇒
-                    // We have to log error reason because even general exceptions are not expected here.
-                    U.prettyError(logger, s"Unexpected top level REST API error: $errMsg", e)
+        U.prettyError(logger,s"Unexpected system error.", e)
 
-                    StatusCodes.BadRequest
-                case _ ⇒
-                    U.prettyError(logger,s"Unexpected system error: $errMsg", e)
-
-                    StatusCodes.InternalServerError
-            }
-
-        completeError(code, "NC_ERROR", errMsg)
+        completeError(StatusCodes.InternalServerError, "NC_ERROR", e.getLocalizedMessage)
     }
 
     /**

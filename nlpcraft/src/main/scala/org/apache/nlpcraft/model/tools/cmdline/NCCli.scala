@@ -588,7 +588,7 @@ object NCCli extends App {
         Command(
             name = "signin",
             group = "2. REST Commands",
-            synopsis = s"Wrapper for REST ${c("/signin")} call.",
+            synopsis = s"Wrapper for ${c("'/signin'")} REST call.",
             desc = Some(
                 s"If no arguments provided, it signs in with the " +
                 s"default 'admin@admin.com' user account. NOTE: please make sure to remove this account when " +
@@ -625,7 +625,7 @@ object NCCli extends App {
         Command(
             name = "signout",
             group = "2. REST Commands",
-            synopsis = s"Wrapper for REST ${c("/signout")} call.",
+            synopsis = s"Wrapper for ${c("'/signout'")} REST call.",
             desc = Some(
                 s"Signs out currently signed in user."
             ),
@@ -704,7 +704,7 @@ object NCCli extends App {
         Command(
             name = "ask",
             group = "2. REST Commands",
-            synopsis = s"Wrapper for REST ${c("/ask/sync")} call.",
+            synopsis = s"Wrapper for ${c("'/ask/sync'")} REST call.",
             desc = Some(
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
@@ -750,6 +750,44 @@ object NCCli extends App {
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
+                )
+            )
+        ),
+        Command(
+            name = "sugsyn",
+            group = "2. REST Commands",
+            synopsis = s"Wrapper for ${c("'/model/sugsyn'")} REST call.",
+            desc = Some(
+                s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
+                s"it requires user to be signed in. REPL session keeps the currently active access " +
+                s"token after user signed in. For command line mode, use ${c("'rest'")} command with " +
+                s"corresponding parameters."
+            ),
+            body = cmdSugSyn,
+            params = Seq(
+                Parameter(
+                    id = "mdlId",
+                    names = Seq("--mdlId"),
+                    value = Some("model.id"),
+                    desc =
+                        s"ID of the model to run synonym suggestion on. " +
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
+                ),
+                Parameter(
+                    id = "minScore",
+                    names = Seq("--minScore"),
+                    value = Some("0.5"),
+                    optional = true,
+                    desc = s"Minimal score to include into the result (from 0 to 1). Default is ${c("0.5")}."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"""> sugsyn --mdlId=my.model.id"""
+                    ),
+                    desc =
+                        s"Issues ${y("'model/sugsyn'")} REST call with default min score and given model ID."
                 )
             )
         ),
@@ -1104,6 +1142,7 @@ object NCCli extends App {
     private final val REST_CMD = CMDS.find(_.name ==  "rest").get
     private final val CALL_CMD = CMDS.find(_.name ==  "call").get
     private final val ASK_CMD = CMDS.find(_.name ==  "ask").get
+    private final val SUGSYN_CMD = CMDS.find(_.name ==  "sugsyn").get
     private final val STOP_SRV_CMD = CMDS.find(_.name ==  "stop-server").get
     private final val START_SRV_CMD = CMDS.find(_.name ==  "start-server").get
 
@@ -2007,6 +2046,34 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private def cmdSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        state.accessToken match {
+            case Some(acsTok) ⇒
+                val mdlId = args.find(_.parameter.id == "mdlId").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "mdlId"))
+                val minScore = Try(args.find(_.parameter.id == "minScore").flatMap(_.value).getOrElse("0.5").toFloat).getOrElse(throw InvalidParameter(cmd, "minScore"))
+
+                httpRest(
+                    cmd,
+                    "model/sugsyn",
+                    s"""
+                       |{
+                       |    "acsTok": ${jsonQuote(acsTok)},
+                       |    "mdlId": ${jsonQuote(mdlId)},
+                       |    "minScore": $minScore
+                       |}
+                       |""".stripMargin
+                )
+
+            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+        }
+
+
+    /**
+     *
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) ⇒
@@ -2109,8 +2176,20 @@ object NCCli extends App {
         if (!REST_SPEC.exists(_.path == path))
             throw InvalidParameter(cmd, "path")
 
+        val spinner = new NCAnsiSpinner(
+            term.writer(),
+            // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
+            NCAnsi.isEnabled && IS_SCRIPT
+        )
+
+        spinner.start()
+
         // Make the REST call.
-        val resp = httpPostResponse(getRestEndpointFromBeacon, path, json)
+        val resp =
+            try
+                httpPostResponse(getRestEndpointFromBeacon, path, json)
+            finally
+                spinner.stop()
 
         // Ack HTTP response code.
         logln(s"HTTP ${if (resp.code == 200) g("200") else r(resp.code)}")
@@ -2135,7 +2214,7 @@ object NCCli extends App {
     /**
      *
      */
-    private def readEvalPrintLoop(): Unit = {
+    private def repl(): Unit = {
         loadServerBeacon(autoSignIn = true) match {
             case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ ()
@@ -2239,8 +2318,8 @@ object NCCli extends App {
                             )
                     }
 
-                    // For 'ask' - add additional auto-completion/suggestion candidates.
-                    if (cmd == ASK_CMD.name)
+                    // For 'ask' and 'sugysn' - add additional model IDs auto-completion/suggestion candidates.
+                    if (cmd == ASK_CMD.name || cmd == SUGSYN_CMD.name)
                         candidates.addAll(
                             state.probes.flatMap(_.models.toList).map(mdl ⇒ {
                                 mkCandidate(
@@ -2795,7 +2874,7 @@ object NCCli extends App {
         title()
 
         if (args.isEmpty)
-            readEvalPrintLoop()
+            repl()
         else
             doCommand(args.toSeq, repl = false)
 

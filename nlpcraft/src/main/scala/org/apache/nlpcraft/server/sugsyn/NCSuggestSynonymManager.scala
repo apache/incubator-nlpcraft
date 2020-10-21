@@ -216,7 +216,6 @@ object NCSuggestSynonymManager extends NCService {
                             if (allSamplesCnt < MIN_CNT_MODEL)
                                 warns +=
                                     s"Model has too few ($allSamplesCnt) intents samples. " +
-                                    s"It will negatively affect the quality of suggestions. " +
                                     s"Try to increase overall sample count to at least $MIN_CNT_MODEL."
 
                             else {
@@ -228,7 +227,6 @@ object NCSuggestSynonymManager extends NCService {
                                 if (ids.nonEmpty)
                                     warns +=
                                         s"Following model intent have too few samples (${ids.mkString(", ")}). " +
-                                        s"It will negatively affect the quality of suggestions. " +
                                         s"Try to increase overall sample count to at least $MIN_CNT_INTENT."
                             }
 
@@ -296,9 +294,7 @@ object NCSuggestSynonymManager extends NCService {
                                     map { case (elemId, _) ⇒ elemId }
 
                             if (noExElems.nonEmpty)
-                                warns +=
-                                    "Some elements don't have synonyms in their intent samples, " +
-                                     s"so the service can't suggest any new synonyms for such elements: [${noExElems.mkString(", ")}]"
+                                warns += s"Elements do not have synonyms in their intent samples - no suggestion can be made: ${noExElems.mkString(", ")}"
 
                             val allReqsCnt = allReqs.map(_._2.size).sum
                             val allSynsCnt = elemSyns.map(_._2.size).sum
@@ -371,7 +367,7 @@ object NCSuggestSynonymManager extends NCService {
                                 cdl.await(Long.MaxValue, TimeUnit.MILLISECONDS)
 
                                 if (err.get() != null)
-                                    throw new NCE("Error during work with 'ctxword' server.", err.get())
+                                    throw new NCE("Error while working with 'ctxword' server.", err.get())
 
                                 val allSynsStems = elemSyns.flatMap(_._2).flatten.map(_.stem).toSet
 
