@@ -91,11 +91,11 @@ Add NLPCraft dependency to your project:
     <dependency>
         <groupId>org.apache.nlpcraft</groupId>
         <artifactId>nlpcraft</artifactId>
-        <version>0.7.0</version>
+        <version>0.7.1</version>
     </dependency>
 </dependencies>
 ```
-NOTE: **0.7.0** should be the latest NLPCraft version.
+NOTE: **0.7.1** should be the latest NLPCraft version.
 
 ### Define Data Model
 Declare the static part of the data model using YAML which we will later load in our model implementation. You can declare entire
