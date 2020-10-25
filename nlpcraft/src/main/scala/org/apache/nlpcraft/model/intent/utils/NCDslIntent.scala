@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.intent.utils
 /**
  * Intent from intent DSL.
  */
-case class NCDslIntent(id: String, conv: Boolean, ordered: Boolean, flow: Array[NCDslFlowItem], terms: Array[NCDslTerm]) {
+case class NCDslIntent(id: String, ordered: Boolean, flow: Array[NCDslFlowItem], terms: Array[NCDslTerm]) {
     if (id == null)
         throw new IllegalArgumentException("Intent ID must be provided.")
     if (terms.length == 0)
@@ -35,13 +35,12 @@ case class NCDslIntent(id: String, conv: Boolean, ordered: Boolean, flow: Array[
      * @return Full intent string representation in text DSL format.
      */
     def toDslString: String = {
-        val convStr = if (conv) "" else " conv=false"
         val orderedStr = if (!ordered) "" else " ordered=true"
         val flowStr = flow.mkString(" >> ") match {
             case s: String if s.nonEmpty ⇒ s" flow=$s"
             case _ ⇒ ""
         }
 
-        s"intent=$id$convStr$orderedStr$flowStr ${terms.mkString(" ")}"
+        s"intent=$id$orderedStr$flowStr ${terms.mkString(" ")}"
     }
 }

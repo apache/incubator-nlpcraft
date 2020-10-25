@@ -1,4 +1,4 @@
-// Generated from /Users/xxx/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.8
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.8
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -35,18 +35,6 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIntentId(NCIntentDslParser.IntentIdContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterConvDecl(NCIntentDslParser.ConvDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConvDecl(NCIntentDslParser.ConvDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -131,6 +119,18 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTerms(NCIntentDslParser.TermsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTermEq(NCIntentDslParser.TermEqContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTermEq(NCIntentDslParser.TermEqContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

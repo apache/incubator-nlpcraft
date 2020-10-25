@@ -92,7 +92,7 @@ public class TimeModel extends NCModelFileAdapter {
      * @param cityTok Token for 'geo' term.
      * @return Query result.
      */
-    @NCIntent("intent=intent2 conv=true term={id=='x:time'} term(city)={id=='nlpcraft:city'}")
+    @NCIntent("intent=intent2 term~{id=='x:time'} term(city)~{id=='nlpcraft:city'}")
     @NCIntentSample({
         "What time is it now in New York City?",
         "What's the current time in Moscow?",
@@ -119,7 +119,7 @@ public class TimeModel extends NCModelFileAdapter {
      * @param ctx Intent solver context.
      * @return Query result.
      */
-    @NCIntent("intent=intent1 conv=false term={id=='x:time'}")
+    @NCIntent("intent=intent1 term={id=='x:time'}")
     @NCIntentSample({
         "What's the local time?"
     })

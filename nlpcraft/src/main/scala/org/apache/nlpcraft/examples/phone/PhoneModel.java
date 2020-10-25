@@ -51,7 +51,6 @@ public class PhoneModel extends NCModelFileAdapter {
      */
     @NCIntent("" +
         "intent=action " +
-        "conv=false " + // No conversation support.
         "term={id == 'phone:act'} " +
         // Either organization, person or a phone number (or a combination of).
         "term(rcpt)={id == 'google:organization' || id == 'google:person' || id == 'google:phone_number'}[1,3]"
