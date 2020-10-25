@@ -24,7 +24,7 @@ import java.util.*;
  * Data model query context. This context defines fully processed user input and its associated data that
  * the model's intents need to process and return the result.
  * 
- * @see NCIntentMatch
+ * @see NCIntentMatch#getContext() 
  */
 public interface NCContext extends Serializable {
     /**
