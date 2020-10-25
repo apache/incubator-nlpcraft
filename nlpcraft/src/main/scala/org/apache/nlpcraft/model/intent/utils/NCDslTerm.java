@@ -126,6 +126,6 @@ public class NCDslTerm implements Serializable {
         if (id == null)
             return String.format("term%s{%s}%s", eq, pred, minMax);
         else
-            return String.format("term(%s)%s{%s}%s", eq, id, pred, minMax);
+            return String.format("term(%s)%s{%s}%s", id, eq, pred, minMax);
     }
 }
