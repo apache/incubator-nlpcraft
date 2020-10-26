@@ -54,7 +54,6 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         "No lights in the bedroom, please."
     ))
     def onMatch(
-        ctx: NCContext,
         @NCIntentTerm("act") actTok: NCToken,
         @NCIntentTerm("loc") locToks: List[NCToken]
     ): NCResult = {
