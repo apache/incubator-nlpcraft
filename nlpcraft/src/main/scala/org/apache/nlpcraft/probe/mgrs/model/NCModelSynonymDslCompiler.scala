@@ -20,11 +20,11 @@ package org.apache.nlpcraft.probe.mgrs.model
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
-
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.utils.NCDslTokenPredicate
-import org.apache.nlpcraft.probe.mgrs.model.antlr4._
+import org.apache.nlpcraft.probe.mgrs.model.antlr4.{NCSynonymDslBaseListener, NCSynonymDslLexer, NCSynonymDslParser}
+//import org.apache.nlpcraft.probe.mgrs.model.antlr4._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable

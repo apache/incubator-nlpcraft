@@ -114,7 +114,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         usedTokens: List[UsedToken],
         weight: Weight
     ) {
-        lazy val minIndex: Int = usedTokens.minBy(_.token.index).token.index
         lazy val maxIndex: Int = usedTokens.maxBy(_.token.index).token.index
     }
 
@@ -163,7 +162,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             variantIdx: Int // Variant index.
         )
         val req = ctx.getRequest
-        val conv = ctx.getConversation.getTokens
 
         startScopedSpan("solve",
             "srvReqId" → req.getServerRequestId,
@@ -187,17 +185,17 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         // Isolated conversation tokens.
                         val convToks =
-                            if (intent.conv)
+                            if (intent.terms.exists(_.isConversational))
                                 Seq.empty[UsedToken] ++
                                     // We shouldn't mix tokens with same group from conversation
                                     // history and processed sentence.
-                                    conv.
+                                    ctx.getConversation.getTokens.
                                         filter(t ⇒ {
                                             val convTokGroups = t.getGroups.sorted
 
                                             !senTokGroups.exists(convTokGroups.containsSlice)
                                         }).
-                                        map(UsedToken(false, true, _))
+                                        map(UsedToken(used = false, conv = true, _))
                             else
                                 Seq.empty[UsedToken]
 
@@ -418,7 +416,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 solveTerm(
                     term,
                     senToks,
-                    convToks
+                    if (term.isConversational) convToks else Seq.empty
                 ) match {
                     case Some(termMatch) ⇒
                         if (ordered && lastTermMatch != null && lastTermMatch.maxIndex > termMatch.maxIndex)
@@ -511,6 +509,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 termWeight ++= t._2
     
                 Some(TermMatch(term.getId, termToks, termWeight))
+
             case None ⇒
                 None
         }

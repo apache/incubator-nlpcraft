@@ -58,6 +58,7 @@ import scala.compat.java8.OptionConverters._
 import scala.collection.JavaConverters._
 import scala.compat.Platform.currentTime
 import scala.util.Try
+import scala.util.control.Breaks.{break, breakable}
 import scala.util.control.Exception.ignoring
 
 /**
@@ -1413,18 +1414,28 @@ object NCCli extends App {
             case None ⇒ 20 // Default.
         }
 
+        if (lines <= 0)
+            throw InvalidParameter(cmd, "lines")
+
         loadServerBeacon() match {
             case Some(beacon) ⇒
                 try
                     managed(new ReversedLinesFileReader(new File(beacon.logPath), StandardCharsets.UTF_8)) acquireAndGet { in ⇒
                         var tail = List.empty[String]
 
-                        for (_ ← 0 to lines)
-                            tail ::= in.readLine()
+                        breakable {
+                            for (_ ← 0 until lines)
+                                in.readLine() match {
+                                    case null ⇒ break
+                                    case line ⇒ tail ::= line
+                                }
+                        }
 
-                        logln(bb(w(s"+----< ${K}Last $lines server log lines $W>---")))
+                        val cnt = tail.size
+
+                        logln(bb(w(s"+----< ${K}Last $cnt server log lines $W>---")))
                         tail.foreach(line ⇒ logln(s"${bb(w("| "))}  $line"))
-                        logln(bb(w(s"+----< ${K}Last $lines server log lines $W>---")))
+                        logln(bb(w(s"+----< ${K}Last $cnt server log lines $W>---")))
                     }
                 catch {
                     case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
@@ -1903,7 +1914,9 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdNano(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (args.size > 1)
+        if (args.isEmpty)
+            throw NotEnoughArguments(cmd)
+        else if (args.size > 1)
             throw TooManyArguments(cmd)
 
         Commands.nano(term,
@@ -1955,7 +1968,7 @@ object NCCli extends App {
     private def cmdLess(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         if (args.isEmpty)
             throw NotEnoughArguments(cmd)
-        else if  (args.size > 1)
+        else if (args.size > 1)
             throw TooManyArguments(cmd)
 
         Commands.less(term,

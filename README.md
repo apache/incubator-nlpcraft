@@ -50,8 +50,19 @@ Any data source, device, or service - public or private. From databases and SaaS
 ### English Focused
 NLPCraft focuses on processing English language delivering the ease of use and unparalleled comprehension for the language spoken by more than a billion people.
 
+### By Devs - For Devs
+Built with a singular focus - provide developers with unprecedented productivity and efficiency when building  modern NLI applications.
+
+### Advanced NLP Toolset
+Combines easy-of-use and development productivity with state-of-the-art NLP capabilities like short-term-memory (STM) support, advanced intent DSL with deterministic matching, and composable NEs.
+                        
 ### Java-First
-REST API and Java-based implementation natively support world's largest ecosystem of development tools, programming languages and services.
+REST API and Java-based implementation natively support world's largest ecosystem of development tools, multiple programming languages, frameworks and services.
+
+<a target=_ href="https://www.oracle.com/java/"><img src="https://nlpcraft.apache.org/images/java2.png" height="32px" alt=""></a>
+<a target=_ href="https://scala-lang.org/"><img src="https://nlpcraft.apache.org/images/scala-logo.png" height="24px" alt=""></a>
+<a target=_ href="https://groovy-lang.org/"><img src="https://nlpcraft.apache.org/images/groovy.png" height="32px" alt=""></a>
+<a target=_ href="https://kotlinlang.org/"><img src="https://nlpcraft.apache.org/images/kotlin.png" height="32px" alt=""></a>
 
 ### Model-As-A-Code
 Model-as-a-code convention natively supports any system development life cycle tools and frameworks in Java eco-system.
@@ -138,7 +149,7 @@ elements:
       - "{<ACTION>|shut|kill|stop|eliminate} {off|out} <LIGHT>"
       - "no <LIGHT>"
 intents:
-  - "intent=ls conv=false term(act)={groups @@ 'act'} term(loc)={id == 'ls:loc'}*"
+  - "intent=ls term(act)~{groups @@ 'act'} term(loc)~{id == 'ls:loc'}*"
 ```
 
 ### Model Implementation

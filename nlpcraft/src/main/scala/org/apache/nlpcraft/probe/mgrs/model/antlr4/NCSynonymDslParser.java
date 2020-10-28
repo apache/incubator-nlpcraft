@@ -1,10 +1,13 @@
-// Generated from /Users/xxx/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4/NCSynonymDsl.g4 by ANTLR 4.8
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4\NCSynonymDsl.g4 by ANTLR 4.8
 package org.apache.nlpcraft.probe.mgrs.model.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class NCSynonymDslParser extends Parser {
@@ -119,11 +122,6 @@ public class NCSynonymDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitSynonym(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitSynonym(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final SynonymContext synonym() throws RecognitionException {
@@ -199,11 +197,6 @@ public class NCSynonymDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitAlias(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitAlias(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AliasContext alias() throws RecognitionException {
@@ -257,11 +250,6 @@ public class NCSynonymDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitItem(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitItem(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -389,11 +377,6 @@ public class NCSynonymDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitPredicate(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitPredicate(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final PredicateContext predicate() throws RecognitionException {
@@ -462,11 +445,6 @@ public class NCSynonymDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitLval(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitLval(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -579,11 +557,6 @@ public class NCSynonymDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitLvalQual(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitLvalQual(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final LvalQualContext lvalQual() throws RecognitionException {
@@ -656,11 +629,6 @@ public class NCSynonymDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitLvalPart(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitLvalPart(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final LvalPartContext lvalPart() throws RecognitionException {
@@ -705,11 +673,6 @@ public class NCSynonymDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitRvalSingle(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitRvalSingle(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -812,11 +775,6 @@ public class NCSynonymDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitRval(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitRval(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final RvalContext rval() throws RecognitionException {
@@ -882,11 +840,6 @@ public class NCSynonymDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitRvalList(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitRvalList(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -968,11 +921,6 @@ public class NCSynonymDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitMeta(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitMeta(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MetaContext meta() throws RecognitionException {
@@ -1050,11 +998,6 @@ public class NCSynonymDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitQstring(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCSynonymDslVisitor ) return ((NCSynonymDslVisitor<? extends T>)visitor).visitQstring(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 

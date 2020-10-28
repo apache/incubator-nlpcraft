@@ -23,7 +23,7 @@ class NCIntentSampleSpecModel extends NCModelAdapter(
             override def getId: String = id
         }
 
-    @NCIntent("intent=intent1 term={id=='x1'}")
+    @NCIntent("intent=intent1 term~{id=='x1'}")
     @NCIntentSample(Array("x1", "x1"))
     @NCIntentSample(Array("unknown", "unknown"))
     private def onX1(ctx: NCIntentMatch): NCResult = "OK"
@@ -31,7 +31,7 @@ class NCIntentSampleSpecModel extends NCModelAdapter(
     @NCIntentSample(Array("x1", "x2", "x3"))
     @NCIntentSample(Array("x1", "x2"))
     @NCIntentSample(Array("x1"))
-    @NCIntent("intent=intent2 term={id=='x2'}")
+    @NCIntent("intent=intent2 term~{id=='x2'}")
     private def onX2(ctx: NCIntentMatch): NCResult = "OK"
 }
 

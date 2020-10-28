@@ -20,9 +20,16 @@ package org.apache.nlpcraft.model;
 import java.util.*;
 
 /**
- * Detected model element. A token is a detected model element and is a part of a
- * parsed user input. Sequence of tokens represents fully parsed (see {@link NCContext#getVariants()} method) user input. A single
+ * Detected model element. A token is a detected model element and is a part of the
+ * parsed user input. Sequence of tokens represents a fully parsed (see {@link NCContext#getVariants()} method) user input. A single
  * token corresponds to a one or more words, sequential or not, in the user sentence.
+ * <p>
+ * Note that tokens can be used to define other tokens (i.e. tokens are composable). Because of that tokens naturally
+ * form a tree hierarchy - see methods {@link #findPartTokens(String...)}, {@link #getAliases()}, {@link #isOfAlias(String)}
+ * and {@link #getPartTokens()}.
+ * Note also that detected model elements that tokens represent also form another hierarchy, namely a model element hierarchy that
+ * user can also access via {@link #getAncestors()}, {@link #getParentId()} methods. These two hierarchies should be not
+ * be confused.
  * <p>
  * <b>Configuring Token Providers</b><br>
  * Token providers (built-in or 3rd party) have to be enabled in the REST server <a href="https://nlpcraft.apache.org/server-and-probe.html">configuration</a>.

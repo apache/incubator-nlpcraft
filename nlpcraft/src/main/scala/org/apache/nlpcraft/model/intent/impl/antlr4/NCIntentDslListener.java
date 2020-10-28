@@ -1,4 +1,4 @@
-// Generated from /Users/xxx/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.8
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.8
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -27,16 +27,6 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIntentId(NCIntentDslParser.IntentIdContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#convDecl}.
-	 * @param ctx the parse tree
-	 */
-	void enterConvDecl(NCIntentDslParser.ConvDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#convDecl}.
-	 * @param ctx the parse tree
-	 */
-	void exitConvDecl(NCIntentDslParser.ConvDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#orderedDecl}.
 	 * @param ctx the parse tree
@@ -107,6 +97,16 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTerms(NCIntentDslParser.TermsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#termEq}.
+	 * @param ctx the parse tree
+	 */
+	void enterTermEq(NCIntentDslParser.TermEqContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#termEq}.
+	 * @param ctx the parse tree
+	 */
+	void exitTermEq(NCIntentDslParser.TermEqContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#term}.
 	 * @param ctx the parse tree

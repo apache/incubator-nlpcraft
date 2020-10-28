@@ -52,4 +52,4 @@ elements:
       - "{fourth|4th} ^^[alias4](id == 'a3')^^"
 
 intents:
-  - "intent=i1 conv=false term(t1)={id == 'a' && ~txt == 'x'}"
+  - "intent=i1 term(t1)={id == 'a' && ~txt == 'x'}"

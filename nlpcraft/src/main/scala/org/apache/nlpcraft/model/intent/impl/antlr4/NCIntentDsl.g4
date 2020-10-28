@@ -17,9 +17,8 @@
 
 grammar NCIntentDsl;
 
-intent: intentId convDecl? orderedDecl? flowDecl? terms EOF;
+intent: intentId orderedDecl? flowDecl? terms EOF;
 intentId: 'intent' EQ ID;
-convDecl: 'conv' EQ BOOL;
 orderedDecl: 'ordered' EQ BOOL;
 flowDecl: 'flow' EQ SQUOTE flow SQUOTE;
 flow
@@ -37,7 +36,8 @@ idList
     | idList VERT ID
     ;
 terms: term | terms term;
-term: 'term' termId? EQ LCURLY item RCURLY minMax?;
+termEq: EQ | TILDA;
+term: 'term' termId? termEq LCURLY item RCURLY minMax?;
 termId: LPAREN ID RPAREN;
 item
     : predicate

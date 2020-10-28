@@ -43,7 +43,6 @@ object NCIntentDslCompiler extends LazyLogging {
       */
     class FiniteStateMachine extends NCIntentDslBaseListener {
         // Intent components.
-        private var conv: Boolean = true
         private var ordered: Boolean = false
         private var id: String = _
         private val terms = ArrayBuffer.empty[NCDslTerm] // Accumulator for parsed terms.
@@ -52,6 +51,7 @@ object NCIntentDslCompiler extends LazyLogging {
     
         // Currently parsed term.
         private var termId: String = _
+        private var termConv: Boolean = _
         
         // Current min/max quantifier.
         private var min = 1
@@ -70,7 +70,7 @@ object NCIntentDslCompiler extends LazyLogging {
             require(id != null)
             require(terms.nonEmpty)
             
-            NCDslIntent(id, conv, ordered, flow.toArray, terms.toArray)
+            NCDslIntent(id, ordered, flow.toArray, terms.toArray)
         }
     
         /**
@@ -101,7 +101,11 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
             termId = ctx.ID().getText
         }
-    
+
+        override def exitTermEq(ctx: NCIntentDslParser.TermEqContext): Unit = {
+            termConv = ctx.TILDA() != null
+        }
+
         override def exitMinMaxRange(ctx: NCIntentDslParser.MinMaxRangeContext): Unit = {
             val minStr = ctx.getChild(1).getText
             val maxStr = ctx.getChild(3).getText
@@ -118,10 +122,6 @@ object NCIntentDslCompiler extends LazyLogging {
             id = ctx.ID().getText
         }
     
-        override def exitConvDecl(ctx: NCIntentDslParser.ConvDeclContext): Unit = {
-            conv = ctx.BOOL().getText == "true"
-        }
-    
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
             ordered = ctx.BOOL().getText == "true"
         }
@@ -131,10 +131,15 @@ object NCIntentDslCompiler extends LazyLogging {
             
             val p = predStack.pop
             
-            terms += new NCDslTerm(termId, new java.util.function.Function[NCToken, java.lang.Boolean]() {
-                override def apply(tok: NCToken): java.lang.Boolean = p.apply(tok)
-                override def toString: String = p.toString() //ctx.item().getText
-            }, min, max)
+            terms += new NCDslTerm(
+                termId,
+                new java.util.function.Function[NCToken, java.lang.Boolean]() {
+                    override def apply(tok: NCToken): java.lang.Boolean = p.apply(tok)
+                    override def toString: String = p.toString() //ctx.item().getText
+                },
+                min,
+                max,
+                termConv)
             
             // Reset.
             termId = null

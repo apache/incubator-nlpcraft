@@ -28,6 +28,9 @@ public class NCDslTerm implements Serializable {
     // Term's predicate.
     final private Function<NCToken, Boolean> pred;
 
+    // Conversational or not.
+    final private boolean conv;
+
     // Terms quantifiers.
     final private int min, max;
 
@@ -41,8 +44,9 @@ public class NCDslTerm implements Serializable {
      * @param pred Token predicate.
      * @param min Minimum quantifier for the predicate (inclusive).
      * @param max Maximum quantifier for the predicate (inclusive).
+     * @param conv Whether or not this term is conversational.
      */
-    public NCDslTerm(String id, Function<NCToken, Boolean> pred, int min, int max) {
+    public NCDslTerm(String id, Function<NCToken, Boolean> pred, int min, int max, boolean conv) {
         if (pred == null)
             throw new IllegalArgumentException("Intent DSL term predicate cannot be null.");
         if (min < 0 || min > max)
@@ -56,6 +60,7 @@ public class NCDslTerm implements Serializable {
         this.pred = pred;
         this.min = min;
         this.max = max;
+        this.conv = conv;
     }
 
     /**
@@ -94,6 +99,13 @@ public class NCDslTerm implements Serializable {
         return max;
     }
 
+    /**
+     * Whether or not this term support conversational context.
+     *
+     * @return {@code true} if this term supports conversational context, {@code false} otherwise.
+     */
+    public boolean isConversational() { return conv; }
+
     @Override
     public String toString() {
         String minMax;
@@ -109,9 +121,11 @@ public class NCDslTerm implements Serializable {
         else
             minMax = String.format("[%d,%d]", min, max);
 
+        String eq = conv ? "~" : "=";
+
         if (id == null)
-            return String.format("term={%s}%s", pred, minMax);
+            return String.format("term%s{%s}%s", eq, pred, minMax);
         else
-            return String.format("term(%s)={%s}%s", id, pred, minMax);
+            return String.format("term(%s)%s{%s}%s", id, eq, pred, minMax);
     }
 }

@@ -34,6 +34,6 @@
         }
     ],
     "intents": [
-        "intent=alarm term={id=='x:alarm'} term(nums)={id=='nlpcraft:num' && ~nlpcraft:num:unittype=='datetime' && ~nlpcraft:num:isequalcondition==true}[0,7]"
+        "intent=alarm term~{id=='x:alarm'} term(nums)~{id=='nlpcraft:num' && ~nlpcraft:num:unittype=='datetime' && ~nlpcraft:num:isequalcondition==true}[0,7]"
     ]
 }

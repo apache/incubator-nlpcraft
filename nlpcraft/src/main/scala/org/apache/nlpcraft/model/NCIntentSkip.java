@@ -36,6 +36,7 @@ import org.apache.nlpcraft.common.*;
  * @see NCIntent
  * @see NCIntentTerm
  * @see NCIntentRef
+ * @see NCIntentSample
  * @see NCIntentMatch
  * @see NCModel#onMatchedIntent(NCIntentMatch)
  */

@@ -54,7 +54,7 @@ class NCTimeoutSpecModel extends NCModel {
             }
         )
 
-    @NCIntent("intent=req conv=true term={id == 'test'}")
+    @NCIntent("intent=req term~{id == 'test'}")
     def onMatch(ctx: NCIntentMatch): NCResult = {
         val conv = ctx.getContext.getConversation
 
