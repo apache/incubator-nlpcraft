@@ -74,15 +74,16 @@ abstract class NCTestContext {
 
                 probeStarted = false
 
-                NCEmbeddedProbe.start(ann.model())
-
-                probeStarted = true
-
-                if (ann.startClient()) {
-                    cli = new NCTestClientBuilder().newBuilder.build
-
-                    cli.open(NCModelManager.getAllModels().head.model.getId)
+                if (NCEmbeddedProbe.start(ann.model())) {
+                    probeStarted = true
+                
+                    if (ann.startClient()) {
+                        cli = new NCTestClientBuilder().newBuilder.build
+                        
+                        cli.open(NCModelManager.getAllModels().head.model.getId)
+                    }
                 }
+                
             case None ⇒ // No-op.
         }
 

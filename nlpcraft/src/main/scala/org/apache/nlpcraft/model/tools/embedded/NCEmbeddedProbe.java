@@ -81,13 +81,21 @@ public class NCEmbeddedProbe {
     }
 
     /**
+     *
+     * @param classes
+     */
+    private static void checkModelClasses(Class<? extends NCModel>[] classes) {
+        if (classes.length == 0)
+            throw new NCException("At least one model class must be provided when starting embedded probe.");
+    }
+
+    /**
      * Start the embedded probe with given configuration file. It is equivalent to starting a probe using
      * <code>-config=cfgFile</code> command line argument.
      *
      * @param cfgFile Configuration file path. It should be either a full path or the file name
      *      that can be found in the current working directory or on the classpath as a class loader
      *      resource.
-     * @throws NCException Thrown in case of any errors starting the data probe.
      * @return Whether or not probe started ok.
      */
     public static boolean start(String cfgFile) {
@@ -99,19 +107,10 @@ public class NCEmbeddedProbe {
     }
 
     /**
-     *
-     * @param classes
-     */
-    private static void checkModelClasses(Class<? extends NCModel>[] classes) {
-        if (classes.length == 0)
-            throw new NCException("At least one model class must be provided when starting embedded probe.");
-    }
-
-    /**
      * Starts the embedded probe with default configuration and specified models to deploy.
      * 
      * @param mdlClasses One or more data model classes to be deployed by the embedded probe.
-     * @throws NCException Thrown in case of any errors starting the data probe.
+     * @throws NCException Thrown if given list of models is empty.
      * @return  Whether or not probe started ok.
      */
     @SafeVarargs
@@ -133,7 +132,7 @@ public class NCEmbeddedProbe {
      * @param upLink Probe up-link to the server.
      * @param dnLink Probe down-link from the server.
      * @param mdlClasses One or more data model classes to be deployed by the embedded probe.
-     * @throws NCException Thrown in case of any errors starting the data probe.
+     * @throws NCException Thrown if given list of models is empty.
      * @return  Whether or not probe started ok.
      */
     @SafeVarargs

@@ -52,13 +52,14 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
     def isValidForModelIds(mdlIds: Array[String]): Boolean = isValid(getClasses(mdlIds))
 
     @throws[Exception]
-    private def isValid(classes: Seq[Class[_ <: NCModel]]) = {
-        NCEmbeddedProbe.start(classes: _*)
-
-        try
-            process(NCModelManager.getAllModels().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
-        finally
-            NCEmbeddedProbe.stop()
+    private def isValid(classes: Seq[Class[_ <: NCModel]]): Boolean = {
+        if (NCEmbeddedProbe.start(classes: _*))
+            try
+                process(NCModelManager.getAllModels().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
+            finally
+                NCEmbeddedProbe.stop()
+        else
+            false
     }
 
     /**

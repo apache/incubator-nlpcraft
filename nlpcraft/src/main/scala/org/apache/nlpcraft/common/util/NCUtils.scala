@@ -1377,7 +1377,7 @@ object NCUtils extends LazyLogging {
                     s"$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line ⇒ {
-                val s = s"${" " * indent}${if (first) ansiBlue("+- ") else "  "}${line.trim}"
+                val s = s"${" " * indent}${if (first) ansiBlue("+- ") else "   "}${line}"
 
                 if (err) logger.error(s) else logger.warn(s)
 

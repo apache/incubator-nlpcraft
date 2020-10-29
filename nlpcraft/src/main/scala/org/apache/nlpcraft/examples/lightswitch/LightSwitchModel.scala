@@ -44,6 +44,7 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         "Turn the lights off in the entire house.",
         "Switch on the illumination in the master bedroom closet.",
         "Get the lights on.",
+        "Lights up in the kitchen.",
         "Please, put the light out in the upstairs bedroom.",
         "Set the lights on in the entire house.",
         "Turn the lights off in the guest bedroom.",

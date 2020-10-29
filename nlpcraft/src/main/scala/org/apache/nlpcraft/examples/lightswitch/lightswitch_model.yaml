@@ -40,8 +40,8 @@ elements:
       - "act"
     description: "Light switch ON action."
     synonyms:
-      - "<ACTION> <LIGHT>"
-      - "<ACTION> on <LIGHT>"
+      - "<ACTION> {on|up|*} <LIGHT> {on|up|*}"
+      - "<LIGHT> {on|up}"
 
   - id: "ls:off"
     groups:

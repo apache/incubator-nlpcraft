@@ -514,7 +514,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 )
             )
         catch {
-            case e: Throwable ⇒ throw new NCE(s"Failed to instantiate model for: $clsName", e)
+            case e: Throwable ⇒ throw new NCE(s"Failed to instantiate model: $clsName", e)
         }
 
     /**
