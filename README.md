@@ -57,7 +57,7 @@ Built with a singular focus - provide developers with unprecedented productivity
 Combines easy-of-use and development productivity with state-of-the-art NLP capabilities like short-term-memory (STM) support, advanced intent DSL with deterministic matching, and composable NEs.
                         
 ### Java-First
-REST API and Java-based implementation natively support world's largest ecosystem of development tools, multiple programming languages, frameworks and services.
+REST API and Java-based implementation natively supports world's largest ecosystem of development tools, multiple programming languages, frameworks and services.
 
 <a target=_ href="https://www.oracle.com/java/"><img src="https://nlpcraft.apache.org/images/java2.png" height="32px" alt=""></a>
 <a target=_ href="https://scala-lang.org/"><img src="https://nlpcraft.apache.org/images/scala-logo.png" height="24px" alt=""></a>

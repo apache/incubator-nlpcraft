@@ -1294,14 +1294,14 @@ object NCUtils extends LazyLogging {
                     .POST(
                         HttpRequest.BodyPublishers.ofString(
                             s"v=1&" +
-                                s"t=screenview&" +
-                                s"tid=UA-180663034-1&" + // 'nlpcraft.apache.org' web property.
-                                s"cid=$anonym&" + // Hide any user information (anonymous user).
-                                s"aip=&" + // Hide user IP (anonymization).
-                                s"an=nlpcraft&" +
-                                s"av=${NCVersion.getCurrent.version}&" +
-                                s"aid=org.apache.nlpcraft&" +
-                                s"cd=$cd"
+                            s"t=screenview&" +
+                            s"tid=UA-180663034-1&" + // 'nlpcraft.apache.org' web property.
+                            s"cid=$anonym&" + // Hide any user information (anonymous user).
+                            s"aip=&" + // Hide user IP (anonymization).
+                            s"an=nlpcraft&" +
+                            s"av=${NCVersion.getCurrent.version}&" +
+                            s"aid=org.apache.nlpcraft&" +
+                            s"cd=$cd"
                         )
                     )
                     .build(),
