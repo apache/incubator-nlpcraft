@@ -54,7 +54,7 @@ NLPCraft focuses on processing English language delivering the ease of use and u
 Built with a singular focus - provide developers with unprecedented productivity and efficiency when building  modern NLI applications.
 
 ### Advanced NLP Toolset
-Combines easy-of-use and development productivity with state-of-the-art NLP capabilities like short-term-memory (STM) support, advanced intent DSL with deterministic matching, and composable NEs.
+Combines ease-of-use and development productivity with state-of-the-art NLP capabilities like short-term-memory (STM) support, advanced intent DSL with deterministic matching, and composable NEs.
                         
 ### Java-First
 REST API and Java-based implementation natively supports the world's largest ecosystem of development tools, multiple programming languages, frameworks and services.
@@ -65,7 +65,7 @@ REST API and Java-based implementation natively supports the world's largest eco
 <a target=_ href="https://kotlinlang.org/"><img src="https://nlpcraft.apache.org/images/kotlin.png" height="32px" alt=""></a>
 
 ### Model-As-A-Code
-Model-as-a-code convention natively supports any system development life cycle tools and frameworks in Java eco-system.
+Model-as-a-code convention natively supports any system development life cycle tools and frameworks in the Java ecosystem.
 
 ### Out-Of-The-Box Integration
 NLPCraft natively integrates with 3rd party libraries for base NLP processing and named entity recognition:
