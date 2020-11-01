@@ -19,12 +19,14 @@ package org.apache.nlpcraft.model.factories.basic;
 
 import org.apache.nlpcraft.common.*;
 import org.apache.nlpcraft.model.*;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
  * Default implementation of {@link NCModelFactory} interface.
  * <p>
- * This factory doesn't have any configuration properties and uses {@link Class#newInstance()} to construct {@link NCModel}s.
+ * This factory doesn't have any configuration properties and uses {@link java.lang.reflect.Constructor#newInstance(Object...)} to construct {@link NCModel}s.
  * </p>
  * Basic factory have to be specified in probe configuration. Here's
  * a <code>probe.conf</code> from <a target="github" href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/names">Names</a> example
@@ -68,8 +70,20 @@ public class NCBasicModelFactory implements NCModelFactory {
         try {
             return type.getConstructor().newInstance();
         }
+        catch (NoSuchMethodException e) {
+            throw new NCException(String.format("Model class does not have no-arg constructor: %s", type.getCanonicalName()), e);
+        }
+        catch (InstantiationException e) {
+            throw new NCException(String.format("Model class cannot be an abstract class: %s", type.getCanonicalName()), e);
+        }
+        catch (InvocationTargetException e) {
+            throw new NCException(String.format("Model no-arg constructor failed: %s", type.getCanonicalName()), e);
+        }
+        catch (ExceptionInInitializerError e) {
+            throw new NCException(String.format("Model class initialization failed: %s", type.getCanonicalName()), e);
+        }
         catch (Exception e) {
-            throw new NCException(String.format("Failed to instantiate model: %s", type), e);
+            throw new NCException(String.format("Failed to instantiate model: %s", type.getCanonicalName()), e);
         }
     }
 

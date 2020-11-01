@@ -1205,21 +1205,6 @@ object NCUtils extends LazyLogging {
             }
 
     /**
-      *
-      * @param e
-      * @return
-      */
-    @tailrec
-    def getOriginCause(e: Throwable): Throwable =
-        if (e == null)
-            null
-        else
-            e.getCause match {
-                case null ⇒ e // Original cause (bottom of the stack trace).
-                case t ⇒ getOriginCause(t)
-            }
-
-    /**
       * Safely and silently closes the server socket.
       *
       * @param sock Server socket to close.
@@ -1363,7 +1348,9 @@ object NCUtils extends LazyLogging {
             var errMsg = x.getLocalizedMessage
 
             if (errMsg == null)
-                errMsg = "<<null>>"
+                errMsg = "<null>"
+
+            val exClsName = if (!x.isInstanceOf[NCE]) s"$ansiRedFg[${x.getClass.getSimpleName}]$ansiReset " else ""
 
             val trace = x.getStackTrace.find(!_.getClassName.startsWith("scala.")).getOrElse(x.getStackTrace.head)
 
@@ -1372,12 +1359,12 @@ object NCUtils extends LazyLogging {
 
             val msg =
                 if (fileName == null || lineNum < 0)
-                    errMsg
+                    s"$exClsName$errMsg"
                 else
-                    s"$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
+                    s"$exClsName$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line ⇒ {
-                val s = s"${" " * indent}${if (first) ansiBlue("+- ") else "   "}${line}"
+                val s = s"${" " * indent}${if (first) ansiBlue("+- ") else "   "}$line"
 
                 if (err) logger.error(s) else logger.warn(s)
 

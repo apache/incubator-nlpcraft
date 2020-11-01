@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer}
-import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX}
+import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX, escapeJson}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
 import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentSolver}
@@ -546,12 +546,17 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     private def makeModelFromSource(cls: Class[_ <: NCModel], src: String): NCModel =
         catching(classOf[Throwable]) either mdlFactory.mkModel(cls) match {
-            case Left(e) ⇒
-                throw new NCE(s"Failed to instantiate model [" +
-                    s"cls=${cls.getName}, " +
-                    s"factory=${mdlFactory.getClass.getName}, " +
-                    s"src=$src" +
-                "]", e)
+            case Left(e) ⇒ e match {
+                case _: NCE ⇒ throw e
+                case _ ⇒
+                    throw new NCE(s"Failed to instantiate model [" +
+                        s"cls=${cls.getName}, " +
+                        s"factory=${mdlFactory.getClass.getName}, " +
+                        s"src=$src" +
+                        "]",
+                        e
+                    )
+            }
 
             case Right(model) ⇒ model
         }

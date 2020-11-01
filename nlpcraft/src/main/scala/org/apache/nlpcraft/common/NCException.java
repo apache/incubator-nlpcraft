@@ -30,7 +30,7 @@ public class NCException extends RuntimeException {
      * @param cause Optional cause of this exception.
      */
     public NCException(String msg, Throwable cause) {
-        super(msg, NCUtils.getOriginCause(cause));
+        super(msg, cause);
     }
 
     /**
