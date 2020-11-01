@@ -52,7 +52,8 @@ class LightSwitchModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/
         "Dial off illumination on the 2nd floor.",
         "Please, no lights!",
         "Kill off all the lights now!",
-        "No lights in the bedroom, please."
+        "No lights in the bedroom, please.",
+        "Light up the garage, please!"
     ))
     def onMatch(
         @NCIntentTerm("act") actTok: NCToken,
