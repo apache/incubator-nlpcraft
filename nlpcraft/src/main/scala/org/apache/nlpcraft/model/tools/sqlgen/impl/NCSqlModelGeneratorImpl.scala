@@ -601,13 +601,13 @@ object NCSqlModelGeneratorImpl {
             System.err.println(
                 s"""
                    |NAME:
-                   |    NCSqlModelGenerator -- NLPCraft model generator for SQL databases.
+                   |    NCSqlModelGenerator -- NLPCraft model generator from SQL databases.
                    |
                    |SYNOPSIS:
                    |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
                    |
                    |DESCRIPTION:
-                   |    This utility generates NLPCraft model stub for a given SQL database schema. You
+                   |    This utility generates NLPCraft model stub from a given SQL database schema. You
                    |    can choose database schema, set of tables and columns for which you
                    |    want to generate NLPCraft model. After the model is generated you can
                    |    further configure and customize it for your specific needs.
@@ -647,7 +647,7 @@ object NCSqlModelGeneratorImpl {
                |        Optional generated model ID. By default, the model ID will be 'sql.model.id'.
                |
                |    [--model-ver|-v] version
-               |        Optional generated model version. By default, the model ID will be '1.0.0-timestamp'.
+               |        Optional generated model version. By default, the model version will be '1.0.0-timestamp'.
                |
                |    [--model-name|-n] name
                |        Optional generated model name. By default, the model name will be 'SQL-based model'.
@@ -677,7 +677,7 @@ object NCSqlModelGeneratorImpl {
                |        Default is true.
                |
                |    [--override|-z] [true|false]
-               |        Flag to determine whether or not to override output file if it already exist.
+               |        Optional flag to determine whether or not to override output file if it already exist.
                |        If override is disabled (default) and output file exists - a unique file name will
                |        be used instead.
                |        Default is false.
