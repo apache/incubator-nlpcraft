@@ -43,6 +43,7 @@ import java.util.regex.Pattern
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.apache.http.util.EntityUtils
+import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl
 import org.jline.builtins.Commands
 import org.jline.reader.{Candidate, Completer, EndOfFileException, Highlighter, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser
@@ -2247,6 +2248,20 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val nativeArgs = args.map { arg ⇒
+            val param = arg.parameter.names.head
+
+            arg.value match {
+                case None ⇒ param
+                case Some(v) ⇒ s"$param=$v"
+            }
+        }
+
+        try
+            NCSqlModelGeneratorImpl.process(nativeArgs.toArray)
+        catch {
+            case e: Exception ⇒ error(e.getLocalizedMessage)
+        }
     }
 
     /**
