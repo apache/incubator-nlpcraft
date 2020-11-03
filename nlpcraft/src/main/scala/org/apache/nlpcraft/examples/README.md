@@ -38,7 +38,7 @@ See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide fo
 
 For any questions, feedback or suggestions:
 
- * Latest [Javadoc](http://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
+ * Latest [Javadoc](https://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
  * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
