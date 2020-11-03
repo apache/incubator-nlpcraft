@@ -33,6 +33,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.impl.json.{NCElementJson, NCMacroJson, NCModelJson}
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType
+import org.apache.nlpcraft.common._
 import resource.managed
 
 import scala.collection.JavaConverters._
@@ -600,13 +601,13 @@ object NCSqlModelGeneratorImpl {
         if (msg == null)
             System.err.println(
                 s"""
-                   |NAME:
-                   |    NCSqlModelGenerator -- NLPCraft model generator from SQL databases.
+                   |${bo("NAME:")}
+                   |    ${c("NCSqlModelGenerator")} -- NLPCraft model generator from SQL databases.
                    |
-                   |SYNOPSIS:
+                   |${bo("SYNOPSIS:")}
                    |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
                    |
-                   |DESCRIPTION:
+                   |${bo("DESCRIPTION:")}
                    |    This utility generates NLPCraft model stub from a given SQL database schema. You
                    |    can choose database schema, set of tables and columns for which you
                    |    want to generate NLPCraft model. After the model is generated you can
@@ -620,102 +621,102 @@ object NCSqlModelGeneratorImpl {
     
         System.err.println(
             s"""
-               |PARAMETERS:
-               |    [--url|-r] url
+               |${bo("PARAMETERS:")}
+               |    ${c("--url|-r")} ${g("url")}
                |        Mandatory database JDBC URL.
                |
-               |    [--driver|-d] class
+               |    ${c("--driver|-d")} ${g("class")}
                |        Mandatory JDBC driver class. Note that 'class' must be a
                |        fully qualified class name. It should also be available on
                |        the classpath.
                |
-               |    [--schema|-s] schema
+               |    ${c("--schema|-s")} ${g("schema")}
                |        Mandatory database schema to scan.
                |
-               |    [--out|-o] filename
+               |    ${c("--out|-o")} ${g("filename")}
                |        Mandatory name of the output JSON or YAML model file. It should
                |        have one of the following extensions: .js, .json, .yml, or .yaml
                |        File extension determines the output file format.
                |
-               |    [--user|-u] username
+               |    ${c("--user|-u")} ${g("username")}
                |        Optional database user name.
                |
-               |    [--password|-w] password
+               |    ${c("--password|-w")} ${g("password")}
                |        Optional database user password.
                |
-               |    [--model-id|-x] id
+               |    ${c("--model-id|-x")} ${g("id")}
                |        Optional generated model ID. By default, the model ID will be 'sql.model.id'.
                |
-               |    [--model-ver|-v] version
+               |    ${c("--model-ver|-v")} ${g("version")}
                |        Optional generated model version. By default, the model version will be '1.0.0-timestamp'.
                |
-               |    [--model-name|-n] name
+               |    ${c("--model-name|-n")} ${g("name")}
                |        Optional generated model name. By default, the model name will be 'SQL-based model'.
                |
-               |    [--exclude|-e] list
+               |    ${c("--exclude|-e")} ${g("list")}
                |        Optional semicolon-separate list of tables and/or columns to exclude. By
                |        default, none of the tables and columns in the schema are excluded. See below
                |        for more information.
                |
-               |    [--prefix|-f] list
+               |    ${c("--prefix|-f")} ${g("list")}
                |        Optional comma-separate list of table or column name prefixes to remove.
                |        These prefixes will be removed when name is used for model elements
                |        synonyms. By default, no prefixes will be removed.
                |
-               |    [--suffix|-q] list
+               |    ${c("--suffix|-q")} ${g("list")}
                |        Optional comma-separate list of table or column name suffixes to remove.
                |        These suffixes will be removed when name is used for model elements
                |        synonyms. By default, no suffixes will be removed.
                |               
-               |    [--include|-i] list
+               |    ${c("--include|-i")} ${g("list")}
                |        Optional semicolon-separate list of tables and/or columns to include. By
                |        default, all tables and columns in the schema are included. See below
                |        for more information.
                |
-               |    [--synonyms|-y] [true|false]
+               |    ${c("--synonyms|-y")} ${g("true|false")}
                |        Optional flag on whether or not to generated auto synonyms for the model elements.
                |        Default is true.
                |
-               |    [--override|-z] [true|false]
+               |    ${c("--override|-z")} ${g("true|false")}
                |        Optional flag to determine whether or not to override output file if it already exist.
                |        If override is disabled (default) and output file exists - a unique file name will
                |        be used instead.
                |        Default is false.
                |
-               |    [--parent|-p] [true|false]
+               |    ${c("--parent|-p")} ${g("true|false")}
                |        Optional flag on whether or not to use element's parent relationship for
                |        defining SQL columns and their containing (i.e. parent) tables.
                |        Default is false.
                |
-               |    [--help|-h|-?]
+               |    ${c("--help|-h|-?")}
                |        Prints this usage information.
                |
-               |DETAILS:
-               |    -r, -d, -s, and -o are mandatory parameters, everything else is optional.
+               |${bo("DETAILS:")}
+               |    ${c("-r")}, ${c("-d")}, ${c("-s")}, and ${c("-o")} are mandatory parameters, everything else is optional.
                |
                |    Each -i or -e parameter is a semicolon ';' separated  list of table or columns names.
                |    Each table or column name can be one of following forms:
-               |      - table         -- to filter on table names only.
-               |      - table#column  -- to filter on both table and column names.
-               |      - #column       -- to filter on columns only (regardless of the table).
+               |      - ${g("table")}         -- to filter on table names only.
+               |      - ${g("table#column")}  -- to filter on both table and column names.
+               |      - ${g("#column")}       -- to filter on columns only (regardless of the table).
                |
                |    Table and column names are treated as standard Java regular expressions. Note that
                |    both '#' and ';' cannot be used inside of the regular expression:
                |
-               |    -e "#_.+"             -- excludes any columns starting with '_'.
-               |    -e "tmp.+"            -- excludes all tables starting with 'tmp'.
-               |    -i "Order.*;#[^_].+"  -- includes only tables starting with 'Order' and columns that
+               |    ${c("-e")} "${g("#_.+")}"             -- excludes any columns starting with '_'.
+               |    ${c("-e")} "${g("tmp.+")}"            -- excludes all tables starting with 'tmp'.
+               |    ${c("-i")} "${g("Order.*;#[^_].+")}"  -- includes only tables starting with 'Order' and columns that
                |                             do not start with '_'.
                |
-               |EXAMPLES:
+               |${bo("EXAMPLES:")}
                |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
-               |        -r jdbc:postgresql://localhost:5432/mydb
-               |        -d org.postgresql.Driver
-               |        -f "tbl_, col_"
-               |        -q "_tmp, _old, _unused"
-               |        -s public
-               |        -e "#_.+"
-               |        -o model.json
+               |        ${c("-r")} jdbc:postgresql://localhost:5432/mydb
+               |        ${c("-d")} org.postgresql.Driver
+               |        ${c("-f")} "tbl_, col_"
+               |        ${c("-q")} "_tmp, _old, _unused"
+               |        ${c("-s")} public
+               |        ${c("-e")} "#_.+"
+               |        ${c("-o")} model.json
             """.stripMargin
         )
         
