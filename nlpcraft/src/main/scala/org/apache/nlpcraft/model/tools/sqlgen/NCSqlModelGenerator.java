@@ -62,9 +62,16 @@ public class NCSqlModelGenerator {
      * @throws NCException Thrown in case of any errors.
      */
     public static void main(String[] args) {
-        // Calling out Scala engine.
-        NCSqlModelGeneratorImpl.process(args);
+        int status  = 0;
 
-        System.exit(0);
+        // Calling out Scala engine.
+        try {
+            NCSqlModelGeneratorImpl.process(false, args);
+        }
+        catch (Exception e) {
+            status = 1;
+        }
+
+        System.exit(status);
     }
 }

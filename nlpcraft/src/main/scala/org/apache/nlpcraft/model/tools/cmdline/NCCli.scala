@@ -2248,17 +2248,17 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val nativeArgs = args.map { arg ⇒
+        val nativeArgs = args.flatMap { arg ⇒
             val param = arg.parameter.names.head
 
             arg.value match {
-                case None ⇒ param
-                case Some(v) ⇒ s"$param=$v"
+                case None ⇒ Seq(param)
+                case Some(v) ⇒ Seq(param, v)
             }
         }
 
         try
-            NCSqlModelGeneratorImpl.process(nativeArgs.toArray)
+            NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
         catch {
             case e: Exception ⇒ error(e.getLocalizedMessage)
         }
@@ -2768,8 +2768,10 @@ object NCCli extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        term.writer().println(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
-        term.flush()
+        if (msg != null && msg.nonEmpty) {
+            term.writer().println(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            term.flush()
+        }
     }
 
     /**

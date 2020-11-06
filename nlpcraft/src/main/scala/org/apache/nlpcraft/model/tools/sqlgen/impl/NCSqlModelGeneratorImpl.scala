@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen.impl
 
-import java.io.{File, FileOutputStream, IOException}
+import java.io.{File, FileOutputStream, IOException, PrintStream}
 import java.sql.{Connection, DriverManager, ResultSet}
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime}
@@ -45,6 +45,8 @@ import scala.util.Try
  * Scala-based SQL model engine.
  */
 object NCSqlModelGeneratorImpl {
+    private var repl = false
+
     case class Join(
         fromColumns: Seq[String],
         toTable: String,
@@ -172,7 +174,7 @@ object NCSqlModelGeneratorImpl {
                 case 1 if !expr.contains("#") ⇒ (s(0), "")  // 'table'
                 case 1 if expr.contains("#") ⇒ ("", s(0))   // '#column'
                 case 2 ⇒ (s(0), s(1))                       // 'table#column'
-                case _ ⇒ throw new Exception(s"Invalid table and/or column filter: $expr")
+                case _ ⇒ throw new Exception(s"Invalid table and/or column filter: $C$expr$RST")
             }
 
             val (tblRx, colRx) = try {
@@ -182,7 +184,7 @@ object NCSqlModelGeneratorImpl {
                 )
             }
             catch {
-                case e: PatternSyntaxException ⇒ throw new Exception(s"Invalid regular expression: ${e.getMessage}")
+                case e: PatternSyntaxException ⇒ throw new Exception(s"Invalid regular expression: $C${e.getMessage}$RST")
             }
 
             (t: String, c: String) ⇒ {
@@ -394,13 +396,13 @@ object NCSqlModelGeneratorImpl {
                 
                 println(
                     s"Output file already exist and override is disabled:\n" +
-                    s"  +-→ using '${file.getName}' filename instead."
+                    s"  +-→ using $C'${file.getName}'$RST filename instead."
                 )
             }
             else
                 println(
                     s"Existing file '${file.getName}' will be overridden:\n" +
-                    s"  +-→ use '-z false' to disable override."
+                    s"  +-→ use $C'-z false'$RST to disable override."
                 )
         }
 
@@ -578,49 +580,36 @@ object NCSqlModelGeneratorImpl {
             }
         }
         catch {
-            case _: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: ${params.driver}")
-            case e: Exception ⇒ errorExit(s"Failed to generate model for '${params.url}': ${e.getMessage}")
-            case e: Exception ⇒ errorExit(s"Failed to generate model for '${params.url}': ${e.getMessage}")
+            case _: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: $C${params.driver}$RST")
+            case e: Exception ⇒ errorExit(s"Failed to generate model for $C'${params.url}'$RST: ${e.getLocalizedMessage}")
         }
         
         tables.values.toSeq.filter(_.columns.nonEmpty)
     }
-    
+
     /**
      *
-     * @param msg Optional error message.
-     */
-    private def errorExit(msg: String = null): Unit = {
-        if (msg != null)
-            System.err.println(
-                s"""
-                |ERROR:
-                |    $msg""".stripMargin
-            )
-        
-        if (msg == null)
-            System.err.println(
-                s"""
-                   |${bo("NAME:")}
-                   |    ${c("NCSqlModelGenerator")} -- NLPCraft model generator from SQL databases.
-                   |
-                   |${bo("SYNOPSIS:")}
-                   |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
-                   |
-                   |${bo("DESCRIPTION:")}
-                   |    This utility generates NLPCraft model stub from a given SQL database schema. You
-                   |    can choose database schema, set of tables and columns for which you
-                   |    want to generate NLPCraft model. After the model is generated you can
-                   |    further configure and customize it for your specific needs.
-                   |
-                   |    This Java class can be run from the command line or from an IDE like any other
-                   |    Java application. Note that required JDBC driver class must be available on the
-                   |    classpath and therefore its JAR should be added to the classpath when running
-                   |    this application.""".stripMargin
-            )
-    
-        System.err.println(
+      */
+    private def help(out: PrintStream): Unit =
+        out.println(
             s"""
+               |${bo("NAME:")}
+               |    ${c("NCSqlModelGenerator")} -- NLPCraft model generator from SQL databases.
+               |
+               |${bo("SYNOPSIS:")}
+               |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
+               |
+               |${bo("DESCRIPTION:")}
+               |    This utility generates NLPCraft model stub from a given SQL database schema. You
+               |    can choose database schema, set of tables and columns for which you
+               |    want to generate NLPCraft model. After the model is generated you can
+               |    further configure and customize it for your specific needs.
+               |
+               |    This Java class can be run from the command line or from an IDE like any other
+               |    Java application. Note that required JDBC driver class must be available on the
+               |    classpath and therefore its JAR should be added to the classpath when running
+               |    this application.
+               |
                |${bo("PARAMETERS:")}
                |    ${c("--url|-r")} ${g("url")}
                |        Mandatory database JDBC URL.
@@ -667,7 +656,7 @@ object NCSqlModelGeneratorImpl {
                |        Optional comma-separate list of table or column name suffixes to remove.
                |        These suffixes will be removed when name is used for model elements
                |        synonyms. By default, no suffixes will be removed.
-               |               
+               |
                |    ${c("--include|-i")} ${g("list")}
                |        Optional semicolon-separate list of tables and/or columns to include. By
                |        default, all tables and columns in the schema are included. See below
@@ -717,10 +706,28 @@ object NCSqlModelGeneratorImpl {
                |        ${c("-s")} public
                |        ${c("-e")} "#_.+"
                |        ${c("-o")} model.json
-            """.stripMargin
+                """.stripMargin
         )
-        
-        System.exit(1)
+    
+    /**
+     *
+     * @param msg Optional error message.
+     */
+    private def errorExit(msg: String = null): Unit = {
+        if (repl)
+            throw new Exception(msg)
+        else {
+            if (msg != null)
+                System.err.println(
+                    s"""
+                       |${r("ERROR:")}
+                       |    $msg""".stripMargin
+                )
+
+            help(System.err)
+
+            throw new Exception(msg)
+        }
     }
     
     /**
@@ -730,7 +737,7 @@ object NCSqlModelGeneratorImpl {
      */
     private def mandatoryParam(v: String, name: String): Unit =
         if (v == null)
-            throw new IllegalArgumentException(s"Parameter is mandatory and must be set: $name")
+            throw new IllegalArgumentException(s"Missing mandatory parameter: $C$name$RST")
     
     /**
      *
@@ -742,7 +749,7 @@ object NCSqlModelGeneratorImpl {
         v.toLowerCase match {
             case "true" ⇒ true
             case "false" ⇒ false
-            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $name $v")
+            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $C$name $v$RST")
         }
         
     /**
@@ -751,9 +758,6 @@ object NCSqlModelGeneratorImpl {
      * @return
      */
     private def parseCmdParameters(cmdArgs: Array[String]): ParametersHolder = {
-        if (cmdArgs.isEmpty || !cmdArgs.intersect(Seq("--help", "-h", "-help", "--?", "-?", "/?", "/help")).isEmpty)
-            errorExit()
-        
         val params = ParametersHolder()
         
         var i = 0
@@ -781,7 +785,7 @@ object NCSqlModelGeneratorImpl {
                     case "--synonyms" | "-y" ⇒ params.synonyms = parseBoolean(v, k)
                     case "--override" | "-z" ⇒ params.overRide = parseBoolean(v, k)
 
-                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: ${cmdArgs(i)}")
+                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: $C${cmdArgs(i)}$RST")
                 }
 
                 i = i + 2
@@ -798,7 +802,7 @@ object NCSqlModelGeneratorImpl {
                 !outLc.endsWith(".js") &&
                 !outLc.endsWith(".yaml") &&
                 !outLc.endsWith(".yml"))
-                throw new IllegalArgumentException(s"Unsupported output file extension in '-out ${params.output}'")
+                throw new IllegalArgumentException(s"Unsupported output file extension in $C'${params.output}'$RST output.")
             
             params.cmdLine = cmdArgs.mkString(" ")
         }
@@ -810,12 +814,20 @@ object NCSqlModelGeneratorImpl {
     }
 
     /**
-      *
-      */
-    def process(args: Array[String]): Unit = {
-        val params = parseCmdParameters(args)
-        val tbls = readSqlMetadata(params)
+     *
+     * @param repl Whether or not this is called from REPL.
+     * @param args Command line arguments.
+     */
+    def process(repl: Boolean, args: Array[String]): Unit = {
+        this.repl = repl
 
-        generateModel(tbls, params)
+        if (args.isEmpty || !args.intersect(Seq("--help", "-h", "-help", "--?", "-?", "/?", "/help")).isEmpty)
+            help(System.out)
+        else {
+            val params = parseCmdParameters(args)
+            val tbls = readSqlMetadata(params)
+
+            generateModel(tbls, params)
+        }
     }
 }
