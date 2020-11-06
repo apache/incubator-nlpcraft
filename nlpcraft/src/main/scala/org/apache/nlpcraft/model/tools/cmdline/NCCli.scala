@@ -43,6 +43,7 @@ import java.util.regex.Pattern
 import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.apache.http.util.EntityUtils
+import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl
 import org.jline.builtins.Commands
 import org.jline.reader.{Candidate, Completer, EndOfFileException, Highlighter, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
 import org.jline.reader.impl.DefaultParser
@@ -77,13 +78,13 @@ object NCCli extends App {
     // +==================================================================+
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
-    private final val NUM_SRV_SERVICES = 30/*services*/ + 1/*progress start*/
+    private final val NUM_SRV_SERVICES = 30 /*services*/ + 1 /*progress start*/
 
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
     private final val HIST_PATH = ".nlpcraft/.cli_history"
 
     private final lazy val VER = NCVersion.getCurrent
-    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome,s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
+    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
     private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
     private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
@@ -138,33 +139,42 @@ object NCCli extends App {
 
     case class SplitError(index: Int)
         extends Exception
+
     case class NoLocalServer()
         extends IllegalStateException(s"Local REST server not found.")
+
     case class MissingParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
             s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-            s"type $C'help --cmd=${cmd.name}'$RST to get help."
+                s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
+
     case class MissingMandatoryJsonParameters(cmd: Command, path: String)
         extends IllegalArgumentException(
             s"Missing mandatory JSON parameter for $C${"'" + cmd.name + s" --path=$path'"}$RST, type $C'help --cmd=${cmd.name}'$RST to get help."
         )
+
     case class InvalidParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
             s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-            s"type $C'help --cmd=${cmd.name}'$RST to get help."
+                s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
+
     case class InvalidJsonParameter(cmd: Command, param: String)
         extends IllegalArgumentException(
             s"Invalid JSON parameter $C${"'" + param + "'"}$RST, " +
-            s"type $C'help --cmd=${cmd.name}'$RST to get help."
+                s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
+
     case class HttpError(httpCode: Int)
         extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
+
     case class MalformedJson()
         extends IllegalStateException("Malformed JSON.")
+
     case class TooManyArguments(cmd: Command)
         extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
+
     case class NotEnoughArguments(cmd: Command)
         extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
@@ -176,10 +186,15 @@ object NCCli extends App {
     )
 
     sealed trait JsonType
+
     case object STRING extends JsonType
+
     case object BOOLEAN extends JsonType
+
     case object NUMERIC extends JsonType
+
     case object OBJECT extends JsonType
+
     case object ARRAY extends JsonType
 
     case class RestSpecParameter(
@@ -440,7 +455,7 @@ object NCCli extends App {
                 RestSpecParameter(name = "acsTok", kind = STRING),
                 RestSpecParameter(name = "usrId", kind = STRING, optional = true),
                 RestSpecParameter(name = "extUsrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "srvReqId", kind = STRING,  optional = true)
+                RestSpecParameter(name = "srvReqId", kind = STRING, optional = true)
             )
         ),
         RestSpec(
@@ -518,11 +533,13 @@ object NCCli extends App {
         def findParameterById(id: String): Parameter =
             findParameterByIdOpt(id).get
     }
+
     // Single command's example.
     case class Example(
         usage: Seq[String],
         desc: String
     )
+
     // Single command's parameter.
     case class Parameter(
         id: String,
@@ -751,6 +768,177 @@ object NCCli extends App {
                     ),
                     desc =
                         s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
+                )
+            )
+        ),
+        Command(
+            name = "sqlgen",
+            group = "4. Miscellaneous Tools",
+            synopsis = s"Generates NLPCraft model stub from SQL databases.",
+            desc = Some(
+                s"You can choose database schema, set of tables and columns for which you want to generate NLPCraft " +
+                s"model. After the model is generated you can further configure and customize it for your specific needs."
+            ),
+            body = cmdSqlGen,
+            params = Seq(
+                Parameter(
+                    id = "url",
+                    names = Seq("--url", "-r"),
+                    value = Some("url"),
+                    desc =
+                        s"Database JDBC URL."
+                ),
+                Parameter(
+                    id = "driver",
+                    names = Seq("--driver", "-d"),
+                    value = Some("class"),
+                    desc =
+                        s"Mandatory JDBC driver class. Note that 'class' must be a fully qualified class name. " +
+                        s"It should also be available on the classpath."
+                ),
+                Parameter(
+                    id = "schema",
+                    names = Seq("--schema", "-s"),
+                    value = Some("schema"),
+                    desc =
+                        s"Database schema to scan."
+                ),
+                Parameter(
+                    id = "out",
+                    names = Seq("--out", "-o"),
+                    value = Some("filename"),
+                    desc =
+                        s"Name of the output JSON or YAML model file. " +
+                        s"It should have one of the following extensions: .js, .json, .yml, or .yaml. " +
+                        s"File extension determines the output file format."
+                ),
+                Parameter(
+                    id = "user",
+                    names = Seq("--user", "-u"),
+                    value = Some("username"),
+                    optional = true,
+                    desc = s"Database user name."
+                ),
+                Parameter(
+                    id = "password",
+                    names = Seq("--password", "-w"),
+                    value = Some("password"),
+                    optional = true,
+                    desc = s"Database password."
+                ),
+                Parameter(
+                    id = "modelId",
+                    names = Seq("--model-id", "-x"),
+                    value = Some("id"),
+                    optional = true,
+                    desc = s"Generated model ID. By default, the model ID is ${c("'sql.model.id'")}."
+                ),
+                Parameter(
+                    id = "modelVer",
+                    names = Seq("--model-ver", "-v"),
+                    value = Some("version"),
+                    optional = true,
+                    desc = s"Generated model version. By default, the model version is ${c("'1.0.0-timestamp'")}."
+                ),
+                Parameter(
+                    id = "modelName",
+                    names = Seq("--model-name", "-n"),
+                    value = Some("name"),
+                    optional = true,
+                    desc = s"Generated model name. By default, the model name is ${c("'SQL-based-model'")}."
+                ),
+                Parameter(
+                    id = "exclude",
+                    names = Seq("--exclude", "-e"),
+                    value = Some("list"),
+                    optional = true,
+                    desc =
+                        s"Semicolon-separate list of tables and/or columns to exclude. By default, none of the " +
+                        s"tables and columns in the schema are excluded. See ${c("--help")} parameter to get more details."
+                ),
+                Parameter(
+                    id = "include",
+                    names = Seq("--include", "-i"),
+                    value = Some("list"),
+                    optional = true,
+                    desc =
+                        s"Semicolon-separate list of tables and/or columns to include. By default, all of the " +
+                        s"tables and columns in the schema are included. See ${c("--help")} parameter to get more details."
+                ),
+                Parameter(
+                    id = "prefix",
+                    names = Seq("--prefix", "-f"),
+                    value = Some("list"),
+                    optional = true,
+                    desc =
+                        s"Comma-separate list of table or column name prefixes to remove. These prefixes will be " +
+                        s"removed when name is used for model elements synonyms. By default, no prefixes will be removed."
+                ),
+                Parameter(
+                    id = "suffix",
+                    names = Seq("--suffix", "-q"),
+                    value = Some("list"),
+                    optional = true,
+                    desc =
+                        s"Comma-separate list of table or column name suffixes to remove. These suffixes will be " +
+                        s"removed when name is used for model elements synonyms. By default, no suffixes will be removed."
+                ),
+                Parameter(
+                    id = "synonyms",
+                    names = Seq("--synonyms", "-y"),
+                    value = Some("true|false"),
+                    optional = true,
+                    desc = s"Flag on whether or not to generated auto synonyms for the model elements. Default is ${c("'true'")}."
+                ),
+                Parameter(
+                    id = "override",
+                    names = Seq("--override", "-z"),
+                    value = Some("true|false"),
+                    optional = true,
+                    desc =
+                        s"Flag to determine whether or not to override output file if it already exist. " +
+                        s"If override is disabled (default) and output file exists - a unique file name " +
+                        s"will be used instead. Default is ${c("'false'")}."
+                ),
+                Parameter(
+                    id = "parent",
+                    names = Seq("--parent", "-p"),
+                    value = Some("true|false"),
+                    optional = true,
+                    desc =
+                        s"Flag on whether or not to use element's parent relationship for defining " +
+                        s"SQL columns and their containing (i.e. parent) tables. Default is ${c("'false'")}."
+                ),
+                Parameter(
+                    id = "help",
+                    names = Seq("--help", "-h"),
+                    optional = true,
+                    desc =
+                        s"Gets extended help and usage information for the ${c("'sqlgen'")} command. " +
+                        s"Includes information on how to run this tool standalone."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME sqlgen --help"
+                    ),
+                    desc =
+                        s"Shows full help and usage information for ${c("sqlgen")} command."
+                ),
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME sqlgen",
+                        "  -r=jdbc:postgresql://localhost:5432/mydb",
+                        "  -d=org.postgresql.Driver",
+                        """  -f="tbl_, col_"""",
+                        """  -q="_tmp, _old, _unused"""",
+                        "  -s=public",
+                        """  -e="#_.+"""",
+                        "  -o=model.json"
+                    ),
+                    desc =
+                        s"Generates model stub from given SQL database connection."
                 )
             )
         ),
@@ -1075,7 +1263,7 @@ object NCCli extends App {
             synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
                 s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
-                s"only listing the commands without parameters or examples."
+                    s"only listing the commands without parameters or examples."
             ),
             body = cmdHelp,
             params = Seq(
@@ -1136,16 +1324,16 @@ object NCCli extends App {
         "Dup commands."
     )
 
-    private final val NO_ANSI_CMD = CMDS.find(_.name ==  "no-ansi").get
-    private final val ANSI_CMD = CMDS.find(_.name ==  "ansi").get
-    private final val QUIT_CMD = CMDS.find(_.name ==  "quit").get
-    private final val HELP_CMD = CMDS.find(_.name ==  "help").get
-    private final val REST_CMD = CMDS.find(_.name ==  "rest").get
-    private final val CALL_CMD = CMDS.find(_.name ==  "call").get
-    private final val ASK_CMD = CMDS.find(_.name ==  "ask").get
-    private final val SUGSYN_CMD = CMDS.find(_.name ==  "sugsyn").get
-    private final val STOP_SRV_CMD = CMDS.find(_.name ==  "stop-server").get
-    private final val START_SRV_CMD = CMDS.find(_.name ==  "start-server").get
+    private final val NO_ANSI_CMD = CMDS.find(_.name == "no-ansi").get
+    private final val ANSI_CMD = CMDS.find(_.name == "ansi").get
+    private final val QUIT_CMD = CMDS.find(_.name == "quit").get
+    private final val HELP_CMD = CMDS.find(_.name == "help").get
+    private final val REST_CMD = CMDS.find(_.name == "rest").get
+    private final val CALL_CMD = CMDS.find(_.name == "call").get
+    private final val ASK_CMD = CMDS.find(_.name == "ask").get
+    private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
+    private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
+    private final val START_SRV_CMD = CMDS.find(_.name == "start-server").get
 
     /**
      *
@@ -1197,7 +1385,7 @@ object NCCli extends App {
     }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
      */
@@ -1321,7 +1509,7 @@ object NCCli extends App {
 
                     progressBar.ticked()
                 })
-                .start()
+                    .start()
 
                 val tailer = Tailer.create(
                     state.serverLog.get,
@@ -1398,7 +1586,7 @@ object NCCli extends App {
         }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1408,7 +1596,7 @@ object NCCli extends App {
                 try
                     Integer.parseInt(arg.value.get)
                 catch {
-                    case _ :Exception ⇒ throw InvalidParameter(cmd, "lines")
+                    case _: Exception ⇒ throw InvalidParameter(cmd, "lines")
                 }
 
             case None ⇒ 20 // Default.
@@ -1446,7 +1634,7 @@ object NCCli extends App {
     }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1458,7 +1646,7 @@ object NCCli extends App {
                 try
                     Integer.parseInt(arg.value.get)
                 catch {
-                    case _ :Exception ⇒ throw InvalidParameter(cmd, "number")
+                    case _: Exception ⇒ throw InvalidParameter(cmd, "number")
                 }
 
             case None ⇒ 1 // Default.
@@ -1506,7 +1694,7 @@ object NCCli extends App {
             i += 1
 
             if (i < num)
-                // Pause between pings.
+            // Pause between pings.
                 Thread.sleep(500.ms)
         }
     }
@@ -1529,8 +1717,8 @@ object NCCli extends App {
                 ) acquireAndGet {
                     _.readObject()
                 }
-            )
-            .asInstanceOf[NCCliServerBeacon]
+                )
+                .asInstanceOf[NCCliServerBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
                 case Some(ph) ⇒
@@ -1603,7 +1791,7 @@ object NCCli extends App {
     }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1612,7 +1800,7 @@ object NCCli extends App {
     }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1624,7 +1812,7 @@ object NCCli extends App {
     }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1650,7 +1838,7 @@ object NCCli extends App {
         }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1659,7 +1847,7 @@ object NCCli extends App {
     }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1668,7 +1856,7 @@ object NCCli extends App {
     }
 
     /**
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1713,7 +1901,7 @@ object NCCli extends App {
                         if (param.value.isDefined)
                             T___ + param.names.zip(Stream.continually(param.value.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
                         else
-                            s"$T___${param.names.mkString(", ")}"
+                            s"$T___${param.names.mkString(",")}"
 
                     lines += c(line)
 
@@ -1741,7 +1929,7 @@ object NCCli extends App {
         }
 
         def helpHelp(): Unit =
-           logln(s"\nType ${c("help --cmd=xxx")} to get help for ${c("xxx")} command.")
+            logln(s"\nType ${c("help --cmd=xxx")} to get help for ${c("xxx")} command.")
 
         if (args.isEmpty) { // Default - show abbreviated help.
             if (!repl)
@@ -1847,7 +2035,7 @@ object NCCli extends App {
         tbl += ("  Expiration timeout", s"$G${beacon.acsToksExpireMins} mins$RST")
         tbl += ("External config:", "")
         tbl += ("  URL", s"${g(beacon.extConfigUrl)}")
-        tbl += ("  Check MD5",s"${g(beacon.extConfigCheckMd5)}")
+        tbl += ("  Check MD5", s"${g(beacon.extConfigCheckMd5)}")
         tbl += ("Log file", logPath)
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
@@ -1887,7 +2075,7 @@ object NCCli extends App {
 
     /**
      *
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1900,7 +2088,7 @@ object NCCli extends App {
 
     /**
      *
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1909,7 +2097,7 @@ object NCCli extends App {
 
     /**
      *
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1961,7 +2149,7 @@ object NCCli extends App {
 
     /**
      *
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1990,7 +2178,7 @@ object NCCli extends App {
 
     /**
      *
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -2011,12 +2199,12 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case Some(_) ⇒  error(s"Already signed in. See ${c("'signout'")} command.")
+            case Some(_) ⇒ error(s"Already signed in. See ${c("'signout'")} command.")
         }
 
     /**
      *
-     * @param cmd Command descriptor.
+     * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -2050,6 +2238,29 @@ object NCCli extends App {
                 ss
             else
                 s""""$ss""""
+        }
+    }
+
+    /**
+     *
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val nativeArgs = args.flatMap { arg ⇒
+            val param = arg.parameter.names.head
+
+            arg.value match {
+                case None ⇒ Seq(param)
+                case Some(v) ⇒ Seq(param, v)
+            }
+        }
+
+        try
+            NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
+        catch {
+            case e: Exception ⇒ error(e.getLocalizedMessage)
         }
     }
 
@@ -2557,8 +2768,10 @@ object NCCli extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        term.writer().println(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
-        term.flush()
+        if (msg != null && msg.nonEmpty) {
+            term.writer().println(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            term.flush()
+        }
     }
 
     /**

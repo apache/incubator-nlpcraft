@@ -46,9 +46,9 @@ import java.util.*;
  *     </li>
  * </ul>
  * <p>
- * See <a target=_ href="http://nlpcraft.apache.org/examples/alarm_clock.html">Alarm Clock</a>,
- * <a target=_ href="http://nlpcraft.apache.org/examples/light_switch.html">Light Switch</a>, and
- * <a target=_ href="http://nlpcraft.apache.org/examples/weather_bot.html">Weather Bot</a> examples
+ * See <a target=_ href="https://nlpcraft.apache.org/examples/alarm_clock.html">Alarm Clock</a>,
+ * <a target=_ href="https://nlpcraft.apache.org/examples/light_switch.html">Light Switch</a>, and
+ * <a target=_ href="https://nlpcraft.apache.org/examples/weather_bot.html">Weather Bot</a> examples
  * for usage of model auto-validator.
  * 
  * @see NCIntentSample

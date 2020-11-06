@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen.impl
 
-import java.io.{File, FileOutputStream, IOException}
+import java.io.{File, FileOutputStream, IOException, PrintStream}
 import java.sql.{Connection, DriverManager, ResultSet}
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime}
@@ -33,6 +33,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.impl.json.{NCElementJson, NCMacroJson, NCModelJson}
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType
+import org.apache.nlpcraft.common._
 import resource.managed
 
 import scala.collection.JavaConverters._
@@ -44,6 +45,8 @@ import scala.util.Try
  * Scala-based SQL model engine.
  */
 object NCSqlModelGeneratorImpl {
+    private var repl = false
+
     case class Join(
         fromColumns: Seq[String],
         toTable: String,
@@ -171,7 +174,7 @@ object NCSqlModelGeneratorImpl {
                 case 1 if !expr.contains("#") ⇒ (s(0), "")  // 'table'
                 case 1 if expr.contains("#") ⇒ ("", s(0))   // '#column'
                 case 2 ⇒ (s(0), s(1))                       // 'table#column'
-                case _ ⇒ throw new Exception(s"Invalid table and/or column filter: $expr")
+                case _ ⇒ throw new Exception(s"Invalid table and/or column filter: $C$expr$RST")
             }
 
             val (tblRx, colRx) = try {
@@ -181,7 +184,7 @@ object NCSqlModelGeneratorImpl {
                 )
             }
             catch {
-                case e: PatternSyntaxException ⇒ throw new Exception(s"Invalid regular expression: ${e.getMessage}")
+                case e: PatternSyntaxException ⇒ throw new Exception(s"Invalid regular expression: $C${e.getMessage}$RST")
             }
 
             (t: String, c: String) ⇒ {
@@ -393,13 +396,13 @@ object NCSqlModelGeneratorImpl {
                 
                 println(
                     s"Output file already exist and override is disabled:\n" +
-                    s"  +-→ using '${file.getName}' filename instead."
+                    s"  +-→ using $C'${file.getName}'$RST filename instead."
                 )
             }
             else
                 println(
                     s"Existing file '${file.getName}' will be overridden:\n" +
-                    s"  +-→ use '-z false' to disable override."
+                    s"  +-→ use $C'-z false'$RST to disable override."
                 )
         }
 
@@ -577,149 +580,154 @@ object NCSqlModelGeneratorImpl {
             }
         }
         catch {
-            case _: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: ${params.driver}")
-            case e: Exception ⇒ errorExit(s"Failed to generate model for '${params.url}': ${e.getMessage}")
-            case e: Exception ⇒ errorExit(s"Failed to generate model for '${params.url}': ${e.getMessage}")
+            case _: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: $C${params.driver}$RST")
+            case e: Exception ⇒ errorExit(s"Failed to generate model for $C'${params.url}'$RST: ${e.getLocalizedMessage}")
         }
         
         tables.values.toSeq.filter(_.columns.nonEmpty)
     }
+
+    /**
+     *
+      */
+    private def help(out: PrintStream): Unit =
+        out.println(
+            s"""
+               |${bo("NAME:")}
+               |    ${c("NCSqlModelGenerator")} -- NLPCraft model generator from SQL databases.
+               |
+               |${bo("SYNOPSIS:")}
+               |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
+               |
+               |${bo("DESCRIPTION:")}
+               |    This utility generates NLPCraft model stub from a given SQL database schema. You
+               |    can choose database schema, set of tables and columns for which you
+               |    want to generate NLPCraft model. After the model is generated you can
+               |    further configure and customize it for your specific needs.
+               |
+               |    This Java class can be run from the command line or from an IDE like any other
+               |    Java application. Note that required JDBC driver class must be available on the
+               |    classpath and therefore its JAR should be added to the classpath when running
+               |    this application.
+               |
+               |${bo("PARAMETERS:")}
+               |    ${c("--url|-r")} ${g("url")}
+               |        Mandatory database JDBC URL.
+               |
+               |    ${c("--driver|-d")} ${g("class")}
+               |        Mandatory JDBC driver class. Note that 'class' must be a
+               |        fully qualified class name. It should also be available on
+               |        the classpath.
+               |
+               |    ${c("--schema|-s")} ${g("schema")}
+               |        Mandatory database schema to scan.
+               |
+               |    ${c("--out|-o")} ${g("filename")}
+               |        Mandatory name of the output JSON or YAML model file. It should
+               |        have one of the following extensions: .js, .json, .yml, or .yaml
+               |        File extension determines the output file format.
+               |
+               |    ${c("--user|-u")} ${g("username")}
+               |        Optional database user name.
+               |
+               |    ${c("--password|-w")} ${g("password")}
+               |        Optional database user password.
+               |
+               |    ${c("--model-id|-x")} ${g("id")}
+               |        Optional generated model ID. By default, the model ID will be 'sql.model.id'.
+               |
+               |    ${c("--model-ver|-v")} ${g("version")}
+               |        Optional generated model version. By default, the model version will be '1.0.0-timestamp'.
+               |
+               |    ${c("--model-name|-n")} ${g("name")}
+               |        Optional generated model name. By default, the model name will be 'SQL-based model'.
+               |
+               |    ${c("--exclude|-e")} ${g("list")}
+               |        Optional semicolon-separate list of tables and/or columns to exclude. By
+               |        default, none of the tables and columns in the schema are excluded. See below
+               |        for more information.
+               |
+               |    ${c("--prefix|-f")} ${g("list")}
+               |        Optional comma-separate list of table or column name prefixes to remove.
+               |        These prefixes will be removed when name is used for model elements
+               |        synonyms. By default, no prefixes will be removed.
+               |
+               |    ${c("--suffix|-q")} ${g("list")}
+               |        Optional comma-separate list of table or column name suffixes to remove.
+               |        These suffixes will be removed when name is used for model elements
+               |        synonyms. By default, no suffixes will be removed.
+               |
+               |    ${c("--include|-i")} ${g("list")}
+               |        Optional semicolon-separate list of tables and/or columns to include. By
+               |        default, all tables and columns in the schema are included. See below
+               |        for more information.
+               |
+               |    ${c("--synonyms|-y")} ${g("true|false")}
+               |        Optional flag on whether or not to generated auto synonyms for the model elements.
+               |        Default is true.
+               |
+               |    ${c("--override|-z")} ${g("true|false")}
+               |        Optional flag to determine whether or not to override output file if it already exist.
+               |        If override is disabled (default) and output file exists - a unique file name will
+               |        be used instead.
+               |        Default is false.
+               |
+               |    ${c("--parent|-p")} ${g("true|false")}
+               |        Optional flag on whether or not to use element's parent relationship for
+               |        defining SQL columns and their containing (i.e. parent) tables.
+               |        Default is false.
+               |
+               |    ${c("--help|-h|-?")}
+               |        Prints this usage information.
+               |
+               |${bo("DETAILS:")}
+               |    ${c("-r")}, ${c("-d")}, ${c("-s")}, and ${c("-o")} are mandatory parameters, everything else is optional.
+               |
+               |    Each -i or -e parameter is a semicolon ';' separated  list of table or columns names.
+               |    Each table or column name can be one of following forms:
+               |      - ${g("table")}         -- to filter on table names only.
+               |      - ${g("table#column")}  -- to filter on both table and column names.
+               |      - ${g("#column")}       -- to filter on columns only (regardless of the table).
+               |
+               |    Table and column names are treated as standard Java regular expressions. Note that
+               |    both '#' and ';' cannot be used inside of the regular expression:
+               |
+               |    ${c("-e")} "${g("#_.+")}"             -- excludes any columns starting with '_'.
+               |    ${c("-e")} "${g("tmp.+")}"            -- excludes all tables starting with 'tmp'.
+               |    ${c("-i")} "${g("Order.*;#[^_].+")}"  -- includes only tables starting with 'Order' and columns that
+               |                             do not start with '_'.
+               |
+               |${bo("EXAMPLES:")}
+               |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
+               |        ${c("-r")} jdbc:postgresql://localhost:5432/mydb
+               |        ${c("-d")} org.postgresql.Driver
+               |        ${c("-f")} "tbl_, col_"
+               |        ${c("-q")} "_tmp, _old, _unused"
+               |        ${c("-s")} public
+               |        ${c("-e")} "#_.+"
+               |        ${c("-o")} model.json
+                """.stripMargin
+        )
     
     /**
      *
      * @param msg Optional error message.
      */
     private def errorExit(msg: String = null): Unit = {
-        if (msg != null)
-            System.err.println(
-                s"""
-                |ERROR:
-                |    $msg""".stripMargin
-            )
-        
-        if (msg == null)
-            System.err.println(
-                s"""
-                   |NAME:
-                   |    NCSqlModelGenerator -- NLPCraft model generator for SQL databases.
-                   |
-                   |SYNOPSIS:
-                   |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator [PARAMETERS]
-                   |
-                   |DESCRIPTION:
-                   |    This utility generates NLPCraft model stub for a given SQL database schema. You
-                   |    can choose database schema, set of tables and columns for which you
-                   |    want to generate NLPCraft model. After the model is generated you can
-                   |    further configure and customize it for your specific needs.
-                   |
-                   |    This Java class can be run from the command line or from an IDE like any other
-                   |    Java application. Note that required JDBC driver class must be available on the
-                   |    classpath and therefore its JAR should be added to the classpath when running
-                   |    this application.""".stripMargin
-            )
-    
-        System.err.println(
-            s"""
-               |PARAMETERS:
-               |    [--url|-r] url
-               |        Mandatory database JDBC URL.
-               |
-               |    [--driver|-d] class
-               |        Mandatory JDBC driver class. Note that 'class' must be a
-               |        fully qualified class name. It should also be available on
-               |        the classpath.
-               |
-               |    [--schema|-s] schema
-               |        Mandatory database schema to scan.
-               |
-               |    [--out|-o] filename
-               |        Mandatory name of the output JSON or YAML model file. It should
-               |        have one of the following extensions: .js, .json, .yml, or .yaml
-               |        File extension determines the output file format.
-               |
-               |    [--user|-u] username
-               |        Optional database user name.
-               |
-               |    [--password|-w] password
-               |        Optional database user password.
-               |
-               |    [--model-id|-x] id
-               |        Optional generated model ID. By default, the model ID will be 'sql.model.id'.
-               |
-               |    [--model-ver|-v] version
-               |        Optional generated model version. By default, the model ID will be '1.0.0-timestamp'.
-               |
-               |    [--model-name|-n] name
-               |        Optional generated model name. By default, the model name will be 'SQL-based model'.
-               |
-               |    [--exclude|-e] list
-               |        Optional semicolon-separate list of tables and/or columns to exclude. By
-               |        default, none of the tables and columns in the schema are excluded. See below
-               |        for more information.
-               |
-               |    [--prefix|-f] list
-               |        Optional comma-separate list of table or column name prefixes to remove.
-               |        These prefixes will be removed when name is used for model elements
-               |        synonyms. By default, no prefixes will be removed.
-               |
-               |    [--suffix|-q] list
-               |        Optional comma-separate list of table or column name suffixes to remove.
-               |        These suffixes will be removed when name is used for model elements
-               |        synonyms. By default, no suffixes will be removed.
-               |               
-               |    [--include|-i] list
-               |        Optional semicolon-separate list of tables and/or columns to include. By
-               |        default, all tables and columns in the schema are included. See below
-               |        for more information.
-               |
-               |    [--synonyms|-y] [true|false]
-               |        Optional flag on whether or not to generated auto synonyms for the model elements.
-               |        Default is true.
-               |
-               |    [--override|-z] [true|false]
-               |        Flag to determine whether or not to override output file if it already exist.
-               |        If override is disabled (default) and output file exists - a unique file name will
-               |        be used instead.
-               |        Default is false.
-               |
-               |    [--parent|-p] [true|false]
-               |        Optional flag on whether or not to use element's parent relationship for
-               |        defining SQL columns and their containing (i.e. parent) tables.
-               |        Default is false.
-               |
-               |    [--help|-h|-?]
-               |        Prints this usage information.
-               |
-               |DETAILS:
-               |    -r, -d, -s, and -o are mandatory parameters, everything else is optional.
-               |
-               |    Each -i or -e parameter is a semicolon ';' separated  list of table or columns names.
-               |    Each table or column name can be one of following forms:
-               |      - table         -- to filter on table names only.
-               |      - table#column  -- to filter on both table and column names.
-               |      - #column       -- to filter on columns only (regardless of the table).
-               |
-               |    Table and column names are treated as standard Java regular expressions. Note that
-               |    both '#' and ';' cannot be used inside of the regular expression:
-               |
-               |    -e "#_.+"             -- excludes any columns starting with '_'.
-               |    -e "tmp.+"            -- excludes all tables starting with 'tmp'.
-               |    -i "Order.*;#[^_].+"  -- includes only tables starting with 'Order' and columns that
-               |                             do not start with '_'.
-               |
-               |EXAMPLES:
-               |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
-               |        -r jdbc:postgresql://localhost:5432/mydb
-               |        -d org.postgresql.Driver
-               |        -f "tbl_, col_"
-               |        -q "_tmp, _old, _unused"
-               |        -s public
-               |        -e "#_.+"
-               |        -o model.json
-            """.stripMargin
-        )
-        
-        System.exit(1)
+        if (repl)
+            throw new Exception(msg)
+        else {
+            if (msg != null)
+                System.err.println(
+                    s"""
+                       |${r("ERROR:")}
+                       |    $msg""".stripMargin
+                )
+
+            help(System.err)
+
+            throw new Exception(msg)
+        }
     }
     
     /**
@@ -729,7 +737,7 @@ object NCSqlModelGeneratorImpl {
      */
     private def mandatoryParam(v: String, name: String): Unit =
         if (v == null)
-            throw new IllegalArgumentException(s"Parameter is mandatory and must be set: $name")
+            throw new IllegalArgumentException(s"Missing mandatory parameter: $C$name$RST")
     
     /**
      *
@@ -741,7 +749,7 @@ object NCSqlModelGeneratorImpl {
         v.toLowerCase match {
             case "true" ⇒ true
             case "false" ⇒ false
-            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $name $v")
+            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $C$name $v$RST")
         }
         
     /**
@@ -750,9 +758,6 @@ object NCSqlModelGeneratorImpl {
      * @return
      */
     private def parseCmdParameters(cmdArgs: Array[String]): ParametersHolder = {
-        if (cmdArgs.isEmpty || !cmdArgs.intersect(Seq("--help", "-h", "-help", "--?", "-?", "/?", "/help")).isEmpty)
-            errorExit()
-        
         val params = ParametersHolder()
         
         var i = 0
@@ -780,7 +785,7 @@ object NCSqlModelGeneratorImpl {
                     case "--synonyms" | "-y" ⇒ params.synonyms = parseBoolean(v, k)
                     case "--override" | "-z" ⇒ params.overRide = parseBoolean(v, k)
 
-                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: ${cmdArgs(i)}")
+                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: $C${cmdArgs(i)}$RST")
                 }
 
                 i = i + 2
@@ -797,7 +802,7 @@ object NCSqlModelGeneratorImpl {
                 !outLc.endsWith(".js") &&
                 !outLc.endsWith(".yaml") &&
                 !outLc.endsWith(".yml"))
-                throw new IllegalArgumentException(s"Unsupported output file extension in '-out ${params.output}'")
+                throw new IllegalArgumentException(s"Unsupported output file extension in $C'${params.output}'$RST output.")
             
             params.cmdLine = cmdArgs.mkString(" ")
         }
@@ -809,12 +814,20 @@ object NCSqlModelGeneratorImpl {
     }
 
     /**
-      *
-      */
-    def process(args: Array[String]): Unit = {
-        val params = parseCmdParameters(args)
-        val tbls = readSqlMetadata(params)
+     *
+     * @param repl Whether or not this is called from REPL.
+     * @param args Command line arguments.
+     */
+    def process(repl: Boolean, args: Array[String]): Unit = {
+        this.repl = repl
 
-        generateModel(tbls, params)
+        if (args.isEmpty || !args.intersect(Seq("--help", "-h", "-help", "--?", "-?", "/?", "/help")).isEmpty)
+            help(System.out)
+        else {
+            val params = parseCmdParameters(args)
+            val tbls = readSqlMetadata(params)
+
+            generateModel(tbls, params)
+        }
     }
 }
