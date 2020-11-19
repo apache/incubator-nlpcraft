@@ -56,6 +56,10 @@ public class NCModelJson {
     private boolean isDupSynonymsAllowed = DFLT_IS_DUP_SYNONYMS_ALLOWED;
     private int maxTotalSynonyms = DFLT_MAX_TOTAL_SYNONYMS;
     private boolean isPermutateSynonyms = DFLT_IS_PERMUTATE_SYNONYMS;
+    private int maxElementSynonyms = DFLT_MAX_TOTAL_SYNONYMS;
+    private boolean maxSynonymsThresholdError = DFLT_MAX_SYNONYMS_THRESHOLD_ERROR;
+    private long conversationTimeout = DFLT_CONV_TIMEOUT_MS;
+    private int conversationDepth = DFLT_CONV_DEPTH;
 
     public String getId() {
         return id;
@@ -232,5 +236,29 @@ public class NCModelJson {
     }
     public void setParsers(String[] parsers) {
         this.parsers = parsers;
+    }
+    public int getMaxElementSynonyms() {
+        return maxElementSynonyms;
+    }
+    public void setMaxElementSynonyms(int maxElementSynonyms) {
+        this.maxElementSynonyms = maxElementSynonyms;
+    }
+    public boolean isMaxSynonymsThresholdError() {
+        return maxSynonymsThresholdError;
+    }
+    public void setMaxSynonymsThresholdError(boolean maxSynonymsThresholdError) {
+        this.maxSynonymsThresholdError = maxSynonymsThresholdError;
+    }
+    public long getConversationTimeout() {
+        return conversationTimeout;
+    }
+    public void setConversationTimeout(long conversationTimeout) {
+        this.conversationTimeout = conversationTimeout;
+    }
+    public int getConversationDepth() {
+        return conversationDepth;
+    }
+    public void setConversationDepth(int conversationDepth) {
+        this.conversationDepth = conversationDepth;
     }
 }

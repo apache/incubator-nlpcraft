@@ -56,7 +56,6 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -83,6 +82,8 @@ object NCUtils extends LazyLogging {
     final val NL = System getProperty "line.separator"
 
     private val idGen = new NCIdGenerator(NCBlowfishHasher.salt(), 8)
+
+    private final val DISABLE_GA_PROP = "NLPCRAFT_DISABLE_GA"
 
     private lazy val ANSI_FG_COLORS = Seq(
         ansiRedFg,
@@ -857,12 +858,12 @@ object NCUtils extends LazyLogging {
 
     /**
       * Recursively removes all files and nested directories in a given folder.
-      * Provided root folder itself is not removed.
       *
       * @param rootDir Folder to remove all nested files and directories in it.
+      * @param delFolder Flag, deleted or not root folder itself.
       */
     @throws[NCE]
-    def clearFolder(rootDir: String) {
+    def clearFolder(rootDir: String, delFolder: Boolean = false) {
         val rootPath = Paths.get(rootDir)
 
         try
@@ -887,6 +888,9 @@ object NCUtils extends LazyLogging {
         catch {
             case e: IOException ⇒ throw new NCE(s"Couldn't clear folder: '$rootDir'", e)
         }
+
+        if (delFolder && !new File(rootDir).delete())
+            throw new NCE(s"Couldn't delete folder: '$rootDir'")
     }
 
     /**
@@ -992,6 +996,15 @@ object NCUtils extends LazyLogging {
       */
     def sysEnv(s: String): Option[String] =
         sysProps.get(s).orElse(sys.env.get(s))
+
+    /**
+     * Tests whether given system property of environment variable is set or not.
+     *
+     * @param s @param s Name of the system property or environment variable.
+     * @return
+     */
+    def isSysEnvSet(s: String): Boolean =
+        sysProps.get(s).nonEmpty || sys.env.contains(s)
 
     /**
       * Returns `true` if given system property, or environment variable is provided and has value
@@ -1258,44 +1271,49 @@ object NCUtils extends LazyLogging {
      *
      * @param cd Content description for GA measurement protocol.
      */
-    def gaScreenView(cd: String): Unit =
-        try {
-            val anonym = NetworkInterface.getByInetAddress(InetAddress.getLocalHost) match {
-                case null ⇒ 555
-                case nif ⇒
-                    val addr = nif.getHardwareAddress
+    def gaScreenView(cd: String): Unit = {
+        if (!isSysEnvSet(DISABLE_GA_PROP)) {
+            logger.debug(s"To disable anonymous Google Analytics access set '${c(DISABLE_GA_PROP)}' system property.")
 
-                    if (addr == null)
-                        555
-                    else
-                        addr.mkString(",").hashCode
-            }
+            try {
+                val anonym = NetworkInterface.getByInetAddress(InetAddress.getLocalHost) match {
+                    case null ⇒ 555
+                    case nif ⇒
+                        val addr = nif.getHardwareAddress
 
-            HttpClient.newHttpClient.send(
-                HttpRequest.newBuilder()
-                    .uri(
-                        URI.create("http://www.google-analytics.com/collect")
-                    )
-                    .POST(
-                        HttpRequest.BodyPublishers.ofString(
-                            s"v=1&" +
-                            s"t=screenview&" +
-                            s"tid=UA-180663034-1&" + // 'nlpcraft.apache.org' web property.
-                            s"cid=$anonym&" + // Hide any user information (anonymous user).
-                            s"aip=&" + // Hide user IP (anonymization).
-                            s"an=nlpcraft&" +
-                            s"av=${NCVersion.getCurrent.version}&" +
-                            s"aid=org.apache.nlpcraft&" +
-                            s"cd=$cd"
+                        if (addr == null)
+                            555
+                        else
+                            addr.mkString(",").hashCode
+                }
+
+                HttpClient.newHttpClient.send(
+                    HttpRequest.newBuilder()
+                        .uri(
+                            URI.create("http://www.google-analytics.com/collect")
                         )
-                    )
-                    .build(),
-                HttpResponse.BodyHandlers.ofString()
-            )
+                        .POST(
+                            HttpRequest.BodyPublishers.ofString(
+                            s"v=1&" +
+                                s"t=screenview&" +
+                                s"tid=UA-180663034-1&" + // 'nlpcraft.apache.org' web property.
+                                s"cid=$anonym&" + // Hide any user information (anonymous user).
+                                s"aip=&" + // Hide user IP (anonymization).
+                                s"an=nlpcraft&" +
+                                s"av=${NCVersion.getCurrent.version}&" +
+                                s"aid=org.apache.nlpcraft&" +
+                                s"cd=$cd"
+                            )
+                        )
+                        .build(),
+                    HttpResponse.BodyHandlers.ofString()
+                )
+            }
+            catch {
+                case _: Exception ⇒ () // Ignore.
+            }
         }
-        catch {
-            case _: Exception ⇒ () // Ignore.
-        }
+    }
 
     /**
       * Formats given double number with provided precision.

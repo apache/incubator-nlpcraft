@@ -486,4 +486,24 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     public List<NCCustomParser> getParsers() {
         return parsers;
     }
+
+    @Override
+    public int getMaxElementSynonyms() {
+        return proxy.getMaxElementSynonyms();
+    }
+
+    @Override
+    public boolean isMaxSynonymsThresholdError() {
+        return proxy.isMaxSynonymsThresholdError();
+    }
+
+    @Override
+    public long getConversationTimeout() {
+        return proxy.getConversationTimeout();
+    }
+
+    @Override
+    public int getConversationDepth() {
+        return proxy.getConversationDepth();
+    }
 }

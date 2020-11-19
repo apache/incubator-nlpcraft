@@ -350,7 +350,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             save()
     }
 
-    // Check version.
+    // Screen view.
     new Thread() {
         override def run(): Unit = U.gaScreenView("server")
     }

@@ -17,47 +17,51 @@
 
 package org.apache.nlpcraft.model.tools.cmdline
 
+import java.io._
+import java.lang.ProcessBuilder.Redirect
+import java.lang.management.ManagementFactory
+import java.nio.charset.StandardCharsets
+import java.nio.file.Paths
+import java.text.DateFormat
+import java.util
+import java.util.Date
+import java.util.regex.Pattern
+import java.util.zip.ZipInputStream
+
+import com.google.common.base.CaseFormat
+import javax.lang.model.SourceVersion
 import javax.net.ssl.SSLException
+import org.apache.commons.io.IOUtils
+import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
 import org.apache.commons.lang3.SystemUtils
+import org.apache.commons.lang3.time.DurationFormatUtils
 import org.apache.http.HttpResponse
 import org.apache.http.client.ResponseHandler
 import org.apache.http.client.methods.{HttpGet, HttpPost}
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
-import org.apache.nlpcraft.common.ascii.NCAsciiTable
-import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
-import org.apache.nlpcraft.common.ansi.NCAnsi._
-import org.apache.nlpcraft.common.version.NCVersion
-import java.lang.ProcessBuilder.Redirect
-import java.lang.management.ManagementFactory
-import java.text.DateFormat
-import java.util
-import java.util.Date
-import java.io._
-import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
-import java.util.regex.Pattern
-
-import org.apache.commons.io.input.{ReversedLinesFileReader, Tailer, TailerListenerAdapter}
-import org.apache.commons.lang3.time.DurationFormatUtils
 import org.apache.http.util.EntityUtils
+import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.ansi.NCAnsi._
+import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
+import org.apache.nlpcraft.common.ascii.NCAsciiTable
+import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl
 import org.jline.builtins.Commands
-import org.jline.reader.{Candidate, Completer, EndOfFileException, Highlighter, LineReader, LineReaderBuilder, ParsedLine, UserInterruptException}
+import org.jline.reader._
 import org.jline.reader.impl.DefaultParser
-import org.jline.terminal.{Terminal, TerminalBuilder}
 import org.jline.reader.impl.DefaultParser.Bracket
 import org.jline.reader.impl.history.DefaultHistory
+import org.jline.terminal.{Terminal, TerminalBuilder}
 import org.jline.utils.AttributedString
 import org.jline.utils.InfoCmp.Capability
 import resource.managed
 
-import scala.collection.mutable
-import scala.compat.java8.OptionConverters._
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.compat.Platform.currentTime
+import scala.compat.java8.OptionConverters._
 import scala.util.Try
 import scala.util.control.Breaks.{break, breakable}
 import scala.util.control.Exception.ignoring
@@ -188,13 +192,9 @@ object NCCli extends App {
     sealed trait JsonType
 
     case object STRING extends JsonType
-
     case object BOOLEAN extends JsonType
-
     case object NUMERIC extends JsonType
-
     case object OBJECT extends JsonType
-
     case object ARRAY extends JsonType
 
     case class RestSpecParameter(
@@ -202,6 +202,31 @@ object NCCli extends App {
         kind: JsonType,
         optional: Boolean = false // Mandatory by default.
     )
+
+    // Project templates for 'gen-project' command.
+    private lazy val PRJ_TEMPLATES: Map[String, Seq[String]] = {
+        val m = mutable.HashMap.empty[String, Seq[String]]
+
+        try
+            managed(new ZipInputStream(U.getStream("cli/templates.zip"))) acquireAndGet { zis ⇒
+                var entry = zis.getNextEntry
+
+                while (entry != null) {
+                    val buf = new StringWriter
+
+                    IOUtils.copy(zis, buf, StandardCharsets.UTF_8)
+
+                    m += entry.getName → buf.toString.split("\n")
+
+                    entry = zis.getNextEntry
+                }
+            }
+        catch {
+            case e: IOException ⇒ throw new NCE(s"Failed to read templates", e)
+        }
+
+        m.toMap
+    }
 
     //noinspection DuplicatedCode
     // TODO: this needs to be loaded dynamically from OpenAPI spec.
@@ -772,7 +797,7 @@ object NCCli extends App {
             )
         ),
         Command(
-            name = "sqlgen",
+            name = "gen-sql",
             group = "4. Miscellaneous Tools",
             synopsis = s"Generates NLPCraft model stub from SQL databases.",
             desc = Some(
@@ -914,21 +939,21 @@ object NCCli extends App {
                     names = Seq("--help", "-h"),
                     optional = true,
                     desc =
-                        s"Gets extended help and usage information for the ${c("'sqlgen'")} command. " +
+                        s"Gets extended help and usage information for the ${c("'gen-sql'")} command. " +
                         s"Includes information on how to run this tool standalone."
                 )
             ),
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME sqlgen --help"
+                        s"$PROMPT $SCRIPT_NAME gen-sql --help"
                     ),
                     desc =
-                        s"Shows full help and usage information for ${c("sqlgen")} command."
+                        s"Shows full help and usage information for ${c("gen-sql")} command."
                 ),
                 Example(
                     usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME sqlgen",
+                        s"$PROMPT $SCRIPT_NAME gen-sql",
                         "  -r=jdbc:postgresql://localhost:5432/mydb",
                         "  -d=org.postgresql.Driver",
                         """  -f="tbl_, col_"""",
@@ -1314,6 +1339,125 @@ object NCCli extends App {
                     value = None,
                     optional = true,
                     desc = s"Display only the release date, e.g. ${VER.date}."
+                )
+            )
+        ),
+        Command(
+            name = "gen-project",
+            group = "4. Miscellaneous Tools",
+            synopsis = s"Generates project stub with default configuration.",
+            desc = Some(
+                "This command supports Java, Scala, and Kotlin languages with either Maven, Gradle or SBT " +
+                "as a build tool. Generated projects compiles and runs and can be used as a quick development sandbox."
+            ),
+            body = cmdGenProject,
+            params = Seq(
+                Parameter(
+                    id = "outputDir",
+                    names = Seq("--outputDir", "-d"),
+                    value = Some("path"),
+                    optional = true,
+                    desc = s"Output directory. Default value is the current working directory."
+                ),
+                Parameter(
+                    id = "baseName",
+                    names = Seq("--baseName", "-n"),
+                    value = Some("name"),
+                    desc =
+                        s"Base name for the generated files. For example, if base name is ${y("'MyApp'")}, " +
+                        s"then generated Java file will be named as ${y("'MyAppModel.java'")} and model file as ${y("'my_app_model.yaml'")}."
+                ),
+                Parameter(
+                    id = "lang",
+                    names = Seq("--lang", "-l"),
+                    value = Some("name"),
+                    optional = true,
+                    desc =
+                        s"Language to generate source files in. Supported value are ${y("'java'")}, ${y("'scala'")}, ${y("'kotlin'")}. " +
+                        s"Default value is ${y("'java'")}."
+                ),
+                Parameter(
+                    id = "buildTool",
+                    names = Seq("--buildTool", "-b"),
+                    value = Some("name"),
+                    optional = true,
+                    desc =
+                        s"Build tool name to use. Supported values are ${y("'mvn'")} and ${y("'gradle'")} for ${y("'java'")}, " +
+                        s"${y("'scala'")}, ${y("'kotlin'")}, and ${y("'sbt'")} for ${y("'scala'")} language. Default value is ${y("'mvn'")}."
+                ),
+                Parameter(
+                    id = "packageName",
+                    names = Seq("--packageName", "-p"),
+                    value = Some("name"),
+                    optional = true,
+                    desc = s"JVM package name to use in generated source code. Default value is ${y("'org.apache.nlpcraft.demo'")}."
+                ),
+                Parameter(
+                    id = "modelType",
+                    names = Seq("--modelType", "-m"),
+                    value = Some("type"),
+                    optional = true,
+                    desc = s"Type of generated model file. Supported value are ${y("'yaml'")} or ${y("'json'")}. Default value is ${y("'yaml'")}."
+                ),
+                Parameter(
+                    id = "override",
+                    names = Seq("--override", "-o"),
+                    value = Some("true|false"),
+                    optional = true,
+                    desc = s"Whether or not to override existing output directory. Default value is ${y("'false'")}."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq("> gen-project -n=MyProject -l=scala -b=sbt"),
+                    desc = s"Generates Scala SBT project."
+                ),
+                Example(
+                    usage = Seq("> gen-project -n=MyProject -l=kotlin -p=com.mycompany.nlp -o=true"),
+                    desc = s"Generates Kotlin Maven project."
+                )
+            )
+        ),
+        Command(
+            name = "gen-model",
+            group = "4. Miscellaneous Tools",
+            synopsis = s"Generates data model file stub.",
+            desc = Some(
+                "Generated model stub will have all default configuration. Model file can be either YAML or JSON."
+            ),
+            body = cmdGenModel,
+            params = Seq(
+                Parameter(
+                    id = "filePath",
+                    names = Seq("--filePath", "-f"),
+                    value = Some("path"),
+                    desc =
+                        s"File path for the model stub. File path can either be an absolute path, relative path or " +
+                        s"just a file name in which case the current folder will be used. File must have one of the " +
+                        s"following extensions: ${y("'json'")}, ${y("'js'")}, ${y("'yaml'")}, or ${y("'yml'")}."
+                ),
+                Parameter(
+                    id = "modelId",
+                    names = Seq("--modelId", "-n"),
+                    value = Some("id"),
+                    desc = "Model ID."
+                ),
+                Parameter(
+                    id = "override",
+                    names = Seq("--override", "-o"),
+                    value = Some("true|false"),
+                    optional = true,
+                    desc = s"Override output directory flag. Supported: ${y("'true'")}, ${y("'false'")}. Default value is ${y("'false'")}"
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq("> gen-model -f=myModel.json -n=my.model.id"),
+                    desc = s"Generates JSON model file stub in the current folder."
+                ),
+                Example(
+                    usage = Seq("> gen-model -f=c:/tmp/myModel.yaml -n=my.model.id --override=true"),
+                    desc = s"Generates YAML model file stub in ${y("'c:/temp'")} folder overriding existing file, if any."
                 )
             )
         )
@@ -1831,7 +1975,8 @@ object NCCli extends App {
 
                     // Reset REPL state right away.
                     state = ReplState()
-                } else
+                }
+                else
                     error(s"Failed to stop the local REST server (pid ${c(pid)}).")
 
             case None ⇒ throw NoLocalServer()
@@ -1842,18 +1987,16 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdNoAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private def cmdNoAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         NCAnsi.setEnabled(false)
-    }
 
     /**
      * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private def cmdAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         NCAnsi.setEnabled(true)
-    }
 
     /**
      * @param cmd  Command descriptor.
@@ -1929,7 +2072,16 @@ object NCCli extends App {
         }
 
         def helpHelp(): Unit =
-            logln(s"\nType ${c("help --cmd=xxx")} to get help for ${c("xxx")} command.")
+            logln(s"" +
+                s"\n" +
+                s"Type ${c("help --cmd=xxx")} to get help for ${c("xxx")} command.\n" +
+                s"\n" +
+                s"You can also execute any OS specific command by prepending '${c("$")}' in front of it:\n" +
+                s"  ${y("> $cmd /c dir")}\n" +
+                s"    Run Windows ${c("dir")} command in a separate shell.\n" +
+                s"  ${y("> $ls -la")}\n" +
+                s"    Run Linux/Unix ${c("ls -la")} command.\n"
+            )
 
         if (args.isEmpty) { // Default - show abbreviated help.
             if (!repl)
@@ -2291,7 +2443,6 @@ object NCCli extends App {
             case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
         }
 
-
     /**
      *
      * @param cmd Command descriptor.
@@ -2388,6 +2539,412 @@ object NCCli extends App {
     }
 
     /**
+      * @param cmd
+      * @param args
+      * @param id
+      * @param dflt
+      */
+    @throws[MissingParameter]
+    private def get(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String =
+        args.find(_.parameter.id == id).flatMap(_.value) match {
+            case Some(v) ⇒ v
+            case None ⇒
+                if (dflt == null)
+                    throw MissingParameter(cmd, id)
+
+                dflt
+        }
+
+    /**
+      *
+      * @param cmd
+      * @param name
+      * @param value
+      * @param supported
+      */
+    @throws[InvalidParameter]
+    private def checkSupported(cmd: Command, name: String, value: String, supported: String*): Unit =
+        if (!supported.contains(value))
+            throw InvalidParameter(cmd, name)
+
+    /**
+      *
+      * @param lines
+      * @param cmtBegin Comment begin sequence.
+      * @param cmtEnd Comment end sequence.
+      */
+    private def extractHeader0(lines: Seq[String], cmtBegin: String, cmtEnd: String): (Int, Int) = {
+        var startIdx, endIdx = -1
+
+        for ((line, idx) ← lines.zipWithIndex if startIdx == -1 || endIdx == -1) {
+            val t = line.trim
+
+            if (t == cmtBegin) {
+                if (startIdx == -1)
+                    startIdx = idx
+            }
+            else if (t == cmtEnd) {
+                if (startIdx != -1 && endIdx == -1)
+                    endIdx = idx
+            }
+        }
+
+        if (startIdx == -1) (-1, -1) else (startIdx, endIdx)
+    }
+
+    /**
+      *
+      * @param lines
+      * @param cmtBegin One-line comment begin sequence.
+      */
+    private def extractHeader0(lines: Seq[String], cmtBegin: String = "#"): (Int, Int) = {
+        var startIdx, endIdx = -1
+
+        for ((line, idx) ← lines.zipWithIndex if startIdx == -1 || endIdx == -1)
+            if (line.trim.startsWith(cmtBegin)) {
+                if (startIdx == -1)
+                    startIdx = idx
+            }
+            else {
+                if (startIdx != -1 && endIdx == -1) {
+                    require(idx > 0)
+
+                    endIdx = idx - 1
+                }
+            }
+
+        if (startIdx == -1)
+            (-1, -1)
+        else if (endIdx == -1)
+            (startIdx, lines.size - 1)
+        else
+            (startIdx, endIdx)
+    }
+
+    def extractJavaHeader(lines: Seq[String]): (Int, Int) = extractHeader0(lines, "/*", "*/")
+    def extractJsonHeader(lines: Seq[String]): (Int, Int) = extractHeader0(lines, "/*", "*/")
+    def extractGradleHeader(lines: Seq[String]): (Int, Int) = extractHeader0(lines, "/*", "*/")
+    def extractSbtHeader(lines: Seq[String]): (Int, Int) = extractHeader0(lines, "/*", "*/")
+    def extractXmlHeader(lines: Seq[String]): (Int, Int) = extractHeader0(lines, "<!--", "-->")
+    def extractYamlHeader(lines: Seq[String]): (Int, Int) = extractHeader0(lines)
+    def extractPropertiesHeader(lines: Seq[String]): (Int, Int) = extractHeader0(lines)
+
+    /**
+      *
+      * @param zipInDir
+      * @param dst
+      * @param inEntry
+      * @param outEntry
+      * @param repls
+      */
+    @throws[NCE]
+    private def copy(
+        zipInDir: String,
+        dst: File,
+        inEntry: String,
+        outEntry: String,
+        extractHeader: Option[Seq[String] ⇒ (Int, Int)],
+        repls: (String, String)*
+    ) {
+        val key = s"$zipInDir/$inEntry"
+
+        require(PRJ_TEMPLATES.contains(key), s"Unexpected template entry for: $key")
+
+        var lines = PRJ_TEMPLATES(key)
+
+        val outFile = if (dst != null) new File(dst, outEntry) else new File(outEntry)
+        val parent = outFile.getAbsoluteFile.getParentFile
+
+        if (parent == null || !parent.exists() && !parent.mkdirs())
+            throw new NCE(s"Invalid folder: ${parent.getAbsolutePath}")
+
+        // Drops headers.
+        extractHeader match {
+            case Some(ext) ⇒
+                val (hdrFrom, hdrTo) = ext(lines)
+
+                lines = lines.zipWithIndex.flatMap {
+                    case (line, idx) ⇒ if (idx < hdrFrom || idx > hdrTo) Some(line) else None
+                }
+            case None ⇒ // No-op.
+        }
+
+        // Drops empty line in begin and end of the file.
+        lines = lines.dropWhile(_.trim.isEmpty).reverse.dropWhile(_.trim.isEmpty).reverse
+
+        val buf = mutable.ArrayBuffer.empty[(String, String)]
+
+        for (line ← lines) {
+            val t = line.trim
+
+            // Drops duplicated empty lines, which can be appeared because header deleting.
+            if (buf.isEmpty || t.nonEmpty || t != buf.last._2)
+                buf += (line → t)
+        }
+
+        var cont = buf.map(_._1).mkString("\n")
+
+        cont = repls.foldLeft(cont)((s, repl) ⇒ s.replaceAll(repl._1, repl._2))
+
+        try
+            managed(new FileWriter(outFile)) acquireAndGet { w ⇒
+                managed(new BufferedWriter(w)) acquireAndGet { bw ⇒
+                    bw.write(cont)
+                }
+            }
+        catch {
+            case e: IOException ⇒ throw new NCE(s"Error writing $outEntry", e)
+        }
+    }
+
+    /**
+      *
+      * @param cmd Command descriptor.
+      * @param args Arguments, if any, for this command.
+      * @param repl Whether or not executing from REPL.
+      */
+    private def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val filePath = get(cmd, args, "filePath")
+        val overrideFlag = get(cmd, args,"override", "false").toLowerCase
+        val modelId = get(cmd, args,"modelId")
+
+        checkSupported(cmd,"overrideFlag", overrideFlag, "true", "false")
+
+        val out = new File(filePath)
+
+        if (out.isDirectory)
+            throw new NCE(s"Invalid file path: ${c(out.getAbsolutePath)}")
+
+        if (out.exists()) {
+            if (overrideFlag == "true") {
+                if (!out.delete())
+                    throw new NCE(s"Couldn't delete file: ${c(out.getAbsolutePath)}")
+            }
+            else
+                throw new NCE(s"File already exists: ${c(out.getAbsolutePath)}")
+        }
+
+        val (fileExt, extractHdr) = {
+            val lc = filePath.toLowerCase
+
+            if (lc.endsWith(".yaml") || lc.endsWith(".yml"))
+                ("yaml", extractYamlHeader _)
+            else if (lc.endsWith(".json") || lc.endsWith(".js"))
+                ("json", extractJsonHeader _)
+            else
+                throw new NCE(s"Unsupported model file type (extension): ${c(filePath)}")
+        }
+
+        copy(
+            "nlpcraft-java-mvn",
+            out.getParentFile,
+            s"src/main/resources/template_model.$fileExt",
+            out.getName,
+            Some(extractHdr),
+            "templateModelId" → modelId
+        )
+
+        logln(s"Model file stub created: ${c(out.getCanonicalPath)}")
+    }
+
+    /**
+      *
+      * @param cmd Command descriptor.
+      * @param args Arguments, if any, for this command.
+      * @param repl Whether or not executing from REPL.
+      */
+    private def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val outputDir = get(cmd, args, "outputDir", ".")
+        val baseName = get(cmd, args,"baseName")
+        val lang = get(cmd, args,"lang", "java").toLowerCase
+        val buildTool = get(cmd, args,"buildTool", "mvn").toLowerCase
+        val pkgName = get(cmd, args,"packageName", "org.apache.nlpcraft.demo").toLowerCase
+        val fileType = get(cmd, args,"modelType", "yaml").toLowerCase
+        val overrideFlag = get(cmd, args,"override", "false").toLowerCase
+        val dst = new File(outputDir, baseName)
+        val pkgDir = pkgName.replaceAll("\\.", "/")
+        val clsName = s"${baseName.head.toUpper}${baseName.tail}"
+        val variant = s"$lang-$buildTool"
+        val inFolder = s"nlpcraft-$variant"
+        val isJson = fileType == "json" || fileType == "js"
+
+        checkSupported(cmd, "lang", lang, "java", "scala", "kotlin")
+        checkSupported(cmd,"buildTool", buildTool, "mvn", "gradle", "sbt")
+        checkSupported(cmd,"fileType", fileType, "yaml", "yml", "json", "js")
+        checkSupported(cmd,"override", overrideFlag, "true", "false")
+
+        def checkJavaName(v: String, name: String): Unit =
+            if (!SourceVersion.isName(v))
+                throw InvalidParameter(cmd, name)
+
+        checkJavaName(clsName, "baseName")
+        checkJavaName(pkgName, "packageName")
+
+        // Prepares output folder.
+        if (dst.isFile)
+            throw new NCE(s"Invalid folder: ${c(dst.getAbsolutePath)}")
+        else {
+            if (!dst.exists()) {
+                if (!dst.mkdirs())
+                    throw new NCE(s"Couldn't create folder: ${c(dst.getAbsolutePath)}")
+            }
+            else {
+                if (overrideFlag == "true")
+                    U.clearFolder(dst.getAbsolutePath)
+                else
+                    throw new NCE(s"Folder already exists: ${c(dst.getAbsolutePath)}")
+            }
+        }
+
+        @throws[NCE]
+        def cp(in: String, extractHeader: Option[Seq[String] ⇒ (Int, Int)], repls: (String, String)*): Unit =
+            copy(inFolder, dst, in, in, extractHeader, repls :_*)
+
+        @throws[NCE]
+        def cpAndRename(in: String, out: String, extractHdr: Option[Seq[String] ⇒ (Int, Int)], repls: (String, String)*): Unit =
+            copy(inFolder, dst, in, out, extractHdr, repls :_*)
+
+        @throws[NCE]
+        def cpCommon(langDir: String, langExt: String): Unit = {
+            cp(".gitignore", None)
+
+            val (startClause, exampleClause) =
+                langExt match {
+                    case "java" ⇒ (s"NCEmbeddedProbe.start($clsName.class);", "Java example")
+                    case "kt" ⇒ (s"NCEmbeddedProbe.start($clsName::class.java)", "Kotlin example")
+                    case "scala" ⇒ (s"NCEmbeddedProbe.start(classOf[$clsName])", "Scala example")
+
+                    case  _ ⇒ throw new AssertionError(s"Unexpected language extension: $langExt")
+                }
+
+            cp(
+                "readme.txt",
+                None,
+                "com.company.nlp.TemplateModel" → s"$pkgName.$clsName",
+                "NCEmbeddedProbe.start\\(TemplateModel.class\\);" → startClause,
+                "Java example" → exampleClause,
+                "templateModelId" → baseName
+            )
+
+            val resFileName =
+                if (baseName.contains("_")) baseName else CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, baseName)
+
+            cpAndRename(
+                s"src/main/$langDir/com/company/nlp/TemplateModel.$langExt",
+                s"src/main/$langDir/$pkgDir/$clsName.$langExt",
+                // Suitable for all supported languages.
+                Some(extractJavaHeader),
+                "com.company.nlp" → s"$pkgName",
+                "TemplateModel" → clsName,
+                "template_model.yaml" → s"$resFileName.$fileType"
+            )
+            cpAndRename(
+                s"src/main/resources/template_model.${if (isJson) "json" else "yaml"}",
+                s"src/main/resources/$resFileName.$fileType",
+                Some(if (isJson) extractJsonHeader else extractYamlHeader),
+                "templateModelId" → baseName
+            )
+        }
+
+        @throws[NCE]
+        def cpPom(): Unit =
+            cp(
+                "pom.xml",
+                Some(extractXmlHeader),
+                "com.company.nlp" → pkgName,
+                "myapplication" → baseName,
+                "<nlpcraft.ver>(.*)</nlpcraft.ver>" → s"<nlpcraft.ver>${VER.version}</nlpcraft.ver>"
+            )
+
+        @throws[NCE]
+        def cpGradle(): Unit = {
+            cp("build.gradle",
+                Some(extractGradleHeader),
+                "com.company.nlp" → pkgName,
+                "myapplication" → baseName,
+                "'org.apache.nlpcraft:nlpcraft:(.*)'" → s"'org.apache.nlpcraft:nlpcraft:${VER.version}'"
+            )
+            cp(
+                "settings.gradle",
+                Some(extractGradleHeader),
+                "myapplication" → baseName
+            )
+            cp("gradlew", None)
+            cp("gradlew.bat", None)
+        }
+
+        @throws[NCE]
+        def cpSbt(): Unit = {
+            cp("build.sbt",
+                Some(extractSbtHeader),
+                "com.company.nlp" → pkgName,
+                "myapplication" → baseName,
+                (s"""libraryDependencies""" + " \\+= " + """"org.apache.nlpcraft" % "nlpcraft" % "(.*)"""") →
+                (s"""libraryDependencies""" + " \\+= " +  s""""org.apache.nlpcraft" % "nlpcraft" % "${VER.version}"""")
+            )
+            cp("project/build.properties", Some(extractPropertiesHeader))
+        }
+
+        def folder2String(dir: File): String = {
+            val sp = System.getProperty("line.separator")
+
+            def get(f: File): List[StringBuilder] = {
+                val name = if (f.isFile) s"${y(f.getName)}" else f.getName
+
+                val buf = mutable.ArrayBuffer.empty[StringBuilder] :+ new StringBuilder().append(name)
+
+                val children = {
+                    val list = f.listFiles()
+
+                    if (list == null) List.empty else list.sortBy(_.getName).toList
+                }
+
+                for {
+                    child ← children
+                    (v1, v2) = if (child != children.last) ("├── ", "│   ") else ("└── ", "    ")
+                    sub = get(child)
+                } {
+                    buf += sub.head.insert(0, v1)
+                    sub.tail.foreach(p ⇒ buf += p.insert(0, v2))
+                }
+
+                buf.toList
+            }
+
+            get(dir).map(line ⇒ s"$line$sp").mkString
+        }
+
+        try {
+            variant match {
+                case "java-mvn" ⇒ cpCommon("java", "java"); cpPom()
+                case "java-gradle" ⇒ cpCommon("java", "java"); cpGradle()
+
+                case "kotlin-mvn" ⇒ cpCommon("kotlin", "kt"); cpPom()
+                case "kotlin-gradle" ⇒ cpCommon("kotlin", "kt"); cpGradle()
+
+                case "scala-mvn" ⇒ cpCommon("scala", "scala"); cpPom()
+                case "scala-gradle" ⇒ cpCommon("scala", "scala"); cpGradle()
+                case "scala-sbt" ⇒ cpCommon("scala", "scala"); cpSbt()
+
+                case _ ⇒ throw new NCE(s"Unsupported combination of '${c(lang)}' and '${c(buildTool)}'.")
+            }
+
+            logln(s"Project created: ${c(dst.getCanonicalPath)}")
+            logln(folder2String(dst))
+        }
+        catch {
+            case e: NCE ⇒
+                try
+                    U.clearFolder(dst.getAbsolutePath, delFolder = true)
+                catch {
+                    case _: NCE ⇒ // No-op.
+                }
+
+                throw e
+        }
+    }
+
+    /**
      *
      * @param cmd
      * @param path
@@ -2454,7 +3011,7 @@ object NCCli extends App {
         parser.regexCommand("")
         parser.regexVariable("")
 
-        val completer = new Completer {
+        val completer: Completer = new Completer {
             private val cmds = CMDS.map(c ⇒ (c.name, c.synopsis, c.group))
 
             /**
@@ -2470,7 +3027,10 @@ object NCCli extends App {
             override def complete(reader: LineReader, line: ParsedLine, candidates: util.List[Candidate]): Unit = {
                 val words = line.words().asScala
 
-                if (words.isEmpty || !cmds.map(_._1).contains(words.head))
+                if (words.nonEmpty && words.head.nonEmpty && words.head.head == '$') { // Don't complete if the line starts with '$'.
+                    // No-op.
+                }
+                else if (words.isEmpty || !cmds.map(_._1).contains(words.head))
                     candidates.addAll(cmds.map(n ⇒ {
                         val name = n._1
                         val desc = n._2.substring(0, n._2.length - 1) // Remove last '.'.
@@ -2504,7 +3064,7 @@ object NCCli extends App {
                                     completed = !hasVal
                                 ))
                             })
-                            .asJava
+                                .asJava
 
                         case None ⇒ Seq.empty[Candidate].asJava
                     })
@@ -2538,7 +3098,7 @@ object NCCli extends App {
                                         completed = true
                                     )
                                 })
-                                .asJava
+                                    .asJava
                             )
                     }
 
@@ -2553,7 +3113,7 @@ object NCCli extends App {
                                     completed = true
                                 )
                             })
-                            .asJava
+                                .asJava
                         )
 
                     // For 'call' - add additional auto-completion/suggestion candidates.
@@ -2575,7 +3135,7 @@ object NCCli extends App {
                                                     completed = false
                                                 )
                                             })
-                                            .asJava
+                                                .asJava
                                         )
 
                                         // Add 'acsTok' auto-suggestion.
@@ -2600,7 +3160,7 @@ object NCCli extends App {
                                                         completed = true
                                                     )
                                                 })
-                                                .asJava
+                                                    .asJava
                                             )
 
                                         // Add default 'email' and 'passwd' auto-suggestion for 'signin' path.
@@ -2689,7 +3249,11 @@ object NCCli extends App {
                 val srvStr = bo(s"${if (state.isServerOnline) s"ON " else s"OFF "}")
                 val acsTokStr = bo(s"${state.accessToken.getOrElse("<signed out>")} ")
 
-                reader.printAbove("\n" + rb(w(s" server: $srvStr")) + wb(k(s" acsTok: $acsTokStr")))
+                val prompt1 = rb(w(s" server: $srvStr")) // Server status.
+                val prompt2 = wb(k(s" acsTok: $acsTokStr")) // Access toke, if any.
+                val prompt3 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
+
+                reader.printAbove("\n" + prompt1 + "⯐" + prompt2 + "⯐" + prompt3)
                 reader.readLine(s"${g(">")} ")
             }
             catch {
@@ -3040,6 +3604,22 @@ object NCCli extends App {
     }
 
     /**
+     *
+     * @param args
+     */
+    private def execOsCmd(args: Seq[String]): Unit = {
+        val pb = new ProcessBuilder(args.asJava).inheritIO()
+
+        val proc = pb.start()
+
+        try
+            proc.waitFor()
+        catch {
+            case e: InterruptedException ⇒ () // Exit.
+        }
+    }
+
+    /**
      * Processes a single command defined by the given arguments.
      *
      * @param args
@@ -3047,27 +3627,37 @@ object NCCli extends App {
      */
     @throws[Exception]
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
-        // Process 'no-ansi' and 'ansi' commands first.
-        processAnsi(args, repl)
+        if (args.nonEmpty) {
+            if (args.head.head == '$')
+                try
+                    execOsCmd(args.head.tail :: args.tail.toList) // Remove '$' from 1st argument.
+                catch {
+                    case e: Exception ⇒ error(e.getLocalizedMessage)
+                }
+            else {
+                // Process 'no-ansi' and 'ansi' commands first.
+                processAnsi(args, repl)
 
-        // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
-        val xargs = args.filter(arg ⇒ arg != NO_ANSI_CMD.name && arg != ANSI_CMD.name)
+                // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
+                val xargs = args.filter(arg ⇒ arg != NO_ANSI_CMD.name && arg != ANSI_CMD.name)
 
-        if (xargs.nonEmpty) {
-            val cmd = xargs.head
+                if (xargs.nonEmpty) {
+                    val cmd = xargs.head
 
-            CMDS.find(_.name == cmd) match {
-                case Some(cmd) ⇒
-                    // Reset error code.
-                    exitStatus = 0
+                    CMDS.find(_.name == cmd) match {
+                        case Some(cmd) ⇒
+                            // Reset error code.
+                            exitStatus = 0
 
-                    try
-                        cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
-                    catch {
-                        case e: Exception ⇒ error(e.getLocalizedMessage)
+                            try
+                                cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
+                            catch {
+                                case e: Exception ⇒ error(e.getLocalizedMessage)
+                            }
+
+                        case None ⇒ errorUnknownCommand(cmd)
                     }
-
-                case None ⇒ errorUnknownCommand(cmd)
+                }
             }
         }
     }
