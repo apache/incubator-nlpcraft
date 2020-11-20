@@ -96,8 +96,8 @@ object NCCli extends App {
     private final lazy val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
 
     private final val T___ = "    "
-    private val OPEN_BRK = Seq('[', '{', '(', '<')
-    private val CLOSE_BRK = Seq(']', '}', ')', '>')
+    private val OPEN_BRK = Seq('[', '{', '(')
+    private val CLOSE_BRK = Seq(']', '}', ')')
     // Pair for each open or close bracket.
     private val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap
 
@@ -150,7 +150,7 @@ object NCCli extends App {
     case class MissingParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
             s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-                s"type $C'help --cmd=${cmd.name}'$RST to get help."
+            s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
 
     case class MissingMandatoryJsonParameters(cmd: Command, path: String)
@@ -161,13 +161,13 @@ object NCCli extends App {
     case class InvalidParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
             s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-                s"type $C'help --cmd=${cmd.name}'$RST to get help."
+            s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
 
     case class InvalidJsonParameter(cmd: Command, param: String)
         extends IllegalArgumentException(
             s"Invalid JSON parameter $C${"'" + param + "'"}$RST, " +
-                s"type $C'help --cmd=${cmd.name}'$RST to get help."
+            s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
 
     case class HttpError(httpCode: Int)
