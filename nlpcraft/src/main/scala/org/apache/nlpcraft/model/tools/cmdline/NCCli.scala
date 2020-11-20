@@ -2254,9 +2254,7 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdNano(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (args.isEmpty)
-            throw NotEnoughArguments(cmd)
-        else if (args.size > 1)
+        if (args.size > 1)
             throw TooManyArguments(cmd)
 
         Commands.nano(term,
