@@ -2257,11 +2257,19 @@ object NCCli extends App {
         if (args.size > 1)
             throw TooManyArguments(cmd)
 
+        val nanoArgs: Array[String] =
+            if (args.isEmpty)
+                Array()
+            else if (args.head.parameter.id == "file")
+                Array(stripQuotes(args.head.value.get))
+            else
+                Array(getServerLogFromBeacon)
+
         Commands.nano(term,
             System.out,
             System.err,
             Paths.get(""),
-            nanoLessArgs(args)
+            nanoArgs
         )
     }
 
@@ -2284,21 +2292,6 @@ object NCCli extends App {
 
     /**
      *
-     * @param args
-     * @return
-     */
-    private def nanoLessArgs(args: Seq[Argument]): Array[String] = {
-        if (args.head.parameter.id == "file")
-            Array(ensureFileExists(stripQuotes(args.head.value.get)))
-        else {
-            require(args.head.parameter.id == "server-log")
-
-            Array(getServerLogFromBeacon)
-        }
-    }
-
-    /**
-     *
      * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
@@ -2309,12 +2302,19 @@ object NCCli extends App {
         else if (args.size > 1)
             throw TooManyArguments(cmd)
 
+        val arg = args.head
+
+        val lessArgs = if (arg.parameter.id == "file")
+            Array(ensureFileExists(stripQuotes(arg.value.get)))
+        else
+            Array(getServerLogFromBeacon)
+
         Commands.less(term,
             System.in,
             System.out,
             System.err,
             Paths.get(""),
-            nanoLessArgs(args)
+            lessArgs
         )
     }
 
