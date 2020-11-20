@@ -3253,7 +3253,7 @@ object NCCli extends App {
                 val prompt2 = wb(k(s" acsTok: $acsTokStr")) // Access toke, if any.
                 val prompt3 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
 
-                reader.printAbove("\n" + prompt1 + ">" + prompt2 + ">" + prompt3)
+                reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3)
                 reader.readLine(s"${g(">")} ")
             }
             catch {
