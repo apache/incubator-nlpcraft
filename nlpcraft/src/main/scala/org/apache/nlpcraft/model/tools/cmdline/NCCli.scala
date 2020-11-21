@@ -3479,7 +3479,7 @@ object NCCli extends App {
         if (args.nonEmpty) {
             if (args.head.head == '$')
                 try
-                    execOsCmd(args.head.tail :: args.tail.toList) // Remove '$' from 1st argument.
+                    execOsCmd(args.head.tail.trim() :: args.tail.toList) // Remove '$' from 1st argument.
                 catch {
                     case e: Exception ⇒ error(e.getLocalizedMessage)
                 }
