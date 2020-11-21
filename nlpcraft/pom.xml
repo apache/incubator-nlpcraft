@@ -375,8 +375,6 @@
                                     Some tests skipped on maven `verify` phase.
                                     ===========================================
                                 -->
-                                <!-- Reason: weather service is not stable enough and can be used for local tests only. -->
-                                <exclude>**/NCConversationSpec.*</exclude>
                                 <!-- Reason: output is to big. -->
                                 <exclude>**/NCDateGeneratorSpec.*</exclude>
                                 <!-- Reason: 'contextWordServer' should be started. -->
