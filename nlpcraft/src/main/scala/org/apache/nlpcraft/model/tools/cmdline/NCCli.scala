@@ -3477,12 +3477,15 @@ object NCCli extends App {
     @throws[Exception]
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         if (args.nonEmpty) {
-            if (args.head.head == '$')
+            if (args.head.head == '$') {
+                val head = args.head.trim
+                val tail = args.tail.toList
                 try
-                    execOsCmd(args.head.tail.trim() :: args.tail.toList) // Remove '$' from 1st argument.
+                    execOsCmd(if (head.isEmpty) tail else head :: tail) // Remove '$' from 1st argument.
                 catch {
                     case e: Exception ⇒ error(e.getLocalizedMessage)
                 }
+            }
             else {
                 // Process 'no-ansi' and 'ansi' commands first.
                 processAnsi(args, repl)
