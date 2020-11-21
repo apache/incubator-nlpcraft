@@ -3478,11 +3478,11 @@ object NCCli extends App {
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         if (args.nonEmpty) {
             if (args.head.head == '$') {
-                val head = args.head.tail.trim
+                val head = args.head.tail.trim // Remove '$' from 1st argument.
                 val tail = args.tail.toList
 
                 try
-                    execOsCmd(if (head.isEmpty) tail else head :: tail) // Remove '$' from 1st argument.
+                    execOsCmd(if (head.isEmpty) tail else head :: tail)
                 catch {
                     case e: Exception ⇒ error(e.getLocalizedMessage)
                 }
