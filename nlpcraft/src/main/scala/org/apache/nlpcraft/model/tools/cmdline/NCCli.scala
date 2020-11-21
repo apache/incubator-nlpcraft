@@ -48,7 +48,6 @@ import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl
-import org.jline.builtins.Commands
 import org.jline.reader._
 import org.jline.reader.impl.DefaultParser
 import org.jline.reader.impl.DefaultParser.Bracket
@@ -1146,71 +1145,6 @@ object NCCli extends App {
             body = cmdCls
         ),
         Command(
-            name = "nano",
-            group = "3. REPL Commands",
-            synopsis = s"Runs built-in ${y("'nano'")} editor.",
-            body = cmdNano,
-            desc = Some(
-                s"Note that built-in ${y("'nano'")} editor uses system settings for syntax highlighting."
-            ),
-            params = Seq(
-                Parameter(
-                    id = "file",
-                    names = Seq("--file", "-f"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"File to open with built-in ${y("'nano'")} editor. Relative paths will based off the current directory."
-                ),
-                Parameter(
-                    id = "server-log",
-                    names = Seq("--server-log", "-s"),
-                    optional = true,
-                    desc =
-                        s"Opens up built-in ${y("'nano'")} editor for currently running local REST server log."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME nano -f=my_model.yml"),
-                    desc = s"Opens ${y("'my_model.yml'")} file in built-in ${y("'nano'")} editor."
-                )
-            )
-        ),
-        Command(
-            name = "less",
-            group = "3. REPL Commands",
-            synopsis = s"Runs built-in ${y("'less'")} command.",
-            body = cmdLess,
-            desc = Some(
-                s"Note that built-in ${y("'less'")} command uses system settings for syntax highlighting. Note " +
-                s"that either ${y("'--file'")} or ${y("'--server-log'")} parameter must be provided (but not both)."
-            ),
-            params = Seq(
-                Parameter(
-                    id = "file",
-                    names = Seq("--file", "-f"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"File to open with built-in ${y("'less'")} commands. Relative paths will based off the current directory."
-                ),
-                Parameter(
-                    id = "server-log",
-                    names = Seq("--server-log", "-s"),
-                    optional = true,
-                    desc =
-                        s"Opens up built-in ${y("'less'")} command for currently running local REST server log."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME less --server-log"),
-                    desc = s"Opens locally run REST server log using built-in ${y("'less'")} command."
-                )
-            )
-        ),
-        Command(
             name = "no-ansi",
             group = "3. REPL Commands",
             synopsis = s"Disables ANSI escape codes for terminal colors & controls.",
@@ -1622,8 +1556,6 @@ object NCCli extends App {
                 tbl += (s"${g("restart-server")}", "Restart the server.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
                 tbl += (s"${g("tail-server")}", "Tail the server log.")
-                tbl += (s"${g("nano -s")}", s"Run ${y("'nano'")} for server log.")
-                tbl += (s"${g("less -s")}", s"Run ${y("'less'")} for server log.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
             }
@@ -1716,16 +1648,6 @@ object NCCli extends App {
     private def getRestEndpointFromBeacon: String =
         loadServerBeacon() match {
             case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
-            case None ⇒ throw NoLocalServer()
-        }
-
-    /**
-     *
-     * @return
-     */
-    private def getServerLogFromBeacon: String =
-        loadServerBeacon() match {
-            case Some(beacon) ⇒ beacon.logPath
             case None ⇒ throw NoLocalServer()
         }
 
@@ -2246,77 +2168,6 @@ object NCCli extends App {
      */
     private def cmdCls(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         term.puts(Capability.clear_screen)
-
-    /**
-     *
-     * @param cmd  Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
-     */
-    private def cmdNano(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (args.size > 1)
-            throw TooManyArguments(cmd)
-
-        val nanoArgs: Array[String] =
-            if (args.isEmpty)
-                Array()
-            else if (args.head.parameter.id == "file")
-                Array(stripQuotes(args.head.value.get))
-            else
-                Array(getServerLogFromBeacon)
-
-        Commands.nano(term,
-            System.out,
-            System.err,
-            Paths.get(""),
-            nanoArgs
-        )
-    }
-
-    /**
-     * Checks that given path denotes a regular existing file.
-     *
-     * @param path
-     * @return Absolute file path.
-     */
-    private def ensureFileExists(path: String): String = {
-        val file = new File(path)
-
-        if (!file.exists())
-            throw new IllegalArgumentException(s"File not found: ${c(file.getAbsolutePath)}")
-        if (!file.isFile)
-            throw new IllegalArgumentException(s"Path is not a file: ${c(file.getAbsolutePath)}")
-
-        file.getCanonicalPath
-    }
-
-    /**
-     *
-     * @param cmd  Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
-     */
-    private def cmdLess(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (args.isEmpty)
-            throw NotEnoughArguments(cmd)
-        else if (args.size > 1)
-            throw TooManyArguments(cmd)
-
-        val arg = args.head
-
-        val lessArgs = if (arg.parameter.id == "file")
-            Array(ensureFileExists(stripQuotes(arg.value.get)))
-        else
-            Array(getServerLogFromBeacon)
-
-        Commands.less(term,
-            System.in,
-            System.out,
-            System.err,
-            Paths.get(""),
-            lessArgs
-        )
-    }
 
     /**
      *
@@ -3613,7 +3464,7 @@ object NCCli extends App {
         try
             proc.waitFor()
         catch {
-            case e: InterruptedException ⇒ () // Exit.
+            case _: InterruptedException ⇒ () // Exit.
         }
     }
 
