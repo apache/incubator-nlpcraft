@@ -319,7 +319,7 @@ object NCSqlModelGeneratorImpl {
             new NCMacroJson("<OF>", "{of|for|per}"),
             new NCMacroJson("<ID>", "{unique|*} {id|identifier}")
         ))
-        mdl.setAdditionalStopwords(Array())
+        mdl.setAdditionalStopWords(Array())
         mdl.setSuspiciousWords(Array())
         mdl.setEnabledBuiltInTokens(Array())
         mdl.setIntents(Array())

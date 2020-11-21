@@ -32,8 +32,8 @@ public class NCModelJson {
     private Map<String, Object> metadata;
     private NCMacroJson[] macros;
     private NCElementJson[] elements;
-    private String[] additionalStopwords;
-    private String[] excludedStopwords;
+    private String[] additionalStopWords;
+    private String[] excludedStopWords;
     private String[] suspiciousWords;
     private String[] enabledBuiltInTokens;
     private String[] intents;
@@ -97,17 +97,17 @@ public class NCModelJson {
     public void setElements(NCElementJson[] elements) {
         this.elements = elements;
     }
-    public String[] getAdditionalStopwords() {
-        return additionalStopwords;
+    public String[] getAdditionalStopWords() {
+        return additionalStopWords;
     }
-    public void setAdditionalStopwords(String[] additionalStopwords) {
-        this.additionalStopwords = additionalStopwords;
+    public void setAdditionalStopWords(String[] additionalStopWords) {
+        this.additionalStopWords = additionalStopWords;
     }
-    public String[] getExcludedStopwords() {
-        return excludedStopwords;
+    public String[] getExcludedStopWords() {
+        return excludedStopWords;
     }
-    public void setExcludedStopwords(String[] excludedStopwords) {
-        this.excludedStopwords = excludedStopwords;
+    public void setExcludedStopWords(String[] excludedStopWords) {
+        this.excludedStopWords = excludedStopWords;
     }
     public String[] getSuspiciousWords() {
         return suspiciousWords;

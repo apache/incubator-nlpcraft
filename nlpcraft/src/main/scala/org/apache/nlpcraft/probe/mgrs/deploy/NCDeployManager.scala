@@ -178,8 +178,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 else
                     NCNlpCoreManager.stem(word)
 
-        val addStopWords = checkAndStemmatize(mdl.getAdditionalStopWords, "additionalStopword")
-        val exclStopWords = checkAndStemmatize(mdl.getExcludedStopWords, "excludedStopword")
+        val addStopWords = checkAndStemmatize(mdl.getAdditionalStopWords, "additionalStopWords")
+        val exclStopWords = checkAndStemmatize(mdl.getExcludedStopWords, "excludedStopWords")
         val suspWords = checkAndStemmatize(mdl.getSuspiciousWords, "suspiciousWord")
 
         checkStopwordsDups(mdlId, addStopWords, exclStopWords)

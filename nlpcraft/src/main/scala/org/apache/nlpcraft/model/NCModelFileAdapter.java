@@ -17,9 +17,9 @@
 
 package org.apache.nlpcraft.model;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.yaml.*;
-import com.google.gson.*;
 import org.apache.nlpcraft.common.*;
 import org.apache.nlpcraft.common.util.*;
 import org.apache.nlpcraft.model.impl.json.*;
@@ -67,9 +67,16 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
     private final String origin;
 
-    /** */
-    private static final Gson GSON = new Gson();
-    
+    private final static ObjectMapper MAPPER_YAML = new ObjectMapper(new YAMLFactory());
+    private final static ObjectMapper MAPPER_JSON = new ObjectMapper();
+
+    static {
+        MAPPER_JSON.enable(JsonParser.Feature.ALLOW_COMMENTS);
+
+        MAPPER_JSON.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        MAPPER_YAML.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+    }
+
     /**
      * Creates new model loading its configuration from given file path. Only <code>.js</code>,
      * <code>.json</code>, <code>.yml</code> and <code>.yaml</code> files are supported. File path can be
@@ -105,8 +112,8 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         this.proxy = proxy;
         this.suspWords = convert(proxy.getSuspiciousWords(), null);
         this.enabledToks = convert(proxy.getEnabledBuiltInTokens(), NCModelView.DFLT_ENABLED_BUILTIN_TOKENS);
-        this.addStopwords = convert(proxy.getAdditionalStopwords(), null);
-        this.exclStopwords = convert(proxy.getExcludedStopwords(), null);
+        this.addStopwords = convert(proxy.getAdditionalStopWords(), null);
+        this.exclStopwords = convert(proxy.getExcludedStopWords(), null);
         this.elems = convertElements(proxy.getElements());
         this.macros = convertMacros(proxy.getMacros());
         this.metadata = convertMeta(proxy.getMetadata());
@@ -170,26 +177,23 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
      * @throws NCException
      */
     private static NCModelJson readModel(String path, InputStream in, String pathLow) {
-        if (pathLow.endsWith("yaml") || pathLow.endsWith("yml")) {
-            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    
-            try {
-                return mapper.readValue(in, NCModelJson.class);
-            }
-            catch (Exception e) {
-                throw new NCException("Failed to load YAML: " + path, e);
-            }
-        }
+        ObjectMapper m;
+
+        if (pathLow.endsWith("yaml") || pathLow.endsWith("yml"))
+            m = MAPPER_YAML;
         else if (pathLow.endsWith("js") || pathLow.endsWith("json")) {
-            try (Reader reader = new BufferedReader(new InputStreamReader(in))) {
-                return GSON.fromJson(reader, NCModelJson.class);
-            }
-            catch (Exception e) {
-                throw new NCException("Failed to load JSON: " + path, e);
-            }
+            m = MAPPER_JSON;
         }
-        
-        throw new NCException("Unsupported model configuration file type (.yaml, .yml, .js or .json only): " + path);
+        else {
+            throw new NCException("Unsupported model configuration file type (.yaml, .yml, .js or .json only): " + path);
+        }
+
+        try {
+            return m.readValue(in, NCModelJson.class);
+        }
+        catch (Exception e) {
+            throw new NCException("Failed to load: " + path, e);
+        }
     }
 
     /**
