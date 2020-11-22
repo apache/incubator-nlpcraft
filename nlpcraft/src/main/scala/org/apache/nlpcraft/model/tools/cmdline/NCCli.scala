@@ -152,9 +152,10 @@ object NCCli extends App {
             s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
 
-    case class MissingMandatoryJsonParameters(cmd: Command, path: String)
+    case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String)
         extends IllegalArgumentException(
-            s"Missing mandatory JSON parameter for $C${"'" + cmd.name + s" --path=$path'"}$RST, type $C'help --cmd=${cmd.name}'$RST to get help."
+            s"Missing mandatory JSON parameters (${missingParams.map(s ⇒ y(s.name)).mkString(",")}) " +
+            s"for $C${"'" + cmd.name + s" --path=$path'"}$RST, type $C'help --cmd=${cmd.name}'$RST to get help."
         )
 
     case class InvalidParameter(cmd: Command, paramId: String)
@@ -2369,7 +2370,7 @@ object NCCli extends App {
         }
 
         if (mandatoryParams.nonEmpty)
-            throw MissingMandatoryJsonParameters(cmd, path)
+            throw MissingMandatoryJsonParameters(cmd, mandatoryParams, path)
 
         httpRest(cmd, path, s"{${buf.toString()}}")
     }
