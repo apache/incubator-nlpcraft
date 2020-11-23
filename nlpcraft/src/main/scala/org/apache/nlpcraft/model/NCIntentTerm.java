@@ -44,5 +44,10 @@ import static java.lang.annotation.RetentionPolicy.*;
 @Retention(value=RUNTIME)
 @Target(value=PARAMETER)
 public @interface NCIntentTerm {
+    /**
+     * ID of the intent defined externally.
+     *
+     * @return ID of the intent defined externally.
+     */
     String value();
 }
