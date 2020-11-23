@@ -1586,7 +1586,7 @@ object NCCli extends App {
 
                     progressBar.ticked()
                 })
-                    .start()
+                .start()
 
                 val tailer = Tailer.create(
                     state.serverLog.get,
