@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.conversation
+package org.apache.nlpcraft.model.dialog
 
 import java.util
 import java.util.Collections
@@ -30,7 +30,7 @@ import scala.collection.JavaConverters._
 /**
   * Test model.
   */
-class NCConversationSpecModel extends NCModel {
+class NCDialogSpecModel extends NCModel {
     override def getId: String = this.getClass.getSimpleName
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
@@ -42,35 +42,46 @@ class NCConversationSpecModel extends NCModel {
 
     override def getElements: util.Set[NCElement] = Set(mkElement("test1"), mkElement("test2")).asJava
 
-    // 'test1' is mandatory, 'test2' is optional.
-    @NCIntent("intent=testIntentId term~{id == 'test1'} term~{id == 'test2'}?")
-    def onMatch(): NCResult = NCResult.text("ok")
+    @NCIntent("intent=test1 term~{id == 'test1'}")
+    def onTest1(): NCResult = NCResult.text("ok")
+
+    @NCIntent("intent=test2 flow='test1[1,1]' term~{id == 'test2'}")
+    def onTest2(): NCResult = NCResult.text("ok")
 }
 
 /**
-  * @see NCConversationSpecModel
+  * @see NCDialogSpecModel
   */
-@NCTestEnvironment(model = classOf[NCConversationSpecModel], startClient = true)
-class NCConversationSpec extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCDialogSpecModel], startClient = true)
+class NCDialogSpec extends NCTestContext {
     @Test
     @throws[Exception]
-    private[conversation] def test(): Unit = {
+    private[dialog] def test(): Unit = {
         val cli = getClient
 
-        // missed 'test1'
-        assertFalse(cli.ask("test2").isOk)
-        assertTrue(cli.ask("test1 test2").isOk)
+        def flow(): Unit = {
+            // There isn't `test1` before.
+            assertFalse(cli.ask("test2").isOk)
 
-        // 'test1' received from conversation.
-        assertTrue(cli.ask("test2").isOk)
+            // `test1` is always ok.
+            assertTrue(cli.ask("test1").isOk)
+
+            // There is one `test1` before.
+            assertTrue(cli.ask("test2").isOk)
+
+            // `test1` is always ok.
+            assertTrue(cli.ask("test1").isOk)
+            assertTrue(cli.ask("test1").isOk)
+
+            // There are too much `test1` before.
+            assertFalse(cli.ask("test2").isOk)
+        }
+
+        flow()
 
         cli.clearConversation()
+        cli.clearDialog()
 
-        // missed 'test1' again.
-        assertFalse(cli.ask("test2").isOk)
-        assertTrue(cli.ask("test1 test2").isOk)
-
-        // 'test1' received from conversation.
-        assertTrue(cli.ask("test2").isOk)
+        flow()
     }
 }
