@@ -357,8 +357,8 @@
                     </systemProperties>
                 </configuration>
                 <executions>
-                    <!-- All tests are defined as integration. -->
                     <execution>
+                        <!-- All tests are defined as integration. -->
                         <id>integration-tests</id>
                         <phase>integration-test</phase>
                         <goals>
@@ -370,11 +370,8 @@
                             <includes>
                                 <include>**/*.*</include>
                             </includes>
+                            <!-- Exclude extended tests (they can be run via 'extended-tests' Maven profile) -->
                             <excludes>
-                                <!--
-                                    Some tests skipped on maven `verify` phase.
-                                    ===========================================
-                                -->
                                 <!-- Reason: output is to big. -->
                                 <exclude>**/NCDateGeneratorSpec.*</exclude>
                                 <!-- Reason: 'contextWordServer' should be started. -->
@@ -541,4 +538,46 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>extended-tests</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.plugin.ver}</version>
+                        <configuration>
+                            <systemProperties>
+                                <property>
+                                    <name>NLPCRAFT_TEST_MAVEN_ENV</name>
+                                    <value>true</value>
+                                </property>
+                            </systemProperties>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>extended-integration-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <includes>
+                                        <include>**/NCDateGeneratorSpec.*</include>
+                                        <include>**/NCRestModelSpec.*</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
