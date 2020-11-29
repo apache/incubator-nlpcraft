@@ -3080,7 +3080,8 @@ object NCCli extends App {
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
         )
 
-        logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
+        logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help and ${rv(" ↑ ")} or ${rv(" ↓ ")} to scroll through history.")
+        logln(s"Type '${c("quit")}' to exit.")
 
         var exit = false
 
