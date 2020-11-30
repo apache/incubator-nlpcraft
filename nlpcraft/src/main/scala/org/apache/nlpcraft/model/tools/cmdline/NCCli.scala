@@ -1784,8 +1784,8 @@ object NCCli extends App {
                 ) acquireAndGet {
                     _.readObject()
                 }
-                )
-                .asInstanceOf[NCCliServerBeacon]
+            )
+            .asInstanceOf[NCCliServerBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
                 case Some(ph) ⇒
@@ -1826,28 +1826,35 @@ object NCCli extends App {
 
                 val baseUrl = "http://" + beacon.restEndpoint
 
-                // Attempt to signin with the default account.
-                if (autoSignIn && state.accessToken.isEmpty)
-                    httpPostResponseJson(
-                        baseUrl,
-                        "signin",
-                        "{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}") match {
-                        case Some(json) ⇒ state.accessToken = Option(Try(U.getJsonStringField(json, "acsTok")).getOrElse(null))
-                        case None ⇒ ()
-                    }
+                try {
+                    // Attempt to signin with the default account.
+                    if (autoSignIn && state.accessToken.isEmpty)
+                        httpPostResponseJson(
+                            baseUrl,
+                            "signin",
+                            "{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}") match {
+                            case Some(json) ⇒ state.accessToken = Option(Try(U.getJsonStringField(json, "acsTok")).getOrElse(null))
+                            case None ⇒ ()
+                        }
 
-                // Attempt to get all connected probes if successfully signed in prior.
-                if (state.accessToken.isDefined)
-                    httpPostResponseJson(
-                        baseUrl,
-                        "probe/all",
-                        "{\"acsTok\": \"" + state.accessToken.get + "\"}") match {
-                        case Some(json) ⇒ state.probes =
-                            Try(
-                                U.jsonToObject[ProbeAllResponse](json, classOf[ProbeAllResponse]).probes.toList
-                            ).getOrElse(Nil)
-                        case None ⇒ ()
-                    }
+                    // Attempt to get all connected probes if successfully signed in prior.
+                    if (state.accessToken.isDefined)
+                        httpPostResponseJson(
+                            baseUrl,
+                            "probe/all",
+                            "{\"acsTok\": \"" + state.accessToken.get + "\"}") match {
+                            case Some(json) ⇒ state.probes =
+                                Try(
+                                    U.jsonToObject[ProbeAllResponse](json, classOf[ProbeAllResponse]).probes.toList
+                                ).getOrElse(Nil)
+                            case None ⇒ ()
+                        }
+                }
+                catch {
+                    case _: Exception ⇒
+                        // Reset REPL state.
+                        state = ReplState()
+                }
 
             case None ⇒
                 // Reset REPL state.
