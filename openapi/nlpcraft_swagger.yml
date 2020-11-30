@@ -32,16 +32,16 @@ tags:
   - name: Authentication
     description: >-
       User signing in (getting access token), singing out and password reset.
-  - name: Users
+  - name: User
     description: >-
       Adding, removing and managing users.
-  - name: Companies
+  - name: Company
     description: >-
       Adding, removing and managing companies.
-  - name: Feedbacks
+  - name: Feedback
     description: >-
       Adding, removing and getting requests feedback.
-  - name: Data Probe
+  - name: Probe
     description: >-
       Managing data probes.
   - name: Asking
@@ -1392,7 +1392,7 @@ paths:
   /feedback/add:
     post:
       tags:
-        - Asking
+        - Feedback
       summary: Adds feedback.
       description: Adds feedback for processed user request.
       operationId: addFeedback
@@ -1457,7 +1457,7 @@ paths:
   /feedback/delete:
     post:
       tags:
-        - Asking
+        - Feedback
       summary: Deletes feedback.
       description: >-
         Deletes feedback for given record ID.
@@ -1494,7 +1494,7 @@ paths:
   /feedback/all:
     post:
       tags:
-        - Asking
+        - Feedback
       summary: Gets feedback.
       description:  >-
         Gets all request feedback records.
