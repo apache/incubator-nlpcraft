@@ -186,7 +186,7 @@ paths:
       description: >-
         Runs model synonym suggestion tool that is based on BERT models and uses @NCIntentSample annotation.
         Administrative privileges required.
-      operationId: inspect
+      operationId: sugsyn
       parameters:
         - in: body
           name: Payload body
