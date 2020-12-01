@@ -32,10 +32,19 @@ package org.apache.nlpcraft.model.tools.sqlgen;
  *     - "customer_id"
  *     jointype: "left"
  * </pre>
+ *
+ * Refer to <a target=_ href="https://en.wikipedia.org/wiki/Join_(SQL)">SQL Join</a>.
  */
 public enum NCSqlJoinType {
+    /** The INNER JOIN keyword selects records that have matching values in both tables. */
     INNER,
+
+    /** The LEFT JOIN keyword returns all records from the left table, and the matched records from the right table. */
     LEFT,
+
+    /** The RIGHT JOIN keyword returns all records from the right table, and the matched records from the left table. */
     RIGHT,
+
+    /** The FULL OUTER JOIN keyword returns all records when there is a match in left or right table records. */
     OUTER
 }

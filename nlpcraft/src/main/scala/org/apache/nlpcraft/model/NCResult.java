@@ -55,9 +55,16 @@ import java.util.Collection;
  * accept {@code text} result type and ignore everything else.
  */
 public class NCResult implements Serializable {
+    /** Data Model result text. */
     private String body;
+
+    /** Data Model result type. One of text, html, json or yaml. */
     private String type;
+
+    /** Sequence of tokens represents a fully parsed (see {@link NCContext#getVariants()} method) user input. */
     private Collection<NCToken> tokens;
+
+    /** ID of the intent defined externally. */
     private String intentId;
     
     /**
