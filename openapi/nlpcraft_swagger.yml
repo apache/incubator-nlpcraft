@@ -35,22 +35,22 @@ produces:
 tags:
   - name: Authentication
     description: >-
-      User signing in (getting access token), singing out and password reset.
+      Signing in, singing out and password reset.
+  - name: Asking
+    description: >-
+      Asking questions, checking results, clearing context.
   - name: User
     description: >-
-      Adding, removing and managing users.
+      Managing users.
   - name: Company
     description: >-
-      Adding, removing and managing companies.
+      Managing companies.
   - name: Feedback
     description: >-
-      Adding, removing and getting requests feedback.
+      Managing feedback.
   - name: Probe
     description: >-
       Managing data probes.
-  - name: Asking
-    description: >-
-      Asking questions, checking results, clearing conversation and dialog context.
 paths:
   /clear/conversation:
     post:
@@ -85,14 +85,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. User ID for which to clear conversation. Optional, caller user ID used by default.
+                  <em>Optional.</em> User ID for which to clear conversation. Optional, caller user ID used by default.
                   Clearing conversation for other users from the same company requires administrative
                   privileges. If both user ID and external 'on-behalf-of' user ID are provided they have to
                   point to the same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' user ID for which to clear conversation. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' user ID for which to clear conversation. Optional, caller
                   user ID used by default. Clearing conversation for other users from the same company
                   requires administrative privileges. If both user ID and external 'on-behalf-of' user ID are
                   provided they have to point to the same NLPCraft user. Note that if only external 'on-behalf-of'
@@ -139,14 +139,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. User ID for which to clear dialog flow. Optional, caller user ID used by default.
+                  <em>Optional.</em> User ID for which to clear dialog flow. Optional, caller user ID used by default.
                   Clearing dialog flow for other users from the same company requires administrative
                   privileges. If both user ID and external 'on-behalf-of' user ID are provided they
                   have to point to the same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' user ID for which to clear dialog flow. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' user ID for which to clear dialog flow. Optional, caller
                   user ID used by default. Clearing dialog flow for other users from the same company
                   requires administrative privileges. If both user ID and external 'on-behalf-of' user
                   ID are provided they have to point to the same NLPCraft user. Note that if only external
@@ -211,7 +211,7 @@ paths:
                 type: number
                 format: double
                 description: >-
-                  Optional. Minimal score to include into the result (from 0 to 1, default is 0).
+                  <em>Optional.</em> Minimal score to include into the result (from 0 to 1, default is 0).
       responses:
         '200':
           description: Successful operation.
@@ -261,14 +261,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. User ID for which to check the results. Optional, caller user ID used by default.
+                  <em>Optional.</em> User ID for which to check the results. Optional, caller user ID used by default.
                   Checking results for other users from the same company requires administrative privileges. If
                   both user ID and external 'on-behalf-of' user ID are provided they have to point to the
                   same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' user ID for which to check the results. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' user ID for which to check the results. Optional, caller
                   user ID used by default. Checking results for other users from the same company requires
                   administrative privileges. If both user ID and external 'on-behalf-of' user ID are provided
                   they have to point to the same NLPCraft user. Note that if only external 'on-behalf-of'
@@ -279,13 +279,13 @@ paths:
                 items:
                   type: string
                 description: >-
-                  Optional. List of server request IDs to check - by default, all current user requests will be returned.
+                  <em>Optional.</em> List of server request IDs to check - by default, all current user requests will be returned.
                   Note, there won't be any errors if invalid server requests IDs are provided (safely ignored instead).
               maxRows:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. Maximum number of returned items - by default all items will be returned.
+                  <em>Optional.</em> Maximum number of returned items - by default all items will be returned.
       responses:
         '200':
           description: Successful operation.
@@ -335,28 +335,28 @@ paths:
                     status:
                       type: string
                       description: >-
-                        Current status of this request (QRY_READY indicates that
-                        result - error or ok - is ready).
+                        Current status of this request (<code>QRY_READY</code> indicates that
+                        the result - successful or not - is ready).
                       enum:
                         - QRY_ENLISTED
-                        - QRY_READY
+                        - <code>QRY_READY</code>
                     resType:
                       type: string
                       description: >-
                         Optional result type if returned by model (provided only
-                        if status is QRY_READY and processing was not rejected
+                        if status is <code>QRY_READY</code> and processing was not rejected
                         or terminated due to an exception).
                     resBody:
                       type: object
                       description: >-
                         Optional body (string or JSON object) of the result if returned by model
-                        (provided only if status is QRY_READY and processing was
+                        (provided only if status is <code>QRY_READY</code> and processing was
                         not rejected or terminated due to an exception).
                     error:
                       type: string
                       description: >-
                         Optional error if returned by model (provided only if
-                        status is QRY_READY and processing was rejected or
+                        status is <code>QRY_READY</code> and processing was rejected or
                         terminated due to an exception).
                     errorCode:
                       type: integer
@@ -417,14 +417,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. ID of the user whose requests to cancel. Optional, caller user ID used by default.
+                  <em>Optional.</em> ID of the user whose requests to cancel. Optional, caller user ID used by default.
                   Cancelling requests for other users from the same company requires administrative privileges. If
                   both user ID and external 'on-behalf-of' user ID are provided they have to point to the
                   same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' ID of the user whose requests to cancel. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' ID of the user whose requests to cancel. Optional, caller
                   user ID used by default. Cancelling requests for other users from the same company requires
                   administrative privileges. If both user ID and external 'on-behalf-of' user ID are provided
                   they have to point to the same NLPCraft user. Note that if only external 'on-behalf-of'
@@ -435,7 +435,7 @@ paths:
                 items:
                   type: string
                 description: >-
-                  Optional. Server IDs of the requests to cancel. Optional, all current user requests will be cancelled by default.
+                  <em>Optional.</em> Server IDs of the requests to cancel. Optional, all current user requests will be cancelled by default.
                   Note, there aren't errors even if invalid server requests identifiers provided as arguments.
       responses:
         '200':
@@ -475,14 +475,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. ID of the user submitting the question. Optional, caller user ID used by default.
+                  <em>Optional.</em> ID of the user submitting the question. Optional, caller user ID used by default.
                   Submitting questions for other users from the same company requires administrative privileges. If
                   both user ID and external 'on-behalf-of' user ID are provided they have to point to the
                   same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' ID of the user submitting the question. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' ID of the user submitting the question. Optional, caller
                   user ID used by default. Submitting questions for other users from the same company requires
                   administrative privileges. If both user ID and external 'on-behalf-of' user ID are provided
                   they have to point to the same NLPCraft user. Note that if only external 'on-behalf-of' user ID
@@ -500,11 +500,11 @@ paths:
               data:
                 type: object
                 description: >-
-                  Optional. Additional user-defined JSON data to be passed along with the request with maximum
+                  <em>Optional.</em> Additional user-defined JSON data to be passed along with the request with maximum
                   JSON length of 512000 bytes.
               enableLog:
                 description: >-
-                  Optional. Flag to enable detailed processing log to be returned with the result.
+                  <em>Optional.</em> Flag to enable detailed processing log to be returned with the result.
                 type: boolean
       responses:
         '200':
@@ -556,14 +556,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. ID of the user submitting the question. Optional, caller user ID used by default.
+                  <em>Optional.</em> ID of the user submitting the question. Optional, caller user ID used by default.
                   Submitting questions for other users from the same company requires administrative privileges. If
                   both user ID and external 'on-behalf-of' user ID are provided they have to point to the
                   same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' ID of the user submitting the question. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' ID of the user submitting the question. Optional, caller
                   user ID used by default. Submitting questions for other users from the same company requires
                   administrative privileges. If both user ID and external 'on-behalf-of' user ID are provided
                   they have to point to the same NLPCraft user. Note that if only external 'on-behalf-of' user ID
@@ -581,10 +581,10 @@ paths:
               data:
                 type: object
                 description: >-
-                  Optional. Additional sentence JSON data with maximum JSON length of 512000 bytes.
+                  <em>Optional.</em> Additional sentence JSON data with maximum JSON length of 512000 bytes.
               enableLog:
                 description: >-
-                  Optional. Flag to enable detailed processing log to be returned with the result.
+                  <em>Optional.</em> Flag to enable detailed processing log to be returned with the result.
                 type: boolean
       responses:
         '200':
@@ -633,28 +633,28 @@ paths:
                   status:
                     type: string
                     description: >-
-                      Current status of this request (QRY_READY indicates that
+                      Current status of this request (<code>QRY_READY</code> indicates that
                       result - error or ok - is ready).
                     enum:
                       - QRY_ENLISTED
-                      - QRY_READY
+                      - <code>QRY_READY</code>
                   resType:
                     type: string
                     description: >-
                       Optional result type if returned by model (provided only
-                      if status is QRY_READY and processing was not rejected
+                      if status is <code>QRY_READY</code> and processing was not rejected
                       or terminated due to an exception).
                   resBody:
                     type: object
                     description: >-
                       Optional body (string or JSON object) of the result if returned by model
-                      (provided only if status is QRY_READY and processing was
+                      (provided only if status is <code>QRY_READY</code> and processing was
                       not rejected or terminated due to an exception).
                   error:
                     type: string
                     description: >-
                       Optional error if returned by model (provided only if
-                      status is QRY_READY and processing was rejected or
+                      status is <code>QRY_READY</code> and processing was rejected or
                       terminated due to an exception).
                   errorCode:
                     type: integer
@@ -694,14 +694,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. ID of the user. Optional, caller user ID used by default.
+                  <em>Optional.</em> ID of the user. Optional, caller user ID used by default.
                   Getting information about other users from the same company requires administrative privileges. If
                   both user ID and external 'on-behalf-of' user ID are provided they have to point to the
                   same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' ID of the user. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' ID of the user. Optional, caller
                   user ID used by default. Getting information for other users from the same company requires
                   administrative privileges. If both user ID and external 'on-behalf-of' user ID are provided
                   they have to point to the same NLPCraft user.
@@ -853,7 +853,7 @@ paths:
                 maxLength: 256
               id:
                 description: >-
-                  Optional. ID of the user to update. Only administrators can
+                  <em>Optional.</em> ID of the user to update. Only administrators can
                   provide this parameter. Current user ID is used by default.
                 type: integer
                 format: int64
@@ -867,11 +867,11 @@ paths:
                 maxLength: 64
               avatarUrl:
                 type: string
-                description: Optional. User avatar URL.
+                description: <em>Optional.</em> User avatar URL.
                 maxLength: 512000
               properties:
                 type: object
-                description: Optional. Additional user properties.
+                description: <em>Optional.</em> Additional user properties.
                 additionalProperties:
                   type: string
       responses:
@@ -908,7 +908,7 @@ paths:
                 type: string
               id:
                 description: >-
-                  Optional. ID of the user to delete. Only administrators can
+                  <em>Optional.</em> ID of the user to delete. Only administrators can
                   provide this parameter. Current user ID is used by default. If both user ID
                   and external 'on-behalf-of' user ID are provided they have to point to the same NLPCraft user.
                 type: integer
@@ -916,7 +916,7 @@ paths:
               usrExtId:
                 maxLength: 64
                 description: >-
-                  Optional. External 'on-behalf-of' ID of the user to delete. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' ID of the user to delete. Optional, caller
                   user ID used by default. Administrative privileges are required to delete
                   other users from the same company. If both user ID and external 'on-behalf-of' user ID
                   are provided they have to point to the same NLPCraft user.
@@ -956,7 +956,7 @@ paths:
                 type: string
               id:
                 description: >-
-                  Optional. ID of the user to update - current user ID is used by default.
+                  <em>Optional.</em> ID of the user to update - current user ID is used by default.
                 type: integer
                 format: int64
               isAdmin:
@@ -997,7 +997,7 @@ paths:
                 type: string
               id:
                 description: >-
-                  Optional. ID of the user to reset password. Only admins
+                  <em>Optional.</em> ID of the user to reset password. Only admins
                   can provide this parameter. Current user ID is used by default.
                 type: integer
                 format: int64
@@ -1057,19 +1057,19 @@ paths:
                 maxLength: 64
               avatarUrl:
                 type: string
-                description: Optional. User avatar URL.
+                description: <em>Optional.</em> User avatar URL.
                 maxLength: 512000
               isAdmin:
                 type: boolean
                 description: Admin flag.
               properties:
                 type: object
-                description: Optional. Additional user properties.
+                description: <em>Optional.</em> Additional user properties.
                 additionalProperties:
                   type: string
               usrExtId:
                 type: string
-                description: Optional. User external 'on-behalf-of' ID. If this field defined, method tries to find and update existing user.
+                description: <em>Optional.</em> User external 'on-behalf-of' ID. If this field defined, method tries to find and update existing user.
                 maxLength: 64
       responses:
         '200':
@@ -1192,27 +1192,27 @@ paths:
                 maxLength: 64
               website:
                 type: string
-                description: Optional. Company website address.
+                description: <em>Optional.</em> Company website address.
                 maxLength: 256
               country:
                 type: string
-                description: Optional. Company country.
+                description: <em>Optional.</em> Company country.
                 maxLength: 32
               region:
                 type: string
-                description: Optional. Company region.
+                description: <em>Optional.</em> Company region.
                 maxLength: 512
               city:
                 type: string
-                description: Optional. Company city.
+                description: <em>Optional.</em> Company city.
                 maxLength: 512
               address:
                 type: string
-                description: Optional. Company address.
+                description: <em>Optional.</em> Company address.
                 maxLength: 512
               postalCode:
                 type: string
-                description: Optional. Company postal code.
+                description: <em>Optional.</em> Company postal code.
                 maxLength: 512
               adminEmail:
                 type: string
@@ -1231,7 +1231,7 @@ paths:
                 maxLength: 64
               adminAvatarUrl:
                 type: string
-                description: Optional. Admin user avatar URL.
+                description: <em>Optional.</em> Admin user avatar URL.
                 maxLength: 512000
       responses:
         '200':
@@ -1289,27 +1289,27 @@ paths:
                 maxLength: 64
               website:
                 type: string
-                description: Optional. Company website address.
+                description: <em>Optional.</em> Company website address.
                 maxLength: 256
               country:
                 type: string
-                description: Optional. Company country.
+                description: <em>Optional.</em> Company country.
                 maxLength: 32
               region:
                 type: string
-                description: Optional. Company region.
+                description: <em>Optional.</em> Company region.
                 maxLength: 512
               city:
                 type: string
-                description: Optional. Company city.
+                description: <em>Optional.</em> Company city.
                 maxLength: 512
               address:
                 type: string
-                description: Optional. Company address.
+                description: <em>Optional.</em> Company address.
                 maxLength: 512
               postalCode:
                 type: string
-                description: Optional. Company postal code.
+                description: <em>Optional.</em> Company postal code.
                 maxLength: 512
       responses:
         '200':
@@ -1420,12 +1420,12 @@ paths:
                 description: Access token obtain via '/signin' call
                 type: string
               usrId:
-                description: Optional. User ID.
+                description: <em>Optional.</em> User ID.
                 type: integer
                 format: int64
               usrExtId:
                 maxLength: 64
-                description: Optional. External user ID. Note user with given ID will be created if missing
+                description: <em>Optional.</em> External user ID. Note user with given ID will be created if missing
                 type: string
               srvReqId:
                 maxLength: 64
@@ -1437,7 +1437,7 @@ paths:
                 format: double
               comment:
                 maxLength: 1024
-                description: Optional. Feedback comment.
+                description: <em>Optional.</em> Feedback comment.
                 type: string
       responses:
         '200':
@@ -1525,14 +1525,14 @@ paths:
                 type: integer
                 format: int64
                 description: >-
-                  Optional. ID of the user to get feedback records for. Optional, caller user ID used by default.
+                  <em>Optional.</em> ID of the user to get feedback records for. Optional, caller user ID used by default.
                   Getting feedback for other users requires administrative privileges. If
                   both user ID and external 'on-behalf-of' user ID are provided they have to point to the
                   same NLPCraft user.
               usrExtId:
                 type: string
                 description: >-
-                  Optional. External 'on-behalf-of' ID of the user to get feedback records for. Optional, caller
+                  <em>Optional.</em> External 'on-behalf-of' ID of the user to get feedback records for. Optional, caller
                   user ID used by default. Getting feedback for other users from the same company requires
                   administrative privileges. If both user ID and external 'on-behalf-of' user ID are provided
                   they have to point to the same NLPCraft user. Note that if only external 'on-behalf-of'
@@ -1540,7 +1540,7 @@ paths:
                 maxLength: 64
               srvReqId:
                 maxLength: 256
-                description: Optional. Server request ID
+                description: <em>Optional.</em> Server request ID
                 type: string
       responses:
         '200':
