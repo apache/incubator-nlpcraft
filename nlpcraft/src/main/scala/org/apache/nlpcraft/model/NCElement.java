@@ -268,7 +268,7 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
-     * Gets the list of synonyms by which this semantic element will be recognized by. Read more about
+     * Gets the list of synonyms by which this model element will be recognized by. Read more about
      * many different forms of synonyms in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section
      * and review <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
      * <p>

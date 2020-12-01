@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model;
 
 /**
- * User-defined semantic data model.
+ * User-defined data model.
  * <p>
  * Data model is a central concept in NLPCraft defining an interface to your data sources
  * like a database or a SaaS application. NLPCraft employs model-as-a-code approach where entire data model
