@@ -266,16 +266,17 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             } match {
                 case Left(e) ⇒
                     logger.trace(s"Failed to read existing probe beacon: ${path.getAbsolutePath}", e)
-                    logger.trace(s"Overriding failed probe beacon: ${path.getAbsolutePath}")
+                    logger.trace(s"Overriding corrupted probe beacon: ${path.getAbsolutePath}")
 
                     save()
 
                 case Right(rawObj) ⇒
                     val beacon = rawObj.asInstanceOf[NCCliProbeBeacon]
 
-                    if (ProcessHandle.of(beacon.pid).isPresent)
-                        logger.error(s"Cannot save probe beacon file as another live local probe detected [pid=${beacon.pid}]")
-                    else {
+                    if (ProcessHandle.of(beacon.pid).isPresent) {
+                        logger.warn(s"Another local probe detected (safely ignored) [id=${beacon.id}, pid=${beacon.pid}]")
+                        logger.warn(s"NOTE: ${c("only one")} locally deployed probe can be managed by 'nlpcraft.{sh|cmd}' management script.")
+                    } else {
                         logger.trace(s"Overriding probe beacon for a phantom process [pid=${beacon.pid}]")
 
                         save()

@@ -331,7 +331,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             } match {
                 case Left(e) ⇒
                     logger.trace(s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
-                    logger.trace(s"Overriding failed server beacon: ${path.getAbsolutePath}")
+                    logger.trace(s"Overriding corrupted server beacon: ${path.getAbsolutePath}")
 
                     save()
 
