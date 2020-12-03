@@ -285,6 +285,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                         beaconPath = path.getAbsolutePath,
                         startMs = currentTime
                     ))
+
                     stream.flush()
                 }
 
