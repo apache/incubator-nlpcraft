@@ -276,6 +276,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                     if (ProcessHandle.of(beacon.pid).isPresent) {
                         logger.warn(s"Another local probe detected (safely ignored) [id=${beacon.id}, pid=${beacon.pid}]")
                         logger.warn(s"NOTE: ${c("only one")} locally deployed probe can be managed by 'nlpcraft.{sh|cmd}' management script.")
+
+                        // Leave the existing probe beacon as is...
                     } else {
                         logger.trace(s"Overriding probe beacon for a phantom process [pid=${beacon.pid}]")
 

@@ -338,9 +338,12 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 case Right(rawObj) ⇒
                     val beacon = rawObj.asInstanceOf[NCCliServerBeacon]
 
-                    if (ProcessHandle.of(beacon.pid).isPresent)
-                        logger.error(s"Cannot save server beacon file as another live local server detected [pid=${beacon.pid}]")
-                    else {
+                    if (ProcessHandle.of(beacon.pid).isPresent) {
+                        logger.warn(s"Another local server detected (safely ignored) [pid=${beacon.pid}]")
+                        logger.warn(s"NOTE: ${c("only one")} locally deployed server can be managed by 'nlpcraft.{sh|cmd}' management script.")
+
+                        // Leave the existing server beacon as is...
+                    } else {
                         logger.trace(s"Overriding server beacon for a phantom process [pid=${beacon.pid}]")
 
                         save()
