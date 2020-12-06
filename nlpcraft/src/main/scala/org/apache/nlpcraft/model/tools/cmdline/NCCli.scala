@@ -76,14 +76,16 @@ object NCCli extends App {
     private final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
     private final val CMD_PARAM = Pattern.compile("(\\s)(--?[\\w-]+)")
 
-    // Number of server services that need to be started + 1 progress start.
+    // Number of server and probe services that need to be started + 1 progress start.
     // Used for progress bar functionality.
     // +==================================================================+
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
     private final val NUM_SRV_SERVICES = 30 /*services*/ + 1 /*progress start*/
+    private final val NUM_PRB_SERVICES = 21 /*services*/ + 1 /*progress start*/
 
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
+    private final val PRB_BEACON_PATH = ".nlpcraft/probe_beacon"
     private final val HIST_PATH = ".nlpcraft/.cli_history"
 
     private final lazy val VER = NCVersion.getCurrent
@@ -145,6 +147,9 @@ object NCCli extends App {
 
     case class NoLocalServer()
         extends IllegalStateException(s"Local REST server not found.")
+
+    case class NoLocalProbe()
+        extends IllegalStateException(s"Local probe not found.")
 
     case class MissingParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
@@ -517,10 +522,29 @@ object NCCli extends App {
 
     case class ReplState(
         var isServerOnline: Boolean = false,
+        var isProbeOnline: Boolean = false,
         var accessToken: Option[String] = None,
         var serverLog: Option[File] = None,
+        var probeLog: Option[File] = None,
         var probes: List[Probe] = Nil // List of connected probes.
-    )
+    ) {
+        /**
+         * Resets server sub-state.
+         */
+        def resetServer(): Unit = {
+            isServerOnline = false
+            serverLog = None
+            probes = Nil
+        }
+
+        /**
+         * Resets probe sub-state.
+         */
+        def resetProbe(): Unit = {
+            isProbeOnline = false
+            probeLog = None
+        }
+    }
 
     @volatile private var state = ReplState()
 
@@ -1007,7 +1031,7 @@ object NCCli extends App {
         ),
         Command(
             name = "tail-server",
-            group = "1. Server Commands",
+            group = "1. Server & Probe Commands",
             synopsis = s"Shows last N lines from the local REST server log.",
             desc = Some(
                 s"Only works for the server started via this script."
@@ -1030,8 +1054,32 @@ object NCCli extends App {
             )
         ),
         Command(
+            name = "tail-probe",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Shows last N lines from the local probe log.",
+            desc = Some(
+                s"Only works for the probe started via this script."
+            ),
+            body = cmdTailProbe,
+            params = Seq(
+                Parameter(
+                    id = "lines",
+                    names = Seq("--lines", "-l"),
+                    value = Some("num"),
+                    desc =
+                        s"Number of the probe log lines from the end to display. Default is 20."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME tail-probe --lines=20 "),
+                    desc = s"Prints last 20 lines from the local probe log."
+                )
+            )
+        ),
+        Command(
             name = "start-server",
-            group = "1. Server Commands",
+            group = "1. Server & Probe Commands",
             synopsis = s"Starts local REST server.",
             desc = Some(
                 s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
@@ -1083,7 +1131,7 @@ object NCCli extends App {
         ),
         Command(
             name = "restart-server",
-            group = "1. Server Commands",
+            group = "1. Server & Probe Commands",
             synopsis = s"Restarts local REST server.",
             desc = Some(
                 s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
@@ -1135,7 +1183,7 @@ object NCCli extends App {
         ),
         Command(
             name = "info-server",
-            group = "1. Server Commands",
+            group = "1. Server & Probe Commands",
             synopsis = s"Info about local REST server.",
             body = cmdInfoServer
         ),
@@ -1177,7 +1225,7 @@ object NCCli extends App {
         ),
         Command(
             name = "ping-server",
-            group = "1. Server Commands",
+            group = "1. Server & Probe Commands",
             synopsis = s"Pings local REST server.",
             desc = Some(
                 s"REST server is pinged using ${y("'/health'")} REST call to check its online status."
@@ -1204,7 +1252,7 @@ object NCCli extends App {
         ),
         Command(
             name = "stop-server",
-            group = "1. Server Commands",
+            group = "1. Server & Probe Commands",
             synopsis = s"Stops local REST server.",
             desc = Some(
                 s"Local REST server must be started via ${y(s"'$SCRIPT_NAME''")} or other compatible way."
@@ -1413,6 +1461,8 @@ object NCCli extends App {
     private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
     private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
     private final val START_SRV_CMD = CMDS.find(_.name == "start-server").get
+    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
+    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
 
     /**
      *
@@ -1653,6 +1703,34 @@ object NCCli extends App {
         }
 
     /**
+     *
+     * @param path
+     * @param lines
+     */
+    private def tailFile(path: String, lines: Int): Unit =
+        try
+            managed(new ReversedLinesFileReader(new File(path), StandardCharsets.UTF_8)) acquireAndGet { in ⇒
+                var tail = List.empty[String]
+
+                breakable {
+                    for (_ ← 0 until lines)
+                        in.readLine() match {
+                            case null ⇒ break
+                            case line ⇒ tail ::= line
+                        }
+                }
+
+                val cnt = tail.size
+
+                logln(bb(w(s"+----< ${K}Last $cnt log lines $W>---")))
+                tail.foreach(line ⇒ logln(s"${bb(w("| "))}  $line"))
+                logln(bb(w(s"+----< ${K}Last $cnt log lines $W>---")))
+            }
+        catch {
+            case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
+        }
+
+    /**
      * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
@@ -1673,30 +1751,34 @@ object NCCli extends App {
             throw InvalidParameter(cmd, "lines")
 
         loadServerBeacon() match {
-            case Some(beacon) ⇒
+            case Some(beacon) ⇒ tailFile(beacon.logPath, lines)
+            case None ⇒ throw NoLocalServer()
+        }
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdTailProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val lines = args.find(_.parameter.id == "lines") match {
+            case Some(arg) ⇒
                 try
-                    managed(new ReversedLinesFileReader(new File(beacon.logPath), StandardCharsets.UTF_8)) acquireAndGet { in ⇒
-                        var tail = List.empty[String]
-
-                        breakable {
-                            for (_ ← 0 until lines)
-                                in.readLine() match {
-                                    case null ⇒ break
-                                    case line ⇒ tail ::= line
-                                }
-                        }
-
-                        val cnt = tail.size
-
-                        logln(bb(w(s"+----< ${K}Last $cnt server log lines $W>---")))
-                        tail.foreach(line ⇒ logln(s"${bb(w("| "))}  $line"))
-                        logln(bb(w(s"+----< ${K}Last $cnt server log lines $W>---")))
-                    }
+                    Integer.parseInt(arg.value.get)
                 catch {
-                    case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
+                    case _: Exception ⇒ throw InvalidParameter(cmd, "lines")
                 }
 
-            case None ⇒ throw NoLocalServer()
+            case None ⇒ 20 // Default.
+        }
+
+        if (lines <= 0)
+            throw InvalidParameter(cmd, "lines")
+
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒ tailFile(beacon.logPath, lines)
+            case None ⇒ throw NoLocalProbe()
         }
     }
 
@@ -1824,9 +1906,9 @@ object NCCli extends App {
             case Some(beacon) ⇒
                 state.isServerOnline = true
 
-                val baseUrl = "http://" + beacon.restEndpoint
-
                 try {
+                    val baseUrl = "http://" + beacon.restEndpoint
+
                     // Attempt to signin with the default account.
                     if (autoSignIn && state.accessToken.isEmpty)
                         httpPostResponseJson(
@@ -1853,12 +1935,74 @@ object NCCli extends App {
                 catch {
                     case _: Exception ⇒
                         // Reset REPL state.
-                        state = ReplState()
+                        state.resetServer()
                 }
 
             case None ⇒
                 // Reset REPL state.
-                state = ReplState()
+                state.resetServer()
+        }
+
+        beaconOpt
+    }
+
+    /**
+     * Loads and returns probe beacon file.
+     *
+     * @return
+     */
+    private def loadProbeBeacon(): Option[NCCliProbeBeacon] = {
+        val beaconOpt = try {
+            val beacon = (
+                managed(
+                    new ObjectInputStream(
+                        new FileInputStream(
+                            new File(SystemUtils.getUserHome, PRB_BEACON_PATH)
+                        )
+                    )
+                ) acquireAndGet {
+                    _.readObject()
+                }
+            )
+            .asInstanceOf[NCCliProbeBeacon]
+
+            ProcessHandle.of(beacon.pid).asScala match {
+                case Some(ph) ⇒
+                    beacon.ph = ph
+
+                    // See if we can detect probe log if server was started by this script.
+                    val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles(new FilenameFilter {
+                        override def accept(dir: File, name: String): Boolean =
+                            name.startsWith(s".pid_$ph")
+                    })
+
+                    if (files.size == 1) {
+                        val split = files(0).getName.split("_")
+
+                        if (split.size == 4) {
+                            val logFile = new File(SystemUtils.getUserHome, s".nlpcraft/probe_log_${split(3)}.txt")
+
+                            if (logFile.exists())
+                                beacon.logPath = logFile.getAbsolutePath
+                        }
+                    }
+
+                    Some(beacon)
+
+                case None ⇒
+                    // Attempt to clean up stale beacon file.
+                    new File(SystemUtils.getUserHome, PRB_BEACON_PATH).delete()
+
+                    None
+            }
+        }
+        catch {
+            case _: Exception ⇒ None
+        }
+
+        beaconOpt match {
+            case Some(_) ⇒ state.isProbeOnline = true
+            case None ⇒ state.resetProbe()
         }
 
         beaconOpt
