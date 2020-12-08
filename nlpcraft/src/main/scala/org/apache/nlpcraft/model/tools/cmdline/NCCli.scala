@@ -146,7 +146,7 @@ object NCCli extends App {
         extends Exception
 
     case class NoLocalServer()
-        extends IllegalStateException(s"Local REST server not found.")
+        extends IllegalStateException(s"Local server not found.")
 
     case class NoLocalProbe()
         extends IllegalStateException(s"Local probe not found.")
@@ -546,7 +546,7 @@ object NCCli extends App {
         }
     }
 
-    @volatile private var state = ReplState()
+    @volatile private val state = ReplState()
 
     // Single CLI command.
     case class Command(
@@ -1032,7 +1032,7 @@ object NCCli extends App {
         Command(
             name = "tail-server",
             group = "1. Server & Probe Commands",
-            synopsis = s"Shows last N lines from the local REST server log.",
+            synopsis = s"Shows last N lines from the local server log.",
             desc = Some(
                 s"Only works for the server started via this script."
             ),
@@ -1080,9 +1080,9 @@ object NCCli extends App {
         Command(
             name = "start-server",
             group = "1. Server & Probe Commands",
-            synopsis = s"Starts local REST server.",
+            synopsis = s"Starts local server.",
             desc = Some(
-                s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
+                s"Server is started in the external JVM process with both stdout and stderr piped out into log file. " +
                 s"Command will block until the server is started unless ${y("'--no-wait'")} parameter is used."
             ),
             body = cmdStartServer,
@@ -1096,7 +1096,7 @@ object NCCli extends App {
                         s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the REST server and the data probe can use the same file for their configuration."
+                        s"Note that the server and the probe can use the same file for their configuration."
                 ),
                 Parameter(
                     id = "igniteConfig",
@@ -1105,7 +1105,7 @@ object NCCli extends App {
                     optional = true,
                     desc =
                         s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
-                        s"computing plane and a default distributed storage. REST server will automatically look for " +
+                        s"computing plane and a default distributed storage. Server will automatically look for " +
                         s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path."
@@ -1125,17 +1125,17 @@ object NCCli extends App {
                 ),
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
-                    desc = "Starts local REST server with alternative configuration file."
+                    desc = "Starts local server with alternative configuration file."
                 )
             )
         ),
         Command(
             name = "restart-server",
             group = "1. Server & Probe Commands",
-            synopsis = s"Restarts local REST server.",
+            synopsis = s"Restarts local server.",
             desc = Some(
                 s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
-                s"corresponding parameters. If there is no local REST server the ${y("'stop-server'")} command is ignored."
+                s"corresponding parameters. If there is no local server the ${y("'stop-server'")} command is ignored."
             ),
             body = cmdRestartServer,
             params = Seq(
@@ -1148,7 +1148,7 @@ object NCCli extends App {
                         s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the REST server and the data probe can use the same file for their configuration."
+                        s"Note that the server and the data probe can use the same file for their configuration."
                 ),
                 Parameter(
                     id = "igniteConfig",
@@ -1157,7 +1157,7 @@ object NCCli extends App {
                     optional = true,
                     desc =
                         s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
-                        s"computing plane and a default distributed storage. REST server will automatically look for " +
+                        s"computing plane and a default distributed storage. Server will automatically look for " +
                         s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path."
@@ -1177,15 +1177,27 @@ object NCCli extends App {
                 ),
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
-                    desc = "Starts local REST server with alternative configuration file."
+                    desc = "Starts local server with alternative configuration file."
                 )
             )
         ),
         Command(
             name = "info-server",
             group = "1. Server & Probe Commands",
-            synopsis = s"Info about local REST server.",
+            synopsis = s"Info about local server.",
             body = cmdInfoServer
+        ),
+        Command(
+            name = "info-probe",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Info about local probe.",
+            body = cmdInfoProbe
+        ),
+        Command(
+            name = "info",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Info about local probe & server.",
+            body = cmdInfo
         ),
         Command(
             name = "cls",
@@ -1226,9 +1238,9 @@ object NCCli extends App {
         Command(
             name = "ping-server",
             group = "1. Server & Probe Commands",
-            synopsis = s"Pings local REST server.",
+            synopsis = s"Pings local server.",
             desc = Some(
-                s"REST server is pinged using ${y("'/health'")} REST call to check its online status."
+                s"Server is pinged using ${y("'/health'")} REST call to check its online status."
             ),
             body = cmdPingServer,
             params = Seq(
@@ -1246,18 +1258,27 @@ object NCCli extends App {
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME ping-server -n=10"
                     ),
-                    desc = "Pings local REST server 10 times."
+                    desc = "Pings local server 10 times."
                 )
             )
         ),
         Command(
             name = "stop-server",
             group = "1. Server & Probe Commands",
-            synopsis = s"Stops local REST server.",
+            synopsis = s"Stops local server.",
             desc = Some(
-                s"Local REST server must be started via ${y(s"'$SCRIPT_NAME''")} or other compatible way."
+                s"Local server must be started via ${y(s"'$SCRIPT_NAME'")} or other compatible way."
             ),
             body = cmdStopServer
+        ),
+        Command(
+            name = "stop-probe",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Stops local probe.",
+            desc = Some(
+                s"Local probe must be started via ${y(s"'$SCRIPT_NAME'")} or other compatible way."
+            ),
+            body = cmdStopProbe
         ),
         Command(
             name = "quit",
@@ -1461,6 +1482,8 @@ object NCCli extends App {
     private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
     private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
     private final val START_SRV_CMD = CMDS.find(_.name == "start-server").get
+    private final val SRV_INFO_CMD = CMDS.find(_.name == "info-server").get
+    private final val PRB_INFO_CMD = CMDS.find(_.name == "info-probe").get
 //    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
 //    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
 
@@ -1804,7 +1827,7 @@ object NCCli extends App {
         var i = 0
 
         while (i < num) {
-            log(s"(${i + 1} of $num) pinging REST server at ${b(endpoint)} ")
+            log(s"(${i + 1} of $num) pinging server at ${b(endpoint)} ")
 
             val spinner = new NCAnsiSpinner(
                 term.writer(),
@@ -2048,12 +2071,37 @@ object NCCli extends App {
                     new File(beacon.beaconPath).delete()
 
                     // Reset REPL state right away.
-                    state = ReplState()
+                    state.resetServer()
                 }
                 else
-                    error(s"Failed to stop the local REST server (pid ${c(pid)}).")
+                    error(s"Failed to stop the local server (pid ${c(pid)}).")
 
             case None ⇒ throw NoLocalServer()
+        }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdStopProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒
+                val pid = beacon.pid
+
+                if (beacon.ph.destroy()) {
+                    logln(s"Probe (pid ${c(pid)}) has been stopped.")
+
+                    // Attempt to delete beacon file right away.
+                    new File(beacon.beaconPath).delete()
+
+                    // Reset REPL state right away.
+                    state.resetProbe()
+                }
+                else
+                    error(s"Failed to stop the local probe (pid ${c(pid)}).")
+
+            case None ⇒ throw NoLocalProbe()
         }
 
     /**
@@ -2152,9 +2200,11 @@ object NCCli extends App {
                 s"\n" +
                 s"You can also execute any OS specific command by prepending '${c("$")}' in front of it:\n" +
                 s"  ${y("> $cmd /c dir")}\n" +
-                s"    Run Windows ${c("dir")} command in a separate shell.\n" +
+                s"    Runs Windows ${c("dir")} command in a separate shell.\n" +
                 s"  ${y("> $ls -la")}\n" +
-                s"    Run Linux/Unix ${c("ls -la")} command.\n"
+                s"    Runs Linux/Unix ${c("ls -la")} command.\n" +
+                s"  ${y("> $mvn clean package")}\n" +
+                s"    Runs Maven build."
             )
 
         if (args.isEmpty) { // Default - show abbreviated help.
@@ -2234,6 +2284,30 @@ object NCCli extends App {
      * @param beacon
      * @return
      */
+    private def logProbeInfo(beacon: NCCliProbeBeacon): Unit = {
+        var tbl = new NCAsciiTable
+
+        val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
+        val jarsFolder = if (beacon.jarsFolder != null) g(beacon.jarsFolder) else y("<not set>")
+        val mdlSeq = beacon.models.split(",").map(s ⇒ s"${g(s.trim)}").toSeq
+
+        tbl += ("PID", s"${g(beacon.pid)}")
+        tbl += ("Probe ID", s"${g(beacon.id)}")
+        tbl += ("Probe Up-Link", s"${g(beacon.upLink)}")
+        tbl += ("Probe Down-Link", s"${g(beacon.downLink)}")
+        tbl += ("JARs Folder", jarsFolder)
+        tbl += (s"Models (${mdlSeq.size})", mdlSeq)
+        tbl += ("Log file", logPath)
+        tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
+
+        logln(s"Local probe:\n${tbl.toString}")
+    }
+
+    /**
+     *
+     * @param beacon
+     * @return
+     */
     private def logServerInfo(beacon: NCCliServerBeacon): Unit = {
         var tbl = new NCAsciiTable
 
@@ -2265,7 +2339,7 @@ object NCCli extends App {
         tbl += ("Log file", logPath)
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
-        logln(s"Local REST server:\n${tbl.toString}")
+        logln(s"Local server:\n${tbl.toString}")
 
         tbl = new NCAsciiTable
 
@@ -2305,10 +2379,34 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
+    private def cmdInfo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        doCommand(Seq(SRV_INFO_CMD.name), repl)
+        doCommand(Seq(PRB_INFO_CMD.name), repl)
+    }
+
+    /**
+     *
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
     private def cmdInfoServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ throw NoLocalServer()
+        }
+    }
+
+    /**
+     *
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdInfoProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒ logProbeInfo(beacon)
+            case None ⇒ throw NoLocalProbe()
         }
     }
 
@@ -3003,7 +3101,7 @@ object NCCli extends App {
         }
 
         if (state.accessToken.isDefined)
-            logln(s"REST server signed in with default '${c("admin@admin.com")}' user.")
+            logln(s"Server signed in with default '${c("admin@admin.com")}' user.")
 
         val parser = new DefaultParser()
 

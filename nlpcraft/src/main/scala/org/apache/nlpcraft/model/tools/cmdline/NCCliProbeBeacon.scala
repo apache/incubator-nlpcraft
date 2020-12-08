@@ -26,6 +26,8 @@ package org.apache.nlpcraft.model.tools.cmdline
  * @param downLink
  * @param jarsFolder
  * @param models
+ * @param beaconPath
+ * @param startMs
  * @param logPath
  * @param ph
  */
@@ -37,6 +39,8 @@ case class NCCliProbeBeacon (
     downLink: String,
     jarsFolder: String,
     models: String,
+    beaconPath: String,
+    startMs: Long,
     @transient var logPath: String = null,
     @transient var ph: ProcessHandle = null
 )

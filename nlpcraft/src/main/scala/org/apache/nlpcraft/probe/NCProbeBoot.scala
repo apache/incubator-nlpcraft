@@ -246,7 +246,9 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                         upLink = s"${cfg.upLink._1}:${cfg.upLink._2}",
                         downLink = s"${cfg.downLink._1}:${cfg.downLink._2}",
                         jarsFolder = cfg.jarsFolder.orNull,
-                        models = cfg.models
+                        models = cfg.models,
+                        beaconPath = path.getAbsolutePath,
+                        startMs = currentTime
                     ))
 
                     stream.flush()
