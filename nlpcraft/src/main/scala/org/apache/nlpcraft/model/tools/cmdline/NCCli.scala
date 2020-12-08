@@ -1461,8 +1461,8 @@ object NCCli extends App {
     private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
     private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
     private final val START_SRV_CMD = CMDS.find(_.name == "start-server").get
-    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
-    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
+//    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
+//    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
 
     /**
      *
@@ -1594,7 +1594,7 @@ object NCCli extends App {
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
-            logln(s"Server output > ${c(output.getAbsolutePath)}")
+            logln(s"Server output: ${c(output.getAbsolutePath)}")
 
             /**
              *
