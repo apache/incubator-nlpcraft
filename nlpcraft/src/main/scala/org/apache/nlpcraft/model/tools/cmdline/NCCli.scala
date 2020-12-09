@@ -546,7 +546,7 @@ object NCCli extends App {
         }
     }
 
-    @volatile private val state = ReplState()
+    private val state = ReplState()
 
     // Single CLI command.
     case class Command(
@@ -1083,7 +1083,7 @@ object NCCli extends App {
             synopsis = s"Starts local server.",
             desc = Some(
                 s"Server is started in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the server is started unless ${y("'--no-wait'")} parameter is used."
+                s"Command will block until the server is started unless ${y("'--no-wait'")} parameter is used or timeout is expired."
             ),
             body = cmdStartServer,
             params = Seq(
@@ -1116,6 +1116,14 @@ object NCCli extends App {
                     optional = true,
                     desc =
                         s"Instructs command not to wait for the server startup and return immediately."
+                ),
+                Parameter(
+                    id = "timeoutMins",
+                    names = Seq("--timeout-mins", "-t"),
+                    optional = true,
+                    value = Some("3"),
+                    desc =
+                        s"Timeout in minutes to wait until server is started. If not specified the default is 3 minutes."
                 )
             ),
             examples = Seq(
@@ -1124,8 +1132,124 @@ object NCCli extends App {
                     desc = "Starts local server with default configuration."
                 ),
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf -t=5"),
                     desc = "Starts local server with alternative configuration file."
+                )
+            )
+        ),
+        Command(
+            name = "start-probe",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Starts local probe.",
+            desc = Some(
+                s"Probe is started in the external JVM process with both stdout and stderr piped out into log file. " +
+                s"Command will block until the probe is started unless ${y("'--no-wait'")} parameter is used or timeout is expired."
+            ),
+            body = cmdStartProbe,
+            params = Seq(
+                Parameter(
+                    id = "config",
+                    names = Seq("--config", "-c"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Configuration absolute file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
+                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
+                        s"different name or in different location use this parameter to provide an alternative path. " +
+                        s"Note that the server and the probe can use the same file for their configuration."
+                ),
+                Parameter(
+                    id = "cp",
+                    names = Seq("--cp", "-p"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Additional JVM classpath component that will be appended to the default JVM classpath. " +
+                        s"Although this configuration property is optional, when deploying your own models you will " +
+                        s"need to provide classpath for all dependencies for the models this probe will be hosting."
+                ),
+                Parameter(
+                    id = "noWait",
+                    names = Seq("--no-wait"),
+                    optional = true,
+                    desc =
+                        s"Instructs command not to wait for the probe startup and return immediately."
+                ),
+                Parameter(
+                    id = "timeoutMins",
+                    names = Seq("--timeout-mins", "-t"),
+                    optional = true,
+                    value = Some("3"),
+                    desc =
+                        s"Timeout to wait until probe is started. If not specified the default is 3 minutes."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-probe"),
+                    desc = "Starts local probe with default configuration."
+                ),
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-probe -c=/opt/nlpcraft/nlpcraft.conf -p=/opt/classes"),
+                    desc = "Starts local probe with alternative configuration file."
+                )
+            )
+        ),
+        Command(
+            name = "restart-probe",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Restarts local probe.",
+            desc = Some(
+                s"Probe is restarted in the external JVM process with both stdout and stderr piped out into log file. " +
+                s"Command will block until the probe is started unless ${y("'--no-wait'")} parameter is used or timeout is expired."
+            ),
+            body = cmdRestartProbe,
+            params = Seq(
+                Parameter(
+                    id = "config",
+                    names = Seq("--config", "-c"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Configuration absolute file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
+                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
+                        s"different name or in different location use this parameter to provide an alternative path. " +
+                        s"Note that the server and the probe can use the same file for their configuration."
+                ),
+                Parameter(
+                    id = "cp",
+                    names = Seq("--cp", "-p"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Additional JVM classpath component that will be appended to the default JVM classpath. " +
+                        s"Although this configuration property is optional, when deploying your own models you will " +
+                        s"need to provide classpath for all dependencies for the models this probe will be hosting."
+                ),
+                Parameter(
+                    id = "noWait",
+                    names = Seq("--no-wait"),
+                    optional = true,
+                    desc =
+                        s"Instructs command not to wait for the probe startup and return immediately."
+                ),
+                Parameter(
+                    id = "timeoutMins",
+                    names = Seq("--timeout-mins", "-t"),
+                    optional = true,
+                    value = Some("3"),
+                    desc =
+                        s"Timeout to wait until probe is started. If not specified the default is 3 minutes."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-probe"),
+                    desc = "Starts local probe with default configuration."
+                ),
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-probe -c=/opt/nlpcraft/nlpcraft.conf -p=/opt/classes"),
+                    desc = "Starts local probe with alternative configuration file."
                 )
             )
         ),
@@ -1168,15 +1292,23 @@ object NCCli extends App {
                     optional = true,
                     desc =
                         s"Instructs command not to wait for the server startup and return immediately."
+                ),
+                Parameter(
+                    id = "timeoutMins",
+                    names = Seq("--timeout-mins", "-t"),
+                    optional = true,
+                    value = Some("3"),
+                    desc =
+                        s"Timeout in minutes to wait until server is started. If not specified the default is 3 minutes."
                 )
             ),
             examples = Seq(
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server"),
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-server"),
                     desc = "Starts local server with default configuration."
                 ),
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-server -c=/opt/nlpcraft/nlpcraft.conf"),
                     desc = "Starts local server with alternative configuration file."
                 )
             )
@@ -1484,8 +1616,8 @@ object NCCli extends App {
     private final val START_SRV_CMD = CMDS.find(_.name == "start-server").get
     private final val SRV_INFO_CMD = CMDS.find(_.name == "info-server").get
     private final val PRB_INFO_CMD = CMDS.find(_.name == "info-probe").get
-//    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
-//    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
+    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
+    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
 
     /**
      *
@@ -1545,6 +1677,16 @@ object NCCli extends App {
         val cfgPath = args.find(_.parameter.id == "config")
         val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
         val noWait = args.exists(_.parameter.id == "noWait")
+        val timeoutMins = args.find(_.parameter.id == "timeoutMins") match {
+            case Some(arg) ⇒
+                try
+                    Integer.parseInt(arg.value.get)
+                catch {
+                    case _: Exception ⇒ throw InvalidParameter(cmd, "timeoutMins")
+                }
+
+            case None ⇒ 3 // Default.
+        }
 
         checkFilePath(cfgPath)
         checkFilePath(igniteCfgPath)
@@ -1626,7 +1768,9 @@ object NCCli extends App {
                 val tbl = new NCAsciiTable()
 
                 tbl += (s"${g("stop-server")}", "Stop the server.")
-                tbl += (s"${g("info-server")}", "Get server information.")
+                tbl += (s"${g("start-probe")}", "Start the probe.")
+                tbl += (s"${g("stop-probe")}", "Stop the probe.")
+                tbl += (s"${g("info")}", "Get server & probe information.")
                 tbl += (s"${g("restart-server")}", "Restart the server.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
                 tbl += (s"${g("tail-server")}", "Tail the server log.")
@@ -1674,7 +1818,7 @@ object NCCli extends App {
 
                 var beacon: NCCliServerBeacon = null
                 var online = false
-                val endOfWait = currentTime + 3.mins // We try for 3 mins max.
+                val endOfWait = currentTime + timeoutMins.mins
 
                 while (currentTime < endOfWait && !online) {
                     if (progressBar.completed) {
@@ -1712,6 +1856,171 @@ object NCCli extends App {
         }
         catch {
             case e: Exception ⇒ error(s"Server failed to start: ${y(e.getLocalizedMessage)}")
+        }
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not running from REPL.
+     */
+    private def cmdStartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val cfgPath = args.find(_.parameter.id == "config")
+        val noWait = args.exists(_.parameter.id == "noWait")
+        val addCp = args.exists(_.parameter.id == "cp")
+        val timeoutMins = args.find(_.parameter.id == "timeoutMins") match {
+            case Some(arg) ⇒
+                try
+                    Integer.parseInt(arg.value.get)
+                catch {
+                    case _: Exception ⇒ throw InvalidParameter(cmd, "timeoutMins")
+                }
+
+            case None ⇒ 3 // Default.
+        }
+
+        checkFilePath(cfgPath)
+
+        // Ensure that there isn't another local probe running.
+        loadProbeBeacon() match {
+            case Some(b) ⇒ throw new IllegalStateException(s"Existing probe (pid ${c(b.pid)}) detected.")
+            case None ⇒ ()
+        }
+
+        val logTstamp = currentTime
+
+        // Server log redirect.
+        val output = new File(SystemUtils.getUserHome, s".nlpcraft/probe_log_$logTstamp.txt")
+
+        // Store in REPL state right away.
+        state.probeLog = Some(output)
+
+        val prbPb = new ProcessBuilder(
+            JAVA,
+            "-ea",
+            "-DNLPCRAFT_ANSI_COLOR_DISABLED=true", // No ANSI colors for text log output to the file.
+            "-cp",
+            s"$JAVA_CP",
+            "org.apache.nlpcraft.NCStart",
+            "-probe",
+            cfgPath match {
+                case Some(path) ⇒ s"-config=${stripQuotes(path.value.get)}"
+                case None ⇒ ""
+            }
+        )
+
+        prbPb.directory(new File(INSTALL_HOME))
+        prbPb.redirectErrorStream(true)
+
+        val bleachPb = new ProcessBuilder(
+            JAVA,
+            "-ea",
+            "-cp",
+            s"$JAVA_CP",
+            "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
+        )
+
+        bleachPb.directory(new File(INSTALL_HOME))
+        bleachPb.redirectOutput(Redirect.appendTo(output))
+
+        try {
+            // Start the 'probe | bleach > server log output' process pipeline.
+            val procs = ProcessBuilder.startPipeline(Seq(prbPb, bleachPb).asJava)
+
+            val prbPid = procs.get(0).pid()
+
+            // Store mapping file between PID and timestamp (once we have probe PID).
+            // Note that the same timestamp is used in probe log file.
+            ignoring(classOf[IOException]) {
+                new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${prbPid}_tstamp_$logTstamp").createNewFile()
+            }
+
+            logln(s"Probe output: ${c(output.getAbsolutePath)}")
+
+            /**
+             *
+             */
+            def showTip(): Unit = {
+                val tbl = new NCAsciiTable()
+
+                tbl += (s"${g("stop-probe")}", "Stop the probe.")
+                tbl += (s"${g("restart-probe")}", "Restart the server.")
+                tbl += (s"${g("info")}", "Get server & probe information.")
+
+                logln(s"Handy commands:\n${tbl.toString}")
+            }
+
+            if (noWait) {
+                logln(s"Probe is starting...")
+
+                showTip()
+            }
+            else {
+                val progressBar = new NCAnsiProgressBar(
+                    term.writer(),
+                    NUM_PRB_SERVICES,
+                    15,
+                    true,
+                    // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
+                    NCAnsi.isEnabled && IS_SCRIPT
+                )
+
+                log(s"Probe is starting ")
+
+                progressBar.start()
+
+                // Tick progress bar "almost" right away to indicate the progress start.
+                new Thread(() => {
+                    Thread.sleep(1.secs)
+
+                    progressBar.ticked()
+                })
+                .start()
+
+                val tailer = Tailer.create(
+                    state.probeLog.get,
+                    new TailerListenerAdapter {
+                        override def handle(line: String): Unit = {
+                            if (TAILER_PTRN.matcher(line).matches())
+                                progressBar.ticked()
+                        }
+                    },
+                    500.ms
+                )
+
+                var beacon: NCCliProbeBeacon = null
+                var online = false
+                val endOfWait = currentTime + timeoutMins.mins
+
+                while (currentTime < endOfWait && !online) {
+                    if (progressBar.completed) {
+                        // First, load the beacon, if any.
+                        if (beacon == null)
+                            beacon = loadProbeBeacon().orNull
+                    }
+
+                    if (!online)
+                        Thread.sleep(2.secs) // Check every 2 secs.
+                }
+
+                tailer.stop()
+
+                progressBar.stop()
+
+                if (!online) {
+                    logln(r(" [Error]"))
+                    error(s"Timed out starting probe, check output for errors.")
+                }
+                else {
+                    logln(g(" [OK]"))
+                    logProbeInfo(beacon)
+
+                    showTip()
+                }
+            }
+        }
+        catch {
+            case e: Exception ⇒ error(s"Probe failed to start: ${y(e.getLocalizedMessage)}")
         }
     }
 
@@ -2050,6 +2359,18 @@ object NCCli extends App {
             STOP_SRV_CMD.body(STOP_SRV_CMD, Seq.empty, repl)
 
         START_SRV_CMD.body(START_SRV_CMD, args, repl)
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdRestartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        if (loadProbeBeacon().isDefined)
+            STOP_PRB_CMD.body(STOP_PRB_CMD, Seq.empty, repl)
+
+        START_PRB_CMD.body(START_PRB_CMD, args, repl)
     }
 
     /**
