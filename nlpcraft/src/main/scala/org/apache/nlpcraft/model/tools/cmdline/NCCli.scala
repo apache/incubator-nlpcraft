@@ -1836,7 +1836,6 @@ object NCCli extends App {
                 }
 
                 tailer.stop()
-
                 progressBar.stop()
 
                 if (!online) {
@@ -1865,9 +1864,18 @@ object NCCli extends App {
      * @param repl Whether or not running from REPL.
      */
     private def cmdStartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        // Ensure that there is .
+        loadServerBeacon() match {
+            case Some(b) ⇒ ()
+            case None ⇒ throw NoLocalServer()
+        }
+
         val cfgPath = args.find(_.parameter.id == "config")
         val noWait = args.exists(_.parameter.id == "noWait")
-        val addCp = args.exists(_.parameter.id == "cp")
+        val addCp = args.find(_.parameter.id == "cp") match {
+            case Some(cp) ⇒ cp.value.get
+            case None ⇒ ""
+        }
         val timeoutMins = args.find(_.parameter.id == "timeoutMins") match {
             case Some(arg) ⇒
                 try
@@ -1900,7 +1908,7 @@ object NCCli extends App {
             "-ea",
             "-DNLPCRAFT_ANSI_COLOR_DISABLED=true", // No ANSI colors for text log output to the file.
             "-cp",
-            s"$JAVA_CP",
+            s"$JAVA_CP;$addCp".replace(";;", ";"),
             "org.apache.nlpcraft.NCStart",
             "-probe",
             cfgPath match {
@@ -1924,7 +1932,7 @@ object NCCli extends App {
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
-            // Start the 'probe | bleach > server log output' process pipeline.
+            // Start the 'probe | bleach > probe log output' process pipeline.
             val procs = ProcessBuilder.startPipeline(Seq(prbPb, bleachPb).asJava)
 
             val prbPid = procs.get(0).pid()
@@ -1944,7 +1952,7 @@ object NCCli extends App {
                 val tbl = new NCAsciiTable()
 
                 tbl += (s"${g("stop-probe")}", "Stop the probe.")
-                tbl += (s"${g("restart-probe")}", "Restart the server.")
+                tbl += (s"${g("restart-probe")}", "Restart the probe.")
                 tbl += (s"${g("info")}", "Get server & probe information.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
@@ -1989,25 +1997,23 @@ object NCCli extends App {
                 )
 
                 var beacon: NCCliProbeBeacon = null
-                var online = false
                 val endOfWait = currentTime + timeoutMins.mins
 
-                while (currentTime < endOfWait && !online) {
+                while (currentTime < endOfWait && beacon == null) {
                     if (progressBar.completed) {
-                        // First, load the beacon, if any.
+                        // Load the beacon, if any.
                         if (beacon == null)
                             beacon = loadProbeBeacon().orNull
                     }
 
-                    if (!online)
+                    if (beacon == null)
                         Thread.sleep(2.secs) // Check every 2 secs.
                 }
 
                 tailer.stop()
-
                 progressBar.stop()
 
-                if (!online) {
+                if (beacon == null) {
                     logln(r(" [Error]"))
                     error(s"Timed out starting probe, check output for errors.")
                 }
