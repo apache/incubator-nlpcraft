@@ -514,7 +514,7 @@ object NCProbeManager extends NCService {
                     "OS",
                     "Timezone",
                     "Host",
-                    "Models Deployed"
+                    "Deployed Models"
                 )
             
                 addProbeToTable(tbl, holder).info(logger, Some("New probe registered:"))

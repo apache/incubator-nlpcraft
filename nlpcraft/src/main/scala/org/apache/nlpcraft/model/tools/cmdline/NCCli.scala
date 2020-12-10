@@ -603,7 +603,17 @@ object NCCli extends App {
     case class Argument(
         parameter: Parameter, // Formal parameter this argument refers to.
         value: Option[String]
-    )
+    ) {
+        /**
+         * Gets the original argument string.
+         *
+         * @return
+         */
+        def origString(): String =  value match {
+            case Some(s) ⇒ s"${parameter.names.head}=$s"
+            case None ⇒ parameter.names.head
+        }
+    }
 
     //noinspection DuplicatedCode
     // All supported commands.
@@ -1165,8 +1175,8 @@ object NCCli extends App {
                     optional = true,
                     desc =
                         s"Additional JVM classpath component that will be appended to the default JVM classpath. " +
-                        s"Although this configuration property is optional, when deploying your own models you will " +
-                        s"need to provide classpath for all dependencies for the models this probe will be hosting."
+                        s"Although this configuration property is optional, when deploying your own models you must " +
+                        s"provide this additional classpath for the models and their dependencies this probe will be hosting."
                 ),
                 Parameter(
                     id = "noWait",
@@ -1903,12 +1913,14 @@ object NCCli extends App {
         // Store in REPL state right away.
         state.probeLog = Some(output)
 
+        val sep = System.getProperty("path.separator")
+
         val prbPb = new ProcessBuilder(
             JAVA,
             "-ea",
             "-DNLPCRAFT_ANSI_COLOR_DISABLED=true", // No ANSI colors for text log output to the file.
             "-cp",
-            s"$JAVA_CP;$addCp".replace(";;", ";"),
+            s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep),
             "org.apache.nlpcraft.NCStart",
             "-probe",
             cfgPath match {
@@ -2361,10 +2373,8 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdRestartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (loadServerBeacon().isDefined)
-            STOP_SRV_CMD.body(STOP_SRV_CMD, Seq.empty, repl)
-
-        START_SRV_CMD.body(START_SRV_CMD, args, repl)
+        doCommand(Seq(STOP_SRV_CMD.name), repl)
+        doCommand(Seq(START_SRV_CMD.name) ++ args.map(_.origString()), repl)
     }
 
     /**
@@ -2373,10 +2383,8 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private def cmdRestartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (loadProbeBeacon().isDefined)
-            STOP_PRB_CMD.body(STOP_PRB_CMD, Seq.empty, repl)
-
-        START_PRB_CMD.body(START_PRB_CMD, args, repl)
+        doCommand(Seq(STOP_PRB_CMD.name), repl)
+        doCommand(Seq(START_PRB_CMD.name) ++ args.map(_.origString()), repl)
     }
 
     /**
@@ -2623,7 +2631,7 @@ object NCCli extends App {
         tbl += ("Probe Up-Link", s"${g(beacon.upLink)}")
         tbl += ("Probe Down-Link", s"${g(beacon.downLink)}")
         tbl += ("JARs Folder", jarsFolder)
-        tbl += (s"Models (${mdlSeq.size})", mdlSeq)
+        tbl += (s"Deployed Models (${mdlSeq.size})", mdlSeq)
         tbl += ("Log file", logPath)
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
@@ -2692,7 +2700,7 @@ object NCCli extends App {
             "Probe ID",
             "Uptime",
             "Host / OS",
-            "Models Deployed"
+            "Deployed Models"
         )
 
         state.probes.foreach(addProbeToTable(tbl, _))
@@ -3674,9 +3682,10 @@ object NCCli extends App {
         while (!exit) {
             val rawLine = try {
                 val srvStr = bo(s"${if (state.isServerOnline) s"ON " else s"OFF "}")
-                val acsTokStr = bo(s"${state.accessToken.getOrElse("<signed out>")} ")
+                val prbStr = bo(s"${if (state.isProbeOnline) s"ON " else s"OFF "}")
+                val acsTokStr = bo(s"${state.accessToken.getOrElse("n/a")} ")
 
-                val prompt1 = rb(w(s" server: $srvStr")) // Server status.
+                val prompt1 = rb(w(s" srv:$srvStr")) + rb(w(s"prb:$prbStr")) // Server status.
                 val prompt2 = wb(k(s" acsTok: $acsTokStr")) // Access toke, if any.
                 val prompt3 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
 
