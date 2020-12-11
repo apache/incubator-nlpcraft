@@ -1174,9 +1174,30 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Additional JVM classpath component that will be appended to the default JVM classpath. " +
+                        s"Additional JVM classpath component that will be appended to the default NLPCraft JVM classpath. " +
                         s"Although this configuration property is optional, when deploying your own models you must " +
-                        s"provide this additional classpath for the models and their dependencies this probe will be hosting."
+                        s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
+                        s"NOTE: this is only optional if you are running example models shipped with NLPCraft."
+                ),
+                Parameter(
+                    id = "models",
+                    names = Seq("--models", "-m"),
+                    value = Some("<model list>"),
+                    optional = true,
+                    desc =
+                        s"Comma separated list of fully qualified class names for models to deploy. This will override " +
+                        s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
+                        s"or the one provided by ${y("--config")} parameter. NOTE: if you provide the list of your " +
+                        s"own models here - you must also provide the additional classpath via ${y("--cp")} parameter."
+                ),
+                Parameter(
+                    id = "jvmopts",
+                    names = Seq("--jvm-opts", "-j"),
+                    value = Some("<jvm flags>"),
+                    optional = true,
+                    desc =
+                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms1024m'")} flags " +
+                        s"will be used."
                 ),
                 Parameter(
                     id = "noWait",
@@ -1197,11 +1218,11 @@ object NCCli extends App {
             examples = Seq(
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-probe"),
-                    desc = "Starts local probe with default configuration."
+                    desc = "Starts local probe with default configuration and parameters."
                 ),
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-probe -c=/opt/nlpcraft/nlpcraft.conf -p=/opt/classes"),
-                    desc = "Starts local probe with alternative configuration file."
+                    desc = "Starts local probe with alternative configuration file and additional classpath."
                 )
             )
         ),
@@ -1232,9 +1253,30 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Additional JVM classpath component that will be appended to the default JVM classpath. " +
-                        s"Although this configuration property is optional, when deploying your own models you will " +
-                        s"need to provide classpath for all dependencies for the models this probe will be hosting."
+                        s"Additional JVM classpath component that will be appended to the default NLPCraft JVM classpath. " +
+                        s"Although this configuration property is optional, when deploying your own models you must " +
+                        s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
+                        s"NOTE: this is only optional if you are running example models shipped with NLPCraft."
+                ),
+                Parameter(
+                    id = "models",
+                    names = Seq("--models", "-m"),
+                    value = Some("<model list>"),
+                    optional = true,
+                    desc =
+                        s"Comma separated list of fully qualified class names for models to deploy. This will override " +
+                        s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
+                        s"or the one provided by ${y("--config")} parameter. NOTE: if you provide the list of your " +
+                        s"own models here - you must also provide the additional classpath via ${y("--cp")} parameter."
+                ),
+                Parameter(
+                    id = "jvmopts",
+                    names = Seq("--jvm-opts", "-j"),
+                    value = Some("<jvm flags>"),
+                    optional = true,
+                    desc =
+                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms1024m'")} flags " +
+                        s"will be used."
                 ),
                 Parameter(
                     id = "noWait",
@@ -1874,11 +1916,11 @@ object NCCli extends App {
      * @param repl Whether or not running from REPL.
      */
     private def cmdStartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        // Ensure that there is .
-        loadServerBeacon() match {
-            case Some(b) ⇒ ()
-            case None ⇒ throw NoLocalServer()
-        }
+        // Ensure that there is a local server running since probe
+        // cannot finish its start unless there's a server to connect to.
+        // TODO: in the future - we'll need add support here for remote servers.
+        if (loadServerBeacon().isEmpty)
+            throw NoLocalServer()
 
         val cfgPath = args.find(_.parameter.id == "config")
         val noWait = args.exists(_.parameter.id == "noWait")
@@ -1895,6 +1937,14 @@ object NCCli extends App {
                 }
 
             case None ⇒ 3 // Default.
+        }
+        val mdls = args.find(_.parameter.id == "models") match {
+            case Some(arg) ⇒ arg.value.get
+            case None ⇒ null
+        }
+        val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
+            case Some(arg) ⇒ arg.value.get.split(" ").map(_.trim).filter(_.nonEmpty).toSeq
+            case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
         checkFilePath(cfgPath)
@@ -1915,19 +1965,27 @@ object NCCli extends App {
 
         val sep = System.getProperty("path.separator")
 
-        val prbPb = new ProcessBuilder(
-            JAVA,
-            "-ea",
-            "-DNLPCRAFT_ANSI_COLOR_DISABLED=true", // No ANSI colors for text log output to the file.
-            "-cp",
-            s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep),
-            "org.apache.nlpcraft.NCStart",
-            "-probe",
+        var prbArgs = mutable.ArrayBuffer.empty[String]
+
+        prbArgs += JAVA
+        prbArgs ++= jvmOpts
+        prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
+        prbArgs += (if (mdls == null) "" else "-Dconfig.override_with_env_vars=true")
+        prbArgs += "-cp"
+        prbArgs += s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep)
+        prbArgs += "org.apache.nlpcraft.NCStart"
+        prbArgs += "-probe"
+        prbArgs += (
             cfgPath match {
                 case Some(path) ⇒ s"-config=${stripQuotes(path.value.get)}"
                 case None ⇒ ""
             }
         )
+
+        val prbPb = new ProcessBuilder(prbArgs.asJava)
+
+        if (mdls != null)
+            prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
 
         prbPb.directory(new File(INSTALL_HOME))
         prbPb.redirectErrorStream(true)
@@ -2363,9 +2421,18 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdQuit(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        // No-op.
-    }
+    private def cmdQuit(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        if (repl) {
+            loadServerBeacon() match {
+                case Some(b) ⇒ warn(s"Local server (pid ${c(b.pid)}) is still running.")
+                case None ⇒ ()
+            }
+
+            loadProbeBeacon() match {
+                case Some(b) ⇒ warn(s"Local probe (pid ${c(b.pid)}) is still running.")
+                case None ⇒ ()
+            }
+        }
 
     /**
      * @param cmd  Command descriptor.
@@ -3698,7 +3765,7 @@ object NCCli extends App {
                 case _: Exception ⇒ "" // Guard against JLine hiccups.
             }
 
-            if (rawLine == null || QUIT_CMD.name == rawLine.trim)
+            if (rawLine == null)
                 exit = true
             else {
                 val line = rawLine
@@ -3707,9 +3774,9 @@ object NCCli extends App {
                     .replace("\t", " ")
                     .trim()
 
-                if (line.nonEmpty)
+                if (line.nonEmpty) {
                     try
-                        doCommand(splitBySpace(line), repl = true)
+                        doCommand(splitAndClean(line), repl = true)
                     catch {
                         case e: SplitError ⇒
                             val idx = e.index
@@ -3720,6 +3787,10 @@ object NCCli extends App {
                             error(s"  ${r("+-")} $lineX")
                             error(s"  ${r("+-")} $dashX")
                     }
+
+                    if (line == QUIT_CMD.name)
+                        exit = true
+                }
             }
         }
 
@@ -3768,11 +3839,17 @@ object NCCli extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        if (msg != null && msg.nonEmpty) {
-            term.writer().println(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
-            term.flush()
-        }
+        if (msg != null && msg.nonEmpty)
+            logln(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
     }
+
+    /**
+     *
+     * @param msg
+     */
+    private def warn(msg: String = ""): Unit =
+        if (msg != null && msg.nonEmpty)
+            logln(s"${y("WRN:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
 
     /**
      *
@@ -3909,7 +3986,7 @@ object NCCli extends App {
      * @return
      */
     @throws[SplitError]
-    private def splitBySpace(line: String): Seq[String] = {
+    private def splitAndClean(line: String): Seq[String] = {
         val lines = mutable.Buffer.empty[String]
         val buf = new StringBuilder
         var stack = List.empty[Char]
