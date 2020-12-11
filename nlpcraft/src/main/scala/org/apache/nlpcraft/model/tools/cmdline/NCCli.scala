@@ -27,8 +27,8 @@ import java.util
 import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
-
 import com.google.common.base.CaseFormat
+
 import javax.lang.model.SourceVersion
 import javax.net.ssl.SSLException
 import org.apache.commons.io.IOUtils
@@ -57,6 +57,7 @@ import org.jline.utils.AttributedString
 import org.jline.utils.InfoCmp.Capability
 import resource.managed
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
@@ -1103,7 +1104,7 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
+                        s"Configuration file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the probe can use the same file for their configuration."
@@ -1114,11 +1115,20 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
+                        s"Apache Ignite configuration file path. Note that Apache Ignite is used as a cluster " +
                         s"computing plane and a default distributed storage. Server will automatically look for " +
                         s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path."
+                ),
+                Parameter(
+                    id = "jvmopts",
+                    names = Seq("--jvm-opts", "-j"),
+                    value = Some("<jvm flags>"),
+                    optional = true,
+                    desc =
+                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms2048m -XX:+UseG1GC'")} flags " +
+                        s"will be used."
                 ),
                 Parameter(
                     id = "noWait",
@@ -1143,7 +1153,7 @@ object NCCli extends App {
                 ),
                 Example(
                     usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf -t=5"),
-                    desc = "Starts local server with alternative configuration file."
+                    desc = "Starts local server with alternative configuration file and timeout of 5 mins."
                 )
             )
         ),
@@ -1163,7 +1173,7 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Configuration absolute file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
+                        s"Configuration file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the probe can use the same file for their configuration."
@@ -1188,7 +1198,8 @@ object NCCli extends App {
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
                         s"or the one provided by ${y("--config")} parameter. NOTE: if you provide the list of your " +
-                        s"own models here - you must also provide the additional classpath via ${y("--cp")} parameter."
+                        s"own models here or in configuration file - you must also provide the additional classpath " +
+                        s"for them via ${y("--cp")} parameter."
                 ),
                 Parameter(
                     id = "jvmopts",
@@ -1242,7 +1253,7 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Configuration absolute file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
+                        s"Configuration file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the probe can use the same file for their configuration."
@@ -1267,7 +1278,8 @@ object NCCli extends App {
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
                         s"or the one provided by ${y("--config")} parameter. NOTE: if you provide the list of your " +
-                        s"own models here - you must also provide the additional classpath via ${y("--cp")} parameter."
+                        s"own models here or in configuration file - you must also provide the additional classpath " +
+                        s"for them via ${y("--cp")} parameter."
                 ),
                 Parameter(
                     id = "jvmopts",
@@ -1321,7 +1333,7 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
+                        s"Configuration file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the data probe can use the same file for their configuration."
@@ -1332,11 +1344,20 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
+                        s"Apache Ignite configuration file path. Note that Apache Ignite is used as a cluster " +
                         s"computing plane and a default distributed storage. Server will automatically look for " +
                         s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
                         s"provide an alternative path."
+                ),
+                Parameter(
+                    id = "jvmopts",
+                    names = Seq("--jvm-opts", "-j"),
+                    value = Some("<jvm flags>"),
+                    optional = true,
+                    desc =
+                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms2048m -XX:+UseG1GC'")} flags " +
+                        s"will be used."
                 ),
                 Parameter(
                     id = "noWait",
@@ -1676,27 +1697,14 @@ object NCCli extends App {
      * @param s
      * @return
      */
+    @tailrec
     private def stripQuotes(s: String): String = {
-        var x = s
-        var found = true
+        val x = s.trim
 
-        while (found) {
-            found = false
-
-            if (x.startsWith("\"") && x.endsWith("\"")) {
-                found = true
-
-                x = x.substring(1, x.length - 1)
-            }
-
-            if (x.startsWith("'") && x.endsWith("'")) {
-                found = true
-
-                x = x.substring(1, x.length - 1)
-            }
-        }
-
-        x
+        if ((x.startsWith("\"") && x.endsWith("\"")) || (x.startsWith("'") && x.endsWith("'")))
+            stripQuotes(x.substring(1, x.length - 1))
+        else
+            x
     }
 
     /**
@@ -1739,6 +1747,10 @@ object NCCli extends App {
 
             case None ⇒ 3 // Default.
         }
+        val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
+            case Some(arg) ⇒ stripQuotes(arg.value.get).split(" ").map(_.trim).filter(_.nonEmpty).toSeq
+            case None ⇒ Seq("-ea", "-Xms2048m", "-XX:+UseG1GC")
+        }
 
         checkFilePath(cfgPath)
         checkFilePath(igniteCfgPath)
@@ -1757,33 +1769,39 @@ object NCCli extends App {
         // Store in REPL state right away.
         state.serverLog = Some(output)
 
-        val srvPb = new ProcessBuilder(
-            JAVA,
-            "-ea",
-            "-Xms2048m",
-            "-XX:+UseG1GC",
-            // Required by Ignite 2.x running on JDK 11+.
-            "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
-            "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
-            "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
-            "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
-            "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
-            "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED",
-            "--illegal-access=permit",
-            "-DNLPCRAFT_ANSI_COLOR_DISABLED=true", // No ANSI colors for text log output to the file.
-            "-cp",
-            s"$JAVA_CP",
-            "org.apache.nlpcraft.NCStart",
-            "-server",
+        var srvArgs = mutable.ArrayBuffer.empty[String]
+
+        srvArgs += JAVA
+        srvArgs ++= jvmOpts
+
+        // Required by Ignite 2.x running on JDK 11+.
+        // TODO: check for dups with 'jvmOpts'?
+        srvArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
+        srvArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+        srvArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
+        srvArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
+        srvArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
+        srvArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
+        srvArgs += "--illegal-access=permit"
+        srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
+        srvArgs += "-cp"
+        srvArgs += s"$JAVA_CP"
+        srvArgs += "org.apache.nlpcraft.NCStart"
+        srvArgs += "-server"
+        srvArgs += (
             cfgPath match {
                 case Some(path) ⇒ s"-config=${stripQuotes(path.value.get)}"
                 case None ⇒ ""
-            },
+            }
+        )
+        srvArgs += (
             igniteCfgPath match {
                 case Some(path) ⇒ s"-igniteConfig=${stripQuotes(path.value.get)}"
                 case None ⇒ ""
-            },
+            }
         )
+
+        val srvPb = new ProcessBuilder(srvArgs.asJava)
 
         srvPb.directory(new File(INSTALL_HOME))
         srvPb.redirectErrorStream(true)
@@ -1939,11 +1957,11 @@ object NCCli extends App {
             case None ⇒ 3 // Default.
         }
         val mdls = args.find(_.parameter.id == "models") match {
-            case Some(arg) ⇒ arg.value.get
+            case Some(arg) ⇒ stripQuotes(arg.value.get)
             case None ⇒ null
         }
         val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
-            case Some(arg) ⇒ arg.value.get.split(" ").map(_.trim).filter(_.nonEmpty).toSeq
+            case Some(arg) ⇒ stripQuotes(arg.value.get).split(" ").map(_.trim).filter(_.nonEmpty).toSeq
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -3501,6 +3519,10 @@ object NCCli extends App {
             case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ ()
         }
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒ logProbeInfo(beacon)
+            case None ⇒ ()
+        }
 
         if (state.accessToken.isDefined)
             logln(s"Server signed in with default '${c("admin@admin.com")}' user.")
@@ -4073,7 +4095,7 @@ object NCCli extends App {
                 throw mkError()
 
             val name = if (parts.size == 1) arg.trim else parts(0).trim
-            val value = if (parts.size == 1) None else Some(parts(1).trim)
+            val value = if (parts.size == 1) None else Some(stripQuotes(parts(1).trim))
             val hasSynth = cmd.params.exists(_.synthetic)
 
             if (name.endsWith("=")) // Missing value or extra '='.
