@@ -18,10 +18,11 @@
 package org.apache.nlpcraft.server.ignite
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.ignite.cluster.ClusterState
 import org.apache.ignite.{IgniteException, Ignition}
 import org.apache.nlpcraft.common._
-import java.io.File
 
+import java.io.File
 import scala.sys.SystemProperties
 
 /**
@@ -72,7 +73,7 @@ object NCIgniteRunner extends LazyLogging {
                         }
                     }
 
-                ignite.cluster().active(true)
+                ignite.cluster().state(ClusterState.ACTIVE)
 
                 ignite
             }
