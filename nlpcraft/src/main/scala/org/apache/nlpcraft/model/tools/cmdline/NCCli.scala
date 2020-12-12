@@ -1489,6 +1489,15 @@ object NCCli extends App {
             body = cmdStopProbe
         ),
         Command(
+            name = "stop",
+            group = "1. Server & Probe Commands",
+            synopsis = s"Stops both local server & probe.",
+            desc = Some(
+                s"Both local server & probe must be started via ${y(s"'$SCRIPT_NAME'")} or other compatible way."
+            ),
+            body = cmdStop
+        ),
+        Command(
             name = "quit",
             group = "3. REPL Commands",
             synopsis = s"Quits REPL mode.",
@@ -2476,6 +2485,16 @@ object NCCli extends App {
     private def cmdRestartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         doCommand(Seq(STOP_PRB_CMD.name), repl)
         doCommand(Seq(START_PRB_CMD.name) ++ args.map(_.origString()), repl)
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdStop(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        doCommand(Seq(STOP_SRV_CMD.name), repl)
+        doCommand(Seq(STOP_PRB_CMD.name), repl)
     }
 
     /**
