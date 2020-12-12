@@ -1828,8 +1828,14 @@ object NCCli extends App {
 
                     showTip()
 
-                    if (state.accessToken.isDefined)
-                        logln(s"Signed in with default '${c("admin@admin.com")}' user.")
+                    if (state.accessToken.isDefined) {
+                        val tbl = new NCAsciiTable()
+
+                        tbl += (s"${g("Email")}", "admin@admin.com")
+                        tbl += (s"${g("Access token")}", state.accessToken.get)
+
+                        logln(s"Signed in with default user:\n$tbl")
+                    }
                 }
             }
         }
