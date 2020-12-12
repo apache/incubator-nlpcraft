@@ -1806,8 +1806,6 @@ object NCCli extends App {
 
         val srvPb = new ProcessBuilder(srvArgs.asJava)
 
-        println(srvPb.command()) // TODO
-
         srvPb.directory(new File(INSTALL_HOME))
         srvPb.redirectErrorStream(true)
 
@@ -2009,8 +2007,6 @@ object NCCli extends App {
         )
 
         val prbPb = new ProcessBuilder(prbArgs.asJava)
-
-        println(prbPb.command()) // TODO
 
         if (mdls != null)
             prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
