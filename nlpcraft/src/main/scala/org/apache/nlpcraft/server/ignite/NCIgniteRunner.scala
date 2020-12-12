@@ -21,6 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.ignite.cluster.ClusterState
 import org.apache.ignite.{IgniteException, Ignition}
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.version.NCVersion
 
 import java.io.File
 import scala.sys.SystemProperties
@@ -32,8 +33,7 @@ object NCIgniteRunner extends LazyLogging {
     /**
       * Starts Ignite node.
       *
-      * @param cfgPath Full path for configuration file or `null` for default on the
-      *               class path `ignite.xml` file.
+      * @param cfgPath Full path for configuration file or `null` for default on the class path `ignite.xml` file.
       * @param body Function to execute on running Ignite node.
       */
     @throws[NCE]
@@ -73,6 +73,7 @@ object NCIgniteRunner extends LazyLogging {
                         }
                     }
 
+                // Activate the cluster.
                 ignite.cluster().state(ClusterState.ACTIVE)
 
                 ignite

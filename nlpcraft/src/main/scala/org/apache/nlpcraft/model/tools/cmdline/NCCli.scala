@@ -70,7 +70,7 @@ import scala.util.control.Exception.ignoring
  * NLPCraft CLI.
  */
 object NCCli extends App {
-    private final val NAME = "Apache NLPCraft CLI"
+    private final val NAME = "NLPCraft CLI"
 
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
@@ -1321,7 +1321,7 @@ object NCCli extends App {
             body = cmdNoLogo,
             examples = Seq(
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME version no-logo"),
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME version -s no-logo"),
                     desc =
                         s"Displays just the version information without any additional logo output. " +
                         s"This command makes sense only in command lime mode (NOT in REPL mode)."
@@ -4137,15 +4137,20 @@ object NCCli extends App {
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
         processAnsi(args, repl = false)
 
-        args.find(_ == NO_LOGO_CMD.name) match {
-            case Some(_) ⇒ NO_LOGO_CMD.body(NO_LOGO_CMD, Seq.empty, false)
-            case None ⇒ title() // Show logo unless we have 'no-logo' command.
-        }
+        if (!args.contains(NO_LOGO_CMD.name))
+            title() // Show logo unless we have 'no-logo' command.
 
-        if (args.isEmpty)
+        // Remove all auxiliary commands that are combined with other commands, if any.
+        val xargs = args.filter(arg ⇒
+            arg != NO_ANSI_CMD.name &&
+            arg != ANSI_CMD.name &&
+            arg != NO_LOGO_CMD.name
+        )
+
+        if (xargs.isEmpty)
             doRepl()
         else
-            doCommand(args.toSeq, repl = false)
+            doCommand(xargs.toSeq, repl = false)
 
         sys.exit(exitStatus)
     }

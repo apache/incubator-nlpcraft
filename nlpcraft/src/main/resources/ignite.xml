@@ -120,13 +120,14 @@
 
     <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
         <property name="igniteInstanceName" value="nlpcraft"/>
+        <property name="consistentId" value="nlpcraft-#{T(org.apache.nlpcraft.common.version.NCVersion).current.version()}"/>
 
         <!--
             Change this path to store Ignite DB files elsewhere.
         -->
-        <property name="workDirectory" value="#{systemProperties['user.home']}/.nlpcraft/ignite"/>
+        <property name="workDirectory" value="#{systemProperties['user.home']}/.nlpcraft/ignite/v#{T(org.apache.nlpcraft.common.version.NCVersion).current.version()}"/>
 
-        <property name="sqlSchemas">
+        <property name="sqlConfiguration.sqlSchemas">
             <list>
                 <value>nlpcraft</value>
             </list>
@@ -143,9 +144,9 @@
                 <!--
                     Change these paths to store Ignite DB elsewhere.
                 -->
-                <property name="walPath" value="#{systemProperties['user.home']}/.nlpcraft/ignite/wal"/>
-                <property name="walArchivePath" value="#{systemProperties['user.home']}/.nlpcraft/ignite/wal-archive"/>
-                <property name="storagePath" value="#{systemProperties['user.home']}/.nlpcraft/ignite/storage"/>
+                <property name="walPath" value="#{systemProperties['user.home']}/.nlpcraft/ignite/v#{T(org.apache.nlpcraft.common.version.NCVersion).current.version()}/wal"/>
+                <property name="walArchivePath" value="#{systemProperties['user.home']}/.nlpcraft/ignite/v#{T(org.apache.nlpcraft.common.version.NCVersion).current.version()}/wal-archive"/>
+                <property name="storagePath" value="#{systemProperties['user.home']}/.nlpcraft/ignite/v#{T(org.apache.nlpcraft.common.version.NCVersion).current.version()}/storage"/>
             </bean>
         </property>
 
