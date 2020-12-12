@@ -1788,7 +1788,7 @@ object NCCli extends App {
         srvArgs += "--illegal-access=permit"
         srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
         srvArgs += "-cp"
-        srvArgs += s"$JAVA_CP"
+        srvArgs += JAVA_CP
         srvArgs += "org.apache.nlpcraft.NCStart"
         srvArgs += "-server"
         srvArgs += (
@@ -1991,7 +1991,10 @@ object NCCli extends App {
         prbArgs += JAVA
         prbArgs ++= jvmOpts
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
-        prbArgs += (if (mdls == null) "" else "-Dconfig.override_with_env_vars=true")
+
+        if (mdls != null)
+            prbArgs += "-Dconfig.override_with_env_vars=true"
+
         prbArgs += "-cp"
         prbArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep))
         prbArgs += "org.apache.nlpcraft.NCStart"
@@ -2005,6 +2008,8 @@ object NCCli extends App {
 
         val prbPb = new ProcessBuilder(prbArgs.asJava)
 
+        println(prbPb.command())
+
         if (mdls != null)
             prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
 
@@ -2015,7 +2020,7 @@ object NCCli extends App {
             JAVA,
             "-ea",
             "-cp",
-            s"$JAVA_CP",
+            JAVA_CP,
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
