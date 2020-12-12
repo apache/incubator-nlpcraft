@@ -34,6 +34,7 @@ readlinkf_posix() {
   [ -d "${target:-/}" ] && target="$target/"
 
   cd -P . 2>/dev/null || return 1
+
   while [ "$max_symlinks" -ge 0 ] && max_symlinks=$((max_symlinks - 1)); do
     if [ ! "$target" = "${target%/*}" ]; then
       case $target in
@@ -52,6 +53,7 @@ readlinkf_posix() {
     link=$(ls -dl -- "$target" 2>/dev/null) || break
     target=${link#*" $target -> "}
   done
+
   return 1
 }
 
@@ -154,6 +156,7 @@ fi
 
 # Build classpath.
 # NOTE: JARs from 'build' override JARs from 'dev'.
+shopt -s nullglob
 for file in "$DEV_JARS"/*-all-deps.jar
 do
     CP=$CP$SEP$file
@@ -162,6 +165,7 @@ for file in "$BUILD_JARS"/*-all-deps.jar
 do
     CP=$CP$SEP$file
 done
+shopt -u nullglob
 
 # Check Java version.
 checkJava
