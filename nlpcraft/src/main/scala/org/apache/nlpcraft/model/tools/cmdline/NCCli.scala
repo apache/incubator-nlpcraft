@@ -857,7 +857,7 @@ object NCCli extends App {
         ),
         Command(
             name = "gen-sql",
-            group = "4. Miscellaneous Tools",
+            group = "3. Miscellaneous",
             synopsis = s"Generates NLPCraft model stub from SQL databases.",
             desc = Some(
                 s"You can choose database schema, set of tables and columns for which you want to generate NLPCraft " +
@@ -1169,7 +1169,7 @@ object NCCli extends App {
                     optional = true,
                     value = Some("3"),
                     desc =
-                        s"Timeout in minutes to wait until server is started. If not specified the default is 3 minutes."
+                        s"Timeout in minutes to wait until server is started. If not specified the default is 1 minutes."
                 )
             ),
             examples = Seq(
@@ -1249,7 +1249,7 @@ object NCCli extends App {
                     optional = true,
                     value = Some("3"),
                     desc =
-                        s"Timeout to wait until probe is started. If not specified the default is 3 minutes."
+                        s"Timeout to wait until probe is started. If not specified the default is 1 minutes."
                 )
             ),
             examples = Seq(
@@ -1258,157 +1258,17 @@ object NCCli extends App {
                     desc = "Starts local probe with default configuration and parameters."
                 ),
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-probe -c=/opt/nlpcraft/nlpcraft.conf -p=/opt/classes"),
-                    desc = "Starts local probe with alternative configuration file and additional classpath."
-                )
-            )
-        ),
-        Command(
-            name = "restart-probe",
-            group = "1. Server & Probe Commands",
-            synopsis = s"Restarts local probe.",
-            desc = Some(
-                s"Probe is restarted in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the probe is started unless ${y("'--no-wait'")} parameter is used or timeout is expired."
-            ),
-            body = cmdRestartProbe,
-            params = Seq(
-                Parameter(
-                    id = "config",
-                    names = Seq("--config", "-c"),
-                    value = Some("path"),
-                    optional = true,
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME start-probe ",
+                        "  --config=/opt/nlpcraft.conf ",
+                        "  --models=my.package.Model ",
+                        "  --cp=/opt/target/classes ",
+                        "  --jmv-opts=\"-ea -Xms2048m\" ",
+                        "  --timeout-mins=5"
+                    ),
                     desc =
-                        s"Configuration file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
-                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                        s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the server and the probe can use the same file for their configuration."
-                ),
-                Parameter(
-                    id = "cp",
-                    names = Seq("--cp", "-p"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Additional JVM classpath component that will be appended to the default NLPCraft JVM classpath. " +
-                        s"Although this configuration property is optional, when deploying your own models you must " +
-                        s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
-                        s"NOTE: this is only optional if you are running example models shipped with NLPCraft."
-                ),
-                Parameter(
-                    id = "models",
-                    names = Seq("--models", "-m"),
-                    value = Some("<model list>"),
-                    optional = true,
-                    desc =
-                        s"Comma separated list of fully qualified class names for models to deploy. This will override " +
-                        s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
-                        s"or the one provided by ${y("--config")} parameter. NOTE: if you provide the list of your " +
-                        s"own models here or in configuration file - you must also provide the additional classpath " +
-                        s"for them via ${y("--cp")} parameter."
-                ),
-                Parameter(
-                    id = "jvmopts",
-                    names = Seq("--jvm-opts", "-j"),
-                    value = Some("<jvm flags>"),
-                    optional = true,
-                    desc =
-                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms1024m'")} flags " +
-                        s"will be used."
-                ),
-                Parameter(
-                    id = "noWait",
-                    names = Seq("--no-wait"),
-                    optional = true,
-                    desc =
-                        s"Instructs command not to wait for the probe startup and return immediately."
-                ),
-                Parameter(
-                    id = "timeoutMins",
-                    names = Seq("--timeout-mins", "-t"),
-                    optional = true,
-                    value = Some("3"),
-                    desc =
-                        s"Timeout to wait until probe is started. If not specified the default is 3 minutes."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-probe"),
-                    desc = "Starts local probe with default configuration."
-                ),
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-probe -c=/opt/nlpcraft/nlpcraft.conf -p=/opt/classes"),
-                    desc = "Starts local probe with alternative configuration file."
-                )
-            )
-        ),
-        Command(
-            name = "restart-server",
-            group = "1. Server & Probe Commands",
-            synopsis = s"Restarts local server.",
-            desc = Some(
-                s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
-                s"corresponding parameters. If there is no local server the ${y("'stop-server'")} command is ignored."
-            ),
-            body = cmdRestartServer,
-            params = Seq(
-                Parameter(
-                    id = "config",
-                    names = Seq("--config", "-c"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Configuration file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
-                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                        s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the server and the data probe can use the same file for their configuration."
-                ),
-                Parameter(
-                    id = "igniteConfig",
-                    names = Seq("--ignite-config", "-i"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Apache Ignite configuration file path. Note that Apache Ignite is used as a cluster " +
-                        s"computing plane and a default distributed storage. Server will automatically look for " +
-                        s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
-                        s"configuration file has different name or in different location use this parameter to " +
-                        s"provide an alternative path."
-                ),
-                Parameter(
-                    id = "jvmopts",
-                    names = Seq("--jvm-opts", "-j"),
-                    value = Some("<jvm flags>"),
-                    optional = true,
-                    desc =
-                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms2048m -XX:+UseG1GC'")} flags " +
-                        s"will be used."
-                ),
-                Parameter(
-                    id = "noWait",
-                    names = Seq("--no-wait"),
-                    optional = true,
-                    desc =
-                        s"Instructs command not to wait for the server startup and return immediately."
-                ),
-                Parameter(
-                    id = "timeoutMins",
-                    names = Seq("--timeout-mins", "-t"),
-                    optional = true,
-                    value = Some("3"),
-                    desc =
-                        s"Timeout in minutes to wait until server is started. If not specified the default is 3 minutes."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-server"),
-                    desc = "Starts local server with default configuration."
-                ),
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME restart-server -c=/opt/nlpcraft/nlpcraft.conf"),
-                    desc = "Starts local server with alternative configuration file."
+                        s"Starts local probe for ${y("'my.package.Model'")} model with alternative configuration " +
+                        s"file and additional parameters."
                 )
             )
         ),
@@ -1432,13 +1292,13 @@ object NCCli extends App {
         ),
         Command(
             name = "cls",
-            group = "3. REPL Commands",
+            group = "3. Miscellaneous",
             synopsis = s"Clears terminal screen.",
             body = cmdCls
         ),
         Command(
             name = "no-ansi",
-            group = "3. REPL Commands",
+            group = "3. Miscellaneous",
             synopsis = s"Disables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
@@ -1452,8 +1312,25 @@ object NCCli extends App {
             )
         ),
         Command(
+            name = "no-logo",
+            group = "3. Miscellaneous",
+            synopsis = s"Disables showing NLPCraft logo at the start.",
+            desc = Some(
+                s"This is a special command that can be combined with any other command in a command line mode."
+            ),
+            body = cmdNoLogo,
+            examples = Seq(
+                Example(
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME version no-logo"),
+                    desc =
+                        s"Displays just the version information without any additional logo output. " +
+                        s"This command makes sense only in command lime mode (NOT in REPL mode)."
+                )
+            )
+        ),
+        Command(
             name = "ansi",
-            group = "3. REPL Commands",
+            group = "3. Miscellaneous",
             synopsis = s"Enables ANSI escape codes for terminal colors & controls.",
             desc = Some(
                 s"This is a special command that can be combined with any other commands."
@@ -1522,13 +1399,13 @@ object NCCli extends App {
         ),
         Command(
             name = "quit",
-            group = "3. REPL Commands",
+            group = "3. Miscellaneous",
             synopsis = s"Quits REPL mode.",
             body = cmdQuit
         ),
         Command(
             name = "help",
-            group = "3. REPL Commands",
+            group = "3. Miscellaneous",
             synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
                 s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
@@ -1563,7 +1440,7 @@ object NCCli extends App {
         ),
         Command(
             name = "version",
-            group = "3. REPL Commands",
+            group = "3. Miscellaneous",
             synopsis = s"Displays full version of ${y(s"'$SCRIPT_NAME'")} script.",
             desc = Some(
                 "Depending on the additional parameters can display only the semantic version or the release date."
@@ -1588,7 +1465,7 @@ object NCCli extends App {
         ),
         Command(
             name = "gen-project",
-            group = "4. Miscellaneous Tools",
+            group = "3. Miscellaneous",
             synopsis = s"Generates project stub with default configuration.",
             desc = Some(
                 "This command supports Java, Scala, and Kotlin languages with either Maven, Gradle or SBT " +
@@ -1664,7 +1541,7 @@ object NCCli extends App {
         ),
         Command(
             name = "gen-model",
-            group = "4. Miscellaneous Tools",
+            group = "3. Miscellaneous",
             synopsis = s"Generates data model file stub.",
             desc = Some(
                 "Generated model stub will have all default configuration. Model file can be either YAML or JSON."
@@ -1712,6 +1589,7 @@ object NCCli extends App {
         "Dup commands."
     )
 
+    private final val NO_LOGO_CMD = CMDS.find(_.name == "no-logo").get
     private final val NO_ANSI_CMD = CMDS.find(_.name == "no-ansi").get
     private final val ANSI_CMD = CMDS.find(_.name == "ansi").get
     private final val QUIT_CMD = CMDS.find(_.name == "quit").get
@@ -1721,11 +1599,9 @@ object NCCli extends App {
     private final val ASK_CMD = CMDS.find(_.name == "ask").get
     private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
     private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
-    private final val START_SRV_CMD = CMDS.find(_.name == "start-server").get
     private final val SRV_INFO_CMD = CMDS.find(_.name == "info-server").get
     private final val PRB_INFO_CMD = CMDS.find(_.name == "info-probe").get
     private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
-    private final val START_PRB_CMD = CMDS.find(_.name == "start-probe").get
 
     /**
      *
@@ -1780,7 +1656,7 @@ object NCCli extends App {
                     case _: Exception ⇒ throw InvalidParameter(cmd, "timeoutMins")
                 }
 
-            case None ⇒ 3 // Default.
+            case None ⇒ 1 // Default.
         }
         val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
             case Some(arg) ⇒ stripQuotes(arg.value.get).split(" ").map(_.trim).filter(_.nonEmpty).toSeq
@@ -1876,7 +1752,6 @@ object NCCli extends App {
                 tbl += (s"${g("start-probe")}", "Start the probe.")
                 tbl += (s"${g("stop-probe")}", "Stop the probe.")
                 tbl += (s"${g("info")}", "Get server & probe information.")
-                tbl += (s"${g("restart-server")}", "Restart the server.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
                 tbl += (s"${g("tail-server")}", "Tail the server log.")
 
@@ -1989,7 +1864,7 @@ object NCCli extends App {
                     case _: Exception ⇒ throw InvalidParameter(cmd, "timeoutMins")
                 }
 
-            case None ⇒ 3 // Default.
+            case None ⇒ 1 // Default.
         }
         val mdls = args.find(_.parameter.id == "models") match {
             case Some(arg) ⇒ stripQuotes(arg.value.get)
@@ -2078,7 +1953,6 @@ object NCCli extends App {
                 val tbl = new NCAsciiTable()
 
                 tbl += (s"${g("stop-probe")}", "Stop the probe.")
-                tbl += (s"${g("restart-probe")}", "Restart the probe.")
                 tbl += (s"${g("info")}", "Get server & probe information.")
 
                 logln(s"Handy commands:\n${tbl.toString}")
@@ -2495,26 +2369,6 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdRestartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        doCommand(Seq(STOP_SRV_CMD.name), repl)
-        doCommand(Seq(START_SRV_CMD.name) ++ args.map(_.origString()), repl)
-    }
-
-    /**
-     * @param cmd  Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
-     */
-    private def cmdRestartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        doCommand(Seq(STOP_PRB_CMD.name), repl)
-        doCommand(Seq(START_PRB_CMD.name) ++ args.map(_.origString()), repl)
-    }
-
-    /**
-     * @param cmd  Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
-     */
     private def cmdStop(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         doCommand(Seq(STOP_SRV_CMD.name), repl)
         doCommand(Seq(STOP_PRB_CMD.name), repl)
@@ -2571,6 +2425,15 @@ object NCCli extends App {
 
             case None ⇒ throw NoLocalProbe()
         }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private def cmdNoLogo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        warn("This command should be used together with other command in a command line mode.")
+    }
 
     /**
      * @param cmd  Command descriptor.
@@ -2791,7 +2654,7 @@ object NCCli extends App {
         tbl += ("  Pool increment", s"${g(beacon.dbPoolInc)}")
         tbl += ("  Reset on start", s"${g(beacon.dbInit)}")
         tbl += ("REST:", "")
-        tbl += ("  Endpoint", s"${g(beacon.restEndpoint)}")
+        tbl += ("  Endpoint", s"http://${g(beacon.restEndpoint)}") // TODO: https?
         tbl += ("  API provider", s"${g(beacon.restApi)}")
         tbl += ("Probe:", "")
         tbl += ("  Uplink", s"${g(beacon.upLink)}")
@@ -3562,7 +3425,7 @@ object NCCli extends App {
     /**
      *
      */
-    private def repl(): Unit = {
+    private def doRepl(): Unit = {
         loadServerBeacon(autoSignIn = true) match {
             case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ ()
@@ -4274,10 +4137,13 @@ object NCCli extends App {
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
         processAnsi(args, repl = false)
 
-        title()
+        args.find(_ == NO_LOGO_CMD.name) match {
+            case Some(_) ⇒ NO_LOGO_CMD.body(NO_LOGO_CMD, Seq.empty, false)
+            case None ⇒ title() // Show logo unless we have 'no-logo' command.
+        }
 
         if (args.isEmpty)
-            repl()
+            doRepl()
         else
             doCommand(args.toSeq, repl = false)
 
