@@ -534,6 +534,7 @@ object NCCli extends App {
          */
         def resetServer(): Unit = {
             isServerOnline = false
+            accessToken = None
             serverLog = None
             probes = Nil
         }
@@ -1010,7 +1011,8 @@ object NCCli extends App {
                 s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${c("'rest'")} command with " +
-                s"corresponding parameters."
+                s"corresponding parameters. Note also that it requires a local probe running that hosts " +
+                s"the specified model."
             ),
             body = cmdSugSyn,
             params = Seq(
@@ -1020,7 +1022,8 @@ object NCCli extends App {
                     value = Some("model.id"),
                     desc =
                         s"ID of the model to run synonym suggestion on. " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
+                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs. " +
+                        s"Note that the probe hosting this model must be connected to the server."
                 ),
                 Parameter(
                     id = "minScore",
@@ -1698,7 +1701,7 @@ object NCCli extends App {
      * @return
      */
     @tailrec
-    private def stripQuotes(s: String): String = {
+    private[cmdline] def stripQuotes(s: String): String = {
         val x = s.trim
 
         if ((x.startsWith("\"") && x.endsWith("\"")) || (x.startsWith("'") && x.endsWith("'")))
@@ -3498,9 +3501,9 @@ object NCCli extends App {
             logln(U.colorJson(U.prettyJson(resp.data)))
         else {
             if (resp.code == 200)
-                logln(s"HTTP response: ${resp.data}")
+                logln(s"${g("HTTP response:")} ${resp.data}")
             else
-                error(s"HTTP error: ${resp.data}")
+                error(s"${r("HTTP error:")} ${resp.data}")
         }
 
         if (resp.code == 200) {
