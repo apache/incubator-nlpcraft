@@ -656,11 +656,21 @@ object NCCli extends App {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME rest ",
+                        s"$$ nlpcraft.sh rest ",
                         "  -p=signin",
                         "  -j='{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}'"
                     ),
-                    desc = s"Issues ${y("'signin'")} REST call with given JSON payload."
+                    desc = s"${bo("Unix/Linux:")} issues ${y("'signin'")} REST call with given JSON payload."
+                ),
+                Example(
+                    usage = Seq(
+                        s"> nlpcraft.cmd rest ",
+                        "  -p=signin",
+                        "  -j='{\\\"email\\\": \\\"admin@admin.com\\\", \\\"passwd\\\": \\\"admin\\\"}'"
+                    ),
+                    desc =
+                        s"${bo("Windows:")} issues ${y("'signin'")} REST call with given JSON payload. " +
+                        s"Note the necessary escaping of double quotes."
                 )
             )
         ),
@@ -768,7 +778,7 @@ object NCCli extends App {
                 ),
                 Example(
                     usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME call --path=ask/sync",
+                        s"$$ nlpcraft.sh call --path=ask/sync",
                         "  --acsTok=qwerty123456",
                         "  --txt=\"User request\"",
                         "  --mdlId=my.model.id",
@@ -776,7 +786,20 @@ object NCCli extends App {
                         "  --enableLog=false"
                     ),
                     desc =
-                        s"Issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
+                        s"${bo("Unix/Linux:")} issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
+                ),
+                Example(
+                    usage = Seq(
+                        s"> nlpcraft.cmd call --path=ask/sync",
+                        "  --acsTok=qwerty123456",
+                        "  --txt=\"User request\"",
+                        "  --mdlId=my.model.id",
+                        "  --data='{\\\"data1\\\": true, \\\"data2\\\": 123, \\\"data3\\\": \\\"some text\\\"}'",
+                        "  --enableLog=false"
+                    ),
+                    desc =
+                        s"${bo("Windows:")} issues ${y("'ask/sync'")} REST call with given JSON payload provided " +
+                        s"as a set of parameters. Note the necessary double quote escaping."
                 )
             )
         ),
@@ -1509,7 +1532,7 @@ object NCCli extends App {
             synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
             desc = Some(
                 s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
-                    s"only listing the commands without parameters or examples."
+                s"only listing the commands without parameters or examples."
             ),
             body = cmdHelp,
             params = Seq(
