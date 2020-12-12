@@ -1947,7 +1947,7 @@ object NCCli extends App {
         val noWait = args.exists(_.parameter.id == "noWait")
         val addCp = args.find(_.parameter.id == "cp") match {
             case Some(cp) ⇒ cp.value.get
-            case None ⇒ ""
+            case None ⇒ null
         }
         val timeoutMins = args.find(_.parameter.id == "timeoutMins") match {
             case Some(arg) ⇒
@@ -1993,7 +1993,7 @@ object NCCli extends App {
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
         prbArgs += (if (mdls == null) "" else "-Dconfig.override_with_env_vars=true")
         prbArgs += "-cp"
-        prbArgs += s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep)
+        prbArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep))
         prbArgs += "org.apache.nlpcraft.NCStart"
         prbArgs += "-probe"
         prbArgs += (
