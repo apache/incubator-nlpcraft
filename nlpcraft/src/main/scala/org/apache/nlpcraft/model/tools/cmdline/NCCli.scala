@@ -1800,7 +1800,7 @@ object NCCli extends App {
                 var online = false
                 val endOfWait = currentTime + timeoutMins.mins
 
-                while (currentTime < endOfWait && !online) {
+                while (currentTime < endOfWait && !online && ProcessHandle.of(srvPid).isPresent) {
                     if (progressBar.completed) {
                         // First, load the beacon, if any.
                         if (beacon == null)
@@ -1820,7 +1820,7 @@ object NCCli extends App {
 
                 if (!online) {
                     logln(r(" [Error]"))
-                    error(s"Timed out starting server, check output for errors.")
+                    error(s"Failed to start the server, check output for errors.")
                 }
                 else {
                     logln(g(" [OK]"))
@@ -2005,7 +2005,7 @@ object NCCli extends App {
                 var beacon: NCCliProbeBeacon = null
                 val endOfWait = currentTime + timeoutMins.mins
 
-                while (currentTime < endOfWait && beacon == null) {
+                while (currentTime < endOfWait && beacon == null && ProcessHandle.of(prbPid).isPresent) {
                     if (progressBar.completed) {
                         // Load the beacon, if any.
                         if (beacon == null)
@@ -2021,7 +2021,7 @@ object NCCli extends App {
 
                 if (beacon == null) {
                     logln(r(" [Error]"))
-                    error(s"Timed out starting probe, check output for errors.")
+                    error(s"Failed to start the probe, check output for errors.")
                 }
                 else {
                     logln(g(" [OK]"))
