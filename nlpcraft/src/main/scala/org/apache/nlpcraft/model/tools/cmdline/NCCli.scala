@@ -714,9 +714,9 @@ object NCCli extends App {
         Command(
             name = "signout",
             group = "2. REST Commands",
-            synopsis = s"Wrapper for ${c("'/signout'")} REST call.",
+            synopsis = s"Wrapper for ${c("'/signout'")} REST call in REPL mode.",
             desc = Some(
-                s"Signs out currently signed in user."
+                s"Signs out currently signed in user. Note that this command makes sense only in REPL mode."
             ),
             body = cmdSignOut,
             examples = Seq(
@@ -2787,7 +2787,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case Some(_) ⇒ error(s"Already signed in. See ${c("'signout'")} command.")
+            case Some(_) ⇒ warn(s"Already signed in. See ${c("'signout'")} command.")
         }
 
     /**
