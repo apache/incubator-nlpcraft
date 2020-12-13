@@ -727,6 +727,13 @@
         </profile>
 
         <profile>
+            <id>examples</id>
+            <modules>
+                <module>nlpcraft-examples</module>
+            </modules>
+        </profile>
+
+        <profile>
             <id>release</id>
             <activation>
                 <property>
