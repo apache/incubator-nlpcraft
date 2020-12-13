@@ -1169,7 +1169,7 @@ object NCCli extends App {
                     optional = true,
                     value = Some("3"),
                     desc =
-                        s"Timeout in minutes to wait until server is started. If not specified the default is 1 minutes."
+                        s"Timeout in minutes to wait until server is started. If not specified the default is 2 minutes."
                 )
             ),
             examples = Seq(
@@ -1249,7 +1249,7 @@ object NCCli extends App {
                     optional = true,
                     value = Some("3"),
                     desc =
-                        s"Timeout to wait until probe is started. If not specified the default is 1 minutes."
+                        s"Timeout to wait until probe is started. If not specified the default is 1 minute."
                 )
             ),
             examples = Seq(
@@ -1656,7 +1656,7 @@ object NCCli extends App {
                     case _: Exception ⇒ throw InvalidParameter(cmd, "timeoutMins")
                 }
 
-            case None ⇒ 1 // Default.
+            case None ⇒ 2 // Default.
         }
         val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
             case Some(arg) ⇒ stripQuotes(arg.value.get).split(" ").map(_.trim).filter(_.nonEmpty).toSeq
@@ -1737,6 +1737,7 @@ object NCCli extends App {
             // Store mapping file between PID and timestamp (once we have server PID).
             // Note that the same timestamp is used in server log file.
             ignoring(classOf[IOException]) {
+                // TODO: These don't get deleted?
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
@@ -1818,9 +1819,20 @@ object NCCli extends App {
                 tailer.stop()
                 progressBar.stop()
 
+                if (!online && currentTime >= endOfWait) // Timed out - attempt to kill the timed out process...
+                    ProcessHandle.of(srvPid).asScala match {
+                        case Some(ph) ⇒
+                            ph.destroy()
+
+                            if (beacon != null && beacon.beaconPath != null)
+                                new File(beacon.beaconPath).delete()
+
+                        case None ⇒ ()
+                    }
+
                 if (!online) {
                     logln(r(" [Error]"))
-                    error(s"Failed to start the server, check output for errors.")
+                    error(s"Server start failed, check for errors: ${c(output.getAbsolutePath)}")
                 }
                 else {
                     logln(g(" [OK]"))
@@ -2019,9 +2031,20 @@ object NCCli extends App {
                 tailer.stop()
                 progressBar.stop()
 
+                if (currentTime >= endOfWait)
+                    ProcessHandle.of(prbPid).asScala match {
+                        case Some(ph) ⇒
+                            ph.destroy()
+
+                            if (beacon != null && beacon.beaconPath != null)
+                                new File(beacon.beaconPath).delete()
+
+                        case None ⇒ ()
+                    }
+
                 if (beacon == null) {
                     logln(r(" [Error]"))
-                    error(s"Failed to start the probe, check output for errors.")
+                    error(s"Probe start failed, check for errors: ${c(output.getAbsolutePath)}")
                 }
                 else {
                     logln(g(" [OK]"))
