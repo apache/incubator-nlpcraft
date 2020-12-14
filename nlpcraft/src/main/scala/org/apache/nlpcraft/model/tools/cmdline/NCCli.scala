@@ -1210,7 +1210,7 @@ object NCCli extends App {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Additional JVM classpath component that will be appended to the default NLPCraft JVM classpath. " +
+                        s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"Although this configuration property is optional, when deploying your own models you must " +
                         s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
                         s"NOTE: this is only optional if you are running example models shipped with NLPCraft."
@@ -1269,6 +1269,58 @@ object NCCli extends App {
                     desc =
                         s"Starts local probe for ${y("'my.package.Model'")} model with alternative configuration " +
                         s"file and additional parameters."
+                )
+            )
+        ),
+        Command(
+            name = "test-model",
+            group = "3. Miscellaneous",
+            synopsis = s"Runs auto model validation.",
+            desc = Some(
+                s"Runs ${y("'NCTestAutoModelValidator'")} model auto-validator for given models."
+            ),
+            body = cmdTestModel,
+            params = Seq(
+                Parameter(
+                    id = "cp",
+                    names = Seq("--cp", "-p"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
+                        s"Although this configuration property is optional, when testing your own models you must " +
+                        s"provide this additional classpath for the models and their dependencies. " +
+                        s"NOTE: this is only optional if you are testing example models shipped with NLPCraft."
+                ),
+                Parameter(
+                    id = "models",
+                    names = Seq("--models", "-m"),
+                    value = Some("<model list>"),
+                    desc =
+                        s"Comma separated list of fully qualified class names for models to test. NOTE: if you provide " +
+                        s"the list of your own models here - you must also provide the additional classpath " +
+                        s"for them via ${y("--cp")} parameter."
+                ),
+                Parameter(
+                    id = "jvmopts",
+                    names = Seq("--jvm-opts", "-j"),
+                    value = Some("<jvm flags>"),
+                    optional = true,
+                    desc =
+                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms1024m'")} flags " +
+                        s"will be used."
+                )
+            ),
+            examples = Seq(
+                Example(
+                    usage = Seq(
+                        s"$PROMPT $SCRIPT_NAME test-model ",
+                        "  --models=my.package.Model ",
+                        "  --cp=/opt/target/classes ",
+                        "  --jmv-opts=\"-ea -Xms2048m\""
+                    ),
+                    desc =
+                        s"Runs model auto-validator for ${y("'my.package.Model'")} model."
                 )
             )
         ),
@@ -1659,7 +1711,7 @@ object NCCli extends App {
             case None ⇒ 2 // Default.
         }
         val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
-            case Some(arg) ⇒ stripQuotes(arg.value.get).split(" ").map(_.trim).filter(_.nonEmpty).toSeq
+            case Some(arg) ⇒ U.splitTrimFilter(stripQuotes(arg.value.get), " ")
             case None ⇒ Seq("-ea", "-Xms2048m", "-XX:+UseG1GC")
         }
 
@@ -1861,6 +1913,15 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
      */
+    private def cmdTestModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not running from REPL.
+     */
     private def cmdStartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         // Ensure that there is a local server running since probe
         // cannot finish its start unless there's a server to connect to.
@@ -1889,7 +1950,7 @@ object NCCli extends App {
             case None ⇒ null
         }
         val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
-            case Some(arg) ⇒ stripQuotes(arg.value.get).split(" ").map(_.trim).filter(_.nonEmpty).toSeq
+            case Some(arg) ⇒ U.splitTrimFilter(stripQuotes(arg.value.get), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -2683,7 +2744,7 @@ object NCCli extends App {
         tbl += ("  Pool increment", s"${g(beacon.dbPoolInc)}")
         tbl += ("  Reset on start", s"${g(beacon.dbInit)}")
         tbl += ("REST:", "")
-        tbl += ("  Endpoint", s"http://${g(beacon.restEndpoint)}") // TODO: https?
+        tbl += ("  Endpoint", s"${g("http://" + beacon.restEndpoint)}") // TODO: https?
         tbl += ("  API provider", s"${g(beacon.restApi)}")
         tbl += ("Probe:", "")
         tbl += ("  Uplink", s"${g(beacon.upLink)}")

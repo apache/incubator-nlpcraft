@@ -34,7 +34,6 @@ import java.util.regex.Pattern
 import java.util.stream.Collectors
 import java.util.zip.{ZipInputStream, GZIPInputStream ⇒ GIS, GZIPOutputStream ⇒ GOS}
 import java.util.{Locale, Properties, Random, Timer, TimerTask, Calendar ⇒ C}
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
@@ -52,10 +51,10 @@ import org.apache.nlpcraft.common.version.NCVersion
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import resource._
+
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-
 import scala.collection.JavaConverters._
 import scala.collection._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -156,6 +155,34 @@ object NCUtils extends LazyLogging {
      */
     def stripAnsi(s: String): String =
         ANSI_SEQ.matcher(s).replaceAll("")
+
+    /**
+     * Trims each sequence string and filters out empty ones.
+     *
+     * @param s String to process.
+     * @return
+     */
+    def trimFilter(s: Seq[String]): Seq[String] =
+        s.map(_.trim).filter(_.nonEmpty)
+
+    /**
+     * Splits, trims and filters empty strings for the given string.
+     *
+     * @param s String to split.
+     * @param sep Separator (regex) to split by.
+     * @return
+     */
+    def splitTrimFilter(s: String, sep: String): Seq[String] =
+        trimFilter(s.split(sep))
+
+    /**
+     *
+     * @param s
+     * @param sep
+     * @return
+     */
+    def normalize(s: String, sep: String): String =
+        splitTrimFilter(s, sep).mkString(sep)
 
     /**
       * Escapes given string for JSON according to RFC 4627 http://www.ietf.org/rfc/rfc4627.txt.
@@ -431,7 +458,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     private def readLcTrimFilter(in: BufferedSource): List[String] =
-        in.getLines().map(_.toLowerCase.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toList
+        in.getLines().map(_.toLowerCase.trim).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toList
 
     /**
       * Reads lines from given file converting to lower case, trimming, and filtering
@@ -1145,7 +1172,7 @@ object NCUtils extends LazyLogging {
       *
       * @param s String to check.
       */
-    def neon(s: String): Boolean = s != null && !s.isEmpty
+    def neon(s: String): Boolean = s != null && s.nonEmpty
 
     /**
       * Generates (relatively) unique ID good for a short-term usage.

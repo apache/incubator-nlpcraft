@@ -136,7 +136,7 @@ object NCNumericManager extends NCService {
         ackStarting()
 
         genNums = mapResource("numeric/numeric.txt", "utf-8", logger, {
-            _.filter(s ⇒ !s.isEmpty && !s.trim.startsWith("#")).
+            _.filter(s ⇒ s.nonEmpty && !s.trim.startsWith("#")).
             map(_.split("=")).
             map(s ⇒ (s(1), s(0).toInt)).
             toMap

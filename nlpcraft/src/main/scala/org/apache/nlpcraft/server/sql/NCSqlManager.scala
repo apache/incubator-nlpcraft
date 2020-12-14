@@ -1026,7 +1026,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             mkString("\n").
             split(";").
             map(_.trim).
-            filter(!_.isEmpty).
+            filter(_.nonEmpty).
             foreach(p ⇒ NCSql.ddl(p))
     }
 

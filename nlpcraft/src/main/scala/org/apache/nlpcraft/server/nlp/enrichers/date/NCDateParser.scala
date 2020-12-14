@@ -19,6 +19,7 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import java.util.{Locale, Calendar ⇒ C}
 import scala.collection.JavaConverters._
+import org.apache.nlpcraft.common._
 
 /**
   * Date parser.
@@ -344,7 +345,7 @@ object NCDateParser {
         }).getTimeInMillis
     }
 
-    private def parseInt(s: String): Option[Int] = if (!s.isEmpty) Some(s.toInt) else None
+    private def parseInt(s: String): Option[Int] = if (s.nonEmpty) Some(s.toInt) else None
 
     private def isSign(ch: Char) = ch == '+' || ch == '-'
 
@@ -364,7 +365,7 @@ object NCDateParser {
     private[date] def calculatePart(fns: String, base: Long): PartResult = {
         var res = PartResult(base, base, "", Seq.empty[String])
 
-        for (fn ← fns.split(",").map(_.trim)) {
+        for (fn ← U.splitTrimFilter(fns, ",")) {
             val resFrom = res.from
 
             def after(heads: String*): String = fn.drop(heads.map(_.length).sum)
@@ -437,7 +438,7 @@ object NCDateParser {
                 if (shift != 0)
                     shift = years - shift
 
-                // Should't be in one function call (last day is relative)
+                // Should not be in one function call (last day is relative).
                 set(c, C.YEAR → (curYear + shift))
                 set(c, C.DAY_OF_YEAR → c.getActualMaximum(C.DAY_OF_YEAR))
             })
@@ -448,7 +449,7 @@ object NCDateParser {
             def ld3M(map3m: Map[Int, Int]): PartResult = lastDay((c: C) ⇒ {
                 val n = map3m(MONTH_NUM_MAP(c.get(C.MONTH)))
 
-                // Should't be in one function call (last day is relative)
+                // Should not be in one function call (last day is relative).
                 // Note that keys in `map3m` sorted.
                 set(c, C.MONTH → NUM_MONTH_MAP(map3m.filter(_._2 == n).keys.toSeq.max))
                 set(c, C.DAY_OF_MONTH → c.getActualMaximum(C.DAY_OF_MONTH))

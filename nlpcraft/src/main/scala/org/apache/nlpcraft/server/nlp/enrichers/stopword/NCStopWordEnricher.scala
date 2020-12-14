@@ -273,7 +273,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                         drop(idxPos + 1).
                         trim.split(" ").
                         map(_.trim.toUpperCase).
-                        filter(!_.isEmpty).
+                        filter(_.nonEmpty).
                         toSeq.
                         map(p ⇒ if (p.head == '~') p.drop(1).trim → false else p → true).
                         toMap
@@ -678,7 +678,7 @@ object NCStopWordEnricher extends NCServerEnricher {
         val m =
             readStopWords(
                 U.readResource("stopwords/stop_words.txt", "UTF-8", logger).
-                    map(_.trim).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).toSeq
+                    map(_.trim).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toSeq
             )
 
         stopWords = m(false)

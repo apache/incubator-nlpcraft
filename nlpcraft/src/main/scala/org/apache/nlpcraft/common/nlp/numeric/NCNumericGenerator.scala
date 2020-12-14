@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.common.nlp.numeric
 
 import java.text.DecimalFormat
+import org.apache.nlpcraft.common._
 
 /**
  * Converts numbers to their textual (word) presentation.
@@ -105,7 +106,7 @@ object NCNumericGenerator {
 
             val n10x1 = convertSmall(s10x1)
 
-            (n10x9 + n10x6 + n10x3 + n10x1).split(" ").filter(!_.isEmpty).mkString(" ")
+            U.normalize(n10x9 + n10x6 + n10x3 + n10x1," ")
         }
     }
 

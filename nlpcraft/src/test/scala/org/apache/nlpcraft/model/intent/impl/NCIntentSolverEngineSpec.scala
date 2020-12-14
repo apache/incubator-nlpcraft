@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.impl
 
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.utils.NCDslFlowItem
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -34,7 +35,7 @@ class NCIntentSolverEngineSpec  {
     private def matchFlow(hist: String, flow: (String/*Intent ID*/, Int/*min*/, Int/*max*/)*): Boolean = {
         NCIntentSolverEngine.matchFlow(
             flow.toArray.map(x ⇒ NCDslFlowItem(x._1.split('|').map(_.trim), x._2, x._3)),
-            hist.split(" ").map(_.trim)
+            U.splitTrimFilter(hist, " ")
         )
     }
 

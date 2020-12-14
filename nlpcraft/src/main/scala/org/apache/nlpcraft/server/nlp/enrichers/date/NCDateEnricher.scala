@@ -57,7 +57,7 @@ object NCDateEnricher extends NCServerEnricher {
 
     // Preposition data holder.
     case class P(text: String) {
-        val words: Seq[String] = text.split(" ").filter(!_.trim.isEmpty).toSeq
+        val words: Seq[String] = U.splitTrimFilter(text," ")
         val length: Int = words.length
     }
 

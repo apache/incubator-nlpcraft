@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen.impl
 
+import org.apache.nlpcraft.common._
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -45,7 +46,7 @@ class NCSqlModelGeneratorImplSpec {
      * @return
      */
     private def mkPrefixFun(s: String): String ⇒ String = {
-        val arr = s.split(",").map(_.trim).filter(_.nonEmpty)
+        val arr = U.splitTrimFilter(s, ",")
 
         z ⇒ (for (fix ← arr if z.startsWith(fix)) yield z.substring(fix.length)).headOption.getOrElse(z)
     }
@@ -57,7 +58,7 @@ class NCSqlModelGeneratorImplSpec {
      * @return
      */
     private def mkSuffixFun(s: String): String ⇒ String = {
-        val arr = s.split(",").map(_.trim).filter(_.nonEmpty)
+        val arr = U.splitTrimFilter(s, ",")
         
         z ⇒ (for (fix ← arr if z.endsWith(fix)) yield z.substring(0, z.length - fix.length)).headOption.getOrElse(z)
     }

@@ -40,8 +40,8 @@ class SqlValueLoader extends NCValueLoader with LazyLogging {
         SqlAccess.select(SqlQuery(s"SELECT $col FROM $tab WHERE $col IS NOT NULL", Seq.empty), logResult = false).
             rows.
             map(_.head).
-            map(_.toString.trim).
-            filter(!_.isEmpty).
+            map(_.trim).
+            filter(_.nonEmpty).
             map(
                 v ⇒ new NCValue {
                     override def getName: String = v

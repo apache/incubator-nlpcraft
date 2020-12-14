@@ -57,7 +57,7 @@ object NCSqlModelGeneratorImpl {
         val nameLc: String
         val elmNameLc: String
 
-        private val nameWs = elmNameLc.replaceAll("_", " ").split(" ").filter(_.nonEmpty).mkString(" ")
+        private val nameWs = U.normalize(elmNameLc.replaceAll("_"," ")," ")
 
         lazy val synonym =
             if (elmNameLc == nameWs)
@@ -144,7 +144,7 @@ object NCSqlModelGeneratorImpl {
      * @return
      */
     private def mkPrefixFun(s: String): String ⇒ String = {
-        val arr = s.split(",").map(_.trim).filter(_.nonEmpty)
+        val arr = U.splitTrimFilter(s, ",")
         
         z ⇒ (for (fix ← arr if z.startsWith(fix)) yield z.substring(fix.length)).headOption.getOrElse(z)
     }
@@ -156,7 +156,7 @@ object NCSqlModelGeneratorImpl {
      * @return
      */
     private def mkSuffixFun(s: String): String ⇒ String = {
-        val arr = s.split(",").map(_.trim).filter(_.nonEmpty)
+        val arr = U.splitTrimFilter(s, ",")
         
         z ⇒ (for (fix ← arr if z.endsWith(fix)) yield z.substring(0, z.length - fix.length)).headOption.getOrElse(z)
     }
@@ -168,12 +168,12 @@ object NCSqlModelGeneratorImpl {
       */
     private def mkPredicate(s: String): (String, String) ⇒ Boolean = {
         def convert(expr: String): (String, String) ⇒ Boolean = {
-            val s = expr.split("#").filter(!_.isEmpty)
+            val s = U.splitTrimFilter(expr, "#")
 
             val (tbl: String, col: String) = s.length match {
-                case 1 if !expr.contains("#") ⇒ (s(0), "")  // 'table'
-                case 1 if expr.contains("#") ⇒ ("", s(0))   // '#column'
-                case 2 ⇒ (s(0), s(1))                       // 'table#column'
+                case 1 if !expr.contains("#") ⇒ (s.head, "")  // 'table'
+                case 1 if expr.contains("#") ⇒ ("", s.head)   // '#column'
+                case 2 ⇒ (s.head, s(1))                       // 'table#column'
                 case _ ⇒ throw new Exception(s"Invalid table and/or column filter: $C$expr$RST")
             }
 
@@ -203,7 +203,7 @@ object NCSqlModelGeneratorImpl {
             }
         }
 
-        val predicates = s.split(";").map(_.trim()).map(convert)
+        val predicates = U.splitTrimFilter(s,";").map(convert)
 
         (tbl: String, col: String) ⇒ predicates.exists(_(tbl, col))
     }
@@ -235,7 +235,7 @@ object NCSqlModelGeneratorImpl {
      * @return
      */
     private def removeSeqDups(syn: String): String = {
-        val words = syn.split(" ").filter(_.nonEmpty)
+        val words = U.splitTrimFilter(syn, " ")
         
         words
             .zip(words.map(NCNlpPorterStemmer.stem))

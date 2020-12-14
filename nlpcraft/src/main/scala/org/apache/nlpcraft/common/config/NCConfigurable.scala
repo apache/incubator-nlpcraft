@@ -19,7 +19,7 @@ package org.apache.nlpcraft.common.config
 
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
-import org.apache.nlpcraft.common.NCE
+import org.apache.nlpcraft.common._
 
 import scala.collection.JavaConverters._
 
@@ -256,7 +256,7 @@ trait NCConfigurable {
       *
       * @param s
       */
-    private def parseCsv(s: String): Seq[String] = s.split(",").map(_.trim).filter(_.nonEmpty)
+    private def parseCsv(s: String): Seq[String] = U.splitTrimFilter(s,",")
 }
 
 object NCConfigurable extends LazyLogging {
@@ -332,7 +332,7 @@ object NCConfigurable extends LazyLogging {
             else
                 cfg = ConfigFactory.load(tmpCfg)
             
-            val lines = cfg.origin().description().split(",").drop(1).distinct
+            val lines = U.splitTrimFilter(cfg.origin().description(),",").drop(1).distinct
             
             logger.info(s"NLPCraft configuration successfully loaded as a merge of: ${lines.mkString("\n  + ", "\n  + ", "")}")
         }
