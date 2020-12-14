@@ -861,7 +861,8 @@ object NCCli extends App {
             synopsis = s"Generates NLPCraft model stub from SQL databases.",
             desc = Some(
                 s"You can choose database schema, set of tables and columns for which you want to generate NLPCraft " +
-                s"model. After the model is generated you can further configure and customize it for your specific needs."
+                s"model. After the model is generated you can further configure and customize it for your specific needs. " +
+                s"Find more information at ${y("https://nlpcraft.apache.org/tools/sql_model_gen.html")}"
             ),
             body = cmdSqlGen,
             params = Seq(
@@ -1013,13 +1014,13 @@ object NCCli extends App {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME gen-sql",
-                        "  -r=jdbc:postgresql://localhost:5432/mydb",
-                        "  -d=org.postgresql.Driver",
-                        """  -f="tbl_, col_"""",
-                        """  -q="_tmp, _old, _unused"""",
-                        "  -s=public",
-                        """  -e="#_.+"""",
-                        "  -o=model.json"
+                        "  --url=jdbc:postgresql://localhost:5432/mydb",
+                        "  --driver=org.postgresql.Driver",
+                        """  --prefix="tbl_, col_"""",
+                        """  --suffix="_tmp, _old, _unused"""",
+                        "  --schema=public",
+                        """  --exclude="#_.+"""",
+                        "  --out=model.json"
                     ),
                     desc =
                         s"Generates model stub from given SQL database connection."
@@ -1035,7 +1036,7 @@ object NCCli extends App {
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${c("'rest'")} command with " +
                 s"corresponding parameters. Note also that it requires a local probe running that hosts " +
-                s"the specified model."
+                s"the specified model. Find more information about this tool at ${y("https://nlpcraft.apache.org/tools/syn_tool.html")}"
             ),
             body = cmdSugSyn,
             params = Seq(

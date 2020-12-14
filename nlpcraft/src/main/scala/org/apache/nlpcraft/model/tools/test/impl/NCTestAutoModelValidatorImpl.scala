@@ -132,9 +132,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
     private def getClasses(s: Array[String]): Seq[Class[_ <: NCModel]] = {
         val clsLdr = Thread.currentThread().getContextClassLoader
 
-        s.
-            map(_.trim).
-            filter(_.nonEmpty).
+        U.trimFilter(s).
             map(clsLdr.loadClass).
             map(_.asSubclass(classOf[NCModel]))
     }
