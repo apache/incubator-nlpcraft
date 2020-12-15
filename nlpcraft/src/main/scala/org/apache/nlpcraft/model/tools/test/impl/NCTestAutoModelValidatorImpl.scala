@@ -31,26 +31,62 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
     private final val PROP_MODELS = "NLPCRAFT_TEST_MODELS"
 
+    /**
+     *
+     * @param args
+     * @throws Exception Thrown in case of any errors.
+     * @return
+     */
     @throws[Exception]
-    def isValid: Boolean =
+    def isValid(args: Array[String]): Boolean =
         U.sysEnv(PROP_MODELS) match {
             case Some(p) ⇒ isValid(getClasses(p.split(",")))
             case None ⇒ throw new IllegalStateException(s"System property '$PROP_MODELS' is not defined.")
         }
 
+    /**
+     *
+     * @param claxx
+     * @throws Exception Thrown in case of any errors.
+     * @return
+     */
     @throws[Exception]
     def isValidForClass(claxx: Class[_ <: NCModel]): Boolean = isValid(Seq(claxx))
 
+    /**
+     *
+     * @param mdlIds
+     * @throws Exception Thrown in case of any errors.
+     * @return
+     */
     @throws[Exception]
     def isValidForModelIds(mdlIds: String): Boolean = isValid(getClasses(mdlIds.split(",")))
-    
+
+    /**
+     *
+     * @param mdlIds
+     * @throws Exception Thrown in case of any errors.
+     * @return
+     */
     @throws[Exception]
     def isValidForModelIds(mdlIds: java.util.Collection[String]): Boolean =
         isValid(getClasses(mdlIds.toArray().asInstanceOf[Array[String]]))
 
+    /**
+     *
+     * @param mdlIds
+     * @throws Exception Thrown in case of any errors.
+     * @return
+     */
     @throws[Exception]
     def isValidForModelIds(mdlIds: Array[String]): Boolean = isValid(getClasses(mdlIds))
 
+    /**
+     *
+     * @param classes
+     * @throws Exception Thrown in case of any errors.
+     * @return
+     */
     @throws[Exception]
     private def isValid(classes: Seq[Class[_ <: NCModel]]): Boolean = {
         if (NCEmbeddedProbe.start(classes: _*))

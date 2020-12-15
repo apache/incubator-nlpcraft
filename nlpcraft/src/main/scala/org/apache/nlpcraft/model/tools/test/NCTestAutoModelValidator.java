@@ -19,6 +19,7 @@ package org.apache.nlpcraft.model.tools.test;
 
 import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.model.tools.test.impl.*;
+
 import java.util.*;
 
 /**
@@ -71,7 +72,7 @@ public class NCTestAutoModelValidator {
      *      output will be printed out to the configured logger.
      */
     public static void main(String[] args) throws Exception {
-        System.exit(NCTestAutoModelValidatorImpl.isValid() ? 0 : 1);
+        System.exit(NCTestAutoModelValidatorImpl.isValid(args) ? 0 : 1);
     }
 
     /**
@@ -86,7 +87,7 @@ public class NCTestAutoModelValidator {
      *      output will be printed out to the configured logger (e.g. log4j), if any.
      */
     public static boolean isValid() throws Exception {
-        return NCTestAutoModelValidatorImpl.isValid();
+        return NCTestAutoModelValidatorImpl.isValid(new String[] {});
     }
 
     /**

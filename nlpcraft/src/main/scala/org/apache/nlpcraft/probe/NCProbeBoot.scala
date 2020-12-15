@@ -315,7 +315,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     
     /**
       *
-      * @param cfgFile
+      * @param cfgFile Configuration file to use.
       * @param fut
       */
     private [probe] def start(cfgFile: String, fut: CompletableFuture[Integer]): Unit = {
@@ -329,11 +329,14 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     }
     
     /**
-      *
-      * @param mdlClasses
+      * Starts the embedded probe with given configuration file and provided overrides.
+     *
+      * @param cfgFile Configuration file to use.
+      * @param mdlClasses Overrides for 'nlpcraft.probe.models' configuration property.
       * @param fut
       */
     private [probe] def start(
+        cfgFile: String,
         mdlClasses: Array[java.lang.Class[_ <: NCModel]],
         fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
@@ -341,7 +344,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         import ConfigValueFactory._
     
         val cfg = initializeConfig(
-            Array.empty,
+            Array(s"-config=$cfgFile"),
             Some(
                 ConfigFactory.empty().withValue(
                     "nlpcraft.probe.models",
@@ -354,7 +357,35 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             override def run(): Unit = start0(cfg, fut)
         }.start()
     }
-    
+
+    /**
+     * Starts the embedded probe with the default configuration.
+     *
+     * @param mdlClasses Overrides for 'nlpcraft.probe.models' configuration property.
+     * @param fut
+     */
+    private [probe] def start(
+        mdlClasses: Array[java.lang.Class[_ <: NCModel]],
+        fut: CompletableFuture[Integer]): Unit = {
+        checkStarted()
+
+        import ConfigValueFactory._
+
+        val cfg = initializeConfig(
+            Array.empty,
+            Some(
+                ConfigFactory.empty().withValue(
+                    "nlpcraft.probe.models",
+                    fromAnyRef(mdlClasses.map(_.getName).mkString(","))
+                )
+            )
+        )
+
+        new Thread() {
+            override def run(): Unit = start0(cfg, fut)
+        }.start()
+    }
+
     /**
       * 
       * @param probeId Probe ID.
