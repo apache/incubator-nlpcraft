@@ -74,7 +74,7 @@ abstract class NCTestContext {
 
                 probeStarted = false
 
-                if (NCEmbeddedProbe.start(ann.model())) {
+                if (NCEmbeddedProbe.start(null, ann.model().getName)) {
                     probeStarted = true
                 
                     if (ann.startClient()) {

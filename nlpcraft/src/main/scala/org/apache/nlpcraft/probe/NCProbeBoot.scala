@@ -167,6 +167,21 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             Cfg.lifecycle
         )
     }
+
+    /**
+     *
+     * @param args
+     * @param fut
+     */
+    private [probe] def start(args: Array[String], fut: CompletableFuture[Integer]): Unit = {
+        checkStarted()
+
+        val cfg = initializeConfig(args, None)
+
+        new Thread() {
+            override def run(): Unit = start0(cfg, fut)
+        }.start()
+    }
     
     /**
       *

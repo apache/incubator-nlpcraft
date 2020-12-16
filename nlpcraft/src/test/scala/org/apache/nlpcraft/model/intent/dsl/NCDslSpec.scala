@@ -36,7 +36,7 @@ class NCDslSpec {
     @throws[IOException]
     private[dsl] def setUp(): Unit = {
         // Start embedded probe with the test model.
-        if (NCEmbeddedProbe.start(classOf[NCDslTestModel])) {
+        if (NCEmbeddedProbe.start(null, classOf[NCDslTestModel].getName)) {
             cli = new NCTestClientBuilder().newBuilder.build
 
             cli.open("nlpcraft.dsl.test")

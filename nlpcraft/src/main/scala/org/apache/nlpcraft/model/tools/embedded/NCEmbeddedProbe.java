@@ -89,6 +89,7 @@ public class NCEmbeddedProbe {
      * @param mdlClasses Optional data model classes to be deployed by the embedded probe. If provided -
      *      these will override {@code nlpcraft.probe.models} configuration property. If {@code null} - the models
      *      defined in the configuration (default or provided via {@code cfgFile} parameter) will be used.
+     *      Each class should be a fully qualified class name.
      * @throws NCException Thrown in case of any errors starting the data probe.
      * @return Whether or not probe started ok.
      */
@@ -108,7 +109,7 @@ public class NCEmbeddedProbe {
      * @param upLink Probe up-link to the server override.
      * @param dnLink Probe down-link from the server override.
      * @param mdlClasses One or more data model classes overrides to be deployed by the embedded probe. At least
-     *      model must be provided.
+     *      model must be provided. Each class should be a fully qualified class name.
      * @throws NCException Thrown in case of any errors starting the data probe.
      * @return  Whether or not probe started ok.
      */
