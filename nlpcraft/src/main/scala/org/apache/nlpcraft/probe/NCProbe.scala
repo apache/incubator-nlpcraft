@@ -35,7 +35,7 @@ object NCProbe extends App {
 
     while (!fut.isDone)
         ignoring(classOf[Exception]) {
-            fut.get();
+            fut.get()
         }
 
     System.exit(fut.get)

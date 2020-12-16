@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.model.tools.embedded;
 
 import org.apache.nlpcraft.common.*;
-import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.model.tools.test.*;
 import org.apache.nlpcraft.probe.*;
 import org.apache.nlpcraft.probe.mgrs.nlp.*;
@@ -81,68 +80,22 @@ public class NCEmbeddedProbe {
     }
 
     /**
+     * Start the embedded probe with optional configuration file and models overrides.
      *
-     * @param classes
-     */
-    private static void checkModelClasses(Class<? extends NCModel>[] classes) {
-        if (classes.length == 0)
-            throw new NCException("At least one model class must be provided when starting embedded probe.");
-    }
-
-    /**
-     * Start the embedded probe with given configuration file. It is equivalent to starting a probe using
-     * <code>-config=cfgFile</code> command line argument.
-     *
-     * @param cfgFile Configuration file path. It should be either a full path or the file name
+     * @param cfgFile Optional configuration file path. It should be either a full path or the file name
      *      that can be found in the current working directory or on the classpath as a class loader
-     *      resource.
+     *      resource. If provided - it is equivalent to starting a probe using <code>-config=cfgFile</code>
+     *      command line argument. If {@code null} - the probe will start with the default configuration.
+     * @param mdlClasses Optional data model classes to be deployed by the embedded probe. If provided -
+     *      these will override {@code nlpcraft.probe.models} configuration property. If {@code null} - the models
+     *      defined in the configuration (default or provided via {@code cfgFile} parameter) will be used.
      * @throws NCException Thrown in case of any errors starting the data probe.
      * @return Whether or not probe started ok.
      */
-    public static boolean start(String cfgFile) {
+    public static boolean start(String cfgFile, String... mdlClasses) {
         CompletableFuture<Integer> fut = new CompletableFuture<>();
 
-        NCProbeBoot$.MODULE$.start(cfgFile, fut);
-
-        return waitForFuture(fut);
-    }
-
-    /**
-     * Start the embedded probe with given configuration file and models overrides. It is equivalent to starting
-     * a probe using <code>-config=cfgFile</code> command line argument.
-     *
-     * @param cfgFile Configuration file path. It should be either a full path or the file name
-     *      that can be found in the current working directory or on the classpath as a class loader
-     *      resource.
-     * @param mdlClasses One or more data model classes to be deployed by the embedded probe. These will
-     *      override {@code nlpcraft.probe.models} configuration property in the provided configuration file.
-     * @throws NCException Thrown in case of any errors starting the data probe.
-     * @return Whether or not probe started ok.
-     */
-    @SafeVarargs
-    public static boolean start(String cfgFile, Class<? extends NCModel>... mdlClasses) {
-        CompletableFuture<Integer> fut = new CompletableFuture<>();
-
-        NCProbeBoot$.MODULE$.start(cfgFile, mdlClasses, fut);
-
-        return waitForFuture(fut);
-    }
-
-    /**
-     * Starts the embedded probe with default configuration and specified models to deploy.
-     *
-     * @param mdlClasses One or more data model classes to be deployed by the embedded probe. These will
-     *      override {@code nlpcraft.probe.models} configuration property in the default configuration file.
-     * @throws NCException Thrown in case of any errors starting the data probe.
-     * @return  Whether or not probe started ok.
-     */
-    @SafeVarargs
-    public static boolean start(Class<? extends NCModel>... mdlClasses) {
-        checkModelClasses(mdlClasses);
-
-        CompletableFuture<Integer> fut = new CompletableFuture<>();
-
-        NCProbeBoot$.MODULE$.start(mdlClasses, fut);
+        NCProbeBoot$.MODULE$.startEmbedded(cfgFile, mdlClasses, fut);
 
         return waitForFuture(fut);
     }
@@ -154,22 +107,23 @@ public class NCEmbeddedProbe {
      * @param tok Probe token override.
      * @param upLink Probe up-link to the server override.
      * @param dnLink Probe down-link from the server override.
-     * @param mdlClasses One or more data model classes overrides to be deployed by the embedded probe.
+     * @param mdlClasses One or more data model classes overrides to be deployed by the embedded probe. At least
+     *      model must be provided.
      * @throws NCException Thrown in case of any errors starting the data probe.
      * @return  Whether or not probe started ok.
      */
-    @SafeVarargs
     public static boolean start(
         String probeId,
         String tok,
         String upLink,
         String dnLink,
-        Class<? extends NCModel>... mdlClasses) {
-        checkModelClasses(mdlClasses);
+        String... mdlClasses) {
+        if (mdlClasses.length == 0)
+            throw new NCException("At least one model class must be provided when starting embedded probe.");
 
         CompletableFuture<Integer> fut = new CompletableFuture<>();
 
-        NCProbeBoot$.MODULE$.start(probeId, tok, upLink, dnLink, mdlClasses, fut);
+        NCProbeBoot$.MODULE$.startEmbedded(probeId, tok, upLink, dnLink, mdlClasses, fut);
 
         return waitForFuture(fut);
     }

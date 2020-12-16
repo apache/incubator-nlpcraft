@@ -33,7 +33,6 @@ import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCE, NCException, NCService, U}
-import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
@@ -312,45 +311,34 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     private def checkStarted(): Unit = 
         if (started)
             throw new NCException(s"Probe has already been started (only one probe per JVM is allowed).")
-    
+
     /**
-      *
-      * @param cfgFile Configuration file to use.
-      * @param fut
-      */
-    private [probe] def start(cfgFile: String, fut: CompletableFuture[Integer]): Unit = {
-        checkStarted()
-        
-        val cfg = initializeConfig(Array(s"-config=$cfgFile"), None)
-        
-        new Thread() {
-            override def run(): Unit = start0(cfg, fut)
-        }.start()
-    }
-    
-    /**
-      * Starts the embedded probe with given configuration file and provided overrides.
+      * Starts the embedded probe with optional configuration file and provided overrides.
      *
-      * @param cfgFile Configuration file to use.
-      * @param mdlClasses Overrides for 'nlpcraft.probe.models' configuration property.
+      * @param cfgFile Optional configuration file to use. If `null` - the default configuration will be used.
+      * @param mdlClasses Optional overrides for 'nlpcraft.probe.models' configuration property. If `null` -
+      *     the models configured in the configuration (default or provided) will be used.
       * @param fut
       */
-    private [probe] def start(
+    private [probe] def startEmbedded(
         cfgFile: String,
-        mdlClasses: Array[java.lang.Class[_ <: NCModel]],
+        mdlClasses: Array[String],
         fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
     
         import ConfigValueFactory._
-    
+
         val cfg = initializeConfig(
-            Array(s"-config=$cfgFile"),
-            Some(
-                ConfigFactory.empty().withValue(
-                    "nlpcraft.probe.models",
-                    fromAnyRef(mdlClasses.map(_.getName).mkString(","))
+            if (cfgFile == null) Array.empty else Array(s"-config=$cfgFile"),
+            if (mdlClasses == null)
+                None
+            else
+                Some(
+                    ConfigFactory.empty().withValue(
+                        "nlpcraft.probe.models",
+                        fromAnyRef(mdlClasses.mkString(","))
+                    )
                 )
-            )
         )
         
         new Thread() {
@@ -359,35 +347,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     }
 
     /**
-     * Starts the embedded probe with the default configuration.
+      * Starts the embedded probe with specified configuration values.
      *
-     * @param mdlClasses Overrides for 'nlpcraft.probe.models' configuration property.
-     * @param fut
-     */
-    private [probe] def start(
-        mdlClasses: Array[java.lang.Class[_ <: NCModel]],
-        fut: CompletableFuture[Integer]): Unit = {
-        checkStarted()
-
-        import ConfigValueFactory._
-
-        val cfg = initializeConfig(
-            Array.empty,
-            Some(
-                ConfigFactory.empty().withValue(
-                    "nlpcraft.probe.models",
-                    fromAnyRef(mdlClasses.map(_.getName).mkString(","))
-                )
-            )
-        )
-
-        new Thread() {
-            override def run(): Unit = start0(cfg, fut)
-        }.start()
-    }
-
-    /**
-      * 
       * @param probeId Probe ID.
       * @param tok
       * @param upLinkStr
@@ -395,12 +356,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param mdlClasses
       * @param fut
       */
-    private [probe] def start(
+    private [probe] def startEmbedded(
         probeId: String,
         tok: String,
         upLinkStr: String,
         dnLinkStr: String,
-        mdlClasses: Array[java.lang.Class[_ <: NCModel]],
+        mdlClasses: Array[String],
         fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
     
@@ -412,7 +373,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val upLink: (String, Integer) = getHostPort(upLinkStr)
             val dnLink: (String, Integer) = getHostPort(dnLinkStr)
             val jarsFolder: Option[String] = getStringOpt(s"$prefix.jarsFolder")
-            val models: String = mdlClasses.map(_.getName).mkString(",")
+            val models: String = mdlClasses.mkString(",")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
     
@@ -443,14 +404,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             stop0()
     }
 
-    /**
-      *
-      * @param args
-      * @param fut
-      */
-    private [probe] def start(args: Array[String], fut: CompletableFuture[Integer]): Unit =
-        start0(initializeConfig(args, None), fut)
-    
     /**
       * Prints ASCII-logo.
       */

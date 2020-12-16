@@ -121,21 +121,6 @@ public class NCTestAutoModelValidator {
     /**
      * Performs validation based on {@link NCIntentSample} annotations for given models.
      *
-     * @param mdlIds Comma separate list of one or more model IDs to validate.
-     * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger.
-     * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger.
-     *
-     * @see NCModelView#getId()
-     */
-    public static boolean isValid(String mdlIds) throws Exception {
-        return NCTestAutoModelValidatorImpl.isValidForModelIds(mdlIds);
-    }
-
-    /**
-     * Performs validation based on {@link NCIntentSample} annotations for given models.
-     *
      * @param mdlIds Collection of model IDs to validate.
      * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
      *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.

@@ -32,7 +32,7 @@ public class TimeModelApp {
      */
     public static void main(String[] args) throws Exception {
         // Start the data probe "in place" with 'TimeModel' model.
-        if (NCEmbeddedProbe.start(TimeModel.class))
+        if (NCEmbeddedProbe.start(null, TimeModel.class.getName()))
             Thread.currentThread().join();
     }
 }
