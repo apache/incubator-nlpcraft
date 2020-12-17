@@ -755,7 +755,7 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Runs ${y("'NCTestAutoModelValidator'")} model auto-validator.",
             desc = Some(
                 s"Validation consists " +
-                s"of starting an embedded probe, scanning for ${y("'NCIntentSample'")} annotations and their corresponding " +
+                s"of starting an embedded probe, scanning all deployed models for ${y("'NCIntentSample'")} annotations and their corresponding " +
                 s"callback methods, submitting each sample input sentences from ${y("'NCIntentSample'")} annotation and " +
                 s"checking that resulting intent matches the intent the sample was attached to. " +
                 s"See more details at https://nlpcraft.apache.org/tools/test_framework.html"
