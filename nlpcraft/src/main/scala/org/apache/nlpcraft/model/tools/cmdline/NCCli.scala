@@ -2442,8 +2442,10 @@ object NCCli extends App {
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
         )
 
-        logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help and ${rv(" ↑ ")} or ${rv(" ↓ ")} to scroll through history.")
-        logln(s"Type '${c("quit")}' to exit.")
+        logln()
+        logln(s"${y("\uD83D\uDCA1")} Hit ${rv(bo(" Tab "))} for auto suggestions and completion.")
+        logln(s"   Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
+        logln(s"   Type '${c("quit")}' to exit.")
 
         var exit = false
 
@@ -2457,6 +2459,8 @@ object NCCli extends App {
 
         pinger.start()
 
+        var wasLastLineEmpty = false
+
         while (!exit) {
             val rawLine = try {
                 val acsTokStr = bo(s"${state.accessToken.getOrElse("N/A")} ")
@@ -2466,7 +2470,9 @@ object NCCli extends App {
                 val prompt3 = wb(k(s" acsTok: $acsTokStr")) // Access token, if any.
                 val prompt4 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
 
-                reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
+                if (!wasLastLineEmpty)
+                    reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
+
                 reader.readLine(s"${g(">")} ")
             }
             catch {
@@ -2485,6 +2491,8 @@ object NCCli extends App {
                     .trim()
 
                 if (line.nonEmpty) {
+                    wasLastLineEmpty = false
+
                     try
                         doCommand(splitAndClean(line), repl = true)
                     catch {
@@ -2501,6 +2509,8 @@ object NCCli extends App {
                     if (line == QUIT_CMD.name)
                         exit = true
                 }
+                else
+                    wasLastLineEmpty = true
             }
         }
 
