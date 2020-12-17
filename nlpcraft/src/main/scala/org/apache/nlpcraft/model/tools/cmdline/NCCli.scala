@@ -2452,12 +2452,10 @@ object NCCli extends App {
 
         while (!exit) {
             val rawLine = try {
-                val srvStr = bo(s"${if (state.isServerOnline) s"ON " else s"OFF "}")
-                val prbStr = bo(s"${if (state.isProbeOnline) s"ON " else s"OFF "}")
                 val acsTokStr = bo(s"${state.accessToken.getOrElse("N/A")} ")
 
-                val prompt1 = rb(w(s" server: $srvStr")) // Server status.
-                val prompt2 = rb(w(s" probe: $prbStr")) // Probe status.
+                val prompt1 = if (state.isServerOnline) gb(k(s" server: ${BO}ON$RST$GB ")) else rb(w(s" server: ${BO}OFF$RST$RB "))
+                val prompt2 = if (state.isProbeOnline) gb(k(s" probe: ${BO}ON$RST$GB ")) else rb(w(s" probe: ${BO}OFF$RST$RB "))
                 val prompt3 = wb(k(s" acsTok: $acsTokStr")) // Access token, if any.
                 val prompt4 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
 
