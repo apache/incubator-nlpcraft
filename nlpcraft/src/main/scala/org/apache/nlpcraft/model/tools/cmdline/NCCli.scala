@@ -97,6 +97,7 @@ object NCCli extends App {
     private final lazy val VER = NCVersion.getCurrent
     private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
     private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
+    private final lazy val WORK_DIR = Paths.get("").toAbsolutePath.toString
     private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
     private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
@@ -381,7 +382,7 @@ object NCCli extends App {
 
         val srvPb = new ProcessBuilder(srvArgs.asJava)
 
-        srvPb.directory(new File(INSTALL_HOME))
+        srvPb.directory(new File(WORK_DIR))
         srvPb.redirectErrorStream(true)
 
         val bleachPb = new ProcessBuilder(
@@ -392,7 +393,7 @@ object NCCli extends App {
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
-        bleachPb.directory(new File(INSTALL_HOME))
+        bleachPb.directory(new File(WORK_DIR))
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
@@ -568,7 +569,7 @@ object NCCli extends App {
 
         val validatorPb = new ProcessBuilder(validatorArgs.asJava)
 
-        validatorPb.directory(new File(INSTALL_HOME))
+        validatorPb.directory(new File(WORK_DIR))
         validatorPb.inheritIO()
 
         try {
@@ -663,7 +664,7 @@ object NCCli extends App {
         if (mdls != null)
             prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
 
-        prbPb.directory(new File(INSTALL_HOME))
+        prbPb.directory(new File(WORK_DIR))
         prbPb.redirectErrorStream(true)
 
         val bleachPb = new ProcessBuilder(
@@ -674,7 +675,7 @@ object NCCli extends App {
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
-        bleachPb.directory(new File(INSTALL_HOME))
+        bleachPb.directory(new File(WORK_DIR))
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
@@ -2468,7 +2469,7 @@ object NCCli extends App {
                 val prompt1 = if (state.isServerOnline) gb(k(s" server: ${BO}ON$RST$GB ")) else rb(w(s" server: ${BO}OFF$RST$RB "))
                 val prompt2 = if (state.isProbeOnline) gb(k(s" probe: ${BO}ON$RST$GB ")) else rb(w(s" probe: ${BO}OFF$RST$RB "))
                 val prompt3 = wb(k(s" acsTok: $acsTokStr")) // Access token, if any.
-                val prompt4 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
+                val prompt4 = kb(g(s" $WORK_DIR ")) // Current working directory.
 
                 if (!wasLastLineEmpty)
                     reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
