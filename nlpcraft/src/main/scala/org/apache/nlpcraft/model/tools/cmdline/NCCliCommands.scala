@@ -630,8 +630,8 @@ private [cmdline] object NCCliCommands {
                     value = Some("<jvm flags>"),
                     optional = true,
                     desc =
-                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms2048m -XX:+UseG1GC'")} flags " +
-                        s"will be used."
+                        s"Space separated quoted string of JVM flags to use. If not provided, the " +
+                        s"default ${y("'-ea -Xms2048m -XX:+UseG1GC'")} flags will be used."
                 ),
                 Parameter(
                     id = "noWait",
@@ -710,8 +710,8 @@ private [cmdline] object NCCliCommands {
                     value = Some("<jvm flags>"),
                     optional = true,
                     desc =
-                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms1024m'")} flags " +
-                        s"will be used."
+                        s"Space separated quoted string of JVM flags to use. If not provided, the " +
+                        s"default ${y("'-ea -Xms1024m'")} flags will be used."
                 ),
                 Parameter(
                     id = "noWait",
@@ -787,6 +787,7 @@ private [cmdline] object NCCliCommands {
                     id = "models",
                     names = Seq("--models", "-m"),
                     value = Some("<model list>"),
+                    optional = true,
                     desc =
                         s"Comma separated list of fully qualified class names for models to test. NOTE: if you provide " +
                         s"the list of your own models here - you must also provide the additional classpath " +
@@ -798,8 +799,8 @@ private [cmdline] object NCCliCommands {
                     value = Some("<jvm flags>"),
                     optional = true,
                     desc =
-                        s"Space separated list of JVM flags to use. If not provided, the default ${y("'-ea -Xms1024m'")} flags " +
-                        s"will be used."
+                        s"Space separated quoted string of JVM flags to use. If not provided, the " +
+                        s"default ${y("'-ea -Xms1024m'")} flags will be used."
                 )
             ),
             examples = Seq(
