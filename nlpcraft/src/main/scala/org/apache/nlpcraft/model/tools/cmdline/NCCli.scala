@@ -525,6 +525,27 @@ object NCCli extends App {
     }
 
     /**
+     * Checks whether given list of models contains class names outside of NLPCraft project.
+     *
+     * @param mdls Comma-separated list of fully qualified class names for data models.
+     * @return
+     */
+    private def hasExternalModels(mdls: String): Boolean =
+        U.splitTrimFilter(mdls, ",").exists(!_.startsWith("org.apache.nlpcraft."))
+
+    /**
+     * Checks that every component of the given class path exists relative to the current user working
+     * directory of this process.
+     *
+     * @param cp Classpath to check.
+     * @return
+     */
+    private def checkClasspath(cp: String): Unit =
+        for (path <- U.splitTrimFilter(cp, ";:"))
+            if (!new File(path).exists())
+                throw new IllegalStateException(s"Classpath not found: ${c(path)}")
+
+    /**
      * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
@@ -617,6 +638,19 @@ object NCCli extends App {
             case Some(arg) ⇒ U.splitTrimFilter(stripQuotes(arg.value.get), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
+
+        if (mdls != null) {
+            if (hasExternalModels(mdls) && addCp == null)
+                throw new IllegalStateException(
+                    s"Additional classpath is required when deploying your own models. " +
+                    s"Use ${c("--cp")} parameters to provide additional classpath.")
+        }
+
+        if (mdls == null && addCp != null)
+            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
+
+        if (addCp != null)
+            checkClasspath(addCp)
 
         checkFilePath(cfgPath)
 
