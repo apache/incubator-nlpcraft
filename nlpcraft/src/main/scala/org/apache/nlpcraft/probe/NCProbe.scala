@@ -27,9 +27,9 @@ import scala.util.control.Exception.ignoring
   * Data probe main app.
   */
 object NCProbe extends App {
-    val fut = new CompletableFuture[Integer]
-
     NCAnsi.ackStatus()
+
+    val fut = new CompletableFuture[Integer]
 
     NCProbeBoot.start(args, fut)
 
@@ -38,5 +38,6 @@ object NCProbe extends App {
             fut.get()
         }
 
-    System.exit(fut.get)
+    if (fut.get != 0)
+        System.exit(fut.get)
 }
