@@ -510,7 +510,7 @@ object NCCli extends App {
                     if (state.accessToken.isDefined) {
                         val tbl = new NCAsciiTable()
 
-                        tbl += (s"${g("Email")}", DFLT_USER_EMAIL)
+                        tbl += (s"${g("Email")}", state.userEmail.get)
                         tbl += (s"${g("Access token")}", state.accessToken.get)
 
                         logln(s"Signed in with default user:\n$tbl")
@@ -1467,6 +1467,15 @@ object NCCli extends App {
         state.probes.foreach(addProbeToTable(tbl, _))
 
         logln(s"Connected probes (${state.probes.size}):\n${tbl.toString}")
+
+        if (state.accessToken.isDefined) {
+            val tbl = new NCAsciiTable()
+
+            tbl += (s"${g("Email")}", state.userEmail.get)
+            tbl += (s"${g("Access token")}", state.accessToken.get)
+
+            logln(s"Signed in user account:\n$tbl")
+        }
     }
 
     /**
