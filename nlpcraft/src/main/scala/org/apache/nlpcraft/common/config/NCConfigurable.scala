@@ -303,19 +303,21 @@ object NCConfigurable extends LazyLogging {
         else {
             val name = cfgFileOpt.get
     
-            logger.info(s"Attempting to load/merge configuration from specified configuration file: $name")
+            logger.info(s"Attempting to load/merge configuration from configuration file: $name")
             
             tmpCfg =
                 if (dfltCfg.isDefined)
-                    ConfigFactory.load(ConfigFactory.
-                        parseFile(new java.io.File(name)).
-                        withFallback(ConfigFactory.parseResources(name)).
-                        withFallback(dfltCfg.get)
+                    ConfigFactory.load(
+                        ConfigFactory.
+                            parseFile(new java.io.File(name)).
+                            withFallback(ConfigFactory.parseResources(name)).
+                            withFallback(dfltCfg.get)
                     )
                 else
-                    ConfigFactory.load(ConfigFactory.
-                        parseFile(new java.io.File(name)).
-                        withFallback(ConfigFactory.parseResources(name))
+                    ConfigFactory.load(
+                        ConfigFactory.
+                            parseFile(new java.io.File(name)).
+                            withFallback(ConfigFactory.parseResources(name))
                     )
         }
         

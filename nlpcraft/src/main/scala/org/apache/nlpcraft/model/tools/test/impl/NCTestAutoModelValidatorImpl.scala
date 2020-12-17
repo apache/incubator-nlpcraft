@@ -24,6 +24,8 @@ import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
+import scala.collection.JavaConverters._
+
 /**
   * Implementation for `NCTestAutoModelValidator` class.
   */
@@ -38,10 +40,13 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
      */
     @throws[Exception]
     def isValid: Boolean = {
-        val classes = U.sysEnv(PROP_MODELS).orNull
+        val classes = U.sysEnv(PROP_MODELS) match {
+            case Some(s) ⇒ U.splitTrimFilter(s, ",")
+            case None ⇒ null
+        }
         val cfgFile = U.sysEnv(PROP_PROBE_CFG).orNull
 
-        if (NCEmbeddedProbe.start(cfgFile, classes))
+        if (NCEmbeddedProbe.start(cfgFile, classes.asJava))
             try
                 process(NCModelManager.getAllModels().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
             finally

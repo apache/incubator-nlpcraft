@@ -22,9 +22,9 @@ import org.apache.nlpcraft.model.tools.test.impl.*;
 
 /**
  * Data model auto-validator is based on {@link NCIntentSample} annotations. Validation consists of starting an embedded
- * probe, scanning for {@link NCIntentSample} annotations and their corresponding callback methods, submitting each sample input
- * sentences from {@link NCIntentSample} annotation and checking that resulting intent matches the intent the sample
- * was attached to.
+ * probe, scanning all deployed models for {@link NCIntentSample} annotations and their corresponding callback methods,
+ * submitting each sample input sentences from {@link NCIntentSample} annotation and checking that resulting intent
+ * matches the intent the sample was attached to.
  * <p>
  * Note that there can be more than one {@link NCIntentSample} annotation attached to the intent callback. Each such
  * annotation will trigger conversation STM reset before its samples will be submitted. This gives an opportunity

@@ -21,6 +21,8 @@ import org.apache.nlpcraft.common.*;
 import org.apache.nlpcraft.model.tools.test.*;
 import org.apache.nlpcraft.probe.*;
 import org.apache.nlpcraft.probe.mgrs.nlp.*;
+
+import java.util.Collection;
 import java.util.concurrent.*;
 import java.util.function.*;
 
@@ -93,7 +95,7 @@ public class NCEmbeddedProbe {
      * @throws NCException Thrown in case of any errors starting the data probe.
      * @return Whether or not probe started ok.
      */
-    public static boolean start(String cfgFile, String... mdlClasses) {
+    public static boolean start(String cfgFile, Collection<String> mdlClasses) {
         CompletableFuture<Integer> fut = new CompletableFuture<>();
 
         NCProbeBoot$.MODULE$.startEmbedded(cfgFile, mdlClasses, fut);
