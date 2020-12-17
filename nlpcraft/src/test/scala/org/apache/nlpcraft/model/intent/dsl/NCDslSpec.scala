@@ -18,12 +18,13 @@
 package org.apache.nlpcraft.model.intent.dsl
 
 import java.io.IOException
-
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+
+import java.util.Collections
 
 /**
  * DSL test model test. Make sure to start up the NLPCraft server before running this test.
@@ -36,7 +37,7 @@ class NCDslSpec {
     @throws[IOException]
     private[dsl] def setUp(): Unit = {
         // Start embedded probe with the test model.
-        if (NCEmbeddedProbe.start(null, classOf[NCDslTestModel].getName)) {
+        if (NCEmbeddedProbe.start(null, Collections.singletonList(classOf[NCDslTestModel].getName))) {
             cli = new NCTestClientBuilder().newBuilder.build
 
             cli.open("nlpcraft.dsl.test")

@@ -100,7 +100,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             withValue(s"$prefix.token", fromAnyRef("3141592653589793")).
             withValue(s"$prefix.upLink", fromAnyRef("localhost:8201")).
             withValue(s"$prefix.downLink", fromAnyRef("localhost:8202")).
-            withValue(s"$prefix.model", fromAnyRef(null)).
             withValue(s"$prefix.models", fromAnyRef("")).
             withValue(s"$prefix.lifecycle", fromIterable(Seq().asJava)).
             withValue(s"$prefix.resultMaxSizeBytes", fromAnyRef(1048576)).
@@ -156,6 +155,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val models: String = getString(s"$prefix.models")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
+
+        println(s"Models -> ${Cfg.models}")
         
         ProbeConfig(
             Cfg.id,
@@ -337,7 +338,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private [probe] def startEmbedded(
         cfgFile: String,
-        mdlClasses: Array[String],
+        mdlClasses: java.util.Collection[String],
         fut: CompletableFuture[Integer]): Unit = {
         checkStarted()
     
@@ -351,7 +352,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 Some(
                     ConfigFactory.empty().withValue(
                         "nlpcraft.probe.models",
-                        fromAnyRef(mdlClasses.mkString(","))
+                        fromAnyRef(mdlClasses.asScala.mkString(","))
                     )
                 )
         )
@@ -449,7 +450,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         tbl += (s"${B}Down-Link$RST", cfg.downLinkString)
         tbl += (s"${B}Up-Link$RST", cfg.upLinkString)
         tbl += (s"${B}Lifecycle$RST", cfg.lifecycle)
-        tbl += (s"${B}Models (${cfg.modelsSeq.size})$RST" , cfg.modelsSeq)
+        tbl += (s"${B}Models (${cfg.modelsSeq.size})$RST", cfg.modelsSeq)
         tbl += (s"${B}JARs Folder$RST", cfg.jarsFolder.getOrElse(""))
 
         tbl.info(logger, Some("Probe Configuration:"))

@@ -23,6 +23,8 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api._
 
+import java.util.Collections
+
 /**
   *
   */
@@ -74,7 +76,7 @@ abstract class NCTestContext {
 
                 probeStarted = false
 
-                if (NCEmbeddedProbe.start(null, ann.model().getName)) {
+                if (NCEmbeddedProbe.start(null, Collections.singletonList(ann.model().getName))) {
                     probeStarted = true
                 
                     if (ann.startClient()) {

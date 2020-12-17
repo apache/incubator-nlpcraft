@@ -19,6 +19,8 @@ package org.apache.nlpcraft.examples.time;
 
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe;
 
+import java.util.Collections;
+
 /**
  * An app that demo the usage of embedded probe. This is an alternative way to
  * deploy data models using embedded probe that can run in any host JVM application.
@@ -32,7 +34,7 @@ public class TimeModelApp {
      */
     public static void main(String[] args) throws Exception {
         // Start the data probe "in place" with 'TimeModel' model.
-        if (NCEmbeddedProbe.start(null, TimeModel.class.getName()))
+        if (NCEmbeddedProbe.start(null, Collections.singletonList(TimeModel.class.getName())))
             Thread.currentThread().join();
     }
 }
