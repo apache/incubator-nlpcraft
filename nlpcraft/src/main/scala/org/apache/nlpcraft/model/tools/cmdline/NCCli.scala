@@ -557,10 +557,10 @@ object NCCli extends App {
         validatorArgs ++= jvmOpts
 
         if (cfgPath.isDefined)
-            validatorArgs += s"-DNLPCRAFT_PROBE_CONFIG=${cfgPath.get}}"
+            validatorArgs += s"-DNLPCRAFT_PROBE_CONFIG=${cfgPath.get}"
 
         if (mdls != null)
-            validatorArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls}"
+            validatorArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
 
         validatorArgs += "-cp"
         validatorArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep))
@@ -572,12 +572,10 @@ object NCCli extends App {
         validatorPb.inheritIO()
 
         try {
-            val validatorPid = validatorPb.start().pid()
-
-            while (ProcessHandle.of(validatorPid).isPresent)
-                Thread.sleep(2.secs) // Check every 2 secs.
+            validatorPb.start().onExit().get()
         }
         catch {
+            case _: InterruptedException ⇒ () // Ignore.
             case e: Exception ⇒ error(s"Failed to run model validator: ${y(e.getLocalizedMessage)}")
         }
     }
@@ -1010,7 +1008,7 @@ object NCCli extends App {
                         httpPostResponseJson(
                             baseUrl,
                             "signin",
-                            s"""{"email": "$DFLT_USER_EMAIL", "passwd": "$DFLT_USER_PASSWD}"}""") match {
+                            s"""{"email": "$DFLT_USER_EMAIL", "passwd": "$DFLT_USER_PASSWD"}""") match {
                             case Some(json) ⇒
                                 Option(Try(U.getJsonStringField(json, "acsTok"))) match {
                                     case Some(tok) ⇒
