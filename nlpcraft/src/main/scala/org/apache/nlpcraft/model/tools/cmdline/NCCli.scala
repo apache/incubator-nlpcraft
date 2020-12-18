@@ -569,6 +569,19 @@ object NCCli extends App {
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
+        if (mdls != null) {
+            if (hasExternalModels(mdls) && addCp == null)
+                throw new IllegalStateException(
+                    s"Additional classpath is required when deploying your own models. " +
+                    s"Use ${c("--cp")} parameters to provide additional classpath.")
+        }
+
+        if (mdls == null && addCp != null)
+            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
+
+        if (addCp != null)
+            checkClasspath(addCp)
+
         checkFilePath(cfgPath)
 
         val sep = System.getProperty("path.separator")
@@ -2247,9 +2260,6 @@ object NCCli extends App {
             case Some(beacon) ⇒ logProbeInfo(beacon)
             case None ⇒ ()
         }
-
-        if (state.accessToken.isDefined)
-            logln(s"Server signed in with default '${c(DFLT_USER_EMAIL)}' user.")
 
         val parser = new DefaultParser()
 
