@@ -24,7 +24,7 @@
     <name>NLPCraft Parent</name>
     <groupId>org.apache.nlpcraft</groupId>
     <artifactId>nlpcraft-parent</artifactId>
-    <version>0.7.2</version>
+    <version>0.7.3</version>
     <packaging>pom</packaging>
 
     <url>https://nlpcraft.apache.org</url>
@@ -67,7 +67,7 @@
         <connection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/apache/incubator-nlpcraft.git</developerConnection>
         <!-- Set actual tag name here -->
-        <tag>v0.7.2</tag>
+        <tag>v0.7.3</tag>
     </scm>
 
     <properties>
