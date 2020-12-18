@@ -97,6 +97,7 @@ object NCCli extends App {
     private final lazy val VER = NCVersion.getCurrent
     private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
     private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
+    private final lazy val WORK_DIR = Paths.get("").toAbsolutePath.toString
     private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
     private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
     private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
@@ -381,7 +382,7 @@ object NCCli extends App {
 
         val srvPb = new ProcessBuilder(srvArgs.asJava)
 
-        srvPb.directory(new File(INSTALL_HOME))
+        srvPb.directory(new File(WORK_DIR))
         srvPb.redirectErrorStream(true)
 
         val bleachPb = new ProcessBuilder(
@@ -392,7 +393,7 @@ object NCCli extends App {
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
-        bleachPb.directory(new File(INSTALL_HOME))
+        bleachPb.directory(new File(WORK_DIR))
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
@@ -404,7 +405,6 @@ object NCCli extends App {
             // Store mapping file between PID and timestamp (once we have server PID).
             // Note that the same timestamp is used in server log file.
             ignoring(classOf[IOException]) {
-                // TODO: These don't get deleted?
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
@@ -524,6 +524,42 @@ object NCCli extends App {
     }
 
     /**
+     * Checks whether given list of models contains class names outside of NLPCraft project.
+     *
+     * @param mdls Comma-separated list of fully qualified class names for data models.
+     * @return
+     */
+    private def hasExternalModels(mdls: String): Boolean =
+        U.splitTrimFilter(mdls, ",").exists(!_.startsWith("org.apache.nlpcraft."))
+
+    /**
+     * Checks that every component of the given class path exists relative to the current user working
+     * directory of this process.
+     *
+     * @param cp Classpath to check.
+     * @return
+     */
+    private def checkClasspath(cp: String): Unit =
+        for (path <- U.splitTrimFilter(cp, ";:"))
+            if (!new File(path).exists())
+                throw new IllegalStateException(s"Classpath not found: ${c(path)}")
+
+    /**
+     *
+     */
+    private def cleanUpTempFiles(): Unit = {
+        val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
+
+        for (file <- new File(SystemUtils.getUserHome, ".nlpcraft").listFiles())
+            if (file.lastModified() < tstamp) {
+                val name = file.getName
+
+                if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
+                    file.delete()
+            }
+    }
+
+    /**
      * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
@@ -547,6 +583,19 @@ object NCCli extends App {
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
+        if (mdls != null) {
+            if (hasExternalModels(mdls) && addCp == null)
+                throw new IllegalStateException(
+                    s"Additional classpath is required when deploying your own models. " +
+                    s"Use ${c("--cp")} parameters to provide additional classpath.")
+        }
+
+        if (mdls == null && addCp != null)
+            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
+
+        if (addCp != null)
+            checkClasspath(addCp)
+
         checkFilePath(cfgPath)
 
         val sep = System.getProperty("path.separator")
@@ -568,7 +617,7 @@ object NCCli extends App {
 
         val validatorPb = new ProcessBuilder(validatorArgs.asJava)
 
-        validatorPb.directory(new File(INSTALL_HOME))
+        validatorPb.directory(new File(WORK_DIR))
         validatorPb.inheritIO()
 
         try {
@@ -617,6 +666,19 @@ object NCCli extends App {
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
+        if (mdls != null) {
+            if (hasExternalModels(mdls) && addCp == null)
+                throw new IllegalStateException(
+                    s"Additional classpath is required when deploying your own models. " +
+                    s"Use ${c("--cp")} parameters to provide additional classpath.")
+        }
+
+        if (mdls == null && addCp != null)
+            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
+
+        if (addCp != null)
+            checkClasspath(addCp)
+
         checkFilePath(cfgPath)
 
         // Ensure that there isn't another local probe running.
@@ -663,7 +725,7 @@ object NCCli extends App {
         if (mdls != null)
             prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
 
-        prbPb.directory(new File(INSTALL_HOME))
+        prbPb.directory(new File(WORK_DIR))
         prbPb.redirectErrorStream(true)
 
         val bleachPb = new ProcessBuilder(
@@ -674,7 +736,7 @@ object NCCli extends App {
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
-        bleachPb.directory(new File(INSTALL_HOME))
+        bleachPb.directory(new File(WORK_DIR))
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
@@ -2213,9 +2275,6 @@ object NCCli extends App {
             case None ⇒ ()
         }
 
-        if (state.accessToken.isDefined)
-            logln(s"Server signed in with default '${c(DFLT_USER_EMAIL)}' user.")
-
         val parser = new DefaultParser()
 
         parser.setEofOnUnclosedBracket(Bracket.CURLY, Bracket.ROUND, Bracket.SQUARE)
@@ -2442,8 +2501,10 @@ object NCCli extends App {
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
         )
 
-        logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help and ${rv(" ↑ ")} or ${rv(" ↓ ")} to scroll through history.")
-        logln(s"Type '${c("quit")}' to exit.")
+        logln()
+        logln(s"${y("\uD83D\uDCA1")} Hit ${rv(bo(" Tab "))} for auto suggestions and completion.")
+        logln(s"   Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
+        logln(s"   Type '${c("quit")}' to exit.")
 
         var exit = false
 
@@ -2457,6 +2518,8 @@ object NCCli extends App {
 
         pinger.start()
 
+        var wasLastLineEmpty = false
+
         while (!exit) {
             val rawLine = try {
                 val acsTokStr = bo(s"${state.accessToken.getOrElse("N/A")} ")
@@ -2464,9 +2527,11 @@ object NCCli extends App {
                 val prompt1 = if (state.isServerOnline) gb(k(s" server: ${BO}ON$RST$GB ")) else rb(w(s" server: ${BO}OFF$RST$RB "))
                 val prompt2 = if (state.isProbeOnline) gb(k(s" probe: ${BO}ON$RST$GB ")) else rb(w(s" probe: ${BO}OFF$RST$RB "))
                 val prompt3 = wb(k(s" acsTok: $acsTokStr")) // Access token, if any.
-                val prompt4 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
+                val prompt4 = kb(g(s" $WORK_DIR ")) // Current working directory.
 
-                reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
+                if (!wasLastLineEmpty)
+                    reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
+
                 reader.readLine(s"${g(">")} ")
             }
             catch {
@@ -2485,6 +2550,8 @@ object NCCli extends App {
                     .trim()
 
                 if (line.nonEmpty) {
+                    wasLastLineEmpty = false
+
                     try
                         doCommand(splitAndClean(line), repl = true)
                     catch {
@@ -2501,6 +2568,8 @@ object NCCli extends App {
                     if (line == QUIT_CMD.name)
                         exit = true
                 }
+                else
+                    wasLastLineEmpty = true
             }
         }
 
@@ -2931,6 +3000,8 @@ object NCCli extends App {
 
         sys.exit(exitStatus)
     }
+
+    cleanUpTempFiles()
 
     // Boot up.
     boot(args)
