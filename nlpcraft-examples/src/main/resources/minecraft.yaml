@@ -1,0 +1,21 @@
+# Mandatory model configuration.
+id: minecraft
+name: Minecraft Model
+version: '1.0'
+description: Minecraft Model.
+
+# List of macros, if any.
+macros:
+  - name: "<MY_MACRO>"
+    macro: "{word1|word2}"
+
+# List of model elements.
+elements:
+  - id: elementId
+    description: An element.
+    synonyms:
+      - "{some|*} <MY_MACRO>"
+
+# List of model intents.
+intents:
+  - intent=intentId term(element)={id == 'elementId'}

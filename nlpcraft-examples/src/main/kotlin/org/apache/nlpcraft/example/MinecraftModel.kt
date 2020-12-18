@@ -18,6 +18,21 @@
 
 package org.apache.nlpcraft.example
 
-fun testExample() {
-    print("Test")
+import org.apache.nlpcraft.model.*
+
+class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
+
+    @NCIntentRef("intentId")
+    fun onMatch(ctx: NCIntentMatch, @NCIntentTerm("element") tok: NCToken): NCResult {
+        // TODO: add the actual intent logic here.
+
+        // As a placeholder - just return an echo string.
+        return NCResult.text(
+            String.format(
+                "Word `%s` found in text: `%s`",
+                tok.originalText,
+                ctx.context.request.normalizedText
+            )
+        )
+    }
 }

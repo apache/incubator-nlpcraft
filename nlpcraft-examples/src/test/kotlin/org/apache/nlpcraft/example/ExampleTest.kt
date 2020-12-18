@@ -24,8 +24,6 @@ import org.junit.jupiter.api.Test
 class ExampleTest {
     @Test
     fun testPass() {
-        testExample()
-
         Assertions.assertTrue(true)
     }
 }
