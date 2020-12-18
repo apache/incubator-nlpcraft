@@ -405,7 +405,6 @@ object NCCli extends App {
             // Store mapping file between PID and timestamp (once we have server PID).
             // Note that the same timestamp is used in server log file.
             ignoring(classOf[IOException]) {
-                // TODO: These don't get deleted?
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
@@ -544,6 +543,21 @@ object NCCli extends App {
         for (path <- U.splitTrimFilter(cp, ";:"))
             if (!new File(path).exists())
                 throw new IllegalStateException(s"Classpath not found: ${c(path)}")
+
+    /**
+     *
+     */
+    private def cleanUpTempFiles(): Unit = {
+        val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
+
+        for (file <- new File(SystemUtils.getUserHome, ".nlpcraft").listFiles())
+            if (file.lastModified() < tstamp) {
+                val name = file.getName
+
+                if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
+                    file.delete()
+            }
+    }
 
     /**
      * @param cmd  Command descriptor.
@@ -2986,6 +3000,8 @@ object NCCli extends App {
 
         sys.exit(exitStatus)
     }
+
+    cleanUpTempFiles()
 
     // Boot up.
     boot(args)
