@@ -446,8 +446,8 @@ object NCDateParser {
             def lde(): PartResult = ldYears(10)
             def ldc(): PartResult = ldYears(100)
 
-            def ld3M(map3m: Map[Int, Int]): PartResult = lastDay((c: C) ⇒ {
-                val n = map3m(MONTH_NUM_MAP(c.get(C.MONTH)))
+            def ld3M(map3m: Map[Int, Int], getIndex: Int ⇒ Int): PartResult = lastDay((c: C) ⇒ {
+                val n = map3m(getIndex(c.get(C.MONTH)))
 
                 // Should not be in one function call (last day is relative).
                 // Note that keys in `map3m` sorted.
@@ -455,8 +455,8 @@ object NCDateParser {
                 set(c, C.DAY_OF_MONTH → c.getActualMaximum(C.DAY_OF_MONTH))
             })
 
-            def ldq(): PartResult = ld3M(QUARTERS)
-            def lds(): PartResult = ld3M(SEASONS)
+            def ldq(): PartResult = ld3M(QUARTERS, i ⇒ MONTH_NUM_MAP(i))
+            def lds(): PartResult = ld3M(SEASONS, i ⇒ i)
 
             res = fn match {
                 case "now" ⇒ now()
