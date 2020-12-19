@@ -1823,6 +1823,16 @@ object NCCli extends App {
 
     /**
       *
+      * @param path
+      */
+    private def refinePath(path: String): String = {
+        require(path != null)
+
+        if (path.nonEmpty && path.head == '~') new File(SystemUtils.getUserHome, path.tail).getAbsolutePath else path
+    }
+
+    /**
+      *
       * @param cmd
       * @param name
       * @param value
@@ -1970,7 +1980,7 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val filePath = get(cmd, args, "filePath")
+        val filePath = refinePath(get(cmd, args, "filePath"))
         val overrideFlag = get(cmd, args,"override", "false").toLowerCase
         val modelId = get(cmd, args,"modelId")
 
@@ -2020,7 +2030,7 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val outputDir = get(cmd, args, "outputDir", ".")
+        val outputDir = refinePath(get(cmd, args, "outputDir", "."))
         val baseName = get(cmd, args,"baseName")
         val lang = get(cmd, args,"lang", "java").toLowerCase
         val buildTool = get(cmd, args,"buildTool", "mvn").toLowerCase
