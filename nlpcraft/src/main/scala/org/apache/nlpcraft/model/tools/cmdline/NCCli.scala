@@ -1381,7 +1381,7 @@ object NCCli extends App {
                         if (param.value.isDefined)
                             T___ + param.names.zip(Stream.continually(param.value.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
                         else
-                            s"$T___${param.names.mkString(",")}"
+                            s"$T___${param.names.mkString(", ")}"
 
                     lines += c(line)
 

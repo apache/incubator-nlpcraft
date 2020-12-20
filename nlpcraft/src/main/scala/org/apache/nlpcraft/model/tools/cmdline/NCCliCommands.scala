@@ -637,7 +637,7 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "noWait",
-                    names = Seq("--noWait"),
+                    names = Seq("--noWait", "-w"),
                     optional = true,
                     desc =
                         s"Instructs command not to wait for the server startup and return immediately."
@@ -719,7 +719,7 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "noWait",
-                    names = Seq("--noWait"),
+                    names = Seq("--noWait", "-w"),
                     optional = true,
                     desc =
                         s"Instructs command not to wait for the probe startup and return immediately."
