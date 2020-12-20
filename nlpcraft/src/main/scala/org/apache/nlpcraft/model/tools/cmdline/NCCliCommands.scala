@@ -950,7 +950,10 @@ private [cmdline] object NCCliCommands {
         Command(
             name = "quit",
             group = "3. Miscellaneous",
-            synopsis = s"Quits REPL mode. Note that started server and probe, if any, will remain running.",
+            synopsis = s"Quits REPL mode.",
+            desc = Some(
+                s" Note that started server and probe, if any, will remain running."
+            ),
             body = NCCli.cmdQuit
         ),
         Command(
@@ -1000,14 +1003,12 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "semver",
                     names = Seq("--semVer", "-s"),
-                    value = None,
                     optional = true,
                     desc = s"Display only the semantic version value, e.g. ${VER.version}."
                 ),
                 Parameter(
                     id = "reldate",
                     names = Seq("--relDate", "-d"),
-                    value = None,
                     optional = true,
                     desc = s"Display only the release date, e.g. ${VER.date}."
                 )

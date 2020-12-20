@@ -23,7 +23,7 @@ import java.lang.management.ManagementFactory
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 import java.text.DateFormat
-import java.util
+import java.{lang, util}
 import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
@@ -167,6 +167,9 @@ object NCCli extends App {
             s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
             s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
+
+    case class NotSignedIn()
+        extends IllegalStateException(s"Not signed in. Use ${c("'signin'")} command to sign in first.")
 
     case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String)
         extends IllegalArgumentException(
@@ -370,17 +373,20 @@ object NCCli extends App {
      * @param id
      * @return
      */
-    private def getPathParam(cmd: Command, args: Seq[Argument], id: String): String =
-        getParamOpt(cmd, args, id) match {
-            case Some(path) ⇒
-                val normPath = refinePath(stripQuotes(path))
+    private def getPathParam(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String = {
+        def makePath(p: String): String = {
+            val normPath = refinePath(stripQuotes(p))
 
-                checkFilePath(normPath)
+            checkFilePath(normPath)
 
-                normPath
-
-            case None ⇒ null
+            normPath
         }
+
+        getParamOpt(cmd, args, id) match {
+            case Some(path) ⇒ makePath(path)
+            case None ⇒ if (dflt == null) null else makePath(dflt)
+        }
+    }
 
     /**
      *
@@ -1677,7 +1683,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case Some(_) ⇒ warn(s"Already signed in. See ${c("'signout'")} command.")
+            case Some(_) ⇒ warn(s"Already signed in. Use ${c("'signout'")} command to sign out first, if necessary.")
         }
 
     /**
@@ -1697,7 +1703,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+            case None ⇒ throw NotSignedIn()
         }
 
     /**
@@ -1735,11 +1741,7 @@ object NCCli extends App {
             }
         }
 
-        try
-            NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
-        catch {
-            case e: Exception ⇒ error(e.getLocalizedMessage)
-        }
+        NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
     }
 
     /**
@@ -1766,7 +1768,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+            case None ⇒ throw NotSignedIn()
         }
 
     /**
@@ -1797,7 +1799,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+            case None ⇒ throw NotSignedIn()
         }
 
     /**
@@ -2000,24 +2002,22 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val filePath = refinePath(getParam(cmd, args, "filePath"))
-        val overrideFlag = getParam(cmd, args,"override", "false").toLowerCase
-        val mdlId = getParam(cmd, args,"mdlId")
-
-        checkSupported(cmd,"overrideFlag", overrideFlag, "true", "false")
+        val filePath = getPathParam(cmd, args, "filePath")
+        val overrideFlag = getFlagParam(cmd, args, "override", false)
+        val mdlId = getParam(cmd, args, "modelId")
 
         val out = new File(filePath)
 
         if (out.isDirectory)
-            throw new NCE(s"Invalid file path: ${c(out.getAbsolutePath)}")
+            throw new IllegalArgumentException(s"Invalid file path: ${c(out.getAbsolutePath)}")
 
         if (out.exists()) {
-            if (overrideFlag == "true") {
+            if (overrideFlag) {
                 if (!out.delete())
-                    throw new NCE(s"Couldn't delete file: ${c(out.getAbsolutePath)}")
+                    throw new IllegalArgumentException(s"Couldn't delete file: ${c(out.getAbsolutePath)}")
             }
             else
-                throw new NCE(s"File already exists: ${c(out.getAbsolutePath)}")
+                throw new IllegalArgumentException(s"File already exists: ${c(out.getAbsolutePath)}")
         }
 
         val (fileExt, extractHdr) = {
@@ -2028,7 +2028,7 @@ object NCCli extends App {
             else if (lc.endsWith(".json") || lc.endsWith(".js"))
                 ("json", extractJsonHeader _)
             else
-                throw new NCE(s"Unsupported model file type (extension): ${c(filePath)}")
+                throw new IllegalArgumentException(s"Unsupported model file type (extension): ${c(filePath)}")
         }
 
         copy(
@@ -2050,13 +2050,14 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val outputDir = refinePath(getParam(cmd, args, "outputDir", "."))
-        val baseName = getParam(cmd, args,"baseName")
-        val lang = getParam(cmd, args,"lang", "java").toLowerCase
-        val buildTool = getParam(cmd, args,"buildTool", "mvn").toLowerCase
-        val pkgName = getParam(cmd, args,"packageName", "org.apache.nlpcraft.demo").toLowerCase
-        val fileType = getParam(cmd, args,"modelType", "yaml").toLowerCase
-        val overrideFlag = getParam(cmd, args,"override", "false").toLowerCase
+        val outputDir = getPathParam(cmd, args, "outputDir", USR_WORK_DIR)
+        val baseName = getParam(cmd, args, "baseName")
+        val lang = getParam(cmd, args, "lang", "java").toLowerCase
+        val buildTool = getParam(cmd, args, "buildTool", "mvn").toLowerCase
+        val pkgName = getParam(cmd, args, "packageName", "org.apache.nlpcraft.demo").toLowerCase
+        val fileType = getParam(cmd, args, "modelType", "yaml").toLowerCase
+        val overrideFlag = getFlagParam(cmd, args, "override", false)
+
         val dst = new File(outputDir, baseName)
         val pkgDir = pkgName.replaceAll("\\.", "/")
         val clsName = s"${baseName.head.toUpper}${baseName.tail}"
@@ -2065,9 +2066,8 @@ object NCCli extends App {
         val isJson = fileType == "json" || fileType == "js"
 
         checkSupported(cmd, "lang", lang, "java", "scala", "kotlin")
-        checkSupported(cmd,"buildTool", buildTool, "mvn", "gradle", "sbt")
-        checkSupported(cmd,"fileType", fileType, "yaml", "yml", "json", "js")
-        checkSupported(cmd,"override", overrideFlag, "true", "false")
+        checkSupported(cmd, "buildTool", buildTool, "mvn", "gradle", "sbt")
+        checkSupported(cmd, "fileType", fileType, "yaml", "yml", "json", "js")
 
         def checkJavaName(v: String, name: String): Unit =
             if (!SourceVersion.isName(v))
@@ -2078,17 +2078,17 @@ object NCCli extends App {
 
         // Prepares output folder.
         if (dst.isFile)
-            throw new NCE(s"Invalid folder: ${c(dst.getAbsolutePath)}")
+            throw new IllegalArgumentException(s"Invalid output folder: ${c(dst.getAbsolutePath)}")
         else {
             if (!dst.exists()) {
                 if (!dst.mkdirs())
-                    throw new NCE(s"Couldn't create folder: ${c(dst.getAbsolutePath)}")
+                    throw new IllegalArgumentException(s"Failed to create folder: ${c(dst.getAbsolutePath)}")
             }
             else {
-                if (overrideFlag == "true")
+                if (overrideFlag)
                     U.clearFolder(dst.getAbsolutePath)
                 else
-                    throw new NCE(s"Folder already exists: ${c(dst.getAbsolutePath)}")
+                    throw new IllegalArgumentException(s"Folder already exists: ${c(dst.getAbsolutePath)}")
             }
         }
 
@@ -2222,18 +2222,18 @@ object NCCli extends App {
                 case "scala-gradle" ⇒ cpCommon("scala", "scala"); cpGradle()
                 case "scala-sbt" ⇒ cpCommon("scala", "scala"); cpSbt()
 
-                case _ ⇒ throw new NCE(s"Unsupported combination of '${c(lang)}' and '${c(buildTool)}'.")
+                case _ ⇒ throw new IllegalArgumentException(s"Unsupported combination of '${c(lang)}' and '${c(buildTool)}'.")
             }
 
             logln(s"Project created: ${c(dst.getCanonicalPath)}")
             logln(folder2String(dst))
         }
         catch {
-            case e: NCE ⇒
+            case e: Exception ⇒
                 try
                     U.clearFolder(dst.getAbsolutePath, delFolder = true)
                 catch {
-                    case _: NCE ⇒ // No-op.
+                    case _: Exception ⇒ // No-op.
                 }
 
                 throw e
@@ -2532,9 +2532,9 @@ object NCCli extends App {
         )
 
         logln()
-        logln(s"${y("\uD83D\uDCA1")} Hit ${rv(bo(" Tab "))} for auto suggestions and completion.")
-        logln(s"   Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
-        logln(s"   Type '${c("quit")}' to exit.")
+        logln(s"${y("Tip:")} Hit ${rv(bo(" Tab "))} for auto suggestions and completion.")
+        logln(s"     Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
+        logln(s"     Type '${c("quit")}' to exit.")
 
         var exit = false
 
@@ -2617,28 +2617,22 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private [cmdline] def cmdVersion(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
-        if (args.isEmpty)
+    private [cmdline] def cmdVersion(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val isS = getFlagParam(cmd, args, "semver", dflt = false)
+        val isD = getFlagParam(cmd, args, "reldate", dflt = false)
+
+        if (!isS && !isD)
             logln((
                 new NCAsciiTable
                     += ("Version:", c(VER.version))
                     += ("Release date:", c(VER.date.toString))
                 ).toString
             )
-        else {
-            val isS = args.exists(_.parameter.id == "semver")
-            val isD = args.exists(_.parameter.id == "reldate")
-
-            if (isS || isD) {
-                if (isS)
-                    logln(s"${VER.version}")
-                if (isD)
-                    logln(s"${VER.date}")
-            }
-            else
-                error(s"Invalid parameters: ${args.mkString(", ")}")
-        }
-
+        else if (isS)
+            logln(s"${VER.version}")
+        else
+            logln(s"${VER.date}")
+    }
 
     /**
      *
@@ -2866,7 +2860,7 @@ object NCCli extends App {
         args.map { arg ⇒
             val parts = arg.split("=")
 
-            def mkError() = new IllegalArgumentException(s"Invalid parameter: ${c(arg)}")
+            def mkError() = new IllegalArgumentException(s"Invalid parameter: ${c(arg)}, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
             if (parts.size > 2)
                 throw mkError()
