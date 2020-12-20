@@ -95,7 +95,7 @@ object NCCli extends App {
     private final val DFLT_USER_PASSWD = "admin"
 
     private final val VER = NCVersion.getCurrent
-    private final val CP_WIN_NIX_SEPS = ":;"
+    private final val CP_WIN_NIX_SEPS_REGEX = "[:;]"
     private final val CP_SEP = File.pathSeparator
     private final val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
     private final val USR_WORK_DIR = SystemUtils.USER_DIR
@@ -441,7 +441,7 @@ object NCCli extends App {
      * @return
      */
     private def normalizeCp(cp: String): String =
-        U.splitTrimFilter(cp, CP_WIN_NIX_SEPS).map(refinePath).map(path ⇒ {
+        U.splitTrimFilter(cp, CP_WIN_NIX_SEPS_REGEX).map(refinePath).map(path ⇒ {
             val normPath = refinePath(path)
 
             if (!normPath.contains("*") && !new File(normPath).exists())
@@ -661,10 +661,14 @@ object NCCli extends App {
 
                 if (!online) {
                     logln(r(" [Error]"))
-                    error(s"Server start failed, check for errors: ${c(output.getAbsolutePath)}")
+
+                    error(s"Server start failed, check full log for errors: ${c(output.getAbsolutePath)}")
+
+                    tailFile(output.getAbsolutePath, 20)
                 }
                 else {
                     logln(g(" [OK]"))
+
                     logServerInfo(beacon)
 
                     showTip()
@@ -926,10 +930,14 @@ object NCCli extends App {
 
                 if (beacon == null) {
                     logln(r(" [Error]"))
-                    error(s"Probe start failed, check for errors: ${c(output.getAbsolutePath)}")
+
+                    error(s"Probe start failed, check full log for errors: ${c(output.getAbsolutePath)}")
+
+                    tailFile(output.getAbsolutePath, 20)
                 }
                 else {
                     logln(g(" [OK]"))
+
                     logProbeInfo(beacon)
 
                     showTip()
