@@ -94,20 +94,21 @@ object NCCli extends App {
     private final val DFLT_USER_EMAIL = "admin@admin.com"
     private final val DFLT_USER_PASSWD = "admin"
 
-    private final lazy val VER = NCVersion.getCurrent
-    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
-    private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
-    private final lazy val WORK_DIR = Paths.get("").toAbsolutePath.toString
-    private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
-    private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
-    private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
-    private final lazy val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
-
+    private final val VER = NCVersion.getCurrent
+    private final val CP_WIN_NIX_SEPS = ":;"
+    private final val CP_SEP = File.pathSeparator
+    private final val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
+    private final val USR_WORK_DIR = SystemUtils.USER_DIR
+    private final val USR_HOME_DIR = SystemUtils.USER_HOME
+    private final val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(USR_WORK_DIR)
+    private final val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
+    private final val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
+    private final val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
+    private final val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
     private final val T___ = "    "
-    private val OPEN_BRK = Seq('[', '{', '(')
-    private val CLOSE_BRK = Seq(']', '}', ')')
-    // Pair for each open or close bracket.
-    private val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap
+    private final val OPEN_BRK = Seq('[', '{', '(')
+    private final val CLOSE_BRK = Seq(']', '}', ')')
+    private final val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap // Pair for each open or close bracket.
 
     private var exitStatus = 0
 
@@ -270,6 +271,125 @@ object NCCli extends App {
     private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
 
     /**
+     * @param cmd
+     * @param args
+     * @param id
+     * @param dflt
+     */
+    @throws[MissingParameter]
+    private def getParam(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String =
+        args.find(_.parameter.id == id).flatMap(_.value) match {
+            case Some(v) ⇒ v
+            case None ⇒
+                if (dflt == null)
+                    throw MissingParameter(cmd, id)
+
+                dflt
+        }
+
+    @throws[InvalidParameter]
+    private def getIntParam(cmd: Command, args: Seq[Argument], id: String, dflt: Int): Int = {
+        getParamOpt(cmd, args, id) match {
+            case Some(num) ⇒
+                try
+                    Integer.parseInt(num)
+                catch {
+                    case _: Exception ⇒ throw InvalidParameter(cmd, id)
+                }
+
+            case None ⇒ dflt // Default.
+        }
+    }
+
+    @throws[InvalidParameter]
+    private def getDoubleParam(cmd: Command, args: Seq[Argument], id: String, dflt: Double): Double = {
+        getParamOpt(cmd, args, id) match {
+            case Some(num) ⇒
+                try
+                    java.lang.Double.parseDouble(num)
+                catch {
+                    case _: Exception ⇒ throw InvalidParameter(cmd, id)
+                }
+
+            case None ⇒ dflt // Default.
+        }
+    }
+
+    /**
+     * @param cmd
+     * @param args
+     * @param id
+     */
+    private def getParamOpt(cmd: Command, args: Seq[Argument], id: String): Option[String] =
+        args.find(_.parameter.id == id).flatMap(_.value)
+
+    /**
+     * @param cmd
+     * @param args
+     * @param id
+     */
+    private def getParamOrNull(cmd: Command, args: Seq[Argument], id: String): String =
+        args.find(_.parameter.id == id) match {
+            case Some(arg) ⇒ stripQuotes(arg.value.get)
+            case None ⇒ null
+        }
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @return
+     */
+    private def getFlagParam(cmd: Command, args: Seq[Argument], id: String, dflt: Boolean): Boolean =
+        args.find(_.parameter.id == id) match {
+            case Some(b) ⇒ true
+            case None ⇒ dflt
+        }
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @return
+     */
+    private def getCpParam(cmd: Command, args: Seq[Argument], id: String): String =
+        getParamOpt(cmd, args, id) match {
+            case Some(path) ⇒ normalizeCp(stripQuotes(path))
+            case None ⇒ null
+        }
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @return
+     */
+    private def getPathParam(cmd: Command, args: Seq[Argument], id: String): String =
+        getParamOpt(cmd, args, id) match {
+            case Some(path) ⇒
+                val normPath = refinePath(stripQuotes(path))
+
+                checkFilePath(normPath)
+
+                normPath
+
+            case None ⇒ null
+        }
+
+    /**
+     *
+     * @param path
+     */
+    private def refinePath(path: String): String = {
+        require(path != null)
+
+        if (path.nonEmpty && path.head == '~') new File(SystemUtils.getUserHome, path.tail).getAbsolutePath else path
+    }
+
+    /**
      *
      * @param s
      * @return
@@ -286,6 +406,59 @@ object NCCli extends App {
 
     /**
      *
+     * @param path
+     */
+    private def checkFilePath(path: String): Unit = {
+        val file = new File(path)
+
+        if (!file.exists() || !file.isFile)
+            throw new IllegalArgumentException(s"File not found: ${c(file.getAbsolutePath)}")
+    }
+
+    /**
+     * Checks whether given list of models contains class names outside of NLPCraft project.
+     *
+     * @param mdls Comma-separated list of fully qualified class names for data models.
+     * @return
+     */
+    private def hasExternalModels(mdls: String): Boolean =
+        U.splitTrimFilter(mdls, ",").exists(!_.startsWith("org.apache.nlpcraft."))
+
+    /**
+     * Handles tilda and checks that every component of the given class path exists relative to the current user working
+     * directory of this process.
+     *
+     * @param cp Classpath to normalize.
+     * @return
+     */
+    private def normalizeCp(cp: String): String =
+        U.splitTrimFilter(cp, CP_WIN_NIX_SEPS).map(refinePath).map(path ⇒ {
+            val normPath = refinePath(path)
+
+            if (!normPath.contains("*") && !new File(normPath).exists())
+                throw new IllegalStateException(s"Classpath not found: ${c(path)}")
+            else
+                normPath
+        })
+        .mkString(CP_SEP)
+
+    /**
+     *
+     */
+    private def cleanUpTempFiles(): Unit = {
+        val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
+
+        for (file <- new File(SystemUtils.getUserHome, ".nlpcraft").listFiles())
+            if (file.lastModified() < tstamp) {
+                val name = file.getName
+
+                if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
+                    file.delete()
+            }
+    }
+
+    /**
+     *
      * @param endpoint
      * @return
      */
@@ -294,15 +467,16 @@ object NCCli extends App {
 
     /**
      *
-     * @param pathOpt
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def checkFilePath(pathOpt: Option[Argument]): Unit =
-        if (pathOpt.isDefined) {
-            val file = new File(stripQuotes(pathOpt.get.value.get))
+    private [cmdline] def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val restPath = getParam(cmd, args, "path") // REST call path (NOT a file system path).
+        val json = stripQuotes(getParam(cmd, args, "json"))
 
-            if (!file.exists() || !file.isFile)
-                throw new IllegalArgumentException(s"File not found: ${c(file.getAbsolutePath)}")
-        }
+        httpRest(cmd, restPath, json)
+    }
 
     /**
      * @param cmd  Command descriptor.
@@ -310,26 +484,14 @@ object NCCli extends App {
      * @param repl Whether or not running from REPL.
      */
     private [cmdline] def cmdStartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val cfgPath = args.find(_.parameter.id == "config")
-        val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
-        val noWait = args.exists(_.parameter.id == "noWait")
-        val timeoutMins = args.find(_.parameter.id == "timeoutMins") match {
-            case Some(arg) ⇒
-                try
-                    Integer.parseInt(arg.value.get)
-                catch {
-                    case _: Exception ⇒ throw InvalidParameter(cmd, "timeoutMins")
-                }
-
-            case None ⇒ 2 // Default.
-        }
-        val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
-            case Some(arg) ⇒ U.splitTrimFilter(stripQuotes(arg.value.get), " ")
+        val cfgPath = getPathParam(cmd, args, "config")
+        val igniteCfgPath = getPathParam(cmd, args, "igniteConfig")
+        val noWait = getFlagParam(cmd, args, "noWait", false)
+        val timeoutMins = getIntParam(cmd, args, "timeoutMins", 2)
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms2048m", "-XX:+UseG1GC")
         }
-
-        checkFilePath(cfgPath)
-        checkFilePath(igniteCfgPath)
 
         // Ensure that there isn't another local server running.
         loadServerBeacon() match {
@@ -367,22 +529,15 @@ object NCCli extends App {
         srvArgs += JAVA_CP
         srvArgs += "org.apache.nlpcraft.NCStart"
         srvArgs += "-server"
-        srvArgs += (
-            cfgPath match {
-                case Some(path) ⇒ s"-config=${stripQuotes(path.value.get)}"
-                case None ⇒ ""
-            }
-        )
-        srvArgs += (
-            igniteCfgPath match {
-                case Some(path) ⇒ s"-igniteConfig=${stripQuotes(path.value.get)}"
-                case None ⇒ ""
-            }
-        )
+
+        if (cfgPath != null)
+            srvArgs += s"-config=$cfgPath"
+        if (igniteCfgPath != null)
+            srvArgs += s"-igniteConfig=$igniteCfgPath"
 
         val srvPb = new ProcessBuilder(srvArgs.asJava)
 
-        srvPb.directory(new File(WORK_DIR))
+        srvPb.directory(new File(USR_WORK_DIR))
         srvPb.redirectErrorStream(true)
 
         val bleachPb = new ProcessBuilder(
@@ -393,7 +548,7 @@ object NCCli extends App {
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
-        bleachPb.directory(new File(WORK_DIR))
+        bleachPb.directory(new File(USR_WORK_DIR))
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
@@ -417,9 +572,7 @@ object NCCli extends App {
                 val tbl = new NCAsciiTable()
 
                 tbl += (s"${g("stop-server")}", "Stop the server.")
-                tbl += (s"${g("start-probe")}", "Start the probe.")
-                tbl += (s"${g("stop-probe")}", "Stop the probe.")
-                tbl += (s"${g("info")}", "Get server & probe information.")
+                tbl += (s"${g("info-server")}", "Get server information.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
                 tbl += (s"${g("tail-server")}", "Tail the server log.")
 
@@ -524,42 +677,6 @@ object NCCli extends App {
     }
 
     /**
-     * Checks whether given list of models contains class names outside of NLPCraft project.
-     *
-     * @param mdls Comma-separated list of fully qualified class names for data models.
-     * @return
-     */
-    private def hasExternalModels(mdls: String): Boolean =
-        U.splitTrimFilter(mdls, ",").exists(!_.startsWith("org.apache.nlpcraft."))
-
-    /**
-     * Checks that every component of the given class path exists relative to the current user working
-     * directory of this process.
-     *
-     * @param cp Classpath to check.
-     * @return
-     */
-    private def checkClasspath(cp: String): Unit =
-        for (path <- U.splitTrimFilter(cp, ";:"))
-            if (!new File(path).exists())
-                throw new IllegalStateException(s"Classpath not found: ${c(path)}")
-
-    /**
-     *
-     */
-    private def cleanUpTempFiles(): Unit = {
-        val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
-
-        for (file <- new File(SystemUtils.getUserHome, ".nlpcraft").listFiles())
-            if (file.lastModified() < tstamp) {
-                val name = file.getName
-
-                if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
-                    file.delete()
-            }
-    }
-
-    /**
      * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
@@ -569,22 +686,16 @@ object NCCli extends App {
         if (loadServerBeacon().isEmpty)
             throw NoLocalServer()
 
-        val cfgPath = args.find(_.parameter.id == "config")
-        val addCp = args.find(_.parameter.id == "cp") match {
-            case Some(cp) ⇒ cp.value.get
-            case None ⇒ null
-        }
-        val mdls = args.find(_.parameter.id == "models") match {
-            case Some(arg) ⇒ stripQuotes(arg.value.get)
-            case None ⇒ null
-        }
-        val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
-            case Some(arg) ⇒ U.splitTrimFilter(stripQuotes(arg.value.get), " ")
+        val cfgPath = getPathParam(cmd, args, "config")
+        val addCp = getCpParam(cmd, args, "cp")
+        val mdls = getParamOrNull(cmd, args, "models")
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
         if (mdls != null) {
-            if (hasExternalModels(mdls) && addCp == null)
+            if (hasExternalModels(mdls) && addCp != null)
                 throw new IllegalStateException(
                     s"Additional classpath is required when deploying your own models. " +
                     s"Use ${c("--cp")} parameters to provide additional classpath.")
@@ -593,31 +704,29 @@ object NCCli extends App {
         if (mdls == null && addCp != null)
             warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
 
-        if (addCp != null)
-            checkClasspath(addCp)
-
-        checkFilePath(cfgPath)
-
-        val sep = System.getProperty("path.separator")
-
         var validatorArgs = mutable.ArrayBuffer.empty[String]
 
         validatorArgs += JAVA
         validatorArgs ++= jvmOpts
 
-        if (cfgPath.isDefined)
-            validatorArgs += s"-DNLPCRAFT_PROBE_CONFIG=${cfgPath.get}"
+        if (cfgPath != null)
+            validatorArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
 
         if (mdls != null)
             validatorArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
 
         validatorArgs += "-cp"
-        validatorArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep))
+
+        if (addCp != null)
+            validatorArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
+        else
+            validatorArgs += JAVA_CP
+
         validatorArgs += "org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator"
 
         val validatorPb = new ProcessBuilder(validatorArgs.asJava)
 
-        validatorPb.directory(new File(WORK_DIR))
+        validatorPb.directory(new File(USR_WORK_DIR))
         validatorPb.inheritIO()
 
         try {
@@ -641,28 +750,22 @@ object NCCli extends App {
         if (loadServerBeacon().isEmpty)
             throw NoLocalServer()
 
-        val cfgPath = args.find(_.parameter.id == "config")
-        val noWait = args.exists(_.parameter.id == "noWait")
-        val addCp = args.find(_.parameter.id == "cp") match {
-            case Some(cp) ⇒ cp.value.get
-            case None ⇒ null
+        // Ensure that there isn't another local probe running.
+        loadProbeBeacon() match {
+            case Some(b) ⇒ throw new IllegalStateException(
+                s"Existing probe (pid ${c(b.pid)}) detected. " +
+                s"Use ${c("'stop-probe'")} command to stop it, if necessary."
+            )
+            case None ⇒ ()
         }
-        val timeoutMins = args.find(_.parameter.id == "timeoutMins") match {
-            case Some(arg) ⇒
-                try
-                    Integer.parseInt(arg.value.get)
-                catch {
-                    case _: Exception ⇒ throw InvalidParameter(cmd, "timeoutMins")
-                }
 
-            case None ⇒ 1 // Default.
-        }
-        val mdls = args.find(_.parameter.id == "models") match {
-            case Some(arg) ⇒ stripQuotes(arg.value.get)
-            case None ⇒ null
-        }
-        val jvmOpts = args.find(_.parameter.id == "jvmopts") match {
-            case Some(arg) ⇒ U.splitTrimFilter(stripQuotes(arg.value.get), " ")
+        val cfgPath = getPathParam(cmd, args, "config")
+        val noWait = getFlagParam(cmd, args, "noWait", false)
+        val addCp = getCpParam(cmd, args, "cp")
+        val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
+        val mdls = getParamOrNull(cmd, args, "models")
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -676,20 +779,6 @@ object NCCli extends App {
         if (mdls == null && addCp != null)
             warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
 
-        if (addCp != null)
-            checkClasspath(addCp)
-
-        checkFilePath(cfgPath)
-
-        // Ensure that there isn't another local probe running.
-        loadProbeBeacon() match {
-            case Some(b) ⇒ throw new IllegalStateException(
-                s"Existing probe (pid ${c(b.pid)}) detected. " +
-                s"Use ${c("'stop-probe'")} command to stop it, if necessary."
-            )
-            case None ⇒ ()
-        }
-
         val logTstamp = currentTime
 
         // Server log redirect.
@@ -697,8 +786,6 @@ object NCCli extends App {
 
         // Store in REPL state right away.
         state.probeLog = Some(output)
-
-        val sep = System.getProperty("path.separator")
 
         var prbArgs = mutable.ArrayBuffer.empty[String]
 
@@ -710,22 +797,19 @@ object NCCli extends App {
             prbArgs += "-Dconfig.override_with_env_vars=true"
 
         prbArgs += "-cp"
-        prbArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$sep$addCp".replace(s"$sep$sep", sep))
+        prbArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP))
         prbArgs += "org.apache.nlpcraft.NCStart"
         prbArgs += "-probe"
-        prbArgs += (
-            cfgPath match {
-                case Some(path) ⇒ s"-config=${stripQuotes(path.value.get)}"
-                case None ⇒ ""
-            }
-        )
+
+        if (cfgPath != null)
+            prbArgs += s"-config=$cfgPath"
 
         val prbPb = new ProcessBuilder(prbArgs.asJava)
 
         if (mdls != null)
             prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
 
-        prbPb.directory(new File(WORK_DIR))
+        prbPb.directory(new File(USR_WORK_DIR))
         prbPb.redirectErrorStream(true)
 
         val bleachPb = new ProcessBuilder(
@@ -736,7 +820,7 @@ object NCCli extends App {
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
-        bleachPb.directory(new File(WORK_DIR))
+        bleachPb.directory(new File(USR_WORK_DIR))
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
@@ -892,16 +976,7 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdTailServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val lines = args.find(_.parameter.id == "lines") match {
-            case Some(arg) ⇒
-                try
-                    Integer.parseInt(arg.value.get)
-                catch {
-                    case _: Exception ⇒ throw InvalidParameter(cmd, "lines")
-                }
-
-            case None ⇒ 20 // Default.
-        }
+        val lines = getIntParam(cmd, args, "lines", 20)
 
         if (lines <= 0)
             throw InvalidParameter(cmd, "lines")
@@ -918,16 +993,7 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdTailProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val lines = args.find(_.parameter.id == "lines") match {
-            case Some(arg) ⇒
-                try
-                    Integer.parseInt(arg.value.get)
-                catch {
-                    case _: Exception ⇒ throw InvalidParameter(cmd, "lines")
-                }
-
-            case None ⇒ 20 // Default.
-        }
+        val lines = getIntParam(cmd, args, "lines", 20)
 
         if (lines <= 0)
             throw InvalidParameter(cmd, "lines")
@@ -944,20 +1010,11 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdPingServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val endpoint = getRestEndpointFromBeacon
-
-        val num = args.find(_.parameter.id == "number") match {
-            case Some(arg) ⇒
-                try
-                    Integer.parseInt(arg.value.get)
-                catch {
-                    case _: Exception ⇒ throw InvalidParameter(cmd, "number")
-                }
-
-            case None ⇒ 1 // Default.
-        }
+        val num = getIntParam(cmd, args, "number", 1)
 
         var i = 0
+
+        val endpoint = getRestEndpointFromBeacon
 
         while (i < num) {
             log(s"(${i + 1} of $num) pinging server at ${b(endpoint)} ")
@@ -999,7 +1056,7 @@ object NCCli extends App {
             i += 1
 
             if (i < num)
-            // Pause between pings.
+                // Pause between pings.
                 Thread.sleep(500.ms)
         }
     }
@@ -1603,8 +1660,8 @@ object NCCli extends App {
     private [cmdline] def cmdSignIn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case None ⇒
-                val email = args.find(_.parameter.id == "email").flatMap(_.value).getOrElse(DFLT_USER_EMAIL)
-                val passwd = args.find(_.parameter.id == "passwd").flatMap(_.value).getOrElse(DFLT_USER_PASSWD)
+                val email = getParam(cmd, args, "email", DFLT_USER_EMAIL)
+                val passwd = getParam(cmd, args, "passwd", DFLT_USER_PASSWD)
 
                 httpRest(
                     cmd,
@@ -1691,8 +1748,8 @@ object NCCli extends App {
     private [cmdline] def cmdSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) ⇒
-                val mdlId = args.find(_.parameter.id == "mdlId").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "mdlId"))
-                val minScore = Try(args.find(_.parameter.id == "minScore").flatMap(_.value).getOrElse("0.5").toFloat).getOrElse(throw InvalidParameter(cmd, "minScore"))
+                val mdlId = getParam(cmd, args, "mdlId")
+                val minScore = getDoubleParam(cmd, args, "minScore", 0.5)
 
                 httpRest(
                     cmd,
@@ -1718,10 +1775,10 @@ object NCCli extends App {
     private [cmdline] def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) ⇒
-                val mdlId = args.find(_.parameter.id == "mdlId").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "mdlId"))
-                val txt = args.find(_.parameter.id == "txt").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "txt"))
-                val data = args.find(_.parameter.id == "data").flatMap(_.value).orNull
-                val enableLog = args.find(_.parameter.id == "enableLog").flatMap(_.value).getOrElse(false)
+                val mdlId = getParam(cmd, args, "mdlId")
+                val txt = getParam(cmd, args, "txt")
+                val data = getParamOrNull(cmd, args, "data")
+                val enableLog = getFlagParam(cmd, args, "enableLog", false)
 
                 httpRest(
                     cmd,
@@ -1789,46 +1846,6 @@ object NCCli extends App {
             throw MissingMandatoryJsonParameters(cmd, mandatoryParams, path)
 
         httpRest(cmd, path, s"{${buf.toString()}}")
-    }
-
-    /**
-     *
-     * @param cmd Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
-     */
-    private [cmdline] def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
-        val json = stripQuotes(args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get)
-
-        httpRest(cmd, path, json)
-    }
-
-    /**
-      * @param cmd
-      * @param args
-      * @param id
-      * @param dflt
-      */
-    @throws[MissingParameter]
-    private def get(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String =
-        args.find(_.parameter.id == id).flatMap(_.value) match {
-            case Some(v) ⇒ v
-            case None ⇒
-                if (dflt == null)
-                    throw MissingParameter(cmd, id)
-
-                dflt
-        }
-
-    /**
-      *
-      * @param path
-      */
-    private def refinePath(path: String): String = {
-        require(path != null)
-
-        if (path.nonEmpty && path.head == '~') new File(SystemUtils.getUserHome, path.tail).getAbsolutePath else path
     }
 
     /**
@@ -1980,9 +1997,9 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val filePath = refinePath(get(cmd, args, "filePath"))
-        val overrideFlag = get(cmd, args,"override", "false").toLowerCase
-        val modelId = get(cmd, args,"modelId")
+        val filePath = refinePath(getParam(cmd, args, "filePath"))
+        val overrideFlag = getParam(cmd, args,"override", "false").toLowerCase
+        val mdlId = getParam(cmd, args,"mdlId")
 
         checkSupported(cmd,"overrideFlag", overrideFlag, "true", "false")
 
@@ -2017,7 +2034,7 @@ object NCCli extends App {
             s"src/main/resources/template_model.$fileExt",
             out.getName,
             Some(extractHdr),
-            "templateModelId" → modelId
+            "templateModelId" → mdlId
         )
 
         logln(s"Model file stub created: ${c(out.getCanonicalPath)}")
@@ -2030,13 +2047,13 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val outputDir = refinePath(get(cmd, args, "outputDir", "."))
-        val baseName = get(cmd, args,"baseName")
-        val lang = get(cmd, args,"lang", "java").toLowerCase
-        val buildTool = get(cmd, args,"buildTool", "mvn").toLowerCase
-        val pkgName = get(cmd, args,"packageName", "org.apache.nlpcraft.demo").toLowerCase
-        val fileType = get(cmd, args,"modelType", "yaml").toLowerCase
-        val overrideFlag = get(cmd, args,"override", "false").toLowerCase
+        val outputDir = refinePath(getParam(cmd, args, "outputDir", "."))
+        val baseName = getParam(cmd, args,"baseName")
+        val lang = getParam(cmd, args,"lang", "java").toLowerCase
+        val buildTool = getParam(cmd, args,"buildTool", "mvn").toLowerCase
+        val pkgName = getParam(cmd, args,"packageName", "org.apache.nlpcraft.demo").toLowerCase
+        val fileType = getParam(cmd, args,"modelType", "yaml").toLowerCase
+        val overrideFlag = getParam(cmd, args,"override", "false").toLowerCase
         val dst = new File(outputDir, baseName)
         val pkgDir = pkgName.replaceAll("\\.", "/")
         val clsName = s"${baseName.head.toUpper}${baseName.tail}"
@@ -2537,7 +2554,7 @@ object NCCli extends App {
                 val prompt1 = if (state.isServerOnline) gb(k(s" server: ${BO}ON$RST$GB ")) else rb(w(s" server: ${BO}OFF$RST$RB "))
                 val prompt2 = if (state.isProbeOnline) gb(k(s" probe: ${BO}ON$RST$GB ")) else rb(w(s" probe: ${BO}OFF$RST$RB "))
                 val prompt3 = wb(k(s" acsTok: $acsTokStr")) // Access token, if any.
-                val prompt4 = kb(g(s" $WORK_DIR ")) // Current working directory.
+                val prompt4 = kb(g(s" $USR_WORK_DIR ")) // Current working directory.
 
                 if (!wasLastLineEmpty)
                     reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)

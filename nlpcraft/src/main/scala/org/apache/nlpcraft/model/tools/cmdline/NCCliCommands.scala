@@ -124,8 +124,8 @@ private [cmdline] object NCCliCommands {
                     value = Some("'json'"),
                     desc =
                         s"REST call parameters as JSON object. Since standard JSON only supports double " +
-                        s"quotes the entire JSON string should be enclosed in single quotes. You can " +
-                        s"find full OpenAPI specification for NLPCraft REST API at " +
+                        s"quotes the entire JSON string should be enclosed in single quotes. Note that on Windows you " +
+                        s"need to escape double quotes. You can find full OpenAPI specification for NLPCraft REST API at " +
                         s"https://nlpcraft.apache.org/using-rest.html"
                 )
             ),
@@ -141,8 +141,8 @@ private [cmdline] object NCCliCommands {
                 Example(
                     usage = Seq(
                         s"> nlpcraft.cmd rest ",
-                        "  -p=signin",
-                        "  -j='{\\\"email\\\": \\\"admin@admin.com\\\", \\\"passwd\\\": \\\"admin\\\"}'"
+                        "  --path=signin",
+                        "  --json='{\\\"email\\\": \\\"admin@admin.com\\\", \\\"passwd\\\": \\\"admin\\\"}'"
                     ),
                     desc =
                         s"${bo("Windows:")} issues ${y("'signin'")} REST call with given JSON payload. " +
@@ -156,8 +156,8 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Wrapper for ${c("'/signin'")} REST call.",
             desc = Some(
                 s"If no arguments provided, it signs in with the " +
-                    s"default 'admin@admin.com' user account. NOTE: please make sure to remove this account when " +
-                    s"running in production."
+                s"default 'admin@admin.com' user account. NOTE: please make sure to remove this account when " +
+                s"running in production."
             ),
             body = NCCli.cmdSignIn,
             params = Seq(
@@ -167,12 +167,12 @@ private [cmdline] object NCCliCommands {
                     value = Some("email"),
                     optional = true,
                     desc =
-                        s"Email of the user. If not provided, 'admin@admin.com' will be used."
+                        s"Email of the user. If not provided, default 'admin@admin.com' email will be used."
                 ),
                 Parameter(
                     id = "passwd",
                     names = Seq("--passwd", "-p"),
-                    value = Some("****"),
+                    value = Some("password"),
                     optional = true,
                     desc =
                         s"User password to sign in. If not provided, the default password will be used."
@@ -210,9 +210,9 @@ private [cmdline] object NCCliCommands {
             synopsis = s"REST call in a convenient way for REPL mode.",
             desc = Some(
                 s"When using this command you supply all call parameters separately through their own parameters named " +
-                    s"after their corresponding parameters in REST specification. " +
-                    s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
-                    s"auto-completion candidates for commonly used paths and call parameters."
+                s"after their corresponding parameters in REST specification. " +
+                s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
+                s"auto-completion candidates for commonly used paths and call parameters."
             ),
             body = NCCli.cmdCall,
             params = Seq(
@@ -236,7 +236,7 @@ private [cmdline] object NCCliCommands {
                         s"${y("'xxx'")} name corresponds to the REST call parameter that can be found at https://nlpcraft.apache.org/using-rest.html " +
                         s"The value of this parameter should be a valid JSON value using valid JSON syntax. Note that strings " +
                         s"don't have to be in double quotes. JSON objects and arrays should be specified as a JSON string in single quotes. You can have " +
-                        s"as many ${y("'--xxx=value'")} parameters as requires by the ${y("'--path'")} parameter. " +
+                        s"as many ${y("'--xxx=value'")} parameters as requires by the ${y("'--path'")} parameter. Note that on Windows you need to escape double quotes. " +
                         s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible parameters and their values."
                 )
             ),
@@ -293,7 +293,7 @@ private [cmdline] object NCCliCommands {
             params = Seq(
                 Parameter(
                     id = "mdlId",
-                    names = Seq("--mdlId"),
+                    names = Seq("--mdlId", "-m"),
                     value = Some("model.id"),
                     desc =
                         s"ID of the data model to send the request to. " +
@@ -301,24 +301,23 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "txt",
-                    names = Seq("--txt"),
+                    names = Seq("--txt", "-t"),
                     value = Some("txt"),
                     desc =
                         s"Text of the question."
                 ),
                 Parameter(
                     id = "data",
-                    names = Seq("--data"),
+                    names = Seq("--data", "-d"),
                     value = Some("'{}'"),
                     optional = true,
                     desc = s"Additional JSON data with maximum JSON length of 512000 bytes. Default is ${c("'null'")}."
                 ),
                 Parameter(
                     id = "enableLog",
-                    names = Seq("--enableLog"),
-                    value = Some("true|false"),
+                    names = Seq("--enableLog", "-l"),
                     optional = true,
-                    desc = s"Flag to enable detailed processing log to be returned with the result. Default is ${c("'false'")}."
+                    desc = s"Enable detailed processing log to be returned with the result."
                 )
             ),
             examples = Seq(
@@ -389,21 +388,21 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "modelId",
-                    names = Seq("--model-id", "-x"),
+                    names = Seq("--mdlId", "-m"),
                     value = Some("id"),
                     optional = true,
                     desc = s"Generated model ID. By default, the model ID is ${c("'sql.model.id'")}."
                 ),
                 Parameter(
                     id = "modelVer",
-                    names = Seq("--model-ver", "-v"),
+                    names = Seq("--mdlVer", "-v"),
                     value = Some("version"),
                     optional = true,
                     desc = s"Generated model version. By default, the model version is ${c("'1.0.0-timestamp'")}."
                 ),
                 Parameter(
                     id = "modelName",
-                    names = Seq("--model-name", "-n"),
+                    names = Seq("--mdlName", "-n"),
                     value = Some("name"),
                     optional = true,
                     desc = s"Generated model name. By default, the model name is ${c("'SQL-based-model'")}."
@@ -476,7 +475,7 @@ private [cmdline] object NCCliCommands {
                     optional = true,
                     desc =
                         s"Gets extended help and usage information for the ${c("'gen-sql'")} command. " +
-                        s"Includes information on how to run this tool standalone."
+                        s"Includes information on how to run this tool standalone in a separate process."
                 )
             ),
             examples = Seq(
@@ -490,16 +489,16 @@ private [cmdline] object NCCliCommands {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME gen-sql",
-                        "  --url=jdbc:postgresql://localhost:5432/mydb",
-                        "  --driver=org.postgresql.Driver",
+                          "  --url=jdbc:postgresql://localhost:5432/mydb",
+                          "  --driver=org.postgresql.Driver",
                         """  --prefix="tbl_, col_"""",
                         """  --suffix="_tmp, _old, _unused"""",
-                        "  --schema=public",
+                          "  --schema=public",
                         """  --exclude="#_.+"""",
-                        "  --out=model.json"
+                          "  --out=model.json"
                     ),
                     desc =
-                        s"Generates model stub from given SQL database connection."
+                        s"Generates ${c("'model.json'")} model stub from given SQL database connection."
                 )
             )
         ),
@@ -512,13 +511,14 @@ private [cmdline] object NCCliCommands {
                 s"it requires user to be signed in. REPL session keeps the currently active access " +
                 s"token after user signed in. For command line mode, use ${c("'rest'")} command with " +
                 s"corresponding parameters. Note also that it requires a local probe running that hosts " +
-                s"the specified model. Find more information about this tool at https://nlpcraft.apache.org/tools/syn_tool.html"
+                s"the specified model as well as running ${c("'ctxword'")} server. Find more information about " +
+                s"this tool at https://nlpcraft.apache.org/tools/syn_tool.html"
             ),
             body = NCCli.cmdSugSyn,
             params = Seq(
                 Parameter(
                     id = "mdlId",
-                    names = Seq("--mdlId"),
+                    names = Seq("--mdlId", "-m"),
                     value = Some("model.id"),
                     desc =
                         s"ID of the model to run synonym suggestion on. " +
@@ -527,7 +527,7 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "minScore",
-                    names = Seq("--minScore"),
+                    names = Seq("--minScore", "-s"),
                     value = Some("0.5"),
                     optional = true,
                     desc = s"Minimal score to include into the result (from 0 to 1). Default is ${c("0.5")}."
@@ -536,7 +536,7 @@ private [cmdline] object NCCliCommands {
             examples = Seq(
                 Example(
                     usage = Seq(
-                        s"""> sugsyn --mdlId=my.model.id"""
+                        s"""> sugsyn -m=my.model.id"""
                     ),
                     desc =
                         s"Issues ${y("'model/sugsyn'")} REST call with default min score and given model ID."
@@ -555,7 +555,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "lines",
                     names = Seq("--lines", "-l"),
-                    value = Some("num"),
+                    value = Some("20"),
                     desc =
                         s"Number of the server log lines from the end to display. Default is 20."
                 )
@@ -579,7 +579,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "lines",
                     names = Seq("--lines", "-l"),
-                    value = Some("num"),
+                    value = Some("20"),
                     desc =
                         s"Number of the probe log lines from the end to display. Default is 20."
                 )
@@ -597,24 +597,25 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Starts local server.",
             desc = Some(
                 s"Server is started in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the server is started unless ${y("'--no-wait'")} parameter is used or timeout is expired."
+                s"Command will block until the server is started unless ${y("'--noWait'")} parameter is used or timeout is expired."
             ),
             body = NCCli.cmdStartServer,
             params = Seq(
                 Parameter(
                     id = "config",
-                    names = Seq("--config", "-c"),
+                    names = Seq("--cfg", "-c"),
                     value = Some("path"),
                     optional = true,
                     desc =
                         s"Configuration file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the server and the probe can use the same file for their configuration."
+                        s"Note that the server and the probe can use the same file for their configuration. " +
+                        s"Note also that you can use ${c("'~'")} at the beginning of the path to specify user home directory."
                 ),
                 Parameter(
                     id = "igniteConfig",
-                    names = Seq("--ignite-config", "-i"),
+                    names = Seq("--igniteCfg", "-i"),
                     value = Some("path"),
                     optional = true,
                     desc =
@@ -622,11 +623,12 @@ private [cmdline] object NCCliCommands {
                         s"computing plane and a default distributed storage. Server will automatically look for " +
                         s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
                         s"configuration file has different name or in different location use this parameter to " +
-                        s"provide an alternative path."
+                        s"provide an alternative path. " +
+                        s"Note also that you can use ${c("'~'")} at the beginning of the path to specify user home directory."
                 ),
                 Parameter(
                     id = "jvmopts",
-                    names = Seq("--jvm-opts", "-j"),
+                    names = Seq("--jvmOpts", "-j"),
                     value = Some("<jvm flags>"),
                     optional = true,
                     desc =
@@ -635,14 +637,14 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "noWait",
-                    names = Seq("--no-wait"),
+                    names = Seq("--noWait"),
                     optional = true,
                     desc =
                         s"Instructs command not to wait for the server startup and return immediately."
                 ),
                 Parameter(
                     id = "timeoutMins",
-                    names = Seq("--timeout-mins", "-t"),
+                    names = Seq("--timeoutMins", "-t"),
                     optional = true,
                     value = Some("3"),
                     desc =
@@ -655,7 +657,7 @@ private [cmdline] object NCCliCommands {
                     desc = "Starts local server with default configuration."
                 ),
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf -t=5"),
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=~/myapp/nlpcraft.conf -t=5"),
                     desc = "Starts local server with alternative configuration file and timeout of 5 mins."
                 )
             )
@@ -666,20 +668,21 @@ private [cmdline] object NCCliCommands {
             synopsis = s"Starts local probe.",
             desc = Some(
                 s"Probe is started in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the probe is started unless ${y("'--no-wait'")} parameter is used or timeout is expired."
+                s"Command will block until the probe is started unless ${y("'--noWait'")} parameter is used or timeout is expired."
             ),
             body = NCCli.cmdStartProbe,
             params = Seq(
                 Parameter(
                     id = "config",
-                    names = Seq("--config", "-c"),
+                    names = Seq("--cfg", "-c"),
                     value = Some("path"),
                     optional = true,
                     desc =
                         s"Configuration file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the server and the probe can use the same file for their configuration."
+                        s"Note that the server and the probe can use the same file for their configuration. " +
+                        s"Note also that you can use ${c("'~'")} at the beginning of the path to specify user home directory."
                 ),
                 Parameter(
                     id = "cp",
@@ -690,23 +693,24 @@ private [cmdline] object NCCliCommands {
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"Although this configuration property is optional, when deploying your own models you must " +
                         s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
-                        s"NOTE: this is only optional if you are running example models shipped with NLPCraft."
+                        s"Note that this is only optional if you are running example models shipped with NLPCraft. " +
+                        s"Note also that you can use ${c("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "models",
-                    names = Seq("--models", "-m"),
+                    names = Seq("--mdls", "-m"),
                     value = Some("<model list>"),
                     optional = true,
                     desc =
                         s"Comma separated list of fully qualified class names for models to deploy. This will override " +
                         s"${y("'nlpcraft.probe.models'")} configuration property from either default configuration file " +
-                        s"or the one provided by ${y("--config")} parameter. NOTE: if you provide the list of your " +
+                        s"or the one provided by ${y("--cfg")} parameter. Note that if you provide the list of your " +
                         s"own models here or in configuration file - you must also provide the additional classpath " +
                         s"for them via ${y("--cp")} parameter."
                 ),
                 Parameter(
                     id = "jvmopts",
-                    names = Seq("--jvm-opts", "-j"),
+                    names = Seq("--jvmOpts", "-j"),
                     value = Some("<jvm flags>"),
                     optional = true,
                     desc =
@@ -715,14 +719,14 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "noWait",
-                    names = Seq("--no-wait"),
+                    names = Seq("--noWait"),
                     optional = true,
                     desc =
                         s"Instructs command not to wait for the probe startup and return immediately."
                 ),
                 Parameter(
                     id = "timeoutMins",
-                    names = Seq("--timeout-mins", "-t"),
+                    names = Seq("--timeoutMins", "-t"),
                     optional = true,
                     value = Some("3"),
                     desc =
@@ -737,11 +741,11 @@ private [cmdline] object NCCliCommands {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME start-probe ",
-                        "  --config=/opt/nlpcraft.conf ",
-                        "  --models=my.package.Model ",
-                        "  --cp=/opt/target/classes ",
-                        "  --jmv-opts=\"-ea -Xms2048m\" ",
-                        "  --timeout-mins=5"
+                        "  --cfg=~/myapp/nlpcraft.conf ",
+                        "  --mdls=my.package.Model ",
+                        "  --cp=~/myapp/target/classes ",
+                        "  --jmvOpts=\"-ea -Xms2048m\" ",
+                        "  --timeoutMins=5"
                     ),
                     desc =
                         s"Starts local probe for ${y("'my.package.Model'")} model with alternative configuration " +
@@ -764,13 +768,14 @@ private [cmdline] object NCCliCommands {
             params = Seq(
                 Parameter(
                     id = "config",
-                    names = Seq("--config", "-c"),
+                    names = Seq("--cfg", "-c"),
                     value = Some("path"),
                     optional = true,
                     desc =
                         s"Configuration file path. By default, the embedded probe will automatically look for ${y("'nlpcraft.conf'")} " +
                         s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                        s"different name or in different location use this parameter to provide an alternative path."
+                        s"different name or in different location use this parameter to provide an alternative path. " +
+                        s"Note also that you can use ${c("'~'")} at the beginning of the path to specify user home directory."
                 ),
                 Parameter(
                     id = "cp",
@@ -781,11 +786,12 @@ private [cmdline] object NCCliCommands {
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"Although this configuration property is optional, when testing your own models you must " +
                         s"provide this additional classpath for the models and their dependencies. " +
-                        s"NOTE: this is only optional if you are testing example models shipped with NLPCraft."
+                        s"Note that this is only optional if you are testing example models shipped with NLPCraft. " +
+                        s"Note also that you can use ${c("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "models",
-                    names = Seq("--models", "-m"),
+                    names = Seq("--mdls", "-m"),
                     value = Some("<model list>"),
                     optional = true,
                     desc =
@@ -795,7 +801,7 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "jvmopts",
-                    names = Seq("--jvm-opts", "-j"),
+                    names = Seq("--jvmOpts", "-j"),
                     value = Some("<jvm flags>"),
                     optional = true,
                     desc =
@@ -807,9 +813,9 @@ private [cmdline] object NCCliCommands {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME test-model ",
-                        "  --models=my.package.Model ",
-                        "  --cp=/opt/target/classes ",
-                        "  --jmv-opts=\"-ea -Xms2048m\""
+                        "  --mdls=my.package.Model ",
+                        "  --cp=~/myapp/target/classes ",
+                        "  --jmvOpts=\"-ea -Xms2048m\""
                     ),
                     desc =
                         s"Runs model auto-validator for ${y("'my.package.Model'")} model."
@@ -868,7 +874,7 @@ private [cmdline] object NCCliCommands {
                     usage = Seq(s"$PROMPT $SCRIPT_NAME version -s no-logo"),
                     desc =
                         s"Displays just the version information without any additional logo output. " +
-                            s"This command makes sense only in command lime mode (NOT in REPL mode)."
+                        s"This command makes sense only in command lime mode (NOT in REPL mode)."
                 )
             )
         ),
@@ -899,7 +905,7 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "number",
                     names = Seq("--number", "-n"),
-                    value = Some("num"),
+                    value = Some("1"),
                     optional = true,
                     desc =
                         "Number of pings to perform. Must be a number > 0. Default is 1."
@@ -993,14 +999,14 @@ private [cmdline] object NCCliCommands {
             params = Seq(
                 Parameter(
                     id = "semver",
-                    names = Seq("--sem-ver", "-s"),
+                    names = Seq("--semVer", "-s"),
                     value = None,
                     optional = true,
                     desc = s"Display only the semantic version value, e.g. ${VER.version}."
                 ),
                 Parameter(
                     id = "reldate",
-                    names = Seq("--rel-date", "-d"),
+                    names = Seq("--relDate", "-d"),
                     value = None,
                     optional = true,
                     desc = s"Display only the release date, e.g. ${VER.date}."
@@ -1022,7 +1028,9 @@ private [cmdline] object NCCliCommands {
                     names = Seq("--outputDir", "-d"),
                     value = Some("path"),
                     optional = true,
-                    desc = s"Output directory. Default value is the current working directory."
+                    desc =
+                        s"Output directory. Default value is the current working directory. " +
+                        s"Note that you can use ${c("'~'")} at the beginning of the path to specify user home directory."
                 ),
                 Parameter(
                     id = "baseName",
@@ -1052,14 +1060,14 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "packageName",
-                    names = Seq("--packageName", "-p"),
+                    names = Seq("--pckgName", "-p"),
                     value = Some("name"),
                     optional = true,
                     desc = s"JVM package name to use in generated source code. Default value is ${y("'org.apache.nlpcraft.demo'")}."
                 ),
                 Parameter(
                     id = "modelType",
-                    names = Seq("--modelType", "-m"),
+                    names = Seq("--mdlType", "-m"),
                     value = Some("type"),
                     optional = true,
                     desc = s"Type of generated model file. Supported value are ${y("'yaml'")} or ${y("'json'")}. Default value is ${y("'yaml'")}."
@@ -1067,9 +1075,8 @@ private [cmdline] object NCCliCommands {
                 Parameter(
                     id = "override",
                     names = Seq("--override", "-o"),
-                    value = Some("true|false"),
                     optional = true,
-                    desc = s"Whether or not to override existing output directory. Default value is ${y("'false'")}."
+                    desc = s"Overrides existing output directory, if any."
                 )
             ),
             examples = Seq(
@@ -1078,7 +1085,7 @@ private [cmdline] object NCCliCommands {
                     desc = s"Generates Scala SBT project."
                 ),
                 Example(
-                    usage = Seq("> gen-project -n=MyProject -l=kotlin -p=com.mycompany.nlp -o=true"),
+                    usage = Seq("> gen-project -n=MyProject -l=kotlin -p=com.mycompany.nlp -o"),
                     desc = s"Generates Kotlin Maven project."
                 )
             )
@@ -1099,29 +1106,29 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"File path for the model stub. File path can either be an absolute path, relative path or " +
                         s"just a file name in which case the current folder will be used. File must have one of the " +
-                        s"following extensions: ${y("'json'")}, ${y("'js'")}, ${y("'yaml'")}, or ${y("'yml'")}."
+                        s"following extensions: ${y("'json'")}, ${y("'js'")}, ${y("'yaml'")}, or ${y("'yml'")}. " +
+                        s"Note that you can use ${c("'~'")} at the beginning of the path to specify user home directory."
                 ),
                 Parameter(
                     id = "modelId",
-                    names = Seq("--modelId", "-n"),
+                    names = Seq("--mdlId", "-m"),
                     value = Some("id"),
                     desc = "Model ID."
                 ),
                 Parameter(
                     id = "override",
                     names = Seq("--override", "-o"),
-                    value = Some("true|false"),
                     optional = true,
-                    desc = s"Override output directory flag. Supported: ${y("'true'")}, ${y("'false'")}. Default value is ${y("'false'")}"
+                    desc = s"Overrides output file, if any."
                 )
             ),
             examples = Seq(
                 Example(
-                    usage = Seq("> gen-model -f=myModel.json -n=my.model.id"),
+                    usage = Seq("> gen-model --filePath=~/myapp/myModel.json --mdlId=my.model.id"),
                     desc = s"Generates JSON model file stub in the current folder."
                 ),
                 Example(
-                    usage = Seq("> gen-model -f=c:/tmp/myModel.yaml -n=my.model.id --override=true"),
+                    usage = Seq("> gen-model -f=c:/tmp/myModel.yaml -m=my.model.id -o"),
                     desc = s"Generates YAML model file stub in ${y("'c:/temp'")} folder overriding existing file, if any."
                 )
             )
