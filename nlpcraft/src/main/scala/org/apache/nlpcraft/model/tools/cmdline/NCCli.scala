@@ -153,6 +153,9 @@ object NCCli extends App {
     case class SplitError(index: Int)
         extends Exception
 
+    case class UnknownCommand(cmd: String)
+        extends IllegalArgumentException(s"Unknown command ${c("'" + cmd + "'")}, type ${c("'help'")} to get help.")
+
     case class NoLocalServer()
         extends IllegalStateException(s"Local server not found, use $C'start-server'$RST command to start one.")
 
@@ -1481,7 +1484,7 @@ object NCCli extends App {
                     case None ⇒
                         err = true
 
-                        errorUnknownCommand(cmdName)
+                        throw UnknownCommand(cmdName)
                 }
             }
 
@@ -2646,7 +2649,7 @@ object NCCli extends App {
         exitStatus = 1
 
         if (msg != null && msg.nonEmpty)
-            logln(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            logln(s"${r("X")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
     }
 
     /**
@@ -2655,7 +2658,7 @@ object NCCli extends App {
      */
     private def warn(msg: String = ""): Unit =
         if (msg != null && msg.nonEmpty)
-            logln(s"${y("WRN:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
+            logln(s"${y("!")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
 
     /**
      *
@@ -2673,16 +2676,6 @@ object NCCli extends App {
     private def log(msg: String = ""): Unit = {
         term.writer().print(msg)
         term.flush()
-    }
-
-    /**
-     *
-     */
-    private def errorUnknownCommand(cmd: String): Unit = {
-        val c2 = c(s"'$cmd'")
-        val h2 = c(s"'help'")
-
-        error(s"Unknown command $c2, type $h2 to get help.")
     }
 
     /**
@@ -2947,40 +2940,34 @@ object NCCli extends App {
     @throws[Exception]
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         if (args.nonEmpty) {
-            if (args.head.head == '$') {
-                val head = args.head.tail.trim // Remove '$' from 1st argument.
-                val tail = args.tail.toList
+            try
+                if (args.head.head == '$') {
+                    val head = args.head.tail.trim // Remove '$' from 1st argument.
+                    val tail = args.tail.toList
 
-                try
                     execOsCmd(if (head.isEmpty) tail else head :: tail)
-                catch {
-                    case e: Exception ⇒ error(e.getLocalizedMessage)
                 }
-            }
-            else {
-                // Process 'no-ansi' and 'ansi' commands first.
-                processAnsi(args, repl)
+                else {
+                    // Process 'no-ansi' and 'ansi' commands first.
+                    processAnsi(args, repl)
 
-                // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
-                val xargs = args.filter(arg ⇒ arg != NO_ANSI_CMD.name && arg != ANSI_CMD.name)
+                    // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
+                    val xargs = args.filter(arg ⇒ arg != NO_ANSI_CMD.name && arg != ANSI_CMD.name)
 
-                if (xargs.nonEmpty) {
-                    val cmd = xargs.head
+                    if (xargs.nonEmpty) {
+                        val cmd = xargs.head
 
-                    CMDS.find(_.name == cmd) match {
-                        case Some(cmd) ⇒
-                            // Reset error code.
-                            exitStatus = 0
+                        // Reset error code.
+                        exitStatus = 0
 
-                            try
-                                cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
-                            catch {
-                                case e: Exception ⇒ error(e.getLocalizedMessage)
-                            }
-
-                        case None ⇒ errorUnknownCommand(cmd)
+                        CMDS.find(_.name == cmd) match {
+                            case Some(cmd) ⇒ cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
+                            case None ⇒ throw UnknownCommand(cmd)
+                        }
                     }
                 }
+            catch {
+                case e: Exception ⇒ error(e.getLocalizedMessage)
             }
         }
     }

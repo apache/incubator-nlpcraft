@@ -451,6 +451,7 @@ object NCSqlModelGeneratorImpl {
       * @param col
       * @return
       */
+    //noinspection SameParameterValue
     private def getString(rs: ResultSet, col: String): String =
         Try(rs.getString(col)).getOrElse("No data")
 
@@ -459,6 +460,7 @@ object NCSqlModelGeneratorImpl {
       * @param col
       * @return
       */
+    //noinspection SameParameterValue
     private def getInt(rs: ResultSet, col: String): Int =
         Try(rs.getInt(col)).getOrElse(-1)
 
@@ -633,13 +635,13 @@ object NCSqlModelGeneratorImpl {
                |    ${c("--password|-w")} ${g("password")}
                |        Optional database user password.
                |
-               |    ${c("--model-id|-x")} ${g("id")}
+               |    ${c("--mdlId|-m")} ${g("id")}
                |        Optional generated model ID. By default, the model ID will be 'sql.model.id'.
                |
-               |    ${c("--model-ver|-v")} ${g("version")}
+               |    ${c("--mdlVer|-v")} ${g("version")}
                |        Optional generated model version. By default, the model version will be '1.0.0-timestamp'.
                |
-               |    ${c("--model-name|-n")} ${g("name")}
+               |    ${c("--mdlName|-n")} ${g("name")}
                |        Optional generated model name. By default, the model name will be 'SQL-based model'.
                |
                |    ${c("--exclude|-e")} ${g("list")}
@@ -773,9 +775,9 @@ object NCSqlModelGeneratorImpl {
                     case "--user" | "-u" ⇒ params.user = v
                     case "--password" | "-w" ⇒ params.password = v
                     case "--schema" | "-s" ⇒ params.schema = v
-                    case "--model-id" | "-x" ⇒ params.modelId = v
-                    case "--model-name" | "-n" ⇒ params.modelName = v
-                    case "--model-ver" | "-v" ⇒ params.modelVer = v
+                    case "--mdlId" | "-m" ⇒ params.modelId = v
+                    case "--mdlName" | "-n" ⇒ params.modelName = v
+                    case "--mdlVer" | "-v" ⇒ params.modelVer = v
                     case "--out" | "-o" ⇒ params.output = v
                     case "--include" | "-i" ⇒ params.inclSpec = v; params.inclPred = mkPredicate(v)
                     case "--exclude" | "-e" ⇒ params.exclSpec = v; params.exclPred = mkPredicate(v)
