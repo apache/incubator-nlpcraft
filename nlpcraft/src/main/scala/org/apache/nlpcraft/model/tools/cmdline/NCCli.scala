@@ -1434,9 +1434,7 @@ object NCCli extends App {
                 s"  ${y("> $cmd /c dir")}\n" +
                 s"    Runs Windows ${c("dir")} command in a separate shell.\n" +
                 s"  ${y("> $ls -la")}\n" +
-                s"    Runs Linux/Unix ${c("ls -la")} command.\n" +
-                s"  ${y("> $mvn clean package")}\n" +
-                s"    Runs Maven build."
+                s"    Runs Linux/Unix ${c("ls -la")} command.\n"
             )
 
         if (args.isEmpty) { // Default - show abbreviated help.
