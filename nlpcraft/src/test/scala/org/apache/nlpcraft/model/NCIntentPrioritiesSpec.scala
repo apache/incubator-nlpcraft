@@ -56,6 +56,7 @@ class NCIntentPrioritiesSpec extends NCTestContext {
         checkHigh(
             "Moscow x",
             "London x",
+            "x London",
             "x berlin",
             "x Berlin, Germany"
         )

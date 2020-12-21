@@ -224,10 +224,17 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 case x2 ⇒
                                     require(x2 == 0)
 
-                                    def calcHash(m: MatchHolder): Int =
-                                        m.variant.tokens.map(t ⇒
-                                            s"${t.getId}${t.getGroups}${t.getValue}${t.normText}"
-                                        ).mkString("").hashCode
+                                    def calcHash(m: MatchHolder): Int = {
+                                        val variantPart =
+                                            m.variant.
+                                            tokens.
+                                            map(t ⇒ s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
+                                            mkString("")
+
+                                        val intentPart = m.intentMatch.intent.toString
+
+                                        (variantPart, intentPart).##
+                                    }
 
                                     // Order doesn't make sense here.
                                     // It is just to provide deterministic result for the matches with the same weight.
