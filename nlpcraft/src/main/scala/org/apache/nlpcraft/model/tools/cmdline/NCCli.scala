@@ -2010,8 +2010,8 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val filePath = getPathParam(cmd, args, "filePath")
-        val overrideFlag = getFlagParam(cmd, args, "override", false)
+        val filePath = refinePath(getParam(cmd, args, "filePath"))
+        val overrideFlag = getFlagParam(cmd, args, "override", dflt = false)
         val mdlId = getParam(cmd, args, "modelId")
 
         val out = new File(filePath)
@@ -2058,13 +2058,13 @@ object NCCli extends App {
       * @param repl Whether or not executing from REPL.
       */
     private [cmdline] def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val outputDir = getPathParam(cmd, args, "outputDir", USR_WORK_DIR)
+        val outputDir = refinePath(getParam(cmd, args, "outputDir", USR_WORK_DIR))
         val baseName = getParam(cmd, args, "baseName")
         val lang = getParam(cmd, args, "lang", "java").toLowerCase
         val buildTool = getParam(cmd, args, "buildTool", "mvn").toLowerCase
         val pkgName = getParam(cmd, args, "packageName", "org.apache.nlpcraft.demo").toLowerCase
         val fileType = getParam(cmd, args, "modelType", "yaml").toLowerCase
-        val overrideFlag = getFlagParam(cmd, args, "override", false)
+        val overrideFlag = getFlagParam(cmd, args, "override", dflt = false)
 
         val dst = new File(outputDir, baseName)
         val pkgDir = pkgName.replaceAll("\\.", "/")
