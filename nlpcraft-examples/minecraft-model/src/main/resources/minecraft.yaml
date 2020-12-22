@@ -27,13 +27,13 @@ elements:
       - weather
     synonyms:
       - "{rain|rainy}"
-  - id: sun
+  - id: clear
     description: Set sunny weather
     groups:
       - weather
     synonyms:
       - "{sun|sunny|clear sky}"
-  - id: storm
+  - id: thunder
     description: Set stormy weather
     groups:
       - weather
