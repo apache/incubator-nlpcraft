@@ -54,13 +54,13 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
         "endidx"
     );
 
-    private List<String> parts;
-    private String param;
-    private String paramFunc;
-    private String op;
-    private Object value;
-    private String valueStr;
-    private Function<NCToken, NCToken> qualFunc;
+    private final List<String> parts;
+    private final String param;
+    private final String paramFunc;
+    private final String op;
+    private final Object value;
+    private final String valueStr;
+    private final Function<NCToken, NCToken> qualFunc;
 
     private boolean validated = false;
 
@@ -92,8 +92,6 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
         this.paramFunc = paramFunc;
         this.param = param;
         this.op = op;
-
-        valueStr = null;
 
         if (value == null)
             valueStr = "null";
@@ -401,11 +399,11 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
                         }
                     }
                     else if (obj instanceof Map)
-                        lval = ((Map<String, Object>)obj).get(strIdx);
+                        lval = ((Map<String, Object>)obj).get(stripQuotes(strIdx));
                     else
                         throw new IllegalArgumentException(String.format(
                             "Invalid token predicate DSL meta parameter value " +
-                                "for indexed access (java.util.List or java.util.Map only): %s %s %s",
+                            "for indexed access (java.util.List or java.util.Map only): %s %s %s",
                             param, op, valueStr));
                 }
             }
