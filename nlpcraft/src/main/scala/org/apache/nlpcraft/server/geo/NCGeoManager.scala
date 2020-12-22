@@ -356,10 +356,12 @@ object NCGeoManager extends NCService {
                             // NCGeoSynonym shouldn't be matched with common dictionary word.
                             // Exception - manually defined synonyms.
                             syns.filter(s ⇒
-                                SYNONYMS_MANUAL_FILES.exists(p ⇒ res.fileName.endsWith(s"/$p")) ||
-                                    (!dicts.contains(s) &&
-                                        !dicts.contains(s.replaceAll("the ", "")) &&
-                                        !dicts.contains(s.replaceAll("the-", "")))
+                                SYNONYMS_MANUAL_FILES.exists(p ⇒ res.fileName.endsWith(p)) ||
+                                (
+                                    !dicts.contains(s) &&
+                                    !dicts.contains(s.replaceAll("the ", "")) &&
+                                    !dicts.contains(s.replaceAll("the-", ""))
+                                )
                             ).foreach(addEntry(_, geoEntry, lowerCase = true))
                         case _ ⇒ throw new NCE(s"Unknown synonym or its sub-component: $geoEntry")
                     }
