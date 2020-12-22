@@ -61,11 +61,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         def ++=(that: Weight2): Weight2 = {
             val buf2 = mutable.ArrayBuffer[Int]()
 
-            for (i ← 0 until Math.max(buf.size, that.buf.size)) {
-                val (w, w2) = get(i, that)
-
-                buf.append(w + w2)
-            }
+            for (i ← 0 until Math.max(buf.size, that.buf.size))
+                buf.append(norm(i, buf) + norm(i, that.buf))
 
             buf = buf2
 
@@ -78,8 +75,20 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
          * @param w New weight to append.
          * @return
          */
-        def += (w: Int): Weight2 = {
+        def =:(w: Int): Weight2 = {
             buf.append(w)
+
+            this
+        }
+
+        /**
+         * Prepends new weight.
+         *
+         * @param w New weight to prepend.
+         * @return
+         */
+        def :=(w: Int): Weight2 = {
+            buf.prepend(w)
 
             this
         }
@@ -94,16 +103,13 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             buf(idx) = w
 
         /**
+         * Gets element at given index or zero if index is out of bounds.
          *
-         * @param i
-         * @param that
+         * @param i Index in collection.
+         * @param c Collection.
          * @return
          */
-        private def get(i: Int, that: Weight2): (Int, Int) =
-        (
-            if (i < buf.size) buf(i) else 0,
-            if (i < that.buf.size) that.buf(i) else 0
-        )
+        private def norm(i: Int, c: mutable.ArrayBuffer[Int]): Int = if (i < c.size) c(i) else 0
 
         /**
          *
@@ -113,11 +119,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         override def compare(that: Weight2): Int = {
             var res = 0
 
-            for (i ← 0 until Math.max(buf.size, that.buf.size) if res == 0) {
-                val (w, w2) = get(i, that)
-
-                res = Integer.compare(w, w2)
-            }
+            for (i ← 0 until Math.max(buf.size, that.buf.size) if res == 0)
+                res = Integer.compare(norm(i, buf), norm(i, that.buf))
 
             res
         }
@@ -303,40 +306,39 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 )
             }
 
-            val sorted =
-                matches.sortWith((m1: MatchHolder, m2: MatchHolder) ⇒
-                    // 1. First with maximum weight.
-                    m1.intentMatch.weight.compare(m2.intentMatch.weight) match {
-                        case x1 if x1 < 0 ⇒ false
-                        case x1 if x1 > 0 ⇒ true
-                        case x1 ⇒
-                            require(x1 == 0)
+            val sorted = matches.sortWith((m1: MatchHolder, m2: MatchHolder) ⇒
+                // 1. First with maximum weight.
+                m1.intentMatch.weight.compare(m2.intentMatch.weight) match {
+                    case x1 if x1 < 0 ⇒ false
+                    case x1 if x1 > 0 ⇒ true
+                    case x1 ⇒
+                        require(x1 == 0)
 
-                            // 2. First with maximum variant.
-                            m1.variant.compareTo(m2.variant) match {
-                                case x2 if x2 < 0 ⇒ false
-                                case x2 if x2 > 0 ⇒ true
-                                case x2 ⇒
-                                    require(x2 == 0)
+                        // 2. First with maximum variant.
+                        m1.variant.compareTo(m2.variant) match {
+                            case x2 if x2 < 0 ⇒ false
+                            case x2 if x2 > 0 ⇒ true
+                            case x2 ⇒
+                                require(x2 == 0)
 
-                                    def calcHash(m: MatchHolder): Int = {
-                                        val variantPart =
-                                            m.variant.
-                                            tokens.
-                                            map(t ⇒ s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
-                                            mkString("")
+                                def calcHash(m: MatchHolder): Int = {
+                                    val variantPart =
+                                        m.variant.
+                                        tokens.
+                                        map(t ⇒ s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
+                                        mkString("")
 
-                                        val intentPart = m.intentMatch.intent.toString
+                                    val intentPart = m.intentMatch.intent.toString
 
-                                        (variantPart, intentPart).##
-                                    }
+                                    (variantPart, intentPart).##
+                                }
 
-                                    // Order doesn't make sense here.
-                                    // It is just to provide deterministic result for the matches with the same weight.
-                                    calcHash(m1) > calcHash(m2)
-                            }
-                    }
-                )
+                                // Order doesn't make sense here.
+                                // It is just to provide deterministic result for the matches with the same weight.
+                                calcHash(m1) > calcHash(m2)
+                        }
+                }
+            )
 
             if (sorted.nonEmpty) {
                 val tbl = NCAsciiTable("Variant", "Intent", "Term Tokens")
