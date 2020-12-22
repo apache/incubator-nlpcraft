@@ -51,4 +51,31 @@ class NCIntentSolverEngineSpec  {
         assertTrue(matchFlow("a a c c e f g h", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
         assertTrue(!matchFlow("a a c c x", ("a", 2, 2), ("b|c", 1, 2), ("d", 1, 1)))
     }
+
+    @Test
+    def testWeightCalculus(): Unit = {
+        import  NCIntentSolverEngine._
+
+        def assertCols(w: Weight, s: Seq[Int]): Unit = assertTrue(w.toSeq.mkString(",") == s.mkString(","))
+
+        assertCols(
+            new Weight(1, 2, 3) += new Weight(1, 2, 3),
+            Seq(2, 4, 6)
+        )
+        assertCols(
+            (new Weight(1, 2, 3) append 5) += new Weight(1, 2, 3),
+            Seq(2, 4, 6, 5)
+        )
+        assertCols(
+            (new Weight(1, 2, 3) prepend 1 append 5) += new Weight(1, 2, 3),
+            Seq(2, 3, 5, 3, 5)
+        )
+
+        assertTrue(new Weight(1, 2, 3).compare(new Weight(1, 2, 3)) == 0)
+        assertTrue(new Weight(1, 2, 3, 0).compare(new Weight(1, 2, 3)) == 0)
+        assertTrue(new Weight(2, 2, 3).compare(new Weight(1, 2, 3)) == 1)
+        assertTrue(new Weight(1, 2, 3).compare(new Weight(2, 2, 3)) == -1)
+        assertTrue(new Weight(1, 2, 3, 1).compare(new Weight(1, 2, 3)) == 1)
+        assertTrue(new Weight(1, 2, 3, 1).compare(new Weight(3)) == -1)
+    }
 }
