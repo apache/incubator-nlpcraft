@@ -58,7 +58,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
          * @param that Weight to add.
          * @return
          */
-        def ++=(that: Weight2): Weight2 = {
+        def ::=(that: Weight2): Weight2 = {
             val buf2 = mutable.ArrayBuffer[Int]()
 
             for (i ← 0 until Math.max(buf.size, that.buf.size))
