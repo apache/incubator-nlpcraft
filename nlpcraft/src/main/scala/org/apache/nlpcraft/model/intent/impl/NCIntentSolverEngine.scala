@@ -36,6 +36,101 @@ import scala.collection.mutable
   * Intent solver that finds the best matching intent given user sentence.
   */
 object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
+    /**
+     * NOTE: not thread-safe.
+     */
+    private class Weight2 extends Ordered[Weight2] {
+        private var buf = mutable.ArrayBuffer[Int]()
+
+        /**
+         *
+         * @param ws
+         */
+        def this(ws: Int*) = {
+            this()
+
+            buf.appendAll(ws)
+        }
+
+        /**
+         * Adds given weight to this weight.
+         *
+         * @param that Weight to add.
+         * @return
+         */
+        def ++=(that: Weight2): Weight2 = {
+            val buf2 = mutable.ArrayBuffer[Int]()
+
+            for (i ← 0 until Math.max(buf.size, that.buf.size)) {
+                val (w, w2) = get(i, that)
+
+                buf.append(w + w2)
+            }
+
+            buf = buf2
+
+            this
+        }
+
+        /**
+         * Appends new weight.
+         *
+         * @param w New weight to append.
+         * @return
+         */
+        def += (w: Int): Weight2 = {
+            buf.append(w)
+
+            this
+        }
+
+        /**
+         * Sets specific weight at a given index.
+         *
+         * @param idx
+         * @param w
+         */
+        def setWeight(idx: Int, w: Int): Unit =
+            buf(idx) = w
+
+        /**
+         *
+         * @param i
+         * @param that
+         * @return
+         */
+        private def get(i: Int, that: Weight2): (Int, Int) =
+        (
+            if (i < buf.size) buf(i) else 0,
+            if (i < that.buf.size) that.buf(i) else 0
+        )
+
+        /**
+         *
+         * @param that
+         * @return
+         */
+        override def compare(that: Weight2): Int = {
+            var res = 0
+
+            for (i ← 0 until Math.max(buf.size, that.buf.size) if res == 0) {
+                val (w, w2) = get(i, that)
+
+                res = Integer.compare(w, w2)
+            }
+
+            res
+        }
+
+        /**
+         *
+         * @return
+         */
+        def get: Seq[Int] = buf.toSeq
+
+        override def toString: String = s"Weight (${buf.mkString(", ")})"
+    }
+
     private class Weight extends Ordered[Weight] {
         private val weights: Array[Int] = new Array(3)
 
