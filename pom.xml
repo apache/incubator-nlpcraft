@@ -727,9 +727,9 @@
         </profile>
 
         <profile>
-            <id>examples</id>
+            <id>example-minecraft</id>
             <modules>
-                <module>nlpcraft-examples</module>
+                <module>nlpcraft-examples/minecraft-model</module>
             </modules>
         </profile>
 
