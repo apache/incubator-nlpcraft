@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model;
 
 /**
- * NLPCraft lifecycle component.
+ * Lifecycle component.
  * <p>
  * This interface defines lifecycle hooks for user-defined components that are instantiated by NLPCraft like
  * probe components, custom NER parsers and value loaders. This hooks can be used to integrated with various IoC

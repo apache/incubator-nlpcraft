@@ -23,12 +23,12 @@ import java.lang.management.ManagementFactory
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 import java.text.DateFormat
-import java.util
+import java.{lang, util}
 import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
-
 import com.google.common.base.CaseFormat
+
 import javax.lang.model.SourceVersion
 import javax.net.ssl.SSLException
 import org.apache.commons.io.IOUtils
@@ -55,8 +55,11 @@ import org.jline.reader.impl.history.DefaultHistory
 import org.jline.terminal.{Terminal, TerminalBuilder}
 import org.jline.utils.AttributedString
 import org.jline.utils.InfoCmp.Capability
+import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
+import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 import resource.managed
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
@@ -69,36 +72,43 @@ import scala.util.control.Exception.ignoring
  * NLPCraft CLI.
  */
 object NCCli extends App {
-    private final val NAME = "Apache NLPCraft CLI"
+    private final val NAME = "NLPCraft CLI"
 
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
     private final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
     private final val CMD_PARAM = Pattern.compile("(\\s)(--?[\\w-]+)")
 
-    // Number of server services that need to be started + 1 progress start.
+    // Number of server and probe services that need to be started + 1 progress start.
     // Used for progress bar functionality.
     // +==================================================================+
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
     private final val NUM_SRV_SERVICES = 30 /*services*/ + 1 /*progress start*/
+    private final val NUM_PRB_SERVICES = 21 /*services*/ + 1 /*progress start*/
 
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
+    private final val PRB_BEACON_PATH = ".nlpcraft/probe_beacon"
     private final val HIST_PATH = ".nlpcraft/.cli_history"
 
-    private final lazy val VER = NCVersion.getCurrent
-    private final lazy val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
-    private final lazy val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(SystemUtils.USER_DIR)
-    private final lazy val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_JAVA_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
-    private final lazy val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
-    private final lazy val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
-    private final lazy val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
+    private final val DFLT_USER_EMAIL = "admin@admin.com"
+    private final val DFLT_USER_PASSWD = "admin"
 
+    private final val VER = NCVersion.getCurrent
+    private final val CP_WIN_NIX_SEPS_REGEX = "[:;]"
+    private final val CP_SEP = File.pathSeparator
+    private final val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
+    private final val USR_WORK_DIR = SystemUtils.USER_DIR
+    private final val USR_HOME_DIR = SystemUtils.USER_HOME
+    private final val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(USR_WORK_DIR)
+    private final val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
+    private final val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
+    private final val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
+    private final val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
     private final val T___ = "    "
-    private val OPEN_BRK = Seq('[', '{', '(')
-    private val CLOSE_BRK = Seq(']', '}', ')')
-    // Pair for each open or close bracket.
-    private val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap
+    private final val OPEN_BRK = Seq('[', '{', '(')
+    private final val CLOSE_BRK = Seq(']', '}', ')')
+    private final val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap // Pair for each open or close bracket.
 
     private var exitStatus = 0
 
@@ -143,14 +153,23 @@ object NCCli extends App {
     case class SplitError(index: Int)
         extends Exception
 
+    case class UnknownCommand(cmd: String)
+        extends IllegalArgumentException(s"Unknown command ${c("'" + cmd + "'")}, type ${c("'help'")} to get help.")
+
     case class NoLocalServer()
-        extends IllegalStateException(s"Local REST server not found.")
+        extends IllegalStateException(s"Local server not found, use $C'start-server'$RST command to start one.")
+
+    case class NoLocalProbe()
+        extends IllegalStateException(s"Local probe not found, use $C'start-probe'$RST command to start one.")
 
     case class MissingParameter(cmd: Command, paramId: String)
         extends IllegalArgumentException(
             s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
             s"type $C'help --cmd=${cmd.name}'$RST to get help."
         )
+
+    case class NotSignedIn()
+        extends IllegalStateException(s"Not signed in. Use ${c("'signin'")} command to sign in first.")
 
     case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String)
         extends IllegalArgumentException(
@@ -174,34 +193,13 @@ object NCCli extends App {
         extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
 
     case class MalformedJson()
-        extends IllegalStateException("Malformed JSON.")
+        extends IllegalStateException(s"Malformed JSON. ${c("Tip:")} on Windows make sure to escape double quotes.")
 
     case class TooManyArguments(cmd: Command)
         extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
     case class NotEnoughArguments(cmd: Command)
         extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
-
-    case class RestSpec(
-        path: String,
-        desc: String,
-        group: String,
-        params: Seq[RestSpecParameter]
-    )
-
-    sealed trait JsonType
-
-    case object STRING extends JsonType
-    case object BOOLEAN extends JsonType
-    case object NUMERIC extends JsonType
-    case object OBJECT extends JsonType
-    case object ARRAY extends JsonType
-
-    case class RestSpecParameter(
-        name: String,
-        kind: JsonType,
-        optional: Boolean = false // Mandatory by default.
-    )
 
     // Project templates for 'gen-project' command.
     private lazy val PRJ_TEMPLATES: Map[String, Seq[String]] = {
@@ -228,288 +226,6 @@ object NCCli extends App {
         m.toMap
     }
 
-    //noinspection DuplicatedCode
-    // TODO: this needs to be loaded dynamically from OpenAPI spec.
-    private final val REST_SPEC = Seq(
-        RestSpec(
-            path = "clear/conversation",
-            desc = "Clears conversation STM",
-            group = "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "mdlId", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
-            )
-        ),
-        RestSpec(
-            "clear/dialog",
-            "Clears dialog flow",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "mdlId", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
-            )
-        ),
-        RestSpec(
-            "model/sugsyn",
-            "Runs model synonym suggestion tool",
-            "Tools",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "mdlId", kind = STRING),
-                RestSpecParameter(name = "minScore", kind = NUMERIC)
-            )
-        ),
-        RestSpec(
-            "check",
-            "Gets status and result of submitted requests",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestSpecParameter(name = "srvReqIds", kind = ARRAY, optional = true),
-                RestSpecParameter(name = "maxRows", kind = NUMERIC, optional = true)
-            )
-        ),
-        RestSpec(
-            "cancel",
-            "Cancels a question",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestSpecParameter(name = "srvReqIds", kind = ARRAY, optional = true),
-            )
-        ),
-        RestSpec(
-            "ask",
-            "Asks a question",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestSpecParameter(name = "txt", kind = STRING),
-                RestSpecParameter(name = "mdlId", kind = STRING),
-                RestSpecParameter(name = "data", kind = OBJECT, optional = true),
-                RestSpecParameter(name = "enableLog", kind = BOOLEAN, optional = true),
-            )
-        ),
-        RestSpec(
-            "ask/sync",
-            "Asks a question in synchronous mode",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestSpecParameter(name = "txt", kind = STRING),
-                RestSpecParameter(name = "mdlId", kind = STRING),
-                RestSpecParameter(name = "data", kind = OBJECT, optional = true),
-                RestSpecParameter(name = "enableLog", kind = BOOLEAN, optional = true),
-            )
-        ),
-        RestSpec(
-            "user/get",
-            "Gets current user information",
-            "User",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "id", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
-            )
-        ),
-        RestSpec(
-            "user/all",
-            "Gets all users",
-            "User",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-            )
-        ),
-        RestSpec(
-            "user/update",
-            "Updates regular user",
-            "User",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "firstName", kind = STRING),
-                RestSpecParameter(name = "lastName", kind = STRING),
-                RestSpecParameter(name = "id", kind = STRING, optional = true),
-                RestSpecParameter(name = "avatarUrl", kind = STRING, optional = true),
-                RestSpecParameter(name = "properties", kind = OBJECT, optional = true)
-            )
-        ),
-        RestSpec(
-            "user/delete",
-            "Deletes user",
-            "User",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "id", kind = STRING, optional = true),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true)
-            )
-        ),
-        RestSpec(
-            "user/admin",
-            "Updates user admin permissions",
-            "User",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "id", kind = STRING, optional = true),
-                RestSpecParameter(name = "isAdmin", kind = BOOLEAN)
-            )
-        ),
-        RestSpec(
-            "user/passwd/reset",
-            "Resets password for the user",
-            "User",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "id", kind = STRING, optional = true),
-                RestSpecParameter(name = "newPasswd", kind = STRING)
-            )
-        ),
-        RestSpec(
-            "user/add",
-            "Adds new user",
-            "User",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "firstName", kind = STRING),
-                RestSpecParameter(name = "lastName", kind = STRING),
-                RestSpecParameter(name = "email", kind = STRING),
-                RestSpecParameter(name = "passwd", kind = STRING),
-                RestSpecParameter(name = "isAdmin", kind = BOOLEAN),
-                RestSpecParameter(name = "usrExtId", kind = STRING, optional = true),
-                RestSpecParameter(name = "avatarUrl", kind = STRING, optional = true),
-                RestSpecParameter(name = "properties", kind = OBJECT, optional = true)
-            )
-        ),
-        RestSpec(
-            "company/get",
-            "Gets current user company information",
-            "Company",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-            )
-        ),
-        RestSpec(
-            "company/add",
-            "Adds new company",
-            "Company",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "name", kind = STRING),
-                RestSpecParameter(name = "website", kind = STRING, optional = true),
-                RestSpecParameter(name = "country", kind = STRING, optional = true),
-                RestSpecParameter(name = "region", kind = STRING, optional = true),
-                RestSpecParameter(name = "city", kind = STRING, optional = true),
-                RestSpecParameter(name = "address", kind = STRING, optional = true),
-                RestSpecParameter(name = "postalCode", kind = STRING, optional = true),
-                RestSpecParameter(name = "adminEmail", kind = STRING),
-                RestSpecParameter(name = "adminPasswd", kind = STRING),
-                RestSpecParameter(name = "adminFirstName", kind = STRING),
-                RestSpecParameter(name = "adminLastName", kind = STRING),
-                RestSpecParameter(name = "adminAvatarUrl", kind = STRING, optional = true)
-            )
-        ),
-        RestSpec(
-            "company/update",
-            "Updates company data",
-            "Company",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "name", kind = STRING),
-                RestSpecParameter(name = "website", kind = STRING, optional = true),
-                RestSpecParameter(name = "country", kind = STRING, optional = true),
-                RestSpecParameter(name = "region", kind = STRING, optional = true),
-                RestSpecParameter(name = "city", kind = STRING, optional = true),
-                RestSpecParameter(name = "address", kind = STRING, optional = true),
-                RestSpecParameter(name = "postalCode", kind = STRING, optional = true)
-            )
-        ),
-        RestSpec(
-            "company/delete",
-            "Deletes company",
-            "Company",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-            )
-        ),
-        RestSpec(
-            "company/token/reset",
-            "Resets company probe auth token",
-            "Company",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-            )
-        ),
-        RestSpec(
-            "feedback/add",
-            "Adds feedback",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "extUsrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "comment", kind = STRING, optional = true),
-                RestSpecParameter(name = "srvReqId", kind = STRING),
-                RestSpecParameter(name = "score", kind = STRING)
-            )
-        ),
-        RestSpec(
-            "feedback/delete",
-            "Deletes feedback",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "id", kind = NUMERIC)
-            )
-        ),
-        RestSpec(
-            "feedback/all",
-            "Gets all feedback",
-            "Asking",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-                RestSpecParameter(name = "usrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "extUsrId", kind = STRING, optional = true),
-                RestSpecParameter(name = "srvReqId", kind = STRING, optional = true)
-            )
-        ),
-        RestSpec(
-            "signin",
-            "Signs in and obtains new access token",
-            "Authentication",
-            params = Seq(
-                RestSpecParameter(name = "email", kind = STRING),
-                RestSpecParameter(name = "passwd", kind = STRING)
-            )
-        ),
-        RestSpec(
-            "signout",
-            "Signs out and releases access token",
-            "Authentication",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-            )
-        ),
-        RestSpec(
-            "probe/all",
-            "Gets all probes",
-            "Probe",
-            params = Seq(
-                RestSpecParameter(name = "acsTok", kind = STRING),
-            )
-        )
-    )
-
     case class HttpRestResponse(
         code: Int,
         data: String
@@ -517,892 +233,36 @@ object NCCli extends App {
 
     case class ReplState(
         var isServerOnline: Boolean = false,
-        var accessToken: Option[String] = None,
+        var isProbeOnline: Boolean = false,
+        var accessToken: Option[String] = None, // Access token obtain with 'userEmail'.
+        var userEmail: Option[String] = None, // Email of the user with 'accessToken'.
         var serverLog: Option[File] = None,
+        var probeLog: Option[File] = None,
         var probes: List[Probe] = Nil // List of connected probes.
-    )
-
-    @volatile private var state = ReplState()
-
-    // Single CLI command.
-    case class Command(
-        name: String,
-        group: String,
-        synopsis: String,
-        desc: Option[String] = None,
-        params: Seq[Parameter] = Seq.empty,
-        examples: Seq[Example] = Seq.empty,
-        body: (Command, Seq[Argument], Boolean) ⇒ Unit
     ) {
         /**
-         *
-         * @param name
-         * @return
+         * Resets server sub-state.
          */
-        def findParameterByNameOpt(name: String): Option[Parameter] =
-            params.find(_.names.contains(name))
+        def resetServer(): Unit = {
+            isServerOnline = false
+            accessToken = None
+            userEmail = None
+            serverLog = None
+            probes = Nil
+        }
 
         /**
-         *
-         * @param id
-         * @return
+         * Resets probe sub-state.
          */
-        def findParameterByIdOpt(id: String): Option[Parameter] =
-            params.find(_.id == id)
-
-        /**
-         *
-         * @param id
-         * @return
-         */
-        def findParameterById(id: String): Parameter =
-            findParameterByIdOpt(id).get
+        def resetProbe(): Unit = {
+            isProbeOnline = false
+            probeLog = None
+        }
     }
 
-    // Single command's example.
-    case class Example(
-        usage: Seq[String],
-        desc: String
-    )
+    private val state = ReplState()
 
-    // Single command's parameter.
-    case class Parameter(
-        id: String,
-        names: Seq[String],
-        value: Option[String] = None,
-        optional: Boolean = false, // Mandatory by default.
-        synthetic: Boolean = false,
-        desc: String
-    )
-
-    // Parsed command line argument.
-    case class Argument(
-        parameter: Parameter, // Formal parameter this argument refers to.
-        value: Option[String]
-    )
-
-    //noinspection DuplicatedCode
-    // All supported commands.
-    private final val CMDS = Seq(
-        Command(
-            name = "rest",
-            group = "2. REST Commands",
-            synopsis = s"REST call in a convenient way for command line mode.",
-            desc = Some(
-                s"When using this command you supply all call parameters as a single ${y("'--json'")} parameter with a JSON string. " +
-                s"In REPL mode, you can hit ${rv(" Tab ")} to see auto-suggestion and auto-completion candidates for " +
-                s"commonly used paths. However, ${y("'call'")} command provides more convenient way to issue REST " +
-                s"calls when in REPL mode."
-            ),
-            body = cmdRest,
-            params = Seq(
-                Parameter(
-                    id = "path",
-                    names = Seq("--path", "-p"),
-                    value = Some("path"),
-                    desc =
-                        s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
-                        s"Note that you don't need supply '/' at the beginning. " +
-                        s"See more details at https://nlpcraft.apache.org/using-rest.html " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible REST paths."
-                ),
-                Parameter(
-                    id = "json",
-                    names = Seq("--json", "-j"),
-                    value = Some("'json'"),
-                    desc =
-                        s"REST call parameters as JSON object. Since standard JSON only supports double " +
-                        s"quotes the entire JSON string should be enclosed in single quotes. You can " +
-                        s"find full OpenAPI specification for NLPCraft REST API at " +
-                        s"https://nlpcraft.apache.org/using-rest.html"
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME rest ",
-                        "  -p=signin",
-                        "  -j='{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}'"
-                    ),
-                    desc = s"Issues ${y("'signin'")} REST call with given JSON payload."
-                )
-            )
-        ),
-        Command(
-            name = "signin",
-            group = "2. REST Commands",
-            synopsis = s"Wrapper for ${c("'/signin'")} REST call.",
-            desc = Some(
-                s"If no arguments provided, it signs in with the " +
-                s"default 'admin@admin.com' user account. NOTE: please make sure to remove this account when " +
-                s"running in production."
-            ),
-            body = cmdSignIn,
-            params = Seq(
-                Parameter(
-                    id = "email",
-                    names = Seq("--email", "-e"),
-                    value = Some("email"),
-                    optional = true,
-                    desc =
-                        s"Email of the user. If not provided, 'admin@admin.com' will be used."
-                ),
-                Parameter(
-                    id = "passwd",
-                    names = Seq("--passwd", "-p"),
-                    value = Some("****"),
-                    optional = true,
-                    desc =
-                        s"User password to sign in. If not provided, the default password will be used."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME signin"
-                    ),
-                    desc = s"Signs in with the default ${c("admin@admin.com")} user account."
-                )
-            )
-        ),
-        Command(
-            name = "signout",
-            group = "2. REST Commands",
-            synopsis = s"Wrapper for ${c("'/signout'")} REST call.",
-            desc = Some(
-                s"Signs out currently signed in user."
-            ),
-            body = cmdSignOut,
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME signout"
-                    ),
-                    desc = s"Signs out currently signed in user, if any."
-                )
-            )
-        ),
-        Command(
-            name = "call",
-            group = "2. REST Commands",
-            synopsis = s"REST call in a convenient way for REPL mode.",
-            desc = Some(
-                s"When using this command you supply all call parameters separately through their own parameters named " +
-                s"after their corresponding parameters in REST specification. " +
-                s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion and " +
-                s"auto-completion candidates for commonly used paths and call parameters."
-            ),
-            body = cmdCall,
-            params = Seq(
-                Parameter(
-                    id = "path",
-                    names = Seq("--path", "-p"),
-                    value = Some("path"),
-                    desc =
-                        s"REST path, e.g. ${y("'signin'")} or ${y("'ask/sync'")}. " +
-                        s"Note that you don't need supply '/' at the beginning. " +
-                        s"See more details at https://nlpcraft.apache.org/using-rest.html " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible REST paths."
-                ),
-                Parameter(
-                    id = "xxx",
-                    names = Seq("--xxx"),
-                    value = Some("value"),
-                    optional = true,
-                    synthetic = true,
-                    desc =
-                        s"${y("'xxx'")} name corresponds to the REST call parameter that can be found at https://nlpcraft.apache.org/using-rest.html " +
-                        s"The value of this parameter should be a valid JSON value using valid JSON syntax. Note that strings " +
-                        s"don't have to be in double quotes. JSON objects and arrays should be specified as a JSON string in single quotes. You can have " +
-                        s"as many ${y("'--xxx=value'")} parameters as requires by the ${y("'--path'")} parameter. " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible parameters and their values."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME call -p=signin",
-                        "  --email=admin@admin.com",
-                        "  --passwd=admin"
-                    ),
-                    desc =
-                        s"Issues ${y("'signin'")} REST call with given JSON payload provided as a set of parameters. " +
-                        s"Note that ${y("'--email'")} and ${y("'--passwd'")} parameters correspond to the REST call " +
-                        s"specification for ${y("'/signin'")} path."
-                ),
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME call --path=ask/sync",
-                        "  --acsTok=qwerty123456",
-                        "  --txt=\"User request\"",
-                        "  --mdlId=my.model.id",
-                        "  --data='{\"data1\": true, \"data2\": 123, \"data3\": \"some text\"}'",
-                        "  --enableLog=false"
-                    ),
-                    desc =
-                        s"Issues ${y("'ask/sync'")} REST call with given JSON payload provided as a set of parameters."
-                )
-            )
-        ),
-        Command(
-            name = "ask",
-            group = "2. REST Commands",
-            synopsis = s"Wrapper for ${c("'/ask/sync'")} REST call.",
-            desc = Some(
-                s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
-                s"it requires user to be signed in. REPL session keeps the currently active access " +
-                s"token after user signed in. For command line mode, use ${c("'rest'")} command with " +
-                s"corresponding parameters."
-            ),
-            body = cmdAsk,
-            params = Seq(
-                Parameter(
-                    id = "mdlId",
-                    names = Seq("--mdlId"),
-                    value = Some("model.id"),
-                    desc =
-                        s"ID of the data model to send the request to. " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
-                ),
-                Parameter(
-                    id = "txt",
-                    names = Seq("--txt"),
-                    value = Some("txt"),
-                    desc =
-                        s"Text of the question."
-                ),
-                Parameter(
-                    id = "data",
-                    names = Seq("--data"),
-                    value = Some("'{}'"),
-                    optional = true,
-                    desc = s"Additional JSON data with maximum JSON length of 512000 bytes. Default is ${c("'null'")}."
-                ),
-                Parameter(
-                    id = "enableLog",
-                    names = Seq("--enableLog"),
-                    value = Some("true|false"),
-                    optional = true,
-                    desc = s"Flag to enable detailed processing log to be returned with the result. Default is ${c("'false'")}."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"""> ask --txt="User request" --mdlId=my.model.id"""
-                    ),
-                    desc =
-                        s"Issues ${y("'ask/sync'")} REST call with given text and model ID."
-                )
-            )
-        ),
-        Command(
-            name = "gen-sql",
-            group = "4. Miscellaneous Tools",
-            synopsis = s"Generates NLPCraft model stub from SQL databases.",
-            desc = Some(
-                s"You can choose database schema, set of tables and columns for which you want to generate NLPCraft " +
-                s"model. After the model is generated you can further configure and customize it for your specific needs."
-            ),
-            body = cmdSqlGen,
-            params = Seq(
-                Parameter(
-                    id = "url",
-                    names = Seq("--url", "-r"),
-                    value = Some("url"),
-                    desc =
-                        s"Database JDBC URL."
-                ),
-                Parameter(
-                    id = "driver",
-                    names = Seq("--driver", "-d"),
-                    value = Some("class"),
-                    desc =
-                        s"Mandatory JDBC driver class. Note that 'class' must be a fully qualified class name. " +
-                        s"It should also be available on the classpath."
-                ),
-                Parameter(
-                    id = "schema",
-                    names = Seq("--schema", "-s"),
-                    value = Some("schema"),
-                    desc =
-                        s"Database schema to scan."
-                ),
-                Parameter(
-                    id = "out",
-                    names = Seq("--out", "-o"),
-                    value = Some("filename"),
-                    desc =
-                        s"Name of the output JSON or YAML model file. " +
-                        s"It should have one of the following extensions: .js, .json, .yml, or .yaml. " +
-                        s"File extension determines the output file format."
-                ),
-                Parameter(
-                    id = "user",
-                    names = Seq("--user", "-u"),
-                    value = Some("username"),
-                    optional = true,
-                    desc = s"Database user name."
-                ),
-                Parameter(
-                    id = "password",
-                    names = Seq("--password", "-w"),
-                    value = Some("password"),
-                    optional = true,
-                    desc = s"Database password."
-                ),
-                Parameter(
-                    id = "modelId",
-                    names = Seq("--model-id", "-x"),
-                    value = Some("id"),
-                    optional = true,
-                    desc = s"Generated model ID. By default, the model ID is ${c("'sql.model.id'")}."
-                ),
-                Parameter(
-                    id = "modelVer",
-                    names = Seq("--model-ver", "-v"),
-                    value = Some("version"),
-                    optional = true,
-                    desc = s"Generated model version. By default, the model version is ${c("'1.0.0-timestamp'")}."
-                ),
-                Parameter(
-                    id = "modelName",
-                    names = Seq("--model-name", "-n"),
-                    value = Some("name"),
-                    optional = true,
-                    desc = s"Generated model name. By default, the model name is ${c("'SQL-based-model'")}."
-                ),
-                Parameter(
-                    id = "exclude",
-                    names = Seq("--exclude", "-e"),
-                    value = Some("list"),
-                    optional = true,
-                    desc =
-                        s"Semicolon-separate list of tables and/or columns to exclude. By default, none of the " +
-                        s"tables and columns in the schema are excluded. See ${c("--help")} parameter to get more details."
-                ),
-                Parameter(
-                    id = "include",
-                    names = Seq("--include", "-i"),
-                    value = Some("list"),
-                    optional = true,
-                    desc =
-                        s"Semicolon-separate list of tables and/or columns to include. By default, all of the " +
-                        s"tables and columns in the schema are included. See ${c("--help")} parameter to get more details."
-                ),
-                Parameter(
-                    id = "prefix",
-                    names = Seq("--prefix", "-f"),
-                    value = Some("list"),
-                    optional = true,
-                    desc =
-                        s"Comma-separate list of table or column name prefixes to remove. These prefixes will be " +
-                        s"removed when name is used for model elements synonyms. By default, no prefixes will be removed."
-                ),
-                Parameter(
-                    id = "suffix",
-                    names = Seq("--suffix", "-q"),
-                    value = Some("list"),
-                    optional = true,
-                    desc =
-                        s"Comma-separate list of table or column name suffixes to remove. These suffixes will be " +
-                        s"removed when name is used for model elements synonyms. By default, no suffixes will be removed."
-                ),
-                Parameter(
-                    id = "synonyms",
-                    names = Seq("--synonyms", "-y"),
-                    value = Some("true|false"),
-                    optional = true,
-                    desc = s"Flag on whether or not to generated auto synonyms for the model elements. Default is ${c("'true'")}."
-                ),
-                Parameter(
-                    id = "override",
-                    names = Seq("--override", "-z"),
-                    value = Some("true|false"),
-                    optional = true,
-                    desc =
-                        s"Flag to determine whether or not to override output file if it already exist. " +
-                        s"If override is disabled (default) and output file exists - a unique file name " +
-                        s"will be used instead. Default is ${c("'false'")}."
-                ),
-                Parameter(
-                    id = "parent",
-                    names = Seq("--parent", "-p"),
-                    value = Some("true|false"),
-                    optional = true,
-                    desc =
-                        s"Flag on whether or not to use element's parent relationship for defining " +
-                        s"SQL columns and their containing (i.e. parent) tables. Default is ${c("'false'")}."
-                ),
-                Parameter(
-                    id = "help",
-                    names = Seq("--help", "-h"),
-                    optional = true,
-                    desc =
-                        s"Gets extended help and usage information for the ${c("'gen-sql'")} command. " +
-                        s"Includes information on how to run this tool standalone."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME gen-sql --help"
-                    ),
-                    desc =
-                        s"Shows full help and usage information for ${c("gen-sql")} command."
-                ),
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME gen-sql",
-                        "  -r=jdbc:postgresql://localhost:5432/mydb",
-                        "  -d=org.postgresql.Driver",
-                        """  -f="tbl_, col_"""",
-                        """  -q="_tmp, _old, _unused"""",
-                        "  -s=public",
-                        """  -e="#_.+"""",
-                        "  -o=model.json"
-                    ),
-                    desc =
-                        s"Generates model stub from given SQL database connection."
-                )
-            )
-        ),
-        Command(
-            name = "sugsyn",
-            group = "2. REST Commands",
-            synopsis = s"Wrapper for ${c("'/model/sugsyn'")} REST call.",
-            desc = Some(
-                s"Requires user to be already signed in. This command ${bo("only makes sense in the REPL mode")} as " +
-                s"it requires user to be signed in. REPL session keeps the currently active access " +
-                s"token after user signed in. For command line mode, use ${c("'rest'")} command with " +
-                s"corresponding parameters."
-            ),
-            body = cmdSugSyn,
-            params = Seq(
-                Parameter(
-                    id = "mdlId",
-                    names = Seq("--mdlId"),
-                    value = Some("model.id"),
-                    desc =
-                        s"ID of the model to run synonym suggestion on. " +
-                        s"In REPL mode, hit ${rv(" Tab ")} to see auto-suggestion for possible model IDs."
-                ),
-                Parameter(
-                    id = "minScore",
-                    names = Seq("--minScore"),
-                    value = Some("0.5"),
-                    optional = true,
-                    desc = s"Minimal score to include into the result (from 0 to 1). Default is ${c("0.5")}."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"""> sugsyn --mdlId=my.model.id"""
-                    ),
-                    desc =
-                        s"Issues ${y("'model/sugsyn'")} REST call with default min score and given model ID."
-                )
-            )
-        ),
-        Command(
-            name = "tail-server",
-            group = "1. Server Commands",
-            synopsis = s"Shows last N lines from the local REST server log.",
-            desc = Some(
-                s"Only works for the server started via this script."
-            ),
-            body = cmdTailServer,
-            params = Seq(
-                Parameter(
-                    id = "lines",
-                    names = Seq("--lines", "-l"),
-                    value = Some("num"),
-                    desc =
-                        s"Number of the server log lines from the end to display. Default is 20."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME tail-server --lines=20 "),
-                    desc = s"Prints last 20 lines from the local server log."
-                )
-            )
-        ),
-        Command(
-            name = "start-server",
-            group = "1. Server Commands",
-            synopsis = s"Starts local REST server.",
-            desc = Some(
-                s"REST server is started in the external JVM process with both stdout and stderr piped out into log file. " +
-                s"Command will block until the server is started unless ${y("'--no-wait'")} parameter is used."
-            ),
-            body = cmdStartServer,
-            params = Seq(
-                Parameter(
-                    id = "config",
-                    names = Seq("--config", "-c"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
-                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                        s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the REST server and the data probe can use the same file for their configuration."
-                ),
-                Parameter(
-                    id = "igniteConfig",
-                    names = Seq("--ignite-config", "-i"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
-                        s"computing plane and a default distributed storage. REST server will automatically look for " +
-                        s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
-                        s"configuration file has different name or in different location use this parameter to " +
-                        s"provide an alternative path."
-                ),
-                Parameter(
-                    id = "noWait",
-                    names = Seq("--no-wait"),
-                    optional = true,
-                    desc =
-                        s"Instructs command not to wait for the server startup and return immediately."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server"),
-                    desc = "Starts local server with default configuration."
-                ),
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
-                    desc = "Starts local REST server with alternative configuration file."
-                )
-            )
-        ),
-        Command(
-            name = "restart-server",
-            group = "1. Server Commands",
-            synopsis = s"Restarts local REST server.",
-            desc = Some(
-                s"This command is equivalent to executing  ${y("'stop-server'")} and then ${y("'start-server'")} commands with " +
-                s"corresponding parameters. If there is no local REST server the ${y("'stop-server'")} command is ignored."
-            ),
-            body = cmdRestartServer,
-            params = Seq(
-                Parameter(
-                    id = "config",
-                    names = Seq("--config", "-c"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Configuration absolute file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
-                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                        s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note that the REST server and the data probe can use the same file for their configuration."
-                ),
-                Parameter(
-                    id = "igniteConfig",
-                    names = Seq("--ignite-config", "-i"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Apache Ignite configuration absolute file path. Note that Apache Ignite is used as a cluster " +
-                        s"computing plane and a default distributed storage. REST server will automatically look for " +
-                        s"${y("'ignite.xml'")} configuration file in the same directory as NLPCraft JAR file. If the " +
-                        s"configuration file has different name or in different location use this parameter to " +
-                        s"provide an alternative path."
-                ),
-                Parameter(
-                    id = "noWait",
-                    names = Seq("--no-wait"),
-                    optional = true,
-                    desc =
-                        s"Instructs command not to wait for the server startup and return immediately."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server"),
-                    desc = "Starts local server with default configuration."
-                ),
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=/opt/nlpcraft/nlpcraft.conf"),
-                    desc = "Starts local REST server with alternative configuration file."
-                )
-            )
-        ),
-        Command(
-            name = "info-server",
-            group = "1. Server Commands",
-            synopsis = s"Info about local REST server.",
-            body = cmdInfoServer
-        ),
-        Command(
-            name = "cls",
-            group = "3. REPL Commands",
-            synopsis = s"Clears terminal screen.",
-            body = cmdCls
-        ),
-        Command(
-            name = "no-ansi",
-            group = "3. REPL Commands",
-            synopsis = s"Disables ANSI escape codes for terminal colors & controls.",
-            desc = Some(
-                s"This is a special command that can be combined with any other commands."
-            ),
-            body = cmdNoAnsi,
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=rest no-ansi"),
-                    desc = s"Displays help for ${y("'rest'")} commands without using ANSI color and escape sequences."
-                )
-            )
-        ),
-        Command(
-            name = "ansi",
-            group = "3. REPL Commands",
-            synopsis = s"Enables ANSI escape codes for terminal colors & controls.",
-            desc = Some(
-                s"This is a special command that can be combined with any other commands."
-            ),
-            body = cmdAnsi,
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=rest ansi"),
-                    desc = s"Displays help for ${y("'rest'")} commands with ANSI color and escape sequences."
-                )
-            )
-        ),
-        Command(
-            name = "ping-server",
-            group = "1. Server Commands",
-            synopsis = s"Pings local REST server.",
-            desc = Some(
-                s"REST server is pinged using ${y("'/health'")} REST call to check its online status."
-            ),
-            body = cmdPingServer,
-            params = Seq(
-                Parameter(
-                    id = "number",
-                    names = Seq("--number", "-n"),
-                    value = Some("num"),
-                    optional = true,
-                    desc =
-                        "Number of pings to perform. Must be a number > 0. Default is 1."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(
-                        s"$PROMPT $SCRIPT_NAME ping-server -n=10"
-                    ),
-                    desc = "Pings local REST server 10 times."
-                )
-            )
-        ),
-        Command(
-            name = "stop-server",
-            group = "1. Server Commands",
-            synopsis = s"Stops local REST server.",
-            desc = Some(
-                s"Local REST server must be started via ${y(s"'$SCRIPT_NAME''")} or other compatible way."
-            ),
-            body = cmdStopServer
-        ),
-        Command(
-            name = "quit",
-            group = "3. REPL Commands",
-            synopsis = s"Quits REPL mode.",
-            body = cmdQuit
-        ),
-        Command(
-            name = "help",
-            group = "3. REPL Commands",
-            synopsis = s"Displays help for ${y(s"'$SCRIPT_NAME'")}.",
-            desc = Some(
-                s"By default, without ${y("'--all'")} or ${y("'--cmd'")} parameters, displays the abbreviated form of manual " +
-                    s"only listing the commands without parameters or examples."
-            ),
-            body = cmdHelp,
-            params = Seq(
-                Parameter(
-                    id = "cmd",
-                    names = Seq("--cmd", "-c"),
-                    value = Some("cmd"),
-                    optional = true,
-                    desc = "Set of commands to show the manual for. Can be used multiple times."
-                ),
-                Parameter(
-                    id = "all",
-                    names = Seq("--all", "-a"),
-                    optional = true,
-                    desc = "Flag to show full manual for all commands."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -c=rest --cmd=version"),
-                    desc = s"Displays help for ${y("'rest'")} and ${y("'version'")} commands."
-                ),
-                Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME help -all"),
-                    desc = "Displays help for all commands."
-                )
-            )
-        ),
-        Command(
-            name = "version",
-            group = "3. REPL Commands",
-            synopsis = s"Displays full version of ${y(s"'$SCRIPT_NAME'")} script.",
-            desc = Some(
-                "Depending on the additional parameters can display only the semantic version or the release date."
-            ),
-            body = cmdVersion,
-            params = Seq(
-                Parameter(
-                    id = "semver",
-                    names = Seq("--sem-ver", "-s"),
-                    value = None,
-                    optional = true,
-                    desc = s"Display only the semantic version value, e.g. ${VER.version}."
-                ),
-                Parameter(
-                    id = "reldate",
-                    names = Seq("--rel-date", "-d"),
-                    value = None,
-                    optional = true,
-                    desc = s"Display only the release date, e.g. ${VER.date}."
-                )
-            )
-        ),
-        Command(
-            name = "gen-project",
-            group = "4. Miscellaneous Tools",
-            synopsis = s"Generates project stub with default configuration.",
-            desc = Some(
-                "This command supports Java, Scala, and Kotlin languages with either Maven, Gradle or SBT " +
-                "as a build tool. Generated projects compiles and runs and can be used as a quick development sandbox."
-            ),
-            body = cmdGenProject,
-            params = Seq(
-                Parameter(
-                    id = "outputDir",
-                    names = Seq("--outputDir", "-d"),
-                    value = Some("path"),
-                    optional = true,
-                    desc = s"Output directory. Default value is the current working directory."
-                ),
-                Parameter(
-                    id = "baseName",
-                    names = Seq("--baseName", "-n"),
-                    value = Some("name"),
-                    desc =
-                        s"Base name for the generated files. For example, if base name is ${y("'MyApp'")}, " +
-                        s"then generated Java file will be named as ${y("'MyAppModel.java'")} and model file as ${y("'my_app_model.yaml'")}."
-                ),
-                Parameter(
-                    id = "lang",
-                    names = Seq("--lang", "-l"),
-                    value = Some("name"),
-                    optional = true,
-                    desc =
-                        s"Language to generate source files in. Supported value are ${y("'java'")}, ${y("'scala'")}, ${y("'kotlin'")}. " +
-                        s"Default value is ${y("'java'")}."
-                ),
-                Parameter(
-                    id = "buildTool",
-                    names = Seq("--buildTool", "-b"),
-                    value = Some("name"),
-                    optional = true,
-                    desc =
-                        s"Build tool name to use. Supported values are ${y("'mvn'")} and ${y("'gradle'")} for ${y("'java'")}, " +
-                        s"${y("'scala'")}, ${y("'kotlin'")}, and ${y("'sbt'")} for ${y("'scala'")} language. Default value is ${y("'mvn'")}."
-                ),
-                Parameter(
-                    id = "packageName",
-                    names = Seq("--packageName", "-p"),
-                    value = Some("name"),
-                    optional = true,
-                    desc = s"JVM package name to use in generated source code. Default value is ${y("'org.apache.nlpcraft.demo'")}."
-                ),
-                Parameter(
-                    id = "modelType",
-                    names = Seq("--modelType", "-m"),
-                    value = Some("type"),
-                    optional = true,
-                    desc = s"Type of generated model file. Supported value are ${y("'yaml'")} or ${y("'json'")}. Default value is ${y("'yaml'")}."
-                ),
-                Parameter(
-                    id = "override",
-                    names = Seq("--override", "-o"),
-                    value = Some("true|false"),
-                    optional = true,
-                    desc = s"Whether or not to override existing output directory. Default value is ${y("'false'")}."
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq("> gen-project -n=MyProject -l=scala -b=sbt"),
-                    desc = s"Generates Scala SBT project."
-                ),
-                Example(
-                    usage = Seq("> gen-project -n=MyProject -l=kotlin -p=com.mycompany.nlp -o=true"),
-                    desc = s"Generates Kotlin Maven project."
-                )
-            )
-        ),
-        Command(
-            name = "gen-model",
-            group = "4. Miscellaneous Tools",
-            synopsis = s"Generates data model file stub.",
-            desc = Some(
-                "Generated model stub will have all default configuration. Model file can be either YAML or JSON."
-            ),
-            body = cmdGenModel,
-            params = Seq(
-                Parameter(
-                    id = "filePath",
-                    names = Seq("--filePath", "-f"),
-                    value = Some("path"),
-                    desc =
-                        s"File path for the model stub. File path can either be an absolute path, relative path or " +
-                        s"just a file name in which case the current folder will be used. File must have one of the " +
-                        s"following extensions: ${y("'json'")}, ${y("'js'")}, ${y("'yaml'")}, or ${y("'yml'")}."
-                ),
-                Parameter(
-                    id = "modelId",
-                    names = Seq("--modelId", "-n"),
-                    value = Some("id"),
-                    desc = "Model ID."
-                ),
-                Parameter(
-                    id = "override",
-                    names = Seq("--override", "-o"),
-                    value = Some("true|false"),
-                    optional = true,
-                    desc = s"Override output directory flag. Supported: ${y("'true'")}, ${y("'false'")}. Default value is ${y("'false'")}"
-                )
-            ),
-            examples = Seq(
-                Example(
-                    usage = Seq("> gen-model -f=myModel.json -n=my.model.id"),
-                    desc = s"Generates JSON model file stub in the current folder."
-                ),
-                Example(
-                    usage = Seq("> gen-model -f=c:/tmp/myModel.yaml -n=my.model.id --override=true"),
-                    desc = s"Generates YAML model file stub in ${y("'c:/temp'")} folder overriding existing file, if any."
-                )
-            )
-        )
-    ).sortBy(_.name)
-
-    require(
-        U.getDups(CMDS.map(_.name)).isEmpty,
-        "Dup commands."
-    )
-
+    private final val NO_LOGO_CMD = CMDS.find(_.name == "no-logo").get
     private final val NO_ANSI_CMD = CMDS.find(_.name == "no-ansi").get
     private final val ANSI_CMD = CMDS.find(_.name == "ansi").get
     private final val QUIT_CMD = CMDS.find(_.name == "quit").get
@@ -1412,34 +272,198 @@ object NCCli extends App {
     private final val ASK_CMD = CMDS.find(_.name == "ask").get
     private final val SUGSYN_CMD = CMDS.find(_.name == "sugsyn").get
     private final val STOP_SRV_CMD = CMDS.find(_.name == "stop-server").get
-    private final val START_SRV_CMD = CMDS.find(_.name == "start-server").get
+    private final val SRV_INFO_CMD = CMDS.find(_.name == "info-server").get
+    private final val PRB_INFO_CMD = CMDS.find(_.name == "info-probe").get
+    private final val STOP_PRB_CMD = CMDS.find(_.name == "stop-probe").get
+
+    /**
+     * @param cmd
+     * @param args
+     * @param id
+     * @param dflt
+     */
+    @throws[MissingParameter]
+    private def getParam(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String =
+        args.find(_.parameter.id == id).flatMap(_.value) match {
+            case Some(v) ⇒ v
+            case None ⇒
+                if (dflt == null)
+                    throw MissingParameter(cmd, id)
+
+                dflt
+        }
+
+    @throws[InvalidParameter]
+    private def getIntParam(cmd: Command, args: Seq[Argument], id: String, dflt: Int): Int = {
+        getParamOpt(cmd, args, id) match {
+            case Some(num) ⇒
+                try
+                    Integer.parseInt(num)
+                catch {
+                    case _: Exception ⇒ throw InvalidParameter(cmd, id)
+                }
+
+            case None ⇒ dflt // Default.
+        }
+    }
+
+    @throws[InvalidParameter]
+    private def getDoubleParam(cmd: Command, args: Seq[Argument], id: String, dflt: Double): Double = {
+        getParamOpt(cmd, args, id) match {
+            case Some(num) ⇒
+                try
+                    java.lang.Double.parseDouble(num)
+                catch {
+                    case _: Exception ⇒ throw InvalidParameter(cmd, id)
+                }
+
+            case None ⇒ dflt // Default.
+        }
+    }
+
+    /**
+     * @param cmd
+     * @param args
+     * @param id
+     */
+    private def getParamOpt(cmd: Command, args: Seq[Argument], id: String): Option[String] =
+        args.find(_.parameter.id == id).flatMap(_.value)
+
+    /**
+     * @param cmd
+     * @param args
+     * @param id
+     */
+    private def getParamOrNull(cmd: Command, args: Seq[Argument], id: String): String =
+        args.find(_.parameter.id == id) match {
+            case Some(arg) ⇒ stripQuotes(arg.value.get)
+            case None ⇒ null
+        }
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @return
+     */
+    private def getFlagParam(cmd: Command, args: Seq[Argument], id: String, dflt: Boolean): Boolean =
+        args.find(_.parameter.id == id) match {
+            case Some(b) ⇒ true
+            case None ⇒ dflt
+        }
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @return
+     */
+    private def getCpParam(cmd: Command, args: Seq[Argument], id: String): String =
+        getParamOpt(cmd, args, id) match {
+            case Some(path) ⇒ normalizeCp(stripQuotes(path))
+            case None ⇒ null
+        }
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @return
+     */
+    private def getPathParam(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String = {
+        def makePath(p: String): String = {
+            val normPath = refinePath(stripQuotes(p))
+
+            checkFilePath(normPath)
+
+            normPath
+        }
+
+        getParamOpt(cmd, args, id) match {
+            case Some(path) ⇒ makePath(path)
+            case None ⇒ if (dflt == null) null else makePath(dflt)
+        }
+    }
+
+    /**
+     *
+     * @param path
+     */
+    private def refinePath(path: String): String = {
+        require(path != null)
+
+        if (path.nonEmpty && path.head == '~') new File(SystemUtils.getUserHome, path.tail).getAbsolutePath else path
+    }
 
     /**
      *
      * @param s
      * @return
      */
-    private def stripQuotes(s: String): String = {
-        var x = s
-        var found = true
+    @tailrec
+    private[cmdline] def stripQuotes(s: String): String = {
+        val x = s.trim
 
-        while (found) {
-            found = false
+        if ((x.startsWith("\"") && x.endsWith("\"")) || (x.startsWith("'") && x.endsWith("'")))
+            stripQuotes(x.substring(1, x.length - 1))
+        else
+            x
+    }
 
-            if (x.startsWith("\"") && x.endsWith("\"")) {
-                found = true
+    /**
+     *
+     * @param path
+     */
+    private def checkFilePath(path: String): Unit = {
+        val file = new File(path)
 
-                x = x.substring(1, x.length - 1)
+        if (!file.exists() || !file.isFile)
+            throw new IllegalArgumentException(s"File not found: ${c(file.getAbsolutePath)}")
+    }
+
+    /**
+     * Checks whether given list of models contains class names outside of NLPCraft project.
+     *
+     * @param mdls Comma-separated list of fully qualified class names for data models.
+     * @return
+     */
+    private def hasExternalModels(mdls: String): Boolean =
+        U.splitTrimFilter(mdls, ",").exists(!_.startsWith("org.apache.nlpcraft."))
+
+    /**
+     * Handles tilda and checks that every component of the given class path exists relative to the current user working
+     * directory of this process.
+     *
+     * @param cp Classpath to normalize.
+     * @return
+     */
+    private def normalizeCp(cp: String): String =
+        U.splitTrimFilter(cp, CP_WIN_NIX_SEPS_REGEX).map(refinePath).map(path ⇒ {
+            val normPath = refinePath(path)
+
+            if (!normPath.contains("*") && !new File(normPath).exists())
+                throw new IllegalStateException(s"Classpath not found: ${c(path)}")
+            else
+                normPath
+        })
+        .mkString(CP_SEP)
+
+    /**
+     *
+     */
+    private def cleanUpTempFiles(): Unit = {
+        val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
+
+        for (file <- new File(SystemUtils.getUserHome, ".nlpcraft").listFiles())
+            if (file.lastModified() < tstamp) {
+                val name = file.getName
+
+                if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
+                    file.delete()
             }
-
-            if (x.startsWith("'") && x.endsWith("'")) {
-                found = true
-
-                x = x.substring(1, x.length - 1)
-            }
-        }
-
-        x
     }
 
     /**
@@ -1452,15 +476,15 @@ object NCCli extends App {
 
     /**
      *
-     * @param pathOpt
+     * @param cmd Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
      */
-    private def checkFilePath(pathOpt: Option[Argument]): Unit = {
-        if (pathOpt.isDefined) {
-            val file = new File(stripQuotes(pathOpt.get.value.get))
+    private [cmdline] def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val restPath = getParam(cmd, args, "path") // REST call path (NOT a file system path).
+        val json = stripQuotes(getParam(cmd, args, "json"))
 
-            if (!file.exists() || !file.isFile)
-                throw new IllegalArgumentException(s"File not found: ${c(file.getAbsolutePath)}")
-        }
+        httpRest(cmd, restPath, json)
     }
 
     /**
@@ -1468,17 +492,22 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
      */
-    private def cmdStartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val cfgPath = args.find(_.parameter.id == "config")
-        val igniteCfgPath = args.find(_.parameter.id == "igniteConfig")
-        val noWait = args.exists(_.parameter.id == "noWait")
-
-        checkFilePath(cfgPath)
-        checkFilePath(igniteCfgPath)
+    private [cmdline] def cmdStartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val cfgPath = getPathParam(cmd, args, "config")
+        val igniteCfgPath = getPathParam(cmd, args, "igniteConfig")
+        val noWait = getFlagParam(cmd, args, "noWait", false)
+        val timeoutMins = getIntParam(cmd, args, "timeoutMins", 2)
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case None ⇒ Seq("-ea", "-Xms2048m", "-XX:+UseG1GC")
+        }
 
         // Ensure that there isn't another local server running.
         loadServerBeacon() match {
-            case Some(b) ⇒ throw new IllegalStateException(s"Existing server (pid ${c(b.pid)}) detected.")
+            case Some(b) ⇒ throw new IllegalStateException(
+                s"Existing server (pid ${c(b.pid)}) detected. " +
+                s"Use ${c("'stop-server'")} command to stop it, if necessary."
+            )
             case None ⇒ ()
         }
 
@@ -1490,35 +519,34 @@ object NCCli extends App {
         // Store in REPL state right away.
         state.serverLog = Some(output)
 
-        val srvPb = new ProcessBuilder(
-            JAVA,
-            "-ea",
-            "-Xms2048m",
-            "-XX:+UseG1GC",
-            // Required by Ignite 2.x running on JDK 11+.
-            "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
-            "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
-            "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
-            "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
-            "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
-            "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED",
-            "--illegal-access=permit",
-            "-DNLPCRAFT_ANSI_COLOR_DISABLED=true", // No ANSI colors for text log output to the file.
-            "-cp",
-            s"$JAVA_CP",
-            "org.apache.nlpcraft.NCStart",
-            "-server",
-            cfgPath match {
-                case Some(path) ⇒ s"-config=${stripQuotes(path.value.get)}"
-                case None ⇒ ""
-            },
-            igniteCfgPath match {
-                case Some(path) ⇒ s"-igniteConfig=${stripQuotes(path.value.get)}"
-                case None ⇒ ""
-            },
-        )
+        var srvArgs = mutable.ArrayBuffer.empty[String]
 
-        srvPb.directory(new File(INSTALL_HOME))
+        srvArgs += JAVA
+        srvArgs ++= jvmOpts
+
+        // Required by Ignite 2.x running on JDK 11+.
+        // TODO: check for dups with 'jvmOpts'?
+        srvArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
+        srvArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+        srvArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
+        srvArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
+        srvArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
+        srvArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
+        srvArgs += "--illegal-access=permit"
+        srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
+        srvArgs += "-cp"
+        srvArgs += JAVA_CP
+        srvArgs += "org.apache.nlpcraft.NCStart"
+        srvArgs += "-server"
+
+        if (cfgPath != null)
+            srvArgs += s"-config=$cfgPath"
+        if (igniteCfgPath != null)
+            srvArgs += s"-igniteConfig=$igniteCfgPath"
+
+        val srvPb = new ProcessBuilder(srvArgs.asJava)
+
+        srvPb.directory(new File(USR_WORK_DIR))
         srvPb.redirectErrorStream(true)
 
         val bleachPb = new ProcessBuilder(
@@ -1529,7 +557,7 @@ object NCCli extends App {
             "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
         )
 
-        bleachPb.directory(new File(INSTALL_HOME))
+        bleachPb.directory(new File(USR_WORK_DIR))
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
@@ -1544,7 +572,7 @@ object NCCli extends App {
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
-            logln(s"Server output > ${c(output.getAbsolutePath)}")
+            logln(s"Server output: ${c(output.getAbsolutePath)}")
 
             /**
              *
@@ -1554,7 +582,6 @@ object NCCli extends App {
 
                 tbl += (s"${g("stop-server")}", "Stop the server.")
                 tbl += (s"${g("info-server")}", "Get server information.")
-                tbl += (s"${g("restart-server")}", "Restart the server.")
                 tbl += (s"${g("ping-server")}", "Ping the server.")
                 tbl += (s"${g("tail-server")}", "Tail the server log.")
 
@@ -1601,9 +628,9 @@ object NCCli extends App {
 
                 var beacon: NCCliServerBeacon = null
                 var online = false
-                val endOfWait = currentTime + 3.mins // We try for 3 mins max.
+                val endOfWait = currentTime + timeoutMins.mins
 
-                while (currentTime < endOfWait && !online) {
+                while (currentTime < endOfWait && !online && ProcessHandle.of(srvPid).isPresent) {
                     if (progressBar.completed) {
                         // First, load the beacon, if any.
                         if (beacon == null)
@@ -1619,26 +646,306 @@ object NCCli extends App {
                 }
 
                 tailer.stop()
-
                 progressBar.stop()
+
+                if (!online && currentTime >= endOfWait) // Timed out - attempt to kill the timed out process...
+                    ProcessHandle.of(srvPid).asScala match {
+                        case Some(ph) ⇒
+                            ph.destroy()
+
+                            if (beacon != null && beacon.beaconPath != null)
+                                new File(beacon.beaconPath).delete()
+
+                        case None ⇒ ()
+                    }
 
                 if (!online) {
                     logln(r(" [Error]"))
-                    error(s"Timed out starting server, check output for errors.")
+
+                    error(s"Server start failed, check full log for errors: ${c(output.getAbsolutePath)}")
+
+                    tailFile(output.getAbsolutePath, 20)
                 }
                 else {
                     logln(g(" [OK]"))
+
                     logServerInfo(beacon)
 
                     showTip()
 
-                    if (state.accessToken.isDefined)
-                        logln(s"Signed in with default '${c("admin@admin.com")}' user.")
+                    if (state.accessToken.isDefined) {
+                        val tbl = new NCAsciiTable()
+
+                        tbl += (s"${g("Email")}", state.userEmail.get)
+                        tbl += (s"${g("Access token")}", state.accessToken.get)
+
+                        logln(s"Signed in with default user:\n$tbl")
+                    }
                 }
             }
         }
         catch {
             case e: Exception ⇒ error(s"Server failed to start: ${y(e.getLocalizedMessage)}")
+        }
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not running from REPL.
+     */
+    private [cmdline] def cmdTestModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        // TODO: in the future - we'll need add support here for remote servers.
+        if (loadServerBeacon().isEmpty)
+            throw NoLocalServer()
+
+        val cfgPath = getPathParam(cmd, args, "config")
+        val addCp = getCpParam(cmd, args, "cp")
+        val mdls = getParamOrNull(cmd, args, "models")
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case None ⇒ Seq("-ea", "-Xms1024m")
+        }
+
+        if (mdls != null) {
+            if (hasExternalModels(mdls) && addCp != null)
+                throw new IllegalStateException(
+                    s"Additional classpath is required when deploying your own models. " +
+                    s"Use ${c("--cp")} parameters to provide additional classpath.")
+        }
+
+        if (mdls == null && addCp != null)
+            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
+
+        var validatorArgs = mutable.ArrayBuffer.empty[String]
+
+        validatorArgs += JAVA
+        validatorArgs ++= jvmOpts
+
+        if (cfgPath != null)
+            validatorArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
+
+        if (mdls != null)
+            validatorArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
+
+        validatorArgs += "-cp"
+
+        if (addCp != null)
+            validatorArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
+        else
+            validatorArgs += JAVA_CP
+
+        validatorArgs += "org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator"
+
+        val validatorPb = new ProcessBuilder(validatorArgs.asJava)
+
+        validatorPb.directory(new File(USR_WORK_DIR))
+        validatorPb.inheritIO()
+
+        try {
+            validatorPb.start().onExit().get()
+        }
+        catch {
+            case _: InterruptedException ⇒ () // Ignore.
+            case e: Exception ⇒ error(s"Failed to run model validator: ${y(e.getLocalizedMessage)}")
+        }
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not running from REPL.
+     */
+    private [cmdline] def cmdStartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        // Ensure that there is a local server running since probe
+        // cannot finish its start unless there's a server to connect to.
+        // TODO: in the future - we'll need add support here for remote servers.
+        if (loadServerBeacon().isEmpty)
+            throw NoLocalServer()
+
+        // Ensure that there isn't another local probe running.
+        loadProbeBeacon() match {
+            case Some(b) ⇒ throw new IllegalStateException(
+                s"Existing probe (pid ${c(b.pid)}) detected. " +
+                s"Use ${c("'stop-probe'")} command to stop it, if necessary."
+            )
+            case None ⇒ ()
+        }
+
+        val cfgPath = getPathParam(cmd, args, "config")
+        val noWait = getFlagParam(cmd, args, "noWait", false)
+        val addCp = getCpParam(cmd, args, "cp")
+        val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
+        val mdls = getParamOrNull(cmd, args, "models")
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case None ⇒ Seq("-ea", "-Xms1024m")
+        }
+
+        if (mdls != null) {
+            if (hasExternalModels(mdls) && addCp == null)
+                throw new IllegalStateException(
+                    s"Additional classpath is required when deploying your own models. " +
+                    s"Use ${c("--cp")} parameters to provide additional classpath.")
+        }
+
+        if (mdls == null && addCp != null)
+            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
+
+        val logTstamp = currentTime
+
+        // Server log redirect.
+        val output = new File(SystemUtils.getUserHome, s".nlpcraft/probe_log_$logTstamp.txt")
+
+        // Store in REPL state right away.
+        state.probeLog = Some(output)
+
+        var prbArgs = mutable.ArrayBuffer.empty[String]
+
+        prbArgs += JAVA
+        prbArgs ++= jvmOpts
+        prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
+
+        if (mdls != null)
+            prbArgs += "-Dconfig.override_with_env_vars=true"
+
+        prbArgs += "-cp"
+        prbArgs += (if (addCp == null) JAVA_CP else s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP))
+        prbArgs += "org.apache.nlpcraft.NCStart"
+        prbArgs += "-probe"
+
+        if (cfgPath != null)
+            prbArgs += s"-config=$cfgPath"
+
+        val prbPb = new ProcessBuilder(prbArgs.asJava)
+
+        if (mdls != null)
+            prbPb.environment().put("CONFIG_FORCE_nlpcraft_probe_models", mdls)
+
+        prbPb.directory(new File(USR_WORK_DIR))
+        prbPb.redirectErrorStream(true)
+
+        val bleachPb = new ProcessBuilder(
+            JAVA,
+            "-ea",
+            "-cp",
+            JAVA_CP,
+            "org.apache.nlpcraft.model.tools.cmdline.NCCliAnsiBleach"
+        )
+
+        bleachPb.directory(new File(USR_WORK_DIR))
+        bleachPb.redirectOutput(Redirect.appendTo(output))
+
+        try {
+            // Start the 'probe | bleach > probe log output' process pipeline.
+            val procs = ProcessBuilder.startPipeline(Seq(prbPb, bleachPb).asJava)
+
+            val prbPid = procs.get(0).pid()
+
+            // Store mapping file between PID and timestamp (once we have probe PID).
+            // Note that the same timestamp is used in probe log file.
+            ignoring(classOf[IOException]) {
+                new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${prbPid}_tstamp_$logTstamp").createNewFile()
+            }
+
+            logln(s"Probe output: ${c(output.getAbsolutePath)}")
+
+            /**
+             *
+             */
+            def showTip(): Unit = {
+                val tbl = new NCAsciiTable()
+
+                tbl += (s"${g("stop-probe")}", "Stop the probe.")
+                tbl += (s"${g("info")}", "Get server & probe information.")
+
+                logln(s"Handy commands:\n${tbl.toString}")
+            }
+
+            if (noWait) {
+                logln(s"Probe is starting...")
+
+                showTip()
+            }
+            else {
+                val progressBar = new NCAnsiProgressBar(
+                    term.writer(),
+                    NUM_PRB_SERVICES,
+                    15,
+                    true,
+                    // ANSI is NOT disabled & we ARE NOT running from IDEA or Eclipse...
+                    NCAnsi.isEnabled && IS_SCRIPT
+                )
+
+                log(s"Probe is starting ")
+
+                progressBar.start()
+
+                // Tick progress bar "almost" right away to indicate the progress start.
+                new Thread(() => {
+                    Thread.sleep(1.secs)
+
+                    progressBar.ticked()
+                })
+                .start()
+
+                val tailer = Tailer.create(
+                    state.probeLog.get,
+                    new TailerListenerAdapter {
+                        override def handle(line: String): Unit = {
+                            if (TAILER_PTRN.matcher(line).matches())
+                                progressBar.ticked()
+                        }
+                    },
+                    500.ms
+                )
+
+                var beacon: NCCliProbeBeacon = null
+                val endOfWait = currentTime + timeoutMins.mins
+
+                while (currentTime < endOfWait && beacon == null && ProcessHandle.of(prbPid).isPresent) {
+                    if (progressBar.completed) {
+                        // Load the beacon, if any.
+                        if (beacon == null)
+                            beacon = loadProbeBeacon().orNull
+                    }
+
+                    if (beacon == null)
+                        Thread.sleep(2.secs) // Check every 2 secs.
+                }
+
+                tailer.stop()
+                progressBar.stop()
+
+                if (currentTime >= endOfWait)
+                    ProcessHandle.of(prbPid).asScala match {
+                        case Some(ph) ⇒
+                            ph.destroy()
+
+                            if (beacon != null && beacon.beaconPath != null)
+                                new File(beacon.beaconPath).delete()
+
+                        case None ⇒ ()
+                    }
+
+                if (beacon == null) {
+                    logln(r(" [Error]"))
+
+                    error(s"Probe start failed, check full log for errors: ${c(output.getAbsolutePath)}")
+
+                    tailFile(output.getAbsolutePath, 20)
+                }
+                else {
+                    logln(g(" [OK]"))
+
+                    logProbeInfo(beacon)
+
+                    showTip()
+                }
+            }
+        }
+        catch {
+            case e: Exception ⇒ error(s"Probe failed to start: ${y(e.getLocalizedMessage)}")
         }
     }
 
@@ -1653,49 +960,46 @@ object NCCli extends App {
         }
 
     /**
+     *
+     * @param path
+     * @param lines
+     */
+    private def tailFile(path: String, lines: Int): Unit =
+        try
+            managed(new ReversedLinesFileReader(new File(path), StandardCharsets.UTF_8)) acquireAndGet { in ⇒
+                var tail = List.empty[String]
+
+                breakable {
+                    for (_ ← 0 until lines)
+                        in.readLine() match {
+                            case null ⇒ break
+                            case line ⇒ tail ::= line
+                        }
+                }
+
+                val cnt = tail.size
+
+                logln(bb(w(s"+----< ${K}Last $cnt log lines $W>---")))
+                tail.foreach(line ⇒ logln(s"${bb(w("| "))}  $line"))
+                logln(bb(w(s"+----< ${K}Last $cnt log lines $W>---")))
+            }
+        catch {
+            case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
+        }
+
+    /**
      * @param cmd  Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdTailServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val lines = args.find(_.parameter.id == "lines") match {
-            case Some(arg) ⇒
-                try
-                    Integer.parseInt(arg.value.get)
-                catch {
-                    case _: Exception ⇒ throw InvalidParameter(cmd, "lines")
-                }
-
-            case None ⇒ 20 // Default.
-        }
+    private [cmdline] def cmdTailServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val lines = getIntParam(cmd, args, "lines", 20)
 
         if (lines <= 0)
             throw InvalidParameter(cmd, "lines")
 
         loadServerBeacon() match {
-            case Some(beacon) ⇒
-                try
-                    managed(new ReversedLinesFileReader(new File(beacon.logPath), StandardCharsets.UTF_8)) acquireAndGet { in ⇒
-                        var tail = List.empty[String]
-
-                        breakable {
-                            for (_ ← 0 until lines)
-                                in.readLine() match {
-                                    case null ⇒ break
-                                    case line ⇒ tail ::= line
-                                }
-                        }
-
-                        val cnt = tail.size
-
-                        logln(bb(w(s"+----< ${K}Last $cnt server log lines $W>---")))
-                        tail.foreach(line ⇒ logln(s"${bb(w("| "))}  $line"))
-                        logln(bb(w(s"+----< ${K}Last $cnt server log lines $W>---")))
-                    }
-                catch {
-                    case e: Exception ⇒ error(s"Failed to read log file: ${e.getLocalizedMessage}")
-                }
-
+            case Some(beacon) ⇒ tailFile(beacon.logPath, lines)
             case None ⇒ throw NoLocalServer()
         }
     }
@@ -1705,24 +1009,32 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdPingServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val endpoint = getRestEndpointFromBeacon
+    private [cmdline] def cmdTailProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val lines = getIntParam(cmd, args, "lines", 20)
 
-        val num = args.find(_.parameter.id == "number") match {
-            case Some(arg) ⇒
-                try
-                    Integer.parseInt(arg.value.get)
-                catch {
-                    case _: Exception ⇒ throw InvalidParameter(cmd, "number")
-                }
+        if (lines <= 0)
+            throw InvalidParameter(cmd, "lines")
 
-            case None ⇒ 1 // Default.
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒ tailFile(beacon.logPath, lines)
+            case None ⇒ throw NoLocalProbe()
         }
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private [cmdline] def cmdPingServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val num = getIntParam(cmd, args, "number", 1)
 
         var i = 0
 
+        val endpoint = getRestEndpointFromBeacon
+
         while (i < num) {
-            log(s"(${i + 1} of $num) pinging REST server at ${b(endpoint)} ")
+            log(s"(${i + 1} of $num) pinging server at ${b(endpoint)} ")
 
             val spinner = new NCAnsiSpinner(
                 term.writer(),
@@ -1761,7 +1073,7 @@ object NCCli extends App {
             i += 1
 
             if (i < num)
-            // Pause between pings.
+                // Pause between pings.
                 Thread.sleep(500.ms)
         }
     }
@@ -1784,8 +1096,8 @@ object NCCli extends App {
                 ) acquireAndGet {
                     _.readObject()
                 }
-                )
-                .asInstanceOf[NCCliServerBeacon]
+            )
+            .asInstanceOf[NCCliServerBeacon]
 
             ProcessHandle.of(beacon.pid).asScala match {
                 case Some(ph) ⇒
@@ -1824,34 +1136,112 @@ object NCCli extends App {
             case Some(beacon) ⇒
                 state.isServerOnline = true
 
-                val baseUrl = "http://" + beacon.restEndpoint
+                try {
+                    val baseUrl = "http://" + beacon.restEndpoint // TODO: https?
 
-                // Attempt to signin with the default account.
-                if (autoSignIn && state.accessToken.isEmpty)
-                    httpPostResponseJson(
-                        baseUrl,
-                        "signin",
-                        "{\"email\": \"admin@admin.com\", \"passwd\": \"admin\"}") match {
-                        case Some(json) ⇒ state.accessToken = Option(Try(U.getJsonStringField(json, "acsTok")).getOrElse(null))
-                        case None ⇒ ()
-                    }
+                    // Attempt to signin with the default account.
+                    if (autoSignIn && state.accessToken.isEmpty)
+                        httpPostResponseJson(
+                            baseUrl,
+                            "signin",
+                            s"""{"email": "$DFLT_USER_EMAIL", "passwd": "$DFLT_USER_PASSWD"}""") match {
+                            case Some(json) ⇒
+                                Option(Try(U.getJsonStringField(json, "acsTok"))) match {
+                                    case Some(tok) ⇒
+                                        state.userEmail = Some(DFLT_USER_EMAIL)
+                                        state.accessToken = Some(tok.get)
+                                    case None ⇒
+                                        state.userEmail = None
+                                        state.accessToken = None
 
-                // Attempt to get all connected probes if successfully signed in prior.
-                if (state.accessToken.isDefined)
-                    httpPostResponseJson(
-                        baseUrl,
-                        "probe/all",
-                        "{\"acsTok\": \"" + state.accessToken.get + "\"}") match {
-                        case Some(json) ⇒ state.probes =
-                            Try(
-                                U.jsonToObject[ProbeAllResponse](json, classOf[ProbeAllResponse]).probes.toList
-                            ).getOrElse(Nil)
-                        case None ⇒ ()
-                    }
+                                }
+                            case None ⇒ ()
+                        }
+
+                    // Attempt to get all connected probes if successfully signed in prior.
+                    if (state.accessToken.isDefined)
+                        httpPostResponseJson(
+                            baseUrl,
+                            "probe/all",
+                            "{\"acsTok\": \"" + state.accessToken.get + "\"}") match {
+                            case Some(json) ⇒ state.probes =
+                                Try(
+                                    U.jsonToObject[ProbeAllResponse](json, classOf[ProbeAllResponse]).probes.toList
+                                ).getOrElse(Nil)
+                            case None ⇒ ()
+                        }
+                }
+                catch {
+                    case _: Exception ⇒
+                        // Reset REPL state.
+                        state.resetServer()
+                }
 
             case None ⇒
                 // Reset REPL state.
-                state = ReplState()
+                state.resetServer()
+        }
+
+        beaconOpt
+    }
+
+    /**
+     * Loads and returns probe beacon file.
+     *
+     * @return
+     */
+    private def loadProbeBeacon(): Option[NCCliProbeBeacon] = {
+        val beaconOpt = try {
+            val beacon = (
+                managed(
+                    new ObjectInputStream(
+                        new FileInputStream(
+                            new File(SystemUtils.getUserHome, PRB_BEACON_PATH)
+                        )
+                    )
+                ) acquireAndGet {
+                    _.readObject()
+                }
+            )
+            .asInstanceOf[NCCliProbeBeacon]
+
+            ProcessHandle.of(beacon.pid).asScala match {
+                case Some(ph) ⇒
+                    beacon.ph = ph
+
+                    // See if we can detect probe log if server was started by this script.
+                    val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles(new FilenameFilter {
+                        override def accept(dir: File, name: String): Boolean =
+                            name.startsWith(s".pid_$ph")
+                    })
+
+                    if (files.size == 1) {
+                        val split = files(0).getName.split("_")
+
+                        if (split.size == 4) {
+                            val logFile = new File(SystemUtils.getUserHome, s".nlpcraft/probe_log_${split(3)}.txt")
+
+                            if (logFile.exists())
+                                beacon.logPath = logFile.getAbsolutePath
+                        }
+                    }
+
+                    Some(beacon)
+
+                case None ⇒
+                    // Attempt to clean up stale beacon file.
+                    new File(SystemUtils.getUserHome, PRB_BEACON_PATH).delete()
+
+                    None
+            }
+        }
+        catch {
+            case _: Exception ⇒ None
+        }
+
+        beaconOpt match {
+            case Some(_) ⇒ state.isProbeOnline = true
+            case None ⇒ state.resetProbe()
         }
 
         beaconOpt
@@ -1862,8 +1252,27 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdQuit(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        // No-op.
+    private [cmdline] def cmdQuit(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        if (repl) {
+            loadServerBeacon() match {
+                case Some(b) ⇒ warn(s"Local server (pid ${c(b.pid)}) is still running.")
+                case None ⇒ ()
+            }
+
+            loadProbeBeacon() match {
+                case Some(b) ⇒ warn(s"Local probe (pid ${c(b.pid)}) is still running.")
+                case None ⇒ ()
+            }
+        }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private [cmdline] def cmdStop(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        doCommand(Seq(STOP_SRV_CMD.name), repl)
+        doCommand(Seq(STOP_PRB_CMD.name), repl)
     }
 
     /**
@@ -1871,19 +1280,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdRestartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        if (loadServerBeacon().isDefined)
-            STOP_SRV_CMD.body(STOP_SRV_CMD, Seq.empty, repl)
-
-        START_SRV_CMD.body(START_SRV_CMD, args, repl)
-    }
-
-    /**
-     * @param cmd  Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
-     */
-    private def cmdStopServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdStopServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         loadServerBeacon() match {
             case Some(beacon) ⇒
                 val pid = beacon.pid
@@ -1897,10 +1294,10 @@ object NCCli extends App {
                     new File(beacon.beaconPath).delete()
 
                     // Reset REPL state right away.
-                    state = ReplState()
+                    state.resetServer()
                 }
                 else
-                    error(s"Failed to stop the local REST server (pid ${c(pid)}).")
+                    error(s"Failed to stop the local server (pid ${c(pid)}).")
 
             case None ⇒ throw NoLocalServer()
         }
@@ -1910,7 +1307,41 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdNoAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdStopProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒
+                val pid = beacon.pid
+
+                if (beacon.ph.destroy()) {
+                    logln(s"Probe (pid ${c(pid)}) has been stopped.")
+
+                    // Attempt to delete beacon file right away.
+                    new File(beacon.beaconPath).delete()
+
+                    // Reset REPL state right away.
+                    state.resetProbe()
+                }
+                else
+                    error(s"Failed to stop the local probe (pid ${c(pid)}).")
+
+            case None ⇒ throw NoLocalProbe()
+        }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private [cmdline] def cmdNoLogo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        warn("This command should be used together with other command in a command line mode.")
+    }
+
+    /**
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private [cmdline] def cmdNoAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         NCAnsi.setEnabled(false)
 
     /**
@@ -1918,7 +1349,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdAnsi(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         NCAnsi.setEnabled(true)
 
     /**
@@ -1926,7 +1357,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdHelp(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private [cmdline] def cmdHelp(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         /**
          *
          */
@@ -1967,7 +1398,7 @@ object NCCli extends App {
                         if (param.value.isDefined)
                             T___ + param.names.zip(Stream.continually(param.value.get)).map(t ⇒ s"${t._1}=${t._2}").mkString(", ")
                         else
-                            s"$T___${param.names.mkString(",")}"
+                            s"$T___${param.names.mkString(", ")}"
 
                     lines += c(line)
 
@@ -2001,9 +1432,9 @@ object NCCli extends App {
                 s"\n" +
                 s"You can also execute any OS specific command by prepending '${c("$")}' in front of it:\n" +
                 s"  ${y("> $cmd /c dir")}\n" +
-                s"    Run Windows ${c("dir")} command in a separate shell.\n" +
+                s"    Runs Windows ${c("dir")} command in a separate shell.\n" +
                 s"  ${y("> $ls -la")}\n" +
-                s"    Run Linux/Unix ${c("ls -la")} command.\n"
+                s"    Runs Linux/Unix ${c("ls -la")} command.\n"
             )
 
         if (args.isEmpty) { // Default - show abbreviated help.
@@ -2065,7 +1496,7 @@ object NCCli extends App {
                     case None ⇒
                         err = true
 
-                        errorUnknownCommand(cmdName)
+                        throw UnknownCommand(cmdName)
                 }
             }
 
@@ -2076,6 +1507,30 @@ object NCCli extends App {
                 logln(tbl.toString)
             }
         }
+    }
+
+    /**
+     *
+     * @param beacon
+     * @return
+     */
+    private def logProbeInfo(beacon: NCCliProbeBeacon): Unit = {
+        var tbl = new NCAsciiTable
+
+        val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
+        val jarsFolder = if (beacon.jarsFolder != null) g(beacon.jarsFolder) else y("<not set>")
+        val mdlSeq = beacon.models.split(",").map(s ⇒ s"${g(s.trim)}").toSeq
+
+        tbl += ("PID", s"${g(beacon.pid)}")
+        tbl += ("Probe ID", s"${g(beacon.id)}")
+        tbl += ("Probe Up-Link", s"${g(beacon.upLink)}")
+        tbl += ("Probe Down-Link", s"${g(beacon.downLink)}")
+        tbl += ("JARs Folder", jarsFolder)
+        tbl += (s"Deployed Models (${mdlSeq.size})", mdlSeq)
+        tbl += ("Log file", logPath)
+        tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
+
+        logln(s"Local probe:\n${tbl.toString}")
     }
 
     /**
@@ -2098,7 +1553,7 @@ object NCCli extends App {
         tbl += ("  Pool increment", s"${g(beacon.dbPoolInc)}")
         tbl += ("  Reset on start", s"${g(beacon.dbInit)}")
         tbl += ("REST:", "")
-        tbl += ("  Endpoint", s"${g(beacon.restEndpoint)}")
+        tbl += ("  Endpoint", s"${g("http://" + beacon.restEndpoint)}") // TODO: https?
         tbl += ("  API provider", s"${g(beacon.restApi)}")
         tbl += ("Probe:", "")
         tbl += ("  Uplink", s"${g(beacon.upLink)}")
@@ -2114,7 +1569,7 @@ object NCCli extends App {
         tbl += ("Log file", logPath)
         tbl += ("Started on", s"${g(DateFormat.getDateTimeInstance.format(new Date(beacon.startMs)))}")
 
-        logln(s"Local REST server:\n${tbl.toString}")
+        logln(s"Local server:\n${tbl.toString}")
 
         tbl = new NCAsciiTable
 
@@ -2140,12 +1595,21 @@ object NCCli extends App {
             "Probe ID",
             "Uptime",
             "Host / OS",
-            "Models Deployed"
+            "Deployed Models"
         )
 
         state.probes.foreach(addProbeToTable(tbl, _))
 
         logln(s"Connected probes (${state.probes.size}):\n${tbl.toString}")
+
+        if (state.accessToken.isDefined) {
+            val tbl = new NCAsciiTable()
+
+            tbl += (s"${g("Email")}", state.userEmail.get)
+            tbl += (s"${g("Access token")}", state.accessToken.get)
+
+            logln(s"Signed in user account:\n$tbl")
+        }
     }
 
     /**
@@ -2154,7 +1618,18 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdInfoServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private [cmdline] def cmdInfo(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        doCommand(Seq(SRV_INFO_CMD.name), repl)
+        doCommand(Seq(PRB_INFO_CMD.name), repl)
+    }
+
+    /**
+     *
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private [cmdline] def cmdInfoServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadServerBeacon() match {
             case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ throw NoLocalServer()
@@ -2167,7 +1642,20 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdCls(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdInfoProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒ logProbeInfo(beacon)
+            case None ⇒ throw NoLocalProbe()
+        }
+    }
+
+    /**
+     *
+     * @param cmd  Command descriptor.
+     * @param args Arguments, if any, for this command.
+     * @param repl Whether or not executing from REPL.
+     */
+    private [cmdline] def cmdClear(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         term.puts(Capability.clear_screen)
 
     /**
@@ -2184,11 +1672,11 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdSignIn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdSignIn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case None ⇒
-                val email = args.find(_.parameter.id == "email").flatMap(_.value).getOrElse("admin@admin.com")
-                val passwd = args.find(_.parameter.id == "passwd").flatMap(_.value).getOrElse("admin")
+                val email = getParam(cmd, args, "email", DFLT_USER_EMAIL)
+                val passwd = getParam(cmd, args, "passwd", DFLT_USER_PASSWD)
 
                 httpRest(
                     cmd,
@@ -2201,7 +1689,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case Some(_) ⇒ error(s"Already signed in. See ${c("'signout'")} command.")
+            case Some(_) ⇒ warn(s"Already signed in. Use ${c("'signout'")} command to sign out first, if necessary.")
         }
 
     /**
@@ -2210,7 +1698,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdSignOut(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdSignOut(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) ⇒
                 httpRest(
@@ -2221,7 +1709,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+            case None ⇒ throw NotSignedIn()
         }
 
     /**
@@ -2249,7 +1737,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private [cmdline] def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val nativeArgs = args.flatMap { arg ⇒
             val param = arg.parameter.names.head
 
@@ -2259,11 +1747,7 @@ object NCCli extends App {
             }
         }
 
-        try
-            NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
-        catch {
-            case e: Exception ⇒ error(e.getLocalizedMessage)
-        }
+        NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
     }
 
     /**
@@ -2272,11 +1756,11 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdSugSyn(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) ⇒
-                val mdlId = args.find(_.parameter.id == "mdlId").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "mdlId"))
-                val minScore = Try(args.find(_.parameter.id == "minScore").flatMap(_.value).getOrElse("0.5").toFloat).getOrElse(throw InvalidParameter(cmd, "minScore"))
+                val mdlId = getParam(cmd, args, "mdlId")
+                val minScore = getDoubleParam(cmd, args, "minScore", 0.5)
 
                 httpRest(
                     cmd,
@@ -2290,7 +1774,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+            case None ⇒ throw NotSignedIn()
         }
 
     /**
@@ -2299,13 +1783,13 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
+    private [cmdline] def cmdAsk(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
         state.accessToken match {
             case Some(acsTok) ⇒
-                val mdlId = args.find(_.parameter.id == "mdlId").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "mdlId"))
-                val txt = args.find(_.parameter.id == "txt").flatMap(_.value).getOrElse(throw MissingParameter(cmd, "txt"))
-                val data = args.find(_.parameter.id == "data").flatMap(_.value).orNull
-                val enableLog = args.find(_.parameter.id == "enableLog").flatMap(_.value).getOrElse(false)
+                val mdlId = getParam(cmd, args, "mdlId")
+                val txt = getParam(cmd, args, "txt")
+                val data = getParamOrNull(cmd, args, "data")
+                val enableLog = getFlagParam(cmd, args, "enableLog", false)
 
                 httpRest(
                     cmd,
@@ -2321,7 +1805,7 @@ object NCCli extends App {
                        |""".stripMargin
                 )
 
-            case None ⇒ error(s"Not signed in. See ${c("'signin'")} command.")
+            case None ⇒ throw NotSignedIn()
         }
 
     /**
@@ -2330,7 +1814,7 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdCall(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+    private [cmdline] def cmdCall(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val normArgs = args.filter(!_.parameter.synthetic)
         val synthArgs = args.filter(_.parameter.synthetic)
 
@@ -2374,36 +1858,6 @@ object NCCli extends App {
 
         httpRest(cmd, path, s"{${buf.toString()}}")
     }
-
-    /**
-     *
-     * @param cmd Command descriptor.
-     * @param args Arguments, if any, for this command.
-     * @param repl Whether or not executing from REPL.
-     */
-    private def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val path = args.find(_.parameter.id == "path").getOrElse(throw MissingParameter(cmd, "path")).value.get
-        val json = stripQuotes(args.find(_.parameter.id == "json").getOrElse(throw MissingParameter(cmd, "json")).value.get)
-
-        httpRest(cmd, path, json)
-    }
-
-    /**
-      * @param cmd
-      * @param args
-      * @param id
-      * @param dflt
-      */
-    @throws[MissingParameter]
-    private def get(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String =
-        args.find(_.parameter.id == id).flatMap(_.value) match {
-            case Some(v) ⇒ v
-            case None ⇒
-                if (dflt == null)
-                    throw MissingParameter(cmd, id)
-
-                dflt
-        }
 
     /**
       *
@@ -2553,25 +2007,23 @@ object NCCli extends App {
       * @param args Arguments, if any, for this command.
       * @param repl Whether or not executing from REPL.
       */
-    private def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val filePath = get(cmd, args, "filePath")
-        val overrideFlag = get(cmd, args,"override", "false").toLowerCase
-        val modelId = get(cmd, args,"modelId")
-
-        checkSupported(cmd,"overrideFlag", overrideFlag, "true", "false")
+    private [cmdline] def cmdGenModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val filePath = refinePath(getParam(cmd, args, "filePath"))
+        val overrideFlag = getFlagParam(cmd, args, "override", dflt = false)
+        val mdlId = getParam(cmd, args, "modelId")
 
         val out = new File(filePath)
 
         if (out.isDirectory)
-            throw new NCE(s"Invalid file path: ${c(out.getAbsolutePath)}")
+            throw new IllegalArgumentException(s"Invalid file path: ${c(out.getAbsolutePath)}")
 
         if (out.exists()) {
-            if (overrideFlag == "true") {
+            if (overrideFlag) {
                 if (!out.delete())
-                    throw new NCE(s"Couldn't delete file: ${c(out.getAbsolutePath)}")
+                    throw new IllegalArgumentException(s"Couldn't delete file: ${c(out.getAbsolutePath)}")
             }
             else
-                throw new NCE(s"File already exists: ${c(out.getAbsolutePath)}")
+                throw new IllegalArgumentException(s"File already exists: ${c(out.getAbsolutePath)}")
         }
 
         val (fileExt, extractHdr) = {
@@ -2582,7 +2034,7 @@ object NCCli extends App {
             else if (lc.endsWith(".json") || lc.endsWith(".js"))
                 ("json", extractJsonHeader _)
             else
-                throw new NCE(s"Unsupported model file type (extension): ${c(filePath)}")
+                throw new IllegalArgumentException(s"Unsupported model file type (extension): ${c(filePath)}")
         }
 
         copy(
@@ -2591,7 +2043,7 @@ object NCCli extends App {
             s"src/main/resources/template_model.$fileExt",
             out.getName,
             Some(extractHdr),
-            "templateModelId" → modelId
+            "templateModelId" → mdlId
         )
 
         logln(s"Model file stub created: ${c(out.getCanonicalPath)}")
@@ -2603,14 +2055,15 @@ object NCCli extends App {
       * @param args Arguments, if any, for this command.
       * @param repl Whether or not executing from REPL.
       */
-    private def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        val outputDir = get(cmd, args, "outputDir", ".")
-        val baseName = get(cmd, args,"baseName")
-        val lang = get(cmd, args,"lang", "java").toLowerCase
-        val buildTool = get(cmd, args,"buildTool", "mvn").toLowerCase
-        val pkgName = get(cmd, args,"packageName", "org.apache.nlpcraft.demo").toLowerCase
-        val fileType = get(cmd, args,"modelType", "yaml").toLowerCase
-        val overrideFlag = get(cmd, args,"override", "false").toLowerCase
+    private [cmdline] def cmdGenProject(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val outputDir = refinePath(getParam(cmd, args, "outputDir", USR_WORK_DIR))
+        val baseName = getParam(cmd, args, "baseName")
+        val lang = getParam(cmd, args, "lang", "java").toLowerCase
+        val buildTool = getParam(cmd, args, "buildTool", "mvn").toLowerCase
+        val pkgName = getParam(cmd, args, "packageName", "org.apache.nlpcraft.demo").toLowerCase
+        val fileType = getParam(cmd, args, "modelType", "yaml").toLowerCase
+        val overrideFlag = getFlagParam(cmd, args, "override", dflt = false)
+
         val dst = new File(outputDir, baseName)
         val pkgDir = pkgName.replaceAll("\\.", "/")
         val clsName = s"${baseName.head.toUpper}${baseName.tail}"
@@ -2619,9 +2072,8 @@ object NCCli extends App {
         val isJson = fileType == "json" || fileType == "js"
 
         checkSupported(cmd, "lang", lang, "java", "scala", "kotlin")
-        checkSupported(cmd,"buildTool", buildTool, "mvn", "gradle", "sbt")
-        checkSupported(cmd,"fileType", fileType, "yaml", "yml", "json", "js")
-        checkSupported(cmd,"override", overrideFlag, "true", "false")
+        checkSupported(cmd, "buildTool", buildTool, "mvn", "gradle", "sbt")
+        checkSupported(cmd, "fileType", fileType, "yaml", "yml", "json", "js")
 
         def checkJavaName(v: String, name: String): Unit =
             if (!SourceVersion.isName(v))
@@ -2632,17 +2084,17 @@ object NCCli extends App {
 
         // Prepares output folder.
         if (dst.isFile)
-            throw new NCE(s"Invalid folder: ${c(dst.getAbsolutePath)}")
+            throw new IllegalArgumentException(s"Invalid output folder: ${c(dst.getAbsolutePath)}")
         else {
             if (!dst.exists()) {
                 if (!dst.mkdirs())
-                    throw new NCE(s"Couldn't create folder: ${c(dst.getAbsolutePath)}")
+                    throw new IllegalArgumentException(s"Failed to create folder: ${c(dst.getAbsolutePath)}")
             }
             else {
-                if (overrideFlag == "true")
+                if (overrideFlag)
                     U.clearFolder(dst.getAbsolutePath)
                 else
-                    throw new NCE(s"Folder already exists: ${c(dst.getAbsolutePath)}")
+                    throw new IllegalArgumentException(s"Folder already exists: ${c(dst.getAbsolutePath)}")
             }
         }
 
@@ -2776,18 +2228,18 @@ object NCCli extends App {
                 case "scala-gradle" ⇒ cpCommon("scala", "scala"); cpGradle()
                 case "scala-sbt" ⇒ cpCommon("scala", "scala"); cpSbt()
 
-                case _ ⇒ throw new NCE(s"Unsupported combination of '${c(lang)}' and '${c(buildTool)}'.")
+                case _ ⇒ throw new IllegalArgumentException(s"Unsupported combination of '${c(lang)}' and '${c(buildTool)}'.")
             }
 
             logln(s"Project created: ${c(dst.getCanonicalPath)}")
             logln(folder2String(dst))
         }
         catch {
-            case e: NCE ⇒
+            case e: Exception ⇒
                 try
                     U.clearFolder(dst.getAbsolutePath, delFolder = true)
                 catch {
-                    case _: NCE ⇒ // No-op.
+                    case _: Exception ⇒ // No-op.
                 }
 
                 throw e
@@ -2829,30 +2281,35 @@ object NCCli extends App {
             logln(U.colorJson(U.prettyJson(resp.data)))
         else {
             if (resp.code == 200)
-                logln(s"HTTP response: ${resp.data}")
+                logln(s"${g("HTTP response:")} ${resp.data}")
             else
-                error(s"HTTP error: ${resp.data}")
+                error(s"${r("HTTP error:")} ${resp.data}")
         }
 
         if (resp.code == 200) {
-            if (path == "signin")
+            if (path == "signin") {
+                state.userEmail = Some(U.getJsonStringField(json, "email"))
                 state.accessToken = Some(U.getJsonStringField(resp.data, "acsTok"))
-            else if (path == "signout")
+            }
+            else if (path == "signout") {
+                state.userEmail = None
                 state.accessToken = None
+            }
         }
     }
 
     /**
      *
      */
-    private def repl(): Unit = {
+    private def doRepl(): Unit = {
         loadServerBeacon(autoSignIn = true) match {
             case Some(beacon) ⇒ logServerInfo(beacon)
             case None ⇒ ()
         }
-
-        if (state.accessToken.isDefined)
-            logln(s"REST server signed in with default '${c("admin@admin.com")}' user.")
+        loadProbeBeacon() match {
+            case Some(beacon) ⇒ logProbeInfo(beacon)
+            case None ⇒ ()
+        }
 
         val parser = new DefaultParser()
 
@@ -3017,7 +2474,7 @@ object NCCli extends App {
                                         if (path == "signin") {
                                             candidates.add(
                                                 mkCandidate(
-                                                    disp = "--email=admin@admin.com",
+                                                    disp = s"--email=$DFLT_USER_EMAIL",
                                                     grp = DFTL_USER_GRP,
                                                     desc = null,
                                                     completed = true
@@ -3025,7 +2482,7 @@ object NCCli extends App {
                                             )
                                             candidates.add(
                                                 mkCandidate(
-                                                    disp = "--passwd=admin",
+                                                    disp = s"--passwd=$DFLT_USER_PASSWD",
                                                     grp = DFTL_USER_GRP,
                                                     desc = null,
                                                     completed = true
@@ -3080,7 +2537,10 @@ object NCCli extends App {
             new File(SystemUtils.getUserHome, HIST_PATH).getAbsolutePath
         )
 
-        logln(s"Hit ${rv(" Tab ")} or type '${c("help")}' to get help, '${c("quit")}' to exit.")
+        logln()
+        logln(s"${y("Tip:")} Hit ${rv(bo(" Tab "))} for auto suggestions and completion.")
+        logln(s"     Type '${c("help")}' to get help and ${rv(bo(" ↑ "))} or ${rv(bo(" ↓ "))} to scroll through history.")
+        logln(s"     Type '${c("quit")}' to exit.")
 
         var exit = false
 
@@ -3094,16 +2554,20 @@ object NCCli extends App {
 
         pinger.start()
 
+        var wasLastLineEmpty = false
+
         while (!exit) {
             val rawLine = try {
-                val srvStr = bo(s"${if (state.isServerOnline) s"ON " else s"OFF "}")
-                val acsTokStr = bo(s"${state.accessToken.getOrElse("<signed out>")} ")
+                val acsTokStr = bo(s"${state.accessToken.getOrElse("N/A")} ")
 
-                val prompt1 = rb(w(s" server: $srvStr")) // Server status.
-                val prompt2 = wb(k(s" acsTok: $acsTokStr")) // Access toke, if any.
-                val prompt3 = kb(g(s" ${Paths.get("").toAbsolutePath} ")) // Current working directory.
+                val prompt1 = if (state.isServerOnline) gb(k(s" server: ${BO}ON$RST$GB ")) else rb(w(s" server: ${BO}OFF$RST$RB "))
+                val prompt2 = if (state.isProbeOnline) gb(k(s" probe: ${BO}ON$RST$GB ")) else rb(w(s" probe: ${BO}OFF$RST$RB "))
+                val prompt3 = wb(k(s" acsTok: $acsTokStr")) // Access token, if any.
+                val prompt4 = kb(g(s" $USR_WORK_DIR ")) // Current working directory.
 
-                reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3)
+                if (!wasLastLineEmpty)
+                    reader.printAbove("\n" + prompt1 + ":" + prompt2 + ":" + prompt3 + ":" + prompt4)
+
                 reader.readLine(s"${g(">")} ")
             }
             catch {
@@ -3112,7 +2576,7 @@ object NCCli extends App {
                 case _: Exception ⇒ "" // Guard against JLine hiccups.
             }
 
-            if (rawLine == null || QUIT_CMD.name == rawLine.trim)
+            if (rawLine == null)
                 exit = true
             else {
                 val line = rawLine
@@ -3121,9 +2585,11 @@ object NCCli extends App {
                     .replace("\t", " ")
                     .trim()
 
-                if (line.nonEmpty)
+                if (line.nonEmpty) {
+                    wasLastLineEmpty = false
+
                     try
-                        doCommand(splitBySpace(line), repl = true)
+                        doCommand(splitAndClean(line), repl = true)
                     catch {
                         case e: SplitError ⇒
                             val idx = e.index
@@ -3134,6 +2600,12 @@ object NCCli extends App {
                             error(s"  ${r("+-")} $lineX")
                             error(s"  ${r("+-")} $dashX")
                     }
+
+                    if (line == QUIT_CMD.name)
+                        exit = true
+                }
+                else
+                    wasLastLineEmpty = true
             }
         }
 
@@ -3151,28 +2623,22 @@ object NCCli extends App {
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
-    private def cmdVersion(cmd: Command, args: Seq[Argument], repl: Boolean): Unit =
-        if (args.isEmpty)
+    private [cmdline] def cmdVersion(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        val isS = getFlagParam(cmd, args, "semver", dflt = false)
+        val isD = getFlagParam(cmd, args, "reldate", dflt = false)
+
+        if (!isS && !isD)
             logln((
                 new NCAsciiTable
                     += ("Version:", c(VER.version))
                     += ("Release date:", c(VER.date.toString))
                 ).toString
             )
-        else {
-            val isS = args.exists(_.parameter.id == "semver")
-            val isD = args.exists(_.parameter.id == "reldate")
-
-            if (isS || isD) {
-                if (isS)
-                    logln(s"${VER.version}")
-                if (isD)
-                    logln(s"${VER.date}")
-            }
-            else
-                error(s"Invalid parameters: ${args.mkString(", ")}")
-        }
-
+        else if (isS)
+            logln(s"${VER.version}")
+        else
+            logln(s"${VER.date}")
+    }
 
     /**
      *
@@ -3182,11 +2648,17 @@ object NCCli extends App {
         // Make sure we exit with non-zero status.
         exitStatus = 1
 
-        if (msg != null && msg.nonEmpty) {
-            term.writer().println(s"${y("ERR:")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
-            term.flush()
-        }
+        if (msg != null && msg.nonEmpty)
+            logln(s"${r("X")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
     }
+
+    /**
+     *
+     * @param msg
+     */
+    private def warn(msg: String = ""): Unit =
+        if (msg != null && msg.nonEmpty)
+            logln(s"${y("!")} ${if (msg.head.isLower) msg.head.toUpper + msg.tail else msg}")
 
     /**
      *
@@ -3204,16 +2676,6 @@ object NCCli extends App {
     private def log(msg: String = ""): Unit = {
         term.writer().print(msg)
         term.flush()
-    }
-
-    /**
-     *
-     */
-    private def errorUnknownCommand(cmd: String): Unit = {
-        val c2 = c(s"'$cmd'")
-        val h2 = c(s"'help'")
-
-        error(s"Unknown command $c2, type $h2 to get help.")
     }
 
     /**
@@ -3323,7 +2785,7 @@ object NCCli extends App {
      * @return
      */
     @throws[SplitError]
-    private def splitBySpace(line: String): Seq[String] = {
+    private def splitAndClean(line: String): Seq[String] = {
         val lines = mutable.Buffer.empty[String]
         val buf = new StringBuilder
         var stack = List.empty[Char]
@@ -3404,13 +2866,13 @@ object NCCli extends App {
         args.map { arg ⇒
             val parts = arg.split("=")
 
-            def mkError() = new IllegalArgumentException(s"Invalid parameter: ${c(arg)}")
+            def mkError() = new IllegalArgumentException(s"Invalid parameter: ${c(arg)}, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
             if (parts.size > 2)
                 throw mkError()
 
             val name = if (parts.size == 1) arg.trim else parts(0).trim
-            val value = if (parts.size == 1) None else Some(parts(1).trim)
+            val value = if (parts.size == 1) None else Some(stripQuotes(parts(1).trim))
             val hasSynth = cmd.params.exists(_.synthetic)
 
             if (name.endsWith("=")) // Missing value or extra '='.
@@ -3478,40 +2940,34 @@ object NCCli extends App {
     @throws[Exception]
     private def doCommand(args: Seq[String], repl: Boolean): Unit = {
         if (args.nonEmpty) {
-            if (args.head.head == '$') {
-                val head = args.head.tail.trim // Remove '$' from 1st argument.
-                val tail = args.tail.toList
+            try
+                if (args.head.head == '$') {
+                    val head = args.head.tail.trim // Remove '$' from 1st argument.
+                    val tail = args.tail.toList
 
-                try
                     execOsCmd(if (head.isEmpty) tail else head :: tail)
-                catch {
-                    case e: Exception ⇒ error(e.getLocalizedMessage)
                 }
-            }
-            else {
-                // Process 'no-ansi' and 'ansi' commands first.
-                processAnsi(args, repl)
+                else {
+                    // Process 'no-ansi' and 'ansi' commands first.
+                    processAnsi(args, repl)
 
-                // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
-                val xargs = args.filter(arg ⇒ arg != NO_ANSI_CMD.name && arg != ANSI_CMD.name)
+                    // Remove 'no-ansi' and 'ansi' commands from the argument list, if any.
+                    val xargs = args.filter(arg ⇒ arg != NO_ANSI_CMD.name && arg != ANSI_CMD.name)
 
-                if (xargs.nonEmpty) {
-                    val cmd = xargs.head
+                    if (xargs.nonEmpty) {
+                        val cmd = xargs.head
 
-                    CMDS.find(_.name == cmd) match {
-                        case Some(cmd) ⇒
-                            // Reset error code.
-                            exitStatus = 0
+                        // Reset error code.
+                        exitStatus = 0
 
-                            try
-                                cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
-                            catch {
-                                case e: Exception ⇒ error(e.getLocalizedMessage)
-                            }
-
-                        case None ⇒ errorUnknownCommand(cmd)
+                        CMDS.find(_.name == cmd) match {
+                            case Some(cmd) ⇒ cmd.body(cmd, processParameters(cmd, xargs.tail), repl)
+                            case None ⇒ throw UnknownCommand(cmd)
+                        }
                     }
                 }
+            catch {
+                case e: Exception ⇒ error(e.getLocalizedMessage)
             }
         }
     }
@@ -3541,15 +2997,25 @@ object NCCli extends App {
         // Process 'no-ansi' and 'ansi' commands first (before ASCII title is shown).
         processAnsi(args, repl = false)
 
-        title()
+        if (!args.contains(NO_LOGO_CMD.name))
+            title() // Show logo unless we have 'no-logo' command.
 
-        if (args.isEmpty)
-            repl()
+        // Remove all auxiliary commands that are combined with other commands, if any.
+        val xargs = args.filter(arg ⇒
+            arg != NO_ANSI_CMD.name &&
+            arg != ANSI_CMD.name &&
+            arg != NO_LOGO_CMD.name
+        )
+
+        if (xargs.isEmpty)
+            doRepl()
         else
-            doCommand(args.toSeq, repl = false)
+            doCommand(xargs.toSeq, repl = false)
 
         sys.exit(exitStatus)
     }
+
+    cleanUpTempFiles()
 
     // Boot up.
     boot(args)

@@ -20,6 +20,7 @@ package org.apache.nlpcraft.examples.sql.db
 import java.sql.Types
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.tools.sqlgen.NCSqlJoinType._
 import org.apache.nlpcraft.model.tools.sqlgen._
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlSortImpl
@@ -490,7 +491,7 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
         val extSorts = extendSort(sortsNorm, tblsNorm, extCols)
 
         SqlQuery(
-            sql =
+            sql = U.normalize(
                 s"""
                    |SELECT
                    |  ${if (distinct) "DISTINCT" else ""}
@@ -499,7 +500,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
                    |  ${if (extConds.isEmpty) "" else s"WHERE ${extConds.mkString(" AND ")}"}
                    |  ${if (extSorts.isEmpty) "" else s"ORDER BY ${extSorts.map(sql).mkString(", ")}"}
                    |  LIMIT ${limit.flatMap(p ⇒ Some(p.getLimit)).getOrElse(DFLT_LIMIT)}
-                   |""".stripMargin.split(" ").map(_.trim).filter(_.nonEmpty).mkString(" "),
+                   |""".stripMargin, " "
+            ),
             parameters = extParams
         )
     }

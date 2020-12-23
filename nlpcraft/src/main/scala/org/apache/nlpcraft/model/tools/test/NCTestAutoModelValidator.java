@@ -19,14 +19,12 @@ package org.apache.nlpcraft.model.tools.test;
 
 import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.model.tools.test.impl.*;
-import java.util.*;
 
 /**
- * Auto-validator for models based on {@link NCIntentSample} annotations. This class takes one or more model IDs
- * (or class names) and performs validation. Validation consists of starting an embedded probe with a given model,
- * scanning for {@link NCIntentSample} annotations and their corresponding callback methods, submitting each sample input
- * sentences from {@link NCIntentSample} annotation and checking that resulting intent matches the intent the sample
- * was attached to.
+ * Data model auto-validator is based on {@link NCIntentSample} annotations. Validation consists of starting an embedded
+ * probe, scanning all deployed models for {@link NCIntentSample} annotations and their corresponding callback methods,
+ * submitting each sample input sentences from {@link NCIntentSample} annotation and checking that resulting intent
+ * matches the intent the sample was attached to.
  * <p>
  * Note that there can be more than one {@link NCIntentSample} annotation attached to the intent callback. Each such
  * annotation will trigger conversation STM reset before its samples will be submitted. This gives an opportunity
@@ -36,13 +34,13 @@ import java.util.*;
  * This class can be used in two modes:
  * <ul>
  *     <li>
- *         As a standalone application supplying model classes using <code>NLPCRAFT_TEST_MODELS</code> system property.
+ *         As a standalone application. See {@link #main(String[])} method for details. 
  *         In this mode it can be used to automatically test models from IDE, maven builds, etc. without
  *         creating a separate, dedicated unit test for it.
  *     </li>
  *     <li>
  *         As a utility class that can be called programmatically from other classes, e.g. unit tests. See
- *         various <code>isValid(...)</code> methods for more details.
+ *         {@link #isValid()} and {@link #isValid(Class)} methods for more details.
  *     </li>
  * </ul>
  * <p>
@@ -56,14 +54,24 @@ import java.util.*;
  * @see NCIntentRef
  */
 public class NCTestAutoModelValidator {
+    private final static String PROP_MODELS = "NLPCRAFT_TEST_MODELS";
+
     /**
      * Performs validation based on {@link NCIntentSample} annotations.
      * <p>
-     * Entry point for a standalone application that expects model classes supplied
-     * using <code>NLPCRAFT_TEST_MODELS</code> system property. This system property should have a comma separated
-     * list of data model class names. In this mode it can be used to automatically test
-     * models from IDE, maven builds, etc. without creating a separate, dedicated unit test for it.
-     * <p>
+     * This is an entry point for a standalone application that expects two system properties (both optional):
+     * <ul>
+     *     <li>
+     *         <code>NLPCRAFT_TEST_MODELS</code> - optional comma separated list of fully qualified data model class names to
+     *         test. Validator will start the embedded probe with these models as an override for
+     *         <code>'nlpcraft.probe.models'</code> configuration value. If not provided - the models defined in configuration (default or
+     *         provided via <code>NLPCRAFT_PROBE_CONFIG</code> property) will be used.
+     *     </li>
+     *     <li>
+     *         <code>NLPCRAFT_PROBE_CONFIG</code> - optional path to probe configuration file. If not provided -
+     *         the default NLPCraft configuration will be used.
+     *     </li>
+     * </ul>
      * Note that standard validation output will be printed out to the configured logger (e.g. log4j), if any.
      * 
      * @param args These arguments are ignored.
@@ -75,10 +83,22 @@ public class NCTestAutoModelValidator {
     }
 
     /**
-     * Performs validation based on {@link NCIntentSample} annotations. Similar to the standard
-     * <code>main(String[])</code>, this method expects model classes supplied
-     * using <code>NLPCRAFT_TEST_MODELS</code> system property. This system property should have a comma separated
-     * list of data model class names.
+     * Performs validation based on {@link NCIntentSample} annotations.
+     * <p>
+     * This method accepts two system properties (both optional):
+     * <ul>
+     *     <li>
+     *         <code>NLPCRAFT_TEST_MODELS</code> - optional comma separated list of fully qualified data model class names to
+     *         test. Validator will start the embedded probe with these models as an override for
+     *         <code>'nlpcraft.probe.models'</code> configuration value. If not provided - the models defined in configuration (default or
+     *         provided via <code>NLPCRAFT_PROBE_CONFIG</code> property) will be used.
+     *     </li>
+     *     <li>
+     *         <code>NLPCRAFT_PROBE_CONFIG</code> - optional path to probe configuration file. If not provided -
+     *         the default NLPCraft configuration will be used.
+     *     </li>
+     * </ul>
+     * Note that standard validation output will be printed out to the configured logger (e.g. log4j), if any.
      * 
      * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
      *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.
@@ -91,6 +111,9 @@ public class NCTestAutoModelValidator {
 
     /**
      * Performs validation based on {@link NCIntentSample} annotations for given model.
+     * <p>
+     * This is a convenient shortcut that is equivalent to setting <code>NLPCRAFT_TEST_MODELS</code> system
+     * property (overriding any existing value) with given mode class name and calling {@link #isValid()} method.
      *
      * @param claxx Data model class.
      * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
@@ -99,51 +122,8 @@ public class NCTestAutoModelValidator {
      *      output will be printed out to the configured logger (e.g. log4j), if any.
      */
     public static boolean isValid(Class<NCModel> claxx) throws Exception {
-        return NCTestAutoModelValidatorImpl.isValidForClass(claxx);
-    }
+        System.setProperty(PROP_MODELS, claxx.getName());
 
-    /**
-     * Performs validation based on {@link NCIntentSample} annotations for given models.
-     *
-     * @param mdlIds One or more ID of the model to validate.
-     * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.
-     * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger (e.g. log4j), if any.
-     *
-     * @see NCModelView#getId()
-     */
-    public static boolean isValid(String... mdlIds) throws Exception {
-        return NCTestAutoModelValidatorImpl.isValidForModelIds(mdlIds);
-    }
-
-    /**
-     * Performs validation based on {@link NCIntentSample} annotations for given models.
-     *
-     * @param mdlIds Comma separate list of one or more model IDs to validate.
-     * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger.
-     * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger.
-     *
-     * @see NCModelView#getId()
-     */
-    public static boolean isValid(String mdlIds) throws Exception {
-        return NCTestAutoModelValidatorImpl.isValidForModelIds(mdlIds);
-    }
-
-    /**
-     * Performs validation based on {@link NCIntentSample} annotations for given models.
-     *
-     * @param mdlIds Collection of model IDs to validate.
-     * @return <code>True</code> if no validation errors found, <code>false</code> otherwise. Note that
-     *      standard validation output will be printed out to the configured logger (e.g. log4j), if any.
-     * @throws Exception Thrown in case of any unexpected errors during validation. Note that standard validation
-     *      output will be printed out to the configured logger (e.g. log4j), if any.
-     *
-     * @see NCModelView#getId()
-     */
-    public static boolean isValid(Collection<String> mdlIds) throws Exception {
-        return NCTestAutoModelValidatorImpl.isValidForModelIds(mdlIds);
+        return NCTestAutoModelValidatorImpl.isValid();
     }
 }

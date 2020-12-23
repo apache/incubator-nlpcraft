@@ -293,8 +293,7 @@ class NCMacroParser {
     }
 
     // Trims all duplicate spaces.
-    private def trimDupSpaces(s: String) =
-        s.split(" ").map(_.trim).filter(_.nonEmpty).mkString(" ")
+    private def trimDupSpaces(s: String) = U.splitTrimFilter(s, " ").mkString(" ")
     
     // Processes '\' escapes for '{', '}', '|', and '*'.
     private def processEscapes(s: String): String = {

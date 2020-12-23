@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.time;
+package org.apache.nlpcraft.model.tools.cmdline
 
-import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe;
-
-import java.util.Collections;
+import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Test
 
 /**
- * An app that demo the usage of embedded probe. This is an alternative way to
- * deploy data models using embedded probe that can run in any host JVM application.
+ * Various tests for `NCCli` class.
  */
-public class TimeModelApp {
-    /**
-     * Main entry point.
-     *
-     * @param args Command like arguments (none required).
-     * @throws Exception Thrown in case of any errors.
-     */
-    public static void main(String[] args) throws Exception {
-        // Start the data probe "in place" with 'TimeModel' model.
-        if (NCEmbeddedProbe.start(null, Collections.singletonList(TimeModel.class.getName())))
-            Thread.currentThread().join();
+class NCCliSpec {
+    @Test
+    def testStripQuotes(): Unit = {
+        assertEquals(NCCli.stripQuotes("""'x'"""), "x")
+        assertEquals(NCCli.stripQuotes("""'"'x'" "z"'"""), """'x'" "z""")
     }
 }

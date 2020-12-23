@@ -40,10 +40,10 @@ object NCGeoMetroGenerator extends App {
     case class Holder(name: String)
 
     private def deleteBrackets(s: String): String =
-        s.replaceAll("\\(", " ").replaceAll("\\)", " ").split(" ").map(_.trim).filter(_.nonEmpty).mkString(" ")
+        U.normalize(s.replaceAll("\\(", " ").replaceAll("\\)", " "), " ")
 
     private def generate() {
-        val lines = U.readPath(in, "UTF-8").toSeq.map(_.trim).filter(_.nonEmpty)
+        val lines = U.readPath(in, "UTF-8").map(_.trim).filter(_.nonEmpty)
 
        // Skips header.
         val metro = lines.tail.filter(!_.contains("(not set)")).map(line ⇒ Holder(line.takeWhile(_ != ',')))

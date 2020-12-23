@@ -24,8 +24,7 @@
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ## What is Apache NLPCraft?
-[Apache NLPCraft](https://nlpcraft.apache.org/) is an open source library for adding a natural language interface to any applications. 
-Based on semantic modelling it allows rapid implementation and requires no model training or pre-existing text corpora:
+[Apache NLPCraft](https://nlpcraft.apache.org/) is an open source library for adding a natural language interface for modern applications: 
 
  * Download, Maven/Grape/Gradle/SBT, installation [instructions](https://nlpcraft.apache.org/download.html) 
  * Read [documentation](https://nlpcraft.apache.org/docs.html)
@@ -41,11 +40,11 @@ Natural Language Interface (NLI) enables users to explore any type of data sourc
 There is no learning curve, no special rules or UI to master, no cumbersome syntax or terms to remember - just a natural language that your users already speak.
  
 ## Key Features
-### Semantic Modeling
-Advanced semantic modelling and intent-based matching enables deterministic natural language understanding without requiring deep learning training or pre-existing text corpora.
+### Programmable Intents
+Fully programmable, advanced intent DSL with deterministic matching provides easy to use and expressive mechanism for a complex intent logic.
 
-### Any Data Source
-Any data source, device, or service - public or private. From databases and SaaS systems, to smart home devices, voice assistants and chatbots.
+### Short-Term-Memory
+Advanced out-of-the-box support for maintaining and managing conversational context that is fully integrated with intent matching.
  
 ### English Focused
 NLPCraft focuses on processing English language delivering the ease of use and unparalleled comprehension for the language spoken by more than a billion people.
@@ -53,9 +52,9 @@ NLPCraft focuses on processing English language delivering the ease of use and u
 ### By Devs - For Devs
 Built with a singular focus - provide developers with unprecedented productivity and efficiency when building  modern NLI applications.
 
-### Advanced NLP Toolset
-Combines ease-of-use and development productivity with state-of-the-art NLP capabilities like short-term-memory (STM) support, advanced intent DSL with deterministic matching, and composable NEs.
-                        
+### Composable Named Entities
+Compose new reusable Named Entities out of existing internal or external ones, build new ones and mix and match using comprehensive DSL.
+                       
 ### Java-First
 REST API and Java-based implementation natively supports the world's largest ecosystem of development tools, multiple programming languages, frameworks and services.
 
@@ -102,11 +101,11 @@ Add NLPCraft dependency to your project:
     <dependency>
         <groupId>org.apache.nlpcraft</groupId>
         <artifactId>nlpcraft</artifactId>
-        <version>0.7.2</version>
+        <version>0.7.3</version>
     </dependency>
 </dependencies>
 ```
-NOTE: **0.7.2** should be the latest NLPCraft version.
+NOTE: **0.7.3** should be the latest NLPCraft version.
 
 ### Define Data Model
 Declare the static part of the data model using YAML which we will later load in our model implementation. You can declare entire

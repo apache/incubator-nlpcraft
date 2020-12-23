@@ -811,7 +811,7 @@ public interface NCModelView extends NCMetadata {
      * Gets optional user-defined model element parsers for custom NER implementations. Note that order of the parsers
      * is important as they will be invoked in the same order they are returned.
      * <p>
-     * By default the semantic data model detects its elements by their synonyms, regexp or DSL expressions. However,
+     * By default the data model detects its elements by their synonyms, regexp or DSL expressions. However,
      * in some cases these methods are not expressive enough. In such cases, a user-defined parser can be defined
      * for the model that would allow the user to define its own NER logic to detect the model elements in the user
      * input programmatically. Note that there can be only one custom parser per model and it can detect any number
@@ -839,7 +839,7 @@ public interface NCModelView extends NCMetadata {
     /**
      * Gets a set of model elements or named entities. Model can have zero or more user defined elements.
      * <p>
-     * An element is the main building block of the semantic model. Data model element defines a named entity
+     * An element is the main building block of the model. Data model element defines a named entity
      * that will be automatically recognized in the user input. See also {@link NCModel#getParsers()} method on how
      * to provide programmatic named entity recognizer (NER) implementations.
      * <p>

@@ -35,7 +35,7 @@ object NCSpellCheckManager extends NCService {
 
     private def isWordUpper(s: String): Boolean = s.forall(_.isUpper)
     private def isHeadUpper(s: String): Boolean = s.head.isUpper
-    private def split(s: String): Seq[String] = s.split(" ").filter(!_.isEmpty)
+    private def split(s: String): Seq[String] = U.splitTrimFilter(s, " ")
     private def processCase(s: String, sample: String): String =
         if (isWordUpper(sample))
             s.toUpperCase

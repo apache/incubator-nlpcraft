@@ -22,38 +22,31 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
-import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
+
+import scala.collection.JavaConverters._
 
 /**
   * Implementation for `NCTestAutoModelValidator` class.
   */
 private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
     private final val PROP_MODELS = "NLPCRAFT_TEST_MODELS"
+    private final val PROP_PROBE_CFG = "NLPCRAFT_PROBE_CONFIG"
 
+    /**
+     *
+     * @throws Exception Thrown in case of any errors.
+     * @return
+     */
     @throws[Exception]
-    def isValid: Boolean =
-        U.sysEnv(PROP_MODELS) match {
-            case Some(p) ⇒ isValid(getClasses(p.split(",")))
-            case None ⇒ throw new IllegalStateException(s"System property '$PROP_MODELS' is not defined.")
+    def isValid: Boolean = {
+        val classes = U.sysEnv(PROP_MODELS) match {
+            case Some(s) ⇒ U.splitTrimFilter(s, ",")
+            case None ⇒ null
         }
+        val cfgFile = U.sysEnv(PROP_PROBE_CFG).orNull
 
-    @throws[Exception]
-    def isValidForClass(claxx: Class[_ <: NCModel]): Boolean = isValid(Seq(claxx))
-
-    @throws[Exception]
-    def isValidForModelIds(mdlIds: String): Boolean = isValid(getClasses(mdlIds.split(",")))
-    
-    @throws[Exception]
-    def isValidForModelIds(mdlIds: java.util.Collection[String]): Boolean =
-        isValid(getClasses(mdlIds.toArray().asInstanceOf[Array[String]]))
-
-    @throws[Exception]
-    def isValidForModelIds(mdlIds: Array[String]): Boolean = isValid(getClasses(mdlIds))
-
-    @throws[Exception]
-    private def isValid(classes: Seq[Class[_ <: NCModel]]): Boolean = {
-        if (NCEmbeddedProbe.start(classes: _*))
+        if (NCEmbeddedProbe.start(cfgFile, classes.asJava))
             try
                 process(NCModelManager.getAllModels().map(p ⇒ p.model.getId → p.samples.toMap).toMap.filter(_._2.nonEmpty))
             finally
@@ -122,20 +115,5 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
         )
         
         failCnt == 0
-    }
-
-    /**
-      *
-      * @param s
-      * @return
-      */
-    private def getClasses(s: Array[String]): Seq[Class[_ <: NCModel]] = {
-        val clsLdr = Thread.currentThread().getContextClassLoader
-
-        s.
-            map(_.trim).
-            filter(_.nonEmpty).
-            map(clsLdr.loadClass).
-            map(_.asSubclass(classOf[NCModel]))
     }
 }

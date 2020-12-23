@@ -138,7 +138,7 @@ object NCSql extends LazyLogging {
         sql.replace("\n", " ").
             replace("\t", " ").
             split(" ").
-            filter(!_.isEmpty).
+            filter(_.nonEmpty).
             mkString(" ").
             trim
 

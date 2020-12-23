@@ -108,7 +108,7 @@ object NCSuggestSynonymManager extends NCService {
     }
     case class SuggestionResult(synonym: String, score: Double)
 
-    private def split(s: String): Seq[String] = s.split(" ").toSeq.map(_.trim).filter(_.nonEmpty)
+    private def split(s: String): Seq[String] = U.splitTrimFilter(s, " ")
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
 

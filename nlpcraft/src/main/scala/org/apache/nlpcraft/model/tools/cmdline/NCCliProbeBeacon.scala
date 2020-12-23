@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.examples.time;
-
-import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe;
-
-import java.util.Collections;
+package org.apache.nlpcraft.model.tools.cmdline
 
 /**
- * An app that demo the usage of embedded probe. This is an alternative way to
- * deploy data models using embedded probe that can run in any host JVM application.
+ *
+ * @param pid
+ * @param id
+ * @param token
+ * @param upLink
+ * @param downLink
+ * @param jarsFolder
+ * @param models
+ * @param beaconPath
+ * @param startMs
+ * @param logPath
+ * @param ph
  */
-public class TimeModelApp {
-    /**
-     * Main entry point.
-     *
-     * @param args Command like arguments (none required).
-     * @throws Exception Thrown in case of any errors.
-     */
-    public static void main(String[] args) throws Exception {
-        // Start the data probe "in place" with 'TimeModel' model.
-        if (NCEmbeddedProbe.start(null, Collections.singletonList(TimeModel.class.getName())))
-            Thread.currentThread().join();
-    }
-}
+case class NCCliProbeBeacon (
+    pid: Long,
+    id: String,
+    token: String,
+    upLink: String,
+    downLink: String,
+    jarsFolder: String,
+    models: String,
+    beaconPath: String,
+    startMs: Long,
+    @transient var logPath: String = null,
+    @transient var ph: ProcessHandle = null
+)

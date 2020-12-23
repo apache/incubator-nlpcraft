@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.server.nlp.preproc
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.NCService
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.server.nlp.spell.NCSpellCheckManager
 
 import scala.collection._
@@ -117,20 +117,20 @@ object NCPreProcessManager extends NCService {
     
     /**
       *
-      * @param sen        Input sentence.
+      * @param sen Input sentence.
       * @param spellCheck Spell check flag.
       * @return
       */
     private def collect(sen: Seq[String], spellCheck: Boolean): String =
         if (spellCheck)
-            sen.map(NCSpellCheckManager.check).map(_.trim).filter(!_.isEmpty).mkString(" ")
+            U.trimFilter(sen.map(NCSpellCheckManager.check)).mkString(" ")
         else
-            sen.map(_.trim).filter(!_.isEmpty).mkString(" ")
+            U.trimFilter(sen).mkString(" ")
     
     /**
       * Performs all pre-processing and normalizes the given input raw text.
       *
-      * @param rawTxt     Raw text to normalize.
+      * @param rawTxt Raw text to normalize.
       * @param spellCheck Using spell checking flag.
       * @return Normalized, pre-processed text.
       * @param parent Optional parent span.

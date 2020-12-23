@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer}
-import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX, escapeJson}
+import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
 import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentSolver}
@@ -255,10 +255,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 var curr = 0
                 val len = x.length - (2 + 2) // 2 is a prefix/suffix length. Hack...
 
-                def splitUp(s: String): Seq[String] = s.split(" ").map(_.trim).filter(_.nonEmpty).toSeq
-
                 def processChunk(fix: String): Unit = {
-                    chunks ++= splitUp(x.substring(start, curr))
+                    chunks ++= U.splitTrimFilter(x.substring(start, curr), " ")
 
                     x.indexOf(fix, curr + fix.length) match {
                         case -1 ⇒
@@ -286,7 +284,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         curr += 1
                 }
 
-                chunks ++= splitUp(x.substring(start))
+                chunks ++= U.splitTrimFilter(x.substring(start), " ")
 
                 chunks.map(mkChunk(mdlId, _))
             }
@@ -627,7 +625,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             case None ⇒ // No-op.
         }
 
-        data ++= Config.models.split(",").map(_.trim).map(makeModelWrapper)
+        data ++= U.splitTrimFilter(Config.models, ",").map(makeModelWrapper)
 
         Config.jarsFolder match {
             case Some(jarsFolder) ⇒
@@ -790,7 +788,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 s"mdlId=${mdl.getId}, " +
                 s"elm=${elm.toString}" +
             s"]")
-        else if (elm.getId.length == 0)
+        else if (elm.getId.isEmpty)
             throw new NCE(s"Model element ID cannot be empty [" +
                 s"mdlId=${mdl.getId}, " +
                 s"elm=${elm.toString}]" +
@@ -932,7 +930,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (startsAndEnds(REGEX_FIX, chunk)) {
             val ptrn = stripSuffix(REGEX_FIX, chunk)
 
-            if (ptrn.length > 0)
+            if (ptrn.nonEmpty)
                 try
                     NCProbeSynonymChunk(kind = REGEX, origText = chunk, regex = Pattern.compile(ptrn))
                 catch {

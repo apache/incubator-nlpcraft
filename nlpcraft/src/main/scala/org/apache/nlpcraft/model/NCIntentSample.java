@@ -33,6 +33,30 @@ import static java.lang.annotation.RetentionPolicy.*;
  * used by {@link NCTestAutoModelValidator} class from built-in test framework for auto-validation between
  * data models and intents.
  * <p>
+ * Here's an example of using this annotation (from <a target=_new href="https://nlpcraft.apache.org/examples/light_switch.html">LightSwitch</a> example):
+ * <pre class="brush: java, highlight: [2]">
+ * {@literal @}NCIntent("intent=act term(act)={groups {@literal @}{@literal @} 'act'} term(loc)={trim(id) == 'ls:loc'}*")
+ * {@literal @}NCIntentSample(Array(
+ *     "Turn the lights off in the entire house.",
+ *     "Switch on the illumination in the master bedroom closet.",
+ *     "Get the lights on.",
+ *     "Please, put the light out in the upstairs bedroom.",
+ *     "Set the lights on in the entire house.",
+ *     "Turn the lights off in the guest bedroom.",
+ *     "Could you please switch off all the lights?",
+ *     "Dial off illumination on the 2nd floor.",
+ *     "Please, no lights!",
+ *     "Kill off all the lights now!",
+ *     "No lights in the bedroom, please."
+ * ))
+ * def onMatch(
+ *     {@literal @}NCIntentTerm("act") actTok: NCToken,
+ *     {@literal @}NCIntentTerm("loc") locToks: List[NCToken]
+ * ): NCResult = {
+ *     ...
+ * }
+ * </pre>
+ * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *

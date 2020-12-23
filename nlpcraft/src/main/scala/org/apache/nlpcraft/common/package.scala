@@ -72,7 +72,7 @@ package object common {
     def bb(s: Any): String = s"$BB${s.toString}$RST"
     def kb(s: Any): String = s"$KB${s.toString}$RST"
 
-    // Real color effect shortcuts...
+    // Effect shortcuts...
     def rv(s: Any): String = s"$ansiReversed${s.toString}$RST"
     def bo(s: Any): String = s"$ansiBold${s.toString}$RST"
 

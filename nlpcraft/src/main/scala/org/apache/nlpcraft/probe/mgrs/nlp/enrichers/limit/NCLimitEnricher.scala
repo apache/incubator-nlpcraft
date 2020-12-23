@@ -20,11 +20,12 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
 import java.io.Serializable
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.numeric.{NCNumeric, NCNumericManager}
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
-import org.apache.nlpcraft.common.{NCE, NCService}
+import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
@@ -194,7 +195,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
         limits= {
             // Few numbers cannot be in on template.
-            require(SYNONYMS.forall(_.split(" ").map(_.trim).count(_ == CD) < 2))
+            require(SYNONYMS.forall(s ⇒ U.splitTrimFilter(s, " ").count(_ == CD) < 2))
 
             def toMacros(seq: Iterable[String]): String = seq.mkString("|")
 
