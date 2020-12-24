@@ -27,8 +27,8 @@
     <parent>
         <groupId>org.apache.nlpcraft</groupId>
         <artifactId>nlpcraft-parent</artifactId>
-        <version>0.7.2</version>
-        <relativePath>../</relativePath>
+        <version>0.7.3</version>
+        <relativePath>../../</relativePath>
     </parent>
 
     <properties>
