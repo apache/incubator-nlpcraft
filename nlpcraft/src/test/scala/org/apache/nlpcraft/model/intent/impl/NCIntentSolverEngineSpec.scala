@@ -19,7 +19,7 @@ package org.apache.nlpcraft.model.intent.impl
 
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.utils.NCDslFlowItem
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 
 /**
@@ -49,6 +49,9 @@ class NCIntentSolverEngineSpec  {
         assertTrue(matchFlow("a a c c", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
         assertTrue(matchFlow("a a c c d", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
         assertTrue(matchFlow("a a c c e f g h", ("a", 2, 2), ("b|c", 1, 2), ("d", 0, 1)))
-        assertTrue(!matchFlow("a a c c x", ("a", 2, 2), ("b|c", 1, 2), ("d", 1, 1)))
+        assertFalse(matchFlow("a a c c x", ("a", 2, 2), ("b|c", 1, 2), ("d", 1, 1)))
+
+        assertTrue(matchFlow(hist = "a", flow = ("a", 1, 1)))
+        assertFalse(matchFlow(hist = "a a", flow = ("a", 1, 1)))
     }
 }
