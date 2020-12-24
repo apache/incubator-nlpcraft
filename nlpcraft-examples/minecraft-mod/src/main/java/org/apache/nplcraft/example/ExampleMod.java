@@ -40,6 +40,7 @@ public class ExampleMod {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Gson gson = new Gson();
     private MinecraftServer server;
+    private Optional<String> token = Optional.empty();
     private boolean inRecursion = false;
 
     public ExampleMod() {
@@ -71,24 +72,44 @@ public class ExampleMod {
     }
 
     private Optional<NCResponse> askProbe(String txt) {
+        AskParams params = new AskParams();
+        params.txt = txt.startsWith("/") ? txt.substring(1) : txt;
+
+        Optional<String> optional = getToken();
+        if (!optional.isPresent()) {
+            return Optional.empty();
+        }
+        params.acsTok = optional.get();
+
+        return post("ask/sync", gson.toJson(params), NCResponse.class);
+    }
+
+    private Optional<String> getToken() {
+        if (!token.isPresent()) {
+            // TODO
+            NCSignIn sign = new NCSignIn();
+            sign.email = "admin@admin.com";
+            sign.passwd = "admin";
+
+            token = post("signin", gson.toJson(sign), NCSignResponse.class).map(x -> x.acsTok);
+        }
+
+        return token;
+    }
+
+    private <T> Optional<T> post(String url, String postJson, Class<T> clazz) {
         try {
-            AskParams params = new AskParams();
-            params.txt = txt.startsWith("/") ? txt.substring(1) : txt;
+            String str = "http://0.0.0.0:8081/api/v1/" + url;
 
-            String str = "http://0.0.0.0:8081/api/v1/ask/sync";
-
-            URL url = new URL(str);
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            HttpURLConnection http = (HttpURLConnection) new URL(str).openConnection();
             http.setRequestMethod("POST"); // PUT is another valid option
             http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             http.setConnectTimeout(1_000);
             http.setReadTimeout(1_000);
 
-            String postJsonData = gson.toJson(params);
-
             http.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(http.getOutputStream());
-            wr.writeBytes(postJsonData);
+            wr.writeBytes(postJson);
             wr.flush();
             wr.close();
 
@@ -96,7 +117,7 @@ public class ExampleMod {
 
             BufferedReader in = new BufferedReader(new InputStreamReader(http.getInputStream()));
 
-            NCResponse response = gson.fromJson(in, NCResponse.class);
+            T response = gson.fromJson(in, clazz);
 
             return Optional.of(response);
         } catch (Exception e) {
@@ -107,9 +128,8 @@ public class ExampleMod {
     }
 
     private class AskParams {
-        // TODO
-        private final String acsTok = "4oe8dBpnpoSAbLo9BbzaL";
         private final String mdlId = "nlpcraft.minecraft.ex";
+        private String acsTok;
         private String txt;
 
         @Override
@@ -150,5 +170,14 @@ public class ExampleMod {
                     ", resBody='" + resBody + '\'' +
                     '}';
         }
+    }
+
+    private class NCSignIn {
+        String email;
+        String passwd;
+    }
+
+    private class NCSignResponse {
+        private String acsTok;
     }
 }
