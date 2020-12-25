@@ -544,13 +544,15 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
         solvePredicate(term.getPredicate, term.getMin, term.getMax, senToks, convToks) match {
             case Some((usedToks, predWeight)) ⇒
-                termToks = termToks ::: usedToks
-                termWeight += predWeight
+                if (usedToks.nonEmpty) { // Used tokens can be empty when term is optional (min is zero).
+                    termToks = termToks ::: usedToks
+                    termWeight += predWeight
 
-                // Add term's quantifiers as less important weights (min is more important than a max).
-                termWeight.append(term.getMin)
-                termWeight.append(term.getMax)
-    
+                    // Add term's quantifiers as less important weights (min is more important than a max).
+                    termWeight.append(term.getMin)
+                    termWeight.append(term.getMax)
+                }
+
                 Some(TermMatch(term.getId, termToks, termWeight))
 
             case None ⇒
