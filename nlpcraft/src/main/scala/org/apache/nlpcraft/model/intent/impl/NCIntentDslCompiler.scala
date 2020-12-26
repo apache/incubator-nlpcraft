@@ -118,7 +118,10 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitFlowDecl(ctx: NCIntentDslParser.FlowDeclContext): Unit = {
-            flowRegex = Some(ctx.qstring().getText.trim)
+            val qRegex = ctx.qstring().getText.trim
+            val regex = qRegex.substring(1, qRegex.length - 1).trim
+
+            flowRegex = if (regex.nonEmpty) Some(regex) else None
         }
 
         override def exitIntentId(ctx: NCIntentDslParser.IntentIdContext): Unit = {

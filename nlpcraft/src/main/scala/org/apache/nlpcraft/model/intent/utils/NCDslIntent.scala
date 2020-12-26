@@ -55,7 +55,7 @@ case class NCDslIntent(id: String, ordered: Boolean, flow: Option[String], terms
     def toDslString: String = {
         val orderedStr = if (!ordered) "" else " ordered=true"
         val flowStr = flow match {
-            case Some(r) ⇒ s"flow='$r''"
+            case Some(r) ⇒ s" flow='$r'"
             case None ⇒ ""
         }
 
