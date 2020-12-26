@@ -543,7 +543,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 NCTokenLogger.prepareTable(sen.asScala).
                     info(
                         logger,
-                        Some(s"Parsing variant #${i + 1} of ${senVars.size} (sorted best to worst) for: '$txt'")
+                        Some(s"Parsing variant #${i + 1} of ${senVars.size} for: '$txt'")
                     )
             }
         }

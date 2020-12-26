@@ -39,8 +39,10 @@ case class NCDslIntent(id: String, ordered: Boolean, flow: Option[String], terms
             try
                 Some(Pattern.compile(r))
             catch {
-                case e: PatternSyntaxException ⇒ throw new IllegalArgumentException(s"Invalid flow regex: ${e.getLocalizedMessage}")
+                case e: PatternSyntaxException ⇒
+                    throw new IllegalArgumentException(s"${e.getDescription} in flow regex '${e.getPattern}' near index ${e.getIndex}.")
             }
+
         case None ⇒ None
     }
 

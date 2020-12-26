@@ -321,9 +321,9 @@ object NCIntentDslCompiler extends LazyLogging {
             e: RecognitionException): Unit = {
             
             val errMsg = s"Intent DSL syntax error at line $line:$charPos - $msg\n" +
-                s"  |- ${c("Model:")}  $mdlId\n" +
-                s"  |- ${c("Intent:")} $dsl\n" +
-                s"  +- ${c("Error:")}  ${makeCharPosPointer(dsl.length, charPos)}"
+                s"  |-- ${c("Model:")}  $mdlId\n" +
+                s"  |-- ${c("Intent:")} $dsl\n" +
+                s"  +-- ${c("Error:")}  ${makeCharPosPointer(dsl.length, charPos)}"
             
             throw new NCE(errMsg)
         }

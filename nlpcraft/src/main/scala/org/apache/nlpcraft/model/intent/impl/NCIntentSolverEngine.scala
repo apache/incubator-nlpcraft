@@ -246,11 +246,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         tbl += (
                             Seq(
                                 s"#${m.variantIdx + 1}",
-                                r("'best match'")
+                                g(bo("'best match'"))
                             ),
                             Seq(
                                 im.intent.id,
-                                r("'best match'")
+                                g(bo("'best match'"))
                             ),
                             mkPickTokens(im)
                         )
@@ -273,7 +273,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         )
                 })
 
-                tbl.info(logger, Some(s"Found matching intents (sorted ${r("best")} to worst):"))
+                tbl.info(logger, Some(s"Found matching intents (sorted ${g(bo("best"))} to worst):"))
             }
             else
                 logger.info("No matching intent found.")
@@ -347,9 +347,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         
         val varStr = s"(variant #${varIdx + 1})"
 
+        val histStr = hist.mkString(" ")
+        val flowRegex = intent.flowRegex
+
         // Check dialog flow first.
-        if (intent.flowRegex.isDefined && !intent.flowRegex.get.matcher(hist.mkString(" ")).matches()) {
-            logger.info(s"Intent '$intentId' didn't match because of dialog flow $varStr.")
+        if (intent.flowRegex.isDefined && !flowRegex.get.matcher(histStr).matches()) {
+            logger.info(s"Intent '$intentId' didn't match because of dialog flow $varStr:")
+            logger.info(s"  |-- ${c("History:")} $histStr")
+            logger.info(s"  +-- ${c("Regex:")}   ${flowRegex.get.toString}")
 
             None
         }

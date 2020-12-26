@@ -45,7 +45,12 @@ class NCDialogSpecModel extends NCModel {
     @NCIntent("intent=test1 term~{id == 'test1'}")
     def onTest1(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=test2 flow='test1[1,1]' term~{id == 'test2'}")
+    /**
+     * 'test2' requires one and only one 'test1' immediately before in history.
+     *
+     * @return
+     */
+    @NCIntent("intent=test2 flow='^(?:test1)(^:test1)*$' term~{id == 'test2'}")
     def onTest2(): NCResult = NCResult.text("ok")
 }
 
@@ -60,20 +65,21 @@ class NCDialogSpec extends NCTestContext {
         val cli = getClient
 
         def flow(): Unit = {
-            // There isn't `test1` before.
+            // FAIL: there isn't 'test1' before for 'test2' to match.
             assertFalse(cli.ask("test2").isOk)
 
-            // `test1` is always ok.
+            // OK: 'test1' is always ok.
             assertTrue(cli.ask("test1").isOk)
 
-            // There is one `test1` before.
+            // OK: 'test2' matches as there is one 'test1' before.
             assertTrue(cli.ask("test2").isOk)
 
-            // `test1` is always ok.
+            // OK: 'test1' is always ok.
             assertTrue(cli.ask("test1").isOk)
             assertTrue(cli.ask("test1").isOk)
 
-            // There are too much `test1` before.
+            // FAIL: there are too many (2) 'test1' before in history,
+            // 'test2' requires one and only one 'test1' to match.
             assertFalse(cli.ask("test2").isOk)
         }
 
