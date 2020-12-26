@@ -36,8 +36,6 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
     override def getElements: util.Set[NCElement] =
         Set("a", "b", "c", "d", "e").map(id ⇒ new NCElement { override def getId: String = id }).asJava
 
-    private def mk(id: String): NCElement = new NCElement { override def getId: String = "a" }
-
     // a. Mandatory, List, +, *, ?
     @NCIntent("intent=aMandatory term(a)={id == 'a' }")
     private def aMandatory(ctx: NCIntentMatch): NCResult = "OK"
