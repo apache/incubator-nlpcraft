@@ -122,7 +122,7 @@
         <maven.bazaarvoice.plugin.ver>0.9</maven.bazaarvoice.plugin.ver>
         <maven.clean.plugin.ver>3.1.0</maven.clean.plugin.ver>
         <apache.rat.plugin.ver>0.13</apache.rat.plugin.ver>
-        <org.antlr4.ver>4.8</org.antlr4.ver>
+        <org.antlr4.ver>4.9</org.antlr4.ver>
         <akka.http.2.12.ver>10.2.0</akka.http.2.12.ver>
         <akka.stream.2.12.ver>2.6.8</akka.stream.2.12.ver>
         <akka.http.spray.json.2.12.ver>10.2.0</akka.http.spray.json.2.12.ver>
