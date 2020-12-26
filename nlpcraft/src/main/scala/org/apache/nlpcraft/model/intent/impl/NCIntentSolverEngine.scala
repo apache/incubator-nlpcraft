@@ -538,27 +538,19 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         term: NCDslTerm,
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
-    ): Option[TermMatch] = {
-        var termToks = List.empty[UsedToken]
-        var termWeight = new Weight()
-
+    ): Option[TermMatch] =
         solvePredicate(term.getPredicate, term.getMin, term.getMax, senToks, convToks) match {
-            case Some((usedToks, predWeight)) ⇒
-                if (usedToks.nonEmpty) { // Used tokens can be empty when term is optional (min is zero).
-                    termToks = termToks ::: usedToks
-                    termWeight += predWeight
+            case Some((usedToks, predWeight)) ⇒ Some(
+                /*
+                 * If term is found (usedToks > 0) we add its min quantifier as 3rd weight.
+                 * Note that weight for the actual number of found tokens is already a 2nd weight
+                 * returned from solvePredicate() method.
+                 */
+                TermMatch(term.getId, usedToks, if (usedToks.isEmpty) new Weight(0, 0, 0) else predWeight.append(term.getMin))
+            )
 
-                    // Add term's quantifiers as less important weights (min is more important than a max).
-                    termWeight.append(term.getMin)
-                    termWeight.append(term.getMax)
-                }
-
-                Some(TermMatch(term.getId, termToks, termWeight))
-
-            case None ⇒
-                None
+            case None ⇒ None
         }
-    }
     
     /**
       *
@@ -598,9 +590,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 }
             }
 
-        // Collect to the 'max', if possible.
+        // Collect to the 'max' from sentence, if possible.
         collect(senToks, max)
-        
+
+        // Further collect to the 'max' from conversation, if necessary & possible.
         collect(convToks, max)
 
         if (combToks.lengthCompare(min) < 0) // We couldn't collect even 'min' tokens.
@@ -608,7 +601,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         else if (combToks.isEmpty) { // Item is optional and no tokens collected (valid result).
             require(min == 0)
             
-            Some(combToks → new Weight())
+            Some(combToks → new Weight(
+                0 /* Conversation weight. */,
+                0 /* Number of matched tokens weight. */
+            ))
         }
         else { // We've collected some tokens.
             // Youngest first.
@@ -620,7 +616,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             combToks.foreach(_.used = true) // Mark tokens as used.
 
-            Some(combToks → new Weight(convW, predW))
+            Some(combToks → new Weight(
+                convW /* Conversation weight. */,
+                predW /* Number of matched tokens weight. */
+            ))
         }
     }
 }
