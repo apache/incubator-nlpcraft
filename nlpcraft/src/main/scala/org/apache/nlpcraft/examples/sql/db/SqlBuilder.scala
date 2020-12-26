@@ -469,8 +469,6 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
         tblsNorm = tblsNorm.distinct
 
-        val extTbls = extendTables(tblsNorm)
-
         if (freeDateColOpt.isEmpty && freeDateRangeOpt.isDefined) {
             freeDateColOpt = findDateColumn(tblsNorm)
 
@@ -478,6 +476,8 @@ case class SqlBuilder(schema: NCSqlSchema) extends LazyLogging {
 
             tblsNorm = tblsNorm.distinct
         }
+
+        val extTbls = extendTables(tblsNorm)
 
         colsNorm = colsNorm.distinct
         condsNorm = condsNorm.distinct
