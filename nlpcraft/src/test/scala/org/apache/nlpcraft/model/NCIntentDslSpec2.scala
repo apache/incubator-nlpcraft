@@ -34,14 +34,9 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
     override def getElements: util.Set[NCElement] =
-        Set(
-            new NCElement { override def getId: String = "a" },
-            new NCElement { override def getId: String = "b" },
-            new NCElement { override def getId: String = "c" },
-            new NCElement { override def getId: String = "d" },
-            new NCElement { override def getId: String = "e" }
+        Set("a", "b", "c", "d", "e").map(id ⇒ new NCElement { override def getId: String = id }).asJava
 
-        ).asJava
+    private def mk(id: String): NCElement = new NCElement { override def getId: String = "a" }
 
     // a. Mandatory, List, +, *, ?
     @NCIntent("intent=aMandatory term(a)={id == 'a' }")
@@ -58,7 +53,6 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
 
     @NCIntent("intent=aOptional term(a)={id == 'a' }?")
     private def aOptional(ctx: NCIntentMatch): NCResult = "OK"
-
 
     // b. List, +, *, ?
     @NCIntent("intent=bList term(b)={id == 'b' }[1,3]")

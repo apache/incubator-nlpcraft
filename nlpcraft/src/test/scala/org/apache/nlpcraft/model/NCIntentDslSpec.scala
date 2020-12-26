@@ -21,6 +21,7 @@ import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
+import java.util
 import scala.language.implicitConversions
 
 /**
@@ -31,12 +32,22 @@ class NCIntentDslSpecModel extends NCModelAdapter(
 ) {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
+    override def getElements: util.Set[NCElement] = util.Collections.singleton(
+        new NCElement {
+            // It overrides city.
+            override def getId: String = "paris"
+        }
+    )
+
     // Moscow population filter.
-    @NCIntent("intent=bigCity term(city)~{id == 'nlpcraft:city' && ~nlpcraft:city:citymeta['population'] >= 10381222}")
+    @NCIntent("intent=bigCity term(city)={id == 'nlpcraft:city' && ~nlpcraft:city:citymeta['population'] >= 10381222}")
     private def onBigCity(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=otherCity term(city)~{id == 'nlpcraft:city' }")
+    @NCIntent("intent=otherCity term(city)={id == 'nlpcraft:city' }")
     private def onOtherCity(ctx: NCIntentMatch): NCResult = "OK"
+
+    @NCIntent("intent=userElement term(x)={id == 'paris' }")
+    private def onUserElement(ctx: NCIntentMatch): NCResult = "OK"
 }
 
 /**
@@ -44,7 +55,7 @@ class NCIntentDslSpecModel extends NCModelAdapter(
   */
 @NCTestEnvironment(model = classOf[NCIntentDslSpecModel], startClient = true)
 class NCIntentDslSpec extends NCTestContext {
-    private def check(txt: String, intent:  String): Unit = {
+    private def check(txt: String, intent: String): Unit = {
         val res = getClient.ask(txt)
 
         assertTrue(res.isOk, s"Checked: $txt")
@@ -57,5 +68,8 @@ class NCIntentDslSpec extends NCTestContext {
 
     @Test
     def testOtherCity(): Unit = check("San Francisco", "otherCity")
+
+    @Test
+    def testUserPriority(): Unit = check("Paris", "userElement")
 }
 
