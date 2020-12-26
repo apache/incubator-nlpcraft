@@ -342,18 +342,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         varIdx: Int
     ): Option[IntentMatch] = {
         val intentId = intent.id
-    
         val hist = NCDialogFlowManager.getDialogFlow(ctx.getRequest.getUser.getId, ctx.getModel.getId)
-        
         val varStr = s"(variant #${varIdx + 1})"
-
-        val histStr = hist.mkString(" ")
         val flowRegex = intent.flowRegex
 
         // Check dialog flow first.
-        if (intent.flowRegex.isDefined && !flowRegex.get.matcher(histStr).matches()) {
+        if (intent.flowRegex.isDefined && !flowRegex.get.matcher(hist.mkString(" ")).matches()) {
             logger.info(s"Intent '$intentId' didn't match because of dialog flow $varStr:")
-            logger.info(s"  |-- ${c("History:")} $histStr")
+            logger.info(s"  |-- ${c("History:")} ${hist.mkString(" ")}")
             logger.info(s"  +-- ${c("Regex:")}   ${flowRegex.get.toString}")
 
             None
