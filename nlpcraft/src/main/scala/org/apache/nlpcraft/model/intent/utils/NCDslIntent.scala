@@ -17,18 +17,36 @@
 
 package org.apache.nlpcraft.model.intent.utils
 
+import java.util.regex.{Pattern, PatternSyntaxException}
+
 /**
  * Intent from intent DSL.
+ *
+ * @param id Intent ID.
+ * @param ordered Whether or not the order of terms is important for matching.
+ * @param flow Optional flow matching regex.
+ * @param terms Array of terms comprising this intent.
  */
-case class NCDslIntent(id: String, ordered: Boolean, flow: Array[NCDslFlowItem], terms: Array[NCDslTerm]) {
+case class NCDslIntent(id: String, ordered: Boolean, flow: Option[String], terms: Array[NCDslTerm]) {
     if (id == null)
         throw new IllegalArgumentException("Intent ID must be provided.")
     if (terms.length == 0)
         throw new IllegalArgumentException("Intent should have at least one term.")
-    
+
+    // Flow regex as a compiled pattern.
+    val flowRegex = flow match {
+        case Some(r) ⇒
+            try
+                Some(Pattern.compile(r))
+            catch {
+                case e: PatternSyntaxException ⇒ throw new IllegalArgumentException(s"Invalid flow regex: ${e.getLocalizedMessage}")
+            }
+        case None ⇒ None
+    }
+
     override def toString: String =
         s"Intent: '$id'"
-    
+
     /**
      * Gets full intent string representation in text DSL format.
      *
@@ -36,9 +54,9 @@ case class NCDslIntent(id: String, ordered: Boolean, flow: Array[NCDslFlowItem],
      */
     def toDslString: String = {
         val orderedStr = if (!ordered) "" else " ordered=true"
-        val flowStr = flow.mkString(" >> ") match {
-            case s: String if s.nonEmpty ⇒ s" flow=$s"
-            case _ ⇒ ""
+        val flowStr = flow match {
+            case Some(r) ⇒ s"flow='$r''"
+            case None ⇒ ""
         }
 
         s"intent=$id$orderedStr$flowStr ${terms.mkString(" ")}"

@@ -35,22 +35,7 @@ import scala.collection.JavaConverters._
 class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCResult/*Callback*/)])
     extends LazyLogging with NCOpenCensusTrace {
     class RedoSolver extends RuntimeException
-    
-    validate()
-    
-    /**
-     * Validates intents.
-     */
-    private def validate(): Unit = {
-        val ids = intents.map(_._1.id)
-        
-        // Check that flow declaration has valid intent IDs.
-        for (intent ← intents.map(_._1))
-            for (id ← intent.flow.flatMap(_.intents))
-                if (!ids.contains(id))
-                    throw new NCException(s"Invalid intent ID '$id' in flow specification for intent '${intent.id}'.")
-    }
-    
+
     /**
      *
      * @param in

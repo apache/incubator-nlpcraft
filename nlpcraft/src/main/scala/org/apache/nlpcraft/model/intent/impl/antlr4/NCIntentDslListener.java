@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.8
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -47,46 +47,6 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFlowDecl(NCIntentDslParser.FlowDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#flow}.
-	 * @param ctx the parse tree
-	 */
-	void enterFlow(NCIntentDslParser.FlowContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#flow}.
-	 * @param ctx the parse tree
-	 */
-	void exitFlow(NCIntentDslParser.FlowContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#flowItem}.
-	 * @param ctx the parse tree
-	 */
-	void enterFlowItem(NCIntentDslParser.FlowItemContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#flowItem}.
-	 * @param ctx the parse tree
-	 */
-	void exitFlowItem(NCIntentDslParser.FlowItemContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#flowItemIds}.
-	 * @param ctx the parse tree
-	 */
-	void enterFlowItemIds(NCIntentDslParser.FlowItemIdsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#flowItemIds}.
-	 * @param ctx the parse tree
-	 */
-	void exitFlowItemIds(NCIntentDslParser.FlowItemIdsContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#idList}.
-	 * @param ctx the parse tree
-	 */
-	void enterIdList(NCIntentDslParser.IdListContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#idList}.
-	 * @param ctx the parse tree
-	 */
-	void exitIdList(NCIntentDslParser.IdListContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#terms}.
 	 * @param ctx the parse tree

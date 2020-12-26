@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.model.intent.utils.{NCDslFlowItem, NCDslIntent, NCDslTerm}
+import org.apache.nlpcraft.model.intent.utils.{NCDslIntent, NCDslTerm}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
@@ -326,58 +326,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         
         buf.toList
     }
-    
-    /**
-     * 
-     * @param flow
-     * @param hist
-     * @return
-     */
-    private[impl] def matchFlow(flow: Array[NCDslFlowItem], hist: Seq[String]): Boolean = {
-        var flowIdx = 0
-        var histIdx = 0
-        var abort = false
-        
-        while (flowIdx < flow.length && !abort) {
-            val item = flow(flowIdx)
-    
-            val intents = item.intents
-            val min = item.min
-            val max = item.max
-            
-            var i = 0
-            
-            // Check min first.
-            while (i < min && histIdx < hist.length && !abort) {
-                abort = !intents.contains(hist(histIdx))
-                
-                histIdx += 1
-                i += 1
-            }
-            
-            if (!abort && i < min)
-                abort = true // Need at least min.
 
-            if (!abort) {
-                var ok = true
-                
-                // Grab up until max, if available.
-                while (i < max && histIdx < hist.length && ok) {
-                    ok = intents.contains(hist(histIdx))
-        
-                    if (ok)
-                        histIdx += 1
-                    
-                    i += 1
-                }
-            }
-            
-            flowIdx += 1
-        }
-        
-        !abort
-    }
-    
     /**
       *
       * @param intent
@@ -397,9 +346,9 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         val hist = NCDialogFlowManager.getDialogFlow(ctx.getRequest.getUser.getId, ctx.getModel.getId)
         
         val varStr = s"(variant #${varIdx + 1})"
-    
+
         // Check dialog flow first.
-        if (!intent.flow.isEmpty && !matchFlow(intent.flow, hist)) {
+        if (intent.flowRegex.isDefined && !intent.flowRegex.get.matcher(hist.mkString(" ")).matches()) {
             logger.info(s"Intent '$intentId' didn't match because of dialog flow $varStr.")
 
             None

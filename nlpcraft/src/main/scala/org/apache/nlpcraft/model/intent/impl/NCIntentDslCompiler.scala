@@ -22,7 +22,7 @@ import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser}
-import org.apache.nlpcraft.model.intent.utils.{NCDslFlowItem, NCDslIntent, NCDslTerm, NCDslTokenPredicate}
+import org.apache.nlpcraft.model.intent.utils.{NCDslIntent, NCDslTerm, NCDslTokenPredicate}
 import org.apache.nlpcraft.common._
 
 import scala.collection.JavaConverters._
@@ -46,9 +46,8 @@ object NCIntentDslCompiler extends LazyLogging {
         private var ordered: Boolean = false
         private var id: String = _
         private val terms = ArrayBuffer.empty[NCDslTerm] // Accumulator for parsed terms.
-        private val flow = ArrayBuffer.empty[NCDslFlowItem] // Accumulator for flow items.
-        private val flowItemIds = mutable.HashSet.empty[String] // Accumulator for flow items IDs.
-    
+        private var flowRegex: Option[String] = None
+
         // Currently parsed term.
         private var termId: String = _
         private var termConv: Boolean = _
@@ -70,7 +69,7 @@ object NCIntentDslCompiler extends LazyLogging {
             require(id != null)
             require(terms.nonEmpty)
             
-            NCDslIntent(id, ordered, flow.toArray, terms.toArray)
+            NCDslIntent(id, ordered, flowRegex, terms.toArray)
         }
     
         /**
@@ -99,7 +98,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
     
         override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
-            termId = ctx.ID().getText
+            termId = ctx.ID().getText.trim
         }
 
         override def exitTermEq(ctx: NCIntentDslParser.TermEqContext): Unit = {
@@ -107,8 +106,8 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitMinMaxRange(ctx: NCIntentDslParser.MinMaxRangeContext): Unit = {
-            val minStr = ctx.getChild(1).getText
-            val maxStr = ctx.getChild(3).getText
+            val minStr = ctx.getChild(1).getText.trim
+            val maxStr = ctx.getChild(3).getText.trim
             
             try
                 setMinMax(java.lang.Integer.parseInt(minStr), java.lang.Integer.parseInt(maxStr))
@@ -117,13 +116,17 @@ object NCIntentDslCompiler extends LazyLogging {
                 case _: NumberFormatException ⇒ assert(false)
             }
         }
-    
+
+        override def exitFlowDecl(ctx: NCIntentDslParser.FlowDeclContext): Unit = {
+            flowRegex = Some(ctx.qstring().getText.trim)
+        }
+
         override def exitIntentId(ctx: NCIntentDslParser.IntentIdContext): Unit = {
-            id = ctx.ID().getText
+            id = ctx.ID().getText.trim
         }
     
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
-            ordered = ctx.BOOL().getText == "true"
+            ordered = ctx.BOOL().getText.trim == "true"
         }
     
         override def exitTerm(ctx: NCIntentDslParser.TermContext): Unit = {
@@ -135,7 +138,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 termId,
                 new java.util.function.Function[NCToken, java.lang.Boolean]() {
                     override def apply(tok: NCToken): java.lang.Boolean = p.apply(tok)
-                    override def toString: String = p.toString() //ctx.item().getText
+                    override def toString: String = p.toString().trim //ctx.item().getText
                 },
                 min,
                 max,
@@ -152,25 +155,6 @@ object NCIntentDslCompiler extends LazyLogging {
     
         override def exitRvalList(ctx: NCIntentDslParser.RvalListContext): Unit = {
             rvalList += rval
-        }
-    
-        override def exitFlowItemIds(ctx: NCIntentDslParser.FlowItemIdsContext): Unit = {
-            val id = ctx.ID()
-            
-            if (id != null)
-                flowItemIds.add(ctx.ID().getText)
-        }
-    
-        override def exitIdList(ctx: NCIntentDslParser.IdListContext): Unit = {
-            flowItemIds.add(ctx.ID().getText)
-        }
-    
-        override def exitFlowItem(ctx: NCIntentDslParser.FlowItemContext): Unit = {
-            flow += NCDslFlowItem(Seq.empty ++ flowItemIds, min, max)
-            
-            // Reset
-            setMinMax(1, 1)
-            flowItemIds.clear()
         }
     
         override def exitItem(ctx: NCIntentDslParser.ItemContext): Unit = {
