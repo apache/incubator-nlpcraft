@@ -47,11 +47,15 @@ class NCDialogSpecModel extends NCModel {
 
     /**
      * 'test2' requires one and only one 'test1' immediately before in history.
-     *
-     * @return
      */
     @NCIntent("intent=test2 flow='^(?:test1)(^:test1)*$' term~{id == 'test2'}")
     def onTest2(): NCResult = NCResult.text("ok")
+
+    /**
+      * 'test3' requires 'test1' immediately before in history.
+      */
+    @NCIntent("intent=test3 flow='test1$' term={id == 'test3'}")
+    def onTest3(): NCResult = NCResult.text("ok")
 }
 
 /**
@@ -61,7 +65,7 @@ class NCDialogSpecModel extends NCModel {
 class NCDialogSpec extends NCTestContext {
     @Test
     @throws[Exception]
-    private[dialog] def test(): Unit = {
+    private[dialog] def test2(): Unit = {
         val cli = getClient
 
         def flow(): Unit = {
@@ -90,4 +94,31 @@ class NCDialogSpec extends NCTestContext {
 
         flow()
     }
+
+    @Test
+    @throws[Exception]
+    private[dialog] def test3(): Unit = {
+        val cli = getClient
+
+        def flow(): Unit = {
+            // No required history.
+            assertFalse(cli.ask("test3").isOk)
+            // Always OK.
+            assertTrue(cli.ask("test1").isOk)
+            // OK, required history.
+            assertFalse(cli.ask("test3").isOk)
+            // Always OK.
+            assertTrue(cli.ask("test1").isOk)
+            // Too much history.
+            assertFalse(cli.ask("test3").isOk)
+        }
+
+        flow()
+
+        cli.clearConversation()
+        cli.clearDialog()
+
+        flow()
+    }
+
 }
