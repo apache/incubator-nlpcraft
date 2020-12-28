@@ -24,7 +24,7 @@ import org.apache.nlpcraft.model._
 import scala.collection.JavaConverters._
 
 /**
-  * Sentence variant.
+  * Sentence variant & its weight.
   */
 case class NCIntentSolverVariant(tokens: util.List[NCToken]) extends Ordered[NCIntentSolverVariant] {
     private val (userToks, wordCnt, avgWordsPerTok, totalSparsity, totalUserDirect) = calcWeight()

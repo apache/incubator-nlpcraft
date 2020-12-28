@@ -592,7 +592,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
         // Collect to the 'max' from sentence, if possible.
         collect(senToks, max)
-
         // Further collect to the 'max' from conversation, if necessary & possible.
         collect(convToks, max)
 
@@ -602,22 +601,25 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             require(min == 0)
             
             Some(combToks → new Weight(
-                0 /* Conversation weight. */,
+                0 /* Specificity weight. */,
                 0 /* Number of matched tokens weight. */
             ))
         }
         else { // We've collected some tokens.
-            // Youngest first.
+            // Youngest first from the conversation.
             val convSrvReqIds = convToks.map(_.token.getServerRequestId).distinct
 
-            // Specificity weight ('1' if conversation wasn't used, -'index of conversation depth' if wasn't).
-            // (It is better to be not from conversation or be youngest tokens from conversation)
-            val convW = -combToks.map(t ⇒ convSrvReqIds.indexOf(t.token.getServerRequestId)).sum
+            // Specificity weight:
+            //   - 1 if conversation was NOT used
+            //   - -X, where X is index of conversation depth, if conversation WAS used.
+            //
+            // NOTE: It is better to be not from conversation or be youngest tokens from conversation.
+            val specW = -combToks.map(t ⇒ convSrvReqIds.indexOf(t.token.getServerRequestId)).sum
 
             combToks.foreach(_.used = true) // Mark tokens as used.
 
             Some(combToks → new Weight(
-                convW /* Conversation weight. */,
+                specW /* Specificity weight. */,
                 predW /* Number of matched tokens weight. */
             ))
         }
