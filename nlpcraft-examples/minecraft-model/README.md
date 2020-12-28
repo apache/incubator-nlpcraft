@@ -35,7 +35,7 @@ Start server normally. For running probe it's required to use dedicated configur
 1. Download [Forge server installer](https://files.minecraftforge.net/) and follow instructions
 1. Build mod (`cd ../minecraft-mod && ./gradlew clean build`)
 1. Copy mod to mods folder of your forge server folder (`cp build/libs/nlpcraft-mod-*.jar <forge-server-location>/mods`)
-1. (Optional) if non-default credentials are used, put them in `main/resources/nlpcraft-credentials.json` and copy file to `<forge-server-location>/config`
+1. (Optional) If non-default settings are used, put them in `main/resources/nlpcraft-settings.json` and copy file to `<forge-server-location>/config`
 1. Start server (`java -jar forge.jar`). For detailed instructions refer to [wiki](https://minecraft.gamepedia.com/Tutorials/Setting_up_a_server)
 1. Connect to the server from client and play!
 

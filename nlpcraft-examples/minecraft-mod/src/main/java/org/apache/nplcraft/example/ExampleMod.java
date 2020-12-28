@@ -23,6 +23,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -42,6 +43,7 @@ public class ExampleMod {
     private static final String MODEL_ID = "nlpcraft.minecraft.ex";
     private final Gson gson = new Gson();
     private NCSignIn creds;
+    private String baseUrl;
     private MinecraftServer server;
     private Optional<String> token = Optional.empty();
     private boolean inRecursion = false;
@@ -89,7 +91,7 @@ public class ExampleMod {
 
     private Optional<String> getToken() {
         if (!token.isPresent()) {
-            obtainCreds();
+            loadSettings();
 
             token = post("signin", gson.toJson(creds), NCSignResponse.class).map(x -> x.acsTok);
         }
@@ -99,7 +101,7 @@ public class ExampleMod {
 
     private <T> Optional<T> post(String url, String postJson, Class<T> clazz) {
         try {
-            String str = "http://0.0.0.0:8081/api/v1/" + url;
+            String str = baseUrl + url;
 
             HttpURLConnection http = (HttpURLConnection) new URL(str).openConnection();
             http.setRequestMethod("POST"); // PUT is another valid option
@@ -127,52 +129,43 @@ public class ExampleMod {
         return Optional.empty();
     }
 
-    private void obtainCreds() {
+    private void loadSettings() {
         creds = new NCSignIn();
         creds.email = "admin@admin.com";
         creds.passwd = "admin";
+        String host = "0.0.0.0";
+        String port = "8081";
 
         Path configDir = Paths.get("config");
 
-        Path jsonPath = FileUtil.resolveResourcePath(configDir, "nlpcraft-credentials", ".json");
+        Path jsonPath = FileUtil.resolveResourcePath(configDir, "nlpcraft-settings", ".json");
 
         try {
             Reader reader = Files.newBufferedReader(jsonPath);
 
-            creds = gson.fromJson(reader, NCSignIn.class);
-        } catch (FileNotFoundException e) {
+            NCSettings settings = gson.fromJson(reader, NCSettings.class);
+            creds.email = settings.email;
+            creds.passwd = settings.passwd;
+            host = settings.host;
+            port = settings.port;
+        } catch (NoSuchFileException e) {
             LOGGER.info("Credentials were not found");
         } catch (IOException e) {
             LOGGER.error(e);
         }
+
+        baseUrl = "http://" + host + ":" + port + "/api/v1/";
     }
 
     private class AskParams {
         private final String mdlId = MODEL_ID;
         private String acsTok;
         private String txt;
-
-        @Override
-        public String toString() {
-            return "AskParams{" +
-                    "acsTok='" + acsTok + '\'' +
-                    ", mdlId='" + mdlId + '\'' +
-                    ", txt='" + txt + '\'' +
-                    '}';
-        }
     }
 
     private class NCResponse {
         private String status;
         private NCState state;
-
-        @Override
-        public String toString() {
-            return "NCResponse{" +
-                    "status='" + status + '\'' +
-                    ", state=" + state +
-                    '}';
-        }
     }
 
     private class NCState {
@@ -180,16 +173,6 @@ public class ExampleMod {
         private String error;
         private String status;
         private String resBody;
-
-        @Override
-        public String toString() {
-            return "NCState{" +
-                    "errorCode=" + errorCode +
-                    ", error='" + error + '\'' +
-                    ", status='" + status + '\'' +
-                    ", resBody='" + resBody + '\'' +
-                    '}';
-        }
     }
 
     private class NCSignIn {
@@ -199,5 +182,12 @@ public class ExampleMod {
 
     private class NCSignResponse {
         private String acsTok;
+    }
+
+    private class NCSettings {
+        private String email;
+        private String passwd;
+        private String host;
+        private String port;
     }
 }
