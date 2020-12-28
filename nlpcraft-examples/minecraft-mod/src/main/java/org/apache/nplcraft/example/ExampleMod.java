@@ -19,7 +19,15 @@
 package org.apache.nplcraft.example;
 
 import com.google.gson.Gson;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.FileUtil;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,17 +36,12 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Optional;
-
 @Mod("nlpcraft_mod")
 public class ExampleMod {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final String MODEL_ID = "nlpcraft.minecraft.ex";
     private final Gson gson = new Gson();
+    private NCSignIn creds;
     private MinecraftServer server;
     private Optional<String> token = Optional.empty();
     private boolean inRecursion = false;
@@ -86,12 +89,9 @@ public class ExampleMod {
 
     private Optional<String> getToken() {
         if (!token.isPresent()) {
-            // TODO
-            NCSignIn sign = new NCSignIn();
-            sign.email = "admin@admin.com";
-            sign.passwd = "admin";
+            obtainCreds();
 
-            token = post("signin", gson.toJson(sign), NCSignResponse.class).map(x -> x.acsTok);
+            token = post("signin", gson.toJson(creds), NCSignResponse.class).map(x -> x.acsTok);
         }
 
         return token;
@@ -127,8 +127,28 @@ public class ExampleMod {
         return Optional.empty();
     }
 
+    private void obtainCreds() {
+        creds = new NCSignIn();
+        creds.email = "admin@admin.com";
+        creds.passwd = "admin";
+
+        Path configDir = Paths.get("config");
+
+        Path jsonPath = FileUtil.resolveResourcePath(configDir, "nlpcraft-credentials", ".json");
+
+        try {
+            Reader reader = Files.newBufferedReader(jsonPath);
+
+            creds = gson.fromJson(reader, NCSignIn.class);
+        } catch (FileNotFoundException e) {
+            LOGGER.info("Credentials were not found");
+        } catch (IOException e) {
+            LOGGER.error(e);
+        }
+    }
+
     private class AskParams {
-        private final String mdlId = "nlpcraft.minecraft.ex";
+        private final String mdlId = MODEL_ID;
         private String acsTok;
         private String txt;
 
@@ -173,8 +193,8 @@ public class ExampleMod {
     }
 
     private class NCSignIn {
-        String email;
-        String passwd;
+        private String email;
+        private String passwd;
     }
 
     private class NCSignResponse {

@@ -32,13 +32,12 @@ Start server normally. For running probe it's required to use dedicated configur
 
 ### Installation
 1. Download [Minecraft client](https://www.minecraft.net/en-us/download)
-2. Download [Forge server installer](https://files.minecraftforge.net/) and follow instructions
-3. Build mod (`cd ../minecraft-mod && ./gradlew clean build`)
-4. Copy mod to mods folder of your forge server folder (`cp build/libs/nlpcraft-mod-*.jar <forge-server-location>/mods`)
-5. Start server (`java -jar forge.jar`). For detailed instructions refer to [wiki](https://minecraft.gamepedia.com/Tutorials/Setting_up_a_server)
-6. Server commands could be invoked directly from server CLI.
-7. Using Forge client is not required, vanilla client from step 1 could be used
-8. Connect to the server from client and play!
+1. Download [Forge server installer](https://files.minecraftforge.net/) and follow instructions
+1. Build mod (`cd ../minecraft-mod && ./gradlew clean build`)
+1. Copy mod to mods folder of your forge server folder (`cp build/libs/nlpcraft-mod-*.jar <forge-server-location>/mods`)
+1. (Optional) if non-default credentials are used, put them in `main/resources/nlpcraft-credentials.json` and copy file to `<forge-server-location>/config`
+1. Start server (`java -jar forge.jar`). For detailed instructions refer to [wiki](https://minecraft.gamepedia.com/Tutorials/Setting_up_a_server)
+1. Connect to the server from client and play!
 
 ### Usage
 After starting Minecraft server with mod, you can use natural language to invoke certain commands. It's not required to
