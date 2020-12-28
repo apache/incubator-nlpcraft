@@ -117,7 +117,7 @@ object NCIgniteHelpers extends NCIgniteInstance {
           *
           * @param keys Keys to be removed from the cache.
           */
-        def --=(keys: Set[K]): Unit = ic.removeAll(keys.asJava)
+        def --=(keys: Seq[K]): Unit = ic.removeAll(new java.util.TreeSet(keys.asJava))
 
         /**
           *

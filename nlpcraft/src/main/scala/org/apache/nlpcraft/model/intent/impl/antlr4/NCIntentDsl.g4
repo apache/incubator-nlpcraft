@@ -20,21 +20,7 @@ grammar NCIntentDsl;
 intent: intentId orderedDecl? flowDecl? terms EOF;
 intentId: 'intent' EQ ID;
 orderedDecl: 'ordered' EQ BOOL;
-flowDecl: 'flow' EQ SQUOTE flow SQUOTE;
-flow
-    :
-    | flowItem
-    | flow RIGHT flowItem
-    ;
-flowItem: flowItemIds minMax?;
-flowItemIds
-    : ID
-    | LPAREN idList RPAREN
-    ;
-idList
-    : ID
-    | idList VERT ID
-    ;
+flowDecl: 'flow' EQ qstring;
 terms: term | terms term;
 termEq: EQ | TILDA;
 term: 'term' termId? termEq LCURLY item RCURLY minMax?;
@@ -98,6 +84,8 @@ EQ: '=';
 PLUS: '+';
 QUESTION: '?';
 STAR: '*';
+DOLLAR: '$';
+POWER: '^';
 BOOL: 'true' | 'false';
 INT: '0' | [1-9][_0-9]*;
 EXP: DOT [0-9]+;

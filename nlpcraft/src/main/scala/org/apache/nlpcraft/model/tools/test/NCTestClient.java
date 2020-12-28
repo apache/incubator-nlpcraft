@@ -96,4 +96,12 @@ public interface NCTestClient {
      * @throws IOException Thrown in case of I/O errors.
      */
     void clearConversation() throws NCTestClientException, IOException;
+
+    /**
+     * TODO:
+     *
+     * @throws NCTestClientException Thrown if any test system errors occur.
+     * @throws IOException Thrown in case of I/O errors.
+     */
+    void clearDialog() throws NCTestClientException, IOException;
 }

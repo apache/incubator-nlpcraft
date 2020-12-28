@@ -456,7 +456,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
                 NCTxManager.startTx {
                     idSigninCache(id) match {
                         case Some(toks) ⇒
-                            tokenSigninCache --= toks
+                            tokenSigninCache --= toks.toSeq
                             idSigninCache -= id
 
                         case None ⇒ // No-op.

@@ -46,6 +46,7 @@ class NCConversationSpecModel extends NCModel {
     @NCIntent("intent=testIntentId term~{id == 'test1'} term~{id == 'test2'}?")
     def onMatch(): NCResult = NCResult.text("ok")
 }
+
 /**
   * @see NCConversationSpecModel
   */

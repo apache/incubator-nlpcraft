@@ -450,7 +450,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     else
                         arg.right.get
 
-                cache --= srvReqIds
+                cache --= srvReqIds.toSeq
 
                 srvReqIds
             }

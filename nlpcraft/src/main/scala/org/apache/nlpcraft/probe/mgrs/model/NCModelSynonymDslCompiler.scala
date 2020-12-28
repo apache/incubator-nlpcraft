@@ -253,8 +253,8 @@ object NCModelSynonymDslCompiler extends LazyLogging {
             val errMsg = s"Synonym DSL syntax error at line $line:$charPos - $msg"
     
             logger.error(errMsg)
-            logger.error(s"  |-- Expression: $dsl")
-            logger.error(s"  +-- Error:      ${makeCharPosPointer(dsl.length, charPos)}")
+            logger.error(s"  |-- ${c("Expression:")} $dsl")
+            logger.error(s"  +-- ${c("Error:")}      ${makeCharPosPointer(dsl.length, charPos)}")
             
             throw new NCE(errMsg)
         }

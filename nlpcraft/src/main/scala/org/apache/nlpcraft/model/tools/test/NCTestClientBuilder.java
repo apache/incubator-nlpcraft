@@ -749,6 +749,14 @@ public class NCTestClientBuilder {
             restClearConversation();
         }
 
+        @Override
+        public void clearDialog() throws NCTestClientException, IOException {
+            if (!opened) throw new IllegalStateException("Client is not opened.");
+            if (closed) throw new IllegalStateException("Client is already closed.");
+
+            restClearDialog();
+        }
+
         @SuppressWarnings("unchecked")
         private <T> T getField(Map<String, Object> m, String fn) throws NCTestClientException {
             Object o = m.get(fn);
@@ -893,6 +901,24 @@ public class NCTestClientBuilder {
             checkStatus(gson.fromJson(
                 post(
                     "clear/conversation",
+                    Pair.of("acsTok", acsTok),
+                    Pair.of("mdlId", mdlId)
+                ),
+                TYPE_RESP)
+            );
+        }
+
+        /**
+         *
+         * @throws IOException Thrown in case of IO errors.
+         * @throws NCTestClientException Thrown in case of test client errors.
+         */
+        private void restClearDialog() throws IOException, NCTestClientException {
+            log.info("'clear/dialog' request sent for data model: {}", mdlId);
+
+            checkStatus(gson.fromJson(
+                post(
+                    "clear/dialog",
                     Pair.of("acsTok", acsTok),
                     Pair.of("mdlId", mdlId)
                 ),
