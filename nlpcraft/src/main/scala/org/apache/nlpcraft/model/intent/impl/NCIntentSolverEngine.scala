@@ -439,7 +439,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
         // Check dialog flow first.
         if (!intent.flow.isEmpty && !matchFlow(intent.flow, hist)) {
-            logger.info(s"Intent '$intentId' didn't match because of dialog flow $varStr.")
+            logger.info(s"Intent '$intentId' ${r("did not")} match because of dialog flow $varStr.")
 
             None
         }
@@ -469,21 +469,17 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         }
 
                     case None ⇒
-                        // Term is missing. Stop further processing for this intent.
-                        // This intent cannot be matched.
-                        logger.trace(s"Term '$term' is missing for intent '$intentId' (stopping further processing).")
+                        // Term is missing. Stop further processing for this intent. This intent cannot be matched.
+                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$term' $varStr.")
 
                         abort = true
                 }
             }
 
-            if (abort) {
-                logger.info(s"Intent '$intentId' didn't match because of unmatched term $varStr.")
-
+            if (abort)
                 None
-            }
             else if (senToks.exists(tok ⇒ !tok.used && tok.token.isUserDefined)) {
-                logger.info(s"Intent '$intentId' didn't match because of remaining unused user tokens $varStr.")
+                logger.info(s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr.")
 
                 NCTokenLogger.prepareTable(senToks.filter(tok ⇒ !tok.used && tok.token.isUserDefined).map(_.token)).
                     info(
@@ -494,33 +490,23 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 None
             }
             else if (!senToks.exists(tok ⇒ tok.used && !tok.conv)) {
-                logger.info(s"Intent '$intentId' didn't match because all its matched tokens came from STM $varStr.")
+                logger.info(s"Intent '$intentId' ${r("did not")} match because all its matched tokens came from STM $varStr.")
 
                 None
             }
             else {
-                // Exact match calculation DOES NOT include tokens from conversation, if any.
-                val exactMatch = !senToks.exists(tok ⇒ !tok.used && !tok.token.isFreeWord)
+                // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
+                // The match is exact when all non-free words are used in that match.
+                // Negate to make sure the bigger (smaller negative number) is better.
+                val nonFreeWordNum = -senToks.count(t ⇒ !t.used && !t.token.isFreeWord)
 
-                val mainWeight = {
-                    // Best weight if the match is exact and conversation WAS NOT used.
-                    if (exactMatch && convToks.isEmpty)
-                        2
-                    // Second best weight if the match is exact and conversation WAS used.
-                    else if (exactMatch)
-                        1
-                    // Third best (i.e. worst) weight if match WAS NOT EXACT.
-                    else
-                        0
-                }
-
-                intentW.prepend(mainWeight)
+                intentW.prepend(nonFreeWordNum)
                 
                 Some(IntentMatch(
                     tokenGroups = intentGrps.toList,
                     weight = intentW,
                     intent = intent,
-                    exactMatch = exactMatch
+                    exactMatch = nonFreeWordNum == 0
                 ))
             }
         }
@@ -541,12 +527,18 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     ): Option[TermMatch] =
         solvePredicate(term.getPredicate, term.getMin, term.getMax, senToks, convToks) match {
             case Some((usedToks, predWeight)) ⇒ Some(
-                /*
-                 * If term is found (usedToks > 0) we add its min quantifier as 3rd weight.
-                 * Note that weight for the actual number of found tokens is already a 2nd weight
-                 * returned from solvePredicate() method.
-                 */
-                TermMatch(term.getId, usedToks, if (usedToks.isEmpty) new Weight(0, 0, 0) else predWeight.append(term.getMin))
+                TermMatch(
+                    term.getId,
+                    usedToks,
+                    if (usedToks.nonEmpty) {
+                        // Normalize max quantifier in case of unbound max.
+                        val max = if (term.getMax == Integer.MAX_VALUE) usedToks.size else term.getMax
+
+                        // If term is found (usedToks > 0) we add its quantifiers as additional weight.
+                        predWeight.append(term.getMin).append(max)
+                    } else
+                        predWeight.append(0).append(0)
+                )
             )
 
             case None ⇒ None
@@ -573,54 +565,39 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         // in entire sentence even if these tokens are separated by other already used tokens
         // and conversation will be used only to get to the 'max' number of the item.
     
-        var combToks = List.empty[UsedToken]
-        var predW = 0
+        var usedToks = List.empty[UsedToken]
 
-        /**
-          *
-          * @param from Collection to collect tokens from.
-          * @param maxLen Maximum number of tokens to collect.
-          */
-        def collect(from: Iterable[UsedToken], maxLen: Int): Unit =
-            for (tok ← from.filter(!_.used) if combToks.lengthCompare(maxLen) < 0) {
-                if (pred.apply(tok.token)) {
-                    combToks :+= tok
+        // Collect to the 'max' from sentence & conversation, if possible.
+        for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0)
+            if (pred.apply(tok.token))
+                usedToks :+= tok
 
-                    predW += 1
-                }
-            }
-
-        // Collect to the 'max' from sentence, if possible.
-        collect(senToks, max)
-        // Further collect to the 'max' from conversation, if necessary & possible.
-        collect(convToks, max)
-
-        if (combToks.lengthCompare(min) < 0) // We couldn't collect even 'min' tokens.
+        // We couldn't collect even 'min' tokens.
+        if (usedToks.lengthCompare(min) < 0)
             None
-        else if (combToks.isEmpty) { // Item is optional and no tokens collected (valid result).
+        // Item is optional (min == 0) and no tokens collected (valid result).
+        else if (usedToks.isEmpty) {
             require(min == 0)
             
-            Some(combToks → new Weight(
-                0 /* Specificity weight. */,
-                0 /* Number of matched tokens weight. */
-            ))
+            Some(usedToks → new Weight(0, 0))
         }
-        else { // We've collected some tokens.
-            // Youngest first from the conversation.
+        // We've collected some tokens (and min > 0).
+        else {
             val convSrvReqIds = convToks.map(_.token.getServerRequestId).distinct
 
-            // Specificity weight:
-            //   - 1 if conversation was NOT used
-            //   - -X, where X is index of conversation depth, if conversation WAS used.
-            //
-            // NOTE: It is better to be not from conversation or be youngest tokens from conversation.
-            val specW = -combToks.map(t ⇒ convSrvReqIds.indexOf(t.token.getServerRequestId)).sum
+            // Number of tokens from the current sentence.
+            val senTokNum = usedToks.count(t ⇒ !convSrvReqIds.contains(t.token.getServerRequestId))
 
-            combToks.foreach(_.used = true) // Mark tokens as used.
+            // Sum of conversation depths for each token from the conversation.
+            // Negated to make sure that bigger (smaller negative number) is better.
+            val convDepthsSum = -usedToks.filter(t ⇒ convSrvReqIds.contains(t.token.getServerRequestId)).zipWithIndex.map(_._2 + 1).sum
 
-            Some(combToks → new Weight(
-                specW /* Specificity weight. */,
-                predW /* Number of matched tokens weight. */
+            // Mark found tokens as used.
+            usedToks.foreach(_.used = true)
+
+            Some(usedToks → new Weight(
+                senTokNum,
+                convDepthsSum
             ))
         }
     }
