@@ -47,7 +47,8 @@ on client side, prefixed with slash (`/make it sunny`)
 ### Supported commands
 | Command | Example of usage |
 | :---: |:---:|
-`/weather` | All those moments will be lost in time, like tears in rain | 
+`/weather` | Make it rain | 
+`/time` | Set current time to evening | 
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation

@@ -18,16 +18,37 @@
 
 package org.apache.nlpcraft.example
 
+import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.*
 
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     @NCIntentRef("weatherIntent")
     @Suppress("unused")
-    fun onMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
+    fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
         }
 
         return NCResult.text("weather ${tok.id}")
+    }
+
+    @NCIntentRef("timeIntent")
+    @Suppress("unused")
+    fun onTimeMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
+        if (ctx.isAmbiguous) {
+            throw NCRejection("Ambiguous request")
+        }
+
+        val time: Int = when (tok.id) {
+            "morning" -> 23000
+            "day" -> 1000
+            "afternoon" -> 6000
+            "evening" -> 12000
+            "night" -> 12000
+            "midnight" -> 18000
+            else -> null
+        } ?: throw NCException("Invalid token id")
+
+        return NCResult.text("time set $time")
     }
 }

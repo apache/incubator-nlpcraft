@@ -40,6 +40,38 @@ elements:
     synonyms:
       - "{thunder|storm|stormy}"
 
+  - id: morning
+    groups:
+      - time
+    synonyms:
+      - "{morning}"
+  - id: day
+    groups:
+      - time
+    synonyms:
+      - "{day}"
+  - id: afternoon
+    groups:
+      - time
+    synonyms:
+      - "{afternoon|noon}"
+  - id: evening
+    groups:
+      - time
+    synonyms:
+      - "{evening}"
+  - id: night
+    groups:
+      - time
+    synonyms:
+      - "{night}"
+  - id: midnight
+    groups:
+      - time
+    synonyms:
+      - "{midnight}"
+
 # List of model intents.
 intents:
   - intent=weatherIntent term(arg)={groups @@ 'weather'}
+  - intent=timeIntent term(arg)={groups @@ 'time'}
