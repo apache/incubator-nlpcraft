@@ -418,25 +418,23 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             intentGrps += TermTokensGroup(termMatch.termId, termMatch.usedTokens)
                             lastTermMatch = termMatch
 
-                            logger.whenInfoEnabled {
-                                val tbl = NCAsciiTable()
+                            val tbl = NCAsciiTable()
 
-                                val w = termMatch.weight.toSeq
+                            val w = termMatch.weight.toSeq
 
-                                tbl += (s"${B}Intent ID$RST", s"$BO${intent.id}$RST")
-                                tbl += (s"${B}Term$RST", term.toString)
-                                tbl += (s"${B}Match tokens$RST", termMatch.usedTokens.map(t ⇒ {
-                                    val txt = t.token.getOriginalText
-                                    val idx = t.token.getIndex
+                            tbl += (s"${B}Intent ID$RST", s"$BO${intent.id}$RST")
+                            tbl += (s"${B}Term$RST", term.toString)
+                            tbl += (s"${B}Match tokens$RST", termMatch.usedTokens.map(t ⇒ {
+                                val txt = t.token.getOriginalText
+                                val idx = t.token.getIndex
 
-                                    s"$txt${c("[" + idx + "]")}"
-                                }).mkString("|"))
-                                tbl += (s"${B}Match weight$RST",
-                                    s"${y("STK:")}${w.head}, ${y("CDW:")}${w(1)}, ${y("MIN:")}${w(2)}, ${y("MAX:")}${w(3)}"
-                                )
+                                s"$txt${c("[" + idx + "]")}"
+                            }).mkString("|"))
+                            tbl += (s"${B}Match weight$RST",
+                                s"${y("STK:")}${w.head}, ${y("CDW:")}${w(1)}, ${y("MIN:")}${w(2)}, ${y("MAX:")}${w(3)}"
+                            )
 
-                                tbl.info(logger, Some("Term match found:"))
-                            }
+                            tbl.info(logger, Some("Term match found:"))
                         }
 
                     case None ⇒
