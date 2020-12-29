@@ -194,6 +194,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             variant: NCIntentSolverVariant, // Variant used for the match.
             variantIdx: Int // Variant index.
         )
+
         val req = ctx.getRequest
 
         startScopedSpan("solve",
@@ -416,11 +417,31 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             intentW += termMatch.weight
                             intentGrps += TermTokensGroup(termMatch.termId, termMatch.usedTokens)
                             lastTermMatch = termMatch
+
+                            logger.whenInfoEnabled {
+                                val tbl = NCAsciiTable()
+
+                                val w = termMatch.weight.toSeq
+
+                                tbl += (s"${B}Intent ID$RST", s"$BO${intent.id}$RST")
+                                tbl += (s"${B}Term$RST", term.toString)
+                                tbl += (s"${B}Match tokens$RST", termMatch.usedTokens.map(t ⇒ {
+                                    val txt = t.token.getOriginalText
+                                    val idx = t.token.getIndex
+
+                                    s"$txt${c("[" + idx + "]")}"
+                                }).mkString("|"))
+                                tbl += (s"${B}Match weight$RST",
+                                    s"${y("STK:")}${w.head}, ${y("CDW:")}${w(1)}, ${y("MIN:")}${w(2)}, ${y("MAX:")}${w(3)}"
+                                )
+
+                                tbl.info(logger, Some("Term match found:"))
+                            }
                         }
 
                     case None ⇒
                         // Term is missing. Stop further processing for this intent. This intent cannot be matched.
-                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$term' $varStr.")
+                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$Y$term$RST' $varStr.")
 
                         abort = true
                 }

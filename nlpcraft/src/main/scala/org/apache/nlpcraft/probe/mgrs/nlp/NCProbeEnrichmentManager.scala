@@ -335,9 +335,9 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             NCConnectionManager.send(msg, span)
             
             if (errMsg.isEmpty)
-                logger.info(s"OK result sent back to server [srvReqId=$srvReqId, type=${resType.getOrElse("")}]")
+                logger.info(s"OK result sent back to server [srvReqId=${rv(g(srvReqId))}, type=${resType.getOrElse("")}]")
             else
-                logger.info(s"REJECT response sent back to server [srvReqId=$srvReqId, response=${errMsg.get}]")
+                logger.info(s"REJECT response sent back to server [srvReqId=${rv(g(srvReqId))}, response=${errMsg.get}]")
         }
 
         val mdl = NCModelManager.getModel(mdlId, span)
@@ -653,7 +653,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             "errMsg" → e.getMessage
                         )
     
-                        logger.info(s"Rejection [srvReqId=$srvReqId, msg=${e.getMessage}]")
+                        logger.info(s"Rejection [srvReqId=${rv(g(srvReqId))}, msg=${e.getMessage}]")
     
                         if (e.getCause != null)
                             logger.info(s"Rejection cause:", e.getCause)
