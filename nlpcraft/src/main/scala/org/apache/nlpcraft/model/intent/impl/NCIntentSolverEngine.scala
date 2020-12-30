@@ -447,36 +447,43 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             if (abort)
                 None
-            else if (senToks.exists(tok ⇒ !tok.used && tok.token.isUserDefined)) {
-                logger.info(s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr.")
-
-                NCTokenLogger.prepareTable(senToks.filter(tok ⇒ !tok.used && tok.token.isUserDefined).map(_.token)).
-                    info(
-                        logger,
-                        Some(s"Unused user tokens for intent '$intentId' $varStr:")
-                    )
-
-                None
-            }
-            else if (!senToks.exists(tok ⇒ tok.used && !tok.conv)) {
-                logger.info(s"Intent '$intentId' ${r("did not")} match because all its matched tokens came from STM $varStr.")
-
-                None
-            }
             else {
-                // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
-                // The match is exact when all non-free words are used in that match.
-                // Negate to make sure the bigger (smaller negative number) is better.
-                val nonFreeWordNum = -senToks.count(t ⇒ !t.used && !t.token.isFreeWord)
+                val usedSenToks = senToks.filter(_.used)
+                val unusedSenToks = senToks.filter(!_.used)
+                val usedConvToks = convToks.filter(_.used)
 
-                intentW.prepend(nonFreeWordNum)
-                
-                Some(IntentMatch(
-                    tokenGroups = intentGrps.toList,
-                    weight = intentW,
-                    intent = intent,
-                    exactMatch = nonFreeWordNum == 0
-                ))
+                var res: Option[IntentMatch] = None
+
+                if (usedSenToks.isEmpty && usedConvToks.isEmpty)
+                    logger.info(s"Intent '$intentId' ${r("did not")} match because no tokens were matched $varStr.")
+                else if (usedSenToks.isEmpty && usedConvToks.nonEmpty)
+                    logger.info(s"Intent '$intentId' ${r("did not")} match because all its matched tokens came from STM $varStr.")
+                else if (unusedSenToks.exists(_.token.isUserDefined))
+                    NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isUserDefined).map(_.token)).
+                        info(
+                            logger,
+                            Some(
+                                s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr." +
+                                s"\nUnused user tokens for intent '$intentId' $varStr:"
+                            )
+                        )
+                else {
+                    // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
+                    // The match is exact when all non-free words are used in that match.
+                    // Negate to make sure the bigger (smaller negative number) is better.
+                    val nonFreeWordNum = -senToks.count(t ⇒ !t.used && !t.token.isFreeWord)
+
+                    intentW.prepend(nonFreeWordNum)
+
+                    res = Some(IntentMatch(
+                        tokenGroups = intentGrps.toList,
+                        weight = intentW,
+                        intent = intent,
+                        exactMatch = nonFreeWordNum == 0
+                    ))
+                }
+
+                res
             }
         }
     }

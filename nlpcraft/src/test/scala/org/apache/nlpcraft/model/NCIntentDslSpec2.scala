@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model
 
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
 import java.util
@@ -37,54 +37,20 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
         Set("a", "b", "c", "d", "e").map(id ⇒ new NCElement { override def getId: String = id }).asJava
 
     // a. Mandatory, List, +, *, ?
-    @NCIntent("intent=aMandatory term(a)={id == 'a' }")
+    @NCIntent("intent=a_11 term(a)={id == 'a' }")
     private def aMandatory(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=aList term(a)={id == 'a' }[1,3]")
+    @NCIntent("intent=a_13 term(a)={id == 'a' }[1,3]")
     private def aList(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=aPlus term(a)={id == 'a' }+")
+    @NCIntent("intent=a_plus term(a)={id == 'a' }+")
     private def aPlus(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=aAsterisk term(a)={id == 'a' }*")
+    @NCIntent("intent=a_star term(a)={id == 'a' }*")
     private def aAsterisk(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=aOptional term(a)={id == 'a' }?")
+    @NCIntent("intent=a_01 term(a)~{id == 'a' }?")
     private def aOptional(ctx: NCIntentMatch): NCResult = "OK"
-
-    // b. List, +, *, ?
-    @NCIntent("intent=bList term(b)={id == 'b' }[1,3]")
-    private def bList(ctx: NCIntentMatch): NCResult = "OK"
-
-    @NCIntent("intent=bPlus term(b)={id == 'b' }+")
-    private def bPlus(ctx: NCIntentMatch): NCResult = "OK"
-
-    @NCIntent("intent=bAsterisk term(b)={id == 'b' }*")
-    private def bAsterisk(ctx: NCIntentMatch): NCResult = "OK"
-
-    @NCIntent("intent=bOptional term(b)={id == 'b' }?")
-    private def bOptional(ctx: NCIntentMatch): NCResult = "OK"
-
-    // c. +, *, ?
-    @NCIntent("intent=cPlus term(c)={id == 'c' }+")
-    private def cPlus(ctx: NCIntentMatch): NCResult = "OK"
-
-    @NCIntent("intent=cAsterisk term(c)={id == 'c' }*")
-    private def cAsterisk(ctx: NCIntentMatch): NCResult = "OK"
-
-    @NCIntent("intent=cOptional term(c)={id == 'c' }?")
-    private def cOptional(ctx: NCIntentMatch): NCResult = "OK"
-
-    // d. *, ?
-    @NCIntent("intent=dAsterisk term(d)={id == 'd' }*")
-    private def dAsterisk(ctx: NCIntentMatch): NCResult = "OK"
-
-    @NCIntent("intent=dOptional term(d)={id == 'd' }?")
-    private def dOptional(ctx: NCIntentMatch): NCResult = "OK"
-
-    // e. ?
-    @NCIntent("intent=eOptional term(e)={id == 'e' }?")
-    private def eOptional(ctx: NCIntentMatch): NCResult = "OK"
 }
 
 /**
@@ -100,38 +66,12 @@ class NCIntentDslSpec2 extends NCTestContext {
         assertEquals(intent, res.getIntentId, s"Checked: $txt")
     }
 
-    private def checkError(txt: String): Unit = {
-        val res = getClient.ask(txt)
-
-        assertFalse(res.isOk)
-    }
-
     @Test
     def test(): Unit = {
-        check("a", "aMandatory")
-        check("a a", "aList")
-        check("a a a", "aList")
-        check("a a a a", "aPlus")
-
-        check("b", "bList")
-        check("b b", "bList")
-        check("b b b", "bList")
-        check("b b b b", "bPlus")
-
-        check("c", "cPlus")
-        check("c c", "cPlus")
-        check("c c c", "cPlus")
-        check("c c c c", "cPlus")
-
-        check("d", "dAsterisk")
-        check("d d", "dAsterisk")
-        check("d d d", "dAsterisk")
-        check("d d d d", "dAsterisk")
-
-        check("Moscow", "eOptional")
-        check("e Moscow", "eOptional")
-        checkError("e e")
-        checkError("e e e")
+        check("a", "a_13")
+        check("a a", "a_13")
+        check("a a a", "a_13")
+        check("a a a a", "a_plus")
     }
 }
 
