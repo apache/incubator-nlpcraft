@@ -2597,8 +2597,8 @@ object NCCli extends App {
                             val dashX = c("-" * idx) + r("^") + c("-" * (line.length - idx - 1))
 
                             error(s"Uneven quotes or brackets:")
-                            error(s"  ${r("+-")} $lineX")
-                            error(s"  ${r("+-")} $dashX")
+                            error(s"  ${r("+--")} $lineX")
+                            error(s"  ${r("+--")} $dashX")
                     }
 
                     if (line == QUIT_CMD.name)
