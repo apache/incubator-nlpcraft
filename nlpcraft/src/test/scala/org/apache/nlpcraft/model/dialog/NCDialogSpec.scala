@@ -40,7 +40,11 @@ class NCDialogSpecModel extends NCModel {
         override def getSynonyms: util.List[String] = Collections.singletonList(id)
     }
 
-    override def getElements: util.Set[NCElement] = Set(mkElement("test1"), mkElement("test2")).asJava
+    override def getElements: util.Set[NCElement] = Set(
+        mkElement("test1"),
+        mkElement("test2"),
+        mkElement("test3")
+    ).asJava
 
     @NCIntent("intent=test1 term~{id == 'test1'}")
     def onTest1(): NCResult = NCResult.text("ok")
@@ -54,7 +58,7 @@ class NCDialogSpecModel extends NCModel {
     /**
       * 'test3' requires 'test1' immediately before in history.
       */
-    @NCIntent("intent=test3 flow='test1$' term={id == 'test3'}")
+    @NCIntent("intent=test3 flow='^(?:test1).*$' term={id == 'test3'}")
     def onTest3(): NCResult = NCResult.text("ok")
 }
 
@@ -94,31 +98,4 @@ class NCDialogSpec extends NCTestContext {
 
         flow()
     }
-
-    @Test
-    @throws[Exception]
-    private[dialog] def test3(): Unit = {
-        val cli = getClient
-
-        def flow(): Unit = {
-            // No required history.
-            assertFalse(cli.ask("test3").isOk)
-            // Always OK.
-            assertTrue(cli.ask("test1").isOk)
-            // OK, required history.
-            assertFalse(cli.ask("test3").isOk)
-            // Always OK.
-            assertTrue(cli.ask("test1").isOk)
-            // Too much history.
-            assertFalse(cli.ask("test3").isOk)
-        }
-
-        flow()
-
-        cli.clearConversation()
-        cli.clearDialog()
-
-        flow()
-    }
-
 }

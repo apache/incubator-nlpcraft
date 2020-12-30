@@ -344,6 +344,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     s"srvReqId=${rv(g(srvReqId))}, " +
                     s"response=${errMsg.get}" +
                 s"]")
+
+            logger.info("\n¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>")
         }
 
         val mdl = NCModelManager.getModel(mdlId, span)
@@ -659,7 +661,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             "errMsg" → e.getMessage
                         )
     
-                        U.prettyError(logger,s"Rejection for server request ID: $srvReqId", e)
+                        U.prettyError(logger,s"Rejection for server request ID: ${rv(g(srvReqId))}", e)
 
                         val res = mdl.model.onRejection(solverIn.intentMatch, e)
     
