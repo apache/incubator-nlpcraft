@@ -17,14 +17,12 @@
 
 package org.apache.nlpcraft.model.dialog
 
-import java.util
-import java.util.Collections
-
 import org.apache.nlpcraft.model.{NCElement, NCIntent, NCModel, NCResult}
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
+import java.util
 import scala.collection.JavaConverters._
 
 /**
@@ -35,27 +33,20 @@ class NCDialogSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    private def mkElement(id: String): NCElement = new NCElement {
-        override def getId: String = id
-        override def getSynonyms: util.List[String] = Collections.singletonList(id)
-    }
+    override def getElements: util.Set[NCElement] =
+        (for (ch ← 'a' to 'y'; i ← 1 to 9) yield new NCElement { override def getId: String = s"$ch$i" }).toSet.asJava
 
-    override def getElements: util.Set[NCElement] = Set(mkElement("test1"), mkElement("test2")).asJava
+    @NCIntent("intent=onA1 term~{id == 'a1'}")
+    def onA1(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=test1 term~{id == 'test1'}")
-    def onTest1(): NCResult = NCResult.text("ok")
+    @NCIntent("intent=onA2 flow='^(?:onA1)(^:onA1)*$' term~{id == 'a2'}")
+    def onA2(): NCResult = NCResult.text("ok")
 
-    /**
-     * 'test2' requires one and only one 'test1' immediately before in history.
-     */
-    @NCIntent("intent=test2 flow='^(?:test1)(^:test1)*$' term~{id == 'test2'}")
-    def onTest2(): NCResult = NCResult.text("ok")
+    @NCIntent("intent=onA3 flow='onA1' term~{id == 'a3'}")
+    def onA3(): NCResult = NCResult.text("ok")
 
-    /**
-      * 'test3' requires 'test1' immediately before in history.
-      */
-    @NCIntent("intent=test3 flow='test1$' term={id == 'test3'}")
-    def onTest3(): NCResult = NCResult.text("ok")
+    @NCIntent("intent=onA4 flow='onA1 onA1' term~{id == 'a4'}")
+    def onA4(): NCResult = NCResult.text("ok")
 }
 
 /**
@@ -63,62 +54,53 @@ class NCDialogSpecModel extends NCModel {
   */
 @NCTestEnvironment(model = classOf[NCDialogSpecModel], startClient = true)
 class NCDialogSpec extends NCTestContext {
-    @Test
-    @throws[Exception]
-    private[dialog] def test2(): Unit = {
+    private def f(pairs: (String, String)*): Unit = {
         val cli = getClient
 
-        def flow(): Unit = {
-            // FAIL: there isn't 'test1' before for 'test2' to match.
-            assertFalse(cli.ask("test2").isOk)
+        def go(): Unit =
+            pairs.zipWithIndex.foreach { case ((txt, intentId), idx) ⇒
+                val res = cli.ask(txt)
 
-            // OK: 'test1' is always ok.
-            assertTrue(cli.ask("test1").isOk)
+                if (intentId == null)
+                    assertTrue(
+                        res.isFailed,
+                        s"Unexpected success [request=$txt, resultIntent=${res.getIntentId}, idx=$idx]"
+                    )
+                else {
+                    assertTrue(
+                        res.isOk,
+                        s"Unexpected error [request=$txt, expectedIntent=$intentId, idx=$idx]"
+                    )
+                    assertEquals(
+                        intentId, res.getIntentId,
+                        s"Expected: $intentId, but got: ${res.getIntentId}, idx=$idx"
+                    )
+                }
+            }
 
-            // OK: 'test2' matches as there is one 'test1' before.
-            assertTrue(cli.ask("test2").isOk)
-
-            // OK: 'test1' is always ok.
-            assertTrue(cli.ask("test1").isOk)
-            assertTrue(cli.ask("test1").isOk)
-
-            // FAIL: there are too many (2) 'test1' before in history,
-            // 'test2' requires one and only one 'test1' to match.
-            assertFalse(cli.ask("test2").isOk)
-        }
-
-        flow()
+        go()
 
         cli.clearConversation()
         cli.clearDialog()
 
-        flow()
+        go()
     }
 
     @Test
     @throws[Exception]
-    private[dialog] def test3(): Unit = {
-        val cli = getClient
+    private[dialog] def test1(): Unit = f(
+        "a2" → null, "a1" → "onA1", "a2" → "onA2", "a1" → "onA1", "a1" → "onA1", "a2" -> null
+    )
 
-        def flow(): Unit = {
-            // No required history.
-            assertFalse(cli.ask("test3").isOk)
-            // Always OK.
-            assertTrue(cli.ask("test1").isOk)
-            // OK, required history.
-            assertFalse(cli.ask("test3").isOk)
-            // Always OK.
-            assertTrue(cli.ask("test1").isOk)
-            // Too much history.
-            assertFalse(cli.ask("test3").isOk)
-        }
+    @Test
+    @throws[Exception]
+    private[dialog] def test2(): Unit = f(
+        "a3" → null, "a1" → "onA1", "a3" → "onA3", "a1" → "onA1", "a1" → "onA1", "a3" -> null
+    )
 
-        flow()
-
-        cli.clearConversation()
-        cli.clearDialog()
-
-        flow()
-    }
-
+    @Test
+    @throws[Exception]
+    private[dialog] def test3(): Unit = f(
+        "a4" → null, "a1" → "onA1", "a1" → "onA1", "a4" → "onA4", "a4" → null
+    )
 }
