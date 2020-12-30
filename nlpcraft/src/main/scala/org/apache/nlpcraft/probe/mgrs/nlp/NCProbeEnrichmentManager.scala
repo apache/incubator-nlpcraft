@@ -338,14 +338,14 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 logger.info(s"OK result sent back to server [" +
                     s"srvReqId=${rv(g(srvReqId))}, " +
                     s"type=${resType.getOrElse("")}" +
-                s"]")
+                s"]" +
+                s"\n\n<<${U.fgRainbow("===========")} ${g("\uD83D\uDE00")} ${U.fgRainbow("===========")}>>\n")
             else
                 logger.info(s"REJECT response sent back to server [" +
                     s"srvReqId=${rv(g(srvReqId))}, " +
                     s"response=${errMsg.get}" +
-                s"]")
-
-            logger.info("\n¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>")
+                s"]" +
+                s"\n\n<<${U.fgRainbow("===========")} ${r("\uD83E\uDD7A")} ${U.fgRainbow("===========")}>>\n")
         }
 
         val mdl = NCModelManager.getModel(mdlId, span)
