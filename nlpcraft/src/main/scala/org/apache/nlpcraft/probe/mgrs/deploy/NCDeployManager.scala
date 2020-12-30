@@ -1476,7 +1476,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                     if (smpAnns.nonEmpty) {
                         if (intAnn == null && refAnn == null) {
-                            logger.warn(s"`@NCTestSample annotation without corresponding @NCIntent or @NCIntentRef annotations [" +
+                            logger.warn(s"`@${CLS_SAMPLE.getSimpleName} annotation without corresponding @NCIntent or @NCIntentRef annotations [" +
                                 s"mdlId=$mdlId, " +
                                 s"callback=$mkMethodName" +
                             s"]")
@@ -1487,7 +1487,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             val samples = smpAnns.toSeq.map(_.value().toSeq)
 
                             if (samples.exists(_.isEmpty)) {
-                                logger.warn(s"@NCTestSample annotation is empty [" +
+                                logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is empty [" +
                                     s"mdlId=$mdlId, " +
                                     s"callback=$mkMethodName" +
                                 s"]")
@@ -1495,7 +1495,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 None
                             }
                             else if (U.containsDups(samples.flatten.toList)) {
-                                logger.warn(s"@NCTestSample annotation has duplicates [" +
+                                logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation has duplicates [" +
                                     s"mdlId=$mdlId, " +
                                     s"callback=$mkMethodName, " +
                                     s"dups=${U.getDups(samples).mkString("'", ", ", "'")}" +
@@ -1510,7 +1510,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         }
                     }
                     else {
-                        logger.warn(s"@NCTestSample annotation is missing [" +
+                        logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is missing [" +
                             s"mdlId=$mdlId, " +
                             s"callback=$mkMethodName" +
                         s"]")
