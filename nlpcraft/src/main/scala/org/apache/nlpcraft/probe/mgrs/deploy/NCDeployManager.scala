@@ -1452,7 +1452,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val samples =
             mdl.getClass.getDeclaredMethods.flatMap(mtd ⇒ {
-                def mkMethodName: String = s"${mtd.getDeclaringClass.getName}#${mtd.getName}(...)"
+                def mkMethodName: String = s"$C${mtd.getDeclaringClass.getName}#${mtd.getName}(...)$RST"
 
                 val smpAnns = mtd.getAnnotationsByType(CLS_SAMPLE)
 
@@ -1474,10 +1474,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                     if (smpAnns.nonEmpty) {
                         if (intAnn == null && refAnn == null) {
-                            logger.warn(s"`@${CLS_SAMPLE.getSimpleName} annotation without corresponding @NCIntent or @NCIntentRef annotations [" +
-                                s"mdlId=$mdlId, " +
-                                s"callback=$mkMethodName" +
-                            s"]")
+                            logger.warn(s"`@${CLS_SAMPLE.getSimpleName} annotation without corresponding @NCIntent or @NCIntentRef annotations: $mkMethodName")
 
                             None
                         }
@@ -1485,19 +1482,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             val samples = smpAnns.toSeq.map(_.value().toSeq)
 
                             if (samples.exists(_.isEmpty)) {
-                                logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is empty [" +
-                                    s"mdlId=$mdlId, " +
-                                    s"callback=$mkMethodName" +
-                                s"]")
+                                logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is empty: $mkMethodName")
 
                                 None
                             }
                             else if (U.containsDups(samples.flatten.toList)) {
-                                logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation has duplicates [" +
-                                    s"mdlId=$mdlId, " +
-                                    s"callback=$mkMethodName, " +
-                                    s"dups=${U.getDups(samples).mkString("'", ", ", "'")}" +
-                                s"]")
+                                logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation has duplicates: $mkMethodName")
 
                                 // Samples is list of list. Duplicates cannot be inside one list,
                                 // but possible between different lists.
@@ -1508,10 +1498,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         }
                     }
                     else {
-                        logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is missing [" +
-                            s"mdlId=$mdlId, " +
-                            s"callback=$mkMethodName" +
-                        s"]")
+                        logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is missing for: $mkMethodName")
 
                         None
                     }

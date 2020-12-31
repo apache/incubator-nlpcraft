@@ -89,18 +89,32 @@ class NCDialogSpec extends NCTestContext {
     @Test
     @throws[Exception]
     private[dialog] def test1(): Unit = f(
-        "a2" → null, "a1" → "onA1", "a2" → "onA2", "a1" → "onA1", "a1" → "onA1", "a2" -> null
+        "a2" → null,
+        "a1" → "onA1",
+        "a2" → "onA2",
+        "a1" → "onA1",
+        "a1" → "onA1",
+        "a2" -> null
     )
 
     @Test
     @throws[Exception]
     private[dialog] def test2(): Unit = f(
-        "a3" → null, "a1" → "onA1", "a3" → "onA3", "a1" → "onA1", "a1" → "onA1", "a3" -> null
+        "a3" → null,
+        "a1" → "onA1",
+        "a3" → "onA3",
+        "a1" → "onA1",
+        "a1" → "onA1",
+        "a3" -> null
     )
 
     @Test
     @throws[Exception]
     private[dialog] def test3(): Unit = f(
-        "a4" → null, "a1" → "onA1", "a1" → "onA1", "a4" → "onA4", "a4" → null
+        "a4" → null,
+        "a1" → "onA1",
+        "a1" → "onA1",
+        "a4" → "onA4",
+        "a4" → null
     )
 }

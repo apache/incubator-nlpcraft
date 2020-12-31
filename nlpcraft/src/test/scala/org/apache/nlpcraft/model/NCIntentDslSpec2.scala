@@ -37,19 +37,19 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
         Set("a", "b", "c", "d", "e").map(id ⇒ new NCElement { override def getId: String = id }).asJava
 
     // a. Mandatory, List, +, *, ?
-    @NCIntent("intent=a_11 term(a)={id == 'a' }")
+    @NCIntent("intent=a_11 term(a)={id == 'a'}")
     private def aMandatory(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=a_13 term(a)={id == 'a' }[1,3]")
+    @NCIntent("intent=a_13 term(a)={id == 'a'}[1,3]")
     private def aList(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=a_plus term(a)={id == 'a' }+")
+    @NCIntent("intent=a_plus term(a)={id == 'a'}+")
     private def aPlus(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=a_star term(a)={id == 'a' }*")
+    @NCIntent("intent=a_star term(a)={id == 'a'}*")
     private def aAsterisk(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=a_01 term(a)~{id == 'a' }?")
+    @NCIntent("intent=a_01 term(a)~{id == 'a'}?")
     private def aOptional(ctx: NCIntentMatch): NCResult = "OK"
 }
 
