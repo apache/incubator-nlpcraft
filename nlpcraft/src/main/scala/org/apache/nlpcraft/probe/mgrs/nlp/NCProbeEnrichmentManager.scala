@@ -335,9 +335,17 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             NCConnectionManager.send(msg, span)
             
             if (errMsg.isEmpty)
-                logger.info(s"OK result sent back to server [srvReqId=$srvReqId, type=${resType.getOrElse("")}]")
+                logger.info(s"OK result sent back to server [" +
+                    s"srvReqId=${rv(g(srvReqId))}, " +
+                    s"type=${resType.getOrElse("")}" +
+                s"]" +
+                s"\n\n<<${bo("===========")} ${g("OK")} ${bo("===========")}>>\n")
             else
-                logger.info(s"REJECT response sent back to server [srvReqId=$srvReqId, response=${errMsg.get}]")
+                logger.info(s"REJECT response sent back to server [" +
+                    s"srvReqId=${rv(g(srvReqId))}, " +
+                    s"response=${errMsg.get}" +
+                s"]" +
+                s"\n\n<<${bo("===========")} ${r("REJECT")} ${bo("===========")}>>\n")
         }
 
         val mdl = NCModelManager.getModel(mdlId, span)
@@ -653,11 +661,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             "errMsg" → e.getMessage
                         )
     
-                        logger.info(s"Rejection [srvReqId=$srvReqId, msg=${e.getMessage}]")
-    
-                        if (e.getCause != null)
-                            logger.info(s"Rejection cause:", e.getCause)
-    
+                        U.prettyError(logger,s"Rejection for server request ID: ${rv(g(srvReqId))}", e)
+
                         val res = mdl.model.onRejection(solverIn.intentMatch, e)
     
                         if (res != null)

@@ -155,8 +155,6 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             val models: String = getString(s"$prefix.models")
             val lifecycle: Seq[String] = getStringList(s"$prefix.lifecycle")
         }
-
-        println(s"Models -> ${Cfg.models}")
         
         ProbeConfig(
             Cfg.id,

@@ -907,7 +907,7 @@ object NCProbeManager extends NCService {
                         s"txt='$txt', " +
                         s"mdlId=$mdlId, " +
                         s"probeId=${holder.probeKey.probeId}, " +
-                        s"srvReqId=$srvReqId" +
+                        s"srvReqId=${rv(g(srvReqId))}" +
                     s"]")
                     
                     addTags(

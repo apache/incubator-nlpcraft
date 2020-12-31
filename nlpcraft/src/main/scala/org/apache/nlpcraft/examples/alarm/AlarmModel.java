@@ -61,6 +61,7 @@ public class AlarmModel extends NCModelFileAdapter {
         NCIntentMatch ctx,
         @NCIntentTerm("nums") List<NCToken> numToks
     ) {
+        // As an example - we check against an ambiguous match.
         if (ctx.isAmbiguous())
             throw new NCRejection("Not exact match.");
 

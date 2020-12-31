@@ -426,12 +426,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 logger.trace(s"Duplicate synonyms found in '$mdlId' model:\n${tbl.toString}")
 
                 logger.warn(s"Duplicate synonyms found in '$mdlId' model - turn on TRACE logging to see them.")
-                logger.warn(s"Model '$mdlId' allows duplicate synonyms but the large number may degrade the performance.")
-            } else {
-                logger.warn(s"Duplicate synonyms found in '$mdlId' model:\n${tbl.toString}")
-
-                throw new NCE(s"Duplicated synonyms found and not allowed - check warning messages [mdlId=$mdlId]")
-            }
+                logger.warn(s"  ${b("|--")} NOTE: ID of the model element is its default built-in synonym - you don't need to add it explicitly to the list of synonyms.")
+                logger.warn(s"  ${b("+--")} Model '$mdlId' allows duplicate synonyms but the large number may degrade the performance.")
+            } else
+                throw new NCE(s"Duplicated synonyms found and not allowed [mdlId=$mdlId]")
         }
 
         mdl.getMetadata.put(MDL_META_ALL_ALIASES_KEY, allAliases.toSet)

@@ -22,39 +22,42 @@ import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
 import java.util
+import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**
   * Intents DSL test model.
   */
-class NCIntentDslSpecModel extends NCModelAdapter(
+class NCIntentDslSpecModel2 extends NCModelAdapter(
     "nlpcraft.intents.dsl.test", "Intents DSL Test Model", "1.0"
 ) {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
-    override def getElements: util.Set[NCElement] = util.Collections.singleton(
-        new NCElement {
-            // It overrides city.
-            override def getId: String = "paris"
-        }
-    )
+    override def getElements: util.Set[NCElement] =
+        Set("a", "b", "c", "d", "e").map(id ⇒ new NCElement { override def getId: String = id }).asJava
 
-    // Moscow population filter.
-    @NCIntent("intent=bigCity term(city)={id == 'nlpcraft:city' && ~nlpcraft:city:citymeta['population'] >= 10381222}")
-    private def onBigCity(ctx: NCIntentMatch): NCResult = "OK"
+    // a. Mandatory, List, +, *, ?
+    @NCIntent("intent=a_11 term(a)={id == 'a' }")
+    private def aMandatory(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=otherCity term(city)={id == 'nlpcraft:city' }")
-    private def onOtherCity(ctx: NCIntentMatch): NCResult = "OK"
+    @NCIntent("intent=a_13 term(a)={id == 'a' }[1,3]")
+    private def aList(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=userElement term(x)={id == 'paris' }")
-    private def onUserElement(ctx: NCIntentMatch): NCResult = "OK"
+    @NCIntent("intent=a_plus term(a)={id == 'a' }+")
+    private def aPlus(ctx: NCIntentMatch): NCResult = "OK"
+
+    @NCIntent("intent=a_star term(a)={id == 'a' }*")
+    private def aAsterisk(ctx: NCIntentMatch): NCResult = "OK"
+
+    @NCIntent("intent=a_01 term(a)~{id == 'a' }?")
+    private def aOptional(ctx: NCIntentMatch): NCResult = "OK"
 }
 
 /**
   * Intents DSL test.
   */
-@NCTestEnvironment(model = classOf[NCIntentDslSpecModel], startClient = true)
-class NCIntentDslSpec extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCIntentDslSpecModel2], startClient = true)
+class NCIntentDslSpec2 extends NCTestContext {
     private def check(txt: String, intent: String): Unit = {
         val res = getClient.ask(txt)
 
@@ -64,12 +67,11 @@ class NCIntentDslSpec extends NCTestContext {
     }
 
     @Test
-    def testBigCity(): Unit = check("Moscow", "bigCity")
-
-    @Test
-    def testOtherCity(): Unit = check("San Francisco", "otherCity")
-
-    @Test
-    def testUserPriority(): Unit = check("Paris", "userElement")
+    def test(): Unit = {
+        check("a", "a_13")
+        check("a a", "a_13")
+        check("a a a", "a_13")
+        check("a a a a", "a_plus")
+    }
 }
 

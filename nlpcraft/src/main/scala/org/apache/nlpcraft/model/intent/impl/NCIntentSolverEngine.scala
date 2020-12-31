@@ -36,65 +36,98 @@ import scala.collection.mutable
   * Intent solver that finds the best matching intent given user sentence.
   */
 object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
-    private class Weight extends Ordered[Weight] {
-        private val weights: Array[Int] = new Array(3)
+    /**
+     * NOTE: not thread-safe.
+     */
+    private [impl] class Weight(ws: Int*) extends Ordered[Weight] {
+        private var buf = mutable.ArrayBuffer[Int]()
+
+        buf.appendAll(ws)
 
         /**
-          *
-          * @param w0
-          * @param w1
-          * @param w2
-          */
-        def this(w0: Int, w1: Int, w2: Int) = {
-            this()
+         * Adds given weight to this weight.
+         *
+         * @param that Weight to add.
+         * @return
+         */
+        def +=(that: Weight): Weight = {
+            val buf2 = mutable.ArrayBuffer[Int]()
 
-            weights(0) = w0
-            weights(1) = w1
-            weights(2) = w2
-        }
+            for (i ← 0 until Math.max(buf.size, that.buf.size))
+                buf2.append(norm(i, buf) + norm(i, that.buf))
 
-        /**
-          * Sets specific weight at a given index.
-          *
-          * @param idx
-          * @param w
-          */
-        def setWeight(idx: Int, w: Int): Unit =
-            weights(idx) = w
-    
-        /**
-          *
-          * @param that
-          * @return
-          */
-        def ++=(that: Weight): Weight = {
-            for (i ← 0 until 3)
-                this.setWeight(i, this.weights(i) + that.weights(i))
-            
+            buf = buf2
+
             this
         }
-    
+
         /**
-          *
-          * @param that
-          * @return
-          */
+         * Appends new weight.
+         *
+         * @param w New weight to append.
+         * @return
+         */
+        def append(w: Int): Weight = {
+            buf.append(w)
+
+            this
+        }
+
+        /**
+         * Prepends new weight.
+         *
+         * @param w New weight to prepend.
+         * @return
+         */
+        def prepend(w: Int): Weight = {
+            buf.prepend(w)
+
+            this
+        }
+
+        /**
+         * Sets specific weight at a given index.
+         *
+         * @param idx
+         * @param w
+         */
+        def setWeight(idx: Int, w: Int): Unit =
+            buf(idx) = w
+
+        /**
+         * Gets element at given index or zero if index is out of bounds.
+         *
+         * @param i Index in collection.
+         * @param c Collection.
+         * @return
+         */
+        private def norm(i: Int, c: mutable.ArrayBuffer[Int]): Int = if (i < c.size) c(i) else 0
+
+        /**
+         *
+         * @param that
+         * @return
+         */
         override def compare(that: Weight): Int = {
             var res = 0
-    
-            for ((i1, i2) ← this.weights.zip(that.weights) if res == 0)
-                res = Integer.compare(i1, i2)
-    
+
+            for (i ← 0 until Math.max(buf.size, that.buf.size) if res == 0)
+                res = Integer.compare(norm(i, buf), norm(i, that.buf))
+
             res
         }
 
-        def get: Seq[Int] = weights.toSeq
-    
-        override def toString: String = s"Weight (${weights.mkString(", ")})"
+        /**
+         *
+         * @return
+         */
+        def toSeq: Seq[Int] = buf
+
+        override def toString: String = s"Weight (${buf.mkString(", ")})"
     }
-    
+
     /**
-      * 
+      *
       * @param used
       * @param token
       */
@@ -103,7 +136,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         var conv: Boolean,
         token: NCToken
     )
-    
+
     /**
       * @param termId
       * @param usedTokens
@@ -161,6 +194,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             variant: NCIntentSolverVariant, // Variant used for the match.
             variantIdx: Int // Variant index.
         )
+
         val req = ctx.getRequest
 
         startScopedSpan("solve",
@@ -208,37 +242,43 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 )
             }
 
-            val sorted =
-                matches.sortWith((m1: MatchHolder, m2: MatchHolder) ⇒
-                    // 1. First with maximum weight.
-                    m1.intentMatch.weight.compare(m2.intentMatch.weight) match {
-                        case x1 if x1 < 0 ⇒ false
-                        case x1 if x1 > 0 ⇒ true
-                        case x1 ⇒
-                            require(x1 == 0)
+            val sorted = matches.sortWith((m1: MatchHolder, m2: MatchHolder) ⇒
+                // 1. First with maximum weight.
+                m1.intentMatch.weight.compare(m2.intentMatch.weight) match {
+                    case x1 if x1 < 0 ⇒ false
+                    case x1 if x1 > 0 ⇒ true
+                    case x1 ⇒
+                        require(x1 == 0)
 
-                            // 2. First with maximum variant.
-                            m1.variant.compareTo(m2.variant) match {
-                                case x2 if x2 < 0 ⇒ false
-                                case x2 if x2 > 0 ⇒ true
-                                case x2 ⇒
-                                    require(x2 == 0)
+                        // 2. First with maximum variant.
+                        m1.variant.compareTo(m2.variant) match {
+                            case x2 if x2 < 0 ⇒ false
+                            case x2 if x2 > 0 ⇒ true
+                            case x2 ⇒
+                                require(x2 == 0)
 
-                                    def calcHash(m: MatchHolder): Int =
-                                        m.variant.tokens.map(t ⇒
-                                            s"${t.getId}${t.getGroups}${t.getValue}${t.normText}"
-                                        ).mkString("").hashCode
+                                def calcHash(m: MatchHolder): Int = {
+                                    val variantPart =
+                                        m.variant.
+                                        tokens.
+                                        map(t ⇒ s"${t.getId}${t.getGroups}${t.getValue}${t.normText}").
+                                        mkString("")
 
-                                    // Order doesn't make sense here.
-                                    // It is just to provide deterministic result for the matches with the same weight.
-                                    calcHash(m1) > calcHash(m2)
-                            }
-                    }
-                )
+                                    val intentPart = m.intentMatch.intent.toString
+
+                                    (variantPart, intentPart).##
+                                }
+
+                                // Order doesn't make sense here.
+                                // It is just to provide deterministic result for the matches with the same weight.
+                                calcHash(m1) > calcHash(m2)
+                        }
+                }
+            )
 
             if (sorted.nonEmpty) {
                 val tbl = NCAsciiTable("Variant", "Intent", "Term Tokens")
-    
+
                 sorted.foreach(m ⇒ {
                     val im = m.intentMatch
 
@@ -265,7 +305,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         logHldr.addIntent(
                             im.intent.id,
                             im.exactMatch,
-                            im.weight.get,
+                            im.weight.toSeq,
                             im.tokenGroups.map(g ⇒
                                 (if (g.termId == null) "" else g.termId) →
                                 g.usedTokens.map(t ⇒ NCLogGroupToken(t.token, t.conv, t.used))
@@ -298,32 +338,32 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
       */
     private def mkPickTokens(im: IntentMatch): List[String] = {
         val buf = mutable.ListBuffer.empty[String]
-        
+
         buf += im.intent.toString
-        
+
         var grpIdx = 0
-        
+
         for (grp ← im.tokenGroups) {
             val termId = if (grp.termId == null) s"#$grpIdx" else s"'${grp.termId}'"
             buf += s"  Term $termId"
-            
+
             grpIdx += 1
-            
+
             if (grp.usedTokens.nonEmpty) {
                 var tokIdx = 0
-                
+
                 for (tok ← grp.usedTokens) {
                     val conv = if (tok.conv) "(conv) " else ""
-                    
+
                     buf += s"    #$tokIdx: $conv${tok.token}"
-                    
+
                     tokIdx += 1
                 }
             }
             else
                 buf += "    <empty>"
         }
-        
+
         buf.toList
     }
 
@@ -360,7 +400,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             var abort = false
             val ordered = intent.ordered
             var lastTermMatch: TermMatch = null
-            
+
             // Check terms.
             for (term ← intent.terms if !abort) {
                 solveTerm(
@@ -374,65 +414,76 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         else {
                             // Term is found.
                             // Add its weight and grab its tokens.
-                            intentW ++= termMatch.weight
+                            intentW += termMatch.weight
                             intentGrps += TermTokensGroup(termMatch.termId, termMatch.usedTokens)
                             lastTermMatch = termMatch
+
+                            val tbl = NCAsciiTable()
+
+                            val w = termMatch.weight.toSeq
+
+                            tbl += (s"${B}Intent ID$RST", s"$BO${intent.id}$RST")
+                            tbl += (s"${B}Term$RST", term.toString)
+                            tbl += (s"${B}Match tokens$RST", termMatch.usedTokens.map(t ⇒ {
+                                val txt = t.token.getOriginalText
+                                val idx = t.token.getIndex
+
+                                s"$txt${c("[" + idx + "]")}"
+                            }).mkString("|"))
+                            tbl += (s"${B}Match weight$RST",
+                                s"${y("STK:")}${w.head}, ${y("CDW:")}${w(1)}, ${y("MIN:")}${w(2)}, ${y("MAX:")}${w(3)}"
+                            )
+
+                            tbl.info(logger, Some("Term match found:"))
                         }
 
                     case None ⇒
-                        // Term is missing. Stop further processing for this intent.
-                        // This intent cannot be matched.
-                        logger.trace(s"Term '$term' is missing for intent '$intentId' (stopping further processing).")
+                        // Term is missing. Stop further processing for this intent. This intent cannot be matched.
+                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$Y$term$RST' $varStr.")
 
                         abort = true
                 }
             }
-            
-            if (abort) {
-                logger.info(s"Intent '$intentId' didn't match because of unmatched term $varStr.")
 
+            if (abort)
                 None
-            }
-            else if (senToks.exists(tok ⇒ !tok.used && tok.token.isUserDefined)) {
-                logger.info(s"Intent '$intentId' didn't match because of remaining unused user tokens $varStr.")
-    
-                NCTokenLogger.prepareTable(senToks.filter(tok ⇒ !tok.used && tok.token.isUserDefined).map(_.token)).
-                    info(
-                        logger,
-                        Some(s"Unused user tokens for intent '$intentId' $varStr:")
-                    )
-                
-                None
-            }
-            else if (!senToks.exists(tok ⇒ tok.used && !tok.conv)) {
-                logger.info(s"Intent '$intentId' didn't match because all its matched tokens came from STM $varStr.")
-
-                None
-            }
             else {
-                // Exact match calculation DOES NOT include tokens from conversation, if any.
-                val exactMatch = !senToks.exists(tok ⇒ !tok.used && !tok.token.isFreeWord)
+                val usedSenToks = senToks.filter(_.used)
+                val unusedSenToks = senToks.filter(!_.used)
+                val usedConvToks = convToks.filter(_.used)
 
-                val mainWeight = {
-                    // Best weight if the match is exact and conversation WAS NOT used.
-                    if (exactMatch && convToks.isEmpty)
-                        2
-                    // Second best weight if the match is exact and conversation WAS used.
-                    else if (exactMatch)
-                        1
-                    // Third best (i.e. worst) weight if match WAS NOT EXACT.
-                    else
-                        0
+                var res: Option[IntentMatch] = None
+
+                if (usedSenToks.isEmpty && usedConvToks.isEmpty)
+                    logger.info(s"Intent '$intentId' ${r("did not")} match because no tokens were matched $varStr.")
+                else if (usedSenToks.isEmpty && usedConvToks.nonEmpty)
+                    logger.info(s"Intent '$intentId' ${r("did not")} match because all its matched tokens came from STM $varStr.")
+                else if (unusedSenToks.exists(_.token.isUserDefined))
+                    NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isUserDefined).map(_.token)).
+                        info(
+                            logger,
+                            Some(
+                                s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr." +
+                                s"\nUnused user tokens for intent '$intentId' $varStr:"
+                            )
+                        )
+                else {
+                    // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
+                    // The match is exact when all non-free words are used in that match.
+                    // Negate to make sure the bigger (smaller negative number) is better.
+                    val nonFreeWordNum = -senToks.count(t ⇒ !t.used && !t.token.isFreeWord)
+
+                    intentW.prepend(nonFreeWordNum)
+
+                    res = Some(IntentMatch(
+                        tokenGroups = intentGrps.toList,
+                        weight = intentW,
+                        intent = intent,
+                        exactMatch = nonFreeWordNum == 0
+                    ))
                 }
 
-                intentW.setWeight(0, mainWeight)
-                
-                Some(IntentMatch(
-                    tokenGroups = intentGrps.toList,
-                    weight = intentW,
-                    intent = intent,
-                    exactMatch = exactMatch
-                ))
+                res
             }
         }
     }
@@ -449,21 +500,25 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         term: NCDslTerm,
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
-    ): Option[TermMatch] = {
-        var termToks = List.empty[UsedToken]
-        var termWeight = new Weight()
-
+    ): Option[TermMatch] =
         solvePredicate(term.getPredicate, term.getMin, term.getMax, senToks, convToks) match {
-            case Some(t) ⇒
-                termToks = termToks ::: t._1
-                termWeight ++= t._2
-    
-                Some(TermMatch(term.getId, termToks, termWeight))
+            case Some((usedToks, predWeight)) ⇒ Some(
+                TermMatch(
+                    term.getId,
+                    usedToks,
+                    if (usedToks.nonEmpty) {
+                        // Normalize max quantifier in case of unbound max.
+                        val max = if (term.getMax == Integer.MAX_VALUE) usedToks.size else term.getMax
 
-            case None ⇒
-                None
+                        // If term is found (usedToks > 0) we add its quantifiers as additional weight.
+                        predWeight.append(term.getMin).append(max)
+                    } else
+                        predWeight.append(0).append(0)
+                )
+            )
+
+            case None ⇒ None
         }
-    }
     
     /**
       *
@@ -486,46 +541,40 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         // in entire sentence even if these tokens are separated by other already used tokens
         // and conversation will be used only to get to the 'max' number of the item.
     
-        var combToks = List.empty[UsedToken]
-        var predW = 0
+        var usedToks = List.empty[UsedToken]
 
-        /**
-          *
-          * @param from Collection to collect tokens from.
-          * @param maxLen Maximum number of tokens to collect.
-          */
-        def collect(from: Iterable[UsedToken], maxLen: Int): Unit =
-            for (tok ← from.filter(!_.used) if combToks.lengthCompare(maxLen) < 0) {
-                if (pred.apply(tok.token)) {
-                    combToks :+= tok
+        // Collect to the 'max' from sentence & conversation, if possible.
+        for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0)
+            if (pred.apply(tok.token))
+                usedToks :+= tok
 
-                    predW += 1
-                }
-            }
-
-        // Collect to the 'max', if possible.
-        collect(senToks, max)
-        
-        collect(convToks, max)
-
-        if (combToks.lengthCompare(min) < 0) // We couldn't collect even 'min' tokens.
+        // We couldn't collect even 'min' tokens.
+        if (usedToks.lengthCompare(min) < 0)
             None
-        else if (combToks.isEmpty) { // Item is optional and no tokens collected (valid result).
+        // Item is optional (min == 0) and no tokens collected (valid result).
+        else if (usedToks.isEmpty) {
             require(min == 0)
             
-            Some(combToks → new Weight())
+            Some(usedToks → new Weight(0, 0))
         }
-        else { // We've collected some tokens.
-            // Youngest first.
+        // We've collected some tokens (and min > 0).
+        else {
             val convSrvReqIds = convToks.map(_.token.getServerRequestId).distinct
 
-            // Specificity weight ('1' if conversation wasn't used, -'index of conversation depth' if wasn't).
-            // (It is better to be not from conversation or be youngest tokens from conversation)
-            val convW = -combToks.map(t ⇒ convSrvReqIds.indexOf(t.token.getServerRequestId)).sum
+            // Number of tokens from the current sentence.
+            val senTokNum = usedToks.count(t ⇒ !convSrvReqIds.contains(t.token.getServerRequestId))
 
-            combToks.foreach(_.used = true) // Mark tokens as used.
+            // Sum of conversation depths for each token from the conversation.
+            // Negated to make sure that bigger (smaller negative number) is better.
+            val convDepthsSum = -usedToks.filter(t ⇒ convSrvReqIds.contains(t.token.getServerRequestId)).zipWithIndex.map(_._2 + 1).sum
 
-            Some(combToks → new Weight(0/* set later */, convW, predW))
+            // Mark found tokens as used.
+            usedToks.foreach(_.used = true)
+
+            Some(usedToks → new Weight(
+                senTokNum,
+                convDepthsSum
+            ))
         }
     }
 }
