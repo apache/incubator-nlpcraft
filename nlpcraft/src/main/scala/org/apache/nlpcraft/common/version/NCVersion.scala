@@ -53,7 +53,7 @@ object NCVersion extends LazyLogging {
         Version("0.7.0", LocalDate.of(2020, 9, 29)),
         Version("0.7.1", LocalDate.of(2020, 10, 29)),
         Version("0.7.2", LocalDate.of(2020, 11, 19)),
-        Version("0.7.3", LocalDate.of(2020, 12, 19))
+        Version("0.7.3", LocalDate.of(2020, 12, 31))
     ).sortBy(_.version)
     // +=================================================+
     // | UPDATE THIS SEQUENCE FOR EACH RELEASE MANUALLY. |
