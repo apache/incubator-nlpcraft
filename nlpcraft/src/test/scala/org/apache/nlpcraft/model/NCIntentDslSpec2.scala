@@ -34,23 +34,22 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
     override def getElements: util.Set[NCElement] =
-        Set("a", "b", "c", "d", "e").map(id ⇒ new NCElement { override def getId: String = id }).asJava
+        Set("a").map(id ⇒ new NCElement { override def getId: String = id }).asJava
 
-    // a. Mandatory, List, +, *, ?
     @NCIntent("intent=a_11 term(a)={id == 'a'}")
-    private def aMandatory(ctx: NCIntentMatch): NCResult = "OK"
+    private def a11(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=a_13 term(a)={id == 'a'}[1,3]")
-    private def aList(ctx: NCIntentMatch): NCResult = "OK"
+    @NCIntent("intent=a_23 term(a)={id == 'a'}[2,3]")
+    private def a23(ctx: NCIntentMatch): NCResult = "OK"
+
+    @NCIntent("intent=a_15 term(a)={id == 'a'}[1,5]")
+    private def a15(ctx: NCIntentMatch): NCResult = "OK"
 
     @NCIntent("intent=a_plus term(a)={id == 'a'}+")
-    private def aPlus(ctx: NCIntentMatch): NCResult = "OK"
+    private def a1Inf(ctx: NCIntentMatch): NCResult = "OK"
 
     @NCIntent("intent=a_star term(a)={id == 'a'}*")
-    private def aAsterisk(ctx: NCIntentMatch): NCResult = "OK"
-
-    @NCIntent("intent=a_01 term(a)~{id == 'a'}?")
-    private def aOptional(ctx: NCIntentMatch): NCResult = "OK"
+    private def a0Inf(ctx: NCIntentMatch): NCResult = "OK"
 }
 
 /**
@@ -68,10 +67,11 @@ class NCIntentDslSpec2 extends NCTestContext {
 
     @Test
     def test(): Unit = {
-        check("a", "a_13")
-        check("a a", "a_13")
-        check("a a a", "a_13")
-        check("a a a a", "a_plus")
+        check("a", "a_11")
+        check("a a", "a_23")
+        check("a a a", "a_23")
+        check("a a a a", "a_15")
+        check("a a a a a a ", "a_plus")
     }
 }
 

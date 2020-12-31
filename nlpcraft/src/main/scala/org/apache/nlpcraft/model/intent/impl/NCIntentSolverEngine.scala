@@ -277,28 +277,39 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             )
 
             if (sorted.nonEmpty) {
-                val tbl = NCAsciiTable("Variant", "Intent", "Term Tokens")
+                val tbl = NCAsciiTable("Variant", "Intent", "Term Tokens", "Match Weight")
 
                 sorted.foreach(m ⇒ {
                     val im = m.intentMatch
+                    val w = im.weight.toSeq
+                    val ws = Seq(
+                        s"${y("XCT_VAL: ")}${w.head}",
+                        s"${y("SEN_TOK: ")}${w(1)}",
+                        s"${y("CNV_TOK: ")}${w(2)}",
+                        s"${y("SPC_MIN: ")}${w(3)}",
+                        s"${y("DLT_MAX: ")}${w(4)}",
+                        s"${y("NRM_MAX: ")}${w(5)}"
+                    )
 
                     if (m == sorted.head)
                         tbl += (
                             Seq(
                                 s"#${m.variantIdx + 1}",
-                                g(bo("'best match'"))
+                                g(bo("best match"))
                             ),
                             Seq(
                                 im.intent.id,
-                                g(bo("'best match'"))
+                                g(bo("best match"))
                             ),
-                            mkPickTokens(im)
+                            mkPickTokens(im),
+                            ws
                         )
                     else
                         tbl += (
                             s"#${m.variantIdx + 1}",
                             im.intent.id,
-                            mkPickTokens(im)
+                            mkPickTokens(im),
+                            ws
                         )
 
                     if (logHldr != null)
@@ -313,7 +324,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         )
                 })
 
-                tbl.info(logger, Some(s"Found matching intents (sorted ${g(bo("best"))} to worst):"))
+                tbl.info(logger, Some(s"Found ${sorted.size} matching intents (sorted ${g(bo("best"))} to worst):"))
             }
             else
                 logger.info("No matching intent found.")
@@ -431,15 +442,22 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             val w = termMatch.weight.toSeq
 
                             tbl += (s"${B}Intent ID$RST", s"$BO${intent.id}$RST")
-                            tbl += (s"${B}Term$RST", term.toString)
-                            tbl += (s"${B}Match tokens$RST", termMatch.usedTokens.map(t ⇒ {
+                            tbl += (s"${B}Matched Term$RST", term.toString)
+                            tbl += (s"${B}Matched tokens$RST", termMatch.usedTokens.map(t ⇒ {
                                 val txt = t.token.getOriginalText
                                 val idx = t.token.getIndex
 
                                 s"$txt${c("[" + idx + "]")}"
-                            }).mkString("|"))
-                            tbl += (s"${B}Match weight$RST",
-                                s"${y("STK:")}${w.head}, ${y("CDW:")}${w(1)}, ${y("MIN:")}${w(2)}, ${y("MAX:")}${w(3)}"
+                            }).mkString(" "))
+                            tbl += (
+                                s"${B}Match weight$RST",
+                                Seq(
+                                    s"${y("SEN_TOK: ")}${w.head}",
+                                    s"${y("CNV_TOK: ")}${w(1)}",
+                                    s"${y("SPC_MIN: ")}${w(2)}",
+                                    s"${y("DLT_MAX: ")}${w(3)}",
+                                    s"${y("NRM_MAX: ")}${w(4)}"
+                                )
                             )
 
                             tbl.info(logger, Some("Term match found:"))
@@ -515,16 +533,29 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     term.getId,
                     usedToks,
                     if (usedToks.nonEmpty) {
-                        // Normalize max quantifier in case of unbound max.
-                        val max = if (term.getMax == Integer.MAX_VALUE) usedToks.size else term.getMax
+                        // If term match is non-empty we add the following weights:
+                        //   - min
+                        //   - delta between specified max and normalized max (how close the actual quantity was to the specified one).
+                        //   - normalized max
+                        predWeight
+                            .append(term.getMin)
+                            .append(-(term.getMax - usedToks.size))
+                            // Normalize max quantifier in case of unbound max.
+                            .append(if (term.getMax == Integer.MAX_VALUE) usedToks.size else term.getMax)
+                    } else {
+                        // Term is optional (found but empty).
+                        require(term.getMin == 0)
 
-                        // If term is found (usedToks > 0) we add its quantifiers as additional weight.
-                        predWeight.append(term.getMin).append(max)
-                    } else
-                        predWeight.append(0).append(0)
+                        predWeight
+                            .append(0)
+                            .append(-term.getMax)
+                            // Normalize max quantifier in case of unbound max.
+                            .append(if (term.getMax == Integer.MAX_VALUE) 0 else term.getMax)
+                    }
                 )
             )
 
+            // Term not found at all.
             case None ⇒ None
         }
     
