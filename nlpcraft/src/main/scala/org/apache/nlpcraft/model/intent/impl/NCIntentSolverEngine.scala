@@ -250,6 +250,13 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     case x1 ⇒
                         require(x1 == 0)
 
+                        logger.warn(s"|>")
+                        logger.warn(s"|> Two matching intents ('${m1.intentMatch.intent.id}' and '${m2.intentMatch.intent.id}') have the same match weights.")
+                        logger.warn(s"|> Such intents will be further sorted based on their variants weights.")
+                        logger.warn(s"|> It is recommended that intents should not be so similar as to produce matches with identical weight.")
+                        logger.warn(s"|> Such situation is indicative of intersecting intents - modify intent definitions to avoid it.")
+                        logger.warn(s"|>")
+
                         // 2. First with maximum variant.
                         m1.variant.compareTo(m2.variant) match {
                             case x2 if x2 < 0 ⇒ false
@@ -270,7 +277,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 }
 
                                 // Order doesn't make sense here.
-                                // It is just to provide deterministic result for the matches with the same weight.
+                                // It is just to provide deterministic result for the matches with the same weights.
                                 calcHash(m1) > calcHash(m2)
                         }
                 }
