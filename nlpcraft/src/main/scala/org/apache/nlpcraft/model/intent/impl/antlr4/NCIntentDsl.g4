@@ -57,10 +57,11 @@ meta
     | TILDA ID LBR INT RBR
     | TILDA ID LBR qstring RBR
     ;
-qstring: SQUOTE ~'\''* SQUOTE;
+qstring: QSTRING;
 minMax: minMaxShortcut | minMaxRange;
 minMaxShortcut: PLUS | QUESTION | STAR;
 minMaxRange: LBR INT COMMA INT RBR;
+QSTRING: SQUOTE (~'\'')* SQUOTE;
 PRED_OP: '==' | '!=' | '>=' | '<=' | '>' | '<' | '@@' | '!@';
 AND: '&&';
 OR: '||';
@@ -90,7 +91,7 @@ BOOL: 'true' | 'false';
 INT: '0' | [1-9][_0-9]*;
 EXP: DOT [0-9]+;
 ID: (UNDERSCORE|[a-z]|[A-Z])+([a-z]|[A-Z]|[0-9]|COLON|MINUS|UNDERSCORE)*;
-WS : [ \r\t\u000C\n]+ -> skip ;
+WS: [ \r\t\u000C\n]+ -> skip ;
 
 ErrorCharacter
   : .
