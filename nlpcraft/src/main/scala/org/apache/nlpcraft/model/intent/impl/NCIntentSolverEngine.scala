@@ -386,15 +386,25 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         val varStr = s"(variant #${varIdx + 1})"
         val flowRegex = intent.flowRegex
 
+        val histS = s"  |-- ${c("History:")} ${hist.mkString(" ")}"
+
         // Check dialog flow first.
         if (intent.flowRegex.isDefined && !flowRegex.get.matcher(hist.mkString(" ")).find(0)) {
             logger.info(s"Intent '$intentId' ${r("did not")} match because of dialog flow $varStr:")
-            logger.info(s"  |-- ${c("History:")} ${hist.mkString(" ")}")
+            logger.info(histS)
             logger.info(s"  +-- ${c("Regex:")}   ${flowRegex.get.toString}")
 
             None
         }
         else {
+            logger.whenDebugEnabled {
+                if (intent.flowRegex.isDefined) {
+                    logger.debug(s"Intent '$intentId' ${g("matched")} dialog flow $varStr:")
+                    logger.debug(histS)
+                    logger.debug(s"  +-- ${c("Regex:")}   ${flowRegex.get.toString}")
+                }
+            }
+
             val intentW = new Weight()
             val intentGrps = mutable.ListBuffer.empty[TermTokensGroup]
             var abort = false

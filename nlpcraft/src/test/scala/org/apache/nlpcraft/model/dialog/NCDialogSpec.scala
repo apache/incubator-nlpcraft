@@ -82,10 +82,14 @@ class NCDialogSpec extends NCTestContext {
 
         cli.clearConversation()
         cli.clearDialog()
+
+        go()
+
+        cli.clearConversation()
+        cli.clearDialog()
     }
 
     @Test
-    @throws[Exception]
     private[dialog] def test1(): Unit =
         f(
             "a2" → null,
@@ -97,7 +101,6 @@ class NCDialogSpec extends NCTestContext {
         )
 
     @Test
-    @throws[Exception]
     private[dialog] def test2(): Unit =
         f(
             "a3" → null,
@@ -109,7 +112,6 @@ class NCDialogSpec extends NCTestContext {
         )
 
     @Test
-    @throws[Exception]
     private[dialog] def test3(): Unit =
         f(
             "a4" → null,
