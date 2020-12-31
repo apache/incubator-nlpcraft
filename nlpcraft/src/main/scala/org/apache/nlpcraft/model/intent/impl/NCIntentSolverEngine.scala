@@ -374,6 +374,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
       * @param convToks
       * @return
       */
+    //noinspection DuplicatedCode
     private def solveIntent(
         ctx: NCContext,
         intent: NCDslIntent,
@@ -386,24 +387,21 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         val varStr = s"(variant #${varIdx + 1})"
         val flowRegex = intent.flowRegex
 
-        val histS = s"  |-- ${c("History:")} ${hist.mkString(" ")}"
+        def logFlowMatch(s: String) = {
+            logger.info(s)
+            logger.info(s"  |-- ${c("Dialog flow:")} ${hist.mkString(" ")}")
+            logger.info(s"  +-- ${c("Match regex:")} ${flowRegex.get.toString}")
+        }
 
         // Check dialog flow first.
         if (intent.flowRegex.isDefined && !flowRegex.get.matcher(hist.mkString(" ")).find(0)) {
-            logger.info(s"Intent '$intentId' ${r("did not")} match because of dialog flow $varStr:")
-            logger.info(histS)
-            logger.info(s"  +-- ${c("Regex:")}   ${flowRegex.get.toString}")
+            logFlowMatch(s"Intent '$intentId' ${r("did not")} match because of dialog flow $varStr:")
 
             None
         }
         else {
-            logger.whenDebugEnabled {
-                if (intent.flowRegex.isDefined) {
-                    logger.debug(s"Intent '$intentId' ${g("matched")} dialog flow $varStr:")
-                    logger.debug(histS)
-                    logger.debug(s"  +-- ${c("Regex:")}   ${flowRegex.get.toString}")
-                }
-            }
+            if (intent.flowRegex.isDefined)
+                logFlowMatch(s"Intent '$intentId' ${g("matched")} dialog flow $varStr:")
 
             val intentW = new Weight()
             val intentGrps = mutable.ListBuffer.empty[TermTokensGroup]
