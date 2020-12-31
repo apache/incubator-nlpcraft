@@ -55,9 +55,12 @@ class NCDialogSpecModel extends NCModel {
 @NCTestEnvironment(model = classOf[NCDialogSpecModel], startClient = true)
 class NCDialogSpec extends NCTestContext {
     private def f(pairs: (String, String)*): Unit = {
-        val cli = getClient
+        def go(): Unit = {
+            val cli = getClient
 
-        def go(): Unit =
+            cli.clearConversation()
+            cli.clearDialog()
+
             pairs.zipWithIndex.foreach { case ((txt, intentId), idx) ⇒
                 val res = cli.ask(txt)
 
@@ -77,16 +80,10 @@ class NCDialogSpec extends NCTestContext {
                     )
                 }
             }
+        }
 
         go()
-
-        cli.clearConversation()
-        cli.clearDialog()
-
         go()
-
-        cli.clearConversation()
-        cli.clearDialog()
     }
 
     @Test

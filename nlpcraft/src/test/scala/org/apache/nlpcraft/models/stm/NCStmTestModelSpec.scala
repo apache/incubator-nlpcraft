@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.models.stm
 
-import java.io.IOException
-
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
@@ -31,9 +29,7 @@ class NCStmTestModelSpec extends NCTestContext {
     /**
      * @param req
      * @param expResp
-     * @throws IOException
      */
-    @throws[IOException]
     private def check(req: String, expResp: String): Unit = {
         val res = getClient.ask(req)
 
@@ -44,11 +40,8 @@ class NCStmTestModelSpec extends NCTestContext {
 
     /**
      * Checks behaviour. It is based on intents and elements groups.
-     *
-     * @throws Exception
      */
     @Test
-    @throws[Exception]
     private[stm] def test(): Unit = for (i ← 0 until 3) {
         check("sale", "sale")
         check("best", "sale_best_employee")
