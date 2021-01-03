@@ -250,12 +250,72 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     case x1 ⇒
                         require(x1 == 0)
 
-                        logger.warn(s"|>")
-                        logger.warn(s"|> Two matching intents ('${m1.intentMatch.intent.id}' and '${m2.intentMatch.intent.id}') have the same match weights.")
-                        logger.warn(s"|> Such intents will be further sorted based on their variants weights.")
-                        logger.warn(s"|> It is recommended that intents should not be so similar as to produce matches with identical weight.")
-                        logger.warn(s"|> Such situation is indicative of intersecting intents - modify intent definitions to avoid it.")
-                        logger.warn(s"|>")
+                        val mw1 = m1.intentMatch.weight.toSeq
+                        val mw2 = m2.intentMatch.weight.toSeq
+
+                        val v1 = m1.variant
+                        val v2 = m2.variant
+
+                        val tbl = new NCAsciiTable()
+
+                        tbl += (
+                            s"${c("Intent ID")}",
+                            m1.intentMatch.intent.id,
+                            m2.intentMatch.intent.id
+                        )
+                        tbl += (
+                            s"${c("Variant #")}",
+                            m1.variantIdx + 1,
+                            m2.variantIdx + 1
+                        )
+                        tbl += (
+                            s"${c("Intent Match Weight")}",
+                            Seq(
+                                s"${y("XCT_VAL: ")}${mw1.head}",
+                                s"${y("SEN_TOK: ")}${mw1(1)}",
+                                s"${y("CNV_TOK: ")}${mw1(2)}",
+                                s"${y("SPC_MIN: ")}${mw1(3)}",
+                                s"${y("DLT_MAX: ")}${mw1(4)}",
+                                s"${y("NRM_MAX: ")}${mw1(5)}"
+                            ),
+                            Seq(
+                                s"${y("XCT_VAL: ")}${mw2.head}",
+                                s"${y("SEN_TOK: ")}${mw2(1)}",
+                                s"${y("CNV_TOK: ")}${mw2(2)}",
+                                s"${y("SPC_MIN: ")}${mw2(3)}",
+                                s"${y("DLT_MAX: ")}${mw2(4)}",
+                                s"${y("NRM_MAX: ")}${mw2(5)}"
+                            )
+                        )
+                        tbl += (
+                            s"${c("Variant Weight")}",
+                            Seq(
+                                s"${y("USR_TOKS: ")}${v1.userToks}",
+                                s"${y("WORD_CNT: ")}${v1.wordCnt}",
+                                s"${y("USR_DRCT: ")}${v1.totalUserDirect}",
+                                s"${y("AWPT_PCT: ")}${v1.avgWordsPerTokPct}",
+                                s"${y("SPARSITY: ")}${v1.totalSparsity}"
+                            ),
+                            Seq(
+                                s"${y("USR_TOKS: ")}${v2.userToks}",
+                                s"${y("WORD_CNT: ")}${v2.wordCnt}",
+                                s"${y("USR_DRCT: ")}${v2.totalUserDirect}",
+                                s"${y("AWPT_PCT: ")}${v2.avgWordsPerTokPct}",
+                                s"${y("SPARSITY: ")}${v2.totalSparsity}"
+                            )
+                        )
+
+                        logger.warn(
+                            s"\n" +
+                                s"+------------------------------------------------------------------------+\n" +
+                                s"| Two matching intents have the ${r("same weight")} for their matches.           |\n" +
+                                s"| These intents will be sorted based on the weight of their variants.    |\n" +
+                                s"| It is recommended that intents should NOT be so similar as to produce  |\n" +
+                                s"| matches with identical weights. If possible, modify intent definitions |\n" +
+                                s"| to avoid intersecting matches...                                       |\n" +
+                                s"+------------------------------------------------------------------------+\n" +
+                                tbl.toString
+                        )
 
                         // 2. First with maximum variant.
                         m1.variant.compareTo(m2.variant) match {
@@ -284,7 +344,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             )
 
             if (sorted.nonEmpty) {
-                val tbl = NCAsciiTable("Variant", "Intent", "Term Tokens", "Match Weight")
+                val tbl = NCAsciiTable("Variant", "Intent", "Term Tokens", "Intent Match Weight")
 
                 sorted.foreach(m ⇒ {
                     val im = m.intentMatch
@@ -450,14 +510,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                             tbl += (s"${B}Intent ID$RST", s"$BO${intent.id}$RST")
                             tbl += (s"${B}Matched Term$RST", term.toString)
-                            tbl += (s"${B}Matched tokens$RST", termMatch.usedTokens.map(t ⇒ {
+                            tbl += (s"${B}Matched Tokens$RST", termMatch.usedTokens.map(t ⇒ {
                                 val txt = t.token.getOriginalText
                                 val idx = t.token.getIndex
 
                                 s"$txt${c("[" + idx + "]")}"
                             }).mkString(" "))
                             tbl += (
-                                s"${B}Match weight$RST",
+                                s"${B}Term Match Weight$RST",
                                 Seq(
                                     s"${y("SEN_TOK: ")}${w.head}",
                                     s"${y("CNV_TOK: ")}${w(1)}",
