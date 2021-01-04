@@ -177,7 +177,7 @@ public interface NCEmbeddedResult {
      * 
      * @return Request processing log holder as JSON string.
      */
-    String getLogHolder();
+    String getLogHolderJson();
 
     /**
      * Gets ID of the intent that was matched against the input sentence. Only set if result was

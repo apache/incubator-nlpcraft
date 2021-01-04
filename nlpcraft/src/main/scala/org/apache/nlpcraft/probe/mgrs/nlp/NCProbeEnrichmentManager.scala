@@ -324,7 +324,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     override val getErrorMessage: String = msg.dataOpt[String]("error").orNull
                     override val getErrorCode: Int = msg.dataOpt[Int]("errorCode").getOrElse(0)
                     override def getProbeId: String = Config.id
-                    override def getLogHolder: String = log.orNull
+                    override def getLogHolderJson: String = log.orNull
                     override def getIntentId: String = intentId.orNull
                 }
 
