@@ -41,6 +41,6 @@ To set up `ctxword` module under Windows, you would need to repeat steps from `s
  9. You can remove the local clone of FastText git repository after its setup is finished.
  
  ### Copyright
- Copyright (C) 2020 Apache Software Foundation
+ Copyright (C) 2021 Apache Software Foundation
  
  <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo"> 

@@ -203,7 +203,7 @@ Done! 👌
 [Learn more about this example >](https://nlpcraft.apache.org/examples/light_switch.html)
  
 ## Copyright
-Copyright (C) 2020 Apache Software Foundation
+Copyright (C) 2021 Apache Software Foundation
 
 <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">
 

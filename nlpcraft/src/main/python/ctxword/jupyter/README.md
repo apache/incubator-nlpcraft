@@ -29,6 +29,6 @@ You can modify weights/variables for models, build graphs, etc. using this Noteb
 Additional requirements are needed to run this Notebook, see `py_requirements` file.  
 
 ### Copyright
-Copyright (C) 2020 Apache Software Foundation
+Copyright (C) 2021 Apache Software Foundation
 
 <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">

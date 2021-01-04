@@ -64,7 +64,7 @@ For any questions, feedback or suggestions:
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
 
 ### Copyright
-Copyright (C) 2020 Apache Software Foundation
+Copyright (C) 2021 Apache Software Foundation
 
 <img src="https://www.apache.org/img/ASF20thAnniversary.jpg" height="64px" alt="ASF Logo">
 

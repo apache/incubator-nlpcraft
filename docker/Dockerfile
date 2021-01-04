@@ -18,7 +18,7 @@
 FROM openjdk:8-alpine
 LABEL Software="https://nlpcraft.apache.org"
 LABEL License="Apache 2.0, https://www.apache.org/licenses/LICENSE-2.0"
-LABEL Licensor="Copyright 2020 (C) Apache Software Foundation"
+LABEL Licensor="Copyright 2021 (C) Apache Software Foundation"
 ARG JAR_FILE
 COPY $JAR_FILE apache-nlpcraft-all-deps.jar
 ENTRYPOINT ["java", \
