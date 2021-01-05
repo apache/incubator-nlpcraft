@@ -672,15 +672,6 @@ object NCCli extends App {
                     logServerInfo(beacon)
 
                     showTip()
-
-                    if (state.accessToken.isDefined) {
-                        val tbl = new NCAsciiTable()
-
-                        tbl += (s"${g("Email")}", state.userEmail.get)
-                        tbl += (s"${g("Access token")}", state.accessToken.get)
-
-                        logln(s"Signed in with default user:\n$tbl")
-                    }
                 }
             }
         }
