@@ -1729,6 +1729,11 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        getParam(cmd, args, "driver")
+        getParam(cmd, args, "schema")
+        getParam(cmd, args, "out")
+        getParam(cmd, args, "url")
+
         val nativeArgs = args.flatMap { arg ⇒
             val param = arg.parameter.names.head
 
