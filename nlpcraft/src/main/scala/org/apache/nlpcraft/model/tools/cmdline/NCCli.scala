@@ -1394,7 +1394,7 @@ object NCCli extends App {
                     lines += c(line)
 
                     if (param.optional)
-                        lines += s"$T___${T___}Optional."
+                        lines += s"$T___${T___}${g("Optional.")}"
 
                     lines += s"$T___$T___${param.desc}"
                     lines += ""

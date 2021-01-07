@@ -1025,6 +1025,14 @@ private [cmdline] object NCCliCommands {
             body = NCCli.cmdGenProject,
             params = Seq(
                 Parameter(
+                    id = "baseName",
+                    names = Seq("--baseName", "-n"),
+                    value = Some("name"),
+                    desc =
+                        s"Base name for the generated files. For example, if base name is ${y("'MyApp'")}, " +
+                        s"then generated Java file will be named as ${y("'MyAppModel.java'")} and model file as ${y("'my_app_model.yaml'")}."
+                ),
+                Parameter(
                     id = "outputDir",
                     names = Seq("--outputDir", "-d"),
                     value = Some("path"),
@@ -1032,14 +1040,6 @@ private [cmdline] object NCCliCommands {
                     desc =
                         s"Output directory. Default value is the current working directory. " +
                         s"Note that you can use ${c("'~'")} at the beginning of the path to specify user home directory."
-                ),
-                Parameter(
-                    id = "baseName",
-                    names = Seq("--baseName", "-n"),
-                    value = Some("name"),
-                    desc =
-                        s"Base name for the generated files. For example, if base name is ${y("'MyApp'")}, " +
-                        s"then generated Java file will be named as ${y("'MyAppModel.java'")} and model file as ${y("'my_app_model.yaml'")}."
                 ),
                 Parameter(
                     id = "lang",
