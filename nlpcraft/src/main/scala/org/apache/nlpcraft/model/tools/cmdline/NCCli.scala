@@ -699,7 +699,7 @@ object NCCli extends App {
         }
 
         if (mdls != null) {
-            if (hasExternalModels(mdls) && addCp != null)
+            if (hasExternalModels(mdls) && addCp == null)
                 throw new IllegalStateException(
                     s"Additional classpath is required when deploying your own models. " +
                     s"Use ${c("--cp")} parameters to provide additional classpath.")
