@@ -22,6 +22,8 @@ description: "NLI-powered light switch example model."
 macros:
   - name: "<ACTION>"
     macro: "{turn|switch|dial|control|let|set|get|put}"
+  - name: "<KILL>"
+    macro: "{shut|kill|stop|eliminate}"
   - name: "<ENTIRE_OPT>"
     macro: "{entire|full|whole|total|*}"
   - name: "<LIGHT>"
@@ -49,7 +51,9 @@ elements:
     description: "Light switch OFF action."
     synonyms:
       - "<ACTION> <LIGHT> {off|out}"
-      - "{<ACTION>|shut|kill|stop|eliminate} {off|out} <LIGHT>"
+      - "{<ACTION>|<KILL>} {off|out} <LIGHT>"
+      - "<KILL> <LIGHT>"
+      - "<LIGHT> <KILL>"
       - "no <LIGHT>"
 intents:
   - "intent=ls term(act)={groups @@ 'act'} term(loc)={id == 'ls:loc'}*"
