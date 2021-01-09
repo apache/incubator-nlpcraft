@@ -1061,7 +1061,7 @@ private [cmdline] object NCCliCommands {
                 ),
                 Parameter(
                     id = "packageName",
-                    names = Seq("--pckgName", "-p"),
+                    names = Seq("--pkgName", "-p"),
                     value = Some("name"),
                     optional = true,
                     desc = s"JVM package name to use in generated source code. Default value is ${y("'org.apache.nlpcraft.demo'")}."
