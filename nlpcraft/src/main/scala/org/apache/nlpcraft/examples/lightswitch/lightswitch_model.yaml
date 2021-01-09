@@ -21,7 +21,7 @@ version: "1.0"
 description: "NLI-powered light switch example model."
 macros:
   - name: "<ACTION>"
-    macro: "{turn|switch|dial|control|let|set|get|put}"
+    macro: "{turn|switch|dial|let|set|get|put}"
   - name: "<KILL>"
     macro: "{shut|kill|stop|eliminate}"
   - name: "<ENTIRE_OPT>"
