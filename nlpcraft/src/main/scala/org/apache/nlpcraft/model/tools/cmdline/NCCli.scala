@@ -2199,7 +2199,7 @@ object NCCli extends App {
 
                 for {
                     child ← children
-                    (v1, v2) = if (child != children.last) ("├── ", "│   ") else ("└── ", "    ")
+                    (v1, v2) = if (child != children.last) (s"${g("+")}-- ", s"${r("|")}   ") else (s"${g("+")}-- ", "    ")
                     sub = get(child)
                 } {
                     buf += sub.head.insert(0, v1)
@@ -2227,7 +2227,7 @@ object NCCli extends App {
                 case _ ⇒ throw new IllegalArgumentException(s"Unsupported combination of '${c(lang)}' and '${c(buildTool)}'.")
             }
 
-            logln(s"Project created: ${c(dst.getCanonicalPath)}")
+            logln(s"Project created in: ${c(dst.getCanonicalPath)}")
             logln(folder2String(dst))
         }
         catch {
