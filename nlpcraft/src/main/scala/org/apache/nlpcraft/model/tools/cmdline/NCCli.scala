@@ -2090,7 +2090,7 @@ object NCCli extends App {
                 if (overrideFlag)
                     U.clearFolder(dst.getAbsolutePath)
                 else
-                    throw new IllegalArgumentException(s"Folder already exists: ${c(dst.getAbsolutePath)}")
+                    throw new IllegalArgumentException(s"Folder already exists (use ${c("'-o'")} to override): ${c(dst.getAbsolutePath)}")
             }
         }
 
@@ -2199,7 +2199,7 @@ object NCCli extends App {
 
                 for {
                     child ← children
-                    (v1, v2) = if (child != children.last) (s"${g("+")}-- ", s"${r("|")}   ") else (s"${g("+")}-- ", "    ")
+                    (v1, v2) = if (child != children.last) (s"${c("|")}-- ", s"${c("|")}   ") else (s"${c("+")}-- ", "    ")
                     sub = get(child)
                 } {
                     buf += sub.head.insert(0, v1)
