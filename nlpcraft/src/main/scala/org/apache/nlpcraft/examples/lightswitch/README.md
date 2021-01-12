@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
+<img alt="" src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
@@ -29,26 +29,8 @@ the entire house` or `switch on the illumination in the master bedroom closet`.
 You can easily modify intent callbacks to perform the actual light switching using HomeKit or Arduino-based
 controllers.
 
-### Running
-You can run necessary JVMs for this example the same way from either the command line or IDE.
-Note that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
-embedded probe and starts it automatically:
- *  Run REST server:
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **Program arguments:** `-server`
- * Test using built-in model auto-validator:
-    * **Main class:** `org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator`
-    * **VM arguments:** `-DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.lightswitch.LightSwitchModel` 
-      
-If not using built-in test framework (i.e. not using embedded probe) you need to start data probe manually:
- * Run data probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **VM arguments:** `-Dconfig.override_with_env_vars=true`
-    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models="org.apache.nlpcraft.examples.lightswitch.LightSwitchModel"`
-    * **Program arguments:** `-probe`
-
 ### Documentation
-See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
+See [Light Switch](https://nlpcraft.apache.org/examples/light_switch.html) guide for more instructions on how to run this example.
 
 For any questions, feedback or suggestions:
 
