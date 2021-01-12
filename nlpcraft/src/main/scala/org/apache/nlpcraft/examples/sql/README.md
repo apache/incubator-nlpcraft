@@ -19,7 +19,7 @@
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
-[![build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
+[![Build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
@@ -27,32 +27,9 @@
 This example demonstrates the relatively complex case of taking an existing SQL schema and developing
 a natural language interface to it. Although it does not support many standard SQL capabilities (to limit the size of the 
 example itself) - it is designed in a such a way that it can be easily extended and developed further.  
-
-### Running
-This example can be run the same way as other examples with one exception - it needs to run H2 database server. 
-The unit test for this example runs H2 database server automatically (which can be run manually, if necessary).
-You need to start H2 database server standalone when you are using `NCSqlModelGenerator` model generation utility.
-You can run necessary JVMs for this example similarly from command line or IDE.
-Note that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
-embedded probe and starts it automatically:
- *  Run REST server:
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **Program arguments:** `-server`
- * Test using built-in test framework:
-    * **JUnit class:** `org.apache.nlpcraft.examples.sql.NCSqlExampleTest`
-
-If not using built-in test framework (i.e. not using embedded probe) you need to start data probe manually:    
- * To run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **VM arguments:** `-Dconfig.override_with_env_vars=true`
-    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models="org.apache.nlpcraft.examples.sql.SqlModel"`
-    * **Program arguments:** `-probe`
-    
-    When running data probe standalone you need run H2 database sever manually (from command line or IDE):
-    * **Main class:** `org.apache.nlpcraft.examples.sql.db.SqlServerRunner`
     
 ### Documentation  
-See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
+See [SQL Model](http://nlpcraft.apache.org/examples/sql_model.html) guide for more instructions on how to run this example.
 
 For any questions, feedback or suggestions:
 

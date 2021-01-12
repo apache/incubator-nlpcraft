@@ -19,36 +19,16 @@
 <br>
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/apache/opennlp/master/LICENSE)
-[![build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
+[![Build](https://github.com/apache/incubator-nlpcraft/workflows/build/badge.svg)](https://github.com/apache/incubator-nlpcraft/actions)
 [![Documentation Status](https://img.shields.io/:docs-latest-green.svg)](https://nlpcraft.apache.org/docs.html)
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ### Echo Example
-This is a Scala example.
-
-For any user input this example model returns JSON representation of the query 
+For any user input this Scala-based example model returns JSON representation of the query 
 context corresponding to that input. This is a simple demonstration of the 
 JSON output and of most of the NLPCraft-provided data that a user defined model 
 can operate on. This example can be useful during the development to see what 
 object properties are available.
-
-### Running
-You can run necessary JVMs for this example the same way from either the command line or IDE.
-Note that you don't need to start Data Probe standalone if you are only running the unit test as it uses the 
-embedded probe and starts it automatically:
- * Run REST server:
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **Program arguments:** `-server`
- * Test using built-in model auto-validator:
-    * **Main class:** `org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator`
-    * **VM arguments:** `-DNLPCRAFT_TEST_MODELS=org.apache.nlpcraft.examples.echo.EchoModel`      
-
-If not using built-in test framework (i.e. not using embedded probe) you need to start data probe manually:     
- * Run probe standalone and use your own [REST client](https://nlpcraft.apache.org/using-rest.html):
-    * **Main class:** `org.apache.nlpcraft.NCStart`
-    * **VM arguments:** `-Dconfig.override_with_env_vars=true`
-    * **Environment variables:** `CONFIG_FORCE_nlpcraft_probe_models="org.apache.nlpcraft.examples.echo.EchoModel"`
-    * **Program arguments:** `-probe`
     
 ### Documentation  
 See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
