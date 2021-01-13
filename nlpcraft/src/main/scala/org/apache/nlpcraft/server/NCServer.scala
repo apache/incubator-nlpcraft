@@ -258,7 +258,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 lazy val nlpEngine =  getString("nlpcraft.nlpEngine")
                 lazy val extCfgUrl =  getString("nlpcraft.extConfig.extUrl")
                 lazy val extCfgCheckMd5 =  getBool("nlpcraft.extConfig.checkMd5")
-                lazy val restEndpoint = s"${Config.restHost}:${Config.restPort}"
+                lazy val restEndpoint = s"${Config.restHost}:${Config.restPort}/api/v1"
             }
 
             try {

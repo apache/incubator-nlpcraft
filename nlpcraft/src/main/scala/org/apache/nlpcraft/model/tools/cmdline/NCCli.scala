@@ -1544,7 +1544,7 @@ object NCCli extends App {
         tbl += ("  Pool increment", s"${g(beacon.dbPoolInc)}")
         tbl += ("  Reset on start", s"${g(beacon.dbInit)}")
         tbl += ("REST:", "")
-        tbl += ("  Endpoint", s"${g("http://" + beacon.restEndpoint)}") // TODO: https?
+        tbl += ("  Endpoint", s"${g("http://" + beacon.restEndpoint)}")
         tbl += ("  API provider", s"${g(beacon.restApi)}")
         tbl += ("Probe:", "")
         tbl += ("  Uplink", s"${g(beacon.upLink)}")
@@ -2690,7 +2690,7 @@ object NCCli extends App {
      * @return
      */
     private def prepRestUrl(baseUrl: String, cmd: String): String =
-        if (baseUrl.endsWith("/")) s"${baseUrl}api/v1/$cmd" else s"$baseUrl/api/v1/$cmd"
+        if (baseUrl.endsWith("/")) s"$baseUrl$cmd" else s"$baseUrl/$cmd"
 
     /**
      * Posts HTTP POST request.
