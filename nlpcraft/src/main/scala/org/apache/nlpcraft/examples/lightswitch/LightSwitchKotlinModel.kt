@@ -17,12 +17,7 @@
 
 package org.apache.nlpcraft.examples.lightswitch
 
-import org.apache.nlpcraft.model.NCModelFileAdapter
-import org.apache.nlpcraft.model.NCIntentRef
-import org.apache.nlpcraft.model.NCIntentSample
-import org.apache.nlpcraft.model.NCIntentTerm
-import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.model.NCResult
+import org.apache.nlpcraft.model.*
 import java.util.stream.Collectors
 
 /**
@@ -69,7 +64,7 @@ class LightSwitchKotlinModel : NCModelFileAdapter("org/apache/nlpcraft/examples/
     ): NCResult {
         val status = if (actTok.id == "ls:on") "on" else "off"
         val locations = if (locToks.isEmpty()) "entire house" else locToks.stream()
-            .map { t: NCToken -> t.meta<Any>("nlpcraft:nlp:origtext") as String }
+            .map { t: NCToken -> t.meta("nlpcraft:nlp:origtext") as String }
             .collect(Collectors.joining(", "))
 
         // Add HomeKit, Arduino or other integration here.
