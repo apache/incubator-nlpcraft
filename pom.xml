@@ -74,6 +74,7 @@
         <!-- Major Scala version. -->
         <scala.base>2.12</scala.base>
         <kotlin.ver>1.4.21</kotlin.ver>
+        <groovy.ver>3.0.7</groovy.ver>
 
         <!-- Versions. -->
         <ignite.ver>2.9.1</ignite.ver>
@@ -515,6 +516,11 @@
             <version>${kotlin.ver}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.ver}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -660,6 +666,35 @@
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.12.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sources>
+                        <source>
+                            <directory>${project.basedir}/src/main/scala</directory>
+                            <includes>
+                                <include>**/*.groovy</include>
+                            </includes>
+                        </source>
+                    </sources>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy</artifactId>
+                        <version>${groovy.ver}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
