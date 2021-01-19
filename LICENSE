@@ -240,3 +240,8 @@ and licensed as follows:
     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
     ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Files in src/main/resources/moby folder are released by Grady Ward into the public domain and licensed under
+Apache License, Version 2.0:
+   - https://en.wikipedia.org/wiki/Moby_Project
+   - http://cs.sru.edu/~ddailey/whence.html

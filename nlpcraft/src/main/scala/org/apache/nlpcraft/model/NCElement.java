@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * Data model element.
  * <p>
- * Data model element defines an semantic entity that will be detected in the user input. A model element
+ * Data model element defines a named entity that will be detected in the user input. A model element
  * typically is one or more individual words that have a consistent semantic meaning and typically denote
  * a real-world object, such as persons, locations, number, date and time, organizations, products, etc.
  * Such object can be abstract or have a physical existence.
