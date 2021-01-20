@@ -17,22 +17,20 @@
 
 package org.apache.nlpcraft.probe
 
-import java.io._
-import java.util.concurrent.CompletableFuture
-
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.version.NCVersion
-import org.apache.nlpcraft.common.{NCE, NCException, NCService, U}
+import org.apache.nlpcraft.common.{NCE, NCException, NCService, U, _}
+import org.apache.nlpcraft.model.tools.cmdline.NCCliProbeBeacon
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
 import org.apache.nlpcraft.probe.mgrs.conversation.NCConversationManager
@@ -49,10 +47,11 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
-import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.tools.cmdline.NCCliProbeBeacon
+import org.apache.nlpcraft.probe.mgrs.pool.NCProbePoolManager
 import resource.managed
 
+import java.io._
+import java.util.concurrent.CompletableFuture
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
@@ -494,6 +493,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "jarFolder" → cfg.jarsFolder
             )
 
+            startedMgrs += NCProbePoolManager.start(span)
             startedMgrs += NCExternalConfigManager.start(span)
             startedMgrs += NCNlpCoreManager.start(span)
             startedMgrs += NCNumericManager.start(span)

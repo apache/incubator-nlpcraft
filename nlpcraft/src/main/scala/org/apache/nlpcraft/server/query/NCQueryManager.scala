@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.server.query
 
 import java.util.concurrent.ConcurrentHashMap
-
 import io.opencensus.trace.Span
 import org.apache.ignite.IgniteCache
 import org.apache.ignite.events.{CacheEvent, EventType}
@@ -31,12 +30,12 @@ import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.mdo.NCQueryStateMdo
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
+import org.apache.nlpcraft.server.pool.NCServerPoolContext
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 import scala.util.control.Exception._
@@ -44,7 +43,7 @@ import scala.util.control.Exception._
 /**
   * Query state machine.
   */
-object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusServerStats {
+object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusServerStats with NCServerPoolContext {
     @volatile private var cache: IgniteCache[String/*Server request ID*/, NCQueryStateMdo] = _
     
     // Promises cannot be used in cache.

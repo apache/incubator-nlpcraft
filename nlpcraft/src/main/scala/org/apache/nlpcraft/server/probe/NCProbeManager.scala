@@ -17,13 +17,6 @@
 
 package org.apache.nlpcraft.server.probe
 
-import java.io._
-import java.net.{InetSocketAddress, ServerSocket, Socket, SocketTimeoutException}
-import java.security.Key
-import java.util
-import java.util.Collections
-import java.util.concurrent.ConcurrentHashMap
-
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.opencensus.trace.Span
@@ -36,6 +29,7 @@ import org.apache.nlpcraft.common.socket.NCSocket
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
+import org.apache.nlpcraft.probe.mgrs.pool.NCProbePoolContext
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.mdo.{NCCompanyMdo, NCProbeMdo, NCProbeModelMdo, NCUserMdo}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
@@ -43,16 +37,21 @@ import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.sql.NCSql
 
+import java.io._
+import java.net.{InetSocketAddress, ServerSocket, Socket, SocketTimeoutException}
+import java.security.Key
+import java.util
+import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
 import scala.collection.{Map, mutable}
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.{Failure, Success}
 
 /**
   * Probe manager.
   */
-object NCProbeManager extends NCService {
+object NCProbeManager extends NCService with NCProbePoolContext {
     private final val GSON = new Gson()
     private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
 

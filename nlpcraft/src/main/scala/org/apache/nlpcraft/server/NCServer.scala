@@ -17,9 +17,6 @@
 
 package org.apache.nlpcraft.server
 
-import java.io.{File, FileInputStream, FileOutputStream, IOException, ObjectInputStream, ObjectOutputStream}
-import java.util.concurrent.CountDownLatch
-
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.commons.lang3.SystemUtils
@@ -44,6 +41,7 @@ import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
 import org.apache.nlpcraft.server.nlp.preproc.NCPreProcessManager
 import org.apache.nlpcraft.server.nlp.spell.NCSpellCheckManager
 import org.apache.nlpcraft.server.nlp.wordnet.NCWordNetManager
+import org.apache.nlpcraft.server.pool.NCServerPoolManager
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
@@ -54,45 +52,48 @@ import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 import resource.managed
 
+import java.io._
+import java.util.concurrent.CountDownLatch
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
 import scala.util.control.Exception.{catching, ignoring}
 
 /**
-  * NLPCraft server app.
-  */
+ * NLPCraft server app.
+ */
 object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCensusTrace {
     private final val BEACON_PATH = ".nlpcraft/server_beacon"
 
     private val startedMgrs = mutable.Buffer.empty[NCService]
 
     /**
-      * Prints ASCII-logo.
-      */
+     * Prints ASCII-logo.
+     */
     private def asciiLogo() {
         val ver = NCVersion.getCurrent
 
         logger.info(
             U.NL +
-            U.asciiLogo() +
-            s"${U.NL}" +
-            s"Server${U.NL}" +
-            s"Version: ${bo(ver.version)}${U.NL}" +
-            s"${NCVersion.copyright}${U.NL}"
+                U.asciiLogo() +
+                s"${U.NL}" +
+                s"Server${U.NL}" +
+                s"Version: ${bo(ver.version)}${U.NL}" +
+                s"${NCVersion.copyright}${U.NL}"
         )
     }
 
     /**
-      * Starts all managers.
-      */
+     * Starts all managers.
+     */
     private def startManagers(): Unit = {
         val ver = NCVersion.getCurrent
 
         // Lifecycle manager has to be started outside of the tracing span.
         NCServerLifecycleManager.start()
         NCServerLifecycleManager.beforeStart()
-    
+
         startScopedSpan("startManagers", "relVer" → ver.version, "relDate" → ver.date) { span ⇒
+            startedMgrs += NCServerPoolManager.start(span)
             startedMgrs += NCExternalConfigManager.start(span)
             startedMgrs += NCWordNetManager.start(span)
             startedMgrs += NCDictionaryManager.start(span)
@@ -113,19 +114,19 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             startedMgrs += NCFeedbackManager.start(span)
             startedMgrs += NCQueryManager.start(span)
             startedMgrs += NCRestManager.start(span)
-    
+
             // Lifecycle callback.
             NCServerLifecycleManager.afterStart()
         }
     }
-    
+
     /**
-      * Stops all managers.
-      */
+     * Stops all managers.
+     */
     private def stopManagers(): Unit = {
         // Lifecycle callback.
         NCServerLifecycleManager.beforeStop()
-    
+
         startScopedSpan("stopManagers") { span ⇒
             startedMgrs.reverse.foreach(p ⇒
                 try
@@ -135,38 +136,38 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 }
             )
         }
-        
+
         // Lifecycle callback.
         NCServerLifecycleManager.afterStop()
         NCServerLifecycleManager.stop()
     }
-    
+
     /**
-      * Acks server start.
-      */
+     * Acks server start.
+     */
     protected def ackStart() {
         val dur = s"[${U.format((currentTime - executionStart) / 1000.0, 2)}s]"
-        
+
         val tbl = NCAsciiTable()
-        
+
         tbl.margin(top = 1, bottom = 1)
-        
+
         tbl += s"Server started ${b(dur)}"
-        
+
         tbl.info(logger)
     }
 
     /**
-      *
-      * @return
-      */
+     *
+     * @return
+     */
     private def setSysProps(): Unit = {
         System.setProperty("java.net.preferIPv4Stack", "true")
     }
 
     /**
-      *
-      */
+     *
+     */
     private def start(): Unit = {
         NCAnsi.ackStatus()
 
@@ -177,25 +178,25 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             args.find(_.startsWith("-config=")) match {
                 case Some(s) ⇒
                     val fileName = s.substring("-config=".length)
-                    
+
                     val f = new java.io.File(fileName)
 
                     if (!(f.exists && f.canRead && f.isFile))
                         throw new NCE(s"Specified server configuration file does not exist or cannot be read: $fileName")
 
                     Some(fileName)
-                    
+
                 case None ⇒
                     Some("nlpcraft.conf") // Default to 'nlpcraft.conf'.
             },
             None, // No defaults.
             (cfg: Config) ⇒ cfg.hasPath("nlpcraft.server")
         )
-        
+
         asciiLogo()
 
         val lifecycle = new CountDownLatch(1)
-    
+
         catching(classOf[Throwable]) either startManagers() match {
             case Left(e) ⇒ // Exception.
                 U.prettyError(logger, "Failed to start server:", e)
@@ -203,7 +204,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 stopManagers()
 
                 System.exit(1)
-        
+
             case _ ⇒ // Managers started OK.
                 // Store beacon file once all managers started OK.
                 storeBeacon()
@@ -235,7 +236,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         /**
          *
          */
-        def save() = {
+        def save(): Unit = {
             final object Config extends NCConfigurable {
                 final private val pre = "nlpcraft.server"
 
@@ -243,21 +244,21 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 lazy val restHost = getString(s"$pre.rest.host")
                 lazy val restApi = getString(s"$pre.rest.apiImpl")
                 lazy val restPort = getInt(s"$pre.rest.port")
-                lazy val upLink =  getString(s"$pre.probe.links.upLink")
-                lazy val downLink =  getString(s"$pre.probe.links.downLink")
-                lazy val dbUrl =  getString(s"$pre.database.jdbc.url")
-                lazy val dbDriver =  getString(s"$pre.database.jdbc.driver")
-                lazy val dbPoolMin =  getInt(s"$pre.database.c3p0.pool.minSize")
-                lazy val dbPoolMax =  getInt(s"$pre.database.c3p0.pool.maxSize")
-                lazy val dbPoolInit =  getInt(s"$pre.database.c3p0.pool.initSize")
-                lazy val dbPoolInc =  getInt(s"$pre.database.c3p0.pool.acquireIncrement")
-                lazy val dbInit =  getBool(s"$pre.database.igniteDbInitialize")
-                lazy val tokProviders =  getString(s"$pre.tokenProviders")
-                lazy val acsToksScanMins =  getInt(s"$pre.user.timeoutScannerFreqMins")
-                lazy val acsToksExpireMins =  getInt(s"$pre.user.accessTokenExpireTimeoutMins")
-                lazy val nlpEngine =  getString("nlpcraft.nlpEngine")
-                lazy val extCfgUrl =  getString("nlpcraft.extConfig.extUrl")
-                lazy val extCfgCheckMd5 =  getBool("nlpcraft.extConfig.checkMd5")
+                lazy val upLink = getString(s"$pre.probe.links.upLink")
+                lazy val downLink = getString(s"$pre.probe.links.downLink")
+                lazy val dbUrl = getString(s"$pre.database.jdbc.url")
+                lazy val dbDriver = getString(s"$pre.database.jdbc.driver")
+                lazy val dbPoolMin = getInt(s"$pre.database.c3p0.pool.minSize")
+                lazy val dbPoolMax = getInt(s"$pre.database.c3p0.pool.maxSize")
+                lazy val dbPoolInit = getInt(s"$pre.database.c3p0.pool.initSize")
+                lazy val dbPoolInc = getInt(s"$pre.database.c3p0.pool.acquireIncrement")
+                lazy val dbInit = getBool(s"$pre.database.igniteDbInitialize")
+                lazy val tokProviders = getString(s"$pre.tokenProviders")
+                lazy val acsToksScanMins = getInt(s"$pre.user.timeoutScannerFreqMins")
+                lazy val acsToksExpireMins = getInt(s"$pre.user.accessTokenExpireTimeoutMins")
+                lazy val nlpEngine = getString("nlpcraft.nlpEngine")
+                lazy val extCfgUrl = getString("nlpcraft.extConfig.extUrl")
+                lazy val extCfgCheckMd5 = getBool("nlpcraft.extConfig.checkMd5")
                 lazy val restEndpoint = s"${Config.restHost}:${Config.restPort}/api/v1"
             }
 
@@ -327,7 +328,9 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readObject() }
+                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet {
+                    _.readObject()
+                }
             } match {
                 case Left(e) ⇒
                     logger.trace(s"Failed to read existing server beacon: ${path.getAbsolutePath}", e)
@@ -350,7 +353,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                     }
             }
         else
-            // No existing beacon file detected.
+        // No existing beacon file detected.
             save()
     }
 
@@ -358,7 +361,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     new Thread() {
         override def run(): Unit = U.gaScreenView("server")
     }
-    .start()
+        .start()
 
     NCIgniteRunner.runWith(
         args.find(_.startsWith("-igniteConfig=")) match {

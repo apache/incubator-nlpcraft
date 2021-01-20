@@ -57,7 +57,6 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import scala.collection.JavaConverters._
 import scala.collection._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.io.{BufferedSource, Source}
@@ -931,7 +930,7 @@ object NCUtils extends LazyLogging {
     def asFuture[T](
         body: Unit ⇒ T,
         onFailure: Throwable ⇒ Unit = _ ⇒ Unit,
-        onSuccess: T ⇒ Unit = (_: T) ⇒ ())(implicit ec: ExecutionContext = global): Future[T] = {
+        onSuccess: T ⇒ Unit = (_: T) ⇒ ())(implicit ec: ExecutionContext): Future[T] = {
         val fut = Future {
             body(())
         }(ec)
@@ -1149,7 +1148,7 @@ object NCUtils extends LazyLogging {
       *
       * @param es Executor service.
       */
-    def shutdownPools(es: ExecutorService): Unit =
+    def shutdownPool(es: ExecutorService): Unit =
         if (es != null) {
             es.shutdown()
 
@@ -1815,7 +1814,7 @@ object NCUtils extends LazyLogging {
       * @param bodies
       * @param ec
       */
-    def executeParallel(bodies: (() ⇒ Any)*)(implicit ec: ExecutionContext = global): Unit = {
+    def executeParallel(bodies: (() ⇒ Any)*)(implicit ec: ExecutionContext): Unit = {
         bodies.map(body ⇒ {
             Future {
                 body()

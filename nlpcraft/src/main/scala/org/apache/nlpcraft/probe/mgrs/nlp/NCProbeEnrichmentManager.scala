@@ -113,7 +113,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 embeddedCbs.clear()
         }
 
-        U.shutdownPools(pool)
+        U.shutdownPool(pool)
         executor = null
         pool = null
 

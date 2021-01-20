@@ -34,6 +34,7 @@ import org.apache.nlpcraft.server.nlp.enrichers.numeric.NCNumericEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.quote.NCQuoteEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.server.nlp.preproc.NCPreProcessManager
+import org.apache.nlpcraft.server.pool.NCServerPoolContext
 
 import scala.collection.Seq
 import scala.util.control.Exception.catching
@@ -41,7 +42,7 @@ import scala.util.control.Exception.catching
 /**
   * Server enrichment pipeline manager.
   */
-object NCServerEnrichmentManager extends NCService with NCIgniteInstance {
+object NCServerEnrichmentManager extends NCService with NCIgniteInstance with NCServerPoolContext {
     private object Config extends NCConfigurable {
         def isBuiltInEnrichers: Boolean = getStringList("nlpcraft.server.tokenProviders").contains("nlpcraft")
     }

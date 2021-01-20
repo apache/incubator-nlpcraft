@@ -36,6 +36,7 @@ import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
+import org.apache.nlpcraft.server.pool.NCServerPoolContext
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
@@ -44,13 +45,12 @@ import spray.json.DefaultJsonProtocol._
 import spray.json.{JsObject, JsValue, RootJsonFormat}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
   * REST API default implementation.
   */
-class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats {
+class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats with NCServerPoolContext {
     protected final val GSON = new Gson()
     protected final val URL_VALIDATOR = new UrlValidator(Array("http", "https"), UrlValidator.ALLOW_LOCAL_URLS)
 

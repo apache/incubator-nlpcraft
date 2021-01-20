@@ -31,6 +31,7 @@ import org.apache.nlpcraft.common.{NCE, NCService, U}
 import resource.managed
 import scala.collection.JavaConverters._
 import scala.io.Source
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * External configuration manager.

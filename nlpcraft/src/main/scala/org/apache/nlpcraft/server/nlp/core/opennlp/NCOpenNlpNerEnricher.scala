@@ -28,6 +28,7 @@ import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
+import org.apache.nlpcraft.server.pool.NCServerPoolContext
 import resource.managed
 
 import scala.util.control.Exception.catching
@@ -35,7 +36,7 @@ import scala.util.control.Exception.catching
 /**
   * OpenNLP NER enricher.
   */
-object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteInstance {
+object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteInstance with NCServerPoolContext {
     @volatile private var nerFinders: Map[NameFinderME, String] = _
     @volatile private var cache: IgniteCache[String, Array[String]] = _
 

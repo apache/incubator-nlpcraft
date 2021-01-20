@@ -21,13 +21,14 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.server.pool.NCServerPoolContext
 
 import scala.collection.Seq
 
 /**
   * Server NLP manager.
   */
-object NCNlpServerManager extends NCService {
+object NCNlpServerManager extends NCService with NCServerPoolContext {
     @volatile private var parser: NCNlpParser = _
     @volatile private var ners: Map[String, NCNlpNerEnricher] = _
 

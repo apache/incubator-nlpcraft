@@ -35,16 +35,16 @@ import scala.util.{Failure, Success}
 import java.util
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 import java.util.concurrent._
-
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.nlpcraft.common.makro.NCMacroParser
+import org.apache.nlpcraft.server.pool.NCServerPoolContext
 
 /**
  * Synonym suggestion manager.
  */
-object NCSuggestSynonymManager extends NCService {
+object NCSuggestSynonymManager extends NCService with NCServerPoolContext {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20
@@ -133,7 +133,7 @@ object NCSuggestSynonymManager extends NCService {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         ackStopping()
 
-        U.shutdownPools(pool)
+        U.shutdownPool(pool)
         pool = null
         executor = null
 
