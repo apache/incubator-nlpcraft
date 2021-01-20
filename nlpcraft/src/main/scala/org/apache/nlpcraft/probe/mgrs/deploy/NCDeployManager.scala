@@ -207,7 +207,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     if (syns.add(holder)) {
                         cnt += 1
 
-                        if (cnt > maxCnt)
+                        if (mdl.isMaxSynonymsThresholdError && cnt > maxCnt)
                             throw new NCE(s"Too many total synonyms detected [" +
                                 s"mdlId=$mdlId, " +
                                 s"cnt=$cnt, " +
@@ -368,6 +368,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 ))
             }
         }
+
+        if (cnt > maxCnt && !mdl.isMaxSynonymsThresholdError)
+            logger.warn(
+                s"Too many total synonyms detected [" +
+                  s"mdlId=$mdlId, " +
+                  s"cnt=$cnt, " +
+                  s"max=$maxCnt" +
+                  s"]"
+            )
 
         // Discard value loaders.
         for (elm ← mdl.getElements.asScala) {
