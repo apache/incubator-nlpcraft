@@ -44,6 +44,9 @@ object NCExternalConfigManager extends NCService {
             GEO → Set(
                 "cc_by40_geo_config.zip"
             ),
+            BADFILTER → Set(
+                "swear_words.txt"
+            ),
             SPELL → Set(
                 "cc_by40_spell_config.zip"
             ),
@@ -98,7 +101,7 @@ object NCExternalConfigManager extends NCService {
 
             try
                 managed(Source.fromURL(url)) acquireAndGet { src ⇒
-                    src.getLines().map(_.trim()).filter(s ⇒ !s.isEmpty && !s.startsWith("#")).map(p ⇒ {
+                    src.getLines().map(_.trim()).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).map(p ⇒ {
                         def splitPair(s: String, sep: String): (String, String) = {
                             val seq = s.split(sep).map(_.trim)
 

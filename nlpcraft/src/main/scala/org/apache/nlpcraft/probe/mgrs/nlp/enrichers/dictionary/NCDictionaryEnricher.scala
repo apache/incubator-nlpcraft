@@ -17,9 +17,9 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.dictionary
 
-import java.io.Serializable
-
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.BADFILTER
 import org.apache.nlpcraft.common.nlp._
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict._
@@ -27,6 +27,7 @@ import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
+import java.io.Serializable
 import scala.collection.Map
 
 /**
@@ -35,6 +36,8 @@ import scala.collection.Map
   * This enricher must be used after all enrichers which can manipulate 'quote' and 'stopword' notes of token.
   */
 object NCDictionaryEnricher extends NCProbeEnricher {
+    private final val RESOURCE = "swear_words.txt"
+
     @volatile private var swearWords: Set[String] = _
 
     /**
@@ -44,8 +47,7 @@ object NCDictionaryEnricher extends NCProbeEnricher {
      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         ackStarting()
-
-        swearWords = U.readTextResource(s"badfilter/swear_words.txt", "UTF-8", logger).
+        swearWords = U.readTextStream(NCExternalConfigManager.getStream(BADFILTER, RESOURCE), "UTF-8", logger).
             map(NCNlpCoreManager.stem).
             toSet
 
