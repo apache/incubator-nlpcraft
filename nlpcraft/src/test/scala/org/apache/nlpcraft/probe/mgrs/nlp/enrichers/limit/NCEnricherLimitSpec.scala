@@ -34,6 +34,16 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
     def test(): Unit =
         runBatch(
             _ ⇒ checkExists(
+                "top 23 A",
+                lim(text = "top 23", limit = 23, index = 1, note = "A", asc = false),
+                usr(text = "A", id = "A")
+            ),
+            _ ⇒ checkExists(
+                "top 10 A",
+                lim(text = "top 10", limit = 10, index = 1, note = "A", asc = false),
+                usr(text = "A", id = "A")
+            ),
+            _ ⇒ checkExists(
                 "top A",
                 lim(text = "top", limit = 10, index = 1, note = "A", asc = false),
                 usr(text = "A", id = "A")

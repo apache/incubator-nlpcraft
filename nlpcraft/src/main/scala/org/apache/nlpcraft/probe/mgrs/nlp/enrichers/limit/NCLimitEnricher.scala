@@ -255,7 +255,7 @@ object NCLimitEnricher extends NCProbeEnricher {
             "mdlId" → mdl.model.getId,
             "txt" → ns.text) { _ ⇒
             val notes = mutable.HashSet.empty[NCNlpSentenceNote]
-            val numsMap = NCNumericManager.find(ns).filter(_.unit.isEmpty).map(p ⇒ p.tokens → p).toMap
+            val numsMap = NCNumericManager.find(ns).map(p ⇒ p.tokens → p).toMap
             val groupsMap = groupNums(ns, numsMap.values)
 
             // Tries to grab tokens reverse way.

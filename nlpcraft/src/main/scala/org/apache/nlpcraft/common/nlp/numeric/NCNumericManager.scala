@@ -361,7 +361,7 @@ object NCNumericManager extends NCService {
                 }).toSeq.map(_._2)
         
             val nums = grps.flatMap(seq ⇒ {
-                def mkNum(v: Double, isFractional: Boolean): NCNumeric = {
+                def mkNums(v: Double, isFractional: Boolean): Seq[NCNumeric] = {
                     // Units synonyms are not stemmed.
                     Range.inclusive(1, maxSynWords).reverse.toStream.flatMap(i ⇒ {
                         val afterNum = ns.slice(seq.last.index + 1, seq.last.index + i + 1)
@@ -386,8 +386,16 @@ object NCNumericManager extends NCService {
                         else
                             None
                     }).headOption match {
-                        case Some((unit, unitToks)) ⇒ NCNumeric(seq ++ unitToks, v, isFractional = isFractional, Some(unit))
-                        case None ⇒ NCNumeric(seq, v, isFractional = isFractional, None)
+                        case Some((unit, unitToks)) ⇒
+                            val numWithUnit = NCNumeric(seq ++ unitToks, v, isFractional = isFractional, Some(unit))
+
+                            // If unit name is same as user element name,
+                            // it returns both variants: numeric with unit and without.
+                            unitToks.flatten.count(p ⇒ !p.isNlp && p.noteType != "nlpcraft:num") match {
+                                case 1 ⇒ Seq(numWithUnit, NCNumeric(seq, v, isFractional = isFractional, None))
+                                case _ ⇒ Seq(numWithUnit)
+                            }
+                        case None ⇒ Seq(NCNumeric(seq, v, isFractional = isFractional, None))
                     }
                 }
         
@@ -395,17 +403,17 @@ object NCNumericManager extends NCService {
                     case 1 ⇒
                         val txt = seq.head.normText
                         genNums.get(txt) match {
-                            case Some(intVal) ⇒ Some(mkNum(intVal.toDouble, isFractional = false))
+                            case Some(intVal) ⇒ mkNums(intVal.toDouble, isFractional = false)
         
                             case None ⇒
                                 toNumeric(txt) match {
-                                    case Some(dblVal) ⇒ Some(mkNum(dblVal, isFractional = isFractional(txt)))
+                                    case Some(dblVal) ⇒ mkNums(dblVal, isFractional = isFractional(txt))
                                     case None ⇒ None
                                 }
                         }
                     case _ ⇒
                         genNums.get(toString(seq)) match {
-                            case Some(intVal) ⇒ Some(mkNum(intVal.toDouble, isFractional = false))
+                            case Some(intVal) ⇒ mkNums(intVal.toDouble, isFractional = false)
         
                             // Try to parse space separated numerics 1 000 000.
                             case None ⇒
@@ -414,7 +422,7 @@ object NCNumericManager extends NCService {
                                     val txt = toString(seq, "")
          
                                     toNumeric(txt) match {
-                                        case Some(dblVal) ⇒ Some(mkNum(dblVal, isFractional = isFractional(txt)))
+                                        case Some(dblVal) ⇒ mkNums(dblVal, isFractional = isFractional(txt))
                                         case None ⇒ None
                                     }
                                 }
@@ -426,7 +434,7 @@ object NCNumericManager extends NCService {
          
             val usedToks = nums.flatMap(_.tokens)
          
-            (nums ++ ns.filter(t ⇒ !usedToks.contains(t)).flatMap(mkSolidNumUnit)).sortBy(_.tokens.head.index)
+            (nums ++ ns.filter(t ⇒ !usedToks.contains(t)).flatMap(mkSolidNumUnit)).sortBy(_.tokens.head.index).distinct
         }
     }
 }
