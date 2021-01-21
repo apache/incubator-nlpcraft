@@ -25,10 +25,12 @@ import org.apache.nlpcraft.common.ansi.NCAnsi
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
+import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
+import org.apache.nlpcraft.common.pool.NCPoolManager
 import org.apache.nlpcraft.common.version._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliServerBeacon
 import org.apache.nlpcraft.server.company.NCCompanyManager
@@ -41,7 +43,6 @@ import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
 import org.apache.nlpcraft.server.nlp.preproc.NCPreProcessManager
 import org.apache.nlpcraft.server.nlp.spell.NCSpellCheckManager
 import org.apache.nlpcraft.server.nlp.wordnet.NCWordNetManager
-import org.apache.nlpcraft.server.pool.NCServerPoolManager
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.query.NCQueryManager
@@ -93,7 +94,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         NCServerLifecycleManager.beforeStart()
 
         startScopedSpan("startManagers", "relVer" → ver.version, "relDate" → ver.date) { span ⇒
-            startedMgrs += NCServerPoolManager.start(span)
+            startedMgrs += NCPoolManager.start(span)
             startedMgrs += NCExternalConfigManager.start(span)
             startedMgrs += NCWordNetManager.start(span)
             startedMgrs += NCDictionaryManager.start(span)
@@ -163,6 +164,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
      */
     private def setSysProps(): Unit = {
         System.setProperty("java.net.preferIPv4Stack", "true")
+        NCModule.setCurrent(NCModule.SERVER)
     }
 
     /**

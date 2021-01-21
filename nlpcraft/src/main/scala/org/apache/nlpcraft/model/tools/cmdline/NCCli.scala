@@ -46,6 +46,7 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
+import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl
 import org.jline.reader._
@@ -113,6 +114,8 @@ object NCCli extends App {
     private var exitStatus = 0
 
     private var term: Terminal = _
+
+    NCModule.setCurrent(NCModule.CLI)
 
     // See NCProbeMdo.
     case class Probe(

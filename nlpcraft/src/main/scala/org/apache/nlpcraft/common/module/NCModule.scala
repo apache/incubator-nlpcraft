@@ -15,11 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.pool
+package org.apache.nlpcraft.common.module
 
-import org.apache.nlpcraft.common.pool.NCPoolManager
+import org.apache.nlpcraft.common.{NCE, U}
 
 /**
- * Server pool manager.
+ *
  */
-object NCServerPoolManager extends NCPoolManager("nlpcraft.server.pools")
+object NCModule extends Enumeration {
+    final val PROPERTY = "NLPCRAFT_MODULE"
+
+    type NCModule = Value
+
+    val SERVER, PROBE, CLI: Value = Value
+
+    def getCurrent: NCModule = NCModule.withName(U.sysEnv(PROPERTY).getOrElse(throw new NCE(s"Module is not set: $PROPERTY")))
+    def setCurrent(m: NCModule): Unit = System.setProperty(NCModule.PROPERTY, m.toString)
+}
+

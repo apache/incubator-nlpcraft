@@ -206,6 +206,5 @@ package object common {
       * @param f Lambda to convert.
       * @return Callable object.
       */
-    implicit def toCallable[R](f: () ⇒ R): Callable[R] =
-        () => f()
+    implicit def toCallable[R](f: () ⇒ R): Callable[R] = () ⇒ f()
 }

@@ -39,12 +39,12 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.nlpcraft.common.makro.NCMacroParser
-import org.apache.nlpcraft.server.pool.NCServerPoolContext
+import org.apache.nlpcraft.common.pool.NCPoolContext
 
 /**
  * Synonym suggestion manager.
  */
-object NCSuggestSynonymManager extends NCService with NCServerPoolContext {
+object NCSuggestSynonymManager extends NCService with NCPoolContext {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20

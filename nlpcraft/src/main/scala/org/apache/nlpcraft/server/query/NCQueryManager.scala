@@ -17,33 +17,33 @@
 
 package org.apache.nlpcraft.server.query
 
-import java.util.concurrent.ConcurrentHashMap
 import io.opencensus.trace.Span
 import org.apache.ignite.IgniteCache
 import org.apache.ignite.events.{CacheEvent, EventType}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
+import org.apache.nlpcraft.common.pool.NCPoolContext
 import org.apache.nlpcraft.common.{NCService, _}
-import org.apache.nlpcraft.server.opencensus._
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode._
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.mdo.NCQueryStateMdo
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnrichmentManager
-import org.apache.nlpcraft.server.pool.NCServerPoolContext
+import org.apache.nlpcraft.server.opencensus._
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.proclog.NCProcessLogManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
 
+import java.util.concurrent.ConcurrentHashMap
 import scala.concurrent.{Future, Promise}
-import scala.util.{Failure, Success}
 import scala.util.control.Exception._
+import scala.util.{Failure, Success}
 
 /**
   * Query state machine.
   */
-object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusServerStats with NCServerPoolContext {
+object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusServerStats with NCPoolContext {
     @volatile private var cache: IgniteCache[String/*Server request ID*/, NCQueryStateMdo] = _
     
     // Promises cannot be used in cache.

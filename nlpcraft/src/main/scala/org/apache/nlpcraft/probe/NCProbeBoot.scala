@@ -24,12 +24,14 @@ import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
+import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
+import org.apache.nlpcraft.common.pool.NCPoolManager
 import org.apache.nlpcraft.common.version.NCVersion
-import org.apache.nlpcraft.common.{NCE, NCException, NCService, U, _}
+import org.apache.nlpcraft.common.{NCE, NCService, U, _}
 import org.apache.nlpcraft.model.tools.cmdline.NCCliProbeBeacon
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
@@ -47,7 +49,6 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort.NCSortEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
-import org.apache.nlpcraft.probe.mgrs.pool.NCProbePoolManager
 import resource.managed
 
 import java.io._
@@ -187,11 +188,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param fut
       */
     private def start0(cfg: ProbeConfig, fut: CompletableFuture[Integer]): Unit = {
+        NCModule.setCurrent(NCModule.PROBE)
+
         // Record an anonymous screenview.
         new Thread() {
             override def run(): Unit = U.gaScreenView("probe")
-        }
-        .start()
+        }.start()
 
         probeThread = Thread.currentThread()
         
@@ -248,7 +250,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         /**
          *
          */
-        def save() = {
+        def save(): Unit = {
             try {
                 managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
                     stream.writeObject(NCCliProbeBeacon(
@@ -323,7 +325,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       */
     private def checkStarted(): Unit = 
         if (started)
-            throw new NCException(s"Probe has already been started (only one probe per JVM is allowed).")
+            throw new NCE(s"Probe has already been started (only one probe per JVM is allowed).")
 
     /**
       * Starts the embedded probe with optional configuration file and provided overrides.
@@ -493,7 +495,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "jarFolder" → cfg.jarsFolder
             )
 
-            startedMgrs += NCProbePoolManager.start(span)
+            startedMgrs += NCPoolManager.start(span)
             startedMgrs += NCExternalConfigManager.start(span)
             startedMgrs += NCNlpCoreManager.start(span)
             startedMgrs += NCNumericManager.start(span)

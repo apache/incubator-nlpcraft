@@ -19,6 +19,8 @@ package org.apache.nlpcraft.common.pool
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
+import org.apache.nlpcraft.common.module.NCModule
+import org.apache.nlpcraft.common.module.NCModule._
 import org.apache.nlpcraft.common.{NCService, U}
 
 import java.util.concurrent.{ConcurrentHashMap, ExecutorService}
@@ -27,16 +29,22 @@ import scala.concurrent.ExecutionContext
 
 /**
  *
- * @param cfg
  */
-abstract class NCPoolManager(cfg: String) extends NCService {
+object NCPoolManager extends NCService {
     @volatile private var data: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
 
     private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
 
     private object Config extends NCConfigurable {
-        val factories: Map[String, NcPoolFactory] = {
-            val m: Option[Map[String, String]] = getMapOpt(cfg)
+        val factories: Map[String, NCPoolFactory] = {
+            val cfgPath =
+                NCModule.get match {
+                    case SERVER ⇒ "nlpcraft.server.pools"
+                    case PROBE ⇒ "nlpcraft.server.pools"
+                    case m ⇒ throw new AssertionError(s"Unexpected module: $m")
+                }
+
+            val m: Option[Map[String, String]] = getMapOpt(cfgPath)
 
             m.getOrElse(Map.empty).map(p ⇒ p._1 → U.mkObject(p._2))
         }

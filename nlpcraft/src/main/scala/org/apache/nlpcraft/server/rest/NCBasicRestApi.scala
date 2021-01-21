@@ -30,13 +30,13 @@ import io.opencensus.stats.Measure
 import io.opencensus.trace.{Span, Status}
 import org.apache.commons.validator.routines.UrlValidator
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common.{NCE, NCException, U}
+import org.apache.nlpcraft.common.pool.NCPoolContext
+import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
 import org.apache.nlpcraft.server.mdo.{NCQueryStateMdo, NCUserMdo}
 import org.apache.nlpcraft.server.opencensus.NCOpenCensusServerStats
-import org.apache.nlpcraft.server.pool.NCServerPoolContext
 import org.apache.nlpcraft.server.probe.NCProbeManager
 import org.apache.nlpcraft.server.query.NCQueryManager
 import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
@@ -50,7 +50,7 @@ import scala.concurrent.Future
 /**
   * REST API default implementation.
   */
-class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats with NCServerPoolContext {
+class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats with NCPoolContext {
     protected final val GSON = new Gson()
     protected final val URL_VALIDATOR = new UrlValidator(Array("http", "https"), UrlValidator.ALLOW_LOCAL_URLS)
 
@@ -1807,7 +1807,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             completeError(StatusCodes.Forbidden, code, errMsg)
 
         // General exception.
-        case e: NCException ⇒
+        case e: NCE ⇒
             val errMsg = "Unexpected system error."
             val code = "NC_ERROR"
 

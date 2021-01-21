@@ -2,6 +2,6 @@ package org.apache.nlpcraft.common.pool;
 
 import java.util.concurrent.ExecutorService;
 
-public interface NcPoolFactory {
+public interface NCPoolFactory {
     ExecutorService mkExecutorService();
 }

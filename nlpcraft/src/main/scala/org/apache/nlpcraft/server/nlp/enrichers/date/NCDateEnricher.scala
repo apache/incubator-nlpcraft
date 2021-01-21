@@ -17,28 +17,26 @@
 
 package org.apache.nlpcraft.server.nlp.enrichers.date
 
-import java.util
-import java.util.{Calendar ⇒ C}
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence}
-import org.apache.nlpcraft.common.nlp.{NCNlpSentenceNote ⇒ Note}
-import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken ⇒ Token}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ Note, NCNlpSentenceToken ⇒ Token}
+import org.apache.nlpcraft.common.pool.NCPoolContext
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
-import org.apache.nlpcraft.server.pool.NCServerPoolContext
 
+import java.util
+import java.util.{Calendar ⇒ C}
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
+import scala.collection.mutable.{LinkedHashMap => LHM}
 
 /**
   * Date enricher.
   */
-object NCDateEnricher extends NCServerEnricher with NCServerPoolContext {
+object NCDateEnricher extends NCServerEnricher with NCPoolContext {
     private object Config extends NCConfigurable {
         def style: NCDateFormatType = getObject("nlpcraft.server.datesFormatStyle", NCDateFormatType.withName)
     }

@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.pool
+package org.apache.nlpcraft.common.pool
+
+import scala.concurrent.ExecutionContext
 
 /**
- * Probe pool context trait.
+ * Pool context trait.
  */
-trait NCProbePoolContext {
+trait NCPoolContext {
     def getName: String = getClass.getName
-
-    implicit def getContext = NCProbePoolManager.getContext(getName)
+    implicit def getContext: ExecutionContext = NCPoolManager.getContext(getName)
 }

@@ -21,15 +21,15 @@ import io.opencensus.trace.Span
 import opennlp.tools.lemmatizer.DictionaryLemmatizer
 import opennlp.tools.postag.{POSModel, POSTagger, POSTaggerME}
 import org.apache.ignite.IgniteCache
-import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
-import org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizer
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
+import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
+import org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizer
+import org.apache.nlpcraft.common.pool.NCPoolContext
 import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.{NCNlpParser, NCNlpWord}
-import org.apache.nlpcraft.server.pool.NCServerPoolContext
 import resource.managed
 
 import scala.util.control.Exception.catching
@@ -37,7 +37,7 @@ import scala.util.control.Exception.catching
 /**
   * OpenNLP parser implementation.
   */
-object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance with NCServerPoolContext{
+object NCOpenNlpParser extends NCService with NCNlpParser with NCIgniteInstance with NCPoolContext{
     @volatile private var tagger: POSTagger = _
     @volatile private var lemmatizer: DictionaryLemmatizer = _
     @volatile private var cache: IgniteCache[String, Array[String]] = _
