@@ -17,12 +17,13 @@
 
 package org.apache.nlpcraft.common.pool
 
+import org.apache.nlpcraft.common.U
 import scala.concurrent.ExecutionContext
 
 /**
  * Pool context trait.
  */
 trait NCPoolContext {
-    def getName: String = getClass.getName
+    def getName: String = U.cleanClassName(getClass, simpleName = false)
     implicit def getContext: ExecutionContext = NCPoolManager.getContext(getName)
 }

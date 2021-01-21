@@ -164,7 +164,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
      */
     private def setSysProps(): Unit = {
         System.setProperty("java.net.preferIPv4Stack", "true")
-        NCModule.setCurrent(NCModule.SERVER)
+        NCModule.setModule(NCModule.SERVER)
     }
 
     /**

@@ -115,7 +115,7 @@ object NCCli extends App {
 
     private var term: Terminal = _
 
-    NCModule.setCurrent(NCModule.CLI)
+    NCModule.setModule(NCModule.CLI)
 
     // See NCProbeMdo.
     case class Probe(

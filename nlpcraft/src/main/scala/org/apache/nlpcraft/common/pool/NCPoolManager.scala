@@ -36,15 +36,19 @@ object NCPoolManager extends NCService {
     private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
 
     private object Config extends NCConfigurable {
-        val factories: Map[String, NCPoolFactory] = {
-            val cfgPath =
-                NCModule.get match {
-                    case SERVER ⇒ "nlpcraft.server.pools"
-                    case PROBE ⇒ "nlpcraft.server.pools"
-                    case m ⇒ throw new AssertionError(s"Unexpected module: $m")
-                }
+        private val module: NCModule = NCModule.getModule
 
-            val m: Option[Map[String, String]] = getMapOpt(cfgPath)
+        val moduleName: String = module.toString.toLowerCase
+
+        val factories: Map[String, NCPoolFactory] = {
+            val m: Option[Map[String, String]] =
+                getMapOpt(
+                    module match {
+                        case SERVER ⇒ "nlpcraft.server.pools"
+                        case PROBE ⇒ "nlpcraft.server.pools"
+                        case m ⇒ throw new AssertionError(s"Unexpected module: $m")
+                    }
+                )
 
             m.getOrElse(Map.empty).map(p ⇒ p._1 → U.mkObject(p._2))
         }
@@ -58,13 +62,16 @@ object NCPoolManager extends NCService {
                     case Some(f) ⇒
                         val p = f.mkExecutorService()
 
-                        logger.info(s"Executor service created with factory '${f.getClass.getName}' for '$name'")
+                        logger.info(
+                            s"Executor service created with factory ${f.getClass.getName} for $name, " +
+                            s"module: ${Config.moduleName}."
+                        )
 
                         Holder(ExecutionContext.fromExecutor(p), Some(p))
                     case None ⇒
-                        logger.info(s"System executor service used for '$name'")
+                        logger.info(s"System executor service used for $name, module: ${Config.moduleName}.")
 
-                        Holder(scala.concurrent.ExecutionContext.Implicits.global, None)
+                        Holder(ExecutionContext.Implicits.global, None)
                 }
             ).context
 

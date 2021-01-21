@@ -188,7 +188,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
       * @param fut
       */
     private def start0(cfg: ProbeConfig, fut: CompletableFuture[Integer]): Unit = {
-        NCModule.setCurrent(NCModule.PROBE)
+        NCModule.setModule(NCModule.PROBE)
 
         // Record an anonymous screenview.
         new Thread() {

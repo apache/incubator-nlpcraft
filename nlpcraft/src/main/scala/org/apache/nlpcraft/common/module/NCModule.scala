@@ -23,13 +23,13 @@ import org.apache.nlpcraft.common.{NCE, U}
  *
  */
 object NCModule extends Enumeration {
-    final val PROPERTY = "NLPCRAFT_MODULE"
+    private final val NAME = "NLPCRAFT_MODULE"
 
     type NCModule = Value
 
     val SERVER, PROBE, CLI: Value = Value
 
-    def getCurrent: NCModule = NCModule.withName(U.sysEnv(PROPERTY).getOrElse(throw new NCE(s"Module is not set: $PROPERTY")))
-    def setCurrent(m: NCModule): Unit = System.setProperty(NCModule.PROPERTY, m.toString)
+    def getModule: NCModule = NCModule.withName(U.sysEnv(NAME).getOrElse(throw new NCE(s"Module is not set: $NAME")))
+    def setModule(m: NCModule): Unit = System.setProperty(NAME, m.toString)
 }
 

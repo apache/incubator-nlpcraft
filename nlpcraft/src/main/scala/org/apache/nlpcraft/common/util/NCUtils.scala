@@ -1849,10 +1849,11 @@ object NCUtils extends LazyLogging {
       * Gets simple class name of the caller removing '$' for Scala classes.
       *
       * @param clazz Class object.
+      * @param simpleName Simple name flag.
       * @return Simple class name.
       */
-    def cleanClassName(clazz: Class[_]): String = {
-        val cls = clazz.getSimpleName
+    def cleanClassName(clazz: Class[_], simpleName: Boolean = true): String = {
+        val cls = if (simpleName) clazz.getSimpleName else clazz.getName
 
         if (cls.endsWith("$"))
             cls.substring(0, cls.length - 1)
