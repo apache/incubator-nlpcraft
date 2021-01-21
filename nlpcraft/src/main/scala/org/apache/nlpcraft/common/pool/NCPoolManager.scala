@@ -21,9 +21,10 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.module.NCModule._
-import org.apache.nlpcraft.common.{NCService, U}
+import org.apache.nlpcraft.common.{NCE, NCService, U}
 
-import java.util.concurrent.{ConcurrentHashMap, ExecutorService}
+import java.util
+import java.util.concurrent._
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
@@ -34,14 +35,15 @@ object NCPoolManager extends NCService {
     @volatile private var data: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
 
     private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
+    private case class PoolCfg(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long)
 
     private object Config extends NCConfigurable {
         private val module: NCModule = NCModule.getModule
 
         val moduleName: String = module.toString.toLowerCase
 
-        val factories: Map[String, NCPoolFactory] = {
-            val m: Option[Map[String, String]] =
+        val factories: Map[String, PoolCfg] = {
+            val m: Option[Map[String, util.HashMap[String, Number]]] =
                 getMapOpt(
                     module match {
                         case SERVER ⇒ "nlpcraft.server.pools"
@@ -50,7 +52,23 @@ object NCPoolManager extends NCService {
                     }
                 )
 
-            m.getOrElse(Map.empty).map(p ⇒ p._1 → U.mkObject(p._2))
+            m.getOrElse(Map.empty).map { case (poolName, poolCfg) ⇒
+                def get(name: String): Number = {
+                    val v = poolCfg.get(name)
+
+                    if (v == null)
+                        throw new NCE(s"Missed value '$name' for pool '$poolName'")
+
+                    v
+                }
+
+                poolName →
+                    PoolCfg(
+                        get("corePoolSize").intValue(),
+                        get("maximumPoolSize").intValue(),
+                        get("keepAliveTime").longValue()
+                    )
+            }
         }
     }
 
@@ -59,17 +77,26 @@ object NCPoolManager extends NCService {
             name,
             (_: String) ⇒
                 Config.factories.get(name) match {
-                    case Some(f) ⇒
-                        val p = f.mkExecutorService()
+                    case Some(poolCfg) ⇒
+                        val p = new ThreadPoolExecutor(
+                            poolCfg.corePoolSize,
+                            poolCfg.maximumPoolSize,
+                            poolCfg.keepAliveTime,
+                            TimeUnit.MILLISECONDS,
+                            new LinkedBlockingQueue[Runnable]
+                        )
 
                         logger.info(
-                            s"Executor service created with factory ${f.getClass.getName} for $name, " +
-                            s"module: ${Config.moduleName}."
+                            s"Executor service created `$name" +
+                            s", corePoolSize=${poolCfg.corePoolSize}" +
+                            s", maximumPoolSize=${poolCfg.maximumPoolSize}" +
+                            s", keepAliveTime=${poolCfg.keepAliveTime}" +
+                            s", module: ${Config.moduleName}"
                         )
 
                         Holder(ExecutionContext.fromExecutor(p), Some(p))
                     case None ⇒
-                        logger.info(s"System executor service used for $name, module: ${Config.moduleName}.")
+                        logger.info(s"System executor service used for `$name`, module: `${Config.moduleName}.")
 
                         Holder(ExecutionContext.Implicits.global, None)
                 }

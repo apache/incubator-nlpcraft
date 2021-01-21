@@ -21,22 +21,24 @@ import java.io._
 import java.net.URL
 import java.nio.file.Files
 import java.util.concurrent.ConcurrentHashMap
-
 import io.opencensus.trace.Span
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType._
+import org.apache.nlpcraft.common.module.NCModule
+import org.apache.nlpcraft.common.module.NCModule.{PROBE, SERVER}
+import org.apache.nlpcraft.common.pool.NCPoolContext
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import resource.managed
+
 import scala.collection.JavaConverters._
 import scala.io.Source
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * External configuration manager.
   */
-object NCExternalConfigManager extends NCService {
+object NCExternalConfigManager extends NCService with NCPoolContext {
     private final val DFLT_DIR = ".nlpcraft/extcfg"
     private final val MD5_FILE = "md5.txt"
 
@@ -63,6 +65,14 @@ object NCExternalConfigManager extends NCService {
                 "en-ner-time.bin",
                 "en-ner-organization.bin"
             )
+        )
+
+    private val FILES_BY_MODULES =
+        Map(
+            GEO → Seq(SERVER),
+            BADFILTER → Seq(SERVER, PROBE),
+            SPELL → Seq(SERVER),
+            OPENNLP → Seq(SERVER, PROBE)
         )
 
     private object Config extends NCConfigurable {
@@ -151,12 +161,21 @@ object NCExternalConfigManager extends NCService {
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         ackStarting()
 
+        require(FILES.size == FILES_BY_MODULES.size)
         require(NCExternalConfigType.values.forall(FILES.contains))
+
+        val module = NCModule.getModule
+
+        val moduleFiles = FILES.filter(p ⇒ FILES_BY_MODULES(p._1).contains(module))
 
         val m = new ConcurrentHashMap[NCResourceType, File]
 
         U.executeParallel(
-            NCExternalConfigType.values.flatMap(t ⇒ FILES(t).map(FileHolder(_, t))).toSeq.map(f ⇒ () ⇒ processFile(f, m)): _*
+            moduleFiles.keys.
+                flatMap(t ⇒ moduleFiles(t).
+                map(FileHolder(_, t))).
+                toSeq.
+                map(f ⇒ () ⇒ processFile(f, m)): _*
         )
 
         val downTypes = m.asScala
@@ -166,7 +185,8 @@ object NCExternalConfigManager extends NCService {
                 downTypes.values.toSeq.map(d ⇒ () ⇒ clearDir(d)): _*
             )
             U.executeParallel(
-                downTypes.keys.toSeq.flatMap(t ⇒ FILES(t).toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
+                downTypes.keys.toSeq.
+                    flatMap(t ⇒ moduleFiles(t).toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
             )
         }
 
