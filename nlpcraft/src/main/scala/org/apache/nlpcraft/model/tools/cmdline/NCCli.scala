@@ -708,30 +708,38 @@ object NCCli extends App {
         if (mdls == null && addCp != null)
             warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
 
-        var validatorArgs = mutable.ArrayBuffer.empty[String]
+        var jvmArgs = mutable.ArrayBuffer.empty[String]
 
-        validatorArgs += JAVA
-        validatorArgs ++= jvmOpts
+        jvmArgs += JAVA
+        jvmArgs ++= jvmOpts
+
+        jvmArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
+        jvmArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+        jvmArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
+        jvmArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
+        jvmArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
+        jvmArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
+        jvmArgs += "--illegal-access=permit"
 
         if (cfgPath != null)
-            validatorArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
+            jvmArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
 
         if (mdls != null)
-            validatorArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
+            jvmArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
 
         if (!NCAnsi.isEnabled)
-            validatorArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
+            jvmArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
 
-        validatorArgs += "-cp"
+        jvmArgs += "-cp"
 
         if (addCp != null)
-            validatorArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
+            jvmArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
         else
-            validatorArgs += JAVA_CP
+            jvmArgs += JAVA_CP
 
-        validatorArgs += "org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator"
+        jvmArgs += "org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator"
 
-        val validatorPb = new ProcessBuilder(validatorArgs.asJava)
+        val validatorPb = new ProcessBuilder(jvmArgs.asJava)
 
         validatorPb.directory(new File(USR_WORK_DIR))
         validatorPb.inheritIO()
@@ -798,6 +806,15 @@ object NCCli extends App {
 
         prbArgs += JAVA
         prbArgs ++= jvmOpts
+
+        prbArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
+        prbArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+        prbArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
+        prbArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
+        prbArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
+        prbArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
+        prbArgs += "--illegal-access=permit"
+
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
 
         if (mdls != null)
@@ -1732,21 +1749,65 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
+        // Mandatory parameters check.
         getParam(cmd, args, "driver")
         getParam(cmd, args, "schema")
         getParam(cmd, args, "out")
         getParam(cmd, args, "url")
 
-        val nativeArgs = args.flatMap { arg ⇒
-            val param = arg.parameter.names.head
-
-            arg.value match {
-                case None ⇒ Seq(param)
-                case Some(v) ⇒ Seq(param, v)
-            }
+        val addCp = getCpParam(cmd, args, "cp")
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
-        NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
+        var jvmArgs = mutable.ArrayBuffer.empty[String]
+
+        jvmArgs += JAVA
+        jvmArgs ++= jvmOpts
+
+        jvmArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
+        jvmArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+        jvmArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
+        jvmArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
+        jvmArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
+        jvmArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
+        jvmArgs += "--illegal-access=permit"
+
+        if (!NCAnsi.isEnabled)
+            jvmArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
+
+        jvmArgs += "-cp"
+
+        if (addCp != null)
+            jvmArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
+        else
+            jvmArgs += JAVA_CP
+
+        jvmArgs += "org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator"
+
+        for (arg ← args)
+            if (arg.parameter.id != "cp" && arg.parameter.id != "jvmopts") {
+                val p = arg.parameter.names.head
+
+                arg.value match {
+                    case None ⇒ jvmArgs += p
+                    case Some(v) ⇒ jvmArgs ++= Seq(p, arg.value.get)
+                }
+            }
+
+        val pb = new ProcessBuilder(jvmArgs.asJava)
+
+        pb.directory(new File(USR_WORK_DIR))
+        pb.inheritIO()
+
+        try {
+            pb.start().onExit().get()
+        }
+        catch {
+            case _: InterruptedException ⇒ () // Ignore.
+            case e: Exception ⇒ error(s"Failed to run SQL model generator: ${y(e.getMessage)}")
+        }
     }
 
     /**
