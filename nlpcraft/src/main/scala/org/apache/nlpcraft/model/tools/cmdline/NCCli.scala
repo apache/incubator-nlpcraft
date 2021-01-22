@@ -719,6 +719,9 @@ object NCCli extends App {
         if (mdls != null)
             validatorArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
 
+        if (!NCAnsi.isEnabled)
+            validatorArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
+
         validatorArgs += "-cp"
 
         if (addCp != null)
