@@ -31,7 +31,7 @@ import java.util.{Calendar ⇒ C}
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap => LHM}
+import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
 
 /**
   * Date enricher.

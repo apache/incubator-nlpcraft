@@ -171,22 +171,22 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
 
         val mFiles = FILES.filter(_.modules.contains(module)).map(p ⇒ p.typ → p).toMap
 
-        val m = new ConcurrentHashMap[NCExternalConfigType, File]
+        if (mFiles.nonEmpty) {
+            val m = new ConcurrentHashMap[NCExternalConfigType, File]
 
-        U.executeParallel(
-            mFiles.values.flatMap(p ⇒ p.files.map(f ⇒ FileHolder(f, p.typ))).toSeq.map(f ⇒ () ⇒ processFile(f, m)): _*
-        )
-
-        val downTypes = m.asScala
-
-        if (downTypes.nonEmpty) {
             U.executeParallel(
-                downTypes.values.toSeq.map(d ⇒ () ⇒ clearDir(d)): _*
+                mFiles.values.flatMap(p ⇒ p.files.map(f ⇒ FileHolder(f, p.typ))).toSeq.map(f ⇒ () ⇒ processFile(f, m)): _*
             )
-            U.executeParallel(
-                downTypes.keys.toSeq.
-                    flatMap(t ⇒ mFiles(t).files.toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
-            )
+
+            val downTypes = m.asScala
+
+            if (downTypes.nonEmpty) {
+                U.executeParallel(downTypes.values.toSeq.map(d ⇒ () ⇒ clearDir(d)): _*)
+                U.executeParallel(
+                    downTypes.keys.toSeq.
+                        flatMap(t ⇒ mFiles(t).files.toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
+                )
+            }
         }
 
         ackStarted()
