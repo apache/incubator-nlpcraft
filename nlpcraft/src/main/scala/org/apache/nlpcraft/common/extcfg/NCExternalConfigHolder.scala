@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.common.extcfg
 
-import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.NCResourceType
+import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.NCExternalConfigType
 
 /**
   * Holder for a single external configuration resource.
@@ -26,4 +26,4 @@ import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.NCResourceType
   * @param fileName Resource file name.
   * @param content Resource content.
   */
-case class NCExternalConfigHolder(resType: NCResourceType, fileName: String, content: String)
+case class NCExternalConfigHolder(resType: NCExternalConfigType, fileName: String, content: String)

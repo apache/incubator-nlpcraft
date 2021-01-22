@@ -17,21 +17,21 @@
 
 package org.apache.nlpcraft.common.extcfg
 
-import java.io._
-import java.net.URL
-import java.nio.file.Files
-import java.util.concurrent.ConcurrentHashMap
 import io.opencensus.trace.Span
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.IOUtils
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType._
 import org.apache.nlpcraft.common.module.NCModule
-import org.apache.nlpcraft.common.module.NCModule.{PROBE, SERVER}
+import org.apache.nlpcraft.common.module.NCModule.{NCModule, PROBE, SERVER}
 import org.apache.nlpcraft.common.pool.NCPoolContext
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import resource.managed
 
+import java.io._
+import java.net.URL
+import java.nio.file.Files
+import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
 import scala.io.Source
 
@@ -42,37 +42,41 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
     private final val DFLT_DIR = ".nlpcraft/extcfg"
     private final val MD5_FILE = "md5.txt"
 
-    private final val FILES =
-        Map(
-            GEO → Set(
-                "cc_by40_geo_config.zip"
-            ),
-            BADFILTER → Set(
-                "swear_words.txt"
-            ),
-            SPELL → Set(
-                "cc_by40_spell_config.zip"
-            ),
-            OPENNLP → Set(
-                "en-pos-maxent.bin",
-                "en-ner-location.bin",
-                "en-ner-date.bin",
-                "en-token.bin",
-                "en-lemmatizer.dict",
-                "en-ner-percentage.bin",
-                "en-ner-person.bin",
-                "en-ner-money.bin",
-                "en-ner-time.bin",
-                "en-ner-organization.bin"
-            )
-        )
+    case class Holder(typ: NCExternalConfigType, files: Set[String], modules: Set[NCModule])
 
-    private val FILES_BY_MODULES =
-        Map(
-            GEO → Seq(SERVER),
-            BADFILTER → Seq(SERVER, PROBE),
-            SPELL → Seq(SERVER),
-            OPENNLP → Seq(SERVER, PROBE)
+    private final val FILES =
+        Set(
+            Holder(
+                GEO,
+                Set("cc_by40_geo_config.zip"),
+                Set(SERVER)
+            ),
+            Holder(
+                BADFILTER,
+                Set("swear_words.txt"),
+                Set(SERVER, PROBE)
+            ),
+            Holder(
+                SPELL,
+                Set("cc_by40_spell_config.zip"),
+                Set(SERVER)
+            ),
+            Holder(
+                OPENNLP,
+                Set(
+                    "en-pos-maxent.bin",
+                    "en-ner-location.bin",
+                    "en-ner-date.bin",
+                    "en-token.bin",
+                    "en-lemmatizer.dict",
+                    "en-ner-percentage.bin",
+                    "en-ner-person.bin",
+                    "en-ner-money.bin",
+                    "en-ner-time.bin",
+                    "en-ner-organization.bin"
+                ),
+                Set(SERVER, PROBE)
+            )
         )
 
     private object Config extends NCConfigurable {
@@ -86,7 +90,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
 
     Config.check()
 
-    private case class Download(fileName: String, typ: NCResourceType) {
+    private case class Download(fileName: String, typ: NCExternalConfigType) {
         val destDir: File = new File(Config.dir, type2String(typ))
         val file: File = new File(destDir, fileName)
         val isZip: Boolean = {
@@ -96,7 +100,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
         }
     }
 
-    case class FileHolder(name: String, typ: NCResourceType) {
+    case class FileHolder(name: String, typ: NCExternalConfigType) {
         val dir = new File(Config.dir, type2String(typ))
 
         checkAndPrepareDir(dir)
@@ -105,14 +109,14 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
     }
 
     private object Md5 {
-        case class Key(typ: NCResourceType, resource: String)
+        case class Key(typ: NCExternalConfigType, resource: String)
 
         private lazy val m: Map[Key, String] = {
             val url = s"${Config.url}/$MD5_FILE"
 
             try
                 managed(Source.fromURL(url)) acquireAndGet { src ⇒
-                    src.getLines().map(_.trim()).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).map(p ⇒ {
+                    src.getLines().map(_.trim()).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).map(f = p ⇒ {
                         def splitPair(s: String, sep: String): (String, String) = {
                             val seq = s.split(sep).map(_.trim)
 
@@ -139,7 +143,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
           * @param typ
           */
         @throws[NCE]
-        def isValid(f: File, typ: NCResourceType): Boolean = {
+        def isValid(f: File, typ: NCExternalConfigType): Boolean = {
             val v1 = m.getOrElse(Key(typ, f.getName), throw new NCE(s"MD5 data not found for: '${f.getAbsolutePath}'"))
 
             val v2 =
@@ -161,21 +165,16 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         ackStarting()
 
-        require(FILES.size == FILES_BY_MODULES.size)
-        require(NCExternalConfigType.values.forall(FILES.contains))
+        require(NCExternalConfigType.values.size == FILES.map(_.typ).toSeq.distinct.size)
 
         val module = NCModule.getModule
 
-        val moduleFiles = FILES.filter(p ⇒ FILES_BY_MODULES(p._1).contains(module))
+        val mFiles = FILES.filter(_.modules.contains(module)).map(p ⇒ p.typ → p).toMap
 
-        val m = new ConcurrentHashMap[NCResourceType, File]
+        val m = new ConcurrentHashMap[NCExternalConfigType, File]
 
         U.executeParallel(
-            moduleFiles.keys.
-                flatMap(t ⇒ moduleFiles(t).
-                map(FileHolder(_, t))).
-                toSeq.
-                map(f ⇒ () ⇒ processFile(f, m)): _*
+            mFiles.values.flatMap(p ⇒ p.files.map(f ⇒ FileHolder(f, p.typ))).toSeq.map(f ⇒ () ⇒ processFile(f, m)): _*
         )
 
         val downTypes = m.asScala
@@ -186,7 +185,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
             )
             U.executeParallel(
                 downTypes.keys.toSeq.
-                    flatMap(t ⇒ moduleFiles(t).toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
+                    flatMap(t ⇒ mFiles(t).files.toSeq.map(f ⇒ Download(f, t))).map(d ⇒ () ⇒ download(d)): _*
             )
         }
 
@@ -210,7 +209,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
       * @param parent Parent tracing span.
       */
     @throws[NCE]
-    def getContent(typ: NCResourceType, res: String, parent: Span = null): String =
+    def getContent(typ: NCExternalConfigType, res: String, parent: Span = null): String =
         startScopedSpan("getContent", parent, "res" → res) { _ ⇒
             mkString(U.readFile(mkExtFile(typ, res), "UTF-8"))
         }
@@ -222,7 +221,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
       * @param parent Parent tracing span.
       */
     @throws[NCE]
-    def getStream(typ: NCResourceType, res: String, parent: Span = null): InputStream =
+    def getStream(typ: NCExternalConfigType, res: String, parent: Span = null): InputStream =
         startScopedSpan("getStream", parent, "res" → res) { _ ⇒
             new BufferedInputStream(new FileInputStream(mkExtFile(typ, res)))
         }
@@ -236,7 +235,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
       */
     @throws[NCE]
     def getDirContent(
-        typ: NCResourceType, resDir: String, resFilter: String ⇒ Boolean, parent: Span = null
+        typ: NCExternalConfigType, resDir: String, resFilter: String ⇒ Boolean, parent: Span = null
     ): Stream[NCExternalConfigHolder] =
         startScopedSpan("getDirContent", parent, "resDir" → resDir) { _ ⇒
             val resDirPath = getResourcePath(typ, resDir)
@@ -261,7 +260,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
       * @param m
       */
     @throws[NCE]
-    private def processFile(h: FileHolder, m: ConcurrentHashMap[NCResourceType, File]): Unit =
+    private def processFile(h: FileHolder, m: ConcurrentHashMap[NCExternalConfigType, File]): Unit =
         if (h.file.exists()) {
             if (h.file.isDirectory)
                 throw new NCE(s"Unexpected folder (expecting a file): ${h.file.getAbsolutePath}")
@@ -330,7 +329,7 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
       *
       * @param typ
       */
-    private def type2String(typ: NCResourceType): String = typ.toString.toLowerCase
+    private def type2String(typ: NCExternalConfigType): String = typ.toString.toLowerCase
 
     /**
       *
@@ -370,14 +369,14 @@ object NCExternalConfigManager extends NCService with NCPoolContext {
       * @param typ
       * @param res
       */
-    private def getResourcePath(typ: NCResourceType, res: String): String = s"${type2String(typ)}/$res"
+    private def getResourcePath(typ: NCExternalConfigType, res: String): String = s"${type2String(typ)}/$res"
 
     /**
       *
       * @param typ
       * @param res
       */
-    private def mkExtFile(typ: NCResourceType, res: String): File = new File(Config.dir, getResourcePath(typ, res))
+    private def mkExtFile(typ: NCExternalConfigType, res: String): File = new File(Config.dir, getResourcePath(typ, res))
 
     /**
       *

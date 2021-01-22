@@ -21,7 +21,7 @@ package org.apache.nlpcraft.common.extcfg
   * Internal type for external configuration resource.
   */
 object NCExternalConfigType extends Enumeration {
-    type NCResourceType = Value
+    type NCExternalConfigType = Value
 
     val SPELL, GEO, OPENNLP, BADFILTER = Value
 }
