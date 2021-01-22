@@ -29,12 +29,14 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
 /**
- *
+ * Common pool manager.
  */
 object NCPoolManager extends NCService {
     @volatile private var data: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
 
     private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
+    // Names same as parameter names of
+    // java.util.concurrent.ThreadPoolExecutor.ThreadPoolExecutor(int, int, long, TimeUnit, BlockingQueue<Runnable>)
     private case class PoolCfg(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long)
 
     private object Config extends NCConfigurable {
@@ -47,22 +49,24 @@ object NCPoolManager extends NCService {
                 getMapOpt(
                     module match {
                         case SERVER ⇒ "nlpcraft.server.pools"
-                        case PROBE ⇒ "nlpcraft.server.pools"
+                        case PROBE ⇒ "nlpcraft.probe.pools"
+
                         case m ⇒ throw new AssertionError(s"Unexpected module: $m")
                     }
                 )
 
-            m.getOrElse(Map.empty).map { case (poolName, poolCfg) ⇒
-                def get(name: String): Number = {
-                    val v = poolCfg.get(name)
+            m.getOrElse(Map.empty).map { case (name, cfg) ⇒
+                val cfgMap = cfg.asScala
 
-                    if (v == null)
-                        throw new NCE(s"Missed value '$name' for pool '$poolName'")
-
-                    v
+                def get(prop: String): Number = {
+                    try
+                        cfgMap.getOrElse(prop, throw new NCE(s"Missed property value '$prop' for pool '$name'"))
+                    catch {
+                        case e: ClassCastException ⇒ throw new NCE(s"Invaid property value '$prop' for pool '$name'", e)
+                    }
                 }
 
-                poolName →
+                name →
                     PoolCfg(
                         get("corePoolSize").intValue(),
                         get("maximumPoolSize").intValue(),
@@ -77,26 +81,26 @@ object NCPoolManager extends NCService {
             name,
             (_: String) ⇒
                 Config.factories.get(name) match {
-                    case Some(poolCfg) ⇒
+                    case Some(pCfg) ⇒
                         val p = new ThreadPoolExecutor(
-                            poolCfg.corePoolSize,
-                            poolCfg.maximumPoolSize,
-                            poolCfg.keepAliveTime,
+                            pCfg.corePoolSize,
+                            pCfg.maximumPoolSize,
+                            pCfg.keepAliveTime,
                             TimeUnit.MILLISECONDS,
                             new LinkedBlockingQueue[Runnable]
                         )
 
                         logger.info(
-                            s"Executor service created `$name" +
-                            s", corePoolSize=${poolCfg.corePoolSize}" +
-                            s", maximumPoolSize=${poolCfg.maximumPoolSize}" +
-                            s", keepAliveTime=${poolCfg.keepAliveTime}" +
-                            s", module: ${Config.moduleName}"
+                            s"Executor service created for '$name', module: '${Config.moduleName}'" +
+                            s" with following parameters" +
+                            s": corePoolSize=${pCfg.corePoolSize}" +
+                            s", maximumPoolSize=${pCfg.maximumPoolSize}" +
+                            s", keepAliveTime=${pCfg.keepAliveTime}"
                         )
 
                         Holder(ExecutionContext.fromExecutor(p), Some(p))
                     case None ⇒
-                        logger.info(s"System executor service used for `$name`, module: `${Config.moduleName}.")
+                        logger.info(s"System executor service used for '$name', module: '${Config.moduleName}'")
 
                         Holder(ExecutionContext.Implicits.global, None)
                 }
@@ -114,9 +118,7 @@ object NCPoolManager extends NCService {
         ackStopping()
 
         data.values().asScala.flatMap(_.pool).foreach(U.shutdownPool)
-
         data.clear()
-
         data = null
 
         ackStopped()
