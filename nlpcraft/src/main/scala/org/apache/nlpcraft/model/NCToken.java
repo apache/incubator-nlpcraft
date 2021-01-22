@@ -303,7 +303,7 @@ public interface NCToken extends NCMetadata {
     /**
      * Tests whether or not this token is a user-defined token.
      *
-     * @return {code true} if this token is defined by the model element in the user model, {@code false} otherwise.
+     * @return {@code True} if this token is defined by the model element in the user model, {@code false} otherwise.
      */
     default boolean isUserDefined() {
         String id = getId();
