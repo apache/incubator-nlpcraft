@@ -20,7 +20,7 @@ package org.apache.nlpcraft.common.module
 import org.apache.nlpcraft.common.NCE
 
 /**
- *
+ * Runtime module (server, probe, cli, etc.).
  */
 object NCModule extends Enumeration {
     type NCModule = Value
@@ -29,7 +29,18 @@ object NCModule extends Enumeration {
 
     val SERVER, PROBE, CLI: Value = Value
 
-    def getModule: NCModule = active.getOrElse(throw new NCE(s"Module is not set"))
+    /**
+     * Gets current runtime module.
+     *
+     * @return
+     */
+    def getModule: NCModule = active.getOrElse(throw new NCE(s"Runtime module is not set."))
+
+    /**
+     * Sets current runtime module.
+     *
+     * @param active
+     */
     def setModule(active: NCModule): Unit = this.active = Some(active)
 }
 

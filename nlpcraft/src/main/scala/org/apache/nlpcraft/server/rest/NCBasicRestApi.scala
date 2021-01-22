@@ -30,7 +30,7 @@ import io.opencensus.stats.Measure
 import io.opencensus.trace.{Span, Status}
 import org.apache.commons.validator.routines.UrlValidator
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common.pool.NCPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
@@ -50,7 +50,7 @@ import scala.concurrent.Future
 /**
   * REST API default implementation.
   */
-class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats with NCPoolContext {
+class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats with NCThreadPoolContext {
     protected final val GSON = new Gson()
     protected final val URL_VALIDATOR = new UrlValidator(Array("http", "https"), UrlValidator.ALLOW_LOCAL_URLS)
 
@@ -1899,30 +1899,30 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                                 withRequestTimeoutResponse(_ ⇒ timeoutResp) {
                                     path(API / "health") { health$() } // Duplicate for POST.
                                     path(API / "signin") { withMetric(M_SIGNIN_LATENCY_MS, signin$) } ~
-                                        path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, signout$) } ~
-                                        path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, cancel$) } ~
-                                        path(API / "check") { withMetric(M_CHECK_LATENCY_MS, check$) } ~
-                                        path(API / "clear"/ "conversation") { withMetric(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
-                                        path(API / "clear"/ "dialog") { withMetric(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
-                                        path(API / "company"/ "add") { withMetric(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
-                                        path(API / "company"/ "get") { withMetric(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
-                                        path(API / "company" / "update") { withMetric(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
-                                        path(API / "company" / "token" / "reset") { withMetric(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
-                                        path(API / "company" / "delete") { withMetric(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
-                                        path(API / "user" / "get") { withMetric(M_USER_GET_LATENCY_MS, user$Get) } ~
-                                        path(API / "user" / "add") { withMetric(M_USER_ADD_LATENCY_MS, user$Add) } ~
-                                        path(API / "user" / "update") { withMetric(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
-                                        path(API / "user" / "delete") { withMetric(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
-                                        path(API / "user" / "admin") { withMetric(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
-                                        path(API / "user" / "passwd" / "reset") { withMetric(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
-                                        path(API / "user" / "all") { withMetric(M_USER_ALL_LATENCY_MS, user$All) } ~
-                                        path(API / "feedback"/ "add") { withMetric(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
-                                        path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
-                                        path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
-                                        path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
-                                        path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
-                                        path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
-                                        path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
+                                    path(API / "signout") { withMetric(M_SIGNOUT_LATENCY_MS, signout$) } ~
+                                    path(API / "cancel") { withMetric(M_CANCEL_LATENCY_MS, cancel$) } ~
+                                    path(API / "check") { withMetric(M_CHECK_LATENCY_MS, check$) } ~
+                                    path(API / "clear"/ "conversation") { withMetric(M_CLEAR_CONV_LATENCY_MS, clear$Conversation) } ~
+                                    path(API / "clear"/ "dialog") { withMetric(M_CLEAR_DIALOG_LATENCY_MS, clear$Dialog) } ~
+                                    path(API / "company"/ "add") { withMetric(M_COMPANY_ADD_LATENCY_MS, company$Add) } ~
+                                    path(API / "company"/ "get") { withMetric(M_COMPANY_GET_LATENCY_MS, company$Get) } ~
+                                    path(API / "company" / "update") { withMetric(M_COMPANY_UPDATE_LATENCY_MS, company$Update) } ~
+                                    path(API / "company" / "token" / "reset") { withMetric(M_COMPANY_TOKEN_LATENCY_MS, company$Token$Reset) } ~
+                                    path(API / "company" / "delete") { withMetric(M_COMPANY_DELETE_LATENCY_MS, company$Delete) } ~
+                                    path(API / "user" / "get") { withMetric(M_USER_GET_LATENCY_MS, user$Get) } ~
+                                    path(API / "user" / "add") { withMetric(M_USER_ADD_LATENCY_MS, user$Add) } ~
+                                    path(API / "user" / "update") { withMetric(M_USER_UPDATE_LATENCY_MS, user$Update) } ~
+                                    path(API / "user" / "delete") { withMetric(M_USER_DELETE_LATENCY_MS, user$Delete) } ~
+                                    path(API / "user" / "admin") { withMetric(M_USER_ADMIN_LATENCY_MS, user$Admin) } ~
+                                    path(API / "user" / "passwd" / "reset") { withMetric(M_USER_PASSWD_RESET_LATENCY_MS, user$Password$Reset) } ~
+                                    path(API / "user" / "all") { withMetric(M_USER_ALL_LATENCY_MS, user$All) } ~
+                                    path(API / "feedback"/ "add") { withMetric(M_FEEDBACK_ADD_LATENCY_MS, feedback$Add) } ~
+                                    path(API / "feedback"/ "all") { withMetric(M_FEEDBACK_GET_LATENCY_MS, feedback$All) } ~
+                                    path(API / "feedback" / "delete") { withMetric(M_FEEDBACK_DELETE_LATENCY_MS, feedback$Delete) } ~
+                                    path(API / "probe" / "all") { withMetric(M_PROBE_ALL_LATENCY_MS, probe$All) } ~
+                                    path(API / "model" / "sugsyn") { withMetric(M_MODEL_SUGSYN_LATENCY_MS, sugsyn$) } ~
+                                    path(API / "ask") { withMetric(M_ASK_LATENCY_MS, ask$) } ~
+                                    path(API / "ask" / "sync") { withMetric(M_ASK_SYNC_LATENCY_MS, ask$Sync) }
                                 }
                             }
                         }

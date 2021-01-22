@@ -21,7 +21,7 @@ import io.opencensus.trace.Span
 import org.apache.ignite.IgniteCache
 import org.apache.ignite.events.{CacheEvent, EventType}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
-import org.apache.nlpcraft.common.pool.NCPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode._
 import org.apache.nlpcraft.server.company.NCCompanyManager
@@ -43,7 +43,7 @@ import scala.util.{Failure, Success}
 /**
   * Query state machine.
   */
-object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusServerStats with NCPoolContext {
+object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusServerStats with NCThreadPoolContext {
     @volatile private var cache: IgniteCache[String/*Server request ID*/, NCQueryStateMdo] = _
     
     // Promises cannot be used in cache.

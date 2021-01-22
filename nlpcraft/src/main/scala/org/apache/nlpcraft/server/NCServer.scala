@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common.pool.NCPoolManager
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.version._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliServerBeacon
 import org.apache.nlpcraft.server.company.NCCompanyManager
@@ -94,7 +94,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
         NCServerLifecycleManager.beforeStart()
 
         startScopedSpan("startManagers", "relVer" → ver.version, "relDate" → ver.date) { span ⇒
-            startedMgrs += NCPoolManager.start(span)
+            startedMgrs += NCThreadPoolManager.start(span)
             startedMgrs += NCExternalConfigManager.start(span)
             startedMgrs += NCWordNetManager.start(span)
             startedMgrs += NCDictionaryManager.start(span)

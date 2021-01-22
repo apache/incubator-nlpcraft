@@ -29,14 +29,13 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
 /**
- * Common pool manager.
+ * Common thread pool manager.
  */
-object NCPoolManager extends NCService {
+object NCThreadPoolManager extends NCService {
     @volatile private var data: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
 
     private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
-    // Names same as parameter names of
-    // java.util.concurrent.ThreadPoolExecutor.ThreadPoolExecutor(int, int, long, TimeUnit, BlockingQueue<Runnable>)
+    // Names are same as parameter names of 'ThreadPoolExecutor'.
     private case class PoolCfg(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long)
 
     private object Config extends NCConfigurable {
@@ -51,7 +50,7 @@ object NCPoolManager extends NCService {
                         case SERVER ⇒ "nlpcraft.server.pools"
                         case PROBE ⇒ "nlpcraft.probe.pools"
 
-                        case m ⇒ throw new AssertionError(s"Unexpected module: $m")
+                        case m ⇒ throw new AssertionError(s"Unexpected runtime module: $m")
                     }
                 )
 
@@ -60,9 +59,9 @@ object NCPoolManager extends NCService {
 
                 def get(prop: String): Number = {
                     try
-                        cfgMap.getOrElse(prop, throw new NCE(s"Missed property value '$prop' for pool '$name'"))
+                        cfgMap.getOrElse(prop, throw new NCE(s"Missing property value '$prop' for thread pool: $name"))
                     catch {
-                        case e: ClassCastException ⇒ throw new NCE(s"Invaid property value '$prop' for pool '$name'", e)
+                        case e: ClassCastException ⇒ throw new NCE(s"Invalid property value '$prop' for thread pool: $name", e)
                     }
                 }
 
@@ -90,17 +89,21 @@ object NCPoolManager extends NCService {
                             new LinkedBlockingQueue[Runnable]
                         )
 
-                        logger.info(
-                            s"Executor service created for '$name', module: '${Config.moduleName}'" +
-                            s" with following parameters" +
-                            s": corePoolSize=${pCfg.corePoolSize}" +
-                            s", maximumPoolSize=${pCfg.maximumPoolSize}" +
-                            s", keepAliveTime=${pCfg.keepAliveTime}"
-                        )
+                        logger.info(s"Custom executor service created [ " +
+                            s"name=$name, " +
+                            s"module=${Config.moduleName}, " +
+                            s"corePoolSize=${pCfg.corePoolSize}, " +
+                            s"maximumPoolSize=${pCfg.maximumPoolSize}, " +
+                            s"keepAliveTime=${pCfg.keepAliveTime}" +
+                        "]")
 
                         Holder(ExecutionContext.fromExecutor(p), Some(p))
+
                     case None ⇒
-                        logger.info(s"System executor service used for '$name', module: '${Config.moduleName}'")
+                        logger.info(s"Default system executor service used [ " +
+                            s"name=$name, " +
+                            s"module=${Config.moduleName}" +
+                        "]")
 
                         Holder(ExecutionContext.Implicits.global, None)
                 }

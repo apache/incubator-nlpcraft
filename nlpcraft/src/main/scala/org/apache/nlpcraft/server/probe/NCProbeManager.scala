@@ -25,7 +25,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.crypto.NCCipher
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
-import org.apache.nlpcraft.common.pool.NCPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.common.socket.NCSocket
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCService, _}
@@ -51,7 +51,7 @@ import scala.util.{Failure, Success}
 /**
   * Probe manager.
   */
-object NCProbeManager extends NCService with NCPoolContext {
+object NCProbeManager extends NCService with NCThreadPoolContext {
     private final val GSON = new Gson()
     private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
 

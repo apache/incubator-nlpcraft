@@ -21,9 +21,20 @@ import org.apache.nlpcraft.common.U
 import scala.concurrent.ExecutionContext
 
 /**
- * Pool context trait.
+ * Thread pool context trait.
  */
-trait NCPoolContext {
+trait NCThreadPoolContext {
+    /**
+     * Gets name of the thread pool.
+     *
+     * @return
+     */
     def getName: String = U.cleanClassName(getClass, simpleName = false)
-    implicit def getContext: ExecutionContext = NCPoolManager.getContext(getName)
+
+    /**
+     * Implicit execution context.
+     *
+     * @return
+     */
+    implicit def getContext: ExecutionContext = NCThreadPoolManager.getContext(getName)
 }

@@ -29,7 +29,7 @@ import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.dict.NCDictionaryManager
 import org.apache.nlpcraft.common.nlp.numeric.NCNumericManager
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common.pool.NCPoolManager
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCE, NCService, U, _}
 import org.apache.nlpcraft.model.tools.cmdline.NCCliProbeBeacon
@@ -495,7 +495,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                 "jarFolder" → cfg.jarsFolder
             )
 
-            startedMgrs += NCPoolManager.start(span)
+            startedMgrs += NCThreadPoolManager.start(span)
             startedMgrs += NCExternalConfigManager.start(span)
             startedMgrs += NCNlpCoreManager.start(span)
             startedMgrs += NCNumericManager.start(span)

@@ -20,7 +20,7 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ Note, NCNlpSentenceToken ⇒ Token}
-import org.apache.nlpcraft.common.pool.NCPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
@@ -36,7 +36,7 @@ import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
 /**
   * Date enricher.
   */
-object NCDateEnricher extends NCServerEnricher with NCPoolContext {
+object NCDateEnricher extends NCServerEnricher with NCThreadPoolContext {
     private object Config extends NCConfigurable {
         def style: NCDateFormatType = getObject("nlpcraft.server.datesFormatStyle", NCDateFormatType.withName)
     }

@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType._
 import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.module.NCModule.{NCModule, PROBE, SERVER}
-import org.apache.nlpcraft.common.pool.NCPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import resource.managed
 
@@ -38,7 +38,7 @@ import scala.io.Source
 /**
   * External configuration manager.
   */
-object NCExternalConfigManager extends NCService with NCPoolContext {
+object NCExternalConfigManager extends NCService with NCThreadPoolContext {
     private final val DFLT_DIR = ".nlpcraft/extcfg"
     private final val MD5_FILE = "md5.txt"
 

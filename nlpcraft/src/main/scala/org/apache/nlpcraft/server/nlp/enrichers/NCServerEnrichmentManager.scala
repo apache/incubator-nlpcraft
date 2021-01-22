@@ -22,7 +22,7 @@ import org.apache.ignite.IgniteCache
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
-import org.apache.nlpcraft.common.pool.NCPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
@@ -42,7 +42,7 @@ import scala.util.control.Exception.catching
 /**
   * Server enrichment pipeline manager.
   */
-object NCServerEnrichmentManager extends NCService with NCIgniteInstance with NCPoolContext {
+object NCServerEnrichmentManager extends NCService with NCIgniteInstance with NCThreadPoolContext {
     private object Config extends NCConfigurable {
         def isBuiltInEnrichers: Boolean = getStringList("nlpcraft.server.tokenProviders").contains("nlpcraft")
     }
