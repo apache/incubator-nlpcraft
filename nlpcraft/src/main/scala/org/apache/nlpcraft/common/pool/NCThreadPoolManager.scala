@@ -89,21 +89,25 @@ object NCThreadPoolManager extends NCService {
                             new LinkedBlockingQueue[Runnable]
                         )
 
-                        logger.info(s"Custom executor service created [ " +
+                        logger.info(
+                            s"Custom executor service created [ " +
                             s"name=$name, " +
                             s"module=${Config.moduleName}, " +
                             s"corePoolSize=${pCfg.corePoolSize}, " +
                             s"maximumPoolSize=${pCfg.maximumPoolSize}, " +
                             s"keepAliveTime=${pCfg.keepAliveTime}" +
-                        "]")
+                            "]"
+                        )
 
                         Holder(ExecutionContext.fromExecutor(p), Some(p))
 
                     case None ⇒
-                        logger.info(s"Default system executor service used [ " +
+                        logger.info(
+                            s"Default system executor service used [ " +
                             s"name=$name, " +
                             s"module=${Config.moduleName}" +
-                        "]")
+                            "]"
+                        )
 
                         Holder(ExecutionContext.Implicits.global, None)
                 }

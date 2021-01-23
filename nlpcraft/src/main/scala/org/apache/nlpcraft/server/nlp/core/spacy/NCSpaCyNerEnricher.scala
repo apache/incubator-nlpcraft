@@ -17,10 +17,6 @@
 
 package org.apache.nlpcraft.server.nlp.core.spacy
 
-import java.net.URLEncoder
-import java.util
-import java.util.concurrent.TimeUnit._
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
@@ -37,8 +33,11 @@ import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
 import spray.json.DefaultJsonProtocol._
 import spray.json.RootJsonFormat
 
+import java.net.URLEncoder
+import java.util
+import java.util.concurrent.TimeUnit._
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Awaitable, ExecutionContextExecutor, TimeoutException}
+import scala.concurrent.{Await, Awaitable, TimeoutException}
 
 /**
   * spaCy REST proxy server NER enricher.
@@ -48,7 +47,6 @@ object NCSpaCyNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteI
 
     private implicit final val SYSTEM: ActorSystem = ActorSystem("spacy-ner")
     private implicit final val MATERIALIZER: Materializer = Materializer.createMaterializer(SYSTEM)
-    private implicit final val EXEC_CTX: ExecutionContextExecutor = SYSTEM.dispatcher
 
     private implicit val fmt: RootJsonFormat[SpacySpan] = jsonFormat7(SpacySpan)
     

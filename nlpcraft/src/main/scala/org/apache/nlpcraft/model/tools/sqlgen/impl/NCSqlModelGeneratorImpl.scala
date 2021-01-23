@@ -57,7 +57,7 @@ object NCSqlModelGeneratorImpl {
         val nameLc: String
         val elmNameLc: String
 
-        private val nameWs = U.normalize(elmNameLc.replaceAll("_"," ")," ")
+        private lazy val nameWs = U.normalize(elmNameLc.replaceAll("_"," ")," ")
 
         lazy val synonym =
             if (elmNameLc == nameWs)

@@ -23,18 +23,18 @@ import akka.http.scaladsl.server._
 import akka.stream.Materializer
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.common.{NCService, _}
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 /**
   * REST manager.
   */
-object NCRestManager extends NCService {
+object NCRestManager extends NCService with NCThreadPoolContext {
     private implicit val SYSTEM: ActorSystem = ActorSystem("server-rest")
     private implicit val MATERIALIZER: Materializer = Materializer.createMaterializer(SYSTEM)
-    private implicit val EXEC_CTX: ExecutionContextExecutor = SYSTEM.dispatcher
 
     @volatile private var bindFut: Future[Http.ServerBinding] = _
 

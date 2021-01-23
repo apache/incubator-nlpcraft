@@ -22,24 +22,24 @@ import com.google.gson.reflect.TypeToken
 import io.opencensus.trace.Span
 import org.apache.http.HttpResponse
 import org.apache.http.client.ResponseHandler
-import org.apache.http.util.EntityUtils
-import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
-import org.apache.nlpcraft.server.probe.NCProbeManager
-
-import scala.collection.JavaConverters._
-import scala.collection.{Seq, mutable}
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future, Promise}
-import scala.util.{Failure, Success}
-import java.util
-import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
-import java.util.concurrent._
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
+import org.apache.http.util.EntityUtils
+import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.makro.NCMacroParser
+import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
 import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.server.probe.NCProbeManager
+
+import java.util
+import java.util.concurrent._
+import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
+import scala.collection.JavaConverters._
+import scala.collection.{Seq, mutable}
+import scala.concurrent.{Future, Promise}
+import scala.util.{Failure, Success}
 
 /**
  * Synonym suggestion manager.
@@ -49,9 +49,6 @@ object NCSuggestSynonymManager extends NCService with NCThreadPoolContext {
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20
     private final val DFLT_MIN_SCORE = 0.0
-
-    @volatile private var pool: ExecutorService = _
-    @volatile private var executor: ExecutionContextExecutor = _
 
     // For warnings.
     private final val MIN_CNT_INTENT = 5
@@ -111,34 +108,6 @@ object NCSuggestSynonymManager extends NCService with NCThreadPoolContext {
     private def split(s: String): Seq[String] = U.splitTrimFilter(s, " ")
     private def toStem(s: String): String = split(s).map(NCNlpPorterStemmer.stem).mkString(" ")
     private def toStemWord(s: String): String = NCNlpPorterStemmer.stem(s)
-
-    /**
-     *
-     * @param parent Optional parent span.
-     * @return
-     */
-    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
-        ackStarting()
-
-        pool = Executors.newCachedThreadPool()
-        executor = ExecutionContext.fromExecutor(pool)
-
-        ackStarted()
-    }
-
-    /**
-     *
-     * @param parent Optional parent span.
-     */
-    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
-        ackStopping()
-
-        U.shutdownPool(pool)
-        pool = null
-        executor = null
-
-        ackStopped()
-    }
 
     /**
      *
@@ -461,8 +430,27 @@ object NCSuggestSynonymManager extends NCService with NCThreadPoolContext {
                             promise.failure(e)
                     }
                 case Failure(e) ⇒ promise.failure(e)
-            }(executor)
+            }
 
             promise.future
         }
+
+    /**
+     *
+     * @param parent Optional parent span.
+     * @return
+     */
+    override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
+        ackStarting()
+        ackStarted()
+    }
+
+    /**
+     *
+     * @param parent Optional parent span.
+     */
+    override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
+        ackStopping()
+        ackStopped()
+    }
 }

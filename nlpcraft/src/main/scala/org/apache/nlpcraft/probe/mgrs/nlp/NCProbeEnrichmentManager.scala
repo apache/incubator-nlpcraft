@@ -17,12 +17,6 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp
 
-import java.io.Serializable
-import java.util
-import java.util.concurrent._
-import java.util.function.Predicate
-import java.util.{Date, Objects}
-
 import io.opencensus.trace.{Span, Status}
 import org.apache.nlpcraft.common.NCErrorCodes._
 import org.apache.nlpcraft.common._
@@ -30,6 +24,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
+import org.apache.nlpcraft.common.pool.NCThreadPoolContext
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
@@ -50,14 +45,17 @@ import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
 import org.apache.nlpcraft.probe.mgrs.{NCProbeMessage, NCProbeVariants}
 
+import java.io.Serializable
+import java.util
+import java.util.function.Predicate
+import java.util.{Date, Objects}
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, _}
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 /**
   * Probe enrichment manager.
   */
-object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
+object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats with NCThreadPoolContext {
     private final val MAX_NESTED_TOKENS = 32
 
     // Embedded probe Java callback function.
@@ -66,8 +64,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     private final val mux = new Object()
 
     @volatile private var embeddedCbs: mutable.Set[EMBEDDED_CB] = _
-    @volatile private var pool: ExecutorService = _
-    @volatile private var executor: ExecutionContextExecutor = _
 
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.probe"
@@ -95,9 +91,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
         embeddedCbs = mutable.HashSet.empty[EMBEDDED_CB]
 
-        pool = U.mkThreadPool("probe-enrichment")
-        executor = ExecutionContext.fromExecutor(pool)
-
         ackStarted()
     }
 
@@ -112,10 +105,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             if (embeddedCbs != null)
                 embeddedCbs.clear()
         }
-
-        U.shutdownPool(pool)
-        executor = null
-        pool = null
 
         ackStopped()
     }
@@ -727,6 +716,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 finally
                     onFinish()
             }
-        )(executor)
+        )
     }
 }
