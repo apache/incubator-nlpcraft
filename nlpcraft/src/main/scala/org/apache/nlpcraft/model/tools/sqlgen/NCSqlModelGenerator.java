@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
-import org.apache.nlpcraft.common.util.NCUtils;
 import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.sqlgen.impl.*;

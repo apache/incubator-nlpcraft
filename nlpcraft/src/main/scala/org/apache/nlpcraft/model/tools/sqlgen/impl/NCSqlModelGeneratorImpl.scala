@@ -686,7 +686,7 @@ object NCSqlModelGeneratorImpl {
                |    Parameter values can be placed in double (") or single (') quotes which will be
                |    automatically discarded. Use it to pass strings containing spaces in the command line.
                |
-               |    Each -i or -e parameter is a semicolon ';' separated  list of table or columns names.
+               |    Each -i or -e parameter is a semicolon (;) separated  list of table or columns names.
                |    Each table or column name can be one of following forms:
                |      - ${g("table")}         -- to filter on table names only.
                |      - ${g("table#column")}  -- to filter on both table and column names.

@@ -74,6 +74,20 @@ import scala.util.control.Exception.ignoring
 object NCCli extends App {
     private final val NAME = "NLPCraft CLI"
 
+    /*
+     * Disable warnings from Ignite on JDK 11.
+     */
+    final val JVM_OPTS_RT_WARNS = Seq (
+        "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
+        "--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+        "--add-opens=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+        "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED",
+        "--illegal-access=permit"
+    )
+
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
     private final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
@@ -334,6 +348,14 @@ object NCCli extends App {
      * @param args
      * @param id
      */
+    private def isParam(cmd: Command, args: Seq[Argument], id: String): Boolean =
+        args.find(_.parameter.id == id).nonEmpty
+
+    /**
+     * @param cmd
+     * @param args
+     * @param id
+     */
     private def getParamOrNull(cmd: Command, args: Seq[Argument], id: String): String =
         args.find(_.parameter.id == id) match {
             case Some(arg) ⇒ U.trimQuotes(arg.value.get)
@@ -509,15 +531,9 @@ object NCCli extends App {
         srvArgs += JAVA
         srvArgs ++= jvmOpts
 
-        // Required by Ignite 2.x running on JDK 11+.
         // TODO: check for dups with 'jvmOpts'?
-        srvArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
-        srvArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-        srvArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
-        srvArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
-        srvArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
-        srvArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
-        srvArgs += "--illegal-access=permit"
+        JVM_OPTS_RT_WARNS.foreach(srvArgs += _)
+
         srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
         srvArgs += "-cp"
         srvArgs += JAVA_CP
@@ -698,13 +714,7 @@ object NCCli extends App {
         jvmArgs += JAVA
         jvmArgs ++= jvmOpts
 
-        jvmArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
-        jvmArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-        jvmArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
-        jvmArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
-        jvmArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
-        jvmArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
-        jvmArgs += "--illegal-access=permit"
+        JVM_OPTS_RT_WARNS.foreach(jvmArgs += _)
 
         if (cfgPath != null)
             jvmArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
@@ -792,13 +802,7 @@ object NCCli extends App {
         prbArgs += JAVA
         prbArgs ++= jvmOpts
 
-        prbArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
-        prbArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-        prbArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
-        prbArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
-        prbArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
-        prbArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
-        prbArgs += "--illegal-access=permit"
+        JVM_OPTS_RT_WARNS.foreach(prbArgs += _)
 
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
 
@@ -1734,11 +1738,13 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        // Mandatory parameters check.
-        getParam(cmd, args, "driver")
-        getParam(cmd, args, "schema")
-        getParam(cmd, args, "out")
-        getParam(cmd, args, "url")
+        // Mandatory parameters check (unless --help is specified).
+        if (!isParam(cmd, args, "help")) {
+            getParam(cmd, args, "driver")
+            getParam(cmd, args, "schema")
+            getParam(cmd, args, "out")
+            getParam(cmd, args, "url")
+        }
 
         val addCp = getCpParam(cmd, args, "cp")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
@@ -1751,13 +1757,7 @@ object NCCli extends App {
         jvmArgs += JAVA
         jvmArgs ++= jvmOpts
 
-        jvmArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
-        jvmArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-        jvmArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
-        jvmArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
-        jvmArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
-        jvmArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
-        jvmArgs += "--illegal-access=permit"
+        JVM_OPTS_RT_WARNS.foreach(jvmArgs += _)
 
         if (!NCAnsi.isEnabled)
             jvmArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
@@ -1777,7 +1777,7 @@ object NCCli extends App {
 
                 arg.value match {
                     case None ⇒ jvmArgs += p
-                    case Some(v) ⇒ jvmArgs ++= Seq(p, arg.value.get)
+                    case Some(v) ⇒ jvmArgs += s"$p=${arg.value.get}"
                 }
             }
 
