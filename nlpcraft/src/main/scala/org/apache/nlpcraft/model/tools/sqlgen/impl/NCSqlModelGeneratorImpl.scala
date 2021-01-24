@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen.impl
 
-import java.io.{File, FileOutputStream, IOException, PrintStream}
+import java.io.{File, FileOutputStream, IOException}
 import java.sql.{Connection, DriverManager, ResultSet}
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime}
@@ -45,8 +45,6 @@ import scala.util.Try
  * Scala-based SQL model engine.
  */
 object NCSqlModelGeneratorImpl {
-    private var fromCli = false
-
     case class Join(
         fromColumns: Seq[String],
         toTable: String,
@@ -57,7 +55,7 @@ object NCSqlModelGeneratorImpl {
         val nameLc: String
         val elmNameLc: String
 
-        private val nameWs = U.normalize(elmNameLc.replaceAll("_"," ")," ")
+        private lazy val nameWs = U.normalize(elmNameLc.replaceAll("_"," ")," ")
 
         lazy val synonym =
             if (elmNameLc == nameWs)
@@ -395,14 +393,14 @@ object NCSqlModelGeneratorImpl {
                 file = new File(file.getParent, s"${name}_$unique.$ext")
                 
                 println(
-                    s"Output file already exist and override is disabled:\n" +
-                    s"  +-→ using $C'${file.getName}'$RST filename instead."
+                    s"Output file already exist and override is disabled ($C-z=false$RST):\n" +
+                    s"  $G+--$RST using $C'${file.getName}'$RST filename instead."
                 )
             }
             else
                 println(
                     s"Existing file '${file.getName}' will be overridden:\n" +
-                    s"  +-→ use $C'-z false'$RST to disable override."
+                    s"  $G+--$RST use $C'-z=false'$RST to disable override."
                 )
         }
 
@@ -414,7 +412,7 @@ object NCSqlModelGeneratorImpl {
             }
         }
         catch {
-            case e: IOException ⇒ errorExit(s"Failed to write output file '${file.getAbsolutePath}': ${e.getMessage}")
+            case e: IOException ⇒ errorExit(s"Failed to write output file: $C'${file.getAbsolutePath}'$RST", e)
         }
 
         val tbl = NCAsciiTable()
@@ -438,7 +436,7 @@ object NCSqlModelGeneratorImpl {
         tbl += ("Columns scanned", tables.flatMap(_.columns).size)
         tbl += ("Model elements", elems.size)
 
-        println(s"Model generated: ${file.getAbsolutePath}")
+        println(s"Model generated: $G${file.getAbsolutePath}$RST")
 
         println(tbl)
 
@@ -582,8 +580,8 @@ object NCSqlModelGeneratorImpl {
             }
         }
         catch {
-            case _: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: $C${params.driver}$RST")
-            case e: Exception ⇒ errorExit(s"Failed to generate model for $C'${params.url}'$RST: ${e.getLocalizedMessage}")
+            case e: ClassNotFoundException ⇒ errorExit(s"Unknown JDBC driver class: $C${params.driver}$RST", e)
+            case e: Exception ⇒ errorExit(s"Failed to generate model for: $C'${params.url}'$RST", e)
         }
         
         tables.values.toSeq.filter(_.columns.nonEmpty)
@@ -716,15 +714,13 @@ object NCSqlModelGeneratorImpl {
     
     /**
      *
-     * @param msg Optional error message.
+     * @param msg Error message.
+     * @param e Cause exception.
      */
-    private def errorExit(msg: String = null): Unit = {
-        System.err.println(s"${r("X:")} $msg")
+    private def errorExit(msg: String, e: Throwable): Unit = {
+        U.prettyError(s"${R}X:$RST $msg", e)
 
-        if (!fromCli)
-            help()
-
-        throw new Exception(msg)
+        throw new Exception(msg, e)
     }
     
     /**
@@ -760,7 +756,7 @@ object NCSqlModelGeneratorImpl {
         var i = 0
         
         try {
-            while (i < cmdArgs.length - 1) {
+            while (i < cmdArgs.length) {
                 val arg = cmdArgs(i)
                 val eq = arg.indexOf('=')
 
@@ -791,7 +787,7 @@ object NCSqlModelGeneratorImpl {
                     case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: $C$arg$RST")
                 }
 
-                i = i + 2
+                i += 1
             }
         
             mandatoryParam(params.url, "--url")
@@ -810,7 +806,7 @@ object NCSqlModelGeneratorImpl {
             params.cmdLine = cmdArgs.mkString(" ")
         }
         catch {
-            case e: Exception ⇒ errorExit(e.getMessage)
+            case e: Exception ⇒ errorExit(e.getMessage, e)
         }
         
         params
@@ -818,12 +814,9 @@ object NCSqlModelGeneratorImpl {
 
     /**
      *
-     * @param fromCli Whether or not this tool was called from NLPCraft CLI.
      * @param args Command line arguments.
      */
-    def process(fromCli: Boolean, args: Array[String]): Unit = {
-        this.fromCli = fromCli
-
+    def process(args: Array[String]): Unit = {
         if (args.isEmpty || !args.intersect(Seq("--help", "-h", "-help", "--?", "-?", "/?", "/help")).isEmpty)
             help()
         else {

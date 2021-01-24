@@ -62,14 +62,11 @@ public class NCSqlModelGenerator {
      * @throws NCException Thrown in case of any errors.
      */
     public static void main(String[] args) {
-
-        boolean fromCli = NCUtils.isSysEnvSet("NLPCRAFT_FROM_CLI");
-
         int status = 0;
 
         // Calling out Scala engine.
         try {
-            NCSqlModelGeneratorImpl.process(fromCli, args);
+            NCSqlModelGeneratorImpl.process(args);
         }
         catch (Exception e) {
             status = 1;
