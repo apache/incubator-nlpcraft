@@ -45,7 +45,7 @@ import scala.util.Try
  * Scala-based SQL model engine.
  */
 object NCSqlModelGeneratorImpl {
-    private var repl = false
+    private var fromCli = false
 
     case class Join(
         fromColumns: Seq[String],
@@ -592,8 +592,8 @@ object NCSqlModelGeneratorImpl {
     /**
      *
       */
-    private def help(out: PrintStream): Unit =
-        out.println(
+    private def help(): Unit =
+        System.out.println(
             s"""
                |${bo("NAME:")}
                |    ${c("NCSqlModelGenerator")} -- NLPCraft model generator from SQL databases.
@@ -613,68 +613,68 @@ object NCSqlModelGeneratorImpl {
                |    this application.
                |
                |${bo("PARAMETERS:")}
-               |    ${c("--url|-r")} ${g("url")}
+               |    ${c("--url|-r")}=${g("url")}
                |        Mandatory database JDBC URL.
                |
-               |    ${c("--driver|-d")} ${g("class")}
+               |    ${c("--driver|-d")}=${g("class")}
                |        Mandatory JDBC driver class. Note that 'class' must be a
                |        fully qualified class name. It should also be available on
                |        the classpath.
                |
-               |    ${c("--schema|-s")} ${g("schema")}
+               |    ${c("--schema|-s")}=${g("schema")}
                |        Mandatory database schema to scan.
                |
-               |    ${c("--out|-o")} ${g("filename")}
+               |    ${c("--out|-o")}=${g("filename")}
                |        Mandatory name of the output JSON or YAML model file. It should
                |        have one of the following extensions: .js, .json, .yml, or .yaml
                |        File extension determines the output file format.
                |
-               |    ${c("--user|-u")} ${g("username")}
+               |    ${c("--user|-u")}=${g("username")}
                |        Optional database user name.
                |
-               |    ${c("--password|-w")} ${g("password")}
+               |    ${c("--password|-w")}=${g("password")}
                |        Optional database user password.
                |
-               |    ${c("--mdlId|-m")} ${g("id")}
+               |    ${c("--mdlId|-m")}=${g("id")}
                |        Optional generated model ID. By default, the model ID will be 'sql.model.id'.
                |
-               |    ${c("--mdlVer|-v")} ${g("version")}
+               |    ${c("--mdlVer|-v")}=${g("version")}
                |        Optional generated model version. By default, the model version will be '1.0.0-timestamp'.
                |
-               |    ${c("--mdlName|-n")} ${g("name")}
+               |    ${c("--mdlName|-n")}=${g("name")}
                |        Optional generated model name. By default, the model name will be 'SQL-based model'.
                |
-               |    ${c("--exclude|-e")} ${g("list")}
+               |    ${c("--exclude|-e")}=${g("list")}
                |        Optional semicolon-separate list of tables and/or columns to exclude. By
                |        default, none of the tables and columns in the schema are excluded. See below
                |        for more information.
                |
-               |    ${c("--prefix|-f")} ${g("list")}
+               |    ${c("--prefix|-f")}=${g("list")}
                |        Optional comma-separate list of table or column name prefixes to remove.
                |        These prefixes will be removed when name is used for model elements
                |        synonyms. By default, no prefixes will be removed.
                |
-               |    ${c("--suffix|-q")} ${g("list")}
+               |    ${c("--suffix|-q")}=${g("list")}
                |        Optional comma-separate list of table or column name suffixes to remove.
                |        These suffixes will be removed when name is used for model elements
                |        synonyms. By default, no suffixes will be removed.
                |
-               |    ${c("--include|-i")} ${g("list")}
+               |    ${c("--include|-i")}=${g("list")}
                |        Optional semicolon-separate list of tables and/or columns to include. By
                |        default, all tables and columns in the schema are included. See below
                |        for more information.
                |
-               |    ${c("--synonyms|-y")} ${g("true|false")}
+               |    ${c("--synonyms|-y")}=${g("true|false")}
                |        Optional flag on whether or not to generated auto synonyms for the model elements.
                |        Default is true.
                |
-               |    ${c("--override|-z")} ${g("true|false")}
+               |    ${c("--override|-z")}=${g("true|false")}
                |        Optional flag to determine whether or not to override output file if it already exist.
                |        If override is disabled (default) and output file exists - a unique file name will
                |        be used instead.
                |        Default is false.
                |
-               |    ${c("--parent|-p")} ${g("true|false")}
+               |    ${c("--parent|-p")}=${g("true|false")}
                |        Optional flag on whether or not to use element's parent relationship for
                |        defining SQL columns and their containing (i.e. parent) tables.
                |        Default is false.
@@ -685,6 +685,9 @@ object NCSqlModelGeneratorImpl {
                |${bo("DETAILS:")}
                |    ${c("-r")}, ${c("-d")}, ${c("-s")}, and ${c("-o")} are mandatory parameters, everything else is optional.
                |
+               |    Parameter values can be placed in double (") or single (') quotes which will be
+               |    automatically discarded. Use it to pass strings containing spaces in the command line.
+               |
                |    Each -i or -e parameter is a semicolon ';' separated  list of table or columns names.
                |    Each table or column name can be one of following forms:
                |      - ${g("table")}         -- to filter on table names only.
@@ -694,20 +697,20 @@ object NCSqlModelGeneratorImpl {
                |    Table and column names are treated as standard Java regular expressions. Note that
                |    both '#' and ';' cannot be used inside of the regular expression:
                |
-               |    ${c("-e")} "${g("#_.+")}"             -- excludes any columns starting with '_'.
-               |    ${c("-e")} "${g("tmp.+")}"            -- excludes all tables starting with 'tmp'.
-               |    ${c("-i")} "${g("Order.*;#[^_].+")}"  -- includes only tables starting with 'Order' and columns that
+               |    ${c("-e")}="${g("#_.+")}"             -- excludes any columns starting with '_'.
+               |    ${c("-e")}="${g("tmp.+")}"            -- excludes all tables starting with 'tmp'.
+               |    ${c("-i")}="${g("Order.*;#[^_].+")}"  -- includes only tables starting with 'Order' and columns that
                |                             do not start with '_'.
                |
                |${bo("EXAMPLES:")}
                |    java -cp apache-nlpcraft-incubating-${ver.version}-all-deps.jar org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator
-               |        ${c("-r")} jdbc:postgresql://localhost:5432/mydb
-               |        ${c("-d")} org.postgresql.Driver
-               |        ${c("-f")} "tbl_, col_"
-               |        ${c("-q")} "_tmp, _old, _unused"
-               |        ${c("-s")} public
-               |        ${c("-e")} "#_.+"
-               |        ${c("-o")} model.json
+               |        ${c("-r")}=jdbc:postgresql://localhost:5432/mydb
+               |        ${c("-d")}=org.postgresql.Driver
+               |        ${c("-f")}="tbl_, col_"
+               |        ${c("-q")}="_tmp, _old, _unused"
+               |        ${c("-s")}=public
+               |        ${c("-e")}="#_.+"
+               |        ${c("-o")}=model.json
                 """.stripMargin
         )
     
@@ -716,20 +719,12 @@ object NCSqlModelGeneratorImpl {
      * @param msg Optional error message.
      */
     private def errorExit(msg: String = null): Unit = {
-        if (repl)
-            throw new Exception(msg)
-        else {
-            if (msg != null)
-                System.err.println(
-                    s"""
-                       |${r("ERROR:")}
-                       |    $msg""".stripMargin
-                )
+        System.err.println(s"${r("X:")} $msg")
 
-            help(System.err)
+        if (!fromCli)
+            help()
 
-            throw new Exception(msg)
-        }
+        throw new Exception(msg)
     }
     
     /**
@@ -751,7 +746,7 @@ object NCSqlModelGeneratorImpl {
         v.toLowerCase match {
             case "true" ⇒ true
             case "false" ⇒ false
-            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $C$name $v$RST")
+            case _ ⇒ throw new IllegalArgumentException(s"Invalid boolean value: $C$name=$v$RST")
         }
         
     /**
@@ -766,8 +761,14 @@ object NCSqlModelGeneratorImpl {
         
         try {
             while (i < cmdArgs.length - 1) {
-                val k = cmdArgs(i).toLowerCase
-                val v = cmdArgs(i + 1)
+                val arg = cmdArgs(i)
+                val eq = arg.indexOf('=')
+
+                if (eq == -1)
+                    throw new IllegalArgumentException(s"Invalid argument: $C$arg$RST")
+
+                val k: String = arg.substring(0, eq)
+                val v: String = U.trimQuotes(arg.substring(eq + 1))
 
                 k match {
                     case "--url" | "-r" ⇒ params.url = v
@@ -787,7 +788,7 @@ object NCSqlModelGeneratorImpl {
                     case "--synonyms" | "-y" ⇒ params.synonyms = parseBoolean(v, k)
                     case "--override" | "-z" ⇒ params.overRide = parseBoolean(v, k)
 
-                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: $C${cmdArgs(i)}$RST")
+                    case _ ⇒ throw new IllegalArgumentException(s"Invalid argument: $C$arg$RST")
                 }
 
                 i = i + 2
@@ -817,14 +818,14 @@ object NCSqlModelGeneratorImpl {
 
     /**
      *
-     * @param repl Whether or not this is called from REPL.
+     * @param fromCli Whether or not this tool was called from NLPCraft CLI.
      * @param args Command line arguments.
      */
-    def process(repl: Boolean, args: Array[String]): Unit = {
-        this.repl = repl
+    def process(fromCli: Boolean, args: Array[String]): Unit = {
+        this.fromCli = fromCli
 
         if (args.isEmpty || !args.intersect(Seq("--help", "-h", "-help", "--?", "-?", "/?", "/help")).isEmpty)
-            help(System.out)
+            help()
         else {
             val params = parseCmdParameters(args)
             val tbls = readSqlMetadata(params)

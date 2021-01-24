@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.sqlgen;
 
+import org.apache.nlpcraft.common.util.NCUtils;
 import org.apache.nlpcraft.model.*;
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.model.tools.sqlgen.impl.*;
@@ -57,16 +58,18 @@ public class NCSqlModelGenerator {
     /**
      * Runs SQL model generator with given command line parameters.
      * 
-     * @param args Command line parameters. Execute with <code>--help</code> parameter to get a full
-     *      documentation.
+     * @param args Command line parameters. Execute with <code>--help</code> parameter to get a full documentation.
      * @throws NCException Thrown in case of any errors.
      */
     public static void main(String[] args) {
-        int status  = 0;
+
+        boolean fromCli = NCUtils.isSysEnvSet("NLPCRAFT_FROM_CLI");
+
+        int status = 0;
 
         // Calling out Scala engine.
         try {
-            NCSqlModelGeneratorImpl.process(false, args);
+            NCSqlModelGeneratorImpl.process(fromCli, args);
         }
         catch (Exception e) {
             status = 1;

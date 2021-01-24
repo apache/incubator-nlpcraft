@@ -336,7 +336,7 @@ object NCCli extends App {
      */
     private def getParamOrNull(cmd: Command, args: Seq[Argument], id: String): String =
         args.find(_.parameter.id == id) match {
-            case Some(arg) ⇒ stripQuotes(arg.value.get)
+            case Some(arg) ⇒ U.trimQuotes(arg.value.get)
             case None ⇒ null
         }
 
@@ -362,7 +362,7 @@ object NCCli extends App {
      */
     private def getCpParam(cmd: Command, args: Seq[Argument], id: String): String =
         getParamOpt(cmd, args, id) match {
-            case Some(path) ⇒ normalizeCp(stripQuotes(path))
+            case Some(path) ⇒ normalizeCp(U.trimQuotes(path))
             case None ⇒ null
         }
 
@@ -375,7 +375,7 @@ object NCCli extends App {
      */
     private def getPathParam(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String = {
         def makePath(p: String): String = {
-            val normPath = refinePath(stripQuotes(p))
+            val normPath = refinePath(U.trimQuotes(p))
 
             checkFilePath(normPath)
 
@@ -396,21 +396,6 @@ object NCCli extends App {
         require(path != null)
 
         if (path.nonEmpty && path.head == '~') new File(SystemUtils.getUserHome, path.tail).getAbsolutePath else path
-    }
-
-    /**
-     *
-     * @param s
-     * @return
-     */
-    @tailrec
-    private[cmdline] def stripQuotes(s: String): String = {
-        val x = s.trim
-
-        if ((x.startsWith("\"") && x.endsWith("\"")) || (x.startsWith("'") && x.endsWith("'")))
-            stripQuotes(x.substring(1, x.length - 1))
-        else
-            x
     }
 
     /**
@@ -482,7 +467,7 @@ object NCCli extends App {
      */
     private [cmdline] def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val restPath = getParam(cmd, args, "path") // REST call path (NOT a file system path).
-        val json = stripQuotes(getParam(cmd, args, "json"))
+        val json = U.trimQuotes(getParam(cmd, args, "json"))
 
         httpRest(cmd, restPath, json)
     }
@@ -498,7 +483,7 @@ object NCCli extends App {
         val noWait = getFlagParam(cmd, args, "noWait", false)
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 2)
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
-            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms2048m", "-XX:+UseG1GC")
         }
 
@@ -694,7 +679,7 @@ object NCCli extends App {
         val addCp = getCpParam(cmd, args, "cp")
         val mdls = getParamOrNull(cmd, args, "models")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
-            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -780,7 +765,7 @@ object NCCli extends App {
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
         val mdls = getParamOrNull(cmd, args, "models")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
-            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -1757,7 +1742,7 @@ object NCCli extends App {
 
         val addCp = getCpParam(cmd, args, "cp")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
-            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -1904,8 +1889,8 @@ object NCCli extends App {
                     val value = arg.value.getOrElse(throw InvalidJsonParameter(cmd, arg.parameter.names.head))
 
                     param.kind match {
-                        case STRING ⇒ buf ++= "\"" + U.escapeJson(stripQuotes(value)) + "\""
-                        case OBJECT | ARRAY ⇒ buf ++= stripQuotes(value)
+                        case STRING ⇒ buf ++= "\"" + U.escapeJson(U.trimQuotes(value)) + "\""
+                        case OBJECT | ARRAY ⇒ buf ++= U.trimQuotes(value)
                         case BOOLEAN | NUMERIC ⇒ buf ++= value
                     }
 
@@ -2932,7 +2917,7 @@ object NCCli extends App {
                 throw mkError()
 
             val name = if (parts.size == 1) arg.trim else parts(0).trim
-            val value = if (parts.size == 1) None else Some(stripQuotes(parts(1).trim))
+            val value = if (parts.size == 1) None else Some(U.trimQuotes(parts(1).trim))
             val hasSynth = cmd.params.exists(_.synthetic)
 
             if (name.endsWith("=")) // Missing value or extra '='.
