@@ -381,7 +381,7 @@ private [cmdline] object NCCliCommands {
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"Although this configuration property is optional, in most cases you will need to provide an " +
                         s"additional classpath for JDBC driver that you use (see ${c("'--driver'")} parameter) unless " +
-                        s"it is available in NLPCraft by default, i.e. Apache Ignite." +
+                        s"it is available in NLPCraft by default, i.e. Apache Ignite and H2. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
