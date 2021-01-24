@@ -511,8 +511,8 @@ private [cmdline] object NCCliCommands {
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME gen-sql",
                         "  --url=jdbc:h2:tcp://localhost:9093/nlp2sql",
-                        "  --org.h2.jdbcx.JdbcDataSource",
-                        "  --schema=public",
+                        "  --org.h2.Driver",
+                        "  --schema=PUBLIC",
                         "  --out=model.yaml"
                     ),
                     desc =
