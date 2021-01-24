@@ -23,7 +23,6 @@ import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.module.NCModule._
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 
-import java.util
 import java.util.concurrent._
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
@@ -32,19 +31,19 @@ import scala.concurrent.ExecutionContext
  * Common thread pool manager.
  */
 object NCThreadPoolManager extends NCService {
+    private final val KEEP_ALIVE_MS = 60000
+
     @volatile private var data: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
 
     private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
-    // Names are same as parameter names of 'ThreadPoolExecutor'.
-    private case class PoolCfg(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long)
 
     private object Config extends NCConfigurable {
         private val module: NCModule = NCModule.getModule
 
         val moduleName: String = module.toString.toLowerCase
 
-        val factories: Map[String, PoolCfg] = {
-            val m: Option[Map[String, util.HashMap[String, Number]]] =
+        val sizes: Map[String, Integer] = {
+            val m: Option[Map[String, Integer]] =
                 getMapOpt(
                     module match {
                         case SERVER ⇒ "nlpcraft.server.pools"
@@ -54,60 +53,40 @@ object NCThreadPoolManager extends NCService {
                     }
                 )
 
-            m.getOrElse(Map.empty).map { case (name, cfg) ⇒
-                val cfgMap = cfg.asScala
+            m.getOrElse(Map.empty)
+        }
 
-                def get(prop: String): Number = {
-                    try
-                        cfgMap.getOrElse(prop, throw new NCE(s"Missing property value '$prop' for thread pool: $name"))
-                    catch {
-                        case e: ClassCastException ⇒ throw new NCE(s"Invalid property value '$prop' for thread pool: $name", e)
-                    }
-                }
+        @throws[NCE]
+        def check(): Unit = {
+            val inv = sizes.filter(_._2 <= 0)
 
-                name →
-                    PoolCfg(
-                        get("corePoolSize").intValue(),
-                        get("maximumPoolSize").intValue(),
-                        get("keepAliveTime").longValue()
-                    )
-            }
+            if (inv.nonEmpty)
+                throw new NCE(s"Invalid pool maximum sizes for: [${inv.keys.mkString(", ")}]")
         }
     }
+
+    Config.check()
 
     def getContext(name: String): ExecutionContext =
         data.computeIfAbsent(
             name,
             (_: String) ⇒
-                Config.factories.get(name) match {
-                    case Some(pCfg) ⇒
-                        val p = new ThreadPoolExecutor(
-                            pCfg.corePoolSize,
-                            pCfg.maximumPoolSize,
-                            pCfg.keepAliveTime,
+                Config.sizes.get(name) match {
+                    case Some(maxSize) ⇒
+                        val ex = new ThreadPoolExecutor(
+                            0,
+                            maxSize,
+                            KEEP_ALIVE_MS,
                             TimeUnit.MILLISECONDS,
                             new LinkedBlockingQueue[Runnable]
                         )
 
-                        logger.info(
-                            s"Custom executor service created [ " +
-                            s"name=$name, " +
-                            s"module=${Config.moduleName}, " +
-                            s"corePoolSize=${pCfg.corePoolSize}, " +
-                            s"maximumPoolSize=${pCfg.maximumPoolSize}, " +
-                            s"keepAliveTime=${pCfg.keepAliveTime}" +
-                            "]"
-                        )
+                        logger.info(s"Custom executor service created for '$name' with maxThreadSize: $maxSize.")
 
-                        Holder(ExecutionContext.fromExecutor(p), Some(p))
+                        Holder(ExecutionContext.fromExecutor(ex), Some(ex))
 
                     case None ⇒
-                        logger.info(
-                            s"Default system executor service used [ " +
-                            s"name=$name, " +
-                            s"module=${Config.moduleName}" +
-                            "]"
-                        )
+                        logger.info(s"Default system executor service used for '$name'")
 
                         Holder(ExecutionContext.Implicits.global, None)
                 }
