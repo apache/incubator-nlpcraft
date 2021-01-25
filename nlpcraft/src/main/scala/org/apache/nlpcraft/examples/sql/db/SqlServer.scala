@@ -20,6 +20,7 @@ package org.apache.nlpcraft.examples.sql.db
 import java.io.File
 import java.sql.SQLException
 
+import org.apache.nlpcraft.common._
 import com.typesafe.scalalogging.LazyLogging
 import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
@@ -73,11 +74,13 @@ object SqlServer extends LazyLogging {
                 if (e.getErrorCode != 42101)
                     throw e
 
-                logger.info(
-                    s"Database '$H2_URL' is NOT initialized because data already exists. " +
-                    s"To re-initialize - delete files in '$H2_BASEDIR' folder and start again. "
-                )
+                logger.info(s"Database '$H2_URL' is NOT initialized because data already exists.")
+                logger.info(s"  +-- To re-initialize - delete files in '$H2_BASEDIR' folder and start again.")
         }
+
+        logger.info(s"JDBC information:")
+        logger.info(s"  +-- ${c("URL")}: $H2_URL")
+        logger.info(s"  +-- ${c("Driver")}: org.h2.Driver")
 
         started = true
     }

@@ -75,6 +75,23 @@ import scala.util.control.Exception.ignoring
 object NCCli extends App {
     private final val NAME = "NLPCraft CLI"
 
+    /*
+     * Disable warnings from Ignite on JDK 11.
+     */
+    final val JVM_OPTS_RT_WARNS = Seq (
+        "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
+        "--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+        "--add-opens=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+        "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED",
+        "--illegal-access=permit"
+    )
+
     //noinspection RegExpRedundantEscape
     private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
     private final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
@@ -337,9 +354,17 @@ object NCCli extends App {
      * @param args
      * @param id
      */
+    private def isParam(cmd: Command, args: Seq[Argument], id: String): Boolean =
+        args.find(_.parameter.id == id).nonEmpty
+
+    /**
+     * @param cmd
+     * @param args
+     * @param id
+     */
     private def getParamOrNull(cmd: Command, args: Seq[Argument], id: String): String =
         args.find(_.parameter.id == id) match {
-            case Some(arg) ⇒ stripQuotes(arg.value.get)
+            case Some(arg) ⇒ U.trimQuotes(arg.value.get)
             case None ⇒ null
         }
 
@@ -365,7 +390,7 @@ object NCCli extends App {
      */
     private def getCpParam(cmd: Command, args: Seq[Argument], id: String): String =
         getParamOpt(cmd, args, id) match {
-            case Some(path) ⇒ normalizeCp(stripQuotes(path))
+            case Some(path) ⇒ normalizeCp(U.trimQuotes(path))
             case None ⇒ null
         }
 
@@ -378,7 +403,7 @@ object NCCli extends App {
      */
     private def getPathParam(cmd: Command, args: Seq[Argument], id: String, dflt: String = null): String = {
         def makePath(p: String): String = {
-            val normPath = refinePath(stripQuotes(p))
+            val normPath = refinePath(U.trimQuotes(p))
 
             checkFilePath(normPath)
 
@@ -399,21 +424,6 @@ object NCCli extends App {
         require(path != null)
 
         if (path.nonEmpty && path.head == '~') new File(SystemUtils.getUserHome, path.tail).getAbsolutePath else path
-    }
-
-    /**
-     *
-     * @param s
-     * @return
-     */
-    @tailrec
-    private[cmdline] def stripQuotes(s: String): String = {
-        val x = s.trim
-
-        if ((x.startsWith("\"") && x.endsWith("\"")) || (x.startsWith("'") && x.endsWith("'")))
-            stripQuotes(x.substring(1, x.length - 1))
-        else
-            x
     }
 
     /**
@@ -485,7 +495,7 @@ object NCCli extends App {
      */
     private [cmdline] def cmdRest(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val restPath = getParam(cmd, args, "path") // REST call path (NOT a file system path).
-        val json = stripQuotes(getParam(cmd, args, "json"))
+        val json = U.trimQuotes(getParam(cmd, args, "json"))
 
         httpRest(cmd, restPath, json)
     }
@@ -501,7 +511,7 @@ object NCCli extends App {
         val noWait = getFlagParam(cmd, args, "noWait", false)
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 2)
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
-            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms2048m", "-XX:+UseG1GC")
         }
 
@@ -527,15 +537,9 @@ object NCCli extends App {
         srvArgs += JAVA
         srvArgs ++= jvmOpts
 
-        // Required by Ignite 2.x running on JDK 11+.
         // TODO: check for dups with 'jvmOpts'?
-        srvArgs += "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED"
-        srvArgs += "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-        srvArgs += "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED"
-        srvArgs += "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED"
-        srvArgs += "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED"
-        srvArgs += "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED"
-        srvArgs += "--illegal-access=permit"
+        JVM_OPTS_RT_WARNS.foreach(srvArgs += _)
+
         srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
         srvArgs += "-cp"
         srvArgs += JAVA_CP
@@ -697,7 +701,7 @@ object NCCli extends App {
         val addCp = getCpParam(cmd, args, "cp")
         val mdls = getParamOrNull(cmd, args, "models")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
-            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -711,27 +715,32 @@ object NCCli extends App {
         if (mdls == null && addCp != null)
             warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
 
-        var validatorArgs = mutable.ArrayBuffer.empty[String]
+        var jvmArgs = mutable.ArrayBuffer.empty[String]
 
-        validatorArgs += JAVA
-        validatorArgs ++= jvmOpts
+        jvmArgs += JAVA
+        jvmArgs ++= jvmOpts
+
+        JVM_OPTS_RT_WARNS.foreach(jvmArgs += _)
 
         if (cfgPath != null)
-            validatorArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
+            jvmArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
 
         if (mdls != null)
-            validatorArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
+            jvmArgs += s"-DNLPCRAFT_TEST_MODELS=$mdls"
 
-        validatorArgs += "-cp"
+        if (!NCAnsi.isEnabled)
+            jvmArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
+
+        jvmArgs += "-cp"
 
         if (addCp != null)
-            validatorArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
+            jvmArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
         else
-            validatorArgs += JAVA_CP
+            jvmArgs += JAVA_CP
 
-        validatorArgs += "org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator"
+        jvmArgs += "org.apache.nlpcraft.model.tools.test.NCTestAutoModelValidator"
 
-        val validatorPb = new ProcessBuilder(validatorArgs.asJava)
+        val validatorPb = new ProcessBuilder(jvmArgs.asJava)
 
         validatorPb.directory(new File(USR_WORK_DIR))
         validatorPb.inheritIO()
@@ -772,7 +781,7 @@ object NCCli extends App {
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
         val mdls = getParamOrNull(cmd, args, "models")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
-            case Some(opts) ⇒ U.splitTrimFilter(stripQuotes(opts), " ")
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
@@ -798,6 +807,9 @@ object NCCli extends App {
 
         prbArgs += JAVA
         prbArgs ++= jvmOpts
+
+        JVM_OPTS_RT_WARNS.foreach(prbArgs += _)
+
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
 
         if (mdls != null)
@@ -1732,21 +1744,61 @@ object NCCli extends App {
      * @param repl Whether or not executing from REPL.
      */
     private [cmdline] def cmdSqlGen(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        getParam(cmd, args, "driver")
-        getParam(cmd, args, "schema")
-        getParam(cmd, args, "out")
-        getParam(cmd, args, "url")
-
-        val nativeArgs = args.flatMap { arg ⇒
-            val param = arg.parameter.names.head
-
-            arg.value match {
-                case None ⇒ Seq(param)
-                case Some(v) ⇒ Seq(param, v)
-            }
+        // Mandatory parameters check (unless --help is specified).
+        if (!isParam(cmd, args, "help")) {
+            getParam(cmd, args, "driver")
+            getParam(cmd, args, "schema")
+            getParam(cmd, args, "out")
+            getParam(cmd, args, "url")
         }
 
-        NCSqlModelGeneratorImpl.process(repl = true, nativeArgs.toArray)
+        val addCp = getCpParam(cmd, args, "cp")
+        val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
+            case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
+            case None ⇒ Seq("-ea", "-Xms1024m")
+        }
+
+        var jvmArgs = mutable.ArrayBuffer.empty[String]
+
+        jvmArgs += JAVA
+        jvmArgs ++= jvmOpts
+
+        JVM_OPTS_RT_WARNS.foreach(jvmArgs += _)
+
+        if (!NCAnsi.isEnabled)
+            jvmArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true"
+
+        jvmArgs += "-cp"
+
+        if (addCp != null)
+            jvmArgs += s"$JAVA_CP$CP_SEP$addCp".replace(s"$CP_SEP$CP_SEP", CP_SEP)
+        else
+            jvmArgs += JAVA_CP
+
+        jvmArgs += "org.apache.nlpcraft.model.tools.sqlgen.NCSqlModelGenerator"
+
+        for (arg ← args)
+            if (arg.parameter.id != "cp" && arg.parameter.id != "jvmopts") {
+                val p = arg.parameter.names.head
+
+                arg.value match {
+                    case None ⇒ jvmArgs += p
+                    case Some(v) ⇒ jvmArgs += s"$p=${arg.value.get}"
+                }
+            }
+
+        val pb = new ProcessBuilder(jvmArgs.asJava)
+
+        pb.directory(new File(USR_WORK_DIR))
+        pb.inheritIO()
+
+        try {
+            pb.start().onExit().get()
+        }
+        catch {
+            case _: InterruptedException ⇒ () // Ignore.
+            case e: Exception ⇒ error(s"Failed to run SQL model generator: ${y(e.getMessage)}")
+        }
     }
 
     /**
@@ -1843,8 +1895,8 @@ object NCCli extends App {
                     val value = arg.value.getOrElse(throw InvalidJsonParameter(cmd, arg.parameter.names.head))
 
                     param.kind match {
-                        case STRING ⇒ buf ++= "\"" + U.escapeJson(stripQuotes(value)) + "\""
-                        case OBJECT | ARRAY ⇒ buf ++= stripQuotes(value)
+                        case STRING ⇒ buf ++= "\"" + U.escapeJson(U.trimQuotes(value)) + "\""
+                        case OBJECT | ARRAY ⇒ buf ++= U.trimQuotes(value)
                         case BOOLEAN | NUMERIC ⇒ buf ++= value
                     }
 
@@ -2871,7 +2923,7 @@ object NCCli extends App {
                 throw mkError()
 
             val name = if (parts.size == 1) arg.trim else parts(0).trim
-            val value = if (parts.size == 1) None else Some(stripQuotes(parts(1).trim))
+            val value = if (parts.size == 1) None else Some(U.trimQuotes(parts(1).trim))
             val hasSynth = cmd.params.exists(_.synthetic)
 
             if (name.endsWith("=")) // Missing value or extra '='.

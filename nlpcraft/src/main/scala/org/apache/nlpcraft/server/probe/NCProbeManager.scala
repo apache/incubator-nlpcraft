@@ -405,7 +405,7 @@ object NCProbeManager extends NCService {
                                 val ms = Config.reconnectTimeoutMs
     
                                 // Server socket error must be logged.
-                                U.prettyWarn(logger, s"$name server error, re-starting in ${ms / 1000} sec.", e)
+                                U.prettyError(logger, s"$name server error, re-starting in ${ms / 1000} sec.", e)
                                 
                                 U.sleep(ms)
                             }

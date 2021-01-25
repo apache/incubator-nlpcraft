@@ -55,6 +55,7 @@ import resource._
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection._
 import scala.concurrent.duration._
@@ -173,6 +174,22 @@ object NCUtils extends LazyLogging {
      */
     def splitTrimFilter(s: String, sep: String): Seq[String] =
         trimFilter(s.split(sep))
+
+    /**
+     * Recursively removed quotes from given string.
+     *
+     * @param s
+     * @return
+     */
+    @tailrec
+    def trimQuotes(s: String): String = {
+        val z = s.trim
+
+        if ((z.startsWith("'") && z.endsWith("'")) || (z.startsWith("\"") && z.endsWith("\"")))
+            trimQuotes(z.substring(1, z.length - 1))
+        else
+            z
+    }
 
     /**
      *
@@ -1359,8 +1376,26 @@ object NCUtils extends LazyLogging {
      * @param title
      * @param e
      */
-    def prettyError(logger: Logger, title: String, e: Throwable): Unit =
-        prettyErrorImpl(err = true, logger, title, e)
+    def prettyError(logger: Logger, title: String, e: Throwable): Unit = {
+        // Keep the full trace in the 'trace' log level.
+        logger.trace(title, e)
+
+        prettyErrorImpl(new PrettyErrorLogger {
+            override def log(s: String): Unit = logger.error(s)
+        }, title, e)
+    }
+
+    /**
+     *
+     * @param title
+     * @param e
+     */
+    def prettyError(title: String, e: Throwable): Unit =
+        prettyErrorImpl(new PrettyErrorLogger(), title, e)
+
+    sealed class PrettyErrorLogger {
+        def log(s: String) = System.err.println(s)
+    }
 
     /**
      *
@@ -1368,18 +1403,8 @@ object NCUtils extends LazyLogging {
      * @param title
      * @param e
      */
-    def prettyWarn(logger: Logger, title: String, e: Throwable): Unit =
-        prettyErrorImpl(err = false, logger, title, e)
-
-    /**
-     *
-     * @param err Error or warning.
-     * @param logger
-     * @param title
-     * @param e
-     */
-    private def prettyErrorImpl(err: Boolean, logger: Logger, title: String, e: Throwable): Unit = {
-        if (err) logger.error(title) else logger.warn(title)
+    private def prettyErrorImpl(logger: PrettyErrorLogger, title: String, e: Throwable): Unit = {
+        logger.log(title)
 
         val INDENT = 2
 
@@ -1394,7 +1419,7 @@ object NCUtils extends LazyLogging {
             if (errMsg == null)
                 errMsg = "<null>"
 
-            val exClsName = if (!x.isInstanceOf[NCE]) s"$ansiRedFg[${x.getClass.getSimpleName}]$ansiReset " else ""
+            val exClsName = if (!x.isInstanceOf[NCE]) s"$ansiRedFg[${x.getClass.getCanonicalName}]$ansiReset " else ""
 
             val trace = x.getStackTrace.find(!_.getClassName.startsWith("scala.")).getOrElse(x.getStackTrace.head)
 
@@ -1408,12 +1433,32 @@ object NCUtils extends LazyLogging {
                     s"$exClsName$errMsg $ansiCyanFg->$ansiReset ($fileName:$lineNum)"
 
             msg.split("\n").foreach(line ⇒ {
-                val s = s"${" " * indent}${if (first) ansiBlue("+-- ") else "   "}$line"
+                val s = s"${" " * indent}${if (first) ansiBlue("+-+ ") else "   "}${bo(y(line))}"
 
-                if (err) logger.error(s) else logger.warn(s)
+                logger.log(s)
 
                 first = false
             })
+
+            val traces = x.getStackTrace.filter {t ⇒
+                val mtdName = t.getMethodName
+                val clsName = t.getClassName
+
+                // Clean up trace.
+                clsName.startsWith("org.apache.nlpcraft") &&
+                !clsName.startsWith("org.apache.nlpcraft.common.opencensus") &&
+                !mtdName.contains("startScopedSpan") &&
+                !mtdName.contains('$')
+            }
+
+            for (trace ← traces) {
+                val fileName = trace.getFileName
+                val lineNum = trace.getLineNumber
+                val mtdName = trace.getMethodName
+                val clsName = trace.getClassName.replace("org.apache.nlpcraft", "o.a.n")
+
+                logger.log(s"${" " * indent}  ${b("|")} $clsName.$mtdName $ansiCyanFg->$ansiReset ($fileName:$lineNum)")
+            }
 
             indent += INDENT
 
