@@ -189,7 +189,7 @@ object NCExternalConfigManager extends NCService {
      * @return
      */
     private def mkFile(typ: NCResourceType, res: String): File = {
-        val file = mkExtFile(typ, res)
+        val file = new File(Config.dir, getResourcePath(typ, res))
 
         if (!file.exists() || !file.canRead)
             throw new NCE(
@@ -368,13 +368,6 @@ object NCExternalConfigManager extends NCService {
       * @param res
       */
     private def getResourcePath(typ: NCResourceType, res: String): String = s"${type2String(typ)}/$res"
-
-    /**
-      *
-      * @param typ
-      * @param res
-      */
-    private def mkExtFile(typ: NCResourceType, res: String): File = new File(Config.dir, getResourcePath(typ, res))
 
     /**
       *
