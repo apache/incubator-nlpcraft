@@ -19,7 +19,7 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => Note, NCNlpSentenceToken => Token}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ Note, NCNlpSentenceToken => Token}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
@@ -31,7 +31,7 @@ import java.util.{Calendar => C}
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap => LHM}
+import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
 import scala.concurrent.ExecutionContext
 
 /**
