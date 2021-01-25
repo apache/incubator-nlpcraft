@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.common.util
 
 import org.apache.nlpcraft.common._
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
 /**
@@ -43,6 +43,12 @@ class NCUtilsSpec  {
         println(s"Compressed length: " + zipStr.length())
         
         assertTrue(rawStr == rawStr2)
+    }
+
+    @Test
+    def testTrimQuotes() = {
+        assertEquals(U.trimQuotes("""'x'"""), "x")
+        assertEquals(U.trimQuotes("""'"'x'" "z"'"""), """'x'" "z""")
     }
 
     @Test

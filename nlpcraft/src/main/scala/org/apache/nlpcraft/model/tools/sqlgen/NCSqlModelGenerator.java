@@ -57,16 +57,15 @@ public class NCSqlModelGenerator {
     /**
      * Runs SQL model generator with given command line parameters.
      * 
-     * @param args Command line parameters. Execute with <code>--help</code> parameter to get a full
-     *      documentation.
+     * @param args Command line parameters. Execute with <code>--help</code> parameter to get a full documentation.
      * @throws NCException Thrown in case of any errors.
      */
     public static void main(String[] args) {
-        int status  = 0;
+        int status = 0;
 
         // Calling out Scala engine.
         try {
-            NCSqlModelGeneratorImpl.process(false, args);
+            NCSqlModelGeneratorImpl.process(args);
         }
         catch (Exception e) {
             status = 1;
