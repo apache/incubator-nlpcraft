@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestLimitToken => lim, NCTestUserToken => usr}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestLimitToken ⇒ lim, NCTestUserToken ⇒ usr,  NCTestNlpToken ⇒ nlp}
 import org.junit.jupiter.api.Test
 
 /**
@@ -58,10 +58,23 @@ class NCEnricherLimitSpec extends NCEnricherBaseSpec {
                 lim(text = "top 10", limit = 10, index = 1, note = "D1", asc = false),
                 usr(text = "D1", id = "D1")
             ),
-            _ ⇒ checkExists(
+            _ ⇒ checkAll(
                 "handful of A B",
-                lim(text = "handful of", limit = 5, index = 1, note = "AB", asc = false),
-                usr(text = "A B", id = "AB")
+                Seq(
+                    lim(text = "handful of", limit = 5, index = 1, note = "AB", asc = false),
+                    usr(text = "A B", id = "AB")
+                ),
+                Seq(
+                    lim(text = "handful of", limit = 5, index = 1, note = "A", asc = false),
+                    usr(text = "A", id = "A"),
+                    usr(text = "B", id = "B")
+                ),
+                Seq(
+                    nlp("handful"),
+                    nlp("of"),
+                    usr(text = "A", id = "A"),
+                    usr(text = "B", id = "B")
+                )
             )
         )
 }
