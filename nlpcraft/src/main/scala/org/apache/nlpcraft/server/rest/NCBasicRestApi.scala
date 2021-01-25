@@ -30,7 +30,7 @@ import io.opencensus.stats.Measure
 import io.opencensus.trace.{Span, Status}
 import org.apache.commons.validator.routines.UrlValidator
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
@@ -45,14 +45,16 @@ import spray.json.DefaultJsonProtocol._
 import spray.json.{JsObject, JsValue, RootJsonFormat}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * REST API default implementation.
   */
-class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats with NCThreadPoolContext {
+class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace with NCOpenCensusServerStats {
     protected final val GSON = new Gson()
     protected final val URL_VALIDATOR = new UrlValidator(Array("http", "https"), UrlValidator.ALLOW_LOCAL_URLS)
+
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getContext("probes.communication")
 
     final val API_VER = 1
     final val API = "api" / s"v$API_VER"

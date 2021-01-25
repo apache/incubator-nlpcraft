@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
@@ -51,15 +51,18 @@ import java.util.function.Predicate
 import java.util.{Date, Objects}
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, _}
+import scala.concurrent.ExecutionContext
 
 /**
   * Probe enrichment manager.
   */
-object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats with NCThreadPoolContext {
-    private final val MAX_NESTED_TOKENS = 32
-
+object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     // Embedded probe Java callback function.
     private type EMBEDDED_CB = java.util.function.Consumer[NCEmbeddedResult]
+
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getContext("model.solver.pool")
+
+    private final val MAX_NESTED_TOKENS = 32
 
     private final val mux = new Object()
 
@@ -73,10 +76,12 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats wi
 
         def check(): Unit =
             if (resultMaxSize <= 0)
-                throw new NCE(s"Configuration property value must be > 0 [" +
+                throw new NCE(
+                    s"Configuration property value must be > 0 [" +
                     s"name=$pre.resultMaxSizeBytes, " +
                     s"value=$resultMaxSize" +
-                s"]")
+                    s"]"
+                )
     }
 
     Config.check()

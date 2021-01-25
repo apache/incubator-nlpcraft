@@ -20,15 +20,18 @@ package org.apache.nlpcraft.server.nlp.core
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 
 import scala.collection.Seq
+import scala.concurrent.ExecutionContext
 
 /**
   * Server NLP manager.
   */
-object NCNlpServerManager extends NCService with NCThreadPoolContext {
+object NCNlpServerManager extends NCService {
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getSystemContext
+
     @volatile private var parser: NCNlpParser = _
     @volatile private var ners: Map[String, NCNlpNerEnricher] = _
 

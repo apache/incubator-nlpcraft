@@ -19,30 +19,33 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ Note, NCNlpSentenceToken ⇒ Token}
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => Note, NCNlpSentenceToken => Token}
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 
 import java.util
-import java.util.{Calendar ⇒ C}
+import java.util.{Calendar => C}
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
+import scala.collection.mutable.{LinkedHashMap => LHM}
+import scala.concurrent.ExecutionContext
 
 /**
   * Date enricher.
   */
-object NCDateEnricher extends NCServerEnricher with NCThreadPoolContext {
+object NCDateEnricher extends NCServerEnricher {
+    private type LHM_SS = LHM[String, String]
+
     private object Config extends NCConfigurable {
         def style: NCDateFormatType = getObject("nlpcraft.server.datesFormatStyle", NCDateFormatType.withName)
     }
 
-    private type LHM_SS = LHM[String, String]
-    
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getSystemContext
+
     // Correctness is not checked (double spaces etc).
     private[date] val prepsFrom = mkPrepositions(FROM)
     private[date] val prepsTo = mkPrepositions(TO)

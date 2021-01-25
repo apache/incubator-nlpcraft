@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType._
 import org.apache.nlpcraft.common.module.NCModule
 import org.apache.nlpcraft.common.module.NCModule.{NCModule, PROBE, SERVER}
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCE, NCService, U}
 import resource.managed
 
@@ -33,14 +33,16 @@ import java.net.URL
 import java.nio.file.Files
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
+import scala.concurrent.ExecutionContext
 import scala.io.Source
 
 /**
   * External configuration manager.
   */
-object NCExternalConfigManager extends NCService with NCThreadPoolContext {
+object NCExternalConfigManager extends NCService {
     private final val DFLT_DIR = ".nlpcraft/extcfg"
     private final val MD5_FILE = "md5.txt"
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getSystemContext
 
     case class Holder(typ: NCExternalConfigType, files: Set[String], modules: Set[NCModule])
 

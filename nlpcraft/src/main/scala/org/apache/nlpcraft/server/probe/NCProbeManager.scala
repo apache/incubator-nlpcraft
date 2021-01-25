@@ -25,7 +25,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.crypto.NCCipher
 import org.apache.nlpcraft.common.nlp.NCNlpSentence
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.socket.NCSocket
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common.{NCService, _}
@@ -45,15 +45,16 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.JavaConverters._
 import scala.collection.{Map, mutable}
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
 
 /**
   * Probe manager.
   */
-object NCProbeManager extends NCService with NCThreadPoolContext {
+object NCProbeManager extends NCService {
     private final val GSON = new Gson()
     private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getContext("probes.communication")
 
     // Type safe and eager configuration container.
     private object Config extends NCConfigurable {

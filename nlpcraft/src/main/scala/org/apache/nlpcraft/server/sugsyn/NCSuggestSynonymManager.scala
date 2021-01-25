@@ -30,7 +30,7 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpPorterStemmer
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.server.probe.NCProbeManager
 
 import java.util
@@ -38,13 +38,13 @@ import java.util.concurrent._
 import java.util.concurrent.atomic.{AtomicInteger, AtomicReference}
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, mutable}
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success}
 
 /**
  * Synonym suggestion manager.
  */
-object NCSuggestSynonymManager extends NCService with NCThreadPoolContext {
+object NCSuggestSynonymManager extends NCService {
     // For context word server requests.
     private final val MAX_LIMIT: Int = 10000
     private final val BATCH_SIZE = 20
@@ -57,6 +57,8 @@ object NCSuggestSynonymManager extends NCService with NCThreadPoolContext {
     private final val GSON = new Gson
     private final val TYPE_RESP = new TypeToken[util.List[util.List[Suggestion]]]() {}.getType
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
+
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getSystemContext
 
     private object Config extends NCConfigurable {
         val urlOpt: Option[String] = getStringOpt("nlpcraft.server.ctxword.url")

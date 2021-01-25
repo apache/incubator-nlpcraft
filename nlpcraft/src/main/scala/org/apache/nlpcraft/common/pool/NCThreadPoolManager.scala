@@ -33,19 +33,15 @@ import scala.concurrent.ExecutionContext
 object NCThreadPoolManager extends NCService {
     private final val KEEP_ALIVE_MS = 60000
 
-    @volatile private var data: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
+    @volatile private var hs: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
 
     private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
 
     private object Config extends NCConfigurable {
-        private val module: NCModule = NCModule.getModule
-
-        val moduleName: String = module.toString.toLowerCase
-
         val sizes: Map[String, Integer] = {
             val m: Option[Map[String, Integer]] =
                 getMapOpt(
-                    module match {
+                    NCModule.getModule match {
                         case SERVER ⇒ "nlpcraft.server.pools"
                         case PROBE ⇒ "nlpcraft.probe.pools"
 
@@ -67,8 +63,10 @@ object NCThreadPoolManager extends NCService {
 
     Config.check()
 
+    def getSystemContext: ExecutionContext =  ExecutionContext.Implicits.global
+
     def getContext(name: String): ExecutionContext =
-        data.computeIfAbsent(
+        hs.computeIfAbsent(
             name,
             (_: String) ⇒
                 Config.sizes.get(name) match {
@@ -84,18 +82,17 @@ object NCThreadPoolManager extends NCService {
                         logger.info(s"Custom executor service created for '$name' with maxThreadSize: $maxSize.")
 
                         Holder(ExecutionContext.fromExecutor(ex), Some(ex))
-
                     case None ⇒
-                        logger.info(s"Default system executor service used for '$name'")
+                        logger.info(s"Default executor service created for '$name', because it is not configured.")
 
-                        Holder(ExecutionContext.Implicits.global, None)
+                        Holder(getSystemContext, None)
                 }
             ).context
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         ackStarting()
 
-        data = new ConcurrentHashMap
+        hs = new ConcurrentHashMap
 
         ackStarted()
     }
@@ -103,9 +100,9 @@ object NCThreadPoolManager extends NCService {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         ackStopping()
 
-        data.values().asScala.flatMap(_.pool).foreach(U.shutdownPool)
-        data.clear()
-        data = null
+        hs.values().asScala.flatMap(_.pool).foreach(U.shutdownPool)
+        hs.clear()
+        hs = null
 
         ackStopped()
     }

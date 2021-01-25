@@ -20,23 +20,26 @@ package org.apache.nlpcraft.server.nlp.core.opennlp
 import io.opencensus.trace.Span
 import opennlp.tools.namefind.{NameFinderME, TokenNameFinderModel}
 import org.apache.ignite.IgniteCache
-import org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizer
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigManager
 import org.apache.nlpcraft.common.extcfg.NCExternalConfigType.OPENNLP
-import org.apache.nlpcraft.common.pool.NCThreadPoolContext
+import org.apache.nlpcraft.common.nlp.core.opennlp.NCOpenNlpTokenizer
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
+import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
 import resource.managed
 
+import scala.concurrent.ExecutionContext
 import scala.util.control.Exception.catching
 
 /**
   * OpenNLP NER enricher.
   */
-object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteInstance with NCThreadPoolContext {
+object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgniteInstance {
+    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getSystemContext
+
     @volatile private var nerFinders: Map[NameFinderME, String] = _
     @volatile private var cache: IgniteCache[String, Array[String]] = _
 
