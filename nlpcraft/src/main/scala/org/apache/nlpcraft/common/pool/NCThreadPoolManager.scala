@@ -18,10 +18,7 @@
 package org.apache.nlpcraft.common.pool
 
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.module.NCModule
-import org.apache.nlpcraft.common.module.NCModule._
-import org.apache.nlpcraft.common.{NCE, NCService, U}
+import org.apache.nlpcraft.common._
 
 import java.util.concurrent._
 import scala.collection.JavaConverters._
@@ -31,68 +28,67 @@ import scala.concurrent.ExecutionContext
  * Common thread pool manager.
  */
 object NCThreadPoolManager extends NCService {
+    /**
+     * Pools that should NOT default to a system context.
+     * TODO: in the future - we may need to open this to user configuration.
+     */
+    private final val NON_SYS_POOLS = Seq(
+        "probes.communication",
+        "probe.requests",
+        "model.solver.pool"
+    )
+
     private final val KEEP_ALIVE_MS = 60000
+    private final val POOL_SIZE = Runtime.getRuntime.availableProcessors // Since JDK 10 is safe for containers.
 
-    @volatile private var hs: ConcurrentHashMap[String, Holder] = new ConcurrentHashMap
+    @volatile private var cache: ConcurrentHashMap[String, Holder] = _
 
-    private case class Holder(context: ExecutionContext, pool: Option[ExecutorService])
+    /**
+     *
+     * @param context
+     * @param pool
+     */
+    private case class Holder(
+        context: ExecutionContext,
+        pool: Option[ExecutorService]
+    )
 
-    private object Config extends NCConfigurable {
-        val sizes: Map[String, Integer] = {
-            val m: Option[Map[String, Integer]] =
-                getMapOpt(
-                    NCModule.getModule match {
-                        case SERVER ⇒ "nlpcraft.server.pools"
-                        case PROBE ⇒ "nlpcraft.probe.pools"
+    /**
+     *
+     * @return
+     */
+    def getSystemContext: ExecutionContext = ExecutionContext.Implicits.global
 
-                        case m ⇒ throw new AssertionError(s"Unexpected runtime module: $m")
-                    }
-                )
-
-            m.getOrElse(Map.empty)
-        }
-
-        @throws[NCE]
-        def check(): Unit = {
-            val inv = sizes.filter(_._2 <= 0)
-
-            if (inv.nonEmpty)
-                throw new NCE(s"Invalid pool maximum sizes for: [${inv.keys.mkString(", ")}]")
-        }
-    }
-
-    Config.check()
-
-    def getSystemContext: ExecutionContext =  ExecutionContext.Implicits.global
-
+    /**
+     *
+     * @param name
+     * @return
+     */
     def getContext(name: String): ExecutionContext =
-        hs.computeIfAbsent(
+        cache.computeIfAbsent(
             name,
             (_: String) ⇒
-                Config.sizes.get(name) match {
-                    case Some(maxSize) ⇒
-                        val ex = new ThreadPoolExecutor(
-                            0,
-                            maxSize,
-                            KEEP_ALIVE_MS,
-                            TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue[Runnable]
-                        )
+                if (NON_SYS_POOLS.contains(name)) {
+                    // Create separate executor for these pools...
+                    val exec = new ThreadPoolExecutor(
+                        0,
+                        POOL_SIZE,
+                        KEEP_ALIVE_MS,
+                        TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue[Runnable]
+                    )
 
-                        logger.info(s"Custom executor service created for '$name' with maxThreadSize: $maxSize.")
-
-                        Holder(ExecutionContext.fromExecutor(ex), Some(ex))
-                    case None ⇒
-                        logger.info(s"Default executor service created for '$name', because it is not configured.")
-
-                        Holder(getSystemContext, None)
+                    Holder(ExecutionContext.fromExecutor(exec), Some(exec))
                 }
-            ).context
+                else
+                    Holder(getSystemContext, None)
+        )
+        .context
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         ackStarting()
 
-        hs = new ConcurrentHashMap
+        cache = new ConcurrentHashMap
 
         ackStarted()
     }
@@ -100,9 +96,10 @@ object NCThreadPoolManager extends NCService {
     override def stop(parent: Span): Unit = startScopedSpan("stop", parent) { _ ⇒
         ackStopping()
 
-        hs.values().asScala.flatMap(_.pool).foreach(U.shutdownPool)
-        hs.clear()
-        hs = null
+        cache.values().asScala.flatMap(_.pool).foreach(U.shutdownPool)
+        cache.clear()
+
+        cache = null
 
         ackStopped()
     }
