@@ -205,6 +205,24 @@ object NCExternalConfigManager extends NCService {
     }
 
     /**
+     *
+     * @param typ Resource type.
+     * @param res Resource name.
+     * @return
+     */
+    private def mkFile(typ: NCExternalConfigType, res: String): File = {
+        val file = new File(Config.dir, getResourcePath(typ, res))
+
+        if (!file.exists() || !file.canRead)
+            throw new NCE(
+                s"Configuration file '$res' not found or not readable. Delete all files from an external " +
+                s"configuration folder '${Config.dir}' and restart."
+            )
+
+        file
+    }
+
+    /**
       *
       * @param typ
       * @param res
@@ -213,7 +231,7 @@ object NCExternalConfigManager extends NCService {
     @throws[NCE]
     def getContent(typ: NCExternalConfigType, res: String, parent: Span = null): String =
         startScopedSpan("getContent", parent, "res" → res) { _ ⇒
-            mkString(U.readFile(mkExtFile(typ, res), "UTF-8"))
+            mkString(U.readFile(mkFile(typ, res), "UTF-8"))
         }
 
     /**
@@ -225,7 +243,7 @@ object NCExternalConfigManager extends NCService {
     @throws[NCE]
     def getStream(typ: NCExternalConfigType, res: String, parent: Span = null): InputStream =
         startScopedSpan("getStream", parent, "res" → res) { _ ⇒
-            new BufferedInputStream(new FileInputStream(mkExtFile(typ, res)))
+            new BufferedInputStream(new FileInputStream(mkFile(typ, res)))
         }
 
     /**
@@ -372,13 +390,6 @@ object NCExternalConfigManager extends NCService {
       * @param res
       */
     private def getResourcePath(typ: NCExternalConfigType, res: String): String = s"${type2String(typ)}/$res"
-
-    /**
-      *
-      * @param typ
-      * @param res
-      */
-    private def mkExtFile(typ: NCExternalConfigType, res: String): File = new File(Config.dir, getResourcePath(typ, res))
 
     /**
       *

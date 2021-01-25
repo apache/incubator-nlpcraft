@@ -314,7 +314,7 @@
                             <waitAfterLaunch>600</waitAfterLaunch>
                             <processLogFile>${project.build.directory}/server-${timestamp}.log</processLogFile>
                             <arguments>
-                                <argument>java</argument>
+                                <argument>${java.home}/bin/java</argument>
                                 <argument>-Xmx4G</argument>
                                 <argument>-Xms4G</argument>
                                 <argument>--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED</argument>
