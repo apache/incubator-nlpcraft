@@ -81,7 +81,7 @@ object NCThreadPoolManager extends NCService {
                     Holder(ExecutionContext.fromExecutor(exec), Some(exec))
                 }
                 else
-                    Holder(getSystemContext, None)
+                    throw new NCE(s"Custom execution context for unexpected thread pool: $name")
         ).context
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
