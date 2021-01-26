@@ -44,8 +44,6 @@ import scala.util.{Failure, Success}
   * Query state machine.
   */
 object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusServerStats {
-    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getContext("probe.requests")
-
     private final val MAX_WORDS = 100
 
     @volatile private var cache: IgniteCache[String/*Server request ID*/, NCQueryStateMdo] = _
@@ -187,6 +185,11 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             srvReqId
         }
     }
+
+    /**
+      * @return
+      */
+    private implicit def getContext: ExecutionContext = NCThreadPoolManager.getContext("probe.requests")
     
     /**
       * @param srvReqId Server request ID.

@@ -54,7 +54,6 @@ import scala.util.{Failure, Success}
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
     private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
-    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getContext("probes.communication")
 
     // Type safe and eager configuration container.
     private object Config extends NCConfigurable {
@@ -220,6 +219,11 @@ object NCProbeManager extends NCService {
      
         ackStopped()
     }
+
+    /**
+      * @return
+      */
+    private implicit def getContext: ExecutionContext = NCThreadPoolManager.getContext("probes.communication")
 
     /**
       *

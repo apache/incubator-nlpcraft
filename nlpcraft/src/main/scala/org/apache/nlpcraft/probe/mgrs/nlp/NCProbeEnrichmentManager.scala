@@ -60,8 +60,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     // Embedded probe Java callback function.
     private type EMBEDDED_CB = java.util.function.Consumer[NCEmbeddedResult]
 
-    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getContext("model.solver.pool")
-
     private final val MAX_NESTED_TOKENS = 32
 
     private final val mux = new Object()
@@ -195,6 +193,11 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     span.end()
         }
     }
+
+    /**
+      * @return
+      */
+    private implicit def getContext: ExecutionContext = NCThreadPoolManager.getContext("model.solver.pool")
 
     /**
       * Processes 'ask' request from probe server.

@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.examples.sql
 
-import java.util
-
 import com.github.difflib.text.DiffRowGenerator
 import com.github.vertical_blank.sqlformatter.SqlFormatter
 import com.google.gson.Gson
@@ -26,8 +24,9 @@ import com.google.gson.reflect.TypeToken
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.examples.sql.db.SqlServer
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
+import java.util
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters.RichOptionalGeneric
 

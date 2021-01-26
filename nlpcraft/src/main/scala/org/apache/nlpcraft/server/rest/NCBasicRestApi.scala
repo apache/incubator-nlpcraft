@@ -54,8 +54,6 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
     protected final val GSON = new Gson()
     protected final val URL_VALIDATOR = new UrlValidator(Array("http", "https"), UrlValidator.ALLOW_LOCAL_URLS)
 
-    private implicit final val ec: ExecutionContext = NCThreadPoolManager.getContext("probes.communication")
-
     final val API_VER = 1
     final val API = "api" / s"v$API_VER"
 
@@ -1877,6 +1875,11 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             recordStats(m → (System.currentTimeMillis() - start))
         }
     }
+
+    /**
+      * @return
+      */
+    private implicit def getContext: ExecutionContext = NCThreadPoolManager.getContext("probes.communication")
 
     /**
       *

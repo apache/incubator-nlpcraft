@@ -82,8 +82,7 @@ object NCThreadPoolManager extends NCService {
                 }
                 else
                     Holder(getSystemContext, None)
-        )
-        .context
+        ).context
 
     override def start(parent: Span): NCService = startScopedSpan("start", parent) { _ ⇒
         ackStarting()
