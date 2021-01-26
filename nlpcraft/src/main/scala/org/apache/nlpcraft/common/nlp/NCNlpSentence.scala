@@ -17,12 +17,11 @@
 
 package org.apache.nlpcraft.common.nlp
 
-import java.util
-import java.util.Collections
-
 import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
 
+import java.util
+import java.util.Collections
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, Set, mutable}
@@ -40,16 +39,7 @@ object NCNlpSentence {
       * @return
       */
     private def checkRelation(ns: NCNlpSentence, idxs: Seq[Int], notesType: String, note: NCNlpSentenceNote): Boolean = {
-        val types =
-            idxs.flatMap(idx ⇒ {
-                val types = ns(idx).map(p ⇒ p).filter(!_.isNlp).map(_.noteType)
-
-                types.size match {
-                    case 0 ⇒ None
-                    case 1 ⇒ Some(types.head)
-                    case _ ⇒ throw new AssertionError(s"Unexpected tokes: ${ns(idx)}")
-                }
-            }).distinct
+        val types = idxs.flatMap(idx ⇒ ns(idx).map(p ⇒ p).filter(!_.isNlp).map(_.noteType)).distinct
 
         /**
           * Example:
@@ -84,15 +74,23 @@ object NCNlpSentence {
       * Note that 'idxsField' is 'indexes' and 'noteField' is 'note' for all kind of references.
       *
       * @param noteType Note type.
+      * @param idxsField Indexes field.
+      * @param noteField Note field.
       * @param ns Sentence.
       * @param history Indexes transformation history.
       * @return Valid flag.
       */
-    private def fixIndexesReferences(noteType: String, ns: NCNlpSentence, history: Seq[(Int, Int)]): Boolean = {
+    private def fixIndexesReferences(
+        noteType: String,
+        idxsField: String,
+        noteField: String,
+        ns: NCNlpSentence,
+        history: Seq[(Int, Int)]
+    ): Boolean = {
         ns.filter(_.isTypeOf(noteType)).foreach(tok ⇒
-            tok.getNoteOpt(noteType, "indexes") match {
+            tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) ⇒
-                    val idxs: Seq[Int] = n.data[java.util.List[Int]]("indexes").asScala
+                    val idxs: Seq[Int] = n.data[java.util.List[Int]](idxsField).asScala
                     var fixed = idxs
 
                     history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(i ⇒ if (i == idxOld) idxNew else i) }
@@ -106,9 +104,44 @@ object NCNlpSentence {
         )
 
         ns.flatMap(_.getNotes(noteType)).forall(
-            n ⇒ checkRelation(ns, n.data[java.util.List[Int]]("indexes").asScala, n.data[String]("note"), n)
+            n ⇒ checkRelation(ns, n.data[java.util.List[Int]]("indexes").asScala, n.data[String](noteField), n)
         )
     }
+
+    /**
+      *
+      * @param note
+      * @param idxsField
+      * @param noteField
+      * @param ns
+      */
+    private def fixNoteIndexes(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit =
+        ns.flatMap(_.getNotes(note)).foreach(
+            n ⇒ checkRelation(ns, n.data[java.util.List[Int]](idxsField).asScala, n.data[String](noteField), n)
+        )
+
+    /**
+      *
+      * @param note
+      * @param idxsField
+      * @param noteField
+      * @param ns
+      */
+    private def fixNoteIndexesList(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit =
+        ns.flatMap(_.getNotes(note)).foreach(rel ⇒
+            rel.dataOpt[java.util.List[java.util.List[Int]]](idxsField) match {
+                case Some(idxsList) ⇒
+                    val notesTypes = rel.data[util.List[String]](noteField)
+
+                    require(idxsList.size() == notesTypes.size())
+
+                    idxsList.asScala.zip(notesTypes.asScala).foreach {
+                        case (idxs, notesType) ⇒ checkRelation(ns, idxs.asScala, notesType, rel)
+                    }
+                case None ⇒ // No-op.
+            }
+        )
+
 
     /**
       * Copies token.
@@ -357,20 +390,22 @@ object NCNlpSentence {
         for (tok ← ns.filter(_.isTypeOf(noteType)) if ok)
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) ⇒
-                    val idxs: Seq[Seq[Int]] = n.data[java.util.List[java.util.List[Int]]](idxsField).asScala.map(_.asScala)
+                    val idxs: Seq[Seq[Int]] =
+                        n.data[java.util.List[java.util.List[Int]]](idxsField).asScala.map(_.asScala)
                     var fixed = idxs
 
-                    history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew else i).distinct) }
+                    history.foreach {
+                        case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew else i).distinct)
+                    }
 
                     if (fixed.forall(_.size == 1))
-                    // Fix double dimension array to one dimension,
-                    // so it should be called always in spite of 'fixIndexesReferences' method.
-                    ns.fixNote(n, idxsField → fixed.map(_.head).asJava.asInstanceOf[java.io.Serializable])
+                        // Fix double dimension array to one dimension,
+                        // so it should be called always in spite of 'fixIndexesReferences' method.
+                        ns.fixNote(n, idxsField → fixed.map(_.head).asJava.asInstanceOf[java.io.Serializable])
                     else
-                    ok = false
+                        ok = false
                 case None ⇒ // No-op.
             }
-
         ok &&
             ns.flatMap(_.getNotes(noteType)).forall(rel ⇒
                 rel.dataOpt[java.util.List[Int]](idxsField) match {
@@ -412,26 +447,33 @@ object NCNlpSentence {
 
         val history = mutable.ArrayBuffer.empty[(Int, Int)]
 
-        notNlpTypes.foreach(typ ⇒ zipNotes(ns, typ, notNlpTypes, history))
+        fixNoteIndexes("nlpcraft:relation", "indexes", "note", ns)
+        fixNoteIndexes("nlpcraft:limit", "indexes", "note", ns)
+        fixNoteIndexesList("nlpcraft:sort", "subjindexes", "subjnotes", ns)
+        fixNoteIndexesList("nlpcraft:sort", "byindexes", "bynotes", ns)
 
+        notNlpTypes.foreach(typ ⇒ zipNotes(ns, typ, notNlpTypes, history))
         unionStops(ns, notNlpTypes, history)
 
         val res =
-            Seq("nlpcraft:relation", "nlpcraft:limit").forall(t ⇒ fixIndexesReferences(t, ns, history)) &&
-                fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
-                fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
+            fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, history) &&
+            fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
 
-        if (res)
+        if (res) {
             // Validation (all indexes calculated well)
             require(
-                !ns.flatten.
-                exists(n ⇒ ns.filter(_.wordIndexes.exists(n.wordIndexes.contains)).exists(t ⇒ !t.contains(n))),
-                    s"Invalid sentence:\n" +
+                !res ||
+                    !ns.flatten.
+                        exists(n ⇒ ns.filter(_.wordIndexes.exists(n.wordIndexes.contains)).exists(t ⇒ !t.contains(n))),
+                s"Invalid sentence:\n" +
                     ns.map(t ⇒
-                    // Human readable invalid sentence for debugging.
-                    s"${t.origText}{index:${t.index}}[${t.map(n ⇒ s"${n.noteType}, {range:${n.tokenFrom}-${n.tokenTo}}").mkString("|")}]"
+                        // Human readable invalid sentence for debugging.
+                        s"${t.origText}{index:${t.index}}[${t.map(n ⇒ s"${n.noteType}, {range:${n.tokenFrom}-${n.tokenTo}}").mkString("|")}]"
                     ).mkString("\n")
             )
+        }
 
         res
     }
@@ -522,11 +564,17 @@ class NCNlpSentence(
                 (
                     // System notes don't have such flags.
                     if (p.isUser) {
-                        if (p.isDirect) 0 else 1
+                        if (p.isDirect)
+                            0
+                        else
+                            1
                     }
                     else
                         0,
-                    if (p.isUser) p.sparsity else 0
+                    if (p.isUser)
+                        p.sparsity
+                    else
+                        0
                 )
             )).
             flatMap(_.drop(1)).
@@ -619,7 +667,10 @@ class NCNlpSentence(
                 m.values.map(_.sentence).toSeq
             }
             else {
-                if (collapseSentence(this, getNotNlpNotes(this).map(_.noteType).distinct)) Seq(this) else Seq.empty
+                if (collapseSentence(this, getNotNlpNotes(this).map(_.noteType).distinct))
+                    Seq(this)
+                else
+                    Seq.empty
             }.distinct
 
         sens.foreach(sen ⇒
@@ -703,9 +754,9 @@ class NCNlpSentence(
     override def equals(obj: Any): Boolean = obj match {
         case x: NCNlpSentence ⇒
             tokens == x.tokens &&
-            srvReqId == x.srvReqId &&
-            text == x.text &&
-            enabledBuiltInToks == x.enabledBuiltInToks
+                srvReqId == x.srvReqId &&
+                text == x.text &&
+                enabledBuiltInToks == x.enabledBuiltInToks
 
         case _ ⇒ false
     }

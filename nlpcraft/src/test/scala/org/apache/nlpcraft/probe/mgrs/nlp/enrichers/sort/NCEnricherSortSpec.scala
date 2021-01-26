@@ -153,6 +153,11 @@ class NCEnricherSortSpec extends NCEnricherBaseSpec {
                     usr(text = "A", id = "A"),
                     usr(text = "B", id = "B"),
                     srt(text = "classify", subjNotes = Seq("B"), subjIndexes = Seq(1))
+                ),
+                Seq(
+                    usr(text = "A", id = "A"),
+                    usr(text = "B", id = "B"),
+                    nlp(text = "classify")
                 )
             ),
             _ ⇒ checkAll(
