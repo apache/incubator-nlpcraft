@@ -42,8 +42,6 @@ class NCSqlGeneratorSpec {
 
     @AfterEach
     def stop(): Unit = {
-        sqlStarted = false
-
         val f = new File(PATH)
 
         if (f.exists()) {
@@ -55,6 +53,8 @@ class NCSqlGeneratorSpec {
 
         if (sqlStarted)
             SqlServer.stop()
+
+        sqlStarted = false
     }
 
     @Test
