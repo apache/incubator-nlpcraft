@@ -815,8 +815,7 @@ public interface NCModelView extends NCMetadata {
      * By default the data model detects its elements by their synonyms, regexp or DSL expressions. However,
      * in some cases these methods are not expressive enough. In such cases, a user-defined parser can be defined
      * for the model that would allow the user to define its own NER logic to detect the model elements in the user
-     * input programmatically. Note that there can be only one custom parser per model and it can detect any number
-     * of model elements (named entities).
+     * input programmatically. Note that a single parser can detect any number of model elements.
      * <p>
      * <b>JSON</b>
      * <br>
@@ -831,7 +830,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Custom user parsers for model elements or {@code null} if not used (default). TODO: cannot be null!
+     * @return Custom user parsers for model elements. Can be empty but never {@code null}.
      */
     default List<NCCustomParser> getParsers() {
         return Collections.emptyList();
