@@ -31,7 +31,15 @@ item
 pred: expr PRED_OP expr;
 expr
     : val
-    | ID LPAREN expr RPAREN // Buit-in function call.
+    | LPAREN expr RPAREN
+    | expr mathOp expr
+    | ID LPAREN expr? RPAREN // Buit-in function call.
+    ;
+mathOp
+    : MINUS
+    | PLUS
+    | STAR
+    | DEVIDE
     ;
 val
     : singleVal
@@ -95,6 +103,9 @@ DOLLAR: '$';
 TILDA: '~';
 LBR: '[';
 RBR: ']';
+PLUS: '+';
+STAR: '*';
+DEVIDE: '/';
 COMMA: ',';
 COLON: ':';
 POUND: '#';

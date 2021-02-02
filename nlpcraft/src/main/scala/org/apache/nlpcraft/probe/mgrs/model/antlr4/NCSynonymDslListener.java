@@ -58,6 +58,16 @@ public interface NCSynonymDslListener extends ParseTreeListener {
 	 */
 	void exitExpr(NCSynonymDslParser.ExprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#mathOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterMathOp(NCSynonymDslParser.MathOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#mathOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitMathOp(NCSynonymDslParser.MathOpContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NCSynonymDslParser#val}.
 	 * @param ctx the parse tree
 	 */

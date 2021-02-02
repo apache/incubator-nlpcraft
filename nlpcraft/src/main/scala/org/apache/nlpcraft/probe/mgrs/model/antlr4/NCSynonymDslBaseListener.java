@@ -76,6 +76,18 @@ public class NCSynonymDslBaseListener implements NCSynonymDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMathOp(NCSynonymDslParser.MathOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMathOp(NCSynonymDslParser.MathOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterVal(NCSynonymDslParser.ValContext ctx) { }
 	/**
 	 * {@inheritDoc}

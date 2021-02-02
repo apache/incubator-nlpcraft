@@ -158,6 +158,16 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitExpr(NCIntentDslParser.ExprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#mathOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterMathOp(NCIntentDslParser.MathOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#mathOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitMathOp(NCIntentDslParser.MathOpContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#val}.
 	 * @param ctx the parse tree
 	 */
