@@ -23,50 +23,81 @@ synonym
     ;
 alias: LBR ID RBR;
 item
-    : predicate
+    : pred
     | LPAREN item RPAREN
-    | item (AND|OR) item
+    | item (AND | OR) item
     | EXCL item
     ;
-predicate
-    : lval PRED_OP rval
-    | ID LPAREN lval RPAREN PRED_OP rval  // Function call.
+pred: expr PRED_OP expr;
+expr
+    : val
+    | ID LPAREN expr RPAREN // Buit-in function call.
     ;
-lval: lvalQual? ('id' | 'aliases' | 'startidx' | 'endidx' | 'parent' | 'groups' | 'ancestors' | 'value' | meta);
-lvalQual: lvalPart | lvalQual lvalPart;
-lvalPart: ID DOT;
-rvalSingle
+val
+    : singleVal
+    | LPAREN val RPAREN
+    | val COMMA val
+    ;
+singleVal
     : 'null'
     | MINUS? (INT | INT EXP)
     | BOOL
     | qstring
+    | tokQual? ('id' | 'aliases' | 'startidx' | 'endidx' | 'parent' | 'groups' | 'ancestors' | 'value')
+    | tokQual? tokMeta
+    | modelMeta
+    | intentMeta
     ;
-rval
-    : rvalSingle
-    | LPAREN rvalList RPAREN
+tokQual
+    : tokQualPart
+    | tokQual tokQualPart
     ;
-rvalList
-    : rvalSingle
-    | rvalList COMMA rvalSingle
-    ;
-meta
+tokQualPart: ID DOT;
+tokMeta // Token metadata: ~prop
     : TILDA ID
     | TILDA ID LBR INT RBR
     | TILDA ID LBR qstring RBR
     ;
-qstring: SQUOTE ~'\''* SQUOTE;
-PRED_OP: '==' | '!=' | '>=' | '<=' | '>' | '<' | '@@' | '!@';
+modelMeta // Model metadata: #prop
+    : POUND ID
+    | POUND ID LBR INT RBR
+    | POUND ID LBR qstring RBR
+    ;
+intentMeta // Intent metadata: $prop
+    : DOLLAR ID
+    | DOLLAR ID LBR INT RBR
+    | DOLLAR ID LBR qstring RBR
+    ;
+qstring
+    : SQSTRING
+    | DQSTRING
+    ;
+SQSTRING: SQUOTE (~'\'')* SQUOTE;
+DQSTRING: DQUOTE (~'"')* DQUOTE;
+PRED_OP
+    : '==' // Includes regex for strings.
+    | '!=' // Includes regex for strings.
+    | '>='
+    | '<='
+    | '>'
+    | '<'
+    | '@@' // Set or string containment.
+    | '!@' // Set or string not containment.
+    ;
 AND: '&&';
 OR: '||';
 EXCL: '!';
 LPAREN: '(';
 RPAREN: ')';
 SQUOTE: '\'';
+DQUOTE: '"';
+DOLLAR: '$';
 TILDA: '~';
 LBR: '[';
 RBR: ']';
 COMMA: ',';
 COLON: ':';
+POUND: '#';
 MINUS: '-';
 DOT: '.';
 UNDERSCORE: '_';

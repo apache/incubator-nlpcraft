@@ -206,7 +206,7 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
         else if (lv instanceof Collection) // Two collections.
             return ((Collection)lv).containsAll((Collection)rv);
         else if (lv instanceof String && rv instanceof String) // Substring containment.
-            return ((String) lv).contains((String) rv);
+            return ((String)lv).contains((String)rv);
         else
             throw operatorError(lv, rv);
     }

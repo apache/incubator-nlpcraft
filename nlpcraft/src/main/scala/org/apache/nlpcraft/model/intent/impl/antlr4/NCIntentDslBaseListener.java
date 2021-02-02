@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -64,6 +64,54 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMetaDecl(NCIntentDslParser.MetaDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMetaDecl(NCIntentDslParser.MetaDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMetaList(NCIntentDslParser.MetaListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMetaList(NCIntentDslParser.MetaListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMetaItem(NCIntentDslParser.MetaItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMetaItem(NCIntentDslParser.MetaItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMetaItemRval(NCIntentDslParser.MetaItemRvalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMetaItemRval(NCIntentDslParser.MetaItemRvalContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTerms(NCIntentDslParser.TermsContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -124,97 +172,109 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPredicate(NCIntentDslParser.PredicateContext ctx) { }
+	@Override public void enterPred(NCIntentDslParser.PredContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPredicate(NCIntentDslParser.PredicateContext ctx) { }
+	@Override public void exitPred(NCIntentDslParser.PredContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLval(NCIntentDslParser.LvalContext ctx) { }
+	@Override public void enterExpr(NCIntentDslParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLval(NCIntentDslParser.LvalContext ctx) { }
+	@Override public void exitExpr(NCIntentDslParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLvalQual(NCIntentDslParser.LvalQualContext ctx) { }
+	@Override public void enterVal(NCIntentDslParser.ValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLvalQual(NCIntentDslParser.LvalQualContext ctx) { }
+	@Override public void exitVal(NCIntentDslParser.ValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLvalPart(NCIntentDslParser.LvalPartContext ctx) { }
+	@Override public void enterSingleVal(NCIntentDslParser.SingleValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLvalPart(NCIntentDslParser.LvalPartContext ctx) { }
+	@Override public void exitSingleVal(NCIntentDslParser.SingleValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRvalSingle(NCIntentDslParser.RvalSingleContext ctx) { }
+	@Override public void enterTokQual(NCIntentDslParser.TokQualContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRvalSingle(NCIntentDslParser.RvalSingleContext ctx) { }
+	@Override public void exitTokQual(NCIntentDslParser.TokQualContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRval(NCIntentDslParser.RvalContext ctx) { }
+	@Override public void enterTokQualPart(NCIntentDslParser.TokQualPartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRval(NCIntentDslParser.RvalContext ctx) { }
+	@Override public void exitTokQualPart(NCIntentDslParser.TokQualPartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRvalList(NCIntentDslParser.RvalListContext ctx) { }
+	@Override public void enterTokMeta(NCIntentDslParser.TokMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRvalList(NCIntentDslParser.RvalListContext ctx) { }
+	@Override public void exitTokMeta(NCIntentDslParser.TokMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMeta(NCIntentDslParser.MetaContext ctx) { }
+	@Override public void enterModelMeta(NCIntentDslParser.ModelMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMeta(NCIntentDslParser.MetaContext ctx) { }
+	@Override public void exitModelMeta(NCIntentDslParser.ModelMetaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIntentMeta(NCIntentDslParser.IntentMetaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntentMeta(NCIntentDslParser.IntentMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

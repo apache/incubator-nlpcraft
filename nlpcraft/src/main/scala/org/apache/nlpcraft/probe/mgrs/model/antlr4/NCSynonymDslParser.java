@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4\NCSynonymDsl.g4 by ANTLR 4.9
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4\NCSynonymDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.probe.mgrs.model.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,42 +11,44 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class NCSynonymDslParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.9", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.9.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
-		PRED_OP=10, AND=11, OR=12, EXCL=13, LPAREN=14, RPAREN=15, SQUOTE=16, TILDA=17, 
-		LBR=18, RBR=19, COMMA=20, COLON=21, MINUS=22, DOT=23, UNDERSCORE=24, BOOL=25, 
-		INT=26, EXP=27, ID=28, WS=29, ErrorCharacter=30;
+		SQSTRING=10, DQSTRING=11, PRED_OP=12, AND=13, OR=14, EXCL=15, LPAREN=16, 
+		RPAREN=17, SQUOTE=18, DQUOTE=19, DOLLAR=20, TILDA=21, LBR=22, RBR=23, 
+		COMMA=24, COLON=25, POUND=26, MINUS=27, DOT=28, UNDERSCORE=29, BOOL=30, 
+		INT=31, EXP=32, ID=33, WS=34, ErrorCharacter=35;
 	public static final int
-		RULE_synonym = 0, RULE_alias = 1, RULE_item = 2, RULE_predicate = 3, RULE_lval = 4, 
-		RULE_lvalQual = 5, RULE_lvalPart = 6, RULE_rvalSingle = 7, RULE_rval = 8, 
-		RULE_rvalList = 9, RULE_meta = 10, RULE_qstring = 11;
+		RULE_synonym = 0, RULE_alias = 1, RULE_item = 2, RULE_pred = 3, RULE_expr = 4, 
+		RULE_val = 5, RULE_singleVal = 6, RULE_tokQual = 7, RULE_tokQualPart = 8, 
+		RULE_tokMeta = 9, RULE_modelMeta = 10, RULE_intentMeta = 11, RULE_qstring = 12;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"synonym", "alias", "item", "predicate", "lval", "lvalQual", "lvalPart", 
-			"rvalSingle", "rval", "rvalList", "meta", "qstring"
+			"synonym", "alias", "item", "pred", "expr", "val", "singleVal", "tokQual", 
+			"tokQualPart", "tokMeta", "modelMeta", "intentMeta", "qstring"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'id'", "'aliases'", "'startidx'", "'endidx'", "'parent'", "'groups'", 
-			"'ancestors'", "'value'", "'null'", null, "'&&'", "'||'", "'!'", "'('", 
-			"')'", "'''", "'~'", "'['", "']'", "','", "':'", "'-'", "'.'", "'_'"
+			null, "'null'", "'id'", "'aliases'", "'startidx'", "'endidx'", "'parent'", 
+			"'groups'", "'ancestors'", "'value'", null, null, null, "'&&'", "'||'", 
+			"'!'", "'('", "')'", "'''", "'\"'", "'$'", "'~'", "'['", "']'", "','", 
+			"':'", "'#'", "'-'", "'.'", "'_'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, null, null, null, "PRED_OP", 
-			"AND", "OR", "EXCL", "LPAREN", "RPAREN", "SQUOTE", "TILDA", "LBR", "RBR", 
-			"COMMA", "COLON", "MINUS", "DOT", "UNDERSCORE", "BOOL", "INT", "EXP", 
-			"ID", "WS", "ErrorCharacter"
+			null, null, null, null, null, null, null, null, null, null, "SQSTRING", 
+			"DQSTRING", "PRED_OP", "AND", "OR", "EXCL", "LPAREN", "RPAREN", "SQUOTE", 
+			"DQUOTE", "DOLLAR", "TILDA", "LBR", "RBR", "COMMA", "COLON", "POUND", 
+			"MINUS", "DOT", "UNDERSCORE", "BOOL", "INT", "EXP", "ID", "WS", "ErrorCharacter"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -128,21 +130,21 @@ public class NCSynonymDslParser extends Parser {
 		SynonymContext _localctx = new SynonymContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_synonym);
 		try {
-			setState(33);
+			setState(35);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LBR:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(24);
-				alias();
-				setState(25);
-				match(LPAREN);
 				setState(26);
-				item(0);
+				alias();
 				setState(27);
-				match(RPAREN);
+				match(LPAREN);
 				setState(28);
+				item(0);
+				setState(29);
+				match(RPAREN);
+				setState(30);
 				match(EOF);
 				}
 				break;
@@ -154,15 +156,23 @@ public class NCSynonymDslParser extends Parser {
 			case T__5:
 			case T__6:
 			case T__7:
+			case T__8:
+			case SQSTRING:
+			case DQSTRING:
 			case EXCL:
 			case LPAREN:
+			case DOLLAR:
 			case TILDA:
+			case POUND:
+			case MINUS:
+			case BOOL:
+			case INT:
 			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(30);
+				setState(32);
 				item(0);
-				setState(31);
+				setState(33);
 				match(EOF);
 				}
 				break;
@@ -205,11 +215,11 @@ public class NCSynonymDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(35);
-			match(LBR);
-			setState(36);
-			match(ID);
 			setState(37);
+			match(LBR);
+			setState(38);
+			match(ID);
+			setState(39);
 			match(RBR);
 			}
 		}
@@ -225,8 +235,8 @@ public class NCSynonymDslParser extends Parser {
 	}
 
 	public static class ItemContext extends ParserRuleContext {
-		public PredicateContext predicate() {
-			return getRuleContext(PredicateContext.class,0);
+		public PredContext pred() {
+			return getRuleContext(PredContext.class,0);
 		}
 		public TerminalNode LPAREN() { return getToken(NCSynonymDslParser.LPAREN, 0); }
 		public List<ItemContext> item() {
@@ -269,47 +279,36 @@ public class NCSynonymDslParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(47);
+			setState(49);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case T__0:
-			case T__1:
-			case T__2:
-			case T__3:
-			case T__4:
-			case T__5:
-			case T__6:
-			case T__7:
-			case TILDA:
-			case ID:
+			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+			case 1:
 				{
-				setState(40);
-				predicate();
+				setState(42);
+				pred();
 				}
 				break;
-			case LPAREN:
+			case 2:
 				{
-				setState(41);
-				match(LPAREN);
-				setState(42);
-				item(0);
 				setState(43);
+				match(LPAREN);
+				setState(44);
+				item(0);
+				setState(45);
 				match(RPAREN);
 				}
 				break;
-			case EXCL:
+			case 3:
 				{
-				setState(45);
+				setState(47);
 				match(EXCL);
-				setState(46);
+				setState(48);
 				item(1);
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(54);
+			setState(56);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -320,9 +319,9 @@ public class NCSynonymDslParser extends Parser {
 					{
 					_localctx = new ItemContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_item);
-					setState(49);
+					setState(51);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(50);
+					setState(52);
 					_la = _input.LA(1);
 					if ( !(_la==AND || _la==OR) ) {
 					_errHandler.recoverInline(this);
@@ -332,12 +331,12 @@ public class NCSynonymDslParser extends Parser {
 						_errHandler.reportMatch(this);
 						consume();
 					}
-					setState(51);
+					setState(53);
 					item(3);
 					}
 					} 
 				}
-				setState(56);
+				setState(58);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
@@ -354,64 +353,102 @@ public class NCSynonymDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class PredicateContext extends ParserRuleContext {
-		public LvalContext lval() {
-			return getRuleContext(LvalContext.class,0);
+	public static class PredContext extends ParserRuleContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
 		}
 		public TerminalNode PRED_OP() { return getToken(NCSynonymDslParser.PRED_OP, 0); }
-		public RvalContext rval() {
-			return getRuleContext(RvalContext.class,0);
-		}
-		public TerminalNode ID() { return getToken(NCSynonymDslParser.ID, 0); }
-		public TerminalNode LPAREN() { return getToken(NCSynonymDslParser.LPAREN, 0); }
-		public TerminalNode RPAREN() { return getToken(NCSynonymDslParser.RPAREN, 0); }
-		public PredicateContext(ParserRuleContext parent, int invokingState) {
+		public PredContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_predicate; }
+		@Override public int getRuleIndex() { return RULE_pred; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterPredicate(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterPred(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitPredicate(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitPred(this);
 		}
 	}
 
-	public final PredicateContext predicate() throws RecognitionException {
-		PredicateContext _localctx = new PredicateContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_predicate);
+	public final PredContext pred() throws RecognitionException {
+		PredContext _localctx = new PredContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_pred);
 		try {
-			setState(68);
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(59);
+			expr();
+			setState(60);
+			match(PRED_OP);
+			setState(61);
+			expr();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ExprContext extends ParserRuleContext {
+		public ValContext val() {
+			return getRuleContext(ValContext.class,0);
+		}
+		public TerminalNode ID() { return getToken(NCSynonymDslParser.ID, 0); }
+		public TerminalNode LPAREN() { return getToken(NCSynonymDslParser.LPAREN, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public TerminalNode RPAREN() { return getToken(NCSynonymDslParser.RPAREN, 0); }
+		public ExprContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitExpr(this);
+		}
+	}
+
+	public final ExprContext expr() throws RecognitionException {
+		ExprContext _localctx = new ExprContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_expr);
+		try {
+			setState(69);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(57);
-				lval();
-				setState(58);
-				match(PRED_OP);
-				setState(59);
-				rval();
+				setState(63);
+				val(0);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(61);
-				match(ID);
-				setState(62);
-				match(LPAREN);
-				setState(63);
-				lval();
 				setState(64);
-				match(RPAREN);
+				match(ID);
 				setState(65);
-				match(PRED_OP);
+				match(LPAREN);
 				setState(66);
-				rval();
+				expr();
+				setState(67);
+				match(RPAREN);
 				}
 				break;
 			}
@@ -427,179 +464,111 @@ public class NCSynonymDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class LvalContext extends ParserRuleContext {
-		public MetaContext meta() {
-			return getRuleContext(MetaContext.class,0);
+	public static class ValContext extends ParserRuleContext {
+		public SingleValContext singleVal() {
+			return getRuleContext(SingleValContext.class,0);
 		}
-		public LvalQualContext lvalQual() {
-			return getRuleContext(LvalQualContext.class,0);
+		public TerminalNode LPAREN() { return getToken(NCSynonymDslParser.LPAREN, 0); }
+		public List<ValContext> val() {
+			return getRuleContexts(ValContext.class);
 		}
-		public LvalContext(ParserRuleContext parent, int invokingState) {
+		public ValContext val(int i) {
+			return getRuleContext(ValContext.class,i);
+		}
+		public TerminalNode RPAREN() { return getToken(NCSynonymDslParser.RPAREN, 0); }
+		public TerminalNode COMMA() { return getToken(NCSynonymDslParser.COMMA, 0); }
+		public ValContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_lval; }
+		@Override public int getRuleIndex() { return RULE_val; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterLval(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterVal(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitLval(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitVal(this);
 		}
 	}
 
-	public final LvalContext lval() throws RecognitionException {
-		LvalContext _localctx = new LvalContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_lval);
-		int _la;
+	public final ValContext val() throws RecognitionException {
+		return val(0);
+	}
+
+	private ValContext val(int _p) throws RecognitionException {
+		ParserRuleContext _parentctx = _ctx;
+		int _parentState = getState();
+		ValContext _localctx = new ValContext(_ctx, _parentState);
+		ValContext _prevctx = _localctx;
+		int _startState = 10;
+		enterRecursionRule(_localctx, 10, RULE_val, _p);
 		try {
+			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(71);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==ID) {
-				{
-				setState(70);
-				lvalQual(0);
-				}
-			}
-
-			setState(82);
+			setState(77);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__0:
+			case T__1:
+			case T__2:
+			case T__3:
+			case T__4:
+			case T__5:
+			case T__6:
+			case T__7:
+			case T__8:
+			case SQSTRING:
+			case DQSTRING:
+			case DOLLAR:
+			case TILDA:
+			case POUND:
+			case MINUS:
+			case BOOL:
+			case INT:
+			case ID:
+				{
+				setState(72);
+				singleVal();
+				}
+				break;
+			case LPAREN:
 				{
 				setState(73);
-				match(T__0);
-				}
-				break;
-			case T__1:
-				{
+				match(LPAREN);
 				setState(74);
-				match(T__1);
-				}
-				break;
-			case T__2:
-				{
+				val(0);
 				setState(75);
-				match(T__2);
-				}
-				break;
-			case T__3:
-				{
-				setState(76);
-				match(T__3);
-				}
-				break;
-			case T__4:
-				{
-				setState(77);
-				match(T__4);
-				}
-				break;
-			case T__5:
-				{
-				setState(78);
-				match(T__5);
-				}
-				break;
-			case T__6:
-				{
-				setState(79);
-				match(T__6);
-				}
-				break;
-			case T__7:
-				{
-				setState(80);
-				match(T__7);
-				}
-				break;
-			case TILDA:
-				{
-				setState(81);
-				meta();
+				match(RPAREN);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class LvalQualContext extends ParserRuleContext {
-		public LvalPartContext lvalPart() {
-			return getRuleContext(LvalPartContext.class,0);
-		}
-		public LvalQualContext lvalQual() {
-			return getRuleContext(LvalQualContext.class,0);
-		}
-		public LvalQualContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_lvalQual; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterLvalQual(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitLvalQual(this);
-		}
-	}
-
-	public final LvalQualContext lvalQual() throws RecognitionException {
-		return lvalQual(0);
-	}
-
-	private LvalQualContext lvalQual(int _p) throws RecognitionException {
-		ParserRuleContext _parentctx = _ctx;
-		int _parentState = getState();
-		LvalQualContext _localctx = new LvalQualContext(_ctx, _parentState);
-		LvalQualContext _prevctx = _localctx;
-		int _startState = 10;
-		enterRecursionRule(_localctx, 10, RULE_lvalQual, _p);
-		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
-			{
-			{
-			setState(85);
-			lvalPart();
-			}
 			_ctx.stop = _input.LT(-1);
-			setState(91);
+			setState(84);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
 					{
-					_localctx = new LvalQualContext(_parentctx, _parentState);
-					pushNewRecursionContext(_localctx, _startState, RULE_lvalQual);
-					setState(87);
+					_localctx = new ValContext(_parentctx, _parentState);
+					pushNewRecursionContext(_localctx, _startState, RULE_val);
+					setState(79);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(88);
-					lvalPart();
+					setState(80);
+					match(COMMA);
+					setState(81);
+					val(2);
 					}
 					} 
 				}
-				setState(93);
+				setState(86);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			}
 			}
 		}
@@ -614,47 +583,7 @@ public class NCSynonymDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class LvalPartContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(NCSynonymDslParser.ID, 0); }
-		public TerminalNode DOT() { return getToken(NCSynonymDslParser.DOT, 0); }
-		public LvalPartContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_lvalPart; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterLvalPart(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitLvalPart(this);
-		}
-	}
-
-	public final LvalPartContext lvalPart() throws RecognitionException {
-		LvalPartContext _localctx = new LvalPartContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_lvalPart);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(94);
-			match(ID);
-			setState(95);
-			match(DOT);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class RvalSingleContext extends ParserRuleContext {
+	public static class SingleValContext extends ParserRuleContext {
 		public TerminalNode INT() { return getToken(NCSynonymDslParser.INT, 0); }
 		public TerminalNode EXP() { return getToken(NCSynonymDslParser.EXP, 0); }
 		public TerminalNode MINUS() { return getToken(NCSynonymDslParser.MINUS, 0); }
@@ -662,85 +591,150 @@ public class NCSynonymDslParser extends Parser {
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
-		public RvalSingleContext(ParserRuleContext parent, int invokingState) {
+		public TokQualContext tokQual() {
+			return getRuleContext(TokQualContext.class,0);
+		}
+		public TokMetaContext tokMeta() {
+			return getRuleContext(TokMetaContext.class,0);
+		}
+		public ModelMetaContext modelMeta() {
+			return getRuleContext(ModelMetaContext.class,0);
+		}
+		public IntentMetaContext intentMeta() {
+			return getRuleContext(IntentMetaContext.class,0);
+		}
+		public SingleValContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_rvalSingle; }
+		@Override public int getRuleIndex() { return RULE_singleVal; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterRvalSingle(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterSingleVal(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitRvalSingle(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitSingleVal(this);
 		}
 	}
 
-	public final RvalSingleContext rvalSingle() throws RecognitionException {
-		RvalSingleContext _localctx = new RvalSingleContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_rvalSingle);
+	public final SingleValContext singleVal() throws RecognitionException {
+		SingleValContext _localctx = new SingleValContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_singleVal);
 		int _la;
 		try {
 			setState(108);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case T__8:
+			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(97);
-				match(T__8);
+				setState(87);
+				match(T__0);
 				}
 				break;
-			case MINUS:
-			case INT:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(99);
+				setState(89);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==MINUS) {
 					{
-					setState(98);
+					setState(88);
 					match(MINUS);
 					}
 				}
 
-				setState(104);
+				setState(94);
 				_errHandler.sync(this);
-				switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+				switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 				case 1:
 					{
-					setState(101);
+					setState(91);
 					match(INT);
 					}
 					break;
 				case 2:
 					{
-					setState(102);
+					setState(92);
 					match(INT);
-					setState(103);
+					setState(93);
 					match(EXP);
 					}
 					break;
 				}
 				}
 				break;
-			case BOOL:
+			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(106);
+				setState(96);
 				match(BOOL);
 				}
 				break;
-			case SQUOTE:
+			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(107);
+				setState(97);
 				qstring();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
+			case 5:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(99);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==ID) {
+					{
+					setState(98);
+					tokQual(0);
+					}
+				}
+
+				setState(101);
+				_la = _input.LA(1);
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__2) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__6) | (1L << T__7) | (1L << T__8))) != 0)) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				}
+				break;
+			case 6:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(103);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==ID) {
+					{
+					setState(102);
+					tokQual(0);
+					}
+				}
+
+				setState(105);
+				tokMeta();
+				}
+				break;
+			case 7:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(106);
+				modelMeta();
+				}
+				break;
+			case 8:
+				enterOuterAlt(_localctx, 8);
+				{
+				setState(107);
+				intentMeta();
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -754,116 +748,48 @@ public class NCSynonymDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class RvalContext extends ParserRuleContext {
-		public RvalSingleContext rvalSingle() {
-			return getRuleContext(RvalSingleContext.class,0);
+	public static class TokQualContext extends ParserRuleContext {
+		public TokQualPartContext tokQualPart() {
+			return getRuleContext(TokQualPartContext.class,0);
 		}
-		public TerminalNode LPAREN() { return getToken(NCSynonymDslParser.LPAREN, 0); }
-		public RvalListContext rvalList() {
-			return getRuleContext(RvalListContext.class,0);
+		public TokQualContext tokQual() {
+			return getRuleContext(TokQualContext.class,0);
 		}
-		public TerminalNode RPAREN() { return getToken(NCSynonymDslParser.RPAREN, 0); }
-		public RvalContext(ParserRuleContext parent, int invokingState) {
+		public TokQualContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_rval; }
+		@Override public int getRuleIndex() { return RULE_tokQual; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterRval(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterTokQual(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitRval(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitTokQual(this);
 		}
 	}
 
-	public final RvalContext rval() throws RecognitionException {
-		RvalContext _localctx = new RvalContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_rval);
-		try {
-			setState(115);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case T__8:
-			case SQUOTE:
-			case MINUS:
-			case BOOL:
-			case INT:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(110);
-				rvalSingle();
-				}
-				break;
-			case LPAREN:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(111);
-				match(LPAREN);
-				setState(112);
-				rvalList(0);
-				setState(113);
-				match(RPAREN);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+	public final TokQualContext tokQual() throws RecognitionException {
+		return tokQual(0);
 	}
 
-	public static class RvalListContext extends ParserRuleContext {
-		public RvalSingleContext rvalSingle() {
-			return getRuleContext(RvalSingleContext.class,0);
-		}
-		public RvalListContext rvalList() {
-			return getRuleContext(RvalListContext.class,0);
-		}
-		public TerminalNode COMMA() { return getToken(NCSynonymDslParser.COMMA, 0); }
-		public RvalListContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_rvalList; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterRvalList(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitRvalList(this);
-		}
-	}
-
-	public final RvalListContext rvalList() throws RecognitionException {
-		return rvalList(0);
-	}
-
-	private RvalListContext rvalList(int _p) throws RecognitionException {
+	private TokQualContext tokQual(int _p) throws RecognitionException {
 		ParserRuleContext _parentctx = _ctx;
 		int _parentState = getState();
-		RvalListContext _localctx = new RvalListContext(_ctx, _parentState);
-		RvalListContext _prevctx = _localctx;
-		int _startState = 18;
-		enterRecursionRule(_localctx, 18, RULE_rvalList, _p);
+		TokQualContext _localctx = new TokQualContext(_ctx, _parentState);
+		TokQualContext _prevctx = _localctx;
+		int _startState = 14;
+		enterRecursionRule(_localctx, 14, RULE_tokQual, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(118);
-			rvalSingle();
+			setState(111);
+			tokQualPart();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(125);
+			setState(117);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -872,18 +798,16 @@ public class NCSynonymDslParser extends Parser {
 					_prevctx = _localctx;
 					{
 					{
-					_localctx = new RvalListContext(_parentctx, _parentState);
-					pushNewRecursionContext(_localctx, _startState, RULE_rvalList);
-					setState(120);
+					_localctx = new TokQualContext(_parentctx, _parentState);
+					pushNewRecursionContext(_localctx, _startState, RULE_tokQual);
+					setState(113);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(121);
-					match(COMMA);
-					setState(122);
-					rvalSingle();
+					setState(114);
+					tokQualPart();
 					}
 					} 
 				}
-				setState(127);
+				setState(119);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
 			}
@@ -900,7 +824,47 @@ public class NCSynonymDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class MetaContext extends ParserRuleContext {
+	public static class TokQualPartContext extends ParserRuleContext {
+		public TerminalNode ID() { return getToken(NCSynonymDslParser.ID, 0); }
+		public TerminalNode DOT() { return getToken(NCSynonymDslParser.DOT, 0); }
+		public TokQualPartContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_tokQualPart; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterTokQualPart(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitTokQualPart(this);
+		}
+	}
+
+	public final TokQualPartContext tokQualPart() throws RecognitionException {
+		TokQualPartContext _localctx = new TokQualPartContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_tokQualPart);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(120);
+			match(ID);
+			setState(121);
+			match(DOT);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class TokMetaContext extends ParserRuleContext {
 		public TerminalNode TILDA() { return getToken(NCSynonymDslParser.TILDA, 0); }
 		public TerminalNode ID() { return getToken(NCSynonymDslParser.ID, 0); }
 		public TerminalNode LBR() { return getToken(NCSynonymDslParser.LBR, 0); }
@@ -909,38 +873,53 @@ public class NCSynonymDslParser extends Parser {
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
-		public MetaContext(ParserRuleContext parent, int invokingState) {
+		public TokMetaContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_meta; }
+		@Override public int getRuleIndex() { return RULE_tokMeta; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterMeta(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterTokMeta(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitMeta(this);
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitTokMeta(this);
 		}
 	}
 
-	public final MetaContext meta() throws RecognitionException {
-		MetaContext _localctx = new MetaContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_meta);
+	public final TokMetaContext tokMeta() throws RecognitionException {
+		TokMetaContext _localctx = new TokMetaContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_tokMeta);
 		try {
-			setState(141);
+			setState(136);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(128);
+				setState(123);
 				match(TILDA);
-				setState(129);
+				setState(124);
 				match(ID);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
+				{
+				setState(125);
+				match(TILDA);
+				setState(126);
+				match(ID);
+				setState(127);
+				match(LBR);
+				setState(128);
+				match(INT);
+				setState(129);
+				match(RBR);
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
 				{
 				setState(130);
 				match(TILDA);
@@ -949,23 +928,172 @@ public class NCSynonymDslParser extends Parser {
 				setState(132);
 				match(LBR);
 				setState(133);
-				match(INT);
+				qstring();
 				setState(134);
+				match(RBR);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ModelMetaContext extends ParserRuleContext {
+		public TerminalNode POUND() { return getToken(NCSynonymDslParser.POUND, 0); }
+		public TerminalNode ID() { return getToken(NCSynonymDslParser.ID, 0); }
+		public TerminalNode LBR() { return getToken(NCSynonymDslParser.LBR, 0); }
+		public TerminalNode INT() { return getToken(NCSynonymDslParser.INT, 0); }
+		public TerminalNode RBR() { return getToken(NCSynonymDslParser.RBR, 0); }
+		public QstringContext qstring() {
+			return getRuleContext(QstringContext.class,0);
+		}
+		public ModelMetaContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_modelMeta; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterModelMeta(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitModelMeta(this);
+		}
+	}
+
+	public final ModelMetaContext modelMeta() throws RecognitionException {
+		ModelMetaContext _localctx = new ModelMetaContext(_ctx, getState());
+		enterRule(_localctx, 20, RULE_modelMeta);
+		try {
+			setState(151);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,13,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(138);
+				match(POUND);
+				setState(139);
+				match(ID);
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(140);
+				match(POUND);
+				setState(141);
+				match(ID);
+				setState(142);
+				match(LBR);
+				setState(143);
+				match(INT);
+				setState(144);
 				match(RBR);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(135);
-				match(TILDA);
-				setState(136);
+				setState(145);
+				match(POUND);
+				setState(146);
 				match(ID);
-				setState(137);
+				setState(147);
 				match(LBR);
-				setState(138);
+				setState(148);
 				qstring();
-				setState(139);
+				setState(149);
+				match(RBR);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class IntentMetaContext extends ParserRuleContext {
+		public TerminalNode DOLLAR() { return getToken(NCSynonymDslParser.DOLLAR, 0); }
+		public TerminalNode ID() { return getToken(NCSynonymDslParser.ID, 0); }
+		public TerminalNode LBR() { return getToken(NCSynonymDslParser.LBR, 0); }
+		public TerminalNode INT() { return getToken(NCSynonymDslParser.INT, 0); }
+		public TerminalNode RBR() { return getToken(NCSynonymDslParser.RBR, 0); }
+		public QstringContext qstring() {
+			return getRuleContext(QstringContext.class,0);
+		}
+		public IntentMetaContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_intentMeta; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).enterIntentMeta(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCSynonymDslListener ) ((NCSynonymDslListener)listener).exitIntentMeta(this);
+		}
+	}
+
+	public final IntentMetaContext intentMeta() throws RecognitionException {
+		IntentMetaContext _localctx = new IntentMetaContext(_ctx, getState());
+		enterRule(_localctx, 22, RULE_intentMeta);
+		try {
+			setState(166);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,14,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(153);
+				match(DOLLAR);
+				setState(154);
+				match(ID);
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(155);
+				match(DOLLAR);
+				setState(156);
+				match(ID);
+				setState(157);
+				match(LBR);
+				setState(158);
+				match(INT);
+				setState(159);
+				match(RBR);
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(160);
+				match(DOLLAR);
+				setState(161);
+				match(ID);
+				setState(162);
+				match(LBR);
+				setState(163);
+				qstring();
+				setState(164);
 				match(RBR);
 				}
 				break;
@@ -983,10 +1111,8 @@ public class NCSynonymDslParser extends Parser {
 	}
 
 	public static class QstringContext extends ParserRuleContext {
-		public List<TerminalNode> SQUOTE() { return getTokens(NCSynonymDslParser.SQUOTE); }
-		public TerminalNode SQUOTE(int i) {
-			return getToken(NCSynonymDslParser.SQUOTE, i);
-		}
+		public TerminalNode SQSTRING() { return getToken(NCSynonymDslParser.SQSTRING, 0); }
+		public TerminalNode DQSTRING() { return getToken(NCSynonymDslParser.DQSTRING, 0); }
 		public QstringContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1003,37 +1129,21 @@ public class NCSynonymDslParser extends Parser {
 
 	public final QstringContext qstring() throws RecognitionException {
 		QstringContext _localctx = new QstringContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_qstring);
+		enterRule(_localctx, 24, RULE_qstring);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(143);
-			match(SQUOTE);
-			setState(147);
-			_errHandler.sync(this);
+			setState(168);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__2) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__6) | (1L << T__7) | (1L << T__8) | (1L << PRED_OP) | (1L << AND) | (1L << OR) | (1L << EXCL) | (1L << LPAREN) | (1L << RPAREN) | (1L << TILDA) | (1L << LBR) | (1L << RBR) | (1L << COMMA) | (1L << COLON) | (1L << MINUS) | (1L << DOT) | (1L << UNDERSCORE) | (1L << BOOL) | (1L << INT) | (1L << EXP) | (1L << ID) | (1L << WS) | (1L << ErrorCharacter))) != 0)) {
-				{
-				{
-				setState(144);
-				_la = _input.LA(1);
-				if ( _la <= 0 || (_la==SQUOTE) ) {
-				_errHandler.recoverInline(this);
-				}
-				else {
-					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-					_errHandler.reportMatch(this);
-					consume();
-				}
-				}
-				}
-				setState(149);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
+			if ( !(_la==SQSTRING || _la==DQSTRING) ) {
+			_errHandler.recoverInline(this);
 			}
-			setState(150);
-			match(SQUOTE);
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -1052,9 +1162,9 @@ public class NCSynonymDslParser extends Parser {
 		case 2:
 			return item_sempred((ItemContext)_localctx, predIndex);
 		case 5:
-			return lvalQual_sempred((LvalQualContext)_localctx, predIndex);
-		case 9:
-			return rvalList_sempred((RvalListContext)_localctx, predIndex);
+			return val_sempred((ValContext)_localctx, predIndex);
+		case 7:
+			return tokQual_sempred((TokQualContext)_localctx, predIndex);
 		}
 		return true;
 	}
@@ -1065,14 +1175,14 @@ public class NCSynonymDslParser extends Parser {
 		}
 		return true;
 	}
-	private boolean lvalQual_sempred(LvalQualContext _localctx, int predIndex) {
+	private boolean val_sempred(ValContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 1:
 			return precpred(_ctx, 1);
 		}
 		return true;
 	}
-	private boolean rvalList_sempred(RvalListContext _localctx, int predIndex) {
+	private boolean tokQual_sempred(TokQualContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 2:
 			return precpred(_ctx, 1);
@@ -1081,49 +1191,55 @@ public class NCSynonymDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3 \u009b\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3%\u00ad\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
-		"\13\4\f\t\f\4\r\t\r\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\5\2$\n\2\3\3\3"+
-		"\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4\62\n\4\3\4\3\4\3\4\7\4"+
-		"\67\n\4\f\4\16\4:\13\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5"+
-		"G\n\5\3\6\5\6J\n\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6U\n\6\3\7\3"+
-		"\7\3\7\3\7\3\7\7\7\\\n\7\f\7\16\7_\13\7\3\b\3\b\3\b\3\t\3\t\5\tf\n\t\3"+
-		"\t\3\t\3\t\5\tk\n\t\3\t\3\t\5\to\n\t\3\n\3\n\3\n\3\n\3\n\5\nv\n\n\3\13"+
-		"\3\13\3\13\3\13\3\13\3\13\7\13~\n\13\f\13\16\13\u0081\13\13\3\f\3\f\3"+
-		"\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\5\f\u0090\n\f\3\r\3\r\7\r\u0094"+
-		"\n\r\f\r\16\r\u0097\13\r\3\r\3\r\3\r\2\5\6\f\24\16\2\4\6\b\n\f\16\20\22"+
-		"\24\26\30\2\4\3\2\r\16\3\2\22\22\2\u00a7\2#\3\2\2\2\4%\3\2\2\2\6\61\3"+
-		"\2\2\2\bF\3\2\2\2\nI\3\2\2\2\fV\3\2\2\2\16`\3\2\2\2\20n\3\2\2\2\22u\3"+
-		"\2\2\2\24w\3\2\2\2\26\u008f\3\2\2\2\30\u0091\3\2\2\2\32\33\5\4\3\2\33"+
-		"\34\7\20\2\2\34\35\5\6\4\2\35\36\7\21\2\2\36\37\7\2\2\3\37$\3\2\2\2 !"+
-		"\5\6\4\2!\"\7\2\2\3\"$\3\2\2\2#\32\3\2\2\2# \3\2\2\2$\3\3\2\2\2%&\7\24"+
-		"\2\2&\'\7\36\2\2\'(\7\25\2\2(\5\3\2\2\2)*\b\4\1\2*\62\5\b\5\2+,\7\20\2"+
-		"\2,-\5\6\4\2-.\7\21\2\2.\62\3\2\2\2/\60\7\17\2\2\60\62\5\6\4\3\61)\3\2"+
-		"\2\2\61+\3\2\2\2\61/\3\2\2\2\628\3\2\2\2\63\64\f\4\2\2\64\65\t\2\2\2\65"+
-		"\67\5\6\4\5\66\63\3\2\2\2\67:\3\2\2\28\66\3\2\2\289\3\2\2\29\7\3\2\2\2"+
-		":8\3\2\2\2;<\5\n\6\2<=\7\f\2\2=>\5\22\n\2>G\3\2\2\2?@\7\36\2\2@A\7\20"+
-		"\2\2AB\5\n\6\2BC\7\21\2\2CD\7\f\2\2DE\5\22\n\2EG\3\2\2\2F;\3\2\2\2F?\3"+
-		"\2\2\2G\t\3\2\2\2HJ\5\f\7\2IH\3\2\2\2IJ\3\2\2\2JT\3\2\2\2KU\7\3\2\2LU"+
-		"\7\4\2\2MU\7\5\2\2NU\7\6\2\2OU\7\7\2\2PU\7\b\2\2QU\7\t\2\2RU\7\n\2\2S"+
-		"U\5\26\f\2TK\3\2\2\2TL\3\2\2\2TM\3\2\2\2TN\3\2\2\2TO\3\2\2\2TP\3\2\2\2"+
-		"TQ\3\2\2\2TR\3\2\2\2TS\3\2\2\2U\13\3\2\2\2VW\b\7\1\2WX\5\16\b\2X]\3\2"+
-		"\2\2YZ\f\3\2\2Z\\\5\16\b\2[Y\3\2\2\2\\_\3\2\2\2][\3\2\2\2]^\3\2\2\2^\r"+
-		"\3\2\2\2_]\3\2\2\2`a\7\36\2\2ab\7\31\2\2b\17\3\2\2\2co\7\13\2\2df\7\30"+
-		"\2\2ed\3\2\2\2ef\3\2\2\2fj\3\2\2\2gk\7\34\2\2hi\7\34\2\2ik\7\35\2\2jg"+
-		"\3\2\2\2jh\3\2\2\2ko\3\2\2\2lo\7\33\2\2mo\5\30\r\2nc\3\2\2\2ne\3\2\2\2"+
-		"nl\3\2\2\2nm\3\2\2\2o\21\3\2\2\2pv\5\20\t\2qr\7\20\2\2rs\5\24\13\2st\7"+
-		"\21\2\2tv\3\2\2\2up\3\2\2\2uq\3\2\2\2v\23\3\2\2\2wx\b\13\1\2xy\5\20\t"+
-		"\2y\177\3\2\2\2z{\f\3\2\2{|\7\26\2\2|~\5\20\t\2}z\3\2\2\2~\u0081\3\2\2"+
-		"\2\177}\3\2\2\2\177\u0080\3\2\2\2\u0080\25\3\2\2\2\u0081\177\3\2\2\2\u0082"+
-		"\u0083\7\23\2\2\u0083\u0090\7\36\2\2\u0084\u0085\7\23\2\2\u0085\u0086"+
-		"\7\36\2\2\u0086\u0087\7\24\2\2\u0087\u0088\7\34\2\2\u0088\u0090\7\25\2"+
-		"\2\u0089\u008a\7\23\2\2\u008a\u008b\7\36\2\2\u008b\u008c\7\24\2\2\u008c"+
-		"\u008d\5\30\r\2\u008d\u008e\7\25\2\2\u008e\u0090\3\2\2\2\u008f\u0082\3"+
-		"\2\2\2\u008f\u0084\3\2\2\2\u008f\u0089\3\2\2\2\u0090\27\3\2\2\2\u0091"+
-		"\u0095\7\22\2\2\u0092\u0094\n\3\2\2\u0093\u0092\3\2\2\2\u0094\u0097\3"+
-		"\2\2\2\u0095\u0093\3\2\2\2\u0095\u0096\3\2\2\2\u0096\u0098\3\2\2\2\u0097"+
-		"\u0095\3\2\2\2\u0098\u0099\7\22\2\2\u0099\31\3\2\2\2\20#\618FIT]ejnu\177"+
-		"\u008f\u0095";
+		"\13\4\f\t\f\4\r\t\r\4\16\t\16\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\5\2"+
+		"&\n\2\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4\64\n\4\3\4\3"+
+		"\4\3\4\7\49\n\4\f\4\16\4<\13\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6"+
+		"\5\6H\n\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7P\n\7\3\7\3\7\3\7\7\7U\n\7\f\7\16"+
+		"\7X\13\7\3\b\3\b\5\b\\\n\b\3\b\3\b\3\b\5\ba\n\b\3\b\3\b\3\b\5\bf\n\b\3"+
+		"\b\3\b\5\bj\n\b\3\b\3\b\3\b\5\bo\n\b\3\t\3\t\3\t\3\t\3\t\7\tv\n\t\f\t"+
+		"\16\ty\13\t\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3"+
+		"\13\3\13\3\13\3\13\5\13\u008b\n\13\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f"+
+		"\3\f\3\f\3\f\3\f\5\f\u009a\n\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r"+
+		"\3\r\3\r\3\r\5\r\u00a9\n\r\3\16\3\16\3\16\2\5\6\f\20\17\2\4\6\b\n\f\16"+
+		"\20\22\24\26\30\32\2\5\3\2\17\20\3\2\4\13\3\2\f\r\2\u00b8\2%\3\2\2\2\4"+
+		"\'\3\2\2\2\6\63\3\2\2\2\b=\3\2\2\2\nG\3\2\2\2\fO\3\2\2\2\16n\3\2\2\2\20"+
+		"p\3\2\2\2\22z\3\2\2\2\24\u008a\3\2\2\2\26\u0099\3\2\2\2\30\u00a8\3\2\2"+
+		"\2\32\u00aa\3\2\2\2\34\35\5\4\3\2\35\36\7\22\2\2\36\37\5\6\4\2\37 \7\23"+
+		"\2\2 !\7\2\2\3!&\3\2\2\2\"#\5\6\4\2#$\7\2\2\3$&\3\2\2\2%\34\3\2\2\2%\""+
+		"\3\2\2\2&\3\3\2\2\2\'(\7\30\2\2()\7#\2\2)*\7\31\2\2*\5\3\2\2\2+,\b\4\1"+
+		"\2,\64\5\b\5\2-.\7\22\2\2./\5\6\4\2/\60\7\23\2\2\60\64\3\2\2\2\61\62\7"+
+		"\21\2\2\62\64\5\6\4\3\63+\3\2\2\2\63-\3\2\2\2\63\61\3\2\2\2\64:\3\2\2"+
+		"\2\65\66\f\4\2\2\66\67\t\2\2\2\679\5\6\4\58\65\3\2\2\29<\3\2\2\2:8\3\2"+
+		"\2\2:;\3\2\2\2;\7\3\2\2\2<:\3\2\2\2=>\5\n\6\2>?\7\16\2\2?@\5\n\6\2@\t"+
+		"\3\2\2\2AH\5\f\7\2BC\7#\2\2CD\7\22\2\2DE\5\n\6\2EF\7\23\2\2FH\3\2\2\2"+
+		"GA\3\2\2\2GB\3\2\2\2H\13\3\2\2\2IJ\b\7\1\2JP\5\16\b\2KL\7\22\2\2LM\5\f"+
+		"\7\2MN\7\23\2\2NP\3\2\2\2OI\3\2\2\2OK\3\2\2\2PV\3\2\2\2QR\f\3\2\2RS\7"+
+		"\32\2\2SU\5\f\7\4TQ\3\2\2\2UX\3\2\2\2VT\3\2\2\2VW\3\2\2\2W\r\3\2\2\2X"+
+		"V\3\2\2\2Yo\7\3\2\2Z\\\7\35\2\2[Z\3\2\2\2[\\\3\2\2\2\\`\3\2\2\2]a\7!\2"+
+		"\2^_\7!\2\2_a\7\"\2\2`]\3\2\2\2`^\3\2\2\2ao\3\2\2\2bo\7 \2\2co\5\32\16"+
+		"\2df\5\20\t\2ed\3\2\2\2ef\3\2\2\2fg\3\2\2\2go\t\3\2\2hj\5\20\t\2ih\3\2"+
+		"\2\2ij\3\2\2\2jk\3\2\2\2ko\5\24\13\2lo\5\26\f\2mo\5\30\r\2nY\3\2\2\2n"+
+		"[\3\2\2\2nb\3\2\2\2nc\3\2\2\2ne\3\2\2\2ni\3\2\2\2nl\3\2\2\2nm\3\2\2\2"+
+		"o\17\3\2\2\2pq\b\t\1\2qr\5\22\n\2rw\3\2\2\2st\f\3\2\2tv\5\22\n\2us\3\2"+
+		"\2\2vy\3\2\2\2wu\3\2\2\2wx\3\2\2\2x\21\3\2\2\2yw\3\2\2\2z{\7#\2\2{|\7"+
+		"\36\2\2|\23\3\2\2\2}~\7\27\2\2~\u008b\7#\2\2\177\u0080\7\27\2\2\u0080"+
+		"\u0081\7#\2\2\u0081\u0082\7\30\2\2\u0082\u0083\7!\2\2\u0083\u008b\7\31"+
+		"\2\2\u0084\u0085\7\27\2\2\u0085\u0086\7#\2\2\u0086\u0087\7\30\2\2\u0087"+
+		"\u0088\5\32\16\2\u0088\u0089\7\31\2\2\u0089\u008b\3\2\2\2\u008a}\3\2\2"+
+		"\2\u008a\177\3\2\2\2\u008a\u0084\3\2\2\2\u008b\25\3\2\2\2\u008c\u008d"+
+		"\7\34\2\2\u008d\u009a\7#\2\2\u008e\u008f\7\34\2\2\u008f\u0090\7#\2\2\u0090"+
+		"\u0091\7\30\2\2\u0091\u0092\7!\2\2\u0092\u009a\7\31\2\2\u0093\u0094\7"+
+		"\34\2\2\u0094\u0095\7#\2\2\u0095\u0096\7\30\2\2\u0096\u0097\5\32\16\2"+
+		"\u0097\u0098\7\31\2\2\u0098\u009a\3\2\2\2\u0099\u008c\3\2\2\2\u0099\u008e"+
+		"\3\2\2\2\u0099\u0093\3\2\2\2\u009a\27\3\2\2\2\u009b\u009c\7\26\2\2\u009c"+
+		"\u00a9\7#\2\2\u009d\u009e\7\26\2\2\u009e\u009f\7#\2\2\u009f\u00a0\7\30"+
+		"\2\2\u00a0\u00a1\7!\2\2\u00a1\u00a9\7\31\2\2\u00a2\u00a3\7\26\2\2\u00a3"+
+		"\u00a4\7#\2\2\u00a4\u00a5\7\30\2\2\u00a5\u00a6\5\32\16\2\u00a6\u00a7\7"+
+		"\31\2\2\u00a7\u00a9\3\2\2\2\u00a8\u009b\3\2\2\2\u00a8\u009d\3\2\2\2\u00a8"+
+		"\u00a2\3\2\2\2\u00a9\31\3\2\2\2\u00aa\u00ab\t\4\2\2\u00ab\33\3\2\2\2\21"+
+		"%\63:GOV[`einw\u008a\u0099\u00a8";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

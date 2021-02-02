@@ -676,7 +676,8 @@ public interface NCModelView extends NCMetadata {
     /**
      * Gets optional user defined model metadata that can be set by the developer and accessed later.
      * By default returns an empty map. Note that this metadata is different from the one returned
-     * by {@link NCToken#getMetadata()} method.
+     * by {@link NCToken#getMetadata()} method. Note also that this metadata is mutable and can be
+     * changed at runtime by the model's code.
      * <p>
      * <b>JSON</b>
      * <br>
@@ -691,7 +692,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Optional user defined model metadata. TODO: cannot be null
+     * @return Optional user defined model metadata. Can be empty but never {@code null}.
      */
     default Map<String, Object> getMetadata() {
         return DFLT_METADATA;

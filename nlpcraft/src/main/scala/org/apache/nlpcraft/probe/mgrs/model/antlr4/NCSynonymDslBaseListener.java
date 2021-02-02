@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4\NCSynonymDsl.g4 by ANTLR 4.9
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4\NCSynonymDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.probe.mgrs.model.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -52,97 +52,109 @@ public class NCSynonymDslBaseListener implements NCSynonymDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPredicate(NCSynonymDslParser.PredicateContext ctx) { }
+	@Override public void enterPred(NCSynonymDslParser.PredContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPredicate(NCSynonymDslParser.PredicateContext ctx) { }
+	@Override public void exitPred(NCSynonymDslParser.PredContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLval(NCSynonymDslParser.LvalContext ctx) { }
+	@Override public void enterExpr(NCSynonymDslParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLval(NCSynonymDslParser.LvalContext ctx) { }
+	@Override public void exitExpr(NCSynonymDslParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLvalQual(NCSynonymDslParser.LvalQualContext ctx) { }
+	@Override public void enterVal(NCSynonymDslParser.ValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLvalQual(NCSynonymDslParser.LvalQualContext ctx) { }
+	@Override public void exitVal(NCSynonymDslParser.ValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLvalPart(NCSynonymDslParser.LvalPartContext ctx) { }
+	@Override public void enterSingleVal(NCSynonymDslParser.SingleValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLvalPart(NCSynonymDslParser.LvalPartContext ctx) { }
+	@Override public void exitSingleVal(NCSynonymDslParser.SingleValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRvalSingle(NCSynonymDslParser.RvalSingleContext ctx) { }
+	@Override public void enterTokQual(NCSynonymDslParser.TokQualContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRvalSingle(NCSynonymDslParser.RvalSingleContext ctx) { }
+	@Override public void exitTokQual(NCSynonymDslParser.TokQualContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRval(NCSynonymDslParser.RvalContext ctx) { }
+	@Override public void enterTokQualPart(NCSynonymDslParser.TokQualPartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRval(NCSynonymDslParser.RvalContext ctx) { }
+	@Override public void exitTokQualPart(NCSynonymDslParser.TokQualPartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRvalList(NCSynonymDslParser.RvalListContext ctx) { }
+	@Override public void enterTokMeta(NCSynonymDslParser.TokMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRvalList(NCSynonymDslParser.RvalListContext ctx) { }
+	@Override public void exitTokMeta(NCSynonymDslParser.TokMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMeta(NCSynonymDslParser.MetaContext ctx) { }
+	@Override public void enterModelMeta(NCSynonymDslParser.ModelMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMeta(NCSynonymDslParser.MetaContext ctx) { }
+	@Override public void exitModelMeta(NCSynonymDslParser.ModelMetaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIntentMeta(NCSynonymDslParser.IntentMetaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntentMeta(NCSynonymDslParser.IntentMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4\NCSynonymDsl.g4 by ANTLR 4.9
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4\NCSynonymDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.probe.mgrs.model.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -38,85 +38,95 @@ public interface NCSynonymDslListener extends ParseTreeListener {
 	 */
 	void exitItem(NCSynonymDslParser.ItemContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#predicate}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#pred}.
 	 * @param ctx the parse tree
 	 */
-	void enterPredicate(NCSynonymDslParser.PredicateContext ctx);
+	void enterPred(NCSynonymDslParser.PredContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#predicate}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#pred}.
 	 * @param ctx the parse tree
 	 */
-	void exitPredicate(NCSynonymDslParser.PredicateContext ctx);
+	void exitPred(NCSynonymDslParser.PredContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#lval}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterLval(NCSynonymDslParser.LvalContext ctx);
+	void enterExpr(NCSynonymDslParser.ExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#lval}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitLval(NCSynonymDslParser.LvalContext ctx);
+	void exitExpr(NCSynonymDslParser.ExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#lvalQual}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#val}.
 	 * @param ctx the parse tree
 	 */
-	void enterLvalQual(NCSynonymDslParser.LvalQualContext ctx);
+	void enterVal(NCSynonymDslParser.ValContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#lvalQual}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#val}.
 	 * @param ctx the parse tree
 	 */
-	void exitLvalQual(NCSynonymDslParser.LvalQualContext ctx);
+	void exitVal(NCSynonymDslParser.ValContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#lvalPart}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#singleVal}.
 	 * @param ctx the parse tree
 	 */
-	void enterLvalPart(NCSynonymDslParser.LvalPartContext ctx);
+	void enterSingleVal(NCSynonymDslParser.SingleValContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#lvalPart}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#singleVal}.
 	 * @param ctx the parse tree
 	 */
-	void exitLvalPart(NCSynonymDslParser.LvalPartContext ctx);
+	void exitSingleVal(NCSynonymDslParser.SingleValContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#rvalSingle}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#tokQual}.
 	 * @param ctx the parse tree
 	 */
-	void enterRvalSingle(NCSynonymDslParser.RvalSingleContext ctx);
+	void enterTokQual(NCSynonymDslParser.TokQualContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#rvalSingle}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#tokQual}.
 	 * @param ctx the parse tree
 	 */
-	void exitRvalSingle(NCSynonymDslParser.RvalSingleContext ctx);
+	void exitTokQual(NCSynonymDslParser.TokQualContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#rval}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#tokQualPart}.
 	 * @param ctx the parse tree
 	 */
-	void enterRval(NCSynonymDslParser.RvalContext ctx);
+	void enterTokQualPart(NCSynonymDslParser.TokQualPartContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#rval}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#tokQualPart}.
 	 * @param ctx the parse tree
 	 */
-	void exitRval(NCSynonymDslParser.RvalContext ctx);
+	void exitTokQualPart(NCSynonymDslParser.TokQualPartContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#rvalList}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#tokMeta}.
 	 * @param ctx the parse tree
 	 */
-	void enterRvalList(NCSynonymDslParser.RvalListContext ctx);
+	void enterTokMeta(NCSynonymDslParser.TokMetaContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#rvalList}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#tokMeta}.
 	 * @param ctx the parse tree
 	 */
-	void exitRvalList(NCSynonymDslParser.RvalListContext ctx);
+	void exitTokMeta(NCSynonymDslParser.TokMetaContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCSynonymDslParser#meta}.
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#modelMeta}.
 	 * @param ctx the parse tree
 	 */
-	void enterMeta(NCSynonymDslParser.MetaContext ctx);
+	void enterModelMeta(NCSynonymDslParser.ModelMetaContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCSynonymDslParser#meta}.
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#modelMeta}.
 	 * @param ctx the parse tree
 	 */
-	void exitMeta(NCSynonymDslParser.MetaContext ctx);
+	void exitModelMeta(NCSynonymDslParser.ModelMetaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCSynonymDslParser#intentMeta}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntentMeta(NCSynonymDslParser.IntentMetaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCSynonymDslParser#intentMeta}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntentMeta(NCSynonymDslParser.IntentMetaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCSynonymDslParser#qstring}.
 	 * @param ctx the parse tree
