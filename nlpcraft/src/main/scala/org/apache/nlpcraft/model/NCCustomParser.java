@@ -24,7 +24,7 @@ import java.util.*;
  * Named Entity Recognizer (NER) implementation in cases when the standard declarative methods are not expressive
  * enough. Instance of the parser should be made available in the model via {@link NCModel#getParsers()} method.
  * <p>
- * By default the data model detects its elements by their declarative synonyms. However,
+ * By default, the data model detects its elements by their declarative synonyms. However,
  * in some cases this is not expressive enough. In such cases, one or more user-defined parsers can be defined
  * for the model that would allow the user to define its own NER logic to detect the model elements in the user
  * input programmatically. Note that there can be multiple custom parsers per model and each one can detect

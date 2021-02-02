@@ -44,7 +44,7 @@ public @interface NCMdoField {
     /**
      * Optional function name to generate JSON value for the field.
      *
-     * By default the actual field value will be used for JSON export.
+     * By default, the actual field value will be used for JSON export.
      * This converter function can be used to modify this default behavior.
      *
      * Converter function can have zero or one parameter only. If it has one parameter

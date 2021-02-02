@@ -97,7 +97,7 @@ public class NCTestClientBuilder {
 
     /**
      * Sets non-default {@link CloseableHttpClient} custom supplier.
-     * By default {@link CloseableHttpClient} created with {@link HttpClients#createDefault()}.
+     * By default, {@link CloseableHttpClient} created with {@link HttpClients#createDefault()}.
      *
      * @param cliSup {@link CloseableHttpClient} custom supplier.
      * @return Builder instance for chaining calls.
@@ -110,7 +110,7 @@ public class NCTestClientBuilder {
 
     /**
      * Sets non-default API base URL. Only change it if your server is not running on localhost.
-     * By default {@link NCTestClientBuilder#DFLT_BASEURL} is used.
+     * By default, {@link NCTestClientBuilder#DFLT_BASEURL} is used.
      *
      * @param baseUrl API base URL.
      * @return Builder instance for chaining calls.
@@ -127,7 +127,7 @@ public class NCTestClientBuilder {
 
     /**
      * Sets non-default user credentials.
-     * By default {@link NCTestClientBuilder#DFLT_EMAIL} and {@link NCTestClientBuilder#DFLT_PASSWORD} are used
+     * By default, {@link NCTestClientBuilder#DFLT_EMAIL} and {@link NCTestClientBuilder#DFLT_PASSWORD} are used
      * and they match the default NLPCraft server user.
      *
      * @param email User email.
@@ -144,7 +144,7 @@ public class NCTestClientBuilder {
     /**
      * Sets the embedded probe mode flag. Default value is {@link #DFLT_EMBEDDED}. If set to {@code true} the test client
      * will expect the {@link NCEmbeddedProbe embedded probe} running in the same JVM
-     * and will use local callbacks for quicker results instead of a full REST roundtrip.
+     * and will use local callbacks for quicker results instead of a full REST round trip.
      *
      * @param embedded Embedded probe mode flag.
      * @return Builder instance for chaining calls.

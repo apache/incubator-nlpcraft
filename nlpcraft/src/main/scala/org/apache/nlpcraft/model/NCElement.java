@@ -77,7 +77,7 @@ public interface NCElement extends NCMetadata, Serializable {
     /**
      * Gets the list of groups this elements belongs to.
      * <p>
-     * Model element can belong to one or more groups. By default the element belongs to a single group whose group
+     * Model element can belong to one or more groups. By default, the element belongs to a single group whose group
      * ID is equal to its {@link #getId() ID}. The proper grouping of the model elements is required for operation
      * of Short-Term-Memory (STM) in {@link NCConversation conversation} (if and when conversation
      * is used). Specifically, a token (i.e. found model element) that is part of the group set will override
@@ -103,7 +103,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *     ]
      * </pre>
      *
-     * @return List of groups this element belongs to. By default - the model element belongs to one group
+     * @return List of groups this element belongs to. By default, the model element belongs to one group
      *      with ID equal to the element {@link #getId() ID}.
      * @see NCConversation
      * @see #getId() 
