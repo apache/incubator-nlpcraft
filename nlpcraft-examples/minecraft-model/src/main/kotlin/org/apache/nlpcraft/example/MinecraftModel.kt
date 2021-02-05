@@ -21,6 +21,7 @@ package org.apache.nlpcraft.example
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.example.MinecraftObjectValueLoader.Companion.dumps
 import org.apache.nlpcraft.model.*
+import java.util.*
 
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     @NCIntentRef("weatherIntent")
@@ -58,15 +59,25 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     fun onGiveMatch(
         ctx: NCIntentMatch,
         @NCIntentTerm("item") item: NCToken,
-        @NCIntentTerm("target") target: NCToken
+        @NCIntentTerm("target") target: NCToken,
+        @NCIntentTerm("quantity") quantity: Optional<NCToken>
     ): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
         }
 
         val itemRegistry = dumps["item"]!![item.value]!!
-        val player = if (target.value == "me") "@p" else target.value?:"@p"
+        val player = if (target.normText() == "me") "@p" else target.originalText ?: "@p"
 
-        return NCResult.text("give $player $itemRegistry")
+        val itemQuantity = quantity
+            .flatMap { x -> x.metaOpt<Double>("nlpcraft:num:from") }
+            .map { x -> x.toLong() }
+            .orElse(1)
+
+        return NCResult.text("give $player $itemRegistry $itemQuantity")
+    }
+
+    private fun NCToken.normText(): String {
+        return this.meta("nlpcraft:nlp:normtext")
     }
 }

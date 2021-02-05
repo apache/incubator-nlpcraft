@@ -79,7 +79,7 @@ elements:
       - "{give}"
   - id: give:target
     synonyms:
-      - "{me}" # TODO: also could be another player
+      - "{me|//[a-zA-Z0-9]+//}"
   - id: give:item
     metadata:
       minecraft:type: item
@@ -90,4 +90,7 @@ elements:
 intents:
   - intent=weatherIntent term(arg)={groups @@ 'weather'}
   - intent=timeIntent term(arg)={groups @@ 'time'}
-  - intent=giveIntent term(action)={id == 'give:action'} term(target)={id == 'give:target'} term(item)={id == 'give:item'}
+  - intent=giveIntent term(action)={id == 'give:action'} term(target)={id == 'give:target'} term(quantity)={id == 'nlpcraft:num'}? term(item)={id == 'give:item'}
+
+# give me sand
+swearWordsAllowed: true
