@@ -59,7 +59,7 @@ object NCModelSynonymDslCompiler extends LazyLogging {
      */
     class FiniteStateMachine extends NCSynonymDslBaseListener {
         private val predStack = new mutable.ArrayStack[NCToken ⇒ Boolean] // Stack of predicates.
-        private val lvalParts = ArrayBuffer.empty[String] // lval parts collector.
+        private val tokQualParts = ArrayBuffer.empty[String] // lval parts collector.
         private val rvalList = ArrayBuffer.empty[String] // rval list collector.
         private var alias: String = _
         private var rval: String = _
@@ -81,8 +81,8 @@ object NCModelSynonymDslCompiler extends LazyLogging {
             rvalList += rval
         }
     
-        override def exitLvalPart(ctx: NCSynonymDslParser.LvalPartContext): Unit = {
-            lvalParts += ctx.ID().getText.trim()
+        override def exitTokQualPart(ctx: NCSynonymDslParser.TokQualPartContext): Unit = {
+            tokQualParts += ctx.ID().getText.trim()
         }
     
         override def exitAlias(ctx: NCSynonymDslParser.AliasContext): Unit = {
@@ -197,7 +197,7 @@ object NCModelSynonymDslCompiler extends LazyLogging {
             }
             
             val pred = new NCDslTokenPredicate(
-                lvalParts.asJava,
+                tokQualParts.asJava,
                 lvalFunc,
                 lval,
                 op,
@@ -210,7 +210,7 @@ object NCModelSynonymDslCompiler extends LazyLogging {
             })
     
             // Reset.
-            lvalParts.clear()
+            tokQualParts.clear()
             rvalList.clear()
             rval = null
         }

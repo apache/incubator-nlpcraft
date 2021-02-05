@@ -44,7 +44,7 @@ mathOp
 val
     : singleVal
     | LPAREN val RPAREN
-    | val COMMA val
+    | val COMMA singleVal
     ;
 singleVal
     : 'null'
