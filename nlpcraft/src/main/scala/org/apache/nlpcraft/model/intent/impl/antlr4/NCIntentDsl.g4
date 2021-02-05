@@ -21,16 +21,23 @@ intent: intentId orderedDecl? flowDecl? metaDecl? terms EOF;
 intentId: 'intent' EQ ID;
 orderedDecl: 'ordered' EQ BOOL;
 flowDecl: 'flow' EQ qstring;
-metaDecl: 'meta' EQ LCURLY metaList? RCURLY;
-metaList
-    : metaItem
-    | metaList COMMA metaItem
+metaDecl: 'meta' EQ jsonObj;
+jsonObj
+    : LCURLY jsonPair (COMMA jsonPair)* RCURLY
+    | LCURLY RCURLY
     ;
-metaItem: qstring COLON metaItemRval;
-metaItemRval
-    : 'null'
+jsonPair: qstring COLON jsonVal;
+jsonVal
+    : qstring
+    | NUM
+    | jsonObj
+    | jsonArr
     | BOOL
-    | qstring
+    | NULL
+    ;
+jsonArr
+    : LBR jsonVal (COMMA jsonVal)* RBR
+    | LBR RBR
     ;
 terms: term | terms term;
 termEq
@@ -49,6 +56,9 @@ javaFqn
     | javaFqn DOT ID
     ;
 termId: LPAREN ID RPAREN;
+
+
+
 item
     : pred
     | LPAREN item RPAREN
@@ -71,12 +81,14 @@ mathOp
 val
     : singleVal
     | LPAREN val RPAREN
-    |
-    
     ;
+
+
+
+
 singleVal
-    : 'null'
-    | MINUS? (INT | INT EXP)
+    : NULL
+    | NUM
     | BOOL
     | qstring
     | tokQual? ('id' | 'aliases' | 'startidx' | 'endidx' | 'parent' | 'groups' | 'ancestors' | 'value')
@@ -158,8 +170,9 @@ FSLASH: '/';
 PERCENT: '%';
 POWER: '^';
 BOOL: 'true' | 'false';
+NULL: 'null';
 INT: '0' | [1-9][_0-9]*;
-EXP: DOT [0-9]+;
+NUM: MINUS? INT (DOT [0-9]+)? ([Ee][+\-]? INT)?;
 ID: (UNDERSCORE|[a-z]|[A-Z]|[$])+([$]|[a-z]|[A-Z]|[0-9]|COLON|MINUS|UNDERSCORE)*;
 WS: [ \r\t\u000C\n]+ -> skip ;
 
