@@ -21,6 +21,7 @@ version: '1.0'
 description: Minecraft Model.
 
 elements:
+  # Weather intent
   - id: rain
     description: Set rain weather
     groups:
@@ -40,6 +41,7 @@ elements:
     synonyms:
       - "{thunder|storm|stormy}"
 
+  # Time intent
   - id: morning
     groups:
       - time
@@ -71,7 +73,21 @@ elements:
     synonyms:
       - "{midnight}"
 
+  # Give intent
+  - id: give:action
+    synonyms:
+      - "{give}"
+  - id: give:target
+    synonyms:
+      - "{me}" # TODO: also could be another player
+  - id: give:item
+    metadata:
+      minecraft:type: item
+    valueLoader: org.apache.nlpcraft.example.MinecraftObjectValueLoader
+
+
 # List of model intents.
 intents:
   - intent=weatherIntent term(arg)={groups @@ 'weather'}
   - intent=timeIntent term(arg)={groups @@ 'time'}
+  - intent=giveIntent term(action)={id == 'give:action'} term(target)={id == 'give:target'} term(item)={id == 'give:item'}

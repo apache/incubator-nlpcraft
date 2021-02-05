@@ -19,6 +19,7 @@
 package org.apache.nlpcraft.example
 
 import org.apache.nlpcraft.common.NCException
+import org.apache.nlpcraft.example.MinecraftObjectValueLoader.Companion.dumps
 import org.apache.nlpcraft.model.*
 
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
@@ -50,5 +51,22 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         } ?: throw NCException("Invalid token id")
 
         return NCResult.text("time set $time")
+    }
+
+    @NCIntentRef("giveIntent")
+    @Suppress("unused")
+    fun onGiveMatch(
+        ctx: NCIntentMatch,
+        @NCIntentTerm("item") item: NCToken,
+        @NCIntentTerm("target") target: NCToken
+    ): NCResult {
+        if (ctx.isAmbiguous) {
+            throw NCRejection("Ambiguous request")
+        }
+
+        val itemRegistry = dumps["item"]!![item.value]!!
+        val player = if (target.value == "me") "@p" else target.value?:"@p"
+
+        return NCResult.text("give $player $itemRegistry")
     }
 }
