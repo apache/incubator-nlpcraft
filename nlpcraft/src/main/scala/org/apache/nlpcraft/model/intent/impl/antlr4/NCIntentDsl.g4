@@ -29,7 +29,7 @@ jsonObj
 jsonPair: qstring COLON jsonVal;
 jsonVal
     : qstring
-    | NUM
+    | MINUS? INT REAL? EXP?
     | jsonObj
     | jsonArr
     | BOOL
@@ -44,51 +44,30 @@ termEq
     : EQ // Do not use conversation.
     | TILDA // Use conversation.
     ;
-term
-    : dslTerm
-    | clsTerm
-    ;
-dslTerm: 'term' termId? termEq LCURLY item RCURLY minMax?;
-clsTerm: 'term' termId? termEq FSLASH clsNer FSLASH minMax?;
+term: 'term' termId? termEq ((LCURLY termDef RCURLY) | (FSLASH clsNer FSLASH)) minMax?;
 clsNer: javaFqn? POUND ID;
 javaFqn
     : ID
     | javaFqn DOT ID
     ;
 termId: LPAREN ID RPAREN;
-
-
-
-item
-    : pred
-    | LPAREN item RPAREN
-    | item (AND | OR) item
-    | EXCL item
+termDef
+    : termPred
+    | LPAREN termDef RPAREN
+    | termDef (AND | OR) termDef
+    | EXCL termDef
     ;
-pred: expr PRED_OP expr;
+termPred: expr PRED_OP expr;
 expr
     : val
+    | expr COMMA val
     | LPAREN expr RPAREN
-    | expr mathOp expr
+    | expr (MINUS | PLUS | STAR | FSLASH) expr
     | ID LPAREN expr? RPAREN // Buit-in function call.
     ;
-mathOp
-    : MINUS
-    | PLUS
-    | STAR
-    | FSLASH
-    ;
 val
-    : singleVal
-    | LPAREN val RPAREN
-    ;
-
-
-
-
-singleVal
     : NULL
-    | NUM
+    | MINUS? INT REAL? EXP?
     | BOOL
     | qstring
     | tokQual? ('id' | 'aliases' | 'startidx' | 'endidx' | 'parent' | 'groups' | 'ancestors' | 'value')
@@ -111,7 +90,7 @@ modelMeta // Model metadata: #prop
     | POUND ID LBR INT RBR
     | POUND ID LBR qstring RBR
     ;
-intentMeta // Intent metadata: $prop
+intentMeta // Intent metadata: %prop
     : PERCENT ID
     | PERCENT ID LBR INT RBR
     | PERCENT ID LBR qstring RBR
@@ -168,13 +147,15 @@ QUESTION: '?';
 STAR: '*';
 FSLASH: '/';
 PERCENT: '%';
+DOLLAR: '$';
 POWER: '^';
 BOOL: 'true' | 'false';
 NULL: 'null';
-INT: '0' | [1-9][_0-9]*;
-NUM: MINUS? INT (DOT [0-9]+)? ([Ee][+\-]? INT)?;
-ID: (UNDERSCORE|[a-z]|[A-Z]|[$])+([$]|[a-z]|[A-Z]|[0-9]|COLON|MINUS|UNDERSCORE)*;
-WS: [ \r\t\u000C\n]+ -> skip ;
+INT: '0' | [1-9] [_0-9]*;
+REAL: DOT [0-9]+;
+EXP: [Ee] [+\-]? INT;
+ID: (UNDERSCORE|[a-z]|[A-Z]|DOLLAR)+(DOLLAR|[a-z]|[A-Z]|[0-9]|COLON|MINUS|UNDERSCORE)*;
+WS: [ \r\t\u000C\n]+ -> skip;
 
 ErrorCharacter
   : .
