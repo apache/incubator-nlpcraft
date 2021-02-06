@@ -56,9 +56,6 @@ javaFqn
     | javaFqn DOT ID
     ;
 termId: LPAREN ID RPAREN;
-
-
-
 item
     : pred
     | LPAREN item RPAREN
