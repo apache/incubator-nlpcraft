@@ -275,7 +275,7 @@ object NCStopWordEnricher extends NCServerEnricher {
                         map(_.trim.toUpperCase).
                         filter(_.nonEmpty).
                         toSeq.
-                        map(p ⇒ if (p.head == '~') p.drop(1).trim → false else p → true).
+                        map(p ⇒ if (p.head == '~') p.drop(1).strip → false else p → true).
                         toMap
                 else
                     Map.empty
@@ -634,7 +634,7 @@ object NCStopWordEnricher extends NCServerEnricher {
             for (tup ← origToks; key = tup._2 if !foundKeys.contains(key) && !isException(tup._1))
                 foundKeys.find(key.startsWith) match {
                     case Some(s) ⇒
-                        if (nounWords.contains(key.substring(s.length).trim))
+                        if (nounWords.contains(key.substring(s.length).strip))
                             tup._1.foreach(tok ⇒ ns.fixNote(tok.getNlpNote, "stopWord" → true))
                     case None ⇒ ()
                 }
@@ -678,7 +678,7 @@ object NCStopWordEnricher extends NCServerEnricher {
         val m =
             readStopWords(
                 U.readResource("stopwords/stop_words.txt", "UTF-8", logger).
-                    map(_.trim).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toSeq
+                    map(_.strip).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toSeq
             )
 
         stopWords = m(false)

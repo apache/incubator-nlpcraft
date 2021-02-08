@@ -1525,7 +1525,7 @@ object NCCli extends App {
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
         val jarsFolder = if (beacon.jarsFolder != null) g(beacon.jarsFolder) else y("<not set>")
-        val mdlSeq = beacon.models.split(",").map(s ⇒ s"${g(s.trim)}").toSeq
+        val mdlSeq = beacon.models.split(",").map(s ⇒ s"${g(s.strip)}").toSeq
 
         tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("Probe ID", s"${g(beacon.id)}")
@@ -2904,7 +2904,7 @@ object NCCli extends App {
         if (buf.nonEmpty)
             lines += buf.toString()
 
-        lines.map(_.trim)
+        lines.map(_.strip)
     }
 
     /**
@@ -2922,8 +2922,8 @@ object NCCli extends App {
             if (parts.size > 2)
                 throw mkError()
 
-            val name = if (parts.size == 1) arg.trim else parts(0).trim
-            val value = if (parts.size == 1) None else Some(U.trimQuotes(parts(1).trim))
+            val name = if (parts.size == 1) arg.strip else parts(0).trim
+            val value = if (parts.size == 1) None else Some(U.trimQuotes(parts(1).strip))
             val hasSynth = cmd.params.exists(_.synthetic)
 
             if (name.endsWith("=")) // Missing value or extra '='.
@@ -2993,7 +2993,7 @@ object NCCli extends App {
         if (args.nonEmpty) {
             try
                 if (args.head.head == '$') {
-                    val head = args.head.tail.trim // Remove '$' from 1st argument.
+                    val head = args.head.tail.strip // Remove '$' from 1st argument.
                     val tail = args.tail.toList
 
                     execOsCmd(if (head.isEmpty) tail else head :: tail)

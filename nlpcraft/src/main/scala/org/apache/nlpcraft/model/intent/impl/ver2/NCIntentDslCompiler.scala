@@ -44,6 +44,63 @@ object NCIntentDslCompiler extends LazyLogging {
         private val terms = ArrayBuffer.empty[NCDslTerm] // Accumulator for parsed terms.
         private var flowRegex: Option[String] = None
 
+        // Currently term.
+        private var termId: String = _
+        private var termConv: Boolean = _
+        private var min = 1
+        private var max = 1
+
+        /**
+         *
+         * @param min
+         * @param max
+         */
+        private def setMinMax(min: Int, max: Int): Unit = {
+            this.min = min
+            this.max = max
+        }
+
+        override def exitMinMaxShortcut(ctx: NCIntentDslParser.MinMaxShortcutContext): Unit = {
+            if (ctx.PLUS() != null)
+                setMinMax(1, Integer.MAX_VALUE)
+            else if (ctx.STAR() != null)
+                setMinMax(0, Integer.MAX_VALUE)
+            else if (ctx.QUESTION() != null)
+                setMinMax(0, 1)
+            else
+                assert(false)
+        }
+
+        override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
+            termId = ctx.ID().getText.trim
+        }
+
+        override def exitTermEq(ctx: NCIntentDslParser.TermEqContext): Unit = {
+            termConv = ctx.TILDA() != null
+        }
+
+        override def exitFlowDecl(ctx: NCIntentDslParser.FlowDeclContext): Unit = {
+            val qRegex = ctx.qstring().getText.trim
+
+            if (qRegex != null && qRegex.length > 2) {
+                val regex = qRegex.substring(1, qRegex.length - 1).strip // Remove single quotes.
+
+                flowRegex = if (regex.nonEmpty) Some(regex) else None
+            }
+        }
+
+        override def exitIntentId(ctx: NCIntentDslParser.IntentIdContext): Unit = {
+            id = ctx.ID().getText.trim
+        }
+
+        override def exitMetaDecl(ctx: NCIntentDslParser.MetaDeclContext): Unit = {
+            meta = U.jsonToObject(ctx.jsonObj().getText, classOf[Map[String, Any]])
+        }
+
+        override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
+            ordered = ctx.BOOL().getText.strip == "true"
+        }
+
         /**
          *
          * @return
@@ -52,7 +109,7 @@ object NCIntentDslCompiler extends LazyLogging {
             require(id != null)
             require(terms.nonEmpty)
 
-            NCDslIntent(dsl, id, ordered, meta, flowRegex, terms.toArray)
+            NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, terms.toArray)
         }
     }
 
@@ -107,22 +164,24 @@ object NCIntentDslCompiler extends LazyLogging {
     def compile(dsl: String, mdlId: String): NCDslIntent = {
         require(dsl != null)
 
+        val src = dsl.strip()
+
         this.mdlId = mdlId
 
-        val intent: NCDslIntent = cache.getOrElseUpdate(dsl, {
+        val intent: NCDslIntent = cache.getOrElseUpdate(src, {
             // ANTLR4 armature.
-            val lexer = new NCIntentDslLexer(CharStreams.fromString(dsl))
+            val lexer = new NCIntentDslLexer(CharStreams.fromString(src))
             val tokens = new CommonTokenStream(lexer)
             val parser = new NCIntentDslParser(tokens)
 
             // Set custom error handlers.
             lexer.removeErrorListeners()
             parser.removeErrorListeners()
-            lexer.addErrorListener(new CompilerErrorListener(dsl))
-            parser.addErrorListener(new CompilerErrorListener(dsl))
+            lexer.addErrorListener(new CompilerErrorListener(src))
+            parser.addErrorListener(new CompilerErrorListener(src))
 
             // State automata.
-            val fsm = new FiniteStateMachine(dsl)
+            val fsm = new FiniteStateMachine(src)
 
             // Parse the input DSL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.intent())

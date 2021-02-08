@@ -56,7 +56,7 @@ class NCSqlExampleSpec extends NCTestContext {
         NORM.
             foldLeft(s) { (res, s) ⇒ res.replaceAll(s, " ") }.
             split(" ").
-            map(_.trim).
+            map(_.strip).
             filter(_.nonEmpty).
             mkString(" ")
 

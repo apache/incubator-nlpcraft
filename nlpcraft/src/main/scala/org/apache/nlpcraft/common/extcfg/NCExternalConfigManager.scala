@@ -120,7 +120,7 @@ object NCExternalConfigManager extends NCService {
                 managed(Source.fromURL(url)) acquireAndGet { src ⇒
                     src.getLines().map(_.trim()).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).map(f = p ⇒ {
                         def splitPair(s: String, sep: String): (String, String) = {
-                            val seq = s.split(sep).map(_.trim)
+                            val seq = s.split(sep).map(_.strip)
 
                             if (seq.length != 2 || seq.exists(_.isEmpty))
                                 throw new NCE(s"Unexpected '$url' file line format: '$p'")

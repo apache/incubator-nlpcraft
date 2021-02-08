@@ -73,7 +73,7 @@ case class NCSocket(socket: Socket, soTimeout: Int = 20000) extends LazyLogging 
 
                 val len =
                     try
-                        Integer.parseInt(line.trim)
+                        Integer.parseInt(line.strip)
                     catch {
                         case e: NumberFormatException ⇒ throw new NCE(s"Unexpected content length: $line", e)
                     }

@@ -121,7 +121,7 @@ public class NCResult implements Serializable {
     public static NCResult json(String json) {
         // Validation.
         try {
-            NCUtils.js2Obj(json);
+            NCUtils.jsonToObject(json);
         }
         catch (NCException e) {
             throw new IllegalArgumentException(String.format("Invalid JSON value: %s.", json), e.getCause());

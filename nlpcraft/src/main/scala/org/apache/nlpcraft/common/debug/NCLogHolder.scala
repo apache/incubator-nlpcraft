@@ -186,7 +186,7 @@ class NCLogHolder extends Serializable {
                 val str = req.getData.get
 
                 try
-                    NCUtils.js2Obj(str)
+                    NCUtils.jsonToObject(str)
                 catch {
                     case _: Exception ⇒ str
                 }

@@ -73,13 +73,13 @@ object NCModelSynonymDslCompiler extends LazyLogging {
             NCModelSynonymDsl(alias, toJavaFunc(alias, predStack.pop()))
         }
     
-        override def exitRvalSingle(ctx: NCSynonymDslParser.RvalSingleContext): Unit = {
-            rval = ctx.getText.trim()
-        }
-    
-        override def exitRvalList(ctx: NCSynonymDslParser.RvalListContext): Unit = {
-            rvalList += rval
-        }
+//        override def exitRvalSingle(ctx: NCSynonymDslParser.RvalSingleContext): Unit = {
+//            rval = ctx.getText.trim()
+//        }
+//
+//        override def exitRvalList(ctx: NCSynonymDslParser.RvalListContext): Unit = {
+//            rvalList += rval
+//        }
     
         override def exitTokQualPart(ctx: NCSynonymDslParser.TokQualPartContext): Unit = {
             tokQualParts += ctx.ID().getText.trim()
@@ -178,42 +178,42 @@ object NCModelSynonymDslCompiler extends LazyLogging {
             }
         }
     
-        override def exitPredicate(ctx: NCSynonymDslParser.PredicateContext): Unit = {
-            var lval: String = null
-            var lvalFunc: String = null
-            var op: String = null
-    
-            def getLvalNode(tree: ParseTree): String =
-                tree.getChild(if (tree.getChildCount == 1) 0 else 1).getText.trim
-    
-            if (ctx.children.size() == 3) {
-                lval = getLvalNode(ctx.getChild(0))
-                op = ctx.getChild(1).getText.trim
-            }
-            else {
-                lvalFunc = ctx.getChild(0).getText.trim
-                lval = getLvalNode(ctx.getChild(2))
-                op = ctx.getChild(4).getText.trim
-            }
-            
-            val pred = new NCDslTokenPredicate(
-                tokQualParts.asJava,
-                lvalFunc,
-                lval,
-                op,
-                if (rvalList.isEmpty) mkRvalObject(rval) else rvalList.map(mkRvalObject).asJava
-            )
-    
-            predStack.push(new Function[NCToken, Boolean] {
-                override def apply(tok: NCToken): Boolean = pred.apply(tok)
-                override def toString: String = pred.toString
-            })
-    
-            // Reset.
-            tokQualParts.clear()
-            rvalList.clear()
-            rval = null
-        }
+//        override def exitPredicate(ctx: NCSynonymDslParser.PredicateContext): Unit = {
+//            var lval: String = null
+//            var lvalFunc: String = null
+//            var op: String = null
+//
+//            def getLvalNode(tree: ParseTree): String =
+//                tree.getChild(if (tree.getChildCount == 1) 0 else 1).getText.trim
+//
+//            if (ctx.children.size() == 3) {
+//                lval = getLvalNode(ctx.getChild(0))
+//                op = ctx.getChild(1).getText.trim
+//            }
+//            else {
+//                lvalFunc = ctx.getChild(0).getText.trim
+//                lval = getLvalNode(ctx.getChild(2))
+//                op = ctx.getChild(4).getText.trim
+//            }
+//
+//            val pred = new NCDslTokenPredicate(
+//                tokQualParts.asJava,
+//                lvalFunc,
+//                lval,
+//                op,
+//                if (rvalList.isEmpty) mkRvalObject(rval) else rvalList.map(mkRvalObject).asJava
+//            )
+//
+//            predStack.push(new Function[NCToken, Boolean] {
+//                override def apply(tok: NCToken): Boolean = pred.apply(tok)
+//                override def toString: String = pred.toString
+//            })
+//
+//            // Reset.
+//            tokQualParts.clear()
+//            rvalList.clear()
+//            rval = null
+//        }
     }
     
     /**

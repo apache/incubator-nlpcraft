@@ -215,13 +215,13 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     s.resultType.isDefined &&
                     s.resultType.get == "json"
                 )
-                    U.js2Obj(s.resultBody.get)
+                    U.jsonToObject(s.resultBody.get)
                 else
                     s.resultBody.orNull
                 ),
             "error" → s.error.orNull,
             "errorCode" → s.errorCode.map(Integer.valueOf).orNull,
-            "logHolder" → (if (s.logJson.isDefined) U.js2Obj(s.logJson.get) else null),
+            "logHolder" → (if (s.logJson.isDefined) U.jsonToObject(s.logJson.get) else null),
             "intentId" → s.intentId.orNull
         ).filter(_._2 != null).asJava
 

@@ -63,8 +63,9 @@ expr
     | expr COMMA val
     | LPAREN expr RPAREN
     | expr (MINUS | PLUS | STAR | FSLASH) expr
-    | ID LPAREN expr? RPAREN // Buit-in function call.
+    | funCall
     ;
+funCall: ID LPAREN expr? RPAREN; // Buit-in function call.
 val
     : NULL
     | MINUS? INT REAL? EXP?

@@ -136,7 +136,7 @@ object NCDateEnricher extends NCServerEnricher {
              
                 val map = U.readTextGzipResource(res, "UTF-8", logger).map(p ⇒ {
                     val idx = p.indexOf("|")
-                    p.take(idx).trim → p.drop(idx + 1).trim
+                    p.take(idx).strip → p.drop(idx + 1).trim
                 })
              
                 m ++= map

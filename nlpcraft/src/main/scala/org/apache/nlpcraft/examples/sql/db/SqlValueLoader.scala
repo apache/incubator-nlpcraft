@@ -40,7 +40,7 @@ class SqlValueLoader extends NCValueLoader with LazyLogging {
         SqlAccess.select(SqlQuery(s"SELECT $col FROM $tab WHERE $col IS NOT NULL", Seq.empty), logResult = false).
             rows.
             map(_.head).
-            map(_.trim).
+            map(_.strip).
             filter(_.nonEmpty).
             map(
                 v ⇒ new NCValue {

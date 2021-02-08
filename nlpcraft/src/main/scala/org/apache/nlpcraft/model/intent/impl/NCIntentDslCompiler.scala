@@ -48,11 +48,9 @@ object NCIntentDslCompiler extends LazyLogging {
         private val terms = ArrayBuffer.empty[NCDslTerm] // Accumulator for parsed terms.
         private var flowRegex: Option[String] = None
 
-        // Currently parsed term.
+        // Currently term.
         private var termId: String = _
         private var termConv: Boolean = _
-        
-        // Current min/max quantifier.
         private var min = 1
         private var max = 1
     
@@ -93,9 +91,9 @@ object NCIntentDslCompiler extends LazyLogging {
                 assert(false)
         }
     
-        override def exitLvalPart(ctx: NCIntentDslParser.LvalPartContext): Unit = {
-            lvalParts += ctx.ID().getText.trim()
-        }
+//        override def exitLvalPart(ctx: NCIntentDslParser.LvalPartContext): Unit = {
+//            lvalParts += ctx.ID().getText.trim()
+//        }
     
         override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
             termId = ctx.ID().getText.trim
@@ -121,7 +119,7 @@ object NCIntentDslCompiler extends LazyLogging {
             val qRegex = ctx.qstring().getText.trim
 
             if (qRegex != null && qRegex.length > 2) {
-                val regex = qRegex.substring(1, qRegex.length - 1).trim // Remove single quotes.
+                val regex = qRegex.substring(1, qRegex.length - 1).strip // Remove single quotes.
 
                 flowRegex = if (regex.nonEmpty) Some(regex) else None
             }
@@ -132,7 +130,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
     
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
-            ordered = ctx.BOOL().getText.trim == "true"
+            ordered = ctx.BOOL().getText.strip == "true"
         }
     
         override def exitTerm(ctx: NCIntentDslParser.TermContext): Unit = {
@@ -144,7 +142,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 termId,
                 new java.util.function.Function[NCToken, java.lang.Boolean]() {
                     override def apply(tok: NCToken): java.lang.Boolean = p.apply(tok)
-                    override def toString: String = p.toString().trim //ctx.item().getText
+                    override def toString: String = p.toString().strip //ctx.item().getText
                 },
                 min,
                 max,
@@ -155,70 +153,70 @@ object NCIntentDslCompiler extends LazyLogging {
             setMinMax(1, 1)
         }
     
-        override def exitRvalSingle(ctx: NCIntentDslParser.RvalSingleContext): Unit = {
-            rval = ctx.getText.trim()
-        }
+//        override def exitRvalSingle(ctx: NCIntentDslParser.RvalSingleContext): Unit = {
+//            rval = ctx.getText.trim()
+//        }
     
-        override def exitRvalList(ctx: NCIntentDslParser.RvalListContext): Unit = {
-            rvalList += rval
-        }
+//        override def exitRvalList(ctx: NCIntentDslParser.RvalListContext): Unit = {
+//            rvalList += rval
+//        }
     
-        override def exitItem(ctx: NCIntentDslParser.ItemContext): Unit = {
-            if (ctx.EXCL() != null) {
-                val p = predStack.pop
-    
-                predStack.push(new Function[NCToken, Boolean] {
-                    override def apply(tok: NCToken): Boolean = !p.apply(tok)
-                    override def toString: String = s"!$p"
-                })
-            }
-            else if (ctx.AND() != null) {
-                // Note that stack is LIFO so order is flipped.
-                val p2 = predStack.pop
-                val p1 = predStack.pop
-        
-                predStack.push(new Function[NCToken, Boolean] {
-                    override def apply(tok: NCToken): Boolean = {
-                        // To bypass any possible compiler optimizations.
-                        if (!p1.apply(tok))
-                            false
-                        else if (!p2.apply(tok))
-                            false
-                        else
-                            true
-                    }
-                    override def toString: String = s"$p1 && $p2"
-                })
-            }
-            else if (ctx.OR() != null) {
-                // Note that stack is LIFO so order is flipped.
-                val p2 = predStack.pop
-                val p1 = predStack.pop
-    
-                predStack.push(new Function[NCToken, Boolean] {
-                    override def apply(tok: NCToken): Boolean = {
-                        // To bypass any possible compiler optimizations.
-                        if (p1.apply(tok))
-                            true
-                        else if (p2.apply(tok))
-                            true
-                        else
-                            false
-                    }
-                    override def toString: String = s"$p1 || $p2"
-                })
-            }
-            else if (ctx.RPAREN() != null && ctx.LPAREN() != null) {
-                val p = predStack.pop
-    
-                predStack.push(new Function[NCToken, Boolean] {
-                    override def apply(tok: NCToken): Boolean = p.apply(tok)
-                    override def toString: String = s"($p)"
-                })
-            }
-    
-            // In all other cases the current predicate is already on the top of the stack.
-        }
+//        override def exitItem(ctx: NCIntentDslParser.ItemContext): Unit = {
+//            if (ctx.EXCL() != null) {
+//                val p = predStack.pop
+//
+//                predStack.push(new Function[NCToken, Boolean] {
+//                    override def apply(tok: NCToken): Boolean = !p.apply(tok)
+//                    override def toString: String = s"!$p"
+//                })
+//            }
+//            else if (ctx.AND() != null) {
+//                // Note that stack is LIFO so order is flipped.
+//                val p2 = predStack.pop
+//                val p1 = predStack.pop
+//
+//                predStack.push(new Function[NCToken, Boolean] {
+//                    override def apply(tok: NCToken): Boolean = {
+//                        // To bypass any possible compiler optimizations.
+//                        if (!p1.apply(tok))
+//                            false
+//                        else if (!p2.apply(tok))
+//                            false
+//                        else
+//                            true
+//                    }
+//                    override def toString: String = s"$p1 && $p2"
+//                })
+//            }
+//            else if (ctx.OR() != null) {
+//                // Note that stack is LIFO so order is flipped.
+//                val p2 = predStack.pop
+//                val p1 = predStack.pop
+//
+//                predStack.push(new Function[NCToken, Boolean] {
+//                    override def apply(tok: NCToken): Boolean = {
+//                        // To bypass any possible compiler optimizations.
+//                        if (p1.apply(tok))
+//                            true
+//                        else if (p2.apply(tok))
+//                            true
+//                        else
+//                            false
+//                    }
+//                    override def toString: String = s"$p1 || $p2"
+//                })
+//            }
+//            else if (ctx.RPAREN() != null && ctx.LPAREN() != null) {
+//                val p = predStack.pop
+//
+//                predStack.push(new Function[NCToken, Boolean] {
+//                    override def apply(tok: NCToken): Boolean = p.apply(tok)
+//                    override def toString: String = s"($p)"
+//                })
+//            }
+//
+//            // In all other cases the current predicate is already on the top of the stack.
+//        }
     
         /**
          *
@@ -252,42 +250,42 @@ object NCIntentDslCompiler extends LazyLogging {
             }
         }
     
-        override def exitPredicate(ctx: NCIntentDslParser.PredicateContext): Unit = {
-            var lval: String = null
-            var lvalFunc: String = null
-            var op: String = null
-        
-            def getLvalNode(tree: ParseTree): String =
-                tree.getChild(if (tree.getChildCount == 1) 0 else 1).getText.trim
-        
-            if (ctx.children.size() == 3) {
-                lval = getLvalNode(ctx.getChild(0))
-                op = ctx.getChild(1).getText.trim
-            }
-            else {
-                lvalFunc = ctx.getChild(0).getText.trim
-                lval = getLvalNode(ctx.getChild(2))
-                op = ctx.getChild(4).getText.trim
-            }
-        
-            val pred = new NCDslTokenPredicate(
-                lvalParts.asJava,
-                lvalFunc,
-                lval,
-                op,
-                if (rvalList.isEmpty) mkRvalObject(rval) else rvalList.map(mkRvalObject).asJava
-            )
-        
-            predStack.push(new Function[NCToken, Boolean] {
-                override def apply(tok: NCToken): Boolean = pred.apply(tok)
-                override def toString: String = pred.toString
-            })
-        
-            // Reset.
-            lvalParts.clear()
-            rvalList.clear()
-            rval = null
-        }
+//        override def exitPredicate(ctx: NCIntentDslParser.PredicateContext): Unit = {
+//            var lval: String = null
+//            var lvalFunc: String = null
+//            var op: String = null
+//
+//            def getLvalNode(tree: ParseTree): String =
+//                tree.getChild(if (tree.getChildCount == 1) 0 else 1).getText.trim
+//
+//            if (ctx.children.size() == 3) {
+//                lval = getLvalNode(ctx.getChild(0))
+//                op = ctx.getChild(1).getText.trim
+//            }
+//            else {
+//                lvalFunc = ctx.getChild(0).getText.trim
+//                lval = getLvalNode(ctx.getChild(2))
+//                op = ctx.getChild(4).getText.trim
+//            }
+//
+//            val pred = new NCDslTokenPredicate(
+//                lvalParts.asJava,
+//                lvalFunc,
+//                lval,
+//                op,
+//                if (rvalList.isEmpty) mkRvalObject(rval) else rvalList.map(mkRvalObject).asJava
+//            )
+//
+//            predStack.push(new Function[NCToken, Boolean] {
+//                override def apply(tok: NCToken): Boolean = pred.apply(tok)
+//                override def toString: String = pred.toString
+//            })
+//
+//            // Reset.
+//            lvalParts.clear()
+//            rvalList.clear()
+//            rval = null
+//        }
     }
     
     /**

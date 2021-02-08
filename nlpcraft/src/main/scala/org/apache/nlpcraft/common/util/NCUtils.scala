@@ -163,7 +163,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     def trimFilter(s: Seq[String]): Seq[String] =
-        s.map(_.trim).filter(_.nonEmpty)
+        s.map(_.strip).filter(_.nonEmpty)
 
     /**
      * Splits, trims and filters empty strings for the given string.
@@ -183,7 +183,7 @@ object NCUtils extends LazyLogging {
      */
     @tailrec
     def trimQuotes(s: String): String = {
-        val z = s.trim
+        val z = s.strip
 
         if ((z.startsWith("'") && z.endsWith("'")) || (z.startsWith("\"") && z.endsWith("\"")))
             trimQuotes(z.substring(1, z.length - 1))
@@ -474,7 +474,7 @@ object NCUtils extends LazyLogging {
      * @return
      */
     private def readLcTrimFilter(in: BufferedSource): List[String] =
-        in.getLines().map(_.toLowerCase.trim).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toList
+        in.getLines().map(_.toLowerCase.strip).filter(s ⇒ s.nonEmpty && !s.startsWith("#")).toList
 
     /**
       * Reads lines from given file converting to lower case, trimming, and filtering
@@ -518,7 +518,7 @@ object NCUtils extends LazyLogging {
       * @param name Full name.
       */
     def toFirstLastName(name: String): (String, String) = {
-        val parts = name.trim.split(' ')
+        val parts = name.strip.split(' ')
 
         val firstName = formatName(parts.head)
         val lastName = formatName(parts.tail.mkString(" "))
@@ -532,7 +532,7 @@ object NCUtils extends LazyLogging {
       * @param name First or last name.
       */
     def formatName(name: String): String = {
-        name.trim.toLowerCase.capitalize
+        name.strip.toLowerCase.capitalize
     }
 
     /**
@@ -1009,7 +1009,7 @@ object NCUtils extends LazyLogging {
       *
       * @param email Email to normalize.
       */
-    def normalizeEmail(email: String): String = email.trim.toLowerCase
+    def normalizeEmail(email: String): String = email.strip.toLowerCase
 
     /**
       * Makes size restricted synchronized map.
@@ -1847,7 +1847,7 @@ object NCUtils extends LazyLogging {
       * @param js JSON string.
       */
     @throws[NCE]
-    def js2Obj(js: String): AnyRef =
+    def jsonToObject(js: String): AnyRef =
         try
             GSON.fromJson(js, classOf[Object])
         catch {

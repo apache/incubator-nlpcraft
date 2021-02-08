@@ -242,7 +242,7 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
         switch (paramFunc) {
             case "trim":
                 if (lval instanceof String)
-                    return ((String) lval).trim();
+                    return ((String) lval).strip();
 
                 break;
 
@@ -413,14 +413,14 @@ public class NCDslTokenPredicate implements Function<NCToken, Boolean> {
         }
         else
             switch (param) {
-                case "id": lval = tok.getId().trim(); break;
+                case "id": lval = tok.getId().strip(); break;
                 case "groups": lval = tok.getGroups(); break;
                 case "aliases": lval = tok.getAliases(); break;
                 case "startidx": lval = tok.getStartCharIndex(); break;
                 case "endidx": lval = tok.getEndCharIndex(); break;
                 case "ancestors": lval = tok.getAncestors(); break;
-                case "value": lval = tok.getValue() == null ? null : tok.getValue().trim(); break;
-                case "parent": lval = tok.getParentId() == null ? null : tok.getParentId().trim(); break;
+                case "value": lval = tok.getValue() == null ? null : tok.getValue().strip(); break;
+                case "parent": lval = tok.getParentId() == null ? null : tok.getParentId().strip(); break;
 
                 default: throw new IllegalArgumentException(String.format(
                     "Invalid token predicate DSL parameter ('%s'): %s %s %s",

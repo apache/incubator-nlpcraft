@@ -1021,11 +1021,11 @@ object NCSqlManager extends NCService with NCIgniteInstance {
     @throws[NCE]
     private def executeScript(sqlPath: String): Unit = startScopedSpan("executeScript", "sqlPath" → sqlPath) { _ ⇒
         U.readResource(sqlPath, "UTF-8").
-            map(_.trim).
+            map(_.strip).
             filter(p ⇒ !p.startsWith("--")).
             mkString("\n").
             split(";").
-            map(_.trim).
+            map(_.strip).
             filter(_.nonEmpty).
             foreach(p ⇒ NCSql.ddl(p))
     }

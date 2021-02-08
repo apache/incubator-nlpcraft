@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils.ver2
+package org.apache.nlpcraft.model.intent.dsl
+
+import org.apache.nlpcraft.common.NCException
+import org.apache.nlpcraft.model.intent.impl.ver2.NCIntentDslCompiler
+import org.junit.jupiter.api.Test
 
 /**
- * DSL intent.
+ * Tests for DSL compiler.
  */
-case class NCDslIntent(
-    orig: String,
-    id: String,
-    ordered: Boolean,
-    meta: Map[String, Any],
-    flow: Option[String],
-    terms: Array[NCDslTerm]
-) {
-    require(id != null)
-    require(terms.nonEmpty)
-    require(meta != null)
+class NCDslCompilerSpec {
+    @Test
+    @throws[NCException]
+    def test(): Unit = {
+        NCIntentDslCompiler.compile(
+            """
+              |intent=i1 meta={'a': true} term={}
+              |""".stripMargin, "mdl.id")
+    }
 }

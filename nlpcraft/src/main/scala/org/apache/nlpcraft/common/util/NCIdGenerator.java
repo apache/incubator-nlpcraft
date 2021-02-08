@@ -52,7 +52,7 @@ public class NCIdGenerator {
      * @param alphabet Alphabet.
      */
     NCIdGenerator(String salt, int minHashLen, String alphabet) {
-        if (alphabet == null || alphabet.trim().isEmpty())
+        if (alphabet == null || alphabet.strip().isEmpty())
             throw new IllegalArgumentException("Alphabet must not be empty.");
 
         if (salt != null)

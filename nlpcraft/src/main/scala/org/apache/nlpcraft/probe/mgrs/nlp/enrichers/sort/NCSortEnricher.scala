@@ -535,7 +535,7 @@ object NCSortEnricher extends NCProbeEnricher {
         }
 
         stemAnd = NCNlpCoreManager.stem("and")
-        maskWords = (sort ++ by ++ order.map(_._1)).flatMap(_.split(" ")).map(_.trim).filter(_.nonEmpty).distinct
+        maskWords = (sort ++ by ++ order.map(_._1)).flatMap(_.split(" ")).map(_.strip).filter(_.nonEmpty).distinct
 
         validate()
 
