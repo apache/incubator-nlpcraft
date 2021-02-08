@@ -58,35 +58,45 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitMetaDecl(NCIntentDslParser.MetaDeclContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#metaList}.
+	 * Enter a parse tree produced by {@link NCIntentDslParser#jsonObj}.
 	 * @param ctx the parse tree
 	 */
-	void enterMetaList(NCIntentDslParser.MetaListContext ctx);
+	void enterJsonObj(NCIntentDslParser.JsonObjContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#metaList}.
+	 * Exit a parse tree produced by {@link NCIntentDslParser#jsonObj}.
 	 * @param ctx the parse tree
 	 */
-	void exitMetaList(NCIntentDslParser.MetaListContext ctx);
+	void exitJsonObj(NCIntentDslParser.JsonObjContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#metaItem}.
+	 * Enter a parse tree produced by {@link NCIntentDslParser#jsonPair}.
 	 * @param ctx the parse tree
 	 */
-	void enterMetaItem(NCIntentDslParser.MetaItemContext ctx);
+	void enterJsonPair(NCIntentDslParser.JsonPairContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#metaItem}.
+	 * Exit a parse tree produced by {@link NCIntentDslParser#jsonPair}.
 	 * @param ctx the parse tree
 	 */
-	void exitMetaItem(NCIntentDslParser.MetaItemContext ctx);
+	void exitJsonPair(NCIntentDslParser.JsonPairContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#metaItemRval}.
+	 * Enter a parse tree produced by {@link NCIntentDslParser#jsonVal}.
 	 * @param ctx the parse tree
 	 */
-	void enterMetaItemRval(NCIntentDslParser.MetaItemRvalContext ctx);
+	void enterJsonVal(NCIntentDslParser.JsonValContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#metaItemRval}.
+	 * Exit a parse tree produced by {@link NCIntentDslParser#jsonVal}.
 	 * @param ctx the parse tree
 	 */
-	void exitMetaItemRval(NCIntentDslParser.MetaItemRvalContext ctx);
+	void exitJsonVal(NCIntentDslParser.JsonValContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#jsonArr}.
+	 * @param ctx the parse tree
+	 */
+	void enterJsonArr(NCIntentDslParser.JsonArrContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#jsonArr}.
+	 * @param ctx the parse tree
+	 */
+	void exitJsonArr(NCIntentDslParser.JsonArrContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#terms}.
 	 * @param ctx the parse tree
@@ -118,6 +128,26 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitTerm(NCIntentDslParser.TermContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#clsNer}.
+	 * @param ctx the parse tree
+	 */
+	void enterClsNer(NCIntentDslParser.ClsNerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#clsNer}.
+	 * @param ctx the parse tree
+	 */
+	void exitClsNer(NCIntentDslParser.ClsNerContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#javaFqn}.
+	 * @param ctx the parse tree
+	 */
+	void enterJavaFqn(NCIntentDslParser.JavaFqnContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#javaFqn}.
+	 * @param ctx the parse tree
+	 */
+	void exitJavaFqn(NCIntentDslParser.JavaFqnContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#termId}.
 	 * @param ctx the parse tree
 	 */
@@ -128,25 +158,25 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitTermId(NCIntentDslParser.TermIdContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#item}.
+	 * Enter a parse tree produced by {@link NCIntentDslParser#termDef}.
 	 * @param ctx the parse tree
 	 */
-	void enterItem(NCIntentDslParser.ItemContext ctx);
+	void enterTermDef(NCIntentDslParser.TermDefContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#item}.
+	 * Exit a parse tree produced by {@link NCIntentDslParser#termDef}.
 	 * @param ctx the parse tree
 	 */
-	void exitItem(NCIntentDslParser.ItemContext ctx);
+	void exitTermDef(NCIntentDslParser.TermDefContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#pred}.
+	 * Enter a parse tree produced by {@link NCIntentDslParser#termPred}.
 	 * @param ctx the parse tree
 	 */
-	void enterPred(NCIntentDslParser.PredContext ctx);
+	void enterTermPred(NCIntentDslParser.TermPredContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#pred}.
+	 * Exit a parse tree produced by {@link NCIntentDslParser#termPred}.
 	 * @param ctx the parse tree
 	 */
-	void exitPred(NCIntentDslParser.PredContext ctx);
+	void exitTermPred(NCIntentDslParser.TermPredContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
@@ -158,16 +188,6 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitExpr(NCIntentDslParser.ExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#mathOp}.
-	 * @param ctx the parse tree
-	 */
-	void enterMathOp(NCIntentDslParser.MathOpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#mathOp}.
-	 * @param ctx the parse tree
-	 */
-	void exitMathOp(NCIntentDslParser.MathOpContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#val}.
 	 * @param ctx the parse tree
 	 */
@@ -177,66 +197,6 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVal(NCIntentDslParser.ValContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#singleVal}.
-	 * @param ctx the parse tree
-	 */
-	void enterSingleVal(NCIntentDslParser.SingleValContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#singleVal}.
-	 * @param ctx the parse tree
-	 */
-	void exitSingleVal(NCIntentDslParser.SingleValContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#tokQual}.
-	 * @param ctx the parse tree
-	 */
-	void enterTokQual(NCIntentDslParser.TokQualContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#tokQual}.
-	 * @param ctx the parse tree
-	 */
-	void exitTokQual(NCIntentDslParser.TokQualContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#tokQualPart}.
-	 * @param ctx the parse tree
-	 */
-	void enterTokQualPart(NCIntentDslParser.TokQualPartContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#tokQualPart}.
-	 * @param ctx the parse tree
-	 */
-	void exitTokQualPart(NCIntentDslParser.TokQualPartContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#tokMeta}.
-	 * @param ctx the parse tree
-	 */
-	void enterTokMeta(NCIntentDslParser.TokMetaContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#tokMeta}.
-	 * @param ctx the parse tree
-	 */
-	void exitTokMeta(NCIntentDslParser.TokMetaContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#modelMeta}.
-	 * @param ctx the parse tree
-	 */
-	void enterModelMeta(NCIntentDslParser.ModelMetaContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#modelMeta}.
-	 * @param ctx the parse tree
-	 */
-	void exitModelMeta(NCIntentDslParser.ModelMetaContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#intentMeta}.
-	 * @param ctx the parse tree
-	 */
-	void enterIntentMeta(NCIntentDslParser.IntentMetaContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#intentMeta}.
-	 * @param ctx the parse tree
-	 */
-	void exitIntentMeta(NCIntentDslParser.IntentMetaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#qstring}.
 	 * @param ctx the parse tree

@@ -70,30 +70,6 @@ val
     | MINUS? INT REAL? EXP?
     | BOOL
     | qstring
-    | tokQual? ('id' | 'aliases' | 'startidx' | 'endidx' | 'parent' | 'groups' | 'ancestors' | 'value')
-    | tokQual? tokMeta
-    | modelMeta
-    | intentMeta
-    ;
-tokQual
-    : tokQualPart
-    | tokQual tokQualPart
-    ;
-tokQualPart: ID DOT;
-tokMeta // Token metadata: ~prop
-    : TILDA ID
-    | TILDA ID LBR INT RBR
-    | TILDA ID LBR qstring RBR
-    ;
-modelMeta // Model metadata: #prop
-    : POUND ID
-    | POUND ID LBR INT RBR
-    | POUND ID LBR qstring RBR
-    ;
-intentMeta // Intent metadata: %prop
-    : PERCENT ID
-    | PERCENT ID LBR INT RBR
-    | PERCENT ID LBR qstring RBR
     ;
 qstring
     : SQSTRING
