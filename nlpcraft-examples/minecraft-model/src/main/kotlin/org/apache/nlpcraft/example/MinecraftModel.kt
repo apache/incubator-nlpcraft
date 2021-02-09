@@ -23,9 +23,9 @@ import org.apache.nlpcraft.example.MinecraftObjectValueLoader.Companion.dumps
 import org.apache.nlpcraft.model.*
 import java.util.*
 
+@Suppress("unused")
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     @NCIntentRef("weatherIntent")
-    @Suppress("unused")
     fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
@@ -35,7 +35,6 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     }
 
     @NCIntentRef("timeIntent")
-    @Suppress("unused")
     fun onTimeMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
@@ -55,7 +54,6 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     }
 
     @NCIntentRef("giveIntent")
-    @Suppress("unused")
     fun onGiveMatch(
         ctx: NCIntentMatch,
         @NCIntentTerm("item") item: NCToken,
@@ -75,6 +73,17 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
             .orElse(1)
 
         return NCResult.text("give $player $itemRegistry $itemQuantity")
+    }
+
+    @NCIntentRef("fillIntent")
+    fun onFillMatch(
+        ctx: NCIntentMatch,
+        @NCIntentTerm("shape") shape: NCToken,
+        @NCIntentTerm("block") block: NCToken,
+        @NCIntentTerm("len") length: NCToken,
+        @NCIntentTerm("position") position: NCToken,
+    ): NCResult {
+        TODO()
     }
 
     private fun NCToken.normText(): String {

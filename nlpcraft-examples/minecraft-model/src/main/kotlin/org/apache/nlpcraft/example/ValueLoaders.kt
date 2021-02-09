@@ -13,7 +13,7 @@ class MinecraftObjectValueLoader : NCValueLoader {
     }
 
     override fun load(owner: NCElement?): MutableSet<NCValue> {
-        val type = owner!!.metax<String>("minecraft:type")
+        val type = owner!!.metax<String>("mc:type")
 
         val inputStream = NCModelFileAdapter::class.java.classLoader.getResourceAsStream("${type}.json")
             ?: throw NCException("Minecraft object dump not found: ${type}.json")

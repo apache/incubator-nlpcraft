@@ -20,7 +20,27 @@ name: Minecraft Model
 version: '1.0'
 description: Minecraft Model.
 
+macros:
+# Doesn't work with fill
+#  - name: "<PLAYER_NAME>"
+#    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
+  - name: "<PLAYER_NAME>"
+    macro: "{me|I|my}"
+
 elements:
+  # General synonyms
+  - id: mc:player
+    synonyms:
+      - "<PLAYER_NAME>"
+  - id: mc:item
+    metadata:
+      mc:type: item
+    valueLoader: org.apache.nlpcraft.example.MinecraftObjectValueLoader
+  - id: mc:block
+    metadata:
+      mc:type: block
+    valueLoader: org.apache.nlpcraft.example.MinecraftObjectValueLoader
+
   # Weather intent
   - id: rain
     description: Set rain weather
@@ -77,20 +97,52 @@ elements:
   - id: give:action
     synonyms:
       - "{give}"
-  - id: give:target
+
+  # Fill intent
+  - id: fill:action
     synonyms:
-      - "{me|//[a-zA-Z0-9]+//}"
-  - id: give:item
-    metadata:
-      minecraft:type: item
-    valueLoader: org.apache.nlpcraft.example.MinecraftObjectValueLoader
+      - "{fill|make|create}"
+  - id: cube
+    groups:
+      - fill:shape
+  - id: sphere
+    groups:
+      - fill:shape
+  - id: square
+    groups:
+      - fill:shape
+    synonyms:
+      - "{box|rectangle}"
+  - id: line
+    groups:
+      - fill:shape
+    synonyms:
+      - "wall"
+  - id: fill:length
+    synonyms:
+      - "{size of?|length of?|diameter of?}"
+  - id: position:player
+    groups:
+      - fill:position
+    synonyms:
+      - "{{at|near} <PLAYER_NAME> position?|where <PLAYER_NAME>}"
+  - id: position:front
+    groups:
+      - fill:position
+    synonyms:
+      - "{{^^[distance](id == 'nlpcraft:num')^^ m|meter|meters|ft|feet}? in? front of? <PLAYER_NAME>}"
+
+
 
 
 # List of model intents.
 intents:
   - intent=weatherIntent term(arg)={groups @@ 'weather'}
   - intent=timeIntent term(arg)={groups @@ 'time'}
-  - intent=giveIntent term(action)={id == 'give:action'} term(target)={id == 'give:target'} term(quantity)={id == 'nlpcraft:num'}? term(item)={id == 'give:item'}
+  - "intent=giveIntent term(action)={id == 'give:action'} term(target)={id == 'mc:player'}
+  term(quantity)={id == 'nlpcraft:num'}? term(item)={id == 'mc:item'}"
+  - "intent=fillIntent term={id == 'fill:action'} term(shape)={groups @@ 'fill:shape'} term(block)={id == 'mc:block'}
+  term={id == 'fill:length'}? term(len)={id == 'nlpcraft:num'} term(position)={groups @@ 'fill:position'}"
 
 # give me sand
 swearWordsAllowed: true
