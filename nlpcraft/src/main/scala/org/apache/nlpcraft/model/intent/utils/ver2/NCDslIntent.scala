@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.model.intent.utils.ver2
 
+import java.util.regex.{Pattern, PatternSyntaxException}
+
 /**
  * DSL intent.
  */
@@ -31,4 +33,20 @@ case class NCDslIntent(
     require(id != null)
     require(terms.nonEmpty)
     require(meta != null)
+
+    // Flow regex as a compiled pattern.
+    val flowRegex = flow match {
+        case Some(r) ⇒
+            try
+                Some(Pattern.compile(r))
+            catch {
+                case e: PatternSyntaxException ⇒
+                    throw new IllegalArgumentException(s"${e.getDescription} in flow regex '${e.getPattern}' near index ${e.getIndex}.")
+            }
+
+        case None ⇒ None
+    }
+
+    override def toString: String =
+        s"Intent: '$id'"
 }

@@ -50,6 +50,8 @@ object NCIntentDslCompiler extends LazyLogging {
         private var min = 1
         private var max = 1
 
+        private var cval: Any = _
+
         /**
          *
          * @param min
@@ -99,6 +101,42 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
             ordered = ctx.BOOL().getText.strip == "true"
+        }
+
+        override def exitVal(ctx: NCIntentDslParser.ValContext): Unit = {
+            cval = mkVal(ctx.getText)
+        }
+
+        /**
+         *
+         * @param s
+         * @return
+         */
+        private def mkVal(s: String): Any = {
+            if (s == "null") null // Try 'null'.
+            else if (s == "true") true // Try 'boolean'.
+            else if (s == "false") false // Try 'boolean'.
+            // Only numeric values below...
+            else {
+                // Strip '_' from numeric values.
+                val num = s.replaceAll("_", "")
+
+                try
+                    java.lang.Integer.parseInt(num) // Try 'int'.
+                catch {
+                    case _: NumberFormatException ⇒
+                        try
+                            java.lang.Long.parseLong(num) // Try 'long'.
+                        catch {
+                            case _: NumberFormatException ⇒
+                                try
+                                    java.lang.Double.parseDouble(num) // Try 'double'.
+                                catch {
+                                    case _: NumberFormatException ⇒ s // String by default (incl. quotes).
+                                }
+                        }
+                }
+            }
         }
 
         /**
