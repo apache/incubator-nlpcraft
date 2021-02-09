@@ -49,6 +49,7 @@ on client side, prefixed with slash (`/make it sunny`)
 | :---: |:---:|
 `/weather` | Make it rain | 
 `/time` | Set current time to evening | 
+`/give` | Give me iron sword | 
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
