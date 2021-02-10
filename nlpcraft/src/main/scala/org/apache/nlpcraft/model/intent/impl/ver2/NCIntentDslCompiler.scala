@@ -21,6 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4._
 import org.apache.nlpcraft.model.intent.utils.ver2._
 
@@ -50,7 +51,10 @@ object NCIntentDslCompiler extends LazyLogging {
         private var min = 1
         private var max = 1
 
-        private var cval: Any = _
+        type Instr = (NCToken, NCDslTermContext) ⇒ NCDslTermRetVal
+
+        // Term's code, i.e. list of instructions.
+        private var termCode = mutable.Buffer.empty[Instr]
 
         /**
          *
@@ -104,7 +108,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitVal(ctx: NCIntentDslParser.ValContext): Unit = {
-            cval = mkVal(ctx.getText)
+            termCode += ((_, _) ⇒ NCDslTermRetVal(mkVal(ctx.getText), usedTok = false))
         }
 
         /**

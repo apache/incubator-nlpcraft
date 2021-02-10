@@ -17,22 +17,13 @@
 
 package org.apache.nlpcraft.model.intent.utils.ver2
 
-import org.apache.nlpcraft.model.NCToken
+import org.apache.nlpcraft.common.ScalaMeta
 
 /**
- * DSL term.
+ *
  */
-case class NCDslTerm(
-    id: String,
-    pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
-    min: Int,
-    max: Int,
-    conv: Boolean
-) {
-    if (pred == null)
-        throw new IllegalArgumentException("Intent DSL term must be defined.")
-    if (min < 0 || min > max)
-        throw new IllegalArgumentException(s"Invalid intent DSL term min quantifiers: $min (must be min >= 0 && min <= max).")
-    if (max < 1)
-        throw new IllegalArgumentException(s"Invalid intent DSL term max quantifiers: $max (must be max >= 1).")
-}
+case class NCDslTermContext(
+    reqMeta: ScalaMeta,
+    usrMeta: ScalaMeta,
+    compMeta: ScalaMeta
+)
