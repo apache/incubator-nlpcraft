@@ -48,5 +48,5 @@ case class NCDslIntent(
     }
 
     override def toString: String =
-        s"Intent: '$id'"
+        s"intent=$id"
 }

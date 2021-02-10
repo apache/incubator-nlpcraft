@@ -50,8 +50,11 @@ object NCIntentDslCompiler extends LazyLogging {
         private var termConv: Boolean = _
         private var min = 1
         private var max = 1
+        private var termClsName: String = _
+        private var termMtdName: String = _
 
-        type Instr = (NCToken, NCDslTermContext) ⇒ NCDslTermRetVal
+        type StackType = mutable.ArrayStack[NCDslTermRetVal]
+        type Instr = (NCToken, StackType,  NCDslTermContext) ⇒ Unit
 
         // Term's code, i.e. list of instructions.
         private var termCode = mutable.Buffer.empty[Instr]
@@ -75,6 +78,40 @@ object NCIntentDslCompiler extends LazyLogging {
                 setMinMax(0, 1)
             else
                 assert(false)
+        }
+
+        override def exitExpr(ctx: NCIntentDslParser.ExprContext): Unit = {
+            if (ctx.`val`() != null) {} // Just a val - no-op.
+            else if (ctx.LPAREN() != null && ctx.RPAREN() != null) {} // Just a val in brackets - no-op.
+            else if (ctx.COMMA() != null) { // Collection.
+                termCode += ((_, stack: StackType, _) ⇒ {
+                    require(stack.nonEmpty)
+
+                    val NCDslTermRetVal(lastVal, usedTok) = stack.pop()
+
+                    val newVal = lastVal match {
+                        case list: List[Any] ⇒ mkVal(ctx.`val`().getText) :: list
+                        case _ ⇒ List(lastVal)
+                    }
+
+                    stack.push(NCDslTermRetVal(newVal, usedTok))
+                })
+            }
+            else if (ctx.MINUS() != null || ctx.PLUS() != null || ctx.STAR() != null || ctx.FSLASH() != null) {
+                termCode += ((_, stack: StackType, _) ⇒ {
+                    require(stack.size >= 2)
+
+                    val NCDslTermRetVal(lastVal1, usedTok1) = stack.pop()
+                    val NCDslTermRetVal(lastVal2, usedTok2) = stack.pop()
+                })
+            }
+        }
+
+        override def exitClsNer(ctx: NCIntentDslParser.ClsNerContext): Unit = {
+            if (ctx.javaFqn() != null)
+                termClsName = ctx.javaFqn().getText.strip()
+
+            termMtdName = ctx.ID().getText.strip()
         }
 
         override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
@@ -108,7 +145,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitVal(ctx: NCIntentDslParser.ValContext): Unit = {
-            termCode += ((_, _) ⇒ NCDslTermRetVal(mkVal(ctx.getText), usedTok = false))
+            termCode += ((_, stack, _) ⇒ stack.push(NCDslTermRetVal(mkVal(ctx.getText), usedTok = false)))
         }
 
         /**
