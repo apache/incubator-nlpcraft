@@ -396,7 +396,7 @@ object NCTokenLogger extends LazyLogging {
         val tbl = NCAsciiTable(headers :_*)
 
         toks.foreach(tok ⇒ {
-            val md: util.Map[String, AnyRef] = tok.getMetadata
+            val md = tok.getMetadata
             val id = tok.getId
 
             def mkFullName(name: String): String = s"$id:$name"

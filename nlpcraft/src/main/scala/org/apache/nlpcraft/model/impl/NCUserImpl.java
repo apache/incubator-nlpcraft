@@ -30,7 +30,7 @@ public class NCUserImpl implements NCUser {
     private final Optional<String> lastName;
     private final Optional<String> email;
     private final Optional<String> avatarUrl;
-    private final Optional<Map<String, String>> props;
+    private final Map<String, Object> meta;
     private final boolean isAdmin;
     private final long signupTstamp;
 
@@ -41,7 +41,7 @@ public class NCUserImpl implements NCUser {
      * @param lastName Last name.
      * @param email Email.
      * @param avatarUrl Avatar URL.
-     * @param props Additional properties.
+     * @param meta User metadata.
      * @param isAdmin Is admin flag.
      * @param signupTstamp Signup timestamp.
      */
@@ -51,7 +51,7 @@ public class NCUserImpl implements NCUser {
         Optional<String> lastName,
         Optional<String> email,
         Optional<String> avatarUrl,
-        Optional<Map<String, String>> props,
+        Map<String, Object> meta,
         boolean isAdmin,
         long signupTstamp
     ) {
@@ -60,7 +60,7 @@ public class NCUserImpl implements NCUser {
         this.lastName = lastName;
         this.email = email;
         this.avatarUrl = avatarUrl;
-        this.props = props;
+        this.meta = meta;
         this.isAdmin = isAdmin;
         this.signupTstamp = signupTstamp;
     }
@@ -81,8 +81,8 @@ public class NCUserImpl implements NCUser {
     }
 
     @Override
-    public Optional<Map<String, String>> getProperties() {
-        return props;
+    public Map<String, Object> getMetadata() {
+        return meta;
     }
 
     @Override

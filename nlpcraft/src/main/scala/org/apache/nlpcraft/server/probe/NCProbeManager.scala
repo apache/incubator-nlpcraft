@@ -53,7 +53,7 @@ import scala.util.{Failure, Success}
   */
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
-    private final val TYPE_MODEL_INFO_RESP = new TypeToken[util.HashMap[String, AnyRef]]() {}.getType
+    private final val TYPE_MODEL_INFO_RESP = new TypeToken[ScalaMeta]() {}.getType
 
     // Type safe and eager configuration container.
     private object Config extends NCConfigurable {
@@ -156,7 +156,7 @@ object NCProbeManager extends NCService {
     // All probes pending complete handshake keyed by probe key.
     @volatile private var pending: mutable.Map[ProbeKey, ProbeHolder] = _
 
-    @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]] = _
+    @volatile private var modelsInfo: ConcurrentHashMap[String, Promise[JavaMeta]] = _
 
     /**
      *
@@ -178,7 +178,7 @@ object NCProbeManager extends NCService {
             "downlink" → s"$dnHost:$dnPort"
         )
 
-        modelsInfo = new ConcurrentHashMap[String, Promise[java.util.Map[String, AnyRef]]]()
+        modelsInfo = new ConcurrentHashMap[String, Promise[JavaMeta]]()
 
         dnSrv = startServer("Downlink", dnHost, dnPort, downLinkHandler)
         upSrv = startServer("Uplink", upHost, upPort, upLinkHandler)
@@ -1026,13 +1026,13 @@ object NCProbeManager extends NCService {
       * @param parent
       * @return
       */
-    def getModelInfo(mdlId: String, parent: Span = null): Future[java.util.Map[String, AnyRef]] =
+    def getModelInfo(mdlId: String, parent: Span = null): Future[JavaMeta] =
         startScopedSpan("getModelInfo", parent, "mdlId" → mdlId) { _ ⇒
             getProbeForModelId(mdlId) match {
                 case Some(probe) ⇒
                     val msg = NCProbeMessage("S2P_MODEL_INFO", "mdlId" → mdlId)
 
-                    val p = Promise[java.util.Map[String, AnyRef]]()
+                    val p = Promise[JavaMeta]()
 
                     modelsInfo.put(msg.getGuid, p)
 

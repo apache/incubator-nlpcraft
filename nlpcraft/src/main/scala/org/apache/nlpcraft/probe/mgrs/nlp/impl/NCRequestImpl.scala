@@ -23,6 +23,7 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl._
 
 import scala.collection._
+import scala.collection.JavaConverters._
 
 /**
  *
@@ -48,7 +49,8 @@ case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCReq
         getOpt("COMPANY_REGION"),
         getOpt("COMPANY_CITY"),
         getOpt("COMPANY_ADDRESS"),
-        getOpt("COMPANY_POSTAL")
+        getOpt("COMPANY_POSTAL"),
+        Map.empty[String, AnyRef].asJava, // TODO
     )
     override lazy val getUser: NCUser = new NCUserImpl(
         meta("USER_ID").asInstanceOf[Long],
@@ -56,7 +58,7 @@ case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCReq
         getOpt("LAST_NAME"),
         getOpt("EMAIL"),
         getOpt("AVATAR_URL"),
-        getOpt("USER_PROPS"),
+        Map.empty[String, AnyRef].asJava, // TODO
         meta("IS_ADMIN").asInstanceOf[Boolean],
         meta("SIGNUP_TSTAMP").asInstanceOf[Long]
     )

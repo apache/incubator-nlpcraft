@@ -116,7 +116,7 @@ private[nlpcraft] object NCTokenImpl {
         // No overlapping allowed at this point.
         require(usrNotes.size <= 1, s"Unexpected elements notes: $usrNotes")
 
-        def convertMeta(): Map[String, AnyRef] = md.toMap.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef])
+        def convertMeta(): ScalaMeta = md.toMap.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef])
 
         usrNotes.headOption match {
             case Some(usrNote) ⇒
@@ -125,14 +125,14 @@ private[nlpcraft] object NCTokenImpl {
                 val elm = mdl.elements(usrNote.noteType)
 
                 val ancestors = mutable.ArrayBuffer.empty[String]
-                var prntId = elm.getParentId
+                var parentId = elm.getParentId
 
-                while (prntId != null) {
-                    ancestors += prntId
+                while (parentId != null) {
+                    ancestors += parentId
 
-                    prntId = mdl.
+                    parentId = mdl.
                         elements.
-                        getOrElse(prntId, throw new AssertionError(s"Element not found: $prntId")).
+                        getOrElse(parentId, throw new AssertionError(s"Element not found: $parentId")).
                         getParentId
                 }
 

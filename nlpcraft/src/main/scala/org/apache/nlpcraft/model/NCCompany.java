@@ -24,7 +24,7 @@ import java.util.*;
  *
  * @see NCRequest
  */
-public interface NCCompany {
+public interface NCCompany extends NCMetadata {
     /**
      * Gets ID of the company.
      *

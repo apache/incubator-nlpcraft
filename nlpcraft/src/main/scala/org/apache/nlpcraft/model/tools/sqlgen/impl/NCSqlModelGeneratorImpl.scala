@@ -208,11 +208,11 @@ object NCSqlModelGeneratorImpl {
 
     /**
       *
-      * @param m
+      * @param meta
       * @param key
       * @param v
       */
-    private def add(m: java.util.Map[String, AnyRef], key: String, v: Any): Unit = {
+    private def add(meta: JavaMeta, key: String, v: Any): Unit = {
         val obj = v.asInstanceOf[AnyRef]
 
         if (obj != null) {
@@ -222,7 +222,7 @@ object NCSqlModelGeneratorImpl {
             }
 
             if (ok)
-                m.put(key, obj)
+                meta.put(key, obj)
         }
     }
 

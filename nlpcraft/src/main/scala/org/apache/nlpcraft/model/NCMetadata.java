@@ -21,7 +21,7 @@ import org.apache.nlpcraft.common.*;
 import java.util.*;
 
 /**
- * Provides support for mutable map-based metadata.
+ * Provides support for mutable runtime-only metadata.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.

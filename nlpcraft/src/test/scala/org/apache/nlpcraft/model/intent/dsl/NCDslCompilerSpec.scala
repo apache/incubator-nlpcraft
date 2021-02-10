@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.dsl
 
-import org.apache.nlpcraft.common.NCException
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.impl.ver2.NCIntentDslCompiler
 import org.junit.jupiter.api.Test
 
@@ -31,6 +31,10 @@ class NCDslCompilerSpec {
         NCIntentDslCompiler.compile(
             """
               |intent=i1 meta={'a': true} term={}
-              |""".stripMargin, "mdl.id")
+              |""".stripMargin, "mdl.id",
+            Map.empty[String, AnyRef],
+            Map.empty[String, AnyRef],
+            Map.empty[String, AnyRef]
+        )
     }
 }

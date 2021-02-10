@@ -30,6 +30,8 @@ import scala.language.implicitConversions
 package object common {
     // Type aliases for `org.apache.nlpcraft`
     type NCE = NCException
+    type ScalaMeta = Map[String, AnyRef]
+    type JavaMeta = java.util.Map[String, Object]
     final val U = NCUtils
     
     // Internal deep debug flag (more verbose tracing).

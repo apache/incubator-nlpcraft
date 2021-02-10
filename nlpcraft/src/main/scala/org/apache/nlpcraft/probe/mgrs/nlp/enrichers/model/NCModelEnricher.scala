@@ -481,8 +481,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             new NCCustomElement() {
                                 override def getElementId: String = noteId
                                 override def getWords: util.List[NCCustomWord] = words
-                                override def getMetadata: util.Map[String, AnyRef] =
-                                    md.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+                                override def getMetadata: JavaMeta = md.map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
                             }
                         }).asJava
                     )

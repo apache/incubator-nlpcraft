@@ -24,7 +24,7 @@ import java.util.*;
  *
  * @see NCRequest
  */
-public interface NCUser {
+public interface NCUser extends NCMetadata {
     /**
      * Gets ID of this user.
      * 
@@ -45,13 +45,6 @@ public interface NCUser {
      * @return Last name of the user.
      */
     Optional<String> getLastName();
-
-    /**
-     * Gets properties associated with the user.
-     *
-     * @return Optional map of properties associated with the user.
-     */
-    Optional<Map<String, String>> getProperties();
 
     /**
      * Gets email of the user.

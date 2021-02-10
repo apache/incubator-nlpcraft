@@ -199,7 +199,13 @@ object NCIntentDslCompiler extends LazyLogging {
      * @param mdlId ID of the model the intent belongs to.
      * @return
      */
-    def compile(dsl: String, mdlId: String): NCDslIntent = {
+    def compile(
+        dsl: String,
+        mdlId: String,
+        reqMeta: ScalaMeta,
+        usrMeta: ScalaMeta,
+        compMeta: ScalaMeta
+    ): NCDslIntent = {
         require(dsl != null)
 
         val src = dsl.strip()

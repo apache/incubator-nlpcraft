@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.common.debug
 
+import org.apache.nlpcraft.common._
 import java.util
 import com.google.gson.Gson
 import org.apache.nlpcraft.common.util._
@@ -56,7 +57,7 @@ class NCLogHolder extends Serializable {
         avatarUrl: String,
         isAdmin: Boolean,
         signupTimestamp: Long,
-        properties: util.Map[String, String]
+        meta: JavaMeta
     )
     
     case class CompanyJson(
@@ -160,7 +161,7 @@ class NCLogHolder extends Serializable {
             avatarUrl = usr.getAvatarUrl.orElse(null),
             isAdmin = usr.isAdmin,
             signupTimestamp = usr.getSignupTimestamp,
-            properties = usr.getProperties.orElse(null)
+            meta = usr.getMetadata
         )
     
         val compJs = CompanyJson(
