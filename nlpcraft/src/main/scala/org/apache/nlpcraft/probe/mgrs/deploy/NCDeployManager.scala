@@ -47,12 +47,13 @@ import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.control.Exception._
 
+
 /**
   * Model deployment manager.
   */
 object NCDeployManager extends NCService with DecorateAsScala {
     private final val TOKENS_PROVIDERS_PREFIXES = Set("nlpcraft:", "google:", "stanford:", "opennlp:", "spacy:")
-    private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:-_]*$"
+    private final val ID_REGEX = "^[_a-zA-Z]+[a-zA-Z0-9:\\-_]*$"
 
     private final val CLS_INTENT = classOf[NCIntent]
     private final val CLS_INTENT_REF = classOf[NCIntentRef]
