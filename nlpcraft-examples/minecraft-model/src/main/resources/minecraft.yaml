@@ -24,8 +24,10 @@ description: Minecraft Model.
 ]
 
 macros:
+#  - name: "<PLAYER_NAME>"
+#    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
   - name: "<PLAYER_NAME>"
-    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
+    macro: "{me|I|my}"
 
 elements:
   # General synonyms
@@ -106,9 +108,6 @@ elements:
     synonyms:
       - "{fill|make|create}"
   - id: cube
-    groups:
-      - fill:shape
-  - id: sphere
     groups:
       - fill:shape
   - id: square

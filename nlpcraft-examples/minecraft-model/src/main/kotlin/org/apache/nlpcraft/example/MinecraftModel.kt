@@ -25,8 +25,6 @@ import java.util.*
 
 @Suppress("unused")
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
-    private var firstPersonWords = setOf("me", "my", "i")
-
     @NCIntentRef("weatherIntent")
     fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
@@ -68,10 +66,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
 
         val itemRegistry = dumps["item"]!![item.value]!!
         val player = player(target.partTokens[1])
-        val itemQuantity = quantity
-            .flatMap { x -> x.metaOpt<Double>("nlpcraft:num:from") }
-            .map { x -> x.toLong() }
-            .orElse(1)
+        val itemQuantity = quantity.map(NCToken::toInt).orElse(1)
 
         return NCResult.text("give $player $itemRegistry $itemQuantity")
     }
@@ -84,14 +79,6 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         @NCIntentTerm("len") length: NCToken,
         @NCIntentTerm("position") position: NCToken,
     ): NCResult {
-        TODO()
-    }
-
-    private fun NCToken.normText(): String {
-        return this.meta("nlpcraft:nlp:normtext")
-    }
-
-    private fun player(target: NCToken): String {
-        return if (firstPersonWords.contains(target.normText())) "@p" else target.originalText ?: "@p"
+        return FIllMatchProcessor.process(ctx, shape, block, length, position)
     }
 }

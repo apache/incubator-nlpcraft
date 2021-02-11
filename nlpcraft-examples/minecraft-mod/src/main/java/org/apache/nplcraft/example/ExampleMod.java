@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FileUtil;
+import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
@@ -68,7 +69,7 @@ public class ExampleMod {
             return;
         }
         String command = event.getParseResults().getReader().getString();
-        LOGGER.debug("Processing command:" + command);
+        Vector2f rotation = event.getParseResults().getContext().getSource().getRotation();
         askProbe(command).map(r -> r.state)
                 .filter(s -> s.errorCode == null)
                 .map(s -> s.resBody)
@@ -134,7 +135,7 @@ public class ExampleMod {
             http.setRequestMethod("POST"); // PUT is another valid option
             http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             http.setConnectTimeout(1_000);
-            http.setReadTimeout(1_000);
+            http.setReadTimeout(3_000);
 
             http.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(http.getOutputStream());
