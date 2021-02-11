@@ -80,6 +80,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 assert(false)
         }
 
+        //noinspection TypeCheckCanBeMatch
         override def exitExpr(ctx: NCIntentDslParser.ExprContext): Unit = {
             if (ctx.`val`() != null) {} // Just a val - no-op.
             else if (ctx.LPAREN() != null && ctx.RPAREN() != null) {} // Just a val in brackets - no-op.
@@ -90,19 +91,102 @@ object NCIntentDslCompiler extends LazyLogging {
                     val NCDslTermRetVal(lastVal, usedTok) = stack.pop()
 
                     val newVal = lastVal match {
-                        case list: List[Any] ⇒ mkVal(ctx.`val`().getText) :: list
+                        case list: List[_] ⇒ mkVal(ctx.`val`().getText) :: list
                         case _ ⇒ List(lastVal)
                     }
 
                     stack.push(NCDslTermRetVal(newVal, usedTok))
                 })
             }
-            else if (ctx.MINUS() != null || ctx.PLUS() != null || ctx.STAR() != null || ctx.FSLASH() != null) {
+            else if (ctx.MINUS() != null || ctx.PLUS() != null || ctx.STAR() != null || ctx.FSLASH() != null || ctx.PERCENT() != null) {
                 termCode += ((_, stack: StackType, _) ⇒ {
                     require(stack.size >= 2)
 
-                    val NCDslTermRetVal(lastVal1, usedTok1) = stack.pop()
-                    val NCDslTermRetVal(lastVal2, usedTok2) = stack.pop()
+                    // Stack pop in reverse order of push...
+                    val NCDslTermRetVal(val2, usedTok2) = stack.pop()
+                    val NCDslTermRetVal(val1, usedTok1) = stack.pop()
+                    
+                    def push(any: Any): Unit = stack.push(NCDslTermRetVal(any, usedTok1 || usedTok2))
+                    def isLong(v: Any): Boolean = v.isInstanceOf[java.lang.Long]
+                    def isDouble(v: Any): Boolean = v.isInstanceOf[java.lang.Double]
+                    def isString(v: Any): Boolean = v.isInstanceOf[String]
+                    def asLong(v: Any): java.lang.Long = v.asInstanceOf[java.lang.Long]
+                    def asDouble(v: Any): java.lang.Double = v.asInstanceOf[java.lang.Double]
+                    def asString(v: Any): String = v.asInstanceOf[String]
+                    def asList(v: Any): List[_] = v.asInstanceOf[List[_]]
+                    def isList(v: Any): Boolean = v.isInstanceOf[List[_]]
+                    
+                    def error(op: String): Unit =
+                        throw new IllegalArgumentException(s"Unexpected '$op' operation for values: $val1, $val2")
+                    
+                    if (ctx.PLUS() != null) { // '+'.
+                        if (isList(val1) && isList(val2))
+                            push(asList(val1) ::: asList(val2))
+                        else if (isList(val1))
+                            push(val2 :: asList(val1))
+                        else if (isList(val2)) 
+                            push(val1 :: asList(val2))
+                        else if (isString(val1) && isString(val2))
+                            push(asString(val1) + asString(val2))
+                        else if (isLong(val1) && isLong(val2))
+                            push(asLong(val1).longValue() + asLong(val2).longValue())
+                        else if (isLong(val1) && isDouble(val2))
+                            push(asLong(val1).longValue() + asDouble(val2).doubleValue())
+                        else if (isDouble(val1) && isLong(val2))
+                            push(asDouble(val1).doubleValue() + asLong(val2).longValue())
+                        else if (isDouble(val1) && isDouble(val2))
+                            push(asDouble(val1).doubleValue() + asDouble(val2).doubleValue())
+                        else
+                            error("+")
+                    }
+                    else if (ctx.MINUS() != null) { // '-'.
+                        if (isList(val1) && isList(val2))
+                            push(asList(val1).filterNot(asInstanceOf[List[_]].toSet))
+                        else if (isList(val1))
+                            push(asList(val1).filter(_ != val1))
+                        else if (isLong(val1) && isLong(val2))
+                            push(asLong(val1).longValue() - asLong(val2).longValue())
+                        else if (isLong(val1) && isDouble(val2))
+                            push(asLong(val1).longValue() - asDouble(val2).doubleValue())
+                        else if (isDouble(val1) && isLong(val2))
+                            push(asDouble(val1).doubleValue() - asLong(val2).longValue())
+                        else if (isDouble(val1) && isDouble(val2))
+                            push(asDouble(val1).doubleValue() - asDouble(val2).doubleValue())
+                        else
+                            error("-")
+                    }
+                    else if (ctx.STAR() != null) { // '*'.
+                        if (isLong(val1) && isLong(val2))
+                            push(asLong(val1).longValue() * asLong(val2).longValue())
+                        else if (isLong(val1) && isDouble(val2))
+                            push(asLong(val1).longValue() * asDouble(val2).doubleValue())
+                        else if (isDouble(val1) && isLong(val2))
+                            push(asDouble(val1).doubleValue() * asLong(val2).longValue())
+                        else if (isDouble(val1) && isDouble(val2))
+                            push(asDouble(val1).doubleValue() * asDouble(val2).doubleValue())
+                        else
+                            error("*")
+                    }
+                    else if (ctx.FSLASH() != null) { // '/'.
+                        if (isLong(val1) && isLong(val2))
+                            push(asLong(val1).longValue() / asLong(val2).longValue())
+                        else if (isLong(val1) && isDouble(val2))
+                            push(asLong(val1).longValue() / asDouble(val2).doubleValue())
+                        else if (isDouble(val1) && isLong(val2))
+                            push(asDouble(val1).doubleValue() / asLong(val2).longValue())
+                        else if (isDouble(val1) && isDouble(val2))
+                            push(asDouble(val1).doubleValue() / asDouble(val2).doubleValue())
+                        else
+                            error("/")
+                    }
+                    else if (ctx.PERCENT() != null) { // '%'.
+                        if (isLong(val1) && isLong(val2))
+                            push(asLong(val1).longValue() % asLong(val2).longValue())
+                        else
+                            error("%")
+                    }
+                    else
+                        assert(false)
                 })
             }
         }
@@ -157,24 +241,19 @@ object NCIntentDslCompiler extends LazyLogging {
             if (s == "null") null // Try 'null'.
             else if (s == "true") true // Try 'boolean'.
             else if (s == "false") false // Try 'boolean'.
-            // Only numeric values below...
+            // Only numeric or string values below...
             else {
                 // Strip '_' from numeric values.
                 val num = s.replaceAll("_", "")
 
                 try
-                    java.lang.Integer.parseInt(num) // Try 'int'.
+                    java.lang.Long.parseLong(num) // Try 'long'.
                 catch {
                     case _: NumberFormatException ⇒
                         try
-                            java.lang.Long.parseLong(num) // Try 'long'.
+                            java.lang.Double.parseDouble(num) // Try 'double'.
                         catch {
-                            case _: NumberFormatException ⇒
-                                try
-                                    java.lang.Double.parseDouble(num) // Try 'double'.
-                                catch {
-                                    case _: NumberFormatException ⇒ s // String by default (incl. quotes).
-                                }
+                            case _: NumberFormatException ⇒ s // String by default (incl. quotes).
                         }
                 }
             }

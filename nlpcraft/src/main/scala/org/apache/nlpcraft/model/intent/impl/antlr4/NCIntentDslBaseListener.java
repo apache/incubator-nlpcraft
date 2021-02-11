@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -227,6 +227,18 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpr(NCIntentDslParser.ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunCall(NCIntentDslParser.FunCallContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunCall(NCIntentDslParser.FunCallContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -62,7 +62,7 @@ expr
     : val
     | expr COMMA val
     | LPAREN expr RPAREN
-    | expr (MINUS | PLUS | STAR | FSLASH) expr
+    | expr (MINUS | PLUS | STAR | FSLASH | PERCENT) expr
     | funCall
     ;
 funCall: ID LPAREN expr? RPAREN; // Buit-in function call.
