@@ -19,13 +19,13 @@ id: nlpcraft.minecraft.ex
 name: Minecraft Model
 version: '1.0'
 description: Minecraft Model.
+"enabledBuiltInTokens": [
+    "nlpcraft:num"
+]
 
 macros:
-# Doesn't work with fill
-#  - name: "<PLAYER_NAME>"
-#    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
   - name: "<PLAYER_NAME>"
-    macro: "{me|I|my}"
+    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
 
 elements:
   # General synonyms
@@ -96,7 +96,10 @@ elements:
   # Give intent
   - id: give:action
     synonyms:
-      - "{give}"
+      - "{give ^^[target](id == 'mc:player')^^}"
+  - id: give:block-word
+    synonyms:
+      - "{block|blocks}"
 
   # Fill intent
   - id: fill:action
@@ -120,17 +123,18 @@ elements:
       - "wall"
   - id: fill:length
     synonyms:
-      - "{size of?|length of?|diameter of?}"
+      - "{{size|length|diameter} {of|*}}"
   - id: position:player
     groups:
       - fill:position
     synonyms:
-      - "{{at|near} <PLAYER_NAME> position?|where <PLAYER_NAME>}"
+      - "{{at|near} ^^[player](id == 'mc:player')^^ {position|*}|where ^^[player](id == 'mc:player')^^}"
+
   - id: position:front
     groups:
       - fill:position
     synonyms:
-      - "{{^^[distance](id == 'nlpcraft:num')^^ m|meter|meters|ft|feet}? in? front of? <PLAYER_NAME>}"
+      - "{{^^[distance](id == 'nlpcraft:num')^^ m|meter|meters|ft|feet}? {in|*} front {of|*} ^^[player](id == 'mc:player')^^}"
 
 
 
@@ -139,9 +143,9 @@ elements:
 intents:
   - intent=weatherIntent term(arg)={groups @@ 'weather'}
   - intent=timeIntent term(arg)={groups @@ 'time'}
-  - "intent=giveIntent term(action)={id == 'give:action'} term(target)={id == 'mc:player'}
-  term(quantity)={id == 'nlpcraft:num'}? term(item)={id == 'mc:item'}"
-  - "intent=fillIntent term={id == 'fill:action'} term(shape)={groups @@ 'fill:shape'} term(block)={id == 'mc:block'}
+  - "intent=giveIntent term(action)={id == 'give:action'} term(quantity)={id == 'nlpcraft:num'}?
+  term(item)={id == 'mc:item'} term={id == 'give:block-word'}?"
+  - "intent=fillIntent term={id == 'fill:action'} term(shape)={groups @@ 'fill:shape'} term(block)={id == 'mc:item'}
   term={id == 'fill:length'}? term(len)={id == 'nlpcraft:num'} term(position)={groups @@ 'fill:position'}"
 
 # give me sand
