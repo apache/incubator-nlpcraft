@@ -25,6 +25,7 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4._
 import org.apache.nlpcraft.model.intent.utils.ver2._
 
+import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -221,7 +222,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitMetaDecl(ctx: NCIntentDslParser.MetaDeclContext): Unit = {
-            meta = U.jsonToObject(ctx.jsonObj().getText, classOf[Map[String, Any]])
+            meta = U.jsonToObject(ctx.jsonObj().getText, classOf[HashMap[String, Any]])
         }
 
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
