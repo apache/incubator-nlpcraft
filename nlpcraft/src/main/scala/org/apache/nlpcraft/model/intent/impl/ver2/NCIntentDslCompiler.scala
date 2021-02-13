@@ -20,6 +20,7 @@ package org.apache.nlpcraft.model.intent.impl.ver2
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
+import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4._
@@ -28,6 +29,8 @@ import org.apache.nlpcraft.model.intent.utils.ver2._
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
+import java.util.{List ⇒ JList, Map ⇒ JMap}
 
 object NCIntentDslCompiler extends LazyLogging {
     // Compiler cache.
@@ -60,6 +63,15 @@ object NCIntentDslCompiler extends LazyLogging {
         // Term's code, i.e. list of instructions.
         private var termCode = mutable.Buffer.empty[Instr]
 
+        private def isJLong(v: AnyRef): Boolean = v.isInstanceOf[JLong]
+        private def isJDouble(v: AnyRef): Boolean = v.isInstanceOf[JDouble]
+        private def isString(v: AnyRef): Boolean = v.isInstanceOf[String]
+        private def asJLong(v: AnyRef): JLong = v.asInstanceOf[JLong]
+        private def asJDouble(v: AnyRef): JDouble = v.asInstanceOf[JDouble]
+        private def asString(v: AnyRef): String = v.asInstanceOf[String]
+        private def asJList(v: AnyRef): JList[_] = v.asInstanceOf[JList[_]]
+        private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[_]]
+
         /**
          *
          * @param min
@@ -91,10 +103,17 @@ object NCIntentDslCompiler extends LazyLogging {
 
                     val NCDslTermRetVal(lastVal, usedTok) = stack.pop()
 
-                    val newVal = lastVal match {
-                        case list: List[_] ⇒ mkVal(ctx.`val`().getText) :: list
-                        case _ ⇒ List(lastVal)
-                    }
+                    // Only use Java collections.
+                    val newVal: AnyRef =
+                        if (lastVal.isInstanceOf[JList[Object]]) {
+                            val x = lastVal.asInstanceOf[JList[Object]]
+
+                            x.add(mkVal(ctx.`val`().getText))
+
+                            x
+                        }
+                        else
+                            java.util.Collections.singletonList(lastVal)
 
                     stack.push(NCDslTermRetVal(newVal, usedTok))
                 })
@@ -104,85 +123,80 @@ object NCIntentDslCompiler extends LazyLogging {
                     require(stack.size >= 2)
 
                     // Stack pop in reverse order of push...
-                    val NCDslTermRetVal(val2, usedTok2) = stack.pop()
-                    val NCDslTermRetVal(val1, usedTok1) = stack.pop()
+                    val NCDslTermRetVal(val2, f1) = stack.pop()
+                    val NCDslTermRetVal(val1, f2) = stack.pop()
+
+                    val usedTok = f1 || f2
                     
-                    def push(any: Any): Unit = stack.push(NCDslTermRetVal(any, usedTok1 || usedTok2))
-                    def isLong(v: Any): Boolean = v.isInstanceOf[java.lang.Long]
-                    def isDouble(v: Any): Boolean = v.isInstanceOf[java.lang.Double]
-                    def isString(v: Any): Boolean = v.isInstanceOf[String]
-                    def asLong(v: Any): java.lang.Long = v.asInstanceOf[java.lang.Long]
-                    def asDouble(v: Any): java.lang.Double = v.asInstanceOf[java.lang.Double]
-                    def asString(v: Any): String = v.asInstanceOf[String]
-                    def asList(v: Any): List[_] = v.asInstanceOf[List[_]]
-                    def isList(v: Any): Boolean = v.isInstanceOf[List[_]]
-                    
-                    def error(op: String): Unit =
-                        throw new IllegalArgumentException(s"Unexpected '$op' operation for values: $val1, $val2")
+                    def push(any: AnyRef): Unit = stack.push(NCDslTermRetVal(any, usedTok))
+                    def pushLong(any: Long): Unit = stack.push(NCDslTermRetVal(Long.box(any), usedTok))
+                    def pushDouble(any: Double): Unit = stack.push(NCDslTermRetVal(Double.box(any), usedTok))
+
+                    def error(op: String): Unit = throw new IAE(s"Unexpected '$op' operation for values: $val1, $val2")
                     
                     if (ctx.PLUS() != null) { // '+'.
-                        if (isList(val1) && isList(val2))
-                            push(asList(val1) ::: asList(val2))
-                        else if (isList(val1))
-                            push(val2 :: asList(val1))
-                        else if (isList(val2)) 
-                            push(val1 :: asList(val2))
+                        if (isJList(val1) && isJList(val2))
+                            push(asJList(val1) ::: asJList(val2))
+                        else if (isJList(val1))
+                            push(val2 :: asJList(val1))
+                        else if (isJList(val2))
+                            push(val1 :: asJList(val2))
                         else if (isString(val1) && isString(val2))
                             push(asString(val1) + asString(val2))
-                        else if (isLong(val1) && isLong(val2))
-                            push(asLong(val1).longValue() + asLong(val2).longValue())
-                        else if (isLong(val1) && isDouble(val2))
-                            push(asLong(val1).longValue() + asDouble(val2).doubleValue())
-                        else if (isDouble(val1) && isLong(val2))
-                            push(asDouble(val1).doubleValue() + asLong(val2).longValue())
-                        else if (isDouble(val1) && isDouble(val2))
-                            push(asDouble(val1).doubleValue() + asDouble(val2).doubleValue())
+                        else if (isJLong(val1) && isJLong(val2))
+                            pushLong(asJLong(val1).longValue() + asJLong(val2).longValue())
+                        else if (isJLong(val1) && isJDouble(val2))
+                            pushDouble(asJLong(val1).longValue() + asJDouble(val2).doubleValue())
+                        else if (isJDouble(val1) && isJLong(val2))
+                            pushDouble(asJDouble(val1).doubleValue() + asJLong(val2).longValue())
+                        else if (isJDouble(val1) && isJDouble(val2))
+                            pushDouble(asJDouble(val1).doubleValue() + asJDouble(val2).doubleValue())
                         else
                             error("+")
                     }
                     else if (ctx.MINUS() != null) { // '-'.
-                        if (isList(val1) && isList(val2))
-                            push(asList(val1).filterNot(asInstanceOf[List[_]].toSet))
-                        else if (isList(val1))
-                            push(asList(val1).filter(_ != val1))
-                        else if (isLong(val1) && isLong(val2))
-                            push(asLong(val1).longValue() - asLong(val2).longValue())
-                        else if (isLong(val1) && isDouble(val2))
-                            push(asLong(val1).longValue() - asDouble(val2).doubleValue())
-                        else if (isDouble(val1) && isLong(val2))
-                            push(asDouble(val1).doubleValue() - asLong(val2).longValue())
-                        else if (isDouble(val1) && isDouble(val2))
-                            push(asDouble(val1).doubleValue() - asDouble(val2).doubleValue())
+                        if (isJList(val1) && isJList(val2))
+                            push(asJList(val1).filterNot(asInstanceOf[List[_]].toSet))
+                        else if (isJList(val1))
+                            push(asJList(val1).filter(_ != val1))
+                        else if (isJLong(val1) && isJLong(val2))
+                            pushLong(asJLong(val1).longValue() - asJLong(val2).longValue())
+                        else if (isJLong(val1) && isJDouble(val2))
+                            pushDouble(asJLong(val1).longValue() - asJDouble(val2).doubleValue())
+                        else if (isJDouble(val1) && isJLong(val2))
+                            pushDouble(asJDouble(val1).doubleValue() - asJLong(val2).longValue())
+                        else if (isJDouble(val1) && isJDouble(val2))
+                            pushDouble(asJDouble(val1).doubleValue() - asJDouble(val2).doubleValue())
                         else
                             error("-")
                     }
                     else if (ctx.STAR() != null) { // '*'.
-                        if (isLong(val1) && isLong(val2))
-                            push(asLong(val1).longValue() * asLong(val2).longValue())
-                        else if (isLong(val1) && isDouble(val2))
-                            push(asLong(val1).longValue() * asDouble(val2).doubleValue())
-                        else if (isDouble(val1) && isLong(val2))
-                            push(asDouble(val1).doubleValue() * asLong(val2).longValue())
-                        else if (isDouble(val1) && isDouble(val2))
-                            push(asDouble(val1).doubleValue() * asDouble(val2).doubleValue())
+                        if (isJLong(val1) && isJLong(val2))
+                            pushLong(asJLong(val1).longValue() * asJLong(val2).longValue())
+                        else if (isJLong(val1) && isJDouble(val2))
+                            pushDouble(asJLong(val1).longValue() * asJDouble(val2).doubleValue())
+                        else if (isJDouble(val1) && isJLong(val2))
+                            pushDouble(asJDouble(val1).doubleValue() * asJLong(val2).longValue())
+                        else if (isJDouble(val1) && isJDouble(val2))
+                            pushDouble(asJDouble(val1).doubleValue() * asJDouble(val2).doubleValue())
                         else
                             error("*")
                     }
                     else if (ctx.FSLASH() != null) { // '/'.
-                        if (isLong(val1) && isLong(val2))
-                            push(asLong(val1).longValue() / asLong(val2).longValue())
-                        else if (isLong(val1) && isDouble(val2))
-                            push(asLong(val1).longValue() / asDouble(val2).doubleValue())
-                        else if (isDouble(val1) && isLong(val2))
-                            push(asDouble(val1).doubleValue() / asLong(val2).longValue())
-                        else if (isDouble(val1) && isDouble(val2))
-                            push(asDouble(val1).doubleValue() / asDouble(val2).doubleValue())
+                        if (isJLong(val1) && isJLong(val2))
+                            pushLong(asJLong(val1).longValue() / asJLong(val2).longValue())
+                        else if (isJLong(val1) && isJDouble(val2))
+                            pushDouble(asJLong(val1).longValue() / asJDouble(val2).doubleValue())
+                        else if (isJDouble(val1) && isJLong(val2))
+                            pushDouble(asJDouble(val1).doubleValue() / asJLong(val2).longValue())
+                        else if (isJDouble(val1) && isJDouble(val2))
+                            pushDouble(asJDouble(val1).doubleValue() / asJDouble(val2).doubleValue())
                         else
                             error("/")
                     }
                     else if (ctx.PERCENT() != null) { // '%'.
-                        if (isLong(val1) && isLong(val2))
-                            push(asLong(val1).longValue() % asLong(val2).longValue())
+                        if (isJLong(val1) && isJLong(val2))
+                            pushLong(asJLong(val1).longValue() % asJLong(val2).longValue())
                         else
                             error("%")
                     }
@@ -190,6 +204,143 @@ object NCIntentDslCompiler extends LazyLogging {
                         assert(false)
                 })
             }
+        }
+
+        override def exitTermPred(ctx: NCIntentDslParser.TermPredContext): Unit = {
+
+
+        }
+
+        override def exitFunCall(ctx: NCIntentDslParser.FunCallContext): Unit = {
+            val fun = ctx.ID().getText
+
+            termCode += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
+                val NCDslTermRetVal(param, usedTok) = if (stack.nonEmpty) stack.pop else (null, false)
+
+                def push(any: AnyRef, f: Boolean): Unit = stack.push(NCDslTermRetVal(any, f))
+                def pushLong(any: Long, f: Boolean): Unit = stack.push(NCDslTermRetVal(Long.box(any), f))
+                def pushDouble(any: Double, f: Boolean): Unit = stack.push(NCDslTermRetVal(Double.box(any), f))
+                def pushBoolean(any: Boolean, f: Boolean): Unit = stack.push(NCDslTermRetVal(Boolean.box(any), f))
+
+                def unknownFun(): Unit = throw new IAE(s"Unknown built-in function: $fun")
+                def errParamNum(): Unit = throw new IAE(s"Invalid number of parameters for built-in function: $fun")
+                def errParamType(): Unit = throw new IAE(s"Invalid parameter type for built-in function: $fun")
+
+                def check1String(): Unit = if (param == null) errParamNum() else if (!isString(param)) errParamType()
+                def check1Long(): Unit = if (param == null) errParamNum() else if (!isJLong(param)) errParamType()
+                def check1Double(): Unit = if (param == null) errParamNum() else if (!isJDouble(param)) errParamType()
+
+                def doTrim(): String = { check1String(); asString(param).strip() }
+                def doUppercase(): String = { check1String(); asString(param).toUpperCase() }
+                def doLowercase(): String = { check1String(); asString(param).toLowerCase() }
+                def doIsAlpha(): Boolean = { check1String(); StringUtils.isAlpha(asString(param)) }
+                def doIsNum(): Boolean = { check1String(); StringUtils.isNumeric(asString(param)) }
+                def doIsAlphaNum(): Boolean = { check1String(); StringUtils.isAlphanumeric(asString(param)) }
+                def doIsWhitespace(): Boolean = { check1String(); StringUtils.isWhitespace(asString(param)) }
+                def doIsAlphaSpace(): Boolean = { check1String(); StringUtils.isAlphaSpace(asString(param)) }
+                def doIsAlphaNumSpace(): Boolean = { check1String(); StringUtils.isAlphanumericSpace(asString(param)) }
+                def doIsNumSpace(): Boolean = { check1String(); StringUtils.isNumericSpace(asString(param)) }
+
+                fun match {
+                    // Metadata access.
+                    case "meta" ⇒
+
+                    // Converts JSON to map.
+                    case "json" ⇒
+
+                    // Inline if-statement.
+                    case "if" ⇒
+
+                    // Token functions.
+                    case "id" ⇒ push(tok.getId, true)
+                    case "ancestors" ⇒ push(tok.getAncestors, true)
+                    case "parent" ⇒ push(tok.getParentId, true)
+                    case "groups" ⇒ push(tok.getGroups, true)
+                    case "value" ⇒ push(tok.getValue, true)
+                    case "aliases" ⇒ push(tok.getAliases, true)
+                    case "start_idx" ⇒ pushLong(tok.getStartCharIndex, true)
+                    case "end_idx" ⇒ pushLong(tok.getEndCharIndex, true)
+
+                    // String functions.
+                    case "trim" ⇒ push(doTrim(), usedTok)
+                    case "strip" ⇒ push(doTrim(), usedTok)
+                    case "uppercase" ⇒ push(doUppercase(), usedTok)
+                    case "lowercase" ⇒ push(doLowercase(), usedTok)
+                    case "is_alpha" ⇒ pushBoolean(doIsAlpha(), usedTok)
+                    case "is_alphanum" ⇒ pushBoolean(doIsAlphaNum(), usedTok)
+                    case "is_whitespace" ⇒ pushBoolean(doIsWhitespace(), usedTok)
+                    case "is_numeric" ⇒ pushBoolean(doIsNum(), usedTok)
+                    case "is_numeric_space" ⇒ pushBoolean(doIsNumSpace(), usedTok)
+                    case "is_alpha_space" ⇒ pushBoolean(doIsAlphaSpace(), usedTok)
+                    case "is_alphanum_space" ⇒ pushBoolean(doIsAlphaNumSpace(), usedTok)
+                    case "substring" ⇒
+                    case "index" ⇒
+                    case "soundex" ⇒
+                    case "split" ⇒
+                    case "replace" ⇒
+
+                    // Math functions.
+                    case "abs" ⇒
+                    case "ceil" ⇒
+                    case "floor" ⇒
+                    case "rint" ⇒
+                    case "round" ⇒
+                    case "signum" ⇒
+                    case "sqrt" ⇒
+                    case "pi" ⇒
+                    case "acos" ⇒
+                    case "asin" ⇒
+                    case "atan" ⇒
+                    case "atn2" ⇒
+                    case "cos" ⇒
+                    case "cot" ⇒
+                    case "degrees" ⇒
+                    case "exp" ⇒
+                    case "log" ⇒
+                    case "log10" ⇒
+                    case "power" ⇒
+                    case "radians" ⇒
+                    case "rand" ⇒
+                    case "sin" ⇒
+                    case "square" ⇒
+                    case "tan" ⇒
+
+                    // Collection, statistical (incl. string) functions.
+                    case "avg" ⇒
+                    case "max" ⇒
+                    case "min" ⇒
+                    case "stdev" ⇒
+                    case "sum" ⇒
+                    case "get" ⇒
+                    case "index" ⇒
+                    case "contains" ⇒
+                    case "first" ⇒
+                    case "last" ⇒
+                    case "keys" ⇒
+                    case "values" ⇒
+                    case "length" ⇒
+                    case "count" ⇒
+                    case "size" ⇒
+                    case "reverse" ⇒
+                    case "is_empty" ⇒
+                    case "non_empty" ⇒
+                    case "to_string" ⇒
+
+                    // Date-time functions.
+                    case "year" ⇒
+                    case "month" ⇒
+                    case "day" ⇒
+                    case "hour" ⇒
+                    case "min" ⇒
+                    case "sec" ⇒
+                    case "week" ⇒
+                    case "quarter" ⇒
+                    case "msec" ⇒
+                    case "now" ⇒
+
+                    case _ ⇒ unknownFun()
+                }
+            })
         }
 
         override def exitClsNer(ctx: NCIntentDslParser.ClsNerContext): Unit = {
@@ -238,21 +389,21 @@ object NCIntentDslCompiler extends LazyLogging {
          * @param s
          * @return
          */
-        private def mkVal(s: String): Any = {
+        private def mkVal(s: String): Object = {
             if (s == "null") null // Try 'null'.
-            else if (s == "true") true // Try 'boolean'.
-            else if (s == "false") false // Try 'boolean'.
+            else if (s == "true") Boolean.box(true) // Try 'boolean'.
+            else if (s == "false") Boolean.box(false) // Try 'boolean'.
             // Only numeric or string values below...
             else {
                 // Strip '_' from numeric values.
                 val num = s.replaceAll("_", "")
 
                 try
-                    java.lang.Long.parseLong(num) // Try 'long'.
+                    Long.box(JLong.parseLong(num)) // Try 'long'.
                 catch {
                     case _: NumberFormatException ⇒
                         try
-                            java.lang.Double.parseDouble(num) // Try 'double'.
+                            Double.box(JDouble.parseDouble(num)) // Try 'double'.
                         catch {
                             case _: NumberFormatException ⇒ s // String by default (incl. quotes).
                         }

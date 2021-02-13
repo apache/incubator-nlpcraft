@@ -57,7 +57,9 @@ termDef
     | termDef (AND | OR) termDef
     | EXCL termDef
     ;
-termPred: expr PRED_OP expr;
+termPred
+    : expr PRED_OP expr
+    | expr;
 expr
     : val
     | expr COMMA val
