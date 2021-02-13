@@ -69,8 +69,8 @@ object NCIntentDslCompiler extends LazyLogging {
         private def asJLong(v: AnyRef): JLong = v.asInstanceOf[JLong]
         private def asJDouble(v: AnyRef): JDouble = v.asInstanceOf[JDouble]
         private def asString(v: AnyRef): String = v.asInstanceOf[String]
-        private def asJList(v: AnyRef): JList[_] = v.asInstanceOf[JList[_]]
-        private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[_]]
+        private def asJList(v: AnyRef): JList[AnyRef] = v.asInstanceOf[JList[AnyRef]]
+        private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[AnyRef]]
 
         /**
          *
@@ -135,12 +135,28 @@ object NCIntentDslCompiler extends LazyLogging {
                     def error(op: String): Unit = throw new IAE(s"Unexpected '$op' operation for values: $val1, $val2")
                     
                     if (ctx.PLUS() != null) { // '+'.
-                        if (isJList(val1) && isJList(val2))
-                            push(asJList(val1) ::: asJList(val2))
-                        else if (isJList(val1))
-                            push(val2 :: asJList(val1))
-                        else if (isJList(val2))
-                            push(val1 :: asJList(val2))
+                        if (isJList(val1) && isJList(val2)) {
+                            val lst1 = asJList(val1)
+                            val lst2 = asJList(val2)
+    
+                            lst1.addAll(lst2)
+                            
+                            push(lst1)
+                        }
+                        else if (isJList(val1)) {
+                            val lst1 = asJList(val1)
+                            
+                            lst1.add(val2)
+                            
+                            push(lst1)
+                        }
+                        else if (isJList(val2)) {
+                            val lst2 = asJList(val2)
+    
+                            lst2.add(val1)
+    
+                            push(lst2)
+                        }
                         else if (isString(val1) && isString(val2))
                             push(asString(val1) + asString(val2))
                         else if (isJLong(val1) && isJLong(val2))
@@ -155,10 +171,21 @@ object NCIntentDslCompiler extends LazyLogging {
                             error("+")
                     }
                     else if (ctx.MINUS() != null) { // '-'.
-                        if (isJList(val1) && isJList(val2))
-                            push(asJList(val1).filterNot(asInstanceOf[List[_]].toSet))
-                        else if (isJList(val1))
-                            push(asJList(val1).filter(_ != val1))
+                        if (isJList(val1) && isJList(val2)) {
+                            val lst1 = asJList(val1)
+                            val lst2 = asJList(val2)
+                            
+                            lst1.removeAll(lst2)
+
+                            push(lst1)
+                        }
+                        else if (isJList(val1)) {
+                            val lst1 = asJList(val1)
+                            
+                            lst1.remove(val2)
+                            
+                            push(lst1)
+                        }
                         else if (isJLong(val1) && isJLong(val2))
                             pushLong(asJLong(val1).longValue() - asJLong(val2).longValue())
                         else if (isJLong(val1) && isJDouble(val2))
