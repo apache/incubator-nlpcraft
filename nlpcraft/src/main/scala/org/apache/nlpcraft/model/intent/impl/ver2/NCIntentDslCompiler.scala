@@ -233,7 +233,7 @@ object NCIntentDslCompiler extends LazyLogging {
             }
         }
 
-        override def exitFunCall(ctx: NCIntentDslParser.FunCallContext): Unit = {
+        override def exitCall(ctx: NCIntentDslParser.CallContext): Unit = {
             val fun = ctx.ID().getText
 
             termCode += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
@@ -297,6 +297,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "is_alphanum_space" ⇒ pushBoolean(doIsAlphaNumSpace(), usedTok)
                     case "substring" ⇒
                     case "index" ⇒
+                    case "regex" ⇒
                     case "soundex" ⇒
                     case "split" ⇒
                     case "replace" ⇒
@@ -342,6 +343,8 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "values" ⇒
                     case "length" ⇒
                     case "count" ⇒
+                    case "take" ⇒
+                    case "drop" ⇒
                     case "size" ⇒
                     case "reverse" ⇒
                     case "is_empty" ⇒
@@ -351,7 +354,8 @@ object NCIntentDslCompiler extends LazyLogging {
                     // Date-time functions.
                     case "year" ⇒
                     case "month" ⇒
-                    case "day" ⇒
+                    case "day_of_month" ⇒
+                    case "day_of_week" ⇒
                     case "hour" ⇒
                     case "min" ⇒
                     case "sec" ⇒

@@ -52,15 +52,15 @@ javaFqn
     ;
 termId: LPAR ID RPAR;
 expr
-    : unaryExpr
+    : unary
     | expr (AND | OR | EQ | NEQ | MULT | DIV | PLUS | MINUS | MOD | LTEQ | GTEQ | LT | GT) expr
     | atom
     | expr COMMA atom
     | LPAR expr RPAR
-    | funCall
+    | call
     ;
-unaryExpr: (MINUS | NOT) expr;
-funCall: ID LPAR expr? RPAR; // Buit-in function call.
+unary: (MINUS | NOT) expr;
+call: ID LPAR expr? RPAR; // Buit-in function call.
 atom
     : NULL
     | INT REAL? EXP?

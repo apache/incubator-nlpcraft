@@ -208,25 +208,25 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterUnaryExpr(NCIntentDslParser.UnaryExprContext ctx) { }
+	@Override public void enterUnary(NCIntentDslParser.UnaryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitUnaryExpr(NCIntentDslParser.UnaryExprContext ctx) { }
+	@Override public void exitUnary(NCIntentDslParser.UnaryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunCall(NCIntentDslParser.FunCallContext ctx) { }
+	@Override public void enterCall(NCIntentDslParser.CallContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFunCall(NCIntentDslParser.FunCallContext ctx) { }
+	@Override public void exitCall(NCIntentDslParser.CallContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

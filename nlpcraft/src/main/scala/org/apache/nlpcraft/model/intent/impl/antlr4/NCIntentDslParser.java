@@ -27,15 +27,15 @@ public class NCIntentDslParser extends Parser {
 		RULE_intent = 0, RULE_intentId = 1, RULE_orderedDecl = 2, RULE_flowDecl = 3, 
 		RULE_metaDecl = 4, RULE_jsonObj = 5, RULE_jsonPair = 6, RULE_jsonVal = 7, 
 		RULE_jsonArr = 8, RULE_terms = 9, RULE_termEq = 10, RULE_term = 11, RULE_clsNer = 12, 
-		RULE_javaFqn = 13, RULE_termId = 14, RULE_expr = 15, RULE_unaryExpr = 16, 
-		RULE_funCall = 17, RULE_atom = 18, RULE_qstring = 19, RULE_minMax = 20, 
-		RULE_minMaxShortcut = 21, RULE_minMaxRange = 22;
+		RULE_javaFqn = 13, RULE_termId = 14, RULE_expr = 15, RULE_unary = 16, 
+		RULE_call = 17, RULE_atom = 18, RULE_qstring = 19, RULE_minMax = 20, RULE_minMaxShortcut = 21, 
+		RULE_minMaxRange = 22;
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"intent", "intentId", "orderedDecl", "flowDecl", "metaDecl", "jsonObj", 
 			"jsonPair", "jsonVal", "jsonArr", "terms", "termEq", "term", "clsNer", 
-			"javaFqn", "termId", "expr", "unaryExpr", "funCall", "atom", "qstring", 
-			"minMax", "minMaxShortcut", "minMaxRange"
+			"javaFqn", "termId", "expr", "unary", "call", "atom", "qstring", "minMax", 
+			"minMaxShortcut", "minMaxRange"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -1120,8 +1120,8 @@ public class NCIntentDslParser extends Parser {
 	}
 
 	public static class ExprContext extends ParserRuleContext {
-		public UnaryExprContext unaryExpr() {
-			return getRuleContext(UnaryExprContext.class,0);
+		public UnaryContext unary() {
+			return getRuleContext(UnaryContext.class,0);
 		}
 		public AtomContext atom() {
 			return getRuleContext(AtomContext.class,0);
@@ -1134,8 +1134,8 @@ public class NCIntentDslParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public TerminalNode RPAR() { return getToken(NCIntentDslParser.RPAR, 0); }
-		public FunCallContext funCall() {
-			return getRuleContext(FunCallContext.class,0);
+		public CallContext call() {
+			return getRuleContext(CallContext.class,0);
 		}
 		public TerminalNode AND() { return getToken(NCIntentDslParser.AND, 0); }
 		public TerminalNode OR() { return getToken(NCIntentDslParser.OR, 0); }
@@ -1188,7 +1188,7 @@ public class NCIntentDslParser extends Parser {
 			case MINUS:
 				{
 				setState(178);
-				unaryExpr();
+				unary();
 				}
 				break;
 			case SQSTRING:
@@ -1214,7 +1214,7 @@ public class NCIntentDslParser extends Parser {
 			case ID:
 				{
 				setState(184);
-				funCall();
+				call();
 				}
 				break;
 			default:
@@ -1284,29 +1284,29 @@ public class NCIntentDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class UnaryExprContext extends ParserRuleContext {
+	public static class UnaryContext extends ParserRuleContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode MINUS() { return getToken(NCIntentDslParser.MINUS, 0); }
 		public TerminalNode NOT() { return getToken(NCIntentDslParser.NOT, 0); }
-		public UnaryExprContext(ParserRuleContext parent, int invokingState) {
+		public UnaryContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_unaryExpr; }
+		@Override public int getRuleIndex() { return RULE_unary; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterUnaryExpr(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterUnary(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitUnaryExpr(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitUnary(this);
 		}
 	}
 
-	public final UnaryExprContext unaryExpr() throws RecognitionException {
-		UnaryExprContext _localctx = new UnaryExprContext(_ctx, getState());
-		enterRule(_localctx, 32, RULE_unaryExpr);
+	public final UnaryContext unary() throws RecognitionException {
+		UnaryContext _localctx = new UnaryContext(_ctx, getState());
+		enterRule(_localctx, 32, RULE_unary);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -1336,30 +1336,30 @@ public class NCIntentDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class FunCallContext extends ParserRuleContext {
+	public static class CallContext extends ParserRuleContext {
 		public TerminalNode ID() { return getToken(NCIntentDslParser.ID, 0); }
 		public TerminalNode LPAR() { return getToken(NCIntentDslParser.LPAR, 0); }
 		public TerminalNode RPAR() { return getToken(NCIntentDslParser.RPAR, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public FunCallContext(ParserRuleContext parent, int invokingState) {
+		public CallContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_funCall; }
+		@Override public int getRuleIndex() { return RULE_call; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterFunCall(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterCall(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFunCall(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitCall(this);
 		}
 	}
 
-	public final FunCallContext funCall() throws RecognitionException {
-		FunCallContext _localctx = new FunCallContext(_ctx, getState());
-		enterRule(_localctx, 34, RULE_funCall);
+	public final CallContext call() throws RecognitionException {
+		CallContext _localctx = new CallContext(_ctx, getState());
+		enterRule(_localctx, 34, RULE_call);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);

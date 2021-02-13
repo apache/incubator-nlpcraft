@@ -115,8 +115,8 @@ clsNer
 javaFqn
 termId
 expr
-unaryExpr
-funCall
+unary
+call
 atom
 qstring
 minMax
