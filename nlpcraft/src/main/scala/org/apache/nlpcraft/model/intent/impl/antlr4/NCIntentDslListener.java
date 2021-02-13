@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -158,26 +158,6 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitTermId(NCIntentDslParser.TermIdContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#termDef}.
-	 * @param ctx the parse tree
-	 */
-	void enterTermDef(NCIntentDslParser.TermDefContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#termDef}.
-	 * @param ctx the parse tree
-	 */
-	void exitTermDef(NCIntentDslParser.TermDefContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#termPred}.
-	 * @param ctx the parse tree
-	 */
-	void enterTermPred(NCIntentDslParser.TermPredContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#termPred}.
-	 * @param ctx the parse tree
-	 */
-	void exitTermPred(NCIntentDslParser.TermPredContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
@@ -187,6 +167,16 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpr(NCIntentDslParser.ExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#unaryExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryExpr(NCIntentDslParser.UnaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#unaryExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryExpr(NCIntentDslParser.UnaryExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#funCall}.
 	 * @param ctx the parse tree
@@ -198,15 +188,15 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitFunCall(NCIntentDslParser.FunCallContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#val}.
+	 * Enter a parse tree produced by {@link NCIntentDslParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterVal(NCIntentDslParser.ValContext ctx);
+	void enterAtom(NCIntentDslParser.AtomContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#val}.
+	 * Exit a parse tree produced by {@link NCIntentDslParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitVal(NCIntentDslParser.ValContext ctx);
+	void exitAtom(NCIntentDslParser.AtomContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#qstring}.
 	 * @param ctx the parse tree

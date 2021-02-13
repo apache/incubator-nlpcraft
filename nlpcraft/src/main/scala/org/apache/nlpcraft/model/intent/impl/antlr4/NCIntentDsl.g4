@@ -18,13 +18,13 @@
 grammar NCIntentDsl;
 
 intent: intentId orderedDecl? flowDecl? metaDecl? terms EOF;
-intentId: 'intent' EQ ID;
-orderedDecl: 'ordered' EQ BOOL;
-flowDecl: 'flow' EQ qstring;
-metaDecl: 'meta' EQ jsonObj;
+intentId: 'intent' ASSIGN ID;
+orderedDecl: 'ordered' ASSIGN BOOL;
+flowDecl: 'flow' ASSIGN qstring;
+metaDecl: 'meta' ASSIGN jsonObj;
 jsonObj
-    : LCURLY jsonPair (COMMA jsonPair)* RCURLY
-    | LCURLY RCURLY
+    : LBRACE jsonPair (COMMA jsonPair)* RBRACE
+    | LBRACE RBRACE
     ;
 jsonPair: qstring COLON jsonVal;
 jsonVal
@@ -41,36 +41,29 @@ jsonArr
     ;
 terms: term | terms term;
 termEq
-    : EQ // Do not use conversation.
+    : ASSIGN // Do not use conversation.
     | TILDA // Use conversation.
     ;
-term: 'term' termId? termEq ((LCURLY termDef RCURLY) | (FSLASH clsNer FSLASH)) minMax?;
+term: 'term' termId? termEq ((LBRACE expr RBRACE) | (DIV clsNer DIV)) minMax?;
 clsNer: javaFqn? POUND ID;
 javaFqn
     : ID
     | javaFqn DOT ID
     ;
-termId: LPAREN ID RPAREN;
-termDef
-    : termPred
-    | LPAREN termDef RPAREN
-    | termDef (AND | OR) termDef
-    | EXCL termDef
-    ;
-termPred
-    : expr PRED_OP expr
-    | expr;
+termId: LPAR ID RPAR;
 expr
-    : val
-    | expr COMMA val
-    | LPAREN expr RPAREN
-    | expr (MINUS | PLUS | STAR | FSLASH | PERCENT) expr
+    : unaryExpr
+    | expr (AND | OR | EQ | NEQ | MULT | DIV | PLUS | MINUS | MOD | LTEQ | GTEQ | LT | GT) expr
+    | atom
+    | expr COMMA atom
+    | LPAR expr RPAR
     | funCall
     ;
-funCall: ID LPAREN expr? RPAREN; // Buit-in function call.
-val
+unaryExpr: (MINUS | NOT) expr;
+funCall: ID LPAR expr? RPAR; // Buit-in function call.
+atom
     : NULL
-    | MINUS? INT REAL? EXP?
+    | INT REAL? EXP?
     | BOOL
     | qstring
     ;
@@ -85,33 +78,28 @@ minMax
 minMaxShortcut
     : PLUS
     | QUESTION
-    | STAR
+    | MULT
     ;
 minMaxRange: LBR INT COMMA INT RBR;
 SQSTRING: SQUOTE (~'\'')* SQUOTE;
 DQSTRING: DQUOTE (~'"')* DQUOTE;
-PRED_OP
-    : '==' // Includes regex for strings.
-    | '!=' // Includes regex for strings.
-    | '>='
-    | '<='
-    | '>'
-    | '<'
-    | '@@' // Set or string containment.
-    | '!@' // Set or string not containment.
-    ;
+EQ: '==';
+NEQ: '!=';
+GTEQ: '>=';
+LTEQ: '<=';
+GT: '>';
+LT: '<';
 AND: '&&';
 OR: '||';
 VERT: '|';
-EXCL: '!';
-LPAREN: '(';
-RPAREN: ')';
-LCURLY: '{';
-RCURLY: '}';
+NOT: '!';
+LPAR: '(';
+RPAR: ')';
+LBRACE: '{';
+RBRACE: '}';
 SQUOTE: '\'';
 DQUOTE: '"';
 TILDA: '~';
-RIGHT: '>>';
 LBR: '[';
 RBR: ']';
 POUND: '#';
@@ -120,14 +108,13 @@ COLON: ':';
 MINUS: '-';
 DOT: '.';
 UNDERSCORE: '_';
-EQ: '=';
+ASSIGN: '=';
 PLUS: '+';
 QUESTION: '?';
-STAR: '*';
-FSLASH: '/';
-PERCENT: '%';
+MULT: '*';
+DIV: '/';
+MOD: '%';
 DOLLAR: '$';
-POWER: '^';
 BOOL: 'true' | 'false';
 NULL: 'null';
 INT: '0' | [1-9] [_0-9]*;

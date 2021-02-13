@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -196,30 +196,6 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermDef(NCIntentDslParser.TermDefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTermDef(NCIntentDslParser.TermDefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTermPred(NCIntentDslParser.TermPredContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTermPred(NCIntentDslParser.TermPredContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExpr(NCIntentDslParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -227,6 +203,18 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpr(NCIntentDslParser.ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterUnaryExpr(NCIntentDslParser.UnaryExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUnaryExpr(NCIntentDslParser.UnaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -244,13 +232,13 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVal(NCIntentDslParser.ValContext ctx) { }
+	@Override public void enterAtom(NCIntentDslParser.AtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitVal(NCIntentDslParser.ValContext ctx) { }
+	@Override public void exitAtom(NCIntentDslParser.AtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

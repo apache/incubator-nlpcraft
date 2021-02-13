@@ -83,7 +83,7 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitMinMaxShortcut(ctx: NCIntentDslParser.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
                 setMinMax(1, Integer.MAX_VALUE)
-            else if (ctx.STAR() != null)
+            else if (ctx.MULT() != null)
                 setMinMax(0, Integer.MAX_VALUE)
             else if (ctx.QUESTION() != null)
                 setMinMax(0, 1)

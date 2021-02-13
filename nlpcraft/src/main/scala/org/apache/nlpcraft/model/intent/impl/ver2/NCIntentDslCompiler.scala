@@ -85,7 +85,7 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitMinMaxShortcut(ctx: NCIntentDslParser.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
                 setMinMax(1, Integer.MAX_VALUE)
-            else if (ctx.STAR() != null)
+            else if (ctx.MULT() != null)
                 setMinMax(0, Integer.MAX_VALUE)
             else if (ctx.QUESTION() != null)
                 setMinMax(0, 1)
@@ -95,8 +95,8 @@ object NCIntentDslCompiler extends LazyLogging {
 
         //noinspection TypeCheckCanBeMatch
         override def exitExpr(ctx: NCIntentDslParser.ExprContext): Unit = {
-            if (ctx.`val`() != null) {} // Just a val - no-op.
-            else if (ctx.LPAREN() != null && ctx.RPAREN() != null) {} // Just a val in brackets - no-op.
+            if (ctx.atom() != null) {} // Just a val - no-op.
+            else if (ctx.LPAR() != null && ctx.RPAR() != null) {} // Just a val in brackets - no-op.
             else if (ctx.COMMA() != null) { // Collection.
                 termCode += ((_, stack: StackType, _) ⇒ {
                     require(stack.nonEmpty)
@@ -108,7 +108,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         if (lastVal.isInstanceOf[JList[Object]]) {
                             val x = lastVal.asInstanceOf[JList[Object]]
 
-                            x.add(mkVal(ctx.`val`().getText))
+                            x.add(mkVal(ctx.atom().getText))
 
                             x
                         }
@@ -118,7 +118,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     stack.push(NCDslTermRetVal(newVal, usedTok))
                 })
             }
-            else if (ctx.MINUS() != null || ctx.PLUS() != null || ctx.STAR() != null || ctx.FSLASH() != null || ctx.PERCENT() != null) {
+            else if (ctx.MINUS() != null || ctx.PLUS() != null || ctx.MULT() != null || ctx.DIV() != null || ctx.MOD() != null) {
                 termCode += ((_, stack: StackType, _) ⇒ {
                     require(stack.size >= 2)
 
@@ -197,7 +197,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         else
                             error("-")
                     }
-                    else if (ctx.STAR() != null) { // '*'.
+                    else if (ctx.MULT() != null) { // '*'.
                         if (isJLong(val1) && isJLong(val2))
                             pushLong(asJLong(val1).longValue() * asJLong(val2).longValue())
                         else if (isJLong(val1) && isJDouble(val2))
@@ -209,7 +209,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         else
                             error("*")
                     }
-                    else if (ctx.FSLASH() != null) { // '/'.
+                    else if (ctx.DIV() != null) { // '/'.
                         if (isJLong(val1) && isJLong(val2))
                             pushLong(asJLong(val1).longValue() / asJLong(val2).longValue())
                         else if (isJLong(val1) && isJDouble(val2))
@@ -221,7 +221,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         else
                             error("/")
                     }
-                    else if (ctx.PERCENT() != null) { // '%'.
+                    else if (ctx.MOD() != null) { // '%'.
                         if (isJLong(val1) && isJLong(val2))
                             pushLong(asJLong(val1).longValue() % asJLong(val2).longValue())
                         else
@@ -231,11 +231,6 @@ object NCIntentDslCompiler extends LazyLogging {
                         assert(false)
                 })
             }
-        }
-
-        override def exitTermPred(ctx: NCIntentDslParser.TermPredContext): Unit = {
-
-
         }
 
         override def exitFunCall(ctx: NCIntentDslParser.FunCallContext): Unit = {
@@ -407,7 +402,7 @@ object NCIntentDslCompiler extends LazyLogging {
             ordered = ctx.BOOL().getText.strip == "true"
         }
 
-        override def exitVal(ctx: NCIntentDslParser.ValContext): Unit = {
+        override def exitAtom(ctx: NCIntentDslParser.AtomContext): Unit = {
             termCode += ((_, stack, _) ⇒ stack.push(NCDslTermRetVal(mkVal(ctx.getText), usedTok = false)))
         }
 
