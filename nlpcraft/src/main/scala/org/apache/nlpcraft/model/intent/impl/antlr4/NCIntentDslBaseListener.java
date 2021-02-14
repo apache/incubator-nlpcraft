@@ -280,18 +280,6 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterListExpr(NCIntentDslParser.ListExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitListExpr(NCIntentDslParser.ListExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterPlusExpr(NCIntentDslParser.PlusExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -311,6 +299,18 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLogExpr(NCIntentDslParser.LogExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterParamList(NCIntentDslParser.ParamListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParamList(NCIntentDslParser.ParamListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

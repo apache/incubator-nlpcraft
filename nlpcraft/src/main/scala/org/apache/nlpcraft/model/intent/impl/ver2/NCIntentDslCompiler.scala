@@ -30,7 +30,6 @@ import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
-import java.util
 import java.util.{List ⇒ JList, Map ⇒ JMap}
 import scala.language.implicitConversions
 
@@ -68,9 +67,11 @@ object NCIntentDslCompiler extends LazyLogging {
         private def isJLong(v: AnyRef): Boolean = v.isInstanceOf[JLong]
         private def isJDouble(v: AnyRef): Boolean = v.isInstanceOf[JDouble]
         private def isString(v: AnyRef): Boolean = v.isInstanceOf[String]
+        private def isBoolean(v: AnyRef): Boolean = v.isInstanceOf[Boolean]
         private def asJLong(v: AnyRef): Long = v.asInstanceOf[JLong].longValue()
         private def asJDouble(v: AnyRef): Double = v.asInstanceOf[JDouble].doubleValue()
         private def asString(v: AnyRef): String = v.asInstanceOf[String]
+        private def asBoolean(v: AnyRef): Boolean = v.asInstanceOf[Boolean]
         private def asJList(v: AnyRef): JList[AnyRef] = v.asInstanceOf[JList[AnyRef]]
         private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[AnyRef]]
         private def asJMap(v: AnyRef): JMap[AnyRef, AnyRef] = v.asInstanceOf[JMap[AnyRef, AnyRef]]
@@ -85,15 +86,16 @@ object NCIntentDslCompiler extends LazyLogging {
         private def pushBoolean(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit =
             stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
 
-        private def errBinaryOp(op: String, val1: AnyRef, val2: AnyRef): Unit =
-            throw new IAE(s"Unexpected '$op' operation for values: $val1, $val2")
-        private def errUnknownFun(fun: String): Unit =
-            throw new IAE(s"Unknown built-in function: $fun")
-        private def errParamNum(fun: String): Unit =
-            throw new IAE(s"Invalid number of parameters for built-in function: $fun")
-        private def errParamType(fun: String): Unit =
-            throw new IAE(s"Invalid parameter type for built-in function: $fun")
-
+        private def errUnaryOp(op: String, v: AnyRef): IAE =
+            new IAE(s"Unexpected '$op' operation for value: $v")
+        private def errBinaryOp(op: String, v1: AnyRef, v2: AnyRef): IAE =
+            new IAE(s"Unexpected '$op' operation for values: $v1, $v2")
+        private def errUnknownFun(fun: String): IAE =
+            new IAE(s"Unknown built-in function: $fun")
+        private def errParamNum(fun: String): IAE =
+            new IAE(s"Invalid number of parameters for built-in function: $fun")
+        private def errParamType(fun: String): IAE =
+            new IAE(s"Invalid parameter type for built-in function: $fun")
 
         /**
          *
@@ -122,54 +124,48 @@ object NCIntentDslCompiler extends LazyLogging {
          * @return
          */
         private def pop2()(implicit stack: StackType): (AnyRef, AnyRef, Boolean) = {
-            // Stack pop in reverse order of push...
+            // Stack pops in reverse order of push...
             val NCDslTermRetVal(val2, f1) = stack.pop()
             val NCDslTermRetVal(val1, f2) = stack.pop()
 
             (val1, val2, f1 || f2)
         }
 
-        override def exitListExpr(ctx: NCIntentDslParser.ListExprContext): Unit = {
-            termCode += ((_, stack: StackType, _) ⇒ {
-                require(stack.size >= 2)
+        /**
+         *
+         * @param stack
+         * @return
+         */
+        private def pop1()(implicit stack: StackType): (AnyRef, Boolean) = {
+            val NCDslTermRetVal(v, f) = stack.pop()
 
-                implicit val s = stack
-
-                val (val1, val2, usedTok) = pop2()
-
-                if (isJList(val1) && isJList(val2)) {
-                    val lst1 = asJList(val1)
-                    val lst2 = asJList(val2)
-
-                    lst1.addAll(lst2)
-
-                    pushAny(lst1, usedTok)
-
-                }
-                else if (isJList(val1)) {
-                    val lst = asJList(val1)
-
-                    lst.add(val2)
-
-                    pushAny(lst, usedTok)
-                }
-                else if (isJList(val2)) {
-                    val lst = asJList(val2)
-
-                    lst.add(val1)
-
-                    pushAny(lst, usedTok)
-                }
-                else {
-                    pushAny(util.Arrays.asList(val1, val2), usedTok)
-                }
-            })
+            (v, f)
         }
-
 
         override def exitUnaryExpr(ctx: NCIntentDslParser.UnaryExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
+                require(stack.nonEmpty)
 
+                implicit val s = stack
+
+                val (v, usedTok) = pop1()
+
+                if (ctx.MINUS() != null) {
+                    if (isJDouble(v))
+                        pushDouble(-asJDouble(v), usedTok)
+                    else if (isJLong(v))
+                        pushLong(-asJLong(v), usedTok)
+                    else
+                        throw errUnaryOp("-", v)
+                }
+                else {
+                    assert(ctx.NOT() != null)
+
+                    if (isBoolean(v))
+                        pushBoolean(!asBoolean(v), usedTok)
+                    else
+                        throw errUnaryOp("!", v)
+                }
             })
         }
 
@@ -179,39 +175,39 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 implicit val s = stack
 
-                val (val1, val2, usedTok) = pop2()
+                val (v1, v2, usedTok) = pop2()
 
                 if (ctx.MULT() != null) {
-                    if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1) * asJLong(val2), usedTok)
-                    else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1) * asJDouble(val2), usedTok)
-                    else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1) * asJLong(val2), usedTok)
-                    else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1) * asJDouble(val2), usedTok)
+                    if (isJLong(v1) && isJLong(v2))
+                        pushLong(asJLong(v1) * asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushDouble(asJLong(v1) * asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushDouble(asJDouble(v1) * asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushDouble(asJDouble(v1) * asJDouble(v2), usedTok)
                     else
-                        errBinaryOp("*", val1, val2)
+                        throw errBinaryOp("*", v1, v2)
                 }
                 else if (ctx.MOD() != null) {
-                    if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1) % asJLong(val2), usedTok)
+                    if (isJLong(v1) && isJLong(v2))
+                        pushLong(asJLong(v1) % asJLong(v2), usedTok)
                     else
-                        errBinaryOp("%", val1, val2)
+                        throw errBinaryOp("%", v1, v2)
                 }
                 else {
                     assert(ctx.DIV() != null)
 
-                    if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1) / asJLong(val2), usedTok)
-                    else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1) / asJDouble(val2), usedTok)
-                    else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1) / asJLong(val2), usedTok)
-                    else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1) / asJDouble(val2), usedTok)
+                    if (isJLong(v1) && isJLong(v2))
+                        pushLong(asJLong(v1) / asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushDouble(asJLong(v1) / asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushDouble(asJDouble(v1) / asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushDouble(asJDouble(v1) / asJDouble(v2), usedTok)
                     else
-                        errBinaryOp("/", val1, val2)
+                        throw errBinaryOp("/", v1, v2)
                 }
             })
         }
@@ -222,35 +218,35 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 implicit val s = stack
 
-                val (val1, val2, usedTok) = pop2()
+                val (v1, v2, usedTok) = pop2()
 
                 if (ctx.PLUS != null) {
-                    if (isString(val1) && isString(val2))
-                        pushAny(asString(val1) + asString(val2), usedTok)
-                    else if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1) + asJLong(val2), usedTok)
-                    else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1) + asJDouble(val2), usedTok)
-                    else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1) + asJLong(val2), usedTok)
-                    else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1) + asJDouble(val2), usedTok)
+                    if (isString(v1) && isString(v2))
+                        pushAny(asString(v1) + asString(v2), usedTok)
+                    else if (isJLong(v1) && isJLong(v2))
+                        pushLong(asJLong(v1) + asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushDouble(asJLong(v1) + asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushDouble(asJDouble(v1) + asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushDouble(asJDouble(v1) + asJDouble(v2), usedTok)
                     else
-                        errBinaryOp("+", val1, val2)
+                        throw errBinaryOp("+", v1, v2)
                 }
                 else {
                     assert(ctx.MINUS != null)
 
-                    if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1) - asJLong(val2), usedTok)
-                    else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1) - asJDouble(val2), usedTok)
-                    else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1) - asJLong(val2), usedTok)
-                    else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1) - asJDouble(val2), usedTok)
+                    if (isJLong(v1) && isJLong(v2))
+                        pushLong(asJLong(v1) - asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushDouble(asJLong(v1) - asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushDouble(asJDouble(v1) - asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushDouble(asJDouble(v1) - asJDouble(v2), usedTok)
                     else
-                        errBinaryOp("-", val1, val2)
+                        throw errBinaryOp("-", v1, v2)
                 }
             })
         }
@@ -261,19 +257,57 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 implicit val s = stack
 
-                val (val1, val2, usedTok) = pop2()
+                val (v1, v2, usedTok) = pop2()
 
                 if (ctx.LT() != null) {
-
+                    if (isJLong(v1) && isJLong(v2))
+                        pushBoolean(asJLong(v1) < asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushBoolean(asJLong(v1) < asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushBoolean(asJDouble(v1) < asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushBoolean(asJDouble(v1) < asJDouble(v2), usedTok)
+                    else
+                        throw errBinaryOp("<", v1, v2)
                 }
                 else if (ctx.GT() != null) {
-
+                    if (isJLong(v1) && isJLong(v2))
+                        pushBoolean(asJLong(v1) > asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushBoolean(asJLong(v1) > asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushBoolean(asJDouble(v1) > asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushBoolean(asJDouble(v1) > asJDouble(v2), usedTok)
+                    else
+                        throw errBinaryOp(">", v1, v2)
                 }
                 else if (ctx.LTEQ() != null) {
-
+                    if (isJLong(v1) && isJLong(v2))
+                        pushBoolean(asJLong(v1) <= asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushBoolean(asJLong(v1) <= asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushBoolean(asJDouble(v1) <= asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushBoolean(asJDouble(v1) <= asJDouble(v2), usedTok)
+                    else
+                        throw errBinaryOp("<=", v1, v2)
                 }
                 else {
-                    assert(ctx.GT() != null)
+                    assert(ctx.GTEQ() != null)
+
+                    if (isJLong(v1) && isJLong(v2))
+                        pushBoolean(asJLong(v1) >= asJLong(v2), usedTok)
+                    else if (isJLong(v1) && isJDouble(v2))
+                        pushBoolean(asJLong(v1) >= asJDouble(v2), usedTok)
+                    else if (isJDouble(v1) && isJLong(v2))
+                        pushBoolean(asJDouble(v1) >= asJLong(v2), usedTok)
+                    else if (isJDouble(v1) && isJDouble(v2))
+                        pushBoolean(asJDouble(v1) >= asJDouble(v2), usedTok)
+                    else
+                        throw errBinaryOp(">=", v1, v2)
                 }
             })
         }
@@ -284,13 +318,17 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 implicit val s = stack
 
-                val (val1, val2, usedTok) = pop2()
+                val (v1, v2, usedTok) = pop2()
 
-                if (ctx.AND() != null) {
+                if (!isBoolean(v1) || !isBoolean(v2))
+                    throw errBinaryOp(if (ctx.AND() != null) "&&" else "||", v1, v2)
 
-                }
+                if (ctx.AND() != null)
+                    pushBoolean(asBoolean(v1) && asBoolean(v2), usedTok)
                 else {
                     assert(ctx.OR() != null)
+
+                    pushBoolean(asBoolean(v1) || asBoolean(v2), usedTok)
                 }
             })
         }
@@ -301,13 +339,24 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 implicit val s = stack
 
-                val (val1, val2, usedTok) = pop2()
+                val (v1, v2, usedTok) = pop2()
 
-                if (ctx.EQ() != null) {
+                def doEq(op: String): Boolean = {
+                    if (isJLong(v1) && isJLong(v2))
+                        asJLong(v1) == asJLong(v2)
+                    if (isJLong(v1) && isJLong(v2))
+                        asJLong(v1) == asJLong(v2)
+                    else
+                        throw errBinaryOp(op, v1, v2)
 
                 }
+
+                if (ctx.EQ() != null)
+                    pushBoolean(doEq("=="), usedTok)
                 else {
                     assert(ctx.NEQ() != null)
+
+                    pushBoolean(!doEq("!='"), usedTok)
                 }
             })
         }
@@ -320,9 +369,9 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 val NCDslTermRetVal(param, usedTok) = if (stack.nonEmpty) stack.pop else (null, false)
 
-                def check1String(): Unit = if (param == null) errParamNum(fun) else if (!isString(param)) errParamType(fun)
-                def check1Long(): Unit = if (param == null) errParamNum(fun) else if (!isJLong(param)) errParamType(fun)
-                def check1Double(): Unit = if (param == null) errParamNum(fun) else if (!isJDouble(param)) errParamType(fun)
+                def check1String(): Unit = if (param == null) throw errParamNum(fun) else if (!isString(param)) throw errParamType(fun)
+                def check1Long(): Unit = if (param == null) throw errParamNum(fun) else if (!isJLong(param)) throw errParamType(fun)
+                def check1Double(): Unit = if (param == null) throw errParamNum(fun) else if (!isJDouble(param)) throw errParamType(fun)
 
                 def doTrim(): String = { check1String(); asString(param).strip() }
                 def doUppercase(): String = { check1String(); asString(param).toUpperCase() }
@@ -406,6 +455,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "tan" ⇒
 
                     // Collection, statistical (incl. string) functions.
+                    case "list" ⇒
                     case "avg" ⇒
                     case "max" ⇒
                     case "min" ⇒

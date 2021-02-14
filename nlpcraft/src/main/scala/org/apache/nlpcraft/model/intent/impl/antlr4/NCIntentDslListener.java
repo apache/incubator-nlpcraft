@@ -242,18 +242,6 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitMultExpr(NCIntentDslParser.MultExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code listExpr}
-	 * labeled alternative in {@link NCIntentDslParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterListExpr(NCIntentDslParser.ListExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code listExpr}
-	 * labeled alternative in {@link NCIntentDslParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitListExpr(NCIntentDslParser.ListExprContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code plusExpr}
 	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
@@ -277,6 +265,16 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLogExpr(NCIntentDslParser.LogExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#paramList}.
+	 * @param ctx the parse tree
+	 */
+	void enterParamList(NCIntentDslParser.ParamListContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#paramList}.
+	 * @param ctx the parse tree
+	 */
+	void exitParamList(NCIntentDslParser.ParamListContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#atom}.
 	 * @param ctx the parse tree

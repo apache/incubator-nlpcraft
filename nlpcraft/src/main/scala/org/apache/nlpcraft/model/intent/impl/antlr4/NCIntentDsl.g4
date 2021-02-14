@@ -61,8 +61,11 @@ expr
     | expr op=(EQ | NEQ) expr # eqExpr
     | expr op=(AND | OR) expr # logExpr
     | atom # atomExpr
-    | ID LPAR expr? RPAR # callExpr
-    | expr COMMA expr # listExpr
+    | ID LPAR paramList? RPAR # callExpr
+    ;
+paramList
+    : expr
+    | paramList COMMA expr
     ;
 atom
     : NULL
