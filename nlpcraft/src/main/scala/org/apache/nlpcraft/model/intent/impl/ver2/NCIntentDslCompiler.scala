@@ -30,8 +30,8 @@ import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
-import java.util.{List ⇒ JList}
-
+import java.util
+import java.util.{List ⇒ JList, Map ⇒ JMap}
 import scala.language.implicitConversions
 
 object NCIntentDslCompiler extends LazyLogging {
@@ -73,6 +73,8 @@ object NCIntentDslCompiler extends LazyLogging {
         private def asString(v: AnyRef): String = v.asInstanceOf[String]
         private def asJList(v: AnyRef): JList[AnyRef] = v.asInstanceOf[JList[AnyRef]]
         private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[AnyRef]]
+        private def asJMap(v: AnyRef): JMap[AnyRef, AnyRef] = v.asInstanceOf[JMap[AnyRef, AnyRef]]
+        private def isJMap(v: AnyRef): Boolean = v.isInstanceOf[JMap[AnyRef, AnyRef]]
 
         private def pushAny(any: AnyRef, usedTok: Boolean)(implicit stack: StackType): Unit =
             stack.push(NCDslTermRetVal(any, usedTok))
@@ -129,17 +131,39 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitListExpr(ctx: NCIntentDslParser.ListExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
-                require(stack.nonEmpty)
+                require(stack.size >= 2)
 
-                val NCDslTermRetVal(lastVal, usedTok) = stack.pop()
+                implicit val s = stack
 
-                // Only use Java collections.
-                val newVal: AnyRef = lastVal match {
-                    case x: JList[Object] ⇒ x.add(mkVal(ctx.atom().getText)); x
-                    case _ ⇒ java.util.Collections.singletonList(lastVal)
+                val (val1, val2, usedTok) = pop2()
+
+                if (isJList(val1) && isJList(val2)) {
+                    val lst1 = asJList(val1)
+                    val lst2 = asJList(val2)
+
+                    lst1.addAll(lst2)
+
+                    pushAny(lst1, usedTok)
+
                 }
+                else if (isJList(val1)) {
+                    val lst = asJList(val1)
 
-                pushAny(newVal, usedTok)(stack)
+                    lst.add(val2)
+
+                    pushAny(lst, usedTok)
+                }
+                else if (isJList(val2)) {
+                    val lst = asJList(val2)
+
+                    lst.add(val1)
+
+                    pushAny(lst, usedTok)
+
+                }
+                else {
+                    pushAny(util.Arrays.asList(val1, val2), usedTok)
+                }
             })
         }
 
@@ -202,29 +226,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 val (val1, val2, usedTok) = pop2()
 
                 if (ctx.PLUS() != null) {
-                    if (isJList(val1) && isJList(val2)) {
-                        val lst1 = asJList(val1)
-                        val lst2 = asJList(val2)
-
-                        lst1.addAll(lst2)
-
-                        pushAny(lst1, usedTok)
-                    }
-                    else if (isJList(val1)) {
-                        val lst1 = asJList(val1)
-
-                        lst1.add(val2)
-
-                        pushAny(lst1, usedTok)
-                    }
-                    else if (isJList(val2)) {
-                        val lst2 = asJList(val2)
-
-                        lst2.add(val1)
-
-                        pushAny(lst2, usedTok)
-                    }
-                    else if (isString(val1) && isString(val2))
+                    if (isString(val1) && isString(val2))
                         pushAny(asString(val1) + asString(val2), usedTok)
                     else if (isJLong(val1) && isJLong(val2))
                         pushLong(asJLong(val1).longValue() + asJLong(val2).longValue(), usedTok)
@@ -240,22 +242,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 else {
                     assert(ctx.MINUS() != null)
 
-                    if (isJList(val1) && isJList(val2)) {
-                        val lst1 = asJList(val1)
-                        val lst2 = asJList(val2)
-
-                        lst1.removeAll(lst2)
-
-                        pushAny(lst1, usedTok)
-                    }
-                    else if (isJList(val1)) {
-                        val lst1 = asJList(val1)
-
-                        lst1.remove(val2)
-
-                        pushAny(lst1, usedTok)
-                    }
-                    else if (isJLong(val1) && isJLong(val2))
+                    if (isJLong(val1) && isJLong(val2))
                         pushLong(asJLong(val1).longValue() - asJLong(val2).longValue(), usedTok)
                     else if (isJLong(val1) && isJDouble(val2))
                         pushDouble(asJLong(val1).longValue() - asJDouble(val2).doubleValue(), usedTok)
@@ -271,19 +258,58 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
+                require(stack.size >= 2)
+
+                implicit val s = stack
+
+                val (val1, val2, usedTok) = pop2()
+
+                if (ctx.LT() != null) {
+
+                }
+                else if (ctx.GT() != null) {
+
+                }
+                else if (ctx.LTEQ() != null) {
+
+                }
+                else {
+                    assert(ctx.GT() != null)
+                }
             })
         }
 
         override def exitLogExpr(ctx: NCIntentDslParser.LogExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
+                require(stack.size >= 2)
 
+                implicit val s = stack
+
+                val (val1, val2, usedTok) = pop2()
+
+                if (ctx.AND() != null) {
+
+                }
+                else {
+                    assert(ctx.OR() != null)
+                }
             })
-
         }
 
         override def exitEqExpr(ctx: NCIntentDslParser.EqExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
+                require(stack.size >= 2)
 
+                implicit val s = stack
+
+                val (val1, val2, usedTok) = pop2()
+
+                if (ctx.EQ() != null) {
+
+                }
+                else {
+                    assert(ctx.NEQ() != null)
+                }
             })
         }
 
@@ -312,7 +338,12 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 fun match {
                     // Metadata access.
-                    case "meta" ⇒
+                    case "token_meta" ⇒
+                    case "model_meta" ⇒
+                    case "intent_meta" ⇒
+                    case "data_meta" ⇒
+                    case "user_meta" ⇒
+                    case "company_meta" ⇒
 
                     // Converts JSON to map.
                     case "json" ⇒
@@ -384,6 +415,9 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "get" ⇒
                     case "index" ⇒
                     case "contains" ⇒
+                    case "tail" ⇒
+                    case "add" ⇒
+                    case "remove" ⇒
                     case "first" ⇒
                     case "last" ⇒
                     case "keys" ⇒
@@ -418,13 +452,13 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitClsNer(ctx: NCIntentDslParser.ClsNerContext): Unit = {
             if (ctx.javaFqn() != null)
-                termClsName = ctx.javaFqn().getText.strip()
+                termClsName = ctx.javaFqn().getText
 
-            termMtdName = ctx.ID().getText.strip()
+            termMtdName = ctx.ID().getText
         }
 
         override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
-            termId = ctx.ID().getText.trim
+            termId = ctx.ID().getText
         }
 
         override def exitTermEq(ctx: NCIntentDslParser.TermEqContext): Unit = {
@@ -432,17 +466,17 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitFlowDecl(ctx: NCIntentDslParser.FlowDeclContext): Unit = {
-            val qRegex = ctx.qstring().getText.trim
+            val qRegex = ctx.qstring().getText
 
             if (qRegex != null && qRegex.length > 2) {
-                val regex = qRegex.substring(1, qRegex.length - 1).strip // Remove single quotes.
+                val regex = qRegex.substring(1, qRegex.length - 1).strip // Remove quotes.
 
                 flowRegex = if (regex.nonEmpty) Some(regex) else None
             }
         }
 
         override def exitIntentId(ctx: NCIntentDslParser.IntentIdContext): Unit = {
-            id = ctx.ID().getText.trim
+            id = ctx.ID().getText
         }
 
         override def exitMetaDecl(ctx: NCIntentDslParser.MetaDeclContext): Unit = {
@@ -450,38 +484,34 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
-            ordered = ctx.BOOL().getText.strip == "true"
+            ordered = ctx.BOOL().getText == "true"
         }
 
         override def exitAtom(ctx: NCIntentDslParser.AtomContext): Unit = {
-            termCode += ((_, stack, _) ⇒ pushAny(mkVal(ctx.getText), false)(stack))
-        }
+            val s = ctx.getText
 
-        /**
-         *
-         * @param s
-         * @return
-         */
-        private def mkVal(s: String): Object = {
-            if (s == "null") null // Try 'null'.
-            else if (s == "true") Boolean.box(true) // Try 'boolean'.
-            else if (s == "false") Boolean.box(false) // Try 'boolean'.
-            // Only numeric or string values below...
-            else {
-                // Strip '_' from numeric values.
-                val num = s.replaceAll("_", "")
+            val atom =
+                if (s == "null") null // Try 'null'.
+                else if (s == "true") Boolean.box(true) // Try 'boolean'.
+                else if (s == "false") Boolean.box(false) // Try 'boolean'.
+                // Only numeric or string values below...
+                else {
+                    // Strip '_' from numeric values.
+                    val num = s.replaceAll("_", "")
 
-                try
-                    Long.box(JLong.parseLong(num)) // Try 'long'.
-                catch {
-                    case _: NumberFormatException ⇒
-                        try
-                            Double.box(JDouble.parseDouble(num)) // Try 'double'.
-                        catch {
-                            case _: NumberFormatException ⇒ s // String by default (incl. quotes).
-                        }
+                    try
+                        Long.box(JLong.parseLong(num)) // Try 'long'.
+                    catch {
+                        case _: NumberFormatException ⇒
+                            try
+                                Double.box(JDouble.parseDouble(num)) // Try 'double'.
+                            catch {
+                                case _: NumberFormatException ⇒ s // String by default (incl. quotes).
+                            }
+                    }
                 }
-            }
+
+            termCode += ((_, stack, _) ⇒ pushAny(atom, false)(stack))
         }
 
         /**
