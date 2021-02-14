@@ -68,8 +68,8 @@ object NCIntentDslCompiler extends LazyLogging {
         private def isJLong(v: AnyRef): Boolean = v.isInstanceOf[JLong]
         private def isJDouble(v: AnyRef): Boolean = v.isInstanceOf[JDouble]
         private def isString(v: AnyRef): Boolean = v.isInstanceOf[String]
-        private def asJLong(v: AnyRef): JLong = v.asInstanceOf[JLong]
-        private def asJDouble(v: AnyRef): JDouble = v.asInstanceOf[JDouble]
+        private def asJLong(v: AnyRef): Long = v.asInstanceOf[JLong].longValue()
+        private def asJDouble(v: AnyRef): Double = v.asInstanceOf[JDouble].doubleValue()
         private def asString(v: AnyRef): String = v.asInstanceOf[String]
         private def asJList(v: AnyRef): JList[AnyRef] = v.asInstanceOf[JList[AnyRef]]
         private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[AnyRef]]
@@ -159,7 +159,6 @@ object NCIntentDslCompiler extends LazyLogging {
                     lst.add(val1)
 
                     pushAny(lst, usedTok)
-
                 }
                 else {
                     pushAny(util.Arrays.asList(val1, val2), usedTok)
@@ -184,19 +183,19 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 if (ctx.MULT() != null) {
                     if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1).longValue() * asJLong(val2).longValue(), usedTok)
+                        pushLong(asJLong(val1) * asJLong(val2), usedTok)
                     else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1).longValue() * asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJLong(val1) * asJDouble(val2), usedTok)
                     else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1).doubleValue() * asJLong(val2).longValue(), usedTok)
+                        pushDouble(asJDouble(val1) * asJLong(val2), usedTok)
                     else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1).doubleValue() * asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJDouble(val1) * asJDouble(val2), usedTok)
                     else
                         errBinaryOp("*", val1, val2)
                 }
                 else if (ctx.MOD() != null) {
                     if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1).longValue() % asJLong(val2).longValue(), usedTok)
+                        pushLong(asJLong(val1) % asJLong(val2), usedTok)
                     else
                         errBinaryOp("%", val1, val2)
                 }
@@ -204,13 +203,13 @@ object NCIntentDslCompiler extends LazyLogging {
                     assert(ctx.DIV() != null)
 
                     if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1).longValue() / asJLong(val2).longValue(), usedTok)
+                        pushLong(asJLong(val1) / asJLong(val2), usedTok)
                     else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1).longValue() / asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJLong(val1) / asJDouble(val2), usedTok)
                     else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1).doubleValue() / asJLong(val2).longValue(), usedTok)
+                        pushDouble(asJDouble(val1) / asJLong(val2), usedTok)
                     else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1).doubleValue() / asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJDouble(val1) / asJDouble(val2), usedTok)
                     else
                         errBinaryOp("/", val1, val2)
                 }
@@ -225,31 +224,31 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 val (val1, val2, usedTok) = pop2()
 
-                if (ctx.PLUS() != null) {
+                if (ctx.PLUS != null) {
                     if (isString(val1) && isString(val2))
                         pushAny(asString(val1) + asString(val2), usedTok)
                     else if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1).longValue() + asJLong(val2).longValue(), usedTok)
+                        pushLong(asJLong(val1) + asJLong(val2), usedTok)
                     else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1).longValue() + asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJLong(val1) + asJDouble(val2), usedTok)
                     else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1).doubleValue() + asJLong(val2).longValue(), usedTok)
+                        pushDouble(asJDouble(val1) + asJLong(val2), usedTok)
                     else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1).doubleValue() + asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJDouble(val1) + asJDouble(val2), usedTok)
                     else
                         errBinaryOp("+", val1, val2)
                 }
                 else {
-                    assert(ctx.MINUS() != null)
+                    assert(ctx.MINUS != null)
 
                     if (isJLong(val1) && isJLong(val2))
-                        pushLong(asJLong(val1).longValue() - asJLong(val2).longValue(), usedTok)
+                        pushLong(asJLong(val1) - asJLong(val2), usedTok)
                     else if (isJLong(val1) && isJDouble(val2))
-                        pushDouble(asJLong(val1).longValue() - asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJLong(val1) - asJDouble(val2), usedTok)
                     else if (isJDouble(val1) && isJLong(val2))
-                        pushDouble(asJDouble(val1).doubleValue() - asJLong(val2).longValue(), usedTok)
+                        pushDouble(asJDouble(val1) - asJLong(val2), usedTok)
                     else if (isJDouble(val1) && isJDouble(val2))
-                        pushDouble(asJDouble(val1).doubleValue() - asJDouble(val2).doubleValue(), usedTok)
+                        pushDouble(asJDouble(val1) - asJDouble(val2), usedTok)
                     else
                         errBinaryOp("-", val1, val2)
                 }
