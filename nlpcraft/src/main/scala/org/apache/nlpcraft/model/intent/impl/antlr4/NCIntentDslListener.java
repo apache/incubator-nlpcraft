@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.impl.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -158,35 +158,125 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitTermId(NCIntentDslParser.TermIdContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#expr}.
+	 * Enter a parse tree produced by the {@code parExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpr(NCIntentDslParser.ExprContext ctx);
+	void enterParExpr(NCIntentDslParser.ParExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#expr}.
+	 * Exit a parse tree produced by the {@code parExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpr(NCIntentDslParser.ExprContext ctx);
+	void exitParExpr(NCIntentDslParser.ParExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#unary}.
+	 * Enter a parse tree produced by the {@code eqExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterUnary(NCIntentDslParser.UnaryContext ctx);
+	void enterEqExpr(NCIntentDslParser.EqExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#unary}.
+	 * Exit a parse tree produced by the {@code eqExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitUnary(NCIntentDslParser.UnaryContext ctx);
+	void exitEqExpr(NCIntentDslParser.EqExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#call}.
+	 * Enter a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterCall(NCIntentDslParser.CallContext ctx);
+	void enterUnaryExpr(NCIntentDslParser.UnaryExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#call}.
+	 * Exit a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitCall(NCIntentDslParser.CallContext ctx);
+	void exitUnaryExpr(NCIntentDslParser.UnaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code compExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterCompExpr(NCIntentDslParser.CompExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code compExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitCompExpr(NCIntentDslParser.CompExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAtomExpr(NCIntentDslParser.AtomExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAtomExpr(NCIntentDslParser.AtomExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code callExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterCallExpr(NCIntentDslParser.CallExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code callExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitCallExpr(NCIntentDslParser.CallExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code multExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultExpr(NCIntentDslParser.MultExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code multExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultExpr(NCIntentDslParser.MultExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code listExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterListExpr(NCIntentDslParser.ListExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code listExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitListExpr(NCIntentDslParser.ListExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code plusExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterPlusExpr(NCIntentDslParser.PlusExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code plusExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitPlusExpr(NCIntentDslParser.PlusExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code logExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterLogExpr(NCIntentDslParser.LogExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code logExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitLogExpr(NCIntentDslParser.LogExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#atom}.
 	 * @param ctx the parse tree

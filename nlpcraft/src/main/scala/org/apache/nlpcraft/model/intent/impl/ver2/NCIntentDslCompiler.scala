@@ -30,7 +30,9 @@ import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
-import java.util.{List ⇒ JList, Map ⇒ JMap}
+import java.util.{List ⇒ JList}
+
+import scala.language.implicitConversions
 
 object NCIntentDslCompiler extends LazyLogging {
     // Compiler cache.
@@ -72,6 +74,25 @@ object NCIntentDslCompiler extends LazyLogging {
         private def asJList(v: AnyRef): JList[AnyRef] = v.asInstanceOf[JList[AnyRef]]
         private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[AnyRef]]
 
+        private def pushAny(any: AnyRef, usedTok: Boolean)(implicit stack: StackType): Unit =
+            stack.push(NCDslTermRetVal(any, usedTok))
+        private def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit =
+            stack.push(NCDslTermRetVal(Long.box(any), usedTok))
+        private def pushDouble(any: Double, usedTok: Boolean)(implicit stack: StackType): Unit =
+            stack.push(NCDslTermRetVal(Double.box(any), usedTok))
+        private def pushBoolean(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit =
+            stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
+
+        private def errBinaryOp(op: String, val1: AnyRef, val2: AnyRef): Unit =
+            throw new IAE(s"Unexpected '$op' operation for values: $val1, $val2")
+        private def errUnknownFun(fun: String): Unit =
+            throw new IAE(s"Unknown built-in function: $fun")
+        private def errParamNum(fun: String): Unit =
+            throw new IAE(s"Invalid number of parameters for built-in function: $fun")
+        private def errParamType(fun: String): Unit =
+            throw new IAE(s"Invalid parameter type for built-in function: $fun")
+
+
         /**
          *
          * @param min
@@ -93,164 +114,190 @@ object NCIntentDslCompiler extends LazyLogging {
                 assert(false)
         }
 
-        //noinspection TypeCheckCanBeMatch
-        override def exitExpr(ctx: NCIntentDslParser.ExprContext): Unit = {
-            if (ctx.atom() != null) {} // Just a val - no-op.
-            else if (ctx.LPAR() != null && ctx.RPAR() != null) {} // Just a val in brackets - no-op.
-            else if (ctx.COMMA() != null) { // Collection.
-                termCode += ((_, stack: StackType, _) ⇒ {
-                    require(stack.nonEmpty)
+        /**
+         *
+         * @param stack
+         * @return
+         */
+        private def pop2()(implicit stack: StackType): (AnyRef, AnyRef, Boolean) = {
+            // Stack pop in reverse order of push...
+            val NCDslTermRetVal(val2, f1) = stack.pop()
+            val NCDslTermRetVal(val1, f2) = stack.pop()
 
-                    val NCDslTermRetVal(lastVal, usedTok) = stack.pop()
-
-                    // Only use Java collections.
-                    val newVal: AnyRef =
-                        if (lastVal.isInstanceOf[JList[Object]]) {
-                            val x = lastVal.asInstanceOf[JList[Object]]
-
-                            x.add(mkVal(ctx.atom().getText))
-
-                            x
-                        }
-                        else
-                            java.util.Collections.singletonList(lastVal)
-
-                    stack.push(NCDslTermRetVal(newVal, usedTok))
-                })
-            }
-            else if (ctx.MINUS() != null || ctx.PLUS() != null || ctx.MULT() != null || ctx.DIV() != null || ctx.MOD() != null) {
-                termCode += ((_, stack: StackType, _) ⇒ {
-                    require(stack.size >= 2)
-
-                    // Stack pop in reverse order of push...
-                    val NCDslTermRetVal(val2, f1) = stack.pop()
-                    val NCDslTermRetVal(val1, f2) = stack.pop()
-
-                    val usedTok = f1 || f2
-                    
-                    def push(any: AnyRef): Unit = stack.push(NCDslTermRetVal(any, usedTok))
-                    def pushLong(any: Long): Unit = stack.push(NCDslTermRetVal(Long.box(any), usedTok))
-                    def pushDouble(any: Double): Unit = stack.push(NCDslTermRetVal(Double.box(any), usedTok))
-
-                    def error(op: String): Unit = throw new IAE(s"Unexpected '$op' operation for values: $val1, $val2")
-                    
-                    if (ctx.PLUS() != null) { // '+'.
-                        if (isJList(val1) && isJList(val2)) {
-                            val lst1 = asJList(val1)
-                            val lst2 = asJList(val2)
-    
-                            lst1.addAll(lst2)
-                            
-                            push(lst1)
-                        }
-                        else if (isJList(val1)) {
-                            val lst1 = asJList(val1)
-                            
-                            lst1.add(val2)
-                            
-                            push(lst1)
-                        }
-                        else if (isJList(val2)) {
-                            val lst2 = asJList(val2)
-    
-                            lst2.add(val1)
-    
-                            push(lst2)
-                        }
-                        else if (isString(val1) && isString(val2))
-                            push(asString(val1) + asString(val2))
-                        else if (isJLong(val1) && isJLong(val2))
-                            pushLong(asJLong(val1).longValue() + asJLong(val2).longValue())
-                        else if (isJLong(val1) && isJDouble(val2))
-                            pushDouble(asJLong(val1).longValue() + asJDouble(val2).doubleValue())
-                        else if (isJDouble(val1) && isJLong(val2))
-                            pushDouble(asJDouble(val1).doubleValue() + asJLong(val2).longValue())
-                        else if (isJDouble(val1) && isJDouble(val2))
-                            pushDouble(asJDouble(val1).doubleValue() + asJDouble(val2).doubleValue())
-                        else
-                            error("+")
-                    }
-                    else if (ctx.MINUS() != null) { // '-'.
-                        if (isJList(val1) && isJList(val2)) {
-                            val lst1 = asJList(val1)
-                            val lst2 = asJList(val2)
-                            
-                            lst1.removeAll(lst2)
-
-                            push(lst1)
-                        }
-                        else if (isJList(val1)) {
-                            val lst1 = asJList(val1)
-                            
-                            lst1.remove(val2)
-                            
-                            push(lst1)
-                        }
-                        else if (isJLong(val1) && isJLong(val2))
-                            pushLong(asJLong(val1).longValue() - asJLong(val2).longValue())
-                        else if (isJLong(val1) && isJDouble(val2))
-                            pushDouble(asJLong(val1).longValue() - asJDouble(val2).doubleValue())
-                        else if (isJDouble(val1) && isJLong(val2))
-                            pushDouble(asJDouble(val1).doubleValue() - asJLong(val2).longValue())
-                        else if (isJDouble(val1) && isJDouble(val2))
-                            pushDouble(asJDouble(val1).doubleValue() - asJDouble(val2).doubleValue())
-                        else
-                            error("-")
-                    }
-                    else if (ctx.MULT() != null) { // '*'.
-                        if (isJLong(val1) && isJLong(val2))
-                            pushLong(asJLong(val1).longValue() * asJLong(val2).longValue())
-                        else if (isJLong(val1) && isJDouble(val2))
-                            pushDouble(asJLong(val1).longValue() * asJDouble(val2).doubleValue())
-                        else if (isJDouble(val1) && isJLong(val2))
-                            pushDouble(asJDouble(val1).doubleValue() * asJLong(val2).longValue())
-                        else if (isJDouble(val1) && isJDouble(val2))
-                            pushDouble(asJDouble(val1).doubleValue() * asJDouble(val2).doubleValue())
-                        else
-                            error("*")
-                    }
-                    else if (ctx.DIV() != null) { // '/'.
-                        if (isJLong(val1) && isJLong(val2))
-                            pushLong(asJLong(val1).longValue() / asJLong(val2).longValue())
-                        else if (isJLong(val1) && isJDouble(val2))
-                            pushDouble(asJLong(val1).longValue() / asJDouble(val2).doubleValue())
-                        else if (isJDouble(val1) && isJLong(val2))
-                            pushDouble(asJDouble(val1).doubleValue() / asJLong(val2).longValue())
-                        else if (isJDouble(val1) && isJDouble(val2))
-                            pushDouble(asJDouble(val1).doubleValue() / asJDouble(val2).doubleValue())
-                        else
-                            error("/")
-                    }
-                    else if (ctx.MOD() != null) { // '%'.
-                        if (isJLong(val1) && isJLong(val2))
-                            pushLong(asJLong(val1).longValue() % asJLong(val2).longValue())
-                        else
-                            error("%")
-                    }
-                    else
-                        assert(false)
-                })
-            }
+            (val1, val2, f1 || f2)
         }
 
-        override def exitCall(ctx: NCIntentDslParser.CallContext): Unit = {
+        override def exitListExpr(ctx: NCIntentDslParser.ListExprContext): Unit = {
+            termCode += ((_, stack: StackType, _) ⇒ {
+                require(stack.nonEmpty)
+
+                val NCDslTermRetVal(lastVal, usedTok) = stack.pop()
+
+                // Only use Java collections.
+                val newVal: AnyRef = lastVal match {
+                    case x: JList[Object] ⇒ x.add(mkVal(ctx.atom().getText)); x
+                    case _ ⇒ java.util.Collections.singletonList(lastVal)
+                }
+
+                pushAny(newVal, usedTok)(stack)
+            })
+        }
+
+
+        override def exitUnaryExpr(ctx: NCIntentDslParser.UnaryExprContext): Unit = {
+            termCode += ((_, stack: StackType, _) ⇒ {
+
+            })
+        }
+
+        override def exitMultExpr(ctx: NCIntentDslParser.MultExprContext): Unit = {
+            termCode += ((_, stack: StackType, _) ⇒ {
+                require(stack.size >= 2)
+
+                implicit val s = stack
+
+                val (val1, val2, usedTok) = pop2()
+
+                if (ctx.MULT() != null) {
+                    if (isJLong(val1) && isJLong(val2))
+                        pushLong(asJLong(val1).longValue() * asJLong(val2).longValue(), usedTok)
+                    else if (isJLong(val1) && isJDouble(val2))
+                        pushDouble(asJLong(val1).longValue() * asJDouble(val2).doubleValue(), usedTok)
+                    else if (isJDouble(val1) && isJLong(val2))
+                        pushDouble(asJDouble(val1).doubleValue() * asJLong(val2).longValue(), usedTok)
+                    else if (isJDouble(val1) && isJDouble(val2))
+                        pushDouble(asJDouble(val1).doubleValue() * asJDouble(val2).doubleValue(), usedTok)
+                    else
+                        errBinaryOp("*", val1, val2)
+                }
+                else if (ctx.MOD() != null) {
+                    if (isJLong(val1) && isJLong(val2))
+                        pushLong(asJLong(val1).longValue() % asJLong(val2).longValue(), usedTok)
+                    else
+                        errBinaryOp("%", val1, val2)
+                }
+                else {
+                    assert(ctx.DIV() != null)
+
+                    if (isJLong(val1) && isJLong(val2))
+                        pushLong(asJLong(val1).longValue() / asJLong(val2).longValue(), usedTok)
+                    else if (isJLong(val1) && isJDouble(val2))
+                        pushDouble(asJLong(val1).longValue() / asJDouble(val2).doubleValue(), usedTok)
+                    else if (isJDouble(val1) && isJLong(val2))
+                        pushDouble(asJDouble(val1).doubleValue() / asJLong(val2).longValue(), usedTok)
+                    else if (isJDouble(val1) && isJDouble(val2))
+                        pushDouble(asJDouble(val1).doubleValue() / asJDouble(val2).doubleValue(), usedTok)
+                    else
+                        errBinaryOp("/", val1, val2)
+                }
+            })
+        }
+
+        override def exitPlusExpr(ctx: NCIntentDslParser.PlusExprContext): Unit = {
+            termCode += ((_, stack: StackType, _) ⇒ {
+                require(stack.size >= 2)
+
+                implicit val s = stack
+
+                val (val1, val2, usedTok) = pop2()
+
+                if (ctx.PLUS() != null) {
+                    if (isJList(val1) && isJList(val2)) {
+                        val lst1 = asJList(val1)
+                        val lst2 = asJList(val2)
+
+                        lst1.addAll(lst2)
+
+                        pushAny(lst1, usedTok)
+                    }
+                    else if (isJList(val1)) {
+                        val lst1 = asJList(val1)
+
+                        lst1.add(val2)
+
+                        pushAny(lst1, usedTok)
+                    }
+                    else if (isJList(val2)) {
+                        val lst2 = asJList(val2)
+
+                        lst2.add(val1)
+
+                        pushAny(lst2, usedTok)
+                    }
+                    else if (isString(val1) && isString(val2))
+                        pushAny(asString(val1) + asString(val2), usedTok)
+                    else if (isJLong(val1) && isJLong(val2))
+                        pushLong(asJLong(val1).longValue() + asJLong(val2).longValue(), usedTok)
+                    else if (isJLong(val1) && isJDouble(val2))
+                        pushDouble(asJLong(val1).longValue() + asJDouble(val2).doubleValue(), usedTok)
+                    else if (isJDouble(val1) && isJLong(val2))
+                        pushDouble(asJDouble(val1).doubleValue() + asJLong(val2).longValue(), usedTok)
+                    else if (isJDouble(val1) && isJDouble(val2))
+                        pushDouble(asJDouble(val1).doubleValue() + asJDouble(val2).doubleValue(), usedTok)
+                    else
+                        errBinaryOp("+", val1, val2)
+                }
+                else {
+                    assert(ctx.MINUS() != null)
+
+                    if (isJList(val1) && isJList(val2)) {
+                        val lst1 = asJList(val1)
+                        val lst2 = asJList(val2)
+
+                        lst1.removeAll(lst2)
+
+                        pushAny(lst1, usedTok)
+                    }
+                    else if (isJList(val1)) {
+                        val lst1 = asJList(val1)
+
+                        lst1.remove(val2)
+
+                        pushAny(lst1, usedTok)
+                    }
+                    else if (isJLong(val1) && isJLong(val2))
+                        pushLong(asJLong(val1).longValue() - asJLong(val2).longValue(), usedTok)
+                    else if (isJLong(val1) && isJDouble(val2))
+                        pushDouble(asJLong(val1).longValue() - asJDouble(val2).doubleValue(), usedTok)
+                    else if (isJDouble(val1) && isJLong(val2))
+                        pushDouble(asJDouble(val1).doubleValue() - asJLong(val2).longValue(), usedTok)
+                    else if (isJDouble(val1) && isJDouble(val2))
+                        pushDouble(asJDouble(val1).doubleValue() - asJDouble(val2).doubleValue(), usedTok)
+                    else
+                        errBinaryOp("-", val1, val2)
+                }
+            })
+        }
+
+        override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit = {
+            termCode += ((_, stack: StackType, _) ⇒ {
+            })
+        }
+
+        override def exitLogExpr(ctx: NCIntentDslParser.LogExprContext): Unit = {
+            termCode += ((_, stack: StackType, _) ⇒ {
+
+            })
+
+        }
+
+        override def exitEqExpr(ctx: NCIntentDslParser.EqExprContext): Unit = {
+            termCode += ((_, stack: StackType, _) ⇒ {
+
+            })
+        }
+
+        override def exitCallExpr(ctx: NCIntentDslParser.CallExprContext): Unit = {
             val fun = ctx.ID().getText
 
             termCode += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
+                implicit val s = stack
+
                 val NCDslTermRetVal(param, usedTok) = if (stack.nonEmpty) stack.pop else (null, false)
 
-                def push(any: AnyRef, f: Boolean): Unit = stack.push(NCDslTermRetVal(any, f))
-                def pushLong(any: Long, f: Boolean): Unit = stack.push(NCDslTermRetVal(Long.box(any), f))
-                def pushDouble(any: Double, f: Boolean): Unit = stack.push(NCDslTermRetVal(Double.box(any), f))
-                def pushBoolean(any: Boolean, f: Boolean): Unit = stack.push(NCDslTermRetVal(Boolean.box(any), f))
-
-                def unknownFun(): Unit = throw new IAE(s"Unknown built-in function: $fun")
-                def errParamNum(): Unit = throw new IAE(s"Invalid number of parameters for built-in function: $fun")
-                def errParamType(): Unit = throw new IAE(s"Invalid parameter type for built-in function: $fun")
-
-                def check1String(): Unit = if (param == null) errParamNum() else if (!isString(param)) errParamType()
-                def check1Long(): Unit = if (param == null) errParamNum() else if (!isJLong(param)) errParamType()
-                def check1Double(): Unit = if (param == null) errParamNum() else if (!isJDouble(param)) errParamType()
+                def check1String(): Unit = if (param == null) errParamNum(fun) else if (!isString(param)) errParamType(fun)
+                def check1Long(): Unit = if (param == null) errParamNum(fun) else if (!isJLong(param)) errParamType(fun)
+                def check1Double(): Unit = if (param == null) errParamNum(fun) else if (!isJDouble(param)) errParamType(fun)
 
                 def doTrim(): String = { check1String(); asString(param).strip() }
                 def doUppercase(): String = { check1String(); asString(param).toUpperCase() }
@@ -274,20 +321,20 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "if" ⇒
 
                     // Token functions.
-                    case "id" ⇒ push(tok.getId, true)
-                    case "ancestors" ⇒ push(tok.getAncestors, true)
-                    case "parent" ⇒ push(tok.getParentId, true)
-                    case "groups" ⇒ push(tok.getGroups, true)
-                    case "value" ⇒ push(tok.getValue, true)
-                    case "aliases" ⇒ push(tok.getAliases, true)
+                    case "id" ⇒ pushAny(tok.getId, true)
+                    case "ancestors" ⇒ pushAny(tok.getAncestors, true)
+                    case "parent" ⇒ pushAny(tok.getParentId, true)
+                    case "groups" ⇒ pushAny(tok.getGroups, true)
+                    case "value" ⇒ pushAny(tok.getValue, true)
+                    case "aliases" ⇒ pushAny(tok.getAliases, true)
                     case "start_idx" ⇒ pushLong(tok.getStartCharIndex, true)
                     case "end_idx" ⇒ pushLong(tok.getEndCharIndex, true)
 
                     // String functions.
-                    case "trim" ⇒ push(doTrim(), usedTok)
-                    case "strip" ⇒ push(doTrim(), usedTok)
-                    case "uppercase" ⇒ push(doUppercase(), usedTok)
-                    case "lowercase" ⇒ push(doLowercase(), usedTok)
+                    case "trim" ⇒ pushAny(doTrim(), usedTok)
+                    case "strip" ⇒ pushAny(doTrim(), usedTok)
+                    case "uppercase" ⇒ pushAny(doUppercase(), usedTok)
+                    case "lowercase" ⇒ pushAny(doLowercase(), usedTok)
                     case "is_alpha" ⇒ pushBoolean(doIsAlpha(), usedTok)
                     case "is_alphanum" ⇒ pushBoolean(doIsAlphaNum(), usedTok)
                     case "is_whitespace" ⇒ pushBoolean(doIsWhitespace(), usedTok)
@@ -364,7 +411,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "msec" ⇒
                     case "now" ⇒
 
-                    case _ ⇒ unknownFun()
+                    case _ ⇒ errUnknownFun(fun)
                 }
             })
         }
@@ -407,7 +454,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitAtom(ctx: NCIntentDslParser.AtomContext): Unit = {
-            termCode += ((_, stack, _) ⇒ stack.push(NCDslTermRetVal(mkVal(ctx.getText), usedTok = false)))
+            termCode += ((_, stack, _) ⇒ pushAny(mkVal(ctx.getText), false)(stack))
         }
 
         /**

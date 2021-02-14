@@ -52,15 +52,18 @@ javaFqn
     ;
 termId: LPAR ID RPAR;
 expr
-    : unary
-    | expr (AND | OR | EQ | NEQ | MULT | DIV | PLUS | MINUS | MOD | LTEQ | GTEQ | LT | GT) expr
-    | atom
-    | expr COMMA atom
-    | LPAR expr RPAR
-    | call
+    // NOTE: order of productions defines precedence.
+    : op=(MINUS | NOT) expr # unaryExpr
+    | LPAR expr RPAR # parExpr
+    | expr op=(MULT | DIV | MOD) expr # multExpr
+    | expr op=(PLUS | MINUS) expr # plusExpr
+    | expr op=(LTEQ | GTEQ | LT | GT) expr # compExpr
+    | expr op=(EQ | NEQ) expr # eqExpr
+    | expr op=(AND | OR) expr # logExpr
+    | atom # atomExpr
+    | expr COMMA atom # listExpr
+    | ID LPAR expr? RPAR # callExpr
     ;
-unary: (MINUS | NOT) expr;
-call: ID LPAR expr? RPAR; // Buit-in function call.
 atom
     : NULL
     | INT REAL? EXP?
@@ -83,6 +86,8 @@ minMaxShortcut
 minMaxRange: LBR INT COMMA INT RBR;
 SQSTRING: SQUOTE (~'\'')* SQUOTE;
 DQSTRING: DQUOTE (~'"')* DQUOTE;
+BOOL: 'true' | 'false';
+NULL: 'null';
 EQ: '==';
 NEQ: '!=';
 GTEQ: '>=';
@@ -115,8 +120,6 @@ MULT: '*';
 DIV: '/';
 MOD: '%';
 DOLLAR: '$';
-BOOL: 'true' | 'false';
-NULL: 'null';
 INT: '0' | [1-9] [_0-9]*;
 REAL: DOT [0-9]+;
 EXP: [Ee] [+\-]? INT;
