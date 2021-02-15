@@ -30,7 +30,6 @@ import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
-import java.util.{List ⇒ JList, Map ⇒ JMap}
 import scala.language.implicitConversions
 
 object NCIntentDslCompiler extends LazyLogging {
@@ -72,10 +71,6 @@ object NCIntentDslCompiler extends LazyLogging {
         private def asJDouble(v: AnyRef): Double = v.asInstanceOf[JDouble].doubleValue()
         private def asString(v: AnyRef): String = v.asInstanceOf[String]
         private def asBoolean(v: AnyRef): Boolean = v.asInstanceOf[Boolean]
-        private def asJList(v: AnyRef): JList[AnyRef] = v.asInstanceOf[JList[AnyRef]]
-        private def isJList(v: AnyRef): Boolean = v.isInstanceOf[JList[AnyRef]]
-        private def asJMap(v: AnyRef): JMap[AnyRef, AnyRef] = v.asInstanceOf[JMap[AnyRef, AnyRef]]
-        private def isJMap(v: AnyRef): Boolean = v.isInstanceOf[JMap[AnyRef, AnyRef]]
 
         private def pushAny(any: AnyRef, usedTok: Boolean)(implicit stack: StackType): Unit =
             stack.push(NCDslTermRetVal(any, usedTok))
@@ -87,15 +82,15 @@ object NCIntentDslCompiler extends LazyLogging {
             stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
 
         private def errUnaryOp(op: String, v: AnyRef): IAE =
-            new IAE(s"Unexpected '$op' operation for value: $v")
+            new IAE(s"Unexpected '$op' DSL operation for value: $v")
         private def errBinaryOp(op: String, v1: AnyRef, v2: AnyRef): IAE =
-            new IAE(s"Unexpected '$op' operation for values: $v1, $v2")
+            new IAE(s"Unexpected '$op' DSL operation for values: $v1, $v2")
         private def errUnknownFun(fun: String): IAE =
-            new IAE(s"Unknown built-in function: $fun")
+            new IAE(s"Unknown DSL function: $fun")
         private def errParamNum(fun: String): IAE =
-            new IAE(s"Invalid number of parameters for built-in function: $fun")
-        private def errParamType(fun: String): IAE =
-            new IAE(s"Invalid parameter type for built-in function: $fun")
+            new IAE(s"Invalid number of parameters for DSL function: $fun")
+        private def errParamType(fun: String, param: AnyRef): IAE =
+            new IAE(s"Invalid type of parameter for DSL function '$fun': $param")
 
         /**
          *
@@ -367,15 +362,28 @@ object NCIntentDslCompiler extends LazyLogging {
             termCode += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
                 implicit val s = stack
 
-                val NCDslTermRetVal(param, usedTok) = if (stack.nonEmpty) stack.pop else (null, false)
+                def get1Str(): (String, Boolean) = {
+                    if (stack.isEmpty)
+                        throw errParamNum(fun)
 
-                def check1String(): Unit = if (param == null) throw errParamNum(fun) else if (!isString(param)) throw errParamType(fun)
-                def check1Long(): Unit = if (param == null) throw errParamNum(fun) else if (!isJLong(param)) throw errParamType(fun)
-                def check1Double(): Unit = if (param == null) throw errParamNum(fun) else if (!isJDouble(param)) throw errParamType(fun)
+                    val (v, f) = pop1()
 
-                def doTrim(): String = { check1String(); asString(param).strip() }
-                def doUppercase(): String = { check1String(); asString(param).toUpperCase() }
-                def doLowercase(): String = { check1String(); asString(param).toLowerCase() }
+                    if (!isString(v))
+                        throw errParamType(fun, v)
+
+                    (asString(v), f)
+                }
+
+                def doTrim(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushAny(s.trim, f)
+                }
+                def doUppercase(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushAny(s.toUpperCase, f)
+                }
+                def doLowercase(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushAny(s.toLowerCase, f)
+                }
+
                 def doIsAlpha(): Boolean = { check1String(); StringUtils.isAlpha(asString(param)) }
                 def doIsNum(): Boolean = { check1String(); StringUtils.isNumeric(asString(param)) }
                 def doIsAlphaNum(): Boolean = { check1String(); StringUtils.isAlphanumeric(asString(param)) }
@@ -410,10 +418,10 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "end_idx" ⇒ pushLong(tok.getEndCharIndex, true)
 
                     // String functions.
-                    case "trim" ⇒ pushAny(doTrim(), usedTok)
-                    case "strip" ⇒ pushAny(doTrim(), usedTok)
-                    case "uppercase" ⇒ pushAny(doUppercase(), usedTok)
-                    case "lowercase" ⇒ pushAny(doLowercase(), usedTok)
+                    case "trim" ⇒ doTrim()
+                    case "strip" ⇒ doTrim()
+                    case "uppercase" ⇒ doUppercase()
+                    case "lowercase" ⇒ doLowercase()
                     case "is_alpha" ⇒ pushBoolean(doIsAlpha(), usedTok)
                     case "is_alphanum" ⇒ pushBoolean(doIsAlphaNum(), usedTok)
                     case "is_whitespace" ⇒ pushBoolean(doIsWhitespace(), usedTok)
