@@ -30,6 +30,7 @@ import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
+import java.time.LocalDate
 import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
 import scala.language.implicitConversions
 
@@ -367,9 +368,12 @@ object NCIntentDslCompiler extends LazyLogging {
             termCode += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
                 implicit val evidence = stack
 
-                def get1Str(): (String, Boolean) = {
-                    if (stack.isEmpty)
+                def ensureStack(min: Int): Unit =
+                    if (stack.size < min)
                         throw errParamNum(fun)
+
+                def get1Str(): (String, Boolean) = {
+                    ensureStack(1)
 
                     val (v, f) = pop1()
 
@@ -379,8 +383,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     (asString(v), f)
                 }
                 def get1Any(): (AnyRef, Boolean) = {
-                    if (stack.isEmpty)
-                        throw errParamNum(fun)
+                    ensureStack(1)
 
                     pop1()
                 }
@@ -388,35 +391,29 @@ object NCIntentDslCompiler extends LazyLogging {
                 /*
                  * String operations.
                  */
-                def doTrim(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushAny(s.trim, f)
-                }
-                def doUppercase(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushAny(s.toUpperCase, f)
-                }
-                def doLowercase(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushAny(s.toLowerCase, f)
-                }
-                def doIsAlpha(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushBoolean(StringUtils.isAlpha(asString(s)), f)
-                }
-                def doIsNum(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushBoolean(StringUtils.isNumeric(asString(s)), f)
-                }
-                def doIsAlphaNum(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumeric(asString(s)), f)
-                }
-                def doIsWhitespace(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushBoolean(StringUtils.isWhitespace(asString(s)), f)
-                }
-                def doIsAlphaSpace(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushBoolean(StringUtils.isAlphaSpace(asString(s)), f)
-                }
-                def doIsAlphaNumSpace(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumericSpace(asString(s)), f)
-                }
-                def doIsNumSpace(): Unit = get1Str() match {
-                    case (s, f) ⇒ pushBoolean(StringUtils.isNumericSpace(asString(s)), f)
+                def doTrim(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.trim, f) }
+                def doUppercase(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.toUpperCase, f) }
+                def doLowercase(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.toLowerCase, f) }
+                def doIsAlpha(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlpha(asString(s)), f) }
+                def doIsNum(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isNumeric(asString(s)), f) }
+                def doIsAlphaNum(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumeric(asString(s)), f) }
+                def doIsWhitespace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isWhitespace(asString(s)), f) }
+                def doIsAlphaSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlphaSpace(asString(s)), f) }
+                def doIsAlphaNumSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumericSpace(asString(s)), f) }
+                def doIsNumSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isNumericSpace(asString(s)), f) }
+
+                def doSplit(): Unit = {
+                    ensureStack(2)
+
+                    val (v1, v2, f1, f2) = pop2()
+                    val usedTok = f1 || f2
+
+                    if (!isString(v1))
+                        errParamType(fun, v1)
+                    if (!isString(v2))
+                        errParamType(fun, v2)
+
+                    asString(v1).split(asString(v2)).foreach { pushAny(_, usedTok) }
                 }
 
                 /*
@@ -491,6 +488,15 @@ object NCIntentDslCompiler extends LazyLogging {
                     case (s, _) ⇒ pushAny(ctx.intentMeta.get(s).orNull, false)
                 }
 
+                /*
+                 * Date-time operations.
+                 */
+                def doYear(): Unit = pushLong(LocalDate.now.getYear,false)
+                def doMonth(): Unit = pushLong(LocalDate.now.getMonthValue,false)
+                def doDayOfMonth(): Unit = pushLong(LocalDate.now.getDayOfMonth,false)
+                def doDayOfWeek(): Unit = pushLong(LocalDate.now.getDayOfWeek.getValue,false)
+                def doDayOfYear(): Unit = pushLong(LocalDate.now.getDayOfYear,false)
+
                 fun match {
                     // Metadata access.
                     case "token_meta" ⇒ doTokenMeta()
@@ -532,7 +538,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "index" ⇒
                     case "regex" ⇒
                     case "soundex" ⇒
-                    case "split" ⇒
+                    case "split" ⇒ doSplit()
                     case "replace" ⇒
 
                     // Math functions.
@@ -590,10 +596,11 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "to_string" ⇒
 
                     // Date-time functions.
-                    case "year" ⇒
-                    case "month" ⇒
-                    case "day_of_month" ⇒
-                    case "day_of_week" ⇒
+                    case "year" ⇒ doYear()
+                    case "month" ⇒ doMonth()
+                    case "day_of_month" ⇒ doDayOfMonth()
+                    case "day_of_week" ⇒ doDayOfWeek()
+                    case "day_of_year" ⇒ doDayOfYear()
                     case "hour" ⇒
                     case "min" ⇒
                     case "sec" ⇒
