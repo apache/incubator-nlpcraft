@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.impl.ver2
 
+import com.google.gson.reflect.TypeToken
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
@@ -26,7 +27,7 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4._
 import org.apache.nlpcraft.model.intent.utils.ver2._
 
-import scala.collection.immutable.HashMap
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
@@ -591,6 +592,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "take" ⇒
                     case "drop" ⇒
                     case "size" ⇒
+                    case "length" ⇒
                     case "reverse" ⇒
                     case "is_empty" ⇒
                     case "non_empty" ⇒
@@ -653,7 +655,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitMetaDecl(ctx: NCIntentDslParser.MetaDeclContext): Unit = {
-            meta = U.jsonToObject(ctx.jsonObj().getText, classOf[HashMap[String, Any]])
+            meta = U.jsonToObject(ctx.jsonObj().getText, classOf[java.util.HashMap[String, Any]]).asScala.toMap
         }
 
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
@@ -696,6 +698,8 @@ object NCIntentDslCompiler extends LazyLogging {
             val pred =
                 if (termMtdName != null) { // User-code defined term.
                     (tok: NCToken, ctx: NCDslTermContext) ⇒ {
+                        // TODO.
+
                         (true, true)
                     }
                 }
@@ -797,10 +801,7 @@ object NCIntentDslCompiler extends LazyLogging {
      */
     def compile(
         dsl: String,
-        mdlId: String,
-        reqMeta: ScalaMeta,
-        usrMeta: ScalaMeta,
-        compMeta: ScalaMeta
+        mdlId: String
     ): NCDslIntent = {
         require(dsl != null)
 

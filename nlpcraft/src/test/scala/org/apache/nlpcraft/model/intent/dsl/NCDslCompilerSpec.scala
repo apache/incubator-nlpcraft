@@ -28,13 +28,12 @@ class NCDslCompilerSpec {
     @Test
     @throws[NCException]
     def test(): Unit = {
-        NCIntentDslCompiler.compile(
+        val intent = NCIntentDslCompiler.compile(
             """
-              |intent=i1 meta={'a': true} term={2 == 2 && size(id()) != -25}
-              |""".stripMargin, "mdl.id",
-            Map.empty[String, AnyRef],
-            Map.empty[String, AnyRef],
-            Map.empty[String, AnyRef]
+              |intent=i1 flow="a[^0-9]b" meta={'a': true, 'b': {'arr': [1, 2, 3]}} term(t1)={2 == 2 && size(id()) != -25}
+              |""".stripMargin, "mdl.id"
         )
+
+        println(intent)
     }
 }
