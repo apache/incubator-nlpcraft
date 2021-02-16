@@ -35,15 +35,9 @@ case class NCDslIntent(
     require(meta != null)
 
     // Flow regex as a compiled pattern.
+    // Regex validity check is already done during intent compilation.
     val flowRegex = flow match {
-        case Some(r) ⇒
-            try
-                Some(Pattern.compile(r))
-            catch {
-                case e: PatternSyntaxException ⇒
-                    throw new IllegalArgumentException(s"${e.getDescription} in flow regex '${e.getPattern}' near index ${e.getIndex}.")
-            }
-
+        case Some(r) ⇒ Some(Pattern.compile(r))
         case None ⇒ None
     }
 

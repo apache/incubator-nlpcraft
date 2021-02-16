@@ -30,7 +30,7 @@ class NCDslCompilerSpec {
     def test(): Unit = {
         NCIntentDslCompiler.compile(
             """
-              |intent=i1 meta={'a': true} term={2 == 2}
+              |intent=i1 meta={'a': true} term={2 == 2 && size(id()) != -25}
               |""".stripMargin, "mdl.id",
             Map.empty[String, AnyRef],
             Map.empty[String, AnyRef],

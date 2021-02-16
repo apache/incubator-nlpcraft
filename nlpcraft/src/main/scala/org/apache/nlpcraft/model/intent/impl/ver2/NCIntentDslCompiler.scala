@@ -31,8 +31,9 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
 import java.time.LocalDate
+import java.util.regex.{Pattern, PatternSyntaxException}
 import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
-import scala.language.implicitConversions
+import scala.language.{dynamics, implicitConversions}
 
 object NCIntentDslCompiler extends LazyLogging {
     // Compiler cache.
@@ -63,7 +64,7 @@ object NCIntentDslCompiler extends LazyLogging {
         type Instr = (NCToken, StackType,  NCDslTermContext) ⇒ Unit
 
         // Term's code, i.e. list of instructions.
-        private var termCode = mutable.Buffer.empty[Instr]
+        private var termInstrs = mutable.Buffer.empty[Instr]
 
         private def isJLong(v: AnyRef): Boolean = v.isInstanceOf[JLong]
         private def isJDouble(v: AnyRef): Boolean = v.isInstanceOf[JDouble]
@@ -140,7 +141,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitUnaryExpr(ctx: NCIntentDslParser.UnaryExprContext): Unit = {
-            termCode += ((_, stack: StackType, _) ⇒ {
+            termInstrs += ((_, stack: StackType, _) ⇒ {
                 require(stack.nonEmpty)
 
                 implicit val s = stack
@@ -167,7 +168,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitMultExpr(ctx: NCIntentDslParser.MultExprContext): Unit = {
-            termCode += ((_, stack: StackType, _) ⇒ {
+            termInstrs += ((_, stack: StackType, _) ⇒ {
                 require(stack.size >= 2)
 
                 implicit val s = stack
@@ -211,7 +212,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitPlusExpr(ctx: NCIntentDslParser.PlusExprContext): Unit = {
-            termCode += ((_, stack: StackType, _) ⇒ {
+            termInstrs += ((_, stack: StackType, _) ⇒ {
                 require(stack.size >= 2)
 
                 implicit val s = stack
@@ -251,7 +252,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit = {
-            termCode += ((_, stack: StackType, _) ⇒ {
+            termInstrs += ((_, stack: StackType, _) ⇒ {
                 implicit val s = stack
 
                 require(stack.size >= 2)
@@ -313,7 +314,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitLogExpr(ctx: NCIntentDslParser.LogExprContext): Unit = {
-            termCode += ((_, stack: StackType, _) ⇒ {
+            termInstrs += ((_, stack: StackType, _) ⇒ {
                 implicit val s = stack
 
                 require(stack.size >= 2)
@@ -334,7 +335,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitEqExpr(ctx: NCIntentDslParser.EqExprContext): Unit = {
-            termCode += ((_, stack: StackType, _) ⇒ {
+            termInstrs += ((_, stack: StackType, _) ⇒ {
                 implicit val s = stack
 
                 require(stack.size >= 2)
@@ -365,7 +366,7 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitCallExpr(ctx: NCIntentDslParser.CallExprContext): Unit = {
             val fun = ctx.ID().getText
 
-            termCode += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
+            termInstrs += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
                 implicit val evidence = stack
 
                 def ensureStack(min: Int): Unit =
@@ -637,6 +638,14 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 flowRegex = if (regex.nonEmpty) Some(regex) else None
             }
+
+            if (flowRegex.isDefined) // Pre-check.
+                try
+                    Pattern.compile(flowRegex.get)
+                catch {
+                    case e: PatternSyntaxException ⇒
+                        throw new IAE(s"${e.getDescription} in DSL intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
+                }
         }
 
         override def exitIntentId(ctx: NCIntentDslParser.IntentIdContext): Unit = {
@@ -675,7 +684,55 @@ object NCIntentDslCompiler extends LazyLogging {
                     }
                 }
 
-            termCode += ((_, stack, _) ⇒ pushAny(atom, false)(stack))
+            termInstrs += ((_, stack, _) ⇒ pushAny(atom, false)(stack))
+        }
+
+        override def exitTerm(ctx: NCIntentDslParser.TermContext): Unit = {
+            if (min < 0 || min > max)
+                throw new IAE(s"Invalid DSL intent term min quantifiers: $min (must be min >= 0 && min <= max).")
+            if (max < 1)
+                throw new IAE(s"Invalid DSL intent term max quantifiers: $max (must be max >= 1).")
+
+            val pred =
+                if (termMtdName != null) { // User-code defined term.
+                    (tok: NCToken, ctx: NCDslTermContext) ⇒ {
+                        (true, true)
+                    }
+                }
+                else { // DSL-defined term.
+                    val instrs = mutable.Buffer.empty[Instr]
+
+                    instrs ++= termInstrs
+
+                    (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
+                        val stack = new mutable.ArrayStack[NCDslTermRetVal]()
+
+                        instrs.foreach(_(tok, stack, termCtx))
+
+                        val x = stack.pop()
+
+                        if (!isBoolean(x.retVal))
+                            throw new IAE(s"DSL intent term does not return boolean value: ${ctx.getText}")
+
+                        (asBoolean(x.retVal), x.usedTok)
+                    }
+
+                }
+
+            // Add term.
+            terms += NCDslTerm(
+                termId,
+                pred,
+                min,
+                max,
+                termConv
+            )
+
+            // Reset term vars.
+            setMinMax(1, 1)
+            termInstrs.clear()
+            termClsName = null
+            termMtdName = null
         }
 
         /**
