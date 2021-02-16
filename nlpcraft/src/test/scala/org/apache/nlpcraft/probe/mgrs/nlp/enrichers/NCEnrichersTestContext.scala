@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.models.stm
+package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Test
+import org.apache.nlpcraft.model.{NCContext, NCModel, NCResult}
+
+import scala.collection.JavaConverters._
 
 /**
- *
- */
-@NCTestEnvironment(model = classOf[NCStmTestModel], startClient = true)
-class NCStmTestModelSpec extends NCTestContext {
-    /**
-     * Checks behaviour. It is based on intents and elements groups.
-     */
-    @Test
-    private[stm] def test(): Unit = for (i ← 0 until 3) {
-        checkResult("sale", "sale")
-        checkResult("best", "sale_best_employee")
-        checkResult("buy", "buy")
-        checkResult("best", "buy_best_employee")
-        checkResult("sale", "sale")
-    }
+  * Enricher test model behaviour.
+  */
+trait NCEnrichersTestContext extends NCModel {
+    override final def onContext(ctx: NCContext): NCResult =
+        NCResult.text(
+            NCTestSentence.serialize(ctx.getVariants.asScala.map(v ⇒ NCTestSentence(v.asScala.map(NCTestToken(_)))))
+        )
 }

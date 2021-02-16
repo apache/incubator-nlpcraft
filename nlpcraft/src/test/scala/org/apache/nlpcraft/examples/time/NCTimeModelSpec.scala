@@ -17,12 +17,11 @@
 
 package org.apache.nlpcraft.examples.time
 
-import java.io.IOException
-
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+
+import java.io.IOException
 
 @NCTestEnvironment(model = classOf[TimeModel], startClient = true)
 class NCTimeModelSpec extends NCTestContext {
@@ -30,25 +29,16 @@ class NCTimeModelSpec extends NCTestContext {
     @throws[NCException]
     @throws[IOException]
     private[time] def testIntentsPriorities(): Unit = {
-        val cli = getClient
-
-        def check(txt: String, id: String): Unit = {
-            val res = cli.ask(txt)
-
-            assertTrue(res.isOk)
-            assertTrue(res.getIntentId == id)
-        }
-
         // intent1 must be winner for `What's the local time?` question, because exact matching.
         // Accumulated history (geo:city information) must be ignored.
 
         // 1. Without conversation.
-        check("Show me time of the day in London.", "intent2")
-        cli.clearConversation()
-        check("What's the local time?", "intent1")
+        checkIntent("Show me time of the day in London.", "intent2")
+        getClient.clearConversation()
+        checkIntent("What's the local time?", "intent1")
 
         // 2. The same with conversation.
-        check("Show me time of the day in London.", "intent2")
-        check("What's the local time?", "intent1")
+        checkIntent("Show me time of the day in London.", "intent2")
+        checkIntent("What's the local time?", "intent1")
     }
 }

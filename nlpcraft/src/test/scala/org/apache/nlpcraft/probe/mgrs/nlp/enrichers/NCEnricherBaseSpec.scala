@@ -17,14 +17,29 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
-import org.apache.nlpcraft.NCTestContext
+import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.{assertTrue, fail}
+import org.junit.jupiter.api.{BeforeEach, TestInfo}
 import org.scalatest.Assertions
 
 /**
   * Enrichers tests utility base class.
   */
 abstract class NCEnricherBaseSpec extends NCTestContext {
+    @BeforeEach
+    def before(info: TestInfo): Unit = {
+        val env = getClassAnnotation(info).
+            getOrElse(
+                throw new IllegalStateException(
+                    s"Enricher tests should ne annotated by model, see: ${classOf[NCTestEnvironment]}"
+                )
+            )
+
+        if (!(classOf[NCEnrichersTestContext]).isAssignableFrom(env.model()))
+            throw new IllegalStateException(
+                s"Enricher tests should ne annotated by model mixed with: ${classOf[NCEnrichersTestContext]}"
+            )
+    }
     /**
       * Checks single variant.
       *

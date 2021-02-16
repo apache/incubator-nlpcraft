@@ -17,17 +17,21 @@
 
 package org.apache.nlpcraft.common.nlp
 
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
+import org.apache.nlpcraft.model.NCModel
 
 import java.util
+import java.util.{List ⇒ JList}
+import java.io.{Serializable ⇒ JSerializable}
 import java.util.Collections
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, Set, mutable}
 import scala.language.implicitConversions
 
-object NCNlpSentence {
+object NCNlpSentence extends LazyLogging {
     implicit def toTokens(x: NCNlpSentence): ArrayBuffer[NCNlpSentenceToken] = x.tokens
 
     /**
@@ -55,7 +59,7 @@ object NCNlpSentence {
           * should not be excluded, but invalid relation should be deleted for these combinations.
           */
         types.size match {
-            case 0 ⇒ throw new AssertionError(s"Unexpected empty types [notesType=$notesType]")
+            case 0 ⇒ false
             case 1 ⇒ types.head == notesType
             case _ ⇒
                 // Equal elements should be processed together with function element.
@@ -63,6 +67,8 @@ object NCNlpSentence {
                     false
                 else {
                     ns.removeNote(note)
+
+                    logger.trace(s"Removed note: $note")
 
                     true
                 }
@@ -90,7 +96,7 @@ object NCNlpSentence {
         ns.filter(_.isTypeOf(noteType)).foreach(tok ⇒
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) ⇒
-                    val idxs: Seq[Int] = n.data[java.util.List[Int]](idxsField).asScala
+                    val idxs: Seq[Int] = n.data[JList[Int]](idxsField).asScala
                     var fixed = idxs
 
                     history.foreach { case (idxOld, idxNew) ⇒ fixed = fixed.map(i ⇒ if (i == idxOld) idxNew else i) }
@@ -98,13 +104,13 @@ object NCNlpSentence {
                     fixed = fixed.distinct
 
                     if (idxs != fixed)
-                        ns.fixNote(n, "indexes" → fixed.asJava.asInstanceOf[java.io.Serializable])
+                        ns.fixNote(n, "indexes" → fixed.asJava.asInstanceOf[JSerializable])
                 case None ⇒ // No-op.
             }
         )
 
         ns.flatMap(_.getNotes(noteType)).forall(
-            n ⇒ checkRelation(ns, n.data[java.util.List[Int]]("indexes").asScala, n.data[String](noteField), n)
+            n ⇒ checkRelation(ns, n.data[JList[Int]]("indexes").asScala, n.data[String](noteField), n)
         )
     }
 
@@ -117,7 +123,7 @@ object NCNlpSentence {
       */
     private def fixNoteIndexes(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit =
         ns.flatMap(_.getNotes(note)).foreach(
-            n ⇒ checkRelation(ns, n.data[java.util.List[Int]](idxsField).asScala, n.data[String](noteField), n)
+            n ⇒ checkRelation(ns, n.data[JList[Int]](idxsField).asScala, n.data[String](noteField), n)
         )
 
     /**
@@ -127,11 +133,11 @@ object NCNlpSentence {
       * @param noteField
       * @param ns
       */
-    private def fixNoteIndexesList(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit =
+    private def fixNoteIndexesList(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit = {
         ns.flatMap(_.getNotes(note)).foreach(rel ⇒
-            rel.dataOpt[java.util.List[java.util.List[Int]]](idxsField) match {
+            rel.dataOpt[JList[JList[Int]]](idxsField) match {
                 case Some(idxsList) ⇒
-                    val notesTypes = rel.data[util.List[String]](noteField)
+                    val notesTypes = rel.data[JList[String]](noteField)
 
                     require(idxsList.size() == notesTypes.size())
 
@@ -141,7 +147,7 @@ object NCNlpSentence {
                 case None ⇒ // No-op.
             }
         )
-
+    }
 
     /**
       * Copies token.
@@ -179,7 +185,7 @@ object NCNlpSentence {
         // Of compilation errors which seems as scala compiler internal error.
         val bufs = new util.ArrayList[mutable.Buffer[NCNlpSentenceToken]]()
 
-        def last[T](l: util.List[T]): T = l.get(l.size() - 1)
+        def last[T](l: JList[T]): T = l.get(l.size() - 1)
 
         ns.filter(t ⇒ t.isStopWord && !t.isBracketed).foreach(t ⇒
             if (!bufs.isEmpty && last(bufs).last.index + 1 == t.index)
@@ -367,7 +373,6 @@ object NCNlpSentence {
         t
     }
 
-
     /**
       * Fixes notes with references list to other notes indexes.
       *
@@ -391,7 +396,7 @@ object NCNlpSentence {
             tok.getNoteOpt(noteType, idxsField) match {
                 case Some(n) ⇒
                     val idxs: Seq[Seq[Int]] =
-                        n.data[java.util.List[java.util.List[Int]]](idxsField).asScala.map(_.asScala)
+                        n.data[JList[JList[Int]]](idxsField).asScala.map(_.asScala)
                     var fixed = idxs
 
                     history.foreach {
@@ -401,16 +406,16 @@ object NCNlpSentence {
                     if (fixed.forall(_.size == 1))
                         // Fix double dimension array to one dimension,
                         // so it should be called always in spite of 'fixIndexesReferences' method.
-                        ns.fixNote(n, idxsField → fixed.map(_.head).asJava.asInstanceOf[java.io.Serializable])
+                        ns.fixNote(n, idxsField → fixed.map(_.head).asJava.asInstanceOf[JSerializable])
                     else
                         ok = false
                 case None ⇒ // No-op.
             }
         ok &&
             ns.flatMap(_.getNotes(noteType)).forall(rel ⇒
-                rel.dataOpt[java.util.List[Int]](idxsField) match {
+                rel.dataOpt[JList[Int]](idxsField) match {
                     case Some(idxsList) ⇒
-                        val notesTypes = rel.data[util.List[String]](noteField)
+                        val notesTypes = rel.data[JList[String]](noteField)
 
                         require(idxsList.size() == notesTypes.size())
 
@@ -489,13 +494,15 @@ import org.apache.nlpcraft.common.nlp.NCNlpSentence._
   * @param text Normalized text.
   * @param enabledBuiltInToks Enabled built-in tokens.
   * @param tokens Initial buffer.
+  * @param deletedNotes Deleted overridden notes with their tokens.
   */
 class NCNlpSentence(
     val srvReqId: String,
     val text: String,
     val enabledBuiltInToks: Set[String],
-    override val tokens: ArrayBuffer[NCNlpSentenceToken] = new ArrayBuffer[NCNlpSentenceToken](32)
-) extends NCNlpSentenceTokenBuffer(tokens) with java.io.Serializable {
+    override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
+    val deletedNotes: mutable.HashMap[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = mutable.HashMap.empty
+) extends NCNlpSentenceTokenBuffer(tokens) with JSerializable {
     @transient
     private var hash: java.lang.Integer = _
 
@@ -504,7 +511,13 @@ class NCNlpSentence(
 
     // Deep copy.
     override def clone(): NCNlpSentence =
-        new NCNlpSentence(srvReqId, text, enabledBuiltInToks, tokens.map(_.clone()))
+        new NCNlpSentence(
+            srvReqId,
+            text,
+            enabledBuiltInToks,
+            tokens.map(_.clone()),
+            deletedNotes.map(p ⇒ p._1.clone() → p._2.map(_.clone()))
+        )
 
     /**
       * Utility method that gets set of notes for given note type collected from
@@ -531,7 +544,7 @@ class NCNlpSentence(
         hash
     }
 
-    def fixNote(note: NCNlpSentenceNote, kvs: (String, java.io.Serializable)*): Unit = {
+    def fixNote(note: NCNlpSentenceNote, kvs: (String, JSerializable)*): Unit = {
         val fixed = note.clone(kvs: _*)
 
         this.filter(t ⇒ t.index >= fixed.tokenIndexes.head && t.index <= fixed.tokenIndexes.last).foreach(t ⇒ {
@@ -542,6 +555,62 @@ class NCNlpSentence(
         hash = null
     }
 
+    private def dropAbstract(mdl: NCModel, ns: NCNlpSentence): Unit =
+        if (!mdl.getAbstractTokens.isEmpty) {
+            val notes = ns.flatten
+
+            case class Key(id: String, start: Int, end: Int) {
+                private def in(i: Int): Boolean = i >= start && i <= end
+                def intersect(id: String, start: Int, end: Int): Boolean = id == this.id && (in(start) || in(end))
+            }
+
+            val keys: Seq[Key] =
+                notes.filter(_.isUser).flatMap(n ⇒ {
+                    val optList: Option[JList[util.HashMap[String, JSerializable]]] = n.dataOpt("parts")
+
+                    optList
+                }).flatMap(_.asScala).map(map ⇒ Key(
+                    map.get("id").asInstanceOf[String],
+                    map.get("startcharindex").asInstanceOf[Int],
+                    map.get("endcharindex").asInstanceOf[Int])
+                ).distinct
+
+            case class NoteLink(note: String, indexes: Seq[Int])
+
+            val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
+
+            for (n ← notes.filter(n ⇒ n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
+                noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala)
+
+            for (n ← notes.filter(_.noteType == "nlpcraft:sort")) {
+                def add(noteName: String, idxsName: String): Unit = {
+                    val names = n(noteName).asInstanceOf[JList[String]]
+                    val idxsSeq = n(idxsName).asInstanceOf[JList[JList[Int]]]
+
+                    require(names.size() == idxsSeq.size())
+
+                    noteLinks ++=
+                        (for ((name, idxs) ← names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
+                            yield NoteLink(name, idxs)
+                        )
+                }
+
+                if (n.contains("subjnotes")) add("subjnotes", "subjindexes")
+                if (n.contains("bynotes")) add("bynotes", "byindexes")
+            }
+
+            notes.filter(n ⇒ {
+                val noteToks = ns.tokens.filter(_.contains(n))
+
+                mdl.getAbstractTokens.contains(n.noteType) &&
+                !keys.exists(_.intersect(n.noteType, noteToks.head.startCharIndex, noteToks.last.startCharIndex)) &&
+                !noteLinks.contains(NoteLink(n.noteType, n.tokenIndexes))
+            }).foreach(ns.removeNote)
+        }
+
+    private def getNotNlpNotes(toks: Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceNote] =
+        toks.flatten.filter(!_.isNlp).distinct
+
     /**
       * This collapser handles several tasks:
       * - "overall" collapsing after all other individual collapsers had their turn.
@@ -549,41 +618,44 @@ class NCNlpSentence(
       *
       * In all cases of overlap (full or partial) - the "longest" note wins. In case of overlap and equal
       * lengths - the winning note is chosen based on this priority.
-      *
       */
     @throws[NCE]
-    def collapse(): Seq[NCNlpSentence] = {
+    def collapse(mdl: NCModel, lastPhase: Boolean = false): Seq[NCNlpSentence] = {
+        def collapse0(ns: NCNlpSentence): Option[NCNlpSentence] = {
+            if (lastPhase)
+                dropAbstract(mdl, ns)
+
+            if (collapseSentence(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Some(ns) else None
+        }
+
         // Always deletes `similar` notes.
         // Some words with same note type can be detected various ways.
         // We keep only one variant -  with `best` direct and sparsity parameters,
         // other variants for these words are redundant.
         val redundant: Seq[NCNlpSentenceNote] =
-        this.flatten.filter(!_.isNlp).distinct.
-            groupBy(_.getKey()).
-            map(p ⇒ p._2.sortBy(p ⇒
-                (
-                    // System notes don't have such flags.
-                    if (p.isUser) {
-                        if (p.isDirect)
-                            0
+            this.flatten.filter(!_.isNlp).distinct.
+                groupBy(_.getKey()).
+                map(p ⇒ p._2.sortBy(p ⇒
+                    (
+                        // System notes don't have such flags.
+                        if (p.isUser) {
+                            if (p.isDirect)
+                                0
+                            else
+                                1
+                        }
                         else
-                            1
-                    }
-                    else
-                        0,
-                    if (p.isUser)
-                        p.sparsity
-                    else
-                        0
-                )
-            )).
-            flatMap(_.drop(1)).
-            toSeq
+                            0,
+                        if (p.isUser)
+                            p.sparsity
+                        else
+                            0
+                    )
+                )).
+                flatMap(_.drop(1)).
+                toSeq
 
         redundant.foreach(this.removeNote)
-
-        def getNotNlpNotes(toks: Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceNote] =
-            toks.flatten.filter(!_.isNlp).distinct
 
         val delCombs: Seq[NCNlpSentenceNote] =
             getNotNlpNotes(this).
@@ -598,7 +670,7 @@ class NCNlpSentence(
 
         val minDelSize = if (toksByIdx.isEmpty) 1 else toksByIdx.map(_.size).max - 1
 
-        val sens =
+        var sens =
             if (delCombs.nonEmpty) {
                 val deleted = mutable.ArrayBuffer.empty[Seq[NCNlpSentenceNote]]
 
@@ -614,6 +686,21 @@ class NCNlpSentence(
                             if (!deleted.exists(_.forall(delComb.contains))) {
                                 val nsClone = this.clone()
 
+                                // Saves deleted notes for sentence and their tokens.
+                                nsClone.deletedNotes ++= delComb.map(n ⇒ {
+                                    val savedDelNote = n.clone()
+                                    val savedDelToks = n.tokenIndexes.map(idx ⇒ nsClone(idx).clone())
+
+                                    val mainNotes =
+                                        savedDelToks.flatten.filter(n ⇒ n.noteType != "nlpcraft:nlp" && n != savedDelNote)
+
+                                    // Deleted note's tokens should contains only nlp data and deleted notes.
+                                    for (savedDelTok ← savedDelToks; mainNote ← mainNotes)
+                                        savedDelTok.remove(mainNote)
+
+                                    savedDelNote → savedDelToks
+                                })
+
                                 delComb.foreach(nsClone.removeNote)
 
                                 // Has overlapped notes for some tokens.
@@ -621,9 +708,7 @@ class NCNlpSentence(
 
                                 deleted += delComb
 
-                                val notNlpTypes = getNotNlpNotes(nsClone).map(_.noteType).distinct
-
-                                if (collapseSentence(nsClone, notNlpTypes)) Some(nsClone) else None
+                                collapse0(nsClone)
                             }
                             else
                                 None
@@ -631,10 +716,7 @@ class NCNlpSentence(
 
                 // It removes sentences which have only one difference - 'direct' flag of their user tokens.
                 // `Direct` sentences have higher priority.
-                case class Key(
-                    sysNotes: Seq[Map[String, java.io.Serializable]],
-                    userNotes: Seq[Map[String, java.io.Serializable]]
-                )
+                case class Key(sysNotes: Seq[Map[String, JSerializable]], userNotes: Seq[Map[String, JSerializable]])
                 case class Value(sentence: NCNlpSentence, directCount: Int)
 
                 val m = mutable.HashMap.empty[Key, Value]
@@ -646,7 +728,7 @@ class NCNlpSentence(
                     val nlpNotes = notes.filter(_.isNlp)
                     val userNotes = notes.filter(_.isUser)
 
-                    def get(seq: Seq[NCNlpSentenceNote]): Seq[Map[String, java.io.Serializable]] =
+                    def get(seq: Seq[NCNlpSentenceNote]): Seq[Map[String, JSerializable]] =
                         seq.map(p ⇒
                             // We have to delete some keys to have possibility to compare sentences.
                             p.clone().filter(_._1 != "direct")
@@ -666,12 +748,10 @@ class NCNlpSentence(
 
                 m.values.map(_.sentence).toSeq
             }
-            else {
-                if (collapseSentence(this, getNotNlpNotes(this).map(_.noteType).distinct))
-                    Seq(this)
-                else
-                    Seq.empty
-            }.distinct
+            else
+                collapse0(this).flatMap(p ⇒ Option(Seq(p))).getOrElse(Seq.empty)
+
+        sens = sens.distinct
 
         sens.foreach(sen ⇒
             sen.foreach(tok ⇒
@@ -720,11 +800,11 @@ class NCNlpSentence(
                 tokensEqualOrSimilar0(set1, set2) || tokensEqualOrSimilar0(set2, set1)
 
             def getList(n: NCNlpSentenceNote, refIdxName: String): Set[NCNlpSentenceToken] =
-                n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[java.util.List[Int]].asScala.
+                n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[JList[Int]].asScala.
                     map(this (_)).toSet
 
             def getListList(n: NCNlpSentenceNote, refIdxName: String): Set[NCNlpSentenceToken] =
-                n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[java.util.List[java.util.List[Int]]].asScala.
+                n.getOrElse(refIdxName, Collections.emptyList).asInstanceOf[JList[JList[Int]]].asScala.
                     flatMap(_.asScala.map(this (_))).toSet
 
             def referencesEqualOrSimilar0(n1: NCNlpSentenceNote, n2: NCNlpSentenceNote): Boolean = {

@@ -17,19 +17,18 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
-import java.util
-import java.util.Collections
-
-import org.apache.nlpcraft.model.{NCContext, NCElement, NCModelAdapter, NCResult, NCValue}
+import org.apache.nlpcraft.model.{NCElement, NCModelAdapter, NCResult, NCValue}
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCDefaultTestModel._
 
+import java.util
+import java.util.Collections
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**
   * Enrichers default test model.
   */
-class NCDefaultTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0") {
+class NCDefaultTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0") with NCEnrichersTestContext {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
     override def getElements: util.Set[NCElement] =
@@ -60,11 +59,6 @@ class NCDefaultTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0
                 override def getSynonyms: util.List[String] = Collections.singletonList(v)
             }).asJava
         }
-
-    override final def onContext(ctx: NCContext): NCResult =
-        NCResult.text(
-            NCTestSentence.serialize(ctx.getVariants.asScala.map(v ⇒ NCTestSentence(v.asScala.map(NCTestToken(_)))))
-        )
 
     final override def getId: String = ID
 }
