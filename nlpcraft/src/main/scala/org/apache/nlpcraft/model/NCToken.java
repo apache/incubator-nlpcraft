@@ -309,6 +309,6 @@ public interface NCToken extends NCMetadata {
         String id = getId();
         int i = id.indexOf(':');
 
-        return i <=0 || !"nlpcraft google opennlp spacy stanford".contains(id.substring(0, i));
+        return i <= 0 || !"nlpcraft google opennlp spacy stanford".contains(id.substring(0, i));
     }
 }

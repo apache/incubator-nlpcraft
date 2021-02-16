@@ -23,6 +23,7 @@ import org.apache.nlpcraft.common.ScalaMeta
  *
  */
 case class NCDslTermContext(
+    intentMeta: ScalaMeta,
     reqMeta: ScalaMeta,
     usrMeta: ScalaMeta,
     compMeta: ScalaMeta

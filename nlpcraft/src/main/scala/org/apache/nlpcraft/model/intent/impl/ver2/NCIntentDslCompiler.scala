@@ -30,6 +30,7 @@ import scala.collection.immutable.HashMap
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
+import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
 import scala.language.implicitConversions
 
 object NCIntentDslCompiler extends LazyLogging {
@@ -118,12 +119,12 @@ object NCIntentDslCompiler extends LazyLogging {
          * @param stack
          * @return
          */
-        private def pop2()(implicit stack: StackType): (AnyRef, AnyRef, Boolean) = {
+        private def pop2()(implicit stack: StackType): (AnyRef, AnyRef, Boolean, Boolean) = {
             // Stack pops in reverse order of push...
             val NCDslTermRetVal(val2, f1) = stack.pop()
             val NCDslTermRetVal(val1, f2) = stack.pop()
 
-            (val1, val2, f1 || f2)
+            (val1, val2, f1, f2)
         }
 
         /**
@@ -170,7 +171,8 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 implicit val s = stack
 
-                val (v1, v2, usedTok) = pop2()
+                val (v1, v2, f1, f2) = pop2()
+                val usedTok = f1 || f2
 
                 if (ctx.MULT() != null) {
                     if (isJLong(v1) && isJLong(v2))
@@ -213,7 +215,8 @@ object NCIntentDslCompiler extends LazyLogging {
 
                 implicit val s = stack
 
-                val (v1, v2, usedTok) = pop2()
+                val (v1, v2, f1, f2) = pop2()
+                val usedTok = f1 || f2
 
                 if (ctx.PLUS != null) {
                     if (isString(v1) && isString(v2))
@@ -248,11 +251,12 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
-                require(stack.size >= 2)
-
                 implicit val s = stack
 
-                val (v1, v2, usedTok) = pop2()
+                require(stack.size >= 2)
+
+                val (v1, v2, f1, f2) = pop2()
+                val usedTok = f1 || f2
 
                 if (ctx.LT() != null) {
                     if (isJLong(v1) && isJLong(v2))
@@ -309,32 +313,33 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitLogExpr(ctx: NCIntentDslParser.LogExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
-                require(stack.size >= 2)
-
                 implicit val s = stack
 
-                val (v1, v2, usedTok) = pop2()
+                require(stack.size >= 2)
+
+                val (v1, v2, f1, f2) = pop2()
 
                 if (!isBoolean(v1) || !isBoolean(v2))
                     throw errBinaryOp(if (ctx.AND() != null) "&&" else "||", v1, v2)
 
                 if (ctx.AND() != null)
-                    pushBoolean(asBoolean(v1) && asBoolean(v2), usedTok)
+                    pushBoolean(asBoolean(v1) && asBoolean(v2), f1 || f2) // Note logical OR for used token flag.
                 else {
                     assert(ctx.OR() != null)
 
-                    pushBoolean(asBoolean(v1) || asBoolean(v2), usedTok)
+                    pushBoolean(asBoolean(v1) || asBoolean(v2), f1 && f2) // Note local AND for used token flag.
                 }
             })
         }
 
         override def exitEqExpr(ctx: NCIntentDslParser.EqExprContext): Unit = {
             termCode += ((_, stack: StackType, _) ⇒ {
-                require(stack.size >= 2)
-
                 implicit val s = stack
 
-                val (v1, v2, usedTok) = pop2()
+                require(stack.size >= 2)
+
+                val (v1, v2, f1, f2) = pop2()
+                val usedTok = f1 || f2
 
                 def doEq(op: String): Boolean = {
                     if (isJLong(v1) && isJLong(v2))
@@ -360,7 +365,7 @@ object NCIntentDslCompiler extends LazyLogging {
             val fun = ctx.ID().getText
 
             termCode += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
-                implicit val s = stack
+                implicit val evidence = stack
 
                 def get1Str(): (String, Boolean) = {
                     if (stack.isEmpty)
@@ -373,7 +378,16 @@ object NCIntentDslCompiler extends LazyLogging {
 
                     (asString(v), f)
                 }
+                def get1Any(): (AnyRef, Boolean) = {
+                    if (stack.isEmpty)
+                        throw errParamNum(fun)
 
+                    pop1()
+                }
+
+                /*
+                 * String operations.
+                 */
                 def doTrim(): Unit = get1Str() match {
                     case (s, f) ⇒ pushAny(s.trim, f)
                 }
@@ -383,23 +397,108 @@ object NCIntentDslCompiler extends LazyLogging {
                 def doLowercase(): Unit = get1Str() match {
                     case (s, f) ⇒ pushAny(s.toLowerCase, f)
                 }
+                def doIsAlpha(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushBoolean(StringUtils.isAlpha(asString(s)), f)
+                }
+                def doIsNum(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushBoolean(StringUtils.isNumeric(asString(s)), f)
+                }
+                def doIsAlphaNum(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumeric(asString(s)), f)
+                }
+                def doIsWhitespace(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushBoolean(StringUtils.isWhitespace(asString(s)), f)
+                }
+                def doIsAlphaSpace(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushBoolean(StringUtils.isAlphaSpace(asString(s)), f)
+                }
+                def doIsAlphaNumSpace(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumericSpace(asString(s)), f)
+                }
+                def doIsNumSpace(): Unit = get1Str() match {
+                    case (s, f) ⇒ pushBoolean(StringUtils.isNumericSpace(asString(s)), f)
+                }
 
-                def doIsAlpha(): Boolean = { check1String(); StringUtils.isAlpha(asString(param)) }
-                def doIsNum(): Boolean = { check1String(); StringUtils.isNumeric(asString(param)) }
-                def doIsAlphaNum(): Boolean = { check1String(); StringUtils.isAlphanumeric(asString(param)) }
-                def doIsWhitespace(): Boolean = { check1String(); StringUtils.isWhitespace(asString(param)) }
-                def doIsAlphaSpace(): Boolean = { check1String(); StringUtils.isAlphaSpace(asString(param)) }
-                def doIsAlphaNumSpace(): Boolean = { check1String(); StringUtils.isAlphanumericSpace(asString(param)) }
-                def doIsNumSpace(): Boolean = { check1String(); StringUtils.isNumericSpace(asString(param)) }
+                /*
+                 * Math operations.
+                 */
+                def doAbs(): Unit = get1Any() match {
+                    case (a: JLong, f) ⇒ pushLong(Math.abs(a), f)
+                    case (a: JDouble, f) ⇒ pushDouble(Math.abs(a), f)
+                    case x ⇒ errParamType(fun, x)
+                }
+
+                /*
+                 * Collection, statistical operations.
+                 */
+                def doList(): Unit = {
+                    val jl = new JArrayList[Object]() // Empty list is allowed.
+                    var f = false
+
+                    stack.drain { x ⇒
+                        jl.add(x.retVal)
+                        f = f || x.usedTok
+                    }
+
+                    Collections.reverse(jl)
+
+                    pushAny(jl, f)
+                }
+                def doMap(): Unit = {
+                    if (stack.size % 2 != 0)
+                        errParamNum(fun)
+
+                    val jm = new JHashMap[Object, Object]()
+                    var f = false
+
+                    val keys = mutable.Buffer.empty[AnyRef]
+                    val vals = mutable.Buffer.empty[AnyRef]
+
+                    var idx = 0
+
+                    stack.drain { x ⇒
+                        if (idx % 2 == 0) keys += x.retVal else vals += x.retVal
+                        f = f || x.usedTok
+
+                        idx += 1
+                    }
+
+                    for ((k, v) ← keys zip vals)
+                        jm.put(k, v)
+
+                    pushAny(jm, f)
+                }
+
+                /*
+                 * Metadata operations.
+                 */
+                def doTokenMeta(): Unit = get1Str() match {
+                    case (s, _) ⇒ pushAny(tok.meta(s), true)
+                }
+                def doModelMeta(): Unit = get1Str() match {
+                    case (s, _) ⇒ pushAny(tok.getModel.meta(s), false)
+                }
+                def doReqMeta(): Unit = get1Str() match {
+                    case (s, _) ⇒ pushAny(ctx.reqMeta.get(s).orNull, false)
+                }
+                def doUserMeta(): Unit = get1Str() match {
+                    case (s, _) ⇒ pushAny(ctx.usrMeta.get(s).orNull, false)
+                }
+                def doCompMeta(): Unit = get1Str() match {
+                    case (s, _) ⇒ pushAny(ctx.compMeta.get(s).orNull, false)
+                }
+                def doIntentMeta(): Unit = get1Str() match {
+                    case (s, _) ⇒ pushAny(ctx.intentMeta.get(s).orNull, false)
+                }
 
                 fun match {
                     // Metadata access.
-                    case "token_meta" ⇒
-                    case "model_meta" ⇒
-                    case "intent_meta" ⇒
-                    case "data_meta" ⇒
-                    case "user_meta" ⇒
-                    case "company_meta" ⇒
+                    case "token_meta" ⇒ doTokenMeta()
+                    case "model_meta" ⇒ doModelMeta()
+                    case "intent_meta" ⇒ doIntentMeta()
+                    case "req_meta" ⇒ doReqMeta()
+                    case "user_meta" ⇒ doUserMeta()
+                    case "company_meta" ⇒ doCompMeta()
 
                     // Converts JSON to map.
                     case "json" ⇒
@@ -422,13 +521,13 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "strip" ⇒ doTrim()
                     case "uppercase" ⇒ doUppercase()
                     case "lowercase" ⇒ doLowercase()
-                    case "is_alpha" ⇒ pushBoolean(doIsAlpha(), usedTok)
-                    case "is_alphanum" ⇒ pushBoolean(doIsAlphaNum(), usedTok)
-                    case "is_whitespace" ⇒ pushBoolean(doIsWhitespace(), usedTok)
-                    case "is_numeric" ⇒ pushBoolean(doIsNum(), usedTok)
-                    case "is_numeric_space" ⇒ pushBoolean(doIsNumSpace(), usedTok)
-                    case "is_alpha_space" ⇒ pushBoolean(doIsAlphaSpace(), usedTok)
-                    case "is_alphanum_space" ⇒ pushBoolean(doIsAlphaNumSpace(), usedTok)
+                    case "is_alpha" ⇒ doIsAlpha()
+                    case "is_alphanum" ⇒ doIsAlphaNum()
+                    case "is_whitespace" ⇒ doIsWhitespace()
+                    case "is_numeric" ⇒ doIsNum()
+                    case "is_numeric_space" ⇒ doIsNumSpace()
+                    case "is_alpha_space" ⇒ doIsAlphaSpace()
+                    case "is_alphanum_space" ⇒ doIsAlphaNumSpace()
                     case "substring" ⇒
                     case "index" ⇒
                     case "regex" ⇒
@@ -437,7 +536,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "replace" ⇒
 
                     // Math functions.
-                    case "abs" ⇒
+                    case "abs" ⇒ doAbs()
                     case "ceil" ⇒
                     case "floor" ⇒
                     case "rint" ⇒
@@ -463,7 +562,8 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "tan" ⇒
 
                     // Collection, statistical (incl. string) functions.
-                    case "list" ⇒
+                    case "list" ⇒ doList()
+                    case "map" ⇒ doMap()
                     case "avg" ⇒
                     case "max" ⇒
                     case "min" ⇒
