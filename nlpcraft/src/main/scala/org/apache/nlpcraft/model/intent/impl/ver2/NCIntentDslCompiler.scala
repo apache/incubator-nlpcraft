@@ -20,19 +20,15 @@ package org.apache.nlpcraft.model.intent.impl.ver2
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
-import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.model.intent.impl.antlr4._
+import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslParser ⇒ Parser, _}
 import org.apache.nlpcraft.model.intent.utils.ver2._
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
-import java.time.LocalDate
+import java.lang.{IllegalArgumentException ⇒ IAE}
 import java.util.regex.{Pattern, PatternSyntaxException}
-import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
-import scala.language.{dynamics, implicitConversions}
 
 object NCIntentDslCompiler extends LazyLogging {
     // Compiler cache.
@@ -43,7 +39,6 @@ object NCIntentDslCompiler extends LazyLogging {
     /**
      *
      */
-    //noinspection DuplicatedCode
     class FiniteStateMachine(dsl: String) extends NCIntentDslBaseListener with NCBaseDslCompiler {
         // Intent components.
         private var id: String = _
@@ -63,6 +58,18 @@ object NCIntentDslCompiler extends LazyLogging {
         // Term's code, i.e. list of instructions.
         private var termInstrs = mutable.Buffer.empty[Instr]
 
+        /*
+         * Shared/common implementation.
+         */
+        override def exitUnaryExpr(ctx: Parser.UnaryExprContext): Unit = termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())
+        override def exitMultExpr(ctx: Parser.MultExprContext): Unit = termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())
+        override def exitPlusExpr(ctx: Parser.PlusExprContext): Unit = termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())
+        override def exitCompExpr(ctx: Parser.CompExprContext): Unit = termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())
+        override def exitLogExpr(ctx: Parser.LogExprContext): Unit = termInstrs += parseLogExpr(ctx.AND, ctx.OR())
+        override def exitEqExpr(ctx: Parser.EqExprContext): Unit = termInstrs += parseEqExpr(ctx.EQ, ctx.NEQ())
+        override def exitCallExpr(ctx: Parser.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.ID())
+        override def exitAtom(ctx: Parser.AtomContext): Unit = termInstrs += parseAtom(ctx.getText)
+
         /**
          *
          * @param min
@@ -73,7 +80,7 @@ object NCIntentDslCompiler extends LazyLogging {
             this.max = max
         }
 
-        override def exitMinMaxShortcut(ctx: NCIntentDslParser.MinMaxShortcutContext): Unit = {
+        override def exitMinMaxShortcut(ctx: Parser.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
                 setMinMax(1, Integer.MAX_VALUE)
             else if (ctx.MULT() != null)
@@ -84,366 +91,20 @@ object NCIntentDslCompiler extends LazyLogging {
                 assert(false)
         }
 
-        override def exitUnaryExpr(ctx: NCIntentDslParser.UnaryExprContext): Unit =
-            termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())
-
-        override def exitMultExpr(ctx: NCIntentDslParser.MultExprContext): Unit =
-            termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())
-
-        override def exitPlusExpr(ctx: NCIntentDslParser.PlusExprContext): Unit =
-            termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())
-
-        override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit =
-            termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())
-
-        override def exitLogExpr(ctx: NCIntentDslParser.LogExprContext): Unit = {
-            termInstrs += ((_, stack: StackType, _) ⇒ {
-                implicit val s = stack
-
-                val (v1, v2, f1, f2) = pop2()
-
-                if (!isBoolean(v1) || !isBoolean(v2))
-                    throw errBinaryOp(if (ctx.AND() != null) "&&" else "||", v1, v2)
-
-                if (ctx.AND() != null)
-                    pushBoolean(asBoolean(v1) && asBoolean(v2), f1 || f2) // Note logical OR for used token flag.
-                else {
-                    assert(ctx.OR() != null)
-
-                    pushBoolean(asBoolean(v1) || asBoolean(v2), f1 && f2) // Note local AND for used token flag.
-                }
-            })
-        }
-
-        override def exitEqExpr(ctx: NCIntentDslParser.EqExprContext): Unit = {
-            termInstrs += ((_, stack: StackType, _) ⇒ {
-                implicit val s = stack
-
-                val (v1, v2, f1, f2) = pop2()
-                val usedTok = f1 || f2
-
-                def doEq(op: String): Boolean = {
-                    if (isJLong(v1) && isJLong(v2))
-                        asJLong(v1) == asJLong(v2)
-                    if (isJLong(v1) && isJLong(v2))
-                        asJLong(v1) == asJLong(v2)
-                    else
-                        throw errBinaryOp(op, v1, v2)
-
-                }
-
-                if (ctx.EQ() != null)
-                    pushBoolean(doEq("=="), usedTok)
-                else {
-                    assert(ctx.NEQ() != null)
-
-                    pushBoolean(!doEq("!='"), usedTok)
-                }
-            })
-        }
-
-        override def exitCallExpr(ctx: NCIntentDslParser.CallExprContext): Unit = {
-            val fun = ctx.ID().getText
-
-            termInstrs += ((tok: NCToken, stack: StackType, termCtx: NCDslTermContext) ⇒ {
-                implicit val evidence = stack
-
-                def ensureStack(min: Int): Unit =
-                    if (stack.size < min)
-                        throw errMinParamNum(min, fun)
-
-                def get1Str(): (String, Boolean) = {
-                    ensureStack(1)
-
-                    val (v, f) = pop1()
-
-                    if (!isString(v))
-                        throw errParamType(fun, v, "string")
-
-                    (asString(v), f)
-                }
-                def get1Any(): (AnyRef, Boolean) = {
-                    ensureStack(1)
-
-                    pop1()
-                }
-
-                /*
-                 * String operations.
-                 */
-                def doTrim(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.trim, f) }
-                def doUppercase(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.toUpperCase, f) }
-                def doLowercase(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.toLowerCase, f) }
-                def doIsAlpha(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlpha(asString(s)), f) }
-                def doIsNum(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isNumeric(asString(s)), f) }
-                def doIsAlphaNum(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumeric(asString(s)), f) }
-                def doIsWhitespace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isWhitespace(asString(s)), f) }
-                def doIsAlphaSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlphaSpace(asString(s)), f) }
-                def doIsAlphaNumSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isAlphanumericSpace(asString(s)), f) }
-                def doIsNumSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBoolean(StringUtils.isNumericSpace(asString(s)), f) }
-
-                def doSplit(): Unit = {
-                    ensureStack(2)
-
-                    val (v1, v2, f1, f2) = pop2()
-                    val usedTok = f1 || f2
-
-                    if (!isString(v1))
-                        errParamType(fun, v1, "string")
-                    if (!isString(v2))
-                        errParamType(fun, v2, "string")
-
-                    asString(v1).split(asString(v2)).foreach { pushAny(_, usedTok) }
-                }
-                def doSplitTrim(): Unit = {
-                    ensureStack(2)
-
-                    val (v1, v2, f1, f2) = pop2()
-                    val usedTok = f1 || f2
-
-                    if (!isString(v1))
-                        errParamType(fun, v1, "string")
-                    if (!isString(v2))
-                        errParamType(fun, v2, "string")
-
-                    asString(v1).split(asString(v2)).foreach { s ⇒ pushAny(s.strip, usedTok) }
-                }
-
-                /*
-                 * Math operations.
-                 */
-                def doAbs(): Unit = get1Any() match {
-                    case (a: JLong, f) ⇒ pushLong(Math.abs(a), f)
-                    case (a: JDouble, f) ⇒ pushDouble(Math.abs(a), f)
-                    case x ⇒ errParamType(fun, x, "numeric")
-                }
-
-                /*
-                 * Collection, statistical operations.
-                 */
-                def doList(): Unit = {
-                    val jl = new JArrayList[Object]() // Empty list is allowed.
-                    var f = false
-
-                    stack.drain { x ⇒
-                        jl.add(x.retVal)
-                        f = f || x.usedTok
-                    }
-
-                    Collections.reverse(jl)
-
-                    pushAny(jl, f)
-                }
-                def doMap(): Unit = {
-                    if (stack.size % 2 != 0)
-                        errParamNum(fun)
-
-                    val jm = new JHashMap[Object, Object]()
-                    var f = false
-
-                    val keys = mutable.Buffer.empty[AnyRef]
-                    val vals = mutable.Buffer.empty[AnyRef]
-
-                    var idx = 0
-
-                    stack.drain { x ⇒
-                        if (idx % 2 == 0) keys += x.retVal else vals += x.retVal
-                        f = f || x.usedTok
-
-                        idx += 1
-                    }
-
-                    for ((k, v) ← keys zip vals)
-                        jm.put(k, v)
-
-                    pushAny(jm, f)
-                }
-
-                /*
-                 * Metadata operations.
-                 */
-                def doTokenMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(tok.meta(s), true)
-                }
-                def doModelMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(tok.getModel.meta(s), false)
-                }
-                def doReqMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(termCtx.reqMeta.get(s).orNull, false)
-                }
-                def doSysMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(U.sysEnv(s).orNull, false)
-                }
-                def doUserMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(termCtx.usrMeta.get(s).orNull, false)
-                }
-                def doCompMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false)
-                }
-                def doIntentMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false)
-                }
-
-                /*
-                 * Date-time operations.
-                 */
-                def doYear(): Unit = pushLong(LocalDate.now.getYear,false)
-                def doMonth(): Unit = pushLong(LocalDate.now.getMonthValue,false)
-                def doDayOfMonth(): Unit = pushLong(LocalDate.now.getDayOfMonth,false)
-                def doDayOfWeek(): Unit = pushLong(LocalDate.now.getDayOfWeek.getValue,false)
-                def doDayOfYear(): Unit = pushLong(LocalDate.now.getDayOfYear,false)
-
-                def doJson(): Unit = get1Str() match { case (s, f) ⇒ pushAny(U.jsonToJavaMap(asString(s)), f) }
-                def doIf(): Unit = {
-                    ensureStack(3)
-
-                    val (v1, v2, v3, f1, f2, f3) = pop3()
-
-                    if (!isBoolean(v1))
-                        throw errParamType(fun, v1, "boolean")
-
-                    if (asBoolean(v1))
-                        pushAny(v2, f1 || f2)
-                    else
-                        pushAny(v3, f1 || f3)
-                }
-
-                fun match {
-                    // Metadata access.
-                    case "token_meta" ⇒ doTokenMeta()
-                    case "model_meta" ⇒ doModelMeta()
-                    case "intent_meta" ⇒ doIntentMeta()
-                    case "req_meta" ⇒ doReqMeta()
-                    case "user_meta" ⇒ doUserMeta()
-                    case "company_meta" ⇒ doCompMeta()
-                    case "sys_meta" ⇒ doSysMeta()
-
-                    // Converts JSON to map.
-                    case "json" ⇒ doJson()
-
-                    // Inline if-statement.
-                    case "if" ⇒ doIf()
-
-                    // Token functions.
-                    case "id" ⇒ pushAny(tok.getId, true)
-                    case "ancestors" ⇒ pushAny(tok.getAncestors, true)
-                    case "parent" ⇒ pushAny(tok.getParentId, true)
-                    case "groups" ⇒ pushAny(tok.getGroups, true)
-                    case "value" ⇒ pushAny(tok.getValue, true)
-                    case "aliases" ⇒ pushAny(tok.getAliases, true)
-                    case "start_idx" ⇒ pushLong(tok.getStartCharIndex, true)
-                    case "end_idx" ⇒ pushLong(tok.getEndCharIndex, true)
-
-                    // String functions.
-                    case "trim" ⇒ doTrim()
-                    case "strip" ⇒ doTrim()
-                    case "uppercase" ⇒ doUppercase()
-                    case "lowercase" ⇒ doLowercase()
-                    case "is_alpha" ⇒ doIsAlpha()
-                    case "is_alphanum" ⇒ doIsAlphaNum()
-                    case "is_whitespace" ⇒ doIsWhitespace()
-                    case "is_numeric" ⇒ doIsNum()
-                    case "is_numeric_space" ⇒ doIsNumSpace()
-                    case "is_alpha_space" ⇒ doIsAlphaSpace()
-                    case "is_alphanum_space" ⇒ doIsAlphaNumSpace()
-                    case "substring" ⇒
-                    case "index" ⇒
-                    case "regex" ⇒
-                    case "soundex" ⇒
-                    case "split" ⇒ doSplit()
-                    case "split_trim" ⇒ doSplitTrim()
-                    case "replace" ⇒
-
-                    // Math functions.
-                    case "abs" ⇒ doAbs()
-                    case "ceil" ⇒
-                    case "floor" ⇒
-                    case "rint" ⇒
-                    case "round" ⇒
-                    case "signum" ⇒
-                    case "sqrt" ⇒
-                    case "pi" ⇒
-                    case "acos" ⇒
-                    case "asin" ⇒
-                    case "atan" ⇒
-                    case "atn2" ⇒
-                    case "cos" ⇒
-                    case "cot" ⇒
-                    case "degrees" ⇒
-                    case "exp" ⇒
-                    case "log" ⇒
-                    case "log10" ⇒
-                    case "power" ⇒
-                    case "radians" ⇒
-                    case "rand" ⇒
-                    case "sin" ⇒
-                    case "square" ⇒
-                    case "tan" ⇒
-
-                    // Collection, statistical (incl. string) functions.
-                    case "list" ⇒ doList()
-                    case "map" ⇒ doMap()
-                    case "avg" ⇒
-                    case "max" ⇒
-                    case "min" ⇒
-                    case "stdev" ⇒
-                    case "sum" ⇒
-                    case "get" ⇒
-                    case "index" ⇒
-                    case "contains" ⇒
-                    case "tail" ⇒
-                    case "add" ⇒
-                    case "remove" ⇒
-                    case "first" ⇒
-                    case "last" ⇒
-                    case "keys" ⇒
-                    case "values" ⇒
-                    case "length" ⇒
-                    case "count" ⇒
-                    case "take" ⇒
-                    case "drop" ⇒
-                    case "size" ⇒
-                    case "length" ⇒
-                    case "reverse" ⇒
-                    case "is_empty" ⇒
-                    case "non_empty" ⇒
-                    case "to_string" ⇒
-
-                    // Date-time functions.
-                    case "year" ⇒ doYear()
-                    case "month" ⇒ doMonth()
-                    case "day_of_month" ⇒ doDayOfMonth()
-                    case "day_of_week" ⇒ doDayOfWeek()
-                    case "day_of_year" ⇒ doDayOfYear()
-                    case "hour" ⇒
-                    case "min" ⇒
-                    case "sec" ⇒
-                    case "week" ⇒
-                    case "quarter" ⇒
-                    case "msec" ⇒
-                    case "now" ⇒
-
-                    case _ ⇒ errUnknownFun(fun)
-                }
-            })
-        }
-
-        override def exitClsNer(ctx: NCIntentDslParser.ClsNerContext): Unit = {
+        override def exitClsNer(ctx: Parser.ClsNerContext): Unit = {
             if (ctx.javaFqn() != null)
                 termClsName = ctx.javaFqn().getText
 
             termMtdName = ctx.ID().getText
         }
 
-        override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
-            termId = ctx.ID().getText
-        }
+        override def exitTermId(ctx: Parser.TermIdContext): Unit = termId = ctx.ID().getText
+        override def exitTermEq(ctx: Parser.TermEqContext): Unit =  termConv = ctx.TILDA() != null
+        override def exitIntentId(ctx: Parser.IntentIdContext): Unit = id = ctx.ID().getText
+        override def exitMetaDecl(ctx: Parser.MetaDeclContext): Unit = meta = U.jsonToScalaMap(ctx.jsonObj().getText)
+        override def exitOrderedDecl(ctx: Parser.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
-        override def exitTermEq(ctx: NCIntentDslParser.TermEqContext): Unit = {
-            termConv = ctx.TILDA() != null
-        }
-
-        override def exitFlowDecl(ctx: NCIntentDslParser.FlowDeclContext): Unit = {
+        override def exitFlowDecl(ctx: Parser.FlowDeclContext): Unit = {
             val qRegex = ctx.qstring().getText
 
             if (qRegex != null && qRegex.length > 2) {
@@ -461,46 +122,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 }
         }
 
-        override def exitIntentId(ctx: NCIntentDslParser.IntentIdContext): Unit = {
-            id = ctx.ID().getText
-        }
-
-        override def exitMetaDecl(ctx: NCIntentDslParser.MetaDeclContext): Unit = {
-            meta = U.jsonToScalaMap(ctx.jsonObj().getText)
-        }
-
-        override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
-            ordered = ctx.BOOL().getText == "true"
-        }
-
-        override def exitAtom(ctx: NCIntentDslParser.AtomContext): Unit = {
-            val s = ctx.getText
-
-            val atom =
-                if (s == "null") null // Try 'null'.
-                else if (s == "true") Boolean.box(true) // Try 'boolean'.
-                else if (s == "false") Boolean.box(false) // Try 'boolean'.
-                // Only numeric or string values below...
-                else {
-                    // Strip '_' from numeric values.
-                    val num = s.replaceAll("_", "")
-
-                    try
-                        Long.box(JLong.parseLong(num)) // Try 'long'.
-                    catch {
-                        case _: NumberFormatException ⇒
-                            try
-                                Double.box(JDouble.parseDouble(num)) // Try 'double'.
-                            catch {
-                                case _: NumberFormatException ⇒ s // String by default (incl. quotes).
-                            }
-                    }
-                }
-
-            termInstrs += ((_, stack, _) ⇒ pushAny(atom, false)(stack))
-        }
-
-        override def exitTerm(ctx: NCIntentDslParser.TermContext): Unit = {
+        override def exitTerm(ctx: Parser.TermContext): Unit = {
             if (min < 0 || min > max)
                 throw new IAE(s"Invalid DSL intent term min quantifiers: $min (must be min >= 0 && min <= max).")
             if (max < 1)
@@ -529,7 +151,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         if (!isBoolean(x.retVal))
                             throw new IAE(s"DSL intent term does not return boolean value: ${ctx.getText}")
 
-                        (asBoolean(x.retVal), x.usedTok)
+                        (asBool(x.retVal), x.usedTok)
                     }
 
                 }
@@ -624,7 +246,7 @@ object NCIntentDslCompiler extends LazyLogging {
             // ANTLR4 armature.
             val lexer = new NCIntentDslLexer(CharStreams.fromString(src))
             val tokens = new CommonTokenStream(lexer)
-            val parser = new NCIntentDslParser(tokens)
+            val parser = new Parser(tokens)
 
             // Set custom error handlers.
             lexer.removeErrorListeners()
