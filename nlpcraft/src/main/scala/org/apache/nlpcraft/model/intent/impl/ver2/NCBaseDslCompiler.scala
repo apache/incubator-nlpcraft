@@ -476,6 +476,7 @@ trait NCBaseDslCompiler {
             def doReqMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.reqMeta.get(s).orNull, false) }
             def doSysMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(U.sysEnv(s).orNull, false) }
             def doUserMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.usrMeta.get(s).orNull, false) }
+            def doConvMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.convMeta.get(s).orNull, false) }
             def doCompMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false) }
             def doIntentMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false) }
 
@@ -523,6 +524,21 @@ trait NCBaseDslCompiler {
             def doAtan2(): Unit = get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.atan2(a1, a2), f) }
 
             /*
+             * User operations.
+             */
+            def doUserId(): Unit = pushLong(termCtx.req.getUser.getId, false)
+
+            /*
+             * Company operations.
+             */
+            def doCompId(): Unit = pushLong(termCtx.req.getCompany.getId, false)
+
+            /*
+             * Request operations.
+             */
+            def doReqId(): Unit = pushAny(termCtx.req.getServerRequestId, false)
+
+            /*
              * Date-time operations.
              */
             def doYear(): Unit = pushLong(LocalDate.now.getYear,false)
@@ -555,6 +571,7 @@ trait NCBaseDslCompiler {
                 case "user_meta" ⇒ doUserMeta()
                 case "company_meta" ⇒ doCompMeta()
                 case "sys_meta" ⇒ doSysMeta()
+                case "conv_meta" ⇒ doConvMeta()
 
                 // Converts JSON to map.
                 case "json" ⇒ doJson()
@@ -572,6 +589,31 @@ trait NCBaseDslCompiler {
                 case "start_idx" ⇒ pushLong(tok.getStartCharIndex, true)
                 case "end_idx" ⇒ pushLong(tok.getEndCharIndex, true)
 
+                // Request data.
+                case "req_id" ⇒ doReqId()
+                case "req_normtext" ⇒
+                case "req_tstamp" ⇒
+                case "req_addr" ⇒
+                case "req_agent" ⇒
+
+                // User data.
+                case "user_id" ⇒ doUserId()
+                case "user_fname" ⇒
+                case "user_lname" ⇒
+                case "user_email" ⇒
+                case "user_admin" ⇒
+                case "user_signup_tstamp" ⇒
+
+                // Company data.
+                case "comp_id" ⇒ doCompId()
+                case "comp_name" ⇒
+                case "comp_website" ⇒
+                case "comp_country" ⇒
+                case "comp_region" ⇒
+                case "comp_city" ⇒
+                case "comp_addr" ⇒
+                case "comp_postcode" ⇒
+
                 // String functions.
                 case "trim" ⇒ doTrim()
                 case "strip" ⇒ doTrim()
@@ -580,10 +622,10 @@ trait NCBaseDslCompiler {
                 case "is_alpha" ⇒ doIsAlpha()
                 case "is_alphanum" ⇒ doIsAlphaNum()
                 case "is_whitespace" ⇒ doIsWhitespace()
-                case "is_numeric" ⇒ doIsNum()
-                case "is_numeric_space" ⇒ doIsNumSpace()
-                case "is_alpha_space" ⇒ doIsAlphaSpace()
-                case "is_alphanum_space" ⇒ doIsAlphaNumSpace()
+                case "is_num" ⇒ doIsNum()
+                case "is_numspace" ⇒ doIsNumSpace()
+                case "is_alphaspace" ⇒ doIsAlphaSpace()
+                case "is_alphanumspace" ⇒ doIsAlphaNumSpace()
                 case "substring" ⇒
                 case "index" ⇒
                 case "regex" ⇒

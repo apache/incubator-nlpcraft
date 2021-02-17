@@ -40,7 +40,7 @@ case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCReq
     override lazy val getReceiveTimestamp: Long = meta("RECEIVE_TSTAMP").asInstanceOf[Long] // UTC.
     override lazy val getClientAgent: Optional[String] = getOpt("USER_AGENT")
     override lazy val getRemoteAddress: Optional[String] = getOpt("REMOTE_ADDR")
-    override lazy val getData: Optional[String] = getOpt("DATA")
+    override lazy val getJsonData: Optional[String] = getOpt("DATA")
     override lazy val getCompany: NCCompany = new NCCompanyImpl(
         meta("COMPANY_ID").asInstanceOf[Long],
         meta("COMPANY_NAME").asInstanceOf[String],

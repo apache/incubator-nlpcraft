@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.intent.utils.ver2
 
 import org.apache.nlpcraft.common.ScalaMeta
+import org.apache.nlpcraft.model.NCRequest
 
 /**
  *
@@ -26,5 +27,7 @@ case class NCDslTermContext(
     intentMeta: ScalaMeta,
     reqMeta: ScalaMeta,
     usrMeta: ScalaMeta,
-    compMeta: ScalaMeta
+    compMeta: ScalaMeta,
+    convMeta: ScalaMeta,
+    req: NCRequest
 )

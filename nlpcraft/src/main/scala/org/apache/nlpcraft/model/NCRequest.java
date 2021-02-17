@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model;
 import java.util.*;
 
 /**
- * Supplemental information about the user request.
+ * Information about the user request.
  *
  * @see NCContext#getRequest()
  */
@@ -82,10 +82,9 @@ public interface NCRequest {
     Optional<String> getClientAgent();
 
     /**
-     * Gets optional JSON data passed in with user request.
+     * Gets optional JSON data passed in with the user request.
      *
-     * @return Optional user input data.
-     * @see NCUser#getProperties()
+     * @return Optional JSON data.
      */
-    Optional<String> getData();
+    Optional<String> getJsonData();
 }

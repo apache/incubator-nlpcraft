@@ -54,7 +54,7 @@ class EchoModel extends NCModelAdapter("nlpcraft.echo.ex", "Echo Example Model",
 
         val map = new util.HashMap[String, Any]()
 
-        map.put("srvReqId", ctx.getServerRequestId)
+        map.put("srvReqId", ctx.getRequest.getServerRequestId)
         map.put("sentence", sm)
 
         NCResult.json(new Gson().toJson(map))

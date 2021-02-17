@@ -28,10 +28,10 @@ import java.util.*;
  */
 public interface NCContext extends Serializable {
     /**
-     * Tests if given token is part of this query.
+     * Tests if given token is part of the query this context is associated with.
      *
      * @param tok Token to check.
-     * @return {@code true} if given token is from this sentence, {@code false} otherwise.
+     * @return {@code true} if given token is from the sentence associated with this context, {@code false} otherwise.
      */
     boolean isOwnerOf(NCToken tok);
 
@@ -42,15 +42,6 @@ public interface NCContext extends Serializable {
      * @return All parsing variants of this query. Always contains at least one variant.
      */
     Collection<? extends NCVariant> getVariants();
-
-    /**
-     * Gets globally unique ID of the current request. Server request is defined as a processing of
-     * a one user input sentence. Note that the model can be accessed (i.e. intents can be matched) multiple times
-     * during the processing of a single request, and therefore multiple contexts may return the same server request ID.
-     *
-     * @return Server request ID.
-     */
-    String getServerRequestId();
 
     /**
      * Gets model instance for this query.

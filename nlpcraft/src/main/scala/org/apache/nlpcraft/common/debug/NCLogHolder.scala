@@ -183,8 +183,8 @@ class NCLogHolder extends Serializable {
             company = compJs,
             remoteAddress = req.getRemoteAddress.orElse(null),
             clientAgent = req.getClientAgent.orElse(null),
-            data = if (req.getData.isPresent) {
-                val str = req.getData.get
+            data = if (req.getJsonData.isPresent) {
+                val str = req.getJsonData.get
 
                 try
                     NCUtils.jsonToObject(str)

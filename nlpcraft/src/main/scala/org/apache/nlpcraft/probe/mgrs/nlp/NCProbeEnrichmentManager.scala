@@ -567,7 +567,6 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val ctx: NCContext = new NCContext {
             override lazy val getRequest: NCRequest = req
             override lazy val getModel: NCModel = mdl.model
-            override lazy val getServerRequestId: String = srvReqId
 
             override lazy val getConversation: NCConversation = new NCConversation {
                 override def getTokens: util.List[NCToken] = conv.getTokens()

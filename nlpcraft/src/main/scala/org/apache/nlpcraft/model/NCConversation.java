@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.model;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -31,15 +30,15 @@ import java.util.function.Predicate;
  * Note also that tokens in STM automatically expire (i.e. context is "forgotten") after a certain period of time and/or
  * based on the depth of the conversation since the last mention.
  * <p>
- * You can also maintain user state-machine between requests using method {@link #getUserData()}. This
- * method returns mutable thread-safe container that can hold any arbitrary user data while supporting the same
+ * You can also maintain user state-machine between requests using metadata. Conversation's metadata is a
+ * mutable thread-safe container that can hold any arbitrary user data while supporting the same
  * expiration logic as the rest of the conversation elements (i.e. tokens and previously matched intent IDs).
  *
  * @see NCContext#getConversation()
  * @see NCModelView#getConversationDepth()
  * @see NCModelView#getConversationTimeout()
  */
-public interface NCConversation {
+public interface NCConversation extends NCMetadata {
     /**
      * Gets an ordered list of tokens stored in the conversation STM for the current
      * user and data model. Tokens in the returned list are ordered by their conversational depth, i.e.
@@ -89,16 +88,4 @@ public interface NCConversation {
      * @param filter Dialog flow filter based on IDs of previously matched intents.
      */
     void clearDialog(Predicate<String/* Intent ID. */> filter);
-
-    /**
-     * Gets modifiable user data container that can be used to store user data in the conversation.
-     * Note that this data will expire the same way as other elements in the conversation (i.e. tokens and
-     * previously matched intents).
-     * <p>
-     * Note that you should not cache or clone the data from this container because it won't be properly expired
-     * in that case. You can, however, cache the return reference itself, if required.
-     *
-     * @return Mutable and thread-safe user data container.
-     */
-    Map<String, Object> getUserData();
 }
