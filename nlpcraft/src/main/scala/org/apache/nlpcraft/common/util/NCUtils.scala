@@ -57,7 +57,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
-import scala.collection._
+import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.io.{BufferedSource, Source}
@@ -1610,6 +1610,24 @@ object NCUtils extends LazyLogging {
      */
     def jsonToObject[T](json: String, cls: Class[T]): T =
         GSON.fromJson(json, cls)
+
+    /**
+     * Shortcut to convert given JSON to Scala map with default mapping.
+     *
+     * @param json JSON to convert.
+     * @return
+     */
+    def jsonToScalaMap(json: String): Map[String, Any] =
+        GSON.fromJson(json, classOf[java.util.HashMap[String, Any]]).asScala.toMap
+
+    /**
+     * Shortcut to convert given JSON to Java map with default mapping.
+     *
+     * @param json JSON to convert.
+     * @return
+     */
+    def jsonToJavaMap(json: String): Map[String, Any] =
+        GSON.fromJson(json, classOf[java.util.HashMap[String, Any]])
 
     /**
      *

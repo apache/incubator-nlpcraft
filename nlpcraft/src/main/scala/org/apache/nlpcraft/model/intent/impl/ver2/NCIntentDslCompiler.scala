@@ -17,7 +17,6 @@
 
 package org.apache.nlpcraft.model.intent.impl.ver2
 
-import com.google.gson.reflect.TypeToken
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
@@ -27,7 +26,6 @@ import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4._
 import org.apache.nlpcraft.model.intent.utils.ver2._
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import java.lang.{Double ⇒ JDouble, IllegalArgumentException ⇒ IAE, Long ⇒ JLong}
@@ -45,6 +43,7 @@ object NCIntentDslCompiler extends LazyLogging {
     /**
      *
      */
+    //noinspection DuplicatedCode
     class FiniteStateMachine(dsl: String) extends NCIntentDslBaseListener {
         // Intent components.
         private var id: String = _
@@ -90,11 +89,13 @@ object NCIntentDslCompiler extends LazyLogging {
         private def errBinaryOp(op: String, v1: AnyRef, v2: AnyRef): IAE =
             new IAE(s"Unexpected '$op' DSL operation for values: $v1, $v2")
         private def errUnknownFun(fun: String): IAE =
-            new IAE(s"Unknown DSL function: $fun")
+            new IAE(s"Unknown DSL function: $fun()")
+        private def errMinParamNum(min: Int, fun: String): IAE =
+            new IAE(s"Invalid number of parameters for DSL function ($min is required): $fun()")
         private def errParamNum(fun: String): IAE =
-            new IAE(s"Invalid number of parameters for DSL function: $fun")
-        private def errParamType(fun: String, param: AnyRef): IAE =
-            new IAE(s"Invalid type of parameter for DSL function '$fun': $param")
+            new IAE(s"Invalid number of parameters for DSL function: $fun()")
+        private def errParamType(fun: String, param: AnyRef, expectType: String): IAE =
+            new IAE(s"Expecting '$expectType' type of parameter for DSL function '$fun()', found: $param")
 
         /**
          *
@@ -123,11 +124,28 @@ object NCIntentDslCompiler extends LazyLogging {
          * @return
          */
         private def pop2()(implicit stack: StackType): (AnyRef, AnyRef, Boolean, Boolean) = {
+            require(stack.size >= 2)
+
             // Stack pops in reverse order of push...
-            val NCDslTermRetVal(val2, f1) = stack.pop()
-            val NCDslTermRetVal(val1, f2) = stack.pop()
+            val NCDslTermRetVal(val2, f2) = stack.pop()
+            val NCDslTermRetVal(val1, f1) = stack.pop()
 
             (val1, val2, f1, f2)
+        }
+        /**
+         *
+         * @param stack
+         * @return
+         */
+        private def pop3()(implicit stack: StackType): (AnyRef, AnyRef, AnyRef, Boolean, Boolean, Boolean) = {
+            require(stack.size >= 3)
+
+            // Stack pops in reverse order of push...
+            val NCDslTermRetVal(val3, f3) = stack.pop()
+            val NCDslTermRetVal(val2, f2) = stack.pop()
+            val NCDslTermRetVal(val1, f1) = stack.pop()
+
+            (val1, val2, val3, f1, f2, f3)
         }
 
         /**
@@ -170,8 +188,6 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitMultExpr(ctx: NCIntentDslParser.MultExprContext): Unit = {
             termInstrs += ((_, stack: StackType, _) ⇒ {
-                require(stack.size >= 2)
-
                 implicit val s = stack
 
                 val (v1, v2, f1, f2) = pop2()
@@ -214,8 +230,6 @@ object NCIntentDslCompiler extends LazyLogging {
 
         override def exitPlusExpr(ctx: NCIntentDslParser.PlusExprContext): Unit = {
             termInstrs += ((_, stack: StackType, _) ⇒ {
-                require(stack.size >= 2)
-
                 implicit val s = stack
 
                 val (v1, v2, f1, f2) = pop2()
@@ -255,8 +269,6 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit = {
             termInstrs += ((_, stack: StackType, _) ⇒ {
                 implicit val s = stack
-
-                require(stack.size >= 2)
 
                 val (v1, v2, f1, f2) = pop2()
                 val usedTok = f1 || f2
@@ -318,8 +330,6 @@ object NCIntentDslCompiler extends LazyLogging {
             termInstrs += ((_, stack: StackType, _) ⇒ {
                 implicit val s = stack
 
-                require(stack.size >= 2)
-
                 val (v1, v2, f1, f2) = pop2()
 
                 if (!isBoolean(v1) || !isBoolean(v2))
@@ -338,8 +348,6 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitEqExpr(ctx: NCIntentDslParser.EqExprContext): Unit = {
             termInstrs += ((_, stack: StackType, _) ⇒ {
                 implicit val s = stack
-
-                require(stack.size >= 2)
 
                 val (v1, v2, f1, f2) = pop2()
                 val usedTok = f1 || f2
@@ -367,12 +375,12 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitCallExpr(ctx: NCIntentDslParser.CallExprContext): Unit = {
             val fun = ctx.ID().getText
 
-            termInstrs += ((tok: NCToken, stack: StackType, ctx: NCDslTermContext) ⇒ {
+            termInstrs += ((tok: NCToken, stack: StackType, termCtx: NCDslTermContext) ⇒ {
                 implicit val evidence = stack
 
                 def ensureStack(min: Int): Unit =
                     if (stack.size < min)
-                        throw errParamNum(fun)
+                        throw errMinParamNum(min, fun)
 
                 def get1Str(): (String, Boolean) = {
                     ensureStack(1)
@@ -380,7 +388,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     val (v, f) = pop1()
 
                     if (!isString(v))
-                        throw errParamType(fun, v)
+                        throw errParamType(fun, v, "string")
 
                     (asString(v), f)
                 }
@@ -411,11 +419,24 @@ object NCIntentDslCompiler extends LazyLogging {
                     val usedTok = f1 || f2
 
                     if (!isString(v1))
-                        errParamType(fun, v1)
+                        errParamType(fun, v1, "string")
                     if (!isString(v2))
-                        errParamType(fun, v2)
+                        errParamType(fun, v2, "string")
 
                     asString(v1).split(asString(v2)).foreach { pushAny(_, usedTok) }
+                }
+                def doSplitTrim(): Unit = {
+                    ensureStack(2)
+
+                    val (v1, v2, f1, f2) = pop2()
+                    val usedTok = f1 || f2
+
+                    if (!isString(v1))
+                        errParamType(fun, v1, "string")
+                    if (!isString(v2))
+                        errParamType(fun, v2, "string")
+
+                    asString(v1).split(asString(v2)).foreach { s ⇒ pushAny(s.strip, usedTok) }
                 }
 
                 /*
@@ -424,7 +445,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 def doAbs(): Unit = get1Any() match {
                     case (a: JLong, f) ⇒ pushLong(Math.abs(a), f)
                     case (a: JDouble, f) ⇒ pushDouble(Math.abs(a), f)
-                    case x ⇒ errParamType(fun, x)
+                    case x ⇒ errParamType(fun, x, "numeric")
                 }
 
                 /*
@@ -478,16 +499,19 @@ object NCIntentDslCompiler extends LazyLogging {
                     case (s, _) ⇒ pushAny(tok.getModel.meta(s), false)
                 }
                 def doReqMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(ctx.reqMeta.get(s).orNull, false)
+                    case (s, _) ⇒ pushAny(termCtx.reqMeta.get(s).orNull, false)
+                }
+                def doSysMeta(): Unit = get1Str() match {
+                    case (s, _) ⇒ pushAny(U.sysEnv(s).orNull, false)
                 }
                 def doUserMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(ctx.usrMeta.get(s).orNull, false)
+                    case (s, _) ⇒ pushAny(termCtx.usrMeta.get(s).orNull, false)
                 }
                 def doCompMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(ctx.compMeta.get(s).orNull, false)
+                    case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false)
                 }
                 def doIntentMeta(): Unit = get1Str() match {
-                    case (s, _) ⇒ pushAny(ctx.intentMeta.get(s).orNull, false)
+                    case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false)
                 }
 
                 /*
@@ -499,6 +523,21 @@ object NCIntentDslCompiler extends LazyLogging {
                 def doDayOfWeek(): Unit = pushLong(LocalDate.now.getDayOfWeek.getValue,false)
                 def doDayOfYear(): Unit = pushLong(LocalDate.now.getDayOfYear,false)
 
+                def doJson(): Unit = get1Str() match { case (s, f) ⇒ pushAny(U.jsonToJavaMap(asString(s)), f) }
+                def doIf(): Unit = {
+                    ensureStack(3)
+
+                    val (v1, v2, v3, f1, f2, f3) = pop3()
+
+                    if (!isBoolean(v1))
+                        throw errParamType(fun, v1, "boolean")
+
+                    if (asBoolean(v1))
+                        pushAny(v2, f1 || f2)
+                    else
+                        pushAny(v3, f1 || f3)
+                }
+
                 fun match {
                     // Metadata access.
                     case "token_meta" ⇒ doTokenMeta()
@@ -507,12 +546,13 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "req_meta" ⇒ doReqMeta()
                     case "user_meta" ⇒ doUserMeta()
                     case "company_meta" ⇒ doCompMeta()
+                    case "sys_meta" ⇒ doSysMeta()
 
                     // Converts JSON to map.
-                    case "json" ⇒
+                    case "json" ⇒ doJson()
 
                     // Inline if-statement.
-                    case "if" ⇒
+                    case "if" ⇒ doIf()
 
                     // Token functions.
                     case "id" ⇒ pushAny(tok.getId, true)
@@ -541,6 +581,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     case "regex" ⇒
                     case "soundex" ⇒
                     case "split" ⇒ doSplit()
+                    case "split_trim" ⇒ doSplitTrim()
                     case "replace" ⇒
 
                     // Math functions.
@@ -655,7 +696,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitMetaDecl(ctx: NCIntentDslParser.MetaDeclContext): Unit = {
-            meta = U.jsonToObject(ctx.jsonObj().getText, classOf[java.util.HashMap[String, Any]]).asScala.toMap
+            meta = U.jsonToScalaMap(ctx.jsonObj().getText)
         }
 
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {
@@ -697,7 +738,7 @@ object NCIntentDslCompiler extends LazyLogging {
 
             val pred =
                 if (termMtdName != null) { // User-code defined term.
-                    (tok: NCToken, ctx: NCDslTermContext) ⇒ {
+                    (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
                         // TODO.
 
                         (true, true)
