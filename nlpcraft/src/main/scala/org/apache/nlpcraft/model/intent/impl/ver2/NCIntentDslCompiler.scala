@@ -44,7 +44,7 @@ object NCIntentDslCompiler extends LazyLogging {
      *
      */
     //noinspection DuplicatedCode
-    class FiniteStateMachine(dsl: String) extends NCIntentDslBaseListener {
+    class FiniteStateMachine(dsl: String) extends NCIntentDslBaseListener with NCBaseDslCompiler {
         // Intent components.
         private var id: String = _
         private var ordered: Boolean = false
@@ -60,42 +60,8 @@ object NCIntentDslCompiler extends LazyLogging {
         private var termClsName: String = _
         private var termMtdName: String = _
 
-        type StackType = mutable.ArrayStack[NCDslTermRetVal]
-        type Instr = (NCToken, StackType,  NCDslTermContext) ⇒ Unit
-
         // Term's code, i.e. list of instructions.
         private var termInstrs = mutable.Buffer.empty[Instr]
-
-        private def isJLong(v: AnyRef): Boolean = v.isInstanceOf[JLong]
-        private def isJDouble(v: AnyRef): Boolean = v.isInstanceOf[JDouble]
-        private def isString(v: AnyRef): Boolean = v.isInstanceOf[String]
-        private def isBoolean(v: AnyRef): Boolean = v.isInstanceOf[Boolean]
-        private def asJLong(v: AnyRef): Long = v.asInstanceOf[JLong].longValue()
-        private def asJDouble(v: AnyRef): Double = v.asInstanceOf[JDouble].doubleValue()
-        private def asString(v: AnyRef): String = v.asInstanceOf[String]
-        private def asBoolean(v: AnyRef): Boolean = v.asInstanceOf[Boolean]
-
-        private def pushAny(any: AnyRef, usedTok: Boolean)(implicit stack: StackType): Unit =
-            stack.push(NCDslTermRetVal(any, usedTok))
-        private def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit =
-            stack.push(NCDslTermRetVal(Long.box(any), usedTok))
-        private def pushDouble(any: Double, usedTok: Boolean)(implicit stack: StackType): Unit =
-            stack.push(NCDslTermRetVal(Double.box(any), usedTok))
-        private def pushBoolean(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit =
-            stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
-
-        private def errUnaryOp(op: String, v: AnyRef): IAE =
-            new IAE(s"Unexpected '$op' DSL operation for value: $v")
-        private def errBinaryOp(op: String, v1: AnyRef, v2: AnyRef): IAE =
-            new IAE(s"Unexpected '$op' DSL operation for values: $v1, $v2")
-        private def errUnknownFun(fun: String): IAE =
-            new IAE(s"Unknown DSL function: $fun()")
-        private def errMinParamNum(min: Int, fun: String): IAE =
-            new IAE(s"Invalid number of parameters for DSL function ($min is required): $fun()")
-        private def errParamNum(fun: String): IAE =
-            new IAE(s"Invalid number of parameters for DSL function: $fun()")
-        private def errParamType(fun: String, param: AnyRef, expectType: String): IAE =
-            new IAE(s"Expecting '$expectType' type of parameter for DSL function '$fun()', found: $param")
 
         /**
          *
@@ -118,213 +84,17 @@ object NCIntentDslCompiler extends LazyLogging {
                 assert(false)
         }
 
-        /**
-         *
-         * @param stack
-         * @return
-         */
-        private def pop2()(implicit stack: StackType): (AnyRef, AnyRef, Boolean, Boolean) = {
-            require(stack.size >= 2)
+        override def exitUnaryExpr(ctx: NCIntentDslParser.UnaryExprContext): Unit =
+            termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())
 
-            // Stack pops in reverse order of push...
-            val NCDslTermRetVal(val2, f2) = stack.pop()
-            val NCDslTermRetVal(val1, f1) = stack.pop()
+        override def exitMultExpr(ctx: NCIntentDslParser.MultExprContext): Unit =
+            termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())
 
-            (val1, val2, f1, f2)
-        }
-        /**
-         *
-         * @param stack
-         * @return
-         */
-        private def pop3()(implicit stack: StackType): (AnyRef, AnyRef, AnyRef, Boolean, Boolean, Boolean) = {
-            require(stack.size >= 3)
+        override def exitPlusExpr(ctx: NCIntentDslParser.PlusExprContext): Unit =
+            termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())
 
-            // Stack pops in reverse order of push...
-            val NCDslTermRetVal(val3, f3) = stack.pop()
-            val NCDslTermRetVal(val2, f2) = stack.pop()
-            val NCDslTermRetVal(val1, f1) = stack.pop()
-
-            (val1, val2, val3, f1, f2, f3)
-        }
-
-        /**
-         *
-         * @param stack
-         * @return
-         */
-        private def pop1()(implicit stack: StackType): (AnyRef, Boolean) = {
-            val NCDslTermRetVal(v, f) = stack.pop()
-
-            (v, f)
-        }
-
-        override def exitUnaryExpr(ctx: NCIntentDslParser.UnaryExprContext): Unit = {
-            termInstrs += ((_, stack: StackType, _) ⇒ {
-                require(stack.nonEmpty)
-
-                implicit val s = stack
-
-                val (v, usedTok) = pop1()
-
-                if (ctx.MINUS() != null) {
-                    if (isJDouble(v))
-                        pushDouble(-asJDouble(v), usedTok)
-                    else if (isJLong(v))
-                        pushLong(-asJLong(v), usedTok)
-                    else
-                        throw errUnaryOp("-", v)
-                }
-                else {
-                    assert(ctx.NOT() != null)
-
-                    if (isBoolean(v))
-                        pushBoolean(!asBoolean(v), usedTok)
-                    else
-                        throw errUnaryOp("!", v)
-                }
-            })
-        }
-
-        override def exitMultExpr(ctx: NCIntentDslParser.MultExprContext): Unit = {
-            termInstrs += ((_, stack: StackType, _) ⇒ {
-                implicit val s = stack
-
-                val (v1, v2, f1, f2) = pop2()
-                val usedTok = f1 || f2
-
-                if (ctx.MULT() != null) {
-                    if (isJLong(v1) && isJLong(v2))
-                        pushLong(asJLong(v1) * asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushDouble(asJLong(v1) * asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushDouble(asJDouble(v1) * asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushDouble(asJDouble(v1) * asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp("*", v1, v2)
-                }
-                else if (ctx.MOD() != null) {
-                    if (isJLong(v1) && isJLong(v2))
-                        pushLong(asJLong(v1) % asJLong(v2), usedTok)
-                    else
-                        throw errBinaryOp("%", v1, v2)
-                }
-                else {
-                    assert(ctx.DIV() != null)
-
-                    if (isJLong(v1) && isJLong(v2))
-                        pushLong(asJLong(v1) / asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushDouble(asJLong(v1) / asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushDouble(asJDouble(v1) / asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushDouble(asJDouble(v1) / asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp("/", v1, v2)
-                }
-            })
-        }
-
-        override def exitPlusExpr(ctx: NCIntentDslParser.PlusExprContext): Unit = {
-            termInstrs += ((_, stack: StackType, _) ⇒ {
-                implicit val s = stack
-
-                val (v1, v2, f1, f2) = pop2()
-                val usedTok = f1 || f2
-
-                if (ctx.PLUS != null) {
-                    if (isString(v1) && isString(v2))
-                        pushAny(asString(v1) + asString(v2), usedTok)
-                    else if (isJLong(v1) && isJLong(v2))
-                        pushLong(asJLong(v1) + asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushDouble(asJLong(v1) + asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushDouble(asJDouble(v1) + asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushDouble(asJDouble(v1) + asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp("+", v1, v2)
-                }
-                else {
-                    assert(ctx.MINUS != null)
-
-                    if (isJLong(v1) && isJLong(v2))
-                        pushLong(asJLong(v1) - asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushDouble(asJLong(v1) - asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushDouble(asJDouble(v1) - asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushDouble(asJDouble(v1) - asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp("-", v1, v2)
-                }
-            })
-        }
-
-        override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit = {
-            termInstrs += ((_, stack: StackType, _) ⇒ {
-                implicit val s = stack
-
-                val (v1, v2, f1, f2) = pop2()
-                val usedTok = f1 || f2
-
-                if (ctx.LT() != null) {
-                    if (isJLong(v1) && isJLong(v2))
-                        pushBoolean(asJLong(v1) < asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushBoolean(asJLong(v1) < asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushBoolean(asJDouble(v1) < asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushBoolean(asJDouble(v1) < asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp("<", v1, v2)
-                }
-                else if (ctx.GT() != null) {
-                    if (isJLong(v1) && isJLong(v2))
-                        pushBoolean(asJLong(v1) > asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushBoolean(asJLong(v1) > asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushBoolean(asJDouble(v1) > asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushBoolean(asJDouble(v1) > asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp(">", v1, v2)
-                }
-                else if (ctx.LTEQ() != null) {
-                    if (isJLong(v1) && isJLong(v2))
-                        pushBoolean(asJLong(v1) <= asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushBoolean(asJLong(v1) <= asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushBoolean(asJDouble(v1) <= asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushBoolean(asJDouble(v1) <= asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp("<=", v1, v2)
-                }
-                else {
-                    assert(ctx.GTEQ() != null)
-
-                    if (isJLong(v1) && isJLong(v2))
-                        pushBoolean(asJLong(v1) >= asJLong(v2), usedTok)
-                    else if (isJLong(v1) && isJDouble(v2))
-                        pushBoolean(asJLong(v1) >= asJDouble(v2), usedTok)
-                    else if (isJDouble(v1) && isJLong(v2))
-                        pushBoolean(asJDouble(v1) >= asJLong(v2), usedTok)
-                    else if (isJDouble(v1) && isJDouble(v2))
-                        pushBoolean(asJDouble(v1) >= asJDouble(v2), usedTok)
-                    else
-                        throw errBinaryOp(">=", v1, v2)
-                }
-            })
-        }
+        override def exitCompExpr(ctx: NCIntentDslParser.CompExprContext): Unit =
+            termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())
 
         override def exitLogExpr(ctx: NCIntentDslParser.LogExprContext): Unit = {
             termInstrs += ((_, stack: StackType, _) ⇒ {
