@@ -36,6 +36,7 @@ public class NCModelJson {
     private String[] excludedStopWords;
     private String[] suspiciousWords;
     private String[] enabledBuiltInTokens;
+    private String[] abstractTokens;
     private String[] intents;
     private String[] parsers;
 
@@ -225,6 +226,12 @@ public class NCModelJson {
         return enabledBuiltInTokens;
     }
     public void setEnabledBuiltInTokens(String[] enabledBuiltInTokens) { this.enabledBuiltInTokens = enabledBuiltInTokens; }
+    public String[] getAbstractTokens() {
+        return abstractTokens;
+    }
+    public void setAbstractTokens(String[] abstractTokens) {
+        this.abstractTokens = abstractTokens;
+    }
     public String[] getIntents() {
         return intents;
     }

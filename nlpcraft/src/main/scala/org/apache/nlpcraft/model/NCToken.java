@@ -311,4 +311,22 @@ public interface NCToken extends NCMetadata {
 
         return i <= 0 || !"nlpcraft google opennlp spacy stanford".contains(id.substring(0, i));
     }
+
+    /**
+     * Whether or not this token is abstract.
+     * <p>
+     * An abstract token is only detected when it is either a constituent part of some other non-abstract token
+     * or referenced by built-in tokens. In other words, an abstract token will not be detected in a standalone
+     * unreferenced position. By default (unless returned by this method), all named entities considered to be
+     * non-abstract.
+     * <p>
+     * Declaring tokens as abstract is important to minimize number of parsing variants automatically
+     * generated as permutation of all possible parsing compositions. For example, if it is known that a particular
+     * named entity will only be used as a constituent part of some other token - declaring such named entity as
+     * abstract can significantly reduce the number of parsing variants leading to a better performance,
+     * and often simpler corresponding intent definition and callback logic.
+     *
+     * @return Whether or not this token is abstract.
+     */
+    boolean isAbstract();
 }

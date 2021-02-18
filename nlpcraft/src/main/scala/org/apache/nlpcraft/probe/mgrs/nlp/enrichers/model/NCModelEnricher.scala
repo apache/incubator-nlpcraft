@@ -387,7 +387,9 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 found = false
 
                                 if (collapsedSens == null)
-                                    collapsedSens = NCProbeVariants.convert(ns.srvReqId, mdl, ns.clone().collapse()).map(_.asScala)
+                                    collapsedSens =
+                                        NCProbeVariants.
+                                            convert(ns.srvReqId, mdl, ns.clone().collapse(mdl.model)).map(_.asScala)
 
                                 if (seq == null)
                                     seq = convert(ns, collapsedSens, toks)

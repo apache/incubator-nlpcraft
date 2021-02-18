@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.model
 
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
 import java.util
@@ -57,21 +56,13 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
   */
 @NCTestEnvironment(model = classOf[NCIntentDslSpecModel2], startClient = true)
 class NCIntentDslSpec2 extends NCTestContext {
-    private def check(txt: String, intent: String): Unit = {
-        val res = getClient.ask(txt)
-
-        assertTrue(res.isOk, s"Checked: $txt")
-        assertTrue(res.getResult.isPresent, s"Checked: $txt")
-        assertEquals(intent, res.getIntentId, s"Checked: $txt")
-    }
-
     @Test
     def test(): Unit = {
-        check("a", "a_11")
-        check("a a", "a_23")
-        check("a a a", "a_23")
-        check("a a a a", "a_15")
-        check("a a a a a a ", "a_plus")
+        checkIntent("a", "a_11")
+        checkIntent("a a", "a_23")
+        checkIntent("a a a", "a_23")
+        checkIntent("a a a a", "a_15")
+        checkIntent("a a a a a a ", "a_plus")
     }
 }
 

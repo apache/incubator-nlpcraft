@@ -57,6 +57,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     private final NCModelJson proxy;
     private final Set<String> suspWords;
     private final Set<String> enabledToks;
+    private final Set<String> abstractToks;
     private final Set<String> addStopwords;
     private final Set<String> exclStopwords;
     private final Set<String> intents;
@@ -112,6 +113,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         this.proxy = proxy;
         this.suspWords = convert(proxy.getSuspiciousWords(), null);
         this.enabledToks = convert(proxy.getEnabledBuiltInTokens(), NCModelView.DFLT_ENABLED_BUILTIN_TOKENS);
+        this.abstractToks = convert(proxy.getAbstractTokens(), Collections.emptySet());
         this.addStopwords = convert(proxy.getAdditionalStopWords(), null);
         this.exclStopwords = convert(proxy.getExcludedStopWords(), null);
         this.elems = convertElements(proxy.getElements());
@@ -484,6 +486,11 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     @Override
     public Set<String> getEnabledBuiltInTokens() {
        return enabledToks;
+    }
+
+    @Override
+    public Set<String> getAbstractTokens() {
+        return abstractToks;
     }
 
     @Override

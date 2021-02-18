@@ -55,21 +55,13 @@ class NCIntentDslSpecModel extends NCModelAdapter(
   */
 @NCTestEnvironment(model = classOf[NCIntentDslSpecModel], startClient = true)
 class NCIntentDslSpec extends NCTestContext {
-    private def check(txt: String, intent: String): Unit = {
-        val res = getClient.ask(txt)
-
-        assertTrue(res.isOk, s"Checked: $txt")
-        assertTrue(res.getResult.isPresent, s"Checked: $txt")
-        assertEquals(intent, res.getIntentId, s"Checked: $txt")
-    }
+    @Test
+    def testBigCity(): Unit = checkIntent("Moscow", "bigCity")
 
     @Test
-    def testBigCity(): Unit = check("Moscow", "bigCity")
+    def testOtherCity(): Unit = checkIntent("San Francisco", "otherCity")
 
     @Test
-    def testOtherCity(): Unit = check("San Francisco", "otherCity")
-
-    @Test
-    def testUserPriority(): Unit = check("Paris", "userElement")
+    def testUserPriority(): Unit = checkIntent("Paris", "userElement")
 }
 

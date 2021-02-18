@@ -59,7 +59,7 @@ public class GeoManager {
      * @return Geo data. Optional.
      */
     public Optional<GeoDataBean> get(NCRequest sen) {
-        if (!sen.getRemoteAddress().isPresent()) {
+        if (sen.getRemoteAddress().isEmpty()) {
             System.err.println("Geo data can't be found because remote address is not available in the sentence.");
 
             return Optional.empty();
@@ -90,8 +90,8 @@ public class GeoManager {
             
             HttpURLConnection conn = (HttpURLConnection)(new URL(URL + host).openConnection());
     
-            // This service requires "User-Agent" property for some reasons.
-            conn.setRequestProperty("User-Agent", "rest");
+            // This service requires "User-Agent" property with its own format.
+            conn.setRequestProperty("User-Agent", "keycdn-tools:https://nlpcraft.apache.org");
     
             try (InputStream in = conn.getInputStream()) {
                 String enc = conn.getContentEncoding();

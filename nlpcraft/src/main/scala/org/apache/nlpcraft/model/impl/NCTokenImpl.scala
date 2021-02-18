@@ -36,6 +36,7 @@ import scala.collection.{Seq, mutable}
   * @param parentId
   * @param value
   * @param meta
+  * @param isAbstr
   */
 private[nlpcraft] class NCTokenImpl(
     mdl: NCModelView,
@@ -47,7 +48,8 @@ private[nlpcraft] class NCTokenImpl(
     value: String,
     startCharIndex: Int,
     endCharIndex: Int,
-    meta: Map[String, Object]
+    meta: Map[String, Object],
+    isAbstr: Boolean
 ) extends NCToken with Serializable {
     require(mdl != null)
     require(srvReqId != null)
@@ -60,7 +62,7 @@ private[nlpcraft] class NCTokenImpl(
         Seq(srvReqId, id, startCharIndex, endCharIndex).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
 
     private var parts = Seq.empty[NCToken]
-    
+
     override lazy val getModel: NCModelView = mdl
     override lazy val getMetadata: java.util.Map[String, Object] = mutable.HashMap(meta.toSeq:_ *).asJava // We need mutable metadata.
     override lazy val getServerRequestId: String = srvReqId
@@ -73,16 +75,17 @@ private[nlpcraft] class NCTokenImpl(
     override lazy val getEndCharIndex: Int = endCharIndex
     override lazy val getAliases: java.util.List[String] = meta(TOK_META_ALIASES_KEY, Collections.emptyList())
     override def getPartTokens: java.util.List[NCToken] = parts.asJava
-    
+    override def isAbstract: Boolean = isAbstr
+
     def setParts(parts: Seq[NCToken]): Unit = this.parts = parts
-    
+
     override def equals(other: Any): Boolean = other match {
         case t: NCTokenImpl ⇒
             getServerRequestId == t.getServerRequestId &&
             getId == t.getId &&
             getStartCharIndex == t.getStartCharIndex &&
             getEndCharIndex == t.getEndCharIndex
-            
+
         case _ ⇒ false
     }
 
@@ -151,7 +154,8 @@ private[nlpcraft] object NCTokenImpl {
                     value = usrNote.dataOpt("value").orNull,
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,
-                    meta = convertMeta()
+                    meta = convertMeta(),
+                    isAbstr = mdl.model.getAbstractTokens.contains(elm.getId)
                 )
 
             case None ⇒
@@ -174,7 +178,8 @@ private[nlpcraft] object NCTokenImpl {
                     value = null,
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,
-                    meta = convertMeta()
+                    meta = convertMeta(),
+                    isAbstr = mdl.model.getAbstractTokens.contains(note.noteType)
                 )
         }
     }

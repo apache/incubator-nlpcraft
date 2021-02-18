@@ -484,7 +484,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         s"]")
             }
 
-            nlpSen.clone().collapse().
+            nlpSen.clone().collapse(mdl.model, lastPhase = true).
                 // Sorted to support deterministic logs.
                 sortBy(p ⇒
                 p.map(p ⇒ {
@@ -525,7 +525,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val meta = mutable.HashMap.empty[String, Any] ++ senMeta
         val req = NCRequestImpl(meta, srvReqId)
 
-        var senVars = NCProbeVariants.convert(srvReqId, mdl, sensSeq)
+        var senVars = NCProbeVariants.convert(srvReqId, mdl, sensSeq, lastPhase = true)
 
         // Sentence variants can be filtered by model.
         val fltSenVars: Seq[(NCVariant, Int)] =

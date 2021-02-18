@@ -692,7 +692,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Optional user defined model metadata. Can be empty but never {@code null}.
+     * @return Optional user defined model metadata. By default, returns an empty map. Never returns {@code null}.
      */
     default Map<String, Object> getMetadata() {
         return DFLT_METADATA;
@@ -830,7 +830,7 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Custom user parsers for model elements. Can be empty but never {@code null}.
+     * @return Custom user parsers for model elements or empty list if not used (default). Never returns {@code null}.
      */
     default List<NCCustomParser> getParsers() {
         return Collections.emptyList();
@@ -907,10 +907,30 @@ public interface NCModelView extends NCMetadata {
      * }
      * </pre>
      *
-     * @return Set of built-in tokens, potentially empty, that should be enabled and detected for this model.
+     * @return Set of built-in tokens, potentially empty but never {@code null}, that should be enabled
+     *      and detected for this model.
      */
     default Set<String> getEnabledBuiltInTokens() {
         return DFLT_ENABLED_BUILTIN_TOKENS;
+    }
+
+    /**
+     * Gets s set of named entities (token) IDs that will be considered as abstract tokens.
+     * An abstract token is only detected when it is either a constituent part of some other non-abstract token
+     * or referenced by built-in tokens. In other words, an abstract token will not be detected in a standalone
+     * unreferenced position. By default (unless returned by this method), all named entities considered to be
+     * non-abstract.
+     * <p>
+     * Declaring tokens as abstract is important to minimize number of parsing variants automatically
+     * generated as permutation of all possible parsing compositions. For example, if it is known that a particular
+     * named entity will only be used as a constituent part of some other token - declaring such named entity as
+     * abstract can significantly reduce the number of parsing variants leading to a better performance,
+     * and often simpler corresponding intent definition and callback logic.
+     *
+     * @return Set of abstract token IDs. Can be empty but never {@code null}.
+     */
+    default Set<String> getAbstractTokens() {
+        return Collections.emptySet();
     }
 
     /**

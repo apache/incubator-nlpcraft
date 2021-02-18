@@ -20,6 +20,7 @@ package org.apache.nlpcraft
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.TestInstance.Lifecycle
 import org.junit.jupiter.api._
 
@@ -55,7 +56,7 @@ abstract class NCTestContext {
         if (getClassAnnotation(info).isDefined)
             stop0()
 
-    private def getClassAnnotation(info: TestInfo) =
+    protected def getClassAnnotation(info: TestInfo): Option[NCTestEnvironment] =
         if (info.getTestClass.isPresent) Option(info.getTestClass.get().getAnnotation(MDL_CLASS)) else None
 
     private def getMethodAnnotation(info: TestInfo): Option[NCTestEnvironment] =
@@ -109,6 +110,31 @@ abstract class NCTestContext {
     protected def preProbeStart(): Unit = { }
 
     protected def afterProbeStop(): Unit = { }
+
+    /**
+      *
+      * @param txt
+      * @param intent
+      */
+    protected def checkIntent(txt: String, intent: String): Unit = {
+        val res = getClient.ask(txt)
+
+        assertTrue(res.isOk, s"Checked: $txt")
+        assertTrue(res.getResult.isPresent, s"Checked: $txt")
+        assertEquals(intent, res.getIntentId, s"Checked: $txt")
+    }
+
+    /**
+      * @param req
+      * @param expResp
+      */
+    protected def checkResult(req: String, expResp: String): Unit = {
+        val res = getClient.ask(req)
+
+        assertTrue(res.isOk)
+        assertTrue(res.getResult.isPresent)
+        assertEquals(expResp, res.getResult.get)
+    }
 
     final protected def getClient: NCTestClient = {
         if (cli == null)

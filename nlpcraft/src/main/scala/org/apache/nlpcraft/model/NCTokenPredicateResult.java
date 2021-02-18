@@ -33,7 +33,7 @@ public class NCTokenPredicateResult {
      * Creates token predicate result.
      *
      * @param result Token predicate result.
-     * @param wasTokenUsed Whether or not a token was used by this predicate (if result is {@code true}).
+     * @param wasTokenUsed Whether or not a token was used by this predicate (if {@link #getResult() result} is {@code true}).
      */
     NCTokenPredicateResult(boolean result, boolean wasTokenUsed) {
         this.result = result;
@@ -50,7 +50,7 @@ public class NCTokenPredicateResult {
     }
 
     /**
-     * Whether or not a token was used by this predicate (if result is {@code true}).
+     * Whether or not a token was used by this predicate (if {@link #getResult() result} is {@code true}).
      *
      * @return {@code true} if token was used by this predicate, {@code false} otherwise.
      */

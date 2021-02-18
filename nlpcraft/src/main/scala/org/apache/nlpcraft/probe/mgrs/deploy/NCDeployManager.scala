@@ -881,13 +881,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
         checkCollection("elements", mdl.getElements)
         checkCollection("enabledBuiltInTokens", mdl.getEnabledBuiltInTokens)
+        checkCollection("abstractTokens", mdl.getAbstractTokens)
         checkCollection("excludedStopWords", mdl.getExcludedStopWords)
         checkCollection("parsers", mdl.getParsers)
         checkCollection("suspiciousWords", mdl.getSuspiciousWords)
         checkCollection("macros", mdl.getMacros)
         checkCollection("metadata", mdl.getMetadata)
 
-        val unsToks =
+        val unsToksBlt =
             mdl.getEnabledBuiltInTokens.asScala.filter(t ⇒
                 // 'stanford', 'google', 'opennlp', 'spacy' - any names, not validated.
                 t == null ||
@@ -896,11 +897,21 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 (t.startsWith("nlpcraft:") && !NCModelView.DFLT_ENABLED_BUILTIN_TOKENS.contains(t))
             )
 
-        if (unsToks.nonEmpty)
+        if (unsToksBlt.nonEmpty)
             throw new NCE(s"Invalid token IDs for 'enabledBuiltInTokens' model property [" +
                 s"mdlId=${mdl.getId}, " +
-                s"ids=${unsToks.mkString(", ")}" +
+                s"ids=${unsToksBlt.mkString(", ")}" +
             s"]")
+
+        // We can't check other names because they can be created by custom parsers.
+        val unsToksAbstract = mdl.getAbstractTokens.asScala.filter(t ⇒ t == null || t == "nlpcraft:nlp")
+
+        if (unsToksAbstract.nonEmpty)
+            throw new NCE(s"Invalid token IDs for 'abstractToken' model property [" +
+                s"mdlId=${mdl.getId}, " +
+                s"ids=${unsToksAbstract.mkString(", ")}" +
+                s"]"
+            )
     }
 
     /**
