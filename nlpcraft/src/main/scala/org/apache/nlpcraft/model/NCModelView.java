@@ -34,6 +34,141 @@ import java.util.*;
  */
 public interface NCModelView extends NCMetadata {
     /**
+     * Min value for {@link #getConversationTimeout()} method.
+     */
+    long CONV_TIMEOUT_MIN = 0L;
+
+    /**
+     * Max value for {@link #getConversationTimeout()} method.
+     */
+    long CONV_TIMEOUT_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getMaxUnknownWords()} method.
+     */
+    long MAX_UNKNOWN_WORDS_MIN = 0L;
+
+    /**
+     * Max value for {@link #getMaxUnknownWords()} method.
+     */
+    long MAX_UNKNOWN_WORDS_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getMaxFreeWords()} method.
+     */
+    long MAX_FREE_WORDS_MIN = 0L;
+
+    /**
+     * Max value for {@link #getMaxFreeWords()} method.
+     */
+    long MAX_FREE_WORDS_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getMaxSuspiciousWords()} method.
+     */
+    long MAX_SUSPICIOUS_WORDS_MIN = 0L;
+
+    /**
+     * Max value for {@link #getMaxSuspiciousWords()} method.
+     */
+    long MAX_SUSPICIOUS_WORDS_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getMinWords()} method.
+     */
+    long MIN_WORDS_MIN = 1L;
+
+    /**
+     * Max value for {@link #getMinWords()} method.
+     */
+    long MIN_WORDS_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getMinNonStopwords()} method.
+     */
+    long MIN_NON_STOPWORDS_MIN = 0L;
+
+    /**
+     * Max value for {@link #getMinNonStopwords()} method.
+     */
+    long MIN_NON_STOPWORDS_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getMinTokens()} method.
+     */
+    long MIN_TOKENS_MIN = 0L;
+
+    /**
+     * Max value for {@link #getMinTokens()} method.
+     */
+    long MIN_TOKENS_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getMaxTokens()} method.
+     */
+    long MAX_TOKENS_MIN = 0L;
+
+    /**
+     * Max value for {@link #getMaxTokens()} method.
+     */
+    long MAX_TOKENS_MAX = 100L;
+
+    /**
+     * Min value for {@link #getMaxWords()} method.
+     */
+    long MAX_WORDS_MIN = 1L;
+
+    /**
+     * Max value for {@link #getMaxWords()} method.
+     */
+    long MAX_WORDS_MAX = 100L;
+
+    /**
+     * Min value for {@link #getJiggleFactor()} method.
+     */
+    long JIGGLE_FACTOR_MIN = 0L;
+
+    /**
+     * Max value for {@link #getJiggleFactor()} method.
+     */
+    long JIGGLE_FACTOR_MAX = 4L;
+
+    /**
+     * Min value for {@link #getMaxElementSynonyms()} method.
+     */
+    long MAX_SYN_MIN = 1L;
+
+    /**
+     * Max value for {@link #getMaxElementSynonyms()} method.
+     */
+    long MAX_SYN_MAX = Long.MAX_VALUE;
+
+    /**
+     * Min value for {@link #getConversationDepth()} method.
+     */
+    long CONV_DEPTH_MIN = 1L;
+
+    /**
+     * Max value for {@link #getConversationDepth()} method.
+     */
+    long CONV_DEPTH_MAX = Long.MAX_VALUE;
+
+    /**
+     * Max length for {@link #getId()} method.
+     */
+    int MODEL_ID_MAXLEN = 32;
+
+    /**
+     * Max length for {@link #getName()} method.
+     */
+    int MODEL_NAME_MAXLEN = 64;
+
+    /**
+     * Max length for {@link #getVersion()} method.
+     */
+    int MODEL_VERSION_MAXLEN = 16;
+
+    /**
      * Default value for {@link #getJiggleFactor()} method.
      */
     int DFLT_JIGGLE_FACTOR = 2;
@@ -647,7 +782,7 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Measure of how much sparsity is allowed when user input words are reordered in attempt to
+     * Measure of how much sparsity is allowed when user input words are permutated in attempt to
      * match the multi-word synonyms. Zero means no reordering is allowed. One means
      * that a word in a synonym can move only one position left or right, and so on. Empirically
      * the value of {@code 2} proved to be a good default value in most cases. Note that larger
@@ -1046,4 +1181,40 @@ public interface NCModelView extends NCMetadata {
      * @see #getConversationTimeout()
      */
     default int getConversationDepth() { return DFLT_CONV_DEPTH; }
+
+    /**
+     * Gets an optional map of restricted named entity combinations (linkage). Returned map is a map of entity ID to a set
+     * of other entity IDs, with each key-value pair defining the restricted combination. Restricting certain entities
+     * from being linked (or referenced) by some other entities allows to reduce "wasteful" parsing variant
+     * generation. For example, it we know that entity with ID "adjective" cannot be sorted, we can restrict it
+     * from being linked with <code>nlpcraft:limit</code> and <code>nlpcraft:sort</code> entities to reduce the
+     * amount of parsing variants being generated.
+     * <p>
+     * Only the following built-in entities can be restricted (i.e., to be the keys in the returned map):
+     * <ul>
+     *     <li><code>nlpcraft:limit</code></li>
+     *     <li><code>nlpcraft:sort</code></li>
+     *     <li><code>nlpcraft:relation</code></li>
+     * </ul>
+     * Note that entity cannot be restricted to itself (entity ID cannot appear as key as well as a
+     * part of the value's set).
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>restrictedCombinations</code> property:
+     * <pre class="brush: js">
+     * {
+     *      "restrictedCombinations": {
+     *          "nlpcraft:limit": ["adjective"],
+     *          "nlpcraft:sort": ["adjective"]
+     *      }
+     * }
+     * </pre>
+     *
+     * @return Optional map of restricted named entity combinations. Can be empty but never {@code null}.
+     * @see NCVariant
+     */
+    default Map<String, Set<String>> getRestrictedCombinations() {
+        return Collections.emptyMap();
+    }
 }

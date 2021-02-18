@@ -17,12 +17,11 @@
 
 package org.apache.nlpcraft.model
 
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
+import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 import java.util
-import java.util.Collections
 
 /**
   * Intents priorities test model.
@@ -30,8 +29,7 @@ import java.util.Collections
 class NCIntentPrioritiesSpecModel extends NCModelAdapter(
     "nlpcraft.priorities.model.test", "Priorities Test Model", "1.0"
 ) {
-    override def getElements: util.Set[NCElement] =
-        Collections.singleton(new NCElement { override def getId: String = "x" } )
+    override def getElements: util.Set[NCElement] = Set(NCTestElement("x"))
 
     @NCIntent("intent=low term(x)={id == 'x'} term(city)={id == 'nlpcraft:city'}?")
     private def onLow(ctx: NCIntentMatch): NCResult = NCResult.text("low")

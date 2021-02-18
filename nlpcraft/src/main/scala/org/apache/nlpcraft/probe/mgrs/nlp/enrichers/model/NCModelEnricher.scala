@@ -19,16 +19,16 @@ package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
 import java.io.Serializable
 import java.util
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, _}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer, _}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeVariants}
 
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, mutable}
@@ -129,6 +129,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def jiggle(ns: NCNlpSentenceTokenBuffer, factor: Int): Iterator[NCNlpSentenceTokenBuffer] = {
         require(factor >= 0)
+
         if (ns.isEmpty)
             Iterator.empty
         else if (factor == 0)
@@ -136,22 +137,21 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         else
             new Iterator[NCNlpSentenceTokenBuffer] {
                 private val min = -factor
-
                 private val max = factor
-
                 private val sz = ns.size
 
                 private var i = 0 // Token index.
                 private var d = 0 // Jiggle amount [min, max].
-
                 private var isNext = sz > 0
 
                 private def calcNext(): Unit = {
                     isNext = false
                     d += 1
+
                     while (i < sz && !isNext) {
                         while (d <= max && !isNext) {
                             val p = i + d
+
                             if (p >= 0 && p < sz) // Valid new position?
                                 isNext = true
                             else
@@ -168,11 +168,14 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                 override def next(): NCNlpSentenceTokenBuffer = {
                     require(isNext)
+
                     val buf = NCNlpSentenceTokenBuffer(ns)
+
                     if (d != 0)
                         buf.insert(i + d, buf.remove(i)) // Jiggle.
 
                     calcNext()
+
                     buf
                 }
             }
@@ -308,8 +311,6 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       */
     private def alreadyMarked(toks: Seq[NCNlpSentenceToken], elemId: String): Boolean = toks.forall(_.isTypeOf(elemId))
 
-    def isComplex(mdl: NCProbeModel): Boolean = mdl.synonymsDsl.nonEmpty || !mdl.model.getParsers.isEmpty
-
     @throws[NCE]
     override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
         require(isStarted)
@@ -318,7 +319,11 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
             "txt" → ns.text) { span ⇒
-            val jiggleFactor = mdl.model.getJiggleFactor
+            val elemsFactors = mdl.elements.values.flatMap(_.getJiggleFactor.asScala).toSeq
+            val elemsMaxFactor: Int = if (elemsFactors.nonEmpty) elemsFactors.max else 0
+
+            val maxJiggleFactor = Math.max(mdl.model.getJiggleFactor, elemsMaxFactor)
+
             val cache = mutable.HashSet.empty[Seq[Int]]
             val matches = ArrayBuffer.empty[ElementMatch]
 
@@ -360,6 +365,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                 for (toks ← combos(perm)) {
                     val key = toks.map(_.index).sorted
+                    val sparsity = U.calcSparsity(key)
 
                     if (!cache.contains(key)) {
                         var seq: Seq[Seq[Complex]] = null
@@ -371,7 +377,10 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             def addMatch(
                                 elm: NCElement, toks: Seq[NCNlpSentenceToken], syn: NCProbeSynonym, parts: Seq[NCToken]
                             ): Unit =
-                                if (!matches.exists(m ⇒ m.element == elm && m.isSubSet(toks.toSet))) {
+                                if (
+                                    (elm.getJiggleFactor.isEmpty || elm.getJiggleFactor.get() >= sparsity) &&
+                                    !matches.exists(m ⇒ m.element == elm && m.isSubSet(toks.toSet))
+                                ) {
                                     found = true
 
                                     matches += ElementMatch(elm, toks, syn, parts)
@@ -410,8 +419,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 "mdlId" → mdl.model.getId,
                 "txt" → ns.text) { _ ⇒
                 // Iterate over depth-limited permutations of the original sentence with and without stopwords.
-                jiggle(ns, jiggleFactor).foreach(procPerm)
-                jiggle(NCNlpSentenceTokenBuffer(ns.filter(!_.isStopWord)), jiggleFactor).foreach(procPerm)
+                jiggle(ns, maxJiggleFactor).foreach(procPerm)
+                jiggle(NCNlpSentenceTokenBuffer(ns.filter(!_.isStopWord)), maxJiggleFactor).foreach(procPerm)
             }
 
             if (DEEP_DEBUG)
@@ -523,4 +532,6 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             }
         }
     }
+
+    def isComplex(mdl: NCProbeModel): Boolean = mdl.synonymsDsl.nonEmpty || !mdl.model.getParsers.isEmpty
 }

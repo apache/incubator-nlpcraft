@@ -20,7 +20,7 @@ package org.apache.nlpcraft.server.rest
 import org.apache.nlpcraft.NCTestEnvironment
 import org.apache.nlpcraft.examples.alarm.AlarmModel
 import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.{Disabled, Test}
+import org.junit.jupiter.api.Test
 
 import scala.collection.JavaConverters._
 
@@ -37,7 +37,7 @@ class NCRestModelSpec extends NCRestSpec {
         // Note that checked values are valid for current configuration of `nlpcraft.alarm.ex` model.
         post("model/sugsyn", "mdlId" → "nlpcraft.alarm.ex")(
             ("$.status", (status: String) ⇒ assertEquals("API_OK", status)),
-            ("$.result.suggestions[:1].x:alarm.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
+              ("$.result.suggestions[:1].x:alarm.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
                 val scores = extract(data)
 
                 assertTrue(scores.nonEmpty)

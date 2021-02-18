@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestLimitToken ⇒ lim, NCTestUserToken ⇒ usr,  NCTestNlpToken ⇒ nlp}
+import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestLimitToken ⇒ lim, NCTestNlpToken ⇒ nlp, NCTestUserToken ⇒ usr}
 import org.junit.jupiter.api.Test
 
 /**

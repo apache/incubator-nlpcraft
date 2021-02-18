@@ -1562,8 +1562,16 @@ object NCUtils extends LazyLogging {
      * @param json
      * @return
      */
-    def prettyJson(json: String): String =
-        GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
+    def prettyJson(json: String): String = {
+        if (json == null || json.isEmpty)
+            ""
+        else
+            try
+                GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
+            catch {
+                case e: Exception ⇒ ""
+            }
+    }
 
     /**
      *

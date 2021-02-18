@@ -17,14 +17,13 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
+import org.apache.nlpcraft.model.NCToken
+import resource.managed
+
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util
 import java.util.{Base64, Optional}
-
-import org.apache.nlpcraft.model.NCToken
-import resource.managed
-
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
 

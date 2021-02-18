@@ -39,6 +39,7 @@ public class NCModelJson {
     private String[] abstractTokens;
     private String[] intents;
     private String[] parsers;
+    private Map<String, String[]> restrictedCombinations;
 
     private int maxUnknownWords = DFLT_MAX_UNKNOWN_WORDS;
     private int maxFreeWords = DFLT_MAX_FREE_WORDS;
@@ -267,5 +268,11 @@ public class NCModelJson {
     }
     public void setConversationDepth(int conversationDepth) {
         this.conversationDepth = conversationDepth;
+    }
+    public Map<String, String[]> getRestrictedCombinations() {
+        return restrictedCombinations;
+    }
+    public void setRestrictedCombinations(Map<String, String[]> restrictedCombinations) {
+        this.restrictedCombinations = restrictedCombinations;
     }
 }

@@ -324,7 +324,67 @@ public interface NCElement extends NCMetadata, Serializable {
      *
      * @return Optional instance of dynamic value loader.
      */
-    default NCValueLoader getValueLoader() {
-        return null;
+    default Optional<NCValueLoader> getValueLoader() {
+        return Optional.empty();
+    }
+
+    /**
+     * Whether or not to permutate multi-word synonyms. Automatic multi-word synonyms permutations greatly
+     * increase the total number of synonyms in the system and allows for better multi-word synonym detection.
+     * For example, if permutation is allowed the synonym "a b c" will be automatically converted into a
+     * sequence of synonyms of "a b c", "b a c", "a c b".
+     * <p>
+     * This property overrides the value from {@link NCModelView#isPermutateSynonyms()}.
+     * One should use this property if model's value isn't applicable to this element.
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>permutateSynonyms</code>:
+     * <pre class="brush: js, highlight: [4]">
+     *     "elements": [
+     *         {
+     *              "id": "elem",
+     *              "permutateSynonyms": true,
+     *              ...
+     *         }
+     *     ]
+     * </pre>
+     *
+     * @return Optional synonym permutate property overriding model's one.
+     * @see NCModelView#isPermutateSynonyms()
+     */
+    default Optional<Boolean> isPermutateSynonyms() {
+        return Optional.empty();
+    }
+
+    /**
+     * Measure of how much sparsity is allowed when user input words are permutated in attempt to
+     * match the multi-word synonyms. Zero means no reordering is allowed. One means
+     * that a word in a synonym can move only one position left or right, and so on. Empirically
+     * the value of {@code 2} proved to be a good default value in most cases. Note that larger
+     * values mean that synonym words can be almost in any random place in the user input which makes
+     * synonym matching practically meaningless. Maximum value is <code>4</code>.
+     * <p>
+     * This property overrides the value from {@link NCModelView#getJiggleFactor()} ()}.
+     * One should use this property if model's value isn't applicable to this element.
+     * <p>
+     * <b>JSON</b>
+     * <br>
+     * If using JSON/YAML model presentation this is set by <code>jiggleFactor</code>:
+     * <pre class="brush: js, highlight: [4]">
+     *     "elements": [
+     *         {
+     *              "id": "elem",
+     *              "jiggleFactor": 1,
+     *              ...
+     *         }
+     *     ]
+     * </pre>
+     *
+     * @return Optional word jiggle factor (sparsity measure) overriding model's one.
+     * @see NCModelView#getJiggleFactor()
+     */
+    default Optional<Integer> getJiggleFactor() {
+        return Optional.empty();
     }
 }

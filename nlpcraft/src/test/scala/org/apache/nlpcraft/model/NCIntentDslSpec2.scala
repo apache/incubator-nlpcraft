@@ -17,11 +17,10 @@
 
 package org.apache.nlpcraft.model
 
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
+import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
 /**
@@ -30,25 +29,22 @@ import scala.language.implicitConversions
 class NCIntentDslSpecModel2 extends NCModelAdapter(
     "nlpcraft.intents.dsl.test", "Intents DSL Test Model", "1.0"
 ) {
-    private implicit def convert(s: String): NCResult = NCResult.text(s)
-
-    override def getElements: util.Set[NCElement] =
-        Set("a").map(id ⇒ new NCElement { override def getId: String = id }).asJava
+    override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 
     @NCIntent("intent=a_11 term(a)={id == 'a'}")
-    private def a11(ctx: NCIntentMatch): NCResult = "OK"
+    private def a11(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
     @NCIntent("intent=a_23 term(a)={id == 'a'}[2,3]")
-    private def a23(ctx: NCIntentMatch): NCResult = "OK"
+    private def a23(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
     @NCIntent("intent=a_15 term(a)={id == 'a'}[1,5]")
-    private def a15(ctx: NCIntentMatch): NCResult = "OK"
+    private def a15(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
     @NCIntent("intent=a_plus term(a)={id == 'a'}+")
-    private def a1Inf(ctx: NCIntentMatch): NCResult = "OK"
+    private def a1Inf(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
     @NCIntent("intent=a_star term(a)={id == 'a'}*")
-    private def a0Inf(ctx: NCIntentMatch): NCResult = "OK"
+    private def a0Inf(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 
 /**

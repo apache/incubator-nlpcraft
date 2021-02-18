@@ -17,10 +17,9 @@
 
 package org.apache.nlpcraft.models.stm
 
-import java.util
-
 import org.apache.nlpcraft.model.{NCIntentMatch, _}
 
+import java.util
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
@@ -28,8 +27,6 @@ import scala.language.implicitConversions
   * STM test model.
   */
 class NCStmTestModel extends NCModelAdapter("nlpcraft.stm.test", "STM Test Model", "1.0") {
-    private implicit def convert(s: String): NCResult = NCResult.text(s)
-
     override def getElements: util.Set[NCElement] =
         Set(
             mkElement("sale", Seq("A"), Seq.empty),
@@ -45,14 +42,14 @@ class NCStmTestModel extends NCModelAdapter("nlpcraft.stm.test", "STM Test Model
         }
 
     @NCIntent("intent=sale term~{id=='sale'}")
-    private def onSale(ctx: NCIntentMatch): NCResult = "sale"
+    private def onSale(ctx: NCIntentMatch): NCResult = NCResult.text("sale")
 
     @NCIntent("intent=buy term~{id=='buy'}")
-    private def onBuy(ctx: NCIntentMatch): NCResult = "buy"
+    private def onBuy(ctx: NCIntentMatch): NCResult = NCResult.text("buy")
 
     @NCIntent("intent=sale_best_employee term~{id=='sale'} term~{id=='best_employee'}")
-    private def onBestEmployeeSale(ctx: NCIntentMatch): NCResult = "sale_best_employee"
+    private def onBestEmployeeSale(ctx: NCIntentMatch): NCResult = NCResult.text("sale_best_employee")
 
     @NCIntent("intent=buy_best_employee term~{id=='buy'} term~{id=='best_employee'}")
-    private def onBestEmployeeBuy(ctx: NCIntentMatch): NCResult = "buy_best_employee"
+    private def onBestEmployeeBuy(ctx: NCIntentMatch): NCResult = NCResult.text("buy_best_employee")
 }

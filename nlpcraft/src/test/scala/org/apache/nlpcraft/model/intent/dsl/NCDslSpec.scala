@@ -17,13 +17,13 @@
 
 package org.apache.nlpcraft.model.intent.dsl
 
-import java.io.IOException
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
 import org.apache.nlpcraft.model.tools.test.{NCTestClient, NCTestClientBuilder}
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 
+import java.io.IOException
 import java.util.Collections
 
 /**

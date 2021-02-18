@@ -17,15 +17,15 @@
 
 package org.apache.nlpcraft.model.conversation
 
+import org.apache.nlpcraft.common.NCException
+import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCModel, NCResult}
+import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
+import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Test
+
 import java.io.IOException
 import java.util
 import java.util.Collections
-
-import org.apache.nlpcraft.common.NCException
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentMatch, NCModel, NCResult}
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.Test
 
 object NCTimeoutSpecModel {
     final val TIMEOUT = 2000
@@ -45,14 +45,7 @@ class NCTimeoutSpecModel extends NCModel {
 
     override def getConversationTimeout: Long = TIMEOUT
 
-    override def getElements: util.Set[NCElement] =
-        Collections.singleton(
-            new NCElement {
-                override def getId: String = "test"
-
-                override def getSynonyms: util.List[String] = Collections.singletonList("test")
-            }
-        )
+    override def getElements: util.Set[NCElement] = Collections.singleton(new NCTestElement("test"))
 
     @NCIntent("intent=req term~{id == 'test'}")
     def onMatch(ctx: NCIntentMatch): NCResult = {

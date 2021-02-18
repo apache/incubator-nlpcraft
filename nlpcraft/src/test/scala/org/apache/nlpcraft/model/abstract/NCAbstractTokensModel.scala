@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.`abstract`
 
+import org.apache.nlpcraft.NCTestElement
 import org.apache.nlpcraft.model.{NCElement, NCModelAdapter}
 
 import java.util
@@ -25,31 +26,14 @@ import scala.collection.JavaConverters._
 class NCAbstractTokensModel extends NCModelAdapter(
     "nlpcraft.abstract.elems.mdl.test", "Abstract Elements Test Model", "1.0"
 ) {
-    private implicit val toList: String ⇒ util.List[String] = (s: String) ⇒ Seq(s).asJava
-
     override def getElements: util.Set[NCElement] =
         Set(
-            new NCElement {
-                override def getId: String = "anyWord"
-                override def getSynonyms: util.List[String] = "//[a-zA-Z0-9]+//"
-            },
-            new NCElement {
-                override def getId: String = "wrapAnyWord"
-                override def getSynonyms: util.List[String] = "the ^^[internal](id == 'anyWord')^^"
-            },
-            new NCElement {
-                override def getId: String = "wrapNum"
-                override def getSynonyms: util.List[String] = "w1 ^^id == 'nlpcraft:num'^^ w2"
-            },
-            new NCElement {
-                override def getId: String = "wrapLimit"
-                override def getSynonyms: util.List[String] = "before limit ^^[limitAlias](id == 'nlpcraft:limit')^^"
-            },
-            new NCElement {
-                override def getId: String = "wrapWrapLimit"
-                override def getSynonyms: util.List[String] = "wrap ^^[wrapLimitAlias](id == 'wrapLimit')^^"
-            }
-        ).asJava
+            NCTestElement("anyWord", "//[a-zA-Z0-9]+//"),
+            NCTestElement("wrapAnyWord", "the ^^[internal](id == 'anyWord')^^"),
+            NCTestElement("wrapNum", "w1 ^^id == 'nlpcraft:num'^^ w2"),
+            NCTestElement("wrapLimit", "before limit ^^[limitAlias](id == 'nlpcraft:limit')^^"),
+            NCTestElement("wrapWrapLimit", "wrap ^^[wrapLimitAlias](id == 'wrapLimit')^^")
+        )
 
     override def getAbstractTokens: util.Set[String] = Set("nlpcraft:num", "anyWord").asJava
     override def isPermutateSynonyms: Boolean = false

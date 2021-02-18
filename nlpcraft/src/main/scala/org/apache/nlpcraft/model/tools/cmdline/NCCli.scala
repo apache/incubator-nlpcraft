@@ -537,7 +537,6 @@ object NCCli extends App {
         srvArgs += JAVA
         srvArgs ++= jvmOpts
 
-        // TODO: check for dups with 'jvmOpts'?
         JVM_OPTS_RT_WARNS.foreach(srvArgs += _)
 
         srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
@@ -693,7 +692,6 @@ object NCCli extends App {
      * @param repl Whether or not running from REPL.
      */
     private [cmdline] def cmdTestModel(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
-        // TODO: in the future - we'll need add support here for remote servers.
         if (loadServerBeacon().isEmpty)
             throw NoLocalServer()
 
@@ -762,7 +760,6 @@ object NCCli extends App {
     private [cmdline] def cmdStartProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         // Ensure that there is a local server running since probe
         // cannot finish its start unless there's a server to connect to.
-        // TODO: in the future - we'll need add support here for remote servers.
         if (loadServerBeacon().isEmpty)
             throw NoLocalServer()
 
@@ -1143,7 +1140,7 @@ object NCCli extends App {
                 state.isServerOnline = true
 
                 try {
-                    val baseUrl = "http://" + beacon.restEndpoint // TODO: https?
+                    val baseUrl = "http://" + beacon.restEndpoint
 
                     // Attempt to signin with the default account.
                     if (autoSignIn && state.accessToken.isEmpty)
@@ -1290,8 +1287,6 @@ object NCCli extends App {
         loadServerBeacon() match {
             case Some(beacon) ⇒
                 val pid = beacon.pid
-
-                // TODO: signout if previously signed in.
 
                 if (beacon.ph.destroy()) {
                     logln(s"Server (pid ${c(pid)}) has been stopped.")

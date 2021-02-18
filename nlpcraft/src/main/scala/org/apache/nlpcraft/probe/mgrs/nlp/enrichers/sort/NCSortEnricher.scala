@@ -105,6 +105,10 @@ object NCSortEnricher extends NCProbeEnricher {
         require(main.nonEmpty)
         require(subjSeq.nonEmpty || bySeq.nonEmpty)
 
+        private lazy val allRefElements: Set[String] = (subjSeq ++ bySeq).flatten.map(_.note).toSet
+
+        def intersect(names: Set[String]): Boolean = allRefElements.intersect(names).nonEmpty
+
         // Special case. Same elements found without ASC flag. Should be skipped as already processed.
         def isSubCase(m: Match): Boolean =
             // Stops skipped.
@@ -440,6 +444,10 @@ object NCSortEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, meta: Map[String, Serializable], parent: Span): Unit = {
         require(isStarted)
 
+        val restricted =
+            mdl.model.getRestrictedCombinations.asScala.getOrElse("nlpcraft:sort", java.util.Collections.emptySet()).
+                asScala.toSet
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -450,7 +458,7 @@ object NCSortEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks)) {
                 tryToMatch(toks) match {
                     case Some(m)  ⇒
-                        if (!matches.exists(_.isSubCase(m))) {
+                        if (!matches.exists(_.isSubCase(m)) && !m.intersect(restricted)) {
                             def addNotes(
                                 params: ArrayBuffer[(String, Any)],
                                 seq: Seq[NoteData],

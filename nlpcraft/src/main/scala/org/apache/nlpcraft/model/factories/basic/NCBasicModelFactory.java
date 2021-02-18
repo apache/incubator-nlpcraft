@@ -68,8 +68,7 @@ public class NCBasicModelFactory implements NCModelFactory {
     @Override
     public NCModel mkModel(Class<? extends NCModel> type) {
         try {
-            return type.getConstructor().
-                newInstance();
+            return type.getConstructor().newInstance();
         }
         catch (NoSuchMethodException e) {
             throw new NCException(String.format("Model class does not have no-arg constructor: %s", type.getCanonicalName()), e);

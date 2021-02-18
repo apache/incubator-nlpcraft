@@ -32,6 +32,7 @@ import org.apache.commons.validator.routines.UrlValidator
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCE, U}
+import org.apache.nlpcraft.model.NCModelView
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode.{API_OK, _}
 import org.apache.nlpcraft.server.company.NCCompanyManager
 import org.apache.nlpcraft.server.feedback.NCFeedbackManager
@@ -99,7 +100,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
      */
     private final val STD_FIELD_LENGTHS = Map[String, Int](
         "srvReqId" → 32,
-        "mdlId" → 32,
+        "mdlId" → NCModelView.MODEL_ID_MAXLEN,
         "country" → 32,
         "postalCode" → 32,
 
@@ -564,7 +565,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         case None ⇒ None
                     }
 
-                checkLengthOpt("data", dataJsOpt, 512000)
+                checkLengthOpt("data", dataJsOpt,512000)
 
                 val acsUsr = authenticate(req.acsTok)
 
