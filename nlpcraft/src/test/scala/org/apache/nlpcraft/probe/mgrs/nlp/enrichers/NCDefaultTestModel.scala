@@ -17,13 +17,15 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
+import org.apache.nlpcraft.NCTestElement
 import org.apache.nlpcraft.model.{NCElement, NCModelAdapter, NCResult, NCValue}
-import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.NCDefaultTestModel._
 
 import java.util
 import java.util.Collections
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
+
+import NCDefaultTestModel._
 
 /**
   * Enrichers default test model.
@@ -33,27 +35,20 @@ class NCDefaultTestModel extends NCModelAdapter(ID, "Model enrichers test", "1.0
 
     override def getElements: util.Set[NCElement] =
         Set(
-            mkElement("A", "A"),
-            mkElement("B", "B"),
-            mkElement("C", "C"),
-            mkElement("AB", "A B"),
-            mkElement("BC", "B C"),
-            mkElement("ABC", "A B C"),
-            mkElement("D1", "D"),
-            mkElement("D2", "D"),
+            NCTestElement("A", "A"),
+            NCTestElement("B", "B"),
+            NCTestElement("C", "C"),
+            NCTestElement("AB", "A B"),
+            NCTestElement("BC", "B C"),
+            NCTestElement("ABC", "A B C"),
+            NCTestElement("D1", "D"),
+            NCTestElement("D2", "D"),
             mkValueElement("V", "V1", "V2")
         ).asJava
-
-    private def mkElement(id: String, syns: String*): NCElement =
-        new NCElement {
-            override def getId: String = id
-            override def getSynonyms: util.List[String] = syns.asJava
-        }
 
     private def mkValueElement(id: String, vals: String*): NCElement =
         new NCElement {
             override def getId: String = id
-            override def getSynonyms: util.List[String] = Collections.singletonList(id)
             override def getValues: util.List[NCValue] = vals.map(v ⇒ new NCValue {
                 override def getName: String = v
                 override def getSynonyms: util.List[String] = Collections.singletonList(v)

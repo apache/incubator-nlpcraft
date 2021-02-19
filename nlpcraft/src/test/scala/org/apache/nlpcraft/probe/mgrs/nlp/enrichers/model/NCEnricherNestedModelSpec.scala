@@ -17,15 +17,12 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
-import java.util
-import java.util.Collections
-
-import org.apache.nlpcraft.NCTestEnvironment
 import org.apache.nlpcraft.model.NCElement
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.{NCDefaultTestModel, NCEnricherBaseSpec, NCTestUserToken ⇒ usr}
+import org.apache.nlpcraft.{NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
-import scala.collection.JavaConverters._
+import java.util
 
 /**
   * Nested Elements test model.
@@ -33,19 +30,13 @@ import scala.collection.JavaConverters._
 class NCNestedTestModel extends NCDefaultTestModel {
     override def getElements: util.Set[NCElement] =
         Set(
-            mkElement("x1", "{test|*} ^^id == 'nlpcraft:date'^^"),
-            mkElement("x2", "{test1|*} ^^id == 'x1'^^"),
-            mkElement("x3", "{test2|*} ^^id == 'x2'^^"),
-            mkElement("y1", "y"),
-            mkElement("y2", "^^id == 'y1'^^"),
-            mkElement("y3", "^^id == 'y2'^^ ^^id == 'y2'^^")
-        ).asJava
-
-    private def mkElement(id: String, syn: String): NCElement =
-        new NCElement {
-            override def getId: String = id
-            override def getSynonyms: util.List[String] = Collections.singletonList(syn)
-        }
+            NCTestElement("x1", "{test|*} ^^id == 'nlpcraft:date'^^"),
+            NCTestElement("x2", "{test1|*} ^^id == 'x1'^^"),
+            NCTestElement("x3", "{test2|*} ^^id == 'x2'^^"),
+            NCTestElement("y1", "y"),
+            NCTestElement("y2", "^^id == 'y1'^^"),
+            NCTestElement("y3", "^^id == 'y2'^^ ^^id == 'y2'^^")
+        )
 }
 
 /**

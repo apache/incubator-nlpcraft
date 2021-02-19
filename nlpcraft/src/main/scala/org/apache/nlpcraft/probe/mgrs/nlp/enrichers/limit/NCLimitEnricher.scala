@@ -17,18 +17,16 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.limit
 
-import java.io.Serializable
-
 import io.opencensus.trace.Span
-import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.common.makro.NCMacroParser
 import org.apache.nlpcraft.common.nlp.core.NCNlpCoreManager
 import org.apache.nlpcraft.common.nlp.numeric.{NCNumeric, NCNumericManager}
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
-import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
+import java.io.Serializable
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, mutable}
 
@@ -246,6 +244,10 @@ object NCLimitEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
         require(isStarted)
 
+        val restricted =
+            mdl.model.getRestrictedCombinations.asScala.getOrElse("nlpcraft:limit", java.util.Collections.emptySet()).
+                asScala
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -267,7 +269,7 @@ object NCLimitEnricher extends NCProbeEnricher {
 
                 tryToMatch(numsMap, groupsMap, tech, toks) match {
                     case Some(m) ⇒
-                        for (refNote ← m.refNotes) {
+                        for (refNote ← m.refNotes if !restricted.contains(refNote)) {
                             val ps = mutable.ArrayBuffer.empty[(String, Any)]
 
                             ps += "limit" → m.limit

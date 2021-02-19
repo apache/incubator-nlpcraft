@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.common.ascii
 
-import org.junit.jupiter.api.Test
 import org.apache.nlpcraft.common.ansi.NCAnsi._
+import org.junit.jupiter.api.Test
 
 /**
  * Test for ASCII text table.

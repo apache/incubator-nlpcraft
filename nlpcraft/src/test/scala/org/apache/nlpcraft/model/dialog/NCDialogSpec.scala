@@ -18,12 +18,11 @@
 package org.apache.nlpcraft.model.dialog
 
 import org.apache.nlpcraft.model.{NCElement, NCIntent, NCModel, NCResult}
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
+import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
 
 /**
   * Test model.
@@ -34,7 +33,7 @@ class NCDialogSpecModel extends NCModel {
     override def getVersion: String = "1.0.0"
 
     override def getElements: util.Set[NCElement] =
-        (for (ch ← 'a' to 'y'; i ← 1 to 9) yield new NCElement { override def getId: String = s"$ch$i" }).toSet.asJava
+        Set((for (ch ← 'a' to 'y'; i ← 1 to 9) yield NCTestElement(s"$ch$i")):_*)
 
     @NCIntent("intent=onA1 term~{id == 'a1'}")
     def onA1(): NCResult = NCResult.text("ok")

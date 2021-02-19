@@ -34,9 +34,6 @@ import scala.collection._
 /**
  * Utility service that provides supporting functionality for ASCII rendering.
  */
-// TODO: we need to refactor this class eventually to remove
-// TODO: duplicate code usage.
-//noinspection DuplicatedCode
 object NCTokenLogger extends LazyLogging {
     case class NoteMetadata(noteType: String, filtered: Seq[String], isFull: Boolean)
     

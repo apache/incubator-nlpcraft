@@ -17,9 +17,6 @@
 
 package org.apache.nlpcraft.server.rest
 
-import java.util
-import java.util.UUID
-
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.jayway.jsonpath.{JsonPath, PathNotFoundException}
@@ -30,10 +27,12 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.apache.http.{HttpEntity, HttpResponse}
 import org.apache.nlpcraft.NCTestContext
+import org.apache.nlpcraft.common._
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{AfterEach, BeforeEach}
-import org.apache.nlpcraft.common._
 
+import java.util
+import java.util.UUID
 import scala.collection.JavaConverters._
 
 private[rest] object NCRestSpec {

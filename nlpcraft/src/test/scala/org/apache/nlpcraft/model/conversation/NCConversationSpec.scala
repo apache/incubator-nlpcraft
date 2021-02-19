@@ -17,15 +17,12 @@
 
 package org.apache.nlpcraft.model.conversation
 
-import java.util
-import java.util.Collections
-
 import org.apache.nlpcraft.model.{NCElement, NCIntent, NCModel, NCResult}
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
+import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 
-import scala.collection.JavaConverters._
+import java.util
 
 /**
   * Test model.
@@ -35,12 +32,7 @@ class NCConversationSpecModel extends NCModel {
     override def getName: String = this.getClass.getSimpleName
     override def getVersion: String = "1.0.0"
 
-    private def mkElement(id: String): NCElement = new NCElement {
-        override def getId: String = id
-        override def getSynonyms: util.List[String] = Collections.singletonList(id)
-    }
-
-    override def getElements: util.Set[NCElement] = Set(mkElement("test1"), mkElement("test2")).asJava
+    override def getElements: util.Set[NCElement] = Set(NCTestElement("test1"), NCTestElement("test2"))
 
     // 'test1' is mandatory, 'test2' is optional.
     @NCIntent("intent=testIntentId term~{id == 'test1'} term~{id == 'test2'}?")

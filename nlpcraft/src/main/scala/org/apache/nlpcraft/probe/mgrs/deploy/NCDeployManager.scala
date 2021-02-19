@@ -25,6 +25,7 @@ import java.util.jar.JarInputStream
 import java.util.regex.{Pattern, PatternSyntaxException}
 
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.model.NCModelView._
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -41,6 +42,7 @@ import org.apache.nlpcraft.probe.mgrs.model.NCModelSynonymDslCompiler
 import resource.managed
 
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 import scala.collection.convert.DecorateAsScala
 import scala.collection.{Map, Seq, Set, mutable}
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
@@ -140,13 +142,31 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val mdlId = mdl.getId
 
-        for (elm ← mdl.getElements.asScala)
+        for (elm ← mdl.getElements.asScala) {
             if (!elm.getId.matches(ID_REGEX))
-                throw new NCE(s"Model element ID does not match regex [" +
+                throw new NCE(
+                s"Model element ID does not match regex [" +
                     s"mdlId=$mdlId, " +
                     s"elmId=${elm.getId}, " +
                     s"regex=$ID_REGEX" +
-                s"]")
+                s"]"
+            )
+
+            elm.getJiggleFactor.asScala match {
+                case Some(elemJiggleFactor) ⇒
+                    if (elemJiggleFactor < JIGGLE_FACTOR_MIN || elemJiggleFactor > JIGGLE_FACTOR_MAX)
+                        throw new NCE(
+                            s"Model element 'jiggleFactor' property is out of range [" +
+                                s"mdlId=$mdlId, " +
+                                s"elm=${elm.getId}, " +
+                                s"value=$elemJiggleFactor," +
+                                s"min=$JIGGLE_FACTOR_MIN, " +
+                                s"max=$JIGGLE_FACTOR_MAX" +
+                            s"]"
+                        )
+                case None ⇒ // No-op.
+            }
+        }
 
         checkMacros(mdl)
 
@@ -234,7 +254,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         )
                 }
 
-                if (mdl.isPermutateSynonyms && !isElementId && chunks.forall(_.wordStem != null))
+                if (
+                    elm.isPermutateSynonyms.orElse(mdl.isPermutateSynonyms) &&
+                    !isElementId && chunks.forall(_.wordStem != null)
+                )
                     simplePermute(chunks).map(p ⇒ p.map(_.wordStem) → p).toMap.values.foreach(p ⇒ add(p, p == chunks))
                 else
                     add(chunks, isDirect = true)
@@ -329,7 +352,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             val vals =
                 (if (elm.getValues != null) elm.getValues.asScala else Seq.empty) ++
-                (if (elm.getValueLoader != null) elm.getValueLoader.load(elm).asScala else Seq.empty)
+                (
+                    elm.getValueLoader.asScala match {
+                        case Some(ldr) ⇒ ldr.load(elm).asScala
+                        case None ⇒ Seq.empty
+                    }
+                )
 
             // Add value synonyms.
             for (v ← vals.map(p ⇒ p.getName → p).toMap.values) {
@@ -379,12 +407,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
             )
 
         // Discard value loaders.
-        for (elm ← mdl.getElements.asScala) {
-            val ldr = elm.getValueLoader
-
-            if (ldr != null)
-                ldr.onDiscard()
-        }
+        for (elm ← mdl.getElements.asScala)
+            elm.getValueLoader.ifPresent(_.onDiscard())
 
         val allAliases = syns
             .flatMap(_.syn)
@@ -843,7 +867,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 s"]")
 
         @throws[NCE]
-        def checkNum(v: Long, name: String, min: Long = 0L, max: Long = Long.MaxValue): Unit =
+        def checkNum(v: Long, name: String, min: Long, max: Long): Unit =
             if (v < min || v > max)
                 throw new NCE(s"Model property is out of range [" +
                     s"mdlId=$mdlId, " +
@@ -861,22 +885,22 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     s"name=$name" +
                 s"]")
 
-        checkMandatoryString(mdl.getId, "id", 32)
-        checkMandatoryString(mdl.getName, "name", 64)
-        checkMandatoryString(mdl.getVersion, "version", 16)
+        checkMandatoryString(mdl.getId, "id", MODEL_ID_MAXLEN)
+        checkMandatoryString(mdl.getName, "name", MODEL_NAME_MAXLEN)
+        checkMandatoryString(mdl.getVersion, "version", MODEL_VERSION_MAXLEN)
 
-        checkNum(mdl.getConversationTimeout, "conversationTimeout")
-        checkNum(mdl.getMaxUnknownWords, "maxUnknownWords")
-        checkNum(mdl.getMaxFreeWords, "maxFreeWords")
-        checkNum(mdl.getMaxSuspiciousWords, "maxSuspiciousWords")
-        checkNum(mdl.getMinWords, "minWords", min = 1)
-        checkNum(mdl.getMinNonStopwords, "minNonStopwords")
-        checkNum(mdl.getMinTokens, "minTokens")
-        checkNum(mdl.getMaxTokens, "maxTokens", max = 100)
-        checkNum(mdl.getMaxWords, "maxWords", min = 1, max = 100)
-        checkNum(mdl.getJiggleFactor, "jiggleFactor", max = 4)
-        checkNum(mdl.getMaxElementSynonyms, "maxSynonymsThreshold", min = 1)
-        checkNum(mdl.getConversationDepth, "conversationDepth", min = 1)
+        checkNum(mdl.getConversationTimeout, "conversationTimeout", CONV_TIMEOUT_MIN, CONV_TIMEOUT_MAX)
+        checkNum(mdl.getMaxUnknownWords, "maxUnknownWords", MAX_UNKNOWN_WORDS_MIN, MAX_UNKNOWN_WORDS_MAX)
+        checkNum(mdl.getMaxFreeWords, "maxFreeWords", MAX_FREE_WORDS_MIN, MAX_FREE_WORDS_MAX)
+        checkNum(mdl.getMaxSuspiciousWords, "maxSuspiciousWords", MAX_SUSPICIOUS_WORDS_MIN, MAX_SUSPICIOUS_WORDS_MAX)
+        checkNum(mdl.getMinWords, "minWords", MIN_WORDS_MIN, MIN_WORDS_MAX)
+        checkNum(mdl.getMinNonStopwords, "minNonStopwords", MIN_NON_STOPWORDS_MIN, MIN_NON_STOPWORDS_MAX)
+        checkNum(mdl.getMinTokens, "minTokens", MIN_TOKENS_MIN, MIN_TOKENS_MAX)
+        checkNum(mdl.getMaxTokens, "maxTokens", MAX_TOKENS_MIN, MAX_TOKENS_MAX)
+        checkNum(mdl.getMaxWords, "maxWords", MAX_WORDS_MIN, MAX_WORDS_MAX)
+        checkNum(mdl.getJiggleFactor, "jiggleFactor", JIGGLE_FACTOR_MIN, JIGGLE_FACTOR_MAX)
+        checkNum(mdl.getMaxElementSynonyms, "maxSynonymsThreshold", MAX_SYN_MIN, MAX_SYN_MAX)
+        checkNum(mdl.getConversationDepth, "conversationDepth", CONV_DEPTH_MIN, CONV_DEPTH_MAX)
 
         checkCollection("additionalStopWords", mdl.getAdditionalStopWords)
         checkCollection("elements", mdl.getElements)
@@ -887,6 +911,20 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkCollection("suspiciousWords", mdl.getSuspiciousWords)
         checkCollection("macros", mdl.getMacros)
         checkCollection("metadata", mdl.getMetadata)
+        checkCollection("restrictedCombinations", mdl.getRestrictedCombinations)
+
+        for ((elm, restrs: util.Set[String]) ← mdl.getRestrictedCombinations.asScala) {
+            if (elm != "nlpcraft:limit" && elm != "nlpcraft:sort" && elm != "nlpcraft:relation")
+                throw new NCE(s"Unsupported restricting element ID [" +
+                    s"mdlId=$mdlId, " +
+                    s"elemId=$elm" +
+                s"]. Only 'nlpcraft:limit', 'nlpcraft:sort', and 'nlpcraft:relation' are allowed.")
+            if (restrs.contains(elm))
+                throw new NCE(s"Element cannot be restricted to itself [" +
+                    s"mdlId=$mdlId, " +
+                    s"elemId=$elm" +
+                s"]")
+        }
 
         val unsToksBlt =
             mdl.getEnabledBuiltInTokens.asScala.filter(t ⇒
@@ -910,8 +948,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             throw new NCE(s"Invalid token IDs for 'abstractToken' model property [" +
                 s"mdlId=${mdl.getId}, " +
                 s"ids=${unsToksAbstract.mkString(", ")}" +
-                s"]"
-            )
+            s"]")
     }
 
     /**
@@ -1388,14 +1425,26 @@ object NCDeployManager extends NCService with DecorateAsScala {
     }
 
     /**
+      * Gets its own methods including private and accessible from parents.
+      *
+      * @param o Object.
+      * @return Methods.
+      */
+    private def getProcessedMethods(o: AnyRef): Set[Method] = {
+        val claxx = o.getClass
+
+        (claxx.getDeclaredMethods ++ claxx.getMethods).toSet
+    }
+
+    /**
       *
       * @param mdl
       */
     @throws[NCE]
     private def scanIntents(mdl: NCModel): Map[NCDslIntent, Callback] = {
         val mdlId = mdl.getId
-        
-        mdl.getClass.getDeclaredMethods.flatMap(m ⇒ {
+
+        getProcessedMethods(mdl).flatMap(m ⇒ {
             // Direct in-the-class and referenced intents.
             val clsArr = m.getAnnotationsByType(CLS_INTENT)
             val refArr = m.getAnnotationsByType(CLS_INTENT_REF)
@@ -1471,7 +1520,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val mdlId = mdl.getId
 
         val samples =
-            mdl.getClass.getDeclaredMethods.flatMap(mtd ⇒ {
+            getProcessedMethods(mdl).flatMap(mtd ⇒ {
                 def mkMethodName: String = s"$C${mtd.getDeclaringClass.getName}#${mtd.getName}(...)$RST"
 
                 val smpAnns = mtd.getAnnotationsByType(CLS_SAMPLE)

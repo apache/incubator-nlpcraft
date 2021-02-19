@@ -17,7 +17,8 @@
 
 package org.apache.nlpcraft.model.impl.json;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Parsing bean.
@@ -31,6 +32,10 @@ public class NCElementJson {
     private Map<String, Object> metadata = new HashMap<>();
     private NCValueJson[] values = new NCValueJson[0];
     private String valueLoader;
+    // Can be null.
+    private Boolean isPermutateSynonyms;
+    // Can be null.
+    private Integer jiggleFactor;
 
     public String getParentId() {
         return parentId;
@@ -79,5 +84,17 @@ public class NCElementJson {
     }
     public void setValueLoader(String valueLoader) {
         this.valueLoader = valueLoader;
+    }
+    public Boolean isPermutateSynonyms() {
+        return isPermutateSynonyms;
+    }
+    public void setPermutateSynonyms(Boolean permutateSynonyms) {
+        isPermutateSynonyms = permutateSynonyms;
+    }
+    public Integer getJiggleFactor() {
+        return jiggleFactor;
+    }
+    public void setJiggleFactor(Integer jiggleFactor) {
+        this.jiggleFactor = jiggleFactor;
     }
 }

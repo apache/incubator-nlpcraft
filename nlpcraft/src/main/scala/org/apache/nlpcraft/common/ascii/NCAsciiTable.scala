@@ -301,7 +301,6 @@ class NCAsciiTable {
      * @param lines
      * @return
      */
-    // TODO: https://issues.apache.org/jira/browse/NLPCRAFT-125
     private def breakUpByNearestSpace(maxWidth: Int, lines: Seq[String]): Seq[String] =
         lines.flatMap(line ⇒ {
             if (line.isEmpty)

@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.model
 
-import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.apache.nlpcraft.NCTestElement._
+import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
@@ -32,12 +32,8 @@ class NCIntentDslSpecModel extends NCModelAdapter(
 ) {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
-    override def getElements: util.Set[NCElement] = util.Collections.singleton(
-        new NCElement {
-            // It overrides city.
-            override def getId: String = "paris"
-        }
-    )
+    // It overrides city.
+    override def getElements: util.Set[NCElement] = Set(NCTestElement("paris"))
 
     // Moscow population filter.
     @NCIntent("intent=bigCity term(city)={id == 'nlpcraft:city' && ~nlpcraft:city:citymeta['population'] >= 10381222}")

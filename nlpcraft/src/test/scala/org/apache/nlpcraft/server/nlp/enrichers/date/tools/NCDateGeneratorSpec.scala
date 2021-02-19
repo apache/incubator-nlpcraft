@@ -17,9 +17,6 @@
 
 package org.apache.nlpcraft.server.nlp.enrichers.date.tools
 
-import java.text.SimpleDateFormat
-import java.util.{Calendar, Date, Locale}
-
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
@@ -28,6 +25,8 @@ import org.apache.nlpcraft.server.nlp.enrichers.date.{NCDateParser, NCDateRange}
 import org.junit.jupiter.api.Assertions.{assertTrue, fail}
 import org.junit.jupiter.api.Test
 
+import java.text.SimpleDateFormat
+import java.util.{Calendar, Date, Locale}
 import scala.collection.JavaConverters._
 import scala.collection._
 import scala.collection.mutable.{LinkedHashMap => LHM}

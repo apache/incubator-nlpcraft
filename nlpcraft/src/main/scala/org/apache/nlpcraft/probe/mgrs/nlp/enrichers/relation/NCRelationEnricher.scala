@@ -150,6 +150,10 @@ object NCRelationEnricher extends NCProbeEnricher {
     override def enrich(mdl: NCProbeModel, ns: NCNlpSentence, senMeta: Map[String, Serializable], parent: Span = null): Unit = {
         require(isStarted)
 
+        val restricted =
+            mdl.model.getRestrictedCombinations.asScala.getOrElse("nlpcraft:relation", java.util.Collections.emptySet()).
+                asScala
+
         startScopedSpan("enrich", parent,
             "srvReqId" → ns.srvReqId,
             "mdlId" → mdl.model.getId,
@@ -161,7 +165,7 @@ object NCRelationEnricher extends NCProbeEnricher {
             for (toks ← ns.tokenMixWithStopWords() if validImportant(ns, toks))
                 tryToMatch(toks) match {
                     case Some(m) ⇒
-                        for (refNote ← m.refNotes) {
+                        for (refNote ← m.refNotes if !restricted.contains(refNote)) {
                             val note = NCNlpSentenceNote(
                                 Seq(m.matchedHead.index),
                                 TOK_ID,

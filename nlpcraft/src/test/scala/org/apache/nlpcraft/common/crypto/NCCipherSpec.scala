@@ -17,11 +17,11 @@
 
 package org.apache.nlpcraft.common.crypto
 
-import java.util.Base64
-
 import org.apache.nlpcraft.common._
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
+
+import java.util.Base64
 /**
  * Tests for crypto and PKI support.
  */

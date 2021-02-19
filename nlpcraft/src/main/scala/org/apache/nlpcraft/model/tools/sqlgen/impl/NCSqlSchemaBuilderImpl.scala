@@ -86,8 +86,6 @@ object NCSqlSchemaBuilderImpl {
                     
                     val table: NCSqlTableImpl = NCSqlTableImpl(
                         table = tab,
-                        // TODO: columns should be list, but elements are set. How should we order them?
-                        // TODO: Seems elements should be seq too in model.
                         columns = cols.asScala,
                         sorts = Seq.empty,
                         selects = dfltSelect,

@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.*;
 
 /**
- * A list of tokens representing one possible parsing variant of the user input.
+ * A parsing variant is a list of tokens representing one possible parsing variant of the user input.
  * <p>
  * Note that a given user input can have one or more possible different parsing variants. Depending on model
  * configuration a user input can produce hundreds or even thousands of parsing variants.

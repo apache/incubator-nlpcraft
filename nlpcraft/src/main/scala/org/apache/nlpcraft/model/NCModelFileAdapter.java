@@ -65,6 +65,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     private final Map<String, Object> metadata;
     private final Set<NCElement> elems;
     private final List<NCCustomParser> parsers;
+    private final Map<String, Set<String>> restrictedCombinations;
 
     private final String origin;
 
@@ -116,11 +117,12 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         this.abstractToks = convert(proxy.getAbstractTokens(), Collections.emptySet());
         this.addStopwords = convert(proxy.getAdditionalStopWords(), null);
         this.exclStopwords = convert(proxy.getExcludedStopWords(), null);
-        this.elems = convertElements(proxy.getElements());
+        this.elems = convertElements(proxy, proxy.getElements());
         this.macros = convertMacros(proxy.getMacros());
         this.metadata = convertMeta(proxy.getMetadata());
         this.intents = convert(proxy.getIntents(), null);
         this.parsers = convertParsers(proxy.getParsers());
+        this.restrictedCombinations = convertRestrictedCombinations(proxy.getRestrictedCombinations());
 
         // NOTE: we can only test/check this at this point. Downstream - this information is lost.
         if (proxy.getIntents() != null && intents.size() != proxy.getIntents().length)
@@ -140,7 +142,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         
         if (in == null)
             try {
-                in = new FileInputStream(new File(filePath));
+                in = new FileInputStream(filePath);
             }
             catch (FileNotFoundException e) {
                 // Ignore.
@@ -211,6 +213,19 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
     /**
      *
+     * @param m
+     * @return
+     */
+    private static Map<String, Set<String>> convertRestrictedCombinations(Map<String, String[]> m) {
+        return m == null ?
+            new HashMap<>() :
+            m.entrySet().stream().collect(
+                Collectors.toMap(Map.Entry::getKey, p -> Arrays.stream(p.getValue()).collect(Collectors.toSet()))
+            );
+    }
+
+    /**
+     *
      * @param arr
      * @return
      */
@@ -245,10 +260,11 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
     /**
      *
+     * @param proxy
      * @param arr
      * @return
      */
-    private static Set<NCElement> convertElements(NCElementJson[] arr) {
+    private static Set<NCElement> convertElements(NCModelJson proxy, NCElementJson[] arr) {
         if (arr == null)
             return Collections.emptySet();
 
@@ -321,10 +337,24 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                         }
 
                         @Override
-                        public NCValueLoader getValueLoader() {
+                        public Optional<NCValueLoader> getValueLoader() {
                             return js.getValueLoader() != null ?
-                                loaders.computeIfAbsent(js.getValueLoader(), this::mkLoader) :
-                                null;
+                                Optional.of(loaders.computeIfAbsent(js.getValueLoader(), this::mkLoader)) :
+                                Optional.empty();
+                        }
+
+                        @Override
+                        public Optional<Boolean> isPermutateSynonyms() {
+                            return nvl(js.isPermutateSynonyms(), proxy.isPermutateSynonyms());
+                        }
+
+                        @Override
+                        public Optional<Integer> getJiggleFactor() {
+                            return nvl(js.getJiggleFactor(), proxy.getJiggleFactor());
+                        }
+
+                        private<T> Optional<T> nvl(T t, T dflt) {
+                            return Optional.of(t != null ? t : dflt);
                         }
                     };
             }).collect(Collectors.toSet());
@@ -516,5 +546,10 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     @Override
     public int getConversationDepth() {
         return proxy.getConversationDepth();
+    }
+
+    @Override
+    public Map<String, Set<String>> getRestrictedCombinations() {
+        return restrictedCombinations;
     }
 }

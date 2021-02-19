@@ -125,6 +125,21 @@ abstract class NCTestContext {
     }
 
     /**
+      *
+      * @param txtsInts
+      */
+    protected def checkIntents(txtsInts: (String, String)*): Unit =
+        for ((txt, intent) ← txtsInts) checkIntent(txt, intent)
+
+    /**
+      *
+      * @param txts
+      */
+    protected def fail(txts: String*): Unit =
+        for (txt ← txts)
+            require(getClient.ask(txt).isFailed)
+
+    /**
       * @param req
       * @param expResp
       */

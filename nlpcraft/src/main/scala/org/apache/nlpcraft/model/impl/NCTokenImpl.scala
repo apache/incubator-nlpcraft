@@ -36,7 +36,7 @@ import scala.collection.{Seq, mutable}
   * @param parentId
   * @param value
   * @param meta
-  * @param isAbstr
+  * @param isAbstractProp
   */
 private[nlpcraft] class NCTokenImpl(
     mdl: NCModelView,
@@ -49,7 +49,7 @@ private[nlpcraft] class NCTokenImpl(
     startCharIndex: Int,
     endCharIndex: Int,
     meta: Map[String, Object],
-    isAbstr: Boolean
+    isAbstractProp: Boolean
 ) extends NCToken with Serializable {
     require(mdl != null)
     require(srvReqId != null)
@@ -74,8 +74,8 @@ private[nlpcraft] class NCTokenImpl(
     override lazy val getStartCharIndex: Int = startCharIndex
     override lazy val getEndCharIndex: Int = endCharIndex
     override lazy val getAliases: java.util.List[String] = meta(TOK_META_ALIASES_KEY, Collections.emptyList())
+    override lazy val isAbstract: Boolean = isAbstractProp
     override def getPartTokens: java.util.List[NCToken] = parts.asJava
-    override def isAbstract: Boolean = isAbstr
 
     def setParts(parts: Seq[NCToken]): Unit = this.parts = parts
 
@@ -155,7 +155,7 @@ private[nlpcraft] object NCTokenImpl {
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,
                     meta = convertMeta(),
-                    isAbstr = mdl.model.getAbstractTokens.contains(elm.getId)
+                    isAbstractProp = mdl.model.getAbstractTokens.contains(elm.getId)
                 )
 
             case None ⇒
@@ -179,7 +179,7 @@ private[nlpcraft] object NCTokenImpl {
                     startCharIndex = tok.startCharIndex,
                     endCharIndex = tok.endCharIndex,
                     meta = convertMeta(),
-                    isAbstr = mdl.model.getAbstractTokens.contains(note.noteType)
+                    isAbstractProp = mdl.model.getAbstractTokens.contains(note.noteType)
                 )
         }
     }
