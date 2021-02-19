@@ -81,4 +81,8 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     ): NCResult {
         return FIllMatchProcessor.process(ctx, shape, block, length, position)
     }
+
+    override fun getAbstractTokens(): MutableSet<String> {
+        return mutableSetOf("mc:player")
+    }
 }

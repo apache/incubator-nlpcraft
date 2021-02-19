@@ -99,6 +99,7 @@ elements:
   - id: give:action
     synonyms:
       - "{give ^^[target](id == 'mc:player')^^}"
+    "permutateSynonyms": false
   - id: give:block-word
     synonyms:
       - "{block|blocks}"
@@ -128,12 +129,14 @@ elements:
       - fill:position
     synonyms:
       - "{{at|near} ^^[player](id == 'mc:player')^^ {position|*}|where ^^[player](id == 'mc:player')^^}"
+    "permutateSynonyms": false
 
   - id: position:front
     groups:
       - fill:position
     synonyms:
-      - "{{^^[distance](id == 'nlpcraft:num')^^ m|meter|meters|ft|feet}? {in|*} front {of|*} ^^[player](id == 'mc:player')^^}"
+      - "{{{^^[distance](id == 'nlpcraft:num')^^ m|meter|meters|ft|feet}|*} {in|*} front {of|*} ^^[player](id == 'mc:player')^^}"
+    "permutateSynonyms": false
 
 
 

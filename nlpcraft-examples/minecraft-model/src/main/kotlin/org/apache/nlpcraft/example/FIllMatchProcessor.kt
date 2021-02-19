@@ -35,14 +35,17 @@ class FIllMatchProcessor {
 
             // TODO: Use user rotation
             // TODO: handle y coordinate for cube
-            return NCResult.text("execute at @p positioned ~ ~ ~*1 rotated 0 0 run fill ${from.relativeRotated()} ${to.relativeRotated()} $block")
+            return NCResult.text("execute at @p positioned ~ ~ ~ rotated 0 0 run fill ${from.relativeRotated()} ${to.relativeRotated()} $block")
         }
 
         private fun resultCoordinates(length: Int, shape: String): Pair<Coordinate, Coordinate> {
             return when (shape) {
-                "line" -> Coordinate(-length / 2) to Coordinate((length - 1) / 2)
-                "square" -> Coordinate(-length / 2,0, -length / 2) to Coordinate((length - 1) / 2, 0,(length - 1) / 2)
-                "cube" -> Coordinate(-length / 2,-length / 2, -length / 2) to Coordinate((length - 1) / 2, (length - 1) / 2,(length - 1) / 2)
+                "line" -> Coordinate(-length / 2) to
+                        Coordinate((length - 1) / 2)
+                "square" -> Coordinate(-length / 2, 0, -length / 2) to
+                        Coordinate((length - 1) / 2, 0, (length - 1) / 2)
+                "cube" -> Coordinate(-length / 2, -length / 2, -length / 2) to
+                        Coordinate((length - 1) / 2, (length - 1) / 2, (length - 1) / 2)
                 else -> {
                     throw NCRejection("Unsupported shape")
                 }
