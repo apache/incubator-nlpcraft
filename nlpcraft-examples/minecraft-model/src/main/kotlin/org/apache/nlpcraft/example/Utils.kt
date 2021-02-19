@@ -30,8 +30,8 @@ internal fun NCToken.toInt(): Int {
     return this.meta<Double>("nlpcraft:num:from").toInt()
 }
 
-internal fun player(target: NCToken): String {
-    return if (firstPersonWords.contains(target.normText())) "@p" else target.originalText ?: "@p"
+internal fun NCToken.player(): String {
+    return if (firstPersonWords.contains(this.normText())) "@p" else this.originalText ?: "@p"
 }
 
 internal data class Coordinate(val x: Int = 0, val y: Int = 0, val z: Int = 0) {

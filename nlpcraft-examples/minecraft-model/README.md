@@ -45,11 +45,12 @@ use modded client, so vanilla client could be used. Commands could be either inv
 on client side, prefixed with slash (`/make it sunny`)
 
 ### Supported commands
-| Command | Example of usage |
-| :---: |:---:|
-`/weather` | Make it rain | 
-`/time` | Set current time to evening | 
-`/give` | Give me iron sword | 
+| Command | Example of usage | Commentary
+| :---: |:---:|:---|
+`/weather` | Make it rain | | 
+`/time` | Set current time to evening | |
+`/give` | Give me iron sword | You can specify quanity |
+`/fill` | Make a cube of gold near me | Can specify length (size of 10, length 10), position (10 meters in front of me/other player) |
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation

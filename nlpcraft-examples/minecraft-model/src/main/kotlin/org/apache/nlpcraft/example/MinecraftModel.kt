@@ -65,7 +65,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         }
 
         val itemRegistry = dumps["item"]!![item.value]!!
-        val player = player(target.partTokens[1])
+        val player = target.partTokens[1].player()
         val itemQuantity = quantity.map(NCToken::toInt).orElse(1)
 
         return NCResult.text("give $player $itemRegistry $itemQuantity")
@@ -76,7 +76,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         ctx: NCIntentMatch,
         @NCIntentTerm("shape") shape: NCToken,
         @NCIntentTerm("block") block: NCToken,
-        @NCIntentTerm("len") length: NCToken,
+        @NCIntentTerm("len") length: Optional<NCToken>,
         @NCIntentTerm("position") position: NCToken,
     ): NCResult {
         return FIllMatchProcessor.process(ctx, shape, block, length, position)

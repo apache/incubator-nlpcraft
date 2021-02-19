@@ -123,7 +123,7 @@ elements:
       - "wall"
   - id: fill:length
     synonyms:
-      - "{{size|length|diameter} {of|*}}"
+      - "{{size|length|diameter} {of|*} ^^[length](id == 'nlpcraft:num')^^}"
   - id: position:player
     groups:
       - fill:position
@@ -135,7 +135,7 @@ elements:
     groups:
       - fill:position
     synonyms:
-      - "{{{^^[distance](id == 'nlpcraft:num')^^ m|meter|meters|ft|feet}|*} {in|*} front {of|*} ^^[player](id == 'mc:player')^^}"
+      - "{{^^[distance](id == 'nlpcraft:num')^^|*} {in|*} front {of|*} ^^[player](id == 'mc:player')^^}"
     "permutateSynonyms": false
 
 
@@ -148,7 +148,7 @@ intents:
   - "intent=giveIntent term(action)={id == 'give:action'} term(quantity)={id == 'nlpcraft:num'}?
   term(item)={id == 'mc:item'} term={id == 'give:block-word'}?"
   - "intent=fillIntent term={id == 'fill:action'} term(shape)={groups @@ 'fill:shape'} term(block)={id == 'mc:item'}
-  term={id == 'fill:length'}? term(len)={id == 'nlpcraft:num'} term(position)={groups @@ 'fill:position'}"
+  term(len)={id == 'fill:length'}? term(position)={groups @@ 'fill:position'}"
 
 # give me sand
 swearWordsAllowed: true

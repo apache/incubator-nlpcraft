@@ -20,6 +20,7 @@ package org.apache.nlpcraft.example
 
 import org.apache.nlpcraft.example.MinecraftObjectValueLoader.Companion.dumps
 import org.apache.nlpcraft.model.*
+import java.util.*
 
 class FIllMatchProcessor {
     companion object {
@@ -27,15 +28,20 @@ class FIllMatchProcessor {
             ctx: NCIntentMatch,
             @NCIntentTerm("shape") shape: NCToken,
             @NCIntentTerm("block") blockToken: NCToken,
-            @NCIntentTerm("len") length: NCToken,
+            @NCIntentTerm("len") length: Optional<NCToken>,
             @NCIntentTerm("position") position: NCToken
         ): NCResult {
-            val (from, to) = resultCoordinates(length = length.toInt(), shape.id)
+            val (from, to) = resultCoordinates(transformLength(length), shape.id)
             val block = dumps["item"]!![blockToken.value]!!
+            val player = findPlayer(position)
+            val positionCoordinate = positionCoordinate(position)
 
             // TODO: Use user rotation
             // TODO: handle y coordinate for cube
-            return NCResult.text("execute at @p positioned ~ ~ ~ rotated 0 0 run fill ${from.relativeRotated()} ${to.relativeRotated()} $block")
+            return NCResult.text(
+                "execute at $player positioned ${positionCoordinate.relative()} rotated 0 0 run " +
+                        "fill ${from.relativeRotated()} ${to.relativeRotated()} $block"
+            )
         }
 
         private fun resultCoordinates(length: Int, shape: String): Pair<Coordinate, Coordinate> {
@@ -50,6 +56,33 @@ class FIllMatchProcessor {
                     throw NCRejection("Unsupported shape")
                 }
             }
+        }
+
+        private fun positionCoordinate(position: NCToken): Coordinate {
+            return when (position.id ) {
+                "position:player" -> Coordinate()
+                "position:front" -> Coordinate(0, 0, transformLength(Optional.of(position), 10))
+                else -> {
+                    throw NCRejection("Unsupported position")
+                }
+            }
+        }
+
+        private fun transformLength(length: Optional<NCToken>, default: Int = 5): Int {
+            return length.flatMap { x ->
+                x.partTokens.stream()
+                    .filter { it.id == "nlpcraft:num" }
+                    .findAny()
+                    .map { it.toInt() }
+            }.orElse(default)
+        }
+
+        private fun findPlayer(position: NCToken): String {
+            return position.partTokens.stream()
+                .filter { it.id == "mc:player" }
+                .findAny()
+                .orElseThrow { NCRejection("") }
+                .player()
         }
     }
 }
