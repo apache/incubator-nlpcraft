@@ -18,12 +18,11 @@
 package org.apache.nlpcraft.probe.mgrs.deploy
 
 import java.io._
-import java.lang.reflect.{InvocationTargetException, Method, ParameterizedType, Type}
+import java.lang.reflect.{InvocationTargetException, Method, ParameterizedType, Type, WildcardType}
 import java.util
 import java.util.function.Function
 import java.util.jar.JarInputStream
 import java.util.regex.{Pattern, PatternSyntaxException}
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.model.NCModelView._
 import org.apache.nlpcraft.common._
@@ -1050,6 +1049,13 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     /**
       *
+      * @param wct
+      * @return
+      */
+    private def wc2Str(wct: WildcardType): String = if (wct == null) "null" else s"'${wct.getTypeName}'"
+
+    /**
+      *
       * @param mtd
       * @return
       */
@@ -1358,6 +1364,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         val compType = compTypes.head
 
                         compType match {
+                            // Java, Scala, Groovy.
                             case _: Class[_] ⇒
                                 val genClass = compTypes.head.asInstanceOf[Class[_]]
 
@@ -1367,12 +1374,26 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                         s"type=${class2Str(genClass)}, " +
                                         s"arg=${mkArg()}" +
                                     s"]")
+                            // Kotlin.
+                            case _: WildcardType ⇒
+                                val wildcardType = compTypes.head.asInstanceOf[WildcardType]
+
+                                val lowBounds = wildcardType.getLowerBounds
+                                val upBounds = wildcardType.getUpperBounds
+
+                                if (lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_TOKEN)
+                                    throw new NCE(
+                                        s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [" +
+                                        s"mdlId=$mdlId, " +
+                                        s"type=${wc2Str(wildcardType)}, " +
+                                        s"arg=${mkArg()}" +
+                                    s"]")
                             case _ ⇒
                                 throw new NCE(s"Unexpected generic type for @NCIntentTerm annotated argument [" +
                                     s"mdlId=$mdlId, " +
                                     s"type=${compType.getTypeName}, " +
                                     s"arg=${mkArg()}" +
-                                    s"]")
+                                s"]")
                         }
 
                     case _ ⇒ throw new NCE(s"Unexpected parameter type for @NCIntentTerm annotated argument [" +
