@@ -667,14 +667,9 @@ trait NCBaseDslCompiler {
                 case "rand" ⇒ doRandom()
                 case "square" ⇒ doSquare()
 
-                // Collection, statistical (incl. string) functions.
+                // Collection functions.
                 case "list" ⇒ doList()
                 case "map" ⇒ doMap()
-                case "avg" ⇒
-                case "max" ⇒ // Works for numerics as well.
-                case "min" ⇒ // Works for numerics as well.
-                case "stdev" ⇒
-                case "sum" ⇒
                 case "get" ⇒
                 case "index" ⇒
                 case "contains" ⇒
@@ -696,19 +691,27 @@ trait NCBaseDslCompiler {
                 case "non_empty" ⇒
                 case "to_string" ⇒
 
+                // Statistical operations.
+                case "avg" ⇒
+                case "max" ⇒ // Works for numerics as well.
+                case "min" ⇒ // Works for numerics as well.
+                case "stdev" ⇒
+                case "sum" ⇒
+
                 // Date-time functions.
-                case "year" ⇒ doYear()
-                case "month" ⇒ doMonth()
-                case "day_of_month" ⇒ doDayOfMonth()
+                case "year" ⇒ doYear() // 2021.
+                case "month" ⇒ doMonth() // 1 ... 12.
+                case "day_of_month" ⇒ doDayOfMonth() // 1 ... 31.
                 case "day_of_week" ⇒ doDayOfWeek()
                 case "day_of_year" ⇒ doDayOfYear()
                 case "hour" ⇒
                 case "min" ⇒
                 case "sec" ⇒
-                case "week" ⇒
+                case "week_of_month" ⇒
+                case "week_of_year" ⇒
                 case "quarter" ⇒
                 case "msec" ⇒
-                case "now" ⇒
+                case "now" ⇒ // Epoc time.
 
                 case _ ⇒ errUnknownFun(fun)
             }

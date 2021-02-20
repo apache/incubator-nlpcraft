@@ -33,7 +33,7 @@ public interface NCMetadata {
      * @param map Map to convert to metadata.
      * @return Newly created metadata container.
      */
-    static NCMetadata convert(Map<String, Object> map) {
+    static NCMetadata apply(Map<String, Object> map) {
         return () -> map;
     }
 
