@@ -28,6 +28,16 @@ import java.util.*;
  */
 public interface NCMetadata {
     /**
+     * Factory for creating metadata out of standard map.
+     *
+     * @param map Map to convert to metadata.
+     * @return Newly created metadata container.
+     */
+    static NCMetadata convert(Map<String, Object> map) {
+        return () -> map;
+    }
+
+    /**
      * Gets mutable metadata.
      *
      * @return Metadata.

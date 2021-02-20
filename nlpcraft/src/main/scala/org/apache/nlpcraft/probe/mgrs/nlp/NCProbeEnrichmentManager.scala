@@ -573,7 +573,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 override def getDialogFlow: util.List[String] = NCDialogFlowManager.getDialogFlow(usrId, mdlId, span).asJava
                 override def clearStm(filter: Predicate[NCToken]): Unit = conv.clearTokens(filter)
                 override def clearDialog(filter: Predicate[String]): Unit = NCDialogFlowManager.clear(usrId, mdlId, span)
-                override def getUserData: util.Map[String, Object] = conv.getUserData
+                override def getMetadata = conv.getUserData
             }
 
             override def isOwnerOf(tok: NCToken): Boolean = allVars.contains(tok)

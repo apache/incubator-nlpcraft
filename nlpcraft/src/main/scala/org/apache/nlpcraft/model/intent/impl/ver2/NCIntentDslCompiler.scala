@@ -23,7 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslParser ⇒ Parser, _}
 import org.apache.nlpcraft.model.intent.utils.ver2._
-import org.apache.nlpcraft.model.{NCMetadata, NCRequest, NCToken, NCTokenPredicateContext}
+import org.apache.nlpcraft.model.{NCMetadata, NCRequest, NCToken, NCTokenPredicateContext, NCTokenPredicateResult}
 
 import java.lang.{IllegalArgumentException ⇒ IAE}
 import java.util.Optional
@@ -138,16 +138,25 @@ object NCIntentDslCompiler extends LazyLogging {
                             override lazy val getToken: NCToken = tok
                             override lazy val getIntentMeta: Optional[NCMetadata] =
                                 if (termCtx.intentMeta != null)
-                                    Optional.of(termCtx.intentMeta.asJava)
+                                    Optional.of(NCMetadata.convert(termCtx.intentMeta.asJava))
                                 else
                                     Optional.empty()
                         }
 
-                        val obj = if (termClsName == null) tok.getModel else U.mkObject(termClsName)
+                        val mdl = tok.getModel
+                        val mdlCls = if (termClsName == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else termClsName
 
-                        // TODO
+                        try {
+                            val obj = if (termClsName == null) mdl else U.mkObject(termClsName)
+                            val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls).getMethod(termMtdName, classOf[NCTokenPredicateContext])
 
-                        (true, true)
+                            val res = mtd.invoke(obj, javaCtx).asInstanceOf[NCTokenPredicateResult]
+
+                            (res.getResult, res.wasTokenUsed())
+                        }
+                        catch {
+                            case e: Exception ⇒ throw new IAE(s"Failed to invoke custom DSL intent term: $mdlCls.$termMtdName", e)
+                        }
                     }
                 }
                 else { // DSL-defined term.

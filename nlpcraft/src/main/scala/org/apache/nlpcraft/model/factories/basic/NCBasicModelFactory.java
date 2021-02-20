@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.factories.basic;
 
 import org.apache.nlpcraft.common.*;
+import org.apache.nlpcraft.common.package$;
 import org.apache.nlpcraft.model.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -68,7 +69,11 @@ public class NCBasicModelFactory implements NCModelFactory {
     @Override
     public NCModel mkModel(Class<? extends NCModel> type) {
         try {
-            return type.getConstructor().newInstance();
+            NCModel mdl = type.getConstructor().newInstance();
+
+            mdl.getMetadata().put(package$.MODULE$.MDL_META_MODEL_CLASS_KEY(), type.getCanonicalName());
+
+            return mdl;
         }
         catch (NoSuchMethodException e) {
             throw new NCException(String.format("Model class does not have no-arg constructor: %s", type.getCanonicalName()), e);

@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.factories.spring;
 
 import org.apache.nlpcraft.common.*;
+import org.apache.nlpcraft.common.package$;
 import org.apache.nlpcraft.model.*;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.*;
@@ -115,8 +116,12 @@ public class NCSpringModelFactory implements NCModelFactory {
     public NCModel mkModel(Class<? extends NCModel> claxx) {
         if (ctx == null)
             throw new IllegalStateException(String.format("%s is not initialized.", getClass().getSimpleName()));
-        
-        return ctx.getBean(claxx);
+
+        NCModel mdl = ctx.getBean(claxx);
+
+        mdl.getMetadata().put(package$.MODULE$.MDL_META_MODEL_CLASS_KEY(), claxx.getCanonicalName());
+
+        return mdl;
     }
     
     @Override
