@@ -696,6 +696,8 @@ class NCNlpSentence(
                 filter(n ⇒ !links.contains(NoteLink(n.noteType, n.tokenIndexes))).
                 filter(getPartKeys(_).isEmpty).
                 flatMap(n ⇒ {
+                    val wIdxs = n.wordIndexes.toSet
+
                     val owners =
                         delCombs.
                             filter(_ != n).
@@ -712,7 +714,17 @@ class NCNlpSentence(
                                     None
                             )
 
-                    if (owners.exists(_.wordIndexes == n.wordIndexes)) Some(n) else None
+
+                    if (owners.exists(
+                        o ⇒ {
+                            val oWIdxs = o.wordIndexes.toSet
+
+                            wIdxs == oWIdxs || wIdxs.subsetOf(oWIdxs)
+                        })
+                    )
+                        Some(n)
+                    else
+                        None
                 })
 
         delCombs = delCombs.filter(p ⇒ !swallowed.contains(p))
