@@ -672,7 +672,7 @@ class NCNlpSentence(
 
         var sens =
             if (delCombs.nonEmpty) {
-                val deleted = mutable.ArrayBuffer.empty[Seq[NCNlpSentenceNote]]
+                val deleted = mutable.ArrayBuffer.empty[Set[NCNlpSentenceNote]]
 
                 val sens =
                     (minDelSize to delCombs.size).
@@ -681,9 +681,10 @@ class NCNlpSentence(
                                 filter(delComb ⇒ !toksByIdx.exists(_.count(note ⇒ !delComb.contains(note)) > 1))
                         ).
                         sortBy(_.size).
+                        map(_.toSet).
                         flatMap(delComb ⇒
                             // Already processed with less subset of same deleted tokens.
-                            if (!deleted.exists(_.forall(delComb.contains))) {
+                            if (!deleted.exists(_.subsetOf(delComb))) {
                                 val nsClone = this.clone()
 
                                 // Saves deleted notes for sentence and their tokens.

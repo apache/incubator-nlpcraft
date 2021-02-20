@@ -225,6 +225,7 @@ object NCSuggestSynonymManager extends NCService {
                             val allReqs =
                                 elemSyns.map {
                                     case (elemId, syns) ⇒
+                                        // Current implementation supports suggestions only for single words synonyms.
                                         val normSyns: Seq[Seq[Word]] = syns.filter(_.size == 1)
                                         val synsStems = normSyns.map(_.map(_.stem))
                                         val synsWords = normSyns.map(_.map(_.word))
@@ -265,7 +266,8 @@ object NCSuggestSynonymManager extends NCService {
                                     map { case (elemId, _) ⇒ elemId }
 
                             if (noExElems.nonEmpty)
-                                warns += s"Elements do not have synonyms in their intent samples - no suggestion can be made: ${noExElems.mkString(", ")}"
+                                warns += s"Elements do not have *single word* synonyms in their @NCIntentSample - " +
+                                    s"no suggestion can be made: ${noExElems.mkString(", ")}"
 
                             val allReqsCnt = allReqs.map(_._2.size).sum
                             val allSynsCnt = elemSyns.map(_._2.size).sum
