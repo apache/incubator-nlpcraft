@@ -56,7 +56,7 @@ object NCLimitEnricher extends NCProbeEnricher {
     // - Any simple word.
     // Note that `CD` is optional (DFLT_LIMIT will be used)
     private final val SYNONYMS = Seq(
-        s"<TOP_WORDS> {of|*} {$CD|*} {<POST_WORDS>|*}",
+        s"<TOP_WORDS> {of|_} {$CD|_} {<POST_WORDS>|_}",
         s"$CD of",
         s"$CD <POST_WORDS>",
         s"<POST_WORDS> $CD"

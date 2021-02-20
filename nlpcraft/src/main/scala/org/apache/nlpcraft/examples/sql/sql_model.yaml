@@ -102,7 +102,7 @@ macros:
 - name: "<OF>"
   macro: "{of|for|per}"
 - name: "<ID>"
-  macro: "{unique|*} {id|identifier}"
+  macro: "{unique|_} {id|identifier}"
 elements:
 - id: "tbl:region"
   groups:
@@ -713,7 +713,7 @@ elements:
   groups:
   - "column"
   synonyms:
-  - "{orders|*} {unit_price|unit price}"
+  - "{orders|_} {unit_price|unit price}"
   - "{order_details|order details} {unit_price|unit price}"
   - "{unit_price|unit price} <OF> {order_details|order details}"
   metadata:
@@ -727,7 +727,7 @@ elements:
   groups:
   - "column"
   synonyms:
-  - "{orders|*} quantity"
+  - "{orders|_} quantity"
   - "{order_details|order details} quantity"
   - "quantity <OF> {order_details|order details}"
   metadata:
@@ -741,7 +741,7 @@ elements:
   groups:
   - "column"
   synonyms:
-  - "{orders|*} discount"
+  - "{orders|_} discount"
   - "{order_details|order details} discount"
   - "discount <OF> {order_details|order details}"
   metadata:
@@ -1475,7 +1475,7 @@ elements:
   groups:
     - "condition"
   synonyms:
-    - "^^id == 'col:varchar'^^ {is|equal|*} ^^id == 'col:val'^^"
+    - "^^id == 'col:varchar'^^ {is|equal|_} ^^id == 'col:val'^^"
     - "^^id == 'col:val'^^"
 - id: "condition:date"
   groups:
@@ -1486,12 +1486,12 @@ elements:
   groups:
     - "Sort criteria"
   synonyms:
-    - "best {performing|*}"
+    - "best {performing|_}"
 - id: "sort:worst"
   groups:
     - "Sort criteria"
   synonyms:
-    - "{worst|least} {performing|*}"
+    - "{worst|least} {performing|_}"
 enabledBuiltInTokens:
   - "nlpcraft:date"
   - "nlpcraft:num"

@@ -32,7 +32,7 @@
             "id": "phone:act",
             "description": "Phone action.",
             "synonyms": [
-                "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+                "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
             ]
         }
     ]

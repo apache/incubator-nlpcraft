@@ -28,8 +28,8 @@
             "id": "x:alarm",
             "description": "Alarm token indicator.",
             "synonyms": [
-                "{ping|buzz|wake|call|hit} {me|up|me up|*}",
-                "{set|*} {my|*} {wake|wake up|*} {alarm|timer|clock|buzzer|call} {up|*}"
+                "{ping|buzz|wake|call|hit} {me|up|me up|_}",
+                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {up|_}"
             ]
         }
     ],

@@ -67,16 +67,16 @@ object NCMacroParser {
   * Syntax:
   * - all macros should start with '<' and end with '>'.
   * - '{A|B}' denotes either 'A' or 'B'.
-  * - '{A|B|*}' denotes either 'A', or 'B' or nothing.
-  * - '\' can be used only for escaping '{', '}', '|', and '*' special symbols.
+  * - '{A|B|_}' denotes either 'A', or 'B' or nothing ('_').
+  * - '\' can be used only for escaping '{', '}', '|', and '_' special symbols.
   *
   * Examples:
   *      "A {B|C} D" ⇒ "A B D", "A C D"
   *      "A \{B\|C\} D" ⇒ "A {B|C} D"
-  *      "A {B|*} D" ⇒ "A D", "A B D"
-  *      "A {*|B|C} D" ⇒ "A D", "A B D", "A C D"
+  *      "A {B|_} D" ⇒ "A D", "A B D"
+  *      "A {_|B|C} D" ⇒ "A D", "A B D", "A C D"
   *      "A <MACRO>" ⇒ "A ..." based on <MACRO> content.
-  *      "A {<MACRO>|*}" ⇒ "A", "A ..." based on <MACRO> content.
+  *      "A {<MACRO>|_}" ⇒ "A", "A ..." based on <MACRO> content.
   *
   * NOTE: Macros cannot be recursive.
   * NOTE: Macros and '{...}' options groups can be nested.
@@ -178,7 +178,7 @@ class NCMacroParser {
     /**
       * Gets the next lexical token.
       *
-      * Special symbols are: ' ', '{', '}', '*' and '|'. Use `\` for escaping.
+      * Special symbols are: ' ', '{', '}', '_' and '|'. Use `\` for escaping.
       *
       * @param s Input string to get the next lexical token from.
       */
@@ -269,7 +269,7 @@ class NCMacroParser {
                         else {
                             if (!isEscape)
                                 ch match {
-                                    case '|' | '*' | '}' ⇒ throw new NCE(s"Suspicious '$ch' at pos $i: '$s'")
+                                    case '|' | '_' | '}' ⇒ throw new NCE(s"Suspicious '$ch' at pos $i: '$s'")
                                     case '{' ⇒ found = true // Found start of the option group.
                                     case _ ⇒
                                 }
@@ -295,7 +295,7 @@ class NCMacroParser {
     // Trims all duplicate spaces.
     private def trimDupSpaces(s: String) = U.splitTrimFilter(s, " ").mkString(" ")
     
-    // Processes '\' escapes for '{', '}', '|', and '*'.
+    // Processes '\' escapes for '{', '}', '|', and '_'.
     private def processEscapes(s: String): String = {
         val len = s.length()
         val buf = new StringBuilder()
@@ -308,7 +308,7 @@ class NCMacroParser {
             if (ch == '\\' && !isEscape)
                 isEscape = true
             else {
-                if (isEscape && ch != '|' && ch != '}' && ch != '{' && ch != '*')
+                if (isEscape && ch != '|' && ch != '}' && ch != '{' && ch != '_')
                     buf += '\\'
                 
                 buf += ch
@@ -353,7 +353,7 @@ class NCMacroParser {
                     val tails = expand0(tok.tail)
                     if (tok.head.head == '{') // Option group.
                         parseGroup(tok.head).flatMap(x ⇒
-                            if (x.head == "*")
+                            if (x.head == "_")
                                 mixTails("", tails)
                             else
                                 expand0(x.head).flatMap(z ⇒ mixTails(z, tails))

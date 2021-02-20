@@ -28,7 +28,7 @@
       "description": "Weather phenomenon.",
       "synonyms": [
         "{high sea|severe weather|hail|heat wave|cold wave|derecho|supercell|avalanche|cyclone|wildfire|landslide|firestorm|dust storm|thunder snow|winter storm|cloudburst|shower|condensation|precipitation|drizzle|rainstorm|rain storm|rainfall|rain|storm|sun|sunshine|cloud|hot|cold|dry|wet|wind||hurricane|typhoon|sand-storm|sand storm|tornado|humid|fog|snow|smog|black ice|haze|thundershower|thundersnow|sleet|drought|wildfire|blizzard|avalanche|mist|thunderstorm}",
-        "{weather {condition|temp|temperature|data|*}|condition|temp|temperature}"
+        "{weather {condition|temp|temperature|data|_}|condition|temp|temperature}"
       ]
     },
     {

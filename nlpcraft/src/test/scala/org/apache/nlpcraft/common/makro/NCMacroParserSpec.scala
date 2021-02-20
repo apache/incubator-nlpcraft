@@ -37,18 +37,18 @@ class NCMacroParserSpec  {
     // Add macros for testing...
     parser.addMacro("<OF>", "{of|for|per}")
     parser.addMacro("<QTY>", "{number|tally|count|quantity|amount}")
-    parser.addMacro("<NUM>", "{overall|total|grand total|entire|complete|full|*} <QTY>")
-    parser.addMacro("<WEBSITE>", "{html|*} {site|website|web site|web-site|web property}")
-    parser.addMacro("<BY>", "{segmented|grouped|combined|arranged|organized|categorized|*} {for|by|over|along|over by}")
+    parser.addMacro("<NUM>", "{overall|total|grand total|entire|complete|full|_} <QTY>")
+    parser.addMacro("<WEBSITE>", "{html|_} {site|website|web site|web-site|web property}")
+    parser.addMacro("<BY>", "{segmented|grouped|combined|arranged|organized|categorized|_} {for|by|over|along|over by}")
     parser.addMacro("<RATE>", "{rate|percentage|speed|momentum|frequency}")
     parser.addMacro("<AVG>", "{avg|average} <QTY>")
-    parser.addMacro("<ID>", "{unique|*} {id|guid|identifier|identification} {number|*}")
-    parser.addMacro("<USER>", "{{<WEBSITE>}|web|*} {user|visitor}")
-    parser.addMacro("<SES>", "{{<WEBSITE>}|web|*} {session|visit}")
-    parser.addMacro("<DCM>", "{double click|double-click|doubleclick|dcm} {manager|*}")
-    parser.addMacro("<PAGE>", "{{<WEBSITE>}|*} {web page|web-page|webpage|page} {path|*}")
+    parser.addMacro("<ID>", "{unique|_} {id|guid|identifier|identification} {number|_}")
+    parser.addMacro("<USER>", "{{<WEBSITE>}|web|_} {user|visitor}")
+    parser.addMacro("<SES>", "{{<WEBSITE>}|web|_} {session|visit}")
+    parser.addMacro("<DCM>", "{double click|double-click|doubleclick|dcm} {manager|_}")
+    parser.addMacro("<PAGE>", "{{<WEBSITE>}|_} {web page|web-page|webpage|page} {path|_}")
     parser.addMacro("<CTR>", "{ctr|click-through-rate|{click through|click-through} <RATE>}")
-    parser.addMacro("<URL>", "{{uniform|*} resource {locator|identifier}|{{<PAGE>}|*} {link|*} {uri|url|address}}")
+    parser.addMacro("<URL>", "{{uniform|_} resource {locator|identifier}|{{<PAGE>}|_} {link|_} {uri|url|address}}")
     parser.addMacro("<METRICS_A>", "{analytics|statistics|measurements|analysis|report|efficiency|performance}")
     parser.addMacro("<METRICS_B>", "{metrics|data|info|information|facts}")
     parser.addMacro("<METRICS>","{<METRICS_A>|<METRICS_B>|<METRICS_A> <METRICS_B>|<METRICS_B> <METRICS_A>}")
@@ -94,7 +94,7 @@ class NCMacroParserSpec  {
         val N = 50000
 
         for (_ ← 0 to N)
-            parser.expand("a {{{<C>}}|{*}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
+            parser.expand("a {{{<C>}}|{_}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
 
         val duration = currentTime - start
 
@@ -122,12 +122,12 @@ class NCMacroParserSpec  {
         parser.expand("<METRICS_B>")
         parser.expand("<METRICS>")
 
-        testParser("<A> {b|*} c", Seq(
+        testParser("<A> {b|_} c", Seq(
             "aaa b c",
             "aaa c"
         ))
 
-        testParser("<B> {b|*} c", Seq(
+        testParser("<B> {b|_} c", Seq(
             "aaa bbb b c",
             "aaa bbb c"
         ))
@@ -137,14 +137,14 @@ class NCMacroParserSpec  {
             "j/k"
         ))
 
-        testParser("a {b|*}. c", Seq(
+        testParser("a {b|_}. c", Seq(
             "a b. c",
             "a . c"
         ))
 
-        testParser("""a {/abc.\*/|\{\*\}} c""", Seq(
+        testParser("""a {/abc.*/|\{\_\}} c""", Seq(
             "a /abc.*/ c",
-            "a {*} c"
+            "a {_} c"
         ))
     
         testParser("""{`a`|\`a\`}""", Seq(
@@ -152,49 +152,49 @@ class NCMacroParserSpec  {
             "\\`a\\`"
         ))
 
-        testParser("""a {/abc.\{\}\*/|/d/} c""", Seq(
+        testParser("""a {/abc.\{\}*/|/d/} c""", Seq(
             "a /abc.{}*/ c",
             "a /d/ c"
         ))
 
-        testParser("a .{b,  |*}. c", Seq(
+        testParser("a .{b,  |_}. c", Seq(
             "a .b, . c",
             "a .. c"
         ))
 
-        testParser("a {{b|c}|*}.", Seq(
+        testParser("a {{b|c}|_}.", Seq(
             "a .",
             "a b.",
             "a c."
         ))
 
-        testParser("a {{{<C>}}|{*}} c", Seq(
+        testParser("a {{{<C>}}|{_}} c", Seq(
             "a aaa bbb z c",
             "a aaa bbb w c",
             "a c"
         ))
 
-        testParser("a {b|*}", Seq(
+        testParser("a {b|_}", Seq(
             "a b",
             "a"
         ))
 
-        testParser("a {b|*}d", Seq(
+        testParser("a {b|_}d", Seq(
             "a bd",
             "a d"
         ))
 
-        testParser("a {b|*} d", Seq(
+        testParser("a {b|_} d", Seq(
             "a b d",
             "a d"
         ))
 
-        testParser("a {b|*}       d", Seq(
+        testParser("a {b|_}       d", Seq(
             "a b d",
             "a d"
         ))
 
-        testParser("{{{a}}} {b||*|{{*}}||*}", Seq(
+        testParser("{{{a}}} {b||_|{{_}}||_}", Seq(
             "a b",
             "a"
         ))
@@ -203,7 +203,7 @@ class NCMacroParserSpec  {
             "a b"
         ))
 
-        testParser("a {b} {c|*}", Seq(
+        testParser("a {b} {c|_}", Seq(
             "a b",
             "a b c"
         ))
@@ -214,9 +214,9 @@ class NCMacroParserSpec  {
         ))
 
         ignoreNCE { testParser("a | b", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a *", Seq.empty); assertTrue(false) }
+        ignoreNCE { testParser("a _", Seq.empty); assertTrue(false) }
         ignoreNCE { testParser("a}}", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a {a|b} *", Seq.empty); assertTrue(false) }
+        ignoreNCE { testParser("a {a|b} _", Seq.empty); assertTrue(false) }
     }
 
     @Test
@@ -226,8 +226,8 @@ class NCMacroParserSpec  {
         testGroup("{a}", Seq("a"))
         testGroup("{{{a}}}", Seq("{{a}}"))
         testGroup("{{{a}}|{b}}", Seq("{{a}}", "{b}"))
-        testGroup("{a {c}|b|*}", Seq("a {c}", "b", "*"))
-        testGroup("""{/abc.\*/|\{\*\}}""", Seq("/abc.\\*/", "\\{\\*\\}"))
+        testGroup("{a {c}|b|_}", Seq("a {c}", "b", "_"))
+        testGroup("""{/abc.\_/|\{\_\}}""", Seq("/abc.\\_/", "\\{\\_\\}"))
 
         ignoreNCE { parser.parseGroup("a"); assertTrue(false) }
         ignoreNCE { parser.parseGroup("{a"); assertTrue(false) }
@@ -236,11 +236,11 @@ class NCMacroParserSpec  {
 
     @Test
     def testParseTokens() {
-        testToken("""a \* b""", """a \* b""", "")
-        testToken("""a \\\* b""", """a \\\* b""", "")
-        testToken("""a \{\*\*\*\} b""", """a \{\*\*\*\} b""", "")
-        testToken("""a{b\|\*\}|c}""", "a", """{b\|\*\}|c}""")
-        testToken("""/\|\*\{\}/ a {bc|d}""", """/\|\*\{\}/ a """, """{bc|d}""")
+        testToken("""a \_ b""", """a \_ b""", "")
+        testToken("""a \\\_ b""", """a \\\_ b""", "")
+        testToken("""a \{\_\_\_\} b""", """a \{\_\_\_\} b""", "")
+        testToken("""a{b\|\_\}|c}""", "a", """{b\|\_\}|c}""")
+        testToken("""/\|\_\{\}/ a {bc|d}""", """/\|\_\{\}/ a """, """{bc|d}""")
         testToken("{a} b", "{a}", " b")
         testToken("{a|{c|d}}", "{a|{c|d}}", "")
         testToken("{a {c|d} xxx {f|g}} b", "{a {c|d} xxx {f|g}}", " b")
@@ -250,7 +250,7 @@ class NCMacroParserSpec  {
         ignoreNCE { parser.nextToken("a } b"); assertTrue(false) }
         ignoreNCE { parser.nextToken("{c b"); assertTrue(false) }
         ignoreNCE { parser.nextToken("a | b"); assertTrue(false) }
-        ignoreNCE { parser.nextToken("a |*"); assertTrue(false) }
+        ignoreNCE { parser.nextToken("a |_"); assertTrue(false) }
         
         assertTrue(parser.nextToken("").isEmpty)
         assertTrue(parser.nextToken("     ").isDefined)
