@@ -21,14 +21,16 @@ import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslParser ⇒ Parser, _}
 import org.apache.nlpcraft.model.intent.utils.ver2._
+import org.apache.nlpcraft.model.{NCMetadata, NCRequest, NCToken, NCTokenPredicateContext}
 
+import java.lang.{IllegalArgumentException ⇒ IAE}
+import java.util.Optional
+import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import java.lang.{IllegalArgumentException ⇒ IAE}
-import java.util.regex.{Pattern, PatternSyntaxException}
+import scala.collection.JavaConverters._
 
 object NCIntentDslCompiler extends LazyLogging {
     // Compiler cache.
@@ -131,7 +133,19 @@ object NCIntentDslCompiler extends LazyLogging {
             val pred =
                 if (termMtdName != null) { // User-code defined term.
                     (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
-                        // TODO.
+                        val javaCtx = new NCTokenPredicateContext {
+                            override lazy val getRequest: NCRequest = termCtx.req
+                            override lazy val getToken: NCToken = tok
+                            override lazy val getIntentMeta: Optional[NCMetadata] =
+                                if (termCtx.intentMeta != null)
+                                    Optional.of(termCtx.intentMeta.asJava)
+                                else
+                                    Optional.empty()
+                        }
+
+                        val obj = if (termClsName == null) tok.getModel else U.mkObject(termClsName)
+
+                        // TODO
 
                         (true, true)
                     }
