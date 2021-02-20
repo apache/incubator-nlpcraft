@@ -104,7 +104,7 @@ ID: (UNDERSCORE|[a-z]|[A-Z])+([a-z]|[A-Z]|[0-9]|COLON|MINUS|UNDERSCORE)*;
 
 
 
-WORD: 
+WORD:
 
 WS: [ \r\t\u000C\n]+ -> skip ;
 
