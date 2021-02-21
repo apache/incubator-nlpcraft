@@ -745,7 +745,7 @@ trait NCBaseDslCompiler {
                 case "msec" ⇒
                 case "now" ⇒ // Epoc time.
 
-                case _ ⇒ throw errUnknownFun(fun)
+                case _ ⇒ throw errUnknownFun(fun) // Assertion.
             }
         }
     }
