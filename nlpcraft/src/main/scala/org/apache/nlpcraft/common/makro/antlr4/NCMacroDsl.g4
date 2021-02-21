@@ -22,92 +22,45 @@ line
     | line syn
     ;
 syn
-    :
-
-
-
-intent: intentId orderedDecl? flowDecl? terms EOF;
-intentId: 'intent' EQ ID;
-orderedDecl: 'ordered' EQ BOOL;
-flowDecl: 'flow' EQ qstring;
-terms: term | terms term;
-termEq: EQ | TILDA;
-term: 'term' termId? termEq LCURLY item RCURLY minMax?;
-termId: LPAREN ID RPAREN;
-item
-    : predicate
-    | LPAREN item RPAREN
-    | item (AND | OR) item
-    | EXCL item
+    : TXT
+    | INT // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
+    | group
     ;
-predicate
-    : lval PRED_OP rval
-    | ID LPAREN lval RPAREN PRED_OP rval  // Function call.
+group: LCURLY list RCURLY minMax?;
+minMax: LBR INT COMMA INT RBR;
+list
+    : syn
+    | list VERT (syn | UNDERSCORE)
     ;
-lval: lvalQual? ('id' | 'aliases' | 'startidx' | 'endidx' | 'parent' | 'groups' | 'ancestors' | 'value' | meta);
-lvalQual: lvalPart | lvalQual lvalPart;
-lvalPart: ID DOT;
-rvalSingle
-    : 'null'
-    | MINUS? (INT | INT EXP)
-    | BOOL
-    | qstring
-    ;
-rval
-    : rvalSingle
-    | LPAREN rvalList RPAREN
-    ;
-rvalList
-    : rvalSingle
-    | rvalList COMMA rvalSingle
-    ;
-meta
-    : TILDA ID
-    | TILDA ID LBR INT RBR
-    | TILDA ID LBR qstring RBR
-    ;
-qstring: QSTRING;
-minMax: minMaxShortcut | minMaxRange;
-minMaxShortcut: PLUS | QUESTION | STAR;
-minMaxRange: LBR INT COMMA INT RBR;
-QSTRING: SQUOTE (~'\'')* SQUOTE;
-PRED_OP: '==' | '!=' | '>=' | '<=' | '>' | '<' | '@@' | '!@';
-AND: '&&';
-OR: '||';
-VERT: '|';
-EXCL: '!';
-LPAREN: '(';
-RPAREN: ')';
 LCURLY: '{';
 RCURLY: '}';
-SQUOTE: '\'';
-TILDA: '~';
-RIGHT: '>>';
 LBR: '[';
 RBR: ']';
+VERT: '|';
 COMMA: ',';
-COLON: ':';
-MINUS: '-';
-DOT: '.';
 UNDERSCORE: '_';
-EQ: '=';
-PLUS: '+';
-QUESTION: '?';
-STAR: '*';
-DOLLAR: '$';
-POWER: '^';
-BOOL: 'true' | 'false';
+fragment TXT_CHAR
+    : [.*^+<>\-&'":#!]
+    | '\u00B7'
+    | '\u0300'..'\u036F'
+    | '\u203F'..'\u2040'
+    | 'A'..'Z'
+    | 'a'..'z'
+    | '0'..'9'
+    | '\u00C0'..'\u00D6'
+    | '\u00D8'..'\u00F6'
+    | '\u00F8'..'\u02FF'
+    | '\u0370'..'\u037D'
+    | '\u037F'..'\u1FFF'
+    | '\u200C'..'\u200D'
+    | '\u2070'..'\u218F'
+    | '\u2C00'..'\u2FEF'
+    | '\u3001'..'\uD7FF'
+    | '\uF900'..'\uFDCF'
+    | '\uFDF0'..'\uFFFD'
+    ; // Ignoring ['\u10000-'\uEFFFF].
+fragment ESC: '\\' . ;
 INT: '0' | [1-9][_0-9]*;
-EXP: DOT [0-9]+;
-ID: (UNDERSCORE|[a-z]|[A-Z])+([a-z]|[A-Z]|[0-9]|COLON|MINUS|UNDERSCORE)*;
-
-
-
-
-WORD:
-
+TXT: (TXT_CHAR | ESC)+;
 WS: [ \r\t\u000C\n]+ -> skip ;
-
-ErrorCharacter
-  : .
-  ;
+ErrorCharacter: .;
