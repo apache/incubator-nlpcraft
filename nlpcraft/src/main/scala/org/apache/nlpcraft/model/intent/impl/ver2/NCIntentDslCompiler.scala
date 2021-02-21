@@ -107,13 +107,10 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitOrderedDecl(ctx: Parser.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
         override def exitFlowDecl(ctx: Parser.FlowDeclContext): Unit = {
-            val qRegex = ctx.qstring().getText
+            val regex = ctx.qstring().getText
 
-            if (qRegex != null && qRegex.length > 2) {
-                val regex = qRegex.substring(1, qRegex.length - 1).strip // Remove quotes.
-
+            if (regex != null && regex.length > 2) 
                 flowRegex = if (regex.nonEmpty) Some(regex) else None
-            }
 
             if (flowRegex.isDefined) // Pre-check.
                 try
