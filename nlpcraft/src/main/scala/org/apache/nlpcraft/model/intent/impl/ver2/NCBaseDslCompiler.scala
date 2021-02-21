@@ -327,7 +327,7 @@ trait NCBaseDslCompiler {
                         try
                             Double.box(JDouble.parseDouble(num)) // Try 'double'.
                         catch {
-                            case _: NumberFormatException ⇒ txt // String by default (incl. quotes).
+                            case _: NumberFormatException ⇒ U.trimEscapesQuotes(txt)
                         }
                 }
             }

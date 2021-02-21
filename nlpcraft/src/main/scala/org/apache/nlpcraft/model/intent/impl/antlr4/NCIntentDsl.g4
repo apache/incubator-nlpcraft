@@ -87,8 +87,8 @@ minMaxShortcut
     | MULT
     ;
 minMaxRange: LBR INT COMMA INT RBR;
-SQSTRING: SQUOTE (~'\'')* SQUOTE;
-DQSTRING: DQUOTE (~'"')* DQUOTE;
+SQSTRING: SQUOTE ((~'\'') | ('\\''\''))* SQUOTE; // Allow for \' (escaped single quote) in the string.
+DQSTRING: DQUOTE ((~'"') | ('\\''"'))* DQUOTE; // Allow for \" (escape double quote) in the string.
 BOOL: 'true' | 'false';
 NULL: 'null';
 EQ: '==';
@@ -126,9 +126,23 @@ DOLLAR: '$';
 INT: '0' | [1-9] [_0-9]*;
 REAL: DOT [0-9]+;
 EXP: [Ee] [+\-]? INT;
-ID: (UNDERSCORE|[a-z]|[A-Z]|DOLLAR)+(DOLLAR|[a-z]|[A-Z]|[0-9]|COLON|MINUS|UNDERSCORE)*;
+fragment UNI_CHAR // International chars.
+    : '\u00B7'
+    | '\u0300'..'\u036F'
+    | '\u203F'..'\u2040'
+    | '\u00C0'..'\u00D6'
+    | '\u00D8'..'\u00F6'
+    | '\u00F8'..'\u02FF'
+    | '\u0370'..'\u037D'
+    | '\u037F'..'\u1FFF'
+    | '\u200C'..'\u200D'
+    | '\u2070'..'\u218F'
+    | '\u2C00'..'\u2FEF'
+    | '\u3001'..'\uD7FF'
+    | '\uF900'..'\uFDCF'
+    | '\uFDF0'..'\uFFFD'
+    ; // Ignoring ['\u10000-'\uEFFFF].
+fragment LETTER: [a-zA-Z];
+ID: (UNI_CHAR|UNDERSCORE|LETTER|DOLLAR)+(UNI_CHAR|DOLLAR|LETTER|[0-9]|COLON|MINUS|UNDERSCORE)*;
 WS: [ \r\t\u000C\n]+ -> skip;
-
-ErrorCharacter
-  : .
-  ;
+ErrorCharacter: .;

@@ -35,12 +35,12 @@ class NCDslCompilerSpec {
         )
         val intent2 = NCIntentDslCompiler.compile(
             """
-              |intent=i1 flow="a[^0-9]b" term(t1)={has(json("{'a': true, 'b': {'arr': [1, 2, 3]}}"), map("k1", "v1", "k2", "v2"))}
+              |intent=i1 flow="a[^0-9]b" term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}
               |""".stripMargin, "mdl.id"
         )
 
-        // val ret = intent2.terms.head.pred(_, _, _)
+        () // Breakpoint.
 
-        println(intent)
+        // val ret = intent2.terms.head.pred(_, _, _)
     }
 }

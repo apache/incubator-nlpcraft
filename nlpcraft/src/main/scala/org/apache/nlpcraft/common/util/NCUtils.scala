@@ -176,7 +176,7 @@ object NCUtils extends LazyLogging {
         trimFilter(s.split(sep))
 
     /**
-     * Recursively removed quotes from given string.
+     * Recursively removes quotes from given string.
      *
      * @param s
      * @return
@@ -187,6 +187,24 @@ object NCUtils extends LazyLogging {
 
         if ((z.startsWith("'") && z.endsWith("'")) || (z.startsWith("\"") && z.endsWith("\"")))
             trimQuotes(z.substring(1, z.length - 1))
+        else
+            z
+    }
+
+    /**
+     * Recursively removes quotes and replaces escaped quotes from given string.
+     *
+     * @param s
+     * @return
+     */
+    @tailrec
+    def trimEscapesQuotes(s: String): String = {
+        val z = s.strip
+
+        if (z.head == '\'' && z.last == '\'')
+            trimEscapesQuotes(z.substring(1, z.length - 1).replace("\'", "'"))
+        else if (z.head == '"' && z.last == '"')
+            trimEscapesQuotes(z.substring(1, z.length - 1).replace("\\\"", "\""))
         else
             z
     }
