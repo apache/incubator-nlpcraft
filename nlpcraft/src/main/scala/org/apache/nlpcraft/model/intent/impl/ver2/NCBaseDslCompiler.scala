@@ -334,6 +334,35 @@ trait NCBaseDslCompiler {
 
         (_, stack, _) ⇒ pushAny(atom, false)(stack)
     }
+    
+    private final val FUNCTIONS = Set(
+        "meta_token",       "meta_model",       "meta_intent",      "meta_req",         "meta_user",
+        "meta_company",     "meta_sys",         "meta_conv",        "json",             "if",
+        "id",               "ancestors",        "parent",           "groups",           "value",
+        "aliases",          "start_idx",        "end_idx",          "req_id",           "req_normtext",
+        "req_tstamp",       "req_addr",         "req_agent",        "user_id",          "user_fname",
+        "user_lname",       "user_email",       "user_admin",       "user_signup_tstamp",   "comp_id",
+        "comp_name",        "comp_website",     "comp_country",     "comp_region",      "comp_city",
+        "comp_addr",        "comp_postcode",    "trim",             "strip",            "uppercase",
+        "lowercase",        "is_alpha",         "is_alphanum",      "is_whitespace",    "is_num",
+        "is_numspace",      "is_alphaspace",    "is_alphanumspace", "substring",        "index",
+        "regex",            "soundex",          "split",            "split_trim",       "replace",
+        "abs",              "ceil",             "floor",            "rint",             "round",
+        "signum",           "sqrt",             "cbrt",             "pi",               "euler",
+        "acos",             "asin",             "atan",             "cos",              "sin",
+        "tan",              "cosh",             "sinh",             "tanh",             "atn2",
+        "degrees",          "radians",          "exp",              "expm1",            "hypot",
+        "log",              "log10",            "log1p",            "pow",              "rand",
+        "square",           "list",             "map",              "get",              "index",
+        "has",              "tail",             "add",              "remove",           "first",
+        "last",             "keys",             "values",           "length",           "count",
+        "take",             "drop",             "size",             "length",           "reverse",
+        "is_empty",         "non_empty",        "to_string",        "avg",              "max",
+        "min",              "stdev",            "sum",              "year",             "month",
+        "day_of_month",     "day_of_week",      "day_of_year",      "hour",             "min",
+        "sec",              "week_of_month",    "week_of_year",     "quarter",          "msec",
+        "now"
+    )
 
     /**
      *
@@ -342,6 +371,9 @@ trait NCBaseDslCompiler {
      */
     def parseCallExpr(id: TN): Instr = {
         val fun = id.getText
+
+        if (!FUNCTIONS.contains(fun))
+            throw errUnknownFun(fun)
 
         (tok, stack: StackType, termCtx) ⇒ {
             implicit val evidence = stack
@@ -564,14 +596,14 @@ trait NCBaseDslCompiler {
 
             fun match {
                 // Metadata access.
-                case "token_meta" ⇒ doTokenMeta()
-                case "model_meta" ⇒ doModelMeta()
-                case "intent_meta" ⇒ doIntentMeta()
-                case "req_meta" ⇒ doReqMeta()
-                case "user_meta" ⇒ doUserMeta()
-                case "company_meta" ⇒ doCompMeta()
-                case "sys_meta" ⇒ doSysMeta()
-                case "conv_meta" ⇒ doConvMeta()
+                case "meta_token" ⇒ doTokenMeta()
+                case "meta_model" ⇒ doModelMeta()
+                case "meta_intent" ⇒ doIntentMeta()
+                case "meta_req" ⇒ doReqMeta()
+                case "meta_user" ⇒ doUserMeta()
+                case "meta_company" ⇒ doCompMeta()
+                case "meta_sys" ⇒ doSysMeta()
+                case "meta_conv" ⇒ doConvMeta()
 
                 // Converts JSON to map.
                 case "json" ⇒ doJson()
@@ -672,7 +704,7 @@ trait NCBaseDslCompiler {
                 case "map" ⇒ doMap()
                 case "get" ⇒
                 case "index" ⇒
-                case "contains" ⇒
+                case "has" ⇒
                 case "tail" ⇒
                 case "add" ⇒
                 case "remove" ⇒
@@ -713,7 +745,7 @@ trait NCBaseDslCompiler {
                 case "msec" ⇒
                 case "now" ⇒ // Epoc time.
 
-                case _ ⇒ errUnknownFun(fun)
+                case _ ⇒ throw errUnknownFun(fun)
             }
         }
     }
