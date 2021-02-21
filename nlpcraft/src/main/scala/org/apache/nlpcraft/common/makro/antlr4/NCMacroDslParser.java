@@ -190,28 +190,31 @@ public class NCMacroDslParser extends Parser {
 	public final SynContext syn() throws RecognitionException {
 		SynContext _localctx = new SynContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_syn);
+		int _la;
 		try {
-			setState(23);
+			setState(22);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
+			case INT:
 			case TXT:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(20);
-				match(TXT);
+				_la = _input.LA(1);
+				if ( !(_la==INT || _la==TXT) ) {
+				_errHandler.recoverInline(this);
 				}
-				break;
-			case INT:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(21);
-				match(INT);
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
 				}
 				break;
 			case LCURLY:
-				enterOuterAlt(_localctx, 3);
+				enterOuterAlt(_localctx, 2);
 				{
-				setState(22);
+				setState(21);
 				group();
 				}
 				break;
@@ -259,18 +262,18 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(25);
+			setState(24);
 			match(LCURLY);
-			setState(26);
+			setState(25);
 			list(0);
-			setState(27);
+			setState(26);
 			match(RCURLY);
-			setState(29);
+			setState(28);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				{
-				setState(28);
+				setState(27);
 				minMax();
 				}
 				break;
@@ -316,15 +319,15 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(31);
+			setState(30);
 			match(LBR);
+			setState(31);
+			match(INT);
 			setState(32);
-			match(INT);
-			setState(33);
 			match(COMMA);
-			setState(34);
+			setState(33);
 			match(INT);
-			setState(35);
+			setState(34);
 			match(RBR);
 			}
 		}
@@ -378,11 +381,11 @@ public class NCMacroDslParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(38);
+			setState(37);
 			syn();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(48);
+			setState(47);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -393,24 +396,24 @@ public class NCMacroDslParser extends Parser {
 					{
 					_localctx = new ListContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_list);
-					setState(40);
+					setState(39);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(41);
+					setState(40);
 					match(VERT);
-					setState(44);
+					setState(43);
 					_errHandler.sync(this);
 					switch (_input.LA(1)) {
 					case LCURLY:
 					case INT:
 					case TXT:
 						{
-						setState(42);
+						setState(41);
 						syn();
 						}
 						break;
 					case UNDERSCORE:
 						{
-						setState(43);
+						setState(42);
 						match(UNDERSCORE);
 						}
 						break;
@@ -420,7 +423,7 @@ public class NCMacroDslParser extends Parser {
 					}
 					} 
 				}
-				setState(50);
+				setState(49);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
 			}
@@ -462,21 +465,20 @@ public class NCMacroDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\r\66\4\2\t\2\4\3"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\r\65\4\2\t\2\4\3"+
 		"\t\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\2\3\2\3\2\7\2\22\n\2\f\2\16\2\25"+
-		"\13\2\3\3\3\3\3\3\5\3\32\n\3\3\4\3\4\3\4\3\4\5\4 \n\4\3\5\3\5\3\5\3\5"+
-		"\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6/\n\6\7\6\61\n\6\f\6\16\6\64\13"+
-		"\6\3\6\2\4\2\n\7\2\4\6\b\n\2\2\2\66\2\f\3\2\2\2\4\31\3\2\2\2\6\33\3\2"+
-		"\2\2\b!\3\2\2\2\n\'\3\2\2\2\f\r\b\2\1\2\r\16\5\4\3\2\16\23\3\2\2\2\17"+
-		"\20\f\3\2\2\20\22\5\4\3\2\21\17\3\2\2\2\22\25\3\2\2\2\23\21\3\2\2\2\23"+
-		"\24\3\2\2\2\24\3\3\2\2\2\25\23\3\2\2\2\26\32\7\13\2\2\27\32\7\n\2\2\30"+
-		"\32\5\6\4\2\31\26\3\2\2\2\31\27\3\2\2\2\31\30\3\2\2\2\32\5\3\2\2\2\33"+
-		"\34\7\3\2\2\34\35\5\n\6\2\35\37\7\4\2\2\36 \5\b\5\2\37\36\3\2\2\2\37 "+
-		"\3\2\2\2 \7\3\2\2\2!\"\7\5\2\2\"#\7\n\2\2#$\7\b\2\2$%\7\n\2\2%&\7\6\2"+
-		"\2&\t\3\2\2\2\'(\b\6\1\2()\5\4\3\2)\62\3\2\2\2*+\f\3\2\2+.\7\7\2\2,/\5"+
-		"\4\3\2-/\7\t\2\2.,\3\2\2\2.-\3\2\2\2/\61\3\2\2\2\60*\3\2\2\2\61\64\3\2"+
-		"\2\2\62\60\3\2\2\2\62\63\3\2\2\2\63\13\3\2\2\2\64\62\3\2\2\2\7\23\31\37"+
-		".\62";
+		"\13\2\3\3\3\3\5\3\31\n\3\3\4\3\4\3\4\3\4\5\4\37\n\4\3\5\3\5\3\5\3\5\3"+
+		"\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6.\n\6\7\6\60\n\6\f\6\16\6\63\13"+
+		"\6\3\6\2\4\2\n\7\2\4\6\b\n\2\3\3\2\n\13\2\64\2\f\3\2\2\2\4\30\3\2\2\2"+
+		"\6\32\3\2\2\2\b \3\2\2\2\n&\3\2\2\2\f\r\b\2\1\2\r\16\5\4\3\2\16\23\3\2"+
+		"\2\2\17\20\f\3\2\2\20\22\5\4\3\2\21\17\3\2\2\2\22\25\3\2\2\2\23\21\3\2"+
+		"\2\2\23\24\3\2\2\2\24\3\3\2\2\2\25\23\3\2\2\2\26\31\t\2\2\2\27\31\5\6"+
+		"\4\2\30\26\3\2\2\2\30\27\3\2\2\2\31\5\3\2\2\2\32\33\7\3\2\2\33\34\5\n"+
+		"\6\2\34\36\7\4\2\2\35\37\5\b\5\2\36\35\3\2\2\2\36\37\3\2\2\2\37\7\3\2"+
+		"\2\2 !\7\5\2\2!\"\7\n\2\2\"#\7\b\2\2#$\7\n\2\2$%\7\6\2\2%\t\3\2\2\2&\'"+
+		"\b\6\1\2\'(\5\4\3\2(\61\3\2\2\2)*\f\3\2\2*-\7\7\2\2+.\5\4\3\2,.\7\t\2"+
+		"\2-+\3\2\2\2-,\3\2\2\2.\60\3\2\2\2/)\3\2\2\2\60\63\3\2\2\2\61/\3\2\2\2"+
+		"\61\62\3\2\2\2\62\13\3\2\2\2\63\61\3\2\2\2\7\23\30\36-\61";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

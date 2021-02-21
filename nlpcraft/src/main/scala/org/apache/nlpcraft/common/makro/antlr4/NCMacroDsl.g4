@@ -22,8 +22,7 @@ line
     | line syn
     ;
 syn
-    : TXT
-    | INT // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
+    : (TXT | INT) // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
     | group
     ;
 group: LCURLY list RCURLY minMax?;
@@ -59,7 +58,7 @@ fragment TXT_CHAR
     | '\uF900'..'\uFDCF'
     | '\uFDF0'..'\uFFFD'
     ; // Ignoring ['\u10000-'\uEFFFF].
-fragment ESC: '\\' . ;
+fragment ESC: '\\' [{}\\<>_[\]|,] ;
 INT: '0' | [1-9][_0-9]*;
 TXT: (TXT_CHAR | ESC)+;
 WS: [ \r\t\u000C\n]+ -> skip ;
