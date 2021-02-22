@@ -19,38 +19,111 @@ package org.apache.nlpcraft.common.makro
 
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
-import org.antlr.v4.runtime.{BaseErrorListener, CharStreams, CommonTokenStream, RecognitionException, Recognizer}
-import org.apache.nlpcraft.common.makro.antlr4._
+import org.antlr.v4.runtime._
 import org.apache.nlpcraft.common._
-
+import org.apache.nlpcraft.common.makro.antlr4._
+import org.apache.nlpcraft.common.makro.antlr4.{NCMacroDslParser ⇒ P}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
- *
- */
+  *
+  */
 object NCMacroCompiler extends LazyLogging {
+    
     /**
-     *
-     */
-    class FiniteStateMachine extends NCMacroDslBaseListener {
-        private val stack = new mutable.ArrayStack[mutable.Buffer[String]]
+      *
+      * @param buffer
+      * @param inGroup
+      */
+    case class StackItem (
+        buffer: mutable.Buffer[String],
+        inGroup: Boolean
+    )
+    
+    /**
+      *
+      * @param parser
+      */
+    class FiniteStateMachine(parser: P) extends NCMacroDslBaseListener {
+        private val stack = new mutable.ArrayStack[StackItem]
 
-        override def enterLine(ctx: NCMacroDslParser.LineContext): Unit = {
-            val buf = new ListBuffer[String]()
-
-            buf += ""
-
-            // Initialize stack with the empty string buffer.
-            stack.push(buf)
-        }
+        // Current min/max quantifier.
+        private var min = 1
+        private var max = 1
         
+        private var expandedSyns: Set[String] = _
+        
+        def pushNew(inGroup: Boolean): Unit = stack.push(StackItem(new ListBuffer[String](), inGroup))
+    
+        /**
+          *
+          * @param errMsg
+          * @param ctx
+          * @return
+          */
+        def error(errMsg: String)(implicit ctx: ParserRuleContext): RecognitionException =
+            new RecognitionException(errMsg, parser, parser.getInputStream, ctx)
+        
+        // Push new container at the beginning and at each new group.
+        override def enterLine(ctx: P.LineContext): Unit = pushNew(false)
+        override def enterGroup(ctx: P.GroupContext): Unit = pushNew(true)
+        
+        override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit = {
+            val top = stack.pop()
+            
+            require(top.inGroup)
+            
+            // TODO.
 
+            // Reset min max.
+            min = 1
+            max = 1
+        }
+    
+        override def exitSyn(ctx: P.SynContext): Unit = {
+            val syn = if (ctx.TXT() != null) ctx.TXT().getText else ctx.INT().getText
+            val top = stack.top
+            
+            if (top.inGroup)
+                top.buffer += syn
+            else
+                top.buffer.map(_ + " " + syn)
+        }
+    
+        override def exitList(ctx: P.ListContext): Unit = if (ctx.UNDERSCORE() != null) stack.top.buffer += ""
+        override def exitLine(ctx: P.LineContext): Unit = expandedSyns = stack.pop().buffer.toSet
+    
+        override def exitMinMax(ctx: P.MinMaxContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
+            
+            val minStr = ctx.getChild(1).getText.trim
+            val maxStr = ctx.getChild(3).getText.trim
+    
+            try
+                min = java.lang.Integer.parseInt(minStr)
+            catch {
+                case _: NumberFormatException ⇒ throw error(s"Invalid min quantifier: $minStr")
+            }
+            try
+                max = java.lang.Integer.parseInt(maxStr)
+            catch {
+                case _: NumberFormatException ⇒ throw error(s"Invalid max quantifier: $maxStr")
+            }
+            
+            if (min < 0 || max < 0 || min > max || max == 0)
+                throw error(s"Min/max quantifiers should satisfy 'max >= min, min >= 0, max > 0': [$min, $max]")
+        }
+    
         /**
          *
          * @return
          */
-        def getExpandedMacro(): Set[String] = ???
+        def getExpandedMacro: Set[String] = {
+            require(expandedSyns != null)
+    
+            expandedSyns
+        }
     }
 
     /**
@@ -112,12 +185,12 @@ object NCMacroCompiler extends LazyLogging {
         parser.addErrorListener(new CompilerErrorListener(in))
 
         // State automata.
-        val fsm = new FiniteStateMachine
+        val fsm = new FiniteStateMachine(parser)
 
         // Parse the input DSL and walk built AST.
         (new ParseTreeWalker).walk(fsm, parser.line())
 
         // Return the expanded macro.
-        fsm.getExpandedMacro()
+        fsm.getExpandedMacro
     }
 }
