@@ -42,6 +42,17 @@ class NCMacroCompilerSpec {
     @Test
     def testCompiler(): Unit = {
         checkEq("A", Seq("A"))
+        checkEq("    A   ", Seq("A"))
         checkEq("A B", Seq("A B"))
+        checkEq("A           B", Seq("A B"))
+        checkEq("{A}", Seq("A"))
+        checkEq("{A}[0,2]", Seq("", "A", "A A"))
+        checkEq("{A  }   [0  ,2]", Seq("", "A", "A A"))
+        checkEq("{A          }", Seq("A"))
+        checkEq("      {      A          }", Seq("A"))
+        checkEq("{A}{B}", Seq("A B"))
+        checkEq(" {  A   }{B}", Seq("A B"))
+        checkEq(" {  A   }      {B}", Seq("A B"))
+        checkEq("A {B | C}", Seq("A B", "A C"))
     }
 }

@@ -24,7 +24,6 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.makro.antlr4._
 import org.apache.nlpcraft.common.makro.antlr4.{NCMacroDslParser ⇒ P}
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 /**
   *
@@ -37,7 +36,7 @@ object NCMacroCompiler extends LazyLogging {
       * @param inGroup
       */
     case class StackItem (
-        buffer: mutable.Buffer[String],
+        var buffer: mutable.Buffer[String],
         inGroup: Boolean
     )
     
@@ -54,8 +53,6 @@ object NCMacroCompiler extends LazyLogging {
         
         private var expandedSyns: Set[String] = _
         
-        def pushNew(inGroup: Boolean): Unit = stack.push(StackItem(new ListBuffer[String](), inGroup))
-    
         /**
           *
           * @param errMsg
@@ -64,10 +61,23 @@ object NCMacroCompiler extends LazyLogging {
           */
         def error(errMsg: String)(implicit ctx: ParserRuleContext): RecognitionException =
             new RecognitionException(errMsg, parser, parser.getInputStream, ctx)
-        
-        // Push new container at the beginning and at each new group.
-        override def enterLine(ctx: P.LineContext): Unit = pushNew(false)
-        override def enterGroup(ctx: P.GroupContext): Unit = pushNew(true)
+    
+        override def enterMakro(ctx: NCMacroDslParser.MakroContext): Unit = {
+            val buf = mutable.Buffer.empty[String]
+            
+            buf += ""
+            
+            stack.push(StackItem(buf, false))
+        }
+    
+        override def enterGroup(ctx: P.GroupContext): Unit =
+            stack.push(StackItem(mutable.Buffer.empty[String], true))
+            
+        private def add(optS: String, s: String): String =
+            if (optS.isEmpty)
+                s
+            else
+                optS + " " + s
         
         override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit = {
             val top = stack.pop()
@@ -75,12 +85,12 @@ object NCMacroCompiler extends LazyLogging {
             require(top.inGroup)
             
             val arg = stack.top
-            
-            arg.buffer.flatMap { s ⇒
+    
+            arg.buffer = arg.buffer.flatMap { s ⇒
                 (
                     for (z ← top.buffer) yield
                         for (i ← min to max) yield
-                            s + " " + (s"$z " * i)
+                            add(s, (s"$z " * i)).trim
                 )
                 .flatten.toSet
             }
@@ -98,12 +108,17 @@ object NCMacroCompiler extends LazyLogging {
             if (top.inGroup)
                 buf += syn
             else {
-                if (buf.isEmpty) buf += syn else buf.map(_ + " " + syn)
+                if (buf.isEmpty)
+                    buf += syn
+                else
+                    for (i ← buf.indices) buf.update(i, add(buf(i), syn))
             }
         }
     
-        override def exitList(ctx: P.ListContext): Unit = if (ctx.UNDERSCORE() != null) stack.top.buffer += ""
-        override def exitLine(ctx: P.LineContext): Unit = expandedSyns = stack.pop().buffer.map(_.trim).toSet
+        override def exitList(ctx: P.ListContext): Unit =
+            if (ctx.UNDERSCORE() != null) stack.top.buffer += ""
+        override def exitMakro(ctx: P.MakroContext): Unit =
+            expandedSyns = stack.pop().buffer.map(_.trim).toSet
     
         override def exitMinMax(ctx: P.MinMaxContext): Unit = {
             implicit val evidence: ParserRuleContext = ctx
@@ -172,7 +187,7 @@ object NCMacroCompiler extends LazyLogging {
 
             val errMsg = s"Macro syntax error at line $line:$charPos - $msg\n" +
                 s"  |-- ${c("Macro:")} $in\n" +
-                s"  +-- ${c("Error:")}  ${makeCharPosPointer(in.length, charPos)}"
+                s"  +-- ${c("Error:")} ${makeCharPosPointer(in.length, charPos)}"
 
             throw new NCE(errMsg)
         }
@@ -199,7 +214,7 @@ object NCMacroCompiler extends LazyLogging {
         val fsm = new FiniteStateMachine(parser)
 
         // Parse the input DSL and walk built AST.
-        (new ParseTreeWalker).walk(fsm, parser.line())
+        (new ParseTreeWalker).walk(fsm, parser.makro())
 
         // Return the expanded macro.
         fsm.getExpandedMacro

@@ -17,14 +17,12 @@
 
 grammar NCMacroDsl;
 
+makro: line;
 line
-    : syn
-    | line syn
+    : (syn | group)
+    | line (syn | group)
     ;
-syn
-    : (TXT | INT) // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
-    | group
-    ;
+syn : (TXT | INT); // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
 group: LCURLY list RCURLY minMax?;
 minMax: LBR INT COMMA INT RBR;
 list

@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4\NCMacroDsl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.common.makro.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -7,6 +7,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link NCMacroDslParser}.
  */
 public interface NCMacroDslListener extends ParseTreeListener {
+	/**
+	 * Enter a parse tree produced by {@link NCMacroDslParser#makro}.
+	 * @param ctx the parse tree
+	 */
+	void enterMakro(NCMacroDslParser.MakroContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCMacroDslParser#makro}.
+	 * @param ctx the parse tree
+	 */
+	void exitMakro(NCMacroDslParser.MakroContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCMacroDslParser#line}.
 	 * @param ctx the parse tree

@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4\NCMacroDsl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.common.makro.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -20,10 +20,11 @@ public class NCMacroDslParser extends Parser {
 		LCURLY=1, RCURLY=2, LBR=3, RBR=4, VERT=5, COMMA=6, UNDERSCORE=7, INT=8, 
 		TXT=9, WS=10, ErrorCharacter=11;
 	public static final int
-		RULE_line = 0, RULE_syn = 1, RULE_group = 2, RULE_minMax = 3, RULE_list = 4;
+		RULE_makro = 0, RULE_line = 1, RULE_syn = 2, RULE_group = 3, RULE_minMax = 4, 
+		RULE_list = 5;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"line", "syn", "group", "minMax", "list"
+			"makro", "line", "syn", "group", "minMax", "list"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -91,9 +92,51 @@ public class NCMacroDslParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
+	public static class MakroContext extends ParserRuleContext {
+		public LineContext line() {
+			return getRuleContext(LineContext.class,0);
+		}
+		public MakroContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_makro; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCMacroDslListener ) ((NCMacroDslListener)listener).enterMakro(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCMacroDslListener ) ((NCMacroDslListener)listener).exitMakro(this);
+		}
+	}
+
+	public final MakroContext makro() throws RecognitionException {
+		MakroContext _localctx = new MakroContext(_ctx, getState());
+		enterRule(_localctx, 0, RULE_makro);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(12);
+			line(0);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
 	public static class LineContext extends ParserRuleContext {
 		public SynContext syn() {
 			return getRuleContext(SynContext.class,0);
+		}
+		public GroupContext group() {
+			return getRuleContext(GroupContext.class,0);
 		}
 		public LineContext line() {
 			return getRuleContext(LineContext.class,0);
@@ -121,20 +164,37 @@ public class NCMacroDslParser extends Parser {
 		int _parentState = getState();
 		LineContext _localctx = new LineContext(_ctx, _parentState);
 		LineContext _prevctx = _localctx;
-		int _startState = 0;
-		enterRecursionRule(_localctx, 0, RULE_line, _p);
+		int _startState = 2;
+		enterRecursionRule(_localctx, 2, RULE_line, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(11);
-			syn();
-			}
-			_ctx.stop = _input.LT(-1);
 			setState(17);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
+			switch (_input.LA(1)) {
+			case INT:
+			case TXT:
+				{
+				setState(15);
+				syn();
+				}
+				break;
+			case LCURLY:
+				{
+				setState(16);
+				group();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+			}
+			_ctx.stop = _input.LT(-1);
+			setState(26);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -143,16 +203,33 @@ public class NCMacroDslParser extends Parser {
 					{
 					_localctx = new LineContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_line);
-					setState(13);
+					setState(19);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(14);
-					syn();
+					setState(22);
+					_errHandler.sync(this);
+					switch (_input.LA(1)) {
+					case INT:
+					case TXT:
+						{
+						setState(20);
+						syn();
+						}
+						break;
+					case LCURLY:
+						{
+						setState(21);
+						group();
+						}
+						break;
+					default:
+						throw new NoViableAltException(this);
+					}
 					}
 					} 
 				}
-				setState(19);
+				setState(28);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
 			}
 		}
@@ -170,9 +247,6 @@ public class NCMacroDslParser extends Parser {
 	public static class SynContext extends ParserRuleContext {
 		public TerminalNode TXT() { return getToken(NCMacroDslParser.TXT, 0); }
 		public TerminalNode INT() { return getToken(NCMacroDslParser.INT, 0); }
-		public GroupContext group() {
-			return getRuleContext(GroupContext.class,0);
-		}
 		public SynContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -189,37 +263,21 @@ public class NCMacroDslParser extends Parser {
 
 	public final SynContext syn() throws RecognitionException {
 		SynContext _localctx = new SynContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_syn);
+		enterRule(_localctx, 4, RULE_syn);
 		int _la;
 		try {
-			setState(22);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case INT:
-			case TXT:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(20);
-				_la = _input.LA(1);
-				if ( !(_la==INT || _la==TXT) ) {
-				_errHandler.recoverInline(this);
-				}
-				else {
-					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-					_errHandler.reportMatch(this);
-					consume();
-				}
-				}
-				break;
-			case LCURLY:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(21);
-				group();
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(29);
+			_la = _input.LA(1);
+			if ( !(_la==INT || _la==TXT) ) {
+			_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -258,22 +316,22 @@ public class NCMacroDslParser extends Parser {
 
 	public final GroupContext group() throws RecognitionException {
 		GroupContext _localctx = new GroupContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_group);
+		enterRule(_localctx, 6, RULE_group);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(24);
+			setState(31);
 			match(LCURLY);
-			setState(25);
+			setState(32);
 			list(0);
-			setState(26);
+			setState(33);
 			match(RCURLY);
-			setState(28);
+			setState(35);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				{
-				setState(27);
+				setState(34);
 				minMax();
 				}
 				break;
@@ -315,19 +373,19 @@ public class NCMacroDslParser extends Parser {
 
 	public final MinMaxContext minMax() throws RecognitionException {
 		MinMaxContext _localctx = new MinMaxContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_minMax);
+		enterRule(_localctx, 8, RULE_minMax);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(30);
+			setState(37);
 			match(LBR);
-			setState(31);
+			setState(38);
 			match(INT);
-			setState(32);
+			setState(39);
 			match(COMMA);
-			setState(33);
+			setState(40);
 			match(INT);
-			setState(34);
+			setState(41);
 			match(RBR);
 			}
 		}
@@ -374,20 +432,20 @@ public class NCMacroDslParser extends Parser {
 		int _parentState = getState();
 		ListContext _localctx = new ListContext(_ctx, _parentState);
 		ListContext _prevctx = _localctx;
-		int _startState = 8;
-		enterRecursionRule(_localctx, 8, RULE_list, _p);
+		int _startState = 10;
+		enterRecursionRule(_localctx, 10, RULE_list, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(37);
+			setState(44);
 			syn();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(47);
+			setState(54);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -396,24 +454,23 @@ public class NCMacroDslParser extends Parser {
 					{
 					_localctx = new ListContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_list);
-					setState(39);
+					setState(46);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(40);
+					setState(47);
 					match(VERT);
-					setState(43);
+					setState(50);
 					_errHandler.sync(this);
 					switch (_input.LA(1)) {
-					case LCURLY:
 					case INT:
 					case TXT:
 						{
-						setState(41);
+						setState(48);
 						syn();
 						}
 						break;
 					case UNDERSCORE:
 						{
-						setState(42);
+						setState(49);
 						match(UNDERSCORE);
 						}
 						break;
@@ -423,9 +480,9 @@ public class NCMacroDslParser extends Parser {
 					}
 					} 
 				}
-				setState(49);
+				setState(56);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			}
 			}
 		}
@@ -442,9 +499,9 @@ public class NCMacroDslParser extends Parser {
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 0:
+		case 1:
 			return line_sempred((LineContext)_localctx, predIndex);
-		case 4:
+		case 5:
 			return list_sempred((ListContext)_localctx, predIndex);
 		}
 		return true;
@@ -465,20 +522,22 @@ public class NCMacroDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\r\65\4\2\t\2\4\3"+
-		"\t\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\3\2\3\2\3\2\3\2\7\2\22\n\2\f\2\16\2\25"+
-		"\13\2\3\3\3\3\5\3\31\n\3\3\4\3\4\3\4\3\4\5\4\37\n\4\3\5\3\5\3\5\3\5\3"+
-		"\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\5\6.\n\6\7\6\60\n\6\f\6\16\6\63\13"+
-		"\6\3\6\2\4\2\n\7\2\4\6\b\n\2\3\3\2\n\13\2\64\2\f\3\2\2\2\4\30\3\2\2\2"+
-		"\6\32\3\2\2\2\b \3\2\2\2\n&\3\2\2\2\f\r\b\2\1\2\r\16\5\4\3\2\16\23\3\2"+
-		"\2\2\17\20\f\3\2\2\20\22\5\4\3\2\21\17\3\2\2\2\22\25\3\2\2\2\23\21\3\2"+
-		"\2\2\23\24\3\2\2\2\24\3\3\2\2\2\25\23\3\2\2\2\26\31\t\2\2\2\27\31\5\6"+
-		"\4\2\30\26\3\2\2\2\30\27\3\2\2\2\31\5\3\2\2\2\32\33\7\3\2\2\33\34\5\n"+
-		"\6\2\34\36\7\4\2\2\35\37\5\b\5\2\36\35\3\2\2\2\36\37\3\2\2\2\37\7\3\2"+
-		"\2\2 !\7\5\2\2!\"\7\n\2\2\"#\7\b\2\2#$\7\n\2\2$%\7\6\2\2%\t\3\2\2\2&\'"+
-		"\b\6\1\2\'(\5\4\3\2(\61\3\2\2\2)*\f\3\2\2*-\7\7\2\2+.\5\4\3\2,.\7\t\2"+
-		"\2-+\3\2\2\2-,\3\2\2\2.\60\3\2\2\2/)\3\2\2\2\60\63\3\2\2\2\61/\3\2\2\2"+
-		"\61\62\3\2\2\2\62\13\3\2\2\2\63\61\3\2\2\2\7\23\30\36-\61";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\r<\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\3\3\3\3\3\5\3\24\n\3\3\3"+
+		"\3\3\3\3\5\3\31\n\3\7\3\33\n\3\f\3\16\3\36\13\3\3\4\3\4\3\5\3\5\3\5\3"+
+		"\5\5\5&\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7\65"+
+		"\n\7\7\7\67\n\7\f\7\16\7:\13\7\3\7\2\4\4\f\b\2\4\6\b\n\f\2\3\3\2\n\13"+
+		"\2;\2\16\3\2\2\2\4\20\3\2\2\2\6\37\3\2\2\2\b!\3\2\2\2\n\'\3\2\2\2\f-\3"+
+		"\2\2\2\16\17\5\4\3\2\17\3\3\2\2\2\20\23\b\3\1\2\21\24\5\6\4\2\22\24\5"+
+		"\b\5\2\23\21\3\2\2\2\23\22\3\2\2\2\24\34\3\2\2\2\25\30\f\3\2\2\26\31\5"+
+		"\6\4\2\27\31\5\b\5\2\30\26\3\2\2\2\30\27\3\2\2\2\31\33\3\2\2\2\32\25\3"+
+		"\2\2\2\33\36\3\2\2\2\34\32\3\2\2\2\34\35\3\2\2\2\35\5\3\2\2\2\36\34\3"+
+		"\2\2\2\37 \t\2\2\2 \7\3\2\2\2!\"\7\3\2\2\"#\5\f\7\2#%\7\4\2\2$&\5\n\6"+
+		"\2%$\3\2\2\2%&\3\2\2\2&\t\3\2\2\2\'(\7\5\2\2()\7\n\2\2)*\7\b\2\2*+\7\n"+
+		"\2\2+,\7\6\2\2,\13\3\2\2\2-.\b\7\1\2./\5\6\4\2/8\3\2\2\2\60\61\f\3\2\2"+
+		"\61\64\7\7\2\2\62\65\5\6\4\2\63\65\7\t\2\2\64\62\3\2\2\2\64\63\3\2\2\2"+
+		"\65\67\3\2\2\2\66\60\3\2\2\2\67:\3\2\2\28\66\3\2\2\289\3\2\2\29\r\3\2"+
+		"\2\2:8\3\2\2\2\b\23\30\34%\648";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
