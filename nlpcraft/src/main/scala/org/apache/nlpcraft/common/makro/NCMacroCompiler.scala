@@ -74,7 +74,16 @@ object NCMacroCompiler extends LazyLogging {
             
             require(top.inGroup)
             
-            // TODO.
+            val arg = stack.top
+            
+            arg.buffer.flatMap { s ⇒
+                (
+                    for (z ← top.buffer) yield
+                        for (i ← min to max) yield
+                            s + " " + (s"$z " * i)
+                )
+                .flatten.toSet
+            }
 
             // Reset min max.
             min = 1
@@ -84,15 +93,17 @@ object NCMacroCompiler extends LazyLogging {
         override def exitSyn(ctx: P.SynContext): Unit = {
             val syn = if (ctx.TXT() != null) ctx.TXT().getText else ctx.INT().getText
             val top = stack.top
+            val buf = top.buffer
             
             if (top.inGroup)
-                top.buffer += syn
-            else
-                top.buffer.map(_ + " " + syn)
+                buf += syn
+            else {
+                if (buf.isEmpty) buf += syn else buf.map(_ + " " + syn)
+            }
         }
     
         override def exitList(ctx: P.ListContext): Unit = if (ctx.UNDERSCORE() != null) stack.top.buffer += ""
-        override def exitLine(ctx: P.LineContext): Unit = expandedSyns = stack.pop().buffer.toSet
+        override def exitLine(ctx: P.LineContext): Unit = expandedSyns = stack.pop().buffer.map(_.trim).toSet
     
         override def exitMinMax(ctx: P.MinMaxContext): Unit = {
             implicit val evidence: ParserRuleContext = ctx
