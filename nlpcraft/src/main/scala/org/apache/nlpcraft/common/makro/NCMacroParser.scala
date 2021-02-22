@@ -336,7 +336,6 @@ class NCMacroParser {
         else if (s.head == '/' && s.last == '/') // Don't macro-process regex.
             Seq(s)
         else {
-    
             /**
               * Mixes (multiplies) given string with tails.
               *

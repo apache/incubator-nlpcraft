@@ -23,6 +23,9 @@ import org.antlr.v4.runtime.{BaseErrorListener, CharStreams, CommonTokenStream, 
 import org.apache.nlpcraft.common.makro.antlr4._
 import org.apache.nlpcraft.common._
 
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+
 /**
  *
  */
@@ -31,6 +34,18 @@ object NCMacroCompiler extends LazyLogging {
      *
      */
     class FiniteStateMachine extends NCMacroDslBaseListener {
+        private val stack = new mutable.ArrayStack[mutable.Buffer[String]]
+
+        override def enterLine(ctx: NCMacroDslParser.LineContext): Unit = {
+            val buf = new ListBuffer[String]()
+
+            buf += ""
+
+            // Initialize stack with the empty string buffer.
+            stack.push(buf)
+        }
+        
+
         /**
          *
          * @return
