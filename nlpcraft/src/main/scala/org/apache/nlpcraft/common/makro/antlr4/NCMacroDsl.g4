@@ -17,17 +17,17 @@
 
 grammar NCMacroDsl;
 
-makro: line;
-line
+makro: expr;
+expr
     : (syn | group)
-    | line (syn | group)
+    | expr (syn | group)
     ;
 syn : (TXT | INT); // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
 group: LCURLY list RCURLY minMax?;
 minMax: LBR INT COMMA INT RBR;
 list
-    : syn
-    | list VERT (syn | UNDERSCORE)
+    : expr
+    | list VERT (expr | UNDERSCORE)
     ;
 LCURLY: '{';
 RCURLY: '}';
