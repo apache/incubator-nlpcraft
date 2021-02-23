@@ -43,8 +43,9 @@ object NCMacroCompiler extends LazyLogging {
     /**
       *
       * @param parser
+      * @param in
       */
-    class FiniteStateMachine(parser: P) extends NCMacroDslBaseListener {
+    class FiniteStateMachine(parser: P, in: String) extends NCMacroDslBaseListener {
         private val stack = new mutable.ArrayStack[StackItem]
 
         // Current min/max quantifier.
@@ -67,9 +68,12 @@ object NCMacroCompiler extends LazyLogging {
           * @param ctx
           * @return
           */
-        def error(errMsg: String)(implicit ctx: ParserRuleContext): RecognitionException =
-            new RecognitionException(errMsg, parser, parser.getInputStream, ctx)
-
+        def compilerError(errMsg: String)(implicit ctx: ParserRuleContext): NCE = {
+            val tok = ctx.start
+            
+            new NCE(mkCompilerError(errMsg, tok.getLine, tok.getCharPositionInLine, in))
+        }
+    
         override def enterExpr(ctx: NCMacroDslParser.ExprContext): Unit = {
             val buf = mutable.Buffer.empty[String]
 
@@ -139,16 +143,16 @@ object NCMacroCompiler extends LazyLogging {
             try
                 min = java.lang.Integer.parseInt(minStr)
             catch {
-                case _: NumberFormatException ⇒ throw error(s"Invalid min quantifier: $minStr")
+                case _: NumberFormatException ⇒ throw compilerError(s"Invalid min quantifier: $minStr")
             }
             try
                 max = java.lang.Integer.parseInt(maxStr)
             catch {
-                case _: NumberFormatException ⇒ throw error(s"Invalid max quantifier: $maxStr")
+                case _: NumberFormatException ⇒ throw compilerError(s"Invalid max quantifier: $maxStr")
             }
             
             if (min < 0 || max < 0 || min > max || max == 0)
-                throw error(s"[min,max] quantifiers should satisfy 'max >= min, min >= 0, max > 0': [$min, $max]")
+                throw compilerError(s"[$min,$max] quantifiers should satisfy 'max >= min, min >= 0, max > 0'.")
         }
     
         /**
@@ -168,18 +172,6 @@ object NCMacroCompiler extends LazyLogging {
     class CompilerErrorListener(in: String) extends BaseErrorListener {
         /**
          *
-         * @param len
-         * @param pos
-         * @return
-         */
-        private def makeCharPosPointer(len: Int, pos: Int): String = {
-            val s = (for (_ ← 1 to len) yield '-').mkString("")
-
-            s.substring(0, pos - 1) + '^' + s.substring(pos)
-        }
-
-        /**
-         *
          * @param recognizer
          * @param offendingSymbol
          * @param line
@@ -193,16 +185,30 @@ object NCMacroCompiler extends LazyLogging {
             line: Int,
             charPos: Int,
             msg: String,
-            e: RecognitionException): Unit = {
-
-            val errMsg = s"Macro syntax error at line $line:$charPos - $msg\n" +
-                s"  |-- ${c("Macro:")} $in\n" +
-                s"  +-- ${c("Error:")} ${makeCharPosPointer(in.length, charPos)}"
-
-            throw new NCE(errMsg)
-        }
+            e: RecognitionException): Unit =  throw new NCE(mkCompilerError(msg, line, charPos, in))
     }
-
+    
+    /**
+      *
+      * @param line
+      * @param charPos
+      * @param in
+      * @param msg
+      */
+    private def mkCompilerError(
+        msg: String,
+        line: Int,
+        charPos: Int,
+        in: String
+    ): String = {
+        val s = "_" * in.length
+        val charPosPtr = s.substring(0, charPos - 1) + '^' + s.substring(charPos)
+    
+        s"Macro compiler error at line $line:$charPos - $msg\n" +
+        s"  |-- ${c("Macro:")} $in\n" +
+        s"  +-- ${c("Error:")} $charPosPtr"
+    }
+    
     /**
      *
      * @param in Macro to expand.
@@ -221,7 +227,7 @@ object NCMacroCompiler extends LazyLogging {
         parser.addErrorListener(new CompilerErrorListener(in))
 
         // State automata.
-        val fsm = new FiniteStateMachine(parser)
+        val fsm = new FiniteStateMachine(parser, in)
 
         // Parse the input DSL and walk built AST.
         (new ParseTreeWalker).walk(fsm, parser.makro())
