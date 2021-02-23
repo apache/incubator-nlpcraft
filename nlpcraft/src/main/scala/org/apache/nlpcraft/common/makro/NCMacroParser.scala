@@ -380,7 +380,7 @@ class NCMacroParser {
         // Grab 1st macro match, if any.
         var m = MACRO_REGEX.findFirstMatchIn(s)
         
-        // Expand macros (supporting nesting).
+        // Expand macros including nested ones.
         while (m.isDefined) {
             val ms = m.get.toString()
             
@@ -396,7 +396,7 @@ class NCMacroParser {
         
         // Check for potentially invalid macros syntax.
         if (BROKEN_MACRO_REGEX1.findFirstIn(s).isDefined || BROKEN_MACRO_REGEX2.findFirstIn(s).isDefined)
-            throw new NCE(s"Likely invalid macro: $txt")
+            throw new NCE(s"Suspicious or invalid macro in: $txt")
         
         U.distinct(expand0(s).toList map trimDupSpaces map processEscapes)
     }
@@ -409,7 +409,7 @@ class NCMacroParser {
     private def checkName(name: String): Unit = {
         if (name.head != '<')
             throw new NCE(s"Missing macro '<' opening: $name")
-        if (name.reverse.head != '>')
+        if (name.last != '>')
             throw new NCE(s"Missing macro '>' closing: $name")
     }
     
@@ -417,7 +417,7 @@ class NCMacroParser {
       * Adds or overrides given macro.
       *
       * @param name Macro name (typically an upper case string).
-      *     It must start with '<' and end with '>'.
+      *     It must start with '&lt;' and end with '&gt;'.
       * @param str Value of the macro (any arbitrary string).
       */
     @throws[NCE]
@@ -452,7 +452,6 @@ class NCMacroParser {
       *
       * @param name Name.
       */
-    def hasMacro(name: String): Boolean = {
+    def hasMacro(name: String): Boolean =
         macros.contains(name)
-    }
 }

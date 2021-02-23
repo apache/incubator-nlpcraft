@@ -201,8 +201,8 @@ object NCMacroCompiler extends LazyLogging {
         charPos: Int,
         in: String
     ): String = {
-        val s = "_" * in.length
-        val charPosPtr = s.substring(0, charPos - 1) + '^' + s.substring(charPos)
+        val dash = "-" * in.length
+        val charPosPtr = dash.substring(0, charPos - 1) + r("^") + dash.substring(charPos)
     
         s"Macro compiler error at line $line:$charPos - $msg\n" +
         s"  |-- ${c("Macro:")} $in\n" +
@@ -217,8 +217,8 @@ object NCMacroCompiler extends LazyLogging {
     def compile(in: String): Set[String] = {
         // ANTLR4 armature.
         val lexer = new NCMacroDslLexer(CharStreams.fromString(in))
-        val tokens = new CommonTokenStream(lexer)
-        val parser = new NCMacroDslParser(tokens)
+        val stream = new CommonTokenStream(lexer)
+        val parser = new NCMacroDslParser(stream)
 
         // Set custom error handlers.
         lexer.removeErrorListeners()
