@@ -26,6 +26,7 @@ import java.util.*
 @Suppress("unused")
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     @NCIntentRef("weatherIntent")
+    @NCIntentSample("make it rain")
     fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
@@ -35,6 +36,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     }
 
     @NCIntentRef("timeIntent")
+    @NCIntentSample("set time to evening")
     fun onTimeMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
@@ -54,6 +56,11 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     }
 
     @NCIntentRef("giveIntent")
+    @NCIntentSample(
+        "give me iron sword",
+        "give me 10 grass blocks",
+        "give PlayerName a jigsaw"
+    )
     fun onGiveMatch(
         ctx: NCIntentMatch,
         @NCIntentTerm("item") item: NCToken,
@@ -72,6 +79,14 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     }
 
     @NCIntentRef("fillIntent")
+    @NCIntentSample(
+        "make a box of sand in front of me",
+        "make a cube of gold near me",
+        "make a line of grass with length of 2 near me",
+
+        "create a rectangle of dirt in front of PlayerName",
+        "make a box of sand with the size of 2 10 meters in front of me"
+    )
     fun onFillMatch(
         ctx: NCIntentMatch,
         @NCIntentTerm("shape") shape: NCToken,
