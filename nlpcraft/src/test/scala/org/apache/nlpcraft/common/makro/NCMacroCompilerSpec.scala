@@ -77,15 +77,25 @@ class NCMacroCompilerSpec {
         checkEq("A {B | C | _}", Seq("A", "A B", "A C"))
         checkEq("{A}[2,2]", Seq("A A"))
         checkEq("{A}[1,2]", Seq("A", "A A"))
+        checkEq("{A|_|_|_|     _}[1,2]", Seq("", "A", "A A"))
         checkEq("{A}[1,2] {B}[2,2]", Seq("A B B", "A A B B"))
         checkEq("yy {xx A|_}[1,2] zz", Seq("yy zz", "yy xx A zz", "yy xx A xx A zz"))
         checkEq("yy {xx A|_}[0,2] zz", Seq("yy zz", "yy xx A zz", "yy xx A xx A zz"))
         checkEq("A {B| xxx {C|E}} D", Seq("A B D", "A xxx C D", "A xxx E D"))
+        checkEq("x {<OF>| y <NO>}[1,2]", Seq("x <OF>", "x y <NO>", "x <OF> <OF>", "x y <NO> y <NO>"))
+        checkEq("{{x  }} {<OF>| y <NO>}[1,2]", Seq("x <OF>", "x y <NO>", "x <OF> <OF>", "x y <NO> y <NO>"))
     }
 
     @Test
     def testFailCompiler(): Unit = {
         checkError("{A")
         checkError("{A}[2,1]")
+        checkError("{A}[1,0]")
+        checkError("{A}[2,]")
+        checkError("{A}[x,1]")
+        checkError("{A}[2.33, 1]")
+        checkError("{A}[1:1]")
+        checkError("{A}[1 1]")
+        checkError("{A|__}")
     }
 }
