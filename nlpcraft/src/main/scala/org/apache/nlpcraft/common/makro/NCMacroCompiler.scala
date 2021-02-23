@@ -29,6 +29,7 @@ import scala.collection.mutable
   *
   */
 object NCMacroCompiler extends LazyLogging {
+    private final val MAX_SYN = 1000
     
     /**
       *
@@ -68,11 +69,20 @@ object NCMacroCompiler extends LazyLogging {
           * @param ctx
           * @return
           */
-        def compilerError(errMsg: String)(implicit ctx: ParserRuleContext): NCE = {
+        private def compilerError(errMsg: String)(implicit ctx: ParserRuleContext): NCE = {
             val tok = ctx.start
             
             new NCE(mkCompilerError(errMsg, tok.getLine, tok.getCharPositionInLine, in))
         }
+    
+        /**
+          *
+          * @param buf
+          * @param ctx
+          */
+        private def checkMaxSyn(buf: mutable.Buffer[String])(implicit ctx: ParserRuleContext): Unit =
+            if (buf.size > MAX_SYN)
+                throw compilerError(s"Exceeded max number ($MAX_SYN) of macro expansions: ${buf.size}")
     
         override def enterExpr(ctx: NCMacroDslParser.ExprContext): Unit = {
             val buf = mutable.Buffer.empty[String]
@@ -90,9 +100,13 @@ object NCMacroCompiler extends LazyLogging {
         }
 
         override def exitExpr(ctx: NCMacroDslParser.ExprContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
+            
             if (stack.size > 1) {
                 val expr = stack.pop()
                 val prn = stack.top
+    
+                checkMaxSyn(expr.buffer)
 
                 require(expr.buffer.nonEmpty)
 
@@ -104,7 +118,14 @@ object NCMacroCompiler extends LazyLogging {
         }
 
         override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
+            
             val grp = stack.pop()
+            
+            // Remove dups.
+            grp.buffer = grp.buffer.distinct
+    
+            checkMaxSyn(grp.buffer)
 
             require(grp.isGroup)
             

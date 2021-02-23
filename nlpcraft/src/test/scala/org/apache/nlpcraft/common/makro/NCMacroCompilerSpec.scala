@@ -59,6 +59,8 @@ class NCMacroCompilerSpec {
     @Test
     def testOkCompiler(): Unit = {
         checkEq("A", Seq("A"))
+        checkEq("{_|A|_}", Seq("", "A"))
+        checkEq("{A|_}", Seq("", "A"))
         checkEq("    A   ", Seq("A"))
         checkEq("A B", Seq("A B"))
         checkEq("""A {Москва|_|\|}""", Seq("A", "A Москва", """A \|"""))

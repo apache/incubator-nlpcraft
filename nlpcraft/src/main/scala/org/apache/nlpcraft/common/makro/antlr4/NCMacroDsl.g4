@@ -28,7 +28,9 @@ group: LCURLY list RCURLY minMax?;
 minMax: LBR INT COMMA INT RBR;
 list
     : expr
-    | list VERT (expr | UNDERSCORE)
+    | list VERT expr
+    | list VERT UNDERSCORE
+    | UNDERSCORE VERT list
     ;
 LCURLY: '{';
 RCURLY: '}';

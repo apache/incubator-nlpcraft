@@ -57,48 +57,30 @@ class NCMacroParserSpec  {
     
     /**
       *
-      * @param txt Text to find next token in.
-      * @param tokHead Expected head value of the token.
-      * @param tokTail Expected tail value of the token.
-      */
-    def testToken(txt: String, tokHead: String, tokTail: String): Unit = {
-        val tok = parser.nextToken(txt)
-        
-        assertTrue(tok.get.head == tokHead)
-        assertTrue(tok.get.tail == tokTail)
-    }
-    
-    /**
-      *
       * @param txt Text to expand.
       * @param exp Expected expansion strings.
       */
-    def testParser(txt: String, exp: Seq[String]): Unit =
-        assertTrue(parser.expand(txt).sorted == exp.sorted)
-    
-    /**
-      *
-      * @param txt Group text.
-      * @param grps Sequence of group's elements.
-      */
-    def testGroup(txt: String, grps: Seq[String]): Unit = {
-        val elms = parser.parseGroup(txt)
+    def testParser(txt: String, exp: Seq[String]): Unit = {
+        val z = parser.expand(txt).sorted
+        val w = exp.sorted
         
-        assertTrue(grps == elms.map(_.head))
+        if (z != w)
+            println(s"$z != $w")
+            
+        assertTrue(z == w)
     }
-
-    @Test
+    
     def testPerformance() {
         val start = currentTime
 
         val N = 50000
 
         for (_ ← 0 to N)
-            parser.expand("a {{{<C>}}|{_}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
+            parser.expand("a {{{<C>}}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
 
         val duration = currentTime - start
 
-        println(s"${N * 1000 / duration} ops/second.")
+        println(s"${N * 1000 / duration} expansions/sec.")
     }
 
     @Test
@@ -138,7 +120,7 @@ class NCMacroParserSpec  {
         ))
 
         testParser("a {b|_}. c", Seq(
-            "a b. c",
+            "a b . c",
             "a . c"
         ))
 
@@ -149,7 +131,7 @@ class NCMacroParserSpec  {
     
         testParser("""{`a`|\`a\`}""", Seq(
             "`a`",
-            "\\`a\\`"
+            """\`a\`"""
         ))
 
         testParser("""a {/abc.\{\}*/|/d/} c""", Seq(
@@ -217,43 +199,6 @@ class NCMacroParserSpec  {
         ignoreNCE { testParser("a _", Seq.empty); assertTrue(false) }
         ignoreNCE { testParser("a}}", Seq.empty); assertTrue(false) }
         ignoreNCE { testParser("a {a|b} _", Seq.empty); assertTrue(false) }
-    }
-
-    @Test
-    def testOptionGroup() {
-        testGroup("{a {b|c} | d}", Seq("a {b|c} ", " d"))
-        testGroup("{a|b}", Seq("a", "b"))
-        testGroup("{a}", Seq("a"))
-        testGroup("{{{a}}}", Seq("{{a}}"))
-        testGroup("{{{a}}|{b}}", Seq("{{a}}", "{b}"))
-        testGroup("{a {c}|b|_}", Seq("a {c}", "b", "_"))
-        testGroup("""{/abc.\_/|\{\_\}}""", Seq("/abc.\\_/", "\\{\\_\\}"))
-
-        ignoreNCE { parser.parseGroup("a"); assertTrue(false) }
-        ignoreNCE { parser.parseGroup("{a"); assertTrue(false) }
-        ignoreNCE { parser.parseGroup("a}"); assertTrue(false) }
-    }
-
-    @Test
-    def testParseTokens() {
-        testToken("""a \_ b""", """a \_ b""", "")
-        testToken("""a \\\_ b""", """a \\\_ b""", "")
-        testToken("""a \{\_\_\_\} b""", """a \{\_\_\_\} b""", "")
-        testToken("""a{b\|\_\}|c}""", "a", """{b\|\_\}|c}""")
-        testToken("""/\|\_\{\}/ a {bc|d}""", """/\|\_\{\}/ a """, """{bc|d}""")
-        testToken("{a} b", "{a}", " b")
-        testToken("{a|{c|d}}", "{a|{c|d}}", "")
-        testToken("{a {c|d} xxx {f|g}} b", "{a {c|d} xxx {f|g}}", " b")
-        testToken("c{a}     b", "c", "{a}     b")
-        testToken("{{{a}}}", "{{{a}}}", "")
-        
-        ignoreNCE { parser.nextToken("a } b"); assertTrue(false) }
-        ignoreNCE { parser.nextToken("{c b"); assertTrue(false) }
-        ignoreNCE { parser.nextToken("a | b"); assertTrue(false) }
-        ignoreNCE { parser.nextToken("a |_"); assertTrue(false) }
-        
-        assertTrue(parser.nextToken("").isEmpty)
-        assertTrue(parser.nextToken("     ").isDefined)
     }
 
     @Test
