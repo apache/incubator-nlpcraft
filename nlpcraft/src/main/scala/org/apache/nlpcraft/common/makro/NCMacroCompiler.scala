@@ -33,13 +33,13 @@ object NCMacroCompiler extends LazyLogging {
     /**
       *
       * @param buffer
-      * @param inGroup
+      * @param isGroup
       */
     case class StackItem (
         var buffer: mutable.Buffer[String],
-        inGroup: Boolean
+        isGroup: Boolean
     )
-    
+
     /**
       *
       * @param parser
@@ -50,9 +50,21 @@ object NCMacroCompiler extends LazyLogging {
         // Current min/max quantifier.
         private var min = 1
         private var max = 1
-        
+
         private var expandedSyns: Set[String] = _
-        
+
+        /**
+         *
+         * @param optS
+         * @param s
+         * @return
+         */
+        private def add(optS: String, s: String): String =
+            if (optS.isEmpty)
+                s
+            else
+                optS + " " + s
+
         /**
           *
           * @param errMsg
@@ -61,38 +73,42 @@ object NCMacroCompiler extends LazyLogging {
           */
         def error(errMsg: String)(implicit ctx: ParserRuleContext): RecognitionException =
             new RecognitionException(errMsg, parser, parser.getInputStream, ctx)
-    
-        override def enterMakro(ctx: NCMacroDslParser.MakroContext): Unit = {
+
+        override def enterExpr(ctx: NCMacroDslParser.ExprContext): Unit = {
             val buf = mutable.Buffer.empty[String]
-            
+
             buf += ""
-            
+
             stack.push(StackItem(buf, false))
         }
-    
+
         override def enterGroup(ctx: P.GroupContext): Unit =
             stack.push(StackItem(mutable.Buffer.empty[String], true))
-            
-        private def add(optS: String, s: String): String =
-            if (optS.isEmpty)
-                s
-            else
-                optS + " " + s
-        
+
+        override def exitExpr(ctx: NCMacroDslParser.ExprContext): Unit = {
+            if (stack.size > 1) {
+                val expr = stack.pop()
+
+                require(expr.buffer.nonEmpty)
+
+                val prn = stack.top
+
+                if (prn.isGroup)
+                    prn.buffer ++= expr.buffer
+                else
+                    prn.buffer = for (z ← expr.buffer; i ← prn.buffer.indices) yield add(prn.buffer(i), z)
+            }
+        }
+
         override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit = {
-            val top = stack.pop()
+            val grp = stack.pop()
+
+            require(grp.isGroup)
             
-            require(top.inGroup)
-            
-            val arg = stack.top
-    
-            arg.buffer = arg.buffer.flatMap { s ⇒
-                (
-                    for (z ← top.buffer) yield
-                        for (i ← min to max) yield
-                            add(s, (s"$z " * i)).trim
-                )
-                .flatten.toSet
+            val prn = stack.top
+
+            prn.buffer = prn.buffer.flatMap {
+                s ⇒ (for (z ← grp.buffer; i ← min to max) yield add(s, s"$z " * i).trim).toSet
             }
 
             // Reset min max.
@@ -102,21 +118,17 @@ object NCMacroCompiler extends LazyLogging {
     
         override def exitSyn(ctx: P.SynContext): Unit = {
             val syn = if (ctx.TXT() != null) ctx.TXT().getText else ctx.INT().getText
-            val top = stack.top
-            val buf = top.buffer
+            val buf = stack.top.buffer
             
-            if (top.inGroup)
+            if (buf.isEmpty)
                 buf += syn
-            else {
-                if (buf.isEmpty)
-                    buf += syn
-                else
-                    for (i ← buf.indices) buf.update(i, add(buf(i), syn))
-            }
+            else
+                for (i ← buf.indices) buf.update(i, add(buf(i), syn))
         }
     
         override def exitList(ctx: P.ListContext): Unit =
             if (ctx.UNDERSCORE() != null) stack.top.buffer += ""
+
         override def exitMakro(ctx: P.MakroContext): Unit =
             expandedSyns = stack.pop().buffer.map(_.trim).toSet
     

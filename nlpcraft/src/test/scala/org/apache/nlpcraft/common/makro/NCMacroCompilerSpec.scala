@@ -55,7 +55,9 @@ class NCMacroCompilerSpec {
         checkEq(" {  A   }{B}", Seq("A B"))
         checkEq(" {  A   }      {B}", Seq("A B"))
         checkEq("A {B | C}", Seq("A B", "A C"))
-        checkEq("{A}[1,2]{B}[2, 2]", Seq("A B B", "A A B B"))
-//        checkEq("A {B| xxx {C|E}} D", Seq("A B D", "A xxx C D", "A xxx E D"))
+        checkEq("{A}[2,2]", Seq("A A"))
+        checkEq("{A}[1,2]", Seq("A", "A A"))
+        checkEq("{A}[1,2] {B}[2,2]", Seq("A B B", "A A B B"))
+        checkEq("A {B| xxx {C|E}} D", Seq("A B D", "A xxx C D", "A xxx E D"))
     }
 }

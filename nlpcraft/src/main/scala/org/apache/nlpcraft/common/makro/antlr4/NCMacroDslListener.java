@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4\NCMacroDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.common.makro.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -18,15 +18,25 @@ public interface NCMacroDslListener extends ParseTreeListener {
 	 */
 	void exitMakro(NCMacroDslParser.MakroContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCMacroDslParser#line}.
+	 * Enter a parse tree produced by {@link NCMacroDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterLine(NCMacroDslParser.LineContext ctx);
+	void enterExpr(NCMacroDslParser.ExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCMacroDslParser#line}.
+	 * Exit a parse tree produced by {@link NCMacroDslParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitLine(NCMacroDslParser.LineContext ctx);
+	void exitExpr(NCMacroDslParser.ExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCMacroDslParser#item}.
+	 * @param ctx the parse tree
+	 */
+	void enterItem(NCMacroDslParser.ItemContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCMacroDslParser#item}.
+	 * @param ctx the parse tree
+	 */
+	void exitItem(NCMacroDslParser.ItemContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCMacroDslParser#syn}.
 	 * @param ctx the parse tree

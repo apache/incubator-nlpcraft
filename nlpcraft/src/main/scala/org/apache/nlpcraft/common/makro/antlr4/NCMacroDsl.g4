@@ -19,9 +19,10 @@ grammar NCMacroDsl;
 
 makro: expr;
 expr
-    : (syn | group)
-    | expr (syn | group)
+    : item
+    | expr item
     ;
+item: syn | group;
 syn : (TXT | INT); // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
 group: LCURLY list RCURLY minMax?;
 minMax: LBR INT COMMA INT RBR;
