@@ -19,6 +19,7 @@ package org.apache.nlpcraft.common.makro
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import  org.apache.nlpcraft.common._
 
 /**
   * Unit tests for the macro compiler.
@@ -38,26 +39,53 @@ class NCMacroCompilerSpec {
         
         assertTrue(res == z)
     }
+
+    /**
+     *
+     * @param txt
+     */
+    private def checkError(txt: String): Unit = {
+        try {
+            NCMacroCompiler.compile(txt)
+
+            assert(false)
+        } catch {
+            case e: NCE ⇒
+                println(e.getMessage)
+                assert(true)
+        }
+    }
     
     @Test
-    def testCompiler(): Unit = {
+    def testOkCompiler(): Unit = {
         checkEq("A", Seq("A"))
         checkEq("    A   ", Seq("A"))
         checkEq("A B", Seq("A B"))
         checkEq("A           B", Seq("A B"))
         checkEq("{A}", Seq("A"))
+        checkEq("{{{A}}[1,1]}[1,1]", Seq("A"))
         checkEq("XX {A}", Seq("XX A"))
         checkEq("{A}[0,2]", Seq("", "A", "A A"))
         checkEq("{A  }   [0  ,2]", Seq("", "A", "A A"))
         checkEq("{A          }", Seq("A"))
         checkEq("      {      A          }", Seq("A"))
         checkEq("{A}{B}", Seq("A B"))
+        checkEq("{A}[0,1]{  {    {B}}}", Seq("B", "A B"))
+        checkEq("{A}[0,1]{  {    {xx B}}}", Seq("xx B", "A xx B"))
         checkEq(" {  A   }{B}", Seq("A B"))
         checkEq(" {  A   }      {B}", Seq("A B"))
-        checkEq("A {B | C}", Seq("A B", "A C"))
+        checkEq("A {B | C | _}", Seq("A", "A B", "A C"))
         checkEq("{A}[2,2]", Seq("A A"))
         checkEq("{A}[1,2]", Seq("A", "A A"))
         checkEq("{A}[1,2] {B}[2,2]", Seq("A B B", "A A B B"))
+        checkEq("yy {xx A|_}[1,2] zz", Seq("yy zz", "yy xx A zz", "yy xx A xx A zz"))
+        checkEq("yy {xx A|_}[0,2] zz", Seq("yy zz", "yy xx A zz", "yy xx A xx A zz"))
         checkEq("A {B| xxx {C|E}} D", Seq("A B D", "A xxx C D", "A xxx E D"))
+    }
+
+    @Test
+    def testFailCompiler(): Unit = {
+        checkError("{A")
+        checkError("{A}[2,1]")
     }
 }

@@ -59,11 +59,7 @@ object NCMacroCompiler extends LazyLogging {
          * @param s
          * @return
          */
-        private def add(optS: String, s: String): String =
-            if (optS.isEmpty)
-                s
-            else
-                optS + " " + s
+        private def concat(optS: String, s: String): String = if (optS.isEmpty) s else optS + " " + s
 
         /**
           *
@@ -77,26 +73,29 @@ object NCMacroCompiler extends LazyLogging {
         override def enterExpr(ctx: NCMacroDslParser.ExprContext): Unit = {
             val buf = mutable.Buffer.empty[String]
 
+            // NOTE: do not allow expression's buffer to be empty.
+            // Add harmless empty string.
             buf += ""
 
             stack.push(StackItem(buf, false))
         }
 
-        override def enterGroup(ctx: P.GroupContext): Unit =
+        override def enterGroup(ctx: P.GroupContext): Unit = {
+            // NOTE: group cannot be empty based on the BNF grammar.
             stack.push(StackItem(mutable.Buffer.empty[String], true))
+        }
 
         override def exitExpr(ctx: NCMacroDslParser.ExprContext): Unit = {
             if (stack.size > 1) {
                 val expr = stack.pop()
+                val prn = stack.top
 
                 require(expr.buffer.nonEmpty)
-
-                val prn = stack.top
 
                 if (prn.isGroup)
                     prn.buffer ++= expr.buffer
                 else
-                    prn.buffer = for (z ← expr.buffer; i ← prn.buffer.indices) yield add(prn.buffer(i), z)
+                    prn.buffer = for (z ← expr.buffer; i ← prn.buffer.indices) yield concat(prn.buffer(i), z)
             }
         }
 
@@ -108,7 +107,7 @@ object NCMacroCompiler extends LazyLogging {
             val prn = stack.top
 
             prn.buffer = prn.buffer.flatMap {
-                s ⇒ (for (z ← grp.buffer; i ← min to max) yield add(s, s"$z " * i).trim).toSet
+                s ⇒ (for (z ← grp.buffer; i ← min to max) yield concat(s, s"$z " * i).trim).toSet
             }
 
             // Reset min max.
@@ -119,11 +118,10 @@ object NCMacroCompiler extends LazyLogging {
         override def exitSyn(ctx: P.SynContext): Unit = {
             val syn = if (ctx.TXT() != null) ctx.TXT().getText else ctx.INT().getText
             val buf = stack.top.buffer
-            
-            if (buf.isEmpty)
-                buf += syn
-            else
-                for (i ← buf.indices) buf.update(i, add(buf(i), syn))
+
+            require(buf.nonEmpty)
+
+            for (i ← buf.indices) buf.update(i, concat(buf(i), syn))
         }
     
         override def exitList(ctx: P.ListContext): Unit =
@@ -150,7 +148,7 @@ object NCMacroCompiler extends LazyLogging {
             }
             
             if (min < 0 || max < 0 || min > max || max == 0)
-                throw error(s"Min/max quantifiers should satisfy 'max >= min, min >= 0, max > 0': [$min, $max]")
+                throw error(s"[min,max] quantifiers should satisfy 'max >= min, min >= 0, max > 0': [$min, $max]")
         }
     
         /**
