@@ -37,14 +37,17 @@ RBR: ']';
 VERT: '|';
 COMMA: ',';
 UNDERSCORE: '_';
+fragment ESC_CHAR: [{}\\<>_[\]|,];
+fragment ESC: '\\' ESC_CHAR;
 fragment TXT_CHAR
-    : [.*^+<>\-&'":#!]
+    : [~!@#$%^&*()+.]
+    | [-=<>/\\;:`]
     | '\u00B7'
-    | '\u0300'..'\u036F'
-    | '\u203F'..'\u2040'
     | 'A'..'Z'
     | 'a'..'z'
     | '0'..'9'
+    | '\u0300'..'\u036F'
+    | '\u203F'..'\u2040'
     | '\u00C0'..'\u00D6'
     | '\u00D8'..'\u00F6'
     | '\u00F8'..'\u02FF'
@@ -57,7 +60,6 @@ fragment TXT_CHAR
     | '\uF900'..'\uFDCF'
     | '\uFDF0'..'\uFFFD'
     ; // Ignoring ['\u10000-'\uEFFFF].
-fragment ESC: '\\' [{}\\<>_[\]|,] ;
 INT: '0' | [1-9][_0-9]*;
 TXT: (TXT_CHAR | ESC)+;
 WS: [ \r\t\u000C\n]+ -> skip ;

@@ -19,7 +19,7 @@ package org.apache.nlpcraft.common.makro
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import  org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common._
 
 /**
   * Unit tests for the macro compiler.
@@ -88,6 +88,13 @@ class NCMacroCompilerSpec {
         checkEq("A {B| xxx {C|E}} D", Seq("A B D", "A xxx C D", "A xxx E D"))
         checkEq("x {<OF>| y <NO>}[1,2]", Seq("x <OF>", "x y <NO>", "x <OF> <OF>", "x y <NO> y <NO>"))
         checkEq("{{x  }} {<OF>| y <NO>}[1,2]", Seq("x <OF>", "x y <NO>", "x <OF> <OF>", "x y <NO> y <NO>"))
+        checkEq("{tl;dr|j/k}", Seq("tl;dr", "j/k"))
+        checkEq("a {b|_}. c", Seq( "a b . c", "a . c"))
+        checkEq("""a {/abc.*/|\{\_\}} c""", Seq("a /abc.*/ c", """a \{\_\} c"""))
+        checkEq("""{`a`   |\`a\`   }""", Seq("`a`", """\`a\`"""))
+        checkEq("""a {/abc.\{\}*/     |/d/} c""", Seq("""a /abc.\{\}*/ c""", "a /d/ c"))
+        checkEq("""a .{b\,  |_}. c"""", Seq("""a . b\, . c""", "a . . c"))
+        checkEq("a {        {b|c}|_}.", Seq("a .", "a b .", "a c ."))
     }
 
     @Test
