@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4\NCMacroDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.common.makro.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -18,7 +18,7 @@ public class NCMacroDslParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		LCURLY=1, RCURLY=2, LBR=3, RBR=4, VERT=5, COMMA=6, UNDERSCORE=7, INT=8, 
-		TXT=9, WS=10, ErrorCharacter=11;
+		TXT=9, WS=10, ERR_CHAR=11;
 	public static final int
 		RULE_makro = 0, RULE_expr = 1, RULE_item = 2, RULE_syn = 3, RULE_group = 4, 
 		RULE_minMax = 5, RULE_list = 6;
@@ -38,7 +38,7 @@ public class NCMacroDslParser extends Parser {
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, "LCURLY", "RCURLY", "LBR", "RBR", "VERT", "COMMA", "UNDERSCORE", 
-			"INT", "TXT", "WS", "ErrorCharacter"
+			"INT", "TXT", "WS", "ERR_CHAR"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -96,6 +96,7 @@ public class NCMacroDslParser extends Parser {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
+		public TerminalNode EOF() { return getToken(NCMacroDslParser.EOF, 0); }
 		public MakroContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -118,6 +119,8 @@ public class NCMacroDslParser extends Parser {
 			{
 			setState(14);
 			expr(0);
+			setState(15);
+			match(EOF);
 			}
 		}
 		catch (RecognitionException re) {
@@ -168,11 +171,11 @@ public class NCMacroDslParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(17);
+			setState(18);
 			item();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(23);
+			setState(24);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -183,14 +186,14 @@ public class NCMacroDslParser extends Parser {
 					{
 					_localctx = new ExprContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_expr);
-					setState(19);
-					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
 					setState(20);
+					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
+					setState(21);
 					item();
 					}
 					} 
 				}
-				setState(25);
+				setState(26);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
 			}
@@ -232,21 +235,21 @@ public class NCMacroDslParser extends Parser {
 		ItemContext _localctx = new ItemContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_item);
 		try {
-			setState(28);
+			setState(29);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case INT:
 			case TXT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(26);
+				setState(27);
 				syn();
 				}
 				break;
 			case LCURLY:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(27);
+				setState(28);
 				group();
 				}
 				break;
@@ -289,7 +292,7 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(30);
+			setState(31);
 			_la = _input.LA(1);
 			if ( !(_la==INT || _la==TXT) ) {
 			_errHandler.recoverInline(this);
@@ -341,18 +344,18 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(32);
-			match(LCURLY);
 			setState(33);
-			list(0);
+			match(LCURLY);
 			setState(34);
+			list(0);
+			setState(35);
 			match(RCURLY);
-			setState(36);
+			setState(37);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				{
-				setState(35);
+				setState(36);
 				minMax();
 				}
 				break;
@@ -398,15 +401,15 @@ public class NCMacroDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(38);
-			match(LBR);
 			setState(39);
-			match(INT);
+			match(LBR);
 			setState(40);
-			match(COMMA);
-			setState(41);
 			match(INT);
+			setState(41);
+			match(COMMA);
 			setState(42);
+			match(INT);
+			setState(43);
 			match(RBR);
 			}
 		}
@@ -459,24 +462,24 @@ public class NCMacroDslParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(49);
+			setState(50);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LCURLY:
 			case INT:
 			case TXT:
 				{
-				setState(45);
+				setState(46);
 				expr(0);
 				}
 				break;
 			case UNDERSCORE:
 				{
-				setState(46);
-				match(UNDERSCORE);
 				setState(47);
-				match(VERT);
+				match(UNDERSCORE);
 				setState(48);
+				match(VERT);
+				setState(49);
 				list(1);
 				}
 				break;
@@ -484,7 +487,7 @@ public class NCMacroDslParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(59);
+			setState(60);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -492,18 +495,18 @@ public class NCMacroDslParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(57);
+					setState(58);
 					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 					case 1:
 						{
 						_localctx = new ListContext(_parentctx, _parentState);
 						pushNewRecursionContext(_localctx, _startState, RULE_list);
-						setState(51);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(52);
-						match(VERT);
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(53);
+						match(VERT);
+						setState(54);
 						expr(0);
 						}
 						break;
@@ -511,18 +514,18 @@ public class NCMacroDslParser extends Parser {
 						{
 						_localctx = new ListContext(_parentctx, _parentState);
 						pushNewRecursionContext(_localctx, _startState, RULE_list);
-						setState(54);
-						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 						setState(55);
-						match(VERT);
+						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 						setState(56);
+						match(VERT);
+						setState(57);
 						match(UNDERSCORE);
 						}
 						break;
 					}
 					} 
 				}
-				setState(61);
+				setState(62);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 			}
@@ -566,23 +569,23 @@ public class NCMacroDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\rA\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\3\3\3\3\3\3\3\3\3"+
-		"\7\3\30\n\3\f\3\16\3\33\13\3\3\4\3\4\5\4\37\n\4\3\5\3\5\3\6\3\6\3\6\3"+
-		"\6\5\6\'\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\5\b\64\n\b\3"+
-		"\b\3\b\3\b\3\b\3\b\3\b\7\b<\n\b\f\b\16\b?\13\b\3\b\2\4\4\16\t\2\4\6\b"+
-		"\n\f\16\2\3\3\2\n\13\2?\2\20\3\2\2\2\4\22\3\2\2\2\6\36\3\2\2\2\b \3\2"+
-		"\2\2\n\"\3\2\2\2\f(\3\2\2\2\16\63\3\2\2\2\20\21\5\4\3\2\21\3\3\2\2\2\22"+
-		"\23\b\3\1\2\23\24\5\6\4\2\24\31\3\2\2\2\25\26\f\3\2\2\26\30\5\6\4\2\27"+
-		"\25\3\2\2\2\30\33\3\2\2\2\31\27\3\2\2\2\31\32\3\2\2\2\32\5\3\2\2\2\33"+
-		"\31\3\2\2\2\34\37\5\b\5\2\35\37\5\n\6\2\36\34\3\2\2\2\36\35\3\2\2\2\37"+
-		"\7\3\2\2\2 !\t\2\2\2!\t\3\2\2\2\"#\7\3\2\2#$\5\16\b\2$&\7\4\2\2%\'\5\f"+
-		"\7\2&%\3\2\2\2&\'\3\2\2\2\'\13\3\2\2\2()\7\5\2\2)*\7\n\2\2*+\7\b\2\2+"+
-		",\7\n\2\2,-\7\6\2\2-\r\3\2\2\2./\b\b\1\2/\64\5\4\3\2\60\61\7\t\2\2\61"+
-		"\62\7\7\2\2\62\64\5\16\b\3\63.\3\2\2\2\63\60\3\2\2\2\64=\3\2\2\2\65\66"+
-		"\f\5\2\2\66\67\7\7\2\2\67<\5\4\3\289\f\4\2\29:\7\7\2\2:<\7\t\2\2;\65\3"+
-		"\2\2\2;8\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>\3\2\2\2>\17\3\2\2\2?=\3\2\2\2\b"+
-		"\31\36&\63;=";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\rB\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\3\3\3\3\3\3\3\3"+
+		"\3\3\7\3\31\n\3\f\3\16\3\34\13\3\3\4\3\4\5\4 \n\4\3\5\3\5\3\6\3\6\3\6"+
+		"\3\6\5\6(\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\5\b\65\n\b\3"+
+		"\b\3\b\3\b\3\b\3\b\3\b\7\b=\n\b\f\b\16\b@\13\b\3\b\2\4\4\16\t\2\4\6\b"+
+		"\n\f\16\2\3\3\2\n\13\2@\2\20\3\2\2\2\4\23\3\2\2\2\6\37\3\2\2\2\b!\3\2"+
+		"\2\2\n#\3\2\2\2\f)\3\2\2\2\16\64\3\2\2\2\20\21\5\4\3\2\21\22\7\2\2\3\22"+
+		"\3\3\2\2\2\23\24\b\3\1\2\24\25\5\6\4\2\25\32\3\2\2\2\26\27\f\3\2\2\27"+
+		"\31\5\6\4\2\30\26\3\2\2\2\31\34\3\2\2\2\32\30\3\2\2\2\32\33\3\2\2\2\33"+
+		"\5\3\2\2\2\34\32\3\2\2\2\35 \5\b\5\2\36 \5\n\6\2\37\35\3\2\2\2\37\36\3"+
+		"\2\2\2 \7\3\2\2\2!\"\t\2\2\2\"\t\3\2\2\2#$\7\3\2\2$%\5\16\b\2%\'\7\4\2"+
+		"\2&(\5\f\7\2\'&\3\2\2\2\'(\3\2\2\2(\13\3\2\2\2)*\7\5\2\2*+\7\n\2\2+,\7"+
+		"\b\2\2,-\7\n\2\2-.\7\6\2\2.\r\3\2\2\2/\60\b\b\1\2\60\65\5\4\3\2\61\62"+
+		"\7\t\2\2\62\63\7\7\2\2\63\65\5\16\b\3\64/\3\2\2\2\64\61\3\2\2\2\65>\3"+
+		"\2\2\2\66\67\f\5\2\2\678\7\7\2\28=\5\4\3\29:\f\4\2\2:;\7\7\2\2;=\7\t\2"+
+		"\2<\66\3\2\2\2<9\3\2\2\2=@\3\2\2\2><\3\2\2\2>?\3\2\2\2?\17\3\2\2\2@>\3"+
+		"\2\2\2\b\32\37\'\64<>";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

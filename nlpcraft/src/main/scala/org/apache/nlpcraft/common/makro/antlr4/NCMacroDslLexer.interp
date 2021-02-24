@@ -24,7 +24,7 @@ UNDERSCORE
 INT
 TXT
 WS
-ErrorCharacter
+ERR_CHAR
 
 rule names:
 LCURLY
@@ -40,7 +40,7 @@ TXT_CHAR
 INT
 TXT
 WS
-ErrorCharacter
+ERR_CHAR
 
 channel names:
 DEFAULT_TOKEN_CHANNEL

@@ -128,7 +128,7 @@ class NCMacroParserSpec  {
             "a /abc.*/ c",
             "a {_} c"
         ))
-    
+
         testParser("""{`a`|\`a\`}""", Seq(
             "`a`",
             """\`a\`"""
@@ -139,18 +139,18 @@ class NCMacroParserSpec  {
             "a /d/ c"
         ))
 
-        testParser("a .{b,  |_}. c", Seq(
-            "a .b, . c",
-            "a .. c"
+        testParser("""a .{b\,  |_}. c""", Seq(
+            "a . b, . c",
+            "a . . c"
         ))
 
         testParser("a {{b|c}|_}.", Seq(
             "a .",
-            "a b.",
-            "a c."
+            "a b .",
+            "a c ."
         ))
 
-        testParser("a {{{<C>}}|{_}} c", Seq(
+        testParser("a {{{<C>}}|_} c", Seq(
             "a aaa bbb z c",
             "a aaa bbb w c",
             "a c"
@@ -162,7 +162,7 @@ class NCMacroParserSpec  {
         ))
 
         testParser("a {b|_}d", Seq(
-            "a bd",
+            "a b d",
             "a d"
         ))
 
@@ -174,11 +174,6 @@ class NCMacroParserSpec  {
         testParser("a {b|_}       d", Seq(
             "a b d",
             "a d"
-        ))
-
-        testParser("{{{a}}} {b||_|{{_}}||_}", Seq(
-            "a b",
-            "a"
         ))
 
         testParser("a {b}", Seq(
@@ -195,18 +190,28 @@ class NCMacroParserSpec  {
             "a c"
         ))
 
-        ignoreNCE { testParser("a | b", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a _", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a}}", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a {a|b} _", Seq.empty); assertTrue(false) }
+        checkError("a {| b")
+        checkError("{a}}")
+    }
+
+    /**
+     *
+     * @param txt
+     */
+    private def checkError(txt: String): Unit = {
+        try {
+            parser.expand(txt)
+
+            assert(false)
+        } catch {
+            case e: NCE ⇒
+                println(e.getMessage)
+                assert(true)
+        }
     }
 
     @Test
     def testLimit() {
-        ignoreNCE {
-            parser.expand("<METRICS> <USER> <BY> <WEBSITE> <BY> <SES> <BY> <METRICS> <BY> <USER> <BY> <METRICS>")
-
-            assertTrue(false)
-        }
+        checkError("<METRICS> <USER> <BY> <WEBSITE> <BY> <SES> <BY> <METRICS> <BY> <USER> <BY> <METRICS>")
     }
 }

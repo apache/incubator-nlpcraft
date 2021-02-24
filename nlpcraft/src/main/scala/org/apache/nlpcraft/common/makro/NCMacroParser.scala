@@ -112,7 +112,7 @@ class NCMacroParser {
             if (ch == '\\' && !isEscape)
                 isEscape = true
             else {
-                if (isEscape && ESC_CHARS.contains(ch))
+                if (isEscape && !ESC_CHARS.contains(ch))
                     buf += '\\'
                 
                 buf += ch

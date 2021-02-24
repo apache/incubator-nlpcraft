@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4/NCMacroDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/common/makro/antlr4\NCMacroDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.common.makro.antlr4;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -18,7 +18,7 @@ public class NCMacroDslLexer extends Lexer {
 		new PredictionContextCache();
 	public static final int
 		LCURLY=1, RCURLY=2, LBR=3, RBR=4, VERT=5, COMMA=6, UNDERSCORE=7, INT=8, 
-		TXT=9, WS=10, ErrorCharacter=11;
+		TXT=9, WS=10, ERR_CHAR=11;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 	};
@@ -30,7 +30,7 @@ public class NCMacroDslLexer extends Lexer {
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"LCURLY", "RCURLY", "LBR", "RBR", "VERT", "COMMA", "UNDERSCORE", "ESC_CHAR", 
-			"ESC", "TXT_CHAR", "INT", "TXT", "WS", "ErrorCharacter"
+			"ESC", "TXT_CHAR", "INT", "TXT", "WS", "ERR_CHAR"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -44,7 +44,7 @@ public class NCMacroDslLexer extends Lexer {
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, "LCURLY", "RCURLY", "LBR", "RBR", "VERT", "COMMA", "UNDERSCORE", 
-			"INT", "TXT", "WS", "ErrorCharacter"
+			"INT", "TXT", "WS", "ERR_CHAR"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();

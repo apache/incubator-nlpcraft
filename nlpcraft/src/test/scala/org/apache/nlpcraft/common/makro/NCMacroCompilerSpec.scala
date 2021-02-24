@@ -60,6 +60,7 @@ class NCMacroCompilerSpec {
     def testOkCompiler(): Unit = {
         checkEq("A", Seq("A"))
         checkEq("{_|A|_}", Seq("", "A"))
+        checkEq("{_|A|_|_|_|{_|A}}", Seq("", "A"))
         checkEq("{A|_}", Seq("", "A"))
         checkEq("    A   ", Seq("A"))
         checkEq("A B", Seq("A B"))
@@ -95,7 +96,7 @@ class NCMacroCompilerSpec {
         checkEq("""a {/abc.*/|\{\_\}} c""", Seq("a /abc.*/ c", """a \{\_\} c"""))
         checkEq("""{`a`   |\`a\`   }""", Seq("`a`", """\`a\`"""))
         checkEq("""a {/abc.\{\}*/     |/d/} c""", Seq("""a /abc.\{\}*/ c""", "a /d/ c"))
-        checkEq("""a .{b\,  |_}. c"""", Seq("""a . b\, . c""", "a . . c"))
+        checkEq("""a .{b\,  |_}. c""", Seq("""a . b\, . c""", "a . . c"))
         checkEq("a {        {b|c}|_}.", Seq("a .", "a b .", "a c ."))
     }
 
@@ -110,5 +111,10 @@ class NCMacroCompilerSpec {
         checkError("{A}[1:1]")
         checkError("{A}[1 1]")
         checkError("{A|__}")
+        checkError("A|__}")
+        checkError("{A|__} }}")
+        checkError("} {A|_}")
+        checkError("{A|_} _")
+        checkError("{A|")
     }
 }

@@ -17,7 +17,8 @@
 
 grammar NCMacroDsl;
 
-makro: expr;
+// Parser.
+makro: expr EOF;
 expr
     : item
     | expr item
@@ -32,6 +33,8 @@ list
     | list VERT UNDERSCORE
     | UNDERSCORE VERT list
     ;
+
+// Lexer.
 LCURLY: '{';
 RCURLY: '}';
 LBR: '[';
@@ -65,4 +68,4 @@ fragment TXT_CHAR
 INT: '0' | [1-9][_0-9]*;
 TXT: (TXT_CHAR | ESC)+;
 WS: [ \r\t\u000C\n]+ -> skip ;
-ErrorCharacter: .;
+ERR_CHAR: .;

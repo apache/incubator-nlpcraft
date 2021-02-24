@@ -223,7 +223,8 @@ object NCMacroCompiler extends LazyLogging {
         in: String
     ): String = {
         val dash = "-" * in.length
-        val charPosPtr = dash.substring(0, charPos - 1) + r("^") + dash.substring(charPos)
+        val pos = Math.max(1, charPos)
+        val charPosPtr = dash.substring(0, pos - 1) + r("^") + dash.substring(pos)
     
         s"Macro compiler error at line $line:$charPos - $msg\n" +
         s"  |-- ${c("Macro:")} $in\n" +
