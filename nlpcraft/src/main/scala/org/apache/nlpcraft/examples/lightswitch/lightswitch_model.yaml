@@ -26,6 +26,10 @@ macros:
     macro: "{shut|kill|stop|eliminate}"
   - name: "<ENTIRE_OPT>"
     macro: "{entire|full|whole|total|_}"
+  - name: "<FLOOR_OPT>"
+    macro: "{upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}"
+  - name: "<TYPE>"
+    macro: "{room|closet|attic|loft|{store|storage} {room|_}}"
   - name: "<LIGHT>"
     macro: "{all|_} {it|them|light|illumination|lamp|lamplight}"
 enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
@@ -33,8 +37,8 @@ elements:
   - id: "ls:loc"
     description: "Location of lights."
     synonyms:
-      - "<ENTIRE_OPT> {upstairs|downstairs|_} {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} room}"
-      - "<ENTIRE_OPT> {upstairs|downstairs|_} {master|kid|children|child|guest|_} {bedroom|bathroom|washroom|storage} {closet|_}"
+      - "<ENTIRE_OPT> <FLOOR_OPT> {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} <TYPE>}"
+      - "<ENTIRE_OPT> <FLOOR_OPT> {master|kid|children|child|guest|_} {bedroom|bathroom|washroom|storage} {<TYPE>|_}"
       - "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
 
   - id: "ls:on"

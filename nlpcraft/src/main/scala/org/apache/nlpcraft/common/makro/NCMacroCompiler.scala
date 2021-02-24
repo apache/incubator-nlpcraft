@@ -29,7 +29,7 @@ import scala.collection.mutable
   *
   */
 object NCMacroCompiler extends LazyLogging {
-    private final val MAX_SYN = 1000
+    private final val MAX_SYN = 10000
     
     /**
       *

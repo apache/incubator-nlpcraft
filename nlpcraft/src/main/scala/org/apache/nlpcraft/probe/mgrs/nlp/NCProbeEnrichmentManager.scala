@@ -335,14 +335,20 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 logger.info(s"" +
                     s"\n" +
                     s"${g("|")}\n" +
-                    s"${g("|")} ${bo(g("SUCCESS"))} result sent back to server [srvReqId=${rv(g(srvReqId))}, type=${resType.getOrElse("")}]\n" +
+                    s"${g("|")} ${bo(g("SUCCESS"))} result sent back to server [" +
+                        s"srvReqId=${rv(g(srvReqId))}, " +
+                        s"type=${resType.getOrElse("")}" +
+                    s"]\n" +
                     s"${g("|")}"
                 )
             else
                 logger.info(s"" +
                     s"\n" +
                     s"${r("|")}\n" +
-                    s"${r("|")} ${bo(r("REJECT"))} result sent back to server [srvReqId=${rv(g(srvReqId))}, response=${errMsg.get}]\n" +
+                    s"${r("|")} ${bo(r("REJECT"))} result sent back to server [" +
+                        s"srvReqId=${rv(g(srvReqId))}, " +
+                        s"response=${errMsg.get}" +
+                    s"]\n" +
                     s"${r("|")}"
                 )
         }
