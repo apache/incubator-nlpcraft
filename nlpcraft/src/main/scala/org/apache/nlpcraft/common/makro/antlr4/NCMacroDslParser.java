@@ -18,7 +18,7 @@ public class NCMacroDslParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		LCURLY=1, RCURLY=2, LBR=3, RBR=4, VERT=5, COMMA=6, UNDERSCORE=7, INT=8, 
-		TXT=9, WS=10, ERR_CHAR=11;
+		REGEX_TXT=9, DSL_TXT=10, TXT=11, WS=12, ERR_CHAR=13;
 	public static final int
 		RULE_makro = 0, RULE_expr = 1, RULE_item = 2, RULE_syn = 3, RULE_group = 4, 
 		RULE_minMax = 5, RULE_list = 6;
@@ -38,7 +38,7 @@ public class NCMacroDslParser extends Parser {
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, "LCURLY", "RCURLY", "LBR", "RBR", "VERT", "COMMA", "UNDERSCORE", 
-			"INT", "TXT", "WS", "ERR_CHAR"
+			"INT", "REGEX_TXT", "DSL_TXT", "TXT", "WS", "ERR_CHAR"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -239,6 +239,8 @@ public class NCMacroDslParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case INT:
+			case REGEX_TXT:
+			case DSL_TXT:
 			case TXT:
 				enterOuterAlt(_localctx, 1);
 				{
@@ -271,6 +273,8 @@ public class NCMacroDslParser extends Parser {
 	public static class SynContext extends ParserRuleContext {
 		public TerminalNode TXT() { return getToken(NCMacroDslParser.TXT, 0); }
 		public TerminalNode INT() { return getToken(NCMacroDslParser.INT, 0); }
+		public TerminalNode REGEX_TXT() { return getToken(NCMacroDslParser.REGEX_TXT, 0); }
+		public TerminalNode DSL_TXT() { return getToken(NCMacroDslParser.DSL_TXT, 0); }
 		public SynContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -294,7 +298,7 @@ public class NCMacroDslParser extends Parser {
 			{
 			setState(31);
 			_la = _input.LA(1);
-			if ( !(_la==INT || _la==TXT) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << INT) | (1L << REGEX_TXT) | (1L << DSL_TXT) | (1L << TXT))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -467,6 +471,8 @@ public class NCMacroDslParser extends Parser {
 			switch (_input.LA(1)) {
 			case LCURLY:
 			case INT:
+			case REGEX_TXT:
+			case DSL_TXT:
 			case TXT:
 				{
 				setState(46);
@@ -569,13 +575,13 @@ public class NCMacroDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\rB\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17B\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\3\3\3\3\3\3\3\3"+
 		"\3\3\7\3\31\n\3\f\3\16\3\34\13\3\3\4\3\4\5\4 \n\4\3\5\3\5\3\6\3\6\3\6"+
 		"\3\6\5\6(\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\5\b\65\n\b\3"+
 		"\b\3\b\3\b\3\b\3\b\3\b\7\b=\n\b\f\b\16\b@\13\b\3\b\2\4\4\16\t\2\4\6\b"+
-		"\n\f\16\2\3\3\2\n\13\2@\2\20\3\2\2\2\4\23\3\2\2\2\6\37\3\2\2\2\b!\3\2"+
-		"\2\2\n#\3\2\2\2\f)\3\2\2\2\16\64\3\2\2\2\20\21\5\4\3\2\21\22\7\2\2\3\22"+
+		"\n\f\16\2\3\3\2\n\r\2@\2\20\3\2\2\2\4\23\3\2\2\2\6\37\3\2\2\2\b!\3\2\2"+
+		"\2\n#\3\2\2\2\f)\3\2\2\2\16\64\3\2\2\2\20\21\5\4\3\2\21\22\7\2\2\3\22"+
 		"\3\3\2\2\2\23\24\b\3\1\2\24\25\5\6\4\2\25\32\3\2\2\2\26\27\f\3\2\2\27"+
 		"\31\5\6\4\2\30\26\3\2\2\2\31\34\3\2\2\2\32\30\3\2\2\2\32\33\3\2\2\2\33"+
 		"\5\3\2\2\2\34\32\3\2\2\2\35 \5\b\5\2\36 \5\n\6\2\37\35\3\2\2\2\37\36\3"+

@@ -141,7 +141,13 @@ object NCMacroCompiler extends LazyLogging {
         }
     
         override def exitSyn(ctx: P.SynContext): Unit = {
-            val syn = if (ctx.TXT() != null) ctx.TXT().getText else ctx.INT().getText
+            val syn = (
+                if (ctx.TXT() != null) ctx.TXT()
+                else if (ctx.INT() != null) ctx.INT()
+                else if (ctx.REGEX_TXT() != null) ctx.REGEX_TXT()
+                else ctx.DSL_TXT()
+            ).getText
+
             val buf = stack.top.buffer
 
             require(buf.nonEmpty)

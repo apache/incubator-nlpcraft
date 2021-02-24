@@ -60,16 +60,17 @@ class NCMacroParserSpec  {
       * @param txt Text to expand.
       * @param exp Expected expansion strings.
       */
-    def testParser(txt: String, exp: Seq[String]): Unit = {
+    def checkEq(txt: String, exp: Seq[String]): Unit = {
         val z = parser.expand(txt).sorted
         val w = exp.sorted
-        
+
         if (z != w)
             println(s"$z != $w")
-            
+
         assertTrue(z == w)
     }
-    
+
+    // @Test
     def testPerformance() {
         val start = currentTime
 
@@ -81,6 +82,23 @@ class NCMacroParserSpec  {
         val duration = currentTime - start
 
         println(s"${N * 1000 / duration} expansions/sec.")
+    }
+
+
+    /**
+     *
+     * @param txt
+     */
+    private def checkError(txt: String): Unit = {
+        try {
+            parser.expand(txt)
+
+            assert(false)
+        } catch {
+            case e: NCE ⇒
+                println(e.getMessage)
+                assert(true)
+        }
     }
 
     @Test
@@ -104,110 +122,35 @@ class NCMacroParserSpec  {
         parser.expand("<METRICS_B>")
         parser.expand("<METRICS>")
 
-        testParser("<A> {b|_} c", Seq(
-            "aaa b c",
-            "aaa c"
-        ))
-
-        testParser("<B> {b|_} c", Seq(
-            "aaa bbb b c",
-            "aaa bbb c"
-        ))
-
-        testParser("{tl;dr|j/k}", Seq(
-            "tl;dr",
-            "j/k"
-        ))
-
-        testParser("a {b|_}. c", Seq(
-            "a b . c",
-            "a . c"
-        ))
-
-        testParser("""a {/abc.*/|\{\_\}} c""", Seq(
-            "a /abc.*/ c",
-            "a {_} c"
-        ))
-
-        testParser("""{`a`|\`a\`}""", Seq(
-            "`a`",
-            """\`a\`"""
-        ))
-
-        testParser("""a {/abc.\{\}*/|/d/} c""", Seq(
-            "a /abc.{}*/ c",
-            "a /d/ c"
-        ))
-
-        testParser("""a .{b\,  |_}. c""", Seq(
-            "a . b, . c",
-            "a . . c"
-        ))
-
-        testParser("a {{b|c}|_}.", Seq(
-            "a .",
-            "a b .",
-            "a c ."
-        ))
-
-        testParser("a {{{<C>}}|_} c", Seq(
-            "a aaa bbb z c",
-            "a aaa bbb w c",
-            "a c"
-        ))
-
-        testParser("a {b|_}", Seq(
-            "a b",
-            "a"
-        ))
-
-        testParser("a {b|_}d", Seq(
-            "a b d",
-            "a d"
-        ))
-
-        testParser("a {b|_} d", Seq(
-            "a b d",
-            "a d"
-        ))
-
-        testParser("a {b|_}       d", Seq(
-            "a b d",
-            "a d"
-        ))
-
-        testParser("a {b}", Seq(
-            "a b"
-        ))
-
-        testParser("a {b} {c|_}", Seq(
-            "a b",
-            "a b c"
-        ))
-
-        testParser("a {{b|c}}", Seq(
-            "a b",
-            "a c"
-        ))
+        checkEq("<A> {b|_} c", Seq("aaa b c", "aaa c"))
+        checkEq("<B> {b|_} c", Seq("aaa bbb b c", "aaa bbb c"))
+        checkEq("{tl;dr|j/k}", Seq("tl;dr", "j/k"))
+        checkEq("a {b|_}. c", Seq("a b . c", "a . c"))
+        checkEq("""a {/abc.*/|\{\_\}} c""", Seq("a /abc.*/ c", "a {_} c"))
+        checkEq("""{`a`|\`a\`}""", Seq("`a`", """\`a\`"""))
+        checkEq("""a {/abc.\{\}*/|/d/} c""", Seq("a /abc.{}*/ c", "a /d/ c"))
+        checkEq("""a .{b\,  |_}. c""", Seq("a . b, . c", "a . . c"))
+        checkEq("a {{b|c}|_}.", Seq("a .", "a b .", "a c ."))
+        checkEq("a {{{<C>}}|_} c", Seq("a aaa bbb z c", "a aaa bbb w c", "a c"))
+        checkEq("a {b|_}", Seq("a b", "a"))
+        checkEq("a {b|_}d", Seq("a b d", "a d"))
+        checkEq("a {b|_} d", Seq("a b d", "a d"))
+        checkEq("a {b|_}       d", Seq("a b d", "a d"))
+        checkEq("a {b}", Seq("a b"))
+        checkEq("a {b} {c|_}", Seq("a b", "a b c"))
+        checkEq("a {{b|c}}", Seq("a b", "a c"))
+        checkEq("a {b|_|{g}[1,2]}", Seq("a", "a b", "a g", "a g g"))
+        checkEq("a {b|_|{//[]{}//}[1,2]}", Seq("a", "a b", "a //[]{}//", "a //[]{}// //[]{}//"))
+        checkEq("a {b|_|{//[]^^// ^^{_}^^}[1,2]}", Seq("a", "a b", "a //[]^^// ^^{_}^^", "a //[]^^// ^^{_}^^ //[]^^// ^^{_}^^"))
+        checkEq("//[a-zA-Z0-9]+//", Seq("//[a-zA-Z0-9]+//"))
+        checkEq("the ^^[internal](id == 'anyWord')^^", Seq("the ^^[internal](id == 'anyWord')^^"))
+        checkEq("{A}[0,1] ^^[internal](id == 'anyWord')^^", Seq("^^[internal](id == 'anyWord')^^", "A ^^[internal](id == 'anyWord')^^"))
+        checkEq("w1 ^^id == 'nlpcraft:num'^^ w2", Seq("w1 ^^id == 'nlpcraft:num'^^ w2"))
+        checkEq("before limit ^^[limitAlias](id == 'nlpcraft:limit')^^", Seq("before limit ^^[limitAlias](id == 'nlpcraft:limit')^^"))
+        checkEq("wrap ^^[wrapLimitAlias](id == 'wrapLimit')^^", Seq("wrap ^^[wrapLimitAlias](id == 'wrapLimit')^^"))
 
         checkError("a {| b")
         checkError("{a}}")
-    }
-
-    /**
-     *
-     * @param txt
-     */
-    private def checkError(txt: String): Unit = {
-        try {
-            parser.expand(txt)
-
-            assert(false)
-        } catch {
-            case e: NCE ⇒
-                println(e.getMessage)
-                assert(true)
-        }
     }
 
     @Test
