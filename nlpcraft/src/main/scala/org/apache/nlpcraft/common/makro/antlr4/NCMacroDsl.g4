@@ -24,7 +24,7 @@ expr
     | expr item
     ;
 item: syn | group;
-syn : (TXT | REGEX_TXT | DSL_TXT); // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
+syn : (TXT | REGEX_TXT | DSL_TXT);
 group: LCURLY list RCURLY MINMAX?;
 list
     : expr
