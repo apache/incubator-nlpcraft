@@ -69,7 +69,7 @@ object NCMacroParser {
   * - '{A|B|_}' denotes either 'A', or 'B' or nothing ('_').
   * - '{A}[1,2]' denotes 'A' or 'A A'.
   * - '{A}[0,1]' denotes 'A' or nothing (just like '{A|_}').
-  * - '\' can be used only for escaping '{}\<>_[]|,' special symbols.
+  * - '\' must be used for escaping any of '{}\<>_[]|,' special symbols.
   *
   * Examples:
   *      "A {B|C}[1,2] D" ⇒ "A B D", "A C D", "A B B D", "A C C D"

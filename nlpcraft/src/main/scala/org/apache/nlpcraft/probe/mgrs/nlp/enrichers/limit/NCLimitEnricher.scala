@@ -48,13 +48,13 @@ object NCLimitEnricher extends NCProbeEnricher {
     // - digits (like `25`),
     // - word numbers (like `twenty two`) or
     // - fuzzy numbers (like `few`).
-    private final val CD = "[CD]"
+    private final val CD = "'CD'"
 
     // Possible elements:
-    // - Any macros,
-    // - Special symbol CD (which designates obvious number or fuzzy number word)
+    // - Any macros.
+    // - Special symbol CD (which designates obvious number or fuzzy number word).
     // - Any simple word.
-    // Note that `CD` is optional (DFLT_LIMIT will be used)
+    // Note that `CD` is optional (DFLT_LIMIT will be used).
     private final val SYNONYMS = Seq(
         s"<TOP_WORDS> {of|_} {$CD|_} {<POST_WORDS>|_}",
         s"$CD of",

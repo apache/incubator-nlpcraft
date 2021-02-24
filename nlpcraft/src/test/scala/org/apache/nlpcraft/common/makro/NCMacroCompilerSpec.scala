@@ -98,6 +98,8 @@ class NCMacroCompilerSpec {
         checkEq("""a {/abc.\{\}*/     |/d/} c""", Seq("""a /abc.\{\}*/ c""", "a /d/ c"))
         checkEq("""a .{b\,  |_}. c""", Seq("""a . b\, . c""", "a . . c"))
         checkEq("a {        {b|c}|_}.", Seq("a .", "a b .", "a c ."))
+        checkEq("°", Seq("°"))
+
     }
 
     @Test
