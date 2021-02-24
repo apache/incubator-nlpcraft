@@ -24,9 +24,8 @@ expr
     | expr item
     ;
 item: syn | group;
-syn : (TXT | INT | REGEX_TXT | DSL_TXT); // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
-group: LCURLY list RCURLY minMax?;
-minMax: LBR INT COMMA INT RBR;
+syn : (TXT | REGEX_TXT | DSL_TXT); // NOTE: since TXT and INT overlap - we catch them both here and resolve in compiler.
+group: LCURLY list RCURLY MINMAX?;
 list
     : expr
     | list VERT expr
@@ -37,16 +36,14 @@ list
 // Lexer.
 LCURLY: '{';
 RCURLY: '}';
-LBR: '[';
-RBR: ']';
 VERT: '|';
 COMMA: ',';
 UNDERSCORE: '_';
 fragment ESC_CHAR: [{}\\_[\]|,];
 fragment ESC: '\\' ESC_CHAR;
 fragment TXT_CHAR
-    : [~!@#$%^&*()+.]
-    | [-=<>/\\;:`'"]
+    : [~!@#$%^&*()+._]
+    | [-=<>/\\;:`'",]
     | '\u00B7'
     | 'A'..'Z'
     | 'a'..'z'
@@ -73,7 +70,7 @@ fragment TXT_CHAR
     | '\uF900'..'\uFDCF'
     | '\uFDF0'..'\uFFFD'
     ; // Ignoring ['\u10000-'\uEFFFF].
-INT: '0' | [1-9][_0-9]*;
+MINMAX: '[' [ 0-9,]+ ']';
 REGEX_TXT: '//' .*? '//';
 DSL_TXT: '^^' .*? '^^';
 TXT: (TXT_CHAR | ESC)+;

@@ -76,18 +76,6 @@ public class NCMacroDslBaseListener implements NCMacroDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMinMax(NCMacroDslParser.MinMaxContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMinMax(NCMacroDslParser.MinMaxContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterList(NCMacroDslParser.ListContext ctx) { }
 	/**
 	 * {@inheritDoc}

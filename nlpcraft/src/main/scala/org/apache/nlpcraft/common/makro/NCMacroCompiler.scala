@@ -49,10 +49,6 @@ object NCMacroCompiler extends LazyLogging {
     class FiniteStateMachine(parser: P, in: String) extends NCMacroDslBaseListener {
         private val stack = new mutable.ArrayStack[StackItem]
 
-        // Current min/max quantifier.
-        private var min = 1
-        private var max = 1
-
         private var expandedSyns: Set[String] = _
 
         /**
@@ -119,7 +115,36 @@ object NCMacroCompiler extends LazyLogging {
 
         override def exitGroup(ctx: NCMacroDslParser.GroupContext): Unit = {
             implicit val evidence: ParserRuleContext = ctx
-            
+
+            var min = 1
+            var max = 1
+
+            if (ctx.MINMAX() != null) {
+                var s = ctx.MINMAX().getText
+                val orig = s
+
+                s = s.substring(1, s.length - 1)
+
+                val comma = s.indexOf(',')
+
+                if (comma == -1 || comma == 0 || comma == s.length - 1)
+                    throw compilerError(s"Invalid min/max quantifier: $orig")
+
+                try
+                    min = java.lang.Integer.parseInt(s.substring(0, comma).trim)
+                catch {
+                    case _: NumberFormatException ⇒ throw compilerError(s"Invalid min quantifier: $orig")
+                }
+                try
+                    max = java.lang.Integer.parseInt(s.substring(comma + 1).trim)
+                catch {
+                    case _: NumberFormatException ⇒ throw compilerError(s"Invalid max quantifier: $orig")
+                }
+
+                if (min < 0 || max < 0 || min > max || max == 0)
+                    throw compilerError(s"[$min,$max] quantifiers should satisfy 'max >= min, min >= 0, max > 0'.")
+            }
+
             val grp = stack.pop()
             
             // Remove dups.
@@ -134,16 +159,11 @@ object NCMacroCompiler extends LazyLogging {
             prn.buffer = prn.buffer.flatMap {
                 s ⇒ (for (z ← grp.buffer; i ← min to max) yield concat(s, s"$z " * i).trim).toSet
             }
-
-            // Reset min max.
-            min = 1
-            max = 1
         }
-    
+
         override def exitSyn(ctx: P.SynContext): Unit = {
             val syn = (
                 if (ctx.TXT() != null) ctx.TXT()
-                else if (ctx.INT() != null) ctx.INT()
                 else if (ctx.REGEX_TXT() != null) ctx.REGEX_TXT()
                 else ctx.DSL_TXT()
             ).getText
@@ -160,27 +180,6 @@ object NCMacroCompiler extends LazyLogging {
 
         override def exitMakro(ctx: P.MakroContext): Unit =
             expandedSyns = stack.pop().buffer.map(_.trim).toSet
-    
-        override def exitMinMax(ctx: P.MinMaxContext): Unit = {
-            implicit val evidence: ParserRuleContext = ctx
-            
-            val minStr = ctx.getChild(1).getText.trim
-            val maxStr = ctx.getChild(3).getText.trim
-    
-            try
-                min = java.lang.Integer.parseInt(minStr)
-            catch {
-                case _: NumberFormatException ⇒ throw compilerError(s"Invalid min quantifier: $minStr")
-            }
-            try
-                max = java.lang.Integer.parseInt(maxStr)
-            catch {
-                case _: NumberFormatException ⇒ throw compilerError(s"Invalid max quantifier: $maxStr")
-            }
-            
-            if (min < 0 || max < 0 || min > max || max == 0)
-                throw compilerError(s"[$min,$max] quantifiers should satisfy 'max >= min, min >= 0, max > 0'.")
-        }
     
         /**
          *

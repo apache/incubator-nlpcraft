@@ -112,7 +112,6 @@ class NCMacroCompilerSpec {
         checkError("{A}[2.33, 1]")
         checkError("{A}[1:1]")
         checkError("{A}[1 1]")
-        checkError("{A|__}")
         checkError("A|__}")
         checkError("{A|__} }}")
         checkError("} {A|_}")

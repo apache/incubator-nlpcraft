@@ -58,16 +58,6 @@ public interface NCMacroDslListener extends ParseTreeListener {
 	 */
 	void exitGroup(NCMacroDslParser.GroupContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCMacroDslParser#minMax}.
-	 * @param ctx the parse tree
-	 */
-	void enterMinMax(NCMacroDslParser.MinMaxContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NCMacroDslParser#minMax}.
-	 * @param ctx the parse tree
-	 */
-	void exitMinMax(NCMacroDslParser.MinMaxContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NCMacroDslParser#list}.
 	 * @param ctx the parse tree
 	 */
