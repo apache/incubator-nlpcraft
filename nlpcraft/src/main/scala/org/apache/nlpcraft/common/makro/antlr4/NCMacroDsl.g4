@@ -37,8 +37,8 @@ list
 // Lexer.
 LCURLY: '{';
 RCURLY: '}';
-LBR: '[';
-RBR: ']';
+LBR: '<';
+RBR: '>';
 VERT: '|';
 COMMA: ',';
 UNDERSCORE: '_';
@@ -46,7 +46,7 @@ fragment ESC_CHAR: [{}\\<>_[\]|,];
 fragment ESC: '\\' ESC_CHAR;
 fragment TXT_CHAR
     : [~!@#$%^&*()+.]
-    | [-=<>/\\;:`'"]
+    | [-=[\]/\\;:`'"]
     | '\u00B7'
     | 'A'..'Z'
     | 'a'..'z'
