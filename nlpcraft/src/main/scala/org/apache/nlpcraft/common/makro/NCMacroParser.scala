@@ -18,13 +18,12 @@
 package org.apache.nlpcraft.common.makro
 
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.common.util.NCUtils._
-
 import scala.collection.JavaConverters._
 import scala.collection._
 
 object NCMacroParser {
     private final val CHARS = "[A-Za-z0-9-_]+"
+    private final val ESC_CHARS = """{}\<>_[]|,"""
     private final val MACRO_REGEX = s"<$CHARS>".r
     private final val BROKEN_MACRO_REGEX1 = s"<$CHARS".r
     private final val BROKEN_MACRO_REGEX2 = s"$CHARS>".r
@@ -66,17 +65,20 @@ object NCMacroParser {
   *
   * Syntax:
   * - all macros should start with '<' and end with '>'.
-  * - '{A|B}' denotes either 'A' or 'B'.
-  * - '{A|B|*}' denotes either 'A', or 'B' or nothing.
-  * - '\' can be used only for escaping '{', '}', '|', and '*' special symbols.
+  * - '{A|{B}}' denotes either 'A' or 'B'.
+  * - '{A|B|_}' denotes either 'A', or 'B' or nothing ('_').
+  * - '{A}[1,2]' denotes 'A' or 'A A'.
+  * - '{A}[0,1]' denotes 'A' or nothing (just like '{A|_}').
+  * - '\' should be used for escaping any of '{}\_[]|,' special symbols.
+  * - Excessive pairs'{' and '}' are ignored
   *
   * Examples:
-  *      "A {B|C} D" ⇒ "A B D", "A C D"
+  *      "A {B|C}[1,2] D" ⇒ "A B D", "A C D", "A B B D", "A C C D"
   *      "A \{B\|C\} D" ⇒ "A {B|C} D"
-  *      "A {B|*} D" ⇒ "A D", "A B D"
-  *      "A {*|B|C} D" ⇒ "A D", "A B D", "A C D"
+  *      "A {B|_} D" ⇒ "A D", "A B D"
+  *      "A {_|B|C} {D}[1,2]" ⇒ "A D", "A B D", "A C D", "A D D", "A B D D", "A C D D"
   *      "A <MACRO>" ⇒ "A ..." based on <MACRO> content.
-  *      "A {<MACRO>|*}" ⇒ "A", "A ..." based on <MACRO> content.
+  *      "A {<MACRO>|_}" ⇒ "A", "A ..." based on <MACRO> content.
   *
   * NOTE: Macros cannot be recursive.
   * NOTE: Macros and '{...}' options groups can be nested.
@@ -84,218 +86,21 @@ object NCMacroParser {
 class NCMacroParser {
     import NCMacroParser._
     
-    // Maximum number of expanded strings.
-    private final val MAX_LIMIT = 500000
-    
-    // Macros.
     private val macros = new java.util.concurrent.ConcurrentHashMap[String, String]().asScala
     
     /**
-      * A token matched in the input string for LR parser.
+      * Trims all duplicate spaces.
       *
-      * @param head Token text.
-      * @param tail Remaining part of the input string, if any.
+      * @param s
+      * @return
       */
-    case class Token(head: String, tail: String)
-    
-    /**
-      * Splits '{...}' option group into sequence of token. Note that
-      * '|' separator will be excluded from tokens.
-      *
-      * @param txt Option group text to parse.
-      */
-    @throws[NCE]
-    private[makro] def parseGroup(txt: String): Seq[Token] = {
-        require(txt != null)
-        
-        var s = txt
-        val last = s.length() - 1
-        
-        if (s.head != '{' || s.charAt(last) != '}')
-            throw new NCE(s"Invalid option group: $txt")
-        
-        s = s.substring(1, last) // Trim out opening '{' and closing '}'.
-        
-        /**
-          *
-          * @param s Text to parse to get next group item.
-          */
-        def nextGroupItem(s: String): Option[Token] = {
-            if (s.isEmpty)
-                None
-            else {
-                var i = 0
-                val len = s.length()
-                var found = false
-                var isEscape = false
-                var depth = 0
-                
-                while (i < len && !found) {
-                    val ch = s.charAt(i)
-    
-                    if (ch == '\\' && !isEscape)
-                        isEscape = true
-                    else {
-                        if (!isEscape)
-                            ch match {
-                                case '}' ⇒ depth -= 1
-                                case '{' ⇒ depth += 1
-                                case '|' ⇒ if (depth == 0) found = true
-                                case _ ⇒
-                            }
-        
-                        isEscape = false
-                    }
-    
-                    i += 1
-                }
-                
-                if (depth != 0)
-                    throw new NCE(s"Uneven curly brackets: $txt")
-                if (isEscape)
-                    throw new NCE(s"Incomplete '\\' escape usage: $txt")
-                
-                if (!found)
-                    Some(Token(s.substring(0), ""))
-                else
-                    Some(Token(s.substring(0, i - 1), s.substring(i)))
-            }
-        }
-        
-        var toks = Seq.empty[Token]
-        
-        var item = nextGroupItem(s)
-        
-        while (item.isDefined) {
-            toks :+= item.get
-            
-            item = nextGroupItem(item.get.tail)
-        }
-        
-        toks
-    }
-    
-    /**
-      * Gets the next lexical token.
-      *
-      * Special symbols are: ' ', '{', '}', '*' and '|'. Use `\` for escaping.
-      *
-      * @param s Input string to get the next lexical token from.
-      */
-    @throws[NCE]
-    private[makro] def nextToken(s: String): Option[Token] = {
-        require(s != null)
-        
-        def procMarker(fix: String): Option[Token] = {
-            if (s.startsWith(fix))
-                s.substring(fix.length).indexOf(fix) match {
-                    case -1 ⇒ throw new NCE(s"Uneven '$fix' marker: $s")
-                    case i ⇒
-                        val tail = i + 2 * fix.length
-    
-                        Some(Token(s.substring(0, tail), s.substring(tail)))
-                }
-            else
-                None
-        }
-        
-        if (s.isEmpty)
-            None
-        else {
-            // Check prefixes first.
-            val tok = procMarker(DSL_FIX) match {
-                case t: Some[Token] ⇒ t
-                case None ⇒ procMarker(REGEX_FIX) match {
-                    case t: Some[Token] ⇒ t
-                    case None ⇒ None
-                }
-            }
-            
-            if (tok.isDefined)
-                tok
-            else {
-                val len = s.length
-                var found = false
-                var isEscape = false
-                
-                if (s.startsWith(DSL_FIX)) {
-                    val i = s.substring(DSL_FIX.length).indexOf(DSL_FIX)
-                    
-                    if (i == -1)
-                        throw new NCE(s"Uneven '$DSL_FIX' marker: $s")
-                    
-                    val tail = i + 2 * DSL_FIX.length
-        
-                    Some(Token(s.substring(0, tail), s.substring(tail)))
-                }
-                else if (s.charAt(0) == '{') { // Option group.
-                    var depth = 0
-                    var i = 1
-                    
-                    while (i < len && !found) {
-                        val ch = s.charAt(i)
-        
-                        if (ch == '\\' && !isEscape)
-                            isEscape = true
-                        else {
-                            if (!isEscape)
-                                ch match {
-                                    case '}' ⇒ if (depth == 0) found = true else depth -= 1
-                                    case '{' ⇒ depth += 1
-                                    case _ ⇒
-                                }
-            
-                            isEscape = false
-                        }
-        
-                        i += 1
-                    }
-                    
-                    if (depth != 0 || !found)
-                        throw new NCE(s"Uneven curly brackets: $s")
-                    if (isEscape)
-                        throw new NCE(s"Incomplete '\\' escape usage: $s")
-                    
-                    Some(Token(s.substring(0, i), s.substring(i)))
-                }
-                else { // Not an option group.
-                    var i = 0
-                    
-                    while (i < len && !found) {
-                        val ch = s.charAt(i)
-                        
-                        if (ch == '\\' && !isEscape)
-                            isEscape = true
-                        else {
-                            if (!isEscape)
-                                ch match {
-                                    case '|' | '*' | '}' ⇒ throw new NCE(s"Suspicious '$ch' at pos $i: '$s'")
-                                    case '{' ⇒ found = true // Found start of the option group.
-                                    case _ ⇒
-                                }
-                            
-                            isEscape = false
-                        }
-        
-                        i += 1
-                    }
-                    
-                    if (isEscape)
-                        throw new NCE(s"Incomplete '\\' escape usage: $s")
-    
-                    if (!found)
-                        Some(Token(s.substring(0), ""))
-                    else
-                        Some(Token(s.substring(0, i - 1), s.substring(i - 1)))
-                }
-            }
-        }
-    }
-
-    // Trims all duplicate spaces.
     private def trimDupSpaces(s: String) = U.splitTrimFilter(s, " ").mkString(" ")
     
-    // Processes '\' escapes for '{', '}', '|', and '*'.
+    /**
+      *
+      * @param s
+      * @return
+      */
     private def processEscapes(s: String): String = {
         val len = s.length()
         val buf = new StringBuilder()
@@ -308,7 +113,7 @@ class NCMacroParser {
             if (ch == '\\' && !isEscape)
                 isEscape = true
             else {
-                if (isEscape && ch != '|' && ch != '}' && ch != '{' && ch != '*')
+                if (isEscape && !ESC_CHARS.contains(ch))
                     buf += '\\'
                 
                 buf += ch
@@ -320,51 +125,6 @@ class NCMacroParser {
         }
         
         buf.toString
-    }
-    
-    /**
-      * LR-parser.
-      *
-      * @param s Text to expand.
-      */
-    @throws[NCE]
-    private def expand0(s: String): Seq[String] = {
-        require(s != null)
-        
-        if (s.isEmpty)
-            Seq.empty
-        else if (s.head == '/' && s.last == '/') // Don't macro-process regex.
-            Seq(s)
-        else {
-    
-            /**
-              * Mixes (multiplies) given string with tails.
-              *
-              * @param s     String to mix in.
-              * @param tails Sequence of tail strings (potentially empty).
-              */
-            def mixTails(s: String, tails: Seq[String]): Seq[String] =
-                if (tails.isEmpty) Seq(s)
-                else tails.map(t ⇒ s + t)
-    
-            val res = nextToken(s) match {
-                case None ⇒ Seq.empty
-                case Some(tok) ⇒
-                    val tails = expand0(tok.tail)
-                    if (tok.head.head == '{') // Option group.
-                        parseGroup(tok.head).flatMap(x ⇒
-                            if (x.head == "*")
-                                mixTails("", tails)
-                            else
-                                expand0(x.head).flatMap(z ⇒ mixTails(z, tails))
-                        )
-                    else // Plain text.
-                        mixTails(tok.head, tails)
-            }
-            if (res.lengthCompare(MAX_LIMIT) > 0)
-                throw new NCE(s"Maximum expansion length reached: $MAX_LIMIT")
-            res
-        }
     }
     
     /**
@@ -381,7 +141,7 @@ class NCMacroParser {
         // Grab 1st macro match, if any.
         var m = MACRO_REGEX.findFirstMatchIn(s)
         
-        // Expand macros (supporting nesting).
+        // Expand macros including nested ones.
         while (m.isDefined) {
             val ms = m.get.toString()
             
@@ -397,11 +157,20 @@ class NCMacroParser {
         
         // Check for potentially invalid macros syntax.
         if (BROKEN_MACRO_REGEX1.findFirstIn(s).isDefined || BROKEN_MACRO_REGEX2.findFirstIn(s).isDefined)
-            throw new NCE(s"Likely invalid macro: $txt")
+            throw new NCE(s"Suspicious or invalid macro in: $txt")
         
-        U.distinct(expand0(s).toList map trimDupSpaces map processEscapes)
+        U.distinct(NCMacroCompiler.compile(s).toList map trimDupSpaces map processEscapes)
     }
-    
+
+    /**
+     * Expand given string.
+     *
+     * @param txt Text to expand.
+     */
+    @throws[NCE]
+    def expandJava(txt: String): java.util.Set[String] =
+        expand(txt).toSet.asJava
+
     /**
       * Checks macro name.
       *
@@ -410,7 +179,7 @@ class NCMacroParser {
     private def checkName(name: String): Unit = {
         if (name.head != '<')
             throw new NCE(s"Missing macro '<' opening: $name")
-        if (name.reverse.head != '>')
+        if (name.last != '>')
             throw new NCE(s"Missing macro '>' closing: $name")
     }
     
@@ -418,7 +187,7 @@ class NCMacroParser {
       * Adds or overrides given macro.
       *
       * @param name Macro name (typically an upper case string).
-      *     It must start with '<' and end with '>'.
+      *     It must start with '&lt;' and end with '&gt;'.
       * @param str Value of the macro (any arbitrary string).
       */
     @throws[NCE]
@@ -453,7 +222,6 @@ class NCMacroParser {
       *
       * @param name Name.
       */
-    def hasMacro(name: String): Boolean = {
+    def hasMacro(name: String): Boolean =
         macros.contains(name)
-    }
 }

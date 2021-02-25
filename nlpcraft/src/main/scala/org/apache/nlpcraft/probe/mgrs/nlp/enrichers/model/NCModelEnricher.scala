@@ -431,10 +431,37 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 "totalJiggledPerms" → permCnt
             )
 
-            val matchCnt = matches.size
+            // Scans by elements that are found with same tokens length.
+            // Inside, for each token we drop all non-optimized combinations.
+            // Example:
+            // 1. element's synonym - 'a b', jiggle factor 4 (default), isPermuteSynonyms 'true' (default)
+            // 2. Request 'a b a b',
+            // Initially found 0-1, 1-2, 2-3, 0-3.
+            // 0-3 will be deleted because for 0 and 3 tokens best variants found for same element with same tokens length.
+            val matchesNorm =
+                matches.
+                flatMap(m ⇒ m.tokens.map(_ → m)).
+                groupBy { case (t, m) ⇒ (m.element.getId, m.length, t) }.
+                flatMap { case (_, seq) ⇒
+                    def perm[T](list: List[List[T]]): List[List[T]] =
+                        list match {
+                            case Nil ⇒ List(Nil)
+                            case head :: tail ⇒ for (h ← head; t ← perm(tail)) yield h :: t
+                        }
+
+                    // Optimization by sparsity sum for each tokens set for one element found with same tokens count.
+                    perm(
+                        seq.groupBy { case (tok, _) ⇒ tok }.
+                        map { case (_, seq) ⇒ seq.map { case (_, m) ⇒ m} .toList }.toList
+                    ).minBy(_.map(_.sparsity).sum)
+                }.
+                toSeq.
+                distinct
+
+            val matchCnt = matchesNorm.size
 
             // Add notes for all remaining (non-intersecting) matches.
-            for ((m, idx) ← matches.zipWithIndex) {
+            for ((m, idx) ← matchesNorm.zipWithIndex) {
                 if (DEEP_DEBUG)
                     logger.trace(
                         s"Model '${mdl.model.getId}' element found (${idx + 1} of $matchCnt) [" +

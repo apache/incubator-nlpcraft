@@ -986,8 +986,8 @@ public interface NCModelView extends NCMetadata {
      *         {
      *             "id": "wt:hist",
      *             "synonyms": [
-     *                 "{&lt;WEATHER&gt;|*} &lt;HISTORY&gt;",
-     *                 "&lt;HISTORY&gt; {&lt;OF&gt;|*} &lt;WEATHER&gt;"
+     *                 "{&lt;WEATHER&gt;|_} &lt;HISTORY&gt;",
+     *                 "&lt;HISTORY&gt; {&lt;OF&gt;|_} &lt;WEATHER&gt;"
      *             ],
      *             "description": "Past weather conditions."
      *         }

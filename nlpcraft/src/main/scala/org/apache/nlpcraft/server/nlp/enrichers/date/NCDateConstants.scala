@@ -58,11 +58,11 @@ private[date] object NCDateConstants {
     val FOR: Seq[String] = Seq(
         "for",
         "during",
-        "during {the|*} {time|*} period of",
+        "during {the|_} {time|_} period of",
         "within",
-        "within {the|*} {time|*} period of",
+        "within {the|_} {time|_} period of",
         "of",
-        "for {the|*} {time|*} period of"
+        "for {the|_} {time|_} period of"
     ).flatMap(parser.expand)
 
     val AGO: Seq[String] = Seq(
@@ -116,8 +116,8 @@ private[date] object NCDateConstants {
     // 'dd' will be duplicated as 'd'
     // 'dd' will be duplicated as 'dth' (st, rd)
     val YEAR_MONTH_DAY_COMMON_1: Seq[String] = Seq(
-        "{yy|yyyy} dd {'of'|*} {MMMM|MMM}",
-        "dd {'of'|*} {MMMM|MMM} {'of'|*} yyyy"
+        "{yy|yyyy} dd {'of'|_} {MMMM|MMM}",
+        "dd {'of'|_} {MMMM|MMM} {'of'|_} yyyy"
     ).flatMap(parser.expand)
 
     // 'dd' will be duplicated as 'd'.
@@ -162,7 +162,7 @@ private[date] object NCDateConstants {
     // 'dd' will be duplicated as 'd'
     // 'dd' will be duplicated as 'dth' (st, rd)
     val MONTH_DAY_COMMON_1: Seq[String] = Seq(
-        "dd {'of'|*} {MMMM|MMM}"
+        "dd {'of'|_} {MMMM|MMM}"
     ).flatMap(parser.expand)
 
     // 'dd' will be duplicated as 'd'.
@@ -179,12 +179,12 @@ private[date] object NCDateConstants {
         )
 
     val MONTH_YEAR_COMMON: Seq[String] = Seq(
-        "{'month of'|'month'|*} {MMMM|MMM} {'of'|'year'|'of year'|'year of'|*} {yy|yyyy} {'year'|*}",
+        "{'month of'|'month'|_} {MMMM|MMM} {'of'|'year'|'of year'|'year of'|_} {yy|yyyy} {'year'|_}",
         "yyyy {MMMM|MMM}",
-        "{'month of'|'month'|*} {MMMMyyyy|MMMyyyy|MMMMyy|MMMyy}",
-        "{'month of'|'month'|*} {yyyyMMMM|yyyyMMM|yyMMMM|yyMMM}",
-        "{'month of'|'month'|*} {yyyyMMMM|yyyyMMM|yyMMMM|yyMMM}",
-        "{'month of'|'month'|*} {MM.yyyy|MM/yyyy|MM-yyyy|yyyy.MM|yyyy/MM|yyyy-MM}"
+        "{'month of'|'month'|_} {MMMMyyyy|MMMyyyy|MMMMyy|MMMyy}",
+        "{'month of'|'month'|_} {yyyyMMMM|yyyyMMM|yyMMMM|yyMMM}",
+        "{'month of'|'month'|_} {yyyyMMMM|yyyyMMM|yyMMMM|yyMMM}",
+        "{'month of'|'month'|_} {MM.yyyy|MM/yyyy|MM-yyyy|yyyy.MM|yyyy/MM|yyyy-MM}"
     ).flatMap(parser.expand)
 
     val MONTH_YEAR_COUNTRY: Map[NCDateFormatType, Seq[String]] =
@@ -195,7 +195,7 @@ private[date] object NCDateConstants {
         ).map { case (typ, seq) ⇒ typ → seq.flatMap(parser.expand) }
 
     val YEAR: Seq[String] = Seq(
-        "'year' {'of'|*} {yyyy|yy}",
+        "'year' {'of'|_} {yyyy|yy}",
         "{yy|yyyy} 'year'",
         "yyyy"
     ).flatMap(parser.expand)

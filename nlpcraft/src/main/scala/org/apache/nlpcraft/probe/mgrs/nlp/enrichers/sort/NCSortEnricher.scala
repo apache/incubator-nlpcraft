@@ -80,8 +80,8 @@ object NCSortEnricher extends NCProbeEnricher {
         "asc" → true,
         "descending" → false,
         "desc" → false,
-        "{in|by|from} {top down|descending} {order|way|fashion|*}" → false,
-        "{in|by|from} {bottom up|ascending} {order|way|fashion|*}" → true
+        "{in|by|from} {top down|descending} {order|way|fashion|_}" → false,
+        "{in|by|from} {bottom up|ascending} {order|way|fashion|_}" → true
     )
 
     case class NoteData(note: String, indexes: Seq[Int]) {

@@ -63,7 +63,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "id": "phone:act",
      *             "description": "Phone action.",
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ]
      *         }
      *     ]
@@ -97,7 +97,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "description": "Phone action.",
      *             "groups": ["group1", "group2"]
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ]
      *         }
      *     ]
@@ -138,7 +138,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "id": "phone:act",
      *             "description": "Phone action.",
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ],
      *             "metadata": {
      *                 "str": "val1",
@@ -167,7 +167,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "id": "phone:act",
      *             "description": "Phone action.",
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ]
      *         }
      *     ]
@@ -192,7 +192,7 @@ public interface NCElement extends NCMetadata, Serializable {
      * <ul>
      *      <li>
      *          Set of general synonyms:
-     *          <code>{transportation|transport|*} {vehicle|car|sedan|auto|automobile|suv|crossover|coupe|truck}</code>
+     *          <code>{transportation|transport|_} {vehicle|car|sedan|auto|automobile|suv|crossover|coupe|truck}</code>
      *      </li>
      *      <li>Set of values:
      *          <ul>
@@ -223,7 +223,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "id": "phone:act",
      *             "description": "Phone action.",
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ],
      *             "values": [
      *                  {
@@ -254,7 +254,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "description": "Phone action.",
      *             "parentId": "parent",
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ]
      *         }
      *     ]
@@ -281,7 +281,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "id": "phone:act",
      *             "description": "Phone action.",
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ]
      *         }
      *     ]
@@ -309,7 +309,7 @@ public interface NCElement extends NCMetadata, Serializable {
      *             "id": "phone:act",
      *             "description": "Phone action.",
      *             "synonyms": [
-     *                 "{give|*} {call|phone|ring|dial|dial up|ping|contact}"
+     *                 "{give|_} {call|phone|ring|dial|dial up|ping|contact}"
      *             ],
      *             "values": [
      *                  {

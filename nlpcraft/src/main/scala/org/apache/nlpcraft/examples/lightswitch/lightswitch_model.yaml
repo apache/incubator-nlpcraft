@@ -25,16 +25,20 @@ macros:
   - name: "<KILL>"
     macro: "{shut|kill|stop|eliminate}"
   - name: "<ENTIRE_OPT>"
-    macro: "{entire|full|whole|total|*}"
+    macro: "{entire|full|whole|total|_}"
+  - name: "<FLOOR_OPT>"
+    macro: "{upstairs|downstairs|{1st|2nd|3rd|4th|5th|top|ground} floor|_}"
+  - name: "<TYPE>"
+    macro: "{room|closet|attic|loft|{store|storage} {room|_}}"
   - name: "<LIGHT>"
-    macro: "{all|*} {it|them|light|illumination|lamp|lamplight}"
+    macro: "{all|_} {it|them|light|illumination|lamp|lamplight}"
 enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
 elements:
   - id: "ls:loc"
     description: "Location of lights."
     synonyms:
-      - "<ENTIRE_OPT> {upstairs|downstairs|*} {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} room}"
-      - "<ENTIRE_OPT> {upstairs|downstairs|*} {master|kid|children|child|guest|*} {bedroom|bathroom|washroom|storage} {closet|*}"
+      - "<ENTIRE_OPT> <FLOOR_OPT> {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} <TYPE>}"
+      - "<ENTIRE_OPT> <FLOOR_OPT> {master|kid|children|child|guest|_} {bedroom|bathroom|washroom|storage} {<TYPE>|_}"
       - "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
 
   - id: "ls:on"
@@ -42,7 +46,7 @@ elements:
       - "act"
     description: "Light switch ON action."
     synonyms:
-      - "<ACTION> {on|up|*} <LIGHT> {on|up|*}"
+      - "<ACTION> {on|up|_} <LIGHT> {on|up|_}"
       - "<LIGHT> {on|up}"
 
   - id: "ls:off"

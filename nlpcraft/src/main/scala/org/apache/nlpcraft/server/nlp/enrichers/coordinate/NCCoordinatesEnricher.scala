@@ -43,8 +43,8 @@ object NCCoordinatesEnricher extends NCServerEnricher {
 
         Seq(
             "°",
-            "{exact|approximate|*} {latitude|lat|longitude|lon}",
-            "{following|*} {geo|*} coordinates {data|info|information|*}"
+            "{exact|approximate|_} {latitude|lat|longitude|lon}",
+            "{following|_} {geo|_} coordinates {data|info|information|_}"
         ).flatMap(p.expand).map(NCNlpCoreManager.stem)
     }
 

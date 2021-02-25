@@ -66,6 +66,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
     @volatile private var embeddedCbs: mutable.Set[EMBEDDED_CB] = _
 
+    private val startMs = new ThreadLocal[Long]()
+
     private object Config extends NCConfigurable {
         final private val pre = "nlpcraft.probe"
 
@@ -161,6 +163,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             "usrId" → usrId,
             "mdlId" → mdlId
         )
+
+        startMs.set(System.currentTimeMillis())
     
         try
             ask0(
@@ -330,19 +334,29 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             }
 
             NCConnectionManager.send(msg, span)
+
+            val durMs = System.currentTimeMillis() - startMs.get
             
             if (errMsg.isEmpty)
                 logger.info(s"" +
                     s"\n" +
                     s"${g("|")}\n" +
-                    s"${g("|")} ${bo(g("SUCCESS"))} result sent back to server [srvReqId=${rv(g(srvReqId))}, type=${resType.getOrElse("")}]\n" +
+                    s"${g("|")} ${bo(g("SUCCESS"))} result sent back to server [" +
+                        s"srvReqId=${rv(g(srvReqId))}, " +
+                        s"type=${resType.getOrElse("")}, " +
+                        s"dur=${durMs}ms" +
+                    s"]\n" +
                     s"${g("|")}"
                 )
             else
                 logger.info(s"" +
                     s"\n" +
                     s"${r("|")}\n" +
-                    s"${r("|")} ${bo(r("REJECT"))} result sent back to server [srvReqId=${rv(g(srvReqId))}, response=${errMsg.get}]\n" +
+                    s"${r("|")} ${bo(r("REJECT"))} result sent back to server [" +
+                        s"srvReqId=${rv(g(srvReqId))}, " +
+                        s"response=${errMsg.get}, " +
+                        s"dur=${durMs}ms" +
+                    s"]\n" +
                     s"${r("|")}"
                 )
         }
@@ -618,9 +632,14 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
     
         val solverIn = new NCIntentSolverInput(ctx)
 
+        val x = startMs.get()
+
         // Execute model query asynchronously.
         U.asFuture(
             _ ⇒ {
+                // Retain start timestamp.
+                startMs.set(x)
+
                 var res = mdl.model.onContext(ctx)
     
                 start = System.currentTimeMillis()

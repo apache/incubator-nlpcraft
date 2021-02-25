@@ -18,87 +18,87 @@
 package org.apache.nlpcraft.common.makro
 
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.model.NCMacroProcessor
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 import scala.compat.Platform._
-import scala.util.control.Exception._
+import scala.collection.JavaConverters._
 
 /**
   * Tests for text parser.
   */
 class NCMacroParserSpec  {
-    private val parser = NCMacroParser(
-        "<A>" → "aaa",
-        "<B>" → "<A> bbb",
-        "<C>" → "<A> bbb {z|w}"
-    )
+    private val parser = new NCMacroProcessor()
+
+    parser.addMacro("<A>", "aaa")
+    parser.addMacro("<B>", "<A> bbb")
+    parser.addMacro("<C>", "<A> bbb {z|w}")
+
     
     // Add macros for testing...
     parser.addMacro("<OF>", "{of|for|per}")
     parser.addMacro("<QTY>", "{number|tally|count|quantity|amount}")
-    parser.addMacro("<NUM>", "{overall|total|grand total|entire|complete|full|*} <QTY>")
-    parser.addMacro("<WEBSITE>", "{html|*} {site|website|web site|web-site|web property}")
-    parser.addMacro("<BY>", "{segmented|grouped|combined|arranged|organized|categorized|*} {for|by|over|along|over by}")
+    parser.addMacro("<NUM>", "{overall|total|grand total|entire|complete|full|_} <QTY>")
+    parser.addMacro("<WEBSITE>", "{html|_} {site|website|web site|web-site|web property}")
+    parser.addMacro("<BY>", "{segmented|grouped|combined|arranged|organized|categorized|_} {for|by|over|along|over by}")
     parser.addMacro("<RATE>", "{rate|percentage|speed|momentum|frequency}")
     parser.addMacro("<AVG>", "{avg|average} <QTY>")
-    parser.addMacro("<ID>", "{unique|*} {id|guid|identifier|identification} {number|*}")
-    parser.addMacro("<USER>", "{{<WEBSITE>}|web|*} {user|visitor}")
-    parser.addMacro("<SES>", "{{<WEBSITE>}|web|*} {session|visit}")
-    parser.addMacro("<DCM>", "{double click|double-click|doubleclick|dcm} {manager|*}")
-    parser.addMacro("<PAGE>", "{{<WEBSITE>}|*} {web page|web-page|webpage|page} {path|*}")
+    parser.addMacro("<ID>", "{unique|_} {id|guid|identifier|identification} {number|_}")
+    parser.addMacro("<USER>", "{{<WEBSITE>}|web|_} {user|visitor}")
+    parser.addMacro("<SES>", "{{<WEBSITE>}|web|_} {session|visit}")
+    parser.addMacro("<DCM>", "{double click|double-click|doubleclick|dcm} {manager|_}")
+    parser.addMacro("<PAGE>", "{{<WEBSITE>}|_} {web page|web-page|webpage|page} {path|_}")
     parser.addMacro("<CTR>", "{ctr|click-through-rate|{click through|click-through} <RATE>}")
-    parser.addMacro("<URL>", "{{uniform|*} resource {locator|identifier}|{{<PAGE>}|*} {link|*} {uri|url|address}}")
+    parser.addMacro("<URL>", "{{uniform|_} resource {locator|identifier}|{{<PAGE>}|_} {link|_} {uri|url|address}}")
     parser.addMacro("<METRICS_A>", "{analytics|statistics|measurements|analysis|report|efficiency|performance}")
     parser.addMacro("<METRICS_B>", "{metrics|data|info|information|facts}")
     parser.addMacro("<METRICS>","{<METRICS_A>|<METRICS_B>|<METRICS_A> <METRICS_B>|<METRICS_B> <METRICS_A>}")
-    
-    private val ignoreNCE = ignoring(classOf[NCE])
-    
-    /**
-      *
-      * @param txt Text to find next token in.
-      * @param tokHead Expected head value of the token.
-      * @param tokTail Expected tail value of the token.
-      */
-    def testToken(txt: String, tokHead: String, tokTail: String): Unit = {
-        val tok = parser.nextToken(txt)
-        
-        assertTrue(tok.get.head == tokHead)
-        assertTrue(tok.get.tail == tokTail)
-    }
-    
+
     /**
       *
       * @param txt Text to expand.
       * @param exp Expected expansion strings.
       */
-    def testParser(txt: String, exp: Seq[String]): Unit =
-        assertTrue(parser.expand(txt).sorted == exp.sorted)
-    
-    /**
-      *
-      * @param txt Group text.
-      * @param grps Sequence of group's elements.
-      */
-    def testGroup(txt: String, grps: Seq[String]): Unit = {
-        val elms = parser.parseGroup(txt)
-        
-        assertTrue(grps == elms.map(_.head))
+    def checkEq(txt: String, exp: Seq[String]): Unit = {
+        val z = parser.expand(txt).asScala.toSeq.sorted
+        val w = exp.sorted
+
+        if (z != w)
+            println(s"$z != $w")
+
+        assertTrue(z == w)
     }
 
-    @Test
+    // @Test
     def testPerformance() {
         val start = currentTime
 
         val N = 50000
 
         for (_ ← 0 to N)
-            parser.expand("a {{{<C>}}|{*}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
+            parser.expand("a {{{<C>}}} {c|d|e|f|g|h|j|k|l|n|m|p|r}")
 
         val duration = currentTime - start
 
-        println(s"${N * 1000 / duration} ops/second.")
+        println(s"${N * 1000 / duration} expansions/sec.")
+    }
+
+
+    /**
+     *
+     * @param txt
+     */
+    private def checkError(txt: String): Unit = {
+        try {
+            parser.expand(txt)
+
+            assert(false)
+        } catch {
+            case e: NCE ⇒
+                println(e.getMessage)
+                assert(true)
+        }
     }
 
     @Test
@@ -122,146 +122,39 @@ class NCMacroParserSpec  {
         parser.expand("<METRICS_B>")
         parser.expand("<METRICS>")
 
-        testParser("<A> {b|*} c", Seq(
-            "aaa b c",
-            "aaa c"
-        ))
+        checkEq("<A> {b|_} c", Seq("aaa b c", "aaa c"))
+        checkEq("<B> {b|_} c", Seq("aaa bbb b c", "aaa bbb c"))
+        checkEq("{tl;dr|j/k}", Seq("tl;dr", "j/k"))
+        checkEq("a {b|_}. c", Seq("a b . c", "a . c"))
+        checkEq("""a {/abc.*/|\{\_\}} c""", Seq("a /abc.*/ c", "a {_} c"))
+        checkEq("""{`a`|\`a\`}""", Seq("`a`", """\`a\`"""))
+        checkEq("""a {/abc.\{\}*/|/d/} c""", Seq("a /abc.{}*/ c", "a /d/ c"))
+        checkEq("""a .{b\,  |_}. c""", Seq("a . b, . c", "a . . c"))
+        checkEq("a {{b|c}|_}.", Seq("a .", "a b .", "a c ."))
+        checkEq("a {{{<C>}}|_} c", Seq("a aaa bbb z c", "a aaa bbb w c", "a c"))
+        checkEq("a {b|_}", Seq("a b", "a"))
+        checkEq("a {b|_}d", Seq("a b d", "a d"))
+        checkEq("a {b|_} d", Seq("a b d", "a d"))
+        checkEq("a {b|_}       d", Seq("a b d", "a d"))
+        checkEq("a {b}", Seq("a b"))
+        checkEq("a {b} {c|_}", Seq("a b", "a b c"))
+        checkEq("a {{b|c}}", Seq("a b", "a c"))
+        checkEq("a {b|_|{g\\}}[1,2]}", Seq("a", "a b", "a g}", "a g} g}"))
+        checkEq("a {b|_|{//[]{}//}[1,2]}", Seq("a", "a b", "a //[]{}//", "a //[]{}// //[]{}//"))
+        checkEq("a {b|_|{//[]^^// ^^{_}^^}[1,2]}", Seq("a", "a b", "a //[]^^// ^^{_}^^", "a //[]^^// ^^{_}^^ //[]^^// ^^{_}^^"))
+        checkEq("//[a-zA-Z0-9]+//", Seq("//[a-zA-Z0-9]+//"))
+        checkEq("the ^^[internal](id == 'anyWord')^^", Seq("the ^^[internal](id == 'anyWord')^^"))
+        checkEq("{A}[0,1] ^^[internal](id == 'anyWord')^^", Seq("^^[internal](id == 'anyWord')^^", "A ^^[internal](id == 'anyWord')^^"))
+        checkEq("w1 ^^id == 'nlpcraft:num'^^ w2", Seq("w1 ^^id == 'nlpcraft:num'^^ w2"))
+        checkEq("before limit ^^[limitAlias](id == 'nlpcraft:limit')^^", Seq("before limit ^^[limitAlias](id == 'nlpcraft:limit')^^"))
+        checkEq("wrap ^^[wrapLimitAlias](id == 'wrapLimit')^^", Seq("wrap ^^[wrapLimitAlias](id == 'wrapLimit')^^"))
 
-        testParser("<B> {b|*} c", Seq(
-            "aaa bbb b c",
-            "aaa bbb c"
-        ))
-
-        testParser("{tl;dr|j/k}", Seq(
-            "tl;dr",
-            "j/k"
-        ))
-
-        testParser("a {b|*}. c", Seq(
-            "a b. c",
-            "a . c"
-        ))
-
-        testParser("""a {/abc.\*/|\{\*\}} c""", Seq(
-            "a /abc.*/ c",
-            "a {*} c"
-        ))
-    
-        testParser("""{`a`|\`a\`}""", Seq(
-            "`a`",
-            "\\`a\\`"
-        ))
-
-        testParser("""a {/abc.\{\}\*/|/d/} c""", Seq(
-            "a /abc.{}*/ c",
-            "a /d/ c"
-        ))
-
-        testParser("a .{b,  |*}. c", Seq(
-            "a .b, . c",
-            "a .. c"
-        ))
-
-        testParser("a {{b|c}|*}.", Seq(
-            "a .",
-            "a b.",
-            "a c."
-        ))
-
-        testParser("a {{{<C>}}|{*}} c", Seq(
-            "a aaa bbb z c",
-            "a aaa bbb w c",
-            "a c"
-        ))
-
-        testParser("a {b|*}", Seq(
-            "a b",
-            "a"
-        ))
-
-        testParser("a {b|*}d", Seq(
-            "a bd",
-            "a d"
-        ))
-
-        testParser("a {b|*} d", Seq(
-            "a b d",
-            "a d"
-        ))
-
-        testParser("a {b|*}       d", Seq(
-            "a b d",
-            "a d"
-        ))
-
-        testParser("{{{a}}} {b||*|{{*}}||*}", Seq(
-            "a b",
-            "a"
-        ))
-
-        testParser("a {b}", Seq(
-            "a b"
-        ))
-
-        testParser("a {b} {c|*}", Seq(
-            "a b",
-            "a b c"
-        ))
-
-        testParser("a {{b|c}}", Seq(
-            "a b",
-            "a c"
-        ))
-
-        ignoreNCE { testParser("a | b", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a *", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a}}", Seq.empty); assertTrue(false) }
-        ignoreNCE { testParser("a {a|b} *", Seq.empty); assertTrue(false) }
-    }
-
-    @Test
-    def testOptionGroup() {
-        testGroup("{a {b|c} | d}", Seq("a {b|c} ", " d"))
-        testGroup("{a|b}", Seq("a", "b"))
-        testGroup("{a}", Seq("a"))
-        testGroup("{{{a}}}", Seq("{{a}}"))
-        testGroup("{{{a}}|{b}}", Seq("{{a}}", "{b}"))
-        testGroup("{a {c}|b|*}", Seq("a {c}", "b", "*"))
-        testGroup("""{/abc.\*/|\{\*\}}""", Seq("/abc.\\*/", "\\{\\*\\}"))
-
-        ignoreNCE { parser.parseGroup("a"); assertTrue(false) }
-        ignoreNCE { parser.parseGroup("{a"); assertTrue(false) }
-        ignoreNCE { parser.parseGroup("a}"); assertTrue(false) }
-    }
-
-    @Test
-    def testParseTokens() {
-        testToken("""a \* b""", """a \* b""", "")
-        testToken("""a \\\* b""", """a \\\* b""", "")
-        testToken("""a \{\*\*\*\} b""", """a \{\*\*\*\} b""", "")
-        testToken("""a{b\|\*\}|c}""", "a", """{b\|\*\}|c}""")
-        testToken("""/\|\*\{\}/ a {bc|d}""", """/\|\*\{\}/ a """, """{bc|d}""")
-        testToken("{a} b", "{a}", " b")
-        testToken("{a|{c|d}}", "{a|{c|d}}", "")
-        testToken("{a {c|d} xxx {f|g}} b", "{a {c|d} xxx {f|g}}", " b")
-        testToken("c{a}     b", "c", "{a}     b")
-        testToken("{{{a}}}", "{{{a}}}", "")
-        
-        ignoreNCE { parser.nextToken("a } b"); assertTrue(false) }
-        ignoreNCE { parser.nextToken("{c b"); assertTrue(false) }
-        ignoreNCE { parser.nextToken("a | b"); assertTrue(false) }
-        ignoreNCE { parser.nextToken("a |*"); assertTrue(false) }
-        
-        assertTrue(parser.nextToken("").isEmpty)
-        assertTrue(parser.nextToken("     ").isDefined)
+        checkError("a {| b")
+        checkError("{a}}")
     }
 
     @Test
     def testLimit() {
-        ignoreNCE {
-            parser.expand("<METRICS> <USER> <BY> <WEBSITE> <BY> <SES> <BY> <METRICS> <BY> <USER> <BY> <METRICS>")
-
-            assertTrue(false)
-        }
+        checkError("<METRICS> <USER> <BY> <WEBSITE> <BY> <SES> <BY> <METRICS> <BY> <USER> <BY> <METRICS>")
     }
 }

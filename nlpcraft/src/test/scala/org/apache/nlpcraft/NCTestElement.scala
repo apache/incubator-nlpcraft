@@ -21,6 +21,7 @@ import org.apache.nlpcraft.model.NCElement
 
 import java.util
 import scala.collection.JavaConverters._
+import scala.language.implicitConversions
 
 /**
   * Simple test element.

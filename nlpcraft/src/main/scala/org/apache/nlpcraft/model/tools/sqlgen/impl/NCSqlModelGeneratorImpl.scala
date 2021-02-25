@@ -315,7 +315,7 @@ object NCSqlModelGeneratorImpl {
 
         mdl.setMacros(Array(
             new NCMacroJson("<OF>", "{of|for|per}"),
-            new NCMacroJson("<ID>", "{unique|*} {id|identifier}")
+            new NCMacroJson("<ID>", "{unique|_} {id|identifier}")
         ))
         mdl.setAdditionalStopWords(Array())
         mdl.setSuspiciousWords(Array())

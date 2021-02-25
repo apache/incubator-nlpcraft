@@ -102,7 +102,7 @@ macros:
 - name: "<OF>"
   macro: "{of|for|per}"
 - name: "<ID>"
-  macro: "{unique|*} {id|identifier}"
+  macro: "{unique|_} {id|identifier}"
 elements:
 - id: "tbl:region"
   groups:

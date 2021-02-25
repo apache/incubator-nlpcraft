@@ -30,5 +30,5 @@ elements:
   - id: "x:time"
     description: "Date and/or time token indicator."
     synonyms:
-      - "{<CUR>|*} <TIME>"
-      - "what <TIME> {is it now|now|is it|*}"
+      - "{<CUR>|_} <TIME>"
+      - "what <TIME> {is it now|now|is it|_}"

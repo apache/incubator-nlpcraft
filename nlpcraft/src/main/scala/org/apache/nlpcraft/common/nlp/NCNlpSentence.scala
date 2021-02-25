@@ -34,6 +34,54 @@ import scala.language.implicitConversions
 object NCNlpSentence extends LazyLogging {
     implicit def toTokens(x: NCNlpSentence): ArrayBuffer[NCNlpSentenceToken] = x.tokens
 
+    private case class NoteLink(note: String, indexes: Seq[Int])
+    private case class PartKey(id: String, start: Int, end: Int) {
+        private def in(i: Int): Boolean = i >= start && i <= end
+        def intersect(id: String, start: Int, end: Int): Boolean = id == this.id && (in(start) || in(end))
+    }
+
+    private def getLinks(notes: Seq[NCNlpSentenceNote]): Seq[NoteLink] = {
+        val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
+
+        for (n ← notes.filter(n ⇒ n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
+            noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala)
+
+        for (n ← notes.filter(_.noteType == "nlpcraft:sort")) {
+            def add(noteName: String, idxsName: String): Unit = {
+                val names = n(noteName).asInstanceOf[JList[String]]
+                val idxsSeq = n(idxsName).asInstanceOf[JList[JList[Int]]]
+
+                require(names.size() == idxsSeq.size())
+
+                noteLinks ++=
+                    (for ((name, idxs) ← names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
+                        yield NoteLink(name, idxs)
+                    )
+            }
+
+            if (n.contains("subjnotes")) add("subjnotes", "subjindexes")
+            if (n.contains("bynotes")) add("bynotes", "byindexes")
+        }
+
+        noteLinks
+    }
+
+    private def getPartKeys(notes: NCNlpSentenceNote*): Seq[PartKey] =
+        notes.
+            filter(_.isUser).
+            flatMap(n ⇒ {
+                val optList: Option[JList[util.HashMap[String, JSerializable]]] = n.dataOpt("parts")
+
+                optList
+            }).flatMap(_.asScala).
+                map(map ⇒
+                    PartKey(
+                        map.get("id").asInstanceOf[String],
+                        map.get("startcharindex").asInstanceOf[Int],
+                        map.get("endcharindex").asInstanceOf[Int]
+                    )
+                ).distinct
+
     /**
       *
       * @param ns
@@ -509,6 +557,20 @@ class NCNlpSentence(
     private def calcHash(): Int =
         Seq(srvReqId, text, enabledBuiltInToks, tokens).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
 
+    private def addDeleted(sen: NCNlpSentence, dels: Iterable[NCNlpSentenceNote]): Unit =
+        sen.deletedNotes ++= dels.map(n ⇒ {
+            val savedDelNote = n.clone()
+            val savedDelToks = n.tokenIndexes.map(idx ⇒ this(idx).clone())
+
+            val mainNotes = savedDelToks.flatten.filter(n ⇒ n.noteType != "nlpcraft:nlp" && n != savedDelNote)
+
+            // Deleted note's tokens should contains only nlp data and deleted notes.
+            for (savedDelTok ← savedDelToks; mainNote ← mainNotes)
+                savedDelTok.remove(mainNote)
+
+            savedDelNote → savedDelToks
+        })
+
     // Deep copy.
     override def clone(): NCNlpSentence =
         new NCNlpSentence(
@@ -559,45 +621,9 @@ class NCNlpSentence(
         if (!mdl.getAbstractTokens.isEmpty) {
             val notes = ns.flatten
 
-            case class Key(id: String, start: Int, end: Int) {
-                private def in(i: Int): Boolean = i >= start && i <= end
-                def intersect(id: String, start: Int, end: Int): Boolean = id == this.id && (in(start) || in(end))
-            }
 
-            val keys: Seq[Key] =
-                notes.filter(_.isUser).flatMap(n ⇒ {
-                    val optList: Option[JList[util.HashMap[String, JSerializable]]] = n.dataOpt("parts")
-
-                    optList
-                }).flatMap(_.asScala).map(map ⇒ Key(
-                    map.get("id").asInstanceOf[String],
-                    map.get("startcharindex").asInstanceOf[Int],
-                    map.get("endcharindex").asInstanceOf[Int])
-                ).distinct
-
-            case class NoteLink(note: String, indexes: Seq[Int])
-
-            val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
-
-            for (n ← notes.filter(n ⇒ n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
-                noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala)
-
-            for (n ← notes.filter(_.noteType == "nlpcraft:sort")) {
-                def add(noteName: String, idxsName: String): Unit = {
-                    val names = n(noteName).asInstanceOf[JList[String]]
-                    val idxsSeq = n(idxsName).asInstanceOf[JList[JList[Int]]]
-
-                    require(names.size() == idxsSeq.size())
-
-                    noteLinks ++=
-                        (for ((name, idxs) ← names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
-                            yield NoteLink(name, idxs)
-                        )
-                }
-
-                if (n.contains("subjnotes")) add("subjnotes", "subjindexes")
-                if (n.contains("bynotes")) add("bynotes", "byindexes")
-            }
+            val keys = getPartKeys(notes :_*)
+            val noteLinks = getLinks(notes)
 
             notes.filter(n ⇒ {
                 val noteToks = ns.tokens.filter(_.contains(n))
@@ -657,10 +683,53 @@ class NCNlpSentence(
 
         redundant.foreach(this.removeNote)
 
-        val delCombs: Seq[NCNlpSentenceNote] =
+        var delCombs: Seq[NCNlpSentenceNote] =
             getNotNlpNotes(this).
                 flatMap(note ⇒ getNotNlpNotes(this.slice(note.tokenFrom, note.tokenTo + 1)).filter(_ != note)).
                 distinct
+
+        // Optimization. Deletes all wholly swallowed notes.
+        val links = getLinks(this.flatten)
+
+        val swallowed =
+            delCombs.
+                filter(n ⇒ !links.contains(NoteLink(n.noteType, n.tokenIndexes))).
+                filter(getPartKeys(_).isEmpty).
+                flatMap(n ⇒ {
+                    val wIdxs = n.wordIndexes.toSet
+
+                    val owners =
+                        delCombs.
+                            filter(_ != n).
+                            flatMap(n1 ⇒
+                                if (getPartKeys(n1).contains(
+                                    PartKey(
+                                        n.noteType,
+                                        this(n.tokenFrom).startCharIndex,
+                                        this(n.tokenTo).endCharIndex)
+                                    )
+                                )
+                                    Some(n1)
+                                else
+                                    None
+                            )
+
+
+                    if (owners.exists(
+                        o ⇒ {
+                            val oWIdxs = o.wordIndexes.toSet
+
+                            wIdxs == oWIdxs || wIdxs.subsetOf(oWIdxs)
+                        })
+                    )
+                        Some(n)
+                    else
+                        None
+                })
+
+        delCombs = delCombs.filter(p ⇒ !swallowed.contains(p))
+        addDeleted(this, swallowed)
+        swallowed.foreach(this.removeNote)
 
         val toksByIdx: Seq[Seq[NCNlpSentenceNote]] =
             delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
@@ -678,7 +747,13 @@ class NCNlpSentence(
                     (minDelSize to delCombs.size).
                         flatMap(i ⇒
                             delCombs.combinations(i).
-                                filter(delComb ⇒ !toksByIdx.exists(_.count(note ⇒ !delComb.contains(note)) > 1))
+                                filter(delComb ⇒
+                                    !toksByIdx.exists(
+                                        rec ⇒
+                                            rec.size - delCombs.size <= 1 &&
+                                            rec.count(note ⇒ !delComb.contains(note)) > 1
+                                    )
+                                )
                         ).
                         sortBy(_.size).
                         map(_.toSet).
@@ -688,20 +763,7 @@ class NCNlpSentence(
                                 val nsClone = this.clone()
 
                                 // Saves deleted notes for sentence and their tokens.
-                                nsClone.deletedNotes ++= delComb.map(n ⇒ {
-                                    val savedDelNote = n.clone()
-                                    val savedDelToks = n.tokenIndexes.map(idx ⇒ nsClone(idx).clone())
-
-                                    val mainNotes =
-                                        savedDelToks.flatten.filter(n ⇒ n.noteType != "nlpcraft:nlp" && n != savedDelNote)
-
-                                    // Deleted note's tokens should contains only nlp data and deleted notes.
-                                    for (savedDelTok ← savedDelToks; mainNote ← mainNotes)
-                                        savedDelTok.remove(mainNote)
-
-                                    savedDelNote → savedDelToks
-                                })
-
+                                addDeleted(nsClone, delComb)
                                 delComb.foreach(nsClone.removeNote)
 
                                 // Has overlapped notes for some tokens.
