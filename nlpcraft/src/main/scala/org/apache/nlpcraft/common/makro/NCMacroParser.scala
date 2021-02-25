@@ -161,7 +161,16 @@ class NCMacroParser {
         
         U.distinct(NCMacroCompiler.compile(s).toList map trimDupSpaces map processEscapes)
     }
-    
+
+    /**
+     * Expand given string.
+     *
+     * @param txt Text to expand.
+     */
+    @throws[NCE]
+    def expandJava(txt: String): java.util.Set[String] =
+        expand(txt).toSet.asJava
+
     /**
       * Checks macro name.
       *
