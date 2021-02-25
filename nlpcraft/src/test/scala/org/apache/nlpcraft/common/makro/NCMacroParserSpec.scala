@@ -18,21 +18,23 @@
 package org.apache.nlpcraft.common.makro
 
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.model.NCMacroProcessor
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 import scala.compat.Platform._
-import scala.util.control.Exception._
+import scala.collection.JavaConverters._
 
 /**
   * Tests for text parser.
   */
 class NCMacroParserSpec  {
-    private val parser = NCMacroParser(
-        "<A>" → "aaa",
-        "<B>" → "<A> bbb",
-        "<C>" → "<A> bbb {z|w}"
-    )
+    private val parser = new NCMacroProcessor()
+
+    parser.addMacro("<A>", "aaa")
+    parser.addMacro("<B>", "<A> bbb")
+    parser.addMacro("<C>", "<A> bbb {z|w}")
+
     
     // Add macros for testing...
     parser.addMacro("<OF>", "{of|for|per}")
@@ -52,16 +54,14 @@ class NCMacroParserSpec  {
     parser.addMacro("<METRICS_A>", "{analytics|statistics|measurements|analysis|report|efficiency|performance}")
     parser.addMacro("<METRICS_B>", "{metrics|data|info|information|facts}")
     parser.addMacro("<METRICS>","{<METRICS_A>|<METRICS_B>|<METRICS_A> <METRICS_B>|<METRICS_B> <METRICS_A>}")
-    
-    private val ignoreNCE = ignoring(classOf[NCE])
-    
+
     /**
       *
       * @param txt Text to expand.
       * @param exp Expected expansion strings.
       */
     def checkEq(txt: String, exp: Seq[String]): Unit = {
-        val z = parser.expand(txt).sorted
+        val z = parser.expand(txt).asScala.toSeq.sorted
         val w = exp.sorted
 
         if (z != w)

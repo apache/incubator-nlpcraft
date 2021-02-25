@@ -15,48 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model;
-
-import org.apache.nlpcraft.common.NCException;
-import org.apache.nlpcraft.common.makro.NCMacroJavaParserTrait;
+package org.apache.nlpcraft.common.makro;
 
 import java.util.Set;
 
 /**
- * Standalone synonym macro DSL processor.
- * <p>
- * This processor provides the same macro support as the built-in macro support in data models.
- * It is a general purpose macro-processor and it can be used standalone when testing synonyms,
- * developing NERs, visualizing synonyms in toolchains, etc.
- * <p>
- * Read full documentation on synonym macro DSL in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
- * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
+ * Java adapter for macro parser (so that Java reflection could work).
  */
-public class NCMacroProcessor {
-    private final NCMacroJavaParserTrait impl = mkImpl();
-
-    // Need to do that in order to avoid Javadoc failures due to mixed Scala/Java project.
-    private static NCMacroJavaParserTrait mkImpl() {
-        try {
-            return (NCMacroJavaParserTrait)Class.forName("org.apache.nlpcraft.common.makro.NCMacroJavaParser")
-                .getDeclaredConstructor().newInstance();
-        }
-        catch (Exception e) {
-            throw new NCException("Error initializing object of type: org.apache.nlpcraft.common.makro.NCMacroJavaParser", e);
-        }
-    }
+public class NCMacroJavaParser implements NCMacroJavaParserTrait {
+    private final NCMacroParser impl = new NCMacroParser();
 
     /**
      * Expands given macro DSL string.
-     * <p>
-     * Read full documentation on synonym macro DSL in <a target=_ href="https://nlpcraft.apache.org/data-model.html">Data Model</a> section and review
-     * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
      *
      * @param s Macro DSL string to expand.
      * @return Set of macro expansions for a given macro DSL string.
      */
     public Set<String> expand(String s) {
-        return impl.expand(s);
+        return impl.expandJava(s);
     }
 
     /**
