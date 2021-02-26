@@ -29,7 +29,7 @@ class NCDslCompilerSpec {
      *
      * @param dsl
      */
-    private def checkOk(dsl: String): Unit = {
+    private def checkOk(dsl: String): Unit =
         try {
             NCIntentDslCompiler.compile(dsl, "mdl.id")
 
@@ -38,13 +38,12 @@ class NCDslCompilerSpec {
         catch {
             case _: Exception ⇒ assert(false)
         }
-    }
 
     /**
      *
      * @param txt
      */
-    private def checkError(txt: String): Unit = {
+    private def checkError(txt: String): Unit =
         try {
             NCIntentDslCompiler.compile(txt, "mdl.id")
 
@@ -54,7 +53,6 @@ class NCDslCompilerSpec {
                 println(e.getMessage)
                 assert(true)
         }
-    }
 
     @Test
     @throws[NCException]
@@ -63,7 +61,7 @@ class NCDslCompilerSpec {
             """
               |intent=i1
               |flow="a[^0-9]b"
-              |meta={'a': true, 'b': {'arr': [1, 2, 3]}}
+              |meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
               |term(t1)={2 == 2 && size(id()) != -25}
               |""".stripMargin
         )
@@ -71,7 +69,7 @@ class NCDslCompilerSpec {
             """
               |intent=i1
               |flow="a[^0-9]b"
-              |term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}
+              |term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |""".stripMargin
         )
     }
