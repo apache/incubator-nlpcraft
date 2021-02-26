@@ -30,7 +30,8 @@ predRef: 'predicate' LPAR ID RPAR;
 intent: intentId orderedDecl? flowDecl? metaDecl? terms;
 intentId: 'intent' ASSIGN ID;
 orderedDecl: 'ordered' ASSIGN BOOL;
-flowDecl: 'flow' ASSIGN qstring;
+mtdDecl: DIV mtdRef DIV;
+flowDecl: 'flow' ASSIGN (qstring | mtdDecl);
 metaDecl: 'meta' ASSIGN jsonObj;
 jsonObj
     : LBRACE jsonPair (COMMA jsonPair)* RBRACE
@@ -57,8 +58,8 @@ termEq
     : ASSIGN // Do not use conversation.
     | TILDA // Use conversation.
     ;
-term: 'term' termId? termEq ((LBRACE expr RBRACE) | (DIV clsNer DIV)) minMax?;
-clsNer: javaFqn? POUND ID;
+term: 'term' termId? termEq ((LBRACE expr RBRACE) | mtdDecl) minMax?;
+mtdRef: javaFqn? POUND ID;
 javaFqn
     : ID
     | javaFqn DOT ID
@@ -102,7 +103,6 @@ minMaxShortcut
 minMaxRange: LBR INT COMMA INT RBR;
 
 // Lexer.
-COMMENT : ('//' ~[\r\n]* '\r'? '\n' | '/*' .*? '*/' ) -> skip;
 SQSTRING: SQUOTE ((~'\'') | ('\\''\''))* SQUOTE; // Allow for \' (escaped single quote) in the string.
 DQSTRING: DQUOTE ((~'"') | ('\\''"'))* DQUOTE; // Allow for \" (escape double quote) in the string.
 BOOL: 'true' | 'false';
@@ -162,5 +162,6 @@ fragment UNI_CHAR // International chars.
     ; // Ignoring ['\u10000-'\uEFFFF].
 fragment LETTER: [a-zA-Z];
 ID: (UNI_CHAR|UNDERSCORE|LETTER|DOLLAR)+(UNI_CHAR|DOLLAR|LETTER|[0-9]|COLON|MINUS|UNDERSCORE)*;
+COMMENT : ('//' ~[\r\n]* '\r'? ('\n'| EOF) | '/*' .*? '*/' ) -> skip;
 WS: [ \r\t\u000C\n]+ -> skip;
 ErrorCharacter: .;
