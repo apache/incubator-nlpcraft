@@ -129,11 +129,19 @@ EXP: [Ee] [+\-]? INT;
 fragment UNI_CHAR // International chars.
     : '\u00B7'
     | '\u0300'..'\u036F'
+    | '\u00A0'..'\u00FF' /* Latin-1 Supplement. */
+    | '\u0100'..'\u017F' /* Latin Extended-A. */
+    | '\u0180'..'\u024F' /* Latin Extended-B. */
+    | '\u1E02'..'\u1EF3' /* Latin Extended Additional. */
+    | '\u0259'..'\u0292' /* IPA Extensions. */
+    | '\u02B0'..'\u02FF' /* Spacing modifier letters. */
     | '\u203F'..'\u2040'
     | '\u00C0'..'\u00D6'
     | '\u00D8'..'\u00F6'
     | '\u00F8'..'\u02FF'
-    | '\u0370'..'\u037D'
+    | '\u0370'..'\u03FF' /* Greek and Coptic. */
+    | '\u1F01'..'\u1FFF' /* Greek Extended. */
+    | '\u0400'..'\u04FF' /* Cyrillic. */
     | '\u037F'..'\u1FFF'
     | '\u200C'..'\u200D'
     | '\u2070'..'\u218F'

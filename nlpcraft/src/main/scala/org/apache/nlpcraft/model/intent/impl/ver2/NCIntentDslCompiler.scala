@@ -25,7 +25,6 @@ import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslParser ⇒ Parse
 import org.apache.nlpcraft.model.intent.utils.ver2._
 import org.apache.nlpcraft.model.{NCMetadata, NCRequest, NCToken, NCTokenPredicateContext, NCTokenPredicateResult}
 
-import java.lang.{IllegalArgumentException ⇒ IAE}
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable
@@ -36,12 +35,12 @@ object NCIntentDslCompiler extends LazyLogging {
     // Compiler cache.
     private val cache = new mutable.HashMap[String, NCDslIntent]
 
-    private var mdlId: String = _
-
     /**
      *
+     * @param dsl
+     * @param mdlId
      */
-    class FiniteStateMachine(dsl: String) extends NCIntentDslBaseListener with NCBaseDslCompiler {
+    class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCBaseDslCompiler {
         // Intent components.
         private var id: String = _
         private var ordered: Boolean = false
@@ -107,6 +106,8 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitOrderedDecl(ctx: Parser.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
         override def exitFlowDecl(ctx: Parser.FlowDeclContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
+
             val regex = ctx.qstring().getText
 
             if (regex != null && regex.length > 2) 
@@ -117,15 +118,17 @@ object NCIntentDslCompiler extends LazyLogging {
                     Pattern.compile(flowRegex.get)
                 catch {
                     case e: PatternSyntaxException ⇒
-                        throw new IAE(s"${e.getDescription} in DSL intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
+                        newSyntaxError(s"${e.getDescription} in DSL intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
                 }
         }
 
         override def exitTerm(ctx: Parser.TermContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
+
             if (min < 0 || min > max)
-                throw new IAE(s"Invalid DSL intent term min quantifiers: $min (must be min >= 0 && min <= max).")
+                throw newSyntaxError(s"Invalid DSL intent term min quantifiers: $min (must be min >= 0 && min <= max).")
             if (max < 1)
-                throw new IAE(s"Invalid DSL intent term max quantifiers: $max (must be max >= 1).")
+                throw newSyntaxError(s"Invalid DSL intent term max quantifiers: $max (must be max >= 1).")
 
             val pred =
                 if (termMtdName != null) { // User-code defined term.
@@ -152,7 +155,8 @@ object NCIntentDslCompiler extends LazyLogging {
                             (res.getResult, res.wasTokenUsed())
                         }
                         catch {
-                            case e: Exception ⇒ throw new IAE(s"Failed to invoke custom DSL intent term: $mdlCls.$termMtdName", e)
+                            case e: Exception ⇒
+                                throw runtimeError(s"Failed to invoke custom DSL intent term: $mdlCls.$termMtdName", e)
                         }
                     }
                 }
@@ -169,7 +173,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         val x = stack.pop()
 
                         if (!isBoolean(x.retVal))
-                            throw new IAE(s"DSL intent term does not return boolean value: ${ctx.getText}")
+                            throw runtimeError(s"DSL intent term does not return boolean value: ${ctx.getText}")
 
                         (asBool(x.retVal), x.usedTok)
                     }
@@ -202,24 +206,51 @@ object NCIntentDslCompiler extends LazyLogging {
 
             NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, terms.toArray)
         }
+
+        override def syntaxError(errMsg: String, line: Int, pos: Int): NCE = throw new NCE(mkSyntaxError(errMsg, line, pos, dsl, mdlId))
+        override def runtimeError(errMsg: String, cause: Exception = null): NCE = throw new NCE(mkRuntimeError(errMsg, dsl, mdlId), cause)
     }
 
     /**
-     * Custom error handler.
+     *
+     * @param msg
+     * @param line
+     * @param charPos
+     * @param dsl
+     * @param mdlId
+     * @return
      */
-    class CompilerErrorListener(dsl: String) extends BaseErrorListener {
-        /**
-         *
-         * @param len
-         * @param pos
-         * @return
-         */
-        private def makeCharPosPointer(len: Int, pos: Int): String = {
-            val s = (for (_ ← 1 to len) yield '-').mkString("")
+    private def mkSyntaxError(msg: String, line: Int, charPos: Int, dsl: String, mdlId: String): String = {
+        val dash = "-" * dsl.length
+        val pos = Math.max(0, charPos - 1)
+        val posPtr = dash.substring(0, pos) + r("^") + dash.substring(pos + 1)
+        val dslPtr = dsl.substring(0, pos) + r(dsl.charAt(pos)) + dsl.substring(pos + 1)
 
-            s.substring(0, pos - 1) + '^' + s.substring(pos)
-        }
+        s"Intent DSL syntax error at line $line:$charPos - $msg\n" +
+        s"  |-- ${c("Model:")}    $mdlId\n" +
+        s"  |-- ${c("Intent:")}   $dslPtr\n" +
+        s"  +-- ${c("Location:")} $posPtr"
+    }
 
+    /**
+     *
+     * @param msg
+     * @param dsl
+     * @param mdlId
+     * @return
+     */
+    private def mkRuntimeError(msg: String, dsl: String, mdlId: String): String =
+        s"$msg\n" +
+        s"  |-- ${c("Model:")}  $mdlId\n" +
+        s"  +-- ${c("Intent:")} $dsl\n"
+
+    /**
+     * Custom error handler.
+     *
+     * @param dsl
+     * @param mdlId
+     */
+    class CompilerErrorListener(dsl: String, mdlId: String) extends BaseErrorListener {
         /**
          *
          * @param recognizer
@@ -235,15 +266,7 @@ object NCIntentDslCompiler extends LazyLogging {
             line: Int,
             charPos: Int,
             msg: String,
-            e: RecognitionException): Unit = {
-
-            val errMsg = s"Intent DSL syntax error at line $line:$charPos - $msg\n" +
-                s"  |-- ${c("Model:")}  $mdlId\n" +
-                s"  |-- ${c("Intent:")} $dsl\n" +
-                s"  +-- ${c("Error:")}  ${makeCharPosPointer(dsl.length, charPos)}"
-
-            throw new NCE(errMsg)
-        }
+            e: RecognitionException): Unit = throw new NCE(mkSyntaxError(msg, line, charPos, dsl, mdlId))
     }
 
     /**
@@ -258,9 +281,7 @@ object NCIntentDslCompiler extends LazyLogging {
     ): NCDslIntent = {
         require(dsl != null)
 
-        val src = dsl.strip()
-
-        this.mdlId = mdlId
+        val src = dsl.strip().replace("\r\n", " ").replace("\n", " ")
 
         val intent: NCDslIntent = cache.getOrElseUpdate(src, {
             // ANTLR4 armature.
@@ -271,11 +292,11 @@ object NCIntentDslCompiler extends LazyLogging {
             // Set custom error handlers.
             lexer.removeErrorListeners()
             parser.removeErrorListeners()
-            lexer.addErrorListener(new CompilerErrorListener(src))
-            parser.addErrorListener(new CompilerErrorListener(src))
+            lexer.addErrorListener(new CompilerErrorListener(src, mdlId))
+            parser.addErrorListener(new CompilerErrorListener(src, mdlId))
 
             // State automata.
-            val fsm = new FiniteStateMachine(src)
+            val fsm = new FiniteStateMachine(src, mdlId)
 
             // Parse the input DSL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.intent())

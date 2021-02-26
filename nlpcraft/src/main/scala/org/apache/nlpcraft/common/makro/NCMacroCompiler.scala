@@ -211,7 +211,7 @@ object NCMacroCompiler extends LazyLogging {
             line: Int,
             charPos: Int,
             msg: String,
-            e: RecognitionException): Unit =  throw new NCE(mkCompilerError(msg, line, charPos, in))
+            e: RecognitionException): Unit = throw new NCE(mkCompilerError(msg, line, charPos, in))
     }
     
     /**
@@ -224,16 +224,17 @@ object NCMacroCompiler extends LazyLogging {
     private def mkCompilerError(
         msg: String,
         line: Int,
-        charPos: Int,
+        charPos: Int, // 1, 2, ...
         in: String
     ): String = {
         val dash = "-" * in.length
-        val pos = Math.max(1, charPos)
-        val charPosPtr = dash.substring(0, pos - 1) + r("^") + dash.substring(pos)
+        val pos = Math.max(0, charPos - 1)
+        val posPtr = dash.substring(0, pos) + r("^") + dash.substring(pos + 1)
+        val inPtr = in.substring(0, pos) + r(in.charAt(pos)) + in.substring(pos + 1)
     
         s"Macro compiler error at line $line:$charPos - $msg\n" +
-        s"  |-- ${c("Macro:")} $in\n" +
-        s"  +-- ${c("Error:")} $charPosPtr"
+        s"  |-- ${c("Macro:")}    $inPtr\n" +
+        s"  +-- ${c("Location:")} $posPtr"
     }
     
     /**

@@ -25,22 +25,74 @@ import org.junit.jupiter.api.Test
  * Tests for DSL compiler.
  */
 class NCDslCompilerSpec {
+    /**
+     *
+     * @param dsl
+     */
+    private def checkOk(dsl: String): Unit = {
+        try {
+            NCIntentDslCompiler.compile(dsl, "mdl.id")
+
+            assert(true)
+        }
+        catch {
+            case _: Exception ⇒ assert(false)
+        }
+    }
+
+    /**
+     *
+     * @param txt
+     */
+    private def checkError(txt: String): Unit = {
+        try {
+            NCIntentDslCompiler.compile(txt, "mdl.id")
+
+            assert(false)
+        } catch {
+            case e: NCE ⇒
+                println(e.getMessage)
+                assert(true)
+        }
+    }
+
     @Test
     @throws[NCException]
-    def test(): Unit = {
-        val intent = NCIntentDslCompiler.compile(
+    def testOk(): Unit = {
+        checkOk(
             """
-              |intent=i1 flow="a[^0-9]b" meta={'a': true, 'b': {'arr': [1, 2, 3]}} term(t1)={2 == 2 && size(id()) != -25}
-              |""".stripMargin, "mdl.id"
+              |intent=i1
+              |flow="a[^0-9]b"
+              |meta={'a': true, 'b': {'arr': [1, 2, 3]}}
+              |term(t1)={2 == 2 && size(id()) != -25}
+              |""".stripMargin
         )
-        val intent2 = NCIntentDslCompiler.compile(
+        checkOk(
             """
-              |intent=i1 flow="a[^0-9]b" term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}
-              |""".stripMargin, "mdl.id"
+              |intent=i1
+              |flow="a[^0-9]b"
+              |term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}
+              |""".stripMargin
         )
+    }
 
-        () // Breakpoint.
-
-        // val ret = intent2.terms.head.pred(_, _, _)
+    @Test
+    @throws[NCException]
+    def testFail(): Unit = {
+        checkError(
+            """
+              |intent=i1
+              |flow="a[^0-9]b"
+              |meta={{'a': true, 'b': {'arr': [1, 2, 3]}}
+              |term(t1)={2 == 2 && size(id()) != -25}
+              |""".stripMargin
+        )
+        checkError(
+            """
+              |intent=i1
+              |flow="a[^0-9]b"
+              |term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}[1:2]
+              |""".stripMargin
+        )
     }
 }
