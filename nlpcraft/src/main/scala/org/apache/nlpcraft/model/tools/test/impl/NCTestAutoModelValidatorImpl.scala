@@ -66,7 +66,8 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
             intentId: String,
             text: String,
             pass: Boolean,
-            error: Option[String]
+            error: Option[String],
+            time: Long
         )
 
         val results = samples.flatMap { case (mdlId, samples) ⇒
@@ -77,14 +78,18 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                     cli.open(mdlId)
 
                     txts.map (txt ⇒ {
+                        var t = System.currentTimeMillis()
+
                         val res = cli.ask(txt)
 
+                        t = System.currentTimeMillis() - t
+
                         if (res.isFailed)
-                            Result(mdlId, intentId, txt, pass = false, Some(res.getResultError.get()))
+                            Result(mdlId, intentId, txt, pass = false, Some(res.getResultError.get()), t)
                         else if (intentId != res.getIntentId)
-                            Result(mdlId, intentId, txt, pass = false, Some(s"Unexpected intent ID '${res.getIntentId}'"))
+                            Result(mdlId, intentId, txt, pass = false, Some(s"Unexpected intent ID '${res.getIntentId}'"), t)
                         else
-                            Result(mdlId, intentId, txt, pass = true, None)
+                            Result(mdlId, intentId, txt, pass = true, None, t)
                     })
                 }
                 finally
@@ -96,7 +101,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
 
         val tbl = NCAsciiTable()
 
-        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error")
+        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "Execution time")
 
         for (res ← results)
             tbl += (
@@ -104,7 +109,8 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
                 res.intentId,
                 if (res.pass) g("OK") else r("FAIL"),
                 res.text,
-                res.error.getOrElse("")
+                res.error.getOrElse(""),
+                res.time
             )
         
         val passCnt = results.count(_.pass)

@@ -36,7 +36,7 @@ import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
 import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentSolver}
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{DSL, REGEX, TEXT}
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelSynonymDslCompiler
 import resource.managed
 
@@ -502,8 +502,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
             model = mdl,
             solver = solver,
             intents = intents.keySet.toSeq,
-            synonyms = mkFastAccessMap(filter(syns, dsl = false)),
-            synonymsDsl = mkFastAccessMap(filter(syns, dsl = true)),
+            synonyms = mkFastAccessMap(filter(syns, dsl = false), NCProbeSynonymsWrapper(_)),
+            synonymsDsl = mkFastAccessMap(filter(syns, dsl = true), seq ⇒ seq),
             addStopWordsStems = addStopWords.toSet,
             exclStopWordsStems = exclStopWords.toSet,
             suspWordsStems = suspWords.toSet,
@@ -550,7 +550,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param set
       * @return
       */
-    private def mkFastAccessMap(set: Set[SynonymHolder]): Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCProbeSynonym]]] =
+    private def mkFastAccessMap[T](set: Set[SynonymHolder], f: Seq[NCProbeSynonym] ⇒ T):
+        Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , T]] =
         set
             .groupBy(_.elmId)
             .map {
@@ -561,7 +562,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         .groupBy(_.size)
                         .map {
                             // Sort synonyms from most important to least important.
-                            case (k, v) ⇒ (k, v.toSeq.sorted.reverse)
+                            case (k, v) ⇒ (k, f(v.toSeq))
                         }
                 )
             }

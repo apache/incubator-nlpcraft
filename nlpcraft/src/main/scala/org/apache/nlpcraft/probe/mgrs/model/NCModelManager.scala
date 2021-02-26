@@ -59,7 +59,7 @@ object NCModelManager extends NCService with DecorateAsScala {
             data.values.foreach(w ⇒ {
                 val mdl = w.model
 
-                val synCnt = w.synonyms.values.flatMap(_.values).flatten.size
+                val synCnt = w.synonyms.flatMap(_._2.map(_._2.count)).sum
                 val elmCnt = w.elements.keySet.size
                 val intentCnt = w.intents.size
 
