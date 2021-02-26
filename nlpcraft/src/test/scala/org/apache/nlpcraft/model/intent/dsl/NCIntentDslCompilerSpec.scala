@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 /**
  * Tests for DSL compiler.
  */
-class NCDslCompilerSpec {
+class NCIntentDslCompilerSpec {
     /**
      *
      * @param dsl

@@ -44,7 +44,6 @@ fragment ESC: '\\' ESC_CHAR;
 fragment TXT_CHAR
     : [~!@#$%^&*()+._]
     | [-=<>/\\;:`'",]
-    | '\u00B7'
     | 'A'..'Z'
     | 'a'..'z'
     | '0'..'9'
@@ -56,13 +55,8 @@ fragment TXT_CHAR
     | '\u0259'..'\u0292' /* IPA Extensions. */
     | '\u02B0'..'\u02FF' /* Spacing modifier letters. */
     | '\u203F'..'\u2040'
-    | '\u00C0'..'\u00D6'
-    | '\u00D8'..'\u00F6'
-    | '\u00F8'..'\u02FF'
-    | '\u0370'..'\u03FF' /* Greek and Coptic. */
     | '\u1F01'..'\u1FFF' /* Greek Extended. */
     | '\u0400'..'\u04FF' /* Cyrillic. */
-    | '\u037F'..'\u1FFF'
     | '\u200C'..'\u200D'
     | '\u2070'..'\u218F'
     | '\u2C00'..'\u2FEF'

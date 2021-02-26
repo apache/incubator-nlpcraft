@@ -17,7 +17,17 @@
 
 grammar NCIntentDsl;
 
-intent: intentId orderedDecl? flowDecl? metaDecl? terms EOF;
+// Parser.
+dsl: dslItems EOF;
+dslItems
+    : dslItem
+    | dslItems dslItem
+    ;
+dslItem: intent | pred;
+pred: predId terms;
+predId: 'predicate' ASSIGN ID;
+predRef: 'predicate' LPAR ID RPAR;
+intent: intentId orderedDecl? flowDecl? metaDecl? terms;
 intentId: 'intent' ASSIGN ID;
 orderedDecl: 'ordered' ASSIGN BOOL;
 flowDecl: 'flow' ASSIGN qstring;
@@ -39,7 +49,10 @@ jsonArr
     : LBR jsonVal (COMMA jsonVal)* RBR
     | LBR RBR
     ;
-terms: term | terms term;
+terms
+    : termItem
+    | terms termItem;
+termItem: term | predRef;
 termEq
     : ASSIGN // Do not use conversation.
     | TILDA // Use conversation.
@@ -87,6 +100,9 @@ minMaxShortcut
     | MULT
     ;
 minMaxRange: LBR INT COMMA INT RBR;
+
+// Lexer.
+COMMENT : ('//' ~[\r\n]* '\r'? '\n' | '/*' .*? '*/' ) -> skip;
 SQSTRING: SQUOTE ((~'\'') | ('\\''\''))* SQUOTE; // Allow for \' (escaped single quote) in the string.
 DQSTRING: DQUOTE ((~'"') | ('\\''"'))* DQUOTE; // Allow for \" (escape double quote) in the string.
 BOOL: 'true' | 'false';
@@ -127,8 +143,7 @@ INT: '0' | [1-9] [_0-9]*;
 REAL: DOT [0-9]+;
 EXP: [Ee] [+\-]? INT;
 fragment UNI_CHAR // International chars.
-    : '\u00B7'
-    | '\u0300'..'\u036F'
+    : '\u0300'..'\u036F'
     | '\u00A0'..'\u00FF' /* Latin-1 Supplement. */
     | '\u0100'..'\u017F' /* Latin Extended-A. */
     | '\u0180'..'\u024F' /* Latin Extended-B. */
@@ -136,13 +151,8 @@ fragment UNI_CHAR // International chars.
     | '\u0259'..'\u0292' /* IPA Extensions. */
     | '\u02B0'..'\u02FF' /* Spacing modifier letters. */
     | '\u203F'..'\u2040'
-    | '\u00C0'..'\u00D6'
-    | '\u00D8'..'\u00F6'
-    | '\u00F8'..'\u02FF'
-    | '\u0370'..'\u03FF' /* Greek and Coptic. */
     | '\u1F01'..'\u1FFF' /* Greek Extended. */
     | '\u0400'..'\u04FF' /* Cyrillic. */
-    | '\u037F'..'\u1FFF'
     | '\u200C'..'\u200D'
     | '\u2070'..'\u218F'
     | '\u2C00'..'\u2FEF'

@@ -220,13 +220,18 @@ object NCIntentDslCompiler extends LazyLogging {
      * @param mdlId
      * @return
      */
-    private def mkSyntaxError(msg: String, line: Int, charPos: Int, dsl: String, mdlId: String): String = {
+    private def mkSyntaxError(
+        msg: String,
+        line: Int, // 1, 2, ...
+        charPos: Int, // 0, 1, 2, ...
+        dsl: String,
+        mdlId: String): String = {
         val dash = "-" * dsl.length
-        val pos = Math.max(0, charPos - 1)
-        val posPtr = dash.substring(0, pos) + r("^") + dash.substring(pos + 1)
-        val dslPtr = dsl.substring(0, pos) + r(dsl.charAt(pos)) + dsl.substring(pos + 1)
+        val pos = Math.max(0, charPos)
+        val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
+        val dslPtr = dsl.substring(0, pos) + r(dsl.charAt(pos)) + y(dsl.substring(pos + 1))
 
-        s"Intent DSL syntax error at line $line:$charPos - $msg\n" +
+        s"Intent DSL syntax error at line $line:${charPos + 1} - $msg\n" +
         s"  |-- ${c("Model:")}    $mdlId\n" +
         s"  |-- ${c("Intent:")}   $dslPtr\n" +
         s"  +-- ${c("Location:")} $posPtr"
@@ -263,10 +268,10 @@ object NCIntentDslCompiler extends LazyLogging {
         override def syntaxError(
             recognizer: Recognizer[_, _],
             offendingSymbol: scala.Any,
-            line: Int,
-            charPos: Int,
+            line: Int, // 1, 2, ...
+            charPos: Int, // 1, 2, ...
             msg: String,
-            e: RecognitionException): Unit = throw new NCE(mkSyntaxError(msg, line, charPos, dsl, mdlId))
+            e: RecognitionException): Unit = throw new NCE(mkSyntaxError(msg, line, charPos - 1, dsl, mdlId))
     }
 
     /**

@@ -66,7 +66,7 @@ object NCMacroCompiler extends LazyLogging {
           * @return
           */
         private def compilerError(errMsg: String)(implicit ctx: ParserRuleContext): NCE = {
-            val tok = ctx.start
+            val tok = ctx.stop
             
             new NCE(mkCompilerError(errMsg, tok.getLine, tok.getCharPositionInLine, in))
         }
@@ -208,10 +208,10 @@ object NCMacroCompiler extends LazyLogging {
         override def syntaxError(
             recognizer: Recognizer[_, _],
             offendingSymbol: scala.Any,
-            line: Int,
-            charPos: Int,
+            line: Int, // 1, 2, ...
+            charPos: Int, // 1, 2, ...
             msg: String,
-            e: RecognitionException): Unit = throw new NCE(mkCompilerError(msg, line, charPos, in))
+            e: RecognitionException): Unit = throw new NCE(mkCompilerError(msg, line, charPos - 1, in))
     }
     
     /**
@@ -223,16 +223,16 @@ object NCMacroCompiler extends LazyLogging {
       */
     private def mkCompilerError(
         msg: String,
-        line: Int,
-        charPos: Int, // 1, 2, ...
+        line: Int, // 1, 2, ...
+        charPos: Int, // 0, 1, 2, ...
         in: String
     ): String = {
         val dash = "-" * in.length
-        val pos = Math.max(0, charPos - 1)
-        val posPtr = dash.substring(0, pos) + r("^") + dash.substring(pos + 1)
-        val inPtr = in.substring(0, pos) + r(in.charAt(pos)) + in.substring(pos + 1)
+        val pos = Math.max(0, charPos)
+        val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
+        val inPtr = in.substring(0, pos) + r(in.charAt(pos)) + y(in.substring(pos + 1))
     
-        s"Macro compiler error at line $line:$charPos - $msg\n" +
+        s"Macro compiler error at line $line:${charPos + 1} - $msg\n" +
         s"  |-- ${c("Macro:")}    $inPtr\n" +
         s"  +-- ${c("Location:")} $posPtr"
     }

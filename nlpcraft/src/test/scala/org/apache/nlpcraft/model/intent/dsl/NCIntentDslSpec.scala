@@ -29,7 +29,7 @@ import java.util.Collections
 /**
  * DSL test model test. Make sure to start up the NLPCraft server before running this test.
  */
-class NCDslSpec {
+class NCIntentDslSpec {
     private var cli: NCTestClient = _
 
     @BeforeEach
@@ -37,7 +37,7 @@ class NCDslSpec {
     @throws[IOException]
     private[dsl] def setUp(): Unit = {
         // Start embedded probe with the test model.
-        if (NCEmbeddedProbe.start(null, Collections.singletonList(classOf[NCDslTestModel].getName))) {
+        if (NCEmbeddedProbe.start(null, Collections.singletonList(classOf[NCIntentDslTestModel].getName))) {
             cli = new NCTestClientBuilder().newBuilder.build
 
             cli.open("nlpcraft.dsl.test")
