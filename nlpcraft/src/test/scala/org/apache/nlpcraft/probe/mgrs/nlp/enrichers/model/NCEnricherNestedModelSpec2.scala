@@ -22,32 +22,48 @@ import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
 
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel3 extends NCModelAdapter(
-    "nlpcraft.nested3.test.mdl", "Nested Data Test Model", "1.0"
-) {
+class NCNestedTestModel21 extends NCModelAdapter("nlpcraft.nested2.test.mdl", "Nested Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
-        Set(
-            NCTestElement("e1", "//[a-zA-Z0-9]+//"),
-            NCTestElement("e2", "^^(id == 'e1')^^"),
-        )
+        Set(NCTestElement("e1", "{^^(id == 'nlpcraft:num')^^|_} word"))
 
-    override def getAbstractTokens: util.Set[String] = Set("e1").asJava
-    override def getEnabledBuiltInTokens: util.Set[String] = Set.empty[String].asJava
-
-    @NCIntent("intent=onE2 term(t1)={id == 'e2'}[12, 100]")
+    @NCIntent("intent=onE1 term(t1)={id == 'e1'}")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+
+    @NCIntent("intent=onNumAndE1 term(t1)={id == 'nlpcraft:num'} term(t1)={id == 'e1'}")
+    def onNumAndE1(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+
+    override def isPermutateSynonyms: Boolean = false
+    override def getJiggleFactor: Int = 0
 }
 
 /**
- * It shouldn't be too slow.
+ * Nested elements model enricher test.
  */
-@NCTestEnvironment(model = classOf[NCNestedTestModel3], startClient = true)
-class NCEnricherNestedModelSpec3 extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCNestedTestModel21], startClient = true)
+class NCEnricherNestedModelSpec21 extends NCTestContext {
     @Test
-    def test(): Unit = checkIntent("a " * 18, "onE2")
+    def test(): Unit = {
+        checkIntent("word", "onE1")
+        checkIntent("10 word", "onE1")
+        checkIntent("11 12 word", "onNumAndE1")
+    }
 }
+
+/**
+  * Nested Elements test model.
+  */
+class NCNestedTestModel22 extends NCNestedTestModel21 {
+    override def isPermutateSynonyms: Boolean = true
+    override def getJiggleFactor: Int = 4
+}
+
+/**
+  * Nested elements model enricher test.
+  */
+@NCTestEnvironment(model = classOf[NCNestedTestModel22], startClient = true)
+class NCEnricherNestedModelSpec22 extends NCEnricherNestedModelSpec21
+
