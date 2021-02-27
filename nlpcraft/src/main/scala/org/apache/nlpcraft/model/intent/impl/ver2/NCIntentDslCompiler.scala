@@ -133,7 +133,7 @@ object NCIntentDslCompiler extends LazyLogging {
             val pred =
                 if (termMtdName != null) { // User-code defined term.
                     (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
-                        val javaCtx = new NCTokenPredicateContext {
+                        val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
                             override lazy val getRequest: NCRequest = termCtx.req
                             override lazy val getToken: NCToken = tok
                             override lazy val getIntentMeta: Optional[NCMetadata] =
@@ -216,7 +216,7 @@ object NCIntentDslCompiler extends LazyLogging {
      * @param msg
      * @param line
      * @param charPos
-     * @param dsl
+     * @param dsl Original DSL text (input).
      * @param mdlId
      * @return
      */
@@ -226,10 +226,15 @@ object NCIntentDslCompiler extends LazyLogging {
         charPos: Int, // 0, 1, 2, ...
         dsl: String,
         mdlId: String): String = {
-        val dash = "-" * dsl.length
-        val pos = Math.max(0, charPos)
+        val aLine = dsl.split("\n")(line - 1)
+        val preLen = aLine.length
+        val dslLine = aLine.strip()
+        val postLen = dslLine.length
+        val delta = preLen - postLen
+        val dash = "-" * dslLine.length
+        val pos = Math.max(0, charPos - delta)
         val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
-        val dslPtr = dsl.substring(0, pos) + r(dsl.charAt(pos)) + y(dsl.substring(pos + 1))
+        val dslPtr = dslLine.substring(0, pos) + r(dslLine.charAt(pos)) + y(dslLine.substring(pos + 1))
 
         s"Intent DSL syntax error at line $line:${charPos + 1} - $msg\n" +
         s"  |-- ${c("Model:")}    $mdlId\n" +
@@ -273,20 +278,35 @@ object NCIntentDslCompiler extends LazyLogging {
             msg: String,
             e: RecognitionException): Unit = throw new NCE(mkSyntaxError(msg, line, charPos - 1, dsl, mdlId))
     }
-
+    
     /**
-     *
-     * @param dsl Intent DSL to parse.
-     * @param mdlId ID of the model the intent belongs to.
-     * @return
-     */
+      * Compile individual fragment or intent. Note that fragments are accumulated in a static
+      * map keyed by model ID. Only intents are returned, if any.
+      *
+      * @param filePath *.nc DSL file to compile.
+      * @param mdlId ID of the model *.nc file belongs to.
+      * @return
+      */
+    def compileFile(
+        filePath: String,
+        mdlId: String
+    ): Set[NCDslIntent] = ???
+    
+    /**
+      * Compile individual fragment or intent. Note that fragments are accumulated in a static
+      * map keyed by model ID. Only intents are returned, if any.
+      *
+      * @param dsl DSL to compile.
+      * @param mdlId ID of the model DSL belongs to.
+      * @return
+      */
     def compile(
         dsl: String,
         mdlId: String
-    ): NCDslIntent = {
+    ): Set[NCDslIntent] = {
         require(dsl != null)
 
-        val src = dsl.strip().replace("\r\n", " ").replace("\n", " ")
+        val src = dsl.strip()
 
         val intent: NCDslIntent = cache.getOrElseUpdate(src, {
             // ANTLR4 armature.
@@ -310,6 +330,6 @@ object NCIntentDslCompiler extends LazyLogging {
             fsm.getBuiltIntent
         })
 
-        intent
+        Set(intent) // TODO
     }
 }

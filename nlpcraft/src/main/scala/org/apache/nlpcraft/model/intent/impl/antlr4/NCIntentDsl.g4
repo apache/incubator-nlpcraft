@@ -101,7 +101,10 @@ minMaxShortcut
     | MULT
     ;
 minMaxRange: LBR INT COMMA INT RBR;
-id: ID | FUN_NAME;
+id
+    : ID
+    | FUN_NAME // Function name can overlap with ID so we detect both.
+    ;
 
 // Lexer.
 FUN_NAME
@@ -224,11 +227,10 @@ FUN_NAME
     | 'day_of_year'
     | 'hour'
     | 'minute'
-    | 'sec'
+    | 'second'
     | 'week_of_month'
     | 'week_of_year'
     | 'quarter'
-    | 'msec'
     | 'now'
     ;
 FRAG: 'fragment'; // To resolve ambiguity with ANTLR4 keyword.

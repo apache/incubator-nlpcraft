@@ -721,11 +721,10 @@ trait NCBaseDslCompiler {
             case "day_of_year" ⇒ doDayOfYear()
             case "hour" ⇒
             case "minute" ⇒
-            case "sec" ⇒
+            case "second" ⇒
             case "week_of_month" ⇒
             case "week_of_year" ⇒
             case "quarter" ⇒
-            case "msec" ⇒
             case "now" ⇒ // Epoc time.
 
             case _ ⇒ throw rtUnknownFunError(fun) // Assertion.
