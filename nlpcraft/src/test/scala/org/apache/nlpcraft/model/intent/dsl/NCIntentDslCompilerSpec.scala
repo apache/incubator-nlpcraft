@@ -60,16 +60,16 @@ class NCIntentDslCompilerSpec {
         checkOk(
             """
               |intent=i1
-              |flow="a[^0-9]b"
-              |meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |term(t1)={2 == 2 && size(id()) != -25}
+              |     flow="a[^0-9]b"
+              |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(id()) != -25}
               |""".stripMargin
         )
         checkOk(
             """
               |intent=i1
-              |flow="a[^0-9]b"
-              |term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     flow="a[^0-9]b"
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |""".stripMargin
         )
     }
@@ -80,16 +80,16 @@ class NCIntentDslCompilerSpec {
         checkError(
             """
               |intent=i1
-              |flow="a[^0-9]b"
-              |meta={{'a': true, 'b': {'arr': [1, 2, 3]}}
-              |term(t1)={2 == 2 && size(id()) != -25}
+              |     flow="a[^0-9]b"
+              |     meta={{'a': true, 'b': {'arr': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(id()) != -25}
               |""".stripMargin
         )
         checkError(
             """
               |intent=i1
-              |flow="a[^0-9]b"
-              |term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}[1:2]
+              |     flow="a[^0-9]b"
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}[1:2]
               |""".stripMargin
         )
     }

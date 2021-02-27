@@ -643,7 +643,7 @@ trait NCBaseDslCompiler {
             case "is_alphaspace" ⇒ doIsAlphaSpace()
             case "is_alphanumspace" ⇒ doIsAlphaNumSpace()
             case "substring" ⇒
-            case "index" ⇒
+            case "charAt" ⇒
             case "regex" ⇒
             case "soundex" ⇒
             case "split" ⇒ doSplit()
@@ -696,7 +696,6 @@ trait NCBaseDslCompiler {
             case "last" ⇒
             case "keys" ⇒
             case "values" ⇒
-            case "length" ⇒
             case "count" ⇒
             case "take" ⇒
             case "drop" ⇒
@@ -721,7 +720,7 @@ trait NCBaseDslCompiler {
             case "day_of_week" ⇒ doDayOfWeek()
             case "day_of_year" ⇒ doDayOfYear()
             case "hour" ⇒
-            case "min" ⇒
+            case "minute" ⇒
             case "sec" ⇒
             case "week_of_month" ⇒
             case "week_of_year" ⇒

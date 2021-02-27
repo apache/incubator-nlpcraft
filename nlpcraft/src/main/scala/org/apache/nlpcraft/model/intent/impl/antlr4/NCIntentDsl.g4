@@ -23,12 +23,12 @@ dslItems
     : dslItem
     | dslItems dslItem
     ;
-dslItem: intent | pred;
-pred: predId terms;
-predId: 'predicate' ASSIGN ID;
-predRef: 'predicate' LPAR ID RPAR;
+dslItem: intent | frag;
+frag: fragId terms;
+fragId: FRAG ASSIGN id;
+fragRef: FRAG LPAR id RPAR;
 intent: intentId orderedDecl? flowDecl? metaDecl? terms;
-intentId: 'intent' ASSIGN ID;
+intentId: 'intent' ASSIGN id;
 orderedDecl: 'ordered' ASSIGN BOOL;
 mtdDecl: DIV mtdRef DIV;
 flowDecl: 'flow' ASSIGN (qstring | mtdDecl);
@@ -53,18 +53,18 @@ jsonArr
 terms
     : termItem
     | terms termItem;
-termItem: term | predRef;
+termItem: term | fragRef;
 termEq
     : ASSIGN // Do not use conversation.
     | TILDA // Use conversation.
     ;
 term: 'term' termId? termEq ((LBRACE expr RBRACE) | mtdDecl) minMax?;
-mtdRef: javaFqn? POUND ID;
+mtdRef: javaFqn? POUND id;
 javaFqn
-    : ID
-    | javaFqn DOT ID
+    : id
+    | javaFqn DOT id
     ;
-termId: LPAR ID RPAR;
+termId: LPAR id RPAR;
 expr
     // NOTE: order of productions defines precedence.
     : op=(MINUS | NOT) expr # unaryExpr
@@ -75,7 +75,7 @@ expr
     | expr op=(EQ | NEQ) expr # eqExpr
     | expr op=(AND | OR) expr # logExpr
     | atom # atomExpr
-    | ID LPAR paramList? RPAR # callExpr
+    | FUN_NAME LPAR paramList? RPAR # callExpr
     ;
 paramList
     : expr
@@ -101,8 +101,137 @@ minMaxShortcut
     | MULT
     ;
 minMaxRange: LBR INT COMMA INT RBR;
+id: ID | FUN_NAME;
 
 // Lexer.
+FUN_NAME
+    : 'meta_token'
+    | 'meta_model'
+    | 'meta_intent'
+    | 'meta_req'
+    | 'meta_user'
+    | 'meta_company'
+    | 'meta_sys'
+    | 'meta_conv'
+    | 'json'
+    | 'if'
+    | 'id'
+    | 'ancestors'
+    | 'parent'
+    | 'groups'
+    | 'value'
+    | 'aliases'
+    | 'start_idx'
+    | 'end_idx'
+    | 'req_id'
+    | 'req_normtext'
+    | 'req_tstamp'
+    | 'req_addr'
+    | 'req_agent'
+    | 'user_id'
+    | 'user_fname'
+    | 'user_lname'
+    | 'user_email'
+    | 'user_admin'
+    | 'user_signup_tstamp'
+    | 'comp_id'
+    | 'comp_name'
+    | 'comp_website'
+    | 'comp_country'
+    | 'comp_region'
+    | 'comp_city'
+    | 'comp_addr'
+    | 'comp_postcode'
+    | 'trim'
+    | 'strip'
+    | 'uppercase'
+    | 'lowercase'
+    | 'is_alpha'
+    | 'is_alphanum'
+    | 'is_whitespace'
+    | 'is_num'
+    | 'is_numspace'
+    | 'is_alphaspace'
+    | 'is_alphanumspace'
+    | 'substring'
+    | 'charAt'
+    | 'regex'
+    | 'soundex'
+    | 'split'
+    | 'split_trim'
+    | 'replace'
+    | 'abs'
+    | 'ceil'
+    | 'floor'
+    | 'rint'
+    | 'round'
+    | 'signum'
+    | 'sqrt'
+    | 'cbrt'
+    | 'pi'
+    | 'euler'
+    | 'acos'
+    | 'asin'
+    | 'atan'
+    | 'cos'
+    | 'sin'
+    | 'tan'
+    | 'cosh'
+    | 'sinh'
+    | 'tanh'
+    | 'atn2'
+    | 'degrees'
+    | 'radians'
+    | 'exp'
+    | 'expm1'
+    | 'hypot'
+    | 'log'
+    | 'log10'
+    | 'log1p'
+    | 'pow'
+    | 'rand'
+    | 'square'
+    | 'list'
+    | 'map'
+    | 'get'
+    | 'index'
+    | 'has'
+    | 'tail'
+    | 'add'
+    | 'remove'
+    | 'first'
+    | 'last'
+    | 'keys'
+    | 'values'
+    | 'length'
+    | 'count'
+    | 'take'
+    | 'drop'
+    | 'size'
+    | 'reverse'
+    | 'is_empty'
+    | 'non_empty'
+    | 'to_string'
+    | 'avg'
+    | 'max'
+    | 'min'
+    | 'stdev'
+    | 'sum'
+    | 'year'
+    | 'month'
+    | 'day_of_month'
+    | 'day_of_week'
+    | 'day_of_year'
+    | 'hour'
+    | 'minute'
+    | 'sec'
+    | 'week_of_month'
+    | 'week_of_year'
+    | 'quarter'
+    | 'msec'
+    | 'now'
+    ;
+FRAG: 'fragment'; // To resolve ambiguity with ANTLR4 keyword.
 SQSTRING: SQUOTE ((~'\'') | ('\\''\''))* SQUOTE; // Allow for \' (escaped single quote) in the string.
 DQSTRING: DQUOTE ((~'"') | ('\\''"'))* DQUOTE; // Allow for \" (escape double quote) in the string.
 BOOL: 'true' | 'false';
