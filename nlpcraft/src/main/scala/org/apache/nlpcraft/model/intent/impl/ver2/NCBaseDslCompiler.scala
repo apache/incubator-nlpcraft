@@ -31,8 +31,8 @@ import scala.collection.mutable
 
 //noinspection DuplicatedCode
 trait NCBaseDslCompiler {
-    def syntaxError(errMsg: String, line: Int, pos: Int): NCE
-    def runtimeError(errMsg: String, cause: Exception = null): NCE
+    def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE
+    def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE
 
     /**
      *
@@ -43,7 +43,18 @@ trait NCBaseDslCompiler {
     def newSyntaxError(errMsg: String)(implicit ctx: ParserRuleContext): NCE = {
         val tok = ctx.start
 
-        syntaxError(errMsg, tok.getLine, tok.getCharPositionInLine)
+        syntaxError(errMsg, tok.getInputStream.getSourceName, tok.getLine, tok.getCharPositionInLine)
+    }
+    /**
+      *
+      * @param errMsg
+      * @param ctx
+      * @return
+      */
+    def newRuntimeError(errMsg: String, cause: Exception = null)(implicit ctx: ParserRuleContext): NCE = {
+        val src = ctx.start.getTokenSource
+        
+        runtimeError(errMsg, src.getSourceName, src.getLine, src.getCharPositionInLine, cause)
     }
 
     type StackType = mutable.ArrayStack[NCDslTermRetVal]
@@ -68,18 +79,18 @@ trait NCBaseDslCompiler {
         stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
 
     // Runtime errors.
-    def rtUnaryOpError(op: String, v: AnyRef): NCE =
-        runtimeError(s"Unexpected '$op' DSL operation for value: $v")
-    def rtBinaryOpError(op: String, v1: AnyRef, v2: AnyRef): NCE =
-        runtimeError(s"Unexpected '$op' DSL operation for values: $v1, $v2")
-    def rtUnknownFunError(fun: String): NCE =
-        runtimeError(s"Unknown DSL function: $fun()")
-    def rtMinParamNumError(min: Int, fun: String): NCE =
-        runtimeError(s"Invalid number of parameters for DSL function ($min is required): $fun()")
-    def rtParamNumError(fun: String): NCE =
-        runtimeError(s"Invalid number of parameters for DSL function: $fun()")
-    def rtParamTypeError(fun: String, param: AnyRef, expectType: String): NCE =
-        runtimeError(s"Expecting '$expectType' type of parameter for DSL function '$fun()', found: $param")
+    def rtUnaryOpError(op: String, v: AnyRef)(implicit ctx: ParserRuleContext): NCE =
+        newRuntimeError(s"Unexpected '$op' DSL operation for value: $v")
+    def rtBinaryOpError(op: String, v1: AnyRef, v2: AnyRef)(implicit ctx: ParserRuleContext): NCE =
+        newRuntimeError(s"Unexpected '$op' DSL operation for values: $v1, $v2")
+    def rtUnknownFunError(fun: String)(implicit ctx: ParserRuleContext): NCE =
+        newRuntimeError(s"Unknown DSL function: $fun()")
+    def rtMinParamNumError(min: Int, fun: String)(implicit ctx: ParserRuleContext): NCE =
+        newRuntimeError(s"Invalid number of parameters for DSL function ($min is required): $fun()")
+    def rtParamNumError(fun: String)(implicit ctx: ParserRuleContext): NCE =
+        newRuntimeError(s"Invalid number of parameters for DSL function: $fun()")
+    def rtParamTypeError(fun: String, param: AnyRef, expectType: String)(implicit ctx: ParserRuleContext): NCE =
+        newRuntimeError(s"Expecting '$expectType' type of parameter for DSL function '$fun()', found: $param")
 
     /**
      *
@@ -131,8 +142,8 @@ trait NCBaseDslCompiler {
      * @param lteq
      * @param gteq
      */
-    def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN): Instr = (_, stack: StackType, _) ⇒ {
-        implicit val s = stack
+    def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+        implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
         val usedTok = f1 || f2
@@ -179,8 +190,8 @@ trait NCBaseDslCompiler {
      * @param mod
      * @param div
      */
-    def parseMultExpr(mult: TN, mod: TN, div: TN): Instr = (_, stack: StackType, _) ⇒ {
-        implicit val s = stack
+    def parseMultExpr(mult: TN, mod: TN, div: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+        implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
         val usedTok = f1 || f2
@@ -216,8 +227,8 @@ trait NCBaseDslCompiler {
      * @param or
      * @return
      */
-    def parseLogExpr(and: TN, or : TN): Instr = (_, stack: StackType, _) ⇒ {
-        implicit val s = stack
+    def parseLogExpr(and: TN, or : TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+        implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
 
@@ -239,8 +250,8 @@ trait NCBaseDslCompiler {
      * @param neq
      * @return
      */
-    def parseEqExpr(eq: TN, neq: TN): Instr = (_, stack: StackType, _) ⇒ {
-        implicit val s = stack
+    def parseEqExpr(eq: TN, neq: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+        implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
         val usedTok = f1 || f2
@@ -269,8 +280,8 @@ trait NCBaseDslCompiler {
      * @param plus
      * @param minus
      */
-    def parsePlusExpr(plus: TN, minus: TN): Instr = (_, stack: StackType, _) ⇒ {
-        implicit val s = stack
+    def parsePlusExpr(plus: TN, minus: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+        implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
         val usedTok = f1 || f2
@@ -302,8 +313,8 @@ trait NCBaseDslCompiler {
      * @param not
      * @return
      */
-    def parseUnaryExpr(minus: TN, not: TN): Instr = (_, stack: StackType, _) ⇒ {
-        implicit val s = stack
+    def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+        implicit val s: StackType = stack
 
         val (v, usedTok) = pop1()
 
@@ -327,7 +338,7 @@ trait NCBaseDslCompiler {
      * @param txt
      * @return
      */
-    def parseAtom(txt: String): Instr = {
+    def parseAtom(txt: String)(implicit ctx: ParserRuleContext): Instr = {
         val atom =
             if (txt == "null") null // Try 'null'.
             else if (txt == "true") Boolean.box(true) // Try 'boolean'.
@@ -357,10 +368,10 @@ trait NCBaseDslCompiler {
      * @param id
      * @return
      */
-    def parseCallExpr(id: TN): Instr = (tok, stack: StackType, termCtx) ⇒ {
+    def parseCallExpr(id: TN)(implicit ctx: ParserRuleContext): Instr = (tok, stack: StackType, termCtx) ⇒ {
         val fun = id.getText
 
-        implicit val evidence = stack
+        implicit val s2: StackType = stack
 
         def ensureStack(min: Int): Unit =
             if (stack.size < min)
@@ -388,7 +399,7 @@ trait NCBaseDslCompiler {
         }
         def get2Doubles(): (JDouble, JDouble, Boolean) = {
             ensureStack(2)
-
+            
             val (v1, v2, f1, f2) = pop2()
 
             if (!isJDouble(v1))

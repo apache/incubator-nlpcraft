@@ -529,6 +529,14 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextGzipPath(path: String, enc: String, log: Logger = logger): List[String] =
         readTextGzipFile(new File(path), enc, log)
+    
+    /**
+      *
+      * @param s
+      * @return
+      */
+    def decapitalize(s: String): String =
+        s.head.toLower + s.tail
 
     /**
       * Converts given name into properly capitalized first and last name.

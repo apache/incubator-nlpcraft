@@ -62,14 +62,14 @@ object NCIntentDslCompiler extends LazyLogging {
         /*
          * Shared/common implementation.
          */
-        override def exitUnaryExpr(ctx: Parser.UnaryExprContext): Unit = termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())
-        override def exitMultExpr(ctx: Parser.MultExprContext): Unit = termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())
-        override def exitPlusExpr(ctx: Parser.PlusExprContext): Unit = termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())
-        override def exitCompExpr(ctx: Parser.CompExprContext): Unit = termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())
-        override def exitLogExpr(ctx: Parser.LogExprContext): Unit = termInstrs += parseLogExpr(ctx.AND, ctx.OR())
-        override def exitEqExpr(ctx: Parser.EqExprContext): Unit = termInstrs += parseEqExpr(ctx.EQ, ctx.NEQ())
-        override def exitCallExpr(ctx: Parser.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.ID())
-        override def exitAtom(ctx: Parser.AtomContext): Unit = termInstrs += parseAtom(ctx.getText)
+        override def exitUnaryExpr(ctx: Parser.UnaryExprContext): Unit = termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
+        override def exitMultExpr(ctx: Parser.MultExprContext): Unit = termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
+        override def exitPlusExpr(ctx: Parser.PlusExprContext): Unit = termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
+        override def exitCompExpr(ctx: Parser.CompExprContext): Unit = termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
+        override def exitLogExpr(ctx: Parser.LogExprContext): Unit = termInstrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
+        override def exitEqExpr(ctx: Parser.EqExprContext): Unit = termInstrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
+        override def exitCallExpr(ctx: Parser.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.ID())(ctx)
+        override def exitAtom(ctx: Parser.AtomContext): Unit = termInstrs += parseAtom(ctx.getText)(ctx)
 
         /**
          *
@@ -118,17 +118,17 @@ object NCIntentDslCompiler extends LazyLogging {
                     Pattern.compile(flowRegex.get)
                 catch {
                     case e: PatternSyntaxException ⇒
-                        newSyntaxError(s"${e.getDescription} in DSL intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
+                        newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
                 }
         }
 
         override def exitTerm(ctx: Parser.TermContext): Unit = {
-            implicit val evidence: ParserRuleContext = ctx
+            implicit val c: ParserRuleContext = ctx
 
             if (min < 0 || min > max)
-                throw newSyntaxError(s"Invalid DSL intent term min quantifiers: $min (must be min >= 0 && min <= max).")
+                throw newSyntaxError(s"Invalid intent term min quantifiers: $min (must be min >= 0 && min <= max).")
             if (max < 1)
-                throw newSyntaxError(s"Invalid DSL intent term max quantifiers: $max (must be max >= 1).")
+                throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")
 
             val pred =
                 if (termMtdName != null) { // User-code defined term.
@@ -156,7 +156,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         }
                         catch {
                             case e: Exception ⇒
-                                throw runtimeError(s"Failed to invoke custom DSL intent term: $mdlCls.$termMtdName", e)
+                                throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$termMtdName", e)
                         }
                     }
                 }
@@ -173,7 +173,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         val x = stack.pop()
 
                         if (!isBoolean(x.retVal))
-                            throw runtimeError(s"DSL intent term does not return boolean value: ${ctx.getText}")
+                            throw newRuntimeError(s"Intent term does not return boolean value: ${ctx.getText}")
 
                         (asBool(x.retVal), x.usedTok)
                     }
@@ -206,9 +206,11 @@ object NCIntentDslCompiler extends LazyLogging {
 
             NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, terms.toArray)
         }
-
-        override def syntaxError(errMsg: String, line: Int, pos: Int): NCE = throw new NCE(mkSyntaxError(errMsg, line, pos, dsl, mdlId))
-        override def runtimeError(errMsg: String, cause: Exception = null): NCE = throw new NCE(mkRuntimeError(errMsg, dsl, mdlId), cause)
+        
+        override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =
+            throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, dsl, mdlId))
+        override def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE =
+            throw new NCE(mkRuntimeError(errMsg, srcName, line, pos, dsl, mdlId), cause)
     }
 
     /**
@@ -222,38 +224,51 @@ object NCIntentDslCompiler extends LazyLogging {
      */
     private def mkSyntaxError(
         msg: String,
+        srcName: String,
         line: Int, // 1, 2, ...
         charPos: Int, // 0, 1, 2, ...
         dsl: String,
-        mdlId: String): String = {
-        val aLine = dsl.split("\n")(line - 1)
-        val preLen = aLine.length
-        val dslLine = aLine.strip()
-        val postLen = dslLine.length
-        val delta = preLen - postLen
-        val dash = "-" * dslLine.length
-        val pos = Math.max(0, charPos - delta)
-        val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
-        val dslPtr = dslLine.substring(0, pos) + r(dslLine.charAt(pos)) + y(dslLine.substring(pos + 1))
-
-        s"Intent DSL syntax error at line $line:${charPos + 1} - $msg\n" +
-        s"  |-- ${c("Model:")}    $mdlId\n" +
-        s"  |-- ${c("Intent:")}   $dslPtr\n" +
-        s"  +-- ${c("Location:")} $posPtr"
-    }
+        mdlId: String): String = mkError("syntax", msg, srcName, line, charPos, dsl, mdlId)
 
     /**
-     *
-     * @param msg
-     * @param dsl
-     * @param mdlId
-     * @return
-     */
-    private def mkRuntimeError(msg: String, dsl: String, mdlId: String): String =
-        s"$msg\n" +
-        s"  |-- ${c("Model:")}  $mdlId\n" +
-        s"  +-- ${c("Intent:")} $dsl\n"
+      *
+      * @param msg
+      * @param dsl
+      * @param mdlId
+      * @param srcName
+      * @param line
+      * @param charPos
+      * @return
+      */
+    private def mkRuntimeError(
+        msg: String,
+        srcName: String,
+        line: Int,
+        charPos: Int,
+        dsl: String,
+        mdlId: String): String = mkError("runtime", msg, srcName, line, charPos, dsl, mdlId)
 
+    private def mkError(
+        kind: String,
+        msg: String,
+        srcName: String,
+        line: Int,
+        charPos: Int,
+        dsl: String,
+        mdlId: String): String = {
+        val dslLine = dsl.split("\n")(line - 1)
+        val dash = "-" * dslLine.length
+        val pos = Math.max(0, charPos)
+        val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
+        val dslPtr = dslLine.substring(0, pos) + r(dslLine.charAt(pos)) + y(dslLine.substring(pos + 1))
+        val src = if (srcName == "<unknown>") "<inline>"else srcName
+        
+        s"Intent DSL $kind error in '$src' at line $line:${charPos + 1} - ${U.decapitalize(msg)}\n" +
+        s"  |-- ${c("Model:")}    $mdlId\n" +
+        s"  |-- ${c("Line:")}     $dslPtr\n" +
+        s"  +-- ${c("Position:")} $posPtr"
+    }
+    
     /**
      * Custom error handler.
      *
@@ -263,20 +278,21 @@ object NCIntentDslCompiler extends LazyLogging {
     class CompilerErrorListener(dsl: String, mdlId: String) extends BaseErrorListener {
         /**
          *
-         * @param recognizer
-         * @param offendingSymbol
+         * @param recog
+         * @param badSymbol
          * @param line
          * @param charPos
          * @param msg
          * @param e
          */
         override def syntaxError(
-            recognizer: Recognizer[_, _],
-            offendingSymbol: scala.Any,
+            recog: Recognizer[_, _],
+            badSymbol: scala.Any,
             line: Int, // 1, 2, ...
             charPos: Int, // 1, 2, ...
             msg: String,
-            e: RecognitionException): Unit = throw new NCE(mkSyntaxError(msg, line, charPos - 1, dsl, mdlId))
+            e: RecognitionException): Unit =
+            throw new NCE(mkSyntaxError(msg, recog.getInputStream.getSourceName, line, charPos - 1, dsl, mdlId))
     }
     
     /**
