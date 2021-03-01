@@ -263,7 +263,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       * @param toks
       * @return
       */
-    protected def combos[T](toks: Seq[T]): Seq[Seq[T]] =
+    private def combos[T](toks: Seq[T]): Seq[Seq[T]] =
         (for (n ← toks.size until 0 by -1) yield toks.sliding(n)).flatten.map(p ⇒ p)
 
     /**
@@ -296,7 +296,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                     varToks.flatMap(t ⇒
                         // Single word token is not split as words - token.
                         // Partly (not strict in) token - word.
-                        if ((toksComb.contains(t) || isSingleWord(t)) && inStrict(t))
+                        if (inStrict(t) && (toksComb.contains(t) || isSingleWord(t)))
                             Seq(Complex(Left(t)))
                         else
                             t.wordIndexes.filter(nlpWordIdxs.contains).map(i ⇒ Complex(Right(initialSen(i))))
@@ -355,7 +355,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 toks.map(t ⇒ (t.origText, t.index)).mkString(" ")
 
             var permCnt = 0
-            var collapsedSens: Seq[Seq[NCToken]] = null
+            lazy val collapsedSens = NCProbeVariants.convert(ns.srvReqId, mdl, ns.clone().collapse(mdl.model)).map(_.asScala)
 
             /**
               *
@@ -366,10 +366,12 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                 for (toks ← combos(perm)) {
                     val key = toks.map(_.index).sorted
-                    val sparsity = U.calcSparsity(key)
 
                     if (!cache.contains(key)) {
-                        var seq: Seq[Seq[Complex]] = null
+                        cache += key
+
+                        lazy val dslCombs = convert(ns, collapsedSens, toks).groupBy(_.length)
+                        lazy val sparsity = U.calcSparsity(key)
 
                         // Attempt to match each element.
                         for (elm ← mdl.elements.values if !alreadyMarked(toks, elm.getId)) {
@@ -426,31 +428,21 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             if (mdl.synonymsDsl.nonEmpty) {
                                 found = false
 
-                                if (collapsedSens == null)
-                                    collapsedSens =
-                                        NCProbeVariants.
-                                            convert(ns.srvReqId, mdl, ns.clone().collapse(mdl.model)).map(_.asScala)
-
-                                if (seq == null)
-                                    seq = convert(ns, collapsedSens, toks)
-
                                 for (
-                                    comb ← seq;
-                                    syn ← fastAccess(mdl.synonymsDsl, elm.getId, comb.length).getOrElse(Seq.empty)
-                                    if !found
+                                    (len, seq) ← dslCombs;
+                                    syn ← fastAccess(mdl.synonymsDsl, elm.getId, len).getOrElse(Seq.empty);
+                                    comb ← seq if !found;
+                                    data = comb.map(_.data)
                                 )
-                                    if (syn.isMatch(comb.map(_.data))) {
+                                    if (syn.isMatch(data)) {
                                         val parts = comb.zip(syn.map(_.kind)).flatMap {
-                                            case (complex, kind) ⇒
-                                                if (complex.isToken) Some(complex.token → kind) else None
+                                            case (complex, kind) ⇒ if (complex.isToken) Some(complex.token → kind) else None
                                         }
 
                                         addMatch(elm, toks, syn, parts)
                                     }
                             }
                         }
-
-                        cache += key
                     }
                 }
             }

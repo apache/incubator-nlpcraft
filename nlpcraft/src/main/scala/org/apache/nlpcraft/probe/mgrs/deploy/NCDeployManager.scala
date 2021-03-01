@@ -503,7 +503,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             solver = solver,
             intents = intents.keySet.toSeq,
             synonyms = mkFastAccessMap(filter(syns, dsl = false), NCProbeSynonymsWrapper(_)),
-            synonymsDsl = mkFastAccessMap(filter(syns, dsl = true), seq ⇒ seq),
+            synonymsDsl = mkFastAccessMap(filter(syns, dsl = true), _.sorted.reverse),
             addStopWordsStems = addStopWords.toSet,
             exclStopWordsStems = exclStopWords.toSet,
             suspWordsStems = suspWords.toSet,
