@@ -17,9 +17,31 @@
 
 package org.apache.nlpcraft.model.intent.impl.ver2
 
+import org.apache.nlpcraft.model.intent.utils.ver2.NCDslFragment
+
+import scala.collection.concurrent.TrieMap
+import scala.collection.mutable
+
 /**
   * Global intent DSL fragment cache.
   */
 object NCIntentDslFragmentCache {
-
+    private final val cache = TrieMap.empty[String /* Model ID. */, mutable.Map[String, NCDslFragment]]
+    
+    /**
+      *
+      * @param mdlId
+      * @param frag
+      */
+    def add(mdlId: String, frag: NCDslFragment): Unit =
+        cache.getOrElse(mdlId, mutable.HashMap.empty[String, NCDslFragment]) += (frag.id → frag)
+    
+    /**
+      *
+      * @param mdlId
+      * @param fragId
+      * @return
+      */
+    def get(mdlId: String, fragId: String): Option[NCDslFragment] =
+        cache.get(mdlId).flatMap(_.get(fragId))
 }

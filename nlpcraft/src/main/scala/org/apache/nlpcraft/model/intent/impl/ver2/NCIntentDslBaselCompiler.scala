@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.impl.ver2
 
-import org.antlr.v4.runtime.ParserRuleContext
+import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
 import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.model.NCToken
@@ -40,10 +40,10 @@ trait NCIntentDslBaselCompiler {
      * @param ctx
      * @return
      */
-    def newSyntaxError(errMsg: String)(implicit ctx: ParserRuleContext): NCE = {
-        val tok = ctx.start
+    def newSyntaxError(errMsg: String)(implicit ctx: PRC): NCE = {
+        val src = ctx.start.getTokenSource
 
-        syntaxError(errMsg, tok.getInputStream.getSourceName, tok.getLine, tok.getCharPositionInLine)
+        syntaxError(errMsg, src.getSourceName, src.getLine, src.getCharPositionInLine)
     }
     /**
       *
@@ -51,7 +51,7 @@ trait NCIntentDslBaselCompiler {
       * @param ctx
       * @return
       */
-    def newRuntimeError(errMsg: String, cause: Exception = null)(implicit ctx: ParserRuleContext): NCE = {
+    def newRuntimeError(errMsg: String, cause: Exception = null)(implicit ctx: PRC): NCE = {
         val src = ctx.start.getTokenSource
         
         runtimeError(errMsg, src.getSourceName, src.getLine, src.getCharPositionInLine, cause)
@@ -79,17 +79,17 @@ trait NCIntentDslBaselCompiler {
         stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
 
     // Runtime errors.
-    def rtUnaryOpError(op: String, v: AnyRef)(implicit ctx: ParserRuleContext): NCE =
+    def rtUnaryOpError(op: String, v: AnyRef)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Unexpected '$op' DSL operation for value: $v")
-    def rtBinaryOpError(op: String, v1: AnyRef, v2: AnyRef)(implicit ctx: ParserRuleContext): NCE =
+    def rtBinaryOpError(op: String, v1: AnyRef, v2: AnyRef)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Unexpected '$op' DSL operation for values: $v1, $v2")
-    def rtUnknownFunError(fun: String)(implicit ctx: ParserRuleContext): NCE =
+    def rtUnknownFunError(fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Unknown DSL function: $fun()")
-    def rtMinParamNumError(min: Int, fun: String)(implicit ctx: ParserRuleContext): NCE =
+    def rtMinParamNumError(min: Int, fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Invalid number of parameters for DSL function ($min is required): $fun()")
-    def rtParamNumError(fun: String)(implicit ctx: ParserRuleContext): NCE =
+    def rtParamNumError(fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Invalid number of parameters for DSL function: $fun()")
-    def rtParamTypeError(fun: String, param: AnyRef, expectType: String)(implicit ctx: ParserRuleContext): NCE =
+    def rtParamTypeError(fun: String, param: AnyRef, expectType: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Expecting '$expectType' type of parameter for DSL function '$fun()', found: $param")
 
     /**
@@ -142,7 +142,7 @@ trait NCIntentDslBaselCompiler {
      * @param lteq
      * @param gteq
      */
-    def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+    def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
@@ -190,7 +190,7 @@ trait NCIntentDslBaselCompiler {
      * @param mod
      * @param div
      */
-    def parseMultExpr(mult: TN, mod: TN, div: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+    def parseMultExpr(mult: TN, mod: TN, div: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
@@ -227,7 +227,7 @@ trait NCIntentDslBaselCompiler {
      * @param or
      * @return
      */
-    def parseLogExpr(and: TN, or : TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+    def parseLogExpr(and: TN, or : TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
@@ -250,7 +250,7 @@ trait NCIntentDslBaselCompiler {
      * @param neq
      * @return
      */
-    def parseEqExpr(eq: TN, neq: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+    def parseEqExpr(eq: TN, neq: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
@@ -280,7 +280,7 @@ trait NCIntentDslBaselCompiler {
      * @param plus
      * @param minus
      */
-    def parsePlusExpr(plus: TN, minus: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+    def parsePlusExpr(plus: TN, minus: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
@@ -313,7 +313,7 @@ trait NCIntentDslBaselCompiler {
      * @param not
      * @return
      */
-    def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: ParserRuleContext): Instr = (_, stack: StackType, _) ⇒ {
+    def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
         val (v, usedTok) = pop1()
@@ -338,7 +338,7 @@ trait NCIntentDslBaselCompiler {
      * @param txt
      * @return
      */
-    def parseAtom(txt: String)(implicit ctx: ParserRuleContext): Instr = {
+    def parseAtom(txt: String)(implicit ctx: PRC): Instr = {
         val atom =
             if (txt == "null") null // Try 'null'.
             else if (txt == "true") Boolean.box(true) // Try 'boolean'.
@@ -368,7 +368,7 @@ trait NCIntentDslBaselCompiler {
      * @param id
      * @return
      */
-    def parseCallExpr(id: TN)(implicit ctx: ParserRuleContext): Instr = (tok, stack: StackType, termCtx) ⇒ {
+    def parseCallExpr(id: TN)(implicit ctx: PRC): Instr = (tok, stack: StackType, termCtx) ⇒ {
         val fun = id.getText
 
         implicit val s2: StackType = stack
@@ -599,6 +599,7 @@ trait NCIntentDslBaselCompiler {
             case "meta_company" ⇒ doCompMeta()
             case "meta_sys" ⇒ doSysMeta()
             case "meta_conv" ⇒ doConvMeta()
+            case "meta_frag" ⇒
 
             // Converts JSON to map.
             case "json" ⇒ doJson()

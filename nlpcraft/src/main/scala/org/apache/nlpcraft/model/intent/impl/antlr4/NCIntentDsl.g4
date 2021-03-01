@@ -23,10 +23,14 @@ dslItems
     : dslItem
     | dslItems dslItem
     ;
-dslItem: intent | frag;
+dslItem
+    : intent
+    | frag
+    ;
 frag: fragId terms;
 fragId: FRAG ASSIGN id;
-fragRef: FRAG LPAR id RPAR;
+fragRef: FRAG LPAR id fragArg? RPAR;
+fragArg: COMMA jsonObj;
 intent: intentId orderedDecl? flowDecl? metaDecl? terms;
 intentId: 'intent' ASSIGN id;
 orderedDecl: 'ordered' ASSIGN BOOL;
@@ -53,7 +57,10 @@ jsonArr
 terms
     : termItem
     | terms termItem;
-termItem: term | fragRef;
+termItem
+    : term
+    | fragRef
+    ;
 termEq
     : ASSIGN // Do not use conversation.
     | TILDA // Use conversation.
@@ -116,6 +123,7 @@ FUN_NAME
     | 'meta_company'
     | 'meta_sys'
     | 'meta_conv'
+    | 'meta_frag'
     | 'json'
     | 'if'
     | 'id'
@@ -295,4 +303,4 @@ fragment LETTER: [a-zA-Z];
 ID: (UNI_CHAR|UNDERSCORE|LETTER|DOLLAR)+(UNI_CHAR|DOLLAR|LETTER|[0-9]|COLON|MINUS|UNDERSCORE)*;
 COMMENT : ('//' ~[\r\n]* '\r'? ('\n'| EOF) | '/*' .*? '*/' ) -> skip;
 WS: [ \r\t\u000C\n]+ -> skip;
-ErrorCharacter: .;
+ErrorChar: .;

@@ -243,8 +243,8 @@ object NCIntentDslCompiler extends LazyLogging {
     private def mkRuntimeError(
         msg: String,
         srcName: String,
-        line: Int,
-        charPos: Int,
+        line: Int, // 1, 2, ...
+        charPos: Int, // 0, 1, 2, ...
         dsl: String,
         mdlId: String): String = mkError("runtime", msg, srcName, line, charPos, dsl, mdlId)
 
