@@ -40,7 +40,7 @@ object NCIntentDslCompiler extends LazyLogging {
      * @param dsl
      * @param mdlId
      */
-    class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCBaseDslCompiler {
+    class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCIntentDslBaselCompiler {
         // Intent components.
         private var id: String = _
         private var ordered: Boolean = false
@@ -204,7 +204,7 @@ object NCIntentDslCompiler extends LazyLogging {
             require(id != null)
             require(terms.nonEmpty)
 
-            NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, terms.toArray)
+            NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, terms.toList)
         }
         
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =
@@ -262,8 +262,12 @@ object NCIntentDslCompiler extends LazyLogging {
         val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
         val dslPtr = dslLine.substring(0, pos) + r(dslLine.charAt(pos)) + y(dslLine.substring(pos + 1))
         val src = if (srcName == "<unknown>") "<inline>"else srcName
+        val aMsg = U.decapitalize(msg) match {
+            case s: String if s.last == '.' ⇒ s
+            case s: String ⇒ s + '.'
+        }
         
-        s"Intent DSL $kind error in '$src' at line $line:${charPos + 1} - ${U.decapitalize(msg)}\n" +
+        s"Intent DSL $kind error in '$src' at line $line:${charPos + 1} - $aMsg\n" +
         s"  |-- ${c("Model:")}    $mdlId\n" +
         s"  |-- ${c("Line:")}     $dslPtr\n" +
         s"  +-- ${c("Position:")} $posPtr"

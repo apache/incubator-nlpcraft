@@ -30,7 +30,7 @@ import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
 import scala.collection.mutable
 
 //noinspection DuplicatedCode
-trait NCBaseDslCompiler {
+trait NCIntentDslBaselCompiler {
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE
 

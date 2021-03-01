@@ -21,11 +21,20 @@ import org.apache.nlpcraft.model.NCToken
 
 /**
  * DSL term.
- */
+  *
+  * @param id Optional ID of this term.
+  * @param pred
+  * @param min
+  * @param max
+  * @param conv
+  */
 case class NCDslTerm(
-    id: String,
+    id: String, // Could be null.
     pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
     min: Int,
     max: Int,
     conv: Boolean
-)
+) {
+    require(pred != null)
+    require(min >= 0 && max >= min)
+}

@@ -49,7 +49,7 @@ class NCLogHolder extends Serializable {
         groups: util.List[String]
     )
     
-    case class UserJson(
+    case class UserJson( // TODO: add metadata
         id: Long,
         firstName: String,
         lastName: String,
@@ -57,10 +57,10 @@ class NCLogHolder extends Serializable {
         avatarUrl: String,
         isAdmin: Boolean,
         signupTimestamp: Long,
-        meta: JavaMeta
+        meta: JavaMeta // TODO: remove.
     )
     
-    case class CompanyJson(
+    case class CompanyJson( // TODO: add metadata
         id: Long,
         name: String,
         website: String,

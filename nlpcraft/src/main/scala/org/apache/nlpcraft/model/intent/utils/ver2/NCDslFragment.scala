@@ -17,37 +17,16 @@
 
 package org.apache.nlpcraft.model.intent.utils.ver2
 
-import java.util.regex.Pattern
-
 /**
- * DSL intent.
+  * DSL fragment.
   *
-  * @param dsl Original DSL of this intent.
-  * @param id
-  * @param ordered
-  * @param meta
-  * @param flow
-  * @param terms
+  * @param id ID of this fragment (must be unique within a model).
+  * @param terms List of terms this fragment defines.
   */
-case class NCDslIntent(
-    dsl: String,
+case class NCDslFragment(
     id: String,
-    ordered: Boolean,
-    meta: Map[String, Any],
-    flow: Option[String],
     terms: List[NCDslTerm]
 ) {
     require(id != null)
     require(terms.nonEmpty)
-    require(meta != null)
-
-    // Flow regex as a compiled pattern.
-    // Regex validity check is already done during intent compilation.
-    val flowRegex = flow match {
-        case Some(r) ⇒ Some(Pattern.compile(r))
-        case None ⇒ None
-    }
-
-    override def toString: String =
-        s"intent=$id"
 }
