@@ -17,21 +17,22 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
-import java.io.Serializable
-import java.util
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer, _}
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, TEXT}
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymsWrapper, NCProbeVariants}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeVariants}
 
+import java.io.Serializable
+import java.util
 import scala.collection.JavaConverters._
-import scala.compat.java8.OptionConverters._
 import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, mutable}
+import scala.compat.java8.OptionConverters._
 
 /**
   * Model elements enricher.
@@ -63,7 +64,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         element: NCElement,
         tokens: Seq[NCNlpSentenceToken],
         synonym: NCProbeSynonym,
-        parts: Seq[NCToken]
+        parts: Seq[(NCToken, NCSynonymChunkKind)]
     ) extends Ordered[ElementMatch] {
         // Tokens sparsity.
         lazy val sparsity: Int = tokens.zipWithIndex.tail.map {
@@ -198,7 +199,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         direct: Boolean,
         syn: Option[NCProbeSynonym],
         metaOpt: Option[Map[String, Object]],
-        parts: Seq[NCToken]
+        parts: Seq[(NCToken, NCSynonymChunkKind)]
     ): Unit = {
         val params = mutable.ArrayBuffer.empty[(String, AnyRef)]
 
@@ -219,16 +220,16 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
         if (parts.nonEmpty) {
             val partsData: Seq[util.HashMap[String, Any]] =
-                parts.map(part ⇒ {
+                parts.map { case (part, kind) ⇒
                     val m = new util.HashMap[String, Any]()
 
-                    m.put("id", part.getId)
+                    m.put("id", if (kind == TEXT) "nlpcraft:nlp" else part.getId)
                     m.put("startcharindex", part.getStartCharIndex)
                     m.put("endcharindex", part.getEndCharIndex)
                     m.put(TOK_META_ALIASES_KEY, part.getMetadata.get(TOK_META_ALIASES_KEY))
 
                     m
-                })
+                }
 
             params += "parts" → partsData.asJava
         }
@@ -375,7 +376,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             var found = false
 
                             def addMatch(
-                                elm: NCElement, toks: Seq[NCNlpSentenceToken], syn: NCProbeSynonym, parts: Seq[NCToken]
+                                elm: NCElement, toks: Seq[NCNlpSentenceToken], syn: NCProbeSynonym, parts: Seq[(NCToken, NCSynonymChunkKind)]
                             ): Unit =
                                 if (
                                     (elm.getJiggleFactor.isEmpty || elm.getJiggleFactor.get() >= sparsity) &&
@@ -438,8 +439,14 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                     syn ← fastAccess(mdl.synonymsDsl, elm.getId, comb.length).getOrElse(Seq.empty)
                                     if !found
                                 )
-                                    if (syn.isMatch(comb.map(_.data)))
-                                        addMatch(elm, toks, syn, comb.filter(_.isToken).map(_.token))
+                                    if (syn.isMatch(comb.map(_.data))) {
+                                        val parts = comb.zip(syn.map(_.kind)).flatMap {
+                                            case (complex, kind) ⇒
+                                                if (complex.isToken) Some(complex.token → kind) else None
+                                        }
+
+                                        addMatch(elm, toks, syn, parts)
+                                    }
                             }
                         }
 

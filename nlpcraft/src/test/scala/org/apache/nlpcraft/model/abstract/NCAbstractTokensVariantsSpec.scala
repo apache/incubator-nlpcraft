@@ -30,6 +30,11 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
     private def checkText(t: NCToken, txt: String): Unit =
         require(t.getOriginalText == txt, s"Expected text: $txt, token: $t")
 
+    private def checkToken(t: NCToken, id: String, txt: String): Unit = {
+        checkId(t, id)
+        checkText(t, txt)
+    }
+
     override def onContext(ctx: NCContext): NCResult = {
         val variants = ctx.getVariants.asScala
 
@@ -49,6 +54,18 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
             )
         }
 
+        def checkWrapAnyWord(t: NCToken, any: String): Unit = {
+            val parts = t.getPartTokens.asScala
+
+            require(parts.size == 2)
+
+            checkToken(parts.head, "nlpcraft:nlp", "the")
+            checkToken(parts.last, "anyWord", any)
+
+            require(parts.last.isAbstract, s"Unexpected abstract token: ${parts.last}")
+
+        }
+
         ctx.getRequest.getNormalizedText match {
             case "word the word" ⇒
                 require(variants.size == 1)
@@ -57,20 +74,10 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
 
                 require(toks.size == 2)
 
-                checkId(toks.head, "nlpcraft:nlp")
-                checkText(toks.head, "word")
+                checkToken(toks.head, "nlpcraft:nlp", "word")
+                checkToken(toks.last, "wrapAnyWord", "the word")
 
-                checkId(toks.last, "wrapAnyWord")
-                checkText(toks.last, "the word")
-
-                val t2Parts = toks.last.getPartTokens.asScala
-
-                require(t2Parts.size == 2)
-
-                checkId(t2Parts.head,"anyWord")
-                checkId(t2Parts.last, "anyWord")
-
-                t2Parts.foreach(t ⇒ require(t.isAbstract, s"Unexpected abstract token: $t"))
+                checkWrapAnyWord(toks.last, "word")
 
             case "10 w1 10 w2" ⇒
                 require(variants.nonEmpty)
@@ -85,16 +92,16 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
 
                 require(toks.size == 2)
 
-                checkText(toks.head, "10")
-                checkText(toks.last,"w1 10 w2")
+                checkToken(toks.head, "nlpcraft:nlp", "10")
+                checkToken(toks.last,"wrapNum", "w1 10 w2")
 
                 val t2Parts = toks.last.getPartTokens.asScala
 
                 require(t2Parts.size == 3)
 
-                checkId(t2Parts.head,"nlpcraft:nlp")
-                checkId(t2Parts(1),"nlpcraft:num")
-                checkId(t2Parts.last,"nlpcraft:nlp")
+                checkToken(t2Parts.head,"nlpcraft:nlp", "w1")
+                checkToken(t2Parts(1),"nlpcraft:num", "10")
+                checkToken(t2Parts.last,"nlpcraft:nlp", "w2")
 
             case "before limit top 6 the any" ⇒
                 require(variants.nonEmpty)
@@ -109,8 +116,8 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
 
                 require(toks.size == 2)
 
-                checkText(toks.head, "before limit top 6")
-                checkText(toks.last,"the any")
+                checkToken(toks.head, "wrapLimit", "before limit top 6")
+                checkToken(toks.last, "wrapAnyWord", "the any")
 
                 val wrap = toks.head.getPartTokens.asScala
 
@@ -118,6 +125,7 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
 
                 checkLimit(wrap.last)
 
+                checkWrapAnyWord(toks.last, "any")
             case "a wrap before limit top 6 the any" ⇒
                 require(variants.nonEmpty)
 
@@ -131,9 +139,9 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
 
                 require(toks.size == 3)
 
-                checkText(toks.head, "a")
-                checkText(toks(1), "wrap before limit top 6")
-                checkText(toks.last,"the any")
+                checkToken(toks.head, "nlpcraft:nlp", "a")
+                checkToken(toks(1), "wrapWrapLimit", "wrap before limit top 6")
+                checkToken(toks.last, "wrapAnyWord", "the any")
 
                 val wrap = toks(1).getPartTokens.asScala
 
@@ -147,6 +155,8 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
                 require(wrapLimit.getPartTokens.size == 3, s"Parts count: ${wrapLimit.getPartTokens.size()}")
 
                 checkLimit(wrapLimit.getPartTokens.asScala.last)
+
+                checkWrapAnyWord(toks.last, "any")
             case _ ⇒ throw new AssertionError(s"Unexpected request: ${ctx.getRequest.getNormalizedText}")
         }
 
