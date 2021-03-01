@@ -242,7 +242,7 @@ class NCTokenPropertiesModel7 extends NCTokenPropertiesModelAbstract {
 }
 
 @NCTestEnvironment(model = classOf[NCTokenPropertiesModel7], startClient = true)
-class NCTokenPropertiesModel6Spe7 extends NCTestContext {
+class NCTokenPropertiesModel7Spec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkIntent("a b", "onAB")
@@ -281,7 +281,7 @@ class NCTokenPropertiesModel8 extends NCTokenPropertiesModelAbstract {
 }
 
 @NCTestEnvironment(model = classOf[NCTokenPropertiesModel8], startClient = true)
-class NCTokenPropertiesModel6Spe8 extends NCTestContext {
+class NCTokenPropertiesModel8Spec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkIntent("a b", "onAB")
