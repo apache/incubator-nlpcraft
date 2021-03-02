@@ -21,9 +21,10 @@ import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslParser ⇒ Parser, _}
+import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslParser ⇒ IDP, _}
 import org.apache.nlpcraft.model.intent.utils.ver2._
-import org.apache.nlpcraft.model.{NCMetadata, NCRequest, NCToken, NCTokenPredicateContext, NCTokenPredicateResult}
+import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.intent.impl.ver2.{NCIntentDslFragmentCache ⇒ FragCache}
 
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
@@ -33,7 +34,7 @@ import scala.collection.JavaConverters._
 
 object NCIntentDslCompiler extends LazyLogging {
     // Compiler cache.
-    private val cache = new mutable.HashMap[String, NCDslIntent]
+    private val cache = new mutable.HashMap[String, Set[NCDslIntent]]
 
     /**
      *
@@ -41,11 +42,19 @@ object NCIntentDslCompiler extends LazyLogging {
      * @param mdlId
      */
     class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCIntentDslBaselCompiler {
+        // Accumulator for parsed intents.
+        private val intents = ArrayBuffer.empty[NCDslIntent]
+
+        // Fragment components.
+        private var fragId: String = _
+
         // Intent components.
-        private var id: String = _
+        private var intentId: String = _
         private var ordered: Boolean = false
-        private val terms = ArrayBuffer.empty[NCDslTerm] // Accumulator for parsed terms.
         private var flowRegex: Option[String] = None
+
+        // Accumulator for parsed terms.
+        private val terms = ArrayBuffer.empty[NCDslTerm]
 
         // Current JSON-based meta.
         private var meta: Map[String, Any] = _
@@ -66,14 +75,14 @@ object NCIntentDslCompiler extends LazyLogging {
         /*
          * Shared/common implementation.
          */
-        override def exitUnaryExpr(ctx: Parser.UnaryExprContext): Unit = termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
-        override def exitMultExpr(ctx: Parser.MultExprContext): Unit = termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
-        override def exitPlusExpr(ctx: Parser.PlusExprContext): Unit = termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
-        override def exitCompExpr(ctx: Parser.CompExprContext): Unit = termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
-        override def exitLogExpr(ctx: Parser.LogExprContext): Unit = termInstrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
-        override def exitEqExpr(ctx: Parser.EqExprContext): Unit = termInstrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
-        override def exitCallExpr(ctx: Parser.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.FUN_NAME())(ctx)
-        override def exitAtom(ctx: Parser.AtomContext): Unit = termInstrs += parseAtom(ctx.getText)(ctx)
+        override def exitUnaryExpr(ctx: IDP.UnaryExprContext): Unit = termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
+        override def exitMultExpr(ctx: IDP.MultExprContext): Unit = termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
+        override def exitPlusExpr(ctx: IDP.PlusExprContext): Unit = termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
+        override def exitCompExpr(ctx: IDP.CompExprContext): Unit = termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
+        override def exitLogExpr(ctx: IDP.LogExprContext): Unit = termInstrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
+        override def exitEqExpr(ctx: IDP.EqExprContext): Unit = termInstrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
+        override def exitCallExpr(ctx: IDP.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.FUN_NAME())(ctx)
+        override def exitAtom(ctx: IDP.AtomContext): Unit = termInstrs += parseAtom(ctx.getText)(ctx)
 
         /**
          *
@@ -85,7 +94,7 @@ object NCIntentDslCompiler extends LazyLogging {
             this.max = max
         }
 
-        override def exitMinMaxShortcut(ctx: Parser.MinMaxShortcutContext): Unit = {
+        override def exitMinMaxShortcut(ctx: IDP.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
                 setMinMax(1, Integer.MAX_VALUE)
             else if (ctx.MULT() != null)
@@ -96,20 +105,21 @@ object NCIntentDslCompiler extends LazyLogging {
                 assert(false)
         }
 
-        override def exitMtdRef(ctx: Parser.MtdRefContext): Unit = {
+        override def exitMtdRef(ctx: IDP.MtdRefContext): Unit = {
             if (ctx.javaFqn() != null)
                 refClsName = Some(ctx.javaFqn().getText)
 
             refMtdName = Some(ctx.id().getText)
         }
 
-        override def exitTermId(ctx: Parser.TermIdContext): Unit = termId = ctx.id().getText
-        override def exitTermEq(ctx: Parser.TermEqContext): Unit =  termConv = ctx.TILDA() != null
-        override def exitIntentId(ctx: Parser.IntentIdContext): Unit = id = ctx.id().getText
-        override def exitMetaDecl(ctx: Parser.MetaDeclContext): Unit = meta = U.jsonToScalaMap(ctx.jsonObj().getText)
-        override def exitOrderedDecl(ctx: Parser.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
+        override def exitTermId(ctx: IDP.TermIdContext): Unit = termId = ctx.id().getText
+        override def exitTermEq(ctx: IDP.TermEqContext): Unit =  termConv = ctx.TILDA() != null
+        override def exitIntentId(ctx: IDP.IntentIdContext): Unit = intentId = ctx.id().getText
+        override def exitFragId(ctx: IDP.FragIdContext): Unit = fragId = ctx.id().getText
+        override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = meta = U.jsonToScalaMap(ctx.jsonObj().getText)
+        override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
-        override def exitFlowDecl(ctx: Parser.FlowDeclContext): Unit = {
+        override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit = {
             implicit val evidence: ParserRuleContext = ctx
 
             if (ctx.qstring() != null) {
@@ -128,7 +138,7 @@ object NCIntentDslCompiler extends LazyLogging {
             }
         }
 
-        override def exitTerm(ctx: Parser.TermContext): Unit = {
+        override def exitTerm(ctx: IDP.TermContext): Unit = {
             implicit val c: ParserRuleContext = ctx
 
             if (min < 0 || min > max)
@@ -138,6 +148,7 @@ object NCIntentDslCompiler extends LazyLogging {
 
             val pred =
                 if (refMtdName != null) { // User-code defined term.
+                    // Closure copies.
                     val clsName = refClsName.orNull
                     val mtdName = refMtdName.orNull
 
@@ -188,7 +199,11 @@ object NCIntentDslCompiler extends LazyLogging {
                     }
 
                 }
-
+                
+            // Check term ID uniqueness.
+            if (terms.exists(t ⇒ t.id != null && t.id == termId))
+                throw newSyntaxError(s"Duplicate term ID: $termId")
+                
             // Add term.
             terms += NCDslTerm(
                 termId,
@@ -205,16 +220,42 @@ object NCIntentDslCompiler extends LazyLogging {
             refMtdName = None
         }
 
+        override def exitFrag(ctx: IDP.FragContext): Unit = {
+            if (FragCache.get(mdlId, fragId).isDefined)
+                throw newSyntaxError(s"Duplicate fragment ID: $fragId")(ctx)
+
+            FragCache.add(mdlId, NCDslFragment(fragId, terms.toList))
+
+            terms.clear()
+        }
+        
+        override def exitIntent(ctx: IDP.IntentContext): Unit = {
+            // Check intent ID uniqueness (only for the current source).
+            if (intents.exists(i ⇒ i.id != null && i.id == intentId))
+                throw newSyntaxError(s"Duplicate intent ID: $termId")(ctx)
+
+            intents += NCDslIntent(
+                dsl,
+                intentId,
+                ordered,
+                if (meta == null) Map.empty else meta,
+                flowRegex,
+                refClsName,
+                refMtdName,
+                terms.toList
+            )
+
+            refClsName = None
+            refMtdName = None
+
+            terms.clear()
+        }
+
         /**
          *
          * @return
          */
-        def getBuiltIntent: NCDslIntent = {
-            require(id != null)
-            require(terms.nonEmpty)
-
-            NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, refClsName, refMtdName,  terms.toList)
-        }
+        def getBuiltIntents: Set[NCDslIntent] = intents.toSet
         
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =
             throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, dsl, mdlId))
@@ -335,30 +376,30 @@ object NCIntentDslCompiler extends LazyLogging {
     ): Set[NCDslIntent] = {
         require(dsl != null)
 
-        val src = dsl.strip()
+        val aDsl = dsl.strip()
 
-        val intent: NCDslIntent = cache.getOrElseUpdate(src, {
+        val intents: Set[NCDslIntent] = cache.getOrElseUpdate(aDsl, {
             // ANTLR4 armature.
-            val lexer = new NCIntentDslLexer(CharStreams.fromString(src))
+            val lexer = new NCIntentDslLexer(CharStreams.fromString(aDsl))
             val tokens = new CommonTokenStream(lexer)
-            val parser = new Parser(tokens)
+            val parser = new IDP(tokens)
 
             // Set custom error handlers.
             lexer.removeErrorListeners()
             parser.removeErrorListeners()
-            lexer.addErrorListener(new CompilerErrorListener(src, mdlId))
-            parser.addErrorListener(new CompilerErrorListener(src, mdlId))
+            lexer.addErrorListener(new CompilerErrorListener(aDsl, mdlId))
+            parser.addErrorListener(new CompilerErrorListener(aDsl, mdlId))
 
             // State automata.
-            val fsm = new FiniteStateMachine(src, mdlId)
+            val fsm = new FiniteStateMachine(aDsl, mdlId)
 
             // Parse the input DSL and walk built AST.
-            (new ParseTreeWalker).walk(fsm, parser.intent())
+            (new ParseTreeWalker).walk(fsm, parser.dsl())
 
             // Return the built intent.
-            fsm.getBuiltIntent
+            fsm.getBuiltIntents
         })
 
-        Set(intent) // TODO
+        intents
     }
 }
