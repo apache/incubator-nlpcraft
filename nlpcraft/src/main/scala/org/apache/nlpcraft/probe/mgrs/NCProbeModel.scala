@@ -39,7 +39,7 @@ case class NCProbeModel(
     model: NCModel,
     solver: NCIntentSolver,
     intents: Seq[NCDslIntent],
-    synonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCProbeSynonym]]], // Fast access map.
+    synonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , NCProbeSynonymsWrapper]], // Fast access map.
     synonymsDsl: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCProbeSynonym]]], // Fast access map.
     addStopWordsStems: Set[String],
     exclStopWordsStems: Set[String],

@@ -25,7 +25,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuf
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeVariants}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymsWrapper, NCProbeVariants}
 
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
@@ -328,21 +328,21 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             val matches = ArrayBuffer.empty[ElementMatch]
 
             /**
-              * Gets sequence of synonyms sorted in descending order by their weight, i.e. first synonym in
-              * the sequence is the most important one.
+              * Gets synonyms sorted in descending order by their weight (already prepared),
+              * i.e. first synonym in the sequence is the most important one.
               *
               * @param fastMap
               * @param elmId
               * @param len
-              * @return
               */
-            def fastAccess(
-                fastMap: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCProbeSynonym]]],
+            def fastAccess[T](
+                fastMap: Map[String /*Element ID*/, Map[Int /*Synonym length*/, T]],
                 elmId: String,
-                len: Int): Seq[NCProbeSynonym] =
-                fastMap.get(elmId).flatMap(_.get(len)) match {
-                    case Some(seq) ⇒ seq
-                    case None ⇒ Seq.empty[NCProbeSynonym]
+                len: Int
+            ): Option[T] =
+                fastMap.get(elmId) match {
+                    case Some(m) ⇒ m.get(len)
+                    case None ⇒ None
                 }
 
             /**
@@ -388,9 +388,39 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                             // Optimization - plain synonyms can be used only on first iteration
                             if (mdl.synonyms.nonEmpty && !ns.exists(_.isUser))
-                                for (syn ← fastAccess(mdl.synonyms, elm.getId, toks.length) if !found)
-                                    if (syn.isMatch(toks))
-                                        addMatch(elm, toks, syn, Seq.empty)
+                                fastAccess(mdl.synonyms, elm.getId, toks.length) match {
+                                    case Some(h) ⇒
+                                        val stems = toks.map(_.stem).mkString(" ")
+
+                                        def tryMap(synsMap: Map[String, NCProbeSynonym], notFound: () ⇒ Unit): Unit =
+                                            synsMap.get(stems) match {
+                                                case Some(syn) ⇒
+                                                    addMatch(elm, toks, syn, Seq.empty)
+
+                                                    if (!found)
+                                                        notFound()
+                                                case None ⇒ notFound()
+                                            }
+
+                                        def tryScan(synsSeq: Seq[NCProbeSynonym]): Unit =
+                                            for (syn ← synsSeq if !found)
+                                                if (syn.isMatch(toks))
+                                                    addMatch(elm, toks, syn, Seq.empty)
+
+                                        tryMap(
+                                            h.txtDirectSynonyms,
+                                            () ⇒ {
+                                                tryScan(h.notTxtDirectSynonyms)
+
+                                                if (!found)
+                                                    tryMap(
+                                                        h.txtNotDirectSynonyms,
+                                                        () ⇒ tryScan(h.notTxtNotDirectSynonyms)
+                                                    )
+                                            }
+                                        )
+                                    case None ⇒ // No-op.
+                                }
 
                             if (mdl.synonymsDsl.nonEmpty) {
                                 found = false
@@ -403,7 +433,11 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 if (seq == null)
                                     seq = convert(ns, collapsedSens, toks)
 
-                                for (comb ← seq; syn ← fastAccess(mdl.synonymsDsl, elm.getId, comb.length) if !found)
+                                for (
+                                    comb ← seq;
+                                    syn ← fastAccess(mdl.synonymsDsl, elm.getId, comb.length).getOrElse(Seq.empty)
+                                    if !found
+                                )
                                     if (syn.isMatch(comb.map(_.data)))
                                         addMatch(elm, toks, syn, comb.filter(_.isToken).map(_.token))
                             }

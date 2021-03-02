@@ -34,17 +34,32 @@ import scala.language.implicitConversions
 object NCNlpSentence extends LazyLogging {
     implicit def toTokens(x: NCNlpSentence): ArrayBuffer[NCNlpSentenceToken] = x.tokens
 
-    private case class NoteLink(note: String, indexes: Seq[Int])
-    private case class PartKey(id: String, start: Int, end: Int) {
+    case class NoteKey(start: Int, end: Int)
+    case class TokenKey(id: String, start: Int, end: Int)
+    case class NoteLink(note: String, indexes: Seq[Int])
+
+    case class PartKey(id: String, start: Int, end: Int) {
+        require(start <= end)
+
         private def in(i: Int): Boolean = i >= start && i <= end
         def intersect(id: String, start: Int, end: Int): Boolean = id == this.id && (in(start) || in(end))
+    }
+    object PartKey {
+        def apply(m: util.HashMap[String, JSerializable]): PartKey = {
+            def get[T](name: String): T = m.get(name).asInstanceOf[T]
+
+            PartKey(get("id"), get("startcharindex"), get("endcharindex"))
+        }
+
+        def apply(t: NCNlpSentenceNote, sen: NCNlpSentence): PartKey =
+            PartKey(t.noteType, sen(t.tokenFrom).startCharIndex, sen(t.tokenTo).endCharIndex)
     }
 
     private def getLinks(notes: Seq[NCNlpSentenceNote]): Seq[NoteLink] = {
         val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
 
         for (n ← notes.filter(n ⇒ n.noteType == "nlpcraft:limit" || n.noteType == "nlpcraft:references"))
-            noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala)
+            noteLinks += NoteLink(n("note").asInstanceOf[String], n("indexes").asInstanceOf[JList[Int]].asScala.sorted)
 
         for (n ← notes.filter(_.noteType == "nlpcraft:sort")) {
             def add(noteName: String, idxsName: String): Unit = {
@@ -55,7 +70,7 @@ object NCNlpSentence extends LazyLogging {
 
                 noteLinks ++=
                     (for ((name, idxs) ← names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
-                        yield NoteLink(name, idxs)
+                        yield NoteLink(name, idxs.sorted)
                     )
             }
 
@@ -73,14 +88,7 @@ object NCNlpSentence extends LazyLogging {
                 val optList: Option[JList[util.HashMap[String, JSerializable]]] = n.dataOpt("parts")
 
                 optList
-            }).flatMap(_.asScala).
-                map(map ⇒
-                    PartKey(
-                        map.get("id").asInstanceOf[String],
-                        map.get("startcharindex").asInstanceOf[Int],
-                        map.get("endcharindex").asInstanceOf[Int]
-                    )
-                ).distinct
+            }).flatMap(_.asScala).map(m ⇒ PartKey(m)).distinct
 
     /**
       *
@@ -549,7 +557,9 @@ class NCNlpSentence(
     val text: String,
     val enabledBuiltInToks: Set[String],
     override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
-    val deletedNotes: mutable.HashMap[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = mutable.HashMap.empty
+    private val deletedNotes: mutable.HashMap[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = mutable.HashMap.empty,
+    private var initNlpNotes: Map[NoteKey, NCNlpSentenceNote] = null,
+    private val nlpTokens: mutable.HashMap[TokenKey, NCNlpSentenceToken] = mutable.HashMap.empty
 ) extends NCNlpSentenceTokenBuffer(tokens) with JSerializable {
     @transient
     private var hash: java.lang.Integer = _
@@ -578,7 +588,8 @@ class NCNlpSentence(
             text,
             enabledBuiltInToks,
             tokens.map(_.clone()),
-            deletedNotes.map(p ⇒ p._1.clone() → p._2.map(_.clone()))
+            deletedNotes.map(p ⇒ p._1.clone() → p._2.map(_.clone())),
+            initNlpNotes = initNlpNotes
         )
 
     /**
@@ -621,7 +632,6 @@ class NCNlpSentence(
         if (!mdl.getAbstractTokens.isEmpty) {
             val notes = ns.flatten
 
-
             val keys = getPartKeys(notes :_*)
             val noteLinks = getLinks(notes)
 
@@ -630,7 +640,7 @@ class NCNlpSentence(
 
                 mdl.getAbstractTokens.contains(n.noteType) &&
                 !keys.exists(_.intersect(n.noteType, noteToks.head.startCharIndex, noteToks.last.startCharIndex)) &&
-                !noteLinks.contains(NoteLink(n.noteType, n.tokenIndexes))
+                !noteLinks.contains(NoteLink(n.noteType, n.tokenIndexes.sorted))
             }).foreach(ns.removeNote)
         }
 
@@ -685,7 +695,7 @@ class NCNlpSentence(
 
         var delCombs: Seq[NCNlpSentenceNote] =
             getNotNlpNotes(this).
-                flatMap(note ⇒ getNotNlpNotes(this.slice(note.tokenFrom, note.tokenTo + 1)).filter(_ != note)).
+                flatMap(note ⇒ getNotNlpNotes(note.tokenIndexes.sorted.map(i ⇒ this(i))).filter(_ != note)).
                 distinct
 
         // Optimization. Deletes all wholly swallowed notes.
@@ -693,38 +703,18 @@ class NCNlpSentence(
 
         val swallowed =
             delCombs.
-                filter(n ⇒ !links.contains(NoteLink(n.noteType, n.tokenIndexes))).
+                // There aren't links on it.
+                filter(n ⇒ !links.contains(NoteLink(n.noteType, n.tokenIndexes.sorted))).
+                // It doesn't have links.
                 filter(getPartKeys(_).isEmpty).
-                flatMap(n ⇒ {
-                    val wIdxs = n.wordIndexes.toSet
+                flatMap(note ⇒ {
+                    val noteWordsIdxs = note.wordIndexes.toSet
+                    val key = PartKey(note, this)
 
-                    val owners =
-                        delCombs.
-                            filter(_ != n).
-                            flatMap(n1 ⇒
-                                if (getPartKeys(n1).contains(
-                                    PartKey(
-                                        n.noteType,
-                                        this(n.tokenFrom).startCharIndex,
-                                        this(n.tokenTo).endCharIndex)
-                                    )
-                                )
-                                    Some(n1)
-                                else
-                                    None
-                            )
+                    val delCombOthers =
+                        delCombs.filter(_ != note).flatMap(n ⇒ if (getPartKeys(n).contains(key)) Some(n) else None)
 
-
-                    if (owners.exists(
-                        o ⇒ {
-                            val oWIdxs = o.wordIndexes.toSet
-
-                            wIdxs == oWIdxs || wIdxs.subsetOf(oWIdxs)
-                        })
-                    )
-                        Some(n)
-                    else
-                        None
+                    if (delCombOthers.exists(o ⇒ noteWordsIdxs == o.wordIndexes.toSet)) Some(note) else None
                 })
 
         delCombs = delCombs.filter(p ⇒ !swallowed.contains(p))
@@ -903,4 +893,42 @@ class NCNlpSentence(
 
         case _ ⇒ false
     }
+
+    /**
+      *
+      */
+    def saveNlpNotes(): Unit =
+        initNlpNotes = this.map(t ⇒ NoteKey(t.startCharIndex, t.endCharIndex) → t.getNlpNote).toMap
+
+    /**
+      *
+      * @return
+      */
+    def findInitialNlpNote(startCharIndex: Int, endCharIndex: Int): Option[NCNlpSentenceNote] =
+        initNlpNotes.get(NoteKey(startCharIndex, endCharIndex))
+
+    /**
+      *
+      * @param nlp
+      */
+    def addNlpToken(nlp: NCNlpSentenceToken): Unit = {
+        require(nlp.size <= 2)
+
+        nlp.foreach(n ⇒ nlpTokens += TokenKey(n.noteType, nlp.startCharIndex, nlp.endCharIndex) → nlp)
+    }
+
+    /**
+      *
+      * @param noteType
+      * @param startCharIndex
+      * @param endCharIndex
+      * @return
+      */
+    def findNlpToken(noteType: String, startCharIndex: Int, endCharIndex: Int): Option[NCNlpSentenceToken] =
+        nlpTokens.get(TokenKey(noteType, startCharIndex, endCharIndex))
+
+    /**
+      *
+      */
+    def getDeletedNotes: Predef.Map[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = deletedNotes.toMap
 }

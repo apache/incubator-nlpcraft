@@ -26,7 +26,7 @@ import java.util
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-class NJiggleModel1 extends NCAbstractTokensModel {
+class NJiggleModel extends NCAbstractTokensModel {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("xyz", "x y z"))
 
     // Default values.
@@ -78,11 +78,10 @@ class NJiggleModel1 extends NCAbstractTokensModel {
 
         NCResult.text("OK")
     }
-
 }
 
-@NCTestEnvironment(model = classOf[NJiggleModel1], startClient = true)
-class NCJiggleSpec1 extends NCTestContext {
+@NCTestEnvironment(model = classOf[NJiggleModel], startClient = true)
+class NCJiggleSpec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkResult("x y z x y z x y z", "OK")

@@ -409,6 +409,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             NCSuspiciousNounsEnricher.enrich(mdl, nlpSen, senMeta, span)
             NCStopWordEnricher.enrich(mdl, nlpSen, senMeta, span)
 
+            nlpSen.saveNlpNotes()
+
             case class Holder(enricher: NCProbeEnricher, getNotes: () ⇒ Seq[NCNlpSentenceNote])
 
             def get(name: String, e: NCProbeEnricher): Option[Holder] =

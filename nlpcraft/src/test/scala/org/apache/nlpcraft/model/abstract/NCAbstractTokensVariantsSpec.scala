@@ -34,20 +34,18 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
         val variants = ctx.getVariants.asScala
 
         def checkLimit(limitPart: NCToken): Unit = {
-            require(limitPart.getIndex == -1, s"Unexpected limit token: $limitPart, meta: ${limitPart.getMetadata}")
+            require(limitPart.getIndex == -1, s"Unexpected limit token index: ${limitPart.getIndex}, token: $limitPart, meta: ${limitPart.getMetadata}")
             checkId(limitPart, "nlpcraft:limit")
 
             val limNote = limitPart.getMetadata.get("nlpcraft:limit:note").asInstanceOf[String]
 
-            require(limNote == "wrapAnyWord", s"Unexpected limit token: $limitPart, meta: ${limitPart.getMetadata}")
+            require(limNote == "anyWord", s"Unexpected limit token note: '$limNote', token: $limitPart, meta: ${limitPart.getMetadata}")
 
-            val limIdxs =
-                limitPart.getMetadata.get("nlpcraft:limit:indexes").
-                    asInstanceOf[util.List[Integer]].asScala
+            val limIdxs = limitPart.getMetadata.get("nlpcraft:limit:indexes").asInstanceOf[util.List[Integer]].asScala
 
             require(
                 limIdxs.size == 1 && limIdxs.head == -1,
-                s"Unexpected limit token: $limitPart, meta: ${limitPart.getMetadata}"
+                s"Unexpected limit token ref indexes: [${limIdxs.mkString(",")}], token: $limitPart, meta: ${limitPart.getMetadata}"
             )
         }
 
@@ -141,14 +139,14 @@ class NCAbstractTokensModelVariants extends NCAbstractTokensModel {
 
                 require(wrap.size == 2)
 
-                val part = wrap.last
+                val wrapLimit = wrap.last
 
-                require(part.getIndex == -1, s"Unexpected limit token: $part, meta: ${part.getMetadata}")
-                checkId(part,"wrapLimit")
+                require(wrapLimit.getIndex == -1, s"Unexpected limit token: $wrapLimit, meta: ${wrapLimit.getMetadata}")
+                checkId(wrapLimit,"wrapLimit")
 
-                require(part.getPartTokens.size == 3)
+                require(wrapLimit.getPartTokens.size == 3, s"Parts count: ${wrapLimit.getPartTokens.size()}")
 
-                checkLimit(part.getPartTokens.asScala.last)
+                checkLimit(wrapLimit.getPartTokens.asScala.last)
             case _ ⇒ throw new AssertionError(s"Unexpected request: ${ctx.getRequest.getNormalizedText}")
         }
 

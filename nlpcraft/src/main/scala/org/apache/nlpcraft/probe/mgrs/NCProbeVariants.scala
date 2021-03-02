@@ -18,10 +18,10 @@
 package org.apache.nlpcraft.probe.mgrs
 
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSentenceToken}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ NlpSentence, NCNlpSentenceNote ⇒ NlpNote, NCNlpSentenceToken ⇒ NlpToken}
 import org.apache.nlpcraft.common.{NCE, TOK_META_ALIASES_KEY}
-import org.apache.nlpcraft.model.NCVariant
-import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCVariantImpl}
+import org.apache.nlpcraft.model.impl.{NCTokenImpl, NCTokenLogger, NCVariantImpl}
+import org.apache.nlpcraft.model.{NCToken, NCVariant}
 
 import java.io.{Serializable ⇒ JSerializable}
 import java.util
@@ -33,39 +33,130 @@ import scala.collection.{Seq, mutable}
   * Sentence to variants converter.
   */
 object NCProbeVariants {
-    private final val IDXS_SER: JSerializable = singletonList(-1).asInstanceOf[JSerializable]
-    private final val IDXS2_SER: JSerializable = singletonList(singletonList(-1)).asInstanceOf[JSerializable]
-    private final val IDXS_OBJ: Object = IDXS_SER.asInstanceOf[Object]
-    private final val IDXS2_OBJ: Object = IDXS2_SER.asInstanceOf[Object]
-    private final val IDX_OBJ = (-1).asInstanceOf[Object]
+    private final val IDX: java.lang.Integer = -1
+    private final val IDXS: JSerializable = singletonList(IDX).asInstanceOf[JSerializable]
+    private final val IDXS2: JSerializable = singletonList(singletonList(IDX)).asInstanceOf[JSerializable]
 
-    private def mkNlpNote(srcToks: Seq[NCNlpSentenceToken]): NCNlpSentenceNote = {
+    case class Key(id: String, from: Int, to: Int)
+
+    object Key {
+        def apply(m: util.HashMap[String, JSerializable]): Key = {
+            def get[T](name: String): T = m.get(name).asInstanceOf[T]
+
+            Key(get("id"), get("startcharindex"), get("endcharindex"))
+        }
+
+        def apply(t: NCToken): Key = Key(t.getId, t.getStartCharIndex, t.getEndCharIndex)
+    }
+
+    /**
+      *
+      * @param t
+      * @return
+      */
+    private def convertTokenMetaIndexes(t: NCTokenImpl) : NCTokenImpl = {
+        val meta = mutable.HashMap.empty[String, Any] ++
+            Map(
+                "nlpcraft:nlp:index" → IDX,
+                s"${t.getId}:tokenindexes" → IDXS,
+                s"${t.getId}:wordindexes" → IDXS
+            )
+
+        t.getId match {
+            case "nlpcraft:relation" | "nlpcraft:limit" ⇒ meta += "nlpcraft:relation:indexes" → IDXS
+            case "nlpcraft:sort" ⇒ meta += "nlpcraft:sort:subjindexes" → IDXS2; meta += "nlpcraft:sort:byindexes" → IDXS2
+            case _ ⇒ // No-op.
+        }
+
+        t.getMetadata.putAll(meta.map(p ⇒ p._1 → p._2.asInstanceOf[Object]).asJava)
+
+        t
+    }
+
+    /**
+      *
+      * @param key
+      * @param delNotes
+      * @param noteTypePred
+      * @return
+      */
+    private def findDeletedToken(
+        key: Key,
+        delNotes: Map[NlpNote, Seq[NlpToken]],
+        noteTypePred: String ⇒ Boolean
+    ): Option[NlpToken] =
+        delNotes.toStream.
+            flatMap { case (delNote, delNoteToks) ⇒
+                if (noteTypePred(delNote.noteType)) {
+                    val toks =
+                        delNoteToks.
+                            dropWhile(_.startCharIndex != key.from).
+                            reverse.
+                            dropWhile(_.endCharIndex != key.to).
+                            reverse
+
+                    toks.size match {
+                        case 0 ⇒ None
+                        case _ ⇒
+                            val artTok = NlpToken(IDX)
+
+                            artTok.add(mkNote(toks))
+
+                            if (key.id != "nlpcraft:nlp") {
+                                val ps = mkNlpNoteParams()
+
+                                delNote.noteType match {
+                                    case "nlpcraft:relation" | "nlpcraft:limit" ⇒ ps += "indexes" → IDXS
+                                    case "nlpcraft:sort" ⇒ ps += "subjindexes" → IDXS2; ps += "byindexes" →  IDXS2
+                                    case _ ⇒ // No-op.
+                                }
+
+                                artTok.add(delNote.clone(ps :_*))
+                            }
+
+                            Some(artTok)
+                    }
+                }
+                else
+                    None
+            }.headOption
+
+    /**
+      *
+      * @return
+      */
+    private def mkNlpNoteParams(): mutable.ArrayBuffer[(String, JSerializable)] =
+        mutable.ArrayBuffer.empty[(String, JSerializable)] ++ Seq("tokMinIndex" → IDX, "tokMaxIndex" → IDX)
+
+    /**
+      *
+      * @param srcToks
+      * @return
+      */
+    private def mkNote(srcToks: Seq[NlpToken]): NlpNote = {
         // Note, it adds stop-words too.
-        def mkValue(get: NCNlpSentenceToken ⇒ String): String = {
+        def mkValue(get: NlpToken ⇒ String): String = {
             val buf = mutable.Buffer.empty[String]
 
             val n = srcToks.size - 1
 
-            srcToks.zipWithIndex.foreach(p ⇒ {
-                val t = p._1
-                val idx = p._2
-
+            srcToks.zipWithIndex.foreach { case (t, idx) ⇒
                 buf += get(t)
 
                 if (idx < n && t.endCharIndex != srcToks(idx + 1).startCharIndex)
                     buf += " "
-            })
+            }
 
             buf.mkString
         }
 
-        def all(is: NCNlpSentenceToken ⇒ Boolean): Boolean = srcToks.forall(is)
-        def exists(is: NCNlpSentenceToken ⇒ Boolean): Boolean = srcToks.exists(is)
+        def all(is: NlpToken ⇒ Boolean): Boolean = srcToks.forall(is)
+        def exists(is: NlpToken ⇒ Boolean): Boolean = srcToks.exists(is)
 
-        val origText = mkValue((t: NCNlpSentenceToken) ⇒ t.origText)
+        val origText = mkValue((t: NlpToken) ⇒ t.origText)
 
         val params = Seq(
-            "index" → -1,
+            "index" → IDX,
             "pos" → NCPennTreebank.SYNTH_POS,
             "posDesc" → NCPennTreebank.SYNTH_POS_DESC,
             "lemma" → mkValue(_.lemma),
@@ -84,7 +175,7 @@ object NCProbeVariants {
             "swear" → exists(_.isSwearWord)
         )
 
-        NCNlpSentenceNote(Seq(-1), srcToks.flatMap(_.wordIndexes).distinct.sorted, "nlpcraft:nlp", params: _*)
+        NlpNote(Seq(IDX.intValue()), srcToks.flatMap(_.wordIndexes).distinct.sorted, "nlpcraft:nlp", params: _*)
     }
 
     /**
@@ -92,154 +183,99 @@ object NCProbeVariants {
       *
       * @param mdl Probe model.
       * @param srvReqId Server request ID.
-      * @param sens Sentences.
+      * @param nlpSens Sentences.
       * @param lastPhase Flag.
       */
-    def convert(srvReqId: String, mdl: NCProbeModel, sens: Seq[NCNlpSentence], lastPhase: Boolean = false): Seq[NCVariant] = {
-        val seq = sens.map(_.toSeq.map(nlpTok ⇒ NCTokenImpl(mdl, srvReqId, nlpTok) → nlpTok))
-        val toks = seq.map(_.map { case (tok, _) ⇒ tok })
+    def convert(srvReqId: String, mdl: NCProbeModel, nlpSens: Seq[NlpSentence], lastPhase: Boolean = false): Seq[NCVariant] = {
+        var vars =
+            nlpSens.flatMap(nlpSen ⇒ {
+                var ok = true
 
-        case class Key(id: String, from: Int, to: Int)
+                def mkToken(nlpTok: NlpToken): NCTokenImpl = {
+                    val ncTok = NCTokenImpl(mdl, srvReqId, nlpTok)
 
-        val keys2Toks = toks.flatten.map(t ⇒ Key(t.getId, t.getStartCharIndex, t.getEndCharIndex) → t).toMap
-        val partsKeys = mutable.HashSet.empty[Key]
+                    nlpSen.addNlpToken(nlpTok)
 
-        val nlpTok2nlpSen: Map[NCNlpSentenceToken, Seq[NCNlpSentence]] =
-            sens.
-            flatMap(sen ⇒ sen.map(_ → sen)).
-            groupBy { case (tok, _) ⇒ tok }.
-            map { case (tok, seq) ⇒ tok → seq.map { case (_, sen) ⇒ sen } }
+                    ncTok
+                }
 
-        seq.flatten.foreach { case (tok, tokNlp) ⇒
-            if (tokNlp.isUser) {
-                val userNotes = tokNlp.filter(_.isUser)
+                val toks = nlpSen.map(mkToken)
+                val keys2Toks = toks.map(t ⇒ Key(t) → t).toMap
 
-                require(userNotes.size == 1)
-
-                val optList: Option[util.List[util.HashMap[String, JSerializable]]] = userNotes.head.dataOpt("parts")
-
-                optList match {
-                    case Some(list) ⇒
-                        val keys =
-                            list.asScala.map(m ⇒
-                                Key(
-                                    m.get("id").asInstanceOf[String],
-                                    m.get("startcharindex").asInstanceOf[Integer],
-                                    m.get("endcharindex").asInstanceOf[Integer]
-                                )
-                            )
-
-                        val parts = keys.map(key ⇒ {
-                            keys2Toks.get(key) match {
-                                // Notes for sentence.
-                                case Some(t) ⇒
-                                    val meta = mutable.HashMap.empty[String, Object]
-
-                                    meta += "nlpcraft:nlp:index" → IDX_OBJ
-
-                                    meta += s"${t.getId}:tokenindexes" → IDXS_OBJ
-                                    meta += s"${t.getId}:wordindexes" → IDXS_OBJ
-
-                                    t.getId match {
-                                        case "nlpcraft:relation"  ⇒
-                                            meta += "nlpcraft:relation:indexes" → IDXS_OBJ
-                                        case "nlpcraft:limit" ⇒
-                                            meta += "nlpcraft:limit:indexes" → IDXS_OBJ
-                                        case "nlpcraft:sort" ⇒
-                                            meta += "nlpcraft:sort:subjindexes" → IDXS2_OBJ
-                                            meta += "nlpcraft:sort:byindexes" → IDXS2_OBJ
-                                        case _ ⇒ // No-op.
-                                    }
-
-                                    t.getMetadata.putAll(meta.asJava)
-
-                                    t
-                                case None ⇒
-                                    // Tries to find between deleted notes.
-                                    val delNotes = nlpTok2nlpSen(tokNlp).flatMap(_.deletedNotes).distinct
-
-                                    def find(noteTypePred: String ⇒ Boolean): Option[NCNlpSentenceToken] =
-                                        delNotes.toStream.
-                                            flatMap { case (delNote, delNoteToks) ⇒
-                                                if (noteTypePred(delNote.noteType)) {
-                                                    val toks =
-                                                        delNoteToks.
-                                                            dropWhile(_.startCharIndex != key.from).
-                                                            reverse.
-                                                            dropWhile(_.endCharIndex != key.to).
-                                                            reverse
-
-                                                    toks.size match {
-                                                        case 0 ⇒ None
-                                                        case _ ⇒
-                                                            val artTok = NCNlpSentenceToken(-1)
-
-                                                            artTok.add(mkNlpNote(toks))
-
-                                                            if (key.id != "nlpcraft:nlp") {
-                                                                val ps =
-                                                                    mutable.ArrayBuffer.empty[(String, JSerializable)]
-
-                                                                ps += "tokenIndexes" → IDXS_SER
-                                                                ps += "wordIndexes" → IDXS_SER
-
-                                                                delNote.noteType match {
-                                                                    case "nlpcraft:relation" ⇒
-                                                                        ps += "indexes" → IDXS_SER
-                                                                    case "nlpcraft:limit" ⇒
-                                                                        ps += "indexes" → IDXS_SER
-                                                                    case "nlpcraft:sort" ⇒
-                                                                        ps += "subjindexes" → IDXS2_SER
-                                                                        ps += "byindexes" → IDXS2_SER
-                                                                    case _ ⇒ // No-op.
-                                                                }
-
-                                                                artTok.add(delNote.clone(ps :_*))
-                                                            }
-
-                                                            Some(artTok)
-                                                    }
-                                                }
-                                                else
-                                                    None
-                                            }.headOption
-
-                                    // Tries to find with same key.
-                                    var nlpTokOpt = find(_ == key.id)
-
-                                    // If couldn't find nlp note, we can try to find any note on the same position.
-                                    if (nlpTokOpt.isEmpty && key.id == "nlpcraft:nlp")
-                                        nlpTokOpt = find(_ ⇒ true)
-
-                                    val nlpTok = nlpTokOpt.getOrElse(throw new NCE(s"Part not found for: $key"))
-
-                                    NCTokenImpl(mdl, srvReqId, nlpTok)
-                            }
-                        })
-
-                        parts.zip(list.asScala).foreach { case (part, map) ⇒
-                            map.get(TOK_META_ALIASES_KEY) match {
-                                case null ⇒ // No-op.
-                                case aliases ⇒ part.getMetadata.put(TOK_META_ALIASES_KEY, aliases.asInstanceOf[Object])
-                            }
+                def process(tok: NCTokenImpl, tokNlp: NlpToken): Unit = {
+                    val optList: Option[util.List[util.HashMap[String, JSerializable]]] =
+                        tokNlp.find(_.isUser) match {
+                            case Some(u) ⇒ u.dataOpt("parts")
+                            case None ⇒ None
                         }
 
-                        tok.setParts(parts)
+                    optList match {
+                        case Some(list) ⇒
+                            val keys = list.asScala.map(Key(_))
 
-                        partsKeys ++= keys
+                            val parts = keys.map(key ⇒
+                                keys2Toks.get(key) match {
+                                    // Notes for sentence.
+                                    case Some(t) ⇒ convertTokenMetaIndexes(t)
+                                    case None ⇒
+                                        val delNotes = nlpSen.getDeletedNotes
 
-                    case None ⇒ // No-op.
+                                        // Tries to find with same key.
+                                        var nlpTokOpt = findDeletedToken(key, delNotes, _ == key.id)
+
+                                        // If couldn't find nlp note, we can try to find any note on the same position.
+                                        if (nlpTokOpt.isEmpty && key.id == "nlpcraft:nlp")
+                                            nlpTokOpt = findDeletedToken(key, delNotes, _ ⇒ true)
+
+                                        nlpTokOpt match {
+                                            case Some(nlpTok) ⇒ mkToken(nlpTok)
+                                            case None ⇒
+                                                nlpSen.findInitialNlpNote(key.from, key.to) match {
+                                                    case Some(nlpNote) ⇒
+                                                        val artTok = NlpToken(IDX)
+
+                                                        artTok.add(nlpNote.clone(mkNlpNoteParams(): _*))
+
+                                                        mkToken(artTok)
+                                                    case None ⇒
+                                                        throw new NCE(
+                                                            s"Part not found for: $key, " +
+                                                            s"token: $tok, " +
+                                                            s"lastPhase=$lastPhase"
+                                                        )
+                                                }
+                                        }
+                                }
+                            )
+
+                            parts.zip(list.asScala).foreach { case (part, map) ⇒
+                                map.get(TOK_META_ALIASES_KEY) match {
+                                    case null ⇒ // No-op.
+                                    case aliases ⇒ part.getMetadata.put(TOK_META_ALIASES_KEY, aliases.asInstanceOf[Object])
+                                }
+                            }
+
+                            tok.setParts(parts)
+
+                            require(parts.nonEmpty)
+
+                            for (tok ← parts)
+                                process(tok,
+                                    nlpSen.
+                                        findNlpToken(tok.getId, tok.getStartCharIndex, tok.getEndCharIndex).
+                                        getOrElse(throw new NCE(s"Token not found for $tok"))
+                                )
+
+                            ok = ok && !toks.exists(t ⇒ t.getId != "nlpcraft:nlp" && keys.contains(Key(t)))
+                        case None ⇒ // No-op.
+                    }
                 }
-            }
-        }
 
-        //  We can't collapse parts earlier, because we need them here (setParts method, few lines above.)
-        var vars = toks.filter(sen ⇒
-            !sen.exists(t ⇒
-                t.getId != "nlpcraft:nlp" &&
-                partsKeys.contains(Key(t.getId, t.getStartCharIndex, t.getEndCharIndex))
-            )
-        ).map(p ⇒ new NCVariantImpl(p.asJava))
+                for ((tok, tokNlp) ← toks.zip(nlpSen) if tokNlp.isUser)
+                    process(tok, tokNlp)
+
+                if (ok) Some(new NCVariantImpl(toks.asJava)) else None
+            })
 
         if (lastPhase && vars.size > 1) {
             // Drops empty.
@@ -252,19 +288,19 @@ object NCProbeVariants {
 
             for (
                 vrnt ← sortedVars.tail
-                // Skips if the candidate has same structure that exists between already saved and
-                // there is only one difference - some candidate's tokens are nlp tokens.
-                if !bestVars.exists(savedVrnt ⇒
-                    savedVrnt.size == vrnt.size &&
-                    savedVrnt.asScala.zip(vrnt.asScala).forall { case (savedTok, tok) ⇒
-                        savedTok.getStartCharIndex == tok.getStartCharIndex &&
-                        savedTok.getEndCharIndex == tok.getEndCharIndex &&
-                        (
-                            savedTok.getId == tok.getId && savedTok.getMetadata == tok.getMetadata ||
-                            tok.getId == "nlpcraft:nlp"
-                        )
-                    }
-                )
+                    // Skips if the candidate has same structure that exists between already saved and
+                    // there is only one difference - some candidate's tokens are nlp tokens.
+                    if !bestVars.exists(savedVrnt ⇒
+                        savedVrnt.size == vrnt.size &&
+                            savedVrnt.asScala.zip(vrnt.asScala).forall { case (savedTok, tok) ⇒
+                                savedTok.getStartCharIndex == tok.getStartCharIndex &&
+                                savedTok.getEndCharIndex == tok.getEndCharIndex &&
+                                (
+                                    savedTok.getId == tok.getId && savedTok.getMetadata == tok.getMetadata ||
+                                    tok.getId == "nlpcraft:nlp"
+                                )
+                            }
+                    )
             )
                 bestVars += vrnt
 
@@ -272,6 +308,15 @@ object NCProbeVariants {
                 // Reverts orders.
                 vars = bestVars.sortBy(sortedVars.indexOf)
         }
+
+        for (v ← vars; t ← v.asScala)
+            require(
+                t.getIndex >= 0,
+                s"Invalid token: $t with index: ${t.getIndex}, " +
+                    s"lastPhase: $lastPhase, " +
+                    s"sentence:\n${NCTokenLogger.prepareTable(v.asScala)}" +
+                    s""
+            )
 
         vars
     }
