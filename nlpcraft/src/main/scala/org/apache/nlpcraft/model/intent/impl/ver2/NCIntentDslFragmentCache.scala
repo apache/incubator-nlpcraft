@@ -34,7 +34,13 @@ object NCIntentDslFragmentCache {
       * @param frag
       */
     def add(mdlId: String, frag: NCDslFragment): Unit =
-        cache.getOrElse(mdlId, mutable.HashMap.empty[String, NCDslFragment]) += (frag.id → frag)
+        cache.getOrElse(mdlId, {
+            val m = mutable.HashMap.empty[String, NCDslFragment]
+            
+            cache += mdlId → m
+            
+            m
+        }) += (frag.id → frag)
     
     /**
       *

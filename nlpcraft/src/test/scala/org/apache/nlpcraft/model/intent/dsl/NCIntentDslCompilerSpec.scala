@@ -36,7 +36,7 @@ class NCIntentDslCompilerSpec {
             assert(true)
         }
         catch {
-            case _: Exception ⇒ assert(false)
+            case e: Exception ⇒ assert(false, e)
         }
 
     /**
@@ -70,6 +70,35 @@ class NCIntentDslCompilerSpec {
               |intent=i1
               |     flow="a[^0-9]b"
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |""".stripMargin
+        )
+        checkOk(
+            """
+              |fragment=f1
+              |     term(ft1)={2==2}
+              |     term~/class#method/
+              |
+              |intent=i1
+              |     flow="a[^0-9]b"
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     fragment(f1, {'a': true, 'b': ["s1", "s2"]})
+              |""".stripMargin
+        )
+        checkOk(
+            """
+              |fragment=f21
+              |     term(f21_t1)={2==2}
+              |     term~/class#method/
+              |
+              |fragment=f22
+              |     term(f22_t1)={2==2}
+              |     fragment(f21)
+              |     term~/class#method/
+              |
+              |intent=i1
+              |     flow="a[^0-9]b"
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     fragment(f21, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
     }

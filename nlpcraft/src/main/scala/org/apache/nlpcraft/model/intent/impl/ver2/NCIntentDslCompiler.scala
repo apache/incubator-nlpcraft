@@ -236,6 +236,7 @@ object NCIntentDslCompiler extends LazyLogging {
 
             // Reset term vars.
             setMinMax(1, 1)
+            termId = null
             termInstrs.clear()
             refClsName = None
             refMtdName = None
