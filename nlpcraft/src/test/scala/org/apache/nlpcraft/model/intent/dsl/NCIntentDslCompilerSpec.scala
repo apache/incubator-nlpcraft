@@ -102,14 +102,19 @@ class NCIntentDslCompilerSpec {
         )
         checkCompileOk(
             """
+              |// Some comments.
               |fragment=f1
-              |     term(ft1)={2==2}
+              |     term(ft1)={2==2} /* Term block comment. */
               |     term~/class#method/
-              |
+              |/*
+              | * +=====================+
+              | * | block comments......|
+              | * +=====================+
+              | */
               |intent=i1
-              |     flow="a[^0-9]b"
+              |     flow="a[^0-9]b" // Flow comment.
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
-              |     fragment(f1, {'a': true, 'b': ["s1", "s2"]})
+              |     fragment(f1, {'a': true, 'b': ["s1", "s2"]}) /* Another fragment. */
               |""".stripMargin
         )
         checkCompileOk(
@@ -139,6 +144,11 @@ class NCIntentDslCompilerSpec {
         checkCompileError(
             """
               |intent=i1
+              |/*
+              | * +=====================+
+              | * | block comments......|
+              | * +=====================+
+              | */
               |     flow="a[^0-9]b"
               |     meta={{'a': true, 'b': {'arr': [1, 2, 3]}}
               |     term(t1)={2 == 2 && size(id()) != -25}
