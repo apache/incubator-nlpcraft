@@ -111,7 +111,14 @@ object NCIntentDslCompiler extends LazyLogging {
             refMtdName = Some(ctx.id().getText)
         }
 
-        override def exitTermId(ctx: IDP.TermIdContext): Unit = termId = ctx.id().getText
+        override def exitTermId(ctx: IDP.TermIdContext): Unit = {
+            termId = ctx.id().getText
+    
+            // Check term ID uniqueness here for better error location.
+            if (terms.exists(t ⇒ t.id != null && t.id == termId))
+                throw newSyntaxError(s"Duplicate term ID: $termId")(ctx.id())
+        }
+        
         override def exitTermEq(ctx: IDP.TermEqContext): Unit =  termConv = ctx.TILDA() != null
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit = intentId = ctx.id().getText
         override def exitFragId(ctx: IDP.FragIdContext): Unit = fragId = ctx.id().getText
@@ -120,8 +127,6 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit = {
-            implicit val evidence: ParserRuleContext = ctx
-
             val id = ctx.id().getText
 
             FragCache.get(mdlId, id) match {
@@ -130,11 +135,11 @@ object NCIntentDslCompiler extends LazyLogging {
 
                     for (fragTerm ← frag.terms)
                          if (terms.exists(t ⇒ t.id != null && t.id == fragTerm.id))
-                            throw newSyntaxError(s"Duplicate fragment term ID: ${fragTerm.id}")
+                            throw newSyntaxError(s"Duplicate term ID '${fragTerm.id}' in fragment '$id'.")(ctx.id())
                         else
                             terms += fragTerm.cloneWithMeta(meta)
 
-                case None ⇒ throw newSyntaxError(s"Unknown intent fragment ID: $id")
+                case None ⇒ throw newSyntaxError(s"Unknown intent fragment ID: $id")(ctx.id())
             }
 
             fragMeta = null
@@ -154,7 +159,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         Pattern.compile(flowRegex.get)
                     catch {
                         case e: PatternSyntaxException ⇒
-                            newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
+                            newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
                     }
             }
         }
@@ -220,10 +225,6 @@ object NCIntentDslCompiler extends LazyLogging {
                     }
 
                 }
-                
-            // Check term ID uniqueness.
-            if (terms.exists(t ⇒ t.id != null && t.id == termId))
-                throw newSyntaxError(s"Duplicate term ID: $termId")
                 
             // Add term.
             terms += NCDslTerm(

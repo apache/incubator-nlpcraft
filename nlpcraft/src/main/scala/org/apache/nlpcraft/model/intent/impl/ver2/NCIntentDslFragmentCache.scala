@@ -30,6 +30,17 @@ object NCIntentDslFragmentCache {
     
     /**
       *
+      */
+    def clear(): Unit = cache.clear()
+    
+    /**
+      *
+      * @param mdlId
+      */
+    def clear(mdlId: String): Unit = cache += mdlId → mutable.HashMap.empty[String, NCDslFragment]
+    
+    /**
+      *
       * @param mdlId
       * @param frag
       */

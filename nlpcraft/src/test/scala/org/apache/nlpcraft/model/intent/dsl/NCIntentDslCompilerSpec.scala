@@ -18,20 +18,22 @@
 package org.apache.nlpcraft.model.intent.dsl
 
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.impl.ver2.NCIntentDslCompiler
+import org.apache.nlpcraft.model.intent.impl.ver2.{NCIntentDslCompiler, NCIntentDslFragmentCache}
 import org.junit.jupiter.api.Test
 
 /**
  * Tests for DSL compiler.
  */
 class NCIntentDslCompilerSpec {
+    private final val MODEL_ID = "test.mdl.id"
+    
     /**
      *
      * @param dsl
      */
     private def checkOk(dsl: String): Unit =
         try {
-            NCIntentDslCompiler.compile(dsl, "mdl.id")
+            NCIntentDslCompiler.compile(dsl, MODEL_ID)
 
             assert(true)
         }
@@ -45,7 +47,7 @@ class NCIntentDslCompilerSpec {
      */
     private def checkError(txt: String): Unit =
         try {
-            NCIntentDslCompiler.compile(txt, "mdl.id")
+            NCIntentDslCompiler.compile(txt, MODEL_ID)
 
             assert(false)
         } catch {
@@ -57,6 +59,8 @@ class NCIntentDslCompilerSpec {
     @Test
     @throws[NCException]
     def testOk(): Unit = {
+        NCIntentDslFragmentCache.clear(MODEL_ID)
+        
         checkOk(
             """
               |intent=i1
@@ -106,6 +110,8 @@ class NCIntentDslCompilerSpec {
     @Test
     @throws[NCException]
     def testFail(): Unit = {
+        NCIntentDslFragmentCache.clear(MODEL_ID)
+        
         checkError(
             """
               |intent=i1
@@ -124,8 +130,40 @@ class NCIntentDslCompilerSpec {
         checkError(
             """
               |intent=i1
+              |     flow="a[^0-9b]"
+              |     term(t1)={true}
+              |     term(t1)={true}
+              |""".stripMargin
+        )
+        checkError(
+            """
+              |intent=i1
               |     flow="a[^0-9]b"
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}[1:2]
+              |""".stripMargin
+        )
+        checkError(
+            """
+              |fragment=f1
+              |     term(t1)={2==2}
+              |     term~/class#method/
+              |
+              |intent=i1
+              |     flow="a[^0-9]b"
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     fragment(f1, {'a': true, 'b': ["s1", "s2"]})
+              |""".stripMargin
+        )
+        checkError(
+            """
+              |fragment=f111
+              |     term(t1)={2==2}
+              |     term~/class#method/
+              |
+              |intent=i1
+              |     flow="a[^0-9]b"
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     fragment(f1_, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
     }
