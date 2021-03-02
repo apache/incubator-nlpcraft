@@ -21,6 +21,8 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.impl.ver2.{NCIntentDslCompiler, NCIntentDslFragmentCache}
 import org.junit.jupiter.api.Test
 
+import java.nio.file.{Path, Paths}
+
 /**
  * Tests for DSL compiler.
  */
@@ -35,6 +37,20 @@ class NCIntentDslCompilerSpec {
         try {
             NCIntentDslCompiler.compile(dsl, MODEL_ID)
 
+            assert(true)
+        }
+        catch {
+            case e: Exception ⇒ assert(false, e)
+        }
+    
+    /**
+      *
+      * @param path
+      */
+    private def checkPathCompileOk(path: Path): Unit =
+        try {
+            NCIntentDslCompiler.compilePath(path, MODEL_ID)
+            
             assert(true)
         }
         catch {
@@ -55,10 +71,18 @@ class NCIntentDslCompilerSpec {
                 println(e.getMessage)
                 assert(true)
         }
-
+    
     @Test
     @throws[NCException]
-    def testOk(): Unit = {
+    def testPathCompileOk(): Unit = {
+        NCIntentDslFragmentCache.clear(MODEL_ID)
+        
+        checkPathCompileOk(Paths.get(classOf[NCIntentDslCompilerSpec].getResource("test_ok.nc").toURI))
+    }
+    
+    @Test
+    @throws[NCException]
+    def testInlineCompileOk(): Unit = {
         NCIntentDslFragmentCache.clear(MODEL_ID)
         
         checkCompileOk(
@@ -109,7 +133,7 @@ class NCIntentDslCompilerSpec {
 
     @Test
     @throws[NCException]
-    def testFail(): Unit = {
+    def testInlineCompileFail(): Unit = {
         NCIntentDslFragmentCache.clear(MODEL_ID)
         
         checkCompileError(

@@ -20,13 +20,13 @@
 // ============================
 
 // Re-usable predicate #1.
-predicate=p1
+fragment=p1
     term={1 == 2}
 
 // Intent #1.
 intent=i1
     flow=/org.package#method1/ // User-code flow predicate.
-    predicate(p1, {'a': true, 'b': {'Москва': [1, 2, 3]}}) /*  Macro-expansion. */
+    fragment(p1, {'a': true, 'b': {'Москва': [1, 2, 3]}}) /*  Macro-expansion. */
     term~{length("some text") > 0} // Normal term.
 
 // Intent #2.
@@ -35,7 +35,7 @@ intent=i2
     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
     term(t1)={2 == 2 && size(id()) != -25}
 
-intent=i1
+intent=i3
     flow="a[^0-9]b"
     term(t1)={
         has(

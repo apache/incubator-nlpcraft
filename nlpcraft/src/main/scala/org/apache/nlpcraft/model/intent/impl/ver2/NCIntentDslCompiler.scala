@@ -440,7 +440,7 @@ object NCIntentDslCompiler extends LazyLogging {
       * @return
       */
     @throws[NCE]
-    def compileFile(
+    def compilePath(
         filePath: Path,
         mdlId: String
     ): Set[NCDslIntent] = antlr4(U.readFile(filePath.toFile).mkString("\n"), mdlId, filePath.getFileName.toString)
