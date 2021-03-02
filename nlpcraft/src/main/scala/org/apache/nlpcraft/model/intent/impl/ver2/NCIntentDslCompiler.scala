@@ -47,17 +47,16 @@ object NCIntentDslCompiler extends LazyLogging {
 
         // Fragment components.
         private var fragId: String = _
+        private var fragMeta: Map[String, Any] = _
 
         // Intent components.
         private var intentId: String = _
         private var ordered: Boolean = false
         private var flowRegex: Option[String] = None
+        private var intentMeta: Map[String, Any] = _
 
         // Accumulator for parsed terms.
         private val terms = ArrayBuffer.empty[NCDslTerm]
-
-        // Current JSON-based meta.
-        private var meta: Map[String, Any] = _
 
         // Currently term.
         private var termId: String = _
@@ -116,8 +115,30 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitTermEq(ctx: IDP.TermEqContext): Unit =  termConv = ctx.TILDA() != null
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit = intentId = ctx.id().getText
         override def exitFragId(ctx: IDP.FragIdContext): Unit = fragId = ctx.id().getText
-        override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = meta = U.jsonToScalaMap(ctx.jsonObj().getText)
+        override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
+        override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
+
+        override def exitFragRef(ctx: IDP.FragRefContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
+
+            val id = ctx.id().getText
+
+            FragCache.get(mdlId, id) match {
+                case Some(frag) ⇒
+                    val meta = if (fragMeta == null) Map.empty[String, Any] else fragMeta
+
+                    for (fragTerm ← frag.terms)
+                         if (terms.exists(t ⇒ t.id != null && t.id == fragTerm.id))
+                            throw newSyntaxError(s"Duplicate fragment term ID: ${fragTerm.id}")
+                        else
+                            terms += fragTerm.cloneWithMeta(meta)
+
+                case None ⇒ throw newSyntaxError(s"Unknown intent fragment ID: $id")
+            }
+
+            fragMeta = null
+        }
 
         override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit = {
             implicit val evidence: ParserRuleContext = ctx
@@ -238,7 +259,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 dsl,
                 intentId,
                 ordered,
-                if (meta == null) Map.empty else meta,
+                if (intentMeta == null) Map.empty else intentMeta,
                 flowRegex,
                 refClsName,
                 refMtdName,
@@ -247,7 +268,7 @@ object NCIntentDslCompiler extends LazyLogging {
 
             refClsName = None
             refMtdName = None
-
+            intentMeta = null
             terms.clear()
         }
 

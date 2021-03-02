@@ -33,8 +33,24 @@ case class NCDslTerm(
     pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
     min: Int,
     max: Int,
-    conv: Boolean
+    conv: Boolean,
+    fragMeta: Map[String, Any] = Map.empty
 ) {
     require(pred != null)
     require(min >= 0 && max >= min)
+
+    /**
+     *
+     * @param meta
+     * @return
+     */
+    def cloneWithMeta(meta: Map[String, Any]): NCDslTerm =
+        NCDslTerm(
+            id,
+            pred,
+            min,
+            max,
+            conv,
+            meta
+        )
 }

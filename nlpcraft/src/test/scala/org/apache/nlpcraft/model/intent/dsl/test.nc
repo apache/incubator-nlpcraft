@@ -26,7 +26,7 @@ predicate=p1
 // Intent #1.
 intent=i1
     flow=/org.package#method1/ // User-code flow predicate.
-    predicate(p1) /*  Macro-expansion. */
+    predicate(p1, {'a': true, 'b': {'Москва': [1, 2, 3]}}) /*  Macro-expansion. */
     term~{length("some text") > 0} // Normal term.
 
 // Intent #2.
