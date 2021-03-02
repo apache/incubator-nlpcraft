@@ -35,6 +35,8 @@ case class NCDslIntent(
     ordered: Boolean,
     meta: Map[String, Any],
     flow: Option[String],
+    flowClsName: Option[String],
+    flowMtdName: Option[String],
     terms: List[NCDslTerm]
 ) {
     require(id != null)
@@ -43,7 +45,7 @@ case class NCDslIntent(
 
     // Flow regex as a compiled pattern.
     // Regex validity check is already done during intent compilation.
-    val flowRegex = flow match {
+    lazy val flowRegex = flow match {
         case Some(r) ⇒ Some(Pattern.compile(r))
         case None ⇒ None
     }

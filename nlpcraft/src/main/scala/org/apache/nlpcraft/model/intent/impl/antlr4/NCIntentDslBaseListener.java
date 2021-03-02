@@ -16,6 +16,90 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDsl(NCIntentDslParser.DslContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDsl(NCIntentDslParser.DslContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDslItems(NCIntentDslParser.DslItemsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDslItems(NCIntentDslParser.DslItemsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDslItem(NCIntentDslParser.DslItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDslItem(NCIntentDslParser.DslItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFrag(NCIntentDslParser.FragContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFrag(NCIntentDslParser.FragContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFragId(NCIntentDslParser.FragIdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFragId(NCIntentDslParser.FragIdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFragRef(NCIntentDslParser.FragRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFragRef(NCIntentDslParser.FragRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFragMeta(NCIntentDslParser.FragMetaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFragMeta(NCIntentDslParser.FragMetaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterIntent(NCIntentDslParser.IntentContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -47,6 +131,18 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOrderedDecl(NCIntentDslParser.OrderedDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMtdDecl(NCIntentDslParser.MtdDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMtdDecl(NCIntentDslParser.MtdDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -136,6 +232,18 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTermItem(NCIntentDslParser.TermItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTermItem(NCIntentDslParser.TermItemContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTermEq(NCIntentDslParser.TermEqContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -160,13 +268,13 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterClsNer(NCIntentDslParser.ClsNerContext ctx) { }
+	@Override public void enterMtdRef(NCIntentDslParser.MtdRefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitClsNer(NCIntentDslParser.ClsNerContext ctx) { }
+	@Override public void exitMtdRef(NCIntentDslParser.MtdRefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -371,6 +479,18 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMinMaxRange(NCIntentDslParser.MinMaxRangeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterId(NCIntentDslParser.IdContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitId(NCIntentDslParser.IdContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

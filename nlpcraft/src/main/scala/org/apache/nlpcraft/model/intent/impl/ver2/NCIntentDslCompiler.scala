@@ -44,19 +44,23 @@ object NCIntentDslCompiler extends LazyLogging {
         // Intent components.
         private var id: String = _
         private var ordered: Boolean = false
-        private var meta: Map[String, Any] = _
         private val terms = ArrayBuffer.empty[NCDslTerm] // Accumulator for parsed terms.
         private var flowRegex: Option[String] = None
+
+        // Current JSON-based meta.
+        private var meta: Map[String, Any] = _
 
         // Currently term.
         private var termId: String = _
         private var termConv: Boolean = _
         private var min = 1
         private var max = 1
-        private var termClsName: String = _
-        private var termMtdName: String = _
 
-        // Term's code, i.e. list of instructions.
+        // Current method reference.
+        private var refClsName: Option[String] = None
+        private var refMtdName: Option[String] = None
+
+        // Current term's code, i.e. list of instructions.
         private var termInstrs = mutable.Buffer.empty[Instr]
 
         /*
@@ -68,7 +72,7 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitCompExpr(ctx: Parser.CompExprContext): Unit = termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
         override def exitLogExpr(ctx: Parser.LogExprContext): Unit = termInstrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
         override def exitEqExpr(ctx: Parser.EqExprContext): Unit = termInstrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
-        override def exitCallExpr(ctx: Parser.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.ID())(ctx)
+        override def exitCallExpr(ctx: Parser.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.FUN_NAME())(ctx)
         override def exitAtom(ctx: Parser.AtomContext): Unit = termInstrs += parseAtom(ctx.getText)(ctx)
 
         /**
@@ -92,34 +96,36 @@ object NCIntentDslCompiler extends LazyLogging {
                 assert(false)
         }
 
-        override def exitClsNer(ctx: Parser.ClsNerContext): Unit = {
+        override def exitMtdRef(ctx: Parser.MtdRefContext): Unit = {
             if (ctx.javaFqn() != null)
-                termClsName = ctx.javaFqn().getText
+                refClsName = Some(ctx.javaFqn().getText)
 
-            termMtdName = ctx.ID().getText
+            refMtdName = Some(ctx.id().getText)
         }
 
-        override def exitTermId(ctx: Parser.TermIdContext): Unit = termId = ctx.ID().getText
+        override def exitTermId(ctx: Parser.TermIdContext): Unit = termId = ctx.id().getText
         override def exitTermEq(ctx: Parser.TermEqContext): Unit =  termConv = ctx.TILDA() != null
-        override def exitIntentId(ctx: Parser.IntentIdContext): Unit = id = ctx.ID().getText
+        override def exitIntentId(ctx: Parser.IntentIdContext): Unit = id = ctx.id().getText
         override def exitMetaDecl(ctx: Parser.MetaDeclContext): Unit = meta = U.jsonToScalaMap(ctx.jsonObj().getText)
         override def exitOrderedDecl(ctx: Parser.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
         override def exitFlowDecl(ctx: Parser.FlowDeclContext): Unit = {
             implicit val evidence: ParserRuleContext = ctx
 
-            val regex = ctx.qstring().getText
+            if (ctx.qstring() != null) {
+                val regex = ctx.qstring().getText
 
-            if (regex != null && regex.length > 2) 
-                flowRegex = if (regex.nonEmpty) Some(regex) else None
+                if (regex != null && regex.length > 2)
+                    flowRegex = if (regex.nonEmpty) Some(regex) else None
 
-            if (flowRegex.isDefined) // Pre-check.
-                try
-                    Pattern.compile(flowRegex.get)
-                catch {
-                    case e: PatternSyntaxException ⇒
-                        newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
-                }
+                if (flowRegex.isDefined) // Pre-check.
+                    try
+                        Pattern.compile(flowRegex.get)
+                    catch {
+                        case e: PatternSyntaxException ⇒
+                            newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")
+                    }
+            }
         }
 
         override def exitTerm(ctx: Parser.TermContext): Unit = {
@@ -131,7 +137,10 @@ object NCIntentDslCompiler extends LazyLogging {
                 throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")
 
             val pred =
-                if (termMtdName != null) { // User-code defined term.
+                if (refMtdName != null) { // User-code defined term.
+                    val clsName = refClsName.orNull
+                    val mtdName = refMtdName.orNull
+
                     (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
                         val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
                             override lazy val getRequest: NCRequest = termCtx.req
@@ -144,11 +153,11 @@ object NCIntentDslCompiler extends LazyLogging {
                         }
 
                         val mdl = tok.getModel
-                        val mdlCls = if (termClsName == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else termClsName
+                        val mdlCls = if (clsName == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else clsName
 
                         try {
-                            val obj = if (termClsName == null) mdl else U.mkObject(termClsName)
-                            val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls).getMethod(termMtdName, classOf[NCTokenPredicateContext])
+                            val obj = if (clsName == null) mdl else U.mkObject(clsName)
+                            val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls).getMethod(mtdName, classOf[NCTokenPredicateContext])
 
                             val res = mtd.invoke(obj, javaCtx).asInstanceOf[NCTokenPredicateResult]
 
@@ -156,7 +165,7 @@ object NCIntentDslCompiler extends LazyLogging {
                         }
                         catch {
                             case e: Exception ⇒
-                                throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$termMtdName", e)
+                                throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e)
                         }
                     }
                 }
@@ -192,8 +201,8 @@ object NCIntentDslCompiler extends LazyLogging {
             // Reset term vars.
             setMinMax(1, 1)
             termInstrs.clear()
-            termClsName = null
-            termMtdName = null
+            refClsName = None
+            refMtdName = None
         }
 
         /**
@@ -204,7 +213,7 @@ object NCIntentDslCompiler extends LazyLogging {
             require(id != null)
             require(terms.nonEmpty)
 
-            NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, terms.toList)
+            NCDslIntent(dsl, id, ordered, if (meta == null) Map.empty else meta, flowRegex, refClsName, refMtdName,  terms.toList)
         }
         
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =

@@ -29,5 +29,6 @@ case class NCDslTermContext(
     usrMeta: ScalaMeta,
     compMeta: ScalaMeta,
     convMeta: ScalaMeta,
+    fragMeta: ScalaMeta,
     req: NCRequest
 )

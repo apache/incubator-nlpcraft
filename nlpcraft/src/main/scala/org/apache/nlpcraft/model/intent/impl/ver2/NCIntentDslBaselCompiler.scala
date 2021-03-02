@@ -41,9 +41,9 @@ trait NCIntentDslBaselCompiler {
      * @return
      */
     def newSyntaxError(errMsg: String)(implicit ctx: PRC): NCE = {
-        val src = ctx.start.getTokenSource
+        val tok = ctx.start
 
-        syntaxError(errMsg, src.getSourceName, src.getLine, src.getCharPositionInLine)
+        syntaxError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine)
     }
     /**
       *
@@ -52,9 +52,9 @@ trait NCIntentDslBaselCompiler {
       * @return
       */
     def newRuntimeError(errMsg: String, cause: Exception = null)(implicit ctx: PRC): NCE = {
-        val src = ctx.start.getTokenSource
-        
-        runtimeError(errMsg, src.getSourceName, src.getLine, src.getCharPositionInLine, cause)
+        val tok = ctx.start
+
+        runtimeError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine, cause)
     }
 
     type StackType = mutable.ArrayStack[NCDslTermRetVal]
@@ -506,6 +506,7 @@ trait NCIntentDslBaselCompiler {
         def doConvMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.convMeta.get(s).orNull, false) }
         def doCompMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false) }
         def doIntentMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false) }
+        def doFragMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.fragMeta.get(s).orNull, false) }
 
         /*
          * Math operations.
@@ -599,7 +600,7 @@ trait NCIntentDslBaselCompiler {
             case "meta_company" ⇒ doCompMeta()
             case "meta_sys" ⇒ doSysMeta()
             case "meta_conv" ⇒ doConvMeta()
-            case "meta_frag" ⇒
+            case "meta_frag" ⇒ doFragMeta()
 
             // Converts JSON to map.
             case "json" ⇒ doJson()

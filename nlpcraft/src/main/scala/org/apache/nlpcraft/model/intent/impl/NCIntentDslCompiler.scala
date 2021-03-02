@@ -22,7 +22,7 @@ import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser}
-import org.apache.nlpcraft.model.intent.utils.{NCDslIntent, NCDslTerm, NCDslTokenPredicate}
+import org.apache.nlpcraft.model.intent.utils.{NCDslIntent, NCDslTerm}
 import org.apache.nlpcraft.common._
 
 import scala.collection.JavaConverters._
@@ -96,7 +96,7 @@ object NCIntentDslCompiler extends LazyLogging {
 //        }
     
         override def exitTermId(ctx: NCIntentDslParser.TermIdContext): Unit = {
-            termId = ctx.ID().getText.trim
+            termId = ctx.id().getText.trim
         }
 
         override def exitTermEq(ctx: NCIntentDslParser.TermEqContext): Unit = {
@@ -126,7 +126,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitIntentId(ctx: NCIntentDslParser.IntentIdContext): Unit = {
-            id = ctx.ID().getText.trim
+            id = ctx.id().getText.trim
         }
     
         override def exitOrderedDecl(ctx: NCIntentDslParser.OrderedDeclContext): Unit = {

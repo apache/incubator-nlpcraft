@@ -29,8 +29,8 @@ dslItem
     ;
 frag: fragId terms;
 fragId: FRAG ASSIGN id;
-fragRef: FRAG LPAR id fragArg? RPAR;
-fragArg: COMMA jsonObj;
+fragRef: FRAG LPAR id fragMeta? RPAR;
+fragMeta: COMMA jsonObj;
 intent: intentId orderedDecl? flowDecl? metaDecl? terms;
 intentId: 'intent' ASSIGN id;
 orderedDecl: 'ordered' ASSIGN BOOL;

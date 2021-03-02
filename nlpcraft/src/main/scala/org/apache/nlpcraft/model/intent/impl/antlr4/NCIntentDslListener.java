@@ -8,6 +8,76 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface NCIntentDslListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#dsl}.
+	 * @param ctx the parse tree
+	 */
+	void enterDsl(NCIntentDslParser.DslContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#dsl}.
+	 * @param ctx the parse tree
+	 */
+	void exitDsl(NCIntentDslParser.DslContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#dslItems}.
+	 * @param ctx the parse tree
+	 */
+	void enterDslItems(NCIntentDslParser.DslItemsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#dslItems}.
+	 * @param ctx the parse tree
+	 */
+	void exitDslItems(NCIntentDslParser.DslItemsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#dslItem}.
+	 * @param ctx the parse tree
+	 */
+	void enterDslItem(NCIntentDslParser.DslItemContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#dslItem}.
+	 * @param ctx the parse tree
+	 */
+	void exitDslItem(NCIntentDslParser.DslItemContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#frag}.
+	 * @param ctx the parse tree
+	 */
+	void enterFrag(NCIntentDslParser.FragContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#frag}.
+	 * @param ctx the parse tree
+	 */
+	void exitFrag(NCIntentDslParser.FragContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#fragId}.
+	 * @param ctx the parse tree
+	 */
+	void enterFragId(NCIntentDslParser.FragIdContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#fragId}.
+	 * @param ctx the parse tree
+	 */
+	void exitFragId(NCIntentDslParser.FragIdContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#fragRef}.
+	 * @param ctx the parse tree
+	 */
+	void enterFragRef(NCIntentDslParser.FragRefContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#fragRef}.
+	 * @param ctx the parse tree
+	 */
+	void exitFragRef(NCIntentDslParser.FragRefContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#fragMeta}.
+	 * @param ctx the parse tree
+	 */
+	void enterFragMeta(NCIntentDslParser.FragMetaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#fragMeta}.
+	 * @param ctx the parse tree
+	 */
+	void exitFragMeta(NCIntentDslParser.FragMetaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#intent}.
 	 * @param ctx the parse tree
 	 */
@@ -37,6 +107,16 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOrderedDecl(NCIntentDslParser.OrderedDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#mtdDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterMtdDecl(NCIntentDslParser.MtdDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#mtdDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitMtdDecl(NCIntentDslParser.MtdDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#flowDecl}.
 	 * @param ctx the parse tree
@@ -108,6 +188,16 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitTerms(NCIntentDslParser.TermsContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#termItem}.
+	 * @param ctx the parse tree
+	 */
+	void enterTermItem(NCIntentDslParser.TermItemContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#termItem}.
+	 * @param ctx the parse tree
+	 */
+	void exitTermItem(NCIntentDslParser.TermItemContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#termEq}.
 	 * @param ctx the parse tree
 	 */
@@ -128,15 +218,15 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitTerm(NCIntentDslParser.TermContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIntentDslParser#clsNer}.
+	 * Enter a parse tree produced by {@link NCIntentDslParser#mtdRef}.
 	 * @param ctx the parse tree
 	 */
-	void enterClsNer(NCIntentDslParser.ClsNerContext ctx);
+	void enterMtdRef(NCIntentDslParser.MtdRefContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIntentDslParser#clsNer}.
+	 * Exit a parse tree produced by {@link NCIntentDslParser#mtdRef}.
 	 * @param ctx the parse tree
 	 */
-	void exitClsNer(NCIntentDslParser.ClsNerContext ctx);
+	void exitMtdRef(NCIntentDslParser.MtdRefContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#javaFqn}.
 	 * @param ctx the parse tree
@@ -325,4 +415,14 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMinMaxRange(NCIntentDslParser.MinMaxRangeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void enterId(NCIntentDslParser.IdContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void exitId(NCIntentDslParser.IdContext ctx);
 }
