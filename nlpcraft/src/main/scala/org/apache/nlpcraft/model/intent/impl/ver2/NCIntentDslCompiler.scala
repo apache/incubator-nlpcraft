@@ -26,6 +26,7 @@ import org.apache.nlpcraft.model.intent.utils.ver2._
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.intent.impl.ver2.{NCIntentDslFragmentCache ⇒ FragCache}
 
+import java.nio.file.Path
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable
@@ -103,6 +104,18 @@ object NCIntentDslCompiler extends LazyLogging {
             else
                 assert(false)
         }
+    
+        override def exitMinMaxRange(ctx: IDP.MinMaxRangeContext): Unit = {
+            val minStr = ctx.getChild(1).getText.trim
+            val maxStr = ctx.getChild(3).getText.trim
+        
+            try
+                setMinMax(java.lang.Integer.parseInt(minStr), java.lang.Integer.parseInt(maxStr))
+            catch {
+                // Errors should be caught during compilation phase.
+                case _: NumberFormatException ⇒ assert(false)
+            }
+        }
 
         override def exitMtdRef(ctx: IDP.MtdRefContext): Unit = {
             if (ctx.javaFqn() != null)
@@ -114,14 +127,25 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitTermId(ctx: IDP.TermIdContext): Unit = {
             termId = ctx.id().getText
     
-            // Check term ID uniqueness here for better error location.
             if (terms.exists(t ⇒ t.id != null && t.id == termId))
                 throw newSyntaxError(s"Duplicate term ID: $termId")(ctx.id())
         }
-        
+    
+        override def exitIntentId(ctx: IDP.IntentIdContext): Unit = {
+            intentId = ctx.id().getText
+    
+            if (intents.exists(i ⇒ i.id != null && i.id == intentId))
+                throw newSyntaxError(s"Duplicate intent ID: $intentId")(ctx.id())
+        }
+    
+        override def exitFragId(ctx: IDP.FragIdContext): Unit = {
+            fragId = ctx.id().getText
+    
+            if (FragCache.get(mdlId, fragId).isDefined)
+                throw newSyntaxError(s"Duplicate fragment ID: $fragId")(ctx.id())
+        }
+
         override def exitTermEq(ctx: IDP.TermEqContext): Unit =  termConv = ctx.TILDA() != null
-        override def exitIntentId(ctx: IDP.IntentIdContext): Unit = intentId = ctx.id().getText
-        override def exitFragId(ctx: IDP.FragIdContext): Unit = fragId = ctx.id().getText
         override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
         override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
@@ -168,9 +192,9 @@ object NCIntentDslCompiler extends LazyLogging {
             implicit val c: ParserRuleContext = ctx
 
             if (min < 0 || min > max)
-                throw newSyntaxError(s"Invalid intent term min quantifiers: $min (must be min >= 0 && min <= max).")
+                throw newSyntaxError(s"Invalid intent term min quantifiers: $min (must be min >= 0 && min <= max).")(ctx.minMax())
             if (max < 1)
-                throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")
+                throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
 
             val pred =
                 if (refMtdName != null) { // User-code defined term.
@@ -244,19 +268,12 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitFrag(ctx: IDP.FragContext): Unit = {
-            if (FragCache.get(mdlId, fragId).isDefined)
-                throw newSyntaxError(s"Duplicate fragment ID: $fragId")(ctx)
-
             FragCache.add(mdlId, NCDslFragment(fragId, terms.toList))
 
             terms.clear()
         }
         
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
-            // Check intent ID uniqueness (only for the current source).
-            if (intents.exists(i ⇒ i.id != null && i.id == intentId))
-                throw newSyntaxError(s"Duplicate intent ID: $termId")(ctx)
-
             intents += NCDslIntent(
                 dsl,
                 intentId,
@@ -334,13 +351,12 @@ object NCIntentDslCompiler extends LazyLogging {
         val pos = Math.max(0, charPos)
         val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
         val dslPtr = dslLine.substring(0, pos) + r(dslLine.charAt(pos)) + y(dslLine.substring(pos + 1))
-        val src = if (srcName == "<unknown>") "<inline>"else srcName
         val aMsg = U.decapitalize(msg) match {
             case s: String if s.last == '.' ⇒ s
             case s: String ⇒ s + '.'
         }
         
-        s"Intent DSL $kind error in '$src' at line $line:${charPos + 1} - $aMsg\n" +
+        s"Intent DSL $kind error in '$srcName' at line $line:${charPos + 1} - $aMsg\n" +
         s"  |-- ${c("Model:")}    $mdlId\n" +
         s"  |-- ${c("Line:")}     $dslPtr\n" +
         s"  +-- ${c("Position:")} $posPtr"
@@ -373,56 +389,73 @@ object NCIntentDslCompiler extends LazyLogging {
     }
     
     /**
-      * Compile individual fragment or intent. Note that fragments are accumulated in a static
-      * map keyed by model ID. Only intents are returned, if any.
+      *
+      * @param dsl
+      * @param mdlId
+      * @param srcName
+      * @return
+      */
+    private def antlr4(
+        dsl: String,
+        mdlId: String,
+        srcName: String
+    ): Set[NCDslIntent] = {
+        require(dsl != null)
+        require(mdlId != null)
+        require(srcName != null)
+    
+        val aDsl = dsl.strip()
+    
+        val intents: Set[NCDslIntent] = cache.getOrElseUpdate(aDsl, {
+            // ANTLR4 armature.
+            val lexer = new NCIntentDslLexer(CharStreams.fromString(aDsl, srcName))
+            val tokens = new CommonTokenStream(lexer)
+            val parser = new IDP(tokens)
+        
+            // Set custom error handlers.
+            lexer.removeErrorListeners()
+            parser.removeErrorListeners()
+            lexer.addErrorListener(new CompilerErrorListener(aDsl, mdlId))
+            parser.addErrorListener(new CompilerErrorListener(aDsl, mdlId))
+        
+            // State automata.
+            val fsm = new FiniteStateMachine(aDsl, mdlId)
+        
+            // Parse the input DSL and walk built AST.
+            (new ParseTreeWalker).walk(fsm, parser.dsl())
+        
+            // Return the built intent.
+            fsm.getBuiltIntents
+        })
+    
+        intents
+    }
+    
+    /**
+      * Compiles inline (supplied) fragments and/or intents from given file. Note that fragments are
+      * accumulated in a static map keyed by model ID. Only intents are returned, if any.
       *
       * @param filePath *.nc DSL file to compile.
       * @param mdlId ID of the model *.nc file belongs to.
       * @return
       */
+    @throws[NCE]
     def compileFile(
-        filePath: String,
+        filePath: Path,
         mdlId: String
-    ): Set[NCDslIntent] = ???
+    ): Set[NCDslIntent] = antlr4(U.readFile(filePath.toFile).mkString("\n"), mdlId, filePath.getFileName.toString)
     
     /**
-      * Compile individual fragment or intent. Note that fragments are accumulated in a static
+      * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
       * map keyed by model ID. Only intents are returned, if any.
       *
       * @param dsl DSL to compile.
       * @param mdlId ID of the model DSL belongs to.
       * @return
       */
+    @throws[NCE]
     def compile(
         dsl: String,
         mdlId: String
-    ): Set[NCDslIntent] = {
-        require(dsl != null)
-
-        val aDsl = dsl.strip()
-
-        val intents: Set[NCDslIntent] = cache.getOrElseUpdate(aDsl, {
-            // ANTLR4 armature.
-            val lexer = new NCIntentDslLexer(CharStreams.fromString(aDsl))
-            val tokens = new CommonTokenStream(lexer)
-            val parser = new IDP(tokens)
-
-            // Set custom error handlers.
-            lexer.removeErrorListeners()
-            parser.removeErrorListeners()
-            lexer.addErrorListener(new CompilerErrorListener(aDsl, mdlId))
-            parser.addErrorListener(new CompilerErrorListener(aDsl, mdlId))
-
-            // State automata.
-            val fsm = new FiniteStateMachine(aDsl, mdlId)
-
-            // Parse the input DSL and walk built AST.
-            (new ParseTreeWalker).walk(fsm, parser.dsl())
-
-            // Return the built intent.
-            fsm.getBuiltIntents
-        })
-
-        intents
-    }
+    ): Set[NCDslIntent] = antlr4(dsl, mdlId, "<inline>")
 }

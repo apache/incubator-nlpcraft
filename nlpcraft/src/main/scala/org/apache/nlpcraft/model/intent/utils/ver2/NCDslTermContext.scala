@@ -21,8 +21,15 @@ import org.apache.nlpcraft.common.ScalaMeta
 import org.apache.nlpcraft.model.NCRequest
 
 /**
- *
- */
+  *
+  * @param intentMeta Intent metadata.
+  * @param reqMeta User request ('data' parameter) metadata.
+  * @param usrMeta User object metadata.
+  * @param compMeta Company metadata.
+  * @param convMeta Conversation metadata.
+  * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
+  * @param req Server request holder.
+  */
 case class NCDslTermContext(
     intentMeta: ScalaMeta,
     reqMeta: ScalaMeta,

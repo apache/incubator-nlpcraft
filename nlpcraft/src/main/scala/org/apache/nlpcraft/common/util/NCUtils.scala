@@ -323,7 +323,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readPath(path: String, enc: String, log: Logger = logger): List[String] =
+    def readPath(path: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
         readFile(new File(path), enc, log)
 
     /**
@@ -334,7 +334,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readResource(res: String, enc: String, log: Logger = logger): List[String] = readStream(getStream(res), enc, log)
+    def readResource(res: String, enc: String = "UTF-8", log: Logger = logger): List[String] = readStream(getStream(res), enc, log)
 
     /**
       * Maps lines from the given resource to an object.
@@ -345,7 +345,7 @@ object NCUtils extends LazyLogging {
       * @param mapper Function to map lines.
       */
     @throws[NCE]
-    def mapResource[T](res: String, enc: String, log: Logger = logger, mapper: Iterator[String] ⇒ T): T =
+    def mapResource[T](res: String, enc: String = "UTF-8", log: Logger = logger, mapper: Iterator[String] ⇒ T): T =
         mapStream(getStream(res), enc, log, mapper)
 
     /**
@@ -356,7 +356,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readGzipPath(path: String, enc: String, log: Logger = logger): List[String] =
+    def readGzipPath(path: String, enc: String = "UTF-8", log: Logger = logger): List[String] =
         readGzipFile(new File(path), enc, log)
 
     /**
@@ -367,7 +367,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readFile(f: File, enc: String, log: Logger = logger): List[String] =
+    def readFile(f: File, enc: String = "UTF-8", log: Logger = logger): List[String] =
         try
             managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
                 getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
@@ -1420,7 +1420,7 @@ object NCUtils extends LazyLogging {
         prettyErrorImpl(new PrettyErrorLogger(), title, e)
 
     sealed class PrettyErrorLogger {
-        def log(s: String) = System.err.println(s)
+        def log(s: String): Unit = System.err.println(s)
     }
 
     /**
@@ -1784,7 +1784,7 @@ object NCUtils extends LazyLogging {
             managed(new PrintStream(out)) acquireAndGet { ps ⇒
                 t.printStackTrace(ps)
 
-                new String(out.toByteArray, "UTF8")
+                new String(out.toByteArray, "UTF-8")
             }
         }
 
@@ -1983,7 +1983,7 @@ object NCUtils extends LazyLogging {
       */
     @throws[NCE]
     def extractYamlFile[T](f: File, ignoreCase: Boolean, tr: TypeReference[T]): T =
-        extractYamlString(readFile(f, "UTF8").mkString("\n"), f.getAbsolutePath, ignoreCase, tr)
+        extractYamlString(readFile(f, "UTF-8").mkString("\n"), f.getAbsolutePath, ignoreCase, tr)
 
     /**
       * Extracts type `T` from given YAML `resource`.
@@ -1994,7 +1994,7 @@ object NCUtils extends LazyLogging {
       */
     @throws[NCE]
     def extractYamlResource[T](res: String, ignoreCase: Boolean, tr: TypeReference[T]): T =
-        extractYamlString(readStream(getStream(res), "UTF8").mkString("\n"), res, ignoreCase, tr)
+        extractYamlString(readStream(getStream(res), "UTF-8").mkString("\n"), res, ignoreCase, tr)
 
     /**
       * Extracts type `T` from given YAML `data`.

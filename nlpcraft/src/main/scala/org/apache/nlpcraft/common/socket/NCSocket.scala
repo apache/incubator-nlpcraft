@@ -36,8 +36,8 @@ case class NCSocket(socket: Socket, soTimeout: Int = 20000) extends LazyLogging 
     socket.setSoTimeout(soTimeout)
 
     private final val rwLock = new Object()
-    private lazy val writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream, "UTF8"))
-    private lazy val reader = new BufferedReader(new InputStreamReader(socket.getInputStream, "UTF8"))
+    private lazy val writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream, "UTF-8"))
+    private lazy val reader = new BufferedReader(new InputStreamReader(socket.getInputStream, "UTF-8"))
 
     override def toString: String = socket.toString
     override def hashCode(): Int = socket.hashCode()

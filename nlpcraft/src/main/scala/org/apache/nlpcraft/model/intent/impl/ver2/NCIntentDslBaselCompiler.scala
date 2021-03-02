@@ -355,7 +355,7 @@ trait NCIntentDslBaselCompiler {
                         try
                             Double.box(JDouble.parseDouble(num)) // Try 'double'.
                         catch {
-                            case _: NumberFormatException ⇒ U.trimEscapesQuotes(txt)
+                            case _: NumberFormatException ⇒ U.trimEscapesQuotes(txt) // String in the end.
                         }
                 }
             }

@@ -31,7 +31,7 @@ import org.apache.nlpcraft.common.U
 object NCGeoStateNamesGenerator extends App {
     // Produce a map of regions (countryCode + regCode → region name)).
     private def getStates(txtFile: String): Map[String, String] =
-        U.readPath(txtFile, "UTF8").filter(!_.startsWith("#")).flatMap(line ⇒ {
+        U.readPath(txtFile, "UTF-8").filter(!_.startsWith("#")).flatMap(line ⇒ {
             val seq = line.split("\t").toSeq
 
             if (seq(7) == "ADM1" && seq(8) == "US") {

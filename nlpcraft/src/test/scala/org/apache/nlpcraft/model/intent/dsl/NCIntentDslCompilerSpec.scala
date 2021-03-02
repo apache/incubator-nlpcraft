@@ -31,7 +31,7 @@ class NCIntentDslCompilerSpec {
      *
      * @param dsl
      */
-    private def checkOk(dsl: String): Unit =
+    private def checkCompileOk(dsl: String): Unit =
         try {
             NCIntentDslCompiler.compile(dsl, MODEL_ID)
 
@@ -45,7 +45,7 @@ class NCIntentDslCompilerSpec {
      *
      * @param txt
      */
-    private def checkError(txt: String): Unit =
+    private def checkCompileError(txt: String): Unit =
         try {
             NCIntentDslCompiler.compile(txt, MODEL_ID)
 
@@ -61,7 +61,7 @@ class NCIntentDslCompilerSpec {
     def testOk(): Unit = {
         NCIntentDslFragmentCache.clear(MODEL_ID)
         
-        checkOk(
+        checkCompileOk(
             """
               |intent=i1
               |     flow="a[^0-9]b"
@@ -69,14 +69,14 @@ class NCIntentDslCompilerSpec {
               |     term(t1)={2 == 2 && size(id()) != -25}
               |""".stripMargin
         )
-        checkOk(
+        checkCompileOk(
             """
               |intent=i1
               |     flow="a[^0-9]b"
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |""".stripMargin
         )
-        checkOk(
+        checkCompileOk(
             """
               |fragment=f1
               |     term(ft1)={2==2}
@@ -88,7 +88,7 @@ class NCIntentDslCompilerSpec {
               |     fragment(f1, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
-        checkOk(
+        checkCompileOk(
             """
               |fragment=f21
               |     term(f21_t1)={2==2}
@@ -112,7 +112,7 @@ class NCIntentDslCompilerSpec {
     def testFail(): Unit = {
         NCIntentDslFragmentCache.clear(MODEL_ID)
         
-        checkError(
+        checkCompileError(
             """
               |intent=i1
               |     flow="a[^0-9]b"
@@ -120,14 +120,27 @@ class NCIntentDslCompilerSpec {
               |     term(t1)={2 == 2 && size(id()) != -25}
               |""".stripMargin
         )
-        checkError(
+        checkCompileError(
+            """
+              |intent=i1
+              |     meta={'a': true1, 'b': {'arr': [1, 2, 3]}}
+              |     term(t1)={2 == 2 && size(id()) != -25}
+              |""".stripMargin
+        )
+        checkCompileError(
             """
               |intent=i1
               |     flow="a[^0-9b"
               |     term(t1)={true}
               |""".stripMargin
         )
-        checkError(
+        checkCompileError(
+            """
+              |intent=i1
+              |     term(t1)={true}[2,1]
+              |""".stripMargin
+        )
+        checkCompileError(
             """
               |intent=i1
               |     flow="a[^0-9b]"
@@ -135,14 +148,24 @@ class NCIntentDslCompilerSpec {
               |     term(t1)={true}
               |""".stripMargin
         )
-        checkError(
+        checkCompileError(
+            """
+              |intent=i1
+              |     flow="a[^0-9b]"
+              |     term(t1)={true}
+              |intent=i1
+              |     flow="a[^0-9b]"
+              |     term(t1)={true}
+              |""".stripMargin
+        )
+        checkCompileError(
             """
               |intent=i1
               |     flow="a[^0-9]b"
               |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}[1:2]
               |""".stripMargin
         )
-        checkError(
+        checkCompileError(
             """
               |fragment=f1
               |     term(t1)={2==2}
@@ -154,7 +177,7 @@ class NCIntentDslCompilerSpec {
               |     fragment(f1, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
-        checkError(
+        checkCompileError(
             """
               |fragment=f111
               |     term(t1)={2==2}
