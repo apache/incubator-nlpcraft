@@ -19,6 +19,8 @@ package org.apache.nlpcraft.probe.mgrs.dialogflow
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch}
+import org.apache.nlpcraft.model.intent.impl.NCIntentSolverResult
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection._
@@ -27,10 +29,17 @@ import scala.collection._
  * Dialog flow manager.
  */
 object NCDialogFlowManager extends NCService {
-    case class Key(usrId: Long, mdlId: String)
-    case class Value(intent: String, tstamp: Long)
+    /**
+      *
+      * @param usrId
+      * @param mdlId
+      */
+    case class Key(
+        usrId: Long,
+        mdlId: String
+    )
 
-    private final val flow = mutable.HashMap.empty[Key, mutable.ArrayBuffer[Value]]
+    private final val flow = mutable.HashMap.empty[Key, mutable.ArrayBuffer[NCDialogFlowItem]]
 
     @volatile private var gc: Thread = _
 
@@ -79,23 +88,48 @@ object NCDialogFlowManager extends NCService {
     }
 
     /**
-     * Adds matched (winning) intent to the dialog flow for the given user and model IDs.
-     *
-     * @param intId Intent ID.
-     * @param usrId User ID.
-     * @param mdlId Model ID.
-     */
-    def addMatchedIntent(intId: String, usrId: Long, mdlId: String, parent: Span = null): Unit = {
-        startScopedSpan("addMatchedIntent", parent, "usrId" → usrId, "mdlId" → mdlId, "intId" → intId) { _ ⇒
+      * Adds matched (winning) intent to the dialog flow.
+      *
+      * @param intentMatch
+      * @param res Intent match result.
+      * @param ctx Original query context.
+      */
+    def addMatchedIntent(intentMatch: NCIntentMatch, res: NCIntentSolverResult, ctx: NCContext, parent: Span = null): Unit = {
+        val usrId = ctx.getRequest.getUser.getId
+        val mdlId = ctx.getModel.getId
+        val intentId = res.intentId
+        
+        startScopedSpan("addMatchedIntent", parent, "usrId" → usrId, "mdlId" → mdlId, "intentId" → intentId) { _ ⇒
             flow.synchronized {
-                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[Value]).append(
-                    Value(intId, System.currentTimeMillis())
-                )
-
+                val req = ctx.getRequest
+                
+                val key = Key(usrId, mdlId)
+                val item: NCDialogFlowItem = new NCDialogFlowItem {
+                    override val getIntentId = intentId
+                    override val getIntentTokens = intentMatch.getIntentTokens
+                    override def getTermTokens(idx: Int) = intentMatch.getTermTokens(idx)
+                    override def getTermTokens(termId: String) = intentMatch.getTermTokens(termId)
+                    override val getVariant = intentMatch.getVariant
+                    override val isAmbiguous = !res.isExactMatch // TODO: rename for consistency?
+                    override val getUser = req.getUser
+                    override val getCompany = req.getCompany
+                    override val getServerRequestId = req.getServerRequestId
+                    override val getNormalizedText = req.getNormalizedText
+                    override val getReceiveTimestamp = req.getReceiveTimestamp
+                    override val getRemoteAddress = req.getRemoteAddress
+                    override val getClientAgent = req.getClientAgent
+                    override val getJsonData = req.getJsonData
+                }
+                
+                flow.getOrElseUpdate(key, mutable.ArrayBuffer.empty[NCDialogFlowItem]).append(item)
                 flow.notifyAll()
             }
 
-            logger.trace(s"Added to dialog flow [mdlId=$mdlId, intId=$intId, userId=$usrId]")
+            logger.trace(s"Added matched intent to dialog flow [" +
+                s"mdlId=$mdlId, " +
+                s"intentId=$intentId, " +
+                s"userId=$usrId" +
+            s"]")
         }
     }
 
@@ -106,10 +140,24 @@ object NCDialogFlowManager extends NCService {
      * @param mdlId Model ID.
      * @return Dialog flow.
      */
-    def getDialogFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[String] =
-        startScopedSpan("getDialogFlow", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
+    def getStringFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[String] =
+        startScopedSpan("getStringFlow", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
             flow.synchronized {
-                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[Value]).map(_.intent)
+                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[NCDialogFlowItem]).map(_.getIntentId)
+            }
+        }
+    
+    /**
+      * Gets sequence of dialog flow items sorted from oldest to newest (i.e. dialog flow) for given user and model IDs.
+      *
+      * @param usrId User ID.
+      * @param mdlId Model ID.
+      * @return Dialog flow.
+      */
+    def getItemFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[NCDialogFlowItem] =
+        startScopedSpan("getItemFlow", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
+            flow.synchronized {
+                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[NCDialogFlowItem])
             }
         }
 
@@ -129,7 +177,7 @@ object NCDialogFlowManager extends NCService {
                     case Some(mdl) ⇒
                         val ms = now - mdl.model.getConversationTimeout
 
-                        values --= values.filter(_.tstamp < ms)
+                        values --= values.filter(_.getReceiveTimestamp < ms)
 
                         timeouts += mdl.model.getId → mdl.model.getConversationTimeout
 
@@ -144,7 +192,7 @@ object NCDialogFlowManager extends NCService {
 
             flow --= delKeys
 
-            val times = (for ((key, values) ← flow) yield values.map(v ⇒ v.tstamp + timeouts(key.mdlId))).flatten
+            val times = (for ((key, values) ← flow) yield values.map(v ⇒ v.getReceiveTimestamp + timeouts(key.mdlId))).flatten
 
             if (times.nonEmpty)
                 times.min
@@ -167,7 +215,7 @@ object NCDialogFlowManager extends NCService {
                 flow.notifyAll()
             }
 
-            logger.trace(s"Dialog history is cleared [" +
+            logger.trace(s"Dialog flow history is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")
@@ -186,12 +234,12 @@ object NCDialogFlowManager extends NCService {
             val key = Key(usrId, mdlId)
 
             flow.synchronized {
-                flow(key) = flow(key).filterNot(v ⇒ pred(v.intent))
+                flow(key) = flow(key).filterNot(v ⇒ pred(v.getIntentId))
 
                 flow.notifyAll()
             }
 
-            logger.trace(s"Dialog history is cleared [" +
+            logger.trace(s"Dialog flow history is cleared [" +
                 s"usrId=$usrId, " +
                 s"mdlId=$mdlId" +
             s"]")
