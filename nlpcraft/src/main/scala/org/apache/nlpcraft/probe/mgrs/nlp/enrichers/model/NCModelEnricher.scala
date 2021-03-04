@@ -17,21 +17,22 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.model
 
-import java.io.Serializable
-import java.util
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer, _}
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, TEXT}
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
-import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymsWrapper, NCProbeVariants}
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeVariants}
 
+import java.io.Serializable
+import java.util
 import scala.collection.JavaConverters._
-import scala.compat.java8.OptionConverters._
 import scala.collection.convert.DecorateAsScala
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, mutable}
+import scala.compat.java8.OptionConverters._
 
 /**
   * Model elements enricher.
@@ -63,7 +64,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         element: NCElement,
         tokens: Seq[NCNlpSentenceToken],
         synonym: NCProbeSynonym,
-        parts: Seq[NCToken]
+        parts: Seq[(NCToken, NCSynonymChunkKind)]
     ) extends Ordered[ElementMatch] {
         // Tokens sparsity.
         lazy val sparsity: Int = tokens.zipWithIndex.tail.map {
@@ -198,7 +199,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
         direct: Boolean,
         syn: Option[NCProbeSynonym],
         metaOpt: Option[Map[String, Object]],
-        parts: Seq[NCToken]
+        parts: Seq[(NCToken, NCSynonymChunkKind)]
     ): Unit = {
         val params = mutable.ArrayBuffer.empty[(String, AnyRef)]
 
@@ -219,16 +220,16 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
         if (parts.nonEmpty) {
             val partsData: Seq[util.HashMap[String, Any]] =
-                parts.map(part ⇒ {
+                parts.map { case (part, kind) ⇒
                     val m = new util.HashMap[String, Any]()
 
-                    m.put("id", part.getId)
+                    m.put("id", if (kind == TEXT) "nlpcraft:nlp" else part.getId)
                     m.put("startcharindex", part.getStartCharIndex)
                     m.put("endcharindex", part.getEndCharIndex)
                     m.put(TOK_META_ALIASES_KEY, part.getMetadata.get(TOK_META_ALIASES_KEY))
 
                     m
-                })
+                }
 
             params += "parts" → partsData.asJava
         }
@@ -262,7 +263,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       * @param toks
       * @return
       */
-    protected def combos[T](toks: Seq[T]): Seq[Seq[T]] =
+    private def combos[T](toks: Seq[T]): Seq[Seq[T]] =
         (for (n ← toks.size until 0 by -1) yield toks.sliding(n)).flatten.map(p ⇒ p)
 
     /**
@@ -295,7 +296,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                     varToks.flatMap(t ⇒
                         // Single word token is not split as words - token.
                         // Partly (not strict in) token - word.
-                        if ((toksComb.contains(t) || isSingleWord(t)) && inStrict(t))
+                        if (inStrict(t) && (toksComb.contains(t) || isSingleWord(t)))
                             Seq(Complex(Left(t)))
                         else
                             t.wordIndexes.filter(nlpWordIdxs.contains).map(i ⇒ Complex(Right(initialSen(i))))
@@ -354,7 +355,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 toks.map(t ⇒ (t.origText, t.index)).mkString(" ")
 
             var permCnt = 0
-            var collapsedSens: Seq[Seq[NCToken]] = null
+            lazy val collapsedSens = NCProbeVariants.convert(ns.srvReqId, mdl, ns.clone().collapse(mdl.model)).map(_.asScala)
 
             /**
               *
@@ -365,17 +366,19 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                 for (toks ← combos(perm)) {
                     val key = toks.map(_.index).sorted
-                    val sparsity = U.calcSparsity(key)
 
                     if (!cache.contains(key)) {
-                        var seq: Seq[Seq[Complex]] = null
+                        cache += key
+
+                        lazy val dslCombs = convert(ns, collapsedSens, toks).groupBy(_.length)
+                        lazy val sparsity = U.calcSparsity(key)
 
                         // Attempt to match each element.
                         for (elm ← mdl.elements.values if !alreadyMarked(toks, elm.getId)) {
                             var found = false
 
                             def addMatch(
-                                elm: NCElement, toks: Seq[NCNlpSentenceToken], syn: NCProbeSynonym, parts: Seq[NCToken]
+                                elm: NCElement, toks: Seq[NCNlpSentenceToken], syn: NCProbeSynonym, parts: Seq[(NCToken, NCSynonymChunkKind)]
                             ): Unit =
                                 if (
                                     (elm.getJiggleFactor.isEmpty || elm.getJiggleFactor.get() >= sparsity) &&
@@ -425,25 +428,21 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             if (mdl.synonymsDsl.nonEmpty) {
                                 found = false
 
-                                if (collapsedSens == null)
-                                    collapsedSens =
-                                        NCProbeVariants.
-                                            convert(ns.srvReqId, mdl, ns.clone().collapse(mdl.model)).map(_.asScala)
-
-                                if (seq == null)
-                                    seq = convert(ns, collapsedSens, toks)
-
                                 for (
-                                    comb ← seq;
-                                    syn ← fastAccess(mdl.synonymsDsl, elm.getId, comb.length).getOrElse(Seq.empty)
-                                    if !found
+                                    (len, seq) ← dslCombs;
+                                    syn ← fastAccess(mdl.synonymsDsl, elm.getId, len).getOrElse(Seq.empty);
+                                    comb ← seq if !found;
+                                    data = comb.map(_.data)
                                 )
-                                    if (syn.isMatch(comb.map(_.data)))
-                                        addMatch(elm, toks, syn, comb.filter(_.isToken).map(_.token))
+                                    if (syn.isMatch(data)) {
+                                        val parts = comb.zip(syn.map(_.kind)).flatMap {
+                                            case (complex, kind) ⇒ if (complex.isToken) Some(complex.token → kind) else None
+                                        }
+
+                                        addMatch(elm, toks, syn, parts)
+                                    }
                             }
                         }
-
-                        cache += key
                     }
                 }
             }

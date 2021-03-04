@@ -69,11 +69,10 @@ class NCProbeSynonym(
     def isMatch(toks: NCNlpSentenceTokenBuffer): Boolean = {
         require(toks != null)
 
-        val ok =
+        if (toks.length == length) {
             if (isTextOnly)
                 toks.stemsHash == stemsHash && toks.stems == stems
             else
-                // Same length.
                 toks.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall {
                     case (tok, chunk) ⇒
                         chunk.kind match {
@@ -83,9 +82,9 @@ class NCProbeSynonym(
                             case _ ⇒ throw new AssertionError()
                         }
                 }
-
-        // Should be called only for valid tokens count (validation optimized for performance reasons)
-        ok && toks.length == length
+        }
+        else
+            false
     }
 
     /**
@@ -100,27 +99,26 @@ class NCProbeSynonym(
         type Word = NCNlpSentenceToken
         type TokenOrWord = Either[Token, Word]
 
-        val ok =
-            // Same length.
+        if (tows.length == length && tows.count(_.isLeft) >= dslChunks)
             tows.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall {
                 case (tow, chunk) ⇒
                     def get0[T](fromToken: Token ⇒ T, fromWord: Word ⇒ T): T =
                         if (tow.isLeft) fromToken(tow.left.get) else fromWord(tow.right.get)
 
                     chunk.kind match {
-                        case TEXT ⇒ chunk.wordStem == get0((t: Token) ⇒ t.stem, (w: Word) ⇒ w.stem)
+                        case TEXT ⇒ chunk.wordStem == get0(_.stem, _.stem)
                         case REGEX ⇒
                             val r = chunk.regex
 
-                            r.matcher(get0((t: Token) ⇒ t.origText, (w: Word) ⇒ w.origText)).matches() ||
-                            r.matcher(get0((t: Token) ⇒ t.normText, (w: Word) ⇒ w.normText)).matches()
-                        case DSL ⇒ get0((t: Token) ⇒ chunk.dslPred.apply(t), (_: Word) ⇒ false)
+                            r.matcher(get0(_.origText, _.origText)).matches() ||
+                            r.matcher(get0(_.normText, _.normText)).matches()
+                        case DSL ⇒ get0(t ⇒ chunk.dslPred.apply(t), _ ⇒ false)
 
                         case _ ⇒ throw new AssertionError()
                     }
             }
-        // Should be called only for valid tokens count (validation optimized for performance reasons)
-        ok && tows.length == length
+        else
+            false
     }
     
     override def toString(): String = mkString(" ")
