@@ -586,7 +586,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
 
             override lazy val getConversation: NCConversation = new NCConversation {
                 override def getTokens: util.List[NCToken] = conv.getTokens()
-                override def getDialogFlow: util.List[String] = NCDialogFlowManager.getDialogFlow(usrId, mdlId, span).asJava
+                override def getDialogFlow: util.List[NCDialogFlowItem] = NCDialogFlowManager.getItemFlow(usrId, mdlId, span).asJava
                 override def clearStm(filter: Predicate[NCToken]): Unit = conv.clearTokens(filter)
                 override def clearDialog(filter: Predicate[String]): Unit = NCDialogFlowManager.clear(usrId, mdlId, span)
                 override def getMetadata = conv.getUserData

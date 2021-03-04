@@ -218,9 +218,31 @@ object NCIntentDslCompiler extends LazyLogging {
 
                         try {
                             val obj = if (clsName == null) mdl else U.mkObject(clsName)
-                            val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls).getMethod(mtdName, classOf[NCTokenPredicateContext])
+                            val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls)
+                                .getMethod(mtdName, classOf[NCTokenPredicateContext])
 
-                            val res = mtd.invoke(obj, javaCtx).asInstanceOf[NCTokenPredicateResult]
+                            var flag = mtd.canAccess(mdl)
+
+                            val res = try {
+                                if (!flag) {
+                                    mtd.setAccessible(true)
+
+                                    flag = true
+                                }
+                                else
+                                    flag = false
+
+                                mtd.invoke(obj, javaCtx).asInstanceOf[NCTokenPredicateResult]
+                            }
+                            finally {
+                                if (flag)
+                                    try
+                                        mtd.setAccessible(false)
+                                    catch {
+                                        case e: SecurityException ⇒
+                                            throw new NCE(s"Access or security error in custom intent term: $mdlCls.$mtdName", e)
+                                    }
+                            }
 
                             (res.getResult, res.wasTokenUsed())
                         }
@@ -238,8 +260,10 @@ object NCIntentDslCompiler extends LazyLogging {
                     (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
                         val stack = new mutable.ArrayStack[NCDslTermRetVal]()
 
+                        // Execute all instructions.
                         instrs.foreach(_(tok, stack, termCtx))
 
+                        // Pop final result from stack.
                         val x = stack.pop()
 
                         if (!isBoolean(x.retVal))

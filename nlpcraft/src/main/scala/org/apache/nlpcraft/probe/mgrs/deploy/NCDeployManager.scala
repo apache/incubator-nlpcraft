@@ -1222,14 +1222,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 case e: NCRejection ⇒ throw e
                 case e: NCE ⇒ throw e
                 case e: Throwable ⇒
-                    throw new NCE(s"Invocation error [" +
+                    throw new NCE(s"Intent callback invocation error [" +
                         s"mdlId=$mdlId, " +
                         s"callback=${method2Str(mtd)}" +
                     s"]", e)
             }
 
             case e: Throwable ⇒
-                throw new NCE(s"Unexpected invocation error [" +
+                throw new NCE(s"Unexpected intent callback invocation error [" +
                     s"mdlId=$mdlId, " +
                     s"callback=${method2Str(mtd)}" +
                 s"]", e)
@@ -1240,7 +1240,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     mtd.setAccessible(false)
                 catch {
                     case e: SecurityException ⇒
-                        throw new NCE(s"Access or security error [" +
+                        throw new NCE(s"Access or security error in intent callback [" +
                             s"mdlId=$mdlId, " +
                             s"callback=${method2Str(mtd)}" +
                         s"]", e)
@@ -1385,10 +1385,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 if (lowBounds.nonEmpty || upBounds.size != 1 || upBounds(0) != CLS_TOKEN)
                                     throw new NCE(
                                         s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [" +
-                                        s"mdlId=$mdlId, " +
-                                        s"type=${wc2Str(wildcardType)}, " +
-                                        s"arg=${mkArg()}" +
-                                    s"]")
+                                            s"mdlId=$mdlId, " +
+                                            s"type=${wc2Str(wildcardType)}, " +
+                                            s"arg=${mkArg()}" +
+                                        s"]")
                             case _ ⇒
                                 throw new NCE(s"Unexpected generic type for @NCIntentTerm annotated argument [" +
                                     s"mdlId=$mdlId, " +

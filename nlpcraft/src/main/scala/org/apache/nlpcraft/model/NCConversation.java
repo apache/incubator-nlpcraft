@@ -54,12 +54,12 @@ public interface NCConversation extends NCMetadata {
     List<NCToken> getTokens();
 
     /**
-     * Gets IDs for the previously matched intents sorted from oldest to newest for the current
+     * Gets the chronologically ordered list of previously matched intents sorted from oldest to newest for the current
      * user and data model.
      *
-     * @return IDs for the previously matched intents.
+     * @return List of chronologically ordered previously matched intents.
      */
-    List<String> getDialogFlow();
+    List<NCDialogFlowItem> getDialogFlow();
 
     /**
      * Removes all tokens satisfying given predicate from the conversation STM.
