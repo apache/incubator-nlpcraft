@@ -219,7 +219,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         // Isolated conversation tokens.
                         val convToks =
-                            if (intent.terms.exists(_.isConversational))
+                            if (intent.terms.exists(_.conv))
                                 Seq.empty[UsedToken] ++
                                     // We shouldn't mix tokens with same group from conversation
                                     // history and processed sentence.
@@ -461,7 +461,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         varIdx: Int
     ): Option[IntentMatch] = {
         val intentId = intent.id
-        val hist = NCDialogFlowManager.getDialogFlow(ctx.getRequest.getUser.getId, ctx.getModel.getId)
+        val flow = NCDialogFlowManager.getDialogFlow(ctx.getRequest.getUser.getId, ctx.getModel.getId)
         val varStr = s"(variant #${varIdx + 1})"
         val flowRegex = intent.flowRegex
 
@@ -470,6 +470,12 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             logger.info(s"  |-- ${c("Dialog flow:")} ${hist.mkString(" ")}")
             logger.info(s"  +-- ${c("Match regex:")} ${flowRegex.get.toString}")
         }
+        
+        if (intent.)
+        
+        
+        
+        
 
         // Check dialog flow first.
         if (intent.flowRegex.isDefined && !flowRegex.get.matcher(hist.mkString(" ")).find(0)) {
@@ -594,10 +600,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
     ): Option[TermMatch] =
-        solvePredicate(term.getPredicate, term.getMin, term.getMax, senToks, convToks) match {
+        solvePredicate(term.pred, term.min, term.max, senToks, convToks) match {
             case Some((usedToks, predWeight)) ⇒ Some(
                 TermMatch(
-                    term.getId,
+                    term.id,
                     usedToks,
                     if (usedToks.nonEmpty) {
                         // If term match is non-empty we add the following weights:
@@ -605,19 +611,19 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         //   - delta between specified max and normalized max (how close the actual quantity was to the specified one).
                         //   - normalized max
                         predWeight
-                            .append(term.getMin)
-                            .append(-(term.getMax - usedToks.size))
+                            .append(term.min)
+                            .append(-(term.max - usedToks.size))
                             // Normalize max quantifier in case of unbound max.
-                            .append(if (term.getMax == Integer.MAX_VALUE) usedToks.size else term.getMax)
+                            .append(if (term.max == Integer.MAX_VALUE) usedToks.size else term.max)
                     } else {
                         // Term is optional (found but empty).
-                        require(term.getMin == 0)
+                        require(term.min == 0)
 
                         predWeight
                             .append(0)
-                            .append(-term.getMax)
+                            .append(-term.max)
                             // Normalize max quantifier in case of unbound max.
-                            .append(if (term.getMax == Integer.MAX_VALUE) 0 else term.getMax)
+                            .append(if (term.max == Integer.MAX_VALUE) 0 else term.max)
                     }
                 )
             )

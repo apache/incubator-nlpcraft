@@ -134,28 +134,14 @@ object NCDialogFlowManager extends NCService {
     }
 
     /**
-     * Gets sequence of intent ID sorted from oldest to newest (i.e. dialog flow) for given user and model IDs.
-     *
-     * @param usrId User ID.
-     * @param mdlId Model ID.
-     * @return Dialog flow.
-     */
-    def getStringFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[String] =
-        startScopedSpan("getStringFlow", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
-            flow.synchronized {
-                flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[NCDialogFlowItem]).map(_.getIntentId)
-            }
-        }
-    
-    /**
       * Gets sequence of dialog flow items sorted from oldest to newest (i.e. dialog flow) for given user and model IDs.
       *
       * @param usrId User ID.
       * @param mdlId Model ID.
       * @return Dialog flow.
       */
-    def getItemFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[NCDialogFlowItem] =
-        startScopedSpan("getItemFlow", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
+    def getDialogFlow(usrId: Long, mdlId: String, parent: Span = null): Seq[NCDialogFlowItem] =
+        startScopedSpan("getDialogFlow", parent, "usrId" → usrId, "mdlId" → mdlId) { _ ⇒
             flow.synchronized {
                 flow.getOrElseUpdate(Key(usrId, mdlId), mutable.ArrayBuffer.empty[NCDialogFlowItem])
             }

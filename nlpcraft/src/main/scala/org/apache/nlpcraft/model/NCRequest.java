@@ -42,7 +42,7 @@ public interface NCRequest {
     /**
      * Gets globally unique server ID of the current request.
      * <p>
-     * Server request is defined as a processing of a one user input request (a session).
+     * Server request is defined as a processing of a one user input request.
      * Note that the model can be accessed multiple times during processing of a single user request
      * and therefore multiple instances of this interface can return the same server
      * request ID. In fact, users of this interfaces can use this fact by using this ID,

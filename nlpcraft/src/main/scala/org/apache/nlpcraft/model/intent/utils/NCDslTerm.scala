@@ -15,41 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils.ver2
+package org.apache.nlpcraft.model.intent.utils
 
-import java.util.regex.Pattern
+import org.apache.nlpcraft.model.NCToken
 
 /**
- * DSL intent.
+ * DSL term.
   *
-  * @param dsl Original DSL of this intent.
-  * @param id
-  * @param ordered
-  * @param meta
-  * @param flow
-  * @param terms
+  * @param id Optional ID of this term.
+  * @param pred
+  * @param min
+  * @param max
+  * @param conv
   */
-case class NCDslIntent(
-    dsl: String,
-    id: String,
-    ordered: Boolean,
-    meta: Map[String, Any],
-    flow: Option[String],
-    flowClsName: Option[String],
-    flowMtdName: Option[String],
-    terms: List[NCDslTerm]
+case class NCDslTerm(
+    id: String, // Could be null.
+    pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
+    min: Int,
+    max: Int,
+    conv: Boolean,
+    fragMeta: Map[String, Any] = Map.empty
 ) {
-    require(id != null)
-    require(terms.nonEmpty)
-    require(meta != null)
+    require(pred != null)
+    require(min >= 0 && max >= min)
 
-    // Flow regex as a compiled pattern.
-    // Regex validity check is already done during intent compilation.
-    lazy val flowRegex = flow match {
-        case Some(r) ⇒ Some(Pattern.compile(r))
-        case None ⇒ None
-    }
-
-    override def toString: String =
-        s"intent=$id"
+    /**
+     *
+     * @param meta
+     * @return
+     */
+    def cloneWithMeta(meta: Map[String, Any]): NCDslTerm =
+        NCDslTerm(
+            id,
+            pred,
+            min,
+            max,
+            conv,
+            meta
+        )
 }

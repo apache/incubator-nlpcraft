@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.impl.ver2
+package org.apache.nlpcraft.model.intent.impl
 
-import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
+import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.apache.commons.lang3.StringUtils
-import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.model.intent.utils.ver2.{NCDslTermContext, NCDslTermRetVal}
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.model.NCToken
+import org.apache.nlpcraft.model.intent.utils.{NCDslTermContext, NCDslTermRetVal}
+import org.apache.nlpcraft.model.intent.utils.ver2.NCDslTermRetVal
 
 import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
 import java.time.LocalDate

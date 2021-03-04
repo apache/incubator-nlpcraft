@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils.ver2
-
-import org.apache.nlpcraft.common.ScalaMeta
-import org.apache.nlpcraft.model.NCRequest
+package org.apache.nlpcraft.model.intent.utils
 
 /**
+  * DSL fragment.
   *
-  * @param intentMeta Intent metadata.
-  * @param reqMeta User request ('data' parameter) metadata.
-  * @param usrMeta User object metadata.
-  * @param compMeta Company metadata.
-  * @param convMeta Conversation metadata.
-  * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
-  * @param req Server request holder.
+  * @param id ID of this fragment (must be unique within a model).
+  * @param terms List of terms this fragment defines.
   */
-case class NCDslTermContext(
-    intentMeta: ScalaMeta,
-    reqMeta: ScalaMeta,
-    usrMeta: ScalaMeta,
-    compMeta: ScalaMeta,
-    convMeta: ScalaMeta,
-    fragMeta: ScalaMeta,
-    req: NCRequest
-)
+case class NCDslFragment(
+    id: String,
+    terms: List[NCDslTerm]
+) {
+    require(id != null)
+    require(terms.nonEmpty)
+}

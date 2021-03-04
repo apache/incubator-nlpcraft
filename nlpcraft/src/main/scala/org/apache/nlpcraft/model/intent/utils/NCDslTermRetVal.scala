@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils.ver2
+package org.apache.nlpcraft.model.intent.utils
 
 /**
  *

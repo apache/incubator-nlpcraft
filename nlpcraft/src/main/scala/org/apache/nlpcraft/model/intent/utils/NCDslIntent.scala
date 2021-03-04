@@ -17,50 +17,39 @@
 
 package org.apache.nlpcraft.model.intent.utils
 
-import java.util.regex.{Pattern, PatternSyntaxException}
+import java.util.regex.Pattern
 
 /**
- * Intent from intent DSL.
- *
- * @param id Intent ID.
- * @param ordered Whether or not the order of terms is important for matching.
- * @param flow Optional flow matching regex.
- * @param terms Array of terms comprising this intent.
- */
-case class NCDslIntent(id: String, ordered: Boolean, flow: Option[String], terms: Array[NCDslTerm]) {
-    if (id == null)
-        throw new IllegalArgumentException("Intent ID must be provided.")
-    if (terms.length == 0)
-        throw new IllegalArgumentException("Intent should have at least one term.")
+ * DSL intent.
+  *
+  * @param dsl Original DSL of this intent.
+  * @param id
+  * @param ordered
+  * @param meta
+  * @param flow
+  * @param terms
+  */
+case class NCDslIntent(
+    dsl: String,
+    id: String,
+    ordered: Boolean,
+    meta: Map[String, Any],
+    flow: Option[String],
+    flowClsName: Option[String],
+    flowMtdName: Option[String],
+    terms: List[NCDslTerm]
+) {
+    require(id != null)
+    require(terms.nonEmpty)
+    require(meta != null)
 
     // Flow regex as a compiled pattern.
-    val flowRegex = flow match {
-        case Some(r) ⇒
-            try
-                Some(Pattern.compile(r))
-            catch {
-                case e: PatternSyntaxException ⇒
-                    throw new IllegalArgumentException(s"${e.getDescription} in flow regex '${e.getPattern}' near index ${e.getIndex}.")
-            }
-
+    // Regex validity check is already done during intent compilation.
+    lazy val flowRegex = flow match {
+        case Some(r) ⇒ Some(Pattern.compile(r))
         case None ⇒ None
     }
 
     override def toString: String =
-        s"Intent: '$id'"
-
-    /**
-     * Gets full intent string representation in text DSL format.
-     *
-     * @return Full intent string representation in text DSL format.
-     */
-    def toDslString: String = {
-        val orderedStr = if (!ordered) "" else " ordered=true"
-        val flowStr = flow match {
-            case Some(r) ⇒ s" flow='$r'"
-            case None ⇒ ""
-        }
-
-        s"intent=$id$orderedStr$flowStr ${terms.mkString(" ")}"
-    }
+        s"intent=$id"
 }

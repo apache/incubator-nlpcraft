@@ -21,8 +21,8 @@ import java.util.*;
 
 /**
  * An item of the dialog flow. Dialog flow is a chronologically ordered list of dialog flow
- * items. Each item represents a snapshot of winning intent's match data. An instance of this interface
- * is passed into user-defined dialog flow match method.
+ * items. Each item represents a snapshot of winning intent's match and its associated data. An instance
+ * of this interface is passed into a custom user-defined dialog flow match method.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
@@ -78,12 +78,12 @@ public interface NCDialogFlowItem {
     List<NCToken> getTermTokens(String termId);
 
     /**
-     * Gets sentence parsing variant that produced the matching for this intent. Returned variant is one of the
+     * Gets sentence parsing variant that produced the matching for the winning intent. Returned variant is one of the
      * variants provided by {@link NCContext#getVariants()} methods. Note that tokens returned by this method are
      * a superset of the tokens returned by {@link #getIntentTokens()} method, i.e. not all tokens
      * from this variant may have been used in matching of the winning intent.
      *
-     * @return Sentence parsing variant that produced the matching for this intent.
+     * @return Sentence parsing variant that produced the matching for the winning intent.
      * @see #getIntentTokens()
      */
     NCVariant getVariant();
@@ -92,12 +92,10 @@ public interface NCDialogFlowItem {
      * Indicates whether or not the intent match was ambiguous (not exact).
      * <p>
      * An exact match means that for the intent to match it has to use all non-free word tokens
-     * in the user input, i.e. only free word tokens can be left after the match. An ambiguous match
+     * in the user input, i.e. only free word tokens can be left unused after the match. An ambiguous match
      * doesn't have this restriction. Note that an ambiguous match should be used with a great care.
      * An ambiguous match completely ignores extra found user or system tokens (which are not part
      * of the intent template) which could have altered the matching outcome had they been considered.
-     * <p>
-     * Intent callbacks that check this property should always provide custom rejection message.
      *
      * @return {@code True} if the intent match was exact, {@code false} otherwise.
      */
@@ -120,7 +118,7 @@ public interface NCDialogFlowItem {
     /**
      * Gets globally unique server ID of the input request.
      * <p>
-     * Server request is defined as a processing of a one user input request (a session).
+     * Server request is defined as a processing of a one user input request.
      * Note that the model can be accessed multiple times during processing of a single user request
      * and therefore multiple instances of this interface can return the same server
      * request ID. In fact, users of this interfaces can use this fact by using this ID,
@@ -138,29 +136,29 @@ public interface NCDialogFlowItem {
     String getNormalizedText();
 
     /**
-     * Gets UTC/GMT timestamp in ms when user input was received.
+     * Gets UTC/GMT timestamp in milliseconds when user input was received.
      *
-     * @return UTC/GMT timestamp in ms when user input was received.
+     * @return UTC/GMT timestamp in milliseconds when user input was received.
      */
     long getReceiveTimestamp();
 
     /**
-     * Gets optional address of the remote client.
+     * Gets optional address of the remote client that made the initial REST request.
      *
      * @return Optional address of the remote client.
      */
     Optional<String> getRemoteAddress();
 
     /**
-     * Gets string representation of the user client agent that made the call with
-     * this request.
+     * Gets string representation of the user client agent that made the initial REST
+     * request .
      *
      * @return User agent string from user client (web browser, REST client, etc.).
      */
     Optional<String> getClientAgent();
 
     /**
-     * Gets optional JSON data passed in with the user request.
+     * Gets optional JSON data passed in with the initial REST request.
      *
      * @return Optional JSON data.
      */

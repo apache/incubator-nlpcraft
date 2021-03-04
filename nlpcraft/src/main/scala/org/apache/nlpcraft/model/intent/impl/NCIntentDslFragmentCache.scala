@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.impl.ver2
+package org.apache.nlpcraft.model.intent.impl
 
-import org.apache.nlpcraft.model.intent.utils.ver2.NCDslFragment
+import org.apache.nlpcraft.model.intent.utils.NCDslFragment
 
 import scala.collection.concurrent.TrieMap
 import scala.collection.mutable

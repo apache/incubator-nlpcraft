@@ -15,42 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils.ver2
+package org.apache.nlpcraft.model.intent.utils
 
-import org.apache.nlpcraft.model.NCToken
+import org.apache.nlpcraft.common.ScalaMeta
+import org.apache.nlpcraft.model.NCRequest
 
 /**
- * DSL term.
   *
-  * @param id Optional ID of this term.
-  * @param pred
-  * @param min
-  * @param max
-  * @param conv
+  * @param intentMeta Intent metadata.
+  * @param reqMeta User request ('data' parameter) metadata.
+  * @param usrMeta User object metadata.
+  * @param compMeta Company metadata.
+  * @param convMeta Conversation metadata.
+  * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
+  * @param req Server request holder.
   */
-case class NCDslTerm(
-    id: String, // Could be null.
-    pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
-    min: Int,
-    max: Int,
-    conv: Boolean,
-    fragMeta: Map[String, Any] = Map.empty
-) {
-    require(pred != null)
-    require(min >= 0 && max >= min)
-
-    /**
-     *
-     * @param meta
-     * @return
-     */
-    def cloneWithMeta(meta: Map[String, Any]): NCDslTerm =
-        NCDslTerm(
-            id,
-            pred,
-            min,
-            max,
-            conv,
-            meta
-        )
-}
+case class NCDslTermContext(
+    intentMeta: ScalaMeta,
+    reqMeta: ScalaMeta,
+    usrMeta: ScalaMeta,
+    compMeta: ScalaMeta,
+    convMeta: ScalaMeta,
+    fragMeta: ScalaMeta,
+    req: NCRequest
+)
