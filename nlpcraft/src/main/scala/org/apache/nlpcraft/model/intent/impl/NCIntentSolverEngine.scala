@@ -18,13 +18,12 @@
 package org.apache.nlpcraft.model.intent.impl
 
 import java.util.function.Function
-
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.model.intent.utils.{NCDslIntent, NCDslTerm}
+import org.apache.nlpcraft.model.intent.utils.{NCDslIntent, NCDslTerm, NCDslTermContext}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
@@ -464,29 +463,32 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         val flow = NCDialogFlowManager.getDialogFlow(ctx.getRequest.getUser.getId, ctx.getModel.getId)
         val varStr = s"(variant #${varIdx + 1})"
         val flowRegex = intent.flowRegex
+        
+        var flowMatched = true
 
-        def logFlowMatch(s: String) = {
-            logger.info(s)
-            logger.info(s"  |-- ${c("Dialog flow:")} ${hist.mkString(" ")}")
-            logger.info(s"  +-- ${c("Match regex:")} ${flowRegex.get.toString}")
+        // Check dialog flow regex first, if any.
+        if (intent.flowRegex.isDefined) {
+            val str = flow.map(_.getIntentId).mkString(" ")
+            
+            def x(s: String): Unit = {
+                logger.info(s"Intent '$intentId' ${bo(s)} regex dialog flow $varStr:")
+                logger.info(s"  |-- ${c("Intent IDs  :")} $str")
+                logger.info(s"  +-- ${c("Match regex :")} ${flowRegex.get.toString}")
+            }
+
+            if (!flowRegex.get.matcher(str).find(0)) {
+                x("did not match")
+                
+                flowMatched = false
+            }
+            else
+                x("matched")
+        }
+        else if (intent.flowMtdName.isDefined) {
+            // TODO.
         }
         
-        if (intent.)
-        
-        
-        
-        
-
-        // Check dialog flow first.
-        if (intent.flowRegex.isDefined && !flowRegex.get.matcher(hist.mkString(" ")).find(0)) {
-            logFlowMatch(s"Intent '$intentId' ${r("did not")} match because of dialog flow $varStr:")
-
-            None
-        }
-        else {
-            if (intent.flowRegex.isDefined)
-                logFlowMatch(s"Intent '$intentId' ${g("matched")} dialog flow $varStr:")
-
+        if (flowMatched) {
             val intentW = new Weight()
             val intentGrps = mutable.ListBuffer.empty[TermTokensGroup]
             var abort = false
@@ -498,7 +500,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 solveTerm(
                     term,
                     senToks,
-                    if (term.isConversational) convToks else Seq.empty
+                    if (term.conv) convToks else Seq.empty
                 ) match {
                     case Some(termMatch) ⇒
                         if (ordered && lastTermMatch != null && lastTermMatch.maxIndex > termMatch.maxIndex)
@@ -585,6 +587,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 res
             }
         }
+        else
+            None
     }
     
     /**
@@ -643,7 +647,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
       */
     @throws[NCE]
     private def solvePredicate(
-        pred: Function[NCToken, java.lang.Boolean],
+        pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
         min: Int,
         max: Int,
         senToks: Seq[UsedToken],
