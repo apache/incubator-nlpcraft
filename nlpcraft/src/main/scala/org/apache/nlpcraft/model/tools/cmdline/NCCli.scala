@@ -470,13 +470,16 @@ object NCCli extends App {
     private def cleanUpTempFiles(): Unit = {
         val tstamp = currentTime - 1000 * 60 * 60 * 24 * 2 // 2 days ago.
 
-        for (file <- new File(SystemUtils.getUserHome, ".nlpcraft").listFiles())
-            if (file.lastModified() < tstamp) {
-                val name = file.getName
-
-                if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
-                    file.delete()
-            }
+        val files = new File(SystemUtils.getUserHome, ".nlpcraft").listFiles()
+        
+        if (files != null)
+            for (file <- files)
+                if (file.lastModified() < tstamp) {
+                    val name = file.getName
+    
+                    if (name.startsWith("server_log") || name.startsWith("server_log") || name.startsWith(".pid_"))
+                        file.delete()
+                }
     }
 
     /**
