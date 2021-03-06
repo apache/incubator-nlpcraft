@@ -24,10 +24,10 @@ description: Minecraft Model.
 ]
 
 macros:
-#  - name: "<PLAYER_NAME>"
-#    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
   - name: "<PLAYER_NAME>"
-    macro: "{me|I|my}"
+    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
+#  - name: "<PLAYER_NAME>"
+#    macro: "{me|I|my}"
 
 elements:
   # General synonyms
