@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.utils.{NCDslTermContext, NCDslTermRetVal}
-import org.apache.nlpcraft.model.intent.utils.ver2.NCDslTermRetVal
 
 import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
 import java.time.LocalDate

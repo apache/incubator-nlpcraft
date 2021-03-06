@@ -72,10 +72,11 @@ object NCModelManager extends NCService with DecorateAsScala {
                         s"Intents: $intentCnt" + (if (intentCnt == 0) s" ${r("(!)")}" else "")
                     ),
                     w.intents
-                        .map(_.toDslString)
+                        .map(_.dsl)
                         .flatMap(s ⇒
                             s
                             .replaceAll("intent=", s"${g("intent")}=")
+                            .replaceAll("fragment=", s"${b("fragment")}=")
                             .replaceAll(" term", s"\n  ${c("term")}").split("\n")
                         )
                 )

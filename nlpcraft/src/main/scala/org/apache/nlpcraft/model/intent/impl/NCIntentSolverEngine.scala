@@ -494,11 +494,22 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             var abort = false
             val ordered = intent.ordered
             var lastTermMatch: TermMatch = null
+            
+            val termCtx = NCDslTermContext( // TODO
+                intentMeta = null,
+                reqMeta = null,
+                usrMeta = null,
+                convMeta = null,
+                compMeta = null,
+                fragMeta = null,
+                req = ctx.getRequest
+            )
 
             // Check terms.
             for (term ← intent.terms if !abort) {
                 solveTerm(
                     term,
+                    termCtx,
                     senToks,
                     if (term.conv) convToks else Seq.empty
                 ) match {
@@ -592,8 +603,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     }
     
     /**
-      * 
+      * Solves term.
+      *
       * @param term
+      * @param ctx
       * @param convToks
       * @param senToks
       * @return
@@ -601,10 +614,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     private def solveTerm(
         term: NCDslTerm,
+        ctx: NCDslTermContext,
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
     ): Option[TermMatch] =
-        solvePredicate(term.pred, term.min, term.max, senToks, convToks) match {
+        solvePredicate(term.pred, ctx, term.min, term.max, senToks, convToks) match {
             case Some((usedToks, predWeight)) ⇒ Some(
                 TermMatch(
                     term.id,
@@ -637,8 +651,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         }
     
     /**
+      * Solves term's predicate.
       *
       * @param pred
+      * @param ctx
       * @param min
       * @param max
       * @param senToks
@@ -648,6 +664,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     private def solvePredicate(
         pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
+        ctx: NCDslTermContext,
         min: Int,
         max: Int,
         senToks: Seq[UsedToken],
@@ -658,23 +675,35 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         // and conversation will be used only to get to the 'max' number of the item.
     
         var usedToks = List.empty[UsedToken]
+        
+        var matches = 0
 
         // Collect to the 'max' from sentence & conversation, if possible.
-        for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0)
-            if (pred.apply(tok.token))
-                usedToks :+= tok
-
-        // We couldn't collect even 'min' tokens.
-        if (usedToks.lengthCompare(min) < 0)
+        for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
+            val (res, used) = pred.apply(tok.token, ctx)
+            
+            if (res) {
+                matches += 1
+    
+                if (used)
+                    usedToks :+= tok
+            }
+        }
+    
+        // We couldn't collect even 'min' matches.
+        if (matches < min)
             None
-        // Item is optional (min == 0) and no tokens collected (valid result).
-        else if (usedToks.isEmpty) {
+        // Term is optional (min == 0) and no matches found (valid result).
+        else if (matches == 0) {
             require(min == 0)
+            require(usedToks.isEmpty)
             
             Some(usedToks → new Weight(0, 0))
         }
-        // We've collected some tokens (and min > 0).
+        // We've found some matches (and min > 0).
         else {
+            require(matches > 0 && matches > min)
+            
             val convSrvReqIds = convToks.map(_.token.getServerRequestId).distinct
 
             // Number of tokens from the current sentence.
