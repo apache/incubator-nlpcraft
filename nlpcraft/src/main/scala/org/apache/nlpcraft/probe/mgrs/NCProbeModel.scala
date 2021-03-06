@@ -45,5 +45,5 @@ case class NCProbeModel(
     exclStopWordsStems: Set[String],
     suspWordsStems: Set[String],
     elements: Map[String /*Element ID*/ , NCElement],
-    samples: Map[String, Seq[Seq[String]]]
+    samples: Set[(String, Seq[Seq[String]])]
 )

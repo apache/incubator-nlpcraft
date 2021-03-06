@@ -43,7 +43,7 @@ import resource.managed
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
 import scala.collection.convert.DecorateAsScala
-import scala.collection.{Map, Seq, Set, mutable}
+import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.control.Exception._
 
@@ -79,6 +79,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     
     type Callback = Function[NCIntentMatch, NCResult]
     type Intent = (NCDslIntent, Callback)
+    type Sample = (String/* Intent ID */, Seq[Seq[String]] /* List of list of input samples for that intent. */)
     
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
@@ -483,7 +484,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         if (intents.nonEmpty) {
             // Check the uniqueness of intent IDs.
-            U.getDups(intents.keys.toSeq.map(_.id)) match {
+            U.getDups(intents.map(_._1).toSeq.map(_.id)) match {
                 case ids if ids.nonEmpty ⇒
                     throw new NCE(s"Duplicate intent IDs found [" +
                         s"mdlId=$mdlId, " +
@@ -502,12 +503,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
         NCProbeModel(
             model = mdl,
             solver = solver,
-            intents = intents.keySet.toSeq,
+            intents = intents.map(_._1).toSeq,
             synonyms = mkFastAccessMap(filter(syns, dsl = false), NCProbeSynonymsWrapper(_)),
             synonymsDsl = mkFastAccessMap(filter(syns, dsl = true), _.sorted.reverse),
-            addStopWordsStems = addStopWords.toSet,
-            exclStopWordsStems = exclStopWords.toSet,
-            suspWordsStems = suspWords.toSet,
+            addStopWordsStems = addStopWords,
+            exclStopWordsStems = exclStopWords,
+            suspWordsStems = suspWords,
             elements = mdl.getElements.asScala.map(elm ⇒ (elm.getId, elm)).toMap,
             samples = scanSamples(mdl)
         )
@@ -1152,7 +1153,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 s"callback=${method2Str(mtd)}" +
             s"]")
 
-        val terms = intent.terms.toSeq
+        val terms = intent.terms
 
         // Checks correctness of term IDs.
         // Note we don't restrict them to be duplicated.
@@ -1469,8 +1470,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val intents = mutable.Buffer.empty[Intent]
         
         for (m ← getAllMethods(mdl)) {
+            val mStr = method2Str(m)
+
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCIntentDslCompiler.compile(ann.value(), mdl.getId))
+            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCIntentDslCompiler.compile(ann.value(), mdl.getId, mStr))
                 intents += (intent → prepareCallback(m, mdl, intent))
     
             // Process intent references from @NCIntentRef annotation.
@@ -1482,13 +1485,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         val compiledIntents = adapter
                             .getIntents
                             .asScala
-                            .flatMap(NCIntentDslCompiler.compile(_, mdl.getId))
+                            .flatMap(NCIntentDslCompiler.compile(_, mdl.getId, mStr))
             
                         U.getDups(compiledIntents.toSeq.map(_.id)) match {
                             case ids if ids.nonEmpty ⇒
                                 throw new NCE(s"Duplicate intent IDs found [" +
                                     s"mdlId=$mdlId, " +
                                     s"origin=${adapter.getOrigin}, " +
+                                    s"callback=$mStr, " +
                                     s"ids=${ids.mkString(",")}" +
                                 s"]")
                 
@@ -1502,14 +1506,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                     s"@IntentRef($refId) references unknown intent ID [" +
                                         s"mdlId=$mdlId, " +
                                         s"refId=$refId, " +
-                                        s"callback=${method2Str(m)}" +
+                                        s"callback=$mStr" +
                                     s"]")
                         }
         
                     case _ ⇒
                         throw new NCE(s"@IntentRef annotation can only be used for models extending 'NCModelFileAdapter' class [" +
                             s"mdlId=$mdlId, " +
-                            s"callback=${method2Str(m)}" +
+                            s"callback=$mStr" +
                         s"]")
                 }
             }
@@ -1524,95 +1528,75 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param mdl Model to scan.
       */
     @throws[NCE]
-    private def scanSamples(mdl: NCModel): Map[String, Seq[Seq[String]]] = {
-        var annFound = false
+    private def scanSamples(mdl: NCModel): Set[Sample] = {
         val mdlId = mdl.getId
 
-        val samples = getAllMethods(mdl).flatMap(mtd ⇒ {
-            def mkMethodName: String = s"$C${mtd.getDeclaringClass.getName}#${mtd.getName}(...)$RST"
+        val samples = mutable.Buffer.empty[Sample]
 
-            val smpAnns = mtd.getAnnotationsByType(CLS_SAMPLE)
-            val intAnn = mtd.getAnnotation(CLS_INTENT)
-            val refAnn = mtd.getAnnotation(CLS_INTENT_REF)
+        for (m ← getAllMethods(mdl)) {
+            val mStr = method2Str(m)
 
-            if (smpAnns.nonEmpty || intAnn != null || refAnn != null) {
-                annFound = true
+            val smpAnns = m.getAnnotationsByType(CLS_SAMPLE)
+            val intAnns = m.getAnnotationsByType(CLS_INTENT)
+            val refAnns = m.getAnnotationsByType(CLS_INTENT_REF)
 
-                def mkIntentId(): String =
-                    if (intAnn != null)
-                        NCIntentDslCompiler.compile(intAnn.value(), mdlId).id
-                    else if (refAnn != null)
-                        refAnn.value().trim
-                    else
-                        throw new AssertionError()
-
-                if (smpAnns.nonEmpty) {
-                    if (intAnn == null && refAnn == null) {
-                        logger.warn(s"`@${CLS_SAMPLE.getSimpleName} annotation without corresponding @NCIntent or @NCIntentRef annotations: $mkMethodName")
-
-                        None
-                    }
-                    else {
-                        val samples = smpAnns.toSeq.map(_.value().toSeq)
-
-                        if (samples.exists(_.isEmpty)) {
-                            logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is empty: $mkMethodName")
-
-                            None
-                        }
-                        else if (U.containsDups(samples.flatten.toList)) {
-                            logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation has duplicates: $mkMethodName")
-
-                            // Samples is list of list. Duplicates cannot be inside one list,
-                            // but possible between different lists.
-                            Some(mkIntentId() → samples.map(_.distinct).distinct)
-                        }
-                        else
-                            Some(mkIntentId() → samples)
-                    }
-                }
+            if (smpAnns.nonEmpty) {
+                if (intAnns.isEmpty && refAnns.isEmpty)
+                    throw new NCE(s"@IntentSample annotation without corresponding @NCIntent or @NCIntentRef annotations: $mStr")
                 else {
-                    logger.warn(s"@${CLS_SAMPLE.getSimpleName} annotation is missing for: $mkMethodName")
+                    val seqSeq = smpAnns.toSeq.map(_.value().toSeq)
 
-                    None
+                    if (seqSeq.exists(_.isEmpty))
+                        logger.warn(s"@IntentSample annotation is empty: $mStr")
+                    if (U.containsDups(seqSeq.flatten.toList))
+                        logger.warn(s"@IntentSample annotation has duplicates: $mStr")
+
+                    val distinct = seqSeq.map(_.distinct).distinct
+
+                    for (ann ← intAnns)
+                        samples += (NCIntentDslCompiler.compile(ann.value(), mdlId, mStr) → distinct)
+                    for (ann ← refAnns)
+                        samples += (ann.value() → distinct)
                 }
             }
-            else
-                None
-        }).toMap
+            else if (intAnns.nonEmpty || refAnns.nonEmpty)
+                logger.warn(s"@IntentSample annotation is missing for: $mStr")
+        }
 
-        val parser = new NCMacroParser
+        if (samples.nonEmpty) {
+            val parser = new NCMacroParser
 
-        mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
+            mdl.getMacros.asScala.foreach { case (name, str) ⇒ parser.addMacro(name, str) }
 
-        val allSyns: Set[Seq[String]] =
-            mdl.getElements.
-                asScala.
-                flatMap(_.getSynonyms.asScala.flatMap(parser.expand)).
-                map(NCNlpPorterStemmer.stem).map(_.split(" ").toSeq).
-                toSet
+            val allSyns: Set[Seq[String]] =
+                mdl.getElements.
+                    asScala.
+                    flatMap(_.getSynonyms.asScala.flatMap(parser.expand)).
+                    map(NCNlpPorterStemmer.stem).map(_.split(" ").toSeq).
+                    toSet
 
-        case class Case(modelId: String, sample: String)
+            case class Case(modelId: String, sample: String)
 
-        val processed = mutable.HashSet.empty[Case]
+            val processed = mutable.HashSet.empty[Case]
 
-        samples.
-            flatMap { case (_, samples) ⇒ samples.flatten.map(_.toLowerCase) }.
-            map(s ⇒ s → SEPARATORS.foldLeft(s)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
-            foreach {
-                case (s, sNorm) ⇒
-                    if (processed.add(Case(mdlId, s))) {
-                        val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
+            samples.
+                flatMap { case (_, samples) ⇒ samples.flatten.map(_.toLowerCase) }.
+                map(s ⇒ s → SEPARATORS.foldLeft(s)((s, ch) ⇒ s.replaceAll(s"\\$ch", s" $ch "))).
+                foreach {
+                    case (s, sNorm) ⇒
+                        if (processed.add(Case(mdlId, s))) {
+                            val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
 
-                        if (!allSyns.exists(_.intersect(seq).nonEmpty))
-                            logger.warn(s"@IntentSample sample doesn't contain any direct synonyms [" +
-                                s"mdlId=$mdlId, " +
-                                s"sample='$s'" +
-                            s"]")
-                    }
+                            if (!allSyns.exists(_.intersect(seq).nonEmpty))
+                                logger.warn(s"@IntentSample sample doesn't contain any direct synonyms [" +
+                                    s"mdlId=$mdlId, " +
+                                    s"sample='$s'" +
+                                s"]")
+                        }
 
-            }
+                }
+        }
 
-        samples
+        samples.toSet
     }
 }

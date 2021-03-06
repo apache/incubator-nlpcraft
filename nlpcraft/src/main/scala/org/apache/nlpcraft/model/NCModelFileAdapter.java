@@ -370,9 +370,9 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     }
 
     /**
-     * Gets list of intents declared in JSON/YML model definition, if any.
+     * Gets list of intents and/or fragments declared in JSON/YML model definition, if any.
      *
-     * @return List of intents declared in JSON/YML model definition, potentially empty.
+     * @return List of intents and/or fragments declared in JSON/YML model definition, potentially empty.
      */
     public Set<String> getIntents() {
         return intents;

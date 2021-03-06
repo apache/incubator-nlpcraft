@@ -470,16 +470,18 @@ object NCIntentDslCompiler extends LazyLogging {
     ): Set[NCDslIntent] = antlr4(U.readFile(filePath.toFile).mkString("\n"), mdlId, filePath.getFileName.toString)
     
     /**
-      * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
-      * map keyed by model ID. Only intents are returned, if any.
-      *
-      * @param dsl DSL to compile.
-      * @param mdlId ID of the model DSL belongs to.
-      * @return
-      */
+     * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
+     * map keyed by model ID. Only intents are returned, if any.
+     *
+     * @param dsl DSL to compile.
+     * @param mdlId ID of the model DSL belongs to.
+     * @param srcName Optional source name.
+     * @return
+     */
     @throws[NCE]
     def compile(
         dsl: String,
-        mdlId: String
-    ): Set[NCDslIntent] = antlr4(dsl, mdlId, "<inline>")
+        mdlId: String,
+        srcName: String = "<inline>"
+    ): Set[NCDslIntent] = antlr4(dsl, mdlId, srcName)
 }
