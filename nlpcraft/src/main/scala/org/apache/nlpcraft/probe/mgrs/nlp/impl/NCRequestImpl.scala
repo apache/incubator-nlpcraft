@@ -19,11 +19,13 @@ package org.apache.nlpcraft.probe.mgrs.nlp.impl
 
 import java.util.Optional
 
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl._
 
 import scala.collection._
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 
 /**
  *
@@ -40,7 +42,10 @@ case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCReq
     override lazy val getReceiveTimestamp: Long = meta("RECEIVE_TSTAMP").asInstanceOf[Long] // UTC.
     override lazy val getClientAgent: Optional[String] = getOpt("USER_AGENT")
     override lazy val getRemoteAddress: Optional[String] = getOpt("REMOTE_ADDR")
-    override lazy val getJsonData: Optional[String] = getOpt("DATA")
+    override lazy val getRequestData: java.util.Map[String, Object] = getOpt[String]("DATA").asScala match {
+        case Some(json) ⇒ U.jsonToJavaMap(json)
+        case None ⇒ Map.empty[String, Object].asJava
+    }
     override lazy val getCompany: NCCompany = new NCCompanyImpl(
         meta("COMPANY_ID").asInstanceOf[Long],
         meta("COMPANY_NAME").asInstanceOf[String],

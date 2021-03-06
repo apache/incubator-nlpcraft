@@ -84,7 +84,7 @@ public interface NCRequest {
     /**
      * Gets optional JSON data passed in with the user request.
      *
-     * @return Optional JSON data.
+     * @return Optional JSON data, can be empty but never {@code null}.
      */
-    Optional<String> getJsonData();
+    Map<String, Object> getRequestData();
 }

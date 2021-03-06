@@ -54,7 +54,7 @@ object NCIntentDslCompiler extends LazyLogging {
         private var intentId: String = _
         private var ordered: Boolean = false
         private var flowRegex: Option[String] = None
-        private var intentMeta: Map[String, Any] = _
+        private var intentMeta: ScalaMeta = _
 
         // Accumulator for parsed terms.
         private val terms = ArrayBuffer.empty[NCDslTerm]
@@ -161,7 +161,7 @@ object NCIntentDslCompiler extends LazyLogging {
                          if (terms.exists(t ⇒ t.id != null && t.id == fragTerm.id))
                             throw newSyntaxError(s"Duplicate term ID '${fragTerm.id}' in fragment '$id'.")(ctx.id())
                         else
-                            terms += fragTerm.cloneWithMeta(meta)
+                            terms += fragTerm.cloneWithFragMeta(meta)
 
                 case None ⇒ throw newSyntaxError(s"Unknown intent fragment ID: $id")(ctx.id())
             }
@@ -208,7 +208,7 @@ object NCIntentDslCompiler extends LazyLogging {
                             override lazy val getToken: NCToken = tok
                             override lazy val getIntentMeta: Optional[NCMetadata] =
                                 if (termCtx.intentMeta != null)
-                                    Optional.of(NCMetadata.apply(termCtx.intentMeta.asJava))
+                                    Optional.of(NCMetadata.apply(termCtx.intentMeta.asJava.asInstanceOf[java.util.Map[String, Object]]))
                                 else
                                     Optional.empty()
                         }

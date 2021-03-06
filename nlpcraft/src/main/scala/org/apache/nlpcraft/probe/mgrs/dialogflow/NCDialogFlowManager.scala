@@ -118,7 +118,7 @@ object NCDialogFlowManager extends NCService {
                     override val getReceiveTimestamp = req.getReceiveTimestamp
                     override val getRemoteAddress = req.getRemoteAddress
                     override val getClientAgent = req.getClientAgent
-                    override val getJsonData = req.getJsonData
+                    override val getRequestData = req.getRequestData
                 }
                 
                 flow.getOrElseUpdate(key, mutable.ArrayBuffer.empty[NCDialogFlowItem]).append(item)

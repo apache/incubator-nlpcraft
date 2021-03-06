@@ -23,6 +23,7 @@ import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.util._
 
 import scala.language.implicitConversions
+import scala.collection.JavaConverters._
 
 /**
   * Package scope.
@@ -30,7 +31,7 @@ import scala.language.implicitConversions
 package object common {
     // Type aliases for `org.apache.nlpcraft`
     type NCE = NCException
-    type ScalaMeta = Map[String, AnyRef]
+    type ScalaMeta = Map[String, Object]
     type JavaMeta = java.util.Map[String, Object]
     final val U = NCUtils
     
@@ -210,4 +211,12 @@ package object common {
       * @return Callable object.
       */
     implicit def toCallable[R](f: () ⇒ R): Callable[R] = () ⇒ f()
+
+    /**
+     *
+     * @param m
+     * @return
+     */
+    implicit def upliftMap(m: java.util.Map[String, Object]): Map[String, Object] =
+        m.asScala.asInstanceOf[Map[String, Object]]
 }

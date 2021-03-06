@@ -21,6 +21,6 @@ package org.apache.nlpcraft.model.intent.utils
  *
  */
 case class NCDslTermRetVal (
-    retVal: AnyRef,
+    retVal: Object,
     usedTok: Boolean
 )

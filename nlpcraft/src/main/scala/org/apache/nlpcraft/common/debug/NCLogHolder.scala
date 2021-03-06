@@ -20,14 +20,13 @@ package org.apache.nlpcraft.common.debug
 import org.apache.nlpcraft.common._
 import java.util
 import com.google.gson.Gson
-import org.apache.nlpcraft.common.util._
 import org.apache.nlpcraft.model._
 
 import scala.collection.JavaConverters._
 
-/*
- * NOTE: these classes are specifically designed for JSON marshalling.
- */
+//
+// NOTE: these classes are specifically designed for JSON marshalling.
+//
 
 case class NCLogGroupToken(token: NCToken, used: Boolean, conversation: Boolean)
 
@@ -183,17 +182,7 @@ class NCLogHolder extends Serializable {
             company = compJs,
             remoteAddress = req.getRemoteAddress.orElse(null),
             clientAgent = req.getClientAgent.orElse(null),
-            data = if (req.getJsonData.isPresent) {
-                val str = req.getJsonData.get
-
-                try
-                    NCUtils.jsonToObject(str)
-                catch {
-                    case _: Exception ⇒ str
-                }
-            }
-            else
-                null
+            data = req.getRequestData
         )
         
         this.queryContext = ContextJson(

@@ -158,9 +158,9 @@ public interface NCDialogFlowItem {
     Optional<String> getClientAgent();
 
     /**
-     * Gets optional JSON data passed in with the initial REST request.
+     * Gets optional JSON data passed in with the user request.
      *
-     * @return Optional JSON data.
+     * @return Optional JSON data, can be empty but never {@code null}.
      */
-    Optional<String> getJsonData();
+    Map<String, Object> getRequestData();
 }

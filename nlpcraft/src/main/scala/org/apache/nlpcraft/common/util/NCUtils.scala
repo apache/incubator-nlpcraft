@@ -1595,7 +1595,7 @@ object NCUtils extends LazyLogging {
             try
                 GSON.toJson(GSON.getAdapter(classOf[JsonElement]).fromJson(json))
             catch {
-                case e: Exception ⇒ ""
+                case _: Exception ⇒ ""
             }
     }
 
@@ -1651,8 +1651,8 @@ object NCUtils extends LazyLogging {
      * @param json JSON to convert.
      * @return
      */
-    def jsonToScalaMap(json: String): Map[String, Any] =
-        GSON.fromJson(json, classOf[java.util.HashMap[String, Any]]).asScala.toMap
+    def jsonToScalaMap(json: String): Map[String, Object] =
+        GSON.fromJson(json, classOf[java.util.HashMap[String, Object]]).asScala.toMap
 
     /**
      * Shortcut to convert given JSON to Java map with default mapping.
@@ -1660,8 +1660,8 @@ object NCUtils extends LazyLogging {
      * @param json JSON to convert.
      * @return
      */
-    def jsonToJavaMap(json: String): Map[String, Any] =
-        GSON.fromJson(json, classOf[java.util.HashMap[String, Any]])
+    def jsonToJavaMap(json: String): java.util.Map[String, Object] =
+        GSON.fromJson(json, classOf[java.util.HashMap[String, Object]])
 
     /**
      *
@@ -1983,7 +1983,7 @@ object NCUtils extends LazyLogging {
       */
     @throws[NCE]
     def extractYamlFile[T](f: File, ignoreCase: Boolean, tr: TypeReference[T]): T =
-        extractYamlString(readFile(f, "UTF-8").mkString("\n"), f.getAbsolutePath, ignoreCase, tr)
+        extractYamlString(readFile(f).mkString("\n"), f.getAbsolutePath, ignoreCase, tr)
 
     /**
       * Extracts type `T` from given YAML `resource`.

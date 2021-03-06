@@ -17,6 +17,8 @@
 
 package org.apache.nlpcraft.model.intent.utils
 
+import org.apache.nlpcraft.common.ScalaMeta
+
 import java.util.regex.Pattern
 
 /**
@@ -33,7 +35,7 @@ case class NCDslIntent(
     dsl: String,
     id: String,
     ordered: Boolean,
-    meta: Map[String, Any],
+    meta: ScalaMeta,
     flow: Option[String],
     flowClsName: Option[String],
     flowMtdName: Option[String],

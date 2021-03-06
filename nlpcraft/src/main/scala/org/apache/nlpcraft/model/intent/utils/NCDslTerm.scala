@@ -44,7 +44,7 @@ case class NCDslTerm(
      * @param meta
      * @return
      */
-    def cloneWithMeta(meta: Map[String, Any]): NCDslTerm =
+    def cloneWithFragMeta(meta: Map[String, Any]): NCDslTerm =
         NCDslTerm(
             id,
             pred,

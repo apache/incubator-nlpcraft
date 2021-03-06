@@ -60,16 +60,16 @@ trait NCIntentDslBaselCompiler {
     type StackType = mutable.ArrayStack[NCDslTermRetVal]
     type Instr = (NCToken, StackType,  NCDslTermContext) ⇒ Unit
 
-    def isJLong(v: AnyRef): Boolean = v.isInstanceOf[JLong]
-    def isJDouble(v: AnyRef): Boolean = v.isInstanceOf[JDouble]
-    def isString(v: AnyRef): Boolean = v.isInstanceOf[String]
-    def isBoolean(v: AnyRef): Boolean = v.isInstanceOf[Boolean]
-    def asJLong(v: AnyRef): Long = v.asInstanceOf[JLong].longValue()
-    def asJDouble(v: AnyRef): Double = v.asInstanceOf[JDouble].doubleValue()
-    def asString(v: AnyRef): String = v.asInstanceOf[String]
-    def asBool(v: AnyRef): Boolean = v.asInstanceOf[Boolean]
+    def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
+    def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
+    def isString(v: Object): Boolean = v.isInstanceOf[String]
+    def isBoolean(v: Object): Boolean = v.isInstanceOf[Boolean]
+    def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
+    def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
+    def asString(v: Object): String = v.asInstanceOf[String]
+    def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
 
-    def pushAny(any: AnyRef, usedTok: Boolean)(implicit stack: StackType): Unit =
+    def pushAny(any: Object, usedTok: Boolean)(implicit stack: StackType): Unit =
         stack.push(NCDslTermRetVal(any, usedTok))
     def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit =
         stack.push(NCDslTermRetVal(Long.box(any), usedTok))
@@ -79,9 +79,9 @@ trait NCIntentDslBaselCompiler {
         stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
 
     // Runtime errors.
-    def rtUnaryOpError(op: String, v: AnyRef)(implicit ctx: PRC): NCE =
+    def rtUnaryOpError(op: String, v: Object)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Unexpected '$op' DSL operation for value: $v")
-    def rtBinaryOpError(op: String, v1: AnyRef, v2: AnyRef)(implicit ctx: PRC): NCE =
+    def rtBinaryOpError(op: String, v1: Object, v2: Object)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Unexpected '$op' DSL operation for values: $v1, $v2")
     def rtUnknownFunError(fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Unknown DSL function: $fun()")
@@ -89,7 +89,7 @@ trait NCIntentDslBaselCompiler {
         newRuntimeError(s"Invalid number of parameters for DSL function ($min is required): $fun()")
     def rtParamNumError(fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Invalid number of parameters for DSL function: $fun()")
-    def rtParamTypeError(fun: String, param: AnyRef, expectType: String)(implicit ctx: PRC): NCE =
+    def rtParamTypeError(fun: String, param: Object, expectType: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Expecting '$expectType' type of parameter for DSL function '$fun()', found: $param")
 
     /**
@@ -97,7 +97,7 @@ trait NCIntentDslBaselCompiler {
      * @param stack
      * @return
      */
-    def pop2()(implicit stack: StackType): (AnyRef, AnyRef, Boolean, Boolean) = {
+    def pop2()(implicit stack: StackType): (Object, Object, Boolean, Boolean) = {
         require(stack.size >= 2)
 
         // Stack pops in reverse order of push...
@@ -111,7 +111,7 @@ trait NCIntentDslBaselCompiler {
      * @param stack
      * @return
      */
-    def pop3()(implicit stack: StackType): (AnyRef, AnyRef, AnyRef, Boolean, Boolean, Boolean) = {
+    def pop3()(implicit stack: StackType): (Object, Object, Object, Boolean, Boolean, Boolean) = {
         require(stack.size >= 3)
 
         // Stack pops in reverse order of push...
@@ -127,7 +127,7 @@ trait NCIntentDslBaselCompiler {
      * @param stack
      * @return
      */
-    def pop1()(implicit stack: StackType): (AnyRef, Boolean) = {
+    def pop1()(implicit stack: StackType): (Object, Boolean) = {
         require(stack.nonEmpty)
 
         val NCDslTermRetVal(v, f) = stack.pop()
@@ -409,7 +409,7 @@ trait NCIntentDslBaselCompiler {
 
             (asJDouble(v1), asJDouble(v2), f1 || f2)
         }
-        def get1Any(): (AnyRef, Boolean) = {
+        def get1Any(): (Any, Boolean) = {
             ensureStack(1)
 
             pop1()
@@ -462,7 +462,7 @@ trait NCIntentDslBaselCompiler {
             var f = false
 
             stack.drain { x ⇒
-                jl.add(x.retVal)
+                jl.add(x.retVal.asInstanceOf[Object])
                 f = f || x.usedTok
             }
 
@@ -477,8 +477,8 @@ trait NCIntentDslBaselCompiler {
             val jm = new JHashMap[Object, Object]()
             var f = false
 
-            val keys = mutable.Buffer.empty[AnyRef]
-            val vals = mutable.Buffer.empty[AnyRef]
+            val keys = mutable.Buffer.empty[Object]
+            val vals = mutable.Buffer.empty[Object]
 
             var idx = 0
 
