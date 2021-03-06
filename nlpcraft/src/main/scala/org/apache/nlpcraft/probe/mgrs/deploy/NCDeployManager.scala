@@ -1553,8 +1553,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                     val distinct = seqSeq.map(_.distinct).distinct
 
-                    for (ann ← intAnns)
-                        samples += (NCIntentDslCompiler.compile(ann.value(), mdlId, mStr) → distinct)
+                    for (ann ← intAnns) {
+                        for (intent ← NCIntentDslCompiler.compile(ann.value(), mdlId, mStr))
+                            samples += (intent.id → distinct)
+                    }
                     for (ann ← refAnns)
                         samples += (ann.value() → distinct)
                 }
