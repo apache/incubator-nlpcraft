@@ -483,7 +483,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val ordered = intent.ordered
             var lastTermMatch: TermMatch = null
             
-            val termCtx = NCDslTermContext( // TODO
+            val termCtx = NCDslTermContext(
                 intentMeta = intent.meta,
                 reqMeta = ctx.getRequest.getRequestData,
                 usrMeta = ctx.getRequest.getUser.getMetadata,

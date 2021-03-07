@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.dsl
+package org.apache.nlpcraft.model.intent.dsl.compiler
 
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentDslFragmentCache}
@@ -124,7 +124,7 @@ class NCIntentDslCompilerSpec {
               |     term~/class#method/
               |
               |fragment=f22
-              |     term(f22_t1)={2==2}
+              |     term(f22_t1)={2==2_000_000.23}
               |     fragment(f21)
               |     term~/class#method/
               |

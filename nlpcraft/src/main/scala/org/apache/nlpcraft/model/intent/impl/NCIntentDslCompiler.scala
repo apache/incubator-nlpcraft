@@ -208,7 +208,7 @@ object NCIntentDslCompiler extends LazyLogging {
                             override lazy val getToken: NCToken = tok
                             override lazy val getIntentMeta: Optional[NCMetadata] =
                                 if (termCtx.intentMeta != null)
-                                    Optional.of(NCMetadata.apply(termCtx.intentMeta.asJava.asInstanceOf[java.util.Map[String, Object]]))
+                                    Optional.of(NCMetadata.apply(termCtx.intentMeta.asJava))
                                 else
                                     Optional.empty()
                         }

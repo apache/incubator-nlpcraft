@@ -60,10 +60,13 @@ trait NCIntentDslBaselCompiler {
     type StackType = mutable.ArrayStack[NCDslTermRetVal]
     type Instr = (NCToken, StackType,  NCDslTermContext) ⇒ Unit
 
+    //noinspection ComparingUnrelatedTypes
     def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
+    //noinspection ComparingUnrelatedTypes
     def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
-    def isString(v: Object): Boolean = v.isInstanceOf[String]
+    //noinspection ComparingUnrelatedTypes
     def isBoolean(v: Object): Boolean = v.isInstanceOf[Boolean]
+    def isString(v: Object): Boolean = v.isInstanceOf[String]
     def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
     def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
     def asString(v: Object): String = v.asInstanceOf[String]
@@ -462,7 +465,7 @@ trait NCIntentDslBaselCompiler {
             var f = false
 
             stack.drain { x ⇒
-                jl.add(x.retVal.asInstanceOf[Object])
+                jl.add(x.retVal)
                 f = f || x.usedTok
             }
 

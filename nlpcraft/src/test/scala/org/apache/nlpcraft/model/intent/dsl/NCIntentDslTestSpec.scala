@@ -29,7 +29,7 @@ import java.util.Collections
 /**
  * DSL test model test. Make sure to start up the NLPCraft server before running this test.
  */
-class NCIntentDslSpec {
+class NCIntentDslTestSpec {
     private var cli: NCTestClient = _
 
     @BeforeEach
