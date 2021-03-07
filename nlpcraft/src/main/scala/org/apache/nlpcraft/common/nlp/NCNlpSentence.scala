@@ -20,11 +20,13 @@ package org.apache.nlpcraft.common.nlp
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.NCE
 import org.apache.nlpcraft.common.nlp.pos.NCPennTreebank
+import org.apache.nlpcraft.common.util.NCComboRecursiveTask
 import org.apache.nlpcraft.model.NCModel
 
-import java.io.{Serializable ⇒ JSerializable}
+import java.io.{Serializable => JSerializable}
 import java.util
-import java.util.{Collections, List ⇒ JList}
+import java.util.concurrent.ForkJoinPool
+import java.util.{Collections, Comparator, List => JList}
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, Set, mutable}
@@ -41,7 +43,6 @@ object NCNlpSentence extends LazyLogging {
         require(start <= end)
 
         private def in(i: Int): Boolean = i >= start && i <= end
-
         def intersect(id: String, start: Int, end: Int): Boolean = id == this.id && (in(start) || in(end))
     }
 
@@ -72,7 +73,7 @@ object NCNlpSentence extends LazyLogging {
                 noteLinks ++=
                     (for ((name, idxs) ← names.asScala.zip(idxsSeq.asScala.map(_.asScala)))
                         yield NoteLink(name, idxs.sorted)
-                        )
+                    )
             }
 
             if (n.contains("subjnotes")) add("subjnotes", "subjindexes")
@@ -410,8 +411,7 @@ object NCNlpSentence extends LazyLogging {
             "stopWord" → stop,
             "bracketed" → false,
             "direct" → direct,
-            "dict" → (if (nsCopyToks.size == 1) nsCopyToks.head.getNlpNote.data[Boolean]("dict")
-            else false),
+            "dict" → (if (nsCopyToks.size == 1) nsCopyToks.head.getNlpNote.data[Boolean]("dict") else false),
             "english" → nsCopyToks.forall(_.getNlpNote.data[Boolean]("english")),
             "swear" → nsCopyToks.exists(_.getNlpNote.data[Boolean]("swear"))
         )
@@ -458,8 +458,7 @@ object NCNlpSentence extends LazyLogging {
                     var fixed = idxs
 
                     history.foreach {
-                        case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew
-                        else i).distinct)
+                        case (idxOld, idxNew) ⇒ fixed = fixed.map(_.map(i ⇒ if (i == idxOld) idxNew else i).distinct)
                     }
 
                     if (fixed.forall(_.size == 1))
@@ -522,9 +521,9 @@ object NCNlpSentence extends LazyLogging {
 
         val res =
             fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, history) &&
-                fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, history) &&
-                fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
-                fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
+            fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
 
         if (res) {
             // Validation (all indexes calculated well)
@@ -590,8 +589,7 @@ object NCNlpSentence extends LazyLogging {
             if (lastPhase)
                 dropAbstract(mdl, ns)
 
-            if (collapseSentence(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Some(ns)
-            else None
+            if (collapseSentence(ns, getNotNlpNotes(ns).map(_.noteType).distinct)) Some(ns) else None
         }
 
         // Always deletes `similar` notes.
@@ -599,27 +597,27 @@ object NCNlpSentence extends LazyLogging {
         // We keep only one variant -  with `best` direct and sparsity parameters,
         // other variants for these words are redundant.
         val redundant: Seq[NCNlpSentenceNote] =
-        thisSen.flatten.filter(!_.isNlp).distinct.
-            groupBy(_.getKey()).
-            map(p ⇒ p._2.sortBy(p ⇒
-                (
-                    // System notes don't have such flags.
-                    if (p.isUser) {
-                        if (p.isDirect)
-                            0
+            thisSen.flatten.filter(!_.isNlp).distinct.
+                groupBy(_.getKey()).
+                map(p ⇒ p._2.sortBy(p ⇒
+                    (
+                        // System notes don't have such flags.
+                        if (p.isUser) {
+                            if (p.isDirect)
+                                0
+                            else
+                                1
+                        }
                         else
-                            1
-                    }
-                    else
-                        0,
-                    if (p.isUser)
-                        p.sparsity
-                    else
-                        0
-                )
-            )).
-            flatMap(_.drop(1)).
-            toSeq
+                            0,
+                        if (p.isUser)
+                            p.sparsity
+                        else
+                            0
+                    )
+                )).
+                flatMap(_.drop(1)).
+                toSeq
 
         redundant.foreach(thisSen.removeNote)
 
@@ -642,62 +640,91 @@ object NCNlpSentence extends LazyLogging {
                     val key = PartKey(note, thisSen)
 
                     val delCombOthers =
-                        delCombs.filter(_ != note).flatMap(n ⇒ if (getPartKeys(n).contains(key)) Some(n)
-                        else None)
+                        delCombs.filter(_ != note).flatMap(n ⇒ if (getPartKeys(n).contains(key)) Some(n) else None)
 
-                    if (delCombOthers.exists(o ⇒ noteWordsIdxs == o.wordIndexes.toSet)) Some(note)
-                    else None
+                    if (delCombOthers.exists(o ⇒ noteWordsIdxs == o.wordIndexes.toSet)) Some(note) else None
                 })
 
         delCombs = delCombs.filter(p ⇒ !swallowed.contains(p))
         addDeleted(thisSen, thisSen, swallowed)
         swallowed.foreach(thisSen.removeNote)
 
-        val toksByIdx: Seq[Set[NCNlpSentenceNote]] =
+        val toksByIdx: Seq[Seq[NCNlpSentenceNote]] =
             delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
                 groupBy { case (idx, _) ⇒ idx }.
-                map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note }.toSet }.
+                map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note } }.
                 toSeq.sortBy(-_.size)
 
-        val minDelSize = if (toksByIdx.isEmpty) 1 else toksByIdx.map(_.size).max - 1
+//        val toksByIdx1 =
+//            delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
+//                groupBy { case (idx, _) ⇒ idx }.
+//                map { case (idx, seq) ⇒ idx → seq.map { case (_, note) ⇒ note } }.
+//                toSeq.sortBy(_._2.size)
+//
+//        toksByIdx.foreach{ case (seq) ⇒
+//            println(s"toksByIdx seq=${seq.map(i ⇒ s"${i.noteType} ${i.wordIndexes.mkString(",")}").mkString(" | ")}")
+//        }
+
+//        toksByIdx1.sortBy(_._1).foreach{ case (i, seq) ⇒
+//            println(s"toksByIdx1 ${i} seq=${seq.map(i ⇒ s"${i.noteType} ${i.wordIndexes.mkString(",")}").mkString(" | ")}")
+//        }
+
+        val dict = mutable.HashMap.empty[String, NCNlpSentenceNote]
+
+        var i = 'A'
+
+        val converted: Seq[Seq[String]] =
+            toksByIdx.map(seq ⇒ {
+                seq.map(
+                    n ⇒ {
+                        val s = s"$i"
+
+                        i = (i.toInt + 1).toChar
+
+                        dict += s → n
+
+                        s
+                    }
+                )
+            })
+
+        //val minDelSize = if (toksByIdx.isEmpty) 1 else toksByIdx.map(_.size).max - 1
 
         var sens =
             if (delCombs.nonEmpty) {
-                val deleted = mutable.ArrayBuffer.empty[Set[NCNlpSentenceNote]]
+                val p = new ForkJoinPool()
+
+                val tmp = NCComboRecursiveTask.findCombinations(
+                    converted.map(_.asJava).asJava,
+                    new Comparator[String]() {
+                        override def compare(n1: String, n2: String): Int = n1.compareTo(n2)
+                    },
+                    p
+                )
+
+                p.shutdown()
+
+                val seq1 = tmp.asScala.map(_.asScala.map(dict))
 
                 val sens =
-                    (minDelSize to delCombs.size).
-                        flatMap(i ⇒
-                            delCombs.combinations(i).
-                                filter(delComb ⇒
-                                    !toksByIdx.exists(
-                                        rec ⇒
-                                            rec.size - delCombs.size <= 1 &&
-                                                rec.count(note ⇒ !delComb.contains(note)) > 1
-                                    )
-                                )
-                        ).
-                        sortBy(_.size).
-                        map(_.toSet).
-                        flatMap(delComb ⇒
-                            // Already processed with less subset of same deleted tokens.
-                            if (!deleted.exists(_.subsetOf(delComb))) {
-                                val nsClone = thisSen.clone()
+                    seq1.
+                        flatMap(p ⇒ {
+                            val delComb: Seq[NCNlpSentenceNote] = p
 
-                                // Saves deleted notes for sentence and their tokens.
-                                addDeleted(thisSen, nsClone, delComb)
-                                delComb.foreach(nsClone.removeNote)
+                            val nsClone = thisSen.clone()
 
-                                // Has overlapped notes for some tokens.
-                                require(!nsClone.exists(_.count(!_.isNlp) > 1))
+                            // Saves deleted notes for sentence and their tokens.
+                            addDeleted(thisSen, nsClone, delComb)
+                            delComb.foreach(nsClone.removeNote)
 
-                                deleted += delComb
+                            // Has overlapped notes for some tokens.
+                            require(
+                                !nsClone.exists(_.count(!_.isNlp) > 1),
+                                s"Invalid notes: ${nsClone.filter(_.count(!_.isNlp) > 1).mkString("|")}"
+                            )
 
-                                collapse0(nsClone)
-                            }
-                            else
-                                None
-                        )
+                            collapse0(nsClone)
+                        })
 
                 // It removes sentences which have only one difference - 'direct' flag of their user tokens.
                 // `Direct` sentences have higher priority.
@@ -719,8 +746,7 @@ object NCNlpSentence extends LazyLogging {
                             p.clone().filter(_._1 != "direct")
                         )
 
-                    (Key(get(sysNotes), get(userNotes)), sen, nlpNotes.map(p ⇒ if (p.isDirect) 0
-                    else 1).sum)
+                    (Key(get(sysNotes), get(userNotes)), sen, nlpNotes.map(p ⇒ if (p.isDirect) 0 else 1).sum)
                 }).
                     foreach { case (key, sen, directCnt) ⇒
                         m.get(key) match {
