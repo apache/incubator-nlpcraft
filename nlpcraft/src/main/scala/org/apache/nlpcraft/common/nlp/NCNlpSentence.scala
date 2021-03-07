@@ -626,6 +626,8 @@ object NCNlpSentence extends LazyLogging {
                 flatMap(note ⇒ getNotNlpNotes(note.tokenIndexes.sorted.map(i ⇒ thisSen(i))).filter(_ != note)).
                 distinct
 
+        println("delCombs="+delCombs.mkString("\n"))
+
         // Optimization. Deletes all wholly swallowed notes.
         val links = getLinks(thisSen.flatten)
 
@@ -670,6 +672,7 @@ object NCNlpSentence extends LazyLogging {
 //        }
 
         val dict = mutable.HashMap.empty[String, NCNlpSentenceNote]
+        val dictBack = mutable.HashMap.empty[NCNlpSentenceNote, String]
 
         var i = 'A'
 
@@ -677,11 +680,20 @@ object NCNlpSentence extends LazyLogging {
             toksByIdx.map(seq ⇒ {
                 seq.map(
                     n ⇒ {
-                        val s = s"$i"
+                        val s =
+                            dictBack.get(n) match {
+                                case Some(s) ⇒ s
+                                case None ⇒ {
+                                    val s = s"$i"
 
-                        i = (i.toInt + 1).toChar
+                                    i = (i.toInt + 1).toChar
 
-                        dict += s → n
+                                    dict += s → n
+                                    dictBack += n → s
+
+                                    s
+                                }
+                            }
 
                         s
                     }
@@ -695,16 +707,13 @@ object NCNlpSentence extends LazyLogging {
                 val p = new ForkJoinPool()
 
                 val tmp = NCComboRecursiveTask.findCombinations(
-                    converted.map(_.asJava).asJava,
-                    new Comparator[String]() {
-                        override def compare(n1: String, n2: String): Int = n1.compareTo(n2)
-                    },
+                    toksByIdx.map(_.asJava).asJava,
                     p
                 )
 
                 p.shutdown()
 
-                val seq1 = tmp.asScala.map(_.asScala.map(dict))
+                val seq1 = tmp.asScala.map(_.asScala)
 
                 val sens =
                     seq1.

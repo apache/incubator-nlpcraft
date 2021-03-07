@@ -19,7 +19,9 @@ package org.apache.nlpcraft.common.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
@@ -42,30 +44,17 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
         this.wordCounts = wordCounts;
     }
 
-    public static <T> List<List<T>> findCombinations(List<List<T>> inp, Comparator<T> comparator, ForkJoinPool pool) {
-        List<List<T>> uniqueInp = inp.stream()
-            .filter(row -> inp.stream().noneMatch(it -> !it.equals(row)  && it.containsAll(row)))
-            .map(i -> i.stream().distinct().sorted(comparator).collect(toList()))
-            .collect(toList());
-
-
-        System.out.println("!!!");
-        for (List<T> ts : uniqueInp) {
-            System.out.println("!!!ts=");
-            System.out.println(ts.stream().map(Object::toString).collect(Collectors.joining("\n")));
-        }
-        System.out.println("!!!");
+    public static <T> List<List<T>> findCombinations(List<List<T>> inp, ForkJoinPool pool) {
+        List<List<T>> uniqueInp = inp;
 
         // Build dictionary of unique words.
         List<T> dict = uniqueInp.stream()
             .flatMap(Collection::stream)
             .distinct()
-            .sorted(comparator)
             .collect(toList());
 
-        System.out.println("dict=");
-        System.out.println(dict.stream().map(Object::toString).collect(Collectors.joining("\n")));
-        System.out.println();
+        System.out.println("inp=" + inp);
+        System.out.println("dict=" + dict);
 
         if (dict.size() > Long.SIZE) {
             // Note: Power set of 64 words results in 9223372036854775807 combinations.
@@ -87,7 +76,11 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
 
         NCComboRecursiveTask task = new NCComboRecursiveTask(lo, hi, wordBits, wordCounts);
 
-        return pool.invoke(task).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
+        final List<List<T>> res = pool.invoke(task).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
+
+        System.out.println("res=" + res);
+
+        return res;
     }
 
     @Override

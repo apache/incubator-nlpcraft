@@ -47,15 +47,15 @@ class NCEnricherNestedModelSpec extends NCEnricherBaseSpec {
     @Test
     def test(): Unit =
         runBatch(
-            _ ⇒ checkExists(
-                "tomorrow",
-                usr(text = "tomorrow", id = "x3")
-            ),
-            _ ⇒ checkExists(
-                "tomorrow yesterday",
-                usr(text = "tomorrow", id = "x3"),
-                usr(text = "yesterday", id = "x3")
-            ),
+//            _ ⇒ checkExists(
+//                "tomorrow",
+//                usr(text = "tomorrow", id = "x3")
+//            ),
+//            _ ⇒ checkExists(
+//                "tomorrow yesterday",
+//                usr(text = "tomorrow", id = "x3"),
+//                usr(text = "yesterday", id = "x3")
+//            ),
             _ ⇒ checkExists(
                 "y y",
                 usr(text = "y y", id = "y3")
