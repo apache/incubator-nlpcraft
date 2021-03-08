@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.common.util;
+package org.apache.nlpcraft.probe.mgrs.sentence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
+/**
+ *
+ */
+class NCComboHelper extends RecursiveTask<List<Long>> {
     private static final long THRESHOLD = (long)Math.pow(2, 20);
 
     private final long lo;
@@ -37,50 +38,44 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
     private final long[] wordBits;
     private final int[] wordCounts;
 
-    private NCComboRecursiveTask(long lo, long hi, long[] wordBits, int[] wordCounts) {
+    private NCComboHelper(long lo, long hi, long[] wordBits, int[] wordCounts) {
         this.lo = lo;
         this.hi = hi;
         this.wordBits = wordBits;
         this.wordCounts = wordCounts;
     }
 
-    public static <T> List<List<T>> findCombinations(List<List<T>> inp, ForkJoinPool pool) {
-        List<List<T>> uniqueInp = inp;
-
+    /**
+     *
+     * @param words
+     * @param pool
+     * @param <T>
+     * @return
+     */
+    static <T> List<List<T>> findCombinations(List<Set<T>> words, ForkJoinPool pool) {
         // Build dictionary of unique words.
-        List<T> dict = uniqueInp.stream()
-            .flatMap(Collection::stream)
-            .distinct()
-            .collect(toList());
+        List<T> dict = words.stream().flatMap(Collection::stream).distinct().collect(toList());
 
-        System.out.println("inp=" + inp);
-        System.out.println("dict=" + dict);
-
-        if (dict.size() > Long.SIZE) {
+        if (dict.size() > Long.SIZE)
             // Note: Power set of 64 words results in 9223372036854775807 combinations.
             throw new IllegalArgumentException("Dictionary is too long: " + dict.size());
-        }
 
         // Convert words to bitmasks (each bit corresponds to an index in the dictionary).
-        long[] wordBits = uniqueInp.stream()
-            .sorted(Comparator.comparingInt(List::size))
-            .mapToLong(row -> wordsToBits(row, dict))
-            .toArray();
+        long[] wordBits =
+            words.stream().sorted(Comparator.comparingInt(Set::size)).mapToLong(row -> wordsToBits(row, dict)).toArray();
 
         // Cache words count per row.
-        int[] wordCounts = uniqueInp.stream().sorted(Comparator.comparingInt(List::size)).mapToInt(List::size).toArray();
+        int[] wordCounts = words.stream().sorted(Comparator.comparingInt(Set::size)).mapToInt(Set::size).toArray();
 
         // Prepare Fork/Join task to iterate over the power set of all combinations.
-        int lo = 1;
-        long hi = (long)Math.pow(2, dict.size());
-
-        NCComboRecursiveTask task = new NCComboRecursiveTask(lo, hi, wordBits, wordCounts);
-
-        final List<List<T>> res = pool.invoke(task).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
-
-        System.out.println("res=" + res);
-
-        return res;
+        return pool.invoke(
+            new NCComboHelper(
+                1,
+                (long)Math.pow(2, dict.size()),
+                wordBits,
+                wordCounts
+            )
+        ).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
     }
 
     @Override
@@ -89,7 +84,7 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
     }
 
     private List<Long> computeLocal() {
-        List<Long> result = new ArrayList<>();
+        List<Long> res = new ArrayList<>();
 
         for (long comboBits = lo; comboBits < hi; comboBits++) {
             boolean match = true;
@@ -98,12 +93,8 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
             // from the input row would give us the expected result.
             for (int j = 0; j < wordBits.length; j++) {
                 // Get bitmask of how many words can be subtracted from the row.
-                long commonBits = wordBits[j] & comboBits;
-
-                int wordsToRemove = Long.bitCount(commonBits);
-
                 // Check if there is more than 1 word remaining after subtraction.
-                if (wordCounts[j] - wordsToRemove > 1) {
+                if (wordCounts[j] - Long.bitCount(wordBits[j] & comboBits) > 1) {
                     // Skip this combination.
                     match = false;
 
@@ -111,19 +102,18 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
                 }
             }
 
-            if (match && !includes(comboBits, result)) {
-                result.add(comboBits);
-            }
+            if (match && !includes(comboBits, res))
+                res.add(comboBits);
         }
 
-        return result;
+        return res;
     }
 
     private List<Long> forkJoin() {
         long mid = lo + hi >>> 1L;
 
-        NCComboRecursiveTask t1 = new NCComboRecursiveTask(lo, mid, wordBits, wordCounts);
-        NCComboRecursiveTask t2 = new NCComboRecursiveTask(mid, hi, wordBits, wordCounts);
+        NCComboHelper t1 = new NCComboHelper(lo, mid, wordBits, wordCounts);
+        NCComboHelper t2 = new NCComboHelper(mid, hi, wordBits, wordCounts);
 
         t2.fork();
 
@@ -131,63 +121,52 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
     }
 
     private List<Long> merge(List<Long> l1, List<Long> l2) {
-        if (l1.isEmpty()) {
+        if (l1.isEmpty())
             return l2;
-        }
-        else if (l2.isEmpty()) {
+        else if (l2.isEmpty())
             return l1;
-        }
 
         int size1 = l1.size();
         int size2 = l2.size();
 
         if (size1 == 1 && size2 > 1 || size2 == 1 && size1 > 1) {
             // Minor optimization in case if one of the lists has only one element.
-            List<Long> list = size1 == 1 ? l2 : l1;
+            List<Long> res = size1 == 1 ? l2 : l1;
             Long val = size1 == 1 ? l1.get(0) : l2.get(0);
 
-            if (!includes(val, list)) {
-                list.add(val);
+            if (!includes(val, res))
+                res.add(val);
+
+            return res;
+        }
+
+        List<Long> res = new ArrayList<>(size1 + size2);
+
+        for (int i = 0, max = Math.max(size1, size2); i < max; i++) {
+            Long v1 = i < size1 ? l1.get(i) : null;
+            Long v2 = i < size2 ? l2.get(i) : null;
+
+            if (v1 != null && v2 != null) {
+                if (containsAllBits(v1, v2))
+                    v1 = null;
+                else if (containsAllBits(v2, v1))
+                    v2 = null;
             }
 
-            return list;
+            if (v1 != null && !includes(v1, res))
+                res.add(v1);
+
+            if (v2 != null && !includes(v2, res))
+                res.add(v2);
         }
-        else {
-            List<Long> result = new ArrayList<>(size1 + size2);
 
-            for (int i = 0, max = Math.max(size1, size2); i < max; i++) {
-                Long v1 = i < size1 ? l1.get(i) : null;
-                Long v2 = i < size2 ? l2.get(i) : null;
-
-                if (v1 != null && v2 != null) {
-                    if (containsAllBits(v1, v2)) {
-                        v1 = null;
-                    }
-                    else if (containsAllBits(v2, v1)) {
-                        v2 = null;
-                    }
-                }
-
-                if (v1 != null && !includes(v1, result)) {
-                    result.add(v1);
-                }
-
-                if (v2 != null && !includes(v2, result)) {
-                    result.add(v2);
-                }
-            }
-
-            return result;
-        }
+        return res;
     }
 
     private static boolean includes(long bits, List<Long> allBits) {
-        for (int i = 0, size = allBits.size(); i < size; i++) {
-            long existing = allBits.get(i);
-
-            if (containsAllBits(bits, existing)) {
+        for (int i = 0, n = allBits.size(); i < n; i++) {
+            if (containsAllBits(bits, allBits.get(i)))
                 return true;
-            }
         }
 
         return false;
@@ -197,14 +176,12 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
         return (bitSet1 & bitSet2) == bitSet2;
     }
 
-    private static <T> long wordsToBits(List<T> words, List<T> dict) {
+    private static <T> long wordsToBits(Set<T> words, List<T> dict) {
         long bits = 0;
 
-        for (int i = 0; i < dict.size(); i++) {
-            if (words.contains(dict.get(i))) {
+        for (int i = 0, n = dict.size(); i < n; i++)
+            if (words.contains(dict.get(i)))
                 bits |= 1L << i;
-            }
-        }
 
         return bits;
     }
@@ -212,11 +189,9 @@ public class NCComboRecursiveTask extends RecursiveTask<List<Long>> {
     private static <T> List<T> bitsToWords(long bits, List<T> dict) {
         List<T> words = new ArrayList<>(Long.bitCount(bits));
 
-        for (int i = 0; i < dict.size(); i++) {
-            if ((bits & 1L << i) != 0) {
+        for (int i = 0, n = dict.size(); i < n; i++)
+            if ((bits & 1L << i) != 0)
                 words.add(dict.get(i));
-            }
-        }
 
         return words;
     }
