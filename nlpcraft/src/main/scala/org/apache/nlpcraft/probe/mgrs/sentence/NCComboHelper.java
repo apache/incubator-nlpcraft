@@ -189,13 +189,8 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
         int[] wordCounts = words.stream().sorted(Comparator.comparingInt(Set::size)).mapToInt(Set::size).toArray();
 
         // Prepare Fork/Join task to iterate over the power set of all combinations.
-        return pool.invoke(
-            new NCComboHelper(
-                words.stream().mapToInt(Set::size).max().orElseThrow() - 1,
-                (long)Math.pow(2, dict.size()),
-                wordBits,
-                wordCounts
-            )
-        ).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
+        return
+            pool.invoke(new NCComboHelper(0, (long)Math.pow(2, dict.size()), wordBits, wordCounts)).
+                stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
     }
 }

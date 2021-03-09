@@ -672,7 +672,7 @@ object NCSentenceManager extends NCService {
         addDeleted(sen, sen, swallowed)
         swallowed.foreach(sen.removeNote)
 
-        val toksByIdx: Seq[Set[NCNlpSentenceNote]] =
+        val toksByIdx =
             delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
                 groupBy { case (idx, _) ⇒ idx }.
                 map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note }.toSet }.
