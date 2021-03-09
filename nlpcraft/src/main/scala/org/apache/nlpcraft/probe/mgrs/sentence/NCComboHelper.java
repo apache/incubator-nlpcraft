@@ -45,47 +45,6 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
         this.wordCounts = wordCounts;
     }
 
-    /**
-     *
-     * @param words
-     * @param pool
-     * @param <T>
-     * @return
-     */
-    static <T> List<List<T>> findCombinations(List<Set<T>> words, ForkJoinPool pool) {
-        assert words != null && !words.isEmpty();
-        assert pool != null;
-
-        // Build dictionary of unique words.
-        List<T> dict = words.stream().flatMap(Collection::stream).distinct().collect(toList());
-
-        if (dict.size() > Long.SIZE)
-            // Note: Power set of 64 words results in 9223372036854775807 combinations.
-            throw new IllegalArgumentException("Dictionary is too long: " + dict.size());
-
-        // Convert words to bitmasks (each bit corresponds to an index in the dictionary).
-        long[] wordBits =
-            words.stream().sorted(Comparator.comparingInt(Set::size)).mapToLong(row -> wordsToBits(row, dict)).toArray();
-
-        // Cache words count per row.
-        int[] wordCounts = words.stream().sorted(Comparator.comparingInt(Set::size)).mapToInt(Set::size).toArray();
-
-        // Prepare Fork/Join task to iterate over the power set of all combinations.
-        return pool.invoke(
-            new NCComboHelper(
-                words.stream().mapToInt(Set::size).max().orElseThrow() - 1,
-                (long)Math.pow(2, dict.size()),
-                wordBits,
-                wordCounts
-            )
-        ).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
-    }
-
-    @Override
-    protected List<Long> compute() {
-        return hi - lo <= THRESHOLD ? computeLocal() : forkJoin();
-    }
-
     private List<Long> computeLocal() {
         List<Long> res = new ArrayList<>();
 
@@ -123,7 +82,7 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
         return merge(t1.compute(), t2.join());
     }
 
-    private List<Long> merge(List<Long> l1, List<Long> l2) {
+    private static List<Long> merge(List<Long> l1, List<Long> l2) {
         if (l1.isEmpty())
             return l2;
         else if (l2.isEmpty())
@@ -197,5 +156,46 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
                 words.add(dict.get(i));
 
         return words;
+    }
+
+    @Override
+    protected List<Long> compute() {
+        return hi - lo <= THRESHOLD ? computeLocal() : forkJoin();
+    }
+
+    /**
+     *
+     * @param words
+     * @param pool
+     * @param <T>
+     * @return
+     */
+    static <T> List<List<T>> findCombinations(List<Set<T>> words, ForkJoinPool pool) {
+        assert words != null && !words.isEmpty();
+        assert pool != null;
+
+        // Build dictionary of unique words.
+        List<T> dict = words.stream().flatMap(Collection::stream).distinct().collect(toList());
+
+        if (dict.size() > Long.SIZE)
+            // Note: Power set of 64 words results in 9223372036854775807 combinations.
+            throw new IllegalArgumentException("Dictionary is too long: " + dict.size());
+
+        // Convert words to bitmasks (each bit corresponds to an index in the dictionary).
+        long[] wordBits =
+            words.stream().sorted(Comparator.comparingInt(Set::size)).mapToLong(row -> wordsToBits(row, dict)).toArray();
+
+        // Cache words count per row.
+        int[] wordCounts = words.stream().sorted(Comparator.comparingInt(Set::size)).mapToInt(Set::size).toArray();
+
+        // Prepare Fork/Join task to iterate over the power set of all combinations.
+        return pool.invoke(
+            new NCComboHelper(
+                words.stream().mapToInt(Set::size).max().orElseThrow() - 1,
+                (long)Math.pow(2, dict.size()),
+                wordBits,
+                wordCounts
+            )
+        ).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
     }
 }
