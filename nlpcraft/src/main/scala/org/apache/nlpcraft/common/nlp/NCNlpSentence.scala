@@ -17,15 +17,13 @@
 
 package org.apache.nlpcraft.common.nlp
 
-import com.typesafe.scalalogging.LazyLogging
-
 import java.io.{Serializable ⇒ JSerializable}
 import java.util.{Collections, List ⇒ JList}
 import scala.collection.JavaConverters._
 import scala.collection.{Map, Seq, Set, mutable}
 import scala.language.implicitConversions
 
-object NCNlpSentence extends LazyLogging {
+object NCNlpSentence {
     case class NoteKey(start: Int, end: Int)
     case class TokenKey(id: String, start: Int, end: Int)
     case class NoteLink(note: String, indexes: Seq[Int])
@@ -61,12 +59,13 @@ class NCNlpSentence(
     // Deep copy.
     override def clone(): NCNlpSentence =
         new NCNlpSentence(
-            srvReqId,
-            text,
-            enabledBuiltInToks,
-            tokens.map(_.clone()),
-            deletedNotes.map(p ⇒ p._1.clone() → p._2.map(_.clone())),
-            initNlpNotes = initNlpNotes
+            srvReqId = srvReqId,
+            text = text,
+            enabledBuiltInToks = enabledBuiltInToks,
+            tokens = tokens.map(_.clone()),
+            deletedNotes = deletedNotes.map(p ⇒ p._1.clone() → p._2.map(_.clone())),
+            initNlpNotes = initNlpNotes,
+            nlpTokens = nlpTokens
         )
 
     /**
@@ -94,6 +93,21 @@ class NCNlpSentence(
         hash
     }
 
+    override def equals(obj: Any): Boolean = obj match {
+        case x: NCNlpSentence ⇒
+            tokens == x.tokens &&
+                srvReqId == x.srvReqId &&
+                text == x.text &&
+                enabledBuiltInToks == x.enabledBuiltInToks
+
+        case _ ⇒ false
+    }
+
+    /**
+      *
+      * @param note
+      * @param kvs
+      */
     def fixNote(note: NCNlpSentenceNote, kvs: (String, JSerializable)*): Unit = {
         val fixed = note.clone(kvs: _*)
 
@@ -166,16 +180,6 @@ class NCNlpSentence(
             getUniqueKey0(n1) == getUniqueKey0(n2) && wordsEqualOrSimilar(n1, n2) && referencesEqualOrSimilar(n1, n2)
         }
 
-    override def equals(obj: Any): Boolean = obj match {
-        case x: NCNlpSentence ⇒
-            tokens == x.tokens &&
-                srvReqId == x.srvReqId &&
-                text == x.text &&
-                enabledBuiltInToks == x.enabledBuiltInToks
-
-        case _ ⇒ false
-    }
-
     /**
       *
       */
@@ -186,7 +190,7 @@ class NCNlpSentence(
       *
       * @return
       */
-    def findInitialNlpNote(startCharIndex: Int, endCharIndex: Int): Option[NCNlpSentenceNote] =
+    def getInitialNlpNote(startCharIndex: Int, endCharIndex: Int): Option[NCNlpSentenceNote] =
         initNlpNotes.get(NoteKey(startCharIndex, endCharIndex))
 
     /**
@@ -206,7 +210,7 @@ class NCNlpSentence(
       * @param endCharIndex
       * @return
       */
-    def findNlpToken(noteType: String, startCharIndex: Int, endCharIndex: Int): Option[NCNlpSentenceToken] =
+    def getNlpToken(noteType: String, startCharIndex: Int, endCharIndex: Int): Option[NCNlpSentenceToken] =
         nlpTokens.get(TokenKey(noteType, startCharIndex, endCharIndex))
 
     /**

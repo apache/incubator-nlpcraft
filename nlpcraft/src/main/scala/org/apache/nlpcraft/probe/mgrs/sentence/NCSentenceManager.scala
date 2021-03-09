@@ -28,7 +28,6 @@ import java.io.{Serializable ⇒ JSerializable}
 import java.util
 import java.util.{List ⇒ JList}
 import scala.collection.JavaConverters.{asScalaBufferConverter, _}
-import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, Set, mutable}
 import scala.language.implicitConversions
 
@@ -37,8 +36,6 @@ import scala.language.implicitConversions
   */
 object NCSentenceManager extends NCService {
     @volatile private var pool: java.util.concurrent.ForkJoinPool = _
-
-    implicit def toTokens(x: NCNlpSentence): ArrayBuffer[NCNlpSentenceToken] = x.tokens
 
     case class PartKey(id: String, start: Int, end: Int) {
         require(start <= end)
@@ -58,6 +55,10 @@ object NCSentenceManager extends NCService {
             PartKey(t.noteType, sen(t.tokenFrom).startCharIndex, sen(t.tokenTo).endCharIndex)
     }
 
+    /**
+      *
+      * @param notes
+      */
     private def getLinks(notes: Seq[NCNlpSentenceNote]): Seq[NoteLink] = {
         val noteLinks = mutable.ArrayBuffer.empty[NoteLink]
 
@@ -84,6 +85,10 @@ object NCSentenceManager extends NCService {
         noteLinks
     }
 
+    /**
+      *
+      * @param notes
+      */
     private def getPartKeys(notes: NCNlpSentenceNote*): Seq[PartKey] =
         notes.
             filter(_.isUser).
@@ -522,9 +527,9 @@ object NCSentenceManager extends NCService {
 
         val res =
             fixIndexesReferences("nlpcraft:relation", "indexes", "note", ns, history) &&
-                fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, history) &&
-                fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
-                fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
+            fixIndexesReferences("nlpcraft:limit", "indexes", "note", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "subjindexes", "subjnotes", ns, history) &&
+            fixIndexesReferencesList("nlpcraft:sort", "byindexes", "bynotes", ns, history)
 
         if (res) {
             // Validation (all indexes calculated well)
@@ -543,6 +548,11 @@ object NCSentenceManager extends NCService {
         res
     }
 
+    /**
+      *
+      * @param mdl
+      * @param ns
+      */
     private def dropAbstract(mdl: NCModel, ns: NCNlpSentence): Unit =
         if (!mdl.getAbstractTokens.isEmpty) {
             val notes = ns.flatten
@@ -559,9 +569,20 @@ object NCSentenceManager extends NCService {
             }).foreach(ns.removeNote)
         }
 
+    /**
+      *
+      * @param toks
+      * @return
+      */
     private def getNotNlpNotes(toks: Seq[NCNlpSentenceToken]): Seq[NCNlpSentenceNote] =
         toks.flatten.filter(!_.isNlp).distinct
 
+    /**
+      *
+      * @param thisSen
+      * @param sen
+      * @param dels
+      */
     private def addDeleted(thisSen: NCNlpSentence, sen: NCNlpSentence, dels: Iterable[NCNlpSentenceNote]): Unit =
         sen.addDeletedNotes(dels.map(n ⇒ {
             val savedDelNote = n.clone()
@@ -746,6 +767,13 @@ object NCSentenceManager extends NCService {
         ackStopped()
     }
 
+    /**
+      *
+      * @param mdl
+      * @param sen
+      * @param lastPhase
+      * @return
+      */
     def collapse(mdl: NCModel, sen: NCNlpSentence, lastPhase: Boolean = false): Seq[NCNlpSentence] =
         collapseSentence(sen, mdl, lastPhase)
 }
