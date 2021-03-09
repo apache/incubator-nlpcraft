@@ -28,7 +28,7 @@ import java.io.{Serializable ⇒ JSerializable}
 import java.util
 import java.util.{List ⇒ JList}
 import scala.collection.JavaConverters.{asScalaBufferConverter, _}
-import scala.collection.{Map, Seq, Set, mutable}
+import scala.collection.{Map, Seq, mutable}
 import scala.language.implicitConversions
 
 /**
@@ -672,14 +672,14 @@ object NCSentenceManager extends NCService {
         addDeleted(sen, sen, swallowed)
         swallowed.foreach(sen.removeNote)
 
-        val toksByIdx =
-            delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
-                groupBy { case (idx, _) ⇒ idx }.
-                map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note }.toSet }.
-                toSeq.sortBy(-_.size)
-
         var sens =
             if (delCombs.nonEmpty) {
+                val toksByIdx =
+                    delCombs.flatMap(note ⇒ note.wordIndexes.map(_ → note)).
+                        groupBy { case (idx, _) ⇒ idx }.
+                        map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note }.toSet }.
+                        toSeq.sortBy(-_.size)
+
                 val sens =
                     NCComboHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala).
                         flatMap(delComb ⇒ {
