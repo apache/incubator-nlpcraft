@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.impl
+package org.apache.nlpcraft.model.intent.solver
 
 import com.typesafe.scalalogging.LazyLogging
 import io.opencensus.trace.Span
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.util.NCUtils
@@ -26,7 +27,7 @@ import org.apache.nlpcraft.model.impl.NCVariantImpl
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
-import org.apache.nlpcraft.common._
+
 import scala.collection.JavaConverters._
 
 /**
@@ -107,7 +108,7 @@ class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCR
                     override def getTermTokens(idx: Int): java.util.List[NCToken] =
                         res.groups(idx).tokens.asJava
                     override def getTermTokens(termId: String): java.util.List[NCToken] =
-                        res.groups.find(_.termId == termId).flatMap(grp ⇒ Some(grp.tokens)).getOrElse(Nil).asJava
+                        res.groups.find(_.termId === termId).flatMap(grp ⇒ Some(grp.tokens)).getOrElse(Nil).asJava
                 }
                 
                 if (!in.context.getModel.asInstanceOf[NCModel].onMatchedIntent(intentMatch)) {

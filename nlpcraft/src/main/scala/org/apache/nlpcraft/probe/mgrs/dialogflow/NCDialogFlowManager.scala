@@ -19,8 +19,8 @@ package org.apache.nlpcraft.probe.mgrs.dialogflow
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCService, _}
+import org.apache.nlpcraft.model.intent.solver.NCIntentSolverResult
 import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch}
-import org.apache.nlpcraft.model.intent.impl.NCIntentSolverResult
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection._

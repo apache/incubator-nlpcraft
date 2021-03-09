@@ -18,7 +18,8 @@
 package org.apache.nlpcraft.model.intent.dsl.compiler
 
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentDslFragmentCache}
+import org.apache.nlpcraft.model.intent.compiler.{NCIntentDslCompiler, NCIntentDslFragmentCache}
+import org.apache.nlpcraft.model.intent.impl.NCIntentDslFragmentCache
 import org.junit.jupiter.api.Test
 
 import java.nio.file.{Path, Paths}

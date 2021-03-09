@@ -39,9 +39,6 @@ package object common {
     final val DEEP_DEBUG = false
     
     // Model and token **internal** metadata keys.
-    final val MDL_META_ALL_ELM_IDS_KEY = "__NLPCRAFT_MDL_META_ALL_ELM_IDS"
-    final val MDL_META_ALL_GRP_IDS_KEY = "__NLPCRAFT_MDL_META_ALL_GRP_IDS"
-    final val MDL_META_ALL_ALIASES_KEY = "__NLPCRAFT_MDL_META_ALL_ALIASES"
     final val TOK_META_ALIASES_KEY = "__NLPCRAFT_TOK_META_ALIASES"
     final val MDL_META_MODEL_CLASS_KEY = "__NLPCRAFT_MDL_CLASS_NAME"
 

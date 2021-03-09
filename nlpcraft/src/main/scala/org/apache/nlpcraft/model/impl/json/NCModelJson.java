@@ -254,9 +254,7 @@ public class NCModelJson {
     public boolean isMaxSynonymsThresholdError() {
         return maxSynonymsThresholdError;
     }
-    public void setMaxSynonymsThresholdError(boolean maxSynonymsThresholdError) {
-        this.maxSynonymsThresholdError = maxSynonymsThresholdError;
-    }
+    public void setMaxSynonymsThresholdError(boolean maxSynonymsThresholdError) { this.maxSynonymsThresholdError = maxSynonymsThresholdError; }
     public long getConversationTimeout() {
         return conversationTimeout;
     }
@@ -272,7 +270,5 @@ public class NCModelJson {
     public Map<String, String[]> getRestrictedCombinations() {
         return restrictedCombinations;
     }
-    public void setRestrictedCombinations(Map<String, String[]> restrictedCombinations) {
-        this.restrictedCombinations = restrictedCombinations;
-    }
+    public void setRestrictedCombinations(Map<String, String[]> restrictedCombinations) { this.restrictedCombinations = restrictedCombinations;}
 }

@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.impl
+package org.apache.nlpcraft.model.intent.compiler
 
-import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
-import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.apache.commons.lang3.StringUtils
-import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.utils.{NCDslTermContext, NCDslTermRetVal}
+import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
+import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
 
-import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
+import java.lang.{Long ⇒ JLong, Double ⇒ JDouble}
 import java.time.LocalDate
 import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
 import scala.collection.mutable
 
-//noinspection DuplicatedCode
 trait NCIntentDslBaselCompiler {
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE
@@ -45,12 +44,13 @@ trait NCIntentDslBaselCompiler {
 
         syntaxError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine)
     }
+
     /**
-      *
-      * @param errMsg
-      * @param ctx
-      * @return
-      */
+     *
+     * @param errMsg
+     * @param ctx
+     * @return
+     */
     def newRuntimeError(errMsg: String, cause: Exception = null)(implicit ctx: PRC): NCE = {
         val tok = ctx.start
 
@@ -58,29 +58,26 @@ trait NCIntentDslBaselCompiler {
     }
 
     type StackType = mutable.ArrayStack[NCDslTermRetVal]
-    type Instr = (NCToken, StackType,  NCDslTermContext) ⇒ Unit
+    type Instr = (NCToken, StackType, NCDslTermContext) ⇒ Unit
 
     //noinspection ComparingUnrelatedTypes
     def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
     //noinspection ComparingUnrelatedTypes
     def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
     //noinspection ComparingUnrelatedTypes
-    def isBoolean(v: Object): Boolean = v.isInstanceOf[Boolean]
-    def isString(v: Object): Boolean = v.isInstanceOf[String]
+    def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
+    def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
     def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
     def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
-    def asString(v: Object): String = v.asInstanceOf[String]
+    def asStr(v: Object): String = v.asInstanceOf[String]
+    def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
     def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
 
-    def pushAny(any: Object, usedTok: Boolean)(implicit stack: StackType): Unit =
-        stack.push(NCDslTermRetVal(any, usedTok))
-    def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit =
-        stack.push(NCDslTermRetVal(Long.box(any), usedTok))
-    def pushDouble(any: Double, usedTok: Boolean)(implicit stack: StackType): Unit =
-        stack.push(NCDslTermRetVal(Double.box(any), usedTok))
-    def pushBool(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit =
-        stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
+    def pushAny(any: Object, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(any, usedTok))
+    def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(Long.box(any), usedTok))
+    def pushDouble(any: Double, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(Double.box(any), usedTok))
+    def pushBool(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
 
     // Runtime errors.
     def rtUnaryOpError(op: String, v: Object)(implicit ctx: PRC): NCE =
@@ -110,6 +107,7 @@ trait NCIntentDslBaselCompiler {
 
         (val1, val2, f1, f2)
     }
+
     /**
      *
      * @param stack
@@ -231,12 +229,12 @@ trait NCIntentDslBaselCompiler {
      * @param or
      * @return
      */
-    def parseLogExpr(and: TN, or : TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
+    def parseLogExpr(and: TN, or: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
         val (v1, v2, f1, f2) = pop2()
 
-        if (!isBoolean(v1) || !isBoolean(v2))
+        if (!isBool(v1) || !isBool(v2))
             throw rtBinaryOpError(if (and != null) "&&" else "||", v1, v2)
 
         if (and != null)
@@ -291,7 +289,7 @@ trait NCIntentDslBaselCompiler {
         val usedTok = f1 || f2
 
         if (plus != null) {
-            if (isString(v1) && isString(v2)) pushAny(asString(v1) + asString(v2), usedTok)
+            if (isStr(v1) && isStr(v2)) pushAny(asStr(v1) + asStr(v2), usedTok)
             else if (isJLong(v1) && isJLong(v2)) pushLong(asJLong(v1) + asJLong(v2), usedTok)
             else if (isJLong(v1) && isJDouble(v2)) pushDouble(asJLong(v1) + asJDouble(v2), usedTok)
             else if (isJDouble(v1) && isJLong(v2)) pushDouble(asJDouble(v1) + asJLong(v2), usedTok)
@@ -331,7 +329,7 @@ trait NCIntentDslBaselCompiler {
         else {
             assert(not != null)
 
-            if (isBoolean(v)) pushBool(!asBool(v), usedTok)
+            if (isBool(v)) pushBool(!asBool(v), usedTok)
             else
                 throw rtUnaryOpError("!", v)
         }
@@ -386,11 +384,12 @@ trait NCIntentDslBaselCompiler {
 
             val (v, f) = pop1()
 
-            if (!isString(v))
+            if (!isStr(v))
                 throw rtParamTypeError(fun, v, "string")
 
-            (asString(v), f)
+            (asStr(v), f)
         }
+
         def get1Double(): (JDouble, Boolean) = {
             ensureStack(1)
 
@@ -401,9 +400,10 @@ trait NCIntentDslBaselCompiler {
 
             (asJDouble(v), f)
         }
+
         def get2Doubles(): (JDouble, JDouble, Boolean) = {
             ensureStack(2)
-            
+
             val (v1, v2, f1, f2) = pop2()
 
             if (!isJDouble(v1))
@@ -413,36 +413,41 @@ trait NCIntentDslBaselCompiler {
 
             (asJDouble(v1), asJDouble(v2), f1 || f2)
         }
+
+        def get2Str(): (String, String, Boolean) = {
+            ensureStack(2)
+
+            val (v1, v2, f1, f2) = pop2()
+
+            if (!isStr(v1))
+                throw rtParamTypeError(fun, v1, "string")
+            if (!isStr(v2))
+                throw rtParamTypeError(fun, v2, "string")
+
+            (asStr(v1), asStr(v2), f1 || f2)
+        }
+
+        def get1Tok1Str(): (NCToken, String, Boolean) = {
+            ensureStack(2)
+
+            val (v1, v2, f1, f2) = pop2()
+
+            if (!isToken(v1))
+                throw rtParamTypeError(fun, v1, "token")
+            if (!isStr(v2))
+                throw rtParamTypeError(fun, v2, "string")
+
+            (asToken(v1), asStr(v2), f1 || f2)
+        }
+
         def get1Any(): (Any, Boolean) = {
             ensureStack(1)
 
             pop1()
         }
 
-        def doSplit(): Unit = {
-            ensureStack(2)
-
-            val (v1, v2, f1, f2) = pop2()
-
-            if (!isString(v1))
-                throw rtParamTypeError(fun, v1, "string")
-            if (!isString(v2))
-                throw rtParamTypeError(fun, v2, "string")
-
-            asString(v1).split(asString(v2)).foreach { pushAny(_, f1 || f2) }
-        }
-        def doSplitTrim(): Unit = {
-            ensureStack(2)
-
-            val (v1, v2, f1, f2) = pop2()
-
-            if (!isString(v1))
-                throw rtParamTypeError(fun, v1, "string")
-            if (!isString(v2))
-                throw rtParamTypeError(fun, v2, "string")
-
-            asString(v1).split(asString(v2)).foreach { s ⇒ pushAny(s.strip, f1 || f2) }
-        }
+        def doSplit(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { pushAny(_, f) }}
+        def doSplitTrim(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { s ⇒ pushAny(s.strip, f) }}
 
         /*
          * Collection, statistical operations.
@@ -460,6 +465,7 @@ trait NCIntentDslBaselCompiler {
 
             pushAny(jl, f)
         }
+
         def doMap(): Unit = {
             if (stack.size % 2 != 0)
                 throw rtParamNumError(fun)
@@ -488,18 +494,7 @@ trait NCIntentDslBaselCompiler {
         /*
          * Metadata operations.
          */
-        def doPartMeta(): Unit = {
-            ensureStack(2)
-
-            val (v1, v2, f1, f2) = pop2()
-
-            if (!isToken(v1))
-                throw rtParamTypeError(fun, v1, "token")
-            if (!isString(v2))
-                throw rtParamTypeError(fun, v2, "string")
-
-            pushAny(v1.asInstanceOf[NCToken].meta(v2.asInstanceOf[String]), f1 || f2)
-        }
+        def doPartMeta(): Unit = get1Tok1Str() match { case (t, s, f) ⇒  pushAny(t.meta(s), f) }
 
         /*
          * Math operations.
@@ -509,19 +504,23 @@ trait NCIntentDslBaselCompiler {
             case (a: JDouble, f) ⇒ pushDouble(Math.abs(a), f)
             case x ⇒ throw rtParamTypeError(fun, x, "numeric")
         }
+
         def doSquare(): Unit = get1Any() match {
             case (a: JLong, f) ⇒ pushLong(a * a, f)
             case (a: JDouble, f) ⇒ pushDouble(a * a, f)
             case x ⇒ throw rtParamTypeError(fun, x, "numeric")
         }
 
-        def doJson(): Unit = get1Str() match { case (s, f) ⇒ pushAny(U.jsonToJavaMap(asString(s)), f) }
+        def doJson(): Unit = get1Str() match {
+            case (s, f) ⇒ pushAny(U.jsonToJavaMap(asStr(s)), f)
+        }
+
         def doIf(): Unit = {
             ensureStack(3)
 
             val (v1, v2, v3, f1, f2, f3) = pop3()
 
-            if (!isBoolean(v1))
+            if (!isBool(v1))
                 throw rtParamTypeError(fun, v1, "boolean")
 
             if (asBool(v1))
@@ -534,17 +533,7 @@ trait NCIntentDslBaselCompiler {
             if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.top.asInstanceOf[NCToken] else tok
 
         def doPart(): Unit = {
-            ensureStack(2)
-
-            val (v1, v2, f1, f2) = pop2()
-
-            if (!isToken(v1))
-                throw rtParamTypeError(fun, v1, "token")
-            if (!isString(v2))
-                throw rtParamTypeError(fun, v2, "string")
-
-            val t = v1.asInstanceOf[NCToken]
-            val aliasId = v2.asInstanceOf[String]
+            val (t, aliasId, f) = get1Tok1Str()
 
             val parts = t.findPartTokens(aliasId)
 
@@ -552,28 +541,17 @@ trait NCIntentDslBaselCompiler {
                 throw newRuntimeError(s"Cannot find part for token (use 'parts' function instead) [" +
                     s"id=${t.getId}, " +
                     s"aliasId=$aliasId" +
-                s"]")
+                    s"]")
             else if (parts.size() > 1)
                 throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
                     s"id=${t.getId}, " +
                     s"aliasId=$aliasId" +
-                s"]")
+                    s"]")
 
-            pushAny(parts.get(0), f1 || f2)
+            pushAny(parts.get(0), f)
         }
 
-        def doParts(): Unit = {
-            ensureStack(2)
-
-            val (v1, v2, f1, f2) = pop2()
-
-            if (!isToken(v1))
-                throw rtParamTypeError(fun, v1, "token")
-            if (!isString(v2))
-                throw rtParamTypeError(fun, v2, "string")
-
-            pushAny(v1.asInstanceOf[NCToken].findPartTokens(v2.asInstanceOf[String]), f1 || f2)
-        }
+        def doParts(): Unit = get1Tok1Str() match { case (t, aliasId, f) ⇒ pushAny(t.findPartTokens(aliasId), f) }
 
         fun match {
             // Metadata access.
@@ -637,13 +615,13 @@ trait NCIntentDslBaselCompiler {
             case "strip" ⇒ get1Str() match { case (s, f) ⇒ pushAny(s.trim, f) }
             case "uppercase" ⇒ get1Str() match { case (s, f) ⇒ pushAny(s.toUpperCase, f) }
             case "lowercase" ⇒ get1Str() match { case (s, f) ⇒ pushAny(s.toLowerCase, f) }
-            case "is_alpha" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlpha(asString(s)), f) }
-            case "is_alphanum" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumeric(asString(s)), f) }
-            case "is_whitespace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isWhitespace(asString(s)), f) }
-            case "is_num" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumeric(asString(s)), f) }
-            case "is_numspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumericSpace(asString(s)), f) }
-            case "is_alphaspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphaSpace(asString(s)), f) }
-            case "is_alphanumspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumericSpace(asString(s)), f) }
+            case "is_alpha" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlpha(asStr(s)), f) }
+            case "is_alphanum" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumeric(asStr(s)), f) }
+            case "is_whitespace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isWhitespace(asStr(s)), f) }
+            case "is_num" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumeric(asStr(s)), f) }
+            case "is_numspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumericSpace(asStr(s)), f) }
+            case "is_alphaspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphaSpace(asStr(s)), f) }
+            case "is_alphanumspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumericSpace(asStr(s)), f) }
             case "substring" ⇒
             case "charAt" ⇒
             case "regex" ⇒
@@ -654,11 +632,11 @@ trait NCIntentDslBaselCompiler {
 
             // Math functions.
             case "abs" ⇒ doAbs()
-            case "ceil" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.ceil(a), f) }
-            case "floor" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.floor(a), f) }
-            case "rint" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.rint(a), f) }
-            case "round" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushLong(Math.round(a), f) }
-            case "signum" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.signum(a), f) }
+            case "ceil" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.ceil(a), f) } 
+            case "floor" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.floor(a), f) } 
+            case "rint" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.rint(a), f) } 
+            case "round" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushLong(Math.round(a), f) } 
+            case "signum" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.signum(a), f) } 
             case "sqrt" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sqrt(a), f) }
             case "cbrt" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cbrt(a), f) }
             case "pi" ⇒ pushDouble(Math.PI, false)
@@ -716,18 +694,18 @@ trait NCIntentDslBaselCompiler {
             case "sum" ⇒
 
             // Date-time functions.
-            case "year" ⇒ pushLong(LocalDate.now.getYear,false) // 2021.
-            case "month" ⇒ pushLong(LocalDate.now.getMonthValue,false) // 1 ... 12.
-            case "day_of_month" ⇒ pushLong(LocalDate.now.getDayOfMonth,false) // 1 ... 31.
-            case "day_of_week" ⇒ pushLong(LocalDate.now.getDayOfWeek.getValue,false)
-            case "day_of_year" ⇒ pushLong(LocalDate.now.getDayOfYear,false)
+            case "year" ⇒ pushLong(LocalDate.now.getYear, false) // 2021.
+            case "month" ⇒ pushLong(LocalDate.now.getMonthValue, false) // 1 ... 12.
+            case "day_of_month" ⇒ pushLong(LocalDate.now.getDayOfMonth, false) // 1 ... 31.
+            case "day_of_week" ⇒ pushLong(LocalDate.now.getDayOfWeek.getValue, false)
+            case "day_of_year" ⇒ pushLong(LocalDate.now.getDayOfYear, false)
             case "hour" ⇒
             case "minute" ⇒
             case "second" ⇒
             case "week_of_month" ⇒
             case "week_of_year" ⇒
             case "quarter" ⇒
-            case "now" ⇒ pushLong(System.currentTimeMillis(),false) // Epoc time.
+            case "now" ⇒ pushLong(System.currentTimeMillis(), false) // Epoc time.
 
             case _ ⇒ throw rtUnknownFunError(fun) // Assertion.
         }

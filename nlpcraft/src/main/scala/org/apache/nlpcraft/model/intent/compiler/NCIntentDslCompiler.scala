@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.impl
+package org.apache.nlpcraft.model.intent.compiler
 
 import com.typesafe.scalalogging.LazyLogging
-import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree.ParseTreeWalker
+import org.antlr.v4.runtime._
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.impl.antlr4.{NCIntentDslParser ⇒ IDP, _}
-import org.apache.nlpcraft.model.intent.impl.{NCIntentDslFragmentCache ⇒ FragCache}
+import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser ⇒ IDP}
 import org.apache.nlpcraft.model.intent.utils._
+import org.apache.nlpcraft.model.intent.compiler.{NCIntentDslFragmentCache ⇒ FragCache}
+import org.apache.nlpcraft.model._
+import scala.collection.JavaConverters._
 
 import java.nio.file.Path
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -44,8 +44,12 @@ object NCIntentDslCompiler extends LazyLogging {
      * @param mdlId
      */
     class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCIntentDslBaselCompiler {
-        // Accumulator for parsed intents.
+        // Accumulators for parsed objects.
         private val intents = ArrayBuffer.empty[NCDslIntent]
+        private var synonym: NCDslSynonym = _
+
+        // Synonym.
+        private var alias: String = _
 
         // Fragment components.
         private var fragId: String = _
@@ -70,27 +74,27 @@ object NCIntentDslCompiler extends LazyLogging {
         private var refClsName: Option[String] = None
         private var refMtdName: Option[String] = None
 
-        // Current term's code, i.e. list of instructions.
-        private var termInstrs = mutable.Buffer.empty[Instr]
+        // Current expression code, i.e. list of instructions.
+        private var instrs = mutable.Buffer.empty[Instr]
 
         /*
          * Shared/common implementation.
          */
-        override def exitUnaryExpr(ctx: IDP.UnaryExprContext): Unit = termInstrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
+        override def exitUnaryExpr(ctx: IDP.UnaryExprContext): Unit = instrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
 
-        override def exitMultExpr(ctx: IDP.MultExprContext): Unit = termInstrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
+        override def exitMultExpr(ctx: IDP.MultExprContext): Unit = instrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
 
-        override def exitPlusExpr(ctx: IDP.PlusExprContext): Unit = termInstrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
+        override def exitPlusExpr(ctx: IDP.PlusExprContext): Unit = instrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
 
-        override def exitCompExpr(ctx: IDP.CompExprContext): Unit = termInstrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
+        override def exitCompExpr(ctx: IDP.CompExprContext): Unit = instrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
 
-        override def exitLogExpr(ctx: IDP.LogExprContext): Unit = termInstrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
+        override def exitLogExpr(ctx: IDP.LogExprContext): Unit = instrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
 
-        override def exitEqExpr(ctx: IDP.EqExprContext): Unit = termInstrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
+        override def exitEqExpr(ctx: IDP.EqExprContext): Unit = instrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
 
-        override def exitCallExpr(ctx: IDP.CallExprContext): Unit = termInstrs += parseCallExpr(ctx.FUN_NAME())(ctx)
+        override def exitCallExpr(ctx: IDP.CallExprContext): Unit = instrs += parseCallExpr(ctx.FUN_NAME())(ctx)
 
-        override def exitAtom(ctx: IDP.AtomContext): Unit = termInstrs += parseAtom(ctx.getText)(ctx)
+        override def exitAtom(ctx: IDP.AtomContext): Unit = instrs += parseAtom(ctx.getText)(ctx)
 
         /**
          *
@@ -144,6 +148,35 @@ object NCIntentDslCompiler extends LazyLogging {
 
             if (intents.exists(i ⇒ i.id != null && i.id == intentId))
                 throw newSyntaxError(s"Duplicate intent ID: $intentId")(ctx.id())
+        }
+
+
+        override def exitAlias(ctx: IDP.AliasContext): Unit = {
+            alias = ctx.id().getText
+        }
+
+        override def exitSynonym(ctx: IDP.SynonymContext): Unit = {
+            implicit val evidence: ParserRuleContext = ctx
+
+            val code = mutable.Buffer.empty[Instr] ++ instrs // Local copy.
+
+            synonym = NCDslSynonym(
+                Option(alias),
+                (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
+                    val stack = new mutable.ArrayStack[NCDslTermRetVal]()
+
+                    // Execute all instructions.
+                    code.foreach(_ (tok, stack, termCtx))
+
+                    // Pop final result from stack.
+                    val x = stack.pop()
+
+                    if (!isBool(x.retVal))
+                        throw newRuntimeError(s"Synonym does not return boolean value: ${ctx.getText}")
+
+                    asBool(x.retVal)
+                }
+            )
         }
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit = {
@@ -264,25 +297,24 @@ object NCIntentDslCompiler extends LazyLogging {
                     }
                 }
                 else { // DSL-defined term.
-                    val instrs = mutable.Buffer.empty[Instr]
+                    val code = mutable.Buffer.empty[Instr]
 
-                    instrs ++= termInstrs
+                    code ++= instrs
 
                     (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
                         val stack = new mutable.ArrayStack[NCDslTermRetVal]()
 
                         // Execute all instructions.
-                        instrs.foreach(_ (tok, stack, termCtx))
+                        code.foreach(_ (tok, stack, termCtx))
 
                         // Pop final result from stack.
                         val x = stack.pop()
 
-                        if (!isBoolean(x.retVal))
+                        if (!isBool(x.retVal))
                             throw newRuntimeError(s"Intent term does not return boolean value: ${ctx.getText}")
 
                         (asBool(x.retVal), x.usedTok)
                     }
-
                 }
 
             // Add term.
@@ -297,7 +329,7 @@ object NCIntentDslCompiler extends LazyLogging {
             // Reset term vars.
             setMinMax(1, 1)
             termId = null
-            termInstrs.clear()
+            instrs.clear()
             refClsName = None
             refMtdName = None
         }
@@ -336,7 +368,7 @@ object NCIntentDslCompiler extends LazyLogging {
          *
          * @return
          */
-        def getCompiledSynonym: NCDslSynonym = ???
+        def getCompiledSynonym: NCDslSynonym = synonym
 
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =
             throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, dsl, mdlId))
@@ -520,7 +552,7 @@ object NCIntentDslCompiler extends LazyLogging {
      * accumulated in a static map keyed by model ID. Only intents are returned, if any.
      *
      * @param filePath *.nc intent DSL file to compile.
-     * @param mdlId ID of the model *.nc file belongs to.
+     * @param mdlId    ID of the model *.nc file belongs to.
      * @return
      */
     @throws[NCE]
@@ -533,8 +565,8 @@ object NCIntentDslCompiler extends LazyLogging {
      * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
      * map keyed by model ID. Only intents are returned, if any.
      *
-     * @param dsl Intent DSL to compile.
-     * @param mdlId ID of the model DSL belongs to.
+     * @param dsl     Intent DSL to compile.
+     * @param mdlId   ID of the model DSL belongs to.
      * @param srcName Optional source name.
      * @return
      */
@@ -547,7 +579,7 @@ object NCIntentDslCompiler extends LazyLogging {
 
     /**
      *
-     * @param dsl Synonym DSL to compile.
+     * @param dsl   Synonym DSL to compile.
      * @param mdlId ID of the model DSL belongs to.
      * @return
      */

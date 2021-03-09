@@ -15,14 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.impl
+package org.apache.nlpcraft.model.intent.solver
 
-import org.apache.nlpcraft.model.{NCContext, NCIntentMatch}
+import org.apache.nlpcraft.model.{NCIntentMatch, _}
 
 /**
- * Input data for intent solver.
- */
-class NCIntentSolverInput(
-    val context: NCContext,
-    var intentMatch: NCIntentMatch = null
+  * Intent solver engine result. Using basic case class for easier Java interop.
+  */
+case class NCIntentTokensGroup(termId: Option[String], tokens: List[NCToken])
+case class NCIntentSolverResult(
+    intentId: String,
+    fn: java.util.function.Function[NCIntentMatch, NCResult],
+    groups: List[NCIntentTokensGroup],
+    isExactMatch: Boolean,
+    variant: NCIntentSolverVariant,
+    variantIdx: Int
 )

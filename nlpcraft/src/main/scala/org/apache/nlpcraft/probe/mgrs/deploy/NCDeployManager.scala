@@ -33,7 +33,8 @@ import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
-import org.apache.nlpcraft.model.intent.impl.{NCIntentDslCompiler, NCIntentSolver}
+import org.apache.nlpcraft.model.intent.compiler.NCIntentDslCompiler
+import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{DSL, REGEX, TEXT}
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
@@ -466,7 +467,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 throw new NCE(s"Duplicated synonyms found and not allowed [mdlId=$mdlId]")
         }
 
-        mdl.getMetadata.put(MDL_META_ALL_ALIASES_KEY, allAliases.toSet)
         mdl.getMetadata.put(MDL_META_ALL_ELM_IDS_KEY,
             mdl.getElements.asScala.map(_.getId).toSet ++
                 Set("nlpcraft:nlp") ++

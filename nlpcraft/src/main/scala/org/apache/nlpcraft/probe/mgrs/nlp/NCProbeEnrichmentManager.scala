@@ -27,7 +27,7 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
-import org.apache.nlpcraft.model.intent.impl.NCIntentSolverInput
+import org.apache.nlpcraft.model.intent.solver.NCIntentSolverInput
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedResult
 import org.apache.nlpcraft.probe.mgrs.conn.NCConnectionManager
