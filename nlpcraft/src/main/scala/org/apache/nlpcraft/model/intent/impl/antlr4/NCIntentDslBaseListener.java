@@ -28,6 +28,30 @@ public class NCIntentDslBaseListener implements NCIntentDslListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSynonym(NCIntentDslParser.SynonymContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSynonym(NCIntentDslParser.SynonymContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAlias(NCIntentDslParser.AliasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAlias(NCIntentDslParser.AliasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDslItems(NCIntentDslParser.DslItemsContext ctx) { }
 	/**
 	 * {@inheritDoc}

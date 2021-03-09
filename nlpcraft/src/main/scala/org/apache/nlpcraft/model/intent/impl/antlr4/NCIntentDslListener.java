@@ -18,6 +18,26 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 */
 	void exitDsl(NCIntentDslParser.DslContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#synonym}.
+	 * @param ctx the parse tree
+	 */
+	void enterSynonym(NCIntentDslParser.SynonymContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#synonym}.
+	 * @param ctx the parse tree
+	 */
+	void exitSynonym(NCIntentDslParser.SynonymContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#alias}.
+	 * @param ctx the parse tree
+	 */
+	void enterAlias(NCIntentDslParser.AliasContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#alias}.
+	 * @param ctx the parse tree
+	 */
+	void exitAlias(NCIntentDslParser.AliasContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#dslItems}.
 	 * @param ctx the parse tree
 	 */

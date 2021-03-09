@@ -35,7 +35,7 @@ class NCIntentDslCompilerSpec {
      */
     private def checkCompileOk(dsl: String): Unit =
         try {
-            NCIntentDslCompiler.compile(dsl, MODEL_ID)
+            NCIntentDslCompiler.compileIntent(dsl, MODEL_ID)
 
             assert(true)
         }
@@ -49,7 +49,7 @@ class NCIntentDslCompilerSpec {
       */
     private def checkPathCompileOk(path: Path): Unit =
         try {
-            NCIntentDslCompiler.compilePath(path, MODEL_ID)
+            NCIntentDslCompiler.compileIntent(path, MODEL_ID)
             
             assert(true)
         }
@@ -63,7 +63,7 @@ class NCIntentDslCompilerSpec {
      */
     private def checkCompileError(txt: String): Unit =
         try {
-            NCIntentDslCompiler.compile(txt, MODEL_ID)
+            NCIntentDslCompiler.compileIntent(txt, MODEL_ID)
 
             assert(false)
         } catch {

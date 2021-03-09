@@ -155,6 +155,14 @@ package object common {
         def fps: Long = 1000 / v
     }
 
+    implicit class OptionEq1[T](private val opt: Option[T]) {
+        def === (x: Option[T]): Boolean = opt.isDefined && x.isDefined && opt.get == x.get
+        def === (x: T): Boolean = opt.isDefined && opt.get == x
+    }
+    implicit class OptionEq2[T](private val opt: T) {
+        def === (x: Option[T]): Boolean = x.isDefined && opt == x.get
+    }
+
     /**
      * 
      * @param f

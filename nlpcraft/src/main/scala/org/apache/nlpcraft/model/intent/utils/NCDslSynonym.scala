@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.probe.mgrs.model
+package org.apache.nlpcraft.model.intent.utils
 
 import org.apache.nlpcraft.model.NCToken
 
 /**
- * Synonym DSL compilation unit.
+ * DSl synonym.
+ *
+ * @param alias
+ * @param pred
  */
-case class NCModelSynonymDsl(
-    alias: String,
-    predicate: java.util.function.Function[NCToken, java.lang.Boolean]
+case class NCDslSynonym(
+    alias: Option[String],
+    pred: (NCToken, NCDslTermContext) ⇒ Boolean,
 )

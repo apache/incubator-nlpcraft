@@ -23,7 +23,7 @@ import org.apache.nlpcraft.common._
 import scala.collection.mutable
 
 /**
- * Scala-based checks.
+ * Token checker.
  */
 object NCDslTokenChecker {
     /**

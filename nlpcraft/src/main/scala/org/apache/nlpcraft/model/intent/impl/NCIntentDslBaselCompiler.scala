@@ -67,6 +67,7 @@ trait NCIntentDslBaselCompiler {
     //noinspection ComparingUnrelatedTypes
     def isBoolean(v: Object): Boolean = v.isInstanceOf[Boolean]
     def isString(v: Object): Boolean = v.isInstanceOf[String]
+    def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
     def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
     def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
     def asString(v: Object): String = v.asInstanceOf[String]
@@ -438,9 +439,9 @@ trait NCIntentDslBaselCompiler {
             val (v1, v2, f1, f2) = pop2()
 
             if (!isString(v1))
-                rtParamTypeError(fun, v1, "string")
+                throw rtParamTypeError(fun, v1, "string")
             if (!isString(v2))
-                rtParamTypeError(fun, v2, "string")
+                throw rtParamTypeError(fun, v2, "string")
 
             asString(v1).split(asString(v2)).foreach { pushAny(_, f1 || f2) }
         }
@@ -450,9 +451,9 @@ trait NCIntentDslBaselCompiler {
             val (v1, v2, f1, f2) = pop2()
 
             if (!isString(v1))
-                rtParamTypeError(fun, v1, "string")
+                throw rtParamTypeError(fun, v1, "string")
             if (!isString(v2))
-                rtParamTypeError(fun, v2, "string")
+                throw rtParamTypeError(fun, v2, "string")
 
             asString(v1).split(asString(v2)).foreach { s ⇒ pushAny(s.strip, f1 || f2) }
         }
@@ -475,7 +476,7 @@ trait NCIntentDslBaselCompiler {
         }
         def doMap(): Unit = {
             if (stack.size % 2 != 0)
-                rtParamNumError(fun)
+                throw rtParamNumError(fun)
 
             val jm = new JHashMap[Object, Object]()
             var f = false
@@ -510,6 +511,18 @@ trait NCIntentDslBaselCompiler {
         def doCompMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false) }
         def doIntentMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false) }
         def doFragMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.fragMeta.get(s).orNull, false) }
+        def doPartMeta(): Unit = {
+            ensureStack(2)
+
+            val (v1, v2, f1, f2) = pop2()
+
+            if (!isToken(v1))
+                throw rtParamTypeError(fun, v1, "token")
+            if (!isString(v2))
+                throw rtParamTypeError(fun, v2, "string")
+
+            pushAny(v1.asInstanceOf[NCToken].meta(v2.asInstanceOf[String]), f1 || f2)
+        }
 
         /*
          * Math operations.
@@ -517,12 +530,12 @@ trait NCIntentDslBaselCompiler {
         def doAbs(): Unit = get1Any() match {
             case (a: JLong, f) ⇒ pushLong(Math.abs(a), f)
             case (a: JDouble, f) ⇒ pushDouble(Math.abs(a), f)
-            case x ⇒ rtParamTypeError(fun, x, "numeric")
+            case x ⇒ throw rtParamTypeError(fun, x, "numeric")
         }
         def doSquare(): Unit = get1Any() match {
             case (a: JLong, f) ⇒ pushLong(a * a, f)
             case (a: JDouble, f) ⇒ pushDouble(a * a, f)
-            case x ⇒ rtParamTypeError(fun, x, "numeric")
+            case x ⇒ throw rtParamTypeError(fun, x, "numeric")
         }
         def doCeil(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.ceil(a), f) }
         def doFloor(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.floor(a), f) }
@@ -555,21 +568,6 @@ trait NCIntentDslBaselCompiler {
         def doAtan2(): Unit = get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.atan2(a1, a2), f) }
 
         /*
-         * User operations.
-         */
-        def doUserId(): Unit = pushLong(termCtx.req.getUser.getId, false)
-
-        /*
-         * Company operations.
-         */
-        def doCompId(): Unit = pushLong(termCtx.req.getCompany.getId, false)
-
-        /*
-         * Request operations.
-         */
-        def doReqId(): Unit = pushAny(termCtx.req.getServerRequestId, false)
-
-        /*
          * Date-time operations.
          */
         def doYear(): Unit = pushLong(LocalDate.now.getYear,false)
@@ -593,9 +591,55 @@ trait NCIntentDslBaselCompiler {
                 pushAny(v3, f1 || f3)
         }
 
+        def token(): NCToken =
+            if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.top.asInstanceOf[NCToken] else tok
+
+        def doPart(): Unit = {
+            ensureStack(2)
+
+            val (v1, v2, f1, f2) = pop2()
+
+            if (!isToken(v1))
+                throw rtParamTypeError(fun, v1, "token")
+            if (!isString(v2))
+                throw rtParamTypeError(fun, v2, "string")
+
+            val t = v1.asInstanceOf[NCToken]
+            val aliasId = v2.asInstanceOf[String]
+
+            val parts = t.findPartTokens(aliasId)
+
+            if (parts.isEmpty)
+                throw newRuntimeError(s"Cannot find part for token (use 'parts' function instead) [" +
+                    s"id=${t.getId}, " +
+                    s"aliasId=$aliasId" +
+                s"]")
+            else if (parts.size() > 1)
+                throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
+                    s"id=${t.getId}, " +
+                    s"aliasId=$aliasId" +
+                s"]")
+
+            pushAny(parts.get(0), f1 || f2)
+        }
+
+        def doParts(): Unit = {
+            ensureStack(2)
+
+            val (v1, v2, f1, f2) = pop2()
+
+            if (!isToken(v1))
+                throw rtParamTypeError(fun, v1, "token")
+            if (!isString(v2))
+                throw rtParamTypeError(fun, v2, "string")
+
+            pushAny(v1.asInstanceOf[NCToken].findPartTokens(v2.asInstanceOf[String]), f1 || f2)
+        }
+
         fun match {
             // Metadata access.
             case "meta_token" ⇒ doTokenMeta()
+            case "meta_part" ⇒ doPartMeta()
             case "meta_model" ⇒ doModelMeta()
             case "meta_intent" ⇒ doIntentMeta()
             case "meta_req" ⇒ doReqMeta()
@@ -612,24 +656,27 @@ trait NCIntentDslBaselCompiler {
             case "if" ⇒ doIf()
 
             // Token functions.
-            case "id" ⇒ pushAny(tok.getId, true)
-            case "ancestors" ⇒ pushAny(tok.getAncestors, true)
-            case "parent" ⇒ pushAny(tok.getParentId, true)
-            case "groups" ⇒ pushAny(tok.getGroups, true)
-            case "value" ⇒ pushAny(tok.getValue, true)
-            case "aliases" ⇒ pushAny(tok.getAliases, true)
-            case "start_idx" ⇒ pushLong(tok.getStartCharIndex, true)
-            case "end_idx" ⇒ pushLong(tok.getEndCharIndex, true)
+            case "id" ⇒ pushAny(token().getId, true)
+            case "ancestors" ⇒ pushAny(token().getAncestors, true)
+            case "parent" ⇒ pushAny(token().getParentId, true)
+            case "groups" ⇒ pushAny(token().getGroups, true)
+            case "value" ⇒ pushAny(token().getValue, true)
+            case "aliases" ⇒ pushAny(token().getAliases, true)
+            case "start_idx" ⇒ pushLong(token().getStartCharIndex, true)
+            case "end_idx" ⇒ pushLong(token().getEndCharIndex, true)
+            case "this" ⇒ pushAny(tok, true)
+            case "part" ⇒ doPart()
+            case "parts" ⇒ doParts()
 
             // Request data.
-            case "req_id" ⇒ doReqId()
+            case "req_id" ⇒ pushAny(termCtx.req.getServerRequestId, false)
             case "req_normtext" ⇒
             case "req_tstamp" ⇒
             case "req_addr" ⇒
             case "req_agent" ⇒
 
             // User data.
-            case "user_id" ⇒ doUserId()
+            case "user_id" ⇒ pushLong(termCtx.req.getUser.getId, false)
             case "user_fname" ⇒
             case "user_lname" ⇒
             case "user_email" ⇒
@@ -637,7 +684,7 @@ trait NCIntentDslBaselCompiler {
             case "user_signup_tstamp" ⇒
 
             // Company data.
-            case "comp_id" ⇒ doCompId()
+            case "comp_id" ⇒ pushLong(termCtx.req.getCompany.getId, false)
             case "comp_name" ⇒
             case "comp_website" ⇒
             case "comp_country" ⇒

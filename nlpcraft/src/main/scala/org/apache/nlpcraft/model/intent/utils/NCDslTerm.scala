@@ -29,7 +29,7 @@ import org.apache.nlpcraft.model.NCToken
   * @param conv
   */
 case class NCDslTerm(
-    id: String, // Could be null.
+    id: Option[String],
     pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
     min: Int,
     max: Int,

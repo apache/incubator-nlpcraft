@@ -127,7 +127,7 @@ object NCIntentDslCompiler extends LazyLogging {
         override def exitTermId(ctx: IDP.TermIdContext): Unit = {
             termId = ctx.id().getText
     
-            if (terms.exists(t ⇒ t.id != null && t.id == termId))
+            if (terms.exists(t ⇒ t.id === termId))
                 throw newSyntaxError(s"Duplicate term ID: $termId")(ctx.id())
         }
     
@@ -158,8 +158,8 @@ object NCIntentDslCompiler extends LazyLogging {
                     val meta = if (fragMeta == null) Map.empty[String, Any] else fragMeta
 
                     for (fragTerm ← frag.terms)
-                         if (terms.exists(t ⇒ t.id != null && t.id == fragTerm.id))
-                            throw newSyntaxError(s"Duplicate term ID '${fragTerm.id}' in fragment '$id'.")(ctx.id())
+                         if (terms.exists(t ⇒ t.id === fragTerm.id))
+                            throw newSyntaxError(s"Duplicate term ID '${fragTerm.id.get}' in fragment '$id'.")(ctx.id())
                         else
                             terms += fragTerm.cloneWithFragMeta(meta)
 
@@ -276,7 +276,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 
             // Add term.
             terms += NCDslTerm(
-                termId,
+                Option(termId),
                 pred,
                 min,
                 max,
@@ -464,7 +464,7 @@ object NCIntentDslCompiler extends LazyLogging {
       * @return
       */
     @throws[NCE]
-    def compilePath(
+    def compileIntent(
         filePath: Path,
         mdlId: String
     ): Set[NCDslIntent] = antlr4(U.readFile(filePath.toFile).mkString("\n"), mdlId, filePath.getFileName.toString)
@@ -479,7 +479,7 @@ object NCIntentDslCompiler extends LazyLogging {
      * @return
      */
     @throws[NCE]
-    def compile(
+    def compileIntent(
         dsl: String,
         mdlId: String,
         srcName: String = "<inline>"

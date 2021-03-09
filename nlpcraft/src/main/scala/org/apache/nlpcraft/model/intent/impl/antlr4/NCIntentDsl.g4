@@ -18,7 +18,9 @@
 grammar NCIntentDsl;
 
 // Parser.
-dsl: dslItems EOF;
+dsl: dslItems EOF; // Intent DSL enty point.
+synonym: alias? LBRACE expr RBRACE EOF; // Synonym DSL entry point.
+alias: LBR id RBR;
 dslItems
     : dslItem
     | dslItems dslItem
@@ -39,7 +41,8 @@ flowDecl: 'flow' ASSIGN (qstring | mtdDecl);
 metaDecl: 'meta' ASSIGN jsonObj;
 jsonObj
     : LBRACE jsonPair (COMMA jsonPair)* RBRACE
-    | LBRACE RBRACE
+    |
+     LBRACE RBRACE
     ;
 jsonPair: qstring COLON jsonVal;
 jsonVal
@@ -116,6 +119,7 @@ id
 // Lexer.
 FUN_NAME
     : 'meta_token'
+    | 'meta_part'
     | 'meta_model'
     | 'meta_intent'
     | 'meta_req'
@@ -127,6 +131,9 @@ FUN_NAME
     | 'json'
     | 'if'
     | 'id'
+    | 'this'
+    | 'part'
+    | 'parts'
     | 'ancestors'
     | 'parent'
     | 'groups'

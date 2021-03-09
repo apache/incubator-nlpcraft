@@ -22,7 +22,8 @@ import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.model.intent.utils.NCDslTokenPredicate
+import org.apache.nlpcraft.model.intent.utils
+import org.apache.nlpcraft.model.intent.utils._
 import org.apache.nlpcraft.probe.mgrs.model.antlr4.{NCSynonymDslBaseListener, NCSynonymDslLexer, NCSynonymDslParser}
 
 import scala.collection.JavaConverters._
@@ -69,8 +70,8 @@ object NCModelSynonymDslCompiler extends LazyLogging {
          * 
          * @return
          */
-        def getCompiledSynonymDsl: NCModelSynonymDsl = {
-            NCModelSynonymDsl(alias, toJavaFunc(alias, predStack.pop()))
+        def getCompiledSynonymDsl: NCDslSynonym = {
+            utils.NCDslSynonym(alias, toJavaFunc(alias, predStack.pop()))
         }
     
 //        override def exitRvalSingle(ctx: NCSynonymDslParser.RvalSingleContext): Unit = {
@@ -264,7 +265,7 @@ object NCModelSynonymDslCompiler extends LazyLogging {
      * @param dsl Synonym DSL to parse.
      * @return
      */
-    def parse(dsl: String): NCModelSynonymDsl = {
+    def parse(dsl: String): NCDslSynonym = {
         require(dsl != null)
         
         // ANTLR4 armature.
