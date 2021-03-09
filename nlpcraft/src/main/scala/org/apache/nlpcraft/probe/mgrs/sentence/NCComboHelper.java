@@ -47,28 +47,29 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
     }
 
     private List<Long> computeLocal() {
-        List<Long> result = new ArrayList<>();
+        List<Long> res = new ArrayList<>();
+
         for (long comboBits = lo; comboBits < hi; comboBits++) {
-            if (match(comboBits, wordBits, wordCounts) && !includes(comboBits, result)) {
-                result.add(comboBits);
-            }
-        }
-        return result;
-    }
+            boolean match = true;
 
-    private static boolean match(long comboBits, long[] wordBits, int[] wordCounts) {
-        for (int j = 0; j < wordBits.length; j++) {
-            // Get bitmask of how many words can be subtracted from the row.
-            long commonBits = wordBits[j] & comboBits;
-            int wordsToRemove = Long.bitCount(commonBits);
+            // For each input row we check if subtracting the current combination of words
+            // from the input row would give us the expected result.
+            for (int j = 0; j < wordBits.length; j++) {
+                // Get bitmask of how many words can be subtracted from the row.
+                // Check if there is more than 1 word remaining after subtraction.
+                if (wordCounts[j] - Long.bitCount(wordBits[j] & comboBits) > 1) {
+                    // Skip this combination.
+                    match = false;
 
-            // Check if there is more than 1 word remaining after subtraction.
-            if (wordCounts[j] - wordsToRemove > 1) {
-                // Combination doesn't match.
-                return false;
+                    break;
+                }
             }
+
+            if (match && !includes(comboBits, res))
+                res.add(comboBits);
         }
-        return true;
+
+        return res;
     }
 
     private List<Long> forkJoin() {
@@ -174,6 +175,9 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
         assert words != null && !words.isEmpty();
         assert pool != null;
 
+        if (words.stream().allMatch(p -> p.size() == 1))
+            return Collections.singletonList(Collections.emptyList());
+
         // Build dictionary of unique words.
         List<T> dict = words.stream().flatMap(Collection::stream).distinct().collect(toList());
 
@@ -188,19 +192,9 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
         // Cache words count per row.
         int[] wordCounts = words.stream().sorted(Comparator.comparingInt(Set::size)).mapToInt(Set::size).toArray();
 
-        if (match(0, wordBits, wordCounts)) {
-            return Collections.emptyList();
-        }
-
         // Prepare Fork/Join task to iterate over the power set of all combinations.
         return
-            pool.invoke(
-                new NCComboHelper(
-                    1,
-                    (long)Math.pow(2, dict.size()),
-                    wordBits,
-                    wordCounts
-                )
-            ).stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
+            pool.invoke(new NCComboHelper(1, (long)Math.pow(2, dict.size()), wordBits, wordCounts)).
+                stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
     }
 }
