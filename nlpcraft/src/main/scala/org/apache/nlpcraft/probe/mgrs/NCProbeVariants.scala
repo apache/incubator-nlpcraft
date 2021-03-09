@@ -230,7 +230,7 @@ object NCProbeVariants {
                                         nlpTokOpt match {
                                             case Some(nlpTok) ⇒ mkToken(nlpTok)
                                             case None ⇒
-                                                nlpSen.findInitialNlpNote(key.from, key.to) match {
+                                                nlpSen.getInitialNlpNote(key.from, key.to) match {
                                                     case Some(nlpNote) ⇒
                                                         val artTok = NlpToken(IDX)
 
@@ -262,7 +262,7 @@ object NCProbeVariants {
                             for (tok ← parts)
                                 process(tok,
                                     nlpSen.
-                                        findNlpToken(tok.getId, tok.getStartCharIndex, tok.getEndCharIndex).
+                                        getNlpToken(tok.getId, tok.getStartCharIndex, tok.getEndCharIndex).
                                         getOrElse(throw new NCE(s"Token not found for $tok"))
                                 )
 
