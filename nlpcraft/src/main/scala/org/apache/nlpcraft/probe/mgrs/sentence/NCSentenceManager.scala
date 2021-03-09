@@ -681,7 +681,7 @@ object NCSentenceManager extends NCService {
                         toSeq.sortBy(-_.size)
 
                 val sens =
-                    NCComboHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala).
+                    NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala).
                         flatMap(delComb ⇒ {
                             val nsClone = sen.clone()
 

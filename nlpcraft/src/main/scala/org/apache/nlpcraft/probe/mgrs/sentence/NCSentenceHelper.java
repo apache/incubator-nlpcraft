@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * It is not converted to scala because scala and java long values implicit conversion performance problems.
  */
-class NCComboHelper extends RecursiveTask<List<Long>> {
+class NCSentenceHelper extends RecursiveTask<List<Long>> {
     private static final long THRESHOLD = (long)Math.pow(2, 20);
 
     private final long lo;
@@ -39,7 +39,7 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
     private final long[] wordBits;
     private final int[] wordCounts;
 
-    private NCComboHelper(long lo, long hi, long[] wordBits, int[] wordCounts) {
+    private NCSentenceHelper(long lo, long hi, long[] wordBits, int[] wordCounts) {
         this.lo = lo;
         this.hi = hi;
         this.wordBits = wordBits;
@@ -65,7 +65,7 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
                 }
             }
 
-            if (match && !includes(comboBits, res))
+            if (match && excludes(comboBits, res))
                 res.add(comboBits);
         }
 
@@ -75,8 +75,8 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
     private List<Long> forkJoin() {
         long mid = lo + hi >>> 1L;
 
-        NCComboHelper t1 = new NCComboHelper(lo, mid, wordBits, wordCounts);
-        NCComboHelper t2 = new NCComboHelper(mid, hi, wordBits, wordCounts);
+        NCSentenceHelper t1 = new NCSentenceHelper(lo, mid, wordBits, wordCounts);
+        NCSentenceHelper t2 = new NCSentenceHelper(mid, hi, wordBits, wordCounts);
 
         t2.fork();
 
@@ -97,7 +97,7 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
             List<Long> res = size1 == 1 ? l2 : l1;
             Long val = size1 == 1 ? l1.get(0) : l2.get(0);
 
-            if (!includes(val, res))
+            if (excludes(val, res))
                 res.add(val);
 
             return res;
@@ -116,23 +116,22 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
                     v2 = null;
             }
 
-            if (v1 != null && !includes(v1, res))
+            if (v1 != null && excludes(v1, res))
                 res.add(v1);
 
-            if (v2 != null && !includes(v2, res))
+            if (v2 != null && excludes(v2, res))
                 res.add(v2);
         }
 
         return res;
     }
 
-    private static boolean includes(long bits, List<Long> allBits) {
-        for (int i = 0, n = allBits.size(); i < n; i++) {
-            if (containsAllBits(bits, allBits.get(i)))
-                return true;
-        }
+    private static boolean excludes(long bits, List<Long> allBits) {
+        for (Long allBit : allBits)
+            if (containsAllBits(bits, allBit))
+                return false;
 
-        return false;
+        return true;
     }
 
     private static boolean containsAllBits(long bitSet1, long bitSet2) {
@@ -194,7 +193,7 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
 
         // Prepare Fork/Join task to iterate over the power set of all combinations.
         return
-            pool.invoke(new NCComboHelper(1, (long)Math.pow(2, dict.size()), wordBits, wordCounts)).
+            pool.invoke(new NCSentenceHelper(1, (long)Math.pow(2, dict.size()), wordBits, wordCounts)).
                 stream().map(bits -> bitsToWords(bits, dict)).collect(toList());
     }
 }
