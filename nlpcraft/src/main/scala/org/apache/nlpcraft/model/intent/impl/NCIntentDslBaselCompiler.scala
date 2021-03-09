@@ -419,20 +419,6 @@ trait NCIntentDslBaselCompiler {
             pop1()
         }
 
-        /*
-         * String operations.
-         */
-        def doTrim(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.trim, f) }
-        def doUppercase(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.toUpperCase, f) }
-        def doLowercase(): Unit = get1Str() match { case (s, f) ⇒ pushAny(s.toLowerCase, f) }
-        def doIsAlpha(): Unit = get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlpha(asString(s)), f) }
-        def doIsNum(): Unit = get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumeric(asString(s)), f) }
-        def doIsAlphaNum(): Unit = get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumeric(asString(s)), f) }
-        def doIsWhitespace(): Unit = get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isWhitespace(asString(s)), f) }
-        def doIsAlphaSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphaSpace(asString(s)), f) }
-        def doIsAlphaNumSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumericSpace(asString(s)), f) }
-        def doIsNumSpace(): Unit = get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumericSpace(asString(s)), f) }
-
         def doSplit(): Unit = {
             ensureStack(2)
 
@@ -502,15 +488,6 @@ trait NCIntentDslBaselCompiler {
         /*
          * Metadata operations.
          */
-        def doTokenMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(tok.meta(s), true) }
-        def doModelMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(tok.getModel.meta(s), false) }
-        def doReqMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.reqMeta.get(s).orNull, false) }
-        def doSysMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(U.sysEnv(s).orNull, false) }
-        def doUserMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.usrMeta.get(s).orNull, false) }
-        def doConvMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.convMeta.get(s).orNull, false) }
-        def doCompMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false) }
-        def doIntentMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false) }
-        def doFragMeta(): Unit = get1Str() match { case (s, _) ⇒ pushAny(termCtx.fragMeta.get(s).orNull, false) }
         def doPartMeta(): Unit = {
             ensureStack(2)
 
@@ -537,44 +514,6 @@ trait NCIntentDslBaselCompiler {
             case (a: JDouble, f) ⇒ pushDouble(a * a, f)
             case x ⇒ throw rtParamTypeError(fun, x, "numeric")
         }
-        def doCeil(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.ceil(a), f) }
-        def doFloor(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.floor(a), f) }
-        def doSignum(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.signum(a), f) }
-        def doAcos(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.acos(a), f) }
-        def doAsin(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.asin(a), f) }
-        def doSin(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sin(a), f) }
-        def doCos(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cos(a), f) }
-        def doRint(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.rint(a), f) }
-        def doRound(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushLong(Math.round(a), f) }
-        def doSqrt(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sqrt(a), f) }
-        def doCbrt(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cbrt(a), f) }
-        def doAtan(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.atan(a), f) }
-        def doTan(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.tan(a), f) }
-        def doCosh(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cosh(a), f) }
-        def doSinh(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sinh(a), f) }
-        def doTanh(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.tanh(a), f) }
-        def doLog(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log(a), f) }
-        def doLog1p(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log1p(a), f) }
-        def doLog10(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log10(a), f) }
-        def doDegrees(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.toDegrees(a), f) }
-        def doRadians(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.toRadians(a), f) }
-        def doExp(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.exp(a), f) }
-        def doExpm1(): Unit = get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.expm1(a), f) }
-        def doRandom(): Unit = pushDouble(Math.random, false)
-        def doPi(): Unit = pushDouble(Math.PI, false)
-        def doEuler(): Unit = pushDouble(Math.E, false)
-        def doPow(): Unit = get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.pow(a1, a2), f) }
-        def doHypot(): Unit = get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.hypot(a1, a2), f) }
-        def doAtan2(): Unit = get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.atan2(a1, a2), f) }
-
-        /*
-         * Date-time operations.
-         */
-        def doYear(): Unit = pushLong(LocalDate.now.getYear,false)
-        def doMonth(): Unit = pushLong(LocalDate.now.getMonthValue,false)
-        def doDayOfMonth(): Unit = pushLong(LocalDate.now.getDayOfMonth,false)
-        def doDayOfWeek(): Unit = pushLong(LocalDate.now.getDayOfWeek.getValue,false)
-        def doDayOfYear(): Unit = pushLong(LocalDate.now.getDayOfYear,false)
 
         def doJson(): Unit = get1Str() match { case (s, f) ⇒ pushAny(U.jsonToJavaMap(asString(s)), f) }
         def doIf(): Unit = {
@@ -638,16 +577,16 @@ trait NCIntentDslBaselCompiler {
 
         fun match {
             // Metadata access.
-            case "meta_token" ⇒ doTokenMeta()
             case "meta_part" ⇒ doPartMeta()
-            case "meta_model" ⇒ doModelMeta()
-            case "meta_intent" ⇒ doIntentMeta()
-            case "meta_req" ⇒ doReqMeta()
-            case "meta_user" ⇒ doUserMeta()
-            case "meta_company" ⇒ doCompMeta()
-            case "meta_sys" ⇒ doSysMeta()
-            case "meta_conv" ⇒ doConvMeta()
-            case "meta_frag" ⇒ doFragMeta()
+            case "meta_token" ⇒ get1Str() match { case (s, _) ⇒ pushAny(tok.meta(s), true) }
+            case "meta_model" ⇒ get1Str() match { case (s, _) ⇒ pushAny(tok.getModel.meta(s), false) }
+            case "meta_intent" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false) }
+            case "meta_req" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.reqMeta.get(s).orNull, false) }
+            case "meta_user" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.usrMeta.get(s).orNull, false) }
+            case "meta_company" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false) }
+            case "meta_sys" ⇒ get1Str() match { case (s, _) ⇒ pushAny(U.sysEnv(s).orNull, false) }
+            case "meta_conv" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.convMeta.get(s).orNull, false) }
+            case "meta_frag" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.fragMeta.get(s).orNull, false) }
 
             // Converts JSON to map.
             case "json" ⇒ doJson()
@@ -694,17 +633,17 @@ trait NCIntentDslBaselCompiler {
             case "comp_postcode" ⇒
 
             // String functions.
-            case "trim" ⇒ doTrim()
-            case "strip" ⇒ doTrim()
-            case "uppercase" ⇒ doUppercase()
-            case "lowercase" ⇒ doLowercase()
-            case "is_alpha" ⇒ doIsAlpha()
-            case "is_alphanum" ⇒ doIsAlphaNum()
-            case "is_whitespace" ⇒ doIsWhitespace()
-            case "is_num" ⇒ doIsNum()
-            case "is_numspace" ⇒ doIsNumSpace()
-            case "is_alphaspace" ⇒ doIsAlphaSpace()
-            case "is_alphanumspace" ⇒ doIsAlphaNumSpace()
+            case "trim" ⇒ get1Str() match { case (s, f) ⇒ pushAny(s.trim, f) }
+            case "strip" ⇒ get1Str() match { case (s, f) ⇒ pushAny(s.trim, f) }
+            case "uppercase" ⇒ get1Str() match { case (s, f) ⇒ pushAny(s.toUpperCase, f) }
+            case "lowercase" ⇒ get1Str() match { case (s, f) ⇒ pushAny(s.toLowerCase, f) }
+            case "is_alpha" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlpha(asString(s)), f) }
+            case "is_alphanum" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumeric(asString(s)), f) }
+            case "is_whitespace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isWhitespace(asString(s)), f) }
+            case "is_num" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumeric(asString(s)), f) }
+            case "is_numspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isNumericSpace(asString(s)), f) }
+            case "is_alphaspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphaSpace(asString(s)), f) }
+            case "is_alphanumspace" ⇒ get1Str() match { case (s, f) ⇒ pushBool(StringUtils.isAlphanumericSpace(asString(s)), f) }
             case "substring" ⇒
             case "charAt" ⇒
             case "regex" ⇒
@@ -715,35 +654,35 @@ trait NCIntentDslBaselCompiler {
 
             // Math functions.
             case "abs" ⇒ doAbs()
-            case "ceil" ⇒ doCeil()
-            case "floor" ⇒ doFloor()
-            case "rint" ⇒ doRint()
-            case "round" ⇒ doRound()
-            case "signum" ⇒ doSignum()
-            case "sqrt" ⇒ doSqrt()
-            case "cbrt" ⇒ doCbrt()
-            case "pi" ⇒ doPi()
-            case "euler" ⇒ doEuler()
-            case "acos" ⇒ doAcos()
-            case "asin" ⇒ doAsin()
-            case "atan" ⇒ doAtan()
-            case "cos" ⇒ doCos()
-            case "sin" ⇒ doSin()
-            case "tan" ⇒ doTan()
-            case "cosh" ⇒ doCosh()
-            case "sinh" ⇒ doSinh()
-            case "tanh" ⇒ doTanh()
-            case "atn2" ⇒ doAtan2()
-            case "degrees" ⇒ doDegrees()
-            case "radians" ⇒ doRadians()
-            case "exp" ⇒ doExp()
-            case "expm1" ⇒ doExpm1()
-            case "hypot" ⇒ doHypot()
-            case "log" ⇒ doLog()
-            case "log10" ⇒ doLog10()
-            case "log1p" ⇒ doLog1p()
-            case "pow" ⇒ doPow()
-            case "rand" ⇒ doRandom()
+            case "ceil" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.ceil(a), f) }
+            case "floor" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.floor(a), f) }
+            case "rint" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.rint(a), f) }
+            case "round" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushLong(Math.round(a), f) }
+            case "signum" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.signum(a), f) }
+            case "sqrt" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sqrt(a), f) }
+            case "cbrt" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cbrt(a), f) }
+            case "pi" ⇒ pushDouble(Math.PI, false)
+            case "euler" ⇒ pushDouble(Math.E, false)
+            case "acos" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.acos(a), f) }
+            case "asin" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.asin(a), f) }
+            case "atan" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.atan(a), f) }
+            case "cos" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cos(a), f) }
+            case "sin" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sin(a), f) }
+            case "tan" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.tan(a), f) }
+            case "cosh" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cosh(a), f) }
+            case "sinh" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sinh(a), f) }
+            case "tanh" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.tanh(a), f) }
+            case "atn2" ⇒ get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.atan2(a1, a2), f) }
+            case "degrees" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.toDegrees(a), f) }
+            case "radians" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.toRadians(a), f) }
+            case "exp" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.exp(a), f) }
+            case "expm1" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.expm1(a), f) }
+            case "hypot" ⇒ get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.hypot(a1, a2), f) }
+            case "log" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log(a), f) }
+            case "log10" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log10(a), f) }
+            case "log1p" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log1p(a), f) }
+            case "pow" ⇒ get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.pow(a1, a2), f) }
+            case "rand" ⇒ pushDouble(Math.random, false)
             case "square" ⇒ doSquare()
 
             // Collection functions.
@@ -777,18 +716,18 @@ trait NCIntentDslBaselCompiler {
             case "sum" ⇒
 
             // Date-time functions.
-            case "year" ⇒ doYear() // 2021.
-            case "month" ⇒ doMonth() // 1 ... 12.
-            case "day_of_month" ⇒ doDayOfMonth() // 1 ... 31.
-            case "day_of_week" ⇒ doDayOfWeek()
-            case "day_of_year" ⇒ doDayOfYear()
+            case "year" ⇒ pushLong(LocalDate.now.getYear,false) // 2021.
+            case "month" ⇒ pushLong(LocalDate.now.getMonthValue,false) // 1 ... 12.
+            case "day_of_month" ⇒ pushLong(LocalDate.now.getDayOfMonth,false) // 1 ... 31.
+            case "day_of_week" ⇒ pushLong(LocalDate.now.getDayOfWeek.getValue,false)
+            case "day_of_year" ⇒ pushLong(LocalDate.now.getDayOfYear,false)
             case "hour" ⇒
             case "minute" ⇒
             case "second" ⇒
             case "week_of_month" ⇒
             case "week_of_year" ⇒
             case "quarter" ⇒
-            case "now" ⇒ // Epoc time.
+            case "now" ⇒ pushLong(System.currentTimeMillis(),false) // Epoc time.
 
             case _ ⇒ throw rtUnknownFunError(fun) // Assertion.
         }

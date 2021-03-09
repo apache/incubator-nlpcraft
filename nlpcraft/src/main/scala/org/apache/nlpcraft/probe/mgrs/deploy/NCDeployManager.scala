@@ -1473,7 +1473,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val mStr = method2Str(m)
 
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCIntentDslCompiler.compileIntent(ann.value(), mdl.getId, mStr))
+            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCIntentDslCompiler.compileIntents(ann.value(), mdl.getId, mStr))
                 intents += (intent → prepareCallback(m, mdl, intent))
     
             // Process intent references from @NCIntentRef annotation.
@@ -1485,7 +1485,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         val compiledIntents = adapter
                             .getIntents
                             .asScala
-                            .flatMap(NCIntentDslCompiler.compileIntent(_, mdl.getId, mStr))
+                            .flatMap(NCIntentDslCompiler.compileIntents(_, mdl.getId, mStr))
             
                         U.getDups(compiledIntents.toSeq.map(_.id)) match {
                             case ids if ids.nonEmpty ⇒
@@ -1554,7 +1554,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     val distinct = seqSeq.map(_.distinct).distinct
 
                     for (ann ← intAnns) {
-                        for (intent ← NCIntentDslCompiler.compileIntent(ann.value(), mdlId, mStr))
+                        for (intent ← NCIntentDslCompiler.compileIntents(ann.value(), mdlId, mStr))
                             samples += (intent.id → distinct)
                     }
                     for (ann ← refAnns)
