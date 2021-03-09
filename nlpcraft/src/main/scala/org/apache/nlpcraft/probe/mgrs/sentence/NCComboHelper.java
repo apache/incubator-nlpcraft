@@ -28,7 +28,7 @@ import java.util.concurrent.RecursiveTask;
 import static java.util.stream.Collectors.toList;
 
 /**
- *
+ * It is not converted to scala because scala and java long values implicit conversion performance problems.
  */
 class NCComboHelper extends RecursiveTask<List<Long>> {
     private static final long THRESHOLD = (long)Math.pow(2, 20);
@@ -53,6 +53,9 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
      * @return
      */
     static <T> List<List<T>> findCombinations(List<Set<T>> words, ForkJoinPool pool) {
+        assert words != null && !words.isEmpty();
+        assert pool != null;
+
         // Build dictionary of unique words.
         List<T> dict = words.stream().flatMap(Collection::stream).distinct().collect(toList());
 
@@ -70,7 +73,7 @@ class NCComboHelper extends RecursiveTask<List<Long>> {
         // Prepare Fork/Join task to iterate over the power set of all combinations.
         return pool.invoke(
             new NCComboHelper(
-                1,
+                words.stream().mapToInt(Set::size).max().orElseThrow() - 1,
                 (long)Math.pow(2, dict.size()),
                 wordBits,
                 wordCounts

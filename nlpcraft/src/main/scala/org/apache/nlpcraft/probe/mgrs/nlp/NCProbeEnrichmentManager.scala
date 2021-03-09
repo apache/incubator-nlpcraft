@@ -433,6 +433,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             while (continue) {
                 step = step + 1
 
+                println(s"step=$step")
+
                 if (step >= MAX_NESTED_TOKENS)
                     throw new NCE(s"Stack overflow on nested tokens processing (> $MAX_NESTED_TOKENS).")
 
