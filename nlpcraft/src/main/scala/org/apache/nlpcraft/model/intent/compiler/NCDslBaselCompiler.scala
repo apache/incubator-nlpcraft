@@ -559,9 +559,9 @@ trait NCDslBaselCompiler {
             case "meta_token" ⇒ get1Str() match { case (s, _) ⇒ pushAny(tok.meta(s), true) }
             case "meta_model" ⇒ get1Str() match { case (s, _) ⇒ pushAny(tok.getModel.meta(s), false) }
             case "meta_intent" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false) }
-            case "meta_req" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.reqMeta.get(s).orNull, false) }
-            case "meta_user" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.usrMeta.get(s).orNull, false) }
-            case "meta_company" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.compMeta.get(s).orNull, false) }
+            case "meta_req" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.req.getRequestData.get(s), false) }
+            case "meta_user" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.req.getUser.getMetadata.get(s), false) }
+            case "meta_company" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.req.getCompany.getMetadata.get(s), false) }
             case "meta_sys" ⇒ get1Str() match { case (s, _) ⇒ pushAny(U.sysEnv(s).orNull, false) }
             case "meta_conv" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.convMeta.get(s).orNull, false) }
             case "meta_frag" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.fragMeta.get(s).orNull, false) }

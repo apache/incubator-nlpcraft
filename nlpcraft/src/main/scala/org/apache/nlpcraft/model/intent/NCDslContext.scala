@@ -23,19 +23,14 @@ import org.apache.nlpcraft.model.NCRequest
 /**
  *
  * @param intentMeta Intent metadata.
- * @param reqMeta User request ('data' parameter) metadata.
- * @param usrMeta User object metadata.
- * @param compMeta Company metadata.
  * @param convMeta Conversation metadata.
  * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
  * @param req Server request holder.
  */
 case class NCDslContext(
-    intentMeta: ScalaMeta,
-    reqMeta: ScalaMeta,
-    usrMeta: ScalaMeta,
-    compMeta: ScalaMeta,
-    convMeta: ScalaMeta,
-    fragMeta: ScalaMeta,
+    intentMeta: ScalaMeta = Map.empty[String, Object],
+    convMeta: ScalaMeta = Map.empty[String, Object],
+    fragMeta: ScalaMeta = Map.empty[String, Object],
     req: NCRequest
 )
+

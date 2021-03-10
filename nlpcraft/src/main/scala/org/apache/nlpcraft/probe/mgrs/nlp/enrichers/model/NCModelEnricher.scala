@@ -439,7 +439,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                     comb ← seq if !found;
                                     data = comb.map(_.data)
                                 )
-                                    if (syn.isMatch(data)) {
+                                    if (syn.isMatch(data, NCRequestImpl(senMeta, ns.srvReqId))) {
                                         val parts = comb.zip(syn.map(_.kind)).flatMap {
                                             case (complex, kind) ⇒ if (complex.isToken) Some(complex.token → kind) else None
                                         }

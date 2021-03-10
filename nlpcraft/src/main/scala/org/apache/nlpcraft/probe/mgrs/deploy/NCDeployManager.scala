@@ -1471,7 +1471,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     
             // Process intent references from @NCIntentRef annotation.
             for (ann ← m.getAnnotationsByType(CLS_INTENT_REF)) {
-                mdl match {
+                intents += (mdl match {
                     case adapter: NCModelFileAdapter ⇒
                         val refId = ann.value().trim
             
@@ -1493,7 +1493,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         }
             
                         compiledIntents.find(_.id == refId) match {
-                            case Some(intent) ⇒ Some(intent, prepareCallback(m, mdl, intent))
+                            case Some(intent) ⇒ (intent, prepareCallback(m, mdl, intent))
                             case None ⇒
                                 throw new NCE(
                                     s"@IntentRef($refId) references unknown intent ID [" +
@@ -1508,7 +1508,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             s"mdlId=$mdlId, " +
                             s"callback=$mStr" +
                         s"]")
-                }
+                })
             }
         }
         

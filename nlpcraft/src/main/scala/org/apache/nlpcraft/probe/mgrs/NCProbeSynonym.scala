@@ -19,6 +19,7 @@ package org.apache.nlpcraft.probe.mgrs
 
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer}
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.intent.NCDslContext
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
 import scala.collection.mutable.ArrayBuffer
@@ -92,7 +93,7 @@ class NCProbeSynonym(
       * @param tows
       * @return
       */
-    def isMatch(tows: Seq[Either[NCToken, NCNlpSentenceToken]]): Boolean = {
+    def isMatch(tows: Seq[Either[NCToken, NCNlpSentenceToken]], req: NCRequest): Boolean = {
         require(tows != null)
 
         type Token = NCToken
@@ -106,13 +107,16 @@ class NCProbeSynonym(
                         if (tow.isLeft) fromToken(tow.left.get) else fromWord(tow.right.get)
 
                     chunk.kind match {
-                        case TEXT ⇒ chunk.wordStem == get0(_.stem, _.stem)
+                        case TEXT ⇒
+                            chunk.wordStem == get0(_.stem, _.stem)
+
                         case REGEX ⇒
                             val r = chunk.regex
 
-                            r.matcher(get0(_.origText, _.origText)).matches() ||
-                            r.matcher(get0(_.normText, _.normText)).matches()
-                        case DSL ⇒ get0(t ⇒ chunk.dslPred.apply(t, null /*TODO*/)._2, _ ⇒ false)
+                            r.matcher(get0(_.origText, _.origText)).matches() || r.matcher(get0(_.normText, _.normText)).matches()
+
+                        case DSL ⇒
+                            get0(t ⇒ chunk.dslPred.apply(t, NCDslContext(req = req))._2, _ ⇒ false)
 
                         case _ ⇒ throw new AssertionError()
                     }

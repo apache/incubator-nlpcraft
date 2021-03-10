@@ -52,7 +52,6 @@ object NCModelManager extends NCService with DecorateAsScala {
         mux.synchronized {
             data = NCDeployManager.getModels.map(w ⇒ {
                 w.model.onInit()
-
                 w.model.getId → w
             }).toMap
 

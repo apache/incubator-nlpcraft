@@ -185,9 +185,7 @@ class NCSentenceHelper extends RecursiveTask<List<Long>> {
             throw new IllegalArgumentException("Dictionary is too long: " + dict.size());
 
         // Convert words to bitmasks (each bit corresponds to an index in the dictionary).
-        long[] wordBits =
-            words.stream().sorted(Comparator.comparingInt(Set::size)).mapToLong(row -> wordsToBits(row, dict)).toArray();
-
+        long[] wordBits = words.stream().sorted(Comparator.comparingInt(Set::size)).mapToLong(row -> wordsToBits(row, dict)).toArray();
         // Cache words count per row.
         int[] wordCounts = words.stream().sorted(Comparator.comparingInt(Set::size)).mapToInt(Set::size).toArray();
 

@@ -486,11 +486,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             val termCtx = NCDslContext(
                 intentMeta = intent.meta,
-                reqMeta = ctx.getRequest.getRequestData,
-                usrMeta = ctx.getRequest.getUser.getMetadata,
                 convMeta = ctx.getConversation.getMetadata,
-                compMeta = ctx.getRequest.getCompany.getMetadata,
-                fragMeta = Map.empty[String, Object], // No fragments during intent matching.
                 req = ctx.getRequest
             )
 
