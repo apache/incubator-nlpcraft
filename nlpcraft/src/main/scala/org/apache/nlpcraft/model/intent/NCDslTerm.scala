@@ -30,7 +30,7 @@ import org.apache.nlpcraft.model.NCToken
  */
 case class NCDslTerm(
     id: Option[String],
-    pred: NCDslPredicate,
+    pred: NCDslTokenPredicate,
     min: Int,
     max: Int,
     conv: Boolean,

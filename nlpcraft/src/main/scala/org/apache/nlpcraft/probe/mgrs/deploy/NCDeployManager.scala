@@ -33,12 +33,11 @@ import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
-import org.apache.nlpcraft.model.intent.compiler.NCIntentDslCompiler
+import org.apache.nlpcraft.model.intent.compiler.NCDslCompiler
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
-import org.apache.nlpcraft.model.intent.utils.NCDslIntent
+import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{DSL, REGEX, TEXT}
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeSynonymChunk, NCProbeSynonymsWrapper}
-import org.apache.nlpcraft.probe.mgrs.model.NCModelSynonymDslCompiler
 import resource.managed
 
 import scala.collection.JavaConverters._
@@ -466,17 +465,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
             } else
                 throw new NCE(s"Duplicated synonyms found and not allowed [mdlId=$mdlId]")
         }
-
-        mdl.getMetadata.put(MDL_META_ALL_ELM_IDS_KEY,
-            mdl.getElements.asScala.map(_.getId).toSet ++
-                Set("nlpcraft:nlp") ++
-                mdl.getEnabledBuiltInTokens.asScala
-        )
-        mdl.getMetadata.put(MDL_META_ALL_GRP_IDS_KEY,
-            mdl.getElements.asScala.flatMap(_.getGroups.asScala).toSet ++
-                Set("nlpcraft:nlp") ++
-                mdl.getEnabledBuiltInTokens.asScala
-        )
 
         // Scan for intent annotations in the model class.
         val intents = scanIntents(mdl)
@@ -1006,9 +994,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // DSL-based synonym.
         else if (startsAndEnds(DSL_FIX, chunk)) {
             val dsl = stripSuffix(DSL_FIX, chunk)
-            val compUnit = NCModelSynonymDslCompiler.parse(dsl)
+            val compUnit = NCDslCompiler.compileSynonym(dsl, mdlId)
 
-            val x = NCProbeSynonymChunk(alias = compUnit.alias, kind = DSL, origText = chunk, dslPred = compUnit.predicate)
+            val x = NCProbeSynonymChunk(alias = compUnit.alias.orNull, kind = DSL, origText = chunk, dslPred = compUnit.pred)
 
             x
         }
@@ -1121,7 +1109,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 s"callback=${method2Str(mtd)}" +
             s"]")
 
-        // Gets terms identifiers.
+        // Gets terms IDs.
         val termIds = tokParamAnns.toList.zipWithIndex.map {
             case (anns, idx) ⇒
                 def mkArg(): String = arg2Str(mtd, idx, ctxFirstParam)
@@ -1157,7 +1145,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // Checks correctness of term IDs.
         // Note we don't restrict them to be duplicated.
-        val intentTermIds = terms.filter(_.id != null).map(_.id)
+        val intentTermIds = terms.flatMap(_.id)
         val invalidIds = termIds.filter(id ⇒ !intentTermIds.contains(id))
 
         if (invalidIds.nonEmpty) {
@@ -1179,7 +1167,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // Checks limits.
         val allLimits = terms.map(t ⇒ t.id → (t.min, t.max)).toMap
 
-        checkMinMax(mdlId, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
+        checkMinMax(mdlId, mtd, tokParamTypes, termIds.map (allLimits), ctxFirstParam)
 
         // Prepares invocation method.
         (ctx: NCIntentMatch) ⇒ {
@@ -1424,7 +1412,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param ctxFirstParam
       */
     @throws[NCE]
-    private def checkMinMax(mdlId: String, mtd: Method, paramCls: Seq[Class[_]], limits: Seq[(Int, Int)], ctxFirstParam: Boolean): Unit = {
+    private def checkMinMax(
+        mdlId: String,
+        mtd: Method,
+        paramCls: Seq[Class[_]],
+        limits: Seq[(Int, Int)],
+        ctxFirstParam: Boolean): Unit = {
         require(paramCls.length == limits.length)
 
         paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) ⇒
@@ -1473,7 +1466,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val mStr = method2Str(m)
 
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCIntentDslCompiler.compileIntents(ann.value(), mdl.getId, mStr))
+            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl.getId, mStr))
                 intents += (intent → prepareCallback(m, mdl, intent))
     
             // Process intent references from @NCIntentRef annotation.
@@ -1485,7 +1478,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         val compiledIntents = adapter
                             .getIntents
                             .asScala
-                            .flatMap(NCIntentDslCompiler.compileIntents(_, mdl.getId, mStr))
+                            .flatMap(NCDslCompiler.compileIntents(_, mdl.getId, mStr))
             
                         U.getDups(compiledIntents.toSeq.map(_.id)) match {
                             case ids if ids.nonEmpty ⇒
@@ -1554,7 +1547,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     val distinct = seqSeq.map(_.distinct).distinct
 
                     for (ann ← intAnns) {
-                        for (intent ← NCIntentDslCompiler.compileIntents(ann.value(), mdlId, mStr))
+                        for (intent ← NCDslCompiler.compileIntents(ann.value(), mdlId, mStr))
                             samples += (intent.id → distinct)
                     }
                     for (ann ← refAnns)

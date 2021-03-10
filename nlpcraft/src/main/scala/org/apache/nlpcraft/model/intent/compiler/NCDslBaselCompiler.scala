@@ -446,8 +446,8 @@ trait NCDslBaselCompiler {
             pop1()
         }
 
-        def doSplit(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { pushAny(_, f) }}
-        def doSplitTrim(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { s ⇒ pushAny(s.strip, f) }}
+        def doSplit(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { s ⇒  pushAny(s, f)(stack) }}
+        def doSplitTrim(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { s ⇒ pushAny(s.strip, f)(stack) }}
 
         /*
          * Collection, statistical operations.

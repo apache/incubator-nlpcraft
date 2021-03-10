@@ -18,8 +18,8 @@
 package org.apache.nlpcraft.probe.mgrs
 
 import java.util.regex.Pattern
-
 import org.apache.nlpcraft.model.NCToken
+import org.apache.nlpcraft.model.intent.NCDslTokenPredicate
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
 /**
@@ -39,7 +39,10 @@ case class NCProbeSynonymChunk(
     wordStem: String = null, // Only for kind == TEXT.
     posTag: String = null,
     regex: Pattern = null,
-    dslPred: java.util.function.Function[NCToken, java.lang.Boolean] = null
+    dslPred: NCDslTokenPredicate = null
 ) {
+    require(origText != null)
+    require(kind != null)
+
     override def toString = s"($origText|$kind)"
 }

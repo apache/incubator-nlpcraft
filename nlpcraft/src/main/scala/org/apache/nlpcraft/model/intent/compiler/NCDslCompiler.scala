@@ -20,11 +20,12 @@ package org.apache.nlpcraft.model.intent.compiler
 import com.typesafe.scalalogging.LazyLogging
 import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
+import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser ⇒ IDP}
 import org.apache.nlpcraft.model.intent.compiler.{NCDslFragmentCache ⇒ FragCache}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslSynonym, NCDslTerm}
+import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslTokenPredicate, NCDslSynonym, NCDslTerm}
 
 import scala.collection.JavaConverters._
 import java.nio.file.Path
@@ -149,27 +150,9 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def exitSynonym(ctx: IDP.SynonymContext): Unit = {
-            implicit val evidence: ParserRuleContext = ctx
+            implicit val evidence: PRC = ctx
 
-            val code = mutable.Buffer.empty[Instr] ++ instrs // Local copy.
-
-            synonym = intent.NCDslSynonym(
-                Option(alias),
-                (tok: NCToken, termCtx: NCDslContext) ⇒ {
-                    val stack = new mutable.ArrayStack[NCDslExprRetVal]()
-
-                    // Execute all instructions.
-                    code.foreach(_ (tok, stack, termCtx))
-
-                    // Pop final result from stack.
-                    val x = stack.pop()
-
-                    if (!isBool(x.retVal))
-                        throw newRuntimeError(s"Synonym does not return boolean value: ${ctx.getText}")
-
-                    asBool(x.retVal)
-                }
-            )
+            synonym = NCDslSynonym(Option(alias), instrToPredicate("Synonym"))
         }
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit = {
@@ -204,7 +187,7 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit = {
-            implicit val evidence: ParserRuleContext = ctx
+            implicit val evidence: PRC = ctx
 
             if (ctx.qstring() != null) {
                 val regex = ctx.qstring().getText
@@ -223,92 +206,73 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def exitTerm(ctx: IDP.TermContext): Unit = {
-            implicit val c: ParserRuleContext = ctx
+            implicit val c: PRC = ctx
 
             if (min < 0 || min > max)
                 throw newSyntaxError(s"Invalid intent term min quantifiers: $min (must be min >= 0 && min <= max).")(ctx.minMax())
             if (max < 1)
                 throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
 
-            val pred =
-                if (refMtdName != null) { // User-code defined term.
-                    // Closure copies.
-                    val clsName = refClsName.orNull
-                    val mtdName = refMtdName.orNull
+            val pred: NCDslTokenPredicate = if (refMtdName != null) { // User-code defined term.
+                // Closure copies.
+                val clsName = refClsName.orNull
+                val mtdName = refMtdName.orNull
 
-                    (tok: NCToken, termCtx: NCDslContext) ⇒ {
-                        val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
-                            override lazy val getRequest: NCRequest = termCtx.req
-                            override lazy val getToken: NCToken = tok
-                            override lazy val getIntentMeta: Optional[NCMetadata] =
-                                if (termCtx.intentMeta != null)
-                                    Optional.of(NCMetadata.apply(termCtx.intentMeta.asJava))
-                                else
-                                    Optional.empty()
+                (tok: NCToken, termCtx: NCDslContext) ⇒ {
+                    val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
+                        override lazy val getRequest: NCRequest = termCtx.req
+                        override lazy val getToken: NCToken = tok
+                        override lazy val getIntentMeta: Optional[NCMetadata] =
+                            if (termCtx.intentMeta != null)
+                                Optional.of(NCMetadata.apply(termCtx.intentMeta.asJava))
+                            else
+                                Optional.empty()
+                    }
+
+                    val mdl = tok.getModel
+                    val mdlCls = if (clsName == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else clsName
+
+                    try {
+                        val obj = if (clsName == null) mdl else U.mkObject(clsName)
+                        val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls)
+                            .getMethod(mtdName, classOf[NCTokenPredicateContext])
+
+                        var flag = mtd.canAccess(mdl)
+
+                        val res = try {
+                            if (!flag) {
+                                mtd.setAccessible(true)
+
+                                flag = true
+                            }
+                            else
+                                flag = false
+
+                            mtd.invoke(obj, javaCtx).asInstanceOf[NCTokenPredicateResult]
                         }
-
-                        val mdl = tok.getModel
-                        val mdlCls = if (clsName == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else clsName
-
-                        try {
-                            val obj = if (clsName == null) mdl else U.mkObject(clsName)
-                            val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls)
-                                .getMethod(mtdName, classOf[NCTokenPredicateContext])
-
-                            var flag = mtd.canAccess(mdl)
-
-                            val res = try {
-                                if (!flag) {
-                                    mtd.setAccessible(true)
-
-                                    flag = true
+                        finally {
+                            if (flag)
+                                try
+                                    mtd.setAccessible(false)
+                                catch {
+                                    case e: SecurityException ⇒
+                                        throw new NCE(s"Access or security error in custom intent term: $mdlCls.$mtdName", e)
                                 }
-                                else
-                                    flag = false
-
-                                mtd.invoke(obj, javaCtx).asInstanceOf[NCTokenPredicateResult]
-                            }
-                            finally {
-                                if (flag)
-                                    try
-                                        mtd.setAccessible(false)
-                                    catch {
-                                        case e: SecurityException ⇒
-                                            throw new NCE(s"Access or security error in custom intent term: $mdlCls.$mtdName", e)
-                                    }
-                            }
-
-                            (res.getResult, res.wasTokenUsed())
                         }
-                        catch {
-                            case e: Exception ⇒
-                                throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e)
-                        }
+
+                        (res.getResult, res.wasTokenUsed())
+                    }
+                    catch {
+                        case e: Exception ⇒
+                            throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e)
                     }
                 }
-                else { // DSL-defined term.
-                    val code = mutable.Buffer.empty[Instr]
-
-                    code ++= instrs
-
-                    (tok: NCToken, termCtx: NCDslContext) ⇒ {
-                        val stack = new mutable.ArrayStack[NCDslExprRetVal]()
-
-                        // Execute all instructions.
-                        code.foreach(_ (tok, stack, termCtx))
-
-                        // Pop final result from stack.
-                        val x = stack.pop()
-
-                        if (!isBool(x.retVal))
-                            throw newRuntimeError(s"Intent term does not return boolean value: ${ctx.getText}")
-
-                        (asBool(x.retVal), x.usedTok)
-                    }
-                }
+            }
+            else  // DSL-defined term.
+                instrToPredicate("Intent term")
 
             // Add term.
-            terms += intent.NCDslTerm(
+            terms += NCDslTerm(
                 Option(termId),
                 pred,
                 min,
@@ -324,6 +288,32 @@ object NCDslCompiler extends LazyLogging {
             refMtdName = None
         }
 
+        /**
+         *
+         * @param subj
+         * @return
+         */
+        private def instrToPredicate(subj: String)(implicit ctx: PRC): NCDslTokenPredicate = {
+            val code = mutable.Buffer.empty[Instr]
+
+            code ++= instrs
+
+            (tok: NCToken, termCtx: NCDslContext) ⇒ {
+                val stack = new mutable.ArrayStack[NCDslExprRetVal]()
+
+                // Execute all instructions.
+                code.foreach(_ (tok, stack, termCtx))
+
+                // Pop final result from stack.
+                val x = stack.pop()
+
+                if (!isBool(x.retVal))
+                    throw newRuntimeError(s"$subj does not return boolean value: ${ctx.getText}")
+
+                (asBool(x.retVal), x.usedTok)
+            }
+        }
+
         override def exitFrag(ctx: IDP.FragContext): Unit = {
             FragCache.add(mdlId, NCDslFragment(fragId, terms.toList))
 
@@ -331,7 +321,7 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
-            intents += intent.NCDslIntent(
+            intents += NCDslIntent(
                 dsl,
                 intentId,
                 ordered,
@@ -471,7 +461,7 @@ object NCDslCompiler extends LazyLogging {
         val x = dsl.strip()
 
         val intents: Set[NCDslIntent] = intentCache.getOrElseUpdate(x, {
-            val (fsm, parser) = antlr4Armature(x, mdlId)
+            val (fsm, parser) = antlr4Armature(x, mdlId, srcName)
 
             // Parse the input DSL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.dsl())
@@ -542,7 +532,7 @@ object NCDslCompiler extends LazyLogging {
      * accumulated in a static map keyed by model ID. Only intents are returned, if any.
      *
      * @param filePath *.nc intent DSL file to compile.
-     * @param mdlId    ID of the model *.nc file belongs to.
+     * @param mdlId ID of the model *.nc file belongs to.
      * @return
      */
     @throws[NCE]
@@ -555,8 +545,8 @@ object NCDslCompiler extends LazyLogging {
      * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
      * map keyed by model ID. Only intents are returned, if any.
      *
-     * @param dsl     Intent DSL to compile.
-     * @param mdlId   ID of the model DSL belongs to.
+     * @param dsl Intent DSL to compile.
+     * @param mdlId ID of the model DSL belongs to.
      * @param srcName Optional source name.
      * @return
      */
@@ -569,7 +559,7 @@ object NCDslCompiler extends LazyLogging {
 
     /**
      *
-     * @param dsl   Synonym DSL to compile.
+     * @param dsl Synonym DSL to compile.
      * @param mdlId ID of the model DSL belongs to.
      * @return
      */

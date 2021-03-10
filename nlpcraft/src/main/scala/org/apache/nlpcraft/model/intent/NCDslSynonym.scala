@@ -27,7 +27,7 @@ import org.apache.nlpcraft.model.NCToken
  */
 case class NCDslSynonym(
     alias: Option[String],
-    pred: NCDslPredicate,
+    pred: NCDslTokenPredicate,
 ) {
     require(pred != null)
 }

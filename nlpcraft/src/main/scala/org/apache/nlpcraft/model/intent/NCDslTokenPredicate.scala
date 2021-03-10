@@ -22,4 +22,4 @@ import org.apache.nlpcraft.model.NCToken
 /**
  *
  */
-trait NCDslPredicate extends ((NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Boolean /*Whether or not token was used.*/ ))
+trait NCDslTokenPredicate extends ((NCToken, NCDslContext) ⇒ (Boolean /* Predicate. */ , Boolean /* Whether or not token was used. */ ))
