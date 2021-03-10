@@ -21,9 +21,12 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer, _}
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, TEXT}
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
+import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
+import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeVariants}
 import org.apache.nlpcraft.probe.mgrs.{NCProbeModel, NCProbeSynonym, NCProbeVariants}
 
 import java.io.Serializable
@@ -355,7 +358,11 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                 toks.map(t ⇒ (t.origText, t.index)).mkString(" ")
 
             var permCnt = 0
-            lazy val collapsedSens = NCProbeVariants.convert(ns.srvReqId, mdl, ns.clone().collapse(mdl.model)).map(_.asScala)
+            lazy val collapsedSens = NCProbeVariants.convert(
+                ns.srvReqId,
+                mdl,
+                NCSentenceManager.collapse(mdl.model, ns.clone())
+            ).map(_.asScala)
 
             /**
               *

@@ -43,6 +43,7 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl._
 import org.apache.nlpcraft.probe.mgrs.nlp.validate._
+import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
 import org.apache.nlpcraft.probe.mgrs.{NCProbeMessage, NCProbeVariants}
 
 import java.io.Serializable
@@ -500,7 +501,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                         s"]")
             }
 
-            nlpSen.clone().collapse(mdl.model, lastPhase = true).
+            NCSentenceManager.collapse(mdl.model, nlpSen.clone(), lastPhase = true).
                 // Sorted to support deterministic logs.
                 sortBy(p ⇒
                 p.map(p ⇒ {
