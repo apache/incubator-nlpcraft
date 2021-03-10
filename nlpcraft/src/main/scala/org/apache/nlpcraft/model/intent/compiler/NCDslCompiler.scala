@@ -22,18 +22,18 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser ⇒ IDP}
-import org.apache.nlpcraft.model.intent.utils._
-import org.apache.nlpcraft.model.intent.compiler.{NCIntentDslFragmentCache ⇒ FragCache}
+import org.apache.nlpcraft.model.intent.compiler.{NCDslFragmentCache ⇒ FragCache}
 import org.apache.nlpcraft.model._
-import scala.collection.JavaConverters._
+import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslSynonym, NCDslTerm}
 
+import scala.collection.JavaConverters._
 import java.nio.file.Path
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object NCIntentDslCompiler extends LazyLogging {
+object NCDslCompiler extends LazyLogging {
     // Compiler caches.
     private val intentCache = new mutable.HashMap[String, Set[NCDslIntent]]
     private val synCache = new mutable.HashMap[String, NCDslSynonym]
@@ -43,7 +43,7 @@ object NCIntentDslCompiler extends LazyLogging {
      * @param dsl
      * @param mdlId
      */
-    class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCIntentDslBaselCompiler {
+    class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCDslBaselCompiler {
         // Accumulators for parsed objects.
         private val intents = ArrayBuffer.empty[NCDslIntent]
         private var synonym: NCDslSynonym = _
@@ -81,19 +81,12 @@ object NCIntentDslCompiler extends LazyLogging {
          * Shared/common implementation.
          */
         override def exitUnaryExpr(ctx: IDP.UnaryExprContext): Unit = instrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
-
         override def exitMultExpr(ctx: IDP.MultExprContext): Unit = instrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
-
         override def exitPlusExpr(ctx: IDP.PlusExprContext): Unit = instrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
-
         override def exitCompExpr(ctx: IDP.CompExprContext): Unit = instrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
-
         override def exitLogExpr(ctx: IDP.LogExprContext): Unit = instrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
-
         override def exitEqExpr(ctx: IDP.EqExprContext): Unit = instrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
-
         override def exitCallExpr(ctx: IDP.CallExprContext): Unit = instrs += parseCallExpr(ctx.FUN_NAME())(ctx)
-
         override def exitAtom(ctx: IDP.AtomContext): Unit = instrs += parseAtom(ctx.getText)(ctx)
 
         /**
@@ -160,10 +153,10 @@ object NCIntentDslCompiler extends LazyLogging {
 
             val code = mutable.Buffer.empty[Instr] ++ instrs // Local copy.
 
-            synonym = NCDslSynonym(
+            synonym = intent.NCDslSynonym(
                 Option(alias),
-                (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
-                    val stack = new mutable.ArrayStack[NCDslTermRetVal]()
+                (tok: NCToken, termCtx: NCDslContext) ⇒ {
+                    val stack = new mutable.ArrayStack[NCDslExprRetVal]()
 
                     // Execute all instructions.
                     code.foreach(_ (tok, stack, termCtx))
@@ -187,11 +180,8 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitTermEq(ctx: IDP.TermEqContext): Unit = termConv = ctx.TILDA() != null
-
         override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
-
         override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
-
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit = {
@@ -246,7 +236,7 @@ object NCIntentDslCompiler extends LazyLogging {
                     val clsName = refClsName.orNull
                     val mtdName = refMtdName.orNull
 
-                    (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
+                    (tok: NCToken, termCtx: NCDslContext) ⇒ {
                         val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
                             override lazy val getRequest: NCRequest = termCtx.req
                             override lazy val getToken: NCToken = tok
@@ -301,8 +291,8 @@ object NCIntentDslCompiler extends LazyLogging {
 
                     code ++= instrs
 
-                    (tok: NCToken, termCtx: NCDslTermContext) ⇒ {
-                        val stack = new mutable.ArrayStack[NCDslTermRetVal]()
+                    (tok: NCToken, termCtx: NCDslContext) ⇒ {
+                        val stack = new mutable.ArrayStack[NCDslExprRetVal]()
 
                         // Execute all instructions.
                         code.foreach(_ (tok, stack, termCtx))
@@ -318,7 +308,7 @@ object NCIntentDslCompiler extends LazyLogging {
                 }
 
             // Add term.
-            terms += NCDslTerm(
+            terms += intent.NCDslTerm(
                 Option(termId),
                 pred,
                 min,
@@ -341,7 +331,7 @@ object NCIntentDslCompiler extends LazyLogging {
         }
 
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
-            intents += NCDslIntent(
+            intents += intent.NCDslIntent(
                 dsl,
                 intentId,
                 ordered,

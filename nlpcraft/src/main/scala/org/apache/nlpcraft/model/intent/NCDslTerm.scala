@@ -15,18 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils
+package org.apache.nlpcraft.model.intent
+
+import org.apache.nlpcraft.model.NCToken
 
 /**
-  * DSL fragment.
-  *
-  * @param id ID of this fragment (must be unique within a model).
-  * @param terms List of terms this fragment defines.
-  */
-case class NCDslFragment(
-    id: String,
-    terms: List[NCDslTerm]
+ * DSL term.
+ *
+ * @param id Optional ID of this term.
+ * @param pred
+ * @param min
+ * @param max
+ * @param conv
+ */
+case class NCDslTerm(
+    id: Option[String],
+    pred: NCDslPredicate,
+    min: Int,
+    max: Int,
+    conv: Boolean,
+    fragMeta: Map[String, Any] = Map.empty
 ) {
-    require(id != null)
-    require(terms.nonEmpty)
+    require(pred != null)
+    require(min >= 0 && max >= min)
+
+    /**
+     *
+     * @param meta
+     * @return
+     */
+    def cloneWithFragMeta(meta: Map[String, Any]): NCDslTerm =
+        NCDslTerm(
+            id,
+            pred,
+            min,
+            max,
+            conv,
+            meta
+        )
 }

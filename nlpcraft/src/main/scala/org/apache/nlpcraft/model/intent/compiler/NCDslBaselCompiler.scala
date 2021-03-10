@@ -20,16 +20,16 @@ package org.apache.nlpcraft.model.intent.compiler
 import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.model.intent.utils.{NCDslTermContext, NCDslTermRetVal}
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
+import org.apache.nlpcraft.model.intent.NCDslContext
 
-import java.lang.{Long ⇒ JLong, Double ⇒ JDouble}
+import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
 import java.time.LocalDate
 import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
 import scala.collection.mutable
 
-trait NCIntentDslBaselCompiler {
+trait NCDslBaselCompiler {
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE
 
@@ -57,8 +57,8 @@ trait NCIntentDslBaselCompiler {
         runtimeError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine, cause)
     }
 
-    type StackType = mutable.ArrayStack[NCDslTermRetVal]
-    type Instr = (NCToken, StackType, NCDslTermContext) ⇒ Unit
+    type StackType = mutable.ArrayStack[NCDslExprRetVal]
+    type Instr = (NCToken, StackType, NCDslContext) ⇒ Unit
 
     //noinspection ComparingUnrelatedTypes
     def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
@@ -74,10 +74,10 @@ trait NCIntentDslBaselCompiler {
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
     def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
 
-    def pushAny(any: Object, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(any, usedTok))
-    def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(Long.box(any), usedTok))
-    def pushDouble(any: Double, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(Double.box(any), usedTok))
-    def pushBool(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslTermRetVal(Boolean.box(any), usedTok))
+    def pushAny(any: Object, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(any, usedTok))
+    def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(Long.box(any), usedTok))
+    def pushDouble(any: Double, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(Double.box(any), usedTok))
+    def pushBool(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(Boolean.box(any), usedTok))
 
     // Runtime errors.
     def rtUnaryOpError(op: String, v: Object)(implicit ctx: PRC): NCE =
@@ -102,8 +102,8 @@ trait NCIntentDslBaselCompiler {
         require(stack.size >= 2)
 
         // Stack pops in reverse order of push...
-        val NCDslTermRetVal(val2, f2) = stack.pop()
-        val NCDslTermRetVal(val1, f1) = stack.pop()
+        val NCDslExprRetVal(val2, f2) = stack.pop()
+        val NCDslExprRetVal(val1, f1) = stack.pop()
 
         (val1, val2, f1, f2)
     }
@@ -117,9 +117,9 @@ trait NCIntentDslBaselCompiler {
         require(stack.size >= 3)
 
         // Stack pops in reverse order of push...
-        val NCDslTermRetVal(val3, f3) = stack.pop()
-        val NCDslTermRetVal(val2, f2) = stack.pop()
-        val NCDslTermRetVal(val1, f1) = stack.pop()
+        val NCDslExprRetVal(val3, f3) = stack.pop()
+        val NCDslExprRetVal(val2, f2) = stack.pop()
+        val NCDslExprRetVal(val1, f1) = stack.pop()
 
         (val1, val2, val3, f1, f2, f3)
     }
@@ -132,7 +132,7 @@ trait NCIntentDslBaselCompiler {
     def pop1()(implicit stack: StackType): (Object, Boolean) = {
         require(stack.nonEmpty)
 
-        val NCDslTermRetVal(v, f) = stack.pop()
+        val NCDslExprRetVal(v, f) = stack.pop()
 
         (v, f)
     }

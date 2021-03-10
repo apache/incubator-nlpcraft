@@ -15,42 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils
+package org.apache.nlpcraft.model.intent
 
 import org.apache.nlpcraft.model.NCToken
 
 /**
- * DSL term.
-  *
-  * @param id Optional ID of this term.
-  * @param pred
-  * @param min
-  * @param max
-  * @param conv
-  */
-case class NCDslTerm(
-    id: Option[String],
-    pred: (NCToken, NCDslTermContext) ⇒ (Boolean/*Predicate.*/, Boolean/*Whether or not token was used.*/),
-    min: Int,
-    max: Int,
-    conv: Boolean,
-    fragMeta: Map[String, Any] = Map.empty
-) {
-    require(pred != null)
-    require(min >= 0 && max >= min)
-
-    /**
-     *
-     * @param meta
-     * @return
-     */
-    def cloneWithFragMeta(meta: Map[String, Any]): NCDslTerm =
-        NCDslTerm(
-            id,
-            pred,
-            min,
-            max,
-            conv,
-            meta
-        )
-}
+ *
+ */
+trait NCDslPredicate extends ((NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Boolean /*Whether or not token was used.*/ ))

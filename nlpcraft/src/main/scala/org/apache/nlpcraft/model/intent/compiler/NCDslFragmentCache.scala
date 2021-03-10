@@ -17,15 +17,13 @@
 
 package org.apache.nlpcraft.model.intent.compiler
 
-import org.apache.nlpcraft.model.intent.utils.NCDslFragment
-
 import scala.collection.concurrent.TrieMap
 import scala.collection.mutable
 
 /**
  * Global intent DSL fragment cache.
  */
-object NCIntentDslFragmentCache {
+object NCDslFragmentCache {
     private final val cache = TrieMap.empty[String /* Model ID. */ , mutable.Map[String, NCDslFragment]]
 
     /**

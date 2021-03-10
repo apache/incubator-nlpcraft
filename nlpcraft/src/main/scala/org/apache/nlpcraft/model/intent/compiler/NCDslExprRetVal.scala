@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils
-
-import org.apache.nlpcraft.model.NCToken
+package org.apache.nlpcraft.model.intent.compiler
 
 /**
- * DSl synonym.
  *
- * @param alias
- * @param pred
  */
-case class NCDslSynonym(
-    alias: Option[String],
-    pred: (NCToken, NCDslTermContext) ⇒ Boolean,
+case class NCDslExprRetVal(
+    retVal: Object,
+    usedTok: Boolean
 )

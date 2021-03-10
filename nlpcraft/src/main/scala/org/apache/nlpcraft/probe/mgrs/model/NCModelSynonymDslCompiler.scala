@@ -22,7 +22,7 @@ import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
-import org.apache.nlpcraft.model.intent.utils
+import org.apache.nlpcraft.model.intent.{NCDslSynonym, utils}
 import org.apache.nlpcraft.model.intent.utils._
 import org.apache.nlpcraft.probe.mgrs.model.antlr4.{NCSynonymDslBaseListener, NCSynonymDslLexer, NCSynonymDslParser}
 

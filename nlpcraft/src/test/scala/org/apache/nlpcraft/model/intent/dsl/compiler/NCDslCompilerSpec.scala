@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model.intent.dsl.compiler
 
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.compiler.{NCIntentDslCompiler, NCIntentDslFragmentCache}
+import org.apache.nlpcraft.model.intent.compiler.{NCDslCompiler, NCDslFragmentCache}
 import org.apache.nlpcraft.model.intent.impl.NCIntentDslFragmentCache
 import org.junit.jupiter.api.Test
 
@@ -27,7 +27,7 @@ import java.nio.file.{Path, Paths}
 /**
  * Tests for DSL compiler.
  */
-class NCIntentDslCompilerSpec {
+class NCDslCompilerSpec {
     private final val MODEL_ID = "test.mdl.id"
     
     /**
@@ -36,7 +36,7 @@ class NCIntentDslCompilerSpec {
      */
     private def checkCompileOk(dsl: String): Unit =
         try {
-            NCIntentDslCompiler.compileIntents(dsl, MODEL_ID)
+            NCDslCompiler.compileIntents(dsl, MODEL_ID)
 
             assert(true)
         }
@@ -50,7 +50,7 @@ class NCIntentDslCompilerSpec {
       */
     private def checkPathCompileOk(path: Path): Unit =
         try {
-            NCIntentDslCompiler.compileIntents(path, MODEL_ID)
+            NCDslCompiler.compileIntents(path, MODEL_ID)
             
             assert(true)
         }
@@ -64,7 +64,7 @@ class NCIntentDslCompilerSpec {
      */
     private def checkCompileError(txt: String): Unit =
         try {
-            NCIntentDslCompiler.compileIntents(txt, MODEL_ID)
+            NCDslCompiler.compileIntents(txt, MODEL_ID)
 
             assert(false)
         } catch {
@@ -76,15 +76,15 @@ class NCIntentDslCompilerSpec {
     @Test
     @throws[NCException]
     def testPathCompileOk(): Unit = {
-        NCIntentDslFragmentCache.clear(MODEL_ID)
+        NCDslFragmentCache.clear(MODEL_ID)
         
-        checkPathCompileOk(Paths.get(classOf[NCIntentDslCompilerSpec].getResource("test_ok.nc").toURI))
+        checkPathCompileOk(Paths.get(classOf[NCDslCompilerSpec].getResource("test_ok.nc").toURI))
     }
     
     @Test
     @throws[NCException]
     def testInlineCompileOk(): Unit = {
-        NCIntentDslFragmentCache.clear(MODEL_ID)
+        NCDslFragmentCache.clear(MODEL_ID)
         
         checkCompileOk(
             """
@@ -140,7 +140,7 @@ class NCIntentDslCompilerSpec {
     @Test
     @throws[NCException]
     def testInlineCompileFail(): Unit = {
-        NCIntentDslFragmentCache.clear(MODEL_ID)
+        NCDslFragmentCache.clear(MODEL_ID)
         
         checkCompileError(
             """

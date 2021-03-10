@@ -17,8 +17,8 @@
 
 package org.apache.nlpcraft.probe.mgrs
 
+import org.apache.nlpcraft.model.intent.NCDslIntent
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
-import org.apache.nlpcraft.model.intent.utils.NCDslIntent
 import org.apache.nlpcraft.model.{NCElement, NCModel}
 
 import scala.collection.{Map, Seq}

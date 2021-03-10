@@ -6,10 +6,11 @@ import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
-import org.apache.nlpcraft.model.intent.utils.{NCDslIntent, NCDslTerm, NCDslTermContext}
+import org.apache.nlpcraft.model.intent.utils.NCDslTerm
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCResult, NCToken}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
+import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslTerm}
 
 import java.util.function.Function
 import scala.collection.mutable
@@ -466,7 +467,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val ordered = intent.ordered
             var lastTermMatch: TermMatch = null
 
-            val termCtx = NCDslTermContext(
+            val termCtx = NCDslContext(
                 intentMeta = intent.meta,
                 reqMeta = ctx.getRequest.getRequestData,
                 usrMeta = ctx.getRequest.getUser.getMetadata,
@@ -585,7 +586,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     private def solveTerm(
         term: NCDslTerm,
-        ctx: NCDslTermContext,
+        ctx: NCDslContext,
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
     ): Option[TermMatch] =
@@ -634,8 +635,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     @throws[NCE]
     private def solvePredicate(
-        pred: (NCToken, NCDslTermContext) ⇒ (Boolean /*Predicate.*/ , Boolean /*Whether or not token was used.*/ ),
-        ctx: NCDslTermContext,
+        pred: (NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Boolean /*Whether or not token was used.*/ ),
+        ctx: NCDslContext,
         min: Int,
         max: Int,
         senToks: Seq[UsedToken],

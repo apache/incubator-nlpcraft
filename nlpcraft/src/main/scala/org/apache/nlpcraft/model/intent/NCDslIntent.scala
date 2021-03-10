@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.utils
+package org.apache.nlpcraft.model.intent
 
 import org.apache.nlpcraft.common.ScalaMeta
 
@@ -23,14 +23,14 @@ import java.util.regex.Pattern
 
 /**
  * DSL intent.
-  *
-  * @param dsl Original DSL of this intent.
-  * @param id
-  * @param ordered
-  * @param meta
-  * @param flow
-  * @param terms
-  */
+ *
+ * @param dsl Original DSL of this intent.
+ * @param id
+ * @param ordered
+ * @param meta
+ * @param flow
+ * @param terms
+ */
 case class NCDslIntent(
     dsl: String,
     id: String,
@@ -51,9 +51,8 @@ case class NCDslIntent(
         case Some(r) ⇒ Some(Pattern.compile(r))
         case None ⇒ None
     }
-    
+
     lazy val isFlowDefined = flow.isDefined || flowMtdName.isDefined
 
-    override def toString: String =
-        s"intent=$id"
+    override def toString: String = s"intent=$id"
 }
