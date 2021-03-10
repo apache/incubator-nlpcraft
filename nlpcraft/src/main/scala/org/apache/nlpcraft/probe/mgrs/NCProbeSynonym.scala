@@ -112,7 +112,7 @@ class NCProbeSynonym(
 
                             r.matcher(get0(_.origText, _.origText)).matches() ||
                             r.matcher(get0(_.normText, _.normText)).matches()
-                        case DSL ⇒ get0(t ⇒ chunk.dslPred.apply(t), _ ⇒ false)
+                        case DSL ⇒ get0(t ⇒ chunk.dslPred.apply(t, null /*TODO*/)._2, _ ⇒ false)
 
                         case _ ⇒ throw new AssertionError()
                     }
