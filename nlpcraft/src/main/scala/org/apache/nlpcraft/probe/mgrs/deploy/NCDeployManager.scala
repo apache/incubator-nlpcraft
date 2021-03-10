@@ -1165,9 +1165,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkTypes(mdlId, mtd, tokParamTypes, paramGenTypes, ctxFirstParam)
 
         // Checks limits.
-        val allLimits = terms.map(t ⇒ t.id → (t.min, t.max)).toMap
+        val allLimits = terms.map(t ⇒ t.id.orNull → (t.min, t.max)).toMap
 
-        checkMinMax(mdlId, mtd, tokParamTypes, termIds.map (allLimits), ctxFirstParam)
+        checkMinMax(mdlId, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
         (ctx: NCIntentMatch) ⇒ {
