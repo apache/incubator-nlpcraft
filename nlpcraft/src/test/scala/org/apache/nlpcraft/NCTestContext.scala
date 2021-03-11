@@ -81,7 +81,7 @@ abstract class NCTestContext {
                     probeStarted = true
                 
                     if (ann.startClient()) {
-                        cli = new NCTestClientBuilder().newBuilder.build
+                        cli = new NCTestClientBuilder().newBuilder.setResponseLog(ann.clientLog()).build
                         
                         cli.open(NCModelManager.getAllModels().head.model.getId)
                     }

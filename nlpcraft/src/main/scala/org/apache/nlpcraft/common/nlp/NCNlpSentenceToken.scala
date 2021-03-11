@@ -62,6 +62,13 @@ case class NCNlpSentenceToken(
     def getNotes(noteType: String): Iterable[NCNlpSentenceNote] = notes.filter(_.noteType == noteType)
 
     /**
+      *
+      * @param noteType
+      * @return
+      */
+    def exists(noteType: String): Boolean = notes.exists(_.noteType == noteType)
+
+    /**
       * Clones note.
       * Shallow copy.
       */
@@ -163,7 +170,7 @@ case class NCNlpSentenceToken(
       *
       * @param types Note type(s) to check.
       */
-    def isTypeOf(types: String*): Boolean = types.exists(t ⇒ getNotes(t).nonEmpty)
+    def isTypeOf(types: String*): Boolean = types.exists(exists)
 
     /**
       * Adds element.

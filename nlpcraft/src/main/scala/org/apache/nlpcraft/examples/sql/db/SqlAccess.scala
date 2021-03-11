@@ -30,7 +30,7 @@ import resource.managed
   * Ad-hoc querying for H2 Database. This is a simple, single thread implementation.
   */
 object SqlAccess extends LazyLogging {
-    private final val LOG_ROWS = 10
+    private final val LOG_ROWS = 3
 
     private var conn: Connection = _
     
