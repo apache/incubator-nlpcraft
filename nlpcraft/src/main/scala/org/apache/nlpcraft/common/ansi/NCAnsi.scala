@@ -104,6 +104,7 @@ sealed trait NCAnsi extends LazyLogging {
     def ansiBlack(s: Any): String = s"$ansiBlackFg${s.toString}s$ansiReset"
     def ansiWhite(s: Any): String = s"$ansiWhiteFg${s.toString}$ansiReset"
     def ansiBlue(s: Any): String = s"$ansiBlueFg${s.toString}$ansiReset"
+    def ansiMagenta(s: Any): String = s"$ansiMagentaFg${s.toString}$ansiReset"
     def ansiBold(s: Any): String = s"$ansiBold${s.toString}$ansiReset"
 
     // Erase functions.

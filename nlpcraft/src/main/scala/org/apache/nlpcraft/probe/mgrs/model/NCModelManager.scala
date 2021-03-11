@@ -21,6 +21,7 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.model.intent.compiler.NCDslSyntaxHighlighter
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.deploy._
 
@@ -70,14 +71,10 @@ object NCModelManager extends NCService with DecorateAsScala {
                         s"Synonyms: $synCnt" + (if (synCnt == 0) s" ${r("(!)")}" else ""),
                         s"Intents: $intentCnt" + (if (intentCnt == 0) s" ${r("(!)")}" else "")
                     ),
-                    w.intents
-                        .map(_.dsl)
-                        .flatMap(s ⇒
-                            s
-                            .replaceAll("intent=", s"${g("intent")}=")
-                            .replaceAll("fragment=", s"${b("fragment")}=")
-                            .replaceAll(" term", s"\n  ${c("term")}").split("\n")
-                        )
+                    w.intents.flatMap(i ⇒ i.dsl
+                        .replaceAll(" term", s"\n  term")
+                        .split("\n").map(NCDslSyntaxHighlighter.color)
+                    )
                 )
             })
         }

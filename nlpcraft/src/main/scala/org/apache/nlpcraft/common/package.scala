@@ -43,6 +43,7 @@ package object common {
     final val MDL_META_MODEL_CLASS_KEY = "__NLPCRAFT_MDL_CLASS_NAME"
 
     def G: String = ansiGreenFg
+    def M: String = ansiMagentaFg
     def R: String = ansiRedFg
     def C: String = ansiCyanFg
     def Y: String = ansiYellowFg
@@ -51,6 +52,7 @@ package object common {
     def BO: String = ansiBold
     def K: String = ansiBlackFg
     def GB: String = ansiGreenBg
+    def MB: String = ansiMagentaBg
     def RB: String = ansiRedBg
     def CB: String = ansiCyanBg
     def YB: String = ansiYellowBg
@@ -59,12 +61,21 @@ package object common {
     def KB: String = ansiBlackBg
     def RST: String = ansiReset
     def g(s: Any): String = s"$G${s.toString}$RST"
+    def m(s: Any): String = s"$M${s.toString}$RST"
     def r(s: Any): String = s"$R${s.toString}$RST"
     def c(s: Any): String = s"$C${s.toString}$RST"
     def y(s: Any): String = s"$Y${s.toString}$RST"
     def w(s: Any): String = s"$W${s.toString}$RST"
     def b(s: Any): String = s"$B${s.toString}$RST"
     def k(s: Any): String = s"$K${s.toString}$RST"
+    def green(s: Any): String = s"$G${s.toString}$RST"
+    def magenta(s: Any): String = s"$M${s.toString}$RST"
+    def red(s: Any): String = s"$R${s.toString}$RST"
+    def cyan(s: Any): String = s"$C${s.toString}$RST"
+    def yellow(s: Any): String = s"$Y${s.toString}$RST"
+    def white(s: Any): String = s"$W${s.toString}$RST"
+    def blue(s: Any): String = s"$B${s.toString}$RST"
+    def black(s: Any): String = s"$K${s.toString}$RST"
     def gb(s: Any): String = s"$GB${s.toString}$RST"
     def rb(s: Any): String = s"$RB${s.toString}$RST"
     def cb(s: Any): String = s"$CB${s.toString}$RST"
@@ -72,10 +83,20 @@ package object common {
     def wb(s: Any): String = s"$WB${s.toString}$RST"
     def bb(s: Any): String = s"$BB${s.toString}$RST"
     def kb(s: Any): String = s"$KB${s.toString}$RST"
+    def greenBg(s: Any): String = s"$GB${s.toString}$RST"
+    def magentaBg(s: Any): String = s"$MB${s.toString}$RST"
+    def redBg(s: Any): String = s"$RB${s.toString}$RST"
+    def cyanBg(s: Any): String = s"$CB${s.toString}$RST"
+    def yellowBg(s: Any): String = s"$YB${s.toString}$RST"
+    def whiteBg(s: Any): String = s"$WB${s.toString}$RST"
+    def blueBg(s: Any): String = s"$BB${s.toString}$RST"
+    def blackBg(s: Any): String = s"$KB${s.toString}$RST"
 
     // Effect shortcuts...
     def rv(s: Any): String = s"$ansiReversed${s.toString}$RST"
     def bo(s: Any): String = s"$ansiBold${s.toString}$RST"
+    def reverse(s: Any): String = s"$ansiReversed${s.toString}$RST"
+    def bold(s: Any): String = s"$ansiBold${s.toString}$RST"
 
     /**
      * Pimps integers with KB, MB, GB units of measure.
