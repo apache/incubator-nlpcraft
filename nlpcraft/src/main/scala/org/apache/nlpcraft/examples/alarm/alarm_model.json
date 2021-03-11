@@ -34,6 +34,7 @@
         }
     ],
     "intents": [
-        "intent=alarm term~{id() == 'x:alarm'} term(nums)~{id() == 'nlpcraft:num' && meta_token('nlpcraft:num:unittype') == 'datetime' && meta_token('nlpcraft:num:isequalcondition') == true}[0,7]"
+        "fragment=f1 term(t1)~{id() == 'x:alarm'}",
+        "intent=alarm fragment(f1) term(nums)~{id() == 'nlpcraft:num' && meta_token('nlpcraft:num:unittype') == 'datetime' && meta_token('nlpcraft:num:isequalcondition') == true}[0,7]"
     ]
 }

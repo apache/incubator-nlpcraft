@@ -27,12 +27,11 @@ import java.util.regex.Pattern
   */
 object NCDslSyntaxHighlighter {
     private final val NUM_REGEX = Pattern.compile("-?[0-9]+")
-    private final val STR1_REGEX = Pattern.compile("'[^']*'")
-    private final val STR2_REGEX = Pattern.compile(""""[^"]*"""")
+    private final val STR_REGEX = Pattern.compile("""(["'])[^"]*\1""")
 
     private val KEYWORDS = Seq("flow", "fragment", "intent", "meta", "term", "ordered")
     private val LITERALS = Seq("true", "false", "null")
-    private val FUNS = Seq(
+    private val FUNCTIONS = Seq(
         "meta_token",
         "meta_part",
         "meta_model",
@@ -178,14 +177,12 @@ object NCDslSyntaxHighlighter {
             val tok = toks.nextToken()
             
             if (KEYWORDS.contains(tok))
-                res ++= (if (tok == "intent") bold(cyan(tok)) else blue(tok))
-            else if (LITERALS.contains(tok))
+                res ++= (if (tok == "intent" || tok == "fragment") bold(cyan(tok)) else blue(tok))
+            else if (LITERALS.contains(tok) || NUM_REGEX.matcher(tok).matches())
                 res ++= green(tok)
-            else if (FUNS.contains(tok))
+            else if (FUNCTIONS.contains(tok))
                 res ++= yellow(tok)
-            else if (NUM_REGEX.matcher(tok).matches())
-                res ++= green(tok)
-            else if (STR1_REGEX.matcher(tok).matches() || STR2_REGEX.matcher(tok).matches())
+            else if (STR_REGEX.matcher(tok).matches())
                 res ++= magenta(tok)
             else
                 res ++= tok
