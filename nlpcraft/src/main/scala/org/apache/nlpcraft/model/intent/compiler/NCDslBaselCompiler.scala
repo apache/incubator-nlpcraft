@@ -26,7 +26,8 @@ import org.apache.nlpcraft.model.intent.NCDslContext
 
 import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
 import java.time.LocalDate
-import java.util.{Collections, ArrayList ⇒ JArrayList, HashMap ⇒ JHashMap}
+import java.util.{Collections, ArrayList ⇒ JList, HashMap ⇒ JMap}
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 trait NCDslBaselCompiler {
@@ -60,15 +61,14 @@ trait NCDslBaselCompiler {
     type StackType = mutable.ArrayStack[NCDslExprRetVal]
     type Instr = (NCToken, StackType, NCDslContext) ⇒ Unit
 
-    //noinspection ComparingUnrelatedTypes
     def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
-    //noinspection ComparingUnrelatedTypes
     def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
-    //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
+    def isJList(v: Object): Boolean = v.isInstanceOf[JList[_]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
     def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
+    def asJList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
     def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
     def asStr(v: Object): String = v.asInstanceOf[String]
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
@@ -261,8 +261,14 @@ trait NCDslBaselCompiler {
         def doEq(op: String): Boolean = {
             if (isJLong(v1) && isJLong(v2))
                 asJLong(v1) == asJLong(v2)
-            if (isJLong(v1) && isJLong(v2))
-                asJLong(v1) == asJLong(v2)
+            else if (isJDouble(v1) && isJDouble(v2))
+                asJDouble(v1) == asJDouble(v2)
+            else if (isBool(v1) && isBool(v2))
+                asBool(v1) == asBool(v2)
+            else if (isStr(v1) && isStr(v2))
+                asStr(v1) == asStr(v2)
+            else if (isJList(v1) && isJList(v2))
+                asJList(v1).equals(asJList(v2))
             else
                 throw rtBinaryOpError(op, v1, v2)
 
@@ -321,15 +327,18 @@ trait NCDslBaselCompiler {
         val (v, usedTok) = pop1()
 
         if (minus != null) {
-            if (isJDouble(v)) pushDouble(-asJDouble(v), usedTok)
-            else if (isJLong(v)) pushLong(-asJLong(v), usedTok)
+            if (isJDouble(v))
+                pushDouble(-asJDouble(v), usedTok)
+            else if (isJLong(v))
+                pushLong(-asJLong(v), usedTok)
             else
                 throw rtUnaryOpError("-", v)
         }
         else {
             assert(not != null)
 
-            if (isBool(v)) pushBool(!asBool(v), usedTok)
+            if (isBool(v))
+                pushBool(!asBool(v), usedTok)
             else
                 throw rtUnaryOpError("!", v)
         }
@@ -388,6 +397,17 @@ trait NCDslBaselCompiler {
                 throw rtParamTypeError(fun, v, "string")
 
             (asStr(v), f)
+        }
+    
+        def get1List(): (JList[_], Boolean) = {
+            ensureStack(1)
+        
+            val (v, f) = pop1()
+        
+            if (!isJList(v))
+                throw rtParamTypeError(fun, v, "list")
+        
+            (asJList(v), f)
         }
 
         def get1Double(): (JDouble, Boolean) = {
@@ -453,7 +473,7 @@ trait NCDslBaselCompiler {
          * Collection, statistical operations.
          */
         def doList(): Unit = {
-            val jl = new JArrayList[Object]() // Empty list is allowed.
+            val jl = new JList[Object]() // Empty list is allowed.
             var f = false
 
             stack.drain { x ⇒
@@ -465,12 +485,25 @@ trait NCDslBaselCompiler {
 
             pushAny(jl, f)
         }
+        
+        def doSize(): Unit = get1List() match { case (list, f) ⇒ pushLong(list.size(), f) }
+        
+        def doHas(): Unit = {
+            ensureStack(2)
+    
+            val (v1, v2, f1, f2) = pop2()
+    
+            if (!isJList(v1))
+                throw rtParamTypeError(fun, v1, "list")
+                
+            pushBool(asJList(v1).contains(v2), f1 || f2)
+        }
 
         def doMap(): Unit = {
             if (stack.size % 2 != 0)
                 throw rtParamNumError(fun)
 
-            val jm = new JHashMap[Object, Object]()
+            val jm = new JMap[Object, Object]()
             var f = false
 
             val keys = mutable.Buffer.empty[Object]
@@ -668,7 +701,7 @@ trait NCDslBaselCompiler {
             case "map" ⇒ doMap()
             case "get" ⇒
             case "index" ⇒
-            case "has" ⇒
+            case "has" ⇒ doHas()
             case "tail" ⇒
             case "add" ⇒
             case "remove" ⇒
@@ -676,15 +709,15 @@ trait NCDslBaselCompiler {
             case "last" ⇒
             case "keys" ⇒
             case "values" ⇒
-            case "count" ⇒
             case "take" ⇒
             case "drop" ⇒
-            case "size" ⇒
-            case "length" ⇒
-            case "reverse" ⇒
-            case "is_empty" ⇒
-            case "non_empty" ⇒
-            case "to_string" ⇒
+            case "size" ⇒ doSize()
+            case "count" ⇒ doSize()
+            case "length" ⇒ doSize()
+            case "reverse" ⇒ get1List() match { case (list, f) ⇒ Collections.reverse(list); pushAny(list, f) }
+            case "is_empty" ⇒ get1List() match { case (list, f) ⇒ pushBool(list.isEmpty, f) }
+            case "non_empty" ⇒ get1List() match { case (list, f) ⇒ pushBool(!list.isEmpty, f) }
+            case "to_string" ⇒ get1List() match { case (list, f) ⇒ pushAny(list.asScala.map(_.toString).asJava, f) }
 
             // Statistical operations.
             case "avg" ⇒
