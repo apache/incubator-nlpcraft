@@ -690,7 +690,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         }
         // We've found some matches (and min > 0).
         else {
-            require(matches > 0 && matches > min)
+            require(matches >= min)
 
             val convSrvReqIds = convToks.map(_.token.getServerRequestId).distinct
 

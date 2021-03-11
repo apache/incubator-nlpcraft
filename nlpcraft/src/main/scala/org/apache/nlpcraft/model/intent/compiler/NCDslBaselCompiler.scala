@@ -26,7 +26,8 @@ import org.apache.nlpcraft.model.intent.NCDslContext
 
 import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
 import java.time.LocalDate
-import java.util.{Collections, ArrayList ⇒ JList, HashMap ⇒ JMap}
+import java.util
+import java.util.{Collections, List ⇒ JList, Map ⇒ JMap}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -446,7 +447,7 @@ trait NCDslBaselCompiler {
          * Collection, statistical operations.
          */
         def doList(): Unit = {
-            val jl = new JList[Object]() // Empty list is allowed.
+            val jl = new util.ArrayList[Object]() // Empty list is allowed.
             var f = false
 
             stack.drain { x ⇒
@@ -476,7 +477,7 @@ trait NCDslBaselCompiler {
             if (stack.size % 2 != 0)
                 throw rtParamNumError(fun)
 
-            val jm = new JMap[Object, Object]()
+            val jm = new util.HashMap[Object, Object]()
             var f = false
 
             val keys = mutable.Buffer.empty[Object]
@@ -675,8 +676,8 @@ trait NCDslBaselCompiler {
             case "remove" ⇒
             case "first" ⇒
             case "last" ⇒
-            case "keys" ⇒ get1Map() match { case (map, f) ⇒ pushAny(new JList(map.keySet()), f) }
-            case "values" ⇒ get1Map() match { case (map, f) ⇒ pushAny(new JList(map.values()), f) }
+            case "keys" ⇒ get1Map() match { case (map, f) ⇒ pushAny(new util.ArrayList(map.keySet()), f) }
+            case "values" ⇒ get1Map() match { case (map, f) ⇒ pushAny(new util.ArrayList(map.values()), f) }
             case "take" ⇒
             case "drop" ⇒
             case "size" ⇒ doSize()
