@@ -73,6 +73,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                     ),
                     w.intents.flatMap(i ⇒ i.dsl
                         .replaceAll(" term", s"\n  term")
+                        .replaceAll(" fragment", s"\n  fragment")
                         .split("\n").map(NCDslSyntaxHighlighter.color)
                     )
                 )

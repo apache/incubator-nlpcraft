@@ -177,7 +177,7 @@ object NCDslSyntaxHighlighter {
             val tok = toks.nextToken()
             
             if (KEYWORDS.contains(tok))
-                res ++= (if (tok == "intent" || tok == "fragment") bold(cyan(tok)) else blue(tok))
+                res ++= (if (tok == "intent") bold(blue(tok)) else cyan(tok))
             else if (LITERALS.contains(tok) || NUM_REGEX.matcher(tok).matches())
                 res ++= green(tok)
             else if (FUNCTIONS.contains(tok))

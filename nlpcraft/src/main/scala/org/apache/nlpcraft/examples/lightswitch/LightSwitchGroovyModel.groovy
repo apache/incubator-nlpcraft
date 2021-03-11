@@ -61,7 +61,7 @@ class LightSwitchGroovyModel extends NCModelFileAdapter {
         "Light up the garage, please!",
         "Kill the illumination now!"
     ])
-    NCResult onMatch(
+    static NCResult onMatch(
         @NCIntentTerm("act") NCToken actTok,
         @NCIntentTerm("loc") List<NCToken> locToks) {
         String status = actTok.id == "ls:on" ? "on" : "off"

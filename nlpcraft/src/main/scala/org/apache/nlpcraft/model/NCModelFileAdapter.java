@@ -60,7 +60,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     private final Set<String> abstractToks;
     private final Set<String> addStopwords;
     private final Set<String> exclStopwords;
-    private final Set<String> intents;
+    private final List<String> intents;
     private final Map<String, String> macros;
     private final Map<String, Object> metadata;
     private final Set<NCElement> elems;
@@ -112,15 +112,15 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
         super(proxy.getId(), proxy.getName(), proxy.getDescription());
 
         this.proxy = proxy;
-        this.suspWords = convert(proxy.getSuspiciousWords(), null);
-        this.enabledToks = convert(proxy.getEnabledBuiltInTokens(), NCModelView.DFLT_ENABLED_BUILTIN_TOKENS);
-        this.abstractToks = convert(proxy.getAbstractTokens(), Collections.emptySet());
-        this.addStopwords = convert(proxy.getAdditionalStopWords(), null);
-        this.exclStopwords = convert(proxy.getExcludedStopWords(), null);
+        this.suspWords = convertToSet(proxy.getSuspiciousWords(), null);
+        this.enabledToks = convertToSet(proxy.getEnabledBuiltInTokens(), NCModelView.DFLT_ENABLED_BUILTIN_TOKENS);
+        this.abstractToks = convertToSet(proxy.getAbstractTokens(), Collections.emptySet());
+        this.addStopwords = convertToSet(proxy.getAdditionalStopWords(), null);
+        this.exclStopwords = convertToSet(proxy.getExcludedStopWords(), null);
         this.elems = convertElements(proxy, proxy.getElements());
         this.macros = convertMacros(proxy.getMacros());
         this.metadata = convertMeta(proxy.getMetadata());
-        this.intents = convert(proxy.getIntents(), null);
+        this.intents = convertToList(proxy.getIntents(), null);
         this.parsers = convertParsers(proxy.getParsers());
         this.restrictedCombinations = convertRestrictedCombinations(proxy.getRestrictedCombinations());
 
@@ -229,12 +229,17 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
      * @param arr
      * @return
      */
-    private static Set<String> convert(String[] arr, Set<String> dflt) {
-        return arr != null ?
-            new HashSet<>(Arrays.asList(arr)) :
-            dflt != null ?
-                new HashSet<>(dflt) :
-                new HashSet<>();
+    private static Set<String> convertToSet(String[] arr, Set<String> dflt) {
+        return arr != null ? new HashSet<>(Arrays.asList(arr)) : dflt != null ? new HashSet<>(dflt) : Collections.emptySet();
+    }
+
+    /**
+     *
+     * @param arr
+     * @return
+     */
+    private static List<String> convertToList(String[] arr, List<String> dflt) {
+        return arr != null ? Arrays.asList(arr) : dflt != null ? dflt : Collections.emptyList();
     }
 
     /**
@@ -374,7 +379,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
      *
      * @return List of intents and/or fragments declared in JSON/YML model definition, potentially empty.
      */
-    public Set<String> getIntents() {
+    public List<String> getIntents() {
         return intents;
     }
 

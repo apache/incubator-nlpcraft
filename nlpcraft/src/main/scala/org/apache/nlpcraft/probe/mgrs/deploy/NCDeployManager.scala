@@ -193,7 +193,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 if (hasWhitespace(word))
                     throw new NCE(s"Model property cannot contain a string with whitespaces [" +
                         s"mdlId=$mdlId, " +
-                        s"name=$name, " +
+                        s"property=$name, " +
                         s"word='$word'" +
                     s"]")
                 else
@@ -404,8 +404,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                   s"mdlId=$mdlId, " +
                   s"cnt=$cnt, " +
                   s"max=$maxCnt" +
-                  s"]"
-            )
+              s"]")
 
         // Discard value loaders.
         for (elm ← mdl.getElements.asScala)
@@ -419,9 +418,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
             .flatten
             .toList
 
-        // Check for DSl alias uniqueness.
+        // Check for DSL alias uniqueness.
         if (U.containsDups(allAliases))
-            throw new NCE(s"Duplicate DSL alias found [" +
+            throw new NCE(s"Duplicate DSL synonym alias found [" +
                 s"mdlId=$mdlId, " +
                 s"dups=${allAliases.diff(allAliases.distinct).mkString(", ")}" +
             s"]")
@@ -430,7 +429,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // Check that DSL aliases don't intersect with element IDs.
         if (idAliasDups.nonEmpty)
-            throw new NCE(s"Model element IDs and DSL aliases intersect [" +
+            throw new NCE(s"Model element IDs and DSL synonym aliases intersect [" +
                 s"mdlId=$mdlId, " +
                 s"dups=${idAliasDups.mkString(", ")}" +
             "]")
@@ -468,6 +467,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // Scan for intent annotations in the model class.
         val intents = scanIntents(mdl)
+        
         var solver: NCIntentSolver = null
 
         if (intents.nonEmpty) {
@@ -634,16 +634,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         data = ArrayBuffer.empty[NCProbeModel]
 
-        mdlFactory = new NCBasicModelFactory
-
-        // Initialize model factory (if configured).
-        Config.modelFactoryType match {
+        mdlFactory = Config.modelFactoryType match {
             case Some(mft) ⇒
-                mdlFactory = makeModelFactory(mft)
+                val mf = makeModelFactory(mft)
 
-                mdlFactory.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
+                mf.initialize(Config.modelFactoryProps.getOrElse(Map.empty[String, String]).asJava)
+                
+                mf
 
-            case None ⇒ // No-op.
+            case None ⇒ new NCBasicModelFactory
         }
 
         data ++= U.splitTrimFilter(Config.models, ",").map(makeModelWrapper)
