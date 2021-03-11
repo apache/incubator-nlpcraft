@@ -557,7 +557,7 @@ object NCDslCompiler extends LazyLogging {
     def compileIntents(
         dsl: String,
         mdlId: String,
-        origin: String = "<inline>"
+        origin: String
     ): Set[NCDslIntent] = parseIntents(dsl, mdlId, origin)
 
     /**

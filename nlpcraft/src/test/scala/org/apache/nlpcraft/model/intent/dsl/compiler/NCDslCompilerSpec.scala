@@ -35,7 +35,7 @@ class NCDslCompilerSpec {
      */
     private def checkCompileOk(dsl: String): Unit =
         try {
-            NCDslCompiler.compileIntents(dsl, MODEL_ID)
+            NCDslCompiler.compileIntents(dsl, MODEL_ID, MODEL_ID)
 
             assert(true)
         }
@@ -63,7 +63,7 @@ class NCDslCompilerSpec {
      */
     private def checkCompileError(txt: String): Unit =
         try {
-            NCDslCompiler.compileIntents(txt, MODEL_ID)
+            NCDslCompiler.compileIntents(txt, MODEL_ID, MODEL_ID)
 
             assert(false)
         } catch {
