@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -26,7 +26,7 @@ public class NCIntentDslParser extends Parser {
 		WS=50, ErrorChar=51;
 	public static final int
 		RULE_dsl = 0, RULE_synonym = 1, RULE_alias = 2, RULE_dslItems = 3, RULE_dslItem = 4, 
-		RULE_url = 5, RULE_frag = 6, RULE_fragId = 7, RULE_fragRef = 8, RULE_fragMeta = 9, 
+		RULE_imp = 5, RULE_frag = 6, RULE_fragId = 7, RULE_fragRef = 8, RULE_fragMeta = 9, 
 		RULE_intent = 10, RULE_intentId = 11, RULE_orderedDecl = 12, RULE_mtdDecl = 13, 
 		RULE_flowDecl = 14, RULE_metaDecl = 15, RULE_jsonObj = 16, RULE_jsonPair = 17, 
 		RULE_jsonVal = 18, RULE_jsonArr = 19, RULE_terms = 20, RULE_termItem = 21, 
@@ -36,7 +36,7 @@ public class NCIntentDslParser extends Parser {
 		RULE_id = 34;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"dsl", "synonym", "alias", "dslItems", "dslItem", "url", "frag", "fragId", 
+			"dsl", "synonym", "alias", "dslItems", "dslItem", "imp", "frag", "fragId", 
 			"fragRef", "fragMeta", "intent", "intentId", "orderedDecl", "mtdDecl", 
 			"flowDecl", "metaDecl", "jsonObj", "jsonPair", "jsonVal", "jsonArr", 
 			"terms", "termItem", "termEq", "term", "mtdRef", "javaFqn", "termId", 
@@ -48,7 +48,7 @@ public class NCIntentDslParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'url'", "'intent'", "'ordered'", "'flow'", "'meta'", "'term'", 
+			null, "'import'", "'intent'", "'ordered'", "'flow'", "'meta'", "'term'", 
 			null, "'fragment'", null, null, null, "'null'", "'=='", "'!='", "'>='", 
 			"'<='", "'>'", "'<'", "'&&'", "'||'", "'|'", "'!'", "'('", "')'", "'{'", 
 			"'}'", "'''", "'\"'", "'~'", "'['", "']'", "'#'", "','", "':'", "'-'", 
@@ -134,6 +134,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitDsl(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitDsl(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final DslContext dsl() throws RecognitionException {
@@ -180,6 +185,11 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitSynonym(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitSynonym(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -239,6 +249,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAlias(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAlias(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final AliasContext alias() throws RecognitionException {
@@ -284,6 +299,11 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitDslItems(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitDslItems(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -349,8 +369,8 @@ public class NCIntentDslParser extends Parser {
 		public FragContext frag() {
 			return getRuleContext(FragContext.class,0);
 		}
-		public UrlContext url() {
-			return getRuleContext(UrlContext.class,0);
+		public ImpContext imp() {
+			return getRuleContext(ImpContext.class,0);
 		}
 		public DslItemContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -363,6 +383,11 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitDslItem(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitDslItem(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -391,7 +416,7 @@ public class NCIntentDslParser extends Parser {
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(97);
-				url();
+				imp();
 				}
 				break;
 			default:
@@ -409,37 +434,45 @@ public class NCIntentDslParser extends Parser {
 		return _localctx;
 	}
 
-	public static class UrlContext extends ParserRuleContext {
-		public TerminalNode ASSIGN() { return getToken(NCIntentDslParser.ASSIGN, 0); }
+	public static class ImpContext extends ParserRuleContext {
+		public TerminalNode LPAR() { return getToken(NCIntentDslParser.LPAR, 0); }
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
-		public UrlContext(ParserRuleContext parent, int invokingState) {
+		public TerminalNode RPAR() { return getToken(NCIntentDslParser.RPAR, 0); }
+		public ImpContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_url; }
+		@Override public int getRuleIndex() { return RULE_imp; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterUrl(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterImp(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitUrl(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitImp(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitImp(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final UrlContext url() throws RecognitionException {
-		UrlContext _localctx = new UrlContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_url);
+	public final ImpContext imp() throws RecognitionException {
+		ImpContext _localctx = new ImpContext(_ctx, getState());
+		enterRule(_localctx, 10, RULE_imp);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(100);
 			match(T__0);
 			setState(101);
-			match(ASSIGN);
+			match(LPAR);
 			setState(102);
 			qstring();
+			setState(103);
+			match(RPAR);
 			}
 		}
 		catch (RecognitionException re) {
@@ -472,6 +505,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFrag(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFrag(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final FragContext frag() throws RecognitionException {
@@ -480,9 +518,9 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(104);
-			fragId();
 			setState(105);
+			fragId();
+			setState(106);
 			terms(0);
 			}
 		}
@@ -515,6 +553,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFragId(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFragId(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final FragIdContext fragId() throws RecognitionException {
@@ -523,11 +566,11 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(107);
-			match(FRAG);
 			setState(108);
-			match(ASSIGN);
+			match(FRAG);
 			setState(109);
+			match(ASSIGN);
+			setState(110);
 			id();
 			}
 		}
@@ -564,6 +607,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFragRef(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFragRef(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final FragRefContext fragRef() throws RecognitionException {
@@ -573,23 +621,23 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(111);
-			match(FRAG);
 			setState(112);
-			match(LPAR);
+			match(FRAG);
 			setState(113);
+			match(LPAR);
+			setState(114);
 			id();
-			setState(115);
+			setState(116);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==COMMA) {
 				{
-				setState(114);
+				setState(115);
 				fragMeta();
 				}
 			}
 
-			setState(117);
+			setState(118);
 			match(RPAR);
 			}
 		}
@@ -621,6 +669,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFragMeta(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFragMeta(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final FragMetaContext fragMeta() throws RecognitionException {
@@ -629,9 +682,9 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(119);
-			match(COMMA);
 			setState(120);
+			match(COMMA);
+			setState(121);
 			jsonObj();
 			}
 		}
@@ -674,6 +727,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitIntent(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitIntent(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final IntentContext intent() throws RecognitionException {
@@ -683,39 +741,39 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(122);
+			setState(123);
 			intentId();
-			setState(124);
+			setState(125);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__2) {
 				{
-				setState(123);
+				setState(124);
 				orderedDecl();
 				}
 			}
 
-			setState(127);
+			setState(128);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__3) {
 				{
-				setState(126);
+				setState(127);
 				flowDecl();
 				}
 			}
 
-			setState(130);
+			setState(131);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__4) {
 				{
-				setState(129);
+				setState(130);
 				metaDecl();
 				}
 			}
 
-			setState(132);
+			setState(133);
 			terms(0);
 			}
 		}
@@ -747,6 +805,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitIntentId(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitIntentId(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final IntentIdContext intentId() throws RecognitionException {
@@ -755,11 +818,11 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(134);
-			match(T__1);
 			setState(135);
-			match(ASSIGN);
+			match(T__1);
 			setState(136);
+			match(ASSIGN);
+			setState(137);
 			id();
 			}
 		}
@@ -789,6 +852,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitOrderedDecl(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitOrderedDecl(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final OrderedDeclContext orderedDecl() throws RecognitionException {
@@ -797,11 +865,11 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(138);
-			match(T__2);
 			setState(139);
-			match(ASSIGN);
+			match(T__2);
 			setState(140);
+			match(ASSIGN);
+			setState(141);
 			match(BOOL);
 			}
 		}
@@ -836,6 +904,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMtdDecl(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMtdDecl(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MtdDeclContext mtdDecl() throws RecognitionException {
@@ -844,11 +917,11 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(142);
-			match(DIV);
 			setState(143);
-			mtdRef();
+			match(DIV);
 			setState(144);
+			mtdRef();
+			setState(145);
 			match(DIV);
 			}
 		}
@@ -883,6 +956,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFlowDecl(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFlowDecl(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final FlowDeclContext flowDecl() throws RecognitionException {
@@ -891,23 +969,23 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(146);
-			match(T__3);
 			setState(147);
+			match(T__3);
+			setState(148);
 			match(ASSIGN);
-			setState(150);
+			setState(151);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case SQSTRING:
 			case DQSTRING:
 				{
-				setState(148);
+				setState(149);
 				qstring();
 				}
 				break;
 			case DIV:
 				{
-				setState(149);
+				setState(150);
 				mtdDecl();
 				}
 				break;
@@ -944,6 +1022,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMetaDecl(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMetaDecl(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MetaDeclContext metaDecl() throws RecognitionException {
@@ -952,11 +1035,11 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(152);
-			match(T__4);
 			setState(153);
-			match(ASSIGN);
+			match(T__4);
 			setState(154);
+			match(ASSIGN);
+			setState(155);
 			jsonObj();
 			}
 		}
@@ -996,6 +1079,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonObj(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonObj(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final JsonObjContext jsonObj() throws RecognitionException {
@@ -1003,42 +1091,42 @@ public class NCIntentDslParser extends Parser {
 		enterRule(_localctx, 32, RULE_jsonObj);
 		int _la;
 		try {
-			setState(169);
+			setState(170);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(156);
-				match(LBRACE);
 				setState(157);
+				match(LBRACE);
+				setState(158);
 				jsonPair();
-				setState(162);
+				setState(163);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(158);
-					match(COMMA);
 					setState(159);
+					match(COMMA);
+					setState(160);
 					jsonPair();
 					}
 					}
-					setState(164);
+					setState(165);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(165);
+				setState(166);
 				match(RBRACE);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(167);
-				match(LBRACE);
 				setState(168);
+				match(LBRACE);
+				setState(169);
 				match(RBRACE);
 				}
 				break;
@@ -1075,6 +1163,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonPair(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonPair(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final JsonPairContext jsonPair() throws RecognitionException {
@@ -1083,11 +1176,11 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(171);
-			qstring();
 			setState(172);
-			match(COLON);
+			qstring();
 			setState(173);
+			match(COLON);
+			setState(174);
 			jsonVal();
 			}
 		}
@@ -1130,6 +1223,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonVal(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonVal(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final JsonValContext jsonVal() throws RecognitionException {
@@ -1137,14 +1235,14 @@ public class NCIntentDslParser extends Parser {
 		enterRule(_localctx, 36, RULE_jsonVal);
 		int _la;
 		try {
-			setState(190);
+			setState(191);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case SQSTRING:
 			case DQSTRING:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(175);
+				setState(176);
 				qstring();
 				}
 				break;
@@ -1152,34 +1250,34 @@ public class NCIntentDslParser extends Parser {
 			case INT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(177);
+				setState(178);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==MINUS) {
 					{
-					setState(176);
+					setState(177);
 					match(MINUS);
 					}
 				}
 
-				setState(179);
+				setState(180);
 				match(INT);
-				setState(181);
+				setState(182);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==REAL) {
 					{
-					setState(180);
+					setState(181);
 					match(REAL);
 					}
 				}
 
-				setState(184);
+				setState(185);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==EXP) {
 					{
-					setState(183);
+					setState(184);
 					match(EXP);
 					}
 				}
@@ -1189,28 +1287,28 @@ public class NCIntentDslParser extends Parser {
 			case LBRACE:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(186);
+				setState(187);
 				jsonObj();
 				}
 				break;
 			case LBR:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(187);
+				setState(188);
 				jsonArr();
 				}
 				break;
 			case BOOL:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(188);
+				setState(189);
 				match(BOOL);
 				}
 				break;
 			case NULL:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(189);
+				setState(190);
 				match(NULL);
 				}
 				break;
@@ -1254,6 +1352,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonArr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonArr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final JsonArrContext jsonArr() throws RecognitionException {
@@ -1261,42 +1364,42 @@ public class NCIntentDslParser extends Parser {
 		enterRule(_localctx, 38, RULE_jsonArr);
 		int _la;
 		try {
-			setState(205);
+			setState(206);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,15,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(192);
-				match(LBR);
 				setState(193);
+				match(LBR);
+				setState(194);
 				jsonVal();
-				setState(198);
+				setState(199);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(194);
-					match(COMMA);
 					setState(195);
+					match(COMMA);
+					setState(196);
 					jsonVal();
 					}
 					}
-					setState(200);
+					setState(201);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(201);
+				setState(202);
 				match(RBR);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(203);
-				match(LBR);
 				setState(204);
+				match(LBR);
+				setState(205);
 				match(RBR);
 				}
 				break;
@@ -1332,6 +1435,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTerms(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTerms(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TermsContext terms() throws RecognitionException {
@@ -1350,11 +1458,11 @@ public class NCIntentDslParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(208);
+			setState(209);
 			termItem();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(214);
+			setState(215);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -1365,14 +1473,14 @@ public class NCIntentDslParser extends Parser {
 					{
 					_localctx = new TermsContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_terms);
-					setState(210);
-					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
 					setState(211);
+					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
+					setState(212);
 					termItem();
 					}
 					} 
 				}
-				setState(216);
+				setState(217);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
 			}
@@ -1408,26 +1516,31 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTermItem(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTermItem(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TermItemContext termItem() throws RecognitionException {
 		TermItemContext _localctx = new TermItemContext(_ctx, getState());
 		enterRule(_localctx, 42, RULE_termItem);
 		try {
-			setState(219);
+			setState(220);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__5:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(217);
+				setState(218);
 				term();
 				}
 				break;
 			case FRAG:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(218);
+				setState(219);
 				fragRef();
 				}
 				break;
@@ -1461,6 +1574,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTermEq(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTermEq(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TermEqContext termEq() throws RecognitionException {
@@ -1470,7 +1588,7 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(221);
+			setState(222);
 			_la = _input.LA(1);
 			if ( !(_la==TILDA || _la==ASSIGN) ) {
 			_errHandler.recoverInline(this);
@@ -1523,6 +1641,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTerm(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTerm(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TermContext term() throws RecognitionException {
@@ -1532,50 +1655,50 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(223);
+			setState(224);
 			match(T__5);
-			setState(225);
+			setState(226);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==LPAR) {
 				{
-				setState(224);
+				setState(225);
 				termId();
 				}
 			}
 
-			setState(227);
+			setState(228);
 			termEq();
-			setState(233);
+			setState(234);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LBRACE:
 				{
 				{
-				setState(228);
-				match(LBRACE);
 				setState(229);
-				expr(0);
+				match(LBRACE);
 				setState(230);
+				expr(0);
+				setState(231);
 				match(RBRACE);
 				}
 				}
 				break;
 			case DIV:
 				{
-				setState(232);
+				setState(233);
 				mtdDecl();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(236);
+			setState(237);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
 			case 1:
 				{
-				setState(235);
+				setState(236);
 				minMax();
 				}
 				break;
@@ -1613,6 +1736,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMtdRef(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMtdRef(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MtdRefContext mtdRef() throws RecognitionException {
@@ -1622,19 +1750,19 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(239);
+			setState(240);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==FUN_NAME || _la==ID) {
 				{
-				setState(238);
+				setState(239);
 				javaFqn(0);
 				}
 			}
 
-			setState(241);
-			match(POUND);
 			setState(242);
+			match(POUND);
+			setState(243);
 			id();
 			}
 		}
@@ -1669,6 +1797,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJavaFqn(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJavaFqn(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final JavaFqnContext javaFqn() throws RecognitionException {
@@ -1687,11 +1820,11 @@ public class NCIntentDslParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(245);
+			setState(246);
 			id();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(252);
+			setState(253);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -1702,16 +1835,16 @@ public class NCIntentDslParser extends Parser {
 					{
 					_localctx = new JavaFqnContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_javaFqn);
-					setState(247);
-					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
 					setState(248);
-					match(DOT);
+					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
 					setState(249);
+					match(DOT);
+					setState(250);
 					id();
 					}
 					} 
 				}
-				setState(254);
+				setState(255);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
 			}
@@ -1746,6 +1879,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTermId(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTermId(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final TermIdContext termId() throws RecognitionException {
@@ -1754,11 +1892,11 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(255);
-			match(LPAR);
 			setState(256);
-			id();
+			match(LPAR);
 			setState(257);
+			id();
+			setState(258);
 			match(RPAR);
 			}
 		}
@@ -1799,6 +1937,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitParExpr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitParExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 	public static class EqExprContext extends ExprContext {
 		public Token op;
@@ -1819,6 +1962,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitEqExpr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitEqExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 	public static class UnaryExprContext extends ExprContext {
 		public Token op;
@@ -1835,6 +1983,11 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitUnaryExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitUnaryExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class CompExprContext extends ExprContext {
@@ -1858,6 +2011,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitCompExpr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitCompExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 	public static class AtomExprContext extends ExprContext {
 		public AtomContext atom() {
@@ -1871,6 +2029,11 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAtomExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAtomExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class CallExprContext extends ExprContext {
@@ -1888,6 +2051,11 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitCallExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitCallExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class MultExprContext extends ExprContext {
@@ -1910,6 +2078,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMultExpr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMultExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 	public static class PlusExprContext extends ExprContext {
 		public Token op;
@@ -1929,6 +2102,11 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitPlusExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitPlusExpr(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class LogExprContext extends ExprContext {
@@ -1950,6 +2128,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitLogExpr(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitLogExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ExprContext expr() throws RecognitionException {
@@ -1968,7 +2151,7 @@ public class NCIntentDslParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(273);
+			setState(274);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NOT:
@@ -1978,7 +2161,7 @@ public class NCIntentDslParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(260);
+				setState(261);
 				((UnaryExprContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==NOT || _la==MINUS) ) {
@@ -1989,7 +2172,7 @@ public class NCIntentDslParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				setState(261);
+				setState(262);
 				expr(9);
 				}
 				break;
@@ -1998,11 +2181,11 @@ public class NCIntentDslParser extends Parser {
 				_localctx = new ParExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(262);
-				match(LPAR);
 				setState(263);
-				expr(0);
+				match(LPAR);
 				setState(264);
+				expr(0);
+				setState(265);
 				match(RPAR);
 				}
 				break;
@@ -2015,7 +2198,7 @@ public class NCIntentDslParser extends Parser {
 				_localctx = new AtomExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(266);
+				setState(267);
 				atom();
 				}
 				break;
@@ -2024,21 +2207,21 @@ public class NCIntentDslParser extends Parser {
 				_localctx = new CallExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(267);
-				match(FUN_NAME);
 				setState(268);
+				match(FUN_NAME);
+				setState(269);
 				match(LPAR);
-				setState(270);
+				setState(271);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FUN_NAME) | (1L << SQSTRING) | (1L << DQSTRING) | (1L << BOOL) | (1L << NULL) | (1L << NOT) | (1L << LPAR) | (1L << MINUS) | (1L << INT))) != 0)) {
 					{
-					setState(269);
+					setState(270);
 					paramList(0);
 					}
 				}
 
-				setState(272);
+				setState(273);
 				match(RPAR);
 				}
 				break;
@@ -2046,7 +2229,7 @@ public class NCIntentDslParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(292);
+			setState(293);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -2054,16 +2237,16 @@ public class NCIntentDslParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(290);
+					setState(291);
 					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,25,_ctx) ) {
 					case 1:
 						{
 						_localctx = new MultExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(275);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(276);
+						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+						setState(277);
 						((MultExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MULT) | (1L << DIV) | (1L << MOD))) != 0)) ) {
@@ -2074,7 +2257,7 @@ public class NCIntentDslParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(277);
+						setState(278);
 						expr(8);
 						}
 						break;
@@ -2082,9 +2265,9 @@ public class NCIntentDslParser extends Parser {
 						{
 						_localctx = new PlusExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(278);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(279);
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						setState(280);
 						((PlusExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==MINUS || _la==PLUS) ) {
@@ -2095,7 +2278,7 @@ public class NCIntentDslParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(280);
+						setState(281);
 						expr(7);
 						}
 						break;
@@ -2103,9 +2286,9 @@ public class NCIntentDslParser extends Parser {
 						{
 						_localctx = new CompExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(281);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(282);
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						setState(283);
 						((CompExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GTEQ) | (1L << LTEQ) | (1L << GT) | (1L << LT))) != 0)) ) {
@@ -2116,7 +2299,7 @@ public class NCIntentDslParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(283);
+						setState(284);
 						expr(6);
 						}
 						break;
@@ -2124,9 +2307,9 @@ public class NCIntentDslParser extends Parser {
 						{
 						_localctx = new EqExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(284);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(285);
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						setState(286);
 						((EqExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==EQ || _la==NEQ) ) {
@@ -2137,7 +2320,7 @@ public class NCIntentDslParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(286);
+						setState(287);
 						expr(5);
 						}
 						break;
@@ -2145,9 +2328,9 @@ public class NCIntentDslParser extends Parser {
 						{
 						_localctx = new LogExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(287);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(288);
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						setState(289);
 						((LogExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==AND || _la==OR) ) {
@@ -2158,14 +2341,14 @@ public class NCIntentDslParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(289);
+						setState(290);
 						expr(4);
 						}
 						break;
 					}
 					} 
 				}
-				setState(294);
+				setState(295);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
 			}
@@ -2202,6 +2385,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitParamList(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitParamList(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ParamListContext paramList() throws RecognitionException {
@@ -2220,11 +2408,11 @@ public class NCIntentDslParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(296);
+			setState(297);
 			expr(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(303);
+			setState(304);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -2235,16 +2423,16 @@ public class NCIntentDslParser extends Parser {
 					{
 					_localctx = new ParamListContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_paramList);
-					setState(298);
-					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
 					setState(299);
-					match(COMMA);
+					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
 					setState(300);
+					match(COMMA);
+					setState(301);
 					expr(0);
 					}
 					} 
 				}
-				setState(305);
+				setState(306);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
 			}
@@ -2282,43 +2470,48 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAtom(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAtom(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final AtomContext atom() throws RecognitionException {
 		AtomContext _localctx = new AtomContext(_ctx, getState());
 		enterRule(_localctx, 58, RULE_atom);
 		try {
-			setState(316);
+			setState(317);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NULL:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(306);
+				setState(307);
 				match(NULL);
 				}
 				break;
 			case INT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(307);
+				setState(308);
 				match(INT);
-				setState(309);
+				setState(310);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,28,_ctx) ) {
 				case 1:
 					{
-					setState(308);
+					setState(309);
 					match(REAL);
 					}
 					break;
 				}
-				setState(312);
+				setState(313);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,29,_ctx) ) {
 				case 1:
 					{
-					setState(311);
+					setState(312);
 					match(EXP);
 					}
 					break;
@@ -2328,7 +2521,7 @@ public class NCIntentDslParser extends Parser {
 			case BOOL:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(314);
+				setState(315);
 				match(BOOL);
 				}
 				break;
@@ -2336,7 +2529,7 @@ public class NCIntentDslParser extends Parser {
 			case DQSTRING:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(315);
+				setState(316);
 				qstring();
 				}
 				break;
@@ -2370,6 +2563,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitQstring(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitQstring(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final QstringContext qstring() throws RecognitionException {
@@ -2379,7 +2577,7 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(318);
+			setState(319);
 			_la = _input.LA(1);
 			if ( !(_la==SQSTRING || _la==DQSTRING) ) {
 			_errHandler.recoverInline(this);
@@ -2421,13 +2619,18 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMinMax(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMinMax(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MinMaxContext minMax() throws RecognitionException {
 		MinMaxContext _localctx = new MinMaxContext(_ctx, getState());
 		enterRule(_localctx, 62, RULE_minMax);
 		try {
-			setState(322);
+			setState(323);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case PLUS:
@@ -2435,14 +2638,14 @@ public class NCIntentDslParser extends Parser {
 			case MULT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(320);
+				setState(321);
 				minMaxShortcut();
 				}
 				break;
 			case LBR:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(321);
+				setState(322);
 				minMaxRange();
 				}
 				break;
@@ -2477,6 +2680,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMinMaxShortcut(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMinMaxShortcut(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MinMaxShortcutContext minMaxShortcut() throws RecognitionException {
@@ -2486,7 +2694,7 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(324);
+			setState(325);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PLUS) | (1L << QUESTION) | (1L << MULT))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -2529,6 +2737,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMinMaxRange(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMinMaxRange(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final MinMaxRangeContext minMaxRange() throws RecognitionException {
@@ -2537,15 +2750,15 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(326);
-			match(LBR);
 			setState(327);
-			match(INT);
+			match(LBR);
 			setState(328);
-			match(COMMA);
-			setState(329);
 			match(INT);
+			setState(329);
+			match(COMMA);
 			setState(330);
+			match(INT);
+			setState(331);
 			match(RBR);
 			}
 		}
@@ -2575,6 +2788,11 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitId(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitId(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final IdContext id() throws RecognitionException {
@@ -2584,7 +2802,7 @@ public class NCIntentDslParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(332);
+			setState(333);
 			_la = _input.LA(1);
 			if ( !(_la==FUN_NAME || _la==ID) ) {
 			_errHandler.recoverInline(this);
@@ -2667,122 +2885,122 @@ public class NCIntentDslParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\65\u0151\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\65\u0152\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
 		"\t!\4\"\t\"\4#\t#\4$\t$\3\2\3\2\3\2\3\3\5\3M\n\3\3\3\3\3\3\3\3\3\3\3\3"+
 		"\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\7\5]\n\5\f\5\16\5`\13\5\3\6\3\6\3\6"+
-		"\5\6e\n\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n"+
-		"\5\nv\n\n\3\n\3\n\3\13\3\13\3\13\3\f\3\f\5\f\177\n\f\3\f\5\f\u0082\n\f"+
-		"\3\f\5\f\u0085\n\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\3\16\3\17\3"+
-		"\17\3\17\3\17\3\20\3\20\3\20\3\20\5\20\u0099\n\20\3\21\3\21\3\21\3\21"+
-		"\3\22\3\22\3\22\3\22\7\22\u00a3\n\22\f\22\16\22\u00a6\13\22\3\22\3\22"+
-		"\3\22\3\22\5\22\u00ac\n\22\3\23\3\23\3\23\3\23\3\24\3\24\5\24\u00b4\n"+
-		"\24\3\24\3\24\5\24\u00b8\n\24\3\24\5\24\u00bb\n\24\3\24\3\24\3\24\3\24"+
-		"\5\24\u00c1\n\24\3\25\3\25\3\25\3\25\7\25\u00c7\n\25\f\25\16\25\u00ca"+
-		"\13\25\3\25\3\25\3\25\3\25\5\25\u00d0\n\25\3\26\3\26\3\26\3\26\3\26\7"+
-		"\26\u00d7\n\26\f\26\16\26\u00da\13\26\3\27\3\27\5\27\u00de\n\27\3\30\3"+
-		"\30\3\31\3\31\5\31\u00e4\n\31\3\31\3\31\3\31\3\31\3\31\3\31\5\31\u00ec"+
-		"\n\31\3\31\5\31\u00ef\n\31\3\32\5\32\u00f2\n\32\3\32\3\32\3\32\3\33\3"+
-		"\33\3\33\3\33\3\33\3\33\7\33\u00fd\n\33\f\33\16\33\u0100\13\33\3\34\3"+
+		"\5\6e\n\6\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n"+
+		"\3\n\5\nw\n\n\3\n\3\n\3\13\3\13\3\13\3\f\3\f\5\f\u0080\n\f\3\f\5\f\u0083"+
+		"\n\f\3\f\5\f\u0086\n\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\3\16\3\17"+
+		"\3\17\3\17\3\17\3\20\3\20\3\20\3\20\5\20\u009a\n\20\3\21\3\21\3\21\3\21"+
+		"\3\22\3\22\3\22\3\22\7\22\u00a4\n\22\f\22\16\22\u00a7\13\22\3\22\3\22"+
+		"\3\22\3\22\5\22\u00ad\n\22\3\23\3\23\3\23\3\23\3\24\3\24\5\24\u00b5\n"+
+		"\24\3\24\3\24\5\24\u00b9\n\24\3\24\5\24\u00bc\n\24\3\24\3\24\3\24\3\24"+
+		"\5\24\u00c2\n\24\3\25\3\25\3\25\3\25\7\25\u00c8\n\25\f\25\16\25\u00cb"+
+		"\13\25\3\25\3\25\3\25\3\25\5\25\u00d1\n\25\3\26\3\26\3\26\3\26\3\26\7"+
+		"\26\u00d8\n\26\f\26\16\26\u00db\13\26\3\27\3\27\5\27\u00df\n\27\3\30\3"+
+		"\30\3\31\3\31\5\31\u00e5\n\31\3\31\3\31\3\31\3\31\3\31\3\31\5\31\u00ed"+
+		"\n\31\3\31\5\31\u00f0\n\31\3\32\5\32\u00f3\n\32\3\32\3\32\3\32\3\33\3"+
+		"\33\3\33\3\33\3\33\3\33\7\33\u00fe\n\33\f\33\16\33\u0101\13\33\3\34\3"+
 		"\34\3\34\3\34\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\5"+
-		"\35\u0111\n\35\3\35\5\35\u0114\n\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35"+
-		"\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\7\35\u0125\n\35\f\35\16\35\u0128"+
-		"\13\35\3\36\3\36\3\36\3\36\3\36\3\36\7\36\u0130\n\36\f\36\16\36\u0133"+
-		"\13\36\3\37\3\37\3\37\5\37\u0138\n\37\3\37\5\37\u013b\n\37\3\37\3\37\5"+
-		"\37\u013f\n\37\3 \3 \3!\3!\5!\u0145\n!\3\"\3\"\3#\3#\3#\3#\3#\3#\3$\3"+
+		"\35\u0112\n\35\3\35\5\35\u0115\n\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35"+
+		"\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\7\35\u0126\n\35\f\35\16\35\u0129"+
+		"\13\35\3\36\3\36\3\36\3\36\3\36\3\36\7\36\u0131\n\36\f\36\16\36\u0134"+
+		"\13\36\3\37\3\37\3\37\5\37\u0139\n\37\3\37\5\37\u013c\n\37\3\37\3\37\5"+
+		"\37\u0140\n\37\3 \3 \3!\3!\5!\u0146\n!\3\"\3\"\3#\3#\3#\3#\3#\3#\3$\3"+
 		"$\3$\2\7\b*\648:%\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62"+
 		"\64\668:<>@BDF\2\f\4\2\37\37((\4\2\30\30%%\3\2+-\4\2%%))\3\2\21\24\3\2"+
-		"\17\20\3\2\25\26\3\2\13\f\3\2)+\4\2\t\t\62\62\2\u0159\2H\3\2\2\2\4L\3"+
-		"\2\2\2\6S\3\2\2\2\bW\3\2\2\2\nd\3\2\2\2\ff\3\2\2\2\16j\3\2\2\2\20m\3\2"+
-		"\2\2\22q\3\2\2\2\24y\3\2\2\2\26|\3\2\2\2\30\u0088\3\2\2\2\32\u008c\3\2"+
-		"\2\2\34\u0090\3\2\2\2\36\u0094\3\2\2\2 \u009a\3\2\2\2\"\u00ab\3\2\2\2"+
-		"$\u00ad\3\2\2\2&\u00c0\3\2\2\2(\u00cf\3\2\2\2*\u00d1\3\2\2\2,\u00dd\3"+
-		"\2\2\2.\u00df\3\2\2\2\60\u00e1\3\2\2\2\62\u00f1\3\2\2\2\64\u00f6\3\2\2"+
-		"\2\66\u0101\3\2\2\28\u0113\3\2\2\2:\u0129\3\2\2\2<\u013e\3\2\2\2>\u0140"+
-		"\3\2\2\2@\u0144\3\2\2\2B\u0146\3\2\2\2D\u0148\3\2\2\2F\u014e\3\2\2\2H"+
+		"\17\20\3\2\25\26\3\2\13\f\3\2)+\4\2\t\t\62\62\2\u015a\2H\3\2\2\2\4L\3"+
+		"\2\2\2\6S\3\2\2\2\bW\3\2\2\2\nd\3\2\2\2\ff\3\2\2\2\16k\3\2\2\2\20n\3\2"+
+		"\2\2\22r\3\2\2\2\24z\3\2\2\2\26}\3\2\2\2\30\u0089\3\2\2\2\32\u008d\3\2"+
+		"\2\2\34\u0091\3\2\2\2\36\u0095\3\2\2\2 \u009b\3\2\2\2\"\u00ac\3\2\2\2"+
+		"$\u00ae\3\2\2\2&\u00c1\3\2\2\2(\u00d0\3\2\2\2*\u00d2\3\2\2\2,\u00de\3"+
+		"\2\2\2.\u00e0\3\2\2\2\60\u00e2\3\2\2\2\62\u00f2\3\2\2\2\64\u00f7\3\2\2"+
+		"\2\66\u0102\3\2\2\28\u0114\3\2\2\2:\u012a\3\2\2\2<\u013f\3\2\2\2>\u0141"+
+		"\3\2\2\2@\u0145\3\2\2\2B\u0147\3\2\2\2D\u0149\3\2\2\2F\u014f\3\2\2\2H"+
 		"I\5\b\5\2IJ\7\2\2\3J\3\3\2\2\2KM\5\6\4\2LK\3\2\2\2LM\3\2\2\2MN\3\2\2\2"+
 		"NO\7\33\2\2OP\58\35\2PQ\7\34\2\2QR\7\2\2\3R\5\3\2\2\2ST\7 \2\2TU\5F$\2"+
 		"UV\7!\2\2V\7\3\2\2\2WX\b\5\1\2XY\5\n\6\2Y^\3\2\2\2Z[\f\3\2\2[]\5\n\6\2"+
 		"\\Z\3\2\2\2]`\3\2\2\2^\\\3\2\2\2^_\3\2\2\2_\t\3\2\2\2`^\3\2\2\2ae\5\26"+
 		"\f\2be\5\16\b\2ce\5\f\7\2da\3\2\2\2db\3\2\2\2dc\3\2\2\2e\13\3\2\2\2fg"+
-		"\7\3\2\2gh\7(\2\2hi\5> \2i\r\3\2\2\2jk\5\20\t\2kl\5*\26\2l\17\3\2\2\2"+
-		"mn\7\n\2\2no\7(\2\2op\5F$\2p\21\3\2\2\2qr\7\n\2\2rs\7\31\2\2su\5F$\2t"+
-		"v\5\24\13\2ut\3\2\2\2uv\3\2\2\2vw\3\2\2\2wx\7\32\2\2x\23\3\2\2\2yz\7#"+
-		"\2\2z{\5\"\22\2{\25\3\2\2\2|~\5\30\r\2}\177\5\32\16\2~}\3\2\2\2~\177\3"+
-		"\2\2\2\177\u0081\3\2\2\2\u0080\u0082\5\36\20\2\u0081\u0080\3\2\2\2\u0081"+
-		"\u0082\3\2\2\2\u0082\u0084\3\2\2\2\u0083\u0085\5 \21\2\u0084\u0083\3\2"+
-		"\2\2\u0084\u0085\3\2\2\2\u0085\u0086\3\2\2\2\u0086\u0087\5*\26\2\u0087"+
-		"\27\3\2\2\2\u0088\u0089\7\4\2\2\u0089\u008a\7(\2\2\u008a\u008b\5F$\2\u008b"+
-		"\31\3\2\2\2\u008c\u008d\7\5\2\2\u008d\u008e\7(\2\2\u008e\u008f\7\r\2\2"+
-		"\u008f\33\3\2\2\2\u0090\u0091\7,\2\2\u0091\u0092\5\62\32\2\u0092\u0093"+
-		"\7,\2\2\u0093\35\3\2\2\2\u0094\u0095\7\6\2\2\u0095\u0098\7(\2\2\u0096"+
-		"\u0099\5> \2\u0097\u0099\5\34\17\2\u0098\u0096\3\2\2\2\u0098\u0097\3\2"+
-		"\2\2\u0099\37\3\2\2\2\u009a\u009b\7\7\2\2\u009b\u009c\7(\2\2\u009c\u009d"+
-		"\5\"\22\2\u009d!\3\2\2\2\u009e\u009f\7\33\2\2\u009f\u00a4\5$\23\2\u00a0"+
-		"\u00a1\7#\2\2\u00a1\u00a3\5$\23\2\u00a2\u00a0\3\2\2\2\u00a3\u00a6\3\2"+
-		"\2\2\u00a4\u00a2\3\2\2\2\u00a4\u00a5\3\2\2\2\u00a5\u00a7\3\2\2\2\u00a6"+
-		"\u00a4\3\2\2\2\u00a7\u00a8\7\34\2\2\u00a8\u00ac\3\2\2\2\u00a9\u00aa\7"+
-		"\33\2\2\u00aa\u00ac\7\34\2\2\u00ab\u009e\3\2\2\2\u00ab\u00a9\3\2\2\2\u00ac"+
-		"#\3\2\2\2\u00ad\u00ae\5> \2\u00ae\u00af\7$\2\2\u00af\u00b0\5&\24\2\u00b0"+
-		"%\3\2\2\2\u00b1\u00c1\5> \2\u00b2\u00b4\7%\2\2\u00b3\u00b2\3\2\2\2\u00b3"+
-		"\u00b4\3\2\2\2\u00b4\u00b5\3\2\2\2\u00b5\u00b7\7/\2\2\u00b6\u00b8\7\60"+
-		"\2\2\u00b7\u00b6\3\2\2\2\u00b7\u00b8\3\2\2\2\u00b8\u00ba\3\2\2\2\u00b9"+
-		"\u00bb\7\61\2\2\u00ba\u00b9\3\2\2\2\u00ba\u00bb\3\2\2\2\u00bb\u00c1\3"+
-		"\2\2\2\u00bc\u00c1\5\"\22\2\u00bd\u00c1\5(\25\2\u00be\u00c1\7\r\2\2\u00bf"+
-		"\u00c1\7\16\2\2\u00c0\u00b1\3\2\2\2\u00c0\u00b3\3\2\2\2\u00c0\u00bc\3"+
-		"\2\2\2\u00c0\u00bd\3\2\2\2\u00c0\u00be\3\2\2\2\u00c0\u00bf\3\2\2\2\u00c1"+
-		"\'\3\2\2\2\u00c2\u00c3\7 \2\2\u00c3\u00c8\5&\24\2\u00c4\u00c5\7#\2\2\u00c5"+
-		"\u00c7\5&\24\2\u00c6\u00c4\3\2\2\2\u00c7\u00ca\3\2\2\2\u00c8\u00c6\3\2"+
-		"\2\2\u00c8\u00c9\3\2\2\2\u00c9\u00cb\3\2\2\2\u00ca\u00c8\3\2\2\2\u00cb"+
-		"\u00cc\7!\2\2\u00cc\u00d0\3\2\2\2\u00cd\u00ce\7 \2\2\u00ce\u00d0\7!\2"+
-		"\2\u00cf\u00c2\3\2\2\2\u00cf\u00cd\3\2\2\2\u00d0)\3\2\2\2\u00d1\u00d2"+
-		"\b\26\1\2\u00d2\u00d3\5,\27\2\u00d3\u00d8\3\2\2\2\u00d4\u00d5\f\3\2\2"+
-		"\u00d5\u00d7\5,\27\2\u00d6\u00d4\3\2\2\2\u00d7\u00da\3\2\2\2\u00d8\u00d6"+
-		"\3\2\2\2\u00d8\u00d9\3\2\2\2\u00d9+\3\2\2\2\u00da\u00d8\3\2\2\2\u00db"+
-		"\u00de\5\60\31\2\u00dc\u00de\5\22\n\2\u00dd\u00db\3\2\2\2\u00dd\u00dc"+
-		"\3\2\2\2\u00de-\3\2\2\2\u00df\u00e0\t\2\2\2\u00e0/\3\2\2\2\u00e1\u00e3"+
-		"\7\b\2\2\u00e2\u00e4\5\66\34\2\u00e3\u00e2\3\2\2\2\u00e3\u00e4\3\2\2\2"+
-		"\u00e4\u00e5\3\2\2\2\u00e5\u00eb\5.\30\2\u00e6\u00e7\7\33\2\2\u00e7\u00e8"+
-		"\58\35\2\u00e8\u00e9\7\34\2\2\u00e9\u00ec\3\2\2\2\u00ea\u00ec\5\34\17"+
-		"\2\u00eb\u00e6\3\2\2\2\u00eb\u00ea\3\2\2\2\u00ec\u00ee\3\2\2\2\u00ed\u00ef"+
-		"\5@!\2\u00ee\u00ed\3\2\2\2\u00ee\u00ef\3\2\2\2\u00ef\61\3\2\2\2\u00f0"+
-		"\u00f2\5\64\33\2\u00f1\u00f0\3\2\2\2\u00f1\u00f2\3\2\2\2\u00f2\u00f3\3"+
-		"\2\2\2\u00f3\u00f4\7\"\2\2\u00f4\u00f5\5F$\2\u00f5\63\3\2\2\2\u00f6\u00f7"+
-		"\b\33\1\2\u00f7\u00f8\5F$\2\u00f8\u00fe\3\2\2\2\u00f9\u00fa\f\3\2\2\u00fa"+
-		"\u00fb\7&\2\2\u00fb\u00fd\5F$\2\u00fc\u00f9\3\2\2\2\u00fd\u0100\3\2\2"+
-		"\2\u00fe\u00fc\3\2\2\2\u00fe\u00ff\3\2\2\2\u00ff\65\3\2\2\2\u0100\u00fe"+
-		"\3\2\2\2\u0101\u0102\7\31\2\2\u0102\u0103\5F$\2\u0103\u0104\7\32\2\2\u0104"+
-		"\67\3\2\2\2\u0105\u0106\b\35\1\2\u0106\u0107\t\3\2\2\u0107\u0114\58\35"+
-		"\13\u0108\u0109\7\31\2\2\u0109\u010a\58\35\2\u010a\u010b\7\32\2\2\u010b"+
-		"\u0114\3\2\2\2\u010c\u0114\5<\37\2\u010d\u010e\7\t\2\2\u010e\u0110\7\31"+
-		"\2\2\u010f\u0111\5:\36\2\u0110\u010f\3\2\2\2\u0110\u0111\3\2\2\2\u0111"+
-		"\u0112\3\2\2\2\u0112\u0114\7\32\2\2\u0113\u0105\3\2\2\2\u0113\u0108\3"+
-		"\2\2\2\u0113\u010c\3\2\2\2\u0113\u010d\3\2\2\2\u0114\u0126\3\2\2\2\u0115"+
-		"\u0116\f\t\2\2\u0116\u0117\t\4\2\2\u0117\u0125\58\35\n\u0118\u0119\f\b"+
-		"\2\2\u0119\u011a\t\5\2\2\u011a\u0125\58\35\t\u011b\u011c\f\7\2\2\u011c"+
-		"\u011d\t\6\2\2\u011d\u0125\58\35\b\u011e\u011f\f\6\2\2\u011f\u0120\t\7"+
-		"\2\2\u0120\u0125\58\35\7\u0121\u0122\f\5\2\2\u0122\u0123\t\b\2\2\u0123"+
-		"\u0125\58\35\6\u0124\u0115\3\2\2\2\u0124\u0118\3\2\2\2\u0124\u011b\3\2"+
-		"\2\2\u0124\u011e\3\2\2\2\u0124\u0121\3\2\2\2\u0125\u0128\3\2\2\2\u0126"+
-		"\u0124\3\2\2\2\u0126\u0127\3\2\2\2\u01279\3\2\2\2\u0128\u0126\3\2\2\2"+
-		"\u0129\u012a\b\36\1\2\u012a\u012b\58\35\2\u012b\u0131\3\2\2\2\u012c\u012d"+
-		"\f\3\2\2\u012d\u012e\7#\2\2\u012e\u0130\58\35\2\u012f\u012c\3\2\2\2\u0130"+
-		"\u0133\3\2\2\2\u0131\u012f\3\2\2\2\u0131\u0132\3\2\2\2\u0132;\3\2\2\2"+
-		"\u0133\u0131\3\2\2\2\u0134\u013f\7\16\2\2\u0135\u0137\7/\2\2\u0136\u0138"+
-		"\7\60\2\2\u0137\u0136\3\2\2\2\u0137\u0138\3\2\2\2\u0138\u013a\3\2\2\2"+
-		"\u0139\u013b\7\61\2\2\u013a\u0139\3\2\2\2\u013a\u013b\3\2\2\2\u013b\u013f"+
-		"\3\2\2\2\u013c\u013f\7\r\2\2\u013d\u013f\5> \2\u013e\u0134\3\2\2\2\u013e"+
-		"\u0135\3\2\2\2\u013e\u013c\3\2\2\2\u013e\u013d\3\2\2\2\u013f=\3\2\2\2"+
-		"\u0140\u0141\t\t\2\2\u0141?\3\2\2\2\u0142\u0145\5B\"\2\u0143\u0145\5D"+
-		"#\2\u0144\u0142\3\2\2\2\u0144\u0143\3\2\2\2\u0145A\3\2\2\2\u0146\u0147"+
-		"\t\n\2\2\u0147C\3\2\2\2\u0148\u0149\7 \2\2\u0149\u014a\7/\2\2\u014a\u014b"+
-		"\7#\2\2\u014b\u014c\7/\2\2\u014c\u014d\7!\2\2\u014dE\3\2\2\2\u014e\u014f"+
-		"\t\13\2\2\u014fG\3\2\2\2\"L^du~\u0081\u0084\u0098\u00a4\u00ab\u00b3\u00b7"+
-		"\u00ba\u00c0\u00c8\u00cf\u00d8\u00dd\u00e3\u00eb\u00ee\u00f1\u00fe\u0110"+
-		"\u0113\u0124\u0126\u0131\u0137\u013a\u013e\u0144";
+		"\7\3\2\2gh\7\31\2\2hi\5> \2ij\7\32\2\2j\r\3\2\2\2kl\5\20\t\2lm\5*\26\2"+
+		"m\17\3\2\2\2no\7\n\2\2op\7(\2\2pq\5F$\2q\21\3\2\2\2rs\7\n\2\2st\7\31\2"+
+		"\2tv\5F$\2uw\5\24\13\2vu\3\2\2\2vw\3\2\2\2wx\3\2\2\2xy\7\32\2\2y\23\3"+
+		"\2\2\2z{\7#\2\2{|\5\"\22\2|\25\3\2\2\2}\177\5\30\r\2~\u0080\5\32\16\2"+
+		"\177~\3\2\2\2\177\u0080\3\2\2\2\u0080\u0082\3\2\2\2\u0081\u0083\5\36\20"+
+		"\2\u0082\u0081\3\2\2\2\u0082\u0083\3\2\2\2\u0083\u0085\3\2\2\2\u0084\u0086"+
+		"\5 \21\2\u0085\u0084\3\2\2\2\u0085\u0086\3\2\2\2\u0086\u0087\3\2\2\2\u0087"+
+		"\u0088\5*\26\2\u0088\27\3\2\2\2\u0089\u008a\7\4\2\2\u008a\u008b\7(\2\2"+
+		"\u008b\u008c\5F$\2\u008c\31\3\2\2\2\u008d\u008e\7\5\2\2\u008e\u008f\7"+
+		"(\2\2\u008f\u0090\7\r\2\2\u0090\33\3\2\2\2\u0091\u0092\7,\2\2\u0092\u0093"+
+		"\5\62\32\2\u0093\u0094\7,\2\2\u0094\35\3\2\2\2\u0095\u0096\7\6\2\2\u0096"+
+		"\u0099\7(\2\2\u0097\u009a\5> \2\u0098\u009a\5\34\17\2\u0099\u0097\3\2"+
+		"\2\2\u0099\u0098\3\2\2\2\u009a\37\3\2\2\2\u009b\u009c\7\7\2\2\u009c\u009d"+
+		"\7(\2\2\u009d\u009e\5\"\22\2\u009e!\3\2\2\2\u009f\u00a0\7\33\2\2\u00a0"+
+		"\u00a5\5$\23\2\u00a1\u00a2\7#\2\2\u00a2\u00a4\5$\23\2\u00a3\u00a1\3\2"+
+		"\2\2\u00a4\u00a7\3\2\2\2\u00a5\u00a3\3\2\2\2\u00a5\u00a6\3\2\2\2\u00a6"+
+		"\u00a8\3\2\2\2\u00a7\u00a5\3\2\2\2\u00a8\u00a9\7\34\2\2\u00a9\u00ad\3"+
+		"\2\2\2\u00aa\u00ab\7\33\2\2\u00ab\u00ad\7\34\2\2\u00ac\u009f\3\2\2\2\u00ac"+
+		"\u00aa\3\2\2\2\u00ad#\3\2\2\2\u00ae\u00af\5> \2\u00af\u00b0\7$\2\2\u00b0"+
+		"\u00b1\5&\24\2\u00b1%\3\2\2\2\u00b2\u00c2\5> \2\u00b3\u00b5\7%\2\2\u00b4"+
+		"\u00b3\3\2\2\2\u00b4\u00b5\3\2\2\2\u00b5\u00b6\3\2\2\2\u00b6\u00b8\7/"+
+		"\2\2\u00b7\u00b9\7\60\2\2\u00b8\u00b7\3\2\2\2\u00b8\u00b9\3\2\2\2\u00b9"+
+		"\u00bb\3\2\2\2\u00ba\u00bc\7\61\2\2\u00bb\u00ba\3\2\2\2\u00bb\u00bc\3"+
+		"\2\2\2\u00bc\u00c2\3\2\2\2\u00bd\u00c2\5\"\22\2\u00be\u00c2\5(\25\2\u00bf"+
+		"\u00c2\7\r\2\2\u00c0\u00c2\7\16\2\2\u00c1\u00b2\3\2\2\2\u00c1\u00b4\3"+
+		"\2\2\2\u00c1\u00bd\3\2\2\2\u00c1\u00be\3\2\2\2\u00c1\u00bf\3\2\2\2\u00c1"+
+		"\u00c0\3\2\2\2\u00c2\'\3\2\2\2\u00c3\u00c4\7 \2\2\u00c4\u00c9\5&\24\2"+
+		"\u00c5\u00c6\7#\2\2\u00c6\u00c8\5&\24\2\u00c7\u00c5\3\2\2\2\u00c8\u00cb"+
+		"\3\2\2\2\u00c9\u00c7\3\2\2\2\u00c9\u00ca\3\2\2\2\u00ca\u00cc\3\2\2\2\u00cb"+
+		"\u00c9\3\2\2\2\u00cc\u00cd\7!\2\2\u00cd\u00d1\3\2\2\2\u00ce\u00cf\7 \2"+
+		"\2\u00cf\u00d1\7!\2\2\u00d0\u00c3\3\2\2\2\u00d0\u00ce\3\2\2\2\u00d1)\3"+
+		"\2\2\2\u00d2\u00d3\b\26\1\2\u00d3\u00d4\5,\27\2\u00d4\u00d9\3\2\2\2\u00d5"+
+		"\u00d6\f\3\2\2\u00d6\u00d8\5,\27\2\u00d7\u00d5\3\2\2\2\u00d8\u00db\3\2"+
+		"\2\2\u00d9\u00d7\3\2\2\2\u00d9\u00da\3\2\2\2\u00da+\3\2\2\2\u00db\u00d9"+
+		"\3\2\2\2\u00dc\u00df\5\60\31\2\u00dd\u00df\5\22\n\2\u00de\u00dc\3\2\2"+
+		"\2\u00de\u00dd\3\2\2\2\u00df-\3\2\2\2\u00e0\u00e1\t\2\2\2\u00e1/\3\2\2"+
+		"\2\u00e2\u00e4\7\b\2\2\u00e3\u00e5\5\66\34\2\u00e4\u00e3\3\2\2\2\u00e4"+
+		"\u00e5\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00ec\5.\30\2\u00e7\u00e8\7\33"+
+		"\2\2\u00e8\u00e9\58\35\2\u00e9\u00ea\7\34\2\2\u00ea\u00ed\3\2\2\2\u00eb"+
+		"\u00ed\5\34\17\2\u00ec\u00e7\3\2\2\2\u00ec\u00eb\3\2\2\2\u00ed\u00ef\3"+
+		"\2\2\2\u00ee\u00f0\5@!\2\u00ef\u00ee\3\2\2\2\u00ef\u00f0\3\2\2\2\u00f0"+
+		"\61\3\2\2\2\u00f1\u00f3\5\64\33\2\u00f2\u00f1\3\2\2\2\u00f2\u00f3\3\2"+
+		"\2\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\7\"\2\2\u00f5\u00f6\5F$\2\u00f6\63"+
+		"\3\2\2\2\u00f7\u00f8\b\33\1\2\u00f8\u00f9\5F$\2\u00f9\u00ff\3\2\2\2\u00fa"+
+		"\u00fb\f\3\2\2\u00fb\u00fc\7&\2\2\u00fc\u00fe\5F$\2\u00fd\u00fa\3\2\2"+
+		"\2\u00fe\u0101\3\2\2\2\u00ff\u00fd\3\2\2\2\u00ff\u0100\3\2\2\2\u0100\65"+
+		"\3\2\2\2\u0101\u00ff\3\2\2\2\u0102\u0103\7\31\2\2\u0103\u0104\5F$\2\u0104"+
+		"\u0105\7\32\2\2\u0105\67\3\2\2\2\u0106\u0107\b\35\1\2\u0107\u0108\t\3"+
+		"\2\2\u0108\u0115\58\35\13\u0109\u010a\7\31\2\2\u010a\u010b\58\35\2\u010b"+
+		"\u010c\7\32\2\2\u010c\u0115\3\2\2\2\u010d\u0115\5<\37\2\u010e\u010f\7"+
+		"\t\2\2\u010f\u0111\7\31\2\2\u0110\u0112\5:\36\2\u0111\u0110\3\2\2\2\u0111"+
+		"\u0112\3\2\2\2\u0112\u0113\3\2\2\2\u0113\u0115\7\32\2\2\u0114\u0106\3"+
+		"\2\2\2\u0114\u0109\3\2\2\2\u0114\u010d\3\2\2\2\u0114\u010e\3\2\2\2\u0115"+
+		"\u0127\3\2\2\2\u0116\u0117\f\t\2\2\u0117\u0118\t\4\2\2\u0118\u0126\58"+
+		"\35\n\u0119\u011a\f\b\2\2\u011a\u011b\t\5\2\2\u011b\u0126\58\35\t\u011c"+
+		"\u011d\f\7\2\2\u011d\u011e\t\6\2\2\u011e\u0126\58\35\b\u011f\u0120\f\6"+
+		"\2\2\u0120\u0121\t\7\2\2\u0121\u0126\58\35\7\u0122\u0123\f\5\2\2\u0123"+
+		"\u0124\t\b\2\2\u0124\u0126\58\35\6\u0125\u0116\3\2\2\2\u0125\u0119\3\2"+
+		"\2\2\u0125\u011c\3\2\2\2\u0125\u011f\3\2\2\2\u0125\u0122\3\2\2\2\u0126"+
+		"\u0129\3\2\2\2\u0127\u0125\3\2\2\2\u0127\u0128\3\2\2\2\u01289\3\2\2\2"+
+		"\u0129\u0127\3\2\2\2\u012a\u012b\b\36\1\2\u012b\u012c\58\35\2\u012c\u0132"+
+		"\3\2\2\2\u012d\u012e\f\3\2\2\u012e\u012f\7#\2\2\u012f\u0131\58\35\2\u0130"+
+		"\u012d\3\2\2\2\u0131\u0134\3\2\2\2\u0132\u0130\3\2\2\2\u0132\u0133\3\2"+
+		"\2\2\u0133;\3\2\2\2\u0134\u0132\3\2\2\2\u0135\u0140\7\16\2\2\u0136\u0138"+
+		"\7/\2\2\u0137\u0139\7\60\2\2\u0138\u0137\3\2\2\2\u0138\u0139\3\2\2\2\u0139"+
+		"\u013b\3\2\2\2\u013a\u013c\7\61\2\2\u013b\u013a\3\2\2\2\u013b\u013c\3"+
+		"\2\2\2\u013c\u0140\3\2\2\2\u013d\u0140\7\r\2\2\u013e\u0140\5> \2\u013f"+
+		"\u0135\3\2\2\2\u013f\u0136\3\2\2\2\u013f\u013d\3\2\2\2\u013f\u013e\3\2"+
+		"\2\2\u0140=\3\2\2\2\u0141\u0142\t\t\2\2\u0142?\3\2\2\2\u0143\u0146\5B"+
+		"\"\2\u0144\u0146\5D#\2\u0145\u0143\3\2\2\2\u0145\u0144\3\2\2\2\u0146A"+
+		"\3\2\2\2\u0147\u0148\t\n\2\2\u0148C\3\2\2\2\u0149\u014a\7 \2\2\u014a\u014b"+
+		"\7/\2\2\u014b\u014c\7#\2\2\u014c\u014d\7/\2\2\u014d\u014e\7!\2\2\u014e"+
+		"E\3\2\2\2\u014f\u0150\t\13\2\2\u0150G\3\2\2\2\"L^dv\177\u0082\u0085\u0099"+
+		"\u00a5\u00ac\u00b4\u00b8\u00bb\u00c1\u00c9\u00d0\u00d9\u00de\u00e4\u00ec"+
+		"\u00ef\u00f2\u00ff\u0111\u0114\u0125\u0127\u0132\u0138\u013b\u013f\u0145";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

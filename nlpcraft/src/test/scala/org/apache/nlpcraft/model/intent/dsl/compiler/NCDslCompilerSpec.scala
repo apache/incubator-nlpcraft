@@ -21,8 +21,6 @@ import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.compiler.{NCDslCompiler, NCDslCompilerGlobal}
 import org.junit.jupiter.api.Test
 
-import java.nio.file.{Path, Paths}
-
 /**
  * Tests for DSL compiler.
  */
@@ -37,20 +35,6 @@ class NCDslCompilerSpec {
         try {
             NCDslCompiler.compileIntents(dsl, MODEL_ID, MODEL_ID)
 
-            assert(true)
-        }
-        catch {
-            case e: Exception ⇒ assert(false, e)
-        }
-    
-    /**
-      *
-      * @param path
-      */
-    private def checkPathCompileOk(path: Path): Unit =
-        try {
-            NCDslCompiler.compileIntents(path, MODEL_ID)
-            
             assert(true)
         }
         catch {
@@ -71,15 +55,7 @@ class NCDslCompilerSpec {
                 println(e.getMessage)
                 assert(true)
         }
-    
-    @Test
-    @throws[NCException]
-    def testPathCompileOk(): Unit = {
-        NCDslCompilerGlobal.clearCache(MODEL_ID)
-        
-        checkPathCompileOk(Paths.get(classOf[NCDslCompilerSpec].getResource("test_ok.nc").toURI))
-    }
-    
+
     @Test
     @throws[NCException]
     def testInlineCompileOk(): Unit = {

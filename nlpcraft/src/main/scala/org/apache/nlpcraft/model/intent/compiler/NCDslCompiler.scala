@@ -28,7 +28,6 @@ import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslTokenPredicate, NCDslSynonym, NCDslTerm}
 
 import scala.collection.JavaConverters._
-import java.nio.file.Path
 import java.util.Optional
 import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable
@@ -331,7 +330,7 @@ object NCDslCompiler extends LazyLogging {
             intents += intent
         }
     
-        override def exitUrl(ctx: IDP.UrlContext): Unit = {
+        override def exitImp(ctx: IDP.ImpContext): Unit = {
         
         }
         
@@ -545,20 +544,6 @@ object NCDslCompiler extends LazyLogging {
         // State automata + it's parser.
         new FiniteStateMachine(origin, dsl, mdlId) → parser
     }
-
-    /**
-     * Compiles inline (supplied) fragments and/or intents from given file. Note that fragments are
-     * accumulated in a static map keyed by model ID. Only intents are returned, if any.
-     *
-     * @param filePath *.nc intent DSL file to compile.
-     * @param mdlId ID of the model *.nc file belongs to.
-     * @return
-     */
-    @throws[NCE]
-    def compileIntents(
-        filePath: Path,
-        mdlId: String
-    ): Set[NCDslIntent] = parseIntents(U.readFile(filePath.toFile).mkString("\n"), mdlId, filePath.getFileName.toString)
 
     /**
      * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
