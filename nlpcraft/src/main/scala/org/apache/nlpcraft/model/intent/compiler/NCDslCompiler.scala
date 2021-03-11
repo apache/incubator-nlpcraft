@@ -213,7 +213,7 @@ object NCDslCompiler extends LazyLogging {
             if (max < 1)
                 throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
 
-            val pred: NCDslTokenPredicate = if (refMtdName != null) { // User-code defined term.
+            val pred: NCDslTokenPredicate = if (refMtdName.isDefined) { // User-code defined term.
                 // Closure copies.
                 val clsName = refClsName.orNull
                 val mtdName = refMtdName.orNull
