@@ -24,6 +24,7 @@ import java.util.regex.Pattern
 /**
  * DSL intent.
  *
+ * @param origin File path, file name, method name or URL.
  * @param dsl Original DSL of this intent.
  * @param id
  * @param ordered
@@ -32,6 +33,7 @@ import java.util.regex.Pattern
  * @param terms
  */
 case class NCDslIntent(
+    origin: String,
     dsl: String,
     id: String,
     ordered: Boolean,

@@ -74,7 +74,6 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
 
     static {
         MAPPER_JSON.enable(JsonParser.Feature.ALLOW_COMMENTS);
-
         MAPPER_JSON.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
         MAPPER_YAML.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
     }
@@ -365,11 +364,7 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
             }).collect(Collectors.toSet());
     }
 
-    /**
-     * Gets this file model adapter origin (file path or URI).
-     *
-     * @return This file model adapter origin (file path or URI).
-     */
+    @Override
     public String getOrigin() {
         return origin;
     }

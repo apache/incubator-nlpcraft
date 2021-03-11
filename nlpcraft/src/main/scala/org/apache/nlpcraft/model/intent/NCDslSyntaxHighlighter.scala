@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.compiler
+package org.apache.nlpcraft.model.intent
 
 import org.apache.nlpcraft.common._
 
@@ -29,7 +29,7 @@ object NCDslSyntaxHighlighter {
     private final val NUM_REGEX = Pattern.compile("-?[0-9]+")
     private final val STR_REGEX = Pattern.compile("""(["'])[^"]*\1""")
 
-    private val KEYWORDS = Seq("flow", "fragment", "intent", "meta", "term", "ordered")
+    private val KEYWORDS = Seq("flow", "fragment", "url", "intent", "meta", "term", "ordered")
     private val LITERALS = Seq("true", "false", "null")
     private val FUNCTIONS = Seq(
         "meta_token",

@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model.intent.dsl.compiler
 
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.compiler.{NCDslCompiler, NCDslFragmentCache}
+import org.apache.nlpcraft.model.intent.compiler.{NCDslCompiler, NCDslCompilerGlobal}
 import org.junit.jupiter.api.Test
 
 import java.nio.file.{Path, Paths}
@@ -75,7 +75,7 @@ class NCDslCompilerSpec {
     @Test
     @throws[NCException]
     def testPathCompileOk(): Unit = {
-        NCDslFragmentCache.clear(MODEL_ID)
+        NCDslCompilerGlobal.clearCache(MODEL_ID)
         
         checkPathCompileOk(Paths.get(classOf[NCDslCompilerSpec].getResource("test_ok.nc").toURI))
     }
@@ -83,7 +83,7 @@ class NCDslCompilerSpec {
     @Test
     @throws[NCException]
     def testInlineCompileOk(): Unit = {
-        NCDslFragmentCache.clear(MODEL_ID)
+        NCDslCompilerGlobal.clearCache(MODEL_ID)
         
         checkCompileOk(
             """
@@ -139,7 +139,7 @@ class NCDslCompilerSpec {
     @Test
     @throws[NCException]
     def testInlineCompileFail(): Unit = {
-        NCDslFragmentCache.clear(MODEL_ID)
+        NCDslCompilerGlobal.clearCache(MODEL_ID)
         
         checkCompileError(
             """

@@ -26,9 +26,11 @@ dslItems
     | dslItems dslItem
     ;
 dslItem
-    : intent
-    | frag
+    : intent // Intent declaration.
+    | frag // Fragment declaration.
+    | url // External URL containing DSL declarations (recursive parsing).
     ;
+url: 'url' ASSIGN qstring;
 frag: fragId terms;
 fragId: FRAG ASSIGN id;
 fragRef: FRAG LPAR id fragMeta? RPAR;

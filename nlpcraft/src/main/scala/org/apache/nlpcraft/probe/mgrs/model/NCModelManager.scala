@@ -21,7 +21,7 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.compiler.NCDslSyntaxHighlighter
+import org.apache.nlpcraft.model.intent.NCDslSyntaxHighlighter
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.deploy._
 

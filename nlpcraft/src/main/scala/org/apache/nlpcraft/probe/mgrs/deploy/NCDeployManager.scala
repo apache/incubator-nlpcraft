@@ -310,7 +310,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                 chunks ++= U.splitTrimFilter(x.substring(start), " ")
 
-                chunks.map(mkChunk(mdlId, _))
+                chunks.map(mkChunk(mdl, _))
             }
 
             /**
@@ -962,19 +962,20 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     /**
      *
-     * @param mdlId Model ID.
+     * @param mdl Model.
      * @param chunk Synonym chunk.
      * @return
      */
     @throws[NCE]
-    private def mkChunk(mdlId: String, chunk: String): NCProbeSynonymChunk = {
+    private def mkChunk(mdl: NCModel, chunk: String): NCProbeSynonymChunk = {
         def stripSuffix(fix: String, s: String): String = s.slice(fix.length, s.length - fix.length)
+        
+        val mdlId = mdl.getId
 
         // Regex synonym.
         if (startsAndEnds(REGEX_FIX, chunk)) {
             val ptrn = stripSuffix(REGEX_FIX, chunk)
-
-            if (ptrn.nonEmpty)
+            if (ptrn.nonEmpty) {
                 try
                     NCProbeSynonymChunk(kind = REGEX, origText = chunk, regex = Pattern.compile(ptrn))
                 catch {
@@ -982,18 +983,19 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         throw new NCE(s"Invalid regex synonym syntax detected [" +
                             s"mdlId=$mdlId, " +
                             s"chunk=$chunk" +
-                        s"]", e)
+                            s"]", e)
                 }
+            }
             else
                 throw new NCE(s"Empty regex synonym detected [" +
                     s"mdlId=$mdlId, " +
                     s"chunk=$chunk" +
-                s"]")
+                    s"]")
         }
         // DSL-based synonym.
         else if (startsAndEnds(DSL_FIX, chunk)) {
             val dsl = stripSuffix(DSL_FIX, chunk)
-            val compUnit = NCDslCompiler.compileSynonym(dsl, mdlId)
+            val compUnit = NCDslCompiler.compileSynonym(dsl, mdlId, mdl.getOrigin)
 
             val x = NCProbeSynonymChunk(alias = compUnit.alias.orNull, kind = DSL, origText = chunk, dslPred = compUnit.pred)
 
@@ -1479,7 +1481,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             .asScala
                             .flatMap(NCDslCompiler.compileIntents(_, mdl.getId, mStr))
             
-                        U.getDups(compiledIntents.toSeq.map(_.id)) match {
+                        U.getDups(compiledIntents.map(_.id)) match {
                             case ids if ids.nonEmpty ⇒
                                 throw new NCE(s"Duplicate intent IDs found [" +
                                     s"mdlId=$mdlId, " +

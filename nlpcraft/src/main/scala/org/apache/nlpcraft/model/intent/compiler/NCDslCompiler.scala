@@ -23,7 +23,7 @@ import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser ⇒ IDP}
-import org.apache.nlpcraft.model.intent.compiler.{NCDslFragmentCache ⇒ FragCache}
+import org.apache.nlpcraft.model.intent.compiler.{NCDslCompilerGlobal ⇒ Global}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslTokenPredicate, NCDslSynonym, NCDslTerm}
 
@@ -40,11 +40,12 @@ object NCDslCompiler extends LazyLogging {
     private val synCache = new mutable.HashMap[String, NCDslSynonym]
 
     /**
-     *
-     * @param dsl
-     * @param mdlId
-     */
-    class FiniteStateMachine(dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCDslBaselCompiler {
+      *
+      * @param origin
+      * @param dsl
+      * @param mdlId
+      */
+    class FiniteStateMachine(origin: String, dsl: String, mdlId: String) extends NCIntentDslBaseListener with NCDslBaselCompiler {
         // Accumulators for parsed objects.
         private val intents = ArrayBuffer.empty[NCDslIntent]
         private var synonym: NCDslSynonym = _
@@ -152,13 +153,13 @@ object NCDslCompiler extends LazyLogging {
         override def exitSynonym(ctx: IDP.SynonymContext): Unit = {
             implicit val evidence: PRC = ctx
 
-            synonym = NCDslSynonym(Option(alias), instrToPredicate("Synonym"))
+            synonym = NCDslSynonym(origin, Option(alias), instrToPredicate("Synonym"))
         }
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit = {
             fragId = ctx.id().getText
 
-            if (FragCache.get(mdlId, fragId).isDefined)
+            if (Global.getFragment(mdlId, fragId).isDefined)
                 throw newSyntaxError(s"Duplicate fragment ID: $fragId")(ctx.id())
         }
 
@@ -170,7 +171,7 @@ object NCDslCompiler extends LazyLogging {
         override def exitFragRef(ctx: IDP.FragRefContext): Unit = {
             val id = ctx.id().getText
 
-            FragCache.get(mdlId, id) match {
+            Global.getFragment(mdlId, id) match {
                 case Some(frag) ⇒
                     val meta = if (fragMeta == null) Map.empty[String, Any] else fragMeta
 
@@ -315,13 +316,14 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def exitFrag(ctx: IDP.FragContext): Unit = {
-            FragCache.add(mdlId, NCDslFragment(fragId, terms.toList))
+            Global.addFragment(mdlId, NCDslFragment(fragId, terms.toList))
 
             terms.clear()
         }
 
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
             intents += NCDslIntent(
+                origin,
                 dsl,
                 intentId,
                 ordered,
@@ -481,7 +483,8 @@ object NCDslCompiler extends LazyLogging {
      */
     private def parseSynonym(
         dsl: String,
-        mdlId: String
+        mdlId: String,
+        origin: String
     ): NCDslSynonym = {
         require(dsl != null)
         require(mdlId != null)
@@ -489,7 +492,7 @@ object NCDslCompiler extends LazyLogging {
         val x = dsl.strip()
 
         val syn: NCDslSynonym = synCache.getOrElseUpdate(x, {
-            val (fsm, parser) = antlr4Armature(x, mdlId)
+            val (fsm, parser) = antlr4Armature(x, mdlId, origin)
 
             // Parse the input DSL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.synonym())
@@ -505,15 +508,15 @@ object NCDslCompiler extends LazyLogging {
      *
      * @param dsl
      * @param mdlId
-     * @param srcName
+     * @param origin
      * @return
      */
     private def antlr4Armature(
         dsl: String,
         mdlId: String,
-        srcName: String = "<inline>"
+        origin: String
     ): (FiniteStateMachine, IDP) = {
-        val lexer = new NCIntentDslLexer(CharStreams.fromString(dsl, srcName))
+        val lexer = new NCIntentDslLexer(CharStreams.fromString(dsl, origin))
         val tokens = new CommonTokenStream(lexer)
         val parser = new IDP(tokens)
 
@@ -524,7 +527,7 @@ object NCDslCompiler extends LazyLogging {
         parser.addErrorListener(new CompilerErrorListener(dsl, mdlId))
 
         // State automata + it's parser.
-        new FiniteStateMachine(dsl, mdlId) → parser
+        new FiniteStateMachine(origin, dsl, mdlId) → parser
     }
 
     /**
@@ -547,25 +550,27 @@ object NCDslCompiler extends LazyLogging {
      *
      * @param dsl Intent DSL to compile.
      * @param mdlId ID of the model DSL belongs to.
-     * @param srcName Optional source name.
+     * @param origin Optional source name.
      * @return
      */
     @throws[NCE]
     def compileIntents(
         dsl: String,
         mdlId: String,
-        srcName: String = "<inline>"
-    ): Set[NCDslIntent] = parseIntents(dsl, mdlId, srcName)
+        origin: String = "<inline>"
+    ): Set[NCDslIntent] = parseIntents(dsl, mdlId, origin)
 
     /**
-     *
-     * @param dsl Synonym DSL to compile.
-     * @param mdlId ID of the model DSL belongs to.
-     * @return
-     */
+      *
+      * @param dsl Synonym DSL to compile.
+      * @param mdlId ID of the model DSL belongs to.*
+      * @param origin Source name.
+      * @return
+      */
     @throws[NCE]
     def compileSynonym(
         dsl: String,
-        mdlId: String
-    ): NCDslSynonym = parseSynonym(dsl, mdlId)
+        mdlId: String,
+        origin: String,
+    ): NCDslSynonym = parseSynonym(dsl, mdlId, origin)
 }

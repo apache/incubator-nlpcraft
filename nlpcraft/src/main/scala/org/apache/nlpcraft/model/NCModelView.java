@@ -385,6 +385,15 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
+     * Gets the origin of this model like name of the class, file path or URL.
+     *
+     * @return Origin of this model like name of the class, file path or URL.
+     */
+    default String getOrigin() {
+        return getClass().getCanonicalName();
+    }
+
+    /**
      * Gets maximum number of unknown words until automatic rejection. An unknown word is a word
      * that is not part of Princeton WordNet database. If you expect a very formalized and well
      * defined input without uncommon slang and abbreviations you can set this to a small number
