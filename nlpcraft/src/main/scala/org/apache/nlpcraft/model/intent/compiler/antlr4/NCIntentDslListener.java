@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -57,6 +57,16 @@ public interface NCIntentDslListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitDslItem(NCIntentDslParser.DslItemContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIntentDslParser#url}.
+	 * @param ctx the parse tree
+	 */
+	void enterUrl(NCIntentDslParser.UrlContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIntentDslParser#url}.
+	 * @param ctx the parse tree
+	 */
+	void exitUrl(NCIntentDslParser.UrlContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIntentDslParser#frag}.
 	 * @param ctx the parse tree

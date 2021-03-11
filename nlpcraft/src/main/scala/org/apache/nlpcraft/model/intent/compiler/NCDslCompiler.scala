@@ -140,12 +140,8 @@ object NCDslCompiler extends LazyLogging {
 
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit = {
             intentId = ctx.id().getText
-
-            if (intents.exists(i ⇒ i.id != null && i.id == intentId))
-                throw newSyntaxError(s"Duplicate intent ID: $intentId")(ctx.id())
         }
-
-
+        
         override def exitAlias(ctx: IDP.AliasContext): Unit = {
             alias = ctx.id().getText
         }
@@ -320,19 +316,39 @@ object NCDslCompiler extends LazyLogging {
 
             terms.clear()
         }
-
+    
+        /**
+          *
+          * @param intent
+          * @param ctx
+          */
+        private def addIntent(intent: NCDslIntent)(implicit ctx: ParserRuleContext): Unit = {
+            val intentId = intent.id
+            
+            if (intents.exists(_.id == intentId))
+                throw newSyntaxError(s"Duplicate intent ID: $intentId")
+                
+            intents += intent
+        }
+    
+        override def exitUrl(ctx: IDP.UrlContext): Unit = {
+        
+        }
+        
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
-            intents += NCDslIntent(
-                origin,
-                dsl,
-                intentId,
-                ordered,
-                if (intentMeta == null) Map.empty else intentMeta,
-                flowRegex,
-                refClsName,
-                refMtdName,
-                terms.toList
-            )
+            addIntent(
+                NCDslIntent(
+                    origin,
+                    dsl,
+                    intentId,
+                    ordered,
+                    if (intentMeta == null) Map.empty else intentMeta,
+                    flowRegex,
+                    refClsName,
+                    refMtdName,
+                    terms.toList
+                )
+            )(ctx.intentId())
 
             refClsName = None
             refMtdName = None
