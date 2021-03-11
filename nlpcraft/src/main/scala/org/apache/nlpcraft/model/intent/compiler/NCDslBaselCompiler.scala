@@ -262,7 +262,11 @@ trait NCDslBaselCompiler {
         val usedTok = f1 || f2
 
         def doEq(op: String): Boolean = {
-            if (isJLong(v1) && isJLong(v2))
+            if (v1 == null && v2 == null)
+                true
+            else if ((v1 == null && v2 != null) || (v1 != null && v2 == null))
+                false
+            else if (isJLong(v1) && isJLong(v2))
                 asJLong(v1) == asJLong(v2)
             else if (isJDouble(v1) && isJDouble(v2))
                 asJDouble(v1) == asJDouble(v2)
@@ -272,11 +276,10 @@ trait NCDslBaselCompiler {
                 asStr(v1) == asStr(v2)
             else if (isJList(v1) && isJList(v2))
                 asJList(v1).equals(asJList(v2))
-            else
+            else {
                 throw rtBinaryOpError(op, v1, v2)
-
-        }
-
+            }}
+    
         if (eq != null)
             pushBool(doEq("=="), usedTok)
         else {
