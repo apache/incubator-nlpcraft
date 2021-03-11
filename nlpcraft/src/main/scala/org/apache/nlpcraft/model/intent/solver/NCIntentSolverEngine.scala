@@ -29,6 +29,7 @@ import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslTerm}
 
 import java.util.function.Function
+import scala.collection.JavaConverters._
 import scala.collection.convert.ImplicitConversions._
 import scala.collection.mutable
 
@@ -486,7 +487,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             val termCtx = NCDslContext(
                 intentMeta = intent.meta,
-                convMeta = ctx.getConversation.getMetadata,
+                convMeta = ctx.getConversation.getMetadata.asScala.toMap[String, Object],
                 req = ctx.getRequest
             )
 
