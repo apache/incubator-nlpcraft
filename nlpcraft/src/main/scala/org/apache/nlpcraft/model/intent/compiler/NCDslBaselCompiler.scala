@@ -65,10 +65,12 @@ trait NCDslBaselCompiler {
     def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
     def isJList(v: Object): Boolean = v.isInstanceOf[JList[_]]
+    def isJMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
     def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
     def asJList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
+    def asJMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
     def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
     def asStr(v: Object): String = v.asInstanceOf[String]
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
@@ -388,64 +390,35 @@ trait NCDslBaselCompiler {
             if (stack.size < min)
                 throw rtMinParamNumError(min, fun)
 
-        def get1Str(): (String, Boolean) = {
+        def get1[T](typ: String, is: Object ⇒ Boolean, as: Object ⇒ T): (T, Boolean) = {
             ensureStack(1)
-
+    
             val (v, f) = pop1()
-
-            if (!isStr(v))
-                throw rtParamTypeError(fun, v, "string")
-
-            (asStr(v), f)
+    
+            if (!is(v))
+                throw rtParamTypeError(fun, v, typ)
+    
+            (as(v), f)
+        }
+        def get2[T](typ: String, is: Object ⇒ Boolean, as: Object ⇒ T): (T, T, Boolean) = {
+            ensureStack(1)
+        
+            val (v1, v2, f1, f2) = pop2()
+        
+            if (!is(v1))
+                throw rtParamTypeError(fun, v1, typ)
+            if (!is(v2))
+                throw rtParamTypeError(fun, v2, typ)
+        
+            (as(v1), as(v2), f1 || f2)
         }
     
-        def get1List(): (JList[_], Boolean) = {
-            ensureStack(1)
-        
-            val (v, f) = pop1()
-        
-            if (!isJList(v))
-                throw rtParamTypeError(fun, v, "list")
-        
-            (asJList(v), f)
-        }
-
-        def get1Double(): (JDouble, Boolean) = {
-            ensureStack(1)
-
-            val (v, f) = pop1()
-
-            if (!isJDouble(v))
-                throw rtParamTypeError(fun, v, "double")
-
-            (asJDouble(v), f)
-        }
-
-        def get2Doubles(): (JDouble, JDouble, Boolean) = {
-            ensureStack(2)
-
-            val (v1, v2, f1, f2) = pop2()
-
-            if (!isJDouble(v1))
-                throw rtParamTypeError(fun, v1, "double")
-            if (!isJDouble(v2))
-                throw rtParamTypeError(fun, v2, "double")
-
-            (asJDouble(v1), asJDouble(v2), f1 || f2)
-        }
-
-        def get2Str(): (String, String, Boolean) = {
-            ensureStack(2)
-
-            val (v1, v2, f1, f2) = pop2()
-
-            if (!isStr(v1))
-                throw rtParamTypeError(fun, v1, "string")
-            if (!isStr(v2))
-                throw rtParamTypeError(fun, v2, "string")
-
-            (asStr(v1), asStr(v2), f1 || f2)
-        }
+        def get1Map(): (JMap[_, _], Boolean) = get1("map", isJMap, asJMap)
+        def get1Double(): (JDouble, Boolean) = get1("double", isJDouble, asJDouble)
+        def get1List(): (JList[_], Boolean) = get1("list", isJList, asJList)
+        def get1Str(): (String, Boolean) = get1("string", isStr, asStr)
+        def get2Doubles(): (JDouble, JDouble, Boolean) = get2("double", isJDouble, asJDouble)
+        def get2Str(): (String, String, Boolean) = get2("string", isStr, asStr)
 
         def get1Tok1Str(): (NCToken, String, Boolean) = {
             ensureStack(2)
@@ -525,11 +498,6 @@ trait NCDslBaselCompiler {
         }
 
         /*
-         * Metadata operations.
-         */
-        def doPartMeta(): Unit = get1Tok1Str() match { case (t, s, f) ⇒  pushAny(t.meta(s), f) }
-
-        /*
          * Math operations.
          */
         def doAbs(): Unit = get1Any() match {
@@ -588,7 +556,7 @@ trait NCDslBaselCompiler {
 
         fun match {
             // Metadata access.
-            case "meta_part" ⇒ doPartMeta()
+            case "meta_part" ⇒ get1Tok1Str() match { case (t, s, f) ⇒  pushAny(t.meta(s), f) }
             case "meta_token" ⇒ get1Str() match { case (s, _) ⇒ pushAny(tok.meta(s), true) }
             case "meta_model" ⇒ get1Str() match { case (s, _) ⇒ pushAny(tok.getModel.meta(s), false) }
             case "meta_intent" ⇒ get1Str() match { case (s, _) ⇒ pushAny(termCtx.intentMeta.get(s).orNull, false) }
@@ -707,8 +675,8 @@ trait NCDslBaselCompiler {
             case "remove" ⇒
             case "first" ⇒
             case "last" ⇒
-            case "keys" ⇒
-            case "values" ⇒
+            case "keys" ⇒ get1Map() match { case (map, f) ⇒ pushAny(new JList(map.keySet()), f) }
+            case "values" ⇒ get1Map() match { case (map, f) ⇒ pushAny(new JList(map.values()), f) }
             case "take" ⇒
             case "drop" ⇒
             case "size" ⇒ doSize()
