@@ -340,14 +340,14 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
       */
     @NCIntent(
         "intent=customSortReport " +
-        "term(sort)~{id == 'sort:best' || id == 'sort:worst'} " +
-        "term(tbls)~{groups @@ 'table'}[0,7] " +
-        "term(cols)~{id == 'col:date' || id == 'col:num' || id == 'col:varchar'}[0,7] " +
-        "term(condNums)~{id == 'condition:num'}[0,7] " +
-        "term(condVals)~{id == 'condition:value'}[0,7] " +
-        "term(condDates)~{id == 'condition:date'}[0,7] " +
-        "term(condFreeDate)~{id == 'nlpcraft:date'}? " +
-        "term(limit)~{id == 'nlpcraft:limit'}?"
+            "term(sort)~{id() == 'sort:best' || id() == 'sort:worst'} " +
+            "term(tbls)~{has(groups(), 'table')}[0,7] " +
+            "term(cols)~{id() == 'col:date' || id() == 'col:num' || id() == 'col:varchar'}[0,7] " +
+            "term(condNums)~{id() == 'condition:num'}[0,7] " +
+            "term(condVals)~{id() == 'condition:value'}[0,7] " +
+            "term(condDates)~{id() == 'condition:date'}[0,7] " +
+            "term(condFreeDate)~{id() == 'nlpcraft:date'}? " +
+            "term(limit)~{id() == 'nlpcraft:limit'}?"
     )
     @NCIntentSample(Array(
         "What are the least performing categories for the last quarter?"
