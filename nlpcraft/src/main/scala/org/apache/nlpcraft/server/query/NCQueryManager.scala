@@ -272,7 +272,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 tbl += (s"${b("Model ID")}", mdlId)
                 tbl += (s"${b("Agent")}", usrAgent.getOrElse("<n/a>"))
                 tbl += (s"${b("Remote Address")}", rmtAddr.getOrElse("<n/a>"))
-                tbl += (s"${b("Server Request ID")}", rv(g(srvReqId)))
+                tbl += (s"${b("Server Request ID")}", m(srvReqId))
                 tbl += (s"${b("Data")}", U.prettyJson(data.orNull).split("\n").toSeq)
 
                 logger.info(s"New request received:\n$tbl")

@@ -245,7 +245,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         tbl += (s"${b("User Agent")}", senMeta.getOrElse("USER_AGENT", ""))
         tbl += (s"${b("Remote Address")}", senMeta.getOrElse("REMOTE_ADDR", ""))
         tbl += (s"${b("Server Timestamp")}", new Date(java.lang.Long.parseLong(senMeta("RECEIVE_TSTAMP").toString)))
-        tbl += (s"${b("Server Request ID")}", rv(g(srvReqId)))
+        tbl += (s"${b("Server Request ID")}", m(srvReqId))
 
         logger.info(s"New request received from server:\n$tbl")
         
@@ -343,7 +343,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     s"\n" +
                     s"${g("|")}\n" +
                     s"${g("|")} ${bo(g("SUCCESS"))} result sent back to server [" +
-                        s"srvReqId=${rv(g(srvReqId))}, " +
+                        s"srvReqId=${m(srvReqId)}, " +
                         s"type=${resType.getOrElse("")}, " +
                         s"dur=${durMs}ms" +
                     s"]\n" +
@@ -354,7 +354,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     s"\n" +
                     s"${r("|")}\n" +
                     s"${r("|")} ${bo(r("REJECT"))} result sent back to server [" +
-                        s"srvReqId=${rv(g(srvReqId))}, " +
+                        s"srvReqId=${m(srvReqId)}, " +
                         s"response=${errMsg.get}, " +
                         s"dur=${durMs}ms" +
                     s"]\n" +
@@ -681,7 +681,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             "errMsg" → e.getMessage
                         )
     
-                        U.prettyError(logger,s"Rejection for server request ID: ${rv(g(srvReqId))}", e)
+                        U.prettyError(logger,s"Rejection for server request ID: ${m(srvReqId)}", e)
 
                         val res = mdl.model.onRejection(solverIn.intentMatch, e)
     
