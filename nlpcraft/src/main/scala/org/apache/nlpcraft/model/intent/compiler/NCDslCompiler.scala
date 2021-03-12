@@ -186,7 +186,7 @@ object NCDslCompiler extends LazyLogging {
 
         override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit = {
             if (ctx.qstring() != null) {
-                val regex = ctx.qstring().getText
+                val regex = U.trimQuotes(ctx.qstring().getText)
 
                 if (regex != null && regex.length > 2)
                     flowRegex = if (regex.nonEmpty) Some(regex) else None
@@ -329,7 +329,7 @@ object NCDslCompiler extends LazyLogging {
         }
     
         override def exitImp(ctx: IDP.ImpContext): Unit = {
-            val x = ctx.qstring().getText
+            val x = U.trimQuotes(ctx.qstring().getText)
             var imports: Set[NCDslIntent] = null
 
             val file = new File(x)
@@ -360,9 +360,13 @@ object NCDslCompiler extends LazyLogging {
                         x
                     )
                 catch {
-                    case _: Exception ⇒ newSyntaxError(s"Invalid or unknown import location: $x")(ctx.qstring())
+                    case _: Exception ⇒ throw newSyntaxError(s"Invalid or unknown import location: $x")(ctx.qstring())
                 }
             }
+
+            require(imports != null)
+
+            imports.foreach(addIntent(_)(ctx.qstring()))
         }
         
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
