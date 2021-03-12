@@ -49,5 +49,5 @@ class NCNestedTestModel4 extends NCModelAdapter(
 @NCTestEnvironment(model = classOf[NCNestedTestModel4], startClient = true)
 class NCEnricherNestedModelSpec4 extends NCTestContext {
     @Test
-    def test(): Unit = checkIntent("the a " * 9, "onE2")
+    def test(): Unit = checkIntent("the a " * 11, "onE2")
 }

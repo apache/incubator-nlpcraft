@@ -680,8 +680,9 @@ object NCSentenceManager extends NCService {
                         map { case (_, seq) ⇒ seq.map { case (_, note) ⇒ note }.toSet }.
                         toSeq.sortBy(-_.size)
 
-                val sens =
+                val seqSens =
                     NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala).
+                        par.
                         flatMap(delComb ⇒ {
                             val nsClone = sen.clone()
 
@@ -693,7 +694,7 @@ object NCSentenceManager extends NCService {
                             require(!nsClone.exists(_.count(!_.isNlp) > 1))
 
                             collapse0(nsClone)
-                        })
+                        }).seq
 
                 // It removes sentences which have only one difference - 'direct' flag of their user tokens.
                 // `Direct` sentences have higher priority.
@@ -702,7 +703,7 @@ object NCSentenceManager extends NCService {
 
                 val m = mutable.HashMap.empty[Key, Value]
 
-                sens.map(sen ⇒ {
+                seqSens.par.map(sen ⇒ {
                     val notes = sen.flatten
 
                     val sysNotes = notes.filter(_.isSystem)
@@ -716,7 +717,7 @@ object NCSentenceManager extends NCService {
                         )
 
                     (Key(get(sysNotes), get(userNotes)), sen, nlpNotes.map(p ⇒ if (p.isDirect) 0 else 1).sum)
-                }).
+                }).seq.
                     foreach { case (key, sen, directCnt) ⇒
                         m.get(key) match {
                             case Some(v) ⇒
@@ -734,7 +735,7 @@ object NCSentenceManager extends NCService {
 
         sens = sens.distinct
 
-        sens.foreach(sen ⇒
+        sens.par.foreach(sen ⇒
             sen.foreach(tok ⇒
                 tok.size match {
                     case 1 ⇒ require(tok.head.isNlp, s"Unexpected non-'nlpcraft:nlp' token: $tok")
