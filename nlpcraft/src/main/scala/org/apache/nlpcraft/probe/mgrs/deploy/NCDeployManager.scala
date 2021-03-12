@@ -995,7 +995,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // DSL-based synonym.
         else if (startsAndEnds(DSL_FIX, chunk)) {
             val dsl = stripSuffix(DSL_FIX, chunk)
-            val compUnit = NCDslCompiler.compileSynonym(dsl, mdlId, mdl.getOrigin)
+            val compUnit = NCDslCompiler.compileSynonym(dsl, mdl, mdl.getOrigin)
 
             val x = NCProbeSynonymChunk(alias = compUnit.alias.orNull, kind = DSL, origText = chunk, dslPred = compUnit.pred)
 
@@ -1467,7 +1467,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val mStr = method2Str(m)
 
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl.getId, mStr))
+            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mStr))
                 intents += (intent → prepareCallback(m, mdl, intent))
     
             // Process intent references from @NCIntentRef annotation.
@@ -1479,7 +1479,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         val compiledIntents = adapter
                             .getIntents
                             .asScala
-                            .flatMap(NCDslCompiler.compileIntents(_, mdl.getId, mStr))
+                            .flatMap(NCDslCompiler.compileIntents(_, mdl, mStr))
             
                         U.getDups(compiledIntents.map(_.id)) match {
                             case ids if ids.nonEmpty ⇒
@@ -1548,7 +1548,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     val distinct = seqSeq.map(_.distinct).distinct
 
                     for (ann ← intAnns) {
-                        for (intent ← NCDslCompiler.compileIntents(ann.value(), mdlId, mStr))
+                        for (intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mStr))
                             samples += (intent.id → distinct)
                     }
                     for (ann ← refAnns)

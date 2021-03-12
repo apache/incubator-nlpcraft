@@ -15,25 +15,11 @@
  * limitations under the License.
  */
 
-{
-    "id": "nlpcraft.alarm.ex",
-    "name": "Alarm Example Model",
-    "version": "1.0",
-    "description": "Alarm example model.",
-    "enabledBuiltInTokens": [
-        "nlpcraft:num"
-    ],
-    "elements": [
-        {
-            "id": "x:alarm",
-            "description": "Alarm token indicator.",
-            "synonyms": [
-                "{ping|buzz|wake|call|hit} {me|up|me up|_}",
-                "{set|_} {my|_} {wake|wake up|_} {alarm|timer|clock|buzzer|call} {up|_}"
-            ]
-        }
-    ],
-    "intents": [
-        "import('org/apache/nlpcraft/examples/alarm/intents.nc')"
-    ]
-}
+ // Fragments.
+ fragment=buzz term~{id() == 'x:alarm'}
+ fragment=when term(nums)~{id() == 'nlpcraft:num' && meta_token('nlpcraft:num:unittype') == 'datetime' && meta_token('nlpcraft:num:isequalcondition') == true}[0,7]
+
+ // Intents
+ intent=alarm
+    fragment(buzz)
+    fragment(when)

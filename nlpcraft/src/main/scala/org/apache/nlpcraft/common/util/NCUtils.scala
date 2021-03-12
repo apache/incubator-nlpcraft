@@ -384,7 +384,7 @@ object NCUtils extends LazyLogging {
       * @param log Logger to use.
       */
     @throws[NCE]
-    def readStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
+    def readStream(in: InputStream, enc: String = "UTF-8", log: Logger = logger): List[String] =
         mapStream(in, enc, log, _.map(p ⇒ p).toList)
 
     /**

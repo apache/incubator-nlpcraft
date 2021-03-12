@@ -31,7 +31,7 @@ import java.util.{Collections, List ⇒ JList, Map ⇒ JMap}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-trait NCDslBaselCompiler {
+trait NCDslCompilerBase {
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE
 
@@ -62,8 +62,11 @@ trait NCDslBaselCompiler {
     type StackType = mutable.ArrayStack[NCDslExprRetVal]
     type Instr = (NCToken, StackType, NCDslContext) ⇒ Unit
 
+    //noinspection ComparingUnrelatedTypes
     def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
+    //noinspection ComparingUnrelatedTypes
     def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
+    //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
     def isJList(v: Object): Boolean = v.isInstanceOf[JList[_]]
     def isJMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]

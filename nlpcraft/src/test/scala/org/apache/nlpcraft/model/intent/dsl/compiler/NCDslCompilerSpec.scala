@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.intent.dsl.compiler
 
 import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.model.NCModel
 import org.apache.nlpcraft.model.intent.compiler.{NCDslCompiler, NCDslCompilerGlobal}
 import org.junit.jupiter.api.Test
 
@@ -26,6 +27,12 @@ import org.junit.jupiter.api.Test
  */
 class NCDslCompilerSpec {
     private final val MODEL_ID = "test.mdl.id"
+
+    private final val MODEL = new NCModel {
+        override val getId: String = MODEL_ID
+        override val getName: String = MODEL_ID
+        override val getVersion: String = "1.0.0"
+    }
     
     /**
      *
@@ -33,7 +40,7 @@ class NCDslCompilerSpec {
      */
     private def checkCompileOk(dsl: String): Unit =
         try {
-            NCDslCompiler.compileIntents(dsl, MODEL_ID, MODEL_ID)
+            NCDslCompiler.compileIntents(dsl, MODEL, MODEL_ID)
 
             assert(true)
         }
@@ -47,7 +54,7 @@ class NCDslCompilerSpec {
      */
     private def checkCompileError(txt: String): Unit =
         try {
-            NCDslCompiler.compileIntents(txt, MODEL_ID, MODEL_ID)
+            NCDslCompiler.compileIntents(txt, MODEL, MODEL_ID)
 
             assert(false)
         } catch {
