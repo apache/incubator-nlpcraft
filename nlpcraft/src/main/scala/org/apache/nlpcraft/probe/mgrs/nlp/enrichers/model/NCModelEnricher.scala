@@ -373,11 +373,16 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
             var permCnt = 0
 
-            val collapsedSens =
-                NCProbeVariants.convert(ns.srvReqId, mdl, NCSentenceManager.collapse(mdl.model, ns.clone())).map(_.asScala)
-            val complexesWords = ns.map(Complex(_))
-            val complexes =
-                collapsedSens.
+            lazy val complexesWords = ns.map(Complex(_))
+            lazy val complexes =
+                NCProbeVariants.
+                    convert(
+                        ns.srvReqId,
+                        mdl,
+                        NCSentenceManager.collapse(mdl.model, ns.clone())
+                    ).
+                    map(_.asScala).
+                    par.
                     flatMap(sen ⇒
                         // Tokens splitting.
                         // For example sentence "A B С D E" (5 words) processed as 3 tokens on first phase after collapsing
@@ -392,14 +397,14 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 sen.flatMap(t ⇒
                                     // Single word token is not split as words - token.
                                     // Partly (not strict in) token - word.
-                                    if (senPartComb.contains(t) || t.wordIndexes.length == 1)
+                                    if (t.wordIndexes.length == 1 || senPartComb.contains(t))
                                         Seq(Complex(t))
                                     else
                                         t.wordIndexes.map(complexesWords)
                                 )
                                 // Drops without tokens (DSL part works with tokens).
                             }).filter(_.exists(_.isToken)).map(ComplexSeq(_)).distinct
-                    )
+                    ).seq
 
             val tokIdxs = ns.map(t ⇒ t → t.wordIndexes).toMap
 
@@ -433,10 +438,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                     if (rec.nonEmpty)
                                         Some(
                                             rec ++
-                                                (
-                                                    complexSeq.wordsIndexes.intersect(idxs) -- rec.flatMap(_.wordIndexes)
-
-                                                ).map(complexesWords)
+                                                (complexSeq.wordsIndexes.intersect(idxs) -- rec.flatMap(_.wordIndexes)).
+                                                    map(complexesWords)
                                         )
                                     else
                                         None
