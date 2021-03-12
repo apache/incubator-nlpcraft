@@ -33,7 +33,7 @@ class NCSqlModelWrapper extends NCDefaultTestModel {
     override def getMacros: util.Map[String, String] = delegate.getMacros
 }
 
-@NCTestEnvironment(model = classOf[NCSqlModelWrapper], startClient = true)
+@NCTestEnvironment(model = classOf[NCSqlModelWrapper], startClient = true, clientLog = false)
 class NCSqlModelSpec extends NCEnricherBaseSpec {
     // org.apache.nlpcraft.examples.sql.SqlModel.SqlModel initialized via DB.
     // (org.apache.nlpcraft.examples.sql.db.SqlValueLoader configured in its model yaml file.)

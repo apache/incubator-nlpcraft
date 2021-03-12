@@ -21,6 +21,7 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer, _}
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCDslContent
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{NCSynonymChunkKind, TEXT}
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.impl.NCRequestImpl
@@ -39,25 +40,87 @@ import scala.compat.java8.OptionConverters._
   * Model elements enricher.
   */
 object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
-    case class Complex(data: Either[NCToken, NCNlpSentenceToken]) {
-        lazy val isToken: Boolean = data.isLeft
-        lazy val isWord: Boolean = data.isRight
-        lazy val token: NCToken = data.left.get
-        lazy val word: NCNlpSentenceToken = data.right.get
-        lazy val origText: String = if (isToken) token.origText else word.origText
-        lazy val wordIndexes: Seq[Int] = if (isToken) token.wordIndexes else word.wordIndexes
+    object Complex {
+        def apply(t: NCToken): Complex =
+            Complex(
+                data = Left(t),
+                isToken = true,
+                isWord = false,
+                token = t,
+                word = null,
+                origText = t.origText,
+                wordIndexes = t.wordIndexes.toSet,
+                minIndex = t.wordIndexes.head,
+                maxIndex = t.wordIndexes.last
+            )
 
-        private lazy val hash = if (isToken) token.hashCode() else word.hashCode()
+        def apply(t: NCNlpSentenceToken): Complex =
+            Complex(
+                data = Right(t),
+                isToken = false,
+                isWord = true,
+                token = null,
+                word = t,
+                origText = t.origText,
+                wordIndexes = t.wordIndexes.toSet,
+                minIndex = t.wordIndexes.head,
+                maxIndex = t.wordIndexes.last
+            )
+    }
+
+    case class Complex(
+        data: NCDslContent,
+        isToken: Boolean,
+        isWord: Boolean,
+        token: NCToken,
+        word: NCNlpSentenceToken,
+        origText: String,
+        wordIndexes: Set[Int],
+        minIndex: Int,
+        maxIndex: Int
+    ) {
+        private final val hash = if (isToken) Seq(wordIndexes, token.getId).hashCode() else wordIndexes.hashCode()
 
         override def hashCode(): Int = hash
+
+        def isSubsetOf(minIndex: Int, maxIndex: Int, indexes: Set[Int]): Boolean =
+            if (this.minIndex > maxIndex || this.maxIndex < minIndex)
+                false
+            else
+                wordIndexes.subsetOf(indexes)
+
         override def equals(obj: Any): Boolean = obj match {
-            case x: Complex ⇒ isToken && x.isToken && token == x.token || isWord && x.isWord && word == x.word
+            case x: Complex ⇒
+                hash == x.hash && (isToken && x.isToken && token == x.token || isWord && x.isWord && word == x.word)
             case _ ⇒ false
         }
 
         // Added for debug reasons.
-        override def toString: String =
-            if (isToken) s"Token: '${token.origText} (${token.getId})'" else s"Word: '${word.origText}'"
+        override def toString: String = {
+            val idxs = wordIndexes.mkString(",")
+
+            if (isToken) s"'$origText' (${token.getId}) [$idxs]]" else s"'$origText' [$idxs]"
+        }
+    }
+
+    object ComplexSeq {
+        def apply(all: Seq[Complex]): ComplexSeq = ComplexSeq(all.filter(_.isToken), all.flatMap(_.wordIndexes).toSet)
+    }
+
+    case class ComplexSeq(tokensComplexes: Seq[Complex], wordsIndexes: Set[Int]) {
+        private val (idxsSet: Set[Int], minIndex: Int, maxIndex: Int) = {
+            val seq = tokensComplexes.flatMap(_.wordIndexes).distinct.sorted
+
+            (seq.toSet, seq.head, seq.last)
+        }
+
+        def isIntersect(minIndex: Int, maxIndex: Int, idxsSet: Set[Int]): Boolean =
+            if (this.minIndex > maxIndex || this.maxIndex < minIndex)
+                false
+            else
+                this.idxsSet.exists(idxsSet.contains)
+
+        override def toString: String = tokensComplexes.mkString(" | ")
     }
 
     // Found-by-synonym model element.
@@ -74,8 +137,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
         // Number of tokens.
         lazy val length: Int = tokens.size
-
-        private lazy val tokensSet = tokens.toSet
+        private lazy val tokensSet: Set[NCNlpSentenceToken] = tokens.toSet
 
         def isSubSet(toks: Set[NCNlpSentenceToken]): Boolean = toks.subsetOf(tokensSet)
 
@@ -103,19 +165,19 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
     }
 
     /**
-     *
-     * @param parent Optional parent span.
-     * @return
-     */
+      *
+      * @param parent Optional parent span.
+      * @return
+      */
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { _ ⇒
         ackStarting()
         ackStarted()
     }
 
     /**
-     *
-     * @param parent Optional parent span.
-     */
+      *
+      * @param parent Optional parent span.
+      */
     override def stop(parent: Span = null): Unit = startScopedSpan("stop", parent) { _ ⇒
         ackStopping()
         ackStopped()
@@ -127,7 +189,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
       *
       * @param ns NLP sentence to jiggle.
       * @param factor Distance of left or right jiggle, i.e. how far can an individual token move
-      *         left or right in the sentence.
+      * left or right in the sentence.
       */
     private def jiggle(ns: NCNlpSentenceTokenBuffer, factor: Int): Iterator[NCNlpSentenceTokenBuffer] = {
         require(factor >= 0)
@@ -267,44 +329,6 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
     private def combos[T](toks: Seq[T]): Seq[Seq[T]] =
         (for (n ← toks.size until 0 by -1) yield toks.sliding(n)).flatten.map(p ⇒ p)
 
-    /**
-      *
-      * @param initialSen
-      * @param collapsedSen
-      * @param nlpToks
-      */
-    private def convert(
-        initialSen: NCNlpSentence, collapsedSen: Seq[Seq[NCToken]], nlpToks: Seq[NCNlpSentenceToken]
-    ): Seq[Seq[Complex]] = {
-        val nlpWordIdxs = nlpToks.flatMap(_.wordIndexes)
-
-        def in(t: NCToken): Boolean = t.wordIndexes.exists(nlpWordIdxs.contains)
-        def inStrict(t: NCToken): Boolean = t.wordIndexes.forall(nlpWordIdxs.contains)
-        def isSingleWord(t: NCToken): Boolean = t.wordIndexes.length == 1
-
-        collapsedSen.
-            map(_.filter(in)).
-            filter(_.nonEmpty).flatMap(varToks ⇒
-                // Tokens splitting.
-                // For example sentence "A B С D E" (5 words) processed as 3 tokens on first phase after collapsing
-                //  'A B' (2 words), 'C D' (2 words) and 'E' (1 word)
-                //  So, result combinations will be:
-                //  Token(AB) + Token(CD) + Token(E)
-                //  Token(AB) + Word(C) + Word(D) + Token(E)
-                //  Word(A) + Word(B) + Token(CD) + Token(E)
-                //  Word(A) + Word(B) + Word(C) + Word(D) + Token(E)
-                combos(varToks).map(toksComb ⇒
-                    varToks.flatMap(t ⇒
-                        // Single word token is not split as words - token.
-                        // Partly (not strict in) token - word.
-                        if (inStrict(t) && (toksComb.contains(t) || isSingleWord(t)))
-                            Seq(Complex(Left(t)))
-                        else
-                            t.wordIndexes.filter(nlpWordIdxs.contains).map(i ⇒ Complex(Right(initialSen(i))))
-                    )
-                ).filter(_.exists(_.isToken)) // Drops without tokens (DSL part works with tokens).
-        ).distinct
-    }
 
     /**
       *
@@ -333,34 +357,51 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
               * Gets synonyms sorted in descending order by their weight (already prepared),
               * i.e. first synonym in the sequence is the most important one.
               *
-              * @param fastMap
+              * @param fastMap {Element ID → {Synonym length → T}}
               * @param elmId
               * @param len
               */
-            def fastAccess[T](
-                fastMap: Map[String /*Element ID*/, Map[Int /*Synonym length*/, T]],
-                elmId: String,
-                len: Int
-            ): Option[T] =
-                fastMap.get(elmId) match {
-                    case Some(m) ⇒ m.get(len)
-                    case None ⇒ None
-                }
+            def fastAccess[T](fastMap: Map[String, Map[Int, T]], elmId: String, len: Int): Option[T] =
+                fastMap.getOrElse(elmId, Map.empty[Int, T]).get(len)
 
             /**
               *
               * @param toks
               * @return
               */
-            def tokString(toks: Seq[NCNlpSentenceToken]): String =
-                toks.map(t ⇒ (t.origText, t.index)).mkString(" ")
+            def tokString(toks: Seq[NCNlpSentenceToken]): String = toks.map(t ⇒ (t.origText, t.index)).mkString(" ")
 
             var permCnt = 0
-            lazy val collapsedSens = NCProbeVariants.convert(
-                ns.srvReqId,
-                mdl,
-                NCSentenceManager.collapse(mdl.model, ns.clone())
-            ).map(_.asScala)
+
+            val collapsedSens =
+                NCProbeVariants.convert(ns.srvReqId, mdl, NCSentenceManager.collapse(mdl.model, ns.clone())).map(_.asScala)
+            val complexesWords = ns.map(Complex(_))
+            val complexes =
+                collapsedSens.
+                    flatMap(sen ⇒
+                        // Tokens splitting.
+                        // For example sentence "A B С D E" (5 words) processed as 3 tokens on first phase after collapsing
+                        //  'A B' (2 words), 'C D' (2 words) and 'E' (1 word)
+                        //  So, result combinations will be:
+                        //  Token(AB) + Token(CD) + Token(E)
+                        //  Token(AB) + Word(C) + Word(D) + Token(E)
+                        //  Word(A) + Word(B) + Token(CD) + Token(E)
+                        //  Word(A) + Word(B) + Word(C) + Word(D) + Token(E)
+                        combos(sen).
+                            map(senPartComb ⇒ {
+                                sen.flatMap(t ⇒
+                                    // Single word token is not split as words - token.
+                                    // Partly (not strict in) token - word.
+                                    if (senPartComb.contains(t) || t.wordIndexes.length == 1)
+                                        Seq(Complex(t))
+                                    else
+                                        t.wordIndexes.map(complexesWords)
+                                )
+                                // Drops without tokens (DSL part works with tokens).
+                            }).filter(_.exists(_.isToken)).map(ComplexSeq(_)).distinct
+                    )
+
+            val tokIdxs = ns.map(t ⇒ t → t.wordIndexes).toMap
 
             /**
               *
@@ -375,19 +416,49 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                     if (!cache.contains(key)) {
                         cache += key
 
-                        lazy val dslCombs = convert(ns, collapsedSens, toks).groupBy(_.length)
+                        val idxsSeq = toks.flatMap(tokIdxs)
+                        val idxsSorted = idxsSeq.sorted
+                        val idxs = idxsSeq.toSet
+                        val idxMin = idxsSorted.head
+                        val idxMax = idxsSorted.last
+
+                        lazy val sorted = idxsSorted.zipWithIndex.toMap
+
+                        lazy val dslCombs =
+                            complexes.par.
+                                flatMap(complexSeq ⇒ {
+                                    val rec = complexSeq.tokensComplexes.filter(_.isSubsetOf(idxMin, idxMax, idxs))
+
+                                    // Drops without tokens (DSL part works with tokens).
+                                    if (rec.nonEmpty)
+                                        Some(
+                                            rec ++
+                                                (
+                                                    complexSeq.wordsIndexes.intersect(idxs) -- rec.flatMap(_.wordIndexes)
+
+                                                ).map(complexesWords)
+                                        )
+                                    else
+                                        None
+                                }).
+                                map(_.sortBy(p ⇒ sorted(p.wordIndexes.head))).seq.groupBy(_.length)
+
                         lazy val sparsity = U.calcSparsity(key)
+                        lazy val tokStems = toks.map(_.stem).mkString(" ")
 
                         // Attempt to match each element.
                         for (elm ← mdl.elements.values if !alreadyMarked(toks, elm.getId)) {
                             var found = false
 
                             def addMatch(
-                                elm: NCElement, toks: Seq[NCNlpSentenceToken], syn: NCProbeSynonym, parts: Seq[(NCToken, NCSynonymChunkKind)]
+                                elm: NCElement,
+                                toks: Seq[NCNlpSentenceToken],
+                                syn: NCProbeSynonym,
+                                parts: Seq[(NCToken, NCSynonymChunkKind)]
                             ): Unit =
                                 if (
                                     (elm.getJiggleFactor.isEmpty || elm.getJiggleFactor.get() >= sparsity) &&
-                                    !matches.exists(m ⇒ m.element == elm && m.isSubSet(toks.toSet))
+                                        !matches.exists(m ⇒ m.element == elm && m.isSubSet(toks.toSet))
                                 ) {
                                     found = true
 
@@ -398,10 +469,8 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             if (mdl.synonyms.nonEmpty && !ns.exists(_.isUser))
                                 fastAccess(mdl.synonyms, elm.getId, toks.length) match {
                                     case Some(h) ⇒
-                                        val stems = toks.map(_.stem).mkString(" ")
-
                                         def tryMap(synsMap: Map[String, NCProbeSynonym], notFound: () ⇒ Unit): Unit =
-                                            synsMap.get(stems) match {
+                                            synsMap.get(tokStems) match {
                                                 case Some(syn) ⇒
                                                     addMatch(elm, toks, syn, Seq.empty)
 
@@ -435,9 +504,9 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                                 for (
                                     (len, seq) ← dslCombs;
-                                    syn ← fastAccess(mdl.synonymsDsl, elm.getId, len).getOrElse(Seq.empty);
-                                    comb ← seq if !found;
-                                    data = comb.map(_.data)
+                                        syn ← fastAccess(mdl.synonymsDsl, elm.getId, len).getOrElse(Seq.empty);
+                                        comb ← seq if !found;
+                                        data = comb.map(_.data)
                                 )
                                     if (syn.isMatch(data, NCRequestImpl(senMeta, ns.srvReqId))) {
                                         val parts = comb.zip(syn.map(_.kind)).flatMap {
@@ -478,23 +547,23 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
             // 0-3 will be deleted because for 0 and 3 tokens best variants found for same element with same tokens length.
             val matchesNorm =
                 matches.
-                flatMap(m ⇒ m.tokens.map(_ → m)).
-                groupBy { case (t, m) ⇒ (m.element.getId, m.length, t) }.
-                flatMap { case (_, seq) ⇒
-                    def perm[T](list: List[List[T]]): List[List[T]] =
-                        list match {
-                            case Nil ⇒ List(Nil)
-                            case head :: tail ⇒ for (h ← head; t ← perm(tail)) yield h :: t
-                        }
+                    flatMap(m ⇒ m.tokens.map(_ → m)).
+                    groupBy { case (t, m) ⇒ (m.element.getId, m.length, t) }.
+                    flatMap { case (_, seq) ⇒
+                        def perm[T](list: List[List[T]]): List[List[T]] =
+                            list match {
+                                case Nil ⇒ List(Nil)
+                                case head :: tail ⇒ for (h ← head; t ← perm(tail)) yield h :: t
+                            }
 
-                    // Optimization by sparsity sum for each tokens set for one element found with same tokens count.
-                    perm(
-                        seq.groupBy { case (tok, _) ⇒ tok }.
-                        map { case (_, seq) ⇒ seq.map { case (_, m) ⇒ m} .toList }.toList
-                    ).minBy(_.map(_.sparsity).sum)
-                }.
-                toSeq.
-                distinct
+                        // Optimization by sparsity sum for each tokens set for one element found with same tokens count.
+                        perm(
+                            seq.groupBy { case (tok, _) ⇒ tok }.
+                                map { case (_, seq) ⇒ seq.map { case (_, m) ⇒ m }.toList }.toList
+                        ).minBy(_.map(_.sparsity).sum)
+                    }.
+                    toSeq.
+                    distinct
 
             val matchCnt = matchesNorm.size
 

@@ -35,7 +35,7 @@ import scala.compat.java8.OptionConverters.RichOptionalGeneric
   *
   * @see SqlModel
   */
-@NCTestEnvironment(model = classOf[SqlModel], startClient = true)
+@NCTestEnvironment(model = classOf[SqlModel], startClient = true, clientLog = false)
 class NCSqlExampleSpec extends NCTestContext {
     private val GSON = new Gson
     private val TYPE_RESP = new TypeToken[util.Map[String, Object]]() {}.getType
