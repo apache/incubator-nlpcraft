@@ -19,6 +19,7 @@ package org.apache.nlpcraft.probe.mgrs
 
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer}
 import org.apache.nlpcraft.model._
+import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCDslContent
 import org.apache.nlpcraft.model.intent.NCDslContext
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
@@ -78,7 +79,10 @@ class NCProbeSynonym(
                     case (tok, chunk) ⇒
                         chunk.kind match {
                             case TEXT ⇒ chunk.wordStem == tok.stem
-                            case REGEX ⇒ chunk.regex.matcher(tok.origText).matches() || chunk.regex.matcher(tok.normText).matches()
+                            case REGEX ⇒
+                                val regex = chunk.regex
+
+                                regex.matcher(tok.origText).matches() || regex.matcher(tok.normText).matches()
                             case DSL ⇒ throw new AssertionError()
                             case _ ⇒ throw new AssertionError()
                         }
@@ -91,19 +95,16 @@ class NCProbeSynonym(
     /**
       *
       * @param tows
+      * @param req
       * @return
       */
-    def isMatch(tows: Seq[Either[NCToken, NCNlpSentenceToken]], req: NCRequest): Boolean = {
+    def isMatch(tows: Seq[NCDslContent], req: NCRequest): Boolean = {
         require(tows != null)
-
-        type Token = NCToken
-        type Word = NCNlpSentenceToken
-        type TokenOrWord = Either[Token, Word]
 
         if (tows.length == length && tows.count(_.isLeft) >= dslChunks)
             tows.zip(this).sortBy(p ⇒ getSort(p._2.kind)).forall {
                 case (tow, chunk) ⇒
-                    def get0[T](fromToken: Token ⇒ T, fromWord: Word ⇒ T): T =
+                    def get0[T](fromToken: NCToken ⇒ T, fromWord: NCNlpSentenceToken ⇒ T): T =
                         if (tow.isLeft) fromToken(tow.left.get) else fromWord(tow.right.get)
 
                     chunk.kind match {
@@ -209,6 +210,8 @@ class NCProbeSynonym(
 }
 
 object NCProbeSynonym {
+    type NCDslContent = Either[NCToken, NCNlpSentenceToken]
+
     /**
       *
       * @param isElementId

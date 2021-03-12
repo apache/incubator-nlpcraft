@@ -163,7 +163,7 @@ case class NCNlpSentenceToken(
       *
       * @param types Note type(s) to check.
       */
-    def isTypeOf(types: String*): Boolean = types.exists(t ⇒ getNotes(t).nonEmpty)
+    def isTypeOf(types: String*): Boolean = types.exists(t ⇒ notes.exists(_.noteType == t))
 
     /**
       * Adds element.

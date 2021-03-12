@@ -42,4 +42,10 @@ public @interface NCTestEnvironment {
      * @return
      */
     boolean startClient() default false;
+
+    /**
+     *
+     * @return
+     */
+    boolean clientLog() default true;
 }
