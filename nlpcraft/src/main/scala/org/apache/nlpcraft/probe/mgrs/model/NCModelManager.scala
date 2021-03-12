@@ -21,7 +21,6 @@ import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.NCDslSyntaxHighlighter
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.deploy._
 
@@ -48,7 +47,7 @@ object NCModelManager extends NCService with DecorateAsScala {
     override def start(parent: Span = null): NCService = startScopedSpan("start", parent) { span ⇒
         ackStarting()
 
-        val tbl = NCAsciiTable("Model", "Intents")
+        val tbl = NCAsciiTable("Models")
 
         mux.synchronized {
             data = NCDeployManager.getModels.map(w ⇒ {
@@ -63,20 +62,14 @@ object NCModelManager extends NCService with DecorateAsScala {
                 val elmCnt = w.elements.keySet.size
                 val intentCnt = w.intents.size
 
-                tbl += (
-                    Seq(
-                        s"${mdl.getName}",
-                        s"ID: ${bo(mdl.getId)}, ver: ${mdl.getVersion}",
-                        s"Origin: ${mdl.getOrigin}",
-                        s"Elements: $elmCnt" + (if (elmCnt == 0) s" ${r("(!)")}" else ""),
-                        s"Synonyms: $synCnt" + (if (synCnt == 0) s" ${r("(!)")}" else ""),
-                        s"Intents: $intentCnt" + (if (intentCnt == 0) s" ${r("(!)")}" else "")
-                    ),
-                    w.intents.flatMap(i ⇒ i.dsl
-                        .replaceAll(" term", s"\n  term")
-                        .replaceAll(" fragment", s"\n  fragment")
-                        .split("\n").map(NCDslSyntaxHighlighter.color)
-                    )
+                tbl += Seq(
+                    s"Name:     ${bo(c(mdl.getName))}",
+                    s"ID:       ${bo(mdl.getId)}",
+                    s"Version:  ${mdl.getVersion}",
+                    s"Origin:   ${mdl.getOrigin}",
+                    s"Elements: $elmCnt" + (if (elmCnt == 0) s" ${r("(!)")}" else ""),
+                    s"Synonyms: $synCnt" + (if (synCnt == 0) s" ${r("(!)")}" else ""),
+                    s"Intents:  $intentCnt" + (if (intentCnt == 0) s" ${r("(!)")}" else "")
                 )
             })
         }
