@@ -67,6 +67,7 @@ object NCModelManager extends NCService with DecorateAsScala {
                     Seq(
                         s"${mdl.getName}",
                         s"ID: ${bo(mdl.getId)}, ver: ${mdl.getVersion}",
+                        s"Origin: ${mdl.getOrigin}",
                         s"Elements: $elmCnt" + (if (elmCnt == 0) s" ${r("(!)")}" else ""),
                         s"Synonyms: $synCnt" + (if (synCnt == 0) s" ${r("(!)")}" else ""),
                         s"Intents: $intentCnt" + (if (intentCnt == 0) s" ${r("(!)")}" else "")
