@@ -698,37 +698,21 @@ object NCSentenceManager extends NCService {
 
                 // It removes sentences which have only one difference - 'direct' flag of their user tokens.
                 // `Direct` sentences have higher priority.
-                case class Key(sysNotes: Seq[Map[String, JSerializable]], userNotes: Seq[Map[String, JSerializable]])
-                case class Value(sentence: NCNlpSentence, directCount: Int)
+                type Key = Seq[Map[String, JSerializable]]
+                case class Holder(key: Key, sentence: NCNlpSentence, factor: Int)
 
-                val m = mutable.HashMap.empty[Key, Value]
-
-                seqSens.par.map(sen ⇒ {
+                def mkHolder(sen: NCNlpSentence): Holder = {
                     val notes = sen.flatten
 
-                    val sysNotes = notes.filter(_.isSystem)
-                    val nlpNotes = notes.filter(_.isNlp)
-                    val userNotes = notes.filter(_.isUser)
+                    Holder(
+                        // We have to delete some keys to have possibility to compare sentences.
+                        notes.map(_.clone().filter { case (name, _) ⇒ name != "direct" }),
+                        sen,
+                        notes.filter(_.isNlp).map(p ⇒ if (p.isDirect) 0 else 1).sum
+                    )
+                }
 
-                    def get(seq: Seq[NCNlpSentenceNote]): Seq[Map[String, JSerializable]] =
-                        seq.map(p ⇒
-                            // We have to delete some keys to have possibility to compare sentences.
-                            p.clone().filter(_._1 != "direct")
-                        )
-
-                    (Key(get(sysNotes), get(userNotes)), sen, nlpNotes.map(p ⇒ if (p.isDirect) 0 else 1).sum)
-                }).seq.
-                    foreach { case (key, sen, directCnt) ⇒
-                        m.get(key) match {
-                            case Some(v) ⇒
-                                // Best sentence is sentence with `direct` synonyms.
-                                if (v.directCount > directCnt)
-                                    m += key → Value(sen, directCnt)
-                            case None ⇒ m += key → Value(sen, directCnt)
-                        }
-                    }
-
-                m.values.map(_.sentence).toSeq
+                seqSens.par.map(mkHolder).seq.groupBy(_.key).map { case (_, seq) ⇒ seq.minBy(_.factor).sentence }.toSeq
             }
             else
                 collapse0(sen).flatMap(p ⇒ Option(Seq(p))).getOrElse(Seq.empty)
