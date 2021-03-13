@@ -42,16 +42,16 @@ class NCSynonymsSpecModel extends NCModelAdapter("nlpcraft.syns.test.mdl", "Syno
             NCTestElement("e4", "{^^(id == 'e1')^^}[3, 3]")
         )
 
-    @NCIntent("intent=onE1 term(t)={id == 'e1'}")
+    @NCIntent("intent=onE1 term(t)={id() == 'e1'}")
     def onE1(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onE2 term(t)={id == 'e2'}")
+    @NCIntent("intent=onE2 term(t)={id() == 'e2'}")
     def onE2(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onE3 term(t)={id == 'e3'}")
+    @NCIntent("intent=onE3 term(t)={id() == 'e3'}")
     def onE3(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onE4 term(t)={id == 'e4'}")
+    @NCIntent("intent=onE4 term(t)={id() == 'e4'}")
     def onE4(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

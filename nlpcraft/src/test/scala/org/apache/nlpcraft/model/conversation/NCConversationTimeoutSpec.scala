@@ -47,7 +47,7 @@ class NCTimeoutSpecModel extends NCModel {
 
     override def getElements: util.Set[NCElement] = Collections.singleton(new NCTestElement("test"))
 
-    @NCIntent("intent=req term~{id == 'test'}")
+    @NCIntent("intent=req term~{id() == 'test'}")
     def onMatch(ctx: NCIntentMatch): NCResult = {
         val conv = ctx.getContext.getConversation
 

@@ -35,16 +35,16 @@ class NCDialogSpecModel extends NCModel {
     override def getElements: util.Set[NCElement] =
         Set((for (ch ← 'a' to 'y'; i ← 1 to 9) yield NCTestElement(s"$ch$i")):_*)
 
-    @NCIntent("intent=onA1 term~{id == 'a1'}")
+    @NCIntent("intent=onA1 term~{id() == 'a1'}")
     def onA1(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA2 flow='^(?:onA1)(^:onA1)*$' term~{id == 'a2'}")
+    @NCIntent("intent=onA2 flow='^(?:onA1)(^:onA1)*$' term~{id() == 'a2'}")
     def onA2(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA3 flow='onA1' term~{id == 'a3'}")
+    @NCIntent("intent=onA3 flow='onA1' term~{id() == 'a3'}")
     def onA3(): NCResult = NCResult.text("ok")
 
-    @NCIntent("intent=onA4 flow='onA1 onA1' term~{id == 'a4'}")
+    @NCIntent("intent=onA4 flow='onA1 onA1' term~{id() == 'a4'}")
     def onA4(): NCResult = NCResult.text("ok")
 }
 

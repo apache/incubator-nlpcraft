@@ -30,10 +30,10 @@ class NCNestedTestModel21 extends NCModelAdapter("nlpcraft.nested2.test.mdl", "N
     override def getElements: util.Set[NCElement] =
         Set(NCTestElement("e1", "{^^(id == 'nlpcraft:num')^^|_} word"))
 
-    @NCIntent("intent=onE1 term(t1)={id == 'e1'}")
+    @NCIntent("intent=onE1 term(t1)={id() == 'e1'}")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onNumAndE1 term(t1)={id == 'nlpcraft:num'} term(t1)={id == 'e1'}")
+    @NCIntent("intent=onNumAndE1 term(t1)={id() == 'nlpcraft:num'} term(t1)={id() == 'e1'}")
     def onNumAndE1(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
     override def isPermutateSynonyms: Boolean = false

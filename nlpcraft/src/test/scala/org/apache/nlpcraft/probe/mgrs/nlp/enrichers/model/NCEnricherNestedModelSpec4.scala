@@ -39,7 +39,7 @@ class NCNestedTestModel4 extends NCModelAdapter(
     override def getAbstractTokens: util.Set[String] = Set("e1").asJava
     override def getEnabledBuiltInTokens: util.Set[String] = Set.empty[String].asJava
 
-    @NCIntent("intent=onE2 term(t1)={id == 'e2'}[8, 100]")
+    @NCIntent("intent=onE2 term(t1)={id() == 'e2'}[8, 100]")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 
