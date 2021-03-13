@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.intent.compiler
 /**
  *
  */
-case class NCDslExprRetVal(
-    retVal: Object,
+case class NCDslStackItem(
+    fun: () ⇒ Object,
     usedTok: Boolean
 )

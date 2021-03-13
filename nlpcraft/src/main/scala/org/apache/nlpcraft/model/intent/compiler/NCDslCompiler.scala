@@ -306,7 +306,7 @@ object NCDslCompiler extends LazyLogging {
             code ++= instrs
 
             (tok: NCToken, termCtx: NCDslContext) ⇒ {
-                val stack = new mutable.ArrayStack[NCDslExprRetVal]()
+                val stack = new mutable.ArrayStack[NCDslStackItem]()
 
                 // Execute all instructions.
                 code.foreach(_ (tok, stack, termCtx))
@@ -314,10 +314,10 @@ object NCDslCompiler extends LazyLogging {
                 // Pop final result from stack.
                 val x = stack.pop()
 
-                if (!isBool(x.retVal))
+                if (!isBool(x.fun))
                     throw newRuntimeError(s"$subj does not return boolean value: ${ctx.getText}")
 
-                (asBool(x.retVal), x.usedTok)
+                (asBool(x.fun), x.usedTok)
             }
         }
 

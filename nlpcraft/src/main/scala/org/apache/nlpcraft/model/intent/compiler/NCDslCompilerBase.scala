@@ -28,7 +28,7 @@ import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
 import java.time.LocalDate
 import java.util
 import java.util.{Collections, List ⇒ JList, Map ⇒ JMap}
-import scala.collection.JavaConverters._
+//import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 trait NCDslCompilerBase {
@@ -59,7 +59,7 @@ trait NCDslCompilerBase {
         runtimeError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine, cause)
     }
 
-    type StackType = mutable.ArrayStack[NCDslExprRetVal]
+    type StackType = mutable.ArrayStack[NCDslStackItem]
     type Instr = (NCToken, StackType, NCDslContext) ⇒ Unit
 
     //noinspection ComparingUnrelatedTypes
@@ -80,10 +80,14 @@ trait NCDslCompilerBase {
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
     def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
 
-    def pushAny(any: Object, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(any, usedTok))
-    def pushLong(any: Long, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(Long.box(any), usedTok))
-    def pushDouble(any: Double, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(Double.box(any), usedTok))
-    def pushBool(any: Boolean, usedTok: Boolean)(implicit stack: StackType): Unit = stack.push(NCDslExprRetVal(Boolean.box(any), usedTok))
+    def pushAny(v: () ⇒ Object, usedTok: Boolean)(implicit stack: StackType): Unit =
+        stack.push(NCDslStackItem(v, usedTok))
+    def pushLong(v: () ⇒ Long, usedTok: Boolean)(implicit stack: StackType): Unit =
+        stack.push(NCDslStackItem(() ⇒ Long.box(v()), usedTok))
+    def pushDouble(v: () ⇒ Double, usedTok: Boolean)(implicit stack: StackType): Unit =
+        stack.push(NCDslStackItem(() ⇒ Double.box(v()), usedTok))
+    def pushBool(v: () ⇒ Boolean, usedTok: Boolean)(implicit stack: StackType): Unit =
+        stack.push(NCDslStackItem(() ⇒ Boolean.box(v()), usedTok))
 
     // Runtime errors.
     def rtUnaryOpError(op: String, v: Object)(implicit ctx: PRC): NCE =
@@ -104,14 +108,14 @@ trait NCDslCompilerBase {
      * @param stack
      * @return
      */
-    def pop2()(implicit stack: StackType): (Object, Object, Boolean, Boolean) = {
+    def pop2()(implicit stack: StackType): (() ⇒ Object, () ⇒ Object, Boolean, Boolean) = {
         require(stack.size >= 2)
 
         // Stack pops in reverse order of push...
-        val NCDslExprRetVal(val2, f2) = stack.pop()
-        val NCDslExprRetVal(val1, f1) = stack.pop()
+        val NCDslStackItem(v2, f2) = stack.pop()
+        val NCDslStackItem(v1, f1) = stack.pop()
 
-        (val1, val2, f1, f2)
+        (v1, v2, f1, f2)
     }
 
     /**
@@ -119,15 +123,26 @@ trait NCDslCompilerBase {
      * @param stack
      * @return
      */
-    def pop3()(implicit stack: StackType): (Object, Object, Object, Boolean, Boolean, Boolean) = {
+    def pop2Values()(implicit stack: StackType): (Object, Object, Boolean, Boolean) = {
+        val (v1, v2, f1, f2) = pop2()
+
+        (v1(), v2(), f1, f2)
+    }
+
+    /**
+     *
+     * @param stack
+     * @return
+     */
+    def pop3()(implicit stack: StackType): (() ⇒ Object, () ⇒ Object, () ⇒ Object, Boolean, Boolean, Boolean) = {
         require(stack.size >= 3)
 
         // Stack pops in reverse order of push...
-        val NCDslExprRetVal(val3, f3) = stack.pop()
-        val NCDslExprRetVal(val2, f2) = stack.pop()
-        val NCDslExprRetVal(val1, f1) = stack.pop()
+        val NCDslStackItem(v3, f3) = stack.pop()
+        val NCDslStackItem(v2, f2) = stack.pop()
+        val NCDslStackItem(v1, f1) = stack.pop()
 
-        (val1, val2, val3, f1, f2, f3)
+        (v1, v2, v3, f1, f2, f3)
     }
 
     /**
@@ -135,12 +150,23 @@ trait NCDslCompilerBase {
      * @param stack
      * @return
      */
-    def pop1()(implicit stack: StackType): (Object, Boolean) = {
+    def pop1()(implicit stack: StackType): (() ⇒ Object, Boolean) = {
         require(stack.nonEmpty)
 
-        val NCDslExprRetVal(v, f) = stack.pop()
+        val NCDslStackItem(v, f) = stack.pop()
 
         (v, f)
+    }
+
+    /**
+     *
+     * @param stack
+     * @return
+     */
+    def pop1Value()(implicit stack: StackType): (Object, Boolean) = {
+        val (v, f) = pop1()
+
+        (v(), f)
     }
 
     /**
@@ -153,40 +179,56 @@ trait NCDslCompilerBase {
     def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
-        val (v1, v2, f1, f2) = pop2()
+        val (v1, v2, f1, f2) = pop2Values()
         val usedTok = f1 || f2
 
         if (lt != null) {
-            if (isJLong(v1) && isJLong(v2)) pushBool(asJLong(v1) < asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushBool(asJLong(v1) < asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushBool(asJDouble(v1) < asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushBool(asJDouble(v1) < asJDouble(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushBool(() ⇒ asJLong(v1) < asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJLong(v1) < asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushBool(() ⇒ asJDouble(v1) < asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJDouble(v1) < asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError("<", v1, v2)
         }
         else if (gt != null) {
-            if (isJLong(v1) && isJLong(v2)) pushBool(asJLong(v1) > asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushBool(asJLong(v1) > asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushBool(asJDouble(v1) > asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushBool(asJDouble(v1) > asJDouble(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushBool(() ⇒ asJLong(v1) > asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJLong(v1) > asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushBool(() ⇒ asJDouble(v1) > asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJDouble(v1) > asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError(">", v1, v2)
         }
         else if (lteq != null) {
-            if (isJLong(v1) && isJLong(v2)) pushBool(asJLong(v1) <= asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushBool(asJLong(v1) <= asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushBool(asJDouble(v1) <= asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushBool(asJDouble(v1) <= asJDouble(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushBool(() ⇒ asJLong(v1) <= asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJLong(v1) <= asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushBool(() ⇒ asJDouble(v1) <= asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJDouble(v1) <= asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError("<=", v1, v2)
         }
         else {
             assert(gteq != null)
 
-            if (isJLong(v1) && isJLong(v2)) pushBool(asJLong(v1) >= asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushBool(asJLong(v1) >= asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushBool(asJDouble(v1) >= asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushBool(asJDouble(v1) >= asJDouble(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushBool(() ⇒ asJLong(v1) >= asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJLong(v1) >= asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushBool(() ⇒ asJDouble(v1) >= asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushBool(() ⇒ asJDouble(v1) >= asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError(">=", v1, v2)
         }
@@ -201,29 +243,38 @@ trait NCDslCompilerBase {
     def parseMultExpr(mult: TN, mod: TN, div: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
-        val (v1, v2, f1, f2) = pop2()
+        val (v1, v2, f1, f2) = pop2Values()
         val usedTok = f1 || f2
 
         if (mult != null) {
-            if (isJLong(v1) && isJLong(v2)) pushLong(asJLong(v1) * asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushDouble(asJLong(v1) * asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushDouble(asJDouble(v1) * asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushDouble(asJDouble(v1) * asJDouble(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushLong(() ⇒ asJLong(v1) * asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJLong(v1) * asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushDouble(() ⇒ asJDouble(v1) * asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJDouble(v1) * asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError("*", v1, v2)
         }
         else if (mod != null) {
-            if (isJLong(v1) && isJLong(v2)) pushLong(asJLong(v1) % asJLong(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushLong(() ⇒ asJLong(v1) % asJLong(v2), usedTok)
             else
                 throw rtBinaryOpError("%", v1, v2)
         }
         else {
             assert(div != null)
 
-            if (isJLong(v1) && isJLong(v2)) pushLong(asJLong(v1) / asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushDouble(asJLong(v1) / asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushDouble(asJDouble(v1) / asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushDouble(asJDouble(v1) / asJDouble(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushLong(() ⇒ asJLong(v1) / asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJLong(v1) / asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushDouble(() ⇒ asJDouble(v1) / asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJDouble(v1) / asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError("/", v1, v2)
         }
@@ -238,17 +289,25 @@ trait NCDslCompilerBase {
     def parseLogExpr(and: TN, or: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
-        val (v1, v2, f1, f2) = pop2()
+        val (v1f, v2f, f1, f2) = pop2()
 
-        if (!isBool(v1) || !isBool(v2))
-            throw rtBinaryOpError(if (and != null) "&&" else "||", v1, v2)
+        val (op, usedTok, flag) = if (and != null) ("&&", f1 || f2, false) else ("||", f1 && f2, true)
 
-        if (and != null)
-            pushBool(asBool(v1) && asBool(v2), f1 || f2) // Note logical OR for used token flag.
+        val v1 = v1f()
+
+        if (!isBool(v1))
+            throw rtBinaryOpError(op, v1, v2f())
+
+        // NOTE: check v1 first and only if it is {true|false} check the v2.
+        if (asBool(v1) == flag)
+            pushBool(() ⇒ flag, usedTok)
         else {
-            assert(or != null)
+            val v2 = v2f()
 
-            pushBool(asBool(v1) || asBool(v2), f1 && f2) // Note local AND for used token flag.
+            if (!isBool(v2))
+                throw rtBinaryOpError(op, v2, v1)
+
+            pushBool(() ⇒ asBool(v2), usedTok)
         }
     }
 
@@ -284,11 +343,11 @@ trait NCDslCompilerBase {
             }}
     
         if (eq != null)
-            pushBool(doEq("=="), usedTok)
+            pushBool(() ⇒ doEq("=="), usedTok)
         else {
             assert(neq != null)
 
-            pushBool(!doEq("!='"), usedTok)
+            pushBool(() => !doEq("!='"), usedTok)
         }
     }
 
@@ -300,25 +359,34 @@ trait NCDslCompilerBase {
     def parsePlusExpr(plus: TN, minus: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
-        val (v1, v2, f1, f2) = pop2()
+        val (v1, v2, f1, f2) = pop2Values()
         val usedTok = f1 || f2
 
         if (plus != null) {
-            if (isStr(v1) && isStr(v2)) pushAny(asStr(v1) + asStr(v2), usedTok)
-            else if (isJLong(v1) && isJLong(v2)) pushLong(asJLong(v1) + asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushDouble(asJLong(v1) + asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushDouble(asJDouble(v1) + asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushDouble(asJDouble(v1) + asJDouble(v2), usedTok)
+            if (isStr(v1) && isStr(v2))
+                pushAny(() ⇒ asStr(v1) + asStr(v2), usedTok)
+            else if (isJLong(v1) && isJLong(v2))
+                pushLong(() ⇒ asJLong(v1) + asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJLong(v1) + asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushDouble(() ⇒ asJDouble(v1) + asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJDouble(v1) + asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError("+", v1, v2)
         }
         else {
             assert(minus != null)
 
-            if (isJLong(v1) && isJLong(v2)) pushLong(asJLong(v1) - asJLong(v2), usedTok)
-            else if (isJLong(v1) && isJDouble(v2)) pushDouble(asJLong(v1) - asJDouble(v2), usedTok)
-            else if (isJDouble(v1) && isJLong(v2)) pushDouble(asJDouble(v1) - asJLong(v2), usedTok)
-            else if (isJDouble(v1) && isJDouble(v2)) pushDouble(asJDouble(v1) - asJDouble(v2), usedTok)
+            if (isJLong(v1) && isJLong(v2))
+                pushLong(() ⇒ asJLong(v1) - asJLong(v2), usedTok)
+            else if (isJLong(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJLong(v1) - asJDouble(v2), usedTok)
+            else if (isJDouble(v1) && isJLong(v2))
+                pushDouble(() ⇒ asJDouble(v1) - asJLong(v2), usedTok)
+            else if (isJDouble(v1) && isJDouble(v2))
+                pushDouble(() ⇒ asJDouble(v1) - asJDouble(v2), usedTok)
             else
                 throw rtBinaryOpError("-", v1, v2)
         }
@@ -333,13 +401,13 @@ trait NCDslCompilerBase {
     def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: PRC): Instr = (_, stack: StackType, _) ⇒ {
         implicit val s: StackType = stack
 
-        val (v, usedTok) = pop1()
+        val (v, usedTok) = pop1Value()
 
         if (minus != null) {
             if (isJDouble(v))
-                pushDouble(-asJDouble(v), usedTok)
+                pushDouble(() => -asJDouble(v), usedTok)
             else if (isJLong(v))
-                pushLong(-asJLong(v), usedTok)
+                pushLong(() => -asJLong(v), usedTok)
             else
                 throw rtUnaryOpError("-", v)
         }
@@ -347,7 +415,7 @@ trait NCDslCompilerBase {
             assert(not != null)
 
             if (isBool(v))
-                pushBool(!asBool(v), usedTok)
+                pushBool(() => !asBool(v), usedTok)
             else
                 throw rtUnaryOpError("!", v)
         }
@@ -380,7 +448,7 @@ trait NCDslCompilerBase {
                 }
             }
 
-        (_, stack, _) ⇒ pushAny(atom, false)(stack)
+        (_, stack, _) ⇒ pushAny(() ⇒ atom, false)(stack)
     }
 
     /**
@@ -397,57 +465,82 @@ trait NCDslCompilerBase {
             if (stack.size < min)
                 throw rtMinParamNumError(min, fun)
 
-        def get1[T](typ: String, is: Object ⇒ Boolean, as: Object ⇒ T): (T, Boolean) = {
-            ensureStack(1)
-    
-            val (v, f) = pop1()
-    
-            if (!is(v))
-                throw rtParamTypeError(fun, v, typ)
-    
-            (as(v), f)
+        def get1[T](typ: String, is: Object ⇒ Boolean, as: Object ⇒ T): (() ⇒ T, Boolean) = {
+            val (vf, f) = pop1()
+
+            (
+                () ⇒ {
+                    val v = vf()
+
+                    if (!is(v))
+                        throw rtParamTypeError(fun, v, typ)
+
+                    as(v)
+                },
+                f
+            )
         }
-        def get2[T](typ: String, is: Object ⇒ Boolean, as: Object ⇒ T): (T, T, Boolean) = {
-            ensureStack(1)
-        
-            val (v1, v2, f1, f2) = pop2()
-        
-            if (!is(v1))
-                throw rtParamTypeError(fun, v1, typ)
-            if (!is(v2))
-                throw rtParamTypeError(fun, v2, typ)
-        
-            (as(v1), as(v2), f1 || f2)
+        def get2[T](typ: String, is: Object ⇒ Boolean, as: Object ⇒ T): (() ⇒ T, () ⇒ T, Boolean) = {
+            val (vf1, vf2, f1, f2) = pop2()
+
+            (
+                () ⇒ {
+                    val v = vf1()
+
+                    if (!is(v))
+                        throw rtParamTypeError(fun, v, typ)
+
+                    as(v)
+                },
+                () ⇒ {
+                    val v = vf2()
+
+                    if (!is(v))
+                        throw rtParamTypeError(fun, v, typ)
+
+                    as(v)
+                },
+                f1 || f2
+            )
         }
     
-        def get1Map(): (JMap[_, _], Boolean) = get1("map", isJMap, asJMap)
-        def get1Double(): (JDouble, Boolean) = get1("double", isJDouble, asJDouble)
-        def get1List(): (JList[_], Boolean) = get1("list", isJList, asJList)
-        def get1Str(): (String, Boolean) = get1("string", isStr, asStr)
-        def get2Doubles(): (JDouble, JDouble, Boolean) = get2("double", isJDouble, asJDouble)
-        def get2Str(): (String, String, Boolean) = get2("string", isStr, asStr)
+        def get1Map(): (() ⇒ JMap[_, _], Boolean) = get1("map", isJMap, asJMap)
+        def get1Double(): (() ⇒ JDouble, Boolean) = get1("double", isJDouble, asJDouble)
+        def get1List(): (() ⇒ JList[_], Boolean) = get1("list", isJList, asJList)
+        def get1Str(): (() ⇒ String, Boolean) = get1("string", isStr, asStr)
+        def get2Doubles(): (() ⇒ JDouble, () ⇒ JDouble, Boolean) = get2("double", isJDouble, asJDouble)
+        def get2Str(): (() ⇒ String, () ⇒ String, Boolean) = get2("string", isStr, asStr)
+        def get1Tok1Str(): (() ⇒ NCToken, () ⇒ String, Boolean) = {
+            val (vf1, vf2, f1, f2) = pop2()
 
-        def get1Tok1Str(): (NCToken, String, Boolean) = {
-            ensureStack(2)
+            (
+                () ⇒ {
+                    val v = vf1()
 
-            val (v1, v2, f1, f2) = pop2()
+                    if (!isToken(v))
+                        throw rtParamTypeError(fun, v, "token")
 
-            if (!isToken(v1))
-                throw rtParamTypeError(fun, v1, "token")
-            if (!isStr(v2))
-                throw rtParamTypeError(fun, v2, "string")
+                    asToken(v)
+                },
+                () ⇒ {
+                    val v = vf2()
 
-            (asToken(v1), asStr(v2), f1 || f2)
+                    if (!isStr(v))
+                        throw rtParamTypeError(fun, v, "string")
+
+                    asStr(v)
+                },
+                f1 || f2
+            )
+        }
+        def get1Any(): (() ⇒ Any, Boolean) = {
+            val (vf, f) = pop1()
+
+            (() ⇒ vf(), f)
         }
 
-        def get1Any(): (Any, Boolean) = {
-            ensureStack(1)
-
-            pop1()
-        }
-
-        def doSplit(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { s ⇒  pushAny(s, f)(stack) }}
-        def doSplitTrim(): Unit = get2Str() match { case (s1, s2, f) ⇒  s1.split(asStr(s2)).foreach { s ⇒ pushAny(s.strip, f)(stack) }}
+        def doSplit(): Unit = get2Str() match { case (s1, s2, f) ⇒ s1().split(s2()).foreach { s ⇒ pushAny(() ⇒ s, f)(stack) } }
+        def doSplitTrim(): Unit = get2Str() match { case (s1, s2, f) ⇒ s1().split(s2()).foreach { s ⇒ pushAny(() ⇒ s.strip, f)(stack) }}
 
         /*
          * Collection, statistical operations.
@@ -457,27 +550,42 @@ trait NCDslCompilerBase {
             var f = false
 
             stack.drain { x ⇒
-                jl.add(x.retVal)
+                jl.add(x.fun())
                 f = f || x.usedTok
             }
 
             Collections.reverse(jl)
 
-            pushAny(jl, f)
+            pushAny(() ⇒ jl, f)
         }
         
-        def doSize(): Unit = get1List() match { case (list, f) ⇒ pushLong(list.size(), f) }
+        def doSize(): Unit = get1List() match { case (list, f) ⇒ pushLong(() ⇒ list().size(), f) }
         
         def doHas(): Unit = {
-            ensureStack(2)
-    
-            val (v1, v2, f1, f2) = pop2()
-    
-            if (!isJList(v1))
-                throw rtParamTypeError(fun, v1, "list")
-                
-            pushBool(asJList(v1).contains(v2), f1 || f2)
+            val (vf1, vf2, f1, f2) = pop2()
+
+            pushBool(() ⇒ {
+                val v1 = vf1()
+                val v2 = vf2()
+
+                if (!isJList(v1))
+                    throw rtParamTypeError(fun, v1, "list")
+
+                asJList(v1).contains(v2)
+            }, f1 || f2)
         }
+
+
+
+
+
+        // ----------------------------------------------------
+
+
+
+
+
+
 
         def doGet(): Unit = {
             ensureStack(2)
@@ -510,7 +618,7 @@ trait NCDslCompilerBase {
             var idx = 0
 
             stack.drain { x ⇒
-                if (idx % 2 == 0) keys += x.retVal else vals += x.retVal
+                if (idx % 2 == 0) keys += x.fun else vals += x.fun
                 f = f || x.usedTok
 
                 idx += 1
@@ -607,7 +715,7 @@ trait NCDslCompilerBase {
             case "aliases" ⇒ pushAny(token().getAliases, true)
             case "start_idx" ⇒ pushLong(token().getStartCharIndex, true)
             case "end_idx" ⇒ pushLong(token().getEndCharIndex, true)
-            case "this" ⇒ pushAny(tok, true)
+            case "this" ⇒ pushAny(() ⇒ tok, true)
             case "part" ⇒ doPart()
             case "parts" ⇒ doParts()
 
@@ -658,35 +766,35 @@ trait NCDslCompilerBase {
 
             // Math functions.
             case "abs" ⇒ doAbs()
-            case "ceil" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.ceil(a), f) } 
-            case "floor" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.floor(a), f) } 
-            case "rint" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.rint(a), f) } 
-            case "round" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushLong(Math.round(a), f) } 
-            case "signum" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.signum(a), f) } 
-            case "sqrt" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sqrt(a), f) }
-            case "cbrt" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cbrt(a), f) }
-            case "pi" ⇒ pushDouble(Math.PI, false)
-            case "euler" ⇒ pushDouble(Math.E, false)
-            case "acos" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.acos(a), f) }
-            case "asin" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.asin(a), f) }
-            case "atan" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.atan(a), f) }
-            case "cos" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cos(a), f) }
-            case "sin" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sin(a), f) }
-            case "tan" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.tan(a), f) }
-            case "cosh" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.cosh(a), f) }
-            case "sinh" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.sinh(a), f) }
-            case "tanh" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.tanh(a), f) }
-            case "atn2" ⇒ get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.atan2(a1, a2), f) }
-            case "degrees" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.toDegrees(a), f) }
-            case "radians" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.toRadians(a), f) }
-            case "exp" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.exp(a), f) }
-            case "expm1" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.expm1(a), f) }
-            case "hypot" ⇒ get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.hypot(a1, a2), f) }
-            case "log" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log(a), f) }
-            case "log10" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log10(a), f) }
-            case "log1p" ⇒ get1Double() match { case (a: JDouble, f) ⇒ pushDouble(Math.log1p(a), f) }
-            case "pow" ⇒ get2Doubles() match { case (a1: JDouble, a2: JDouble, f) ⇒ pushDouble(Math.pow(a1, a2), f) }
-            case "rand" ⇒ pushDouble(Math.random, false)
+            case "ceil" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.ceil(a()), f) }
+            case "floor" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.floor(a), f) }
+            case "rint" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.rint(a), f) }
+            case "round" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushLong(() ⇒ Math.round(a), f) }
+            case "signum" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.signum(a), f) }
+            case "sqrt" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.sqrt(a), f) }
+            case "cbrt" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.cbrt(a), f) }
+            case "pi" ⇒ pushDouble(() ⇒ Math.PI, false)
+            case "euler" ⇒ pushDouble(() ⇒ Math.E, false)
+            case "acos" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.acos(a), f) }
+            case "asin" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.asin(a), f) }
+            case "atan" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.atan(a), f) }
+            case "cos" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.cos(a), f) }
+            case "sin" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.sin(a), f) }
+            case "tan" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.tan(a), f) }
+            case "cosh" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.cosh(a), f) }
+            case "sinh" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.sinh(a), f) }
+            case "tanh" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.tanh(a), f) }
+            case "atn2" ⇒ get2Doubles() match { case (a1: () ⇒ JDouble, a2: JDouble, f) ⇒ pushDouble(() ⇒ Math.atan2(a1, a2), f) }
+            case "degrees" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.toDegrees(a), f) }
+            case "radians" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.toRadians(a), f) }
+            case "exp" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.exp(a), f) }
+            case "expm1" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.expm1(a), f) }
+            case "hypot" ⇒ get2Doubles() match { case (a1: () ⇒ JDouble, a2: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.hypot(a1, a2), f) }
+            case "log" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.log(a), f) }
+            case "log10" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.log10(a), f) }
+            case "log1p" ⇒ get1Double() match { case (a: () ⇒ JDouble, f) ⇒ pushDouble(() ⇒ Math.log1p(a), f) }
+            case "pow" ⇒ get2Doubles() match { case (a1: () ⇒ JDouble, a2: JDouble, f) ⇒ pushDouble(() ⇒ Math.pow(a1, a2), f) }
+            case "rand" ⇒ pushDouble(() ⇒ Math.random, false)
             case "square" ⇒ doSquare()
 
             // Collection functions.
