@@ -49,7 +49,7 @@ elements:
     - "{a33|a3}"
   - id: "a4"
     synonyms:
-      - "{fourth|4th} ^^[alias4](id == 'a3')^^"
+      - "{fourth|4th} ^^[alias4]{id == 'a3'}^^"
 
 intents:
   - "intent=i1 term(t1)={id() == 'a' && meta_token('txt') == 'x'}"

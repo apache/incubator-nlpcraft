@@ -34,8 +34,8 @@ class NCNestedTestModel extends NCDefaultTestModel {
             NCTestElement("x2", "{test1|_} ^^{id() == 'x1'}^^"),
             NCTestElement("x3", "{test2|_} ^^{id() == 'x2'}^^"),
             NCTestElement("y1", "y"),
-            NCTestElement("y2", "^^id == 'y1'^^"),
-            NCTestElement("y3", "^^id == 'y2'^^ ^^id == 'y2'^^")
+            NCTestElement("y2", "^^{id == 'y1'}^^"),
+            NCTestElement("y3", "^^{id == 'y2'}^^ ^^{id == 'y2'}^^")
         )
 }
 

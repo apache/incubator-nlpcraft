@@ -36,7 +36,7 @@ class NCIntentDslSpecModel extends NCModelAdapter(
     override def getElements: util.Set[NCElement] = Set(NCTestElement("paris"))
 
     // Moscow population filter.
-    @NCIntent("intent=bigCity term(city)={id() == 'nlpcraft:city' && value(meta_token('nlpcraft:city:citymeta'), 'population') >= 10381222}")
+    @NCIntent("intent=bigCity term(city)={id() == 'nlpcraft:city' && get(meta_token('nlpcraft:city:citymeta'), 'population') >= 10381222}")
     private def onBigCity(ctx: NCIntentMatch): NCResult = "OK"
 
     @NCIntent("intent=otherCity term(city)={id() == 'nlpcraft:city' }")
