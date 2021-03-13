@@ -15,11 +15,16 @@
  * limitations under the License.
  */
 
- // Fragments.
- fragment=buzz term~{id() == 'x:alarm'}
- fragment=when term(nums)~{id() == 'nlpcraft:num' && meta_token('nlpcraft:num:unittype') == 'datetime' && meta_token('nlpcraft:num:isequalcondition') == true}[0,7]
+// Fragments.
+fragment=buzz term~{id() == 'x:alarm'}
+fragment=when
+    term(nums)~{
+        id() == 'nlpcraft:num' &&
+        meta_token('nlpcraft:num:unittype') == 'datetime' &&
+        meta_token('nlpcraft:num:isequalcondition') == true
+    }[0,7]
 
- // Intents
- intent=alarm
+// Intents
+intent=alarm
     fragment(buzz)
     fragment(when)

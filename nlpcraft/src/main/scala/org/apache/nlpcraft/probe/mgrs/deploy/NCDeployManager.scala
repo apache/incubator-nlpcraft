@@ -1082,6 +1082,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (mtd.getReturnType != CLS_QRY_RES)
             throw new NCE(s"Unexpected result type for @NCIntent annotated method [" +
                 s"mdlId=$mdlId, " +
+                s"intentId=${intent.id}, " +
                 s"type=${class2Str(mtd.getReturnType)}, " +
                 s"callback=${method2Str(mtd)}" +
             s"]")
@@ -1106,6 +1107,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (tokParamAnns.length != tokParamTypes.length)
             throw new NCE(s"Unexpected annotations count for @NCIntent annotated method [" +
                 s"mdlId=$mdlId, " +
+                s"intentId=${intent.id}, " +
                 s"count=${tokParamAnns.size}, " +
                 s"callback=${method2Str(mtd)}" +
             s"]")
@@ -1124,12 +1126,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     case 0 ⇒
                         throw new NCE(s"Missing @NCIntentTerm annotation for [" +
                             s"mdlId=$mdlId, " +
+                            s"intentId=${intent.id}, " +
                             s"arg=${mkArg()}" +
                         s"]")
 
                     case _ ⇒
                         throw new NCE(s"Too many @NCIntentTerm annotations for [" +
                             s"mdlId=$mdlId, " +
+                            s"intentId=${intent.id}, " +
                             s"arg=${mkArg()}" +
                         s"]")
                 }
@@ -1138,6 +1142,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         if (U.containsDups(termIds))
             throw new NCE(s"Duplicate term IDs in @NCIntentTerm annotations [" +
                 s"mdlId=$mdlId, " +
+                s"intentId=${intent.id}, " +
                 s"dups=${U.getDups(termIds).mkString(", ")}, " +
                 s"callback=${method2Str(mtd)}" +
             s"]")
@@ -1153,7 +1158,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Report only the first one for simplicity & clarity.
             throw new NCE(s"Unknown term ID in @NCIntentTerm annotation [" +
                 s"mdlId=$mdlId, " +
-                s"id='${invalidIds.head}', " +
+                s"intentId=${intent.id}, " +
+                s"termId=${invalidIds.head}, " +
                 s"callback=${method2Str(mtd)}" +
             s"]")
         }

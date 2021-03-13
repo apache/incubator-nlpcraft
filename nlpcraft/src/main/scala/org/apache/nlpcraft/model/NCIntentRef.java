@@ -17,9 +17,7 @@
 
 package org.apache.nlpcraft.model;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -40,6 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(value=RUNTIME)
 @Target(value=METHOD)
+@Repeatable(NCIntentRef.NCIntentRefList.class)
 public @interface NCIntentRef {
     /**
      * ID of the intent defined externally.
@@ -47,4 +46,20 @@ public @interface NCIntentRef {
      * @return ID of the intent defined externally.
      */
     String value() default "";
+
+    /**
+     * Grouping annotation required for when more than one {@link NCIntentRef} annotation is attached to the
+     * callback.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(value=METHOD)
+    @Documented
+    @interface NCIntentRefList {
+        /**
+         * Gets the list of all {@link NCIntentRef} annotations attached to the callback.
+         *
+         * @return List of all {@link NCIntentRef} annotations attached to the callback.
+         */
+        NCIntentRef[] value();
+    }
 }

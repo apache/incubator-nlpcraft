@@ -86,6 +86,7 @@ public @interface NCIntentSample {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value=METHOD)
+    @Documented
     @interface NCIntentSampleList {
         /**
          * Gets the list of all {@link NCIntentSample} annotations attached to the callback.

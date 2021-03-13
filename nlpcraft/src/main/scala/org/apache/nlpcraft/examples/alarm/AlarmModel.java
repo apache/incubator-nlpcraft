@@ -45,6 +45,14 @@ public class AlarmModel extends NCModelFileAdapter {
         super("org/apache/nlpcraft/examples/alarm/alarm_model.json");
     }
 
+    @NCIntent("intent=i11 term={true}")
+    @NCIntent("intent=i12 term={true}")
+    NCResult cb1(NCIntentMatch ctx) { return NCResult.text(""); }
+
+    @NCIntent("intent=i21 term={true}")
+    @NCIntent("intent=i22 term={true}")
+    NCResult cb2(NCIntentMatch ctx) { return NCResult.text(""); }
+
     /**
      * Callback on intent match.
      *

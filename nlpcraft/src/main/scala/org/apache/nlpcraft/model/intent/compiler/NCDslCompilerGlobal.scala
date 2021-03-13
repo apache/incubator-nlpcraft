@@ -25,17 +25,42 @@ import scala.collection.mutable
  */
 object NCDslCompilerGlobal {
     private final val fragCache = TrieMap.empty[String /* Model ID. */ , mutable.Map[String, NCDslFragment]]
+    private final val importCache = mutable.HashSet.empty[String]
 
     /**
      *
      */
-    def clearCache(): Unit = fragCache.clear()
+    def clearAllCaches(): Unit = {
+        fragCache.clear()
+        clearImportCache()
+    }
+
+    /**
+     *
+     */
+    private def clearImportCache(): Unit =
+        importCache.synchronized {
+            importCache.clear
+        }
 
     /**
      *
      * @param mdlId
      */
     def clearCache(mdlId: String): Unit = fragCache += mdlId → mutable.HashMap.empty[String, NCDslFragment]
+
+    /**
+     *
+     * @param imp
+     */
+    def addImport(imp: String): Unit = importCache.synchronized { importCache += imp }
+
+    /**
+     *
+     * @param imp
+     * @return
+     */
+    def hasImport(imp: String): Boolean = importCache.synchronized { importCache.contains(imp) }
 
     /**
      *

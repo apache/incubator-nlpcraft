@@ -38,7 +38,8 @@ import static java.lang.annotation.RetentionPolicy.*;
  */
 @Documented
 @Retention(value=RUNTIME)
-@Target(value=METHOD)
+@Target(value={METHOD, TYPE})
+@Repeatable(NCIntent.NCIntentList.class)
 public @interface NCIntent {
     /**
      * Intent specification using intent DSL.
@@ -46,4 +47,20 @@ public @interface NCIntent {
      * @return Intent specification using intent DSL.
      */
     String value() default "";
+
+    /**
+     * Grouping annotation required for when more than one {@link NCIntent} annotation is attached to the
+     * callback or class.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @Target(value={METHOD, TYPE})
+    @interface NCIntentList {
+        /**
+         * Gets the list of all {@link NCIntent} annotations attached to the callback or class.
+         *
+         * @return List of all {@link NCIntent} annotations attached to the callback or class.
+         */
+        NCIntent[] value();
+    }
 }

@@ -80,6 +80,19 @@ object NCDslCompiler extends LazyLogging {
         // Current expression code, i.e. list of instructions.
         private var instrs = mutable.Buffer.empty[Instr]
 
+
+        /**
+         *
+         * @return
+         */
+        def getCompiledIntents: Set[NCDslIntent] = intents.toSet
+
+        /**
+         *
+         * @return
+         */
+        def getCompiledSynonym: NCDslSynonym = synonym
+
         /*
          * Shared/common implementation.
          */
@@ -330,43 +343,50 @@ object NCDslCompiler extends LazyLogging {
     
         override def exitImp(ctx: IDP.ImpContext): Unit = {
             val x = U.trimQuotes(ctx.qstring().getText)
-            var imports: Set[NCDslIntent] = null
 
-            val file = new File(x)
+            if (Global.hasImport(x))
+                logger.warn(s"Ignoring already processed DSL import '$x' in: $origin")
+            else {
+                Global.addImport(x)
 
-            if (file.exists())
-                imports = NCDslCompiler.compileIntents(
-                    U.readFile(file).mkString("\n"),
-                    mdl,
-                    x
-                )
+                var imports: Set[NCDslIntent] = null
 
-            if (imports == null) {
-                val in = mdl.getClass.getClassLoader.getResourceAsStream(x)
+                val file = new File(x)
 
-                if (in != null)
+                if (file.exists())
                     imports = NCDslCompiler.compileIntents(
-                        U.readStream(in).mkString("\n"),
+                        U.readFile(file).mkString("\n"),
                         mdl,
                         x
                     )
-            }
 
-            if (imports == null) {
-                try
-                    imports = NCDslCompiler.compileIntents(
-                        U.readStream(new URL(x).openStream()).mkString("\n"),
-                        mdl,
-                        x
-                    )
-                catch {
-                    case _: Exception ⇒ throw newSyntaxError(s"Invalid or unknown import location: $x")(ctx.qstring())
+                if (imports == null) {
+                    val in = mdl.getClass.getClassLoader.getResourceAsStream(x)
+
+                    if (in != null)
+                        imports = NCDslCompiler.compileIntents(
+                            U.readStream(in).mkString("\n"),
+                            mdl,
+                            x
+                        )
                 }
+
+                if (imports == null) {
+                    try
+                        imports = NCDslCompiler.compileIntents(
+                            U.readStream(new URL(x).openStream()).mkString("\n"),
+                            mdl,
+                            x
+                        )
+                    catch {
+                        case _: Exception ⇒ throw newSyntaxError(s"Invalid or unknown import location: $x")(ctx.qstring())
+                    }
+                }
+
+                require(imports != null)
+
+                imports.foreach(addIntent(_)(ctx.qstring()))
             }
-
-            require(imports != null)
-
-            imports.foreach(addIntent(_)(ctx.qstring()))
         }
         
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
@@ -390,31 +410,21 @@ object NCDslCompiler extends LazyLogging {
             terms.clear()
         }
 
-        /**
-         *
-         * @return
-         */
-        def getCompiledIntents: Set[NCDslIntent] = intents.toSet
-
-        /**
-         *
-         * @return
-         */
-        def getCompiledSynonym: NCDslSynonym = synonym
-
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =
-            throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, dsl, mdl))
+            throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, dsl, origin, mdl))
 
         override def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE =
-            throw new NCE(mkRuntimeError(errMsg, srcName, line, pos, dsl, mdl), cause)
+            throw new NCE(mkRuntimeError(errMsg, srcName, line, pos, dsl, origin, mdl), cause)
     }
 
     /**
      *
      * @param msg
+     * @param srcName
      * @param line
      * @param charPos
-     * @param dsl Original DSL text (input).
+     * @param dsl
+     * @param origin DSL origin.
      * @param mdl
      * @return
      */
@@ -424,16 +434,18 @@ object NCDslCompiler extends LazyLogging {
         line: Int, // 1, 2, ...
         charPos: Int, // 0, 1, 2, ...
         dsl: String,
-        mdl: NCModel): String = mkError("syntax", msg, srcName, line, charPos, dsl, mdl)
+        origin: String,
+        mdl: NCModel): String = mkError("syntax", msg, srcName, line, charPos, dsl, origin, mdl)
 
     /**
      *
      * @param msg
-     * @param dsl
-     * @param mdl
      * @param srcName
      * @param line
      * @param charPos
+     * @param dsl
+     * @param origin DSL origin.
+     * @param mdl
      * @return
      */
     private def mkRuntimeError(
@@ -442,8 +454,21 @@ object NCDslCompiler extends LazyLogging {
         line: Int, // 1, 2, ...
         charPos: Int, // 0, 1, 2, ...
         dsl: String,
-        mdl: NCModel): String = mkError("runtime", msg, srcName, line, charPos, dsl, mdl)
+        origin: String,
+        mdl: NCModel): String = mkError("runtime", msg, srcName, line, charPos, dsl, origin, mdl)
 
+    /**
+     *
+     * @param kind
+     * @param msg
+     * @param srcName
+     * @param line
+     * @param charPos
+     * @param dsl
+     * @param origin DSL origin.
+     * @param mdl
+     * @return
+     */
     private def mkError(
         kind: String,
         msg: String,
@@ -451,6 +476,7 @@ object NCDslCompiler extends LazyLogging {
         line: Int,
         charPos: Int,
         dsl: String,
+        origin: String,
         mdl: NCModel): String = {
         val dslLine = dsl.split("\n")(line - 1)
         val dash = "-" * dslLine.length
@@ -463,7 +489,10 @@ object NCDslCompiler extends LazyLogging {
         }
 
         s"DSL $kind error in '$srcName' at line $line:${charPos + 1} - $aMsg\n" +
-            s"  |-- ${c("Model ID:")} ${mdl.getId} $C<-$RST $W${mdl.getOrigin}$RST\n" +
+            s"  |-- ${c("Model ID:")} ${mdl.getId}\n" +
+            s"  |-- ${c("Model origin:")} ${mdl.getOrigin}\n" +
+            s"  |-- ${c("Intent origin:")} $origin\n" +
+            s"  |-- $RST$W--------------$RST\n" +
             s"  |-- ${c("Line:")}     $dslPtr\n" +
             s"  +-- ${c("Position:")} $posPtr"
     }
@@ -473,8 +502,9 @@ object NCDslCompiler extends LazyLogging {
      *
      * @param dsl
      * @param mdl
+     * @param origin DSL origin.
      */
-    class CompilerErrorListener(dsl: String, mdl: NCModel) extends BaseErrorListener {
+    class CompilerErrorListener(dsl: String, mdl: NCModel, origin: String) extends BaseErrorListener {
         /**
          *
          * @param recog
@@ -491,7 +521,7 @@ object NCDslCompiler extends LazyLogging {
             charPos: Int, // 1, 2, ...
             msg: String,
             e: RecognitionException): Unit =
-            throw new NCE(mkSyntaxError(msg, recog.getInputStream.getSourceName, line, charPos - 1, dsl, mdl))
+            throw new NCE(mkSyntaxError(msg, recog.getInputStream.getSourceName, line, charPos - 1, dsl, origin, mdl))
     }
 
     /**
@@ -573,8 +603,8 @@ object NCDslCompiler extends LazyLogging {
         // Set custom error handlers.
         lexer.removeErrorListeners()
         parser.removeErrorListeners()
-        lexer.addErrorListener(new CompilerErrorListener(dsl, mdl))
-        parser.addErrorListener(new CompilerErrorListener(dsl, mdl))
+        lexer.addErrorListener(new CompilerErrorListener(dsl, mdl, origin))
+        parser.addErrorListener(new CompilerErrorListener(dsl, mdl, origin))
 
         // State automata + it's parser.
         new FiniteStateMachine(origin, dsl, mdl) → parser
