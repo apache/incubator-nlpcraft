@@ -30,7 +30,7 @@ import scala.collection.JavaConverters._
 @NCTestEnvironment(model = classOf[AlarmModel], startClient = false)
 class NCRestModelSpec extends NCRestSpec {
     @Test
-    def test(): Unit = {
+    private def test(): Unit = {
         def extract(data: java.util.List[java.util.Map[String, Object]]): Seq[Double] =
             data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue())
 

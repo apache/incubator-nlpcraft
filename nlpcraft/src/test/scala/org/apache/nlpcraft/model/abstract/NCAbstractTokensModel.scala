@@ -30,7 +30,7 @@ class NCAbstractTokensModel extends NCModelAdapter(
         Set(
             NCTestElement("anyWord", "//[a-zA-Z0-9]+//"),
             NCTestElement("wrapAnyWord", "the ^^[internal]{id() == 'anyWord'}^^"),
-            NCTestElement("wrapNum", "w1 ^^{id == 'nlpcraft:num'}^^ w2"),
+            NCTestElement("wrapNum", "w1 ^^{id() == 'nlpcraft:num'}^^ w2"),
             NCTestElement("wrapLimit", "before limit ^^[limitAlias]{id() == 'nlpcraft:limit'}^^"),
             NCTestElement("wrapWrapLimit", "wrap ^^[wrapLimitAlias]{id() == 'wrapLimit'}^^")
         )

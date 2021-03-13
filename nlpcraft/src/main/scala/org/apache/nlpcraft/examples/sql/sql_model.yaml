@@ -1450,38 +1450,38 @@ elements:
   groups:
     - "element"
   synonyms:
-    - "^^[colVal](has(groups(), 'column') && value() != null)^^"
+    - "^^[colVal]{has(groups(), 'column') && value() != null}^^"
 - id: "col:num"
   groups:
     - "element"
   synonyms:
-    - "^^id() == 'col' && has(list(4, 8), meta_part(part('colName'), 'sql:datatype'))^^"
+    - "^^{id() == 'col' && has(list(4, 8), meta_part(part('colName'), 'sql:datatype')}^^"
 - id: "col:date"
   groups:
     - "element"
   synonyms:
-    - "^^id() == 'col' && meta_part(part('colName'), 'sql:datatype') == 91^^"
+    - "^^{id() == 'col' && meta_part(part('colName'), 'sql:datatype') == 91}^^"
 - id: "col:varchar"
   groups:
     - "element"
   synonyms:
-    - "^^id() == 'col' && meta_part(part('colName'), 'sql:datatype') == 12^^"
+    - "^^{id() == 'col' && meta_part(part('colName'), 'sql:datatype') == 12}^^"
 - id: "condition:num"
   groups:
     - "condition"
   synonyms:
-    - "^^id() == 'col:num'^^ ^^id() == 'nlpcraft:num'^^ "
+    - "^^{id() == 'col:num'^^ ^^id() == 'nlpcraft:num'}^^ "
 - id: "condition:value"
   groups:
     - "condition"
   synonyms:
-    - "^^id() == 'col:varchar'^^ {is|equal|_} ^^id() == 'col:val'^^"
-    - "^^id() == 'col:val'^^"
+    - "^^{id() == 'col:varchar'^^ {is|equal|_} ^^id() == 'col:val'}^^"
+    - "^^{id() == 'col:val'}^^"
 - id: "condition:date"
   groups:
     - "condition"
   synonyms:
-    - "^^id() == 'col:date'^^ ^^id() == 'nlpcraft:date'^^ "
+    - "^^{id() == 'col:date'^^ ^^id() == 'nlpcraft:date'}^^"
 - id: "sort:best"
   groups:
     - "Sort criteria"

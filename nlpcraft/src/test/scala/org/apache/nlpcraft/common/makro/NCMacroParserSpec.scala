@@ -145,7 +145,7 @@ class NCMacroParserSpec  {
         checkEq("//[a-zA-Z0-9]+//", Seq("//[a-zA-Z0-9]+//"))
         checkEq("the ^^[internal]{id() == 'anyWord'}^^", Seq("the ^^[internal]{id() == 'anyWord'}^^"))
         checkEq("{A}[0,1] ^^[internal]{id() == 'anyWord'}^^", Seq("^^[internal]{id() == 'anyWord'}^^", "A ^^[internal]{id() == 'anyWord'}^^"))
-        checkEq("w1 ^^{id == 'nlpcraft:num'}^^ w2", Seq("w1 ^^{id == 'nlpcraft:num'}^^ w2"))
+        checkEq("w1 ^^{id() == 'nlpcraft:num'}^^ w2", Seq("w1 ^^{id() == 'nlpcraft:num'}^^ w2"))
         checkEq("before limit ^^[limitAlias]{id() == 'nlpcraft:limit'}^^", Seq("before limit ^^[limitAlias]{id() == 'nlpcraft:limit'}^^"))
         checkEq("wrap ^^[wrapLimitAlias]{id() == 'wrapLimit'}^^", Seq("wrap ^^[wrapLimitAlias]{id() == 'wrapLimit'}^^"))
 

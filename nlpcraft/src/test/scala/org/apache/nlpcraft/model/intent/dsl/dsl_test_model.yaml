@@ -38,7 +38,7 @@ elements:
       floatVal: 1.5
       textVal: "a2"
     synonyms:
-    - "{second|2nd} ^^[alias1](trim(id) == 'a')^^"
+    - "{second|2nd} ^^[alias1]{(}trim(id) == 'a'}^^"
   - id: "a3"
     metadata:
       intVal: 2
@@ -49,7 +49,7 @@ elements:
     - "{a33|a3}"
   - id: "a4"
     synonyms:
-      - "{fourth|4th} ^^[alias4]{id == 'a3'}^^"
+      - "{fourth|4th} ^^[alias4]{id() == 'a3'}^^"
 
 intents:
   - "intent=i1 term(t1)={id() == 'a' && meta_token('txt') == 'x'}"
