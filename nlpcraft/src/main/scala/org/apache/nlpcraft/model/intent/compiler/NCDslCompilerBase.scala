@@ -664,7 +664,7 @@ trait NCDslCompilerBase {
         }
 
         def token(): NCToken =
-            if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.top.asInstanceOf[NCToken] else tok
+            if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.pop().asInstanceOf[NCToken] else tok
 
         def doPart(): Unit = {
             val (t, aliasId, f) = get1Tok1Str()

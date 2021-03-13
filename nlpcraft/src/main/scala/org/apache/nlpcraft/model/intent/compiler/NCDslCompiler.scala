@@ -315,7 +315,7 @@ object NCDslCompiler extends LazyLogging {
                 val x = stack.pop()
 
                 if (!isBool(x.fun))
-                    throw newRuntimeError(s"$subj does not return boolean value: ${ctx.getText}")
+                    throw newRuntimeError(s"$subj did not return boolean value: ${ctx.getText}")
 
                 (asBool(x.fun), x.usedTok)
             }
