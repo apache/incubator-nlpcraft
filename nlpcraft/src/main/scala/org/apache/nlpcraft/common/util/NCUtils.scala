@@ -1217,9 +1217,10 @@ object NCUtils extends LazyLogging {
     def neon(s: String): Boolean = s != null && s.nonEmpty
 
     /**
-      * Generates (relatively) unique ID good for a short-term usage.
+      * Generates (a relatively) globally unique ID good for a short-term usage.
       */
-    def genGuid(): String = idGen.encrypt(System.currentTimeMillis(), System.nanoTime())
+    def genGuid(): String = idGen.encrypt(System.currentTimeMillis(), System.nanoTime()).
+        toUpperCase.grouped(4).filter(_.length() == 4).mkString("-")
 
     /**
       * Converts non-empty sequence of '\n' and '\s' into one ' '.
