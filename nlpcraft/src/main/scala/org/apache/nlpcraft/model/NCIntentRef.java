@@ -23,7 +23,9 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotations referencing an intent defined externally in JSON or YAML model declaration.
+ * Annotations referencing an intent defined outside of callback method declaration. Multiple such annotations
+ * can be applied to the callback method. Note that multiple intents can be bound to the same callback method,
+ * but only one callback method can be bound with a given intent.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.

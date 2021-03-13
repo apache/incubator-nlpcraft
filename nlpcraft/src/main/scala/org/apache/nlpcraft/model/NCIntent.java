@@ -23,8 +23,11 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Annotation to define an intent on the method serving as its callback. This annotation takes a string value
- * that defines an intent via intent DSL.
+ * Annotation to bind an intent with the method serving as its callback. This annotation takes a string value
+ * that defines an intent via intent DSL. This annotation can also be applied to a model's class in
+ * which case it will just declare the intent without binding it and the callback method will need to
+ * use {@link NCIntentRef} annotation to actually bind it to the declared intent. Note that multiple intents
+ * can be bound to the same callback method, but only one callback method can be bound with a given intent.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.

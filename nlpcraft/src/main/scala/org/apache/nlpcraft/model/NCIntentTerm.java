@@ -30,6 +30,9 @@ import static java.lang.annotation.RetentionPolicy.*;
  * method parameters to get the tokens associated with that term (if and when the intent was matched and that
  * callback was invoked).
  * <p>
+ * Note that if multiple intents bound to the same callback method, all such intents should have the named
+ * terms specified by this annotation.
+ * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  *
@@ -45,9 +48,9 @@ import static java.lang.annotation.RetentionPolicy.*;
 @Target(value=PARAMETER)
 public @interface NCIntentTerm {
     /**
-     * ID of the intent defined externally.
+     * ID of the intent term.
      *
-     * @return ID of the intent defined externally.
+     * @return ID of the intent term.
      */
     String value();
 }
