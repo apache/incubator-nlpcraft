@@ -33,7 +33,7 @@ class NCNestedTestModel4 extends NCModelAdapter(
     override def getElements: util.Set[NCElement] =
         Set(
             NCTestElement("e1", "//[a-zA-Z0-9]+//"),
-            NCTestElement("e2", "the ^^(id == 'e1')^^")
+            NCTestElement("e2", "the ^^(id() == 'e1')^^")
         )
 
     override def getAbstractTokens: util.Set[String] = Set("e1").asJava

@@ -29,10 +29,10 @@ class NCAbstractTokensModel extends NCModelAdapter(
     override def getElements: util.Set[NCElement] =
         Set(
             NCTestElement("anyWord", "//[a-zA-Z0-9]+//"),
-            NCTestElement("wrapAnyWord", "the ^^[internal](id == 'anyWord')^^"),
+            NCTestElement("wrapAnyWord", "the ^^[internal](id() == 'anyWord')^^"),
             NCTestElement("wrapNum", "w1 ^^id == 'nlpcraft:num'^^ w2"),
-            NCTestElement("wrapLimit", "before limit ^^[limitAlias](id == 'nlpcraft:limit')^^"),
-            NCTestElement("wrapWrapLimit", "wrap ^^[wrapLimitAlias](id == 'wrapLimit')^^")
+            NCTestElement("wrapLimit", "before limit ^^[limitAlias](id() == 'nlpcraft:limit')^^"),
+            NCTestElement("wrapWrapLimit", "wrap ^^[wrapLimitAlias](id() == 'wrapLimit')^^")
         )
 
     override def getAbstractTokens: util.Set[String] = Set("nlpcraft:num", "anyWord").asJava

@@ -28,7 +28,7 @@ import java.util
   */
 class NCNestedTestModel21 extends NCModelAdapter("nlpcraft.nested2.test.mdl", "Nested Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
-        Set(NCTestElement("e1", "{^^(id == 'nlpcraft:num')^^|_} word"))
+        Set(NCTestElement("e1", "{^^(id() == 'nlpcraft:num')^^|_} word"))
 
     @NCIntent("intent=onE1 term(t1)={id() == 'e1'}")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")

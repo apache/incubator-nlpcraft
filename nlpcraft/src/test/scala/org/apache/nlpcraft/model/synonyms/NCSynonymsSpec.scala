@@ -39,7 +39,7 @@ class NCSynonymsSpecModel extends NCModelAdapter("nlpcraft.syns.test.mdl", "Syno
             NCTestElement("e3", "{//AA//}[3, 3]"),
 
             // Nested - 3 words.
-            NCTestElement("e4", "{^^(id == 'e1')^^}[3, 3]")
+            NCTestElement("e4", "{^^(id() == 'e1')^^}[3, 3]")
         )
 
     @NCIntent("intent=onE1 term(t)={id() == 'e1'}")

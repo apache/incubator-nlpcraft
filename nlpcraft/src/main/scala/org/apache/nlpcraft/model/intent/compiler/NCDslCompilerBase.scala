@@ -479,6 +479,24 @@ trait NCDslCompilerBase {
             pushBool(asJList(v1).contains(v2), f1 || f2)
         }
 
+        def doGet(): Unit = {
+            ensureStack(2)
+
+            val (col, key, f1, f2) = pop2() // NOTE: pop2() corrects for stack's LIFO order.
+            val f = f1 || f2
+
+            if (isJList(col)) {
+                if (isJLong(key))
+                    pushAny(asJList(col).get(asJLong(key).intValue()).asInstanceOf[Object], f)
+                else
+                    rtParamTypeError(fun, key, "numeric")
+            }
+            else if (isJMap(col))
+                pushAny(asJMap(col).get(key).asInstanceOf[Object], f)
+            else
+                rtParamTypeError(fun, col, "list or map")
+        }
+
         def doMap(): Unit = {
             if (stack.size % 2 != 0)
                 throw rtParamNumError(fun)
@@ -674,7 +692,7 @@ trait NCDslCompilerBase {
             // Collection functions.
             case "list" ⇒ doList()
             case "map" ⇒ doMap()
-            case "get" ⇒
+            case "get" ⇒ doGet()
             case "index" ⇒
             case "has" ⇒ doHas()
             case "tail" ⇒
