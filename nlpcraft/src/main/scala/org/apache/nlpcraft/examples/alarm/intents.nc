@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-// Fragments.
+// Fragments (mostly for demo purposes here).
 fragment=buzz term~{id() == 'x:alarm'}
 fragment=when
     term(nums)~{

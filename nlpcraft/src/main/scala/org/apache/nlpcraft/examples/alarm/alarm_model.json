@@ -34,6 +34,6 @@
         }
     ],
     "intents": [
-        "import('org/apache/nlpcraft/examples/alarm/intents.nc')"
+        "import('org/apache/nlpcraft/examples/alarm/intents.nc')" // Import intents from external file.
     ]
 }

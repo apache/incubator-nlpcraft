@@ -474,8 +474,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
             // Check the uniqueness of intent IDs.
             U.getDups(intents.map(_._1).toSeq.map(_.id)) match {
                 case ids if ids.nonEmpty ⇒
-                    throw new NCE(s"Duplicate intent IDs found [" +
+                    throw new NCE(s"Duplicate intent IDs [" +
                         s"mdlId=$mdlId, " +
+                        s"mdlOrigin=${mdl.getOrigin}, " +
                         s"ids=${ids.mkString(",")}" +
                     s"]")
                 case _ ⇒ ()
@@ -1169,12 +1170,12 @@ object NCDeployManager extends NCService with DecorateAsScala {
         require(tokParamTypes.length == paramGenTypes.length)
 
         // Checks parameters.
-        checkTypes(mdlId, mtd, tokParamTypes, paramGenTypes, ctxFirstParam)
+        checkTypes(mdl, mtd, tokParamTypes, paramGenTypes, ctxFirstParam)
 
         // Checks limits.
         val allLimits = terms.map(t ⇒ t.id.orNull → (t.min, t.max)).toMap
 
-        checkMinMax(mdlId, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
+        checkMinMax(mdl, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
         (ctx: NCIntentMatch) ⇒ {
@@ -1317,15 +1318,22 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     /**
       *
-      * @param mdlId
+      * @param mdl
       * @param mtd
       * @param paramCls
       * @param paramGenTypes
       * @param ctxFirstParam
       */
     @throws[NCE]
-    private def checkTypes(mdlId: String, mtd: Method, paramCls: Seq[Class[_]], paramGenTypes: Seq[Type], ctxFirstParam: Boolean): Unit = {
+    private def checkTypes(
+        mdl: NCModel,
+        mtd: Method,
+        paramCls: Seq[Class[_]],
+        paramGenTypes: Seq[Type],
+        ctxFirstParam: Boolean): Unit = {
         require(paramCls.length == paramGenTypes.length)
+
+        val mdlId = mdl.getId
 
         paramCls.zip(paramGenTypes).zipWithIndex.foreach { case ((pClass, pGenType), i) ⇒
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
@@ -1340,6 +1348,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 if (compType != CLS_TOKEN)
                     throw new NCE(s"Unexpected array element type for @NCIntentTerm annotated argument [" +
                         s"mdlId=$mdlId, " +
+                        s"mdlOrigin=${mdl.getOrigin}, " +
                         s"type=${class2Str(compType)}, " +
                         s"arg=${mkArg()}" +
                     s"]")
@@ -1355,6 +1364,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             throw new NCE(
                                 s"Unexpected generic types count for @NCIntentTerm annotated argument [" +
                                     s"mdlId=$mdlId, " +
+                                    s"mdlOrigin=${mdl.getOrigin}, " +
                                     s"count=${compTypes.length}, " +
                                     s"arg=${mkArg()}" +
                                 s"]")
@@ -1369,6 +1379,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                 if (genClass != CLS_TOKEN)
                                     throw new NCE(s"Unexpected generic type for @NCIntentTerm annotated argument [" +
                                         s"mdlId=$mdlId, " +
+                                        s"mdlOrigin=${mdl.getOrigin}, " +
                                         s"type=${class2Str(genClass)}, " +
                                         s"arg=${mkArg()}" +
                                     s"]")
@@ -1383,12 +1394,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                                     throw new NCE(
                                         s"Unexpected Kotlin generic type for @NCIntentTerm annotated argument [" +
                                             s"mdlId=$mdlId, " +
+                                            s"mdlOrigin=${mdl.getOrigin}, " +
                                             s"type=${wc2Str(wildcardType)}, " +
                                             s"arg=${mkArg()}" +
                                         s"]")
                             case _ ⇒
                                 throw new NCE(s"Unexpected generic type for @NCIntentTerm annotated argument [" +
                                     s"mdlId=$mdlId, " +
+                                    s"mdlOrigin=${mdl.getOrigin}, " +
                                     s"type=${compType.getTypeName}, " +
                                     s"arg=${mkArg()}" +
                                 s"]")
@@ -1396,6 +1409,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
                     case _ ⇒ throw new NCE(s"Unexpected parameter type for @NCIntentTerm annotated argument [" +
                         s"mdlId=$mdlId, " +
+                        s"mdlOrigin=${mdl.getOrigin}, " +
                         s"type=${pGenType.getTypeName}, " +
                         s"arg=${mkArg()}" +
                     s"]")
@@ -1404,6 +1418,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             else
                 throw new NCE(s"Unexpected parameter type for @NCIntentTerm annotated argument [" +
                     s"mdlId=$mdlId, " +
+                    s"mdlOrigin=${mdl.getOrigin}, " +
                     s"type=${class2Str(pClass)}, " +
                     s"arg=${mkArg()}" +
                 s"]")
@@ -1412,7 +1427,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
     /**
       *
-      * @param mdlId
+      * @param mdl
       * @param mtd
       * @param paramCls
       * @param limits
@@ -1420,31 +1435,37 @@ object NCDeployManager extends NCService with DecorateAsScala {
       */
     @throws[NCE]
     private def checkMinMax(
-        mdlId: String,
+        mdl: NCModel,
         mtd: Method,
         paramCls: Seq[Class[_]],
         limits: Seq[(Int, Int)],
         ctxFirstParam: Boolean): Unit = {
         require(paramCls.length == limits.length)
 
+        val mdlId = mdl.getId
+
         paramCls.zip(limits).zipWithIndex.foreach { case ((cls, (min, max)), i) ⇒
             def mkArg(): String = arg2Str(mtd, i, ctxFirstParam)
 
             val p1 = "its @NCIntentTerm annotated argument"
-            val p2 = s"[mdlId=$mdlId, arg=${mkArg()}]"
+            val p2 = s"[" +
+                s"mdlId=$mdlId, " +
+                s"mdlOrigin=${mdl.getOrigin}, " +
+                s"arg=${mkArg()}" +
+            s"]"
 
             // Argument is single token but defined as not single token.
             if (cls == CLS_TOKEN && (min != 1 || max != 1))
-                throw new NCE(s"@Intent term must have [1,1] quantifier because $p1 is a single value $p2")
+                throw new NCE(s"Intent term must have [1,1] quantifier because $p1 is a single value $p2")
             // Argument is not single token but defined as single token.
             else if (cls != CLS_TOKEN && (min == 1 && max == 1))
-                throw new NCE(s"@Intent term has [1,1] quantifier but $p1 is not a single value $p2")
+                throw new NCE(s"Intent term has [1,1] quantifier but $p1 is not a single value $p2")
             // Argument is optional but defined as not optional.
             else if ((cls == CLS_SCALA_OPT || cls == CLS_JAVA_OPT) && (min != 0 || max != 1))
-                throw new NCE(s"@Intent term must have [0,1] quantifier because $p1 is optional $p2")
+                throw new NCE(s"Intent term must have [0,1] quantifier because $p1 is optional $p2")
             // Argument is not optional but defined as optional.
             else if ((cls != CLS_SCALA_OPT && cls != CLS_JAVA_OPT) && (min == 0 && max == 1))
-                throw new NCE(s"@Intent term has [0,1] quantifier but $p1 is not optional $p2")
+                throw new NCE(s"Intent term has [0,1] quantifier but $p1 is not optional $p2")
         }
     }
 
@@ -1467,55 +1488,73 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     private def scanIntents(mdl: NCModel): Set[Intent] = {
         val mdlId = mdl.getId
+        val intentDecls = mutable.Buffer.empty[NCDslIntent]
         val intents = mutable.Buffer.empty[Intent]
-        
+
+        // First, get intent declarations from the JSON/YAML file, if any.
+        mdl match {
+            case adapter: NCModelFileAdapter ⇒
+                intentDecls ++= adapter
+                    .getIntents
+                    .asScala
+                    .flatMap(NCDslCompiler.compileIntents(_, mdl, mdl.getOrigin))
+
+            case _ ⇒ ()
+        }
+
+        // Second, scan class for class-level @NCIntent annotations (intent declarations).
+        val mdlCls = mdl.meta[String](MDL_META_MODEL_CLASS_KEY)
+
+        if (mdlCls != null) {
+            try {
+                val cls = Class.forName(mdlCls)
+
+                for (ann ← cls.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mdlCls))
+                    if (intentDecls.exists(_.id == intent.id))
+                        throw new NCE(s"Duplicate intent ID [" +
+                            s"mdlId=$mdlId, " +
+                            s"mdlOrigin=${mdl.getOrigin}, " +
+                            s"class=$mdlCls, " +
+                            s"id=${intent.id}" +
+                        s"]")
+                    else
+                        intentDecls += intent
+            }
+            catch {
+                case _: ClassNotFoundException ⇒ throw new NCE(s"Failed to scan class for @NCIntent annotation: $mdlCls")
+            }
+        }
+
+        // Third, scan all methods for intent-callback bindings.
         for (m ← getAllMethods(mdl)) {
-            val mStr = method2Str(m)
+            val mtdStr = method2Str(m)
 
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mStr))
-                intents += (intent → prepareCallback(m, mdl, intent))
-    
+            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mtdStr))
+                if (intentDecls.exists(_.id == intent.id) || intents.exists(_._1.id == intent.id))
+                    throw new NCE(s"Duplicate intent ID [" +
+                        s"mdlId=$mdlId, " +
+                        s"mdlOrigin=${mdl.getOrigin}, " +
+                        s"callback=$mtdStr, " +
+                        s"id=${intent.id}" +
+                    s"]")
+                else
+                    intents += (intent → prepareCallback(m, mdl, intent))
+
             // Process intent references from @NCIntentRef annotation.
             for (ann ← m.getAnnotationsByType(CLS_INTENT_REF)) {
-                intents += (mdl match {
-                    case adapter: NCModelFileAdapter ⇒
-                        val refId = ann.value().trim
-            
-                        val compiledIntents = adapter
-                            .getIntents
-                            .asScala
-                            .flatMap(NCDslCompiler.compileIntents(_, mdl, mStr))
-            
-                        U.getDups(compiledIntents.map(_.id)) match {
-                            case ids if ids.nonEmpty ⇒
-                                throw new NCE(s"Duplicate intent IDs found [" +
-                                    s"mdlId=$mdlId, " +
-                                    s"origin=${adapter.getOrigin}, " +
-                                    s"callback=$mStr, " +
-                                    s"ids=${ids.mkString(",")}" +
-                                s"]")
-                
-                            case _ ⇒ ()
-                        }
-            
-                        compiledIntents.find(_.id == refId) match {
-                            case Some(intent) ⇒ (intent, prepareCallback(m, mdl, intent))
-                            case None ⇒
-                                throw new NCE(
-                                    s"@IntentRef($refId) references unknown intent ID [" +
-                                        s"mdlId=$mdlId, " +
-                                        s"refId=$refId, " +
-                                        s"callback=$mStr" +
-                                    s"]")
-                        }
-        
-                    case _ ⇒
-                        throw new NCE(s"@IntentRef annotation can only be used for models extending 'NCModelFileAdapter' class [" +
+                val refId = ann.value().trim
+
+                intentDecls.find(_.id == refId) match {
+                    case Some(intent) ⇒ intents += (intent → prepareCallback(m, mdl, intent))
+                    case None ⇒ throw new NCE(
+                        s"""@NCIntentRef("$refId") references unknown intent ID [""" +
                             s"mdlId=$mdlId, " +
-                            s"callback=$mStr" +
+                            s"mdlOrigin=${mdl.getOrigin}, " +
+                            s"refId=$refId, " +
+                            s"callback=$mtdStr" +
                         s"]")
-                })
+                }
             }
         }
         
@@ -1534,7 +1573,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         val samples = mutable.Buffer.empty[Sample]
 
         for (m ← getAllMethods(mdl)) {
-            val mStr = method2Str(m)
+            val mtdStr = method2Str(m)
 
             val smpAnns = m.getAnnotationsByType(CLS_SAMPLE)
             val intAnns = m.getAnnotationsByType(CLS_INTENT)
@@ -1542,19 +1581,19 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (smpAnns.nonEmpty) {
                 if (intAnns.isEmpty && refAnns.isEmpty)
-                    throw new NCE(s"@IntentSample annotation without corresponding @NCIntent or @NCIntentRef annotations: $mStr")
+                    throw new NCE(s"@NCIntentSample annotation without corresponding @NCIntent or @NCIntentRef annotations: $mtdStr")
                 else {
                     val seqSeq = smpAnns.toSeq.map(_.value().toSeq)
 
                     if (seqSeq.exists(_.isEmpty))
-                        logger.warn(s"@IntentSample annotation is empty: $mStr")
+                        logger.warn(s"@NCIntentSample annotation is empty: $mtdStr")
                     if (U.containsDups(seqSeq.flatten.toList))
-                        logger.warn(s"@IntentSample annotation has duplicates: $mStr")
+                        logger.warn(s"@NCIntentSample annotation has duplicates: $mtdStr")
 
                     val distinct = seqSeq.map(_.distinct).distinct
 
                     for (ann ← intAnns) {
-                        for (intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mStr))
+                        for (intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mtdStr))
                             samples += (intent.id → distinct)
                     }
                     for (ann ← refAnns)
@@ -1562,7 +1601,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 }
             }
             else if (intAnns.nonEmpty || refAnns.nonEmpty)
-                logger.warn(s"@IntentSample annotation is missing for: $mStr")
+                logger.warn(s"@NCIntentSample annotation is missing for: $mtdStr")
         }
 
         if (samples.nonEmpty) {
@@ -1590,8 +1629,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             val seq: Seq[String] = sNorm.split(" ").map(NCNlpPorterStemmer.stem)
 
                             if (!allSyns.exists(_.intersect(seq).nonEmpty))
-                                logger.warn(s"@IntentSample sample doesn't contain any direct synonyms [" +
+                                logger.warn(s"@NCIntentSample sample doesn't contain any direct synonyms [" +
                                     s"mdlId=$mdlId, " +
+                                    s"mdlOrigin=${mdl.getOrigin}, " +
                                     s"sample='$s'" +
                                 s"]")
                         }

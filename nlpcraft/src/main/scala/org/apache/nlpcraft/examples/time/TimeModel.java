@@ -40,6 +40,9 @@ import static java.time.format.FormatStyle.*;
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
+// Declaring intents on the class level for demo purposes.
+@NCIntent("intent=intent2 term~{id() == 'x:time'} term(city)~{id() == 'nlpcraft:city'}")
+@NCIntent("intent=intent1 term={id() == 'x:time'}")
 public class TimeModel extends NCModelFileAdapter {
     // Medium data formatter.
     static private final DateTimeFormatter FMT = DateTimeFormatter.ofLocalizedDateTime(MEDIUM);
@@ -92,7 +95,7 @@ public class TimeModel extends NCModelFileAdapter {
      * @param cityTok Token for 'geo' term.
      * @return Query result.
      */
-    @NCIntent("intent=intent2 term~{id() == 'x:time'} term(city)~{id() == 'nlpcraft:city'}")
+    @NCIntentRef("intent2")
     @NCIntentSample({
         "What time is it now in New York City?",
         "What's the current time in Moscow?",
@@ -119,7 +122,7 @@ public class TimeModel extends NCModelFileAdapter {
      * @param ctx Intent solver context.
      * @return Query result.
      */
-    @NCIntent("intent=intent1 term={id() == 'x:time'}")
+    @NCIntentRef("intent1")
     @NCIntentSample({
         "What's the local time?"
     })
