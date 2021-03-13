@@ -77,7 +77,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         CLS_JAVA_OPT
     )
     
-    type Callback = Function[NCIntentMatch, NCResult]
+    type Callback = (String /* ID */, Function[NCIntentMatch, NCResult])
     type Intent = (NCDslIntent, Callback)
     type Sample = (String/* Intent ID */, Seq[Seq[String]] /* List of list of input samples for that intent. */)
     
@@ -483,7 +483,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             }
 
             solver = new NCIntentSolver(
-                intents.toList.map(x ⇒ (x._1, (z: NCIntentMatch) ⇒ x._2.apply(z)))
+                intents.toList.map(x ⇒ (x._1, (z: NCIntentMatch) ⇒ x._2._2.apply(z)))
             )
         }
         else
@@ -1178,17 +1178,20 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkMinMax(mdl, mtd, tokParamTypes, termIds.map(allLimits), ctxFirstParam)
 
         // Prepares invocation method.
-        (ctx: NCIntentMatch) ⇒ {
-            invoke(
-                mtd,
-                mdl,
-                (
-                    (if (ctxFirstParam) Seq(ctx)
-                    else Seq.empty) ++
-                        prepareParams(mdlId, mtd, tokParamTypes, termIds.map(ctx.getTermTokens), ctxFirstParam)
-                    ).toArray
-            )
-        }
+        (
+            mtd.toString,
+            (ctx: NCIntentMatch) ⇒ {
+                invoke(
+                    mtd,
+                    mdl,
+                    (
+                        (if (ctxFirstParam) Seq(ctx)
+                        else Seq.empty) ++
+                            prepareParams(mdlId, mtd, tokParamTypes, termIds.map(ctx.getTermTokens), ctxFirstParam)
+                        ).toArray
+                )
+            }
+        )
     }
 
     /**
@@ -1529,6 +1532,20 @@ object NCDeployManager extends NCService with DecorateAsScala {
         for (m ← getAllMethods(mdl)) {
             val mtdStr = method2Str(m)
 
+            def bindIntent(intent: NCDslIntent, cb: Callback): Unit = {
+                if (intents.exists(i ⇒ i._1.id == intent.id && i._2._1 != cb._1))
+                    throw new NCE(s"The intent cannot be bound to more than one callback [" +
+                        s"mdlId=$mdlId, " +
+                        s"mdlOrigin=${mdl.getOrigin}, " +
+                        s"class=$mdlCls, " +
+                        s"intentId=${intent.id}" +
+                    s"]")
+                else {
+                    intentDecls += intent
+                    intents += (intent → prepareCallback(m, mdl, intent))
+                }
+            }
+
             // Process inline intent declarations by @NCIntent annotation.
             for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mtdStr))
                 if (intentDecls.exists(_.id == intent.id) || intents.exists(_._1.id == intent.id))
@@ -1539,14 +1556,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         s"id=${intent.id}" +
                     s"]")
                 else
-                    intents += (intent → prepareCallback(m, mdl, intent))
+                    bindIntent(intent, prepareCallback(m, mdl, intent))
 
             // Process intent references from @NCIntentRef annotation.
             for (ann ← m.getAnnotationsByType(CLS_INTENT_REF)) {
                 val refId = ann.value().trim
 
                 intentDecls.find(_.id == refId) match {
-                    case Some(intent) ⇒ intents += (intent → prepareCallback(m, mdl, intent))
+                    case Some(intent) ⇒ bindIntent(intent, prepareCallback(m, mdl, intent))
                     case None ⇒ throw new NCE(
                         s"""@NCIntentRef("$refId") references unknown intent ID [""" +
                             s"mdlId=$mdlId, " +
@@ -1557,6 +1574,15 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 }
             }
         }
+
+        val unusedIntents = intentDecls.filter(i ⇒ !intents.exists(_._1.id == i.id))
+
+        if (unusedIntents.nonEmpty)
+            logger.warn(s"Declared but unused intents: [" +
+                s"mdlId=$mdlId, " +
+                s"mdlOrigin=${mdl.getOrigin}, " +
+                s"intentIds=${unusedIntents.map(_.id).mkString("(", ", ", ")")}]"
+            )
         
         intents.toSet
     }
