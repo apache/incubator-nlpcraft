@@ -24,5 +24,5 @@ import org.apache.nlpcraft.model._
  */
 class NCIntentDslTestModel extends NCModelFileAdapter("src/test/scala/org/apache/nlpcraft/model/intent/dsl/dsl_test_model.yaml") {
     @NCIntentRef("i1")
-    private def callback$i4(ctx: NCIntentMatch): NCResult = NCResult.text("callback$i1")
+    private def callback$i1(ctx: NCIntentMatch): NCResult = NCResult.text("callback$i1")
 }

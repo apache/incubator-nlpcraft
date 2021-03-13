@@ -1445,7 +1445,7 @@ elements:
   groups:
     - "element"
   synonyms:
-    - "^^[colName](has(groups(), 'column') && value() == null)^^"
+    - "^^[colName]{has(groups(), 'column') && value() == null}^^"
 - id: "col:val"
   groups:
     - "element"

@@ -26,7 +26,7 @@ enabledBuiltInTokens: [
 elements:
   - id: "a"
     metadata:
-      txt: "//[xX]//"
+      txt: "x"
     groups:
     - "grp1"
     synonyms:
@@ -38,7 +38,7 @@ elements:
       floatVal: 1.5
       textVal: "a2"
     synonyms:
-    - "{second|2nd} ^^[alias1]{(}trim(id) == 'a'}^^"
+    - "{second|2nd} ^^[alias1]{trim(id()) == 'a'}^^"
   - id: "a3"
     metadata:
       intVal: 2
