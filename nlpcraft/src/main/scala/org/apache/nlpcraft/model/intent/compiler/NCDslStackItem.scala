@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.model.intent.compiler
 
-import org.apache.nlpcraft.model.intent.compiler.NCDslStackItem.StackValue
-
 /**
  *
  */
