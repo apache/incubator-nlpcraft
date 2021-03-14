@@ -475,6 +475,7 @@ trait NCDslCompilerBase {
         def toJList(v: Object): JList[_] = toX("list", v, isJList, asJList)
         def toJMap(v: Object): JMap[_, _] = toX("map", v, isJMap, asJMap)
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
+        def toBool(v: Object): Boolean = toX("boolean", v, isBool, asBool)
 
         def optToken(): NCToken =
             if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.pop().asInstanceOf[NCToken] else tok
@@ -528,8 +529,6 @@ trait NCDslCompilerBase {
                 Z(jl, f)
             })
         }
-        
-        def doSize(): Unit = get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).size(), f)}) }
 
         def doHas(): Unit = {
             val (x1, x2) = get2()
@@ -538,10 +537,7 @@ trait NCDslCompilerBase {
                 val Z(v1, f1) = x1()
                 val Z(v2, f2) = x2()
 
-                if (!isJList(v1))
-                    throw rtParamTypeError(fun, v1, "list")
-
-                Z(asJList(v1).contains(v2), f1 || f2)
+                Z(toJList(v1).contains(v2), f1 || f2)
             })
         }
 
@@ -593,6 +589,64 @@ trait NCDslCompilerBase {
             })
         }
 
+        def doIf(): Unit = {
+            val (x1, x2, x3) = get3()
+
+            stack.push(() ⇒ {
+                val Z(v1, f1) = x1()
+                val Z(v2, f2) = x2()
+                val Z(v3, f3) = x3()
+
+                if (toBool(v1))
+                    Z(v2, f1 || f2)
+                else
+                    Z(v3, f1 || f3)
+            })
+        }
+
+        //noinspection DuplicatedCode
+        def doPart(): Unit = {
+            val (x1, x2) = get2()
+
+            stack.push(() ⇒ {
+                val Z(t, f1) = x1()
+                val Z(a, f2) = x2()
+
+                val tok = toToken(t)
+                val aliasId = toStr(a)
+
+                val parts = tok.findPartTokens(aliasId)
+
+                if (parts.isEmpty)
+                    throw newRuntimeError(s"Cannot find part for token (use 'parts' function instead) [" +
+                        s"id=${tok.getId}, " +
+                        s"aliasId=$aliasId" +
+                    s"]")
+                else if (parts.size() > 1)
+                    throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
+                        s"id=${tok.getId}, " +
+                        s"aliasId=$aliasId" +
+                    s"]")
+
+                Z(parts.get(0), f1 || f2)
+            })
+        }
+
+        //noinspection DuplicatedCode
+        def doParts(): Unit = {
+            val (x1, x2) = get2()
+
+            stack.push(() ⇒ {
+                val Z(t, f1) = x1()
+                val Z(a, f2) = x2()
+
+                val tok = toToken(t)
+                val aliasId = toStr(a)
+
+                Z(tok.findPartTokens(aliasId), f1 || f2)
+            })
+        }
+
         fun match {
             // Metadata access.
             case "meta_part" ⇒ get2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(toToken(v1).meta[Object](toStr(v2)), f1 || f2) }) }
@@ -610,7 +664,7 @@ trait NCDslCompilerBase {
             case "json" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(U.jsonToJavaMap(asStr(v)), f) }) }
 
             // Inline if-statement.
-            case "if" ⇒
+            case "if" ⇒ doIf()
 
             // Token functions.
             case "id" ⇒ stack.push(() ⇒ Z(optToken().getId, true))
@@ -622,8 +676,8 @@ trait NCDslCompilerBase {
             case "start_idx" ⇒ stack.push(() ⇒ Z(optToken().getStartCharIndex, true))
             case "end_idx" ⇒ stack.push(() ⇒ Z(optToken().getEndCharIndex, true))
             case "this" ⇒ stack.push(() ⇒ Z(tok, true))
-            case "part" ⇒
-            case "parts" ⇒
+            case "part" ⇒ doPart()
+            case "parts" ⇒ doParts()
 
             // Request data.
             case "req_id" ⇒ stack.push(() ⇒ Z(termCtx.req.getServerRequestId, false))
@@ -721,9 +775,7 @@ trait NCDslCompilerBase {
             case "values" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) }) }
             case "take" ⇒
             case "drop" ⇒
-            case "size" ⇒ doSize()
-            case "count" ⇒ doSize()
-            case "length" ⇒ doSize()
+            case "size" | "count" | "length" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).size(), f)}) }
             case "reverse" ⇒ get1() match { case x ⇒ stack.push(() ⇒ {
                 val Z(v, f) = x()
 
