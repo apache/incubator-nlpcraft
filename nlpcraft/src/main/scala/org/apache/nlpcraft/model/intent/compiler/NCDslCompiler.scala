@@ -104,6 +104,12 @@ object NCDslCompiler extends LazyLogging {
         override def exitEqNeqExpr(ctx: IDP.EqNeqExprContext): Unit = instrs += parseEqNeqExpr(ctx.EQ, ctx.NEQ())(ctx)
         override def exitCallExpr(ctx: IDP.CallExprContext): Unit = instrs += parseCallExpr(ctx.FUN_NAME())(ctx)
         override def exitAtom(ctx: IDP.AtomContext): Unit = instrs += parseAtom(ctx.getText)(ctx)
+        override def exitTermEq(ctx: IDP.TermEqContext): Unit = termConv = ctx.TILDA() != null
+        override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
+        override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
+        override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
+        override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
+        override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
 
         /**
          *
@@ -152,14 +158,6 @@ object NCDslCompiler extends LazyLogging {
                 throw newSyntaxError(s"Duplicate intent term ID: $termId")(ctx.id())
         }
 
-        override def exitIntentId(ctx: IDP.IntentIdContext): Unit = {
-            intentId = ctx.id().getText
-        }
-        
-        override def exitAlias(ctx: IDP.AliasContext): Unit = {
-            alias = ctx.id().getText
-        }
-
         override def exitSynonym(ctx: IDP.SynonymContext): Unit = {
             implicit val evidence: PRC = ctx
 
@@ -172,11 +170,6 @@ object NCDslCompiler extends LazyLogging {
             if (Global.getFragment(mdl.getId, fragId).isDefined)
                 throw newSyntaxError(s"Duplicate fragment ID: $fragId")(ctx.id())
         }
-
-        override def exitTermEq(ctx: IDP.TermEqContext): Unit = termConv = ctx.TILDA() != null
-        override def exitFragMeta(ctx: IDP.FragMetaContext): Unit = fragMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
-        override def exitMetaDecl(ctx: IDP.MetaDeclContext): Unit = intentMeta = U.jsonToScalaMap(ctx.jsonObj().getText)
-        override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
 
         override def exitFragRef(ctx: IDP.FragRefContext): Unit = {
             val id = ctx.id().getText
@@ -271,7 +264,7 @@ object NCDslCompiler extends LazyLogging {
                     }
                     catch {
                         case e: Exception ⇒
-                            throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e, ctx.mtdDecl())
+                            throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e)(ctx.mtdDecl())
                     }
                 }
             }
@@ -306,18 +299,19 @@ object NCDslCompiler extends LazyLogging {
             code ++= instrs
 
             (tok: NCToken, termCtx: NCDslContext) ⇒ {
-                val stack = new mutable.ArrayStack[NCDslStackItem]()
+                val stack = new mutable.ArrayStack[() ⇒ NCDslStackItem]()
 
                 // Execute all instructions.
                 code.foreach(_ (tok, stack, termCtx))
 
                 // Pop final result from stack.
-                val x = stack.pop()
+                val x = stack.pop()()
+                val v = x.value
 
-                if (!isBool(x.valFun))
-                    throw newRuntimeError(s"$subj did not return boolean value: ${ctx.getText}", ctx = ctx)
+                if (!isBool(v))
+                    throw newRuntimeError(s"$subj did not return boolean value: ${ctx.getText}")
 
-                (asBool(x.valFun), x.usedTok)
+                (asBool(v), x.usedTok)
             }
         }
 
@@ -325,6 +319,7 @@ object NCDslCompiler extends LazyLogging {
             Global.addFragment(mdl.getId, NCDslFragment(fragId, terms.toList))
 
             terms.clear()
+            fragId = null
         }
     
         /**
@@ -353,6 +348,7 @@ object NCDslCompiler extends LazyLogging {
 
                 val file = new File(x)
 
+                // First, try absolute path.
                 if (file.exists())
                     imports = NCDslCompiler.compileIntents(
                         U.readFile(file).mkString("\n"),
@@ -360,6 +356,7 @@ object NCDslCompiler extends LazyLogging {
                         x
                     )
 
+                // Second, try as a classloader resource.
                 if (imports == null) {
                     val in = mdl.getClass.getClassLoader.getResourceAsStream(x)
 
@@ -371,6 +368,7 @@ object NCDslCompiler extends LazyLogging {
                         )
                 }
 
+                // Finally, try as URL resource.
                 if (imports == null) {
                     try
                         imports = NCDslCompiler.compileIntents(
@@ -597,8 +595,7 @@ object NCDslCompiler extends LazyLogging {
         origin: String
     ): (FiniteStateMachine, IDP) = {
         val lexer = new NCIntentDslLexer(CharStreams.fromString(dsl, origin))
-        val tokens = new CommonTokenStream(lexer)
-        val parser = new IDP(tokens)
+        val parser = new IDP(new CommonTokenStream(lexer))
 
         // Set custom error handlers.
         lexer.removeErrorListeners()

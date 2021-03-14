@@ -23,10 +23,6 @@ import org.apache.nlpcraft.model.intent.compiler.NCDslStackItem.StackValue
  *
  */
 case class NCDslStackItem(
-    valFun: StackValue,
+    value: Object,
     usedTok: Boolean
 )
-
-object NCDslStackItem {
-    type StackValue = () ⇒ Object
-}
