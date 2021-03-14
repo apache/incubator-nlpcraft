@@ -81,11 +81,11 @@ expr
     // NOTE: order of productions defines precedence.
     : op=(MINUS | NOT) expr # unaryExpr
     | LPAR expr RPAR # parExpr
-    | expr op=(MULT | DIV | MOD) expr # multExpr
-    | expr op=(PLUS | MINUS) expr # plusExpr
+    | expr op=(MULT | DIV | MOD) expr # multDivModExpr
+    | expr op=(PLUS | MINUS) expr # plusMinusExpr
     | expr op=(LTEQ | GTEQ | LT | GT) expr # compExpr
-    | expr op=(EQ | NEQ) expr # eqExpr
-    | expr op=(AND | OR) expr # logExpr
+    | expr op=(EQ | NEQ) expr # eqNeqExpr
+    | expr op=(AND | OR) expr # andOrExpr
     | atom # atomExpr
     | FUN_NAME LPAR paramList? RPAR # callExpr
     ;

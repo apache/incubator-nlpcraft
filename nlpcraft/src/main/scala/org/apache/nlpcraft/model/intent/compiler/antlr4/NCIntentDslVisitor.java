@@ -180,13 +180,6 @@ public interface NCIntentDslVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParExpr(NCIntentDslParser.ParExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code eqExpr}
-	 * labeled alternative in {@link NCIntentDslParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEqExpr(NCIntentDslParser.EqExprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code unaryExpr}
 	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
@@ -201,12 +194,33 @@ public interface NCIntentDslVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCompExpr(NCIntentDslParser.CompExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code plusMinusExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPlusMinusExpr(NCIntentDslParser.PlusMinusExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAtomExpr(NCIntentDslParser.AtomExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code multDivModExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultDivModExpr(NCIntentDslParser.MultDivModExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code andOrExpr}
+	 * labeled alternative in {@link NCIntentDslParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAndOrExpr(NCIntentDslParser.AndOrExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code callExpr}
 	 * labeled alternative in {@link NCIntentDslParser#expr}.
@@ -215,26 +229,12 @@ public interface NCIntentDslVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCallExpr(NCIntentDslParser.CallExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code multExpr}
+	 * Visit a parse tree produced by the {@code eqNeqExpr}
 	 * labeled alternative in {@link NCIntentDslParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMultExpr(NCIntentDslParser.MultExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code plusExpr}
-	 * labeled alternative in {@link NCIntentDslParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPlusExpr(NCIntentDslParser.PlusExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code logExpr}
-	 * labeled alternative in {@link NCIntentDslParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogExpr(NCIntentDslParser.LogExprContext ctx);
+	T visitEqNeqExpr(NCIntentDslParser.EqNeqExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NCIntentDslParser#paramList}.
 	 * @param ctx the parse tree

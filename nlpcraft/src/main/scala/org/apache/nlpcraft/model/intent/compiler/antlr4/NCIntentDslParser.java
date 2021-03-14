@@ -1943,31 +1943,6 @@ public class NCIntentDslParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class EqExprContext extends ExprContext {
-		public Token op;
-		public List<ExprContext> expr() {
-			return getRuleContexts(ExprContext.class);
-		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
-		}
-		public TerminalNode EQ() { return getToken(NCIntentDslParser.EQ, 0); }
-		public TerminalNode NEQ() { return getToken(NCIntentDslParser.NEQ, 0); }
-		public EqExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterEqExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitEqExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitEqExpr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class UnaryExprContext extends ExprContext {
 		public Token op;
 		public ExprContext expr() {
@@ -2017,6 +1992,31 @@ public class NCIntentDslParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class PlusMinusExprContext extends ExprContext {
+		public Token op;
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public TerminalNode PLUS() { return getToken(NCIntentDslParser.PLUS, 0); }
+		public TerminalNode MINUS() { return getToken(NCIntentDslParser.MINUS, 0); }
+		public PlusMinusExprContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterPlusMinusExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitPlusMinusExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitPlusMinusExpr(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class AtomExprContext extends ExprContext {
 		public AtomContext atom() {
 			return getRuleContext(AtomContext.class,0);
@@ -2033,6 +2033,57 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAtomExpr(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class MultDivModExprContext extends ExprContext {
+		public Token op;
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public TerminalNode MULT() { return getToken(NCIntentDslParser.MULT, 0); }
+		public TerminalNode DIV() { return getToken(NCIntentDslParser.DIV, 0); }
+		public TerminalNode MOD() { return getToken(NCIntentDslParser.MOD, 0); }
+		public MultDivModExprContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterMultDivModExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMultDivModExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMultDivModExpr(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AndOrExprContext extends ExprContext {
+		public Token op;
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public TerminalNode AND() { return getToken(NCIntentDslParser.AND, 0); }
+		public TerminalNode OR() { return getToken(NCIntentDslParser.OR, 0); }
+		public AndOrExprContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterAndOrExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAndOrExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAndOrExpr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2058,7 +2109,7 @@ public class NCIntentDslParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class MultExprContext extends ExprContext {
+	public static class EqNeqExprContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -2066,71 +2117,20 @@ public class NCIntentDslParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode MULT() { return getToken(NCIntentDslParser.MULT, 0); }
-		public TerminalNode DIV() { return getToken(NCIntentDslParser.DIV, 0); }
-		public TerminalNode MOD() { return getToken(NCIntentDslParser.MOD, 0); }
-		public MultExprContext(ExprContext ctx) { copyFrom(ctx); }
+		public TerminalNode EQ() { return getToken(NCIntentDslParser.EQ, 0); }
+		public TerminalNode NEQ() { return getToken(NCIntentDslParser.NEQ, 0); }
+		public EqNeqExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterMultExpr(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterEqNeqExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMultExpr(this);
+			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitEqNeqExpr(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMultExpr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class PlusExprContext extends ExprContext {
-		public Token op;
-		public List<ExprContext> expr() {
-			return getRuleContexts(ExprContext.class);
-		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
-		}
-		public TerminalNode PLUS() { return getToken(NCIntentDslParser.PLUS, 0); }
-		public TerminalNode MINUS() { return getToken(NCIntentDslParser.MINUS, 0); }
-		public PlusExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterPlusExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitPlusExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitPlusExpr(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class LogExprContext extends ExprContext {
-		public Token op;
-		public List<ExprContext> expr() {
-			return getRuleContexts(ExprContext.class);
-		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
-		}
-		public TerminalNode AND() { return getToken(NCIntentDslParser.AND, 0); }
-		public TerminalNode OR() { return getToken(NCIntentDslParser.OR, 0); }
-		public LogExprContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).enterLogExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitLogExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitLogExpr(this);
+			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitEqNeqExpr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2242,15 +2242,15 @@ public class NCIntentDslParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,25,_ctx) ) {
 					case 1:
 						{
-						_localctx = new MultExprContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new MultDivModExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(276);
 						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(277);
-						((MultExprContext)_localctx).op = _input.LT(1);
+						((MultDivModExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MULT) | (1L << DIV) | (1L << MOD))) != 0)) ) {
-							((MultExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((MultDivModExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -2263,15 +2263,15 @@ public class NCIntentDslParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new PlusExprContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new PlusMinusExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(279);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(280);
-						((PlusExprContext)_localctx).op = _input.LT(1);
+						((PlusMinusExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==MINUS || _la==PLUS) ) {
-							((PlusExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((PlusMinusExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -2305,15 +2305,15 @@ public class NCIntentDslParser extends Parser {
 						break;
 					case 4:
 						{
-						_localctx = new EqExprContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new EqNeqExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(285);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(286);
-						((EqExprContext)_localctx).op = _input.LT(1);
+						((EqNeqExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==EQ || _la==NEQ) ) {
-							((EqExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((EqNeqExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -2326,15 +2326,15 @@ public class NCIntentDslParser extends Parser {
 						break;
 					case 5:
 						{
-						_localctx = new LogExprContext(new ExprContext(_parentctx, _parentState));
+						_localctx = new AndOrExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(288);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(289);
-						((LogExprContext)_localctx).op = _input.LT(1);
+						((AndOrExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==AND || _la==OR) ) {
-							((LogExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((AndOrExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;

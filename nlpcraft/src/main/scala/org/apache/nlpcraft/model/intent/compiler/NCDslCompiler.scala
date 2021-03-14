@@ -97,11 +97,11 @@ object NCDslCompiler extends LazyLogging {
          * Shared/common implementation.
          */
         override def exitUnaryExpr(ctx: IDP.UnaryExprContext): Unit = instrs += parseUnaryExpr(ctx.MINUS(), ctx.NOT())(ctx)
-        override def exitMultExpr(ctx: IDP.MultExprContext): Unit = instrs += parseMultExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
-        override def exitPlusExpr(ctx: IDP.PlusExprContext): Unit = instrs += parsePlusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
+        override def exitMultDivModExpr(ctx: IDP.MultDivModExprContext): Unit = instrs += parseMultDivModExpr(ctx.MULT(), ctx.MOD(), ctx.DIV())(ctx)
+        override def exitPlusMinusExpr(ctx: IDP.PlusMinusExprContext): Unit = instrs += parsePlusMinusExpr(ctx.PLUS(), ctx.MINUS())(ctx)
         override def exitCompExpr(ctx: IDP.CompExprContext): Unit = instrs += parseCompExpr(ctx.LT(), ctx.GT(), ctx.LTEQ(), ctx.GTEQ())(ctx)
-        override def exitLogExpr(ctx: IDP.LogExprContext): Unit = instrs += parseLogExpr(ctx.AND, ctx.OR())(ctx)
-        override def exitEqExpr(ctx: IDP.EqExprContext): Unit = instrs += parseEqExpr(ctx.EQ, ctx.NEQ())(ctx)
+        override def exitAndOrExpr(ctx: IDP.AndOrExprContext): Unit = instrs += parseAndOrExpr(ctx.AND, ctx.OR())(ctx)
+        override def exitEqNeqExpr(ctx: IDP.EqNeqExprContext): Unit = instrs += parseEqNeqExpr(ctx.EQ, ctx.NEQ())(ctx)
         override def exitCallExpr(ctx: IDP.CallExprContext): Unit = instrs += parseCallExpr(ctx.FUN_NAME())(ctx)
         override def exitAtom(ctx: IDP.AtomContext): Unit = instrs += parseAtom(ctx.getText)(ctx)
 
@@ -271,7 +271,7 @@ object NCDslCompiler extends LazyLogging {
                     }
                     catch {
                         case e: Exception ⇒
-                            throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e)(ctx.mtdDecl())
+                            throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e, ctx.mtdDecl())
                     }
                 }
             }
@@ -314,10 +314,10 @@ object NCDslCompiler extends LazyLogging {
                 // Pop final result from stack.
                 val x = stack.pop()
 
-                if (!isBool(x.fun))
-                    throw newRuntimeError(s"$subj did not return boolean value: ${ctx.getText}")
+                if (!isBool(x.valFun))
+                    throw newRuntimeError(s"$subj did not return boolean value: ${ctx.getText}", ctx = ctx)
 
-                (asBool(x.fun), x.usedTok)
+                (asBool(x.valFun), x.usedTok)
             }
         }
 

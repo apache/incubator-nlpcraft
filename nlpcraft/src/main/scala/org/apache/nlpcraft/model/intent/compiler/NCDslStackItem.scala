@@ -17,10 +17,16 @@
 
 package org.apache.nlpcraft.model.intent.compiler
 
+import org.apache.nlpcraft.model.intent.compiler.NCDslStackItem.StackValue
+
 /**
  *
  */
 case class NCDslStackItem(
-    fun: () ⇒ Object,
+    valFun: StackValue,
     usedTok: Boolean
 )
+
+object NCDslStackItem {
+    type StackValue = () ⇒ Object
+}
