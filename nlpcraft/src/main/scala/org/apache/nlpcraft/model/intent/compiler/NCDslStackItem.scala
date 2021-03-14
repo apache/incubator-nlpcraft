@@ -24,3 +24,9 @@ case class NCDslStackItem(
     value: Object,
     usedTok: Boolean
 )
+
+object NCDslStackItem {
+    def apply(v: Boolean, f: Boolean): NCDslStackItem = new NCDslStackItem(Boolean.box(v), f)
+    def apply(v: Long, f: Boolean): NCDslStackItem = new NCDslStackItem(Long.box(v), f)
+    def apply(v: Double, f: Boolean): NCDslStackItem = new NCDslStackItem(Double.box(v), f)
+}

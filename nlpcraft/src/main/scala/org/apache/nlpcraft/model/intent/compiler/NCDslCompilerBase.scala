@@ -163,7 +163,7 @@ trait NCDslCompilerBase {
                     else
                         throw rtBinaryOpError("<", v1, v2)
 
-                Z(f, f1 || f2)
+                Z(Boolean.box(f), f1 || f2)
             })
         else if (gt != null)
             stack.push(() ⇒ {
@@ -283,21 +283,21 @@ trait NCDslCompilerBase {
         stack.push(() ⇒ {
             val (op, flag) = if (and != null) ("&&", false) else ("||", true)
 
-            val v1 = x1()
+            val Z(v1, f1) = x1()
 
             if (!isBool(v1))
-                throw rtBinaryOpError(op, v1, x2())
+                throw rtBinaryOpError(op, v1, x2().value)
 
             // NOTE: check v1 first and only if it is {true|false} check the v2.
             if (asBool(v1) == flag)
-                Z(flag, v1.usedTok)
+                Z(flag, f1)
             else {
-                val v2 = x2()
+                val Z(v2, f2) = x2()
 
                 if (!isBool(v2))
                     throw rtBinaryOpError(op, v2, v1)
 
-                Z(asBool(v2), if (and != null) v1.usedTok || v2.usedTok else v1.usedTok && v2.usedTok)
+                Z(asBool(v2), if (and != null) f1 || f2 else f1 && f2)
             }
         })
     }
@@ -352,17 +352,15 @@ trait NCDslCompilerBase {
             stack.push(() ⇒ {
                 val Z(v1, f1) = x1()
                 val Z(v2, f2) = x2()
+                val f = f1 || f2
 
-                val f: Object =
-                    if (isStr(v1) && isStr(v2)) asStr(v1) + asStr(v2)
-                    else if (isJLong(v1) && isJLong(v2)) asJLong(v1) + asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) + asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) + asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) + asJDouble(v2)
-                    else
-                        throw rtBinaryOpError("+", v1, v2)
-
-                Z(f, f1 || f2)
+                if (isStr(v1) && isStr(v2)) Z(asStr(v1) + asStr(v2), f)
+                else if (isJLong(v1) && isJLong(v2))  Z(asJLong(v1) + asJLong(v2), f)
+                else if (isJLong(v1) && isJDouble(v2))  Z(asJLong(v1) + asJDouble(v2), f)
+                else if (isJDouble(v1) && isJLong(v2))  Z(asJDouble(v1) + asJLong(v2), f)
+                else if (isJDouble(v1) && isJDouble(v2))  Z(asJDouble(v1) + asJDouble(v2), f)
+                else
+                    throw rtBinaryOpError("+", v1, v2)
             })
         else {
             assert(minus != null)
@@ -381,8 +379,8 @@ trait NCDslCompilerBase {
 
                 Z(f, v1.usedTok || v2.usedTok)
             })
+        }
     }
-
 
     /**
      * @param minus
@@ -461,6 +459,10 @@ trait NCDslCompilerBase {
             if (stack.size < min)
                 throw rtMinParamNumError(min, fun)
 
+        def get1(): () ⇒ Z = { ensureStack(1); pop1() }
+        def get2(): (() ⇒ Z, () ⇒ Z) = { ensureStack(2); pop2() }
+        def get3(): (() ⇒ Z, () ⇒ Z, () ⇒ Z) = { ensureStack(3); pop3() }
+
         def toX[T](typ: String, v: Object, is: Object ⇒ Boolean, as: Object ⇒ T): T = {
             if (!is(v))
                 throw rtParamTypeError(fun, v, typ)
@@ -470,16 +472,15 @@ trait NCDslCompilerBase {
 
         def toStr(v: Object): String = toX("string", v, isStr, asStr)
         def toJDouble(v: Object): JDouble = toX("double", v, isJDouble, asJDouble)
-        def toJLong(v: Object): JDouble = toX("long", v, isJLong, asJLong)
         def toJList(v: Object): JList[_] = toX("list", v, isJList, asJList)
         def toJMap(v: Object): JMap[_, _] = toX("map", v, isJMap, asJMap)
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
 
-//        def optToken(): NCToken =
-//            if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.pop().asInstanceOf[NCToken] else tok
+        def optToken(): NCToken =
+            if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.pop().asInstanceOf[NCToken] else tok
 
         def doSplit(): Unit = {
-            val (x1, x2) = pop2()
+            val (x1, x2) = get2()
 
             stack.push(
                 () ⇒ {
@@ -492,7 +493,7 @@ trait NCDslCompilerBase {
         }
 
         def doSplitTrim(): Unit = {
-            val (x1, x2) = pop2()
+            val (x1, x2) = get2()
 
             stack.push(
                 () ⇒ {
@@ -528,172 +529,101 @@ trait NCDslCompilerBase {
             })
         }
         
-        def doSize(): Unit = pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).size(), f)}) }
-
-
-
-
-
-
-
-
-
-
-
-        // ----------------------------------------------------
-
-
-
-
-
-
-
-
-
-
+        def doSize(): Unit = get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).size(), f)}) }
 
         def doHas(): Unit = {
-            val (vf1, vf2, f1, f2) = pop2()
+            val (x1, x2) = get2()
 
-            pushBool(() ⇒ {
-                val v1 = vf1()
-                val v2 = vf2()
+            stack.push(() ⇒ {
+                val Z(v1, f1) = x1()
+                val Z(v2, f2) = x2()
 
                 if (!isJList(v1))
                     throw rtParamTypeError(fun, v1, "list")
 
-                asJList(v1).contains(v2)
-            }, f1 || f2)
+                Z(asJList(v1).contains(v2), f1 || f2)
+            })
         }
 
         def doGet(): Unit = {
-            ensureStack(2)
+            val (x1, x2) = get2() // NOTE: get2() corrects for stack's LIFO order.
 
-            val (col, key, f1, f2) = pop2() // NOTE: pop2() corrects for stack's LIFO order.
-            val f = f1 || f2
+            stack.push(() ⇒ {
+                val Z(col, f1) = x1()
+                val Z(key, f2) = x2()
+                val f = f1 || f2
 
-            if (isJList(col)) {
-                if (isJLong(key))
-                    pushAny(asJList(col).get(asJLong(key).intValue()).asInstanceOf[Object], f)
+                if (isJList(col)) {
+                    if (isJLong(key))
+                        Z(asJList(col).get(asJLong(key).intValue()).asInstanceOf[Object], f)
+                    else
+                        throw rtParamTypeError(fun, key, "numeric")
+                }
+                else if (isJMap(col))
+                    Z(asJMap(col).get(key).asInstanceOf[Object], f)
                 else
-                    rtParamTypeError(fun, key, "numeric")
-            }
-            else if (isJMap(col))
-                pushAny(asJMap(col).get(key).asInstanceOf[Object], f)
-            else
-                rtParamTypeError(fun, col, "list or map")
-        }
-
-        def doMap(): Unit = {
-            if (stack.size % 2 != 0)
-                throw rtParamNumError(fun)
-
-            val jm = new util.HashMap[Object, Object]()
-            var f = false
-
-            val keys = mutable.Buffer.empty[Object]
-            val vals = mutable.Buffer.empty[Object]
-
-            var idx = 0
-
-            stack.drain { x ⇒
-                if (idx % 2 == 0) keys += x.valFun else vals += x.valFun
-                f = f || x.usedTok
-
-                idx += 1
-            }
-
-            for ((k, v) ← keys zip vals)
-                jm.put(k, v)
-
-            pushAny(jm, f)
+                    throw rtParamTypeError(fun, col, "list or map")
+            })
         }
 
         /*
          * Math operations.
          */
-        def doAbs(): Unit = get1Any() match {
-            case (a: JLong, f) ⇒ pushLong(Math.abs(a), f)
-            case (a: JDouble, f) ⇒ pushDouble(Math.abs(a), f)
-            case x ⇒ throw rtParamTypeError(fun, x, "numeric")
+        def doAbs(): Unit = get1() match {
+            case x ⇒ stack.push(() ⇒ {
+                val Z(v, f) = x()
+
+                v match {
+                    case a: JLong ⇒ Z(Math.abs(a), f)
+                    case a: JDouble ⇒ Z(Math.abs(a), f)
+                    case _ ⇒ throw rtParamTypeError(fun, v, "numeric")
+                }
+            })
         }
 
-        def doSquare(): Unit = get1Any() match {
-            case (a: JLong, f) ⇒ pushLong(a * a, f)
-            case (a: JDouble, f) ⇒ pushDouble(a * a, f)
-            case x ⇒ throw rtParamTypeError(fun, x, "numeric")
+        def doSquare(): Unit = get1() match {
+            case x ⇒ stack.push(() ⇒ {
+                val Z(v, f) = x()
+
+                v match {
+                    case a: JLong ⇒ Z(a * a, f)
+                    case a: JDouble ⇒ Z(a * a, f)
+                    case _ ⇒ throw rtParamTypeError(fun, v, "numeric")
+                }
+            })
         }
-
-        def doJson(): Unit = get1Str() match {
-            case (s, f) ⇒ pushAny(U.jsonToJavaMap(asStr(s)), f)
-        }
-
-        def doIf(): Unit = {
-            ensureStack(3)
-
-            val (v1, v2, v3, f1, f2, f3) = pop3()
-
-            if (!isBool(v1))
-                throw rtParamTypeError(fun, v1, "boolean")
-
-            if (asBool(v1))
-                pushAny(v2, f1 || f2)
-            else
-                pushAny(v3, f1 || f3)
-        }
-
-        def doPart(): Unit = {
-            val (t, aliasId, f) = get1Tok1Str()
-
-            val parts = t.findPartTokens(aliasId)
-
-            if (parts.isEmpty)
-                throw newRuntimeError(s"Cannot find part for token (use 'parts' function instead) [" +
-                    s"id=${t.getId}, " +
-                    s"aliasId=$aliasId" +
-                    s"]")
-            else if (parts.size() > 1)
-                throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
-                    s"id=${t.getId}, " +
-                    s"aliasId=$aliasId" +
-                    s"]")
-
-            pushAny(parts.get(0), f)
-        }
-
-        def doParts(): Unit = get1Tok1Str() match { case (t, aliasId, f) ⇒ pushAny(t.findPartTokens(aliasId), f) }
 
         fun match {
             // Metadata access.
-            case "meta_part" ⇒ pop2() match { case (t, s, f1, f2) ⇒ stack.push(() ⇒ toToken(t).meta(toStr(s)), f1 || f2) }
-            case "meta_token" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ tok.meta(toStr(s)), true) }
-            case "meta_model" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ tok.getModel.meta(toStr(s)), false) }
-            case "meta_intent" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ termCtx.intentMeta.get(toStr(s)).orNull, false) }
-            case "meta_req" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ termCtx.req.getRequestData.get(toStr(s)), false) }
-            case "meta_user" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ termCtx.req.getUser.getMetadata.get(toStr(s)), false) }
-            case "meta_company" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ termCtx.req.getCompany.getMetadata.get(s), false) }
-            case "meta_sys" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ U.sysEnv(toStr(s)).orNull, false) }
-            case "meta_conv" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ termCtx.convMeta.get(toStr(s)).orNull, false) }
-            case "meta_frag" ⇒ pop1() match { case (s, _) ⇒ stack.push(() ⇒ termCtx.fragMeta.get(toStr(s)).orNull, false) }
+            case "meta_part" ⇒ get2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(toToken(v1).meta[Object](toStr(v2)), f1 || f2) }) }
+            case "meta_token" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(tok.meta[Object](toStr(v)), true) }) }
+            case "meta_model" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(tok.getModel.meta[Object](toStr(v)), false) }) }
+            case "meta_intent" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(termCtx.intentMeta.get(toStr(v)).orNull, false) }) }
+            case "meta_req" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(termCtx.req.getRequestData.get(toStr(v)), false) }) }
+            case "meta_user" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(termCtx.req.getUser.getMetadata.get(toStr(v)), false) }) }
+            case "meta_company" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(termCtx.req.getCompany.getMetadata.get(v), false) }) }
+            case "meta_sys" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(U.sysEnv(toStr(v)).orNull, false) }) }
+            case "meta_conv" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, _) = x(); Z(termCtx.convMeta.get(toStr(v)).orNull, false) }) }
+            case "meta_frag" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(termCtx.fragMeta.get(toStr(v)).orNull, f) }) }
 
             // Converts JSON to map.
-            case "json" ⇒ doJson()
+            case "json" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(U.jsonToJavaMap(asStr(v)), f) }) }
 
             // Inline if-statement.
-            case "if" ⇒ doIf()
+            case "if" ⇒
 
             // Token functions.
-            case "id" ⇒ stack.push(() ⇒ optToken().getId, true)
-            case "ancestors" ⇒ stack.push(() ⇒ optToken().getAncestors, true)
-            case "parent" ⇒ stack.push(() ⇒ optToken().getParentId, true)
-            case "groups" ⇒ stack.push(() ⇒ optToken().getGroups, true)
-            case "value" ⇒ stack.push(() ⇒ optToken().getValue, true)
-            case "aliases" ⇒ stack.push(() ⇒ optToken().getAliases, true)
-            case "start_idx" ⇒ stack.push(() ⇒ optToken().getStartCharIndex, true)
-            case "end_idx" ⇒ stack.push(() ⇒ optToken().getEndCharIndex, true)
-            case "this" ⇒ stack.push(() ⇒ tok, true)
-            case "part" ⇒ doPart()
-            case "parts" ⇒ doParts()
+            case "id" ⇒ stack.push(() ⇒ Z(optToken().getId, true))
+            case "ancestors" ⇒ stack.push(() ⇒ Z(optToken().getAncestors, true))
+            case "parent" ⇒ stack.push(() ⇒ Z(optToken().getParentId, true))
+            case "groups" ⇒ stack.push(() ⇒ Z(optToken().getGroups, true))
+            case "value" ⇒ stack.push(() ⇒ Z(optToken().getValue, true))
+            case "aliases" ⇒ stack.push(() ⇒ Z(optToken().getAliases, true))
+            case "start_idx" ⇒ stack.push(() ⇒ Z(optToken().getStartCharIndex, true))
+            case "end_idx" ⇒ stack.push(() ⇒ Z(optToken().getEndCharIndex, true))
+            case "this" ⇒ stack.push(() ⇒ Z(tok, true))
+            case "part" ⇒
+            case "parts" ⇒
 
             // Request data.
             case "req_id" ⇒ stack.push(() ⇒ Z(termCtx.req.getServerRequestId, false))
@@ -721,16 +651,16 @@ trait NCDslCompilerBase {
             case "comp_postcode" ⇒ stack.push(() ⇒ Z(termCtx.req.getCompany.getPostalCode, false))
 
             // String functions.
-            case "trim" || "strip" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toStr(v).trim, f) }) }
-            case "uppercase" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toStr(v).toUpperCase, f) }) }
-            case "lowercase" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toStr(v).toLowerCase, f) }) }
-            case "is_alpha" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlpha(toStr(v)), f) }) }
-            case "is_alphanum" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlphanumeric(toStr(v)), f) }) }
-            case "is_whitespace" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isWhitespace(toStr(v)), f) }) }
-            case "is_num" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isNumeric(toStr(v)), f) }) }
-            case "is_numspace" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isNumericSpace(toStr(v)), f) }) }
-            case "is_alphaspace" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlphaSpace(toStr(v)), f) }) }
-            case "is_alphanumspace" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) }) }
+            case "trim" | "strip" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toStr(v).trim, f) }) }
+            case "uppercase" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toStr(v).toUpperCase, f) }) }
+            case "lowercase" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toStr(v).toLowerCase, f) }) }
+            case "is_alpha" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlpha(toStr(v)), f) }) }
+            case "is_alphanum" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlphanumeric(toStr(v)), f) }) }
+            case "is_whitespace" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isWhitespace(toStr(v)), f) }) }
+            case "is_num" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isNumeric(toStr(v)), f) }) }
+            case "is_numspace" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isNumericSpace(toStr(v)), f) }) }
+            case "is_alphaspace" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlphaSpace(toStr(v)), f) }) }
+            case "is_alphanumspace" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) }) }
             case "substring" ⇒
             case "charAt" ⇒
             case "regex" ⇒
@@ -741,44 +671,44 @@ trait NCDslCompilerBase {
 
             // Math functions.
             case "abs" ⇒ doAbs()
-            case "ceil" ⇒ pop1() match { case item ⇒ stack.push(() ⇒ {
+            case "ceil" ⇒ get1() match { case item ⇒ stack.push(() ⇒ {
                 val Z(v, f) = item()
 
                 Z(Math.ceil(toJDouble(v)), f)
             }) }
-            case "floor" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.floor(toJDouble(v)), f) }) }
-            case "rint" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.rint(toJDouble(v)), f) }) }
-            case "round" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.round(toJDouble(v)), f) }) }
-            case "signum" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.signum(toJDouble(v)), f) }) }
-            case "sqrt" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.sqrt(toJDouble(v)), f) }) }
-            case "cbrt" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.cbrt(toJDouble(v)), f) }) }
+            case "floor" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.floor(toJDouble(v)), f) }) }
+            case "rint" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.rint(toJDouble(v)), f) }) }
+            case "round" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.round(toJDouble(v)), f) }) }
+            case "signum" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.signum(toJDouble(v)), f) }) }
+            case "sqrt" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.sqrt(toJDouble(v)), f) }) }
+            case "cbrt" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.cbrt(toJDouble(v)), f) }) }
             case "pi" ⇒ stack.push(() ⇒ Z(Math.PI, false))
             case "euler" ⇒ stack.push(() ⇒ Z(Math.E, false))
-            case "acos" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.acos(toJDouble(v)), f) }) }
-            case "asin" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.asin(toJDouble(v)), f) }) }
-            case "atan" ⇒ pop1() match { case x ⇒ stack.push(() ⇒{ val Z(v, f) = x(); Z( Math.atan(toJDouble(v)), f) }) }
-            case "cos" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.cos(toJDouble(v)), f) }) }
-            case "sin" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.sin(toJDouble(v)), f) }) }
-            case "tan" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.tan(toJDouble(v)), f) }) }
-            case "cosh" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.cosh(toJDouble(v)), f) }) }
-            case "sinh" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.sinh(toJDouble(v)), f) }) }
-            case "tanh" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.tanh(toJDouble(v)), f) }) }
-            case "atn2" ⇒ pop2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(Math.atan2(toJDouble(v1), toJDouble(v2)), f1 || f2) }) }
-            case "degrees" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.toDegrees(toJDouble(v)), f) }) }
-            case "radians" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z( Math.toRadians(toJDouble(v)), f) }) }
-            case "exp" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.exp(toJDouble(v)), f) }) }
-            case "expm1" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.expm1(toJDouble(v)), f) }) }
-            case "hypot" ⇒ pop2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(Math.hypot(toJDouble(v1), toJDouble(v2)), f1 || f2) }) }
-            case "log" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.log(toJDouble(v)), f) }) }
-            case "log10" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.log10(toJDouble(v)), f) }) }
-            case "log1p" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) }) }
-            case "pow" ⇒ pop2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 || f2) }) }
+            case "acos" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.acos(toJDouble(v)), f) }) }
+            case "asin" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.asin(toJDouble(v)), f) }) }
+            case "atan" ⇒ get1() match { case x ⇒ stack.push(() ⇒{ val Z(v, f) = x(); Z( Math.atan(toJDouble(v)), f) }) }
+            case "cos" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.cos(toJDouble(v)), f) }) }
+            case "sin" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.sin(toJDouble(v)), f) }) }
+            case "tan" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.tan(toJDouble(v)), f) }) }
+            case "cosh" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.cosh(toJDouble(v)), f) }) }
+            case "sinh" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.sinh(toJDouble(v)), f) }) }
+            case "tanh" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.tanh(toJDouble(v)), f) }) }
+            case "atn2" ⇒ get2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(Math.atan2(toJDouble(v1), toJDouble(v2)), f1 || f2) }) }
+            case "degrees" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.toDegrees(toJDouble(v)), f) }) }
+            case "radians" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z( Math.toRadians(toJDouble(v)), f) }) }
+            case "exp" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.exp(toJDouble(v)), f) }) }
+            case "expm1" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.expm1(toJDouble(v)), f) }) }
+            case "hypot" ⇒ get2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(Math.hypot(toJDouble(v1), toJDouble(v2)), f1 || f2) }) }
+            case "log" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.log(toJDouble(v)), f) }) }
+            case "log10" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.log10(toJDouble(v)), f) }) }
+            case "log1p" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) }) }
+            case "pow" ⇒ get2() match { case (x1, x2) ⇒ stack.push(() ⇒ { val Z(v1, f1) = x1(); val Z(v2, f2) = x2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 || f2) }) }
             case "rand" ⇒ stack.push(() ⇒ Z(Math.random, false))
             case "square" ⇒ doSquare()
 
             // Collection functions.
             case "list" ⇒ doList()
-            case "map" ⇒ doMap()
+            case "map" ⇒
             case "get" ⇒ doGet()
             case "index" ⇒
             case "has" ⇒ doHas()
@@ -787,14 +717,14 @@ trait NCDslCompilerBase {
             case "remove" ⇒
             case "first" ⇒
             case "last" ⇒
-            case "keys" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) }) }
-            case "values" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) }) }
+            case "keys" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) }) }
+            case "values" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) }) }
             case "take" ⇒
             case "drop" ⇒
             case "size" ⇒ doSize()
             case "count" ⇒ doSize()
             case "length" ⇒ doSize()
-            case "reverse" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ {
+            case "reverse" ⇒ get1() match { case x ⇒ stack.push(() ⇒ {
                 val Z(v, f) = x()
 
                 val jl = toJList(v)
@@ -803,9 +733,9 @@ trait NCDslCompilerBase {
 
                 Z(jl, f)
             }) }
-            case "is_empty" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).isEmpty, f) }) }
-            case "non_empty" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(!toJList(v).isEmpty, f) }) }
-            case "to_string" ⇒ pop1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) }) }
+            case "is_empty" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).isEmpty, f) }) }
+            case "non_empty" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(!toJList(v).isEmpty, f) }) }
+            case "to_string" ⇒ get1() match { case x ⇒ stack.push(() ⇒ { val Z(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) }) }
 
             // Statistical operations.
             case "avg" ⇒
