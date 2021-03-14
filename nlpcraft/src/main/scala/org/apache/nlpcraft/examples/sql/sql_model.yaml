@@ -1455,7 +1455,7 @@ elements:
   groups:
     - "element"
   synonyms:
-    - "^^{id() == 'col' && has(list(4, 8), meta_part(part('colName'), 'sql:datatype')}^^"
+    - "^^{id() == 'col' && has(list(4, 8), meta_part(part('colName'), 'sql:datatype'))}^^"
 - id: "col:date"
   groups:
     - "element"
@@ -1475,7 +1475,7 @@ elements:
   groups:
     - "condition"
   synonyms:
-    - "^^{id() == 'col:varchar'^^ {is|equal|_} ^^id() == 'col:val'}^^"
+    - "^^{id() == 'col:varchar'}^^ {is|equal|_} ^^{id() == 'col:val'}^^"
     - "^^{id() == 'col:val'}^^"
 - id: "condition:date"
   groups:

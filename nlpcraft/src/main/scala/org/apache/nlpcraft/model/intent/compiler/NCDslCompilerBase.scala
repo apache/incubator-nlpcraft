@@ -103,8 +103,8 @@ trait NCDslCompilerBase {
      * @param stack
      * @return
      */
-    def pop1()(implicit stack: Stack): () ⇒ Z = {
-        require(stack.nonEmpty)
+    def pop1()(implicit stack: Stack, ctx: PRC): () ⇒ Z = {
+        require(stack.nonEmpty, ctx.getText)
 
         stack.pop()
     }
@@ -114,8 +114,8 @@ trait NCDslCompilerBase {
      * @param stack
      * @return
      */
-    def pop2()(implicit stack: Stack): (() ⇒ Z, () ⇒ Z) = {
-        require(stack.size >= 2)
+    def pop2()(implicit stack: Stack, ctx: PRC): (() ⇒ Z, () ⇒ Z) = {
+        require(stack.size >= 2, ctx.getText)
 
         // Stack pops in reverse order of push...
         val v2 = stack.pop()
@@ -129,8 +129,8 @@ trait NCDslCompilerBase {
      * @param stack
      * @return
      */
-    def pop3()(implicit stack: Stack): (() ⇒ Z, () ⇒ Z, () ⇒ Z) = {
-        require(stack.size >= 3)
+    def pop3()(implicit stack: Stack, ctx: PRC): (() ⇒ Z, () ⇒ Z, () ⇒ Z) = {
+        require(stack.size >= 3, ctx.getText)
 
         // Stack pops in reverse order of push...
         val v3 = stack.pop()
@@ -148,7 +148,7 @@ trait NCDslCompilerBase {
      * @param gteq
      */
     def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN)(implicit ctx: PRC): Instr = (_, stack: Stack, _) ⇒ {
-        val (x1, x2) = pop2()(stack)
+        val (x1, x2) = pop2()(stack, ctx)
 
         if (lt != null)
             stack.push(() ⇒ {
@@ -222,7 +222,7 @@ trait NCDslCompilerBase {
      * @param div
      */
     def parseMultDivModExpr(mult: TN, mod: TN, div: TN)(implicit ctx: PRC): Instr = (_, stack: Stack, _) ⇒ {
-        val (x1, x2) = pop2()(stack)
+        val (x1, x2) = pop2()(stack, ctx)
 
         if (mult != null)
             stack.push(() ⇒ {
@@ -278,7 +278,7 @@ trait NCDslCompilerBase {
      * @return
      */
     def parseAndOrExpr(and: TN, or: TN)(implicit ctx: PRC): Instr = (_, stack: Stack, _) ⇒ {
-        val (x1, x2) = pop2()(stack)
+        val (x1, x2) = pop2()(stack, ctx)
 
         stack.push(() ⇒ {
             val (op, flag) = if (and != null) ("&&", false) else ("||", true)
@@ -309,7 +309,7 @@ trait NCDslCompilerBase {
      * @return
      */
     def parseEqNeqExpr(eq: TN, neq: TN)(implicit ctx: PRC): Instr = (_, stack: Stack, _) ⇒ {
-        val (x1, x2) = pop2()(stack)
+        val (x1, x2) = pop2()(stack, ctx)
 
         def doEq(op: String, v1: Object, v2: Object): Boolean = {
             if (v1 == null && v2 == null) true
@@ -346,7 +346,7 @@ trait NCDslCompilerBase {
      * @param minus
      */
     def parsePlusMinusExpr(plus: TN, minus: TN)(implicit ctx: PRC): Instr = (_, stack: Stack, _) ⇒ {
-        val (x1, x2) = pop2()(stack)
+        val (x1, x2) = pop2()(stack, ctx)
 
         if (plus != null)
             stack.push(() ⇒ {
@@ -388,7 +388,7 @@ trait NCDslCompilerBase {
      * @return
      */
     def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: PRC): Instr = (_, stack: Stack, _) ⇒ {
-        val x = pop1()(stack)
+        val x = pop1()(stack, ctx)
 
         if (minus != null)
             stack.push(() ⇒ {
@@ -477,7 +477,7 @@ trait NCDslCompilerBase {
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
         def toBool(v: Object): Boolean = toX("boolean", v, isBool, asBool)
 
-        def optToken(): NCToken =
+//        def optToken(): NCToken =
             if (stack.nonEmpty && stack.top.isInstanceOf[NCToken]) stack.pop().asInstanceOf[NCToken] else tok
 
         def doSplit(): Unit = {
@@ -594,13 +594,17 @@ trait NCDslCompilerBase {
 
             stack.push(() ⇒ {
                 val Z(v1, f1) = x1()
-                val Z(v2, f2) = x2()
-                val Z(v3, f3) = x3()
 
-                if (toBool(v1))
+                if (toBool(v1)) {
+                    val Z(v2, f2) = x2()
+
                     Z(v2, f1 || f2)
-                else
+                }
+                else {
+                    val Z(v3, f3) = x3()
+
                     Z(v3, f1 || f3)
+                }
             })
         }
 
@@ -618,7 +622,7 @@ trait NCDslCompilerBase {
                 val parts = tok.findPartTokens(aliasId)
 
                 if (parts.isEmpty)
-                    throw newRuntimeError(s"Cannot find part for token (use 'parts' function instead) [" +
+                    throw newRuntimeError(s"Cannot find part for token (try 'parts' function instead) [" +
                         s"id=${tok.getId}, " +
                         s"aliasId=$aliasId" +
                     s"]")

@@ -239,10 +239,11 @@ object NCProbeVariants {
                                                         mkToken(artTok)
                                                     case None ⇒
                                                         throw new NCE(
-                                                            s"Part not found for: $key, " +
-                                                            s"token: $tok, " +
-                                                            s"lastPhase=$lastPhase"
-                                                        )
+                                                            s"Part not found [" +
+                                                            s"kwy=$key, " +
+                                                            s"token=$tok, " +
+                                                            s"lastPhase=$lastPhase" +
+                                                        s"]")
                                                 }
                                         }
                                 }
