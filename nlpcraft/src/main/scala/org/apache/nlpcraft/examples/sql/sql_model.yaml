@@ -1470,7 +1470,7 @@ elements:
   groups:
     - "condition"
   synonyms:
-    - "^^{id() == 'col:num'^^ ^^id() == 'nlpcraft:num'}^^ "
+    - "^^{id() == 'col:num'}^^ ^^{id() == 'nlpcraft:num'}^^ "
 - id: "condition:value"
   groups:
     - "condition"
@@ -1481,7 +1481,7 @@ elements:
   groups:
     - "condition"
   synonyms:
-    - "^^{id() == 'col:date'^^ ^^id() == 'nlpcraft:date'}^^"
+    - "^^{id() == 'col:date'}^^ ^^{id() == 'nlpcraft:date'}^^"
 - id: "sort:best"
   groups:
     - "Sort criteria"
