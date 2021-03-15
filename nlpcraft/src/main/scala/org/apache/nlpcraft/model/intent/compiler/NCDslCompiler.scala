@@ -111,7 +111,7 @@ object NCDslCompiler extends LazyLogging {
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
     
-        override def enterParamList(ctx: IDP.ParamListContext): Unit =
+        override def enterCallExpr(ctx: IDP.CallExprContext): Unit =
             instrs += ((_, stack: NCDslStack, _) ⇒ stack.push(stack.MARKER))
     
         /**

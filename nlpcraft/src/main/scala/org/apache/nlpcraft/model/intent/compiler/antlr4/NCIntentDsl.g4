@@ -43,8 +43,7 @@ flowDecl: 'flow' ASSIGN (qstring | mtdDecl);
 metaDecl: 'meta' ASSIGN jsonObj;
 jsonObj
     : LBRACE jsonPair (COMMA jsonPair)* RBRACE
-    |
-     LBRACE RBRACE
+    | LBRACE RBRACE
     ;
 jsonPair: qstring COLON jsonVal;
 jsonVal
