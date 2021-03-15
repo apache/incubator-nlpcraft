@@ -148,7 +148,7 @@ elements:
       - "{<ACTION>|shut|kill|stop|eliminate} {off|out} <LIGHT>"
       - "no <LIGHT>"
 intents:
-  - "intent=ls term(act)~{groups @@ 'act'} term(loc)~{id == 'ls:loc'}*"
+  - "intent=ls term(act)~{has(groups(), 'act')} term(loc)~{id() == 'ls:loc'}*"
 ```
 
 ### Model Implementation

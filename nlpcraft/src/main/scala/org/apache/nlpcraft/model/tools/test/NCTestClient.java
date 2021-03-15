@@ -98,8 +98,6 @@ public interface NCTestClient {
     void clearConversation() throws NCTestClientException, IOException;
 
     /**
-     * TODO:
-     *
      * @throws NCTestClientException Thrown if any test system errors occur.
      * @throws IOException Thrown in case of I/O errors.
      */

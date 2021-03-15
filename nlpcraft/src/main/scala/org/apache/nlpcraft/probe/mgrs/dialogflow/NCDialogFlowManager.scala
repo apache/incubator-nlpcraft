@@ -110,7 +110,7 @@ object NCDialogFlowManager extends NCService {
                     override def getTermTokens(idx: Int) = intentMatch.getTermTokens(idx)
                     override def getTermTokens(termId: String) = intentMatch.getTermTokens(termId)
                     override val getVariant = intentMatch.getVariant
-                    override val isAmbiguous = !res.isExactMatch // TODO: rename for consistency?
+                    override val isAmbiguous = !res.isExactMatch
                     override val getUser = req.getUser
                     override val getCompany = req.getCompany
                     override val getServerRequestId = req.getServerRequestId
