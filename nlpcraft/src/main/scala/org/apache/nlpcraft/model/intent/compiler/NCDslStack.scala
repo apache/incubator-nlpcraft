@@ -17,9 +17,11 @@
 
 package org.apache.nlpcraft.model.intent.compiler
 
+import scala.collection.mutable
+
 /**
- *
- */
+  *
+  */
 case class NCDslStackItem(
     value: Object,
     usedTok: Boolean
@@ -29,4 +31,19 @@ object NCDslStackItem {
     def apply(v: Boolean, f: Boolean): NCDslStackItem = new NCDslStackItem(Boolean.box(v), f)
     def apply(v: Long, f: Boolean): NCDslStackItem = new NCDslStackItem(Long.box(v), f)
     def apply(v: Double, f: Boolean): NCDslStackItem = new NCDslStackItem(Double.box(v), f)
+}
+
+/**
+  *
+  */
+trait NCDslStackType extends (() ⇒ NCDslStackItem)
+
+/**
+  *
+  */
+class NCDslStack extends mutable.ArrayStack[NCDslStackType] {
+    /**
+      * Special marker for stack frames.
+      */
+    final val MARKER: NCDslStackType = () ⇒ { NCDslStackItem(null, false) }
 }

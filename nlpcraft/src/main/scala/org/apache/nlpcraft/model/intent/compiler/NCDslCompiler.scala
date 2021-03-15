@@ -77,8 +77,8 @@ object NCDslCompiler extends LazyLogging {
         private var refClsName: Option[String] = None
         private var refMtdName: Option[String] = None
 
-        // Current expression code, i.e. list of instructions.
-        private var instrs = mutable.Buffer.empty[Instr]
+        // List of instructions for the current expression.
+        private var instrs = mutable.Buffer.empty[I]
 
 
         /**
@@ -110,7 +110,10 @@ object NCDslCompiler extends LazyLogging {
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
-
+    
+        override def enterParamList(ctx: IDP.ParamListContext): Unit =
+            instrs += ((_, stack: NCDslStack, _) ⇒ stack.push(stack.MARKER))
+    
         /**
          *
          * @param min
@@ -120,7 +123,7 @@ object NCDslCompiler extends LazyLogging {
             this.min = min
             this.max = max
         }
-
+    
         override def exitMinMaxShortcut(ctx: IDP.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
                 setMinMax(1, Integer.MAX_VALUE)
@@ -294,12 +297,12 @@ object NCDslCompiler extends LazyLogging {
          * @return
          */
         private def instrToPredicate(subj: String)(implicit ctx: PRC): NCDslTokenPredicate = {
-            val code = mutable.Buffer.empty[Instr]
+            val code = mutable.Buffer.empty[I]
 
             code ++= instrs
 
             (tok: NCToken, termCtx: NCDslContext) ⇒ {
-                val stack = new mutable.ArrayStack[() ⇒ NCDslStackItem]()
+                val stack = new S()
 
                 // Execute all instructions.
                 code.foreach(_ (tok, stack, termCtx))
