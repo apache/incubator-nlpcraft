@@ -103,7 +103,7 @@ object NCCli extends App {
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
     // +==================================================================+
     private final val NUM_SRV_SERVICES = 31 /*services*/ + 1 /*progress start*/
-    private final val NUM_PRB_SERVICES = 21 /*services*/ + 1 /*progress start*/
+    private final val NUM_PRB_SERVICES = 23 /*services*/ + 1 /*progress start*/
 
     private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
     private final val PRB_BEACON_PATH = ".nlpcraft/probe_beacon"
