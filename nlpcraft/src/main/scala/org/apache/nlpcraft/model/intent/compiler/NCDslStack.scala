@@ -45,5 +45,5 @@ class NCDslStack extends mutable.ArrayStack[NCDslStackType] {
     /**
       * Special marker for stack frames.
       */
-    final val MARKER: NCDslStackType = () ⇒ { NCDslStackItem(null, false) }
+    final val PLIST_MARKER: NCDslStackType = () ⇒ { NCDslStackItem(null, false) }
 }

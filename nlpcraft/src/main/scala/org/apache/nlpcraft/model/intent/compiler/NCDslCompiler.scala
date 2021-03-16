@@ -112,7 +112,7 @@ object NCDslCompiler extends LazyLogging {
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
     
         override def enterCallExpr(ctx: IDP.CallExprContext): Unit =
-            instrs += ((_, stack: NCDslStack, _) ⇒ stack.push(stack.MARKER))
+            instrs += ((_, stack: NCDslStack, _) ⇒ stack.push(stack.PLIST_MARKER))
     
         /**
          *
@@ -276,6 +276,7 @@ object NCDslCompiler extends LazyLogging {
 
             // Add term.
             terms += NCDslTerm(
+                ctx.getText,
                 Option(termId),
                 pred,
                 min,

@@ -29,6 +29,7 @@ import org.apache.nlpcraft.model.NCToken
  * @param conv
  */
 case class NCDslTerm(
+    dsl: String,
     id: Option[String],
     pred: NCDslTokenPredicate,
     min: Int,
@@ -46,6 +47,7 @@ case class NCDslTerm(
      */
     def cloneWithFragMeta(meta: Map[String, Any]): NCDslTerm =
         NCDslTerm(
+            dsl,
             id,
             pred,
             min,
@@ -53,4 +55,6 @@ case class NCDslTerm(
             conv,
             meta
         )
+
+    override def toString: String = dsl
 }
