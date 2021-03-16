@@ -658,7 +658,7 @@ trait NCDslCompilerBase {
             })
         }
 
-        def z[Y](args: () ⇒ Y, body: Y ⇒ Z): Unit = args() match { case x ⇒ stack.push(() ⇒ body(x)) }
+        def z[Y](args: () ⇒ Y, body: Y ⇒ Z): Unit = { val x = args(); stack.push(() ⇒ body(x)) }
         def z0(body: () ⇒ Z): Unit = { delMarker(); stack.push(() ⇒ body()) } 
 
         fun match {
