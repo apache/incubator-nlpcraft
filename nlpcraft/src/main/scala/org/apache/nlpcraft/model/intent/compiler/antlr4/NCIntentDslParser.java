@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -134,11 +134,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitDsl(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitDsl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final DslContext dsl() throws RecognitionException {
@@ -185,11 +180,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitSynonym(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitSynonym(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -249,11 +239,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAlias(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAlias(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AliasContext alias() throws RecognitionException {
@@ -299,11 +284,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitDslItems(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitDslItems(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -384,11 +364,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitDslItem(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitDslItem(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final DslItemContext dslItem() throws RecognitionException {
@@ -452,11 +427,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitImp(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitImp(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ImpContext imp() throws RecognitionException {
@@ -505,11 +475,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFrag(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFrag(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final FragContext frag() throws RecognitionException {
@@ -552,11 +517,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFragId(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFragId(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -606,11 +566,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFragRef(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFragRef(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -669,11 +624,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFragMeta(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFragMeta(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final FragMetaContext fragMeta() throws RecognitionException {
@@ -726,11 +676,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitIntent(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitIntent(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -805,11 +750,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitIntentId(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitIntentId(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final IntentIdContext intentId() throws RecognitionException {
@@ -851,11 +791,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitOrderedDecl(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitOrderedDecl(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -904,11 +839,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMtdDecl(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMtdDecl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MtdDeclContext mtdDecl() throws RecognitionException {
@@ -955,11 +885,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitFlowDecl(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitFlowDecl(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1022,11 +947,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMetaDecl(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMetaDecl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MetaDeclContext metaDecl() throws RecognitionException {
@@ -1078,11 +998,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonObj(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonObj(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1163,11 +1078,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonPair(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonPair(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final JsonPairContext jsonPair() throws RecognitionException {
@@ -1222,11 +1132,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonVal(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonVal(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1352,11 +1257,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJsonArr(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJsonArr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final JsonArrContext jsonArr() throws RecognitionException {
@@ -1435,11 +1335,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTerms(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTerms(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final TermsContext terms() throws RecognitionException {
@@ -1516,11 +1411,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTermItem(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTermItem(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final TermItemContext termItem() throws RecognitionException {
@@ -1573,11 +1463,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTermEq(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTermEq(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1640,11 +1525,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTerm(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTerm(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1736,11 +1616,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMtdRef(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMtdRef(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MtdRefContext mtdRef() throws RecognitionException {
@@ -1796,11 +1671,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitJavaFqn(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitJavaFqn(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1879,11 +1749,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitTermId(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitTermId(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final TermIdContext termId() throws RecognitionException {
@@ -1937,11 +1802,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitParExpr(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitParExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class UnaryExprContext extends ExprContext {
 		public Token op;
@@ -1958,11 +1818,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitUnaryExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitUnaryExpr(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	public static class CompExprContext extends ExprContext {
@@ -1986,11 +1841,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitCompExpr(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitCompExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class PlusMinusExprContext extends ExprContext {
 		public Token op;
@@ -2011,11 +1861,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitPlusMinusExpr(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitPlusMinusExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class AtomExprContext extends ExprContext {
 		public AtomContext atom() {
@@ -2029,11 +1874,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAtomExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAtomExpr(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	public static class MultDivModExprContext extends ExprContext {
@@ -2056,11 +1896,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMultDivModExpr(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMultDivModExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class AndOrExprContext extends ExprContext {
 		public Token op;
@@ -2081,11 +1916,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAndOrExpr(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAndOrExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class CallExprContext extends ExprContext {
 		public TerminalNode FUN_NAME() { return getToken(NCIntentDslParser.FUN_NAME, 0); }
@@ -2102,11 +1932,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitCallExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitCallExpr(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 	public static class EqNeqExprContext extends ExprContext {
@@ -2127,11 +1952,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitEqNeqExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitEqNeqExpr(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2385,11 +2205,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitParamList(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitParamList(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ParamListContext paramList() throws RecognitionException {
@@ -2469,11 +2284,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitAtom(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitAtom(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2563,11 +2373,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitQstring(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitQstring(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final QstringContext qstring() throws RecognitionException {
@@ -2618,11 +2423,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMinMax(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMinMax(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -2680,11 +2480,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMinMaxShortcut(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMinMaxShortcut(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MinMaxShortcutContext minMaxShortcut() throws RecognitionException {
@@ -2737,11 +2532,6 @@ public class NCIntentDslParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitMinMaxRange(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitMinMaxRange(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MinMaxRangeContext minMaxRange() throws RecognitionException {
@@ -2787,11 +2577,6 @@ public class NCIntentDslParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof NCIntentDslListener ) ((NCIntentDslListener)listener).exitId(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof NCIntentDslVisitor ) return ((NCIntentDslVisitor<? extends T>)visitor).visitId(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 

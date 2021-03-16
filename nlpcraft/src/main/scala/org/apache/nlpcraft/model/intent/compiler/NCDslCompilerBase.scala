@@ -757,7 +757,7 @@ trait NCDslCompilerBase {
             case "aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getAliases, true) }) }
             case "start_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getStartCharIndex, true) }) }
             case "end_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getEndCharIndex, true) }) }
-            case "this" ⇒ delMarker(); stack.push(() ⇒ Z(tok, true))
+            case "this" ⇒ z0(() ⇒ Z(tok, true))
             case "part" ⇒ doPart()
             case "parts" ⇒ doParts()
 
@@ -838,9 +838,9 @@ trait NCDslCompilerBase {
             case "log1p" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) }) 
             case "pow" ⇒ z[(T, T)](arg2, { x ⇒ val Z(v1, f1) = x._1(); val Z(v2, f2) = x._2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 || f2) }) 
             case "square" ⇒ doSquare()
-            case "pi" ⇒ delMarker(); stack.push(() ⇒ Z(Math.PI, false))
-            case "euler" ⇒ delMarker(); stack.push(() ⇒ Z(Math.E, false))
-            case "rand" ⇒ delMarker(); stack.push(() ⇒ Z(Math.random, false))
+            case "pi" ⇒ z0(() ⇒ Z(Math.PI, false))
+            case "euler" ⇒ z0(() ⇒ Z(Math.E, false))
+            case "rand" ⇒ z0(() ⇒ Z(Math.random, false))
 
             // Collection functions.
             case "list" ⇒ doList()
