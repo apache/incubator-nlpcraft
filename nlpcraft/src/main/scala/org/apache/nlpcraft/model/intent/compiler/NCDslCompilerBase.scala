@@ -22,6 +22,7 @@ import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.model.NCToken
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
+import org.apache.commons.collections.CollectionUtils
 import org.apache.nlpcraft.model.intent.NCDslContext
 import org.apache.nlpcraft.model.intent.compiler.{NCDslStackItem ⇒ Z}
 
@@ -319,7 +320,7 @@ trait NCDslCompilerBase {
             else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) == asJDouble(v2)
             else if (isBool(v1) && isBool(v2)) asBool(v1) == asBool(v2)
             else if (isStr(v1) && isStr(v2)) asStr(v1) == asStr(v2)
-            else if (isJList(v1) && isJList(v2)) asJList(v1).equals(asJList(v2))
+            else if (isJList(v1) && isJList(v2)) CollectionUtils.isEqualCollection(asJList(v1), asJList(v2))
             else {
                 throw rtBinaryOpError(op, v1, v2)
             }}
