@@ -94,8 +94,10 @@ trait NCDslCompilerBase {
         newRuntimeError(s"Invalid number of parameters for DSL function ($min is required): $fun()")
     def rtParamNumError(fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Invalid number of parameters for DSL function: $fun()")
-    def rtParamTypeError(fun: String, param: Object, expectType: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Expecting '$expectType' type of parameter for DSL function '$fun()', found: $param")
+    def rtParamTypeError(fun: String, invalid: Object, expectType: String)(implicit ctx: PRC): NCE =
+        newRuntimeError(s"Expected '$expectType' type of parameter for DSL function '$fun()', found: $invalid")
+    def rtListTypeError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
+        newRuntimeError(s"Expected uniform list type for DSL function '$fun()', found polymorphic list.", cause)
 
     /**
      *
@@ -539,6 +541,72 @@ trait NCDslCompilerBase {
                 Z(jl, f)
             })
         }
+        
+        def doReverse(): Unit = {
+            val x = arg1()
+            
+            stack.push(() ⇒ {
+                val Z(v, f) = x()
+        
+                val jl = toJList(v)
+        
+                Collections.reverse(jl)
+        
+                Z(jl, f)
+            })
+        }
+        
+        def doMin(): Unit = {
+            val x = arg1()
+    
+            stack.push(() ⇒ {
+                val Z(v, f) = x()
+                
+                val lst = toJList(v).asInstanceOf[util.List[Object]]
+                
+                try
+                    if (lst.isEmpty)
+                        Z(0, f)
+                    else
+                        Z(Collections.min(lst, null), f)
+                catch {
+                    case e: Exception ⇒ throw rtListTypeError(fun, e)
+                }
+            })
+        }
+    
+        def doMax(): Unit = {
+            val x = arg1()
+        
+            stack.push(() ⇒ {
+                val Z(v, f) = x()
+            
+                val lst = toJList(v).asInstanceOf[util.List[Object]]
+            
+                try
+                    if (lst.isEmpty)
+                        Z(0, f)
+                    else
+                        Z(Collections.max(lst, null), f)
+                catch {
+                    case e: Exception ⇒ throw rtListTypeError(fun, e)
+                }
+            })
+        }
+
+        def doSort(): Unit = {
+            val x = arg1()
+        
+            stack.push(() ⇒ {
+                val Z(v, f) = x()
+            
+                val jl = toJList(v)
+                
+                jl.sort(null) // Use natural order.
+            
+                Z(jl, f)
+            })
+        }
 
         def doHas(): Unit = {
             val (x1, x2) = arg2()
@@ -776,37 +844,23 @@ trait NCDslCompilerBase {
 
             // Collection functions.
             case "list" ⇒ doList()
-            case "map" ⇒
             case "get" ⇒ doGet()
-            case "index" ⇒
             case "has" ⇒ doHas()
-            case "tail" ⇒
-            case "add" ⇒
-            case "remove" ⇒
-            case "first" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)}) 
+            case "first" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)})
             case "last" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], f)}) 
             case "keys" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) }) 
             case "values" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) }) 
-            case "take" ⇒
-            case "drop" ⇒
-            case "size" | "count" | "length" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).size(), f)}) 
-            case "reverse" ⇒ arg1() match { case x ⇒ stack.push(() ⇒ {
-                val Z(v, f) = x()
-
-                val jl = toJList(v)
-
-                Collections.reverse(jl)
-
-                Z(jl, f)
-            }) }
+            case "size" | "count" | "length" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).size(), f)})
+            case "reverse" ⇒ doReverse()
+            case "sort" ⇒ doSort()
             case "is_empty" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).isEmpty, f) }) 
             case "non_empty" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(!toJList(v).isEmpty, f) }) 
             case "to_string" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) }) 
 
-            // Statistical operations.
+            // Statistical operations on lists.
             case "avg" ⇒
-            case "max" ⇒ // Works for numerics as well.
-            case "min" ⇒ // Works for numerics as well.
+            case "max" ⇒ doMin()
+            case "min" ⇒ doMax()
             case "stdev" ⇒
             case "sum" ⇒
 
