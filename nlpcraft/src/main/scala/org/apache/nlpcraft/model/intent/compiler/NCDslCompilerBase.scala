@@ -22,15 +22,14 @@ import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.model.NCToken
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
-
 import org.apache.nlpcraft.model.intent.NCDslContext
 import org.apache.nlpcraft.model.intent.compiler.{NCDslStackItem ⇒ Z}
 
 import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
-import java.time.LocalDate
+import java.time.temporal.IsoFields
+import java.time.{LocalDate, LocalTime}
 import java.util
-import java.util.{Collections, List ⇒ JList, Map ⇒ JMap}
-
+import java.util.{Calendar, Collections, List ⇒ JList, Map ⇒ JMap}
 import scala.collection.JavaConverters._
 
 trait NCDslCompilerBase {
@@ -520,7 +519,10 @@ trait NCDslCompilerBase {
         def doList(): Unit = {
             val dump = new S() // Empty list is allowed.
 
-            stack.drain { dump += _ }
+            while (stack.nonEmpty && stack.top != stack.MARKER)
+                dump += stack.pop()
+
+            delMarker()
 
             stack.push(() ⇒ {
                 val jl = new util.ArrayList[Object]()
@@ -550,7 +552,7 @@ trait NCDslCompilerBase {
         }
 
         def doGet(): Unit = {
-            val (x1, x2) = arg2() // NOTE: get2() corrects for stack's LIFO order.
+            val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
                 val Z(col, f1) = x1()
@@ -811,12 +813,12 @@ trait NCDslCompilerBase {
             case "day_of_month" ⇒ delMarker(); stack.push(() ⇒ Z(LocalDate.now.getDayOfMonth, false)) // 1 ... 31.
             case "day_of_week" ⇒ delMarker(); stack.push(() ⇒ Z(LocalDate.now.getDayOfWeek.getValue, false))
             case "day_of_year" ⇒ delMarker(); stack.push(() ⇒ Z(LocalDate.now.getDayOfYear, false))
-            case "hour" ⇒
-            case "minute" ⇒
-            case "second" ⇒
-            case "week_of_month" ⇒
-            case "week_of_year" ⇒
-            case "quarter" ⇒
+            case "hour" ⇒ delMarker(); stack.push(() ⇒ Z(LocalTime.now.getHour, false))
+            case "minute" ⇒ delMarker(); stack.push(() ⇒ Z(LocalTime.now.getMinute, false))
+            case "second" ⇒ delMarker(); stack.push(() ⇒ Z(LocalTime.now.getSecond, false))
+            case "week_of_month" ⇒ delMarker(); stack.push(() ⇒ Z(Calendar.getInstance().get(Calendar.WEEK_OF_MONTH), false))
+            case "week_of_year" ⇒ delMarker(); stack.push(() ⇒ Z(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR), false))
+            case "quarter" ⇒ delMarker(); stack.push(() ⇒ Z(LocalDate.now().get(IsoFields.QUARTER_OF_YEAR), false))
             case "now" ⇒ delMarker(); stack.push(() ⇒ Z(System.currentTimeMillis(), false)) // Epoc time.
 
             case _ ⇒ throw rtUnknownFunError(fun) // Assertion.
