@@ -236,32 +236,11 @@ object NCDslCompiler extends LazyLogging {
                     val mdlCls = if (clsName == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else clsName
 
                     try {
-                        val obj = if (clsName == null) mdl else U.mkObject(clsName)
-                        val mtd = Thread.currentThread().getContextClassLoader.loadClass(mdlCls)
-                            .getMethod(mtdName, classOf[NCTokenPredicateContext])
-
-                        var flag = mtd.canAccess(mdl)
-
-                        val res = try {
-                            if (!flag) {
-                                mtd.setAccessible(true)
-
-                                flag = true
-                            }
-                            else
-                                flag = false
-
-                            mtd.invoke(obj, javaCtx).asInstanceOf[NCTokenPredicateResult]
-                        }
-                        finally {
-                            if (flag)
-                                try
-                                    mtd.setAccessible(false)
-                                catch {
-                                    case e: SecurityException ⇒
-                                        throw new NCE(s"Access or security error in custom intent term: $mdlCls.$mtdName", e)
-                                }
-                        }
+                        val res = U.callMethod[NCTokenPredicateContext, NCTokenPredicateResult](
+                            () ⇒ if (clsName == null) mdl else U.mkObject(clsName),
+                            mtdName,
+                            javaCtx
+                        )
 
                         (res.getResult, res.wasTokenUsed())
                     }

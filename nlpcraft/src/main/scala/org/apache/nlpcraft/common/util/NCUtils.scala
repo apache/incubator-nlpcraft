@@ -62,6 +62,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.io.{BufferedSource, Source}
 import scala.language.{implicitConversions, postfixOps}
+import scala.reflect.{ClassTag, classTag}
 import scala.reflect.runtime.universe._
 import scala.sys.SystemProperties
 import scala.util.control.Exception.ignoring
@@ -1919,6 +1920,37 @@ object NCUtils extends LazyLogging {
             }(ec)
         }).foreach(Await.result(_, Duration.Inf))
     }
+    
+    /**
+      *
+      * @param objFac
+      * @param mtdName
+      * @param arg
+      * @tparam T
+      * @return
+      */
+    def callMethod[T: ClassTag, R](objFac: () ⇒ Object, mtdName: String, arg: T): R = {
+        val obj = objFac()
+        val mtd = obj.getClass.getMethod(mtdName, classTag[T].runtimeClass)
+    
+        var flag = mtd.canAccess(obj)
+    
+        try {
+            if (!flag) {
+                mtd.setAccessible(true)
+            
+                flag = true
+            }
+            else
+                flag = false
+        
+            mtd.invoke(obj, arg.asInstanceOf[Object]).asInstanceOf[R]
+        }
+        finally {
+            if (flag)
+                mtd.setAccessible(false)
+        }
+    }
 
     /**
       *
@@ -1995,7 +2027,7 @@ object NCUtils extends LazyLogging {
       */
     @throws[NCE]
     def extractYamlResource[T](res: String, ignoreCase: Boolean, tr: TypeReference[T]): T =
-        extractYamlString(readStream(getStream(res), "UTF-8").mkString("\n"), res, ignoreCase, tr)
+        extractYamlString(readStream(getStream(res)).mkString("\n"), res, ignoreCase, tr)
 
     /**
       * Extracts type `T` from given YAML `data`.

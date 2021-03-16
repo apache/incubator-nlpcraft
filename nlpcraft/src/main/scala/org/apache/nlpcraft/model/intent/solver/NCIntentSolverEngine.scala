@@ -23,7 +23,7 @@ import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
-import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCResult, NCToken}
+import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslTerm}
@@ -475,7 +475,37 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 x("matched")
         }
         else if (intent.flowMtdName.isDefined) {
-            // TODO.
+            require(intent.flowClsName.isDefined)
+
+            val clsName = intent.flowClsName.get
+            val mtdName = intent.flowMtdName.get
+            
+            val fqn = s"$clsName.$mtdName(java.util.List[NCDialogFlowItem])"
+            
+            val res =
+                try
+                    U.callMethod[java.util.List[NCDialogFlowItem], java.lang.Boolean](
+                        U.mkObject(clsName),
+                        mtdName,
+                        flow.toList.asJava
+                    )
+                catch {
+                    case e: Exception ⇒
+                        throw new NCE(s"Failed to invoke custom flow callback: $fqn", e)
+                }
+
+            def x(s: String): Unit = {
+                logger.info(s"Intent '$intentId' ${bo(s)} custom flow callback $varStr:")
+                logger.info(s"  +-- ${c("Custom callback :")} $fqn")
+            }
+
+            if (!res) {
+                x("did not match")
+        
+                flowMatched = false
+            }
+            else
+                x("matched")
         }
 
         if (flowMatched) {
