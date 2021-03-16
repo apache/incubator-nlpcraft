@@ -80,7 +80,7 @@ class NCDslCompilerSpec {
             """
               |intent=i1
               |     flow="a[^0-9]b"
-              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |""".stripMargin
         )
         checkCompileOk(
@@ -96,7 +96,7 @@ class NCDslCompilerSpec {
               | */
               |intent=i1
               |     flow="a[^0-9]b" // Flow comment.
-              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |     fragment(f1, {'a': true, 'b': ["s1", "s2"]}) /* Another fragment. */
               |""".stripMargin
         )
@@ -113,7 +113,7 @@ class NCDslCompilerSpec {
               |
               |intent=i1
               |     flow="a[^0-9]b"
-              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |     fragment(f21, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
@@ -179,7 +179,7 @@ class NCDslCompilerSpec {
             """
               |intent=i1
               |     flow="a[^0-9]b"
-              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("k1\"", 'v1\'v1', "k2", "v2"))}[1:2]
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("k1\"", 'v1\'v1', "k2", "v2"))}[1:2]
               |""".stripMargin
         )
         checkCompileError(
@@ -190,7 +190,7 @@ class NCDslCompilerSpec {
               |
               |intent=i1
               |     flow="a[^0-9]b"
-              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |     fragment(f1, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )
@@ -202,7 +202,7 @@ class NCDslCompilerSpec {
               |
               |intent=i1
               |     flow="a[^0-9]b"
-              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), map("موسكو\"", 'v1\'v1', "k2", "v2"))}
+              |     term(t1)={has(json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"), list("موسكو\"", 'v1\'v1', "k2", "v2"))}
               |     fragment(f1_, {'a': true, 'b': ["s1", "s2"]})
               |""".stripMargin
         )

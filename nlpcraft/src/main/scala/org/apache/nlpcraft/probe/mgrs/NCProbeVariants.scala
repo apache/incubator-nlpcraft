@@ -240,7 +240,7 @@ object NCProbeVariants {
                                                     case None ⇒
                                                         throw new NCE(
                                                             s"Part not found [" +
-                                                            s"kwy=$key, " +
+                                                            s"key=$key, " +
                                                             s"token=$tok, " +
                                                             s"lastPhase=$lastPhase" +
                                                         s"]")
