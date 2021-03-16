@@ -33,13 +33,13 @@ intent=i1
 intent=i2
     flow="a[^0-9]b"
     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-    term(t1)={2 == 2 && size(id()) != -25}
+    term(t1)={2 == 2 && !(id()) != -25}
 
 intent=i3
     flow="a[^0-9]b"
     term(t1)={
         has(
             json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"),
-            map("موسكو\"", 'v1\'v1', "k2", "v2")
+            list("موسكو\"", 'v1\'v1', "k2", "v2")
         )
     }
