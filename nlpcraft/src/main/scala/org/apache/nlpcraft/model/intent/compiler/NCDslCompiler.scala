@@ -165,6 +165,9 @@ object NCDslCompiler extends LazyLogging {
             implicit val evidence: PRC = ctx
 
             synonym = NCDslSynonym(origin, Option(alias), instrToPredicate("Synonym"))
+
+            alias = null
+            instrs.clear()
         }
 
         override def exitFragId(ctx: IDP.FragIdContext): Unit = {

@@ -30,7 +30,7 @@ class NCSynonymsSpecModelTmp extends NCModelAdapter("nlpcraft.syns.test.mdl", "S
 
     override def getElements: util.Set[NCElement] =
         Set(
-            NCTestElement("wrapper", "{^^{id() == 'unknown'}^^}")
+            NCTestElement("wrapper", "^^{id() == 'unknown'}^^")
         )
 
     @NCIntent("intent=onWrapper term(t)={id() == 'wrapper'}")
