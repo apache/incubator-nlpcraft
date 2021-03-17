@@ -47,6 +47,9 @@ object NCDslCompiler extends LazyLogging {
       * @param mdl
       */
     class FiniteStateMachine(origin: String, dsl: String, mdl: NCModel) extends NCIntentDslBaseListener with NCDslCompilerBase {
+        // Actual value for '*' as in min/max shortcut.
+        final private val MINMAX_MAX = 100
+        
         // Accumulators for parsed objects.
         private val intents = ArrayBuffer.empty[NCDslIntent]
         private var synonym: NCDslSynonym = _
@@ -126,9 +129,9 @@ object NCDslCompiler extends LazyLogging {
     
         override def exitMinMaxShortcut(ctx: IDP.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
-                setMinMax(1, Integer.MAX_VALUE)
+                setMinMax(1, MINMAX_MAX)
             else if (ctx.MULT() != null)
-                setMinMax(0, Integer.MAX_VALUE)
+                setMinMax(0, MINMAX_MAX)
             else if (ctx.QUESTION() != null)
                 setMinMax(0, 1)
             else
@@ -139,8 +142,19 @@ object NCDslCompiler extends LazyLogging {
             val minStr = ctx.getChild(1).getText.trim
             val maxStr = ctx.getChild(3).getText.trim
 
-            try
-                setMinMax(java.lang.Integer.parseInt(minStr), java.lang.Integer.parseInt(maxStr))
+            try {
+                val min = java.lang.Integer.parseInt(minStr)
+                val max = java.lang.Integer.parseInt(maxStr)
+                
+                if (min < 0)
+                    throw newSyntaxError(s"Min value cannot be negative: $min")(ctx)
+                if (min > max)
+                    throw newSyntaxError(s"Min value '$min' cannot be greater than max value '$min'.")(ctx)
+                if (max > MINMAX_MAX)
+                    throw newSyntaxError(s"Max value '$max' cannot be greater than '$MINMAX_MAX'.")(ctx)
+                
+                setMinMax(min, max)
+            }
             catch {
                 // Errors should be caught during compilation phase.
                 case _: NumberFormatException ⇒ assert(false)

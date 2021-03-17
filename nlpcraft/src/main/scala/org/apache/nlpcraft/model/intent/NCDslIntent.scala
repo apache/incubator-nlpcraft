@@ -56,5 +56,5 @@ case class NCDslIntent(
 
     lazy val isFlowDefined = flow.isDefined || flowMtdName.isDefined
 
-    override def toString: String = s"intent=$id"
+    override def toString: String = dsl
 }
