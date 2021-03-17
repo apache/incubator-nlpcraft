@@ -569,7 +569,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                     case None ⇒
                         // Term is missing. Stop further processing for this intent. This intent cannot be matched.
-                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$Y$term$RST' $varStr.")
+                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$term' $varStr.")
 
                         abort = true
                 }

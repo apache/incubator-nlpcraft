@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
 import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
-import org.junit.jupiter.api.Assertions.{assertTrue, fail}
+import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{BeforeEach, TestInfo}
 import org.scalatest.Assertions
 
@@ -35,7 +35,7 @@ abstract class NCEnricherBaseSpec extends NCTestContext {
                 )
             )
 
-        if (!(classOf[NCEnrichersTestContext]).isAssignableFrom(env.model()))
+        if (!classOf[NCEnrichersTestContext].isAssignableFrom(env.model()))
             throw new IllegalStateException(
                 s"Enricher tests should ne annotated by model mixed with: ${classOf[NCEnrichersTestContext]}"
             )

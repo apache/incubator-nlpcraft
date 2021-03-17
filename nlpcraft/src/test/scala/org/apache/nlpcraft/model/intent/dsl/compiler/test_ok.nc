@@ -21,7 +21,7 @@
 
 // Re-usable predicate #1.
 fragment=p1
-    term={id(part("alias")) == 2}
+    term={id(part(this(), "alias")) == 2}
 
 // Intent #1.
 intent=i1

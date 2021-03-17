@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.intent
 
-import org.apache.nlpcraft.model.NCToken
+import org.apache.nlpcraft.common._
 
 /**
  * DSL term.
@@ -56,5 +56,5 @@ case class NCDslTerm(
             meta
         )
 
-    override def toString: String = dsl
+    override def toString: String = g(dsl)
 }

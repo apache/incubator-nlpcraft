@@ -22,7 +22,7 @@ import scala.collection.mutable
 /**
   *
   */
-case class NCDslStackItem(
+case class NCDslStackItem (
     value: Object,
     usedTok: Boolean
 )

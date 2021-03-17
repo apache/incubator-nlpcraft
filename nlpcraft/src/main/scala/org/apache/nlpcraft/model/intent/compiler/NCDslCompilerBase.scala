@@ -470,8 +470,8 @@ trait NCDslCompilerBase {
             x
         }
         def arg1(): T = arg(1, pop1)
-        def arg2(): (T, T) = arg(1, pop2)
-        def arg3(): (T, T, T) = arg(1, pop3)
+        def arg2(): (T, T) = arg(2, pop2)
+        def arg3(): (T, T, T) = arg(3, pop3)
         def arg1Tok(): T =
             if (stack.nonEmpty && stack.top == stack.PLIST_MARKER) {
                 delMarker()
