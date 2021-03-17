@@ -179,7 +179,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     /**
      * Main entry point for intent engine.
      *
-     * @param ctx     Query context.
+     * @param ctx Query context.
      * @param intents Set of intents to match for.
      * @param logHldr Log holder.
      * @return
@@ -595,7 +595,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             logger,
                             Some(
                                 s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr." +
-                                    s"\nUnused user tokens for intent '$intentId' $varStr:"
+                                s"\nUnused user tokens for intent '$intentId' $varStr:"
                             )
                         )
                 else {
@@ -720,7 +720,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             require(min == 0)
             require(usedToks.isEmpty)
 
-            Some(usedToks → new Weight(0, 0))
+            Some(usedToks → new Weight(0, 0, 0))
         }
         // We've found some matches (and min > 0).
         else {
