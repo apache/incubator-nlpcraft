@@ -392,7 +392,8 @@ object NCUserManager extends NCService with NCIgniteInstance {
         lastName: String,
         avatarUrl: Option[String],
         props: Option[Map[String, String]],
-        parent: Span = null): Unit =
+        parent: Span = null
+    ): Unit =
         startScopedSpan("updateUser", parent, "usrId" → id) { span ⇒
             NCSql.sql {
                 if (NCSqlManager.updateUser(id, firstName, lastName, avatarUrl, props, span) != 1)

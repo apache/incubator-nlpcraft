@@ -21,7 +21,7 @@ import io.opencensus.trace.Span
 import org.apache.ignite.{IgniteAtomicSequence, IgniteSemaphore}
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
-import org.apache.nlpcraft.server.mdo.NCCompanyMdo
+import org.apache.nlpcraft.server.mdo.{NCCompanyMdo, NCCompanyPropertyMdo}
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.user.NCUserManager
 
@@ -98,8 +98,9 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                         adminFirstName = "Hermann",
                         adminLastName = "Minkowski",
                         adminAvatarUrl = None,
-                        () ⇒ U.DFLT_PROBE_TOKEN,
-                        span
+                        props = None,
+                        mkToken = () ⇒ U.DFLT_PROBE_TOKEN,
+                        parent = span
                     )
 
                     logger.info(s"Default admin user ($adminEmail/$adminPwd) created for default company: $compName")
@@ -149,12 +150,13 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
       * @param id
       * @param name
       * @param website
-      * @param address
-      * @param city
-      * @param region
-      * @param postalCode
       * @param country
-      * parent Optional parent span.
+      * @param region
+      * @param city
+      * @param address
+      * @param postalCode
+      * @param props
+      * @param parent
       */
     @throws[NCE]
     def updateCompany(
@@ -166,6 +168,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         city: Option[String],
         address: Option[String],
         postalCode: Option[String],
+        props: Option[Map[String, String]],
         parent: Span = null
     ): Unit =
         startScopedSpan("updateCompany", parent, "id" → id) { span ⇒
@@ -191,6 +194,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                             city = city,
                             address = address,
                             postalCode = postalCode,
+                            propsOpt = props,
                             parent = span
                         )
          
@@ -250,12 +254,19 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
       *
       * @param name
       * @param website
-      * @param address
-      * @param city
-      * @param region
-      * @param postalCode
       * @param country
-      * @param parent Optional parent span.
+      * @param region
+      * @param city
+      * @param address
+      * @param postalCode
+      * @param adminEmail
+      * @param adminPwd
+      * @param adminFirstName
+      * @param adminLastName
+      * @param adminAvatarUrl
+      * @param props
+      * @param mkToken
+      * @param parent
       */
     @throws[NCE]
     private def addCompany0(
@@ -271,6 +282,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         adminFirstName: String,
         adminLastName: String,
         adminAvatarUrl: Option[String],
+        props: Option[Map[String, String]],
         mkToken: () ⇒ String,
         parent: Span = null
     ): NCCompanyCreationData = {
@@ -299,6 +311,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
                             city,
                             address,
                             postalCode,
+                            props,
                             span
                         )
     
@@ -340,6 +353,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
       * @param adminPwd
       * @param adminFirstName
       * @param adminLastName
+      * @param props
       * @param adminAvatarUrl
       * @param parent Optional parent span.
       */
@@ -357,6 +371,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         adminFirstName: String,
         adminLastName: String,
         adminAvatarUrl: Option[String],
+        props: Option[Map[String, String]],
         parent: Span = null
     ): NCCompanyCreationData = startScopedSpan("addCompany", parent, "name" → name) { _ ⇒
         addCompany0(
@@ -372,7 +387,22 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
             adminFirstName,
             adminLastName,
             adminAvatarUrl,
+            props,
             () ⇒ mkToken()
         )
     }
+
+    /**
+      * Gets company properties for given company ID.
+      *
+      * @param id User ID.
+      * @param parent Optional parent span.
+      */
+    @throws[NCE]
+    def getCompanyProperties(id: Long, parent: Span = null): Seq[NCCompanyPropertyMdo] =
+        startScopedSpan("getCompanyProperties", parent, "companyId" → id) { span ⇒
+            NCSql.sql {
+                NCSqlManager.getCompanyProperties(id, span)
+            }
+        }
 }

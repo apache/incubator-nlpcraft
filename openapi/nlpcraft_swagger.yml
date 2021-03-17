@@ -1154,6 +1154,11 @@ paths:
               postalCode:
                 description: Company postal code.
                 type: string
+              properties:
+                type: object
+                description: Additional company properties.
+                additionalProperties:
+                  type: string
         '400':
           description: Failed operation.
           schema:
@@ -1233,6 +1238,11 @@ paths:
                 type: string
                 description: <em>Optional.</em> Admin user avatar URL.
                 maxLength: 512000
+              properties:
+                type: object
+                description: <em>Optional.</em> Additional company properties.
+                additionalProperties:
+                  type: string
       responses:
         '200':
           description: Successful operation.
@@ -1311,6 +1321,11 @@ paths:
                 type: string
                 description: <em>Optional.</em> Company postal code.
                 maxLength: 512
+              properties:
+                type: object
+                description: <em>Optional.</em> Additional company properties.
+                additionalProperties:
+                  type: string
       responses:
         '200':
           description: Successful operation.

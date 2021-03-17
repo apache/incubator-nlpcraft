@@ -46,6 +46,20 @@ CREATE TABLE nc_company (
 CREATE UNIQUE INDEX nc_company_idx_1 ON nc_company(name);
 CREATE UNIQUE INDEX nc_company_idx_2 ON nc_company(auth_token);
 CREATE UNIQUE INDEX nc_company_idx_3 ON nc_company(auth_token_hash);
+
+--
+-- Company properties table.
+--
+CREATE TABLE nc_company_property (
+    id SERIAL PRIMARY KEY,
+    company_id BIGINT UNSIGNED NOT NULL,
+    property VARCHAR(64) NOT NULL,
+    value VARCHAR(512) NULL,
+    created_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
+    last_modified_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
+    FOREIGN KEY (company_id) REFERENCES nc_company(id)
+);
+
 --
 -- User table.
 --

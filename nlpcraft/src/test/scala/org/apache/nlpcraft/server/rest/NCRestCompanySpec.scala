@@ -20,7 +20,11 @@ package org.apache.nlpcraft.server.rest
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
+import scala.collection.JavaConverters._
+
 class NCRestCompanySpec extends NCRestSpec {
+    private final val PROPS = Map("k1" → "v1", "k2" → "v2").asJava
+
     @Test
     def testCurrentCompany(): Unit = {
         var compName: String = null
@@ -93,7 +97,8 @@ class NCRestCompanySpec extends NCRestSpec {
                 "region" → "region2",
                 "city" → "city2",
                 "address" → "address2",
-                "postalCode" → "postalCode2"
+                "postalCode" → "postalCode2",
+                "properties" → PROPS
             )()
 
             // Checks company fields.
@@ -104,7 +109,8 @@ class NCRestCompanySpec extends NCRestSpec {
                 ("$.region", (region: String) ⇒ assertEquals("region2", region)),
                 ("$.city", (city: String) ⇒ assertEquals("city2", city)),
                 ("$.address", (address: String) ⇒ assertEquals("address2", address)),
-                ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode2", postalCode))
+                ("$.postalCode", (postalCode: String) ⇒ assertEquals("postalCode2", postalCode)),
+                ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(PROPS, properties))
             )
 
             // Updates company.
@@ -118,7 +124,8 @@ class NCRestCompanySpec extends NCRestSpec {
                 ("$.region", (region: String) ⇒ assertEquals(null, region)),
                 ("$.city", (city: String) ⇒ assertEquals(null, city)),
                 ("$.address", (address: String) ⇒ assertEquals(null, address)),
-                ("$.postalCode", (postalCode: String) ⇒ assertEquals(null, postalCode))
+                ("$.postalCode", (postalCode: String) ⇒ assertEquals(null, postalCode)),
+                ("$.properties", (properties: java.util.Map[String, String]) ⇒ assertEquals(null, properties)),
             )
 
             // Resets token.
@@ -130,31 +137,31 @@ class NCRestCompanySpec extends NCRestSpec {
 
     @Test
     def testParameters(): Unit = {
-        testCompany()
-        testCompany(website = Some("website"))
-        testCompany(
+        testParameters0()
+        testParameters0(website = Some("website"))
+        testParameters0(
             website = Some("website"),
             country = Some("country")
         )
-        testCompany(
+        testParameters0(
             website = Some("website"),
             country = Some("country"),
             region = Some("region")
         )
-        testCompany(
+        testParameters0(
             website = Some("website"),
             country = Some("country"),
             region = Some("region"),
             city = Some("city")
         )
-        testCompany(
+        testParameters0(
             website = Some("website"),
             country = Some("country"),
             region = Some("region"),
             city = Some("city"),
             address = Some("address")
         )
-        testCompany(
+        testParameters0(
             website = Some("website"),
             country = Some("country"),
             region = Some("region"),
@@ -162,7 +169,7 @@ class NCRestCompanySpec extends NCRestSpec {
             address = Some("address"),
             postalCode = Some("postalCode")
         )
-        testCompany(
+        testParameters0(
             website = Some("website"),
             country = Some("country"),
             region = Some("region"),
@@ -170,6 +177,16 @@ class NCRestCompanySpec extends NCRestSpec {
             address = Some("address"),
             postalCode = Some("postalCode"),
             adminAvatarUrl = Some("adminAvatarUrl")
+        )
+        testParameters0(
+            website = Some("website"),
+            country = Some("country"),
+            region = Some("region"),
+            city = Some("city"),
+            address = Some("address"),
+            postalCode = Some("postalCode"),
+            adminAvatarUrl = Some("adminAvatarUrl"),
+            properties = Some(PROPS)
         )
     }
 
@@ -183,14 +200,15 @@ class NCRestCompanySpec extends NCRestSpec {
       * @param postalCode
       * @param adminAvatarUrl
       */
-    private def testCompany(
+    private def testParameters0(
         website: Option[String] = None,
         country: Option[String] = None,
         region: Option[String] = None,
         city: Option[String] = None,
         address: Option[String] = None,
         postalCode: Option[String] = None,
-        adminAvatarUrl: Option[String] = None
+        adminAvatarUrl: Option[String] = None,
+        properties: Option[java.util.Map[String, String]] = None
     ): Unit = {
         val compName = rnd()
 
@@ -210,11 +228,30 @@ class NCRestCompanySpec extends NCRestSpec {
             "adminPasswd" → adminPswd,
             "adminFirstName" → "firstName",
             "adminLastName" → "lastName",
-            "adminAvatarUrl" → adminAvatarUrl.orNull
+            "adminAvatarUrl" → adminAvatarUrl.orNull,
+            "properties" → properties.orNull
         )(
             ("$.adminId", (id: Number) ⇒ assertNotNull(id))
         )
 
-        post("company/delete", signin(adminEmail, adminPswd))()
+        def check(paramOpt: Option[Any], exp: Any, js: Any): Unit =
+            paramOpt match {
+                case Some(_) ⇒ assertEquals(exp, js)
+                case None ⇒ assertEquals(null, js)
+            }
+
+        val adminTkn = signin(adminEmail, adminPswd)
+
+        post("company/get", adminTkn)(
+            ("$.website", (websiteJs: String) ⇒ check(website, "website", websiteJs)),
+            ("$.country", (countryJs: String) ⇒ check(country, "country", countryJs)),
+            ("$.region", (regionJs: String) ⇒ check(region, "region", regionJs)),
+            ("$.city", (cityJs: String) ⇒ check(city, "city", cityJs)),
+            ("$.address", (addressJs: String) ⇒ check(address, "address", addressJs)),
+            ("$.postalCode", (postalCodeJs: String) ⇒ check(postalCode, "postalCode", postalCodeJs)),
+            ("$.properties", (propertiesJs: java.util.Map[String, String]) ⇒ check(properties, PROPS, propertiesJs))
+        )
+
+        post("company/delete", adminTkn)()
     }
 }

@@ -34,9 +34,21 @@ CREATE TABLE nc_company (
     last_modified_on TIMESTAMP NOT NULL
 ) WITH "template=replicated, atomicity=transactional";
 
-CREATE INDEX company_idx_1 ON nc_company(name);
-CREATE INDEX company_idx_2 ON nc_company(auth_token);
-CREATE INDEX company_idx_3 ON nc_company(auth_token_hash);
+CREATE INDEX nc_company_idx_1 ON nc_company(name);
+CREATE INDEX nc_company_idx_2 ON nc_company(auth_token);
+CREATE INDEX nc_company_idx_3 ON nc_company(auth_token_hash);
+
+DROP TABLE IF EXISTS nc_company_property;
+CREATE TABLE nc_company_property (
+    id LONG PRIMARY KEY,
+    company_id LONG NOT NULL, -- Foreign key nc_company.id.
+    property VARCHAR NOT NULL,
+    value VARCHAR NULL,
+    created_on TIMESTAMP NOT NULL,
+    last_modified_on TIMESTAMP NOT NULL
+) WITH "template=replicated, atomicity=transactional";
+
+CREATE INDEX nc_company_property_idx_1 ON nc_company_property(company_id);
 
 DROP TABLE IF EXISTS nc_user;
 CREATE TABLE nc_user (
@@ -56,7 +68,6 @@ CREATE TABLE nc_user (
 CREATE INDEX nc_user_idx_1 ON nc_user(email);
 CREATE INDEX nc_user_idx_2 ON nc_user(company_id, ext_id);
 CREATE INDEX nc_user_idx_3 ON nc_user(company_id);
-
 
 DROP TABLE IF EXISTS nc_user_property;
 CREATE TABLE nc_user_property (

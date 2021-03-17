@@ -46,6 +46,21 @@ CREATE UNIQUE INDEX nc_company_idx_2 ON nc_company(auth_token);
 CREATE UNIQUE INDEX nc_company_idx_3 ON nc_company(auth_token_hash);
 
 --
+-- Company properties table.
+--
+CREATE TABLE nc_company_property (
+    id NUMBER PRIMARY KEY,
+    company_id NUMBER NOT NULL,
+    property VARCHAR2(64) NOT NULL,
+    value VARCHAR2(512) NULL,
+    created_on DATE DEFAULT sysdate NOT NULL,
+    last_modified_on DATE DEFAULT sysdate NOT NULL,
+    CONSTRAINT fk_company_id_company_property FOREIGN KEY (company_id) REFERENCES nc_company(id)
+);
+
+CREATE INDEX nc_company_property_idx1 ON nc_company_property(company_id);
+
+--
 -- User table.
 --
 CREATE TABLE nc_user (
@@ -60,7 +75,7 @@ CREATE TABLE nc_user (
     passwd_salt VARCHAR2(64) NULL,
     created_on DATE DEFAULT sysdate NOT NULL,
     last_modified_on DATE DEFAULT sysdate NOT NULL,
-    CONSTRAINT fk_company_id FOREIGN KEY (company_id)REFERENCES nc_company(id)
+    CONSTRAINT fk_company_id_user FOREIGN KEY (company_id) REFERENCES nc_company(id)
 );
 
 CREATE UNIQUE INDEX nc_user_idx_1 ON nc_user(email);
@@ -77,7 +92,7 @@ CREATE TABLE nc_user_property (
     value VARCHAR2(512) NULL,
     created_on DATE DEFAULT sysdate NOT NULL,
     last_modified_on DATE DEFAULT sysdate NOT NULL,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id)REFERENCES nc_user(id)
+    CONSTRAINT fk_user_id_user_property FOREIGN KEY (user_id) REFERENCES nc_user(id)
 );
 
 CREATE INDEX nc_user_property_idx1 ON nc_user_property(user_id);

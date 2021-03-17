@@ -232,7 +232,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
       * @param propsOpt Optional properties.
       */
     @throws[TooLargeField]
-    private def checkUserProperties(propsOpt: Option[Map[String, String]]): Unit =
+    private def checkProperties(propsOpt: Option[Map[String, String]]): Unit =
         propsOpt match {
             case Some(props) ⇒
                 props.foreach { case (k, v) ⇒
@@ -880,7 +880,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             adminPasswd: String,
             adminFirstName: String,
             adminLastName: String,
-            adminAvatarUrl: Option[String]
+            adminAvatarUrl: Option[String],
+            properties: Option[Map[String, String]]
         )
         case class Res$Company$Add(
             status: String,
@@ -888,7 +889,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             adminId: Long
         )
 
-        implicit val reqFmt: RootJsonFormat[Req$Company$Add] = jsonFormat13(Req$Company$Add)
+        implicit val reqFmt: RootJsonFormat[Req$Company$Add] = jsonFormat14(Req$Company$Add)
         implicit val resFmt: RootJsonFormat[Res$Company$Add] = jsonFormat3(Res$Company$Add)
 
         //noinspection DuplicatedCod
@@ -910,6 +911,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     "adminAvatarUrl" → req.adminAvatarUrl
                 )
 
+                checkProperties(req.properties)
+
                 // Via REST only administrators of already created companies can create new companies.
                 authenticateAsAdmin(req.acsTok)
 
@@ -926,6 +929,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     req.adminFirstName,
                     req.adminLastName,
                     req.adminAvatarUrl,
+                    req.properties,
                     span
                 )
 
@@ -953,11 +957,12 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             region: Option[String],
             city: Option[String],
             address: Option[String],
-            postalCode: Option[String]
+            postalCode: Option[String],
+            properties: Option[Map[String, String]]
         )
 
         implicit val reqFmt: RootJsonFormat[Req$Company$Get] = jsonFormat1(Req$Company$Get)
-        implicit val resFmt: RootJsonFormat[Res$Company$Get] = jsonFormat9(Res$Company$Get)
+        implicit val resFmt: RootJsonFormat[Res$Company$Get] = jsonFormat10(Res$Company$Get)
 
         entity(as[Req$Company$Get]) { req ⇒
             startScopedSpan("company$get", "acsTok" → req.acsTok) { span ⇒
@@ -969,6 +974,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     getCompany(acsUsr.companyId, span).
                     getOrElse(throw new NCE(s"Company not found: ${acsUsr.companyId}"))
 
+                val props = NCCompanyManager.getCompanyProperties(acsUsr.companyId, span)
+
                 complete {
                     Res$Company$Get(API_OK,
                         company.id,
@@ -978,7 +985,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                         company.region,
                         company.city,
                         company.address,
-                        company.postalCode
+                        company.postalCode,
+                        if (props.isEmpty) None else Some(props.map(p ⇒ p.property → p.value).toMap)
                     )
                 }
             }
@@ -1001,13 +1009,14 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
             region: Option[String],
             city: Option[String],
             address: Option[String],
-            postalCode: Option[String]
+            postalCode: Option[String],
+            properties: Option[Map[String, String]]
         )
         case class Res$Company$Update(
             status: String
         )
 
-        implicit val reqFmt: RootJsonFormat[Req$Company$Update] = jsonFormat8(Req$Company$Update)
+        implicit val reqFmt: RootJsonFormat[Req$Company$Update] = jsonFormat9(Req$Company$Update)
         implicit val resFmt: RootJsonFormat[Res$Company$Update] = jsonFormat1(Res$Company$Update)
 
         entity(as[Req$Company$Update]) { req ⇒
@@ -1022,6 +1031,8 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     "postalCode" → req.postalCode
                 )
 
+                checkProperties(req.properties)
+
                 val admUsr = authenticateAsAdmin(req.acsTok)
 
                 NCCompanyManager.updateCompany(
@@ -1033,6 +1044,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     req.city,
                     req.address,
                     req.postalCode,
+                    req.properties,
                     span
                 )
 
@@ -1325,7 +1337,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     "usrExtId" → req.usrExtId
                 )
 
-                checkUserProperties(req.properties)
+                checkProperties(req.properties)
 
                 val admUsr = authenticateAsAdmin(req.acsTok)
 
@@ -1381,7 +1393,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     "avatarUrl" → req.avatarUrl
                 )
 
-                checkUserProperties(req.properties)
+                checkProperties(req.properties)
 
                 val acsUsr = authenticate(req.acsTok)
 

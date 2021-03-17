@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.server.sql
 
-import java.sql.Timestamp
-
 import io.opencensus.trace.Span
 import org.apache.ignite.IgniteAtomicSequence
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -28,6 +26,7 @@ import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.mdo._
 import org.apache.nlpcraft.server.sql.NCSql.Implicits._
 
+import java.sql.Timestamp
 import scala.util.control.Exception.catching
 
 /**
@@ -35,7 +34,9 @@ import scala.util.control.Exception.catching
   * Note that all functions in this class expect outside `NCSql.sql()` block.
   */
 object NCSqlManager extends NCService with NCIgniteInstance {
-    private final val DB_TABLES = Seq("nc_company", "nc_user", "nc_user_property", "passwd_pool", "proc_log", "feedback")
+    private final val DB_TABLES = Seq(
+        "nc_company", "nc_company_property", "nc_user", "nc_user_property", "passwd_pool", "proc_log", "feedback"
+    )
     private final val CACHE_2_CLEAR = Seq(
         "user-token-signin-cache",
         "user-id-signin-cache",
@@ -50,6 +51,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
     }
 
     @volatile private var usersPropsSeq: IgniteAtomicSequence = _
+    @volatile private var compPropsSeq: IgniteAtomicSequence = _
 
     /**
      *
@@ -68,6 +70,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
      
         catching(wrapIE) {
             usersPropsSeq = NCSql.mkSeq(ignite, "usersPropsSeq", "nc_user_property", "id")
+            compPropsSeq = NCSql.mkSeq(ignite, "companiesPropsSeq", "nc_company_property", "id")
         }
      
         ackStarted()
@@ -276,7 +279,6 @@ object NCSqlManager extends NCService with NCIgniteInstance {
             n
         }
 
-
     /**
       *
       * @param id
@@ -296,6 +298,36 @@ object NCSqlManager extends NCService with NCIgniteInstance {
                                |VALUES(?, ?, ?, ?, ?, ?)
                             """.stripMargin,
                             usersPropsSeq.getAndIncrement(),
+                            id,
+                            k,
+                            v,
+                            now,
+                            now
+                        )
+                    }
+                case None ⇒ // No-op.
+            }
+        }
+
+    /**
+      *
+      * @param id
+      * @param propsOpt
+      * @param parent Optional parent span.
+      */
+    private def addCompanyProperties(id: Long, propsOpt: Option[Map[String, String]], parent: Span): Unit =
+        startScopedSpan("addCompanyProperties", parent, "companyId" → id) { _ ⇒
+            propsOpt match {
+                case Some(props) ⇒
+                    val now = U.nowUtcTs()
+
+                    props.foreach { case (k, v) ⇒
+                        NCSql.insert(
+                            s"""
+                               |INSERT INTO nc_company_property (id, company_id, property, value, created_on, last_modified_on)
+                               |VALUES(?, ?, ?, ?, ?, ?)
+                            """.stripMargin,
+                            compPropsSeq.getAndIncrement(),
                             id,
                             k,
                             v,
@@ -342,6 +374,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       * @param city Company's city. Optional.
       * @param address Company's address. Optional.
       * @param postalCode Company's postal code. Optional.
+      * @param propsOpt Company's property. Optional.
       * @param parent Optional parent span.
       */
     @throws[NCE]
@@ -354,9 +387,11 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         city: Option[String],
         address: Option[String],
         postalCode: Option[String],
-        parent: Span): Int =
+        propsOpt: Option[Map[String, String]],
+        parent: Span
+    ): Int =
         startScopedSpan("updateCompany", parent, "compId" → id) { _ ⇒
-            NCSql.update(
+            val res = NCSql.update(
                 s"""
                    |UPDATE nc_company
                    |SET
@@ -380,6 +415,12 @@ object NCSqlManager extends NCService with NCIgniteInstance {
                 U.nowUtcTs(),
                 id
             )
+
+            NCSql.delete("DELETE FROM nc_company_property WHERE company_id = ?", id)
+
+            addCompanyProperties(id, propsOpt, parent)
+
+            res
         }
 
     /**
@@ -503,6 +544,20 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         }
 
     /**
+      * Gets company properties for given ID.
+      *
+      * @param id User ID.
+      * @param parent Optional parent span.
+      * @return Company properties.
+      *
+      */
+    @throws[NCE]
+    def getCompanyProperties(id: Long, parent: Span): Seq[NCCompanyPropertyMdo] =
+        startScopedSpan("getCompanyProperties", parent, "usrId" → id) { _ ⇒
+            NCSql.select[NCCompanyPropertyMdo]("SELECT * FROM nc_company_property WHERE company_id = ?", id)
+        }
+
+    /**
       * Gets user properties for given external ID.
       *
       * @param companyId Company ID.
@@ -574,6 +629,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       * @param city Company's city. Optional.
       * @param address Company's address. Optional.
       * @param postalCode Company's postal code. Optional.
+      * @param propsOpt Company's properties. Optional.
       * @param parent Optional parent span.
       */
     @throws[NCE]
@@ -587,7 +643,9 @@ object NCSqlManager extends NCService with NCIgniteInstance {
         city: Option[String],
         address: Option[String],
         postalCode: Option[String],
-        parent: Span): Unit =
+        propsOpt: Option[Map[String, String]],
+        parent: Span
+    ): Unit =
         startScopedSpan("addCompany", parent, "compId" → id, "name" → name, "tkn" → tkn) { _ ⇒
             val now = U.nowUtcTs()
     
@@ -623,6 +681,8 @@ object NCSqlManager extends NCService with NCIgniteInstance {
                 now,
                 now
             )
+
+            addCompanyProperties(id, propsOpt, parent)
         }
 
     /**
@@ -637,7 +697,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       * @param avatarUrl User's avatar URL. Optional.
       * @param passwdSalt Salt for password Blowfish hashing. Optional.
       * @param isAdmin Whether or not the user is admin.
-      * @param propsOpt User properties.  Optional.
+      * @param propsOpt User properties. Optional.
       * @param parent Optional parent span.
       */
     @throws[NCE]
@@ -1020,7 +1080,7 @@ object NCSqlManager extends NCService with NCIgniteInstance {
       */
     @throws[NCE]
     private def executeScript(sqlPath: String): Unit = startScopedSpan("executeScript", "sqlPath" → sqlPath) { _ ⇒
-        U.readResource(sqlPath, "UTF-8").
+        U.readResource(sqlPath).
             map(_.strip).
             filter(p ⇒ !p.startsWith("--")).
             mkString("\n").
