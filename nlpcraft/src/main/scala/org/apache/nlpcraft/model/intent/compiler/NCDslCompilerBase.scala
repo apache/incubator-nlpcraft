@@ -698,14 +698,14 @@ trait NCDslCompilerBase {
                 val parts = tok.findPartTokens(aliasId)
 
                 if (parts.isEmpty)
-                    throw newRuntimeError(s"Cannot find part for token (try 'parts' function instead) [" +
-                        s"id=${tok.getId}, " +
-                        s"aliasId=$aliasId" +
+                    throw newRuntimeError(s"Cannot find part for token [" +
+                        s"tokenId=${tok.getId}, " +
+                        s"partId=$aliasId" +
                     s"]")
                 else if (parts.size() > 1)
                     throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
-                        s"id=${tok.getId}, " +
-                        s"aliasId=$aliasId" +
+                        s"tokenId=${tok.getId}, " +
+                        s"partId=$aliasId" +
                     s"]")
 
                 Z(parts.get(0), f1 || f2)
