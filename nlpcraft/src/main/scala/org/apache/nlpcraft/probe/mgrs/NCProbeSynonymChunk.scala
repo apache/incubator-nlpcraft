@@ -17,10 +17,10 @@
 
 package org.apache.nlpcraft.probe.mgrs
 
-import java.util.regex.Pattern
-import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.intent.NCDslTokenPredicate
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
+
+import java.util.regex.Pattern
 
 /**
  *
