@@ -558,9 +558,10 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 Seq(
                                     s"${y("SEN_TOK: ")}${w.head}",
                                     s"${y("CNV_TOK: ")}${w(1)}",
-                                    s"${y("SPC_MIN: ")}${w(2)}",
-                                    s"${y("DLT_MAX: ")}${w(3)}",
-                                    s"${y("NRM_MAX: ")}${w(4)}"
+                                    s"${y("TOK_USN: ")}${w(2)}",
+                                    s"${y("SPC_MIN: ")}${w(3)}",
+                                    s"${y("DLT_MAX: ")}${w(4)}",
+                                    s"${y("NRM_MAX: ")}${w(5)}"
                                 )
                             )
 
@@ -681,7 +682,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     @throws[NCE]
     private def solvePredicate(
-        pred: (NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Boolean /*Whether or not token was used.*/ ),
+        pred: (NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Int /*How many times a token was used.*/ ),
         ctx: NCDslContext,
         min: Int,
         max: Int,
@@ -695,16 +696,19 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         var usedToks = List.empty[UsedToken]
 
         var matches = 0
+        var tokUses = 0
 
         // Collect to the 'max' from sentence & conversation, if possible.
         for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
-            val (res, used) = pred.apply(tok.token, ctx)
+            val (res, uses) = pred.apply(tok.token, ctx)
 
             if (res) {
                 matches += 1
 
-                if (used)
+                if (uses > 0) {
+                    tokUses += uses
                     usedToks :+= tok
+                }
             }
         }
 
@@ -736,7 +740,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
             Some(usedToks → new Weight(
                 senTokNum,
-                convDepthsSum
+                convDepthsSum,
+                tokUses
             ))
         }
     }

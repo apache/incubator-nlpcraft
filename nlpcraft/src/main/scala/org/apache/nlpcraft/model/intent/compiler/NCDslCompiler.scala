@@ -245,7 +245,7 @@ object NCDslCompiler extends LazyLogging {
                             javaCtx
                         )
 
-                        (res.getResult, res.wasTokenUsed())
+                        (res.getResult, res.getTokenUses)
                     }
                     catch {
                         case e: Exception ⇒
@@ -297,7 +297,7 @@ object NCDslCompiler extends LazyLogging {
                 if (!isBool(v))
                     throw newRuntimeError(s"$subj did not return boolean value: ${ctx.getText}")
 
-                (asBool(v), x.usedTok)
+                (asBool(v), x.tokUse)
             }
         }
 
