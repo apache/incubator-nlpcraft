@@ -65,7 +65,6 @@ class NCMacroCompilerSpec {
         checkEq("    A   ", Seq("A"))
         checkEq("A B", Seq("A B"))
         checkEq("""A {Москва|_|\|}""", Seq("A", "A Москва", """A \|"""))
-        checkEq("A موسكو", Seq("A موسكو"))
         checkEq("A Moscó", Seq("A Moscó"))
         checkEq("""A B \[ \] \< \> \_ \{ \} \, \|""", Seq("""A B \[ \] \< \> \_ \{ \} \, \|"""))
         checkEq("A           B", Seq("A B"))
