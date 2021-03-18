@@ -26,11 +26,20 @@ import org.apache.commons.collections.CollectionUtils
 import org.apache.nlpcraft.model.intent.NCDslContext
 import org.apache.nlpcraft.model.intent.compiler.{NCDslStackItem ⇒ Z}
 
-import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
+import java.lang.{
+    Number ⇒ JNumber,
+    Double ⇒ JDouble,
+    Float ⇒ JFloat,
+    Long ⇒ JLong,
+    Integer ⇒ JInt,
+    Byte ⇒ JByte,
+    Short ⇒ JShort
+}
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
 import java.util.{Calendar, Collections, List ⇒ JList, Map ⇒ JMap}
+
 import scala.collection.JavaConverters._
 
 trait NCDslCompilerBase {
@@ -66,20 +75,58 @@ trait NCDslCompilerBase {
         runtimeError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine, cause)
     }
 
+
+    /**
+     * Check if given object is mathematically an integer number.
+     *
+     * @param v
+     * @return
+     */
     //noinspection ComparingUnrelatedTypes
-    def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
+    def isInt(v: Object): Boolean = v.isInstanceOf[JNumber]
+
+    /**
+     *
+     * @param v
+     * @return
+     */
+    def asInt(v: Object): JLong = v match {
+        case l: JLong ⇒ l
+        case i: JInt ⇒ i.longValue()
+        case b: JByte ⇒ b.longValue()
+        case s: JShort ⇒ s.longValue()
+        case _ ⇒ throw new AssertionError(s"Unexpected int value: $v")
+    }
+
+    /**
+     * Check if given object is mathematically an real number.
+     *
+     * @param v
+     * @return
+     */
     //noinspection ComparingUnrelatedTypes
-    def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
+    def isReal(v: Object): Boolean = v.isInstanceOf[JDouble] || v.isInstanceOf[JFloat]
+
+    /**
+     *
+     * @param v
+     * @return
+     */
+    def asReal(v: Object): JDouble = v match {
+        case d: JDouble ⇒ d
+        case f: JFloat ⇒ f.doubleValue()
+        case _ ⇒ throw new AssertionError(s"Unexpected real value: $v")
+    }
+
+
     //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
     def isJList(v: Object): Boolean = v.isInstanceOf[JList[_]]
     def isJMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
-    def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
     def asJList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
     def asJMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
-    def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
     def asStr(v: Object): String = v.asInstanceOf[String]
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
     def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
@@ -158,10 +205,10 @@ trait NCDslCompilerBase {
                 val Z(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) < asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) < asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) < asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) < asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) < asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) < asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) < asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) < asReal(v2)
                     else
                         throw rtBinaryOpError("<", v1, v2)
 
@@ -173,10 +220,10 @@ trait NCDslCompilerBase {
                 val Z(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) > asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) > asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) > asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) > asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) > asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) > asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) > asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) > asReal(v2)
                     else
                         throw rtBinaryOpError(">", v1, v2)
 
@@ -188,10 +235,10 @@ trait NCDslCompilerBase {
                 val Z(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) <= asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) <= asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) <= asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) <= asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) <= asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) <= asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) <= asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) <= asReal(v2)
                     else
                         throw rtBinaryOpError("<=", v1, v2)
 
@@ -205,10 +252,10 @@ trait NCDslCompilerBase {
                 val Z(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) >= asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) >= asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) >= asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) >= asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) >= asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) >= asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) >= asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) >= asReal(v2)
                     else
                         throw rtBinaryOpError(">=", v1, v2)
 
@@ -232,10 +279,10 @@ trait NCDslCompilerBase {
                 val Z(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) * asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) * asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) * asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) * asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) * asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) * asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) * asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) * asReal(v2)
                     else
                         throw rtBinaryOpError("*", v1, v2)
 
@@ -247,7 +294,7 @@ trait NCDslCompilerBase {
                 val Z(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) % asJLong(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) % asInt(v2)
                     else
                         throw rtBinaryOpError("%", v1, v2)
 
@@ -261,10 +308,10 @@ trait NCDslCompilerBase {
                 val Z(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) / asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) / asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) / asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) / asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) / asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) / asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) / asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) / asReal(v2)
                     else
                         throw rtBinaryOpError("/", v1, v2)
 
@@ -316,14 +363,14 @@ trait NCDslCompilerBase {
         def doEq(op: String, v1: Object, v2: Object): Boolean = {
             if (v1 == null && v2 == null) true
             else if ((v1 == null && v2 != null) || (v1 != null && v2 == null)) false
-            else if (isJLong(v1) && isJLong(v2)) asJLong(v1) == asJLong(v2)
-            else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) == asJDouble(v2)
+            else if (isInt(v1) && isInt(v2)) asInt(v1) == asInt(v2)
+            else if (isReal(v1) && isReal(v2)) asReal(v1) == asReal(v2)
             else if (isBool(v1) && isBool(v2)) asBool(v1) == asBool(v2)
             else if (isStr(v1) && isStr(v2)) asStr(v1) == asStr(v2)
             else if (isJList(v1) && isJList(v2)) CollectionUtils.isEqualCollection(asJList(v1), asJList(v2))
-            else {
+            else
                 throw rtBinaryOpError(op, v1, v2)
-            }}
+        }
 
         stack.push(() ⇒ {
             val Z(v1, n1) = x1()
@@ -362,10 +409,10 @@ trait NCDslCompilerBase {
                 val (v1, v2, n) = extract()
 
                 if (isStr(v1) && isStr(v2)) Z(asStr(v1) + asStr(v2), n)
-                else if (isJLong(v1) && isJLong(v2))  Z(asJLong(v1) + asJLong(v2), n)
-                else if (isJLong(v1) && isJDouble(v2))  Z(asJLong(v1) + asJDouble(v2), n)
-                else if (isJDouble(v1) && isJLong(v2))  Z(asJDouble(v1) + asJLong(v2), n)
-                else if (isJDouble(v1) && isJDouble(v2))  Z(asJDouble(v1) + asJDouble(v2), n)
+                else if (isInt(v1) && isInt(v2))  Z(asInt(v1) + asInt(v2), n)
+                else if (isInt(v1) && isReal(v2))  Z(asInt(v1) + asReal(v2), n)
+                else if (isReal(v1) && isInt(v2))  Z(asReal(v1) + asInt(v2), n)
+                else if (isReal(v1) && isReal(v2))  Z(asReal(v1) + asReal(v2), n)
                 else
                     throw rtBinaryOpError("+", v1, v2)
             })
@@ -376,10 +423,10 @@ trait NCDslCompilerBase {
                 val (v1, v2, n) = extract()
 
                 val v =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) - asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) - asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) - asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) - asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) - asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) - asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) - asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) - asReal(v2)
                     else
                         throw rtBinaryOpError("-", v1, v2)
 
@@ -401,8 +448,8 @@ trait NCDslCompilerBase {
                 val Z(v, n) = x()
 
                 val z =
-                    if (isJDouble(v)) -asJDouble(v)
-                    else if (isJLong(v)) -asJLong(v)
+                    if (isReal(v)) -asReal(v)
+                    else if (isInt(v)) -asInt(v)
                     else
                         throw rtUnaryOpError("-", v)
 
@@ -491,7 +538,7 @@ trait NCDslCompilerBase {
             as(v)
         }
         def toStr(v: Object): String = toX("string", v, isStr, asStr)
-        def toJDouble(v: Object): JDouble = toX("double", v, isJDouble, asJDouble)
+        def toJDouble(v: Object): JDouble = toX("double", v, isReal, asReal)
         def toJList(v: Object): JList[_] = toX("list", v, isJList, asJList)
         def toJMap(v: Object): JMap[_, _] = toX("map", v, isJMap, asJMap)
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
@@ -633,8 +680,8 @@ trait NCDslCompilerBase {
                 val n = n1 + n2
 
                 if (isJList(col)) {
-                    if (isJLong(key))
-                        Z(asJList(col).get(asJLong(key).intValue()).asInstanceOf[Object], n)
+                    if (isInt(key))
+                        Z(asJList(col).get(asInt(key).intValue()).asInstanceOf[Object], n)
                     else
                         throw rtParamTypeError(fun, key, "numeric")
                 }
