@@ -140,7 +140,7 @@ public interface NCToken extends NCMetadata {
 
                 if (!found)
                     // Check aliases if not found by ID.
-                    for (String alias : getAliases()) {
+                    for (String alias : part.getAliases()) {
                         found = Arrays.binarySearch(idOrAlias, alias) >= 0;
 
                         if (found)
