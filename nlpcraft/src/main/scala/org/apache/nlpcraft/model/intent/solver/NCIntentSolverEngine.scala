@@ -125,7 +125,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
          */
         def toSeq: Seq[Int] = buf
 
-        override def toString: String = s"Weight (${buf.mkString(", ")})"
+        override def toString: String = buf.mkString(y("<"), " ,", y(">"))
     }
 
     /**
@@ -244,9 +244,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 )
             }
 
-            def intentMatchWeight(w: Seq[Int]): String =
-                s"${y("<")}${w.head}, ${w(1)}, ${w(2)}, ${w(3)}, ${w(4)}, ${w(5)}${y(">")}"
-
             val sorted = matches.sortWith((m1: MatchHolder, m2: MatchHolder) ⇒
                 // 1. First with maximum weight.
                 m1.intentMatch.weight.compare(m2.intentMatch.weight) match {
@@ -255,8 +252,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     case x1 ⇒
                         require(x1 == 0)
 
-                        val mw1 = m1.intentMatch.weight.toSeq
-                        val mw2 = m2.intentMatch.weight.toSeq
+                        val mw1 = m1.intentMatch.weight
+                        val mw2 = m2.intentMatch.weight
 
                         val v1 = m1.variant
                         val v2 = m2.variant
@@ -276,27 +273,18 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         tbl += (
                             s"${c("Intent Match Weight")}",
-                            intentMatchWeight(mw1),
-                            intentMatchWeight(mw2)
+                            mw1,
+                            mw2
                         )
 
-                        def variantWeight(w: NCIntentSolverVariant): String =
-                            s"${y("<")}" +
-                                s"${w.userToks}, " +
-                                s"${w.wordCnt}, " +
-                                s"${w.totalUserDirect}, " +
-                                s"${w.avgWordsPerTokPct}, " +
-                                s"${w.totalSparsity}" +
-                            s"${y(">")}"
-    
                         tbl += (
                             s"${c("Variant Weight")}",
-                            variantWeight(v1),
-                            variantWeight(v2)
+                            v1,
+                            v2
                         )
 
                         logger.warn(
-                            s"Two matching intents have the ${y("same weight")} for their matches.\n" +
+                            s"Two matching intents have the ${y(bo("same weight"))} for their matches (variants weight will be used further):\n" +
                             tbl.toString
                         )
 
@@ -331,8 +319,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                 sorted.foreach(m ⇒ {
                     val im = m.intentMatch
-                    val w = im.weight.toSeq
-                    val ws = intentMatchWeight(w)
+                    val w = im.weight
 
                     if (m == sorted.head)
                         tbl += (
@@ -345,14 +332,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 g(bo("best match"))
                             ),
                             mkPickTokens(im),
-                            ws
+                            w
                         )
                     else
                         tbl += (
                             s"#${m.variantIdx + 1}",
                             im.intent.id,
                             mkPickTokens(im),
-                            ws
+                            w
                         )
 
                     if (logHldr != null)
@@ -399,9 +386,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         var grpIdx = 0
 
         for (grp ← im.tokenGroups) {
-            val term = grp.term
-
-            buf += s"  ${term.dsl}"
+            buf += s"  ${grp.term}"
 
             grpIdx += 1
 

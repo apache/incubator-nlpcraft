@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.solver
 
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCToken
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 
@@ -79,13 +80,5 @@ case class NCIntentSolverVariant(tokens: util.List[NCToken]) extends Ordered[NCI
         else 0
     }
 
-    override def toString: String =
-        s"Variant [" +
-            s"userToks=$userToks" +
-            s", wordCnt=$wordCnt" +
-            s", totalUserDirect=$totalUserDirect" +
-            s", avgWordsPerTokPct=$avgWordsPerTokPct" +
-            s", sparsity=$totalSparsity" +
-            s", toks=$tokens" +
-            "]"
+    override def toString: String = s"${y("<")}$userToks, $wordCnt, $totalUserDirect, $avgWordsPerTokPct, $totalSparsity${y(">")}"
 }
