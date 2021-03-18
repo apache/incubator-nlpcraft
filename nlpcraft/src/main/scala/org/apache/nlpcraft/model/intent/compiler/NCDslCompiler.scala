@@ -178,7 +178,28 @@ object NCDslCompiler extends LazyLogging {
         override def exitSynonym(ctx: IDP.SynonymContext): Unit = {
             implicit val evidence: PRC = ctx
 
-            synonym = NCDslSynonym(origin, Option(alias), instrToPredicate("Synonym"))
+            val pred = instrToPredicate("Synonym")
+            val capture = alias
+            val wrapper: NCDslTokenPredicate = (tok: NCToken, ctx: NCDslContext) ⇒ {
+                val (res, tokUses) = pred(tok, ctx)
+
+                // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.
+                // NOTE: token can have multiple aliases associated with it.
+                if (res && capture != null) { // NOTE: we ignore 'tokUses' here on purpose.
+                    val meta = tok.getMetadata
+
+                    if (!meta.containsKey(TOK_META_ALIASES_KEY))
+                        meta.put(TOK_META_ALIASES_KEY, new java.util.HashSet[String]())
+
+                    val aliases = meta.get(TOK_META_ALIASES_KEY).asInstanceOf[java.util.Set[String]]
+
+                    aliases.add(capture)
+                }
+
+                (res, tokUses)
+            }
+
+            synonym = NCDslSynonym(origin, Option(alias), wrapper)
 
             alias = null
             instrs.clear()

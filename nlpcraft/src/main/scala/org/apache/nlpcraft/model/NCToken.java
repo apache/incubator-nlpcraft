@@ -159,13 +159,13 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * Gets optional list of aliases this token is known by. Token can get an alias if it is a part of
+     * Gets optional set of aliases this token is known by. Token can get an alias if it is a part of
      * other composed token and token DSL expression that was used to match it specified an alias. Note
      * that token can have zero, one or more aliases.
      *
      * @return List of aliases this token is known by. Can be empty, but never {@code null}.
      */
-    List<String> getAliases();
+    Set<String> getAliases();
 
     /**
      * Tests whether or not this token has given alias. It is equivalent to:
