@@ -810,9 +810,9 @@ trait NCIdlCompilerBase {
             case "aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getAliases, 1) }) }
             case "start_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getStartCharIndex, 1) }) }
             case "end_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getEndCharIndex, 1) }) }
-            case "this" ⇒ z0(() ⇒ Z(tok, 1))
-            case "part" ⇒ doPart()
-            case "parts" ⇒ doParts()
+            case "token" ⇒ z0(() ⇒ Z(tok, 1))
+            case "find_part" ⇒ doPart()
+            case "find_parts" ⇒ doParts()
 
             // Request data.
             case "req_id" ⇒ z0(() ⇒ Z(termCtx.req.getServerRequestId, 0))
