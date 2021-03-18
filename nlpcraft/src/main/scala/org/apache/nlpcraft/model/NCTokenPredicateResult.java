@@ -26,18 +26,19 @@ package org.apache.nlpcraft.model;
  * @see NCTokenPredicateContext
  */
 public class NCTokenPredicateResult {
-    private final boolean result;
-    private final boolean wasTokenUsed;
+    private final boolean res;
+    private final int tokUses;
 
     /**
      * Creates token predicate result.
      *
-     * @param result Token predicate result.
-     * @param wasTokenUsed Whether or not a token was used by this predicate (if {@link #getResult() result} is {@code true}).
+     * @param res Token predicate result.
+     * @param tokUses How many times a token was used to match this predicate (if {@link #getResult() result} is {@code true}).
+     *      The more times a token was used the "stronger" the this match will be when used by intent solver.
      */
-    public NCTokenPredicateResult(boolean result, boolean wasTokenUsed) {
-        this.result = result;
-        this.wasTokenUsed = wasTokenUsed;
+    public NCTokenPredicateResult(boolean res, int tokUses) {
+        this.res = res;
+        this.tokUses = tokUses;
     }
 
     /**
@@ -46,15 +47,15 @@ public class NCTokenPredicateResult {
      * @return Predicate result.
      */
     public boolean getResult() {
-        return result;
+        return res;
     }
 
     /**
-     * Whether or not a token was used by this predicate (if {@link #getResult() result} is {@code true}).
+     * Gets how many times a token was used to match this predicate (if {@link #getResult() result} is {@code true}).
      *
-     * @return {@code true} if token was used by this predicate, {@code false} otherwise.
+     * @return Number of times a token was used to match this term.
      */
-    public boolean wasTokenUsed() {
-        return wasTokenUsed;
+    public int getTokenUses() {
+        return tokUses;
     }
 }

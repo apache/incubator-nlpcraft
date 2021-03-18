@@ -47,6 +47,9 @@ object NCDslCompiler extends LazyLogging {
       * @param mdl
       */
     class FiniteStateMachine(origin: String, dsl: String, mdl: NCModel) extends NCIntentDslBaseListener with NCDslCompilerBase {
+        // Actual value for '*' as in min/max shortcut.
+        final private val MINMAX_MAX = 100
+        
         // Accumulators for parsed objects.
         private val intents = ArrayBuffer.empty[NCDslIntent]
         private var synonym: NCDslSynonym = _
@@ -126,9 +129,9 @@ object NCDslCompiler extends LazyLogging {
     
         override def exitMinMaxShortcut(ctx: IDP.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
-                setMinMax(1, Integer.MAX_VALUE)
+                setMinMax(1, MINMAX_MAX)
             else if (ctx.MULT() != null)
-                setMinMax(0, Integer.MAX_VALUE)
+                setMinMax(0, MINMAX_MAX)
             else if (ctx.QUESTION() != null)
                 setMinMax(0, 1)
             else
@@ -139,8 +142,19 @@ object NCDslCompiler extends LazyLogging {
             val minStr = ctx.getChild(1).getText.trim
             val maxStr = ctx.getChild(3).getText.trim
 
-            try
-                setMinMax(java.lang.Integer.parseInt(minStr), java.lang.Integer.parseInt(maxStr))
+            try {
+                val min = java.lang.Integer.parseInt(minStr)
+                val max = java.lang.Integer.parseInt(maxStr)
+                
+                if (min < 0)
+                    throw newSyntaxError(s"Min value cannot be negative: $min")(ctx)
+                if (min > max)
+                    throw newSyntaxError(s"Min value '$min' cannot be greater than max value '$min'.")(ctx)
+                if (max > MINMAX_MAX)
+                    throw newSyntaxError(s"Max value '$max' cannot be greater than '$MINMAX_MAX'.")(ctx)
+                
+                setMinMax(min, max)
+            }
             catch {
                 // Errors should be caught during compilation phase.
                 case _: NumberFormatException ⇒ assert(false)
@@ -164,7 +178,28 @@ object NCDslCompiler extends LazyLogging {
         override def exitSynonym(ctx: IDP.SynonymContext): Unit = {
             implicit val evidence: PRC = ctx
 
-            synonym = NCDslSynonym(origin, Option(alias), instrToPredicate("Synonym"))
+            val pred = instrToPredicate("Synonym")
+            val capture = alias
+            val wrapper: NCDslTokenPredicate = (tok: NCToken, ctx: NCDslContext) ⇒ {
+                val (res, tokUses) = pred(tok, ctx)
+
+                // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.
+                // NOTE: token can have multiple aliases associated with it.
+                if (res && capture != null) { // NOTE: we ignore 'tokUses' here on purpose.
+                    val meta = tok.getMetadata
+
+                    if (!meta.containsKey(TOK_META_ALIASES_KEY))
+                        meta.put(TOK_META_ALIASES_KEY, new java.util.HashSet[String]())
+
+                    val aliases = meta.get(TOK_META_ALIASES_KEY).asInstanceOf[java.util.Set[String]]
+
+                    aliases.add(capture)
+                }
+
+                (res, tokUses)
+            }
+
+            synonym = NCDslSynonym(origin, Option(alias), wrapper)
 
             alias = null
             instrs.clear()
@@ -245,7 +280,7 @@ object NCDslCompiler extends LazyLogging {
                             javaCtx
                         )
 
-                        (res.getResult, res.wasTokenUsed())
+                        (res.getResult, res.getTokenUses)
                     }
                     catch {
                         case e: Exception ⇒
@@ -297,7 +332,7 @@ object NCDslCompiler extends LazyLogging {
                 if (!isBool(v))
                     throw newRuntimeError(s"$subj did not return boolean value: ${ctx.getText}")
 
-                (asBool(v), x.usedTok)
+                (asBool(v), x.tokUse)
             }
         }
 

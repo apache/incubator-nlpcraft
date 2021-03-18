@@ -125,7 +125,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
          */
         def toSeq: Seq[Int] = buf
 
-        override def toString: String = s"Weight (${buf.mkString(", ")})"
+        override def toString: String = buf.mkString(y("<"), " ,", y(">"))
     }
 
     /**
@@ -154,11 +154,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
     /**
      *
-     * @param termId
+     * @param term
      * @param usedTokens
      */
     private case class TermTokensGroup(
-        termId: Option[String],
+        term: NCDslTerm,
         usedTokens: List[UsedToken]
     )
 
@@ -179,7 +179,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     /**
      * Main entry point for intent engine.
      *
-     * @param ctx     Query context.
+     * @param ctx Query context.
      * @param intents Set of intents to match for.
      * @param logHldr Log holder.
      * @return
@@ -244,16 +244,6 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 )
             }
 
-            def intentMatchWeight(w: Seq[Int]): Seq[String] =
-                Seq(
-                    s"${y("XCT_VAL: ")}${w.head}",
-                    s"${y("SEN_TOK: ")}${w(1)}",
-                    s"${y("CNV_TOK: ")}${w(2)}",
-                    s"${y("SPC_MIN: ")}${w(3)}",
-                    s"${y("DLT_MAX: ")}${w(4)}",
-                    s"${y("NRM_MAX: ")}${w(5)}"
-                )
-
             val sorted = matches.sortWith((m1: MatchHolder, m2: MatchHolder) ⇒
                 // 1. First with maximum weight.
                 m1.intentMatch.weight.compare(m2.intentMatch.weight) match {
@@ -262,8 +252,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                     case x1 ⇒
                         require(x1 == 0)
 
-                        val mw1 = m1.intentMatch.weight.toSeq
-                        val mw2 = m2.intentMatch.weight.toSeq
+                        val mw1 = m1.intentMatch.weight
+                        val mw2 = m2.intentMatch.weight
 
                         val v1 = m1.variant
                         val v2 = m2.variant
@@ -283,35 +273,19 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         tbl += (
                             s"${c("Intent Match Weight")}",
-                            intentMatchWeight(mw1),
-                            intentMatchWeight(mw2)
+                            mw1,
+                            mw2
                         )
-
-                        def variantWeight(w: NCIntentSolverVariant): Seq[String] =
-                            Seq(
-                                s"${y("USR_TOKS: ")}${w.userToks}",
-                                s"${y("WORD_CNT: ")}${w.wordCnt}",
-                                s"${y("USR_DRCT: ")}${w.totalUserDirect}",
-                                s"${y("AWPT_PCT: ")}${w.avgWordsPerTokPct}",
-                                s"${y("SPARSITY: ")}${w.totalSparsity}"
-                            )
 
                         tbl += (
                             s"${c("Variant Weight")}",
-                            variantWeight(v1),
-                            variantWeight(v2)
+                            v1,
+                            v2
                         )
 
                         logger.warn(
-                            s"\n" +
-                                s"+------------------------------------------------------------------------+\n" +
-                                s"| Two matching intents have the ${r("same weight")} for their matches.           |\n" +
-                                s"| These intents will be sorted based on the weight of their variants.    |\n" +
-                                s"| It is recommended that intents should NOT be so similar as to produce  |\n" +
-                                s"| matches with identical weights. If possible, modify intent definitions |\n" +
-                                s"| to avoid intersecting matches...                                       |\n" +
-                                s"+------------------------------------------------------------------------+\n" +
-                                tbl.toString
+                            s"Two matching intents have the ${y(bo("same weight"))} for their matches (variants weight will be used further):\n" +
+                            tbl.toString
                         )
 
                         // 2. First with maximum variant.
@@ -345,8 +319,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                 sorted.foreach(m ⇒ {
                     val im = m.intentMatch
-                    val w = im.weight.toSeq
-                    val ws = intentMatchWeight(w)
+                    val w = im.weight
 
                     if (m == sorted.head)
                         tbl += (
@@ -359,14 +332,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 g(bo("best match"))
                             ),
                             mkPickTokens(im),
-                            ws
+                            w
                         )
                     else
                         tbl += (
                             s"#${m.variantIdx + 1}",
                             im.intent.id,
                             mkPickTokens(im),
-                            ws
+                            w
                         )
 
                     if (logHldr != null)
@@ -375,7 +348,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             im.exactMatch,
                             im.weight.toSeq,
                             im.tokenGroups.map(g ⇒
-                                g.termId.getOrElse("") → g.usedTokens.map(t ⇒ NCLogGroupToken(t.token, t.conv, t.used))
+                                g.term.id.getOrElse("") → g.usedTokens.map(t ⇒ NCLogGroupToken(t.token, t.conv, t.used))
                             ).toMap
                         )
                 })
@@ -389,7 +362,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 NCIntentSolverResult(
                     m.intentMatch.intent.id,
                     m.callback,
-                    m.intentMatch.tokenGroups.map(grp ⇒ NCIntentTokensGroup(grp.termId, grp.usedTokens.map(_.token))),
+                    m.intentMatch.tokenGroups.map(grp ⇒ NCIntentTokensGroup(grp.term.id, grp.usedTokens.map(_.token))),
                     m.intentMatch.exactMatch,
                     m.variant,
                     m.variantIdx
@@ -405,14 +378,15 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     private def mkPickTokens(im: IntentMatch): List[String] = {
         val buf = mutable.ListBuffer.empty[String]
+        
+        val intent = im.intent
 
-        buf += im.intent.toString
+        buf += s"intent=${intent.id} ordered=${intent.ordered}"
 
         var grpIdx = 0
 
         for (grp ← im.tokenGroups) {
-            val termId = if (grp.termId == null) s"#$grpIdx" else s"'${grp.termId}'"
-            buf += s"  Term $termId"
+            buf += s"  ${grp.term}"
 
             grpIdx += 1
 
@@ -538,7 +512,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             // Term is found.
                             // Add its weight and grab its tokens.
                             intentW += termMatch.weight
-                            intentGrps += TermTokensGroup(termMatch.termId, termMatch.usedTokens)
+                            intentGrps += TermTokensGroup(term, termMatch.usedTokens)
                             lastTermMatch = termMatch
 
                             val tbl = NCAsciiTable()
@@ -555,13 +529,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             }).mkString(" "))
                             tbl += (
                                 s"${B}Term Match Weight$RST",
-                                Seq(
-                                    s"${y("SEN_TOK: ")}${w.head}",
-                                    s"${y("CNV_TOK: ")}${w(1)}",
-                                    s"${y("SPC_MIN: ")}${w(2)}",
-                                    s"${y("DLT_MAX: ")}${w(3)}",
-                                    s"${y("NRM_MAX: ")}${w(4)}"
-                                )
+                                s"${y("<")}${w.head}, ${w(1)}, ${w(2)}, ${w(3)}, ${w(4)}, ${w(5)}${y(">")}"
                             )
 
                             tbl.info(logger, Some("Term match found:"))
@@ -594,7 +562,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             logger,
                             Some(
                                 s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr." +
-                                    s"\nUnused user tokens for intent '$intentId' $varStr:"
+                                s"\nUnused user tokens for intent '$intentId' $varStr:"
                             )
                         )
                 else {
@@ -681,7 +649,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     @throws[NCE]
     private def solvePredicate(
-        pred: (NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Boolean /*Whether or not token was used.*/ ),
+        pred: (NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Int /*How many times a token was used.*/ ),
         ctx: NCDslContext,
         min: Int,
         max: Int,
@@ -695,16 +663,19 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         var usedToks = List.empty[UsedToken]
 
         var matches = 0
+        var tokUses = 0
 
         // Collect to the 'max' from sentence & conversation, if possible.
         for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
-            val (res, used) = pred.apply(tok.token, ctx)
+            val (res, uses) = pred.apply(tok.token, ctx)
 
             if (res) {
                 matches += 1
 
-                if (used)
+                if (uses > 0) {
+                    tokUses += uses
                     usedToks :+= tok
+                }
             }
         }
 
@@ -716,7 +687,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             require(min == 0)
             require(usedToks.isEmpty)
 
-            Some(usedToks → new Weight(0, 0))
+            Some(usedToks → new Weight(0, 0, 0))
         }
         // We've found some matches (and min > 0).
         else {
@@ -730,13 +701,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             // Sum of conversation depths for each token from the conversation.
             // Negated to make sure that bigger (smaller negative number) is better.
             val convDepthsSum = -usedToks.filter(t ⇒ convSrvReqIds.contains(t.token.getServerRequestId)).zipWithIndex.map(_._2 + 1).sum
-
+            
             // Mark found tokens as used.
             usedToks.foreach(_.used = true)
 
             Some(usedToks → new Weight(
                 senTokNum,
-                convDepthsSum
+                convDepthsSum,
+                tokUses
             ))
         }
     }

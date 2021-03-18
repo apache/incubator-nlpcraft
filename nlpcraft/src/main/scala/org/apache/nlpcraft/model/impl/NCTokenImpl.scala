@@ -73,7 +73,7 @@ private[nlpcraft] class NCTokenImpl(
     override lazy val getValue: String = value
     override lazy val getStartCharIndex: Int = startCharIndex
     override lazy val getEndCharIndex: Int = endCharIndex
-    override lazy val getAliases: java.util.List[String] = meta(TOK_META_ALIASES_KEY, Collections.emptyList())
+    override lazy val getAliases: java.util.Set[String] = meta(TOK_META_ALIASES_KEY, Collections.emptySet())
     override lazy val isAbstract: Boolean = isAbstractProp
     override def getPartTokens: java.util.List[NCToken] = parts.asJava
 

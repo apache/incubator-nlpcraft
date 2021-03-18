@@ -24,13 +24,13 @@ import scala.collection.mutable
   */
 case class NCDslStackItem (
     value: Object,
-    usedTok: Boolean
+    tokUse: Int
 )
 
 object NCDslStackItem {
-    def apply(v: Boolean, f: Boolean): NCDslStackItem = new NCDslStackItem(Boolean.box(v), f)
-    def apply(v: Long, f: Boolean): NCDslStackItem = new NCDslStackItem(Long.box(v), f)
-    def apply(v: Double, f: Boolean): NCDslStackItem = new NCDslStackItem(Double.box(v), f)
+    def apply(v: Boolean, f: Int): NCDslStackItem = new NCDslStackItem(Boolean.box(v), f)
+    def apply(v: Long, f: Int): NCDslStackItem = new NCDslStackItem(Long.box(v), f)
+    def apply(v: Double, f: Int): NCDslStackItem = new NCDslStackItem(Double.box(v), f)
 }
 
 /**
@@ -45,5 +45,5 @@ class NCDslStack extends mutable.ArrayStack[NCDslStackType] {
     /**
       * Special marker for stack frames.
       */
-    final val PLIST_MARKER: NCDslStackType = () ⇒ { NCDslStackItem(null, false) }
+    final val PLIST_MARKER: NCDslStackType = () ⇒ { NCDslStackItem(null, 0) }
 }
