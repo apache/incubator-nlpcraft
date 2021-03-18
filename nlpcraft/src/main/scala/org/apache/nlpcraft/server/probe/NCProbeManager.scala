@@ -824,16 +824,19 @@ object NCProbeManager extends NCService {
 
     /**
       *
-      * @param srvReqId Server request ID.
+      * @param srvReqId
       * @param usr
       * @param company
+      * @param mdlId
       * @param txt
       * @param nlpSen
       * @param usrAgent
       * @param rmtAddr
       * @param data
+      * @param usrMeta
+      * @param companyMeta
       * @param logEnable
-      * @param parent Optional parent span.
+      * @param parent
       */
     @throws[NCE]
     def askProbe(
@@ -846,18 +849,19 @@ object NCProbeManager extends NCService {
         usrAgent: Option[String],
         rmtAddr: Option[String],
         data: Option[String],
-        usrPropsOpt: Option[Map[String, String]],
+        usrMeta: Option[Map[String, String]],
+        companyMeta: Option[Map[String, String]],
         logEnable: Boolean,
         parent: Span = null): Unit = {
         startScopedSpan("askProbe", parent, "srvReqId" → srvReqId, "usrId" → usr.id, "mdlId" → mdlId, "txt" → txt) { span ⇒
-            val userProps =
-                usrPropsOpt match {
-                    case Some(props) ⇒
-                        val m = new util.HashMap[String, String]()
+            def convertMeta(metaOpt: Option[Map[String, String]]): util.HashMap[String, String] =
+                metaOpt match {
+                    case Some(meta) ⇒
+                        val map = new util.HashMap[String, String]()
+
+                        meta.foreach { case (k, v) ⇒ map.put(k, v) }
     
-                        props.foreach { case (k, v) ⇒ m.put(k, v) }
-    
-                        m
+                        map
                     case None ⇒ null
                 }
 
@@ -876,7 +880,7 @@ object NCProbeManager extends NCService {
                 "IS_ADMIN" → usr.isAdmin,
                 "AVATAR_URL" → usr.avatarUrl.orNull,
                 "DATA" → data.orNull,
-                "USER_PROPS" → userProps,
+                "META" → convertMeta(usrMeta),
                 "COMPANY_ID" → company.id,
                 "COMPANY_NAME" → company.name,
                 "COMPANY_WEBSITE" → company.website.orNull,
@@ -884,7 +888,8 @@ object NCProbeManager extends NCService {
                 "COMPANY_REGION" → company.region.orNull,
                 "COMPANY_CITY" → company.city.orNull,
                 "COMPANY_ADDRESS" → company.address.orNull,
-                "COMPANY_POSTAL" → company.postalCode.orNull
+                "COMPANY_POSTAL" → company.postalCode.orNull,
+                "COMPANY_META" → convertMeta(companyMeta)
             ).
                 filter(_._2 != null).
                 foreach(p ⇒ senMeta.put(p._1, p._2.asInstanceOf[java.io.Serializable]))

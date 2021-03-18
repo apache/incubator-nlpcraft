@@ -221,12 +221,18 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         val usr = NCUserManager.getUserById(usrId, parent).getOrElse(throw new NCE(s"Unknown user ID: $usrId"))
         val company = NCCompanyManager.getCompany(usr.companyId, parent).getOrElse(throw new NCE(s"Unknown company ID: ${usr.companyId}"))
 
-        val usrProps = {
+        val usrMeta = {
             val m = NCUserManager.getUserProperties(usrId, parent)
 
             if (m.isEmpty) None else Some(m.map(p ⇒ p.property → p.value).toMap)
         }
-        
+
+        val compMeta = {
+            val m = NCCompanyManager.getCompanyProperties(usr.companyId, parent)
+
+            if (m.isEmpty) None else Some(m.map(p ⇒ p.property → p.value).toMap)
+        }
+
         // Check input length.
         if (txt0.split(" ").length > MAX_WORDS)
             throw new NCE(s"User input is too long (max is $MAX_WORDS words).")
@@ -290,7 +296,8 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     usrAgent,
                     rmtAddr,
                     data,
-                    usrProps,
+                    usrMeta,
+                    compMeta,
                     enabledLog,
                     span
                 )
