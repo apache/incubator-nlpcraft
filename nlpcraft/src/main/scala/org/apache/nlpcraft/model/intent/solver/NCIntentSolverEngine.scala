@@ -26,7 +26,7 @@ import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
-import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslTerm}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlIntent, NCIdlTerm}
 
 import java.util.function.Function
 import scala.collection.JavaConverters._
@@ -158,7 +158,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      * @param usedTokens
      */
     private case class TermTokensGroup(
-        term: NCDslTerm,
+        term: NCIdlTerm,
         usedTokens: List[UsedToken]
     )
 
@@ -172,7 +172,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     private case class IntentMatch(
         tokenGroups: List[TermTokensGroup],
         weight: Weight,
-        intent: NCDslIntent,
+        intent: NCIdlIntent,
         exactMatch: Boolean
     )
 
@@ -187,7 +187,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     def solve(
         ctx: NCContext,
-        intents: List[(NCDslIntent /*Intent*/ , NCIntentMatch ⇒ NCResult) /*Callback*/ ],
+        intents: List[(NCIdlIntent /*Intent*/ , NCIntentMatch ⇒ NCResult) /*Callback*/ ],
         logHldr: NCLogHolder
     ): List[NCIntentSolverResult] = {
         case class MatchHolder(
@@ -418,7 +418,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
     //noinspection DuplicatedCode
     private def solveIntent(
         ctx: NCContext,
-        intent: NCDslIntent,
+        intent: NCIdlIntent,
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken],
         varIdx: Int
@@ -491,7 +491,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             
             val x = ctx.getConversation.getMetadata
 
-            val termCtx = NCDslContext(
+            val termCtx = NCIdlContext(
                 intentMeta = intent.meta,
                 convMeta = if (x.isEmpty) Map.empty[String, Object] else x.asScala.toMap[String, Object],
                 req = ctx.getRequest
@@ -599,8 +599,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     @throws[NCE]
     private def solveTerm(
-        term: NCDslTerm,
-        ctx: NCDslContext,
+        term: NCIdlTerm,
+        ctx: NCIdlContext,
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
     ): Option[TermMatch] =
@@ -649,8 +649,8 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     @throws[NCE]
     private def solvePredicate(
-        pred: (NCToken, NCDslContext) ⇒ (Boolean /*Predicate.*/ , Int /*How many times a token was used.*/ ),
-        ctx: NCDslContext,
+        pred: (NCToken, NCIdlContext) ⇒ (Boolean /*Predicate.*/ , Int /*How many times a token was used.*/ ),
+        ctx: NCIdlContext,
         min: Int,
         max: Int,
         senToks: Seq[UsedToken],

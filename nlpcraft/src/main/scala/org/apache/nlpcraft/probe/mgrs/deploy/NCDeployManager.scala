@@ -33,7 +33,7 @@ import org.apache.nlpcraft.common.nlp.core.{NCNlpCoreManager, NCNlpPorterStemmer
 import org.apache.nlpcraft.common.util.NCUtils.{DSL_FIX, REGEX_FIX}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.factories.basic.NCBasicModelFactory
-import org.apache.nlpcraft.model.intent.compiler.NCDslCompiler
+import org.apache.nlpcraft.model.intent.compiler.NCIdlCompiler
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.intent._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind.{DSL, REGEX, TEXT}
@@ -78,7 +78,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     )
     
     type Callback = (String /* ID */, Function[NCIntentMatch, NCResult])
-    type Intent = (NCDslIntent, Callback)
+    type Intent = (NCIdlIntent, Callback)
     type Sample = (String/* Intent ID */, Seq[Seq[String]] /* List of list of input samples for that intent. */)
     
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
@@ -996,7 +996,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // DSL-based synonym.
         else if (startsAndEnds(DSL_FIX, chunk)) {
             val dsl = stripSuffix(DSL_FIX, chunk)
-            val compUnit = NCDslCompiler.compileSynonym(dsl, mdl, mdl.getOrigin)
+            val compUnit = NCIdlCompiler.compileSynonym(dsl, mdl, mdl.getOrigin)
 
             val x = NCProbeSynonymChunk(alias = compUnit.alias.orNull, kind = DSL, origText = chunk, dslPred = compUnit.pred)
 
@@ -1076,7 +1076,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
       * @param intent
       */
     @throws[NCE]
-    private def prepareCallback(mtd: Method, mdl: NCModel, intent: NCDslIntent): Callback = {
+    private def prepareCallback(mtd: Method, mdl: NCModel, intent: NCIdlIntent): Callback = {
         val mdlId = mdl.getId
 
         // Checks method result type.
@@ -1491,7 +1491,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     @throws[NCE]
     private def scanIntents(mdl: NCModel): Set[Intent] = {
         val mdlId = mdl.getId
-        val intentDecls = mutable.Buffer.empty[NCDslIntent]
+        val intentDecls = mutable.Buffer.empty[NCIdlIntent]
         val intents = mutable.Buffer.empty[Intent]
 
         // First, get intent declarations from the JSON/YAML file, if any.
@@ -1500,7 +1500,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 intentDecls ++= adapter
                     .getIntents
                     .asScala
-                    .flatMap(NCDslCompiler.compileIntents(_, mdl, mdl.getOrigin))
+                    .flatMap(NCIdlCompiler.compileIntents(_, mdl, mdl.getOrigin))
 
             case _ ⇒ ()
         }
@@ -1512,7 +1512,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             try {
                 val cls = Class.forName(mdlCls)
 
-                for (ann ← cls.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mdlCls))
+                for (ann ← cls.getAnnotationsByType(CLS_INTENT); intent ← NCIdlCompiler.compileIntents(ann.value(), mdl, mdlCls))
                     if (intentDecls.exists(_.id == intent.id))
                         throw new NCE(s"Duplicate intent ID [" +
                             s"mdlId=$mdlId, " +
@@ -1532,7 +1532,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
         for (m ← getAllMethods(mdl)) {
             val mtdStr = method2Str(m)
 
-            def bindIntent(intent: NCDslIntent, cb: Callback): Unit = {
+            def bindIntent(intent: NCIdlIntent, cb: Callback): Unit = {
                 if (intents.exists(i ⇒ i._1.id == intent.id && i._2._1 != cb._1))
                     throw new NCE(s"The intent cannot be bound to more than one callback [" +
                         s"mdlId=$mdlId, " +
@@ -1547,7 +1547,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             }
 
             // Process inline intent declarations by @NCIntent annotation.
-            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mtdStr))
+            for (ann ← m.getAnnotationsByType(CLS_INTENT); intent ← NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr))
                 if (intentDecls.exists(_.id == intent.id) || intents.exists(_._1.id == intent.id))
                     throw new NCE(s"Duplicate intent ID [" +
                         s"mdlId=$mdlId, " +
@@ -1619,7 +1619,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     val distinct = seqSeq.map(_.distinct).distinct
 
                     for (ann ← intAnns) {
-                        for (intent ← NCDslCompiler.compileIntents(ann.value(), mdl, mtdStr))
+                        for (intent ← NCIdlCompiler.compileIntents(ann.value(), mdl, mtdStr))
                             samples += (intent.id → distinct)
                     }
                     for (ann ← refAnns)

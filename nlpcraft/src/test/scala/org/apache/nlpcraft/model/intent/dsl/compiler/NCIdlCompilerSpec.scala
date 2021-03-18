@@ -19,13 +19,13 @@ package org.apache.nlpcraft.model.intent.dsl.compiler
 
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCModel
-import org.apache.nlpcraft.model.intent.compiler.{NCDslCompiler, NCDslCompilerGlobal}
+import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGlobal}
 import org.junit.jupiter.api.Test
 
 /**
  * Tests for DSL compiler.
  */
-class NCDslCompilerSpec {
+class NCIdlCompilerSpec {
     private final val MODEL_ID = "test.mdl.id"
 
     private final val MODEL = new NCModel {
@@ -40,7 +40,7 @@ class NCDslCompilerSpec {
      */
     private def checkCompileOk(dsl: String): Unit =
         try {
-            NCDslCompiler.compileIntents(dsl, MODEL, MODEL_ID)
+            NCIdlCompiler.compileIntents(dsl, MODEL, MODEL_ID)
 
             assert(true)
         }
@@ -54,7 +54,7 @@ class NCDslCompilerSpec {
      */
     private def checkCompileError(txt: String): Unit =
         try {
-            NCDslCompiler.compileIntents(txt, MODEL, MODEL_ID)
+            NCIdlCompiler.compileIntents(txt, MODEL, MODEL_ID)
 
             assert(false)
         } catch {
@@ -66,7 +66,7 @@ class NCDslCompilerSpec {
     @Test
     @throws[NCException]
     def testInlineCompileOk(): Unit = {
-        NCDslCompilerGlobal.clearCache(MODEL_ID)
+        NCIdlCompilerGlobal.clearCache(MODEL_ID)
         
         checkCompileOk(
             """
@@ -122,7 +122,7 @@ class NCDslCompilerSpec {
     @Test
     @throws[NCException]
     def testInlineCompileFail(): Unit = {
-        NCDslCompilerGlobal.clearCache(MODEL_ID)
+        NCIdlCompilerGlobal.clearCache(MODEL_ID)
         
         checkCompileError(
             """

@@ -18,43 +18,19 @@
 package org.apache.nlpcraft.model.intent
 
 import org.apache.nlpcraft.common.ScalaMeta
-
-import java.util.regex.Pattern
+import org.apache.nlpcraft.model.NCRequest
 
 /**
- * DSL intent.
  *
- * @param origin File path, file name, method name or URL.
- * @param dsl Original DSL of this intent.
- * @param id
- * @param ordered
- * @param meta
- * @param flow
- * @param terms
+ * @param intentMeta Intent metadata.
+ * @param convMeta Conversation metadata.
+ * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
+ * @param req Server request holder.
  */
-case class NCDslIntent(
-    origin: String,
-    dsl: String,
-    id: String,
-    ordered: Boolean,
-    meta: ScalaMeta,
-    flow: Option[String],
-    flowClsName: Option[String],
-    flowMtdName: Option[String],
-    terms: List[NCDslTerm]
-) {
-    require(id != null)
-    require(terms.nonEmpty)
-    require(meta != null)
+case class NCIdlContext(
+    intentMeta: ScalaMeta = Map.empty[String, Object],
+    convMeta: ScalaMeta = Map.empty[String, Object],
+    fragMeta: ScalaMeta = Map.empty[String, Object],
+    req: NCRequest
+)
 
-    // Flow regex as a compiled pattern.
-    // Regex validity check is already done during intent compilation.
-    lazy val flowRegex = flow match {
-        case Some(r) ⇒ Some(Pattern.compile(r))
-        case None ⇒ None
-    }
-
-    lazy val isFlowDefined = flow.isDefined || flowMtdName.isDefined
-
-    override def toString: String = dsl
-}

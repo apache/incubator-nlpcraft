@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent
+package org.apache.nlpcraft.model.intent.compiler
 
-import org.apache.nlpcraft.common.ScalaMeta
-import org.apache.nlpcraft.model.NCRequest
+import org.apache.nlpcraft.model.intent.NCIdlTerm
 
 /**
+ * IDL fragment.
  *
- * @param intentMeta Intent metadata.
- * @param convMeta Conversation metadata.
- * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
- * @param req Server request holder.
+ * @param id ID of this fragment (must be unique within a model).
+ * @param terms List of terms this fragment defines.
  */
-case class NCDslContext(
-    intentMeta: ScalaMeta = Map.empty[String, Object],
-    convMeta: ScalaMeta = Map.empty[String, Object],
-    fragMeta: ScalaMeta = Map.empty[String, Object],
-    req: NCRequest
-)
-
+case class NCIdlFragment(
+    id: String,
+    terms: List[NCIdlTerm]
+) {
+    require(id != null)
+    require(terms.nonEmpty)
+}

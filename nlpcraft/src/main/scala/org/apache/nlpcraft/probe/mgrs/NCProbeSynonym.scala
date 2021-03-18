@@ -20,7 +20,7 @@ package org.apache.nlpcraft.probe.mgrs
 import org.apache.nlpcraft.common.nlp.{NCNlpSentenceToken, NCNlpSentenceTokenBuffer}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonym.NCDslContent
-import org.apache.nlpcraft.model.intent.NCDslContext
+import org.apache.nlpcraft.model.intent.NCIdlContext
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
 import scala.collection.mutable.ArrayBuffer
@@ -117,7 +117,7 @@ class NCProbeSynonym(
                             r.matcher(get0(_.origText, _.origText)).matches() || r.matcher(get0(_.normText, _.normText)).matches()
 
                         case DSL ⇒
-                            get0(t ⇒ chunk.dslPred.apply(t, NCDslContext(req = req))._1, _ ⇒ false)
+                            get0(t ⇒ chunk.dslPred.apply(t, NCIdlContext(req = req))._1, _ ⇒ false)
 
                         case _ ⇒ throw new AssertionError()
                     }
