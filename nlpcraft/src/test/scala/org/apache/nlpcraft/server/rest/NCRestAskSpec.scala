@@ -135,7 +135,7 @@ class NCRestAskSpec extends NCRestSpec {
       * @param usrId
       * @param data
       */
-    private def testAsk(
+    def testAsk(
         sync: Boolean,
         enableLog: Option[java.lang.Boolean],
         usrId: Option[java.lang.Long],

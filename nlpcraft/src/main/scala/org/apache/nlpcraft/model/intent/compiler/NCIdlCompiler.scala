@@ -288,7 +288,7 @@ object NCIdlCompiler extends LazyLogging {
                     }
                 }
             }
-            else  // DSL-defined term.
+            else  // IDL term.
                 instrToPredicate("Intent term")(ctx.expr())
 
             // Add term.
@@ -361,7 +361,7 @@ object NCIdlCompiler extends LazyLogging {
             val x = U.trimQuotes(ctx.qstring().getText)
 
             if (Global.hasImport(x))
-                logger.warn(s"Ignoring already processed DSL import '$x' in: $origin")
+                logger.warn(s"Ignoring already processed IDL import '$x' in: $origin")
             else {
                 Global.addImport(x)
 
@@ -521,7 +521,7 @@ object NCIdlCompiler extends LazyLogging {
      *
      * @param dsl
      * @param mdl
-     * @param origin DSL origin.
+     * @param origin IDL origin.
      */
     class CompilerErrorListener(dsl: String, mdl: NCModel, origin: String) extends BaseErrorListener {
         /**

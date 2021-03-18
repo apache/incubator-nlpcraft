@@ -24,10 +24,10 @@ import java.util
 import scala.language.implicitConversions
 
 /**
-  * Intents DSL test model.
+  * IDL test model.
   */
 class NCIntentDslSpecModel2 extends NCModelAdapter(
-    "nlpcraft.intents.dsl.test", "Intents DSL Test Model", "1.0"
+    "nlpcraft.intents.dsl.test", "IDL Test Model", "1.0"
 ) {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 
@@ -48,7 +48,7 @@ class NCIntentDslSpecModel2 extends NCModelAdapter(
 }
 
 /**
-  * Intents DSL test.
+  * IDL test.
   */
 @NCTestEnvironment(model = classOf[NCIntentDslSpecModel2], startClient = true)
 class NCIntentDslSpec2 extends NCTestContext {

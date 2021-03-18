@@ -41,7 +41,7 @@ There is no learning curve, no special rules or UI to master, no cumbersome synt
  
 ## Key Features
 ### Programmable Intents
-Fully programmable, advanced intent DSL with deterministic matching provides easy to use and expressive mechanism for a complex intent logic.
+Fully programmable, advanced NLPCraft IDL (Intent Definition Language) with deterministic matching provides easy to use and expressive mechanism for a complex intent logic.
 
 ### Short-Term-Memory
 Advanced out-of-the-box support for maintaining and managing conversational context that is fully integrated with intent matching.
@@ -53,7 +53,7 @@ NLPCraft focuses on processing English language delivering the ease of use and u
 Built with a singular focus - provide developers with unprecedented productivity and efficiency when building  modern NLI applications.
 
 ### Composable Named Entities
-Compose new reusable Named Entities out of existing internal or external ones, build new ones and mix and match using comprehensive DSL.
+Compose new reusable Named Entities out of existing internal or external ones, build new ones and mix and match using comprehensive NLPCraft IDL.
                        
 ### Java-First
 REST API and Java-based implementation natively supports the world's largest ecosystem of development tools, multiple programming languages, frameworks and services.

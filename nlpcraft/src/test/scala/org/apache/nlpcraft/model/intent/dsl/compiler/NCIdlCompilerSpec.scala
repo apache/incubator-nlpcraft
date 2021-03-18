@@ -23,7 +23,7 @@ import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGl
 import org.junit.jupiter.api.Test
 
 /**
- * Tests for DSL compiler.
+ * Tests for IDL compiler.
  */
 class NCIdlCompilerSpec {
     private final val MODEL_ID = "test.mdl.id"

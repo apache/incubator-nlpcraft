@@ -45,7 +45,7 @@ class NCProbeSynonym(
     
     lazy val isTextOnly: Boolean = forall(_.kind == TEXT)
     lazy val regexChunks: Int = count(_.kind == REGEX)
-    lazy val dslChunks: Int = count(_.kind == DSL)
+    lazy val dslChunks: Int = count(_.kind == IDL)
     lazy val isValueSynonym: Boolean = value != null
     lazy val stems: String = map(_.wordStem).mkString(" ")
     lazy val stemsHash: Int = stems.hashCode
@@ -58,7 +58,7 @@ class NCProbeSynonym(
     private def getSort(kind: NCSynonymChunkKind): Int =
         kind match {
             case TEXT ⇒ 0
-            case DSL ⇒ 1
+            case IDL ⇒ 1
             case REGEX ⇒ 2
             case _ ⇒ throw new AssertionError(s"Unexpected kind: $kind")
         }
@@ -83,7 +83,7 @@ class NCProbeSynonym(
                                 val regex = chunk.regex
 
                                 regex.matcher(tok.origText).matches() || regex.matcher(tok.normText).matches()
-                            case DSL ⇒ throw new AssertionError()
+                            case IDL ⇒ throw new AssertionError()
                             case _ ⇒ throw new AssertionError()
                         }
                 }
@@ -116,8 +116,8 @@ class NCProbeSynonym(
 
                             r.matcher(get0(_.origText, _.origText)).matches() || r.matcher(get0(_.normText, _.normText)).matches()
 
-                        case DSL ⇒
-                            get0(t ⇒ chunk.dslPred.apply(t, NCIdlContext(req = req))._1, _ ⇒ false)
+                        case IDL ⇒
+                            get0(t ⇒ chunk.idlPred.apply(t, NCIdlContext(req = req))._1, _ ⇒ false)
 
                         case _ ⇒ throw new AssertionError()
                     }
@@ -165,7 +165,7 @@ class NCProbeSynonym(
                                     val thisDynCnt = regexChunks + dslChunks
                                     val thatDynCnt = that.regexChunks + that.dslChunks
                                     
-                                    // Less PoS/regex/DSL chunks means less uncertainty, i.e. larger weight.
+                                    // Less PoS/regex/IDL chunks means less uncertainty, i.e. larger weight.
                                     if (thisDynCnt < thatDynCnt)
                                         1
                                     else if (thisDynCnt > thatDynCnt)

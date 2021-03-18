@@ -20,16 +20,18 @@ package org.apache.nlpcraft.model.intent
 import org.apache.nlpcraft.common._
 
 /**
- * DSL term.
+ * IDL term.
  *
+ * @param idl
  * @param id Optional ID of this term.
  * @param pred
  * @param min
  * @param max
  * @param conv
+ * @param fragMeta
  */
 case class NCIdlTerm(
-    dsl: String,
+    idl: String,
     id: Option[String],
     pred: NCIdlTokenPredicate,
     min: Int,
@@ -47,7 +49,7 @@ case class NCIdlTerm(
      */
     def cloneWithFragMeta(meta: Map[String, Any]): NCIdlTerm =
         NCIdlTerm(
-            dsl,
+            idl,
             id,
             pred,
             min,
@@ -56,5 +58,5 @@ case class NCIdlTerm(
             meta
         )
 
-    override def toString: String = g(dsl)
+    override def toString: String = g(idl)
 }

@@ -165,7 +165,7 @@ object NCMacroCompiler extends LazyLogging {
             val syn = (
                 if (ctx.TXT() != null) ctx.TXT()
                 else if (ctx.REGEX_TXT() != null) ctx.REGEX_TXT()
-                else ctx.DSL_TXT()
+                else ctx.IDL_TXT()
             ).getText
 
             val buf = stack.top.buffer

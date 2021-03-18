@@ -956,7 +956,7 @@ public interface NCModelView extends NCMetadata {
      * Gets optional user-defined model element parsers for custom NER implementations. Note that order of the parsers
      * is important as they will be invoked in the same order they are returned.
      * <p>
-     * By default, the data model detects its elements by their synonyms, regexp or DSL expressions. However,
+     * By default, the data model detects its elements by their synonyms, regexp or IDL expressions. However,
      * in some cases these methods are not expressive enough. In such cases, a user-defined parser can be defined
      * for the model that would allow the user to define its own NER logic to detect the model elements in the user
      * input programmatically. Note that a single parser can detect any number of model elements.

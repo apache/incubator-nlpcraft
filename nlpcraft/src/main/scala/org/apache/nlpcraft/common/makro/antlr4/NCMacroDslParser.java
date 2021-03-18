@@ -18,7 +18,7 @@ public class NCMacroDslParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		LCURLY=1, RCURLY=2, VERT=3, COMMA=4, UNDERSCORE=5, MINMAX=6, REGEX_TXT=7, 
-		DSL_TXT=8, TXT=9, WS=10, ERR_CHAR=11;
+		IDL_TXT=8, TXT=9, WS=10, ERR_CHAR=11;
 	public static final int
 		RULE_makro = 0, RULE_expr = 1, RULE_item = 2, RULE_syn = 3, RULE_group = 4, 
 		RULE_list = 5;
@@ -38,7 +38,7 @@ public class NCMacroDslParser extends Parser {
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, "LCURLY", "RCURLY", "VERT", "COMMA", "UNDERSCORE", "MINMAX", "REGEX_TXT", 
-			"DSL_TXT", "TXT", "WS", "ERR_CHAR"
+			"IDL_TXT", "TXT", "WS", "ERR_CHAR"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -239,7 +239,7 @@ public class NCMacroDslParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case REGEX_TXT:
-			case DSL_TXT:
+			case IDL_TXT:
 			case TXT:
 				enterOuterAlt(_localctx, 1);
 				{
@@ -272,7 +272,7 @@ public class NCMacroDslParser extends Parser {
 	public static class SynContext extends ParserRuleContext {
 		public TerminalNode TXT() { return getToken(NCMacroDslParser.TXT, 0); }
 		public TerminalNode REGEX_TXT() { return getToken(NCMacroDslParser.REGEX_TXT, 0); }
-		public TerminalNode DSL_TXT() { return getToken(NCMacroDslParser.DSL_TXT, 0); }
+		public TerminalNode IDL_TXT() { return getToken(NCMacroDslParser.IDL_TXT, 0); }
 		public SynContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -296,7 +296,7 @@ public class NCMacroDslParser extends Parser {
 			{
 			setState(29);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << REGEX_TXT) | (1L << DSL_TXT) | (1L << TXT))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << REGEX_TXT) | (1L << IDL_TXT) | (1L << TXT))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -416,7 +416,7 @@ public class NCMacroDslParser extends Parser {
 			switch (_input.LA(1)) {
 			case LCURLY:
 			case REGEX_TXT:
-			case DSL_TXT:
+			case IDL_TXT:
 			case TXT:
 				{
 				setState(38);

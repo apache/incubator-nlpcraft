@@ -24,7 +24,7 @@ expr
     | expr item
     ;
 item: syn | group;
-syn : (TXT | REGEX_TXT | DSL_TXT);
+syn : (TXT | REGEX_TXT | IDL_TXT);
 group: LCURLY list RCURLY MINMAX?;
 list
     : expr
@@ -66,7 +66,7 @@ fragment TXT_CHAR
     ; // Ignoring ['\u10000-'\uEFFFF].
 MINMAX: '[' [ 0-9,]+ ']';
 REGEX_TXT: '//' .*? '//';
-DSL_TXT: '^^' .*? '^^';
+IDL_TXT: '^^' .*? '^^';
 TXT: (TXT_CHAR | ESC)+;
 WS: [ \r\t\u000C\n]+ -> skip ;
 ERR_CHAR: .;

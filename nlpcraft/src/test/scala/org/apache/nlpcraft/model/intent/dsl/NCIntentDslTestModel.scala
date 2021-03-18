@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.intent.dsl
 import org.apache.nlpcraft.model._
 
 /**
- * Test model for intent DSL.
+ * Test model for IDL.
  */
 class NCIntentDslTestModel extends NCModelFileAdapter("src/test/scala/org/apache/nlpcraft/model/intent/dsl/dsl_test_model.yaml") {
     @NCIntentRef("i1")

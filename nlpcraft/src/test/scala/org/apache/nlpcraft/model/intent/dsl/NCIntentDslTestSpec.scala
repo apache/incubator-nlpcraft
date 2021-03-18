@@ -27,7 +27,7 @@ import java.io.IOException
 import java.util.Collections
 
 /**
- * DSL test model test. Make sure to start up the NLPCraft server before running this test.
+ * IDL test model test. Make sure to start up the NLPCraft server before running this test.
  */
 class NCIntentDslTestSpec {
     private var cli: NCTestClient = _

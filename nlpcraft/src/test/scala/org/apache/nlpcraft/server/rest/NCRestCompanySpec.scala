@@ -183,7 +183,7 @@ class NCRestCompanySpec extends NCRestSpec {
       * @param postalCode
       * @param adminAvatarUrl
       */
-    private def testCompany(
+    def testCompany(
         website: Option[String] = None,
         country: Option[String] = None,
         region: Option[String] = None,
