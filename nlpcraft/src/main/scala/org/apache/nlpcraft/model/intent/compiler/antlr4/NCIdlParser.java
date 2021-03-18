@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIntentIdl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class NCIntentIdlParser extends Parser {
+public class NCIdlParser extends Parser {
 	static { RuntimeMetaData.checkVersion("4.9.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -101,7 +101,7 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "NCIntentIdl.g4"; }
+	public String getGrammarFileName() { return "NCIdl.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -112,7 +112,7 @@ public class NCIntentIdlParser extends Parser {
 	@Override
 	public ATN getATN() { return _ATN; }
 
-	public NCIntentIdlParser(TokenStream input) {
+	public NCIdlParser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
@@ -121,18 +121,18 @@ public class NCIntentIdlParser extends Parser {
 		public IdlItemsContext idlItems() {
 			return getRuleContext(IdlItemsContext.class,0);
 		}
-		public TerminalNode EOF() { return getToken(NCIntentIdlParser.EOF, 0); }
+		public TerminalNode EOF() { return getToken(NCIdlParser.EOF, 0); }
 		public IdlContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_idl; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterIdl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIdl(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitIdl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIdl(this);
 		}
 	}
 
@@ -160,12 +160,12 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class SynonymContext extends ParserRuleContext {
-		public TerminalNode LBRACE() { return getToken(NCIntentIdlParser.LBRACE, 0); }
+		public TerminalNode LBRACE() { return getToken(NCIdlParser.LBRACE, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public TerminalNode RBRACE() { return getToken(NCIntentIdlParser.RBRACE, 0); }
-		public TerminalNode EOF() { return getToken(NCIntentIdlParser.EOF, 0); }
+		public TerminalNode RBRACE() { return getToken(NCIdlParser.RBRACE, 0); }
+		public TerminalNode EOF() { return getToken(NCIdlParser.EOF, 0); }
 		public AliasContext alias() {
 			return getRuleContext(AliasContext.class,0);
 		}
@@ -175,11 +175,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_synonym; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterSynonym(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterSynonym(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitSynonym(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitSynonym(this);
 		}
 	}
 
@@ -222,22 +222,22 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class AliasContext extends ParserRuleContext {
-		public TerminalNode LBR() { return getToken(NCIntentIdlParser.LBR, 0); }
+		public TerminalNode LBR() { return getToken(NCIdlParser.LBR, 0); }
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
-		public TerminalNode RBR() { return getToken(NCIntentIdlParser.RBR, 0); }
+		public TerminalNode RBR() { return getToken(NCIdlParser.RBR, 0); }
 		public AliasContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_alias; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterAlias(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterAlias(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitAlias(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitAlias(this);
 		}
 	}
 
@@ -279,11 +279,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_idlItems; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterIdlItems(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIdlItems(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitIdlItems(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIdlItems(this);
 		}
 	}
 
@@ -358,11 +358,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_idlItem; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterIdlItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIdlItem(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitIdlItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIdlItem(this);
 		}
 	}
 
@@ -410,22 +410,22 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class ImpContext extends ParserRuleContext {
-		public TerminalNode LPAR() { return getToken(NCIntentIdlParser.LPAR, 0); }
+		public TerminalNode LPAR() { return getToken(NCIdlParser.LPAR, 0); }
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
-		public TerminalNode RPAR() { return getToken(NCIntentIdlParser.RPAR, 0); }
+		public TerminalNode RPAR() { return getToken(NCIdlParser.RPAR, 0); }
 		public ImpContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_imp; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterImp(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterImp(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitImp(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitImp(this);
 		}
 	}
 
@@ -469,11 +469,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_frag; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterFrag(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterFrag(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitFrag(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitFrag(this);
 		}
 	}
 
@@ -501,8 +501,8 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class FragIdContext extends ParserRuleContext {
-		public TerminalNode FRAG() { return getToken(NCIntentIdlParser.FRAG, 0); }
-		public TerminalNode ASSIGN() { return getToken(NCIntentIdlParser.ASSIGN, 0); }
+		public TerminalNode FRAG() { return getToken(NCIdlParser.FRAG, 0); }
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
@@ -512,11 +512,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_fragId; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterFragId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterFragId(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitFragId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitFragId(this);
 		}
 	}
 
@@ -546,12 +546,12 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class FragRefContext extends ParserRuleContext {
-		public TerminalNode FRAG() { return getToken(NCIntentIdlParser.FRAG, 0); }
-		public TerminalNode LPAR() { return getToken(NCIntentIdlParser.LPAR, 0); }
+		public TerminalNode FRAG() { return getToken(NCIdlParser.FRAG, 0); }
+		public TerminalNode LPAR() { return getToken(NCIdlParser.LPAR, 0); }
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
-		public TerminalNode RPAR() { return getToken(NCIntentIdlParser.RPAR, 0); }
+		public TerminalNode RPAR() { return getToken(NCIdlParser.RPAR, 0); }
 		public FragMetaContext fragMeta() {
 			return getRuleContext(FragMetaContext.class,0);
 		}
@@ -561,11 +561,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_fragRef; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterFragRef(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterFragRef(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitFragRef(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitFragRef(this);
 		}
 	}
 
@@ -608,7 +608,7 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class FragMetaContext extends ParserRuleContext {
-		public TerminalNode COMMA() { return getToken(NCIntentIdlParser.COMMA, 0); }
+		public TerminalNode COMMA() { return getToken(NCIdlParser.COMMA, 0); }
 		public JsonObjContext jsonObj() {
 			return getRuleContext(JsonObjContext.class,0);
 		}
@@ -618,11 +618,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_fragMeta; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterFragMeta(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterFragMeta(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitFragMeta(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitFragMeta(this);
 		}
 	}
 
@@ -671,11 +671,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_intent; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterIntent(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIntent(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitIntent(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIntent(this);
 		}
 	}
 
@@ -734,7 +734,7 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class IntentIdContext extends ParserRuleContext {
-		public TerminalNode ASSIGN() { return getToken(NCIntentIdlParser.ASSIGN, 0); }
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
@@ -744,11 +744,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_intentId; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterIntentId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIntentId(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitIntentId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIntentId(this);
 		}
 	}
 
@@ -778,19 +778,19 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class OrderedDeclContext extends ParserRuleContext {
-		public TerminalNode ASSIGN() { return getToken(NCIntentIdlParser.ASSIGN, 0); }
-		public TerminalNode BOOL() { return getToken(NCIntentIdlParser.BOOL, 0); }
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
+		public TerminalNode BOOL() { return getToken(NCIdlParser.BOOL, 0); }
 		public OrderedDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_orderedDecl; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterOrderedDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterOrderedDecl(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitOrderedDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitOrderedDecl(this);
 		}
 	}
 
@@ -820,9 +820,9 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class MtdDeclContext extends ParserRuleContext {
-		public List<TerminalNode> DIV() { return getTokens(NCIntentIdlParser.DIV); }
+		public List<TerminalNode> DIV() { return getTokens(NCIdlParser.DIV); }
 		public TerminalNode DIV(int i) {
-			return getToken(NCIntentIdlParser.DIV, i);
+			return getToken(NCIdlParser.DIV, i);
 		}
 		public MtdRefContext mtdRef() {
 			return getRuleContext(MtdRefContext.class,0);
@@ -833,11 +833,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_mtdDecl; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterMtdDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterMtdDecl(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitMtdDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitMtdDecl(this);
 		}
 	}
 
@@ -867,7 +867,7 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class FlowDeclContext extends ParserRuleContext {
-		public TerminalNode ASSIGN() { return getToken(NCIntentIdlParser.ASSIGN, 0); }
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
@@ -880,11 +880,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_flowDecl; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterFlowDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterFlowDecl(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitFlowDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitFlowDecl(this);
 		}
 	}
 
@@ -931,7 +931,7 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class MetaDeclContext extends ParserRuleContext {
-		public TerminalNode ASSIGN() { return getToken(NCIntentIdlParser.ASSIGN, 0); }
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public JsonObjContext jsonObj() {
 			return getRuleContext(JsonObjContext.class,0);
 		}
@@ -941,11 +941,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_metaDecl; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterMetaDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterMetaDecl(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitMetaDecl(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitMetaDecl(this);
 		}
 	}
 
@@ -975,17 +975,17 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class JsonObjContext extends ParserRuleContext {
-		public TerminalNode LBRACE() { return getToken(NCIntentIdlParser.LBRACE, 0); }
+		public TerminalNode LBRACE() { return getToken(NCIdlParser.LBRACE, 0); }
 		public List<JsonPairContext> jsonPair() {
 			return getRuleContexts(JsonPairContext.class);
 		}
 		public JsonPairContext jsonPair(int i) {
 			return getRuleContext(JsonPairContext.class,i);
 		}
-		public TerminalNode RBRACE() { return getToken(NCIntentIdlParser.RBRACE, 0); }
-		public List<TerminalNode> COMMA() { return getTokens(NCIntentIdlParser.COMMA); }
+		public TerminalNode RBRACE() { return getToken(NCIdlParser.RBRACE, 0); }
+		public List<TerminalNode> COMMA() { return getTokens(NCIdlParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(NCIntentIdlParser.COMMA, i);
+			return getToken(NCIdlParser.COMMA, i);
 		}
 		public JsonObjContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -993,11 +993,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_jsonObj; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterJsonObj(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterJsonObj(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitJsonObj(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitJsonObj(this);
 		}
 	}
 
@@ -1062,7 +1062,7 @@ public class NCIntentIdlParser extends Parser {
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
-		public TerminalNode COLON() { return getToken(NCIntentIdlParser.COLON, 0); }
+		public TerminalNode COLON() { return getToken(NCIdlParser.COLON, 0); }
 		public JsonValContext jsonVal() {
 			return getRuleContext(JsonValContext.class,0);
 		}
@@ -1072,11 +1072,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_jsonPair; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterJsonPair(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterJsonPair(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitJsonPair(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitJsonPair(this);
 		}
 	}
 
@@ -1109,29 +1109,29 @@ public class NCIntentIdlParser extends Parser {
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
-		public TerminalNode INT() { return getToken(NCIntentIdlParser.INT, 0); }
-		public TerminalNode MINUS() { return getToken(NCIntentIdlParser.MINUS, 0); }
-		public TerminalNode REAL() { return getToken(NCIntentIdlParser.REAL, 0); }
-		public TerminalNode EXP() { return getToken(NCIntentIdlParser.EXP, 0); }
+		public TerminalNode INT() { return getToken(NCIdlParser.INT, 0); }
+		public TerminalNode MINUS() { return getToken(NCIdlParser.MINUS, 0); }
+		public TerminalNode REAL() { return getToken(NCIdlParser.REAL, 0); }
+		public TerminalNode EXP() { return getToken(NCIdlParser.EXP, 0); }
 		public JsonObjContext jsonObj() {
 			return getRuleContext(JsonObjContext.class,0);
 		}
 		public JsonArrContext jsonArr() {
 			return getRuleContext(JsonArrContext.class,0);
 		}
-		public TerminalNode BOOL() { return getToken(NCIntentIdlParser.BOOL, 0); }
-		public TerminalNode NULL() { return getToken(NCIntentIdlParser.NULL, 0); }
+		public TerminalNode BOOL() { return getToken(NCIdlParser.BOOL, 0); }
+		public TerminalNode NULL() { return getToken(NCIdlParser.NULL, 0); }
 		public JsonValContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_jsonVal; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterJsonVal(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterJsonVal(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitJsonVal(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitJsonVal(this);
 		}
 	}
 
@@ -1233,17 +1233,17 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class JsonArrContext extends ParserRuleContext {
-		public TerminalNode LBR() { return getToken(NCIntentIdlParser.LBR, 0); }
+		public TerminalNode LBR() { return getToken(NCIdlParser.LBR, 0); }
 		public List<JsonValContext> jsonVal() {
 			return getRuleContexts(JsonValContext.class);
 		}
 		public JsonValContext jsonVal(int i) {
 			return getRuleContext(JsonValContext.class,i);
 		}
-		public TerminalNode RBR() { return getToken(NCIntentIdlParser.RBR, 0); }
-		public List<TerminalNode> COMMA() { return getTokens(NCIntentIdlParser.COMMA); }
+		public TerminalNode RBR() { return getToken(NCIdlParser.RBR, 0); }
+		public List<TerminalNode> COMMA() { return getTokens(NCIdlParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(NCIntentIdlParser.COMMA, i);
+			return getToken(NCIdlParser.COMMA, i);
 		}
 		public JsonArrContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1251,11 +1251,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_jsonArr; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterJsonArr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterJsonArr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitJsonArr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitJsonArr(this);
 		}
 	}
 
@@ -1329,11 +1329,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_terms; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterTerms(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTerms(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitTerms(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTerms(this);
 		}
 	}
 
@@ -1405,11 +1405,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_termItem; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterTermItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTermItem(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitTermItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTermItem(this);
 		}
 	}
 
@@ -1450,19 +1450,19 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class TermEqContext extends ParserRuleContext {
-		public TerminalNode ASSIGN() { return getToken(NCIntentIdlParser.ASSIGN, 0); }
-		public TerminalNode TILDA() { return getToken(NCIntentIdlParser.TILDA, 0); }
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
+		public TerminalNode TILDA() { return getToken(NCIdlParser.TILDA, 0); }
 		public TermEqContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_termEq; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterTermEq(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTermEq(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitTermEq(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTermEq(this);
 		}
 	}
 
@@ -1509,22 +1509,22 @@ public class NCIntentIdlParser extends Parser {
 		public MinMaxContext minMax() {
 			return getRuleContext(MinMaxContext.class,0);
 		}
-		public TerminalNode LBRACE() { return getToken(NCIntentIdlParser.LBRACE, 0); }
+		public TerminalNode LBRACE() { return getToken(NCIdlParser.LBRACE, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public TerminalNode RBRACE() { return getToken(NCIntentIdlParser.RBRACE, 0); }
+		public TerminalNode RBRACE() { return getToken(NCIdlParser.RBRACE, 0); }
 		public TermContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_term; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterTerm(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTerm(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitTerm(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTerm(this);
 		}
 	}
 
@@ -1597,7 +1597,7 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class MtdRefContext extends ParserRuleContext {
-		public TerminalNode POUND() { return getToken(NCIntentIdlParser.POUND, 0); }
+		public TerminalNode POUND() { return getToken(NCIdlParser.POUND, 0); }
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
@@ -1610,11 +1610,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_mtdRef; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterMtdRef(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterMtdRef(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitMtdRef(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitMtdRef(this);
 		}
 	}
 
@@ -1659,18 +1659,18 @@ public class NCIntentIdlParser extends Parser {
 		public JavaFqnContext javaFqn() {
 			return getRuleContext(JavaFqnContext.class,0);
 		}
-		public TerminalNode DOT() { return getToken(NCIntentIdlParser.DOT, 0); }
+		public TerminalNode DOT() { return getToken(NCIdlParser.DOT, 0); }
 		public JavaFqnContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_javaFqn; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterJavaFqn(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterJavaFqn(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitJavaFqn(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitJavaFqn(this);
 		}
 	}
 
@@ -1732,22 +1732,22 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class TermIdContext extends ParserRuleContext {
-		public TerminalNode LPAR() { return getToken(NCIntentIdlParser.LPAR, 0); }
+		public TerminalNode LPAR() { return getToken(NCIdlParser.LPAR, 0); }
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
-		public TerminalNode RPAR() { return getToken(NCIntentIdlParser.RPAR, 0); }
+		public TerminalNode RPAR() { return getToken(NCIdlParser.RPAR, 0); }
 		public TermIdContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_termId; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterTermId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTermId(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitTermId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTermId(this);
 		}
 	}
 
@@ -1788,19 +1788,19 @@ public class NCIntentIdlParser extends Parser {
 		}
 	}
 	public static class ParExprContext extends ExprContext {
-		public TerminalNode LPAR() { return getToken(NCIntentIdlParser.LPAR, 0); }
+		public TerminalNode LPAR() { return getToken(NCIdlParser.LPAR, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public TerminalNode RPAR() { return getToken(NCIntentIdlParser.RPAR, 0); }
+		public TerminalNode RPAR() { return getToken(NCIdlParser.RPAR, 0); }
 		public ParExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterParExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterParExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitParExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitParExpr(this);
 		}
 	}
 	public static class UnaryExprContext extends ExprContext {
@@ -1808,16 +1808,16 @@ public class NCIntentIdlParser extends Parser {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public TerminalNode MINUS() { return getToken(NCIntentIdlParser.MINUS, 0); }
-		public TerminalNode NOT() { return getToken(NCIntentIdlParser.NOT, 0); }
+		public TerminalNode MINUS() { return getToken(NCIdlParser.MINUS, 0); }
+		public TerminalNode NOT() { return getToken(NCIdlParser.NOT, 0); }
 		public UnaryExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterUnaryExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterUnaryExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitUnaryExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitUnaryExpr(this);
 		}
 	}
 	public static class CompExprContext extends ExprContext {
@@ -1828,18 +1828,18 @@ public class NCIntentIdlParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode LTEQ() { return getToken(NCIntentIdlParser.LTEQ, 0); }
-		public TerminalNode GTEQ() { return getToken(NCIntentIdlParser.GTEQ, 0); }
-		public TerminalNode LT() { return getToken(NCIntentIdlParser.LT, 0); }
-		public TerminalNode GT() { return getToken(NCIntentIdlParser.GT, 0); }
+		public TerminalNode LTEQ() { return getToken(NCIdlParser.LTEQ, 0); }
+		public TerminalNode GTEQ() { return getToken(NCIdlParser.GTEQ, 0); }
+		public TerminalNode LT() { return getToken(NCIdlParser.LT, 0); }
+		public TerminalNode GT() { return getToken(NCIdlParser.GT, 0); }
 		public CompExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterCompExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterCompExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitCompExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitCompExpr(this);
 		}
 	}
 	public static class PlusMinusExprContext extends ExprContext {
@@ -1850,16 +1850,16 @@ public class NCIntentIdlParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode PLUS() { return getToken(NCIntentIdlParser.PLUS, 0); }
-		public TerminalNode MINUS() { return getToken(NCIntentIdlParser.MINUS, 0); }
+		public TerminalNode PLUS() { return getToken(NCIdlParser.PLUS, 0); }
+		public TerminalNode MINUS() { return getToken(NCIdlParser.MINUS, 0); }
 		public PlusMinusExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterPlusMinusExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterPlusMinusExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitPlusMinusExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitPlusMinusExpr(this);
 		}
 	}
 	public static class AtomExprContext extends ExprContext {
@@ -1869,11 +1869,11 @@ public class NCIntentIdlParser extends Parser {
 		public AtomExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterAtomExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterAtomExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitAtomExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitAtomExpr(this);
 		}
 	}
 	public static class MultDivModExprContext extends ExprContext {
@@ -1884,17 +1884,17 @@ public class NCIntentIdlParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode MULT() { return getToken(NCIntentIdlParser.MULT, 0); }
-		public TerminalNode DIV() { return getToken(NCIntentIdlParser.DIV, 0); }
-		public TerminalNode MOD() { return getToken(NCIntentIdlParser.MOD, 0); }
+		public TerminalNode MULT() { return getToken(NCIdlParser.MULT, 0); }
+		public TerminalNode DIV() { return getToken(NCIdlParser.DIV, 0); }
+		public TerminalNode MOD() { return getToken(NCIdlParser.MOD, 0); }
 		public MultDivModExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterMultDivModExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterMultDivModExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitMultDivModExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitMultDivModExpr(this);
 		}
 	}
 	public static class AndOrExprContext extends ExprContext {
@@ -1905,33 +1905,33 @@ public class NCIntentIdlParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode AND() { return getToken(NCIntentIdlParser.AND, 0); }
-		public TerminalNode OR() { return getToken(NCIntentIdlParser.OR, 0); }
+		public TerminalNode AND() { return getToken(NCIdlParser.AND, 0); }
+		public TerminalNode OR() { return getToken(NCIdlParser.OR, 0); }
 		public AndOrExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterAndOrExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterAndOrExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitAndOrExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitAndOrExpr(this);
 		}
 	}
 	public static class CallExprContext extends ExprContext {
-		public TerminalNode FUN_NAME() { return getToken(NCIntentIdlParser.FUN_NAME, 0); }
-		public TerminalNode LPAR() { return getToken(NCIntentIdlParser.LPAR, 0); }
-		public TerminalNode RPAR() { return getToken(NCIntentIdlParser.RPAR, 0); }
+		public TerminalNode FUN_NAME() { return getToken(NCIdlParser.FUN_NAME, 0); }
+		public TerminalNode LPAR() { return getToken(NCIdlParser.LPAR, 0); }
+		public TerminalNode RPAR() { return getToken(NCIdlParser.RPAR, 0); }
 		public ParamListContext paramList() {
 			return getRuleContext(ParamListContext.class,0);
 		}
 		public CallExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterCallExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterCallExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitCallExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitCallExpr(this);
 		}
 	}
 	public static class EqNeqExprContext extends ExprContext {
@@ -1942,16 +1942,16 @@ public class NCIntentIdlParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode EQ() { return getToken(NCIntentIdlParser.EQ, 0); }
-		public TerminalNode NEQ() { return getToken(NCIntentIdlParser.NEQ, 0); }
+		public TerminalNode EQ() { return getToken(NCIdlParser.EQ, 0); }
+		public TerminalNode NEQ() { return getToken(NCIdlParser.NEQ, 0); }
 		public EqNeqExprContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterEqNeqExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterEqNeqExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitEqNeqExpr(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitEqNeqExpr(this);
 		}
 	}
 
@@ -2192,18 +2192,18 @@ public class NCIntentIdlParser extends Parser {
 		public ParamListContext paramList() {
 			return getRuleContext(ParamListContext.class,0);
 		}
-		public TerminalNode COMMA() { return getToken(NCIntentIdlParser.COMMA, 0); }
+		public TerminalNode COMMA() { return getToken(NCIdlParser.COMMA, 0); }
 		public ParamListContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_paramList; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterParamList(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterParamList(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitParamList(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitParamList(this);
 		}
 	}
 
@@ -2265,11 +2265,11 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class AtomContext extends ParserRuleContext {
-		public TerminalNode NULL() { return getToken(NCIntentIdlParser.NULL, 0); }
-		public TerminalNode INT() { return getToken(NCIntentIdlParser.INT, 0); }
-		public TerminalNode REAL() { return getToken(NCIntentIdlParser.REAL, 0); }
-		public TerminalNode EXP() { return getToken(NCIntentIdlParser.EXP, 0); }
-		public TerminalNode BOOL() { return getToken(NCIntentIdlParser.BOOL, 0); }
+		public TerminalNode NULL() { return getToken(NCIdlParser.NULL, 0); }
+		public TerminalNode INT() { return getToken(NCIdlParser.INT, 0); }
+		public TerminalNode REAL() { return getToken(NCIdlParser.REAL, 0); }
+		public TerminalNode EXP() { return getToken(NCIdlParser.EXP, 0); }
+		public TerminalNode BOOL() { return getToken(NCIdlParser.BOOL, 0); }
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
 		}
@@ -2279,11 +2279,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_atom; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterAtom(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterAtom(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitAtom(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitAtom(this);
 		}
 	}
 
@@ -2359,19 +2359,19 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class QstringContext extends ParserRuleContext {
-		public TerminalNode SQSTRING() { return getToken(NCIntentIdlParser.SQSTRING, 0); }
-		public TerminalNode DQSTRING() { return getToken(NCIntentIdlParser.DQSTRING, 0); }
+		public TerminalNode SQSTRING() { return getToken(NCIdlParser.SQSTRING, 0); }
+		public TerminalNode DQSTRING() { return getToken(NCIdlParser.DQSTRING, 0); }
 		public QstringContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_qstring; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterQstring(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterQstring(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitQstring(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitQstring(this);
 		}
 	}
 
@@ -2418,11 +2418,11 @@ public class NCIntentIdlParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_minMax; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterMinMax(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterMinMax(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitMinMax(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitMinMax(this);
 		}
 	}
 
@@ -2465,20 +2465,20 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class MinMaxShortcutContext extends ParserRuleContext {
-		public TerminalNode PLUS() { return getToken(NCIntentIdlParser.PLUS, 0); }
-		public TerminalNode QUESTION() { return getToken(NCIntentIdlParser.QUESTION, 0); }
-		public TerminalNode MULT() { return getToken(NCIntentIdlParser.MULT, 0); }
+		public TerminalNode PLUS() { return getToken(NCIdlParser.PLUS, 0); }
+		public TerminalNode QUESTION() { return getToken(NCIdlParser.QUESTION, 0); }
+		public TerminalNode MULT() { return getToken(NCIdlParser.MULT, 0); }
 		public MinMaxShortcutContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_minMaxShortcut; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterMinMaxShortcut(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterMinMaxShortcut(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitMinMaxShortcut(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitMinMaxShortcut(this);
 		}
 	}
 
@@ -2513,24 +2513,24 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class MinMaxRangeContext extends ParserRuleContext {
-		public TerminalNode LBR() { return getToken(NCIntentIdlParser.LBR, 0); }
-		public List<TerminalNode> INT() { return getTokens(NCIntentIdlParser.INT); }
+		public TerminalNode LBR() { return getToken(NCIdlParser.LBR, 0); }
+		public List<TerminalNode> INT() { return getTokens(NCIdlParser.INT); }
 		public TerminalNode INT(int i) {
-			return getToken(NCIntentIdlParser.INT, i);
+			return getToken(NCIdlParser.INT, i);
 		}
-		public TerminalNode COMMA() { return getToken(NCIntentIdlParser.COMMA, 0); }
-		public TerminalNode RBR() { return getToken(NCIntentIdlParser.RBR, 0); }
+		public TerminalNode COMMA() { return getToken(NCIdlParser.COMMA, 0); }
+		public TerminalNode RBR() { return getToken(NCIdlParser.RBR, 0); }
 		public MinMaxRangeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_minMaxRange; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterMinMaxRange(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterMinMaxRange(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitMinMaxRange(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitMinMaxRange(this);
 		}
 	}
 
@@ -2564,19 +2564,19 @@ public class NCIntentIdlParser extends Parser {
 	}
 
 	public static class IdContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(NCIntentIdlParser.ID, 0); }
-		public TerminalNode FUN_NAME() { return getToken(NCIntentIdlParser.FUN_NAME, 0); }
+		public TerminalNode ID() { return getToken(NCIdlParser.ID, 0); }
+		public TerminalNode FUN_NAME() { return getToken(NCIdlParser.FUN_NAME, 0); }
 		public IdContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_id; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).enterId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterId(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIntentIdlListener ) ((NCIntentIdlListener)listener).exitId(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitId(this);
 		}
 	}
 

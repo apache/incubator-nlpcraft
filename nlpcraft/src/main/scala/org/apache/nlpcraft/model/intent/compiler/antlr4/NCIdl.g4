@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar NCIntentIdl;
+grammar NCIdl;
 
 // Parser.
 idl: idlItems EOF; // Intent enty point.

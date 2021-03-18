@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIntentIdlBaseListener, NCIntentIdlLexer, NCIntentIdlParser ⇒ IDP}
+import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser ⇒ IDP}
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal ⇒ Global}
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlIntent, NCIdlSynonym, NCIdlTerm, NCIdlTokenPredicate}
@@ -46,7 +46,7 @@ object NCIdlCompiler extends LazyLogging {
       * @param idl
       * @param mdl
       */
-    class FiniteStateMachine(origin: String, idl: String, mdl: NCModel) extends NCIntentIdlBaseListener with NCIdlCompilerBase {
+    class FiniteStateMachine(origin: String, idl: String, mdl: NCModel) extends NCIdlBaseListener with NCIdlCompilerBase {
         // Actual value for '*' as in min/max shortcut.
         final private val MINMAX_MAX = 100
 
@@ -615,7 +615,7 @@ object NCIdlCompiler extends LazyLogging {
         mdl: NCModel,
         origin: String
     ): (FiniteStateMachine, IDP) = {
-        val lexer = new NCIntentIdlLexer(CharStreams.fromString(idl, origin))
+        val lexer = new NCIdlLexer(CharStreams.fromString(idl, origin))
         val parser = new IDP(new CommonTokenStream(lexer))
 
         // Set custom error handlers.
