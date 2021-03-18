@@ -125,7 +125,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
          */
         def toSeq: Seq[Int] = buf
 
-        override def toString: String = buf.mkString(y("<"), " ,", y(">"))
+        def toAnsiString: String = buf.mkString(y(bo("[")), ", ", y(bo("]")))
     }
 
     /**
@@ -273,14 +273,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                         tbl += (
                             s"${c("Intent Match Weight")}",
-                            mw1,
-                            mw2
+                            mw1.toAnsiString,
+                            mw2.toAnsiString
                         )
 
                         tbl += (
                             s"${c("Variant Weight")}",
-                            v1,
-                            v2
+                            v1.toAnsiString,
+                            v2.toAnsiString
                         )
 
                         logger.warn(
@@ -332,14 +332,14 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                                 g(bo("best match"))
                             ),
                             mkPickTokens(im),
-                            w
+                            w.toAnsiString
                         )
                     else
                         tbl += (
                             s"#${m.variantIdx + 1}",
                             im.intent.id,
                             mkPickTokens(im),
-                            w
+                            w.toAnsiString
                         )
 
                     if (logHldr != null)
@@ -386,7 +386,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         var grpIdx = 0
 
         for (grp ← im.tokenGroups) {
-            buf += s"  ${grp.term}"
+            buf += s"  ${grp.term.toAnsiString}"
 
             grpIdx += 1
 
@@ -520,7 +520,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                             val w = termMatch.weight.toSeq
 
                             tbl += (s"${B}Intent ID$RST", s"$BO${intent.id}$RST")
-                            tbl += (s"${B}Matched Term$RST", term.toString)
+                            tbl += (s"${B}Matched Term$RST", term.toAnsiString)
                             tbl += (s"${B}Matched Tokens$RST", termMatch.usedTokens.map(t ⇒ {
                                 val txt = t.token.getOriginalText
                                 val idx = t.token.getIndex

@@ -58,5 +58,7 @@ case class NCIdlTerm(
             meta
         )
 
-    override def toString: String = g(idl)
+    override def toString: String = idl
+
+    def toAnsiString: String = g(idl)
 }

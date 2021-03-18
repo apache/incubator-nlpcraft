@@ -264,6 +264,7 @@
                     <include>**/*.txt</include>
                     <include>**/*.json</include>
                     <include>**/*.nc</include>
+                    <include>**/*.idl</include>
                     <include>**/*.yaml</include>
                     <include>**/*.sql</include>
                     <include>**/*.properties</include>
