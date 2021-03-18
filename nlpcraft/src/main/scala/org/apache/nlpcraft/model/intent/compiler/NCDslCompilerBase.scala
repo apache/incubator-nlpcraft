@@ -125,6 +125,7 @@ trait NCDslCompilerBase {
     def isJMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
+
     def asJList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
     def asJMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
     def asStr(v: Object): String = v.asInstanceOf[String]
@@ -133,19 +134,19 @@ trait NCDslCompilerBase {
 
     // Runtime errors.
     def rtUnaryOpError(op: String, v: Object)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Unexpected '$op' DSL operation for value: $v")
+        newRuntimeError(s"Unexpected '$op' IDL operation for value: $v")
     def rtBinaryOpError(op: String, v1: Object, v2: Object)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Unexpected '$op' DSL operation for values: $v1, $v2")
+        newRuntimeError(s"Unexpected '$op' IDL operation for values: $v1, $v2")
     def rtUnknownFunError(fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Unknown DSL function: $fun()")
+        newRuntimeError(s"Unknown IDL function: $fun()")
     def rtMinParamNumError(min: Int, fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Invalid number of parameters for DSL function ($min is required): $fun()")
+        newRuntimeError(s"Invalid number of parameters for function ($min is required): $fun()")
     def rtParamNumError(fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Invalid number of parameters for DSL function: $fun()")
+        newRuntimeError(s"Invalid number of parameters for IDL function: $fun()")
     def rtParamTypeError(fun: String, invalid: Object, expectType: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Expected '$expectType' type of parameter for DSL function '$fun()', found: $invalid")
+        newRuntimeError(s"Expected '$expectType' type of parameter for IDL function '$fun()', found: $invalid")
     def rtListTypeError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Expected uniform list type for DSL function '$fun()', found polymorphic list.", cause)
+        newRuntimeError(s"Expected uniform list type for IDL function '$fun()', found polymorphic list.", cause)
 
     /**
      *

@@ -43,13 +43,13 @@ object NCDslCompiler extends LazyLogging {
     /**
       *
       * @param origin
-      * @param dsl
+      * @param idl
       * @param mdl
       */
-    class FiniteStateMachine(origin: String, dsl: String, mdl: NCModel) extends NCIntentDslBaseListener with NCDslCompilerBase {
+    class FiniteStateMachine(origin: String, idl: String, mdl: NCModel) extends NCIntentDslBaseListener with NCDslCompilerBase {
         // Actual value for '*' as in min/max shortcut.
         final private val MINMAX_MAX = 100
-        
+
         // Accumulators for parsed objects.
         private val intents = ArrayBuffer.empty[NCDslIntent]
         private var synonym: NCDslSynonym = _
@@ -113,10 +113,10 @@ object NCDslCompiler extends LazyLogging {
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
-    
+
         override def enterCallExpr(ctx: IDP.CallExprContext): Unit =
             instrs += ((_, stack: NCDslStack, _) ⇒ stack.push(stack.PLIST_MARKER))
-    
+
         /**
          *
          * @param min
@@ -126,7 +126,7 @@ object NCDslCompiler extends LazyLogging {
             this.min = min
             this.max = max
         }
-    
+
         override def exitMinMaxShortcut(ctx: IDP.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
                 setMinMax(1, MINMAX_MAX)
@@ -145,14 +145,14 @@ object NCDslCompiler extends LazyLogging {
             try {
                 val min = java.lang.Integer.parseInt(minStr)
                 val max = java.lang.Integer.parseInt(maxStr)
-                
+
                 if (min < 0)
                     throw newSyntaxError(s"Min value cannot be negative: $min")(ctx)
                 if (min > max)
                     throw newSyntaxError(s"Min value '$min' cannot be greater than max value '$min'.")(ctx)
                 if (max > MINMAX_MAX)
                     throw newSyntaxError(s"Max value '$max' cannot be greater than '$MINMAX_MAX'.")(ctx)
-                
+
                 setMinMax(min, max)
             }
             catch {
@@ -342,7 +342,7 @@ object NCDslCompiler extends LazyLogging {
             terms.clear()
             fragId = null
         }
-    
+
         /**
           *
           * @param intent
@@ -350,13 +350,13 @@ object NCDslCompiler extends LazyLogging {
           */
         private def addIntent(intent: NCDslIntent)(implicit ctx: ParserRuleContext): Unit = {
             val intentId = intent.id
-            
+
             if (intents.exists(_.id == intentId))
                 throw newSyntaxError(s"Duplicate intent ID: $intentId")
-                
+
             intents += intent
         }
-    
+
         override def exitImp(ctx: IDP.ImpContext): Unit = {
             val x = U.trimQuotes(ctx.qstring().getText)
 
@@ -407,12 +407,12 @@ object NCDslCompiler extends LazyLogging {
                 imports.foreach(addIntent(_)(ctx.qstring()))
             }
         }
-        
+
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
             addIntent(
                 NCDslIntent(
                     origin,
-                    dsl,
+                    idl,
                     intentId,
                     ordered,
                     if (intentMeta == null) Map.empty else intentMeta,
@@ -430,10 +430,10 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =
-            throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, dsl, origin, mdl))
+            throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, idl, origin, mdl))
 
         override def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE =
-            throw new NCE(mkRuntimeError(errMsg, srcName, line, pos, dsl, origin, mdl), cause)
+            throw new NCE(mkRuntimeError(errMsg, srcName, line, pos, idl, origin, mdl), cause)
     }
 
     /**

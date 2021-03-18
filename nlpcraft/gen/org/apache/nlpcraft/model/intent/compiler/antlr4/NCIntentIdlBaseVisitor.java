@@ -1,315 +1,315 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIntentIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
- * This class provides an empty implementation of {@link NCIntentDslVisitor},
+ * This class provides an empty implementation of {@link NCIntentIdlVisitor},
  * which can be extended to create a visitor which only needs to handle a subset
  * of the available methods.
  *
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
  */
-public class NCIntentDslBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements NCIntentDslVisitor<T> {
+public class NCIntentIdlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements NCIntentIdlVisitor<T> {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitDsl(NCIntentDslParser.DslContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIdl(NCIntentIdlParser.IdlContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSynonym(NCIntentDslParser.SynonymContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSynonym(NCIntentIdlParser.SynonymContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAlias(NCIntentDslParser.AliasContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAlias(NCIntentIdlParser.AliasContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitDslItems(NCIntentDslParser.DslItemsContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIdlItems(NCIntentIdlParser.IdlItemsContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitDslItem(NCIntentDslParser.DslItemContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIdlItem(NCIntentIdlParser.IdlItemContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitImp(NCIntentDslParser.ImpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitImp(NCIntentIdlParser.ImpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFrag(NCIntentDslParser.FragContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFrag(NCIntentIdlParser.FragContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFragId(NCIntentDslParser.FragIdContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFragId(NCIntentIdlParser.FragIdContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFragRef(NCIntentDslParser.FragRefContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFragRef(NCIntentIdlParser.FragRefContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFragMeta(NCIntentDslParser.FragMetaContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFragMeta(NCIntentIdlParser.FragMetaContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIntent(NCIntentDslParser.IntentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIntent(NCIntentIdlParser.IntentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIntentId(NCIntentDslParser.IntentIdContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIntentId(NCIntentIdlParser.IntentIdContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitOrderedDecl(NCIntentDslParser.OrderedDeclContext ctx) { return visitChildren(ctx); }
+	@Override public T visitOrderedDecl(NCIntentIdlParser.OrderedDeclContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMtdDecl(NCIntentDslParser.MtdDeclContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMtdDecl(NCIntentIdlParser.MtdDeclContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFlowDecl(NCIntentDslParser.FlowDeclContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFlowDecl(NCIntentIdlParser.FlowDeclContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMetaDecl(NCIntentDslParser.MetaDeclContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMetaDecl(NCIntentIdlParser.MetaDeclContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJsonObj(NCIntentDslParser.JsonObjContext ctx) { return visitChildren(ctx); }
+	@Override public T visitJsonObj(NCIntentIdlParser.JsonObjContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJsonPair(NCIntentDslParser.JsonPairContext ctx) { return visitChildren(ctx); }
+	@Override public T visitJsonPair(NCIntentIdlParser.JsonPairContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJsonVal(NCIntentDslParser.JsonValContext ctx) { return visitChildren(ctx); }
+	@Override public T visitJsonVal(NCIntentIdlParser.JsonValContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJsonArr(NCIntentDslParser.JsonArrContext ctx) { return visitChildren(ctx); }
+	@Override public T visitJsonArr(NCIntentIdlParser.JsonArrContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTerms(NCIntentDslParser.TermsContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTerms(NCIntentIdlParser.TermsContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermItem(NCIntentDslParser.TermItemContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTermItem(NCIntentIdlParser.TermItemContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermEq(NCIntentDslParser.TermEqContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTermEq(NCIntentIdlParser.TermEqContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTerm(NCIntentDslParser.TermContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTerm(NCIntentIdlParser.TermContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMtdRef(NCIntentDslParser.MtdRefContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMtdRef(NCIntentIdlParser.MtdRefContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJavaFqn(NCIntentDslParser.JavaFqnContext ctx) { return visitChildren(ctx); }
+	@Override public T visitJavaFqn(NCIntentIdlParser.JavaFqnContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermId(NCIntentDslParser.TermIdContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTermId(NCIntentIdlParser.TermIdContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParExpr(NCIntentDslParser.ParExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParExpr(NCIntentIdlParser.ParExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitUnaryExpr(NCIntentDslParser.UnaryExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitUnaryExpr(NCIntentIdlParser.UnaryExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCompExpr(NCIntentDslParser.CompExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCompExpr(NCIntentIdlParser.CompExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPlusMinusExpr(NCIntentDslParser.PlusMinusExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPlusMinusExpr(NCIntentIdlParser.PlusMinusExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAtomExpr(NCIntentDslParser.AtomExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAtomExpr(NCIntentIdlParser.AtomExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMultDivModExpr(NCIntentDslParser.MultDivModExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMultDivModExpr(NCIntentIdlParser.MultDivModExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAndOrExpr(NCIntentDslParser.AndOrExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAndOrExpr(NCIntentIdlParser.AndOrExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCallExpr(NCIntentDslParser.CallExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCallExpr(NCIntentIdlParser.CallExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitEqNeqExpr(NCIntentDslParser.EqNeqExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitEqNeqExpr(NCIntentIdlParser.EqNeqExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParamList(NCIntentDslParser.ParamListContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParamList(NCIntentIdlParser.ParamListContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAtom(NCIntentDslParser.AtomContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAtom(NCIntentIdlParser.AtomContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitQstring(NCIntentDslParser.QstringContext ctx) { return visitChildren(ctx); }
+	@Override public T visitQstring(NCIntentIdlParser.QstringContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMinMax(NCIntentDslParser.MinMaxContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMinMax(NCIntentIdlParser.MinMaxContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMinMaxShortcut(NCIntentDslParser.MinMaxShortcutContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMinMaxShortcut(NCIntentIdlParser.MinMaxShortcutContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMinMaxRange(NCIntentDslParser.MinMaxRangeContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMinMaxRange(NCIntentIdlParser.MinMaxRangeContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitId(NCIntentDslParser.IdContext ctx) { return visitChildren(ctx); }
+	@Override public T visitId(NCIntentIdlParser.IdContext ctx) { return visitChildren(ctx); }
 }

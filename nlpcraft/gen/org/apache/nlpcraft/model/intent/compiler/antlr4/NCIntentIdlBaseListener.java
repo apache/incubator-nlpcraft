@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIntentIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -6,527 +6,527 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
- * This class provides an empty implementation of {@link NCIntentDslListener},
+ * This class provides an empty implementation of {@link NCIntentIdlListener},
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
-public class NCIntentDslBaseListener implements NCIntentDslListener {
+public class NCIntentIdlBaseListener implements NCIntentIdlListener {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDsl(NCIntentDslParser.DslContext ctx) { }
+	@Override public void enterIdl(NCIntentIdlParser.IdlContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDsl(NCIntentDslParser.DslContext ctx) { }
+	@Override public void exitIdl(NCIntentIdlParser.IdlContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSynonym(NCIntentDslParser.SynonymContext ctx) { }
+	@Override public void enterSynonym(NCIntentIdlParser.SynonymContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSynonym(NCIntentDslParser.SynonymContext ctx) { }
+	@Override public void exitSynonym(NCIntentIdlParser.SynonymContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAlias(NCIntentDslParser.AliasContext ctx) { }
+	@Override public void enterAlias(NCIntentIdlParser.AliasContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAlias(NCIntentDslParser.AliasContext ctx) { }
+	@Override public void exitAlias(NCIntentIdlParser.AliasContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDslItems(NCIntentDslParser.DslItemsContext ctx) { }
+	@Override public void enterIdlItems(NCIntentIdlParser.IdlItemsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDslItems(NCIntentDslParser.DslItemsContext ctx) { }
+	@Override public void exitIdlItems(NCIntentIdlParser.IdlItemsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDslItem(NCIntentDslParser.DslItemContext ctx) { }
+	@Override public void enterIdlItem(NCIntentIdlParser.IdlItemContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDslItem(NCIntentDslParser.DslItemContext ctx) { }
+	@Override public void exitIdlItem(NCIntentIdlParser.IdlItemContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterImp(NCIntentDslParser.ImpContext ctx) { }
+	@Override public void enterImp(NCIntentIdlParser.ImpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitImp(NCIntentDslParser.ImpContext ctx) { }
+	@Override public void exitImp(NCIntentIdlParser.ImpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFrag(NCIntentDslParser.FragContext ctx) { }
+	@Override public void enterFrag(NCIntentIdlParser.FragContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFrag(NCIntentDslParser.FragContext ctx) { }
+	@Override public void exitFrag(NCIntentIdlParser.FragContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFragId(NCIntentDslParser.FragIdContext ctx) { }
+	@Override public void enterFragId(NCIntentIdlParser.FragIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFragId(NCIntentDslParser.FragIdContext ctx) { }
+	@Override public void exitFragId(NCIntentIdlParser.FragIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFragRef(NCIntentDslParser.FragRefContext ctx) { }
+	@Override public void enterFragRef(NCIntentIdlParser.FragRefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFragRef(NCIntentDslParser.FragRefContext ctx) { }
+	@Override public void exitFragRef(NCIntentIdlParser.FragRefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFragMeta(NCIntentDslParser.FragMetaContext ctx) { }
+	@Override public void enterFragMeta(NCIntentIdlParser.FragMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFragMeta(NCIntentDslParser.FragMetaContext ctx) { }
+	@Override public void exitFragMeta(NCIntentIdlParser.FragMetaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntent(NCIntentDslParser.IntentContext ctx) { }
+	@Override public void enterIntent(NCIntentIdlParser.IntentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntent(NCIntentDslParser.IntentContext ctx) { }
+	@Override public void exitIntent(NCIntentIdlParser.IntentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntentId(NCIntentDslParser.IntentIdContext ctx) { }
+	@Override public void enterIntentId(NCIntentIdlParser.IntentIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntentId(NCIntentDslParser.IntentIdContext ctx) { }
+	@Override public void exitIntentId(NCIntentIdlParser.IntentIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOrderedDecl(NCIntentDslParser.OrderedDeclContext ctx) { }
+	@Override public void enterOrderedDecl(NCIntentIdlParser.OrderedDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOrderedDecl(NCIntentDslParser.OrderedDeclContext ctx) { }
+	@Override public void exitOrderedDecl(NCIntentIdlParser.OrderedDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMtdDecl(NCIntentDslParser.MtdDeclContext ctx) { }
+	@Override public void enterMtdDecl(NCIntentIdlParser.MtdDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMtdDecl(NCIntentDslParser.MtdDeclContext ctx) { }
+	@Override public void exitMtdDecl(NCIntentIdlParser.MtdDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFlowDecl(NCIntentDslParser.FlowDeclContext ctx) { }
+	@Override public void enterFlowDecl(NCIntentIdlParser.FlowDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFlowDecl(NCIntentDslParser.FlowDeclContext ctx) { }
+	@Override public void exitFlowDecl(NCIntentIdlParser.FlowDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMetaDecl(NCIntentDslParser.MetaDeclContext ctx) { }
+	@Override public void enterMetaDecl(NCIntentIdlParser.MetaDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMetaDecl(NCIntentDslParser.MetaDeclContext ctx) { }
+	@Override public void exitMetaDecl(NCIntentIdlParser.MetaDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterJsonObj(NCIntentDslParser.JsonObjContext ctx) { }
+	@Override public void enterJsonObj(NCIntentIdlParser.JsonObjContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitJsonObj(NCIntentDslParser.JsonObjContext ctx) { }
+	@Override public void exitJsonObj(NCIntentIdlParser.JsonObjContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterJsonPair(NCIntentDslParser.JsonPairContext ctx) { }
+	@Override public void enterJsonPair(NCIntentIdlParser.JsonPairContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitJsonPair(NCIntentDslParser.JsonPairContext ctx) { }
+	@Override public void exitJsonPair(NCIntentIdlParser.JsonPairContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterJsonVal(NCIntentDslParser.JsonValContext ctx) { }
+	@Override public void enterJsonVal(NCIntentIdlParser.JsonValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitJsonVal(NCIntentDslParser.JsonValContext ctx) { }
+	@Override public void exitJsonVal(NCIntentIdlParser.JsonValContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterJsonArr(NCIntentDslParser.JsonArrContext ctx) { }
+	@Override public void enterJsonArr(NCIntentIdlParser.JsonArrContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitJsonArr(NCIntentDslParser.JsonArrContext ctx) { }
+	@Override public void exitJsonArr(NCIntentIdlParser.JsonArrContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTerms(NCIntentDslParser.TermsContext ctx) { }
+	@Override public void enterTerms(NCIntentIdlParser.TermsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTerms(NCIntentDslParser.TermsContext ctx) { }
+	@Override public void exitTerms(NCIntentIdlParser.TermsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermItem(NCIntentDslParser.TermItemContext ctx) { }
+	@Override public void enterTermItem(NCIntentIdlParser.TermItemContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermItem(NCIntentDslParser.TermItemContext ctx) { }
+	@Override public void exitTermItem(NCIntentIdlParser.TermItemContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermEq(NCIntentDslParser.TermEqContext ctx) { }
+	@Override public void enterTermEq(NCIntentIdlParser.TermEqContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermEq(NCIntentDslParser.TermEqContext ctx) { }
+	@Override public void exitTermEq(NCIntentIdlParser.TermEqContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTerm(NCIntentDslParser.TermContext ctx) { }
+	@Override public void enterTerm(NCIntentIdlParser.TermContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTerm(NCIntentDslParser.TermContext ctx) { }
+	@Override public void exitTerm(NCIntentIdlParser.TermContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMtdRef(NCIntentDslParser.MtdRefContext ctx) { }
+	@Override public void enterMtdRef(NCIntentIdlParser.MtdRefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMtdRef(NCIntentDslParser.MtdRefContext ctx) { }
+	@Override public void exitMtdRef(NCIntentIdlParser.MtdRefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterJavaFqn(NCIntentDslParser.JavaFqnContext ctx) { }
+	@Override public void enterJavaFqn(NCIntentIdlParser.JavaFqnContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitJavaFqn(NCIntentDslParser.JavaFqnContext ctx) { }
+	@Override public void exitJavaFqn(NCIntentIdlParser.JavaFqnContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermId(NCIntentDslParser.TermIdContext ctx) { }
+	@Override public void enterTermId(NCIntentIdlParser.TermIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermId(NCIntentDslParser.TermIdContext ctx) { }
+	@Override public void exitTermId(NCIntentIdlParser.TermIdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParExpr(NCIntentDslParser.ParExprContext ctx) { }
+	@Override public void enterParExpr(NCIntentIdlParser.ParExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParExpr(NCIntentDslParser.ParExprContext ctx) { }
+	@Override public void exitParExpr(NCIntentIdlParser.ParExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterUnaryExpr(NCIntentDslParser.UnaryExprContext ctx) { }
+	@Override public void enterUnaryExpr(NCIntentIdlParser.UnaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitUnaryExpr(NCIntentDslParser.UnaryExprContext ctx) { }
+	@Override public void exitUnaryExpr(NCIntentIdlParser.UnaryExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCompExpr(NCIntentDslParser.CompExprContext ctx) { }
+	@Override public void enterCompExpr(NCIntentIdlParser.CompExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCompExpr(NCIntentDslParser.CompExprContext ctx) { }
+	@Override public void exitCompExpr(NCIntentIdlParser.CompExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPlusMinusExpr(NCIntentDslParser.PlusMinusExprContext ctx) { }
+	@Override public void enterPlusMinusExpr(NCIntentIdlParser.PlusMinusExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPlusMinusExpr(NCIntentDslParser.PlusMinusExprContext ctx) { }
+	@Override public void exitPlusMinusExpr(NCIntentIdlParser.PlusMinusExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAtomExpr(NCIntentDslParser.AtomExprContext ctx) { }
+	@Override public void enterAtomExpr(NCIntentIdlParser.AtomExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAtomExpr(NCIntentDslParser.AtomExprContext ctx) { }
+	@Override public void exitAtomExpr(NCIntentIdlParser.AtomExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMultDivModExpr(NCIntentDslParser.MultDivModExprContext ctx) { }
+	@Override public void enterMultDivModExpr(NCIntentIdlParser.MultDivModExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMultDivModExpr(NCIntentDslParser.MultDivModExprContext ctx) { }
+	@Override public void exitMultDivModExpr(NCIntentIdlParser.MultDivModExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAndOrExpr(NCIntentDslParser.AndOrExprContext ctx) { }
+	@Override public void enterAndOrExpr(NCIntentIdlParser.AndOrExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAndOrExpr(NCIntentDslParser.AndOrExprContext ctx) { }
+	@Override public void exitAndOrExpr(NCIntentIdlParser.AndOrExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCallExpr(NCIntentDslParser.CallExprContext ctx) { }
+	@Override public void enterCallExpr(NCIntentIdlParser.CallExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCallExpr(NCIntentDslParser.CallExprContext ctx) { }
+	@Override public void exitCallExpr(NCIntentIdlParser.CallExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEqNeqExpr(NCIntentDslParser.EqNeqExprContext ctx) { }
+	@Override public void enterEqNeqExpr(NCIntentIdlParser.EqNeqExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEqNeqExpr(NCIntentDslParser.EqNeqExprContext ctx) { }
+	@Override public void exitEqNeqExpr(NCIntentIdlParser.EqNeqExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParamList(NCIntentDslParser.ParamListContext ctx) { }
+	@Override public void enterParamList(NCIntentIdlParser.ParamListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParamList(NCIntentDslParser.ParamListContext ctx) { }
+	@Override public void exitParamList(NCIntentIdlParser.ParamListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAtom(NCIntentDslParser.AtomContext ctx) { }
+	@Override public void enterAtom(NCIntentIdlParser.AtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAtom(NCIntentDslParser.AtomContext ctx) { }
+	@Override public void exitAtom(NCIntentIdlParser.AtomContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterQstring(NCIntentDslParser.QstringContext ctx) { }
+	@Override public void enterQstring(NCIntentIdlParser.QstringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitQstring(NCIntentDslParser.QstringContext ctx) { }
+	@Override public void exitQstring(NCIntentIdlParser.QstringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMinMax(NCIntentDslParser.MinMaxContext ctx) { }
+	@Override public void enterMinMax(NCIntentIdlParser.MinMaxContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMinMax(NCIntentDslParser.MinMaxContext ctx) { }
+	@Override public void exitMinMax(NCIntentIdlParser.MinMaxContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMinMaxShortcut(NCIntentDslParser.MinMaxShortcutContext ctx) { }
+	@Override public void enterMinMaxShortcut(NCIntentIdlParser.MinMaxShortcutContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMinMaxShortcut(NCIntentDslParser.MinMaxShortcutContext ctx) { }
+	@Override public void exitMinMaxShortcut(NCIntentIdlParser.MinMaxShortcutContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMinMaxRange(NCIntentDslParser.MinMaxRangeContext ctx) { }
+	@Override public void enterMinMaxRange(NCIntentIdlParser.MinMaxRangeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMinMaxRange(NCIntentDslParser.MinMaxRangeContext ctx) { }
+	@Override public void exitMinMaxRange(NCIntentIdlParser.MinMaxRangeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterId(NCIntentDslParser.IdContext ctx) { }
+	@Override public void enterId(NCIntentIdlParser.IdContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitId(NCIntentDslParser.IdContext ctx) { }
+	@Override public void exitId(NCIntentIdlParser.IdContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

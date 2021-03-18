@@ -1,4 +1,4 @@
-// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIntentDsl.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIntentIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class NCIntentDslLexer extends Lexer {
+public class NCIntentIdlLexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.9.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -100,13 +100,13 @@ public class NCIntentDslLexer extends Lexer {
 	}
 
 
-	public NCIntentDslLexer(CharStream input) {
+	public NCIntentIdlLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "NCIntentDsl.g4"; }
+	public String getGrammarFileName() { return "NCIntentIdl.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
