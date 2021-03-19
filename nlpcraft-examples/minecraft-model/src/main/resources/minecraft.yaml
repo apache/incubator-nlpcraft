@@ -44,6 +44,9 @@ elements:
     valueLoader: org.apache.nlpcraft.example.MinecraftObjectValueLoader
 
   # Weather intent
+  - id: weather:action
+    synonyms:
+      - "{make|start|cast}"
   - id: rain
     description: Set rain weather
     groups:
@@ -99,7 +102,8 @@ elements:
   - id: give:action
     synonyms:
       - "{give ^^[target](id == 'mc:player')^^}"
-    "permutateSynonyms": false
+    jiggleFactor: 0
+    permutateSynonyms: false
   - id: give:block-word
     synonyms:
       - "{block|blocks}"
@@ -129,21 +133,23 @@ elements:
       - fill:position
     synonyms:
       - "{{at|near} ^^[player](id == 'mc:player')^^ {position|_}|where ^^[player](id == 'mc:player')^^}"
-    "permutateSynonyms": false
+    jiggleFactor: 0
+    permutateSynonyms: false
 
   - id: position:front
     groups:
       - fill:position
     synonyms:
       - "{{^^[distance](id == 'nlpcraft:num')^^|_} {in|_} front {of|_} ^^[player](id == 'mc:player')^^}"
-    "permutateSynonyms": false
+    jiggleFactor: 0
+    permutateSynonyms: false
 
 
 
 
 # List of model intents.
 intents:
-  - intent=weatherIntent term(arg)={groups @@ 'weather'}
+  - intent=weatherIntent term={id == 'weather:action'}? term(arg)={groups @@ 'weather'}
   - intent=timeIntent term(arg)={groups @@ 'time'}
   - "intent=giveIntent term(action)={id == 'give:action'} term(quantity)={id == 'nlpcraft:num'}?
   term(item)={id == 'mc:item'} term={id == 'give:block-word'}?"

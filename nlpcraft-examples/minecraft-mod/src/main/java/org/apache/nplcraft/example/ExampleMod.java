@@ -118,11 +118,9 @@ public class ExampleMod {
     }
 
     private Optional<String> getToken() {
-        if (!token.isPresent()) {
-            loadSettings();
+        loadSettings();
 
-            token = post("signin", gson.toJson(creds), NCSignResponse.class).map(x -> x.acsTok);
-        }
+        token = post("signin", gson.toJson(creds), NCSignResponse.class).map(x -> x.acsTok);
 
         return token;
     }
@@ -135,7 +133,7 @@ public class ExampleMod {
             http.setRequestMethod("POST"); // PUT is another valid option
             http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             http.setConnectTimeout(1_000);
-            http.setReadTimeout(3_000);
+            http.setReadTimeout(5_000);
 
             http.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(http.getOutputStream());

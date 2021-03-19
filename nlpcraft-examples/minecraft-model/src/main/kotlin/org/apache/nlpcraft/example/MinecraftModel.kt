@@ -26,7 +26,12 @@ import java.util.*
 @Suppress("unused")
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     @NCIntentRef("weatherIntent")
-    @NCIntentSample("make it rain")
+    @NCIntentSample(
+        "make it rain",
+        "cast the sun rays",
+        "it's rather rainy today",
+        "heavy storm is coming"
+    )
     fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
@@ -36,7 +41,12 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     }
 
     @NCIntentRef("timeIntent")
-    @NCIntentSample("set time to evening")
+    @NCIntentSample(
+        "set time to evening",
+        "now is evening",
+        "night",
+        "it's midnight"
+    )
     fun onTimeMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         if (ctx.isAmbiguous) {
             throw NCRejection("Ambiguous request")
@@ -59,7 +69,8 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     @NCIntentSample(
         "give me iron sword",
         "give me 10 grass blocks",
-        "give PlayerName a jigsaw"
+        "give PlayerName a jigsaw",
+        "give PlayerName 1 kilogram of feathers"
     )
     fun onGiveMatch(
         ctx: NCIntentMatch,
