@@ -17,8 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs.cmd
 
-import java.io.Serializable
-
+import java.io.{Serializable ⇒ JSerializable}
 import com.google.gson.Gson
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCService, _}
@@ -31,6 +30,7 @@ import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnrichmentManager
 
+import java.util
 import scala.collection.JavaConverters._
 
 /**
@@ -99,7 +99,7 @@ object NCCommandManager extends NCService {
                             txt = msg.data[String]("txt"),
                             nlpSens = msg.data[java.util.List[NCNlpSentence]]("nlpSens").asScala,
                             usrId = msg.data[Long]("userId"),
-                            senMeta = msg.data[java.util.Map[String, Serializable]]("senMeta").asScala,
+                            senMeta = msg.data[java.util.Map[String, JSerializable]]("senMeta").asScala,
                             mdlId = msg.data[String]("mdlId"),
                             logEnable = msg.data[Boolean]("logEnable"),
                             span
@@ -110,9 +110,9 @@ object NCCommandManager extends NCService {
 
                         val mdlData = NCModelManager.getModel(mdlId)
 
-                        val macros = mdlData.model.getMacros.asInstanceOf[Serializable]
-                        val syns = mdlData.model.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava.asInstanceOf[Serializable]
-                        val samples = mdlData.samples.map(p ⇒ p._1 → p._2.map(_.asJava).asJava).asJava.asInstanceOf[Serializable]
+                        val macros: util.Map[String, String] = mdlData.model.getMacros
+                        val syns: util.Map[String, util.List[String]] = mdlData.model.getElements.asScala.map(p ⇒ p.getId → p.getSynonyms).toMap.asJava
+                        val samples: util.Map[String, util.List[util.List[String]]] = mdlData.samples.map(p ⇒ p._1 → p._2.map(_.asJava).asJava).toMap.asJava
 
                         NCConnectionManager.send(
                             NCProbeMessage(
@@ -120,9 +120,9 @@ object NCCommandManager extends NCService {
                                 "reqGuid" → msg.getGuid,
                                 "resp" → GSON.toJson(
                                     Map(
-                                        "macros" → macros,
-                                        "synonyms" → syns,
-                                        "samples" → samples
+                                        "macros" → macros.asInstanceOf[JSerializable],
+                                        "synonyms" → syns.asInstanceOf[JSerializable],
+                                        "samples" → samples.asInstanceOf[JSerializable]
                                     ).asJava
                                 )
                             ),
