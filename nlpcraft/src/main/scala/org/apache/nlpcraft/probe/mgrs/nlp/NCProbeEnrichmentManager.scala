@@ -483,7 +483,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     h.enricher → same
                 }).toMap
 
-                // Loop has sense if model is complex (has user defined parsers or DSL based synonyms)
+                // Loop has sense if model is complex (has user defined parsers or IDL based synonyms)
                 continue = NCModelEnricher.isComplex(mdl) && res.exists { case (_, same) ⇒ !same }
 
                 if (DEEP_DEBUG)

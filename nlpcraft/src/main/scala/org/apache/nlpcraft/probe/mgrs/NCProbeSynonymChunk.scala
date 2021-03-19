@@ -17,29 +17,29 @@
 
 package org.apache.nlpcraft.probe.mgrs
 
-import org.apache.nlpcraft.model.intent.NCDslTokenPredicate
+import org.apache.nlpcraft.model.intent.NCIdlTokenPredicate
 import org.apache.nlpcraft.probe.mgrs.NCProbeSynonymChunkKind._
 
 import java.util.regex.Pattern
 
 /**
  *
- * @param alias Optional alias for this chunk from token DSL.
+ * @param alias Optional alias for this chunk from IDL.
  * @param kind Kind of synonym chunk.
  * @param origText Original text.
  * @param wordStem Optional stem for a single word synonyms.
  * @param posTag Optional PoS tag to match on.
  * @param regex Optional regex expression to match on.
- * @param dslPred Optional DSL expression to match on.
+ * @param idlPred Optional IDL expression to match on.
  */
 case class NCProbeSynonymChunk(
-    alias: String = null, // Not-null only for kind == DSL.
+    alias: String = null, // Not-null only for kind == IDL.
     kind: NCSynonymChunkKind,
     origText: String,
     wordStem: String = null, // Only for kind == TEXT.
     posTag: String = null,
     regex: Pattern = null,
-    dslPred: NCDslTokenPredicate = null
+    idlPred: NCIdlTokenPredicate = null
 ) {
     require(origText != null)
     require(kind != null)

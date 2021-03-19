@@ -22,32 +22,32 @@ import org.apache.nlpcraft.{NCTestContext, NCTestElement, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 import java.util
-import scala.collection.JavaConverters._
 
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel4 extends NCModelAdapter(
-    "nlpcraft.nested4.test.mdl", "Nested Data Test Model", "1.0"
+class NCNestedTestModel5 extends NCModelAdapter(
+    "nlpcraft.nested5.test.mdl", "Nested Data Test Model", "1.0"
 ) {
     override def getElements: util.Set[NCElement] =
         Set(
-            NCTestElement("e1", "//[a-zA-Z0-9]+//"),
-            NCTestElement("e2", "the ^^{id() == 'e1'}^^")
+            NCTestElement("cityWrapper", "^^[cityAlias]{id() == 'nlpcraft:city'}^^"),
         )
-
-    override def getAbstractTokens: util.Set[String] = Set("e1").asJava
-    override def getEnabledBuiltInTokens: util.Set[String] = Set.empty[String].asJava
-
-    @NCIntent("intent=onE2 term(t1)={id() == 'e2'}[8, 100]")
-    def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+    @NCIntent(
+        "intent=bigCity " +
+        "term(city)={" +
+        "    id() == 'cityWrapper' && " +
+        "    get(meta_part(part_token(token(), 'cityAlias'), 'nlpcraft:city:citymeta'), 'population') >= 10381222" +
+        "}"
+    )
+    private def onBigCity(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 
 /**
-  * It shouldn't be too slow.
+  *
   */
-@NCTestEnvironment(model = classOf[NCNestedTestModel4], startClient = true)
-class NCEnricherNestedModelSpec4 extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCNestedTestModel5], startClient = true)
+class NCEnricherNestedModelSpec5 extends NCTestContext {
     @Test
-    def test(): Unit = checkIntent("the a " * 11, "onE2")
+    def test(): Unit = checkIntent("moscow", "bigCity")
 }

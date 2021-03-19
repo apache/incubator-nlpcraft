@@ -16,9 +16,9 @@
 #
 
 id: "nlpcraft.dsl.test"
-name: "Intent DSL Test Model"
+name: "IDL Test Model"
 version: "1.0"
-description: "Intent DSL test model."
+description: "IDL test model."
 enabledBuiltInTokens: [
   "nlpcraft:num",
   "nlpcraft:date"

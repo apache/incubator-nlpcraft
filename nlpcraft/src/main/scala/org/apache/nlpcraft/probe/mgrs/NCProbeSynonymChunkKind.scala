@@ -25,5 +25,5 @@ object NCProbeSynonymChunkKind extends Enumeration {
     
     val TEXT: Value = Value // Simple word.
     val REGEX: Value = Value // RegEx match expression (//[abd]+//).
-    val DSL: Value = Value // DSL match expression (^^id == 'nlpcraft:city'^^).
+    val IDL: Value = Value // IDL match expression (^^[alias]{id == 'nlpcraft:city'}^^).
 }

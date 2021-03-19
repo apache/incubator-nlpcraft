@@ -37,9 +37,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * intent matching logic. It uses Apple's Dark Sky API weather provider REST service for the actual
  * weather information (https://darksky.net/dev/docs#overview)
  * <p>
- * Note that this example uses class-based intent DSL to demonstrate its usage pattern.
- * Note also that it also returns intent ID together with execution result which can be used in testing.
- * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
 public class WeatherModel extends NCModelFileAdapter {

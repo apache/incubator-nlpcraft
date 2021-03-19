@@ -107,11 +107,11 @@ WS
 ErrorChar
 
 rule names:
-dsl
+idl
 synonym
 alias
-dslItems
-dslItem
+idlItems
+idlItem
 imp
 frag
 fragId

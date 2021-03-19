@@ -23,20 +23,29 @@ import org.apache.nlpcraft.model.NCToken
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
 import org.apache.commons.collections.CollectionUtils
-import org.apache.nlpcraft.model.intent.NCDslContext
-import org.apache.nlpcraft.model.intent.compiler.{NCDslStackItem ⇒ Z}
+import org.apache.nlpcraft.model.intent.NCIdlContext
+import org.apache.nlpcraft.model.intent.compiler.{NCIdlStackItem ⇒ Z}
 
-import java.lang.{Double ⇒ JDouble, Long ⇒ JLong}
+import java.lang.{
+    Number ⇒ JNumber,
+    Double ⇒ JDouble,
+    Float ⇒ JFloat,
+    Long ⇒ JLong,
+    Integer ⇒ JInt,
+    Byte ⇒ JByte,
+    Short ⇒ JShort
+}
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
 import java.util.{Calendar, Collections, List ⇒ JList, Map ⇒ JMap}
+
 import scala.collection.JavaConverters._
 
-trait NCDslCompilerBase {
-    type S = NCDslStack
-    type T = NCDslStackType
-    type I = (NCToken, S, NCDslContext) ⇒ Unit
+trait NCIdlCompilerBase {
+    type S = NCIdlStack
+    type T = NCIdlStackType
+    type I = (NCToken, S, NCIdlContext) ⇒ Unit
 
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE
@@ -66,39 +75,78 @@ trait NCDslCompilerBase {
         runtimeError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine, cause)
     }
 
+
+    /**
+     * Check if given object is mathematically an integer number.
+     *
+     * @param v
+     * @return
+     */
     //noinspection ComparingUnrelatedTypes
-    def isJLong(v: Object): Boolean = v.isInstanceOf[JLong]
+    def isInt(v: Object): Boolean = v.isInstanceOf[JNumber]
+
+    /**
+     *
+     * @param v
+     * @return
+     */
+    def asInt(v: Object): JLong = v match {
+        case l: JLong ⇒ l
+        case i: JInt ⇒ i.longValue()
+        case b: JByte ⇒ b.longValue()
+        case s: JShort ⇒ s.longValue()
+        case _ ⇒ throw new AssertionError(s"Unexpected int value: $v")
+    }
+
+    /**
+     * Check if given object is mathematically an real number.
+     *
+     * @param v
+     * @return
+     */
     //noinspection ComparingUnrelatedTypes
-    def isJDouble(v: Object): Boolean = v.isInstanceOf[JDouble]
+    def isReal(v: Object): Boolean = v.isInstanceOf[JDouble] || v.isInstanceOf[JFloat]
+
+    /**
+     *
+     * @param v
+     * @return
+     */
+    def asReal(v: Object): JDouble = v match {
+        case d: JDouble ⇒ d
+        case f: JFloat ⇒ f.doubleValue()
+        case _ ⇒ throw new AssertionError(s"Unexpected real value: $v")
+    }
+
+
     //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
     def isJList(v: Object): Boolean = v.isInstanceOf[JList[_]]
     def isJMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
-    def asJLong(v: Object): Long = v.asInstanceOf[JLong].longValue()
+
     def asJList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
     def asJMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
-    def asJDouble(v: Object): Double = v.asInstanceOf[JDouble].doubleValue()
     def asStr(v: Object): String = v.asInstanceOf[String]
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
     def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
 
     // Runtime errors.
     def rtUnaryOpError(op: String, v: Object)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Unexpected '$op' DSL operation for value: $v")
+        newRuntimeError(s"Unexpected '$op' IDL operation for value: $v")
     def rtBinaryOpError(op: String, v1: Object, v2: Object)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Unexpected '$op' DSL operation for values: $v1, $v2")
+        newRuntimeError(s"Unexpected '$op' IDL operation for values: $v1, $v2")
     def rtUnknownFunError(fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Unknown DSL function: $fun()")
+        newRuntimeError(s"Unknown IDL function: $fun()")
     def rtMinParamNumError(min: Int, fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Invalid number of parameters for DSL function ($min is required): $fun()")
+        newRuntimeError(s"Invalid number of parameters for function ($min is required): $fun()")
     def rtParamNumError(fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Invalid number of parameters for DSL function: $fun()")
+        newRuntimeError(s"Invalid number of parameters for IDL function: $fun()")
     def rtParamTypeError(fun: String, invalid: Object, expectType: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Expected '$expectType' type of parameter for DSL function '$fun()', found: $invalid")
+        newRuntimeError(s"Expected '$expectType' type of parameter for IDL function '$fun()', found: $invalid")
     def rtListTypeError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Expected uniform list type for DSL function '$fun()', found polymorphic list.", cause)
+        newRuntimeError(s"Expected uniform list type for IDL function '$fun()', found polymorphic list.", cause)
 
     /**
      *
@@ -154,14 +202,14 @@ trait NCDslCompilerBase {
 
         if (lt != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) < asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) < asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) < asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) < asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) < asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) < asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) < asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) < asReal(v2)
                     else
                         throw rtBinaryOpError("<", v1, v2)
 
@@ -169,14 +217,14 @@ trait NCDslCompilerBase {
             })
         else if (gt != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) > asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) > asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) > asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) > asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) > asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) > asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) > asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) > asReal(v2)
                     else
                         throw rtBinaryOpError(">", v1, v2)
 
@@ -184,14 +232,14 @@ trait NCDslCompilerBase {
             })
         else if (lteq != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) <= asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) <= asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) <= asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) <= asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) <= asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) <= asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) <= asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) <= asReal(v2)
                     else
                         throw rtBinaryOpError("<=", v1, v2)
 
@@ -201,14 +249,14 @@ trait NCDslCompilerBase {
             require(gteq != null)
 
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) >= asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) >= asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) >= asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) >= asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) >= asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) >= asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) >= asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) >= asReal(v2)
                     else
                         throw rtBinaryOpError(">=", v1, v2)
 
@@ -228,14 +276,14 @@ trait NCDslCompilerBase {
 
         if (mult != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) * asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) * asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) * asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) * asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) * asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) * asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) * asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) * asReal(v2)
                     else
                         throw rtBinaryOpError("*", v1, v2)
 
@@ -243,11 +291,11 @@ trait NCDslCompilerBase {
             })
         else if (mod != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) % asJLong(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) % asInt(v2)
                     else
                         throw rtBinaryOpError("%", v1, v2)
 
@@ -257,14 +305,14 @@ trait NCDslCompilerBase {
             assert(div != null)
 
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 val f =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) / asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) / asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) / asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) / asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) / asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) / asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) / asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) / asReal(v2)
                     else
                         throw rtBinaryOpError("/", v1, v2)
 
@@ -285,7 +333,7 @@ trait NCDslCompilerBase {
         stack.push(() ⇒ {
             val (op, flag) = if (and != null) ("&&", false) else ("||", true)
 
-            val Z(v1, n1) = x1()
+            val NCIdlStackItem(v1, n1) = x1()
 
             if (!isBool(v1))
                 throw rtBinaryOpError(op, v1, x2().value)
@@ -294,7 +342,7 @@ trait NCDslCompilerBase {
             if (asBool(v1) == flag)
                 Z(flag, n1)
             else {
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 if (!isBool(v2))
                     throw rtBinaryOpError(op, v2, v1)
@@ -316,18 +364,18 @@ trait NCDslCompilerBase {
         def doEq(op: String, v1: Object, v2: Object): Boolean = {
             if (v1 == null && v2 == null) true
             else if ((v1 == null && v2 != null) || (v1 != null && v2 == null)) false
-            else if (isJLong(v1) && isJLong(v2)) asJLong(v1) == asJLong(v2)
-            else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) == asJDouble(v2)
+            else if (isInt(v1) && isInt(v2)) asInt(v1) == asInt(v2)
+            else if (isReal(v1) && isReal(v2)) asReal(v1) == asReal(v2)
             else if (isBool(v1) && isBool(v2)) asBool(v1) == asBool(v2)
             else if (isStr(v1) && isStr(v2)) asStr(v1) == asStr(v2)
             else if (isJList(v1) && isJList(v2)) CollectionUtils.isEqualCollection(asJList(v1), asJList(v2))
-            else {
+            else
                 throw rtBinaryOpError(op, v1, v2)
-            }}
+        }
 
         stack.push(() ⇒ {
-            val Z(v1, n1) = x1()
-            val Z(v2, n2) = x2()
+            val NCIdlStackItem(v1, n1) = x1()
+            val NCIdlStackItem(v2, n2) = x2()
 
             val f =
                 if (eq != null)
@@ -351,8 +399,8 @@ trait NCDslCompilerBase {
         val (x1, x2) = pop2()(stack, ctx)
 
         def extract(): (Object, Object, Int) = {
-            val Z(v1, n1) = x1()
-            val Z(v2, n2) = x2()
+            val NCIdlStackItem(v1, n1) = x1()
+            val NCIdlStackItem(v2, n2) = x2()
 
             (v1, v2, n1 + n2)
         }
@@ -362,10 +410,10 @@ trait NCDslCompilerBase {
                 val (v1, v2, n) = extract()
 
                 if (isStr(v1) && isStr(v2)) Z(asStr(v1) + asStr(v2), n)
-                else if (isJLong(v1) && isJLong(v2))  Z(asJLong(v1) + asJLong(v2), n)
-                else if (isJLong(v1) && isJDouble(v2))  Z(asJLong(v1) + asJDouble(v2), n)
-                else if (isJDouble(v1) && isJLong(v2))  Z(asJDouble(v1) + asJLong(v2), n)
-                else if (isJDouble(v1) && isJDouble(v2))  Z(asJDouble(v1) + asJDouble(v2), n)
+                else if (isInt(v1) && isInt(v2))  Z(asInt(v1) + asInt(v2), n)
+                else if (isInt(v1) && isReal(v2))  Z(asInt(v1) + asReal(v2), n)
+                else if (isReal(v1) && isInt(v2))  Z(asReal(v1) + asInt(v2), n)
+                else if (isReal(v1) && isReal(v2))  Z(asReal(v1) + asReal(v2), n)
                 else
                     throw rtBinaryOpError("+", v1, v2)
             })
@@ -376,10 +424,10 @@ trait NCDslCompilerBase {
                 val (v1, v2, n) = extract()
 
                 val v =
-                    if (isJLong(v1) && isJLong(v2)) asJLong(v1) - asJLong(v2)
-                    else if (isJLong(v1) && isJDouble(v2)) asJLong(v1) - asJDouble(v2)
-                    else if (isJDouble(v1) && isJLong(v2)) asJDouble(v1) - asJLong(v2)
-                    else if (isJDouble(v1) && isJDouble(v2)) asJDouble(v1) - asJDouble(v2)
+                    if (isInt(v1) && isInt(v2)) asInt(v1) - asInt(v2)
+                    else if (isInt(v1) && isReal(v2)) asInt(v1) - asReal(v2)
+                    else if (isReal(v1) && isInt(v2)) asReal(v1) - asInt(v2)
+                    else if (isReal(v1) && isReal(v2)) asReal(v1) - asReal(v2)
                     else
                         throw rtBinaryOpError("-", v1, v2)
 
@@ -398,11 +446,11 @@ trait NCDslCompilerBase {
 
         if (minus != null)
             stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
 
                 val z =
-                    if (isJDouble(v)) -asJDouble(v)
-                    else if (isJLong(v)) -asJLong(v)
+                    if (isReal(v)) -asReal(v)
+                    else if (isInt(v)) -asInt(v)
                     else
                         throw rtUnaryOpError("-", v)
 
@@ -412,7 +460,7 @@ trait NCDslCompilerBase {
             assert(not != null)
 
             stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
 
                 if (isBool(v)) Z(!asBool(v), n)
                 else
@@ -491,7 +539,7 @@ trait NCDslCompilerBase {
             as(v)
         }
         def toStr(v: Object): String = toX("string", v, isStr, asStr)
-        def toJDouble(v: Object): JDouble = toX("double", v, isJDouble, asJDouble)
+        def toJDouble(v: Object): JDouble = toX("double", v, isReal, asReal)
         def toJList(v: Object): JList[_] = toX("list", v, isJList, asJList)
         def toJMap(v: Object): JMap[_, _] = toX("map", v, isJMap, asJMap)
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
@@ -502,8 +550,8 @@ trait NCDslCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val NCIdlStackItem(v1, n1) = x1()
+                    val NCIdlStackItem(v2, n2) = x2()
 
                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2))), n1 + n2)
                 }
@@ -515,8 +563,8 @@ trait NCDslCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val NCIdlStackItem(v1, n1) = x1()
+                    val NCIdlStackItem(v2, n2) = x2()
 
                     Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip)), n1 + n2)
                 }
@@ -536,7 +584,7 @@ trait NCDslCompilerBase {
                 var z = 0
 
                 dump.reverse.foreach { x ⇒
-                    val Z(v, n) = x()
+                    val NCIdlStackItem(v, n) = x()
 
                     z += n
 
@@ -551,7 +599,7 @@ trait NCDslCompilerBase {
             val x = arg1()
             
             stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
         
                 val jl = toJList(v)
         
@@ -565,7 +613,7 @@ trait NCDslCompilerBase {
             val x = arg1()
     
             stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
                 
                 val lst = toJList(v).asInstanceOf[util.List[Object]]
                 
@@ -584,7 +632,7 @@ trait NCDslCompilerBase {
             val x = arg1()
         
             stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
             
                 val lst = toJList(v).asInstanceOf[util.List[Object]]
             
@@ -603,7 +651,7 @@ trait NCDslCompilerBase {
             val x = arg1()
         
             stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
             
                 val jl = toJList(v)
                 
@@ -617,8 +665,8 @@ trait NCDslCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val NCIdlStackItem(v1, n1) = x1()
+                val NCIdlStackItem(v2, n2) = x2()
 
                 Z(toJList(v1).contains(v2), n1 + n2)
             })
@@ -628,13 +676,13 @@ trait NCDslCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(col, n1) = x1()
-                val Z(key, n2) = x2()
+                val NCIdlStackItem(col, n1) = x1()
+                val NCIdlStackItem(key, n2) = x2()
                 val n = n1 + n2
 
                 if (isJList(col)) {
-                    if (isJLong(key))
-                        Z(asJList(col).get(asJLong(key).intValue()).asInstanceOf[Object], n)
+                    if (isInt(key))
+                        Z(asJList(col).get(asInt(key).intValue()).asInstanceOf[Object], n)
                     else
                         throw rtParamTypeError(fun, key, "numeric")
                 }
@@ -647,7 +695,7 @@ trait NCDslCompilerBase {
 
         def doAbs(): Unit = arg1() match {
             case x ⇒ stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
 
                 v match {
                     case a: JLong ⇒ Z(Math.abs(a), n)
@@ -659,7 +707,7 @@ trait NCDslCompilerBase {
 
         def doSquare(): Unit = arg1() match {
             case x ⇒ stack.push(() ⇒ {
-                val Z(v, n) = x()
+                val NCIdlStackItem(v, n) = x()
 
                 v match {
                     case a: JLong ⇒ Z(a * a, n)
@@ -673,15 +721,15 @@ trait NCDslCompilerBase {
             val (x1, x2, x3) = arg3()
 
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
+                val NCIdlStackItem(v1, n1) = x1()
 
                 if (toBool(v1)) {
-                    val Z(v2, n2) = x2()
+                    val NCIdlStackItem(v2, n2) = x2()
 
                     Z(v2, n1 + n2)
                 }
                 else {
-                    val Z(v3, n3) = x3()
+                    val NCIdlStackItem(v3, n3) = x3()
 
                     Z(v3, n1 + n3)
                 }
@@ -693,8 +741,8 @@ trait NCDslCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(t, n1) = x1()
-                val Z(a, n2) = x2()
+                val NCIdlStackItem(t, n1) = x1()
+                val NCIdlStackItem(a, n2) = x2()
 
                 val tok = toToken(t)
                 val aliasId = toStr(a)
@@ -721,8 +769,8 @@ trait NCDslCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(t, n1) = x1()
-                val Z(a, n2) = x2()
+                val NCIdlStackItem(t, n1) = x1()
+                val NCIdlStackItem(a, n2) = x2()
 
                 val tok = toToken(t)
                 val aliasId = toStr(a)
@@ -736,19 +784,19 @@ trait NCDslCompilerBase {
 
         fun match {
             // Metadata access.
-            case "meta_part" ⇒ z[(T, T)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(toToken(v1).meta[Object](toStr(v2)), n1 + n2) })
-            case "meta_token" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(tok.meta[Object](toStr(v)), 1) })
-            case "meta_model" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(tok.getModel.meta[Object](toStr(v)), 0) })
-            case "meta_intent" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(termCtx.intentMeta.get(toStr(v)).orNull, 0) })
-            case "meta_req" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(termCtx.req.getRequestData.get(toStr(v)), 0) })
-            case "meta_user" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(termCtx.req.getUser.getMetadata.get(toStr(v)), 0) })
-            case "meta_company" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(termCtx.req.getCompany.getMetadata.get(v), 0) })
-            case "meta_sys" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(U.sysEnv(toStr(v)).orNull, 0) })
-            case "meta_conv" ⇒ z[T](arg1, { x ⇒ val Z(v, _) = x(); Z(termCtx.convMeta.get(toStr(v)).orNull, 0) })
-            case "meta_frag" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(termCtx.fragMeta.get(toStr(v)).orNull, f) })
+            case "meta_part" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, n1) = x._1(); val NCIdlStackItem(v2, n2) = x._2(); Z(toToken(v1).meta[Object](toStr(v2)), n1 + n2) })
+            case "meta_token" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(tok.meta[Object](toStr(v)), 1) })
+            case "meta_model" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(tok.getModel.meta[Object](toStr(v)), 0) })
+            case "meta_intent" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.intentMeta.get(toStr(v)).orNull, 0) })
+            case "meta_req" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.req.getRequestData.get(toStr(v)), 0) })
+            case "meta_user" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.req.getUser.getMetadata.get(toStr(v)), 0) })
+            case "meta_company" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.req.getCompany.getMetadata.get(v), 0) })
+            case "meta_sys" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(U.sysEnv(toStr(v)).orNull, 0) })
+            case "meta_conv" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.convMeta.get(toStr(v)).orNull, 0) })
+            case "meta_frag" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(termCtx.fragMeta.get(toStr(v)).orNull, f) })
 
             // Converts JSON to map.
-            case "json" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(U.jsonToJavaMap(asStr(v)), f) })
+            case "json" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(U.jsonToJavaMap(asStr(v)), f) })
 
             // Inline if-statement.
             case "if" ⇒ doIf()
@@ -762,9 +810,9 @@ trait NCDslCompilerBase {
             case "aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getAliases, 1) }) }
             case "start_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getStartCharIndex, 1) }) }
             case "end_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getEndCharIndex, 1) }) }
-            case "this" ⇒ z0(() ⇒ Z(tok, 1))
-            case "part" ⇒ doPart()
-            case "parts" ⇒ doParts()
+            case "token" ⇒ z0(() ⇒ Z(tok, 1))
+            case "find_part" ⇒ doPart()
+            case "find_parts" ⇒ doParts()
 
             // Request data.
             case "req_id" ⇒ z0(() ⇒ Z(termCtx.req.getServerRequestId, 0))
@@ -792,16 +840,16 @@ trait NCDslCompilerBase {
             case "comp_postcode" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getPostalCode, 0))
 
             // String functions.
-            case "trim" | "strip" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toStr(v).trim, f) })
-            case "uppercase" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toStr(v).toUpperCase, f) })
-            case "lowercase" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toStr(v).toLowerCase, f) })
-            case "is_alpha" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlpha(toStr(v)), f) })
-            case "is_alphanum" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphanumeric(toStr(v)), f) })
-            case "is_whitespace" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isWhitespace(toStr(v)), f) })
-            case "is_num" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isNumeric(toStr(v)), f) })
-            case "is_numspace" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isNumericSpace(toStr(v)), f) })
-            case "is_alphaspace" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphaSpace(toStr(v)), f) })
-            case "is_alphanumspace" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) }) 
+            case "trim" | "strip" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toStr(v).trim, f) })
+            case "uppercase" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toStr(v).toUpperCase, f) })
+            case "lowercase" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toStr(v).toLowerCase, f) })
+            case "is_alpha" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlpha(toStr(v)), f) })
+            case "is_alphanum" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphanumeric(toStr(v)), f) })
+            case "is_whitespace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isWhitespace(toStr(v)), f) })
+            case "is_num" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isNumeric(toStr(v)), f) })
+            case "is_numspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isNumericSpace(toStr(v)), f) })
+            case "is_alphaspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphaSpace(toStr(v)), f) })
+            case "is_alphanumspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) })
             case "substring" ⇒
             case "charAt" ⇒
             case "regex" ⇒
@@ -813,35 +861,35 @@ trait NCDslCompilerBase {
             // Math functions.
             case "abs" ⇒ doAbs()
             case "ceil" ⇒ arg1() match { case item ⇒ stack.push(() ⇒ {
-                val Z(v, f) = item()
+                val NCIdlStackItem(v, f) = item()
 
                 Z(Math.ceil(toJDouble(v)), f)
             }) }
-            case "floor" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toJDouble(v)), f) }) 
-            case "rint" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toJDouble(v)), f) }) 
-            case "round" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toJDouble(v)), f) }) 
-            case "signum" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.signum(toJDouble(v)), f) }) 
-            case "sqrt" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sqrt(toJDouble(v)), f) }) 
-            case "cbrt" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cbrt(toJDouble(v)), f) }) 
-            case "acos" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.acos(toJDouble(v)), f) }) 
-            case "asin" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.asin(toJDouble(v)), f) }) 
-            case "atan" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.atan(toJDouble(v)), f) }) 
-            case "cos" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cos(toJDouble(v)), f) }) 
-            case "sin" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sin(toJDouble(v)), f) }) 
-            case "tan" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tan(toJDouble(v)), f) }) 
-            case "cosh" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toJDouble(v)), f) }) 
-            case "sinh" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toJDouble(v)), f) }) 
-            case "tanh" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toJDouble(v)), f) }) 
-            case "atn2" ⇒ z[(T, T)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.atan2(toJDouble(v1), toJDouble(v2)), n1 + n2) })
-            case "degrees" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toJDouble(v)), f) }) 
-            case "radians" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toJDouble(v)), f) }) 
-            case "exp" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toJDouble(v)), f) }) 
-            case "expm1" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.expm1(toJDouble(v)), f) }) 
-            case "hypot" ⇒ z[(T, T)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.hypot(toJDouble(v1), toJDouble(v2)), n1 + n2) })
-            case "log" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log(toJDouble(v)), f) }) 
-            case "log10" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log10(toJDouble(v)), f) }) 
-            case "log1p" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) }) 
-            case "pow" ⇒ z[(T, T)](arg2, { x ⇒ val Z(v1, f1) = x._1(); val Z(v2, f2) = x._2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 + f2 + 1) })
+            case "floor" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.floor(toJDouble(v)), f) })
+            case "rint" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.rint(toJDouble(v)), f) })
+            case "round" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.round(toJDouble(v)), f) })
+            case "signum" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.signum(toJDouble(v)), f) })
+            case "sqrt" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.sqrt(toJDouble(v)), f) })
+            case "cbrt" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.cbrt(toJDouble(v)), f) })
+            case "acos" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.acos(toJDouble(v)), f) })
+            case "asin" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.asin(toJDouble(v)), f) })
+            case "atan" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z( Math.atan(toJDouble(v)), f) })
+            case "cos" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.cos(toJDouble(v)), f) })
+            case "sin" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.sin(toJDouble(v)), f) })
+            case "tan" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.tan(toJDouble(v)), f) })
+            case "cosh" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.cosh(toJDouble(v)), f) })
+            case "sinh" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.sinh(toJDouble(v)), f) })
+            case "tanh" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.tanh(toJDouble(v)), f) })
+            case "atn2" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, n1) = x._1(); val NCIdlStackItem(v2, n2) = x._2(); Z(Math.atan2(toJDouble(v1), toJDouble(v2)), n1 + n2) })
+            case "degrees" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.toDegrees(toJDouble(v)), f) })
+            case "radians" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z( Math.toRadians(toJDouble(v)), f) })
+            case "exp" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.exp(toJDouble(v)), f) })
+            case "expm1" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.expm1(toJDouble(v)), f) })
+            case "hypot" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, n1) = x._1(); val NCIdlStackItem(v2, n2) = x._2(); Z(Math.hypot(toJDouble(v1), toJDouble(v2)), n1 + n2) })
+            case "log" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.log(toJDouble(v)), f) })
+            case "log10" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.log10(toJDouble(v)), f) })
+            case "log1p" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) })
+            case "pow" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, f1) = x._1(); val NCIdlStackItem(v2, f2) = x._2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 + f2 + 1) })
             case "square" ⇒ doSquare()
             case "pi" ⇒ z0(() ⇒ Z(Math.PI, 0))
             case "euler" ⇒ z0(() ⇒ Z(Math.E, 0))
@@ -851,16 +899,16 @@ trait NCDslCompilerBase {
             case "list" ⇒ doList()
             case "get" ⇒ doGet()
             case "has" ⇒ doHas()
-            case "first" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)})
-            case "last" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], f)}) 
-            case "keys" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) }) 
-            case "values" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) }) 
-            case "size" | "count" | "length" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).size(), f)})
+            case "first" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)})
+            case "last" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], f)})
+            case "keys" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) })
+            case "values" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) })
+            case "size" | "count" | "length" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toJList(v).size(), f)})
             case "reverse" ⇒ doReverse()
             case "sort" ⇒ doSort()
-            case "is_empty" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).isEmpty, f) }) 
-            case "non_empty" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(!toJList(v).isEmpty, f) }) 
-            case "to_string" ⇒ z[T](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) }) 
+            case "is_empty" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toJList(v).isEmpty, f) })
+            case "non_empty" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(!toJList(v).isEmpty, f) })
+            case "to_string" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) })
 
             // Statistical operations on lists.
             case "avg" ⇒

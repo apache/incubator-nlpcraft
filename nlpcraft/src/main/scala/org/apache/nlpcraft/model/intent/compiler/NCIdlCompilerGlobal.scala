@@ -21,10 +21,10 @@ import scala.collection.concurrent.TrieMap
 import scala.collection.mutable
 
 /**
- * Global DSL compiler state.
+ * Global IDL compiler state.
  */
-object NCDslCompilerGlobal {
-    private final val fragCache = TrieMap.empty[String /* Model ID. */ , mutable.Map[String, NCDslFragment]]
+object NCIdlCompilerGlobal {
+    private final val fragCache = TrieMap.empty[String /* Model ID. */ , mutable.Map[String, NCIdlFragment]]
     private final val importCache = mutable.HashSet.empty[String]
 
     /**
@@ -47,7 +47,7 @@ object NCDslCompilerGlobal {
      *
      * @param mdlId
      */
-    def clearCache(mdlId: String): Unit = fragCache += mdlId → mutable.HashMap.empty[String, NCDslFragment]
+    def clearCache(mdlId: String): Unit = fragCache += mdlId → mutable.HashMap.empty[String, NCIdlFragment]
 
     /**
      *
@@ -67,9 +67,9 @@ object NCDslCompilerGlobal {
      * @param mdlId
      * @param frag
      */
-    def addFragment(mdlId: String, frag: NCDslFragment): Unit =
+    def addFragment(mdlId: String, frag: NCIdlFragment): Unit =
         fragCache.getOrElse(mdlId, {
-            val m = mutable.HashMap.empty[String, NCDslFragment]
+            val m = mutable.HashMap.empty[String, NCIdlFragment]
 
             fragCache += mdlId → m
 
@@ -82,6 +82,6 @@ object NCDslCompilerGlobal {
      * @param fragId
      * @return
      */
-    def getFragment(mdlId: String, fragId: String): Option[NCDslFragment] =
+    def getFragment(mdlId: String, fragId: String): Option[NCIdlFragment] =
         fragCache.get(mdlId).flatMap(_.get(fragId))
 }

@@ -80,5 +80,5 @@ case class NCIntentSolverVariant(tokens: util.List[NCToken]) extends Ordered[NCI
         else 0
     }
 
-    override def toString: String = s"${y("<")}$userToks, $wordCnt, $totalUserDirect, $avgWordsPerTokPct, $totalSparsity${y(">")}"
+    def toAnsiString: String = s"${y(bo("["))}$userToks, $wordCnt, $totalUserDirect, $avgWordsPerTokPct, $totalSparsity${y(bo("]"))}"
 }

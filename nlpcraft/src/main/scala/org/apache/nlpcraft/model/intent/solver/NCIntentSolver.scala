@@ -24,7 +24,7 @@ import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
 import org.apache.nlpcraft.common.util.NCUtils
 import org.apache.nlpcraft.model.impl.NCVariantImpl
-import org.apache.nlpcraft.model.intent.NCDslIntent
+import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.{NCContext, NCIntentMatch, NCIntentSkip, NCModel, NCRejection, NCResult, NCToken, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
@@ -33,7 +33,7 @@ import scala.collection.JavaConverters._
 /**
  * Front-end for intent solver.
  */
-class NCIntentSolver(intents: List[(NCDslIntent/*Intent*/, NCIntentMatch ⇒ NCResult/*Callback*/)])
+class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCResult/*Callback*/)])
     extends LazyLogging with NCOpenCensusTrace {
     class RedoSolver extends RuntimeException
 

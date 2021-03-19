@@ -75,7 +75,7 @@ object NCUtils extends LazyLogging {
     private final val ANSI_SEQ = Pattern.compile("\u001B\\[[?;\\d]*[a-zA-Z]")
 
     final val REGEX_FIX = "//"
-    final val DSL_FIX = "^^"
+    final val IDL_FIX = "^^"
 
     final val DFLT_PROBE_TOKEN = "3141592653589793"
 

@@ -22,10 +22,10 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIntentDslBaseListener, NCIntentDslLexer, NCIntentDslParser ⇒ IDP}
-import org.apache.nlpcraft.model.intent.compiler.{NCDslCompilerGlobal ⇒ Global}
+import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser ⇒ IDP}
+import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal ⇒ Global}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.{NCDslContext, NCDslIntent, NCDslSynonym, NCDslTerm, NCDslTokenPredicate}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlIntent, NCIdlSynonym, NCIdlTerm, NCIdlTokenPredicate}
 
 import java.io._
 import java.net._
@@ -35,24 +35,24 @@ import java.util.regex.{Pattern, PatternSyntaxException}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object NCDslCompiler extends LazyLogging {
+object NCIdlCompiler extends LazyLogging {
     // Compiler caches.
-    private val intentCache = new mutable.HashMap[String, Set[NCDslIntent]]
-    private val synCache = new mutable.HashMap[String, NCDslSynonym]
+    private val intentCache = new mutable.HashMap[String, Set[NCIdlIntent]]
+    private val synCache = new mutable.HashMap[String, NCIdlSynonym]
 
     /**
       *
       * @param origin
-      * @param dsl
+      * @param idl
       * @param mdl
       */
-    class FiniteStateMachine(origin: String, dsl: String, mdl: NCModel) extends NCIntentDslBaseListener with NCDslCompilerBase {
+    class FiniteStateMachine(origin: String, idl: String, mdl: NCModel) extends NCIdlBaseListener with NCIdlCompilerBase {
         // Actual value for '*' as in min/max shortcut.
         final private val MINMAX_MAX = 100
-        
+
         // Accumulators for parsed objects.
-        private val intents = ArrayBuffer.empty[NCDslIntent]
-        private var synonym: NCDslSynonym = _
+        private val intents = ArrayBuffer.empty[NCIdlIntent]
+        private var synonym: NCIdlSynonym = _
 
         // Synonym.
         private var alias: String = _
@@ -68,7 +68,7 @@ object NCDslCompiler extends LazyLogging {
         private var intentMeta: ScalaMeta = _
 
         // Accumulator for parsed terms.
-        private val terms = ArrayBuffer.empty[NCDslTerm]
+        private val terms = ArrayBuffer.empty[NCIdlTerm]
 
         // Currently term.
         private var termId: String = _
@@ -88,13 +88,13 @@ object NCDslCompiler extends LazyLogging {
          *
          * @return
          */
-        def getCompiledIntents: Set[NCDslIntent] = intents.toSet
+        def getCompiledIntents: Set[NCIdlIntent] = intents.toSet
 
         /**
          *
          * @return
          */
-        def getCompiledSynonym: NCDslSynonym = synonym
+        def getCompiledSynonym: NCIdlSynonym = synonym
 
         /*
          * Shared/common implementation.
@@ -113,10 +113,10 @@ object NCDslCompiler extends LazyLogging {
         override def exitOrderedDecl(ctx: IDP.OrderedDeclContext): Unit = ordered = ctx.BOOL().getText == "true"
         override def exitIntentId(ctx: IDP.IntentIdContext): Unit =  intentId = ctx.id().getText
         override def exitAlias(ctx: IDP.AliasContext): Unit = alias = ctx.id().getText
-    
+
         override def enterCallExpr(ctx: IDP.CallExprContext): Unit =
-            instrs += ((_, stack: NCDslStack, _) ⇒ stack.push(stack.PLIST_MARKER))
-    
+            instrs += ((_, stack: NCIdlStack, _) ⇒ stack.push(stack.PLIST_MARKER))
+
         /**
          *
          * @param min
@@ -126,7 +126,7 @@ object NCDslCompiler extends LazyLogging {
             this.min = min
             this.max = max
         }
-    
+
         override def exitMinMaxShortcut(ctx: IDP.MinMaxShortcutContext): Unit = {
             if (ctx.PLUS() != null)
                 setMinMax(1, MINMAX_MAX)
@@ -145,14 +145,14 @@ object NCDslCompiler extends LazyLogging {
             try {
                 val min = java.lang.Integer.parseInt(minStr)
                 val max = java.lang.Integer.parseInt(maxStr)
-                
+
                 if (min < 0)
                     throw newSyntaxError(s"Min value cannot be negative: $min")(ctx)
                 if (min > max)
                     throw newSyntaxError(s"Min value '$min' cannot be greater than max value '$min'.")(ctx)
                 if (max > MINMAX_MAX)
                     throw newSyntaxError(s"Max value '$max' cannot be greater than '$MINMAX_MAX'.")(ctx)
-                
+
                 setMinMax(min, max)
             }
             catch {
@@ -180,7 +180,7 @@ object NCDslCompiler extends LazyLogging {
 
             val pred = instrToPredicate("Synonym")
             val capture = alias
-            val wrapper: NCDslTokenPredicate = (tok: NCToken, ctx: NCDslContext) ⇒ {
+            val wrapper: NCIdlTokenPredicate = (tok: NCToken, ctx: NCIdlContext) ⇒ {
                 val (res, tokUses) = pred(tok, ctx)
 
                 // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.
@@ -199,7 +199,7 @@ object NCDslCompiler extends LazyLogging {
                 (res, tokUses)
             }
 
-            synonym = NCDslSynonym(origin, Option(alias), wrapper)
+            synonym = NCIdlSynonym(origin, Option(alias), wrapper)
 
             alias = null
             instrs.clear()
@@ -254,12 +254,12 @@ object NCDslCompiler extends LazyLogging {
             if (max < 1)
                 throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
 
-            val pred: NCDslTokenPredicate = if (refMtdName.isDefined) { // User-code defined term.
+            val pred: NCIdlTokenPredicate = if (refMtdName.isDefined) { // User-code defined term.
                 // Closure copies.
                 val clsName = refClsName.orNull
                 val mtdName = refMtdName.orNull
 
-                (tok: NCToken, termCtx: NCDslContext) ⇒ {
+                (tok: NCToken, termCtx: NCIdlContext) ⇒ {
                     val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
                         override lazy val getRequest: NCRequest = termCtx.req
                         override lazy val getToken: NCToken = tok
@@ -288,11 +288,11 @@ object NCDslCompiler extends LazyLogging {
                     }
                 }
             }
-            else  // DSL-defined term.
+            else  // IDL term.
                 instrToPredicate("Intent term")(ctx.expr())
 
             // Add term.
-            terms += NCDslTerm(
+            terms += NCIdlTerm(
                 ctx.getText,
                 Option(termId),
                 pred,
@@ -314,12 +314,12 @@ object NCDslCompiler extends LazyLogging {
          * @param subj
          * @return
          */
-        private def instrToPredicate(subj: String)(implicit ctx: PRC): NCDslTokenPredicate = {
+        private def instrToPredicate(subj: String)(implicit ctx: PRC): NCIdlTokenPredicate = {
             val code = mutable.Buffer.empty[I]
 
             code ++= instrs
 
-            (tok: NCToken, termCtx: NCDslContext) ⇒ {
+            (tok: NCToken, termCtx: NCIdlContext) ⇒ {
                 val stack = new S()
 
                 // Execute all instructions.
@@ -337,41 +337,41 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def exitFrag(ctx: IDP.FragContext): Unit = {
-            Global.addFragment(mdl.getId, NCDslFragment(fragId, terms.toList))
+            Global.addFragment(mdl.getId, NCIdlFragment(fragId, terms.toList))
 
             terms.clear()
             fragId = null
         }
-    
+
         /**
           *
           * @param intent
           * @param ctx
           */
-        private def addIntent(intent: NCDslIntent)(implicit ctx: ParserRuleContext): Unit = {
+        private def addIntent(intent: NCIdlIntent)(implicit ctx: ParserRuleContext): Unit = {
             val intentId = intent.id
-            
+
             if (intents.exists(_.id == intentId))
                 throw newSyntaxError(s"Duplicate intent ID: $intentId")
-                
+
             intents += intent
         }
-    
+
         override def exitImp(ctx: IDP.ImpContext): Unit = {
             val x = U.trimQuotes(ctx.qstring().getText)
 
             if (Global.hasImport(x))
-                logger.warn(s"Ignoring already processed DSL import '$x' in: $origin")
+                logger.warn(s"Ignoring already processed IDL import '$x' in: $origin")
             else {
                 Global.addImport(x)
 
-                var imports: Set[NCDslIntent] = null
+                var imports: Set[NCIdlIntent] = null
 
                 val file = new File(x)
 
                 // First, try absolute path.
                 if (file.exists())
-                    imports = NCDslCompiler.compileIntents(
+                    imports = NCIdlCompiler.compileIntents(
                         U.readFile(file).mkString("\n"),
                         mdl,
                         x
@@ -382,7 +382,7 @@ object NCDslCompiler extends LazyLogging {
                     val in = mdl.getClass.getClassLoader.getResourceAsStream(x)
 
                     if (in != null)
-                        imports = NCDslCompiler.compileIntents(
+                        imports = NCIdlCompiler.compileIntents(
                             U.readStream(in).mkString("\n"),
                             mdl,
                             x
@@ -392,7 +392,7 @@ object NCDslCompiler extends LazyLogging {
                 // Finally, try as URL resource.
                 if (imports == null) {
                     try
-                        imports = NCDslCompiler.compileIntents(
+                        imports = NCIdlCompiler.compileIntents(
                             U.readStream(new URL(x).openStream()).mkString("\n"),
                             mdl,
                             x
@@ -407,12 +407,12 @@ object NCDslCompiler extends LazyLogging {
                 imports.foreach(addIntent(_)(ctx.qstring()))
             }
         }
-        
+
         override def exitIntent(ctx: IDP.IntentContext): Unit = {
             addIntent(
-                NCDslIntent(
+                NCIdlIntent(
                     origin,
-                    dsl,
+                    idl,
                     intentId,
                     ordered,
                     if (intentMeta == null) Map.empty else intentMeta,
@@ -430,10 +430,10 @@ object NCDslCompiler extends LazyLogging {
         }
 
         override def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE =
-            throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, dsl, origin, mdl))
+            throw new NCE(mkSyntaxError(errMsg, srcName, line, pos, idl, origin, mdl))
 
         override def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE =
-            throw new NCE(mkRuntimeError(errMsg, srcName, line, pos, dsl, origin, mdl), cause)
+            throw new NCE(mkRuntimeError(errMsg, srcName, line, pos, idl, origin, mdl), cause)
     }
 
     /**
@@ -442,8 +442,8 @@ object NCDslCompiler extends LazyLogging {
      * @param srcName
      * @param line
      * @param charPos
-     * @param dsl
-     * @param origin DSL origin.
+     * @param idl
+     * @param origin IDL origin.
      * @param mdl
      * @return
      */
@@ -452,9 +452,9 @@ object NCDslCompiler extends LazyLogging {
         srcName: String,
         line: Int, // 1, 2, ...
         charPos: Int, // 0, 1, 2, ...
-        dsl: String,
+        idl: String,
         origin: String,
-        mdl: NCModel): String = mkError("syntax", msg, srcName, line, charPos, dsl, origin, mdl)
+        mdl: NCModel): String = mkError("syntax", msg, srcName, line, charPos, idl, origin, mdl)
 
     /**
      *
@@ -462,8 +462,8 @@ object NCDslCompiler extends LazyLogging {
      * @param srcName
      * @param line
      * @param charPos
-     * @param dsl
-     * @param origin DSL origin.
+     * @param idl
+     * @param origin IDL origin.
      * @param mdl
      * @return
      */
@@ -472,9 +472,9 @@ object NCDslCompiler extends LazyLogging {
         srcName: String,
         line: Int, // 1, 2, ...
         charPos: Int, // 0, 1, 2, ...
-        dsl: String,
+        idl: String,
         origin: String,
-        mdl: NCModel): String = mkError("runtime", msg, srcName, line, charPos, dsl, origin, mdl)
+        mdl: NCModel): String = mkError("runtime", msg, srcName, line, charPos, idl, origin, mdl)
 
     /**
      *
@@ -483,8 +483,8 @@ object NCDslCompiler extends LazyLogging {
      * @param srcName
      * @param line
      * @param charPos
-     * @param dsl
-     * @param origin DSL origin.
+     * @param idl
+     * @param origin IDL origin.
      * @param mdl
      * @return
      */
@@ -494,25 +494,25 @@ object NCDslCompiler extends LazyLogging {
         srcName: String,
         line: Int,
         charPos: Int,
-        dsl: String,
+        idl: String,
         origin: String,
         mdl: NCModel): String = {
-        val dslLine = dsl.split("\n")(line - 1)
-        val dash = "-" * dslLine.length
+        val idlLine = idl.split("\n")(line - 1)
+        val dash = "-" * idlLine.length
         val pos = Math.max(0, charPos)
         val posPtr = dash.substring(0, pos) + r("^") + y(dash.substring(pos + 1))
-        val dslPtr = dslLine.substring(0, pos) + r(dslLine.charAt(pos)) + y(dslLine.substring(pos + 1))
+        val idlPtr = idlLine.substring(0, pos) + r(idlLine.charAt(pos)) + y(idlLine.substring(pos + 1))
         val aMsg = U.decapitalize(msg) match {
             case s: String if s.last == '.' ⇒ s
             case s: String ⇒ s + '.'
         }
 
-        s"DSL $kind error in '$srcName' at line $line:${charPos + 1} - $aMsg\n" +
+        s"IDL $kind error in '$srcName' at line $line:${charPos + 1} - $aMsg\n" +
             s"  |-- ${c("Model ID:")} ${mdl.getId}\n" +
             s"  |-- ${c("Model origin:")} ${mdl.getOrigin}\n" +
             s"  |-- ${c("Intent origin:")} $origin\n" +
             s"  |-- $RST$W--------------$RST\n" +
-            s"  |-- ${c("Line:")}     $dslPtr\n" +
+            s"  |-- ${c("Line:")}     $idlPtr\n" +
             s"  +-- ${c("Position:")} $posPtr"
     }
 
@@ -521,7 +521,7 @@ object NCDslCompiler extends LazyLogging {
      *
      * @param dsl
      * @param mdl
-     * @param origin DSL origin.
+     * @param origin IDL origin.
      */
     class CompilerErrorListener(dsl: String, mdl: NCModel, origin: String) extends BaseErrorListener {
         /**
@@ -545,27 +545,27 @@ object NCDslCompiler extends LazyLogging {
 
     /**
      *
-     * @param dsl
+     * @param idl
      * @param mdl
      * @param srcName
      * @return
      */
     private def parseIntents(
-        dsl: String,
+        idl: String,
         mdl: NCModel,
         srcName: String
-    ): Set[NCDslIntent] = {
-        require(dsl != null)
+    ): Set[NCIdlIntent] = {
+        require(idl != null)
         require(mdl != null)
         require(srcName != null)
 
-        val x = dsl.strip()
+        val x = idl.strip()
 
-        val intents: Set[NCDslIntent] = intentCache.getOrElseUpdate(x, {
+        val intents: Set[NCIdlIntent] = intentCache.getOrElseUpdate(x, {
             val (fsm, parser) = antlr4Armature(x, mdl, srcName)
 
-            // Parse the input DSL and walk built AST.
-            (new ParseTreeWalker).walk(fsm, parser.dsl())
+            // Parse the input IDL and walk built AST.
+            (new ParseTreeWalker).walk(fsm, parser.idl())
 
             // Return the compiled intents.
             fsm.getCompiledIntents
@@ -576,24 +576,24 @@ object NCDslCompiler extends LazyLogging {
 
     /**
      *
-     * @param dsl
+     * @param idl
      * @param mdl
      * @return
      */
     private def parseSynonym(
-        dsl: String,
+        idl: String,
         mdl: NCModel,
         origin: String
-    ): NCDslSynonym = {
-        require(dsl != null)
+    ): NCIdlSynonym = {
+        require(idl != null)
         require(mdl != null)
 
-        val x = dsl.strip()
+        val x = idl.strip()
 
-        val syn: NCDslSynonym = synCache.getOrElseUpdate(x, {
+        val syn: NCIdlSynonym = synCache.getOrElseUpdate(x, {
             val (fsm, parser) = antlr4Armature(x, mdl, origin)
 
-            // Parse the input DSL and walk built AST.
+            // Parse the input IDL and walk built AST.
             (new ParseTreeWalker).walk(fsm, parser.synonym())
 
             // Return the compiled synonym.
@@ -605,56 +605,56 @@ object NCDslCompiler extends LazyLogging {
 
     /**
      *
-     * @param dsl
+     * @param idl
      * @param mdl
      * @param origin
      * @return
      */
     private def antlr4Armature(
-        dsl: String,
+        idl: String,
         mdl: NCModel,
         origin: String
     ): (FiniteStateMachine, IDP) = {
-        val lexer = new NCIntentDslLexer(CharStreams.fromString(dsl, origin))
+        val lexer = new NCIdlLexer(CharStreams.fromString(idl, origin))
         val parser = new IDP(new CommonTokenStream(lexer))
 
         // Set custom error handlers.
         lexer.removeErrorListeners()
         parser.removeErrorListeners()
-        lexer.addErrorListener(new CompilerErrorListener(dsl, mdl, origin))
-        parser.addErrorListener(new CompilerErrorListener(dsl, mdl, origin))
+        lexer.addErrorListener(new CompilerErrorListener(idl, mdl, origin))
+        parser.addErrorListener(new CompilerErrorListener(idl, mdl, origin))
 
         // State automata + it's parser.
-        new FiniteStateMachine(origin, dsl, mdl) → parser
+        new FiniteStateMachine(origin, idl, mdl) → parser
     }
 
     /**
      * Compiles inline (supplied) fragments and/or intents. Note that fragments are accumulated in a static
      * map keyed by model ID. Only intents are returned, if any.
      *
-     * @param dsl Intent DSL to compile.
-     * @param mdl Model DSL belongs to.
+     * @param idl Intent IDL to compile.
+     * @param mdl Model IDL belongs to.
      * @param origin Optional source name.
      * @return
      */
     @throws[NCE]
     def compileIntents(
-        dsl: String,
+        idl: String,
         mdl: NCModel,
         origin: String
-    ): Set[NCDslIntent] = parseIntents(dsl, mdl, origin)
+    ): Set[NCIdlIntent] = parseIntents(idl, mdl, origin)
 
     /**
       *
-      * @param dsl Synonym DSL to compile.
-      * @param mdl Model DSL belongs to.*
+      * @param idl Synonym IDL to compile.
+      * @param mdl Model IDL belongs to.*
       * @param origin Source name.
       * @return
       */
     @throws[NCE]
     def compileSynonym(
-        dsl: String,
+        idl: String,
         mdl: NCModel,
         origin: String,
-    ): NCDslSynonym = parseSynonym(dsl, mdl, origin)
+    ): NCIdlSynonym = parseSynonym(idl, mdl, origin)
 }

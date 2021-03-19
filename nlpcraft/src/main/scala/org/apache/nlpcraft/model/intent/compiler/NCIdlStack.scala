@@ -15,21 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent
+package org.apache.nlpcraft.model.intent.compiler
 
-import org.apache.nlpcraft.model.NCToken
+import scala.collection.mutable
 
 /**
- * DSl synonym.
- *
- * @param alias
- * @param pred
- */
-case class NCDslSynonym(
-    origin: String,
-    alias: Option[String],
-    pred: NCDslTokenPredicate,
-) {
-    require(origin != null)
-    require(pred != null)
+  *
+  */
+case class NCIdlStackItem (
+    value: Object,
+    tokUse: Int
+)
+
+object NCIdlStackItem {
+    def apply(v: Boolean, f: Int): NCIdlStackItem = new NCIdlStackItem(Boolean.box(v), f)
+    def apply(v: Long, f: Int): NCIdlStackItem = new NCIdlStackItem(Long.box(v), f)
+    def apply(v: Double, f: Int): NCIdlStackItem = new NCIdlStackItem(Double.box(v), f)
+}
+
+/**
+  *
+  */
+trait NCIdlStackType extends (() ⇒ NCIdlStackItem)
+
+/**
+  *
+  */
+class NCIdlStack extends mutable.ArrayStack[NCIdlStackType] {
+    /**
+      * Special marker for stack frames.
+      */
+    final val PLIST_MARKER: NCIdlStackType = () ⇒ { NCIdlStackItem(null, 0) }
 }

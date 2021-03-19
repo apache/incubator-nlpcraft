@@ -140,7 +140,7 @@ public interface NCToken extends NCMetadata {
 
                 if (!found)
                     // Check aliases if not found by ID.
-                    for (String alias : getAliases()) {
+                    for (String alias : part.getAliases()) {
                         found = Arrays.binarySearch(idOrAlias, alias) >= 0;
 
                         if (found)
@@ -160,7 +160,7 @@ public interface NCToken extends NCMetadata {
 
     /**
      * Gets optional set of aliases this token is known by. Token can get an alias if it is a part of
-     * other composed token and token DSL expression that was used to match it specified an alias. Note
+     * other composed token and IDL expression that was used to match it specified an alias. Note
      * that token can have zero, one or more aliases.
      *
      * @return List of aliases this token is known by. Can be empty, but never {@code null}.

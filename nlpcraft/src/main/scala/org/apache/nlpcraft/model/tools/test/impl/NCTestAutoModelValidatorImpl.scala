@@ -101,7 +101,7 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
 
         val tbl = NCAsciiTable()
 
-        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "Execution time")
+        tbl #= ("Model ID", "Intent ID", "+/-", "Text", "Error", "Execution time, ms.")
 
         for (res ← results)
             tbl += (

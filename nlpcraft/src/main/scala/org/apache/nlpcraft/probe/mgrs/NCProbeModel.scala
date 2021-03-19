@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.probe.mgrs
 
-import org.apache.nlpcraft.model.intent.NCDslIntent
+import org.apache.nlpcraft.model.intent.NCIdlIntent
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolver
 import org.apache.nlpcraft.model.{NCElement, NCModel}
 
@@ -38,7 +38,7 @@ import scala.collection.{Map, Seq}
 case class NCProbeModel(
     model: NCModel,
     solver: NCIntentSolver,
-    intents: Seq[NCDslIntent],
+    intents: Seq[NCIdlIntent],
     synonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , NCProbeSynonymsWrapper]], // Fast access map.
     synonymsDsl: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCProbeSynonym]]], // Fast access map.
     addStopWordsStems: Set[String],

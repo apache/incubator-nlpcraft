@@ -17,44 +17,19 @@
 
 package org.apache.nlpcraft.model.intent
 
-import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.model.NCToken
 
 /**
- * DSL term.
+ * DSl synonym.
  *
- * @param id Optional ID of this term.
+ * @param alias
  * @param pred
- * @param min
- * @param max
- * @param conv
  */
-case class NCDslTerm(
-    dsl: String,
-    id: Option[String],
-    pred: NCDslTokenPredicate,
-    min: Int,
-    max: Int,
-    conv: Boolean,
-    fragMeta: Map[String, Any] = Map.empty
+case class NCIdlSynonym(
+    origin: String,
+    alias: Option[String],
+    pred: NCIdlTokenPredicate,
 ) {
+    require(origin != null)
     require(pred != null)
-    require(min >= 0 && max >= min)
-
-    /**
-     *
-     * @param meta
-     * @return
-     */
-    def cloneWithFragMeta(meta: Map[String, Any]): NCDslTerm =
-        NCDslTerm(
-            dsl,
-            id,
-            pred,
-            min,
-            max,
-            conv,
-            meta
-        )
-
-    override def toString: String = g(dsl)
 }

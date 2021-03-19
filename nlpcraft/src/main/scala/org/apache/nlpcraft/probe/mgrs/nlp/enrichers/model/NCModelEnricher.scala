@@ -402,7 +402,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                     else
                                         t.wordIndexes.map(complexesWords)
                                 )
-                                // Drops without tokens (DSL part works with tokens).
+                                // Drops without tokens (IDL part works with tokens).
                             }).filter(_.exists(_.isToken)).map(ComplexSeq(_)).distinct
                     ).seq
 
@@ -434,7 +434,7 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                                 flatMap(complexSeq ⇒ {
                                     val rec = complexSeq.tokensComplexes.filter(_.isSubsetOf(idxMin, idxMax, idxs))
 
-                                    // Drops without tokens (DSL part works with tokens).
+                                    // Drops without tokens (IDL part works with tokens).
                                     if (rec.nonEmpty)
                                         Some(
                                             rec ++

@@ -1,4 +1,4 @@
- /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,31 +15,20 @@
  * limitations under the License.
  */
 
-// ============================
-// Test intents and predicates.
-// ============================
+package org.apache.nlpcraft.model.intent.compiler
 
-// Re-usable predicate #1.
-fragment=p1
-    term={id(part(this(), "alias")) == 2}
+import org.apache.nlpcraft.model.intent.NCIdlTerm
 
-// Intent #1.
-intent=i1
-    flow=/org.package#method1/ // User-code flow predicate.
-    fragment(p1, {'a': true, 'b': {'Москва': [1, 2, 3]}}) /*  Macro-expansion. */
-    term~{length("some text") > 0} // Normal term.
-
-// Intent #2.
-intent=i2
-    flow="a[^0-9]b"
-    meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-    term(t1)={2 == 2 && !(id()) != -25}
-
-intent=i3
-    flow="a[^0-9]b"
-    term(t1)={
-        has(
-            json("{'a': true, 'b\'2': {'arr': [1, 2, 3]}}"),
-            list("موسكو\"", 'v1\'v1', "k2", "v2")
-        )
-    }
+/**
+ * IDL fragment.
+ *
+ * @param id ID of this fragment (must be unique within a model).
+ * @param terms List of terms this fragment defines.
+ */
+case class NCIdlFragment(
+    id: String,
+    terms: List[NCIdlTerm]
+) {
+    require(id != null)
+    require(terms.nonEmpty)
+}

@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-grammar NCIntentDsl;
+grammar NCIdl;
 
 // Parser.
-dsl: dslItems EOF; // Intent DSL enty point.
-synonym: alias? LBRACE expr RBRACE EOF; // Synonym DSL entry point.
+idl: idlItems EOF; // Intent enty point.
+synonym: alias? LBRACE expr RBRACE EOF; // Synonym entry point.
 alias: LBR id RBR;
-dslItems
-    : dslItem
-    | dslItems dslItem
+idlItems
+    : idlItem
+    | idlItems idlItem
     ;
-dslItem
+idlItem
     : intent // Intent declaration.
     | frag // Fragment declaration.
-    | imp // External URL containing DSL declarations (recursive parsing).
+    | imp // External URL containing IDL declarations (recursive parsing).
     ;
 imp: 'import' LPAR qstring RPAR;
 frag: fragId terms;
@@ -132,9 +132,9 @@ FUN_NAME
     | 'json'
     | 'if'
     | 'id'
-    | 'this'
-    | 'part'
-    | 'parts'
+    | 'token'
+    | 'find_part'
+    | 'find_parts'
     | 'ancestors'
     | 'parent'
     | 'groups'

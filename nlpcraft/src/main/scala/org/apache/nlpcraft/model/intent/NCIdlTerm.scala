@@ -15,20 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.compiler
+package org.apache.nlpcraft.model.intent
 
-import org.apache.nlpcraft.model.intent.NCDslTerm
+import org.apache.nlpcraft.common._
 
 /**
- * DSL fragment.
+ * IDL term.
  *
- * @param id ID of this fragment (must be unique within a model).
- * @param terms List of terms this fragment defines.
+ * @param idl
+ * @param id Optional ID of this term.
+ * @param pred
+ * @param min
+ * @param max
+ * @param conv
+ * @param fragMeta
  */
-case class NCDslFragment(
-    id: String,
-    terms: List[NCDslTerm]
+case class NCIdlTerm(
+    idl: String,
+    id: Option[String],
+    pred: NCIdlTokenPredicate,
+    min: Int,
+    max: Int,
+    conv: Boolean,
+    fragMeta: Map[String, Any] = Map.empty
 ) {
-    require(id != null)
-    require(terms.nonEmpty)
+    require(pred != null)
+    require(min >= 0 && max >= min)
+
+    /**
+     *
+     * @param meta
+     * @return
+     */
+    def cloneWithFragMeta(meta: Map[String, Any]): NCIdlTerm =
+        NCIdlTerm(
+            idl,
+            id,
+            pred,
+            min,
+            max,
+            conv,
+            meta
+        )
+
+    override def toString: String = idl
+
+    def toAnsiString: String = g(idl)
 }

@@ -25,10 +25,10 @@ import java.util
 import scala.language.implicitConversions
 
 /**
-  * Intents DSL test model.
+  * IDL test model.
   */
 class NCIntentDslSpecModel extends NCModelAdapter(
-    "nlpcraft.intents.dsl.test", "Intents DSL Test Model", "1.0"
+    "nlpcraft.intents.dsl.test", "IDL Test Model", "1.0"
 ) {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
@@ -51,7 +51,7 @@ class NCIntentDslSpecModel extends NCModelAdapter(
 }
 
 /**
-  * Intents DSL test.
+  * IDL test.
   */
 @NCTestEnvironment(model = classOf[NCIntentDslSpecModel], startClient = true)
 class NCIntentDslSpec extends NCTestContext {

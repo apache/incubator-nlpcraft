@@ -24,7 +24,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 
 /**
  * Annotation to bind an intent with the method serving as its callback. This annotation takes a string value
- * that defines an intent via intent DSL. This annotation can also be applied to a model's class in
+ * that defines an intent via IDL. This annotation can also be applied to a model's class in
  * which case it will just declare the intent without binding it and the callback method will need to
  * use {@link NCIntentRef} annotation to actually bind it to the declared intent. Note that multiple intents
  * can be bound to the same callback method, but only one callback method can be bound with a given intent.
@@ -45,9 +45,9 @@ import static java.lang.annotation.RetentionPolicy.*;
 @Repeatable(NCIntent.NCIntentList.class)
 public @interface NCIntent {
     /**
-     * Intent specification using intent DSL.
+     * Intent specification using IDL.
      *
-     * @return Intent specification using intent DSL.
+     * @return Intent specification using IDL.
      */
     String value() default "";
 
