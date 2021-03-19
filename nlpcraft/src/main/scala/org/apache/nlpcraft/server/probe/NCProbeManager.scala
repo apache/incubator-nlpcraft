@@ -53,7 +53,7 @@ import scala.util.{Failure, Success}
   */
 object NCProbeManager extends NCService {
     private final val GSON = new Gson()
-    private final val TYPE_MODEL_INFO_RESP = new TypeToken[ScalaMeta]() {}.getType
+    private final val TYPE_MODEL_INFO_RESP = new TypeToken[JavaMeta]() {}.getType
 
     // Type safe and eager configuration container.
     private object Config extends NCConfigurable {

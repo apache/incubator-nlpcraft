@@ -37,7 +37,7 @@ class NCNestedTestModel5 extends NCModelAdapter(
         "intent=bigCity " +
         "term(city)={" +
         "    id() == 'cityWrapper' && " +
-        "    get(meta_part(part_token(token(), 'cityAlias'), 'nlpcraft:city:citymeta'), 'population') >= 10381222" +
+        "    get(meta_part(find_part(token(), 'cityAlias'), 'nlpcraft:city:citymeta'), 'population') >= 10381222" +
         "}"
     )
     private def onBigCity(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
