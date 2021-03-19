@@ -144,9 +144,6 @@ elements:
     jiggleFactor: 0
     permutateSynonyms: false
 
-
-
-
 # List of model intents.
 intents:
   - intent=weatherIntent term={id == 'weather:action'}? term(arg)={groups @@ 'weather'}
