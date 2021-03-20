@@ -26,20 +26,11 @@ import org.apache.commons.collections.CollectionUtils
 import org.apache.nlpcraft.model.intent.NCIdlContext
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlStackItem ⇒ Z}
 
-import java.lang.{
-    Number ⇒ JNumber,
-    Double ⇒ JDouble,
-    Float ⇒ JFloat,
-    Long ⇒ JLong,
-    Integer ⇒ JInt,
-    Byte ⇒ JByte,
-    Short ⇒ JShort
-}
+import java.lang.{Byte ⇒ JByte, Double ⇒ JDouble, Float ⇒ JFloat, Integer ⇒ JInt, Long ⇒ JLong, Number ⇒ JNumber, Short ⇒ JShort}
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
-import java.util.{Calendar, Collections, List ⇒ JList, Map ⇒ JMap}
-
+import java.util.{Calendar, Collections, Collection ⇒ JColl, List ⇒ JList, Map ⇒ JMap}
 import scala.collection.JavaConverters._
 
 trait NCIdlCompilerBase {
@@ -118,22 +109,31 @@ trait NCIdlCompilerBase {
         case _ ⇒ throw new AssertionError(s"Unexpected real value: $v")
     }
 
-    def box(v: Object): Object =
-        if (isInt(v))
+    def box(v: Object): Object = {
+        if (v == null)
+            null
+        else if (isInt(v))
             asInt(v)
         else if (isReal(v))
             asReal(v)
+        else if (isJList(v) || isJMap(v))
+            v
+        else if (isJColl(v)) // Convert any other Java collections to ArrayList.
+            new java.util.ArrayList(asJColl(v)).asInstanceOf[Object]
         else
             v
+    }
 
     //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
     def isJList(v: Object): Boolean = v.isInstanceOf[JList[_]]
+    def isJColl(v: Object): Boolean = v.isInstanceOf[JColl[_]]
     def isJMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
 
     def asJList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
+    def asJColl(v: Object): JColl[_] = v.asInstanceOf[JColl[_]]
     def asJMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
     def asStr(v: Object): String = v.asInstanceOf[String]
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
@@ -743,31 +743,39 @@ trait NCIdlCompilerBase {
             })
         }
 
+        /**
+         *
+         * @param whole
+         * @param aliasId
+         * @return
+         */
+        def findPart(whole: NCToken, aliasId: String): NCToken = {
+            val parts = whole.findPartTokens(aliasId)
+
+            if (parts.isEmpty)
+                throw newRuntimeError(s"Cannot find part for token [" +
+                    s"tokenId=${whole.getId}, " +
+                    s"partId=$aliasId" +
+                    s"]")
+            else if (parts.size() > 1)
+                throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
+                    s"tokenId=${whole.getId}, " +
+                    s"partId=$aliasId" +
+                    s"]")
+            else
+                parts.get(0)
+
+        }
+
         //noinspection DuplicatedCode
-        def doPart(): Unit = {
+        def doFindPart(): Unit = {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(t, n1) = x1()
-                val NCIdlStackItem(a, n2) = x2()
+                val NCIdlStackItem(tok, n1) = x1()
+                val NCIdlStackItem(aliasId, n2) = x2() // Token alias or token ID.
 
-                val tok = toToken(t)
-                val aliasId = toStr(a)
-
-                val parts = tok.findPartTokens(aliasId)
-
-                if (parts.isEmpty)
-                    throw newRuntimeError(s"Cannot find part for token [" +
-                        s"tokenId=${tok.getId}, " +
-                        s"partId=$aliasId" +
-                    s"]")
-                else if (parts.size() > 1)
-                    throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
-                        s"tokenId=${tok.getId}, " +
-                        s"partId=$aliasId" +
-                    s"]")
-
-                Z(parts.get(0), n1 + n2)
+                Z(box(findPart(toToken(tok), toStr(aliasId))), n1 + n2)
             })
         }
         
@@ -775,28 +783,15 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
     
             stack.push(() ⇒ {
-                val NCIdlStackItem(alias, n1) = x1() // Token alias or token ID.
+                val NCIdlStackItem(aliasId, n1) = x1() // Token alias or token ID.
                 val NCIdlStackItem(key, n2) = x2()
-    
-                val parts = tok.findPartTokens(toStr(alias))
-    
-                if (parts.isEmpty)
-                    throw newRuntimeError(s"Cannot find part for token [" +
-                        s"tokenId=${tok.getId}, " +
-                        s"partId=$alias" +
-                        s"]")
-                else if (parts.size() > 1)
-                    throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
-                        s"tokenId=${tok.getId}, " +
-                        s"partId=$alias" +
-                        s"]")
-                
-                Z(parts.get(0).meta[Object](toStr(key)), n1 + n2)
+
+                Z(box(findPart(tok, toStr(aliasId)).meta[Object](toStr(key))), n1 + n2)
             })
         }
 
         //noinspection DuplicatedCode
-        def doParts(): Unit = {
+        def doFindParts(): Unit = {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
@@ -816,15 +811,15 @@ trait NCIdlCompilerBase {
         fun match {
             // Metadata access.
             case "meta_part" ⇒ doPartMeta()
-            case "meta_token" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(tok.meta[Object](toStr(v)), 1) })
-            case "meta_model" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(tok.getModel.meta[Object](toStr(v)), 0) })
-            case "meta_intent" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.intentMeta.get(toStr(v)).orNull, 0) })
-            case "meta_req" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.req.getRequestData.get(toStr(v)), 0) })
-            case "meta_user" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.req.getUser.getMetadata.get(toStr(v)), 0) })
-            case "meta_company" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.req.getCompany.getMetadata.get(v), 0) })
-            case "meta_sys" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(U.sysEnv(toStr(v)).orNull, 0) })
-            case "meta_conv" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.convMeta.get(toStr(v)).orNull, 0) })
-            case "meta_frag" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(termCtx.fragMeta.get(toStr(v)).orNull, f) })
+            case "meta_token" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
+            case "meta_model" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(tok.getModel.meta[Object](toStr(v))), 0) })
+            case "meta_req" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.req.getRequestData.get(toStr(v))), 0) })
+            case "meta_user" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.req.getUser.meta(toStr(v))), 0) })
+            case "meta_company" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.req.getCompany.meta(toStr(v))), 0) })
+            case "meta_intent" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.intentMeta.get(toStr(v)).orNull), 0) })
+            case "meta_conv" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.convMeta.get(toStr(v)).orNull), 0) })
+            case "meta_frag" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(box(termCtx.fragMeta.get(toStr(v)).orNull), f) })
+            case "meta_sys" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(U.sysEnv(toStr(v)).orNull), 0) })
 
             // Converts JSON to map.
             case "json" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(U.jsonToJavaMap(asStr(v)), f) })
@@ -842,8 +837,8 @@ trait NCIdlCompilerBase {
             case "start_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getStartCharIndex, 1) }) }
             case "end_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getEndCharIndex, 1) }) }
             case "token" ⇒ z0(() ⇒ Z(tok, 1))
-            case "find_part" ⇒ doPart()
-            case "find_parts" ⇒ doParts()
+            case "find_part" ⇒ doFindPart()
+            case "find_parts" ⇒ doFindParts()
 
             // Request data.
             case "req_id" ⇒ z0(() ⇒ Z(termCtx.req.getServerRequestId, 0))
