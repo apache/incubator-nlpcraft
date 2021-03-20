@@ -35,7 +35,7 @@ import java.util
 import java.util.UUID
 import scala.collection.JavaConverters._
 
-private[rest] object NCRestSpec {
+object NCRestSpec {
     private final val DFLT_BASEURL = "http://localhost:8081/api/v1/"
     private final val DFLT_ADMIN_EMAIL = "admin@admin.com"
     private final val DFLT_ADMIN_PSWD = "admin"
@@ -122,7 +122,7 @@ private[rest] object NCRestSpec {
 
 import org.apache.nlpcraft.server.rest.NCRestSpec._
 
-private[rest] class NCRestSpec extends NCTestContext {
+class NCRestSpec extends NCTestContext {
     type ResponseContent = java.util.Map[String, Object]
     type ResponseList = java.util.List[ResponseContent]
     type JList[T] = java.util.List[T]

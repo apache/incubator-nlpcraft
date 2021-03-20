@@ -75,8 +75,8 @@ case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCReq
         }
 
     private def getMap(key: String): util.Map[String, AnyRef] = {
-        val m: Optional[Map[String, AnyRef]] = getOpt(key)
+        val m: Optional[JavaMeta] = getOpt(key)
 
-        if (m.isPresent) m.get().asJava else Collections.emptyMap()
+        if (m.isPresent) m.get() else Collections.emptyMap()
     }
 }
