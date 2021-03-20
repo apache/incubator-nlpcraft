@@ -517,14 +517,14 @@ trait NCIdlCompilerBase {
         val fun = id.getText
     
         def ensureStack(min: Int): Unit = if (stack.size < min) throw rtMinParamNumError(min, fun)
-        def delMarker(): Unit = require(pop1() == stack.PLIST_MARKER)
+        def popMarker(): Unit = require(pop1() == stack.PLIST_MARKER)
         def arg[X](min: Int, f: () ⇒ X): X = {
             ensureStack(min + 1) // +1 for the frame marker.
             
             val x = f()
         
             // Make sure to pop up the parameter list stack frame marker.
-            delMarker()
+            popMarker()
             
             x
         }
@@ -533,7 +533,7 @@ trait NCIdlCompilerBase {
         def arg3(): (T, T, T) = arg(3, pop3)
         def arg1Tok(): T =
             if (stack.nonEmpty && stack.top == stack.PLIST_MARKER) {
-                delMarker()
+                popMarker()
             
                 () ⇒ Z(tok, 1)
             }
@@ -584,7 +584,7 @@ trait NCIdlCompilerBase {
             while (stack.nonEmpty && stack.top != stack.PLIST_MARKER)
                 dump += stack.pop()
 
-            delMarker()
+            popMarker()
 
             stack.push(() ⇒ {
                 val jl = new util.ArrayList[Object]()
@@ -811,7 +811,7 @@ trait NCIdlCompilerBase {
         }
 
         def z[Y](args: () ⇒ Y, body: Y ⇒ Z): Unit = { val x = args(); stack.push(() ⇒ body(x)) }
-        def z0(body: () ⇒ Z): Unit = { delMarker(); stack.push(() ⇒ body()) } 
+        def z0(body: () ⇒ Z): Unit = { popMarker(); stack.push(() ⇒ body()) }
 
         fun match {
             // Metadata access.
