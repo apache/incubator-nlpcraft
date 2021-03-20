@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.dsl
+package org.apache.nlpcraft.model.intent.idl
 
 import org.apache.nlpcraft.model._
 
 /**
  * Test model for IDL.
  */
-class NCIntentDslTestModel extends NCModelFileAdapter("src/test/scala/org/apache/nlpcraft/model/intent/dsl/dsl_test_model.yaml") {
+class NCIdlTestModel extends NCModelFileAdapter("src/test/scala/org/apache/nlpcraft/model/intent/idl/idl_test_model.yaml") {
     @NCIntentRef("i1")
     private def callback$i1(ctx: NCIntentMatch): NCResult = NCResult.text("callback$i1")
 }

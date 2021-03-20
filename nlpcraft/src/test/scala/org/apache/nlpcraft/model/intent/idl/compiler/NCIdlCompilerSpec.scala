@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.dsl.compiler
+package org.apache.nlpcraft.model.intent.idl.compiler
 
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.NCModel
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test
 class NCIdlCompilerSpec {
     private final val MODEL_ID = "test.mdl.id"
 
-    private final val MODEL = new NCModel {
+    private final val MODEL: NCModel = new NCModel {
         override val getId: String = MODEL_ID
         override val getName: String = MODEL_ID
         override val getVersion: String = "1.0.0"
@@ -67,7 +67,12 @@ class NCIdlCompilerSpec {
     @throws[NCException]
     def testInlineCompileOk(): Unit = {
         NCIdlCompilerGlobal.clearCache(MODEL_ID)
-        
+    
+        checkCompileOk(
+            """
+              |import('org/apache/nlpcraft/model/intent/idl/compiler/test_ok.idl')
+              |""".stripMargin
+        )
         checkCompileOk(
             """
               |intent=i1

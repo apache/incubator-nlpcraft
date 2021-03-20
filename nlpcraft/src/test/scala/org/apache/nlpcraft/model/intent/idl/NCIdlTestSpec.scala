@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.dsl
+package org.apache.nlpcraft.model.intent.idl
 
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
@@ -29,15 +29,15 @@ import java.util.Collections
 /**
  * IDL test model test. Make sure to start up the NLPCraft server before running this test.
  */
-class NCIntentDslTestSpec {
+class NCIdlTestSpec {
     private var cli: NCTestClient = _
 
     @BeforeEach
     @throws[NCException]
     @throws[IOException]
-    private[dsl] def setUp(): Unit = {
+    private[idl] def setUp(): Unit = {
         // Start embedded probe with the test model.
-        if (NCEmbeddedProbe.start(null, Collections.singletonList(classOf[NCIntentDslTestModel].getName))) {
+        if (NCEmbeddedProbe.start(null, Collections.singletonList(classOf[NCIdlTestModel].getName))) {
             cli = new NCTestClientBuilder().newBuilder.build
 
             cli.open("nlpcraft.dsl.test")
@@ -47,7 +47,7 @@ class NCIntentDslTestSpec {
     @AfterEach
     @throws[NCException]
     @throws[IOException]
-    private[dsl] def tearDown(): Unit = {
+    private[idl] def tearDown(): Unit = {
         if (cli != null)
             cli.close()
 
@@ -57,5 +57,5 @@ class NCIntentDslTestSpec {
     @Test
     @throws[NCException]
     @throws[IOException]
-    private[dsl] def test(): Unit = assertTrue(cli.ask("aa").isOk)
+    private[idl] def test(): Unit = assertTrue(cli.ask("aa").isOk)
 }

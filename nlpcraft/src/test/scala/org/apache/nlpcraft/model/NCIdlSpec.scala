@@ -27,7 +27,7 @@ import scala.language.implicitConversions
 /**
   * IDL test model.
   */
-class NCIntentDslSpecModel extends NCModelAdapter(
+class NCIdlSpecModel extends NCModelAdapter(
     "nlpcraft.intents.dsl.test", "IDL Test Model", "1.0"
 ) {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
@@ -53,8 +53,8 @@ class NCIntentDslSpecModel extends NCModelAdapter(
 /**
   * IDL test.
   */
-@NCTestEnvironment(model = classOf[NCIntentDslSpecModel], startClient = true)
-class NCIntentDslSpec extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCIdlSpecModel], startClient = true)
+class NCIdlSpec extends NCTestContext {
     @Test
     def testBigCity(): Unit = checkIntent("Moscow", "bigCity")
 

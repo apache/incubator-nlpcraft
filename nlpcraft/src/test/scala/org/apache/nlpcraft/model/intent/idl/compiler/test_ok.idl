@@ -22,6 +22,7 @@
 // Re-usable predicate #1.
 fragment=p1
     term={id(find_part(token(), "alias")) == 2}
+    term(userDefined)=/org.apache.MyShit#myMethod/
 
 // Intent #1.
 intent=i1
