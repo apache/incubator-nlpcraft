@@ -118,6 +118,13 @@ trait NCIdlCompilerBase {
         case _ ⇒ throw new AssertionError(s"Unexpected real value: $v")
     }
 
+    def box(v: Object): Object =
+        if (isInt(v))
+            asInt(v)
+        else if (isReal(v))
+            asReal(v)
+        else
+            v
 
     //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
@@ -668,7 +675,7 @@ trait NCIdlCompilerBase {
                 val NCIdlStackItem(v1, n1) = x1()
                 val NCIdlStackItem(v2, n2) = x2()
 
-                Z(toJList(v1).contains(v2), n1 + n2)
+                Z(toJList(v1).contains(box(v2)), n1 + n2)
             })
         }
 
@@ -687,7 +694,7 @@ trait NCIdlCompilerBase {
                         throw rtParamTypeError(fun, key, "numeric")
                 }
                 else if (isJMap(col))
-                    Z(asJMap(col).get(key).asInstanceOf[Object], n)
+                    Z(asJMap(col).get(box(key)).asInstanceOf[Object], n)
                 else
                     throw rtParamTypeError(fun, col, "list or map")
             })
