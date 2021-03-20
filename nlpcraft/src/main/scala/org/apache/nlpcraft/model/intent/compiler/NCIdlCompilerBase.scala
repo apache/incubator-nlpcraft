@@ -672,10 +672,10 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val NCIdlStackItem(lst, n1) = x1()
+                val NCIdlStackItem(obj, n2) = x2()
 
-                Z(toJList(v1).contains(box(v2)), n1 + n2)
+                Z(toJList(lst).contains(box(obj)), n1 + n2)
             })
         }
 
@@ -770,6 +770,30 @@ trait NCIdlCompilerBase {
                 Z(parts.get(0), n1 + n2)
             })
         }
+        
+        def doPartMeta(): Unit = {
+            val (x1, x2) = arg2()
+    
+            stack.push(() ⇒ {
+                val NCIdlStackItem(alias, n1) = x1() // Token alias or token ID.
+                val NCIdlStackItem(key, n2) = x2()
+    
+                val parts = tok.findPartTokens(toStr(alias))
+    
+                if (parts.isEmpty)
+                    throw newRuntimeError(s"Cannot find part for token [" +
+                        s"tokenId=${tok.getId}, " +
+                        s"partId=$alias" +
+                        s"]")
+                else if (parts.size() > 1)
+                    throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
+                        s"tokenId=${tok.getId}, " +
+                        s"partId=$alias" +
+                        s"]")
+                
+                Z(parts.get(0).meta[Object](toStr(key)), n1 + n2)
+            })
+        }
 
         //noinspection DuplicatedCode
         def doParts(): Unit = {
@@ -791,7 +815,7 @@ trait NCIdlCompilerBase {
 
         fun match {
             // Metadata access.
-            case "meta_part" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, n1) = x._1(); val NCIdlStackItem(v2, n2) = x._2(); Z(toToken(v1).meta[Object](toStr(v2)), n1 + n2) })
+            case "meta_part" ⇒ doPartMeta()
             case "meta_token" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(tok.meta[Object](toStr(v)), 1) })
             case "meta_model" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(tok.getModel.meta[Object](toStr(v)), 0) })
             case "meta_intent" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(termCtx.intentMeta.get(toStr(v)).orNull, 0) })
