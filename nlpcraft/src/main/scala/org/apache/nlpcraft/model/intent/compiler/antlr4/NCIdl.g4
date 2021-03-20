@@ -208,6 +208,8 @@ FUN_NAME
     | 'list'
     | 'get'
     | 'has'
+    | 'has_any'
+    | 'has_all'
     | 'first'
     | 'last'
     | 'keys'

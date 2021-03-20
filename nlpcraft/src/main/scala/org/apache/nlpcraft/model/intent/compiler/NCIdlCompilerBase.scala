@@ -417,10 +417,10 @@ trait NCIdlCompilerBase {
                 val (v1, v2, n) = extract()
 
                 if (isStr(v1) && isStr(v2)) Z(asStr(v1) + asStr(v2), n)
-                else if (isInt(v1) && isInt(v2))  Z(asInt(v1) + asInt(v2), n)
-                else if (isInt(v1) && isReal(v2))  Z(asInt(v1) + asReal(v2), n)
-                else if (isReal(v1) && isInt(v2))  Z(asReal(v1) + asInt(v2), n)
-                else if (isReal(v1) && isReal(v2))  Z(asReal(v1) + asReal(v2), n)
+                else if (isInt(v1) && isInt(v2)) Z(asInt(v1) + asInt(v2), n)
+                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) + asReal(v2), n)
+                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) + asInt(v2), n)
+                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) + asReal(v2), n)
                 else
                     throw rtBinaryOpError("+", v1, v2)
             })
@@ -679,6 +679,28 @@ trait NCIdlCompilerBase {
             })
         }
 
+        def doHasAll(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(() ⇒ {
+                val NCIdlStackItem(lst1, n1) = x1()
+                val NCIdlStackItem(lst2, n2) = x2()
+
+                Z(toJList(lst1).containsAll(toJList(lst2)), n1 + n2)
+            })
+        }
+
+        def doHasAny(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(() ⇒ {
+                val NCIdlStackItem(lst1, n1) = x1()
+                val NCIdlStackItem(lst2, n2) = x2()
+
+                Z(CollectionUtils.containsAny(toJList(lst1), toJList(lst2)), n1 + n2)
+            })
+        }
+
         def doGet(): Unit = {
             val (x1, x2) = arg2()
 
@@ -920,6 +942,8 @@ trait NCIdlCompilerBase {
             case "list" ⇒ doList()
             case "get" ⇒ doGet()
             case "has" ⇒ doHas()
+            case "has_any" ⇒ doHasAny()
+            case "has_all" ⇒ doHasAll()
             case "first" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)})
             case "last" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], f)})
             case "keys" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) })
