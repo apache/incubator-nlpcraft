@@ -857,13 +857,8 @@ trait NCIdlCompilerBase {
             case "is_numspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isNumericSpace(toStr(v)), f) })
             case "is_alphaspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphaSpace(toStr(v)), f) })
             case "is_alphanumspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) })
-            case "substring" ⇒
-            case "charAt" ⇒
-            case "regex" ⇒
-            case "soundex" ⇒
             case "split" ⇒ doSplit()
             case "split_trim" ⇒ doSplitTrim()
-            case "replace" ⇒
 
             // Math functions.
             case "abs" ⇒ doAbs()
@@ -918,11 +913,8 @@ trait NCIdlCompilerBase {
             case "to_string" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) })
 
             // Statistical operations on lists.
-            case "avg" ⇒
             case "max" ⇒ doMin()
             case "min" ⇒ doMax()
-            case "stdev" ⇒
-            case "sum" ⇒
 
             // Date-time functions.
             case "year" ⇒ z0(() ⇒ Z(LocalDate.now.getYear, 0)) // 2021.
