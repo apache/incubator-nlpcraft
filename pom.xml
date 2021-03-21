@@ -73,7 +73,7 @@
     <properties>
         <!-- Major Scala version. -->
         <scala.base>2.12</scala.base>
-        <kotlin.ver>1.4.21</kotlin.ver>
+        <kotlin.ver>1.4.31</kotlin.ver>
         <groovy.ver>3.0.7</groovy.ver>
 
         <!-- Versions. -->
@@ -756,8 +756,8 @@
                                 <exclude>zips/**/*</exclude>
                                 <exclude>src/main/resources/**/*.json</exclude>
                                 <exclude>src/main/resources/moby/*</exclude>
-                                <exclude>src/main/scala/org/apache/nlpcraft/model/intent/impl/antlr4/*</exclude>
-                                <exclude>src/main/scala/org/apache/nlpcraft/probe/mgrs/model/antlr4/*</exclude>
+                                <exclude>src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/*</exclude>
+                                <exclude>src/main/scala/org/apache/nlpcraft/common/makro/antlr4/*</exclude>
                                 <exclude>src/main/resources/opennlp/en-lemmatizer.dict</exclude>
                             </excludes>
                             <numUnapprovedLicenses>0</numUnapprovedLicenses>
