@@ -18,24 +18,24 @@
 grammar NCIdl;
 
 // Parser.
-idl: idlItems EOF; // Intent enty point.
-synonym: alias? LBRACE expr RBRACE EOF; // Synonym entry point.
+idl: idlDecls EOF; // Intent enty point.
+synonym: alias? LBRACE vars? expr RBRACE EOF; // Synonym entry point.
 alias: LBR id RBR;
-idlItems
-    : idlItem
-    | idlItems idlItem
+idlDecls
+    : idlDecl
+    | idlDecls idlDecl
     ;
-idlItem
+idlDecl
     : intent // Intent declaration.
     | frag // Fragment declaration.
     | imp // External URL containing IDL declarations (recursive parsing).
     ;
 imp: 'import' LPAR qstring RPAR;
-frag: fragId terms;
+frag: fragId termDecls;
 fragId: FRAG ASSIGN id;
 fragRef: FRAG LPAR id fragMeta? RPAR;
 fragMeta: COMMA jsonObj;
-intent: intentId orderedDecl? flowDecl? metaDecl? terms;
+intent: intentId orderedDecl? flowDecl? metaDecl? termDecls;
 intentId: 'intent' ASSIGN id;
 orderedDecl: 'ordered' ASSIGN BOOL;
 mtdDecl: DIV mtdRef DIV;
@@ -58,10 +58,10 @@ jsonArr
     : LBR jsonVal (COMMA jsonVal)* RBR
     | LBR RBR
     ;
-terms
-    : termItem
-    | terms termItem;
-termItem
+termDecls
+    : termDecl
+    | termDecls termDecl;
+termDecl
     : term
     | fragRef
     ;
@@ -69,7 +69,7 @@ termEq
     : ASSIGN // Do not use conversation.
     | TILDA // Use conversation.
     ;
-term: 'term' termId? termEq ((LBRACE expr RBRACE) | mtdDecl) minMax?;
+term: 'term' termId? termEq ((LBRACE vars? expr RBRACE) | mtdDecl) minMax?;
 mtdRef: javaFqn? POUND id;
 javaFqn
     : id
@@ -87,7 +87,13 @@ expr
     | expr op=(AND | OR) expr # andOrExpr
     | atom # atomExpr
     | FUN_NAME LPAR paramList? RPAR # callExpr
+    | AT id # varRef
     ;
+vars
+    : varDecl
+    | vars varDecl
+    ;
+varDecl: AT id ASSIGN expr;
 paramList
     : expr
     | paramList COMMA expr
@@ -273,6 +279,7 @@ QUESTION: '?';
 MULT: '*';
 DIV: '/';
 MOD: '%';
+AT: '@';
 DOLLAR: '$';
 INT: '0' | [1-9] [_0-9]*;
 REAL: DOT [0-9]+;

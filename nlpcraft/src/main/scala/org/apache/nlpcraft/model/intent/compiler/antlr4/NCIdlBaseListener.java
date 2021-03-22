@@ -52,25 +52,25 @@ public class NCIdlBaseListener implements NCIdlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIdlItems(NCIdlParser.IdlItemsContext ctx) { }
+	@Override public void enterIdlDecls(NCIdlParser.IdlDeclsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIdlItems(NCIdlParser.IdlItemsContext ctx) { }
+	@Override public void exitIdlDecls(NCIdlParser.IdlDeclsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIdlItem(NCIdlParser.IdlItemContext ctx) { }
+	@Override public void enterIdlDecl(NCIdlParser.IdlDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIdlItem(NCIdlParser.IdlItemContext ctx) { }
+	@Override public void exitIdlDecl(NCIdlParser.IdlDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -256,25 +256,25 @@ public class NCIdlBaseListener implements NCIdlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTerms(NCIdlParser.TermsContext ctx) { }
+	@Override public void enterTermDecls(NCIdlParser.TermDeclsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTerms(NCIdlParser.TermsContext ctx) { }
+	@Override public void exitTermDecls(NCIdlParser.TermDeclsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTermItem(NCIdlParser.TermItemContext ctx) { }
+	@Override public void enterTermDecl(NCIdlParser.TermDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTermItem(NCIdlParser.TermItemContext ctx) { }
+	@Override public void exitTermDecl(NCIdlParser.TermDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -400,6 +400,18 @@ public class NCIdlBaseListener implements NCIdlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterVarRef(NCIdlParser.VarRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarRef(NCIdlParser.VarRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMultDivModExpr(NCIdlParser.MultDivModExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -443,6 +455,30 @@ public class NCIdlBaseListener implements NCIdlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitEqNeqExpr(NCIdlParser.EqNeqExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVars(NCIdlParser.VarsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVars(NCIdlParser.VarsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVarDecl(NCIdlParser.VarDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarDecl(NCIdlParser.VarDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

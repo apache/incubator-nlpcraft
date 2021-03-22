@@ -22,26 +22,26 @@ public class NCIdlParser extends Parser {
 		LT=18, AND=19, OR=20, VERT=21, NOT=22, LPAR=23, RPAR=24, LBRACE=25, RBRACE=26, 
 		SQUOTE=27, DQUOTE=28, TILDA=29, LBR=30, RBR=31, POUND=32, COMMA=33, COLON=34, 
 		MINUS=35, DOT=36, UNDERSCORE=37, ASSIGN=38, PLUS=39, QUESTION=40, MULT=41, 
-		DIV=42, MOD=43, DOLLAR=44, INT=45, REAL=46, EXP=47, ID=48, COMMENT=49, 
-		WS=50, ErrorChar=51;
+		DIV=42, MOD=43, AT=44, DOLLAR=45, INT=46, REAL=47, EXP=48, ID=49, COMMENT=50, 
+		WS=51, ErrorChar=52;
 	public static final int
-		RULE_idl = 0, RULE_synonym = 1, RULE_alias = 2, RULE_idlItems = 3, RULE_idlItem = 4, 
+		RULE_idl = 0, RULE_synonym = 1, RULE_alias = 2, RULE_idlDecls = 3, RULE_idlDecl = 4, 
 		RULE_imp = 5, RULE_frag = 6, RULE_fragId = 7, RULE_fragRef = 8, RULE_fragMeta = 9, 
 		RULE_intent = 10, RULE_intentId = 11, RULE_orderedDecl = 12, RULE_mtdDecl = 13, 
 		RULE_flowDecl = 14, RULE_metaDecl = 15, RULE_jsonObj = 16, RULE_jsonPair = 17, 
-		RULE_jsonVal = 18, RULE_jsonArr = 19, RULE_terms = 20, RULE_termItem = 21, 
+		RULE_jsonVal = 18, RULE_jsonArr = 19, RULE_termDecls = 20, RULE_termDecl = 21, 
 		RULE_termEq = 22, RULE_term = 23, RULE_mtdRef = 24, RULE_javaFqn = 25, 
-		RULE_termId = 26, RULE_expr = 27, RULE_paramList = 28, RULE_atom = 29, 
-		RULE_qstring = 30, RULE_minMax = 31, RULE_minMaxShortcut = 32, RULE_minMaxRange = 33, 
-		RULE_id = 34;
+		RULE_termId = 26, RULE_expr = 27, RULE_vars = 28, RULE_varDecl = 29, RULE_paramList = 30, 
+		RULE_atom = 31, RULE_qstring = 32, RULE_minMax = 33, RULE_minMaxShortcut = 34, 
+		RULE_minMaxRange = 35, RULE_id = 36;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"idl", "synonym", "alias", "idlItems", "idlItem", "imp", "frag", "fragId", 
+			"idl", "synonym", "alias", "idlDecls", "idlDecl", "imp", "frag", "fragId", 
 			"fragRef", "fragMeta", "intent", "intentId", "orderedDecl", "mtdDecl", 
 			"flowDecl", "metaDecl", "jsonObj", "jsonPair", "jsonVal", "jsonArr", 
-			"terms", "termItem", "termEq", "term", "mtdRef", "javaFqn", "termId", 
-			"expr", "paramList", "atom", "qstring", "minMax", "minMaxShortcut", "minMaxRange", 
-			"id"
+			"termDecls", "termDecl", "termEq", "term", "mtdRef", "javaFqn", "termId", 
+			"expr", "vars", "varDecl", "paramList", "atom", "qstring", "minMax", 
+			"minMaxShortcut", "minMaxRange", "id"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -52,7 +52,7 @@ public class NCIdlParser extends Parser {
 			null, "'fragment'", null, null, null, "'null'", "'=='", "'!='", "'>='", 
 			"'<='", "'>'", "'<'", "'&&'", "'||'", "'|'", "'!'", "'('", "')'", "'{'", 
 			"'}'", "'''", "'\"'", "'~'", "'['", "']'", "'#'", "','", "':'", "'-'", 
-			"'.'", "'_'", "'='", "'+'", "'?'", "'*'", "'/'", "'%'", "'$'"
+			"'.'", "'_'", "'='", "'+'", "'?'", "'*'", "'/'", "'%'", "'@'", "'$'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -63,7 +63,7 @@ public class NCIdlParser extends Parser {
 			"AND", "OR", "VERT", "NOT", "LPAR", "RPAR", "LBRACE", "RBRACE", "SQUOTE", 
 			"DQUOTE", "TILDA", "LBR", "RBR", "POUND", "COMMA", "COLON", "MINUS", 
 			"DOT", "UNDERSCORE", "ASSIGN", "PLUS", "QUESTION", "MULT", "DIV", "MOD", 
-			"DOLLAR", "INT", "REAL", "EXP", "ID", "COMMENT", "WS", "ErrorChar"
+			"AT", "DOLLAR", "INT", "REAL", "EXP", "ID", "COMMENT", "WS", "ErrorChar"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -118,8 +118,8 @@ public class NCIdlParser extends Parser {
 	}
 
 	public static class IdlContext extends ParserRuleContext {
-		public IdlItemsContext idlItems() {
-			return getRuleContext(IdlItemsContext.class,0);
+		public IdlDeclsContext idlDecls() {
+			return getRuleContext(IdlDeclsContext.class,0);
 		}
 		public TerminalNode EOF() { return getToken(NCIdlParser.EOF, 0); }
 		public IdlContext(ParserRuleContext parent, int invokingState) {
@@ -142,9 +142,9 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(70);
-			idlItems(0);
-			setState(71);
+			setState(74);
+			idlDecls(0);
+			setState(75);
 			match(EOF);
 			}
 		}
@@ -169,6 +169,9 @@ public class NCIdlParser extends Parser {
 		public AliasContext alias() {
 			return getRuleContext(AliasContext.class,0);
 		}
+		public VarsContext vars() {
+			return getRuleContext(VarsContext.class,0);
+		}
 		public SynonymContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -190,23 +193,33 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(74);
+			setState(78);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==LBR) {
 				{
-				setState(73);
+				setState(77);
 				alias();
 				}
 			}
 
-			setState(76);
+			setState(80);
 			match(LBRACE);
-			setState(77);
+			setState(82);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+			case 1:
+				{
+				setState(81);
+				vars(0);
+				}
+				break;
+			}
+			setState(84);
 			expr(0);
-			setState(78);
+			setState(85);
 			match(RBRACE);
-			setState(79);
+			setState(86);
 			match(EOF);
 			}
 		}
@@ -247,11 +260,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(81);
+			setState(88);
 			match(LBR);
-			setState(82);
+			setState(89);
 			id();
-			setState(83);
+			setState(90);
 			match(RBR);
 			}
 		}
@@ -266,68 +279,68 @@ public class NCIdlParser extends Parser {
 		return _localctx;
 	}
 
-	public static class IdlItemsContext extends ParserRuleContext {
-		public IdlItemContext idlItem() {
-			return getRuleContext(IdlItemContext.class,0);
+	public static class IdlDeclsContext extends ParserRuleContext {
+		public IdlDeclContext idlDecl() {
+			return getRuleContext(IdlDeclContext.class,0);
 		}
-		public IdlItemsContext idlItems() {
-			return getRuleContext(IdlItemsContext.class,0);
+		public IdlDeclsContext idlDecls() {
+			return getRuleContext(IdlDeclsContext.class,0);
 		}
-		public IdlItemsContext(ParserRuleContext parent, int invokingState) {
+		public IdlDeclsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_idlItems; }
+		@Override public int getRuleIndex() { return RULE_idlDecls; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIdlItems(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIdlDecls(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIdlItems(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIdlDecls(this);
 		}
 	}
 
-	public final IdlItemsContext idlItems() throws RecognitionException {
-		return idlItems(0);
+	public final IdlDeclsContext idlDecls() throws RecognitionException {
+		return idlDecls(0);
 	}
 
-	private IdlItemsContext idlItems(int _p) throws RecognitionException {
+	private IdlDeclsContext idlDecls(int _p) throws RecognitionException {
 		ParserRuleContext _parentctx = _ctx;
 		int _parentState = getState();
-		IdlItemsContext _localctx = new IdlItemsContext(_ctx, _parentState);
-		IdlItemsContext _prevctx = _localctx;
+		IdlDeclsContext _localctx = new IdlDeclsContext(_ctx, _parentState);
+		IdlDeclsContext _prevctx = _localctx;
 		int _startState = 6;
-		enterRecursionRule(_localctx, 6, RULE_idlItems, _p);
+		enterRecursionRule(_localctx, 6, RULE_idlDecls, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(86);
-			idlItem();
+			setState(93);
+			idlDecl();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(92);
+			setState(99);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
 					{
-					_localctx = new IdlItemsContext(_parentctx, _parentState);
-					pushNewRecursionContext(_localctx, _startState, RULE_idlItems);
-					setState(88);
+					_localctx = new IdlDeclsContext(_parentctx, _parentState);
+					pushNewRecursionContext(_localctx, _startState, RULE_idlDecls);
+					setState(95);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(89);
-					idlItem();
+					setState(96);
+					idlDecl();
 					}
 					} 
 				}
-				setState(94);
+				setState(101);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,1,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
 			}
 		}
@@ -342,7 +355,7 @@ public class NCIdlParser extends Parser {
 		return _localctx;
 	}
 
-	public static class IdlItemContext extends ParserRuleContext {
+	public static class IdlDeclContext extends ParserRuleContext {
 		public IntentContext intent() {
 			return getRuleContext(IntentContext.class,0);
 		}
@@ -352,45 +365,45 @@ public class NCIdlParser extends Parser {
 		public ImpContext imp() {
 			return getRuleContext(ImpContext.class,0);
 		}
-		public IdlItemContext(ParserRuleContext parent, int invokingState) {
+		public IdlDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_idlItem; }
+		@Override public int getRuleIndex() { return RULE_idlDecl; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIdlItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterIdlDecl(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIdlItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitIdlDecl(this);
 		}
 	}
 
-	public final IdlItemContext idlItem() throws RecognitionException {
-		IdlItemContext _localctx = new IdlItemContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_idlItem);
+	public final IdlDeclContext idlDecl() throws RecognitionException {
+		IdlDeclContext _localctx = new IdlDeclContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_idlDecl);
 		try {
-			setState(98);
+			setState(105);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(95);
+				setState(102);
 				intent();
 				}
 				break;
 			case FRAG:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(96);
+				setState(103);
 				frag();
 				}
 				break;
 			case T__0:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(97);
+				setState(104);
 				imp();
 				}
 				break;
@@ -435,13 +448,13 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(100);
+			setState(107);
 			match(T__0);
-			setState(101);
+			setState(108);
 			match(LPAR);
-			setState(102);
+			setState(109);
 			qstring();
-			setState(103);
+			setState(110);
 			match(RPAR);
 			}
 		}
@@ -460,8 +473,8 @@ public class NCIdlParser extends Parser {
 		public FragIdContext fragId() {
 			return getRuleContext(FragIdContext.class,0);
 		}
-		public TermsContext terms() {
-			return getRuleContext(TermsContext.class,0);
+		public TermDeclsContext termDecls() {
+			return getRuleContext(TermDeclsContext.class,0);
 		}
 		public FragContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -483,10 +496,10 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(105);
+			setState(112);
 			fragId();
-			setState(106);
-			terms(0);
+			setState(113);
+			termDecls(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -526,11 +539,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(108);
+			setState(115);
 			match(FRAG);
-			setState(109);
+			setState(116);
 			match(ASSIGN);
-			setState(110);
+			setState(117);
 			id();
 			}
 		}
@@ -576,23 +589,23 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(112);
+			setState(119);
 			match(FRAG);
-			setState(113);
+			setState(120);
 			match(LPAR);
-			setState(114);
+			setState(121);
 			id();
-			setState(116);
+			setState(123);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==COMMA) {
 				{
-				setState(115);
+				setState(122);
 				fragMeta();
 				}
 			}
 
-			setState(118);
+			setState(125);
 			match(RPAR);
 			}
 		}
@@ -632,9 +645,9 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(120);
+			setState(127);
 			match(COMMA);
-			setState(121);
+			setState(128);
 			jsonObj();
 			}
 		}
@@ -653,8 +666,8 @@ public class NCIdlParser extends Parser {
 		public IntentIdContext intentId() {
 			return getRuleContext(IntentIdContext.class,0);
 		}
-		public TermsContext terms() {
-			return getRuleContext(TermsContext.class,0);
+		public TermDeclsContext termDecls() {
+			return getRuleContext(TermDeclsContext.class,0);
 		}
 		public OrderedDeclContext orderedDecl() {
 			return getRuleContext(OrderedDeclContext.class,0);
@@ -686,40 +699,40 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(123);
+			setState(130);
 			intentId();
-			setState(125);
+			setState(132);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__2) {
 				{
-				setState(124);
+				setState(131);
 				orderedDecl();
 				}
 			}
 
-			setState(128);
+			setState(135);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__3) {
 				{
-				setState(127);
+				setState(134);
 				flowDecl();
 				}
 			}
 
-			setState(131);
+			setState(138);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__4) {
 				{
-				setState(130);
+				setState(137);
 				metaDecl();
 				}
 			}
 
-			setState(133);
-			terms(0);
+			setState(140);
+			termDecls(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -758,11 +771,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(135);
+			setState(142);
 			match(T__1);
-			setState(136);
+			setState(143);
 			match(ASSIGN);
-			setState(137);
+			setState(144);
 			id();
 			}
 		}
@@ -800,11 +813,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(139);
+			setState(146);
 			match(T__2);
-			setState(140);
+			setState(147);
 			match(ASSIGN);
-			setState(141);
+			setState(148);
 			match(BOOL);
 			}
 		}
@@ -847,11 +860,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(143);
+			setState(150);
 			match(DIV);
-			setState(144);
+			setState(151);
 			mtdRef();
-			setState(145);
+			setState(152);
 			match(DIV);
 			}
 		}
@@ -894,23 +907,23 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(147);
+			setState(154);
 			match(T__3);
-			setState(148);
+			setState(155);
 			match(ASSIGN);
-			setState(151);
+			setState(158);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case SQSTRING:
 			case DQSTRING:
 				{
-				setState(149);
+				setState(156);
 				qstring();
 				}
 				break;
 			case DIV:
 				{
-				setState(150);
+				setState(157);
 				mtdDecl();
 				}
 				break;
@@ -955,11 +968,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(153);
+			setState(160);
 			match(T__4);
-			setState(154);
+			setState(161);
 			match(ASSIGN);
-			setState(155);
+			setState(162);
 			jsonObj();
 			}
 		}
@@ -1006,42 +1019,42 @@ public class NCIdlParser extends Parser {
 		enterRule(_localctx, 32, RULE_jsonObj);
 		int _la;
 		try {
-			setState(170);
+			setState(177);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(157);
+				setState(164);
 				match(LBRACE);
-				setState(158);
+				setState(165);
 				jsonPair();
-				setState(163);
+				setState(170);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(159);
+					setState(166);
 					match(COMMA);
-					setState(160);
+					setState(167);
 					jsonPair();
 					}
 					}
-					setState(165);
+					setState(172);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(166);
+				setState(173);
 				match(RBRACE);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(168);
+				setState(175);
 				match(LBRACE);
-				setState(169);
+				setState(176);
 				match(RBRACE);
 				}
 				break;
@@ -1086,11 +1099,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(172);
+			setState(179);
 			qstring();
-			setState(173);
+			setState(180);
 			match(COLON);
-			setState(174);
+			setState(181);
 			jsonVal();
 			}
 		}
@@ -1140,14 +1153,14 @@ public class NCIdlParser extends Parser {
 		enterRule(_localctx, 36, RULE_jsonVal);
 		int _la;
 		try {
-			setState(191);
+			setState(198);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case SQSTRING:
 			case DQSTRING:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(176);
+				setState(183);
 				qstring();
 				}
 				break;
@@ -1155,34 +1168,34 @@ public class NCIdlParser extends Parser {
 			case INT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(178);
+				setState(185);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==MINUS) {
 					{
-					setState(177);
+					setState(184);
 					match(MINUS);
 					}
 				}
 
-				setState(180);
+				setState(187);
 				match(INT);
-				setState(182);
+				setState(189);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==REAL) {
 					{
-					setState(181);
+					setState(188);
 					match(REAL);
 					}
 				}
 
-				setState(185);
+				setState(192);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==EXP) {
 					{
-					setState(184);
+					setState(191);
 					match(EXP);
 					}
 				}
@@ -1192,28 +1205,28 @@ public class NCIdlParser extends Parser {
 			case LBRACE:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(187);
+				setState(194);
 				jsonObj();
 				}
 				break;
 			case LBR:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(188);
+				setState(195);
 				jsonArr();
 				}
 				break;
 			case BOOL:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(189);
+				setState(196);
 				match(BOOL);
 				}
 				break;
 			case NULL:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(190);
+				setState(197);
 				match(NULL);
 				}
 				break;
@@ -1264,42 +1277,42 @@ public class NCIdlParser extends Parser {
 		enterRule(_localctx, 38, RULE_jsonArr);
 		int _la;
 		try {
-			setState(206);
+			setState(213);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,15,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(193);
+				setState(200);
 				match(LBR);
-				setState(194);
+				setState(201);
 				jsonVal();
-				setState(199);
+				setState(206);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COMMA) {
 					{
 					{
-					setState(195);
+					setState(202);
 					match(COMMA);
-					setState(196);
+					setState(203);
 					jsonVal();
 					}
 					}
-					setState(201);
+					setState(208);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(202);
+				setState(209);
 				match(RBR);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(204);
+				setState(211);
 				match(LBR);
-				setState(205);
+				setState(212);
 				match(RBR);
 				}
 				break;
@@ -1316,68 +1329,68 @@ public class NCIdlParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TermsContext extends ParserRuleContext {
-		public TermItemContext termItem() {
-			return getRuleContext(TermItemContext.class,0);
+	public static class TermDeclsContext extends ParserRuleContext {
+		public TermDeclContext termDecl() {
+			return getRuleContext(TermDeclContext.class,0);
 		}
-		public TermsContext terms() {
-			return getRuleContext(TermsContext.class,0);
+		public TermDeclsContext termDecls() {
+			return getRuleContext(TermDeclsContext.class,0);
 		}
-		public TermsContext(ParserRuleContext parent, int invokingState) {
+		public TermDeclsContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_terms; }
+		@Override public int getRuleIndex() { return RULE_termDecls; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTerms(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTermDecls(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTerms(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTermDecls(this);
 		}
 	}
 
-	public final TermsContext terms() throws RecognitionException {
-		return terms(0);
+	public final TermDeclsContext termDecls() throws RecognitionException {
+		return termDecls(0);
 	}
 
-	private TermsContext terms(int _p) throws RecognitionException {
+	private TermDeclsContext termDecls(int _p) throws RecognitionException {
 		ParserRuleContext _parentctx = _ctx;
 		int _parentState = getState();
-		TermsContext _localctx = new TermsContext(_ctx, _parentState);
-		TermsContext _prevctx = _localctx;
+		TermDeclsContext _localctx = new TermDeclsContext(_ctx, _parentState);
+		TermDeclsContext _prevctx = _localctx;
 		int _startState = 40;
-		enterRecursionRule(_localctx, 40, RULE_terms, _p);
+		enterRecursionRule(_localctx, 40, RULE_termDecls, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(209);
-			termItem();
+			setState(216);
+			termDecl();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(215);
+			setState(222);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
 					{
-					_localctx = new TermsContext(_parentctx, _parentState);
-					pushNewRecursionContext(_localctx, _startState, RULE_terms);
-					setState(211);
+					_localctx = new TermDeclsContext(_parentctx, _parentState);
+					pushNewRecursionContext(_localctx, _startState, RULE_termDecls);
+					setState(218);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(212);
-					termItem();
+					setState(219);
+					termDecl();
 					}
 					} 
 				}
-				setState(217);
+				setState(224);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
 			}
 			}
 		}
@@ -1392,45 +1405,45 @@ public class NCIdlParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TermItemContext extends ParserRuleContext {
+	public static class TermDeclContext extends ParserRuleContext {
 		public TermContext term() {
 			return getRuleContext(TermContext.class,0);
 		}
 		public FragRefContext fragRef() {
 			return getRuleContext(FragRefContext.class,0);
 		}
-		public TermItemContext(ParserRuleContext parent, int invokingState) {
+		public TermDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_termItem; }
+		@Override public int getRuleIndex() { return RULE_termDecl; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTermItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterTermDecl(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTermItem(this);
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitTermDecl(this);
 		}
 	}
 
-	public final TermItemContext termItem() throws RecognitionException {
-		TermItemContext _localctx = new TermItemContext(_ctx, getState());
-		enterRule(_localctx, 42, RULE_termItem);
+	public final TermDeclContext termDecl() throws RecognitionException {
+		TermDeclContext _localctx = new TermDeclContext(_ctx, getState());
+		enterRule(_localctx, 42, RULE_termDecl);
 		try {
-			setState(220);
+			setState(227);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__5:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(218);
+				setState(225);
 				term();
 				}
 				break;
 			case FRAG:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(219);
+				setState(226);
 				fragRef();
 				}
 				break;
@@ -1473,7 +1486,7 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(222);
+			setState(229);
 			_la = _input.LA(1);
 			if ( !(_la==TILDA || _la==ASSIGN) ) {
 			_errHandler.recoverInline(this);
@@ -1514,6 +1527,9 @@ public class NCIdlParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode RBRACE() { return getToken(NCIdlParser.RBRACE, 0); }
+		public VarsContext vars() {
+			return getRuleContext(VarsContext.class,0);
+		}
 		public TermContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1535,50 +1551,60 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(224);
+			setState(231);
 			match(T__5);
-			setState(226);
+			setState(233);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==LPAR) {
 				{
-				setState(225);
+				setState(232);
 				termId();
 				}
 			}
 
-			setState(228);
+			setState(235);
 			termEq();
-			setState(234);
+			setState(244);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case LBRACE:
 				{
 				{
-				setState(229);
+				setState(236);
 				match(LBRACE);
-				setState(230);
+				setState(238);
+				_errHandler.sync(this);
+				switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
+				case 1:
+					{
+					setState(237);
+					vars(0);
+					}
+					break;
+				}
+				setState(240);
 				expr(0);
-				setState(231);
+				setState(241);
 				match(RBRACE);
 				}
 				}
 				break;
 			case DIV:
 				{
-				setState(233);
+				setState(243);
 				mtdDecl();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(237);
+			setState(247);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,20,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,22,_ctx) ) {
 			case 1:
 				{
-				setState(236);
+				setState(246);
 				minMax();
 				}
 				break;
@@ -1625,19 +1651,19 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(240);
+			setState(250);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==FUN_NAME || _la==ID) {
 				{
-				setState(239);
+				setState(249);
 				javaFqn(0);
 				}
 			}
 
-			setState(242);
+			setState(252);
 			match(POUND);
-			setState(243);
+			setState(253);
 			id();
 			}
 		}
@@ -1690,13 +1716,13 @@ public class NCIdlParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(246);
+			setState(256);
 			id();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(253);
+			setState(263);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,24,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1705,18 +1731,18 @@ public class NCIdlParser extends Parser {
 					{
 					_localctx = new JavaFqnContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_javaFqn);
-					setState(248);
+					setState(258);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(249);
+					setState(259);
 					match(DOT);
-					setState(250);
+					setState(260);
 					id();
 					}
 					} 
 				}
-				setState(255);
+				setState(265);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,24,_ctx);
 			}
 			}
 		}
@@ -1757,11 +1783,11 @@ public class NCIdlParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(256);
+			setState(266);
 			match(LPAR);
-			setState(257);
+			setState(267);
 			id();
-			setState(258);
+			setState(268);
 			match(RPAR);
 			}
 		}
@@ -1876,6 +1902,21 @@ public class NCIdlParser extends Parser {
 			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitAtomExpr(this);
 		}
 	}
+	public static class VarRefContext extends ExprContext {
+		public TerminalNode AT() { return getToken(NCIdlParser.AT, 0); }
+		public IdContext id() {
+			return getRuleContext(IdContext.class,0);
+		}
+		public VarRefContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterVarRef(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitVarRef(this);
+		}
+	}
 	public static class MultDivModExprContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1971,7 +2012,7 @@ public class NCIdlParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(274);
+			setState(286);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NOT:
@@ -1981,7 +2022,7 @@ public class NCIdlParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(261);
+				setState(271);
 				((UnaryExprContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(_la==NOT || _la==MINUS) ) {
@@ -1992,8 +2033,8 @@ public class NCIdlParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				setState(262);
-				expr(9);
+				setState(272);
+				expr(10);
 				}
 				break;
 			case LPAR:
@@ -2001,11 +2042,11 @@ public class NCIdlParser extends Parser {
 				_localctx = new ParExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(263);
+				setState(273);
 				match(LPAR);
-				setState(264);
+				setState(274);
 				expr(0);
-				setState(265);
+				setState(275);
 				match(RPAR);
 				}
 				break;
@@ -2018,7 +2059,7 @@ public class NCIdlParser extends Parser {
 				_localctx = new AtomExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(267);
+				setState(277);
 				atom();
 				}
 				break;
@@ -2027,46 +2068,57 @@ public class NCIdlParser extends Parser {
 				_localctx = new CallExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(268);
+				setState(278);
 				match(FUN_NAME);
-				setState(269);
+				setState(279);
 				match(LPAR);
-				setState(271);
+				setState(281);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FUN_NAME) | (1L << SQSTRING) | (1L << DQSTRING) | (1L << BOOL) | (1L << NULL) | (1L << NOT) | (1L << LPAR) | (1L << MINUS) | (1L << INT))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FUN_NAME) | (1L << SQSTRING) | (1L << DQSTRING) | (1L << BOOL) | (1L << NULL) | (1L << NOT) | (1L << LPAR) | (1L << MINUS) | (1L << AT) | (1L << INT))) != 0)) {
 					{
-					setState(270);
+					setState(280);
 					paramList(0);
 					}
 				}
 
-				setState(273);
+				setState(283);
 				match(RPAR);
+				}
+				break;
+			case AT:
+				{
+				_localctx = new VarRefContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(284);
+				match(AT);
+				setState(285);
+				id();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(293);
+			setState(305);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(291);
+					setState(303);
 					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,25,_ctx) ) {
+					switch ( getInterpreter().adaptivePredict(_input,27,_ctx) ) {
 					case 1:
 						{
 						_localctx = new MultDivModExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(276);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
-						setState(277);
+						setState(288);
+						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
+						setState(289);
 						((MultDivModExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MULT) | (1L << DIV) | (1L << MOD))) != 0)) ) {
@@ -2077,17 +2129,17 @@ public class NCIdlParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(278);
-						expr(8);
+						setState(290);
+						expr(9);
 						}
 						break;
 					case 2:
 						{
 						_localctx = new PlusMinusExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(279);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
-						setState(280);
+						setState(291);
+						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+						setState(292);
 						((PlusMinusExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==MINUS || _la==PLUS) ) {
@@ -2098,17 +2150,17 @@ public class NCIdlParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(281);
-						expr(7);
+						setState(293);
+						expr(8);
 						}
 						break;
 					case 3:
 						{
 						_localctx = new CompExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(282);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
-						setState(283);
+						setState(294);
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						setState(295);
 						((CompExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GTEQ) | (1L << LTEQ) | (1L << GT) | (1L << LT))) != 0)) ) {
@@ -2119,17 +2171,17 @@ public class NCIdlParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(284);
-						expr(6);
+						setState(296);
+						expr(7);
 						}
 						break;
 					case 4:
 						{
 						_localctx = new EqNeqExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(285);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
-						setState(286);
+						setState(297);
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						setState(298);
 						((EqNeqExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==EQ || _la==NEQ) ) {
@@ -2140,17 +2192,17 @@ public class NCIdlParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(287);
-						expr(5);
+						setState(299);
+						expr(6);
 						}
 						break;
 					case 5:
 						{
 						_localctx = new AndOrExprContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(288);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(289);
+						setState(300);
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						setState(301);
 						((AndOrExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==AND || _la==OR) ) {
@@ -2161,16 +2213,16 @@ public class NCIdlParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(290);
-						expr(4);
+						setState(302);
+						expr(5);
 						}
 						break;
 					}
 					} 
 				}
-				setState(295);
+				setState(307);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
 			}
 			}
 		}
@@ -2181,6 +2233,132 @@ public class NCIdlParser extends Parser {
 		}
 		finally {
 			unrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public static class VarsContext extends ParserRuleContext {
+		public VarDeclContext varDecl() {
+			return getRuleContext(VarDeclContext.class,0);
+		}
+		public VarsContext vars() {
+			return getRuleContext(VarsContext.class,0);
+		}
+		public VarsContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_vars; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterVars(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitVars(this);
+		}
+	}
+
+	public final VarsContext vars() throws RecognitionException {
+		return vars(0);
+	}
+
+	private VarsContext vars(int _p) throws RecognitionException {
+		ParserRuleContext _parentctx = _ctx;
+		int _parentState = getState();
+		VarsContext _localctx = new VarsContext(_ctx, _parentState);
+		VarsContext _prevctx = _localctx;
+		int _startState = 56;
+		enterRecursionRule(_localctx, 56, RULE_vars, _p);
+		try {
+			int _alt;
+			enterOuterAlt(_localctx, 1);
+			{
+			{
+			setState(309);
+			varDecl();
+			}
+			_ctx.stop = _input.LT(-1);
+			setState(315);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					if ( _parseListeners!=null ) triggerExitRuleEvent();
+					_prevctx = _localctx;
+					{
+					{
+					_localctx = new VarsContext(_parentctx, _parentState);
+					pushNewRecursionContext(_localctx, _startState, RULE_vars);
+					setState(311);
+					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
+					setState(312);
+					varDecl();
+					}
+					} 
+				}
+				setState(317);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			unrollRecursionContexts(_parentctx);
+		}
+		return _localctx;
+	}
+
+	public static class VarDeclContext extends ParserRuleContext {
+		public TerminalNode AT() { return getToken(NCIdlParser.AT, 0); }
+		public IdContext id() {
+			return getRuleContext(IdContext.class,0);
+		}
+		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public VarDeclContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_varDecl; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).enterVarDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof NCIdlListener ) ((NCIdlListener)listener).exitVarDecl(this);
+		}
+	}
+
+	public final VarDeclContext varDecl() throws RecognitionException {
+		VarDeclContext _localctx = new VarDeclContext(_ctx, getState());
+		enterRule(_localctx, 58, RULE_varDecl);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(318);
+			match(AT);
+			setState(319);
+			id();
+			setState(320);
+			match(ASSIGN);
+			setState(321);
+			expr(0);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
 		}
 		return _localctx;
 	}
@@ -2216,20 +2394,20 @@ public class NCIdlParser extends Parser {
 		int _parentState = getState();
 		ParamListContext _localctx = new ParamListContext(_ctx, _parentState);
 		ParamListContext _prevctx = _localctx;
-		int _startState = 56;
-		enterRecursionRule(_localctx, 56, RULE_paramList, _p);
+		int _startState = 60;
+		enterRecursionRule(_localctx, 60, RULE_paramList, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(297);
+			setState(324);
 			expr(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(304);
+			setState(331);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,30,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -2238,18 +2416,18 @@ public class NCIdlParser extends Parser {
 					{
 					_localctx = new ParamListContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_paramList);
-					setState(299);
+					setState(326);
 					if (!(precpred(_ctx, 1))) throw new FailedPredicateException(this, "precpred(_ctx, 1)");
-					setState(300);
+					setState(327);
 					match(COMMA);
-					setState(301);
+					setState(328);
 					expr(0);
 					}
 					} 
 				}
-				setState(306);
+				setState(333);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,30,_ctx);
 			}
 			}
 		}
@@ -2289,39 +2467,39 @@ public class NCIdlParser extends Parser {
 
 	public final AtomContext atom() throws RecognitionException {
 		AtomContext _localctx = new AtomContext(_ctx, getState());
-		enterRule(_localctx, 58, RULE_atom);
+		enterRule(_localctx, 62, RULE_atom);
 		try {
-			setState(317);
+			setState(344);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NULL:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(307);
+				setState(334);
 				match(NULL);
 				}
 				break;
 			case INT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(308);
+				setState(335);
 				match(INT);
-				setState(310);
+				setState(337);
 				_errHandler.sync(this);
-				switch ( getInterpreter().adaptivePredict(_input,28,_ctx) ) {
+				switch ( getInterpreter().adaptivePredict(_input,31,_ctx) ) {
 				case 1:
 					{
-					setState(309);
+					setState(336);
 					match(REAL);
 					}
 					break;
 				}
-				setState(313);
+				setState(340);
 				_errHandler.sync(this);
-				switch ( getInterpreter().adaptivePredict(_input,29,_ctx) ) {
+				switch ( getInterpreter().adaptivePredict(_input,32,_ctx) ) {
 				case 1:
 					{
-					setState(312);
+					setState(339);
 					match(EXP);
 					}
 					break;
@@ -2331,7 +2509,7 @@ public class NCIdlParser extends Parser {
 			case BOOL:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(315);
+				setState(342);
 				match(BOOL);
 				}
 				break;
@@ -2339,7 +2517,7 @@ public class NCIdlParser extends Parser {
 			case DQSTRING:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(316);
+				setState(343);
 				qstring();
 				}
 				break;
@@ -2377,12 +2555,12 @@ public class NCIdlParser extends Parser {
 
 	public final QstringContext qstring() throws RecognitionException {
 		QstringContext _localctx = new QstringContext(_ctx, getState());
-		enterRule(_localctx, 60, RULE_qstring);
+		enterRule(_localctx, 64, RULE_qstring);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(319);
+			setState(346);
 			_la = _input.LA(1);
 			if ( !(_la==SQSTRING || _la==DQSTRING) ) {
 			_errHandler.recoverInline(this);
@@ -2428,9 +2606,9 @@ public class NCIdlParser extends Parser {
 
 	public final MinMaxContext minMax() throws RecognitionException {
 		MinMaxContext _localctx = new MinMaxContext(_ctx, getState());
-		enterRule(_localctx, 62, RULE_minMax);
+		enterRule(_localctx, 66, RULE_minMax);
 		try {
-			setState(323);
+			setState(350);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case PLUS:
@@ -2438,14 +2616,14 @@ public class NCIdlParser extends Parser {
 			case MULT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(321);
+				setState(348);
 				minMaxShortcut();
 				}
 				break;
 			case LBR:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(322);
+				setState(349);
 				minMaxRange();
 				}
 				break;
@@ -2484,12 +2662,12 @@ public class NCIdlParser extends Parser {
 
 	public final MinMaxShortcutContext minMaxShortcut() throws RecognitionException {
 		MinMaxShortcutContext _localctx = new MinMaxShortcutContext(_ctx, getState());
-		enterRule(_localctx, 64, RULE_minMaxShortcut);
+		enterRule(_localctx, 68, RULE_minMaxShortcut);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(325);
+			setState(352);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PLUS) | (1L << QUESTION) | (1L << MULT))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -2536,19 +2714,19 @@ public class NCIdlParser extends Parser {
 
 	public final MinMaxRangeContext minMaxRange() throws RecognitionException {
 		MinMaxRangeContext _localctx = new MinMaxRangeContext(_ctx, getState());
-		enterRule(_localctx, 66, RULE_minMaxRange);
+		enterRule(_localctx, 70, RULE_minMaxRange);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(327);
+			setState(354);
 			match(LBR);
-			setState(328);
+			setState(355);
 			match(INT);
-			setState(329);
+			setState(356);
 			match(COMMA);
-			setState(330);
+			setState(357);
 			match(INT);
-			setState(331);
+			setState(358);
 			match(RBR);
 			}
 		}
@@ -2582,12 +2760,12 @@ public class NCIdlParser extends Parser {
 
 	public final IdContext id() throws RecognitionException {
 		IdContext _localctx = new IdContext(_ctx, getState());
-		enterRule(_localctx, 68, RULE_id);
+		enterRule(_localctx, 72, RULE_id);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(333);
+			setState(360);
 			_la = _input.LA(1);
 			if ( !(_la==FUN_NAME || _la==ID) ) {
 			_errHandler.recoverInline(this);
@@ -2613,26 +2791,28 @@ public class NCIdlParser extends Parser {
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
 		case 3:
-			return idlItems_sempred((IdlItemsContext)_localctx, predIndex);
+			return idlDecls_sempred((IdlDeclsContext)_localctx, predIndex);
 		case 20:
-			return terms_sempred((TermsContext)_localctx, predIndex);
+			return termDecls_sempred((TermDeclsContext)_localctx, predIndex);
 		case 25:
 			return javaFqn_sempred((JavaFqnContext)_localctx, predIndex);
 		case 27:
 			return expr_sempred((ExprContext)_localctx, predIndex);
 		case 28:
+			return vars_sempred((VarsContext)_localctx, predIndex);
+		case 30:
 			return paramList_sempred((ParamListContext)_localctx, predIndex);
 		}
 		return true;
 	}
-	private boolean idlItems_sempred(IdlItemsContext _localctx, int predIndex) {
+	private boolean idlDecls_sempred(IdlDeclsContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
 			return precpred(_ctx, 1);
 		}
 		return true;
 	}
-	private boolean terms_sempred(TermsContext _localctx, int predIndex) {
+	private boolean termDecls_sempred(TermDeclsContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 1:
 			return precpred(_ctx, 1);
@@ -2649,143 +2829,161 @@ public class NCIdlParser extends Parser {
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 3:
-			return precpred(_ctx, 7);
+			return precpred(_ctx, 8);
 		case 4:
-			return precpred(_ctx, 6);
+			return precpred(_ctx, 7);
 		case 5:
-			return precpred(_ctx, 5);
+			return precpred(_ctx, 6);
 		case 6:
-			return precpred(_ctx, 4);
+			return precpred(_ctx, 5);
 		case 7:
-			return precpred(_ctx, 3);
+			return precpred(_ctx, 4);
 		}
 		return true;
 	}
-	private boolean paramList_sempred(ParamListContext _localctx, int predIndex) {
+	private boolean vars_sempred(VarsContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 8:
 			return precpred(_ctx, 1);
 		}
 		return true;
 	}
+	private boolean paramList_sempred(ParamListContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 9:
+			return precpred(_ctx, 1);
+		}
+		return true;
+	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\65\u0152\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\66\u016d\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
-		"\t!\4\"\t\"\4#\t#\4$\t$\3\2\3\2\3\2\3\3\5\3M\n\3\3\3\3\3\3\3\3\3\3\3\3"+
-		"\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\7\5]\n\5\f\5\16\5`\13\5\3\6\3\6\3\6"+
-		"\5\6e\n\6\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n"+
-		"\3\n\5\nw\n\n\3\n\3\n\3\13\3\13\3\13\3\f\3\f\5\f\u0080\n\f\3\f\5\f\u0083"+
-		"\n\f\3\f\5\f\u0086\n\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\3\16\3\17"+
-		"\3\17\3\17\3\17\3\20\3\20\3\20\3\20\5\20\u009a\n\20\3\21\3\21\3\21\3\21"+
-		"\3\22\3\22\3\22\3\22\7\22\u00a4\n\22\f\22\16\22\u00a7\13\22\3\22\3\22"+
-		"\3\22\3\22\5\22\u00ad\n\22\3\23\3\23\3\23\3\23\3\24\3\24\5\24\u00b5\n"+
-		"\24\3\24\3\24\5\24\u00b9\n\24\3\24\5\24\u00bc\n\24\3\24\3\24\3\24\3\24"+
-		"\5\24\u00c2\n\24\3\25\3\25\3\25\3\25\7\25\u00c8\n\25\f\25\16\25\u00cb"+
-		"\13\25\3\25\3\25\3\25\3\25\5\25\u00d1\n\25\3\26\3\26\3\26\3\26\3\26\7"+
-		"\26\u00d8\n\26\f\26\16\26\u00db\13\26\3\27\3\27\5\27\u00df\n\27\3\30\3"+
-		"\30\3\31\3\31\5\31\u00e5\n\31\3\31\3\31\3\31\3\31\3\31\3\31\5\31\u00ed"+
-		"\n\31\3\31\5\31\u00f0\n\31\3\32\5\32\u00f3\n\32\3\32\3\32\3\32\3\33\3"+
-		"\33\3\33\3\33\3\33\3\33\7\33\u00fe\n\33\f\33\16\33\u0101\13\33\3\34\3"+
-		"\34\3\34\3\34\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\5"+
-		"\35\u0112\n\35\3\35\5\35\u0115\n\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35"+
-		"\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\7\35\u0126\n\35\f\35\16\35\u0129"+
-		"\13\35\3\36\3\36\3\36\3\36\3\36\3\36\7\36\u0131\n\36\f\36\16\36\u0134"+
-		"\13\36\3\37\3\37\3\37\5\37\u0139\n\37\3\37\5\37\u013c\n\37\3\37\3\37\5"+
-		"\37\u0140\n\37\3 \3 \3!\3!\5!\u0146\n!\3\"\3\"\3#\3#\3#\3#\3#\3#\3$\3"+
-		"$\3$\2\7\b*\648:%\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62"+
-		"\64\668:<>@BDF\2\f\4\2\37\37((\4\2\30\30%%\3\2+-\4\2%%))\3\2\21\24\3\2"+
-		"\17\20\3\2\25\26\3\2\13\f\3\2)+\4\2\t\t\62\62\2\u015a\2H\3\2\2\2\4L\3"+
-		"\2\2\2\6S\3\2\2\2\bW\3\2\2\2\nd\3\2\2\2\ff\3\2\2\2\16k\3\2\2\2\20n\3\2"+
-		"\2\2\22r\3\2\2\2\24z\3\2\2\2\26}\3\2\2\2\30\u0089\3\2\2\2\32\u008d\3\2"+
-		"\2\2\34\u0091\3\2\2\2\36\u0095\3\2\2\2 \u009b\3\2\2\2\"\u00ac\3\2\2\2"+
-		"$\u00ae\3\2\2\2&\u00c1\3\2\2\2(\u00d0\3\2\2\2*\u00d2\3\2\2\2,\u00de\3"+
-		"\2\2\2.\u00e0\3\2\2\2\60\u00e2\3\2\2\2\62\u00f2\3\2\2\2\64\u00f7\3\2\2"+
-		"\2\66\u0102\3\2\2\28\u0114\3\2\2\2:\u012a\3\2\2\2<\u013f\3\2\2\2>\u0141"+
-		"\3\2\2\2@\u0145\3\2\2\2B\u0147\3\2\2\2D\u0149\3\2\2\2F\u014f\3\2\2\2H"+
-		"I\5\b\5\2IJ\7\2\2\3J\3\3\2\2\2KM\5\6\4\2LK\3\2\2\2LM\3\2\2\2MN\3\2\2\2"+
-		"NO\7\33\2\2OP\58\35\2PQ\7\34\2\2QR\7\2\2\3R\5\3\2\2\2ST\7 \2\2TU\5F$\2"+
-		"UV\7!\2\2V\7\3\2\2\2WX\b\5\1\2XY\5\n\6\2Y^\3\2\2\2Z[\f\3\2\2[]\5\n\6\2"+
-		"\\Z\3\2\2\2]`\3\2\2\2^\\\3\2\2\2^_\3\2\2\2_\t\3\2\2\2`^\3\2\2\2ae\5\26"+
-		"\f\2be\5\16\b\2ce\5\f\7\2da\3\2\2\2db\3\2\2\2dc\3\2\2\2e\13\3\2\2\2fg"+
-		"\7\3\2\2gh\7\31\2\2hi\5> \2ij\7\32\2\2j\r\3\2\2\2kl\5\20\t\2lm\5*\26\2"+
-		"m\17\3\2\2\2no\7\n\2\2op\7(\2\2pq\5F$\2q\21\3\2\2\2rs\7\n\2\2st\7\31\2"+
-		"\2tv\5F$\2uw\5\24\13\2vu\3\2\2\2vw\3\2\2\2wx\3\2\2\2xy\7\32\2\2y\23\3"+
-		"\2\2\2z{\7#\2\2{|\5\"\22\2|\25\3\2\2\2}\177\5\30\r\2~\u0080\5\32\16\2"+
-		"\177~\3\2\2\2\177\u0080\3\2\2\2\u0080\u0082\3\2\2\2\u0081\u0083\5\36\20"+
-		"\2\u0082\u0081\3\2\2\2\u0082\u0083\3\2\2\2\u0083\u0085\3\2\2\2\u0084\u0086"+
-		"\5 \21\2\u0085\u0084\3\2\2\2\u0085\u0086\3\2\2\2\u0086\u0087\3\2\2\2\u0087"+
-		"\u0088\5*\26\2\u0088\27\3\2\2\2\u0089\u008a\7\4\2\2\u008a\u008b\7(\2\2"+
-		"\u008b\u008c\5F$\2\u008c\31\3\2\2\2\u008d\u008e\7\5\2\2\u008e\u008f\7"+
-		"(\2\2\u008f\u0090\7\r\2\2\u0090\33\3\2\2\2\u0091\u0092\7,\2\2\u0092\u0093"+
-		"\5\62\32\2\u0093\u0094\7,\2\2\u0094\35\3\2\2\2\u0095\u0096\7\6\2\2\u0096"+
-		"\u0099\7(\2\2\u0097\u009a\5> \2\u0098\u009a\5\34\17\2\u0099\u0097\3\2"+
-		"\2\2\u0099\u0098\3\2\2\2\u009a\37\3\2\2\2\u009b\u009c\7\7\2\2\u009c\u009d"+
-		"\7(\2\2\u009d\u009e\5\"\22\2\u009e!\3\2\2\2\u009f\u00a0\7\33\2\2\u00a0"+
-		"\u00a5\5$\23\2\u00a1\u00a2\7#\2\2\u00a2\u00a4\5$\23\2\u00a3\u00a1\3\2"+
-		"\2\2\u00a4\u00a7\3\2\2\2\u00a5\u00a3\3\2\2\2\u00a5\u00a6\3\2\2\2\u00a6"+
-		"\u00a8\3\2\2\2\u00a7\u00a5\3\2\2\2\u00a8\u00a9\7\34\2\2\u00a9\u00ad\3"+
-		"\2\2\2\u00aa\u00ab\7\33\2\2\u00ab\u00ad\7\34\2\2\u00ac\u009f\3\2\2\2\u00ac"+
-		"\u00aa\3\2\2\2\u00ad#\3\2\2\2\u00ae\u00af\5> \2\u00af\u00b0\7$\2\2\u00b0"+
-		"\u00b1\5&\24\2\u00b1%\3\2\2\2\u00b2\u00c2\5> \2\u00b3\u00b5\7%\2\2\u00b4"+
-		"\u00b3\3\2\2\2\u00b4\u00b5\3\2\2\2\u00b5\u00b6\3\2\2\2\u00b6\u00b8\7/"+
-		"\2\2\u00b7\u00b9\7\60\2\2\u00b8\u00b7\3\2\2\2\u00b8\u00b9\3\2\2\2\u00b9"+
-		"\u00bb\3\2\2\2\u00ba\u00bc\7\61\2\2\u00bb\u00ba\3\2\2\2\u00bb\u00bc\3"+
-		"\2\2\2\u00bc\u00c2\3\2\2\2\u00bd\u00c2\5\"\22\2\u00be\u00c2\5(\25\2\u00bf"+
-		"\u00c2\7\r\2\2\u00c0\u00c2\7\16\2\2\u00c1\u00b2\3\2\2\2\u00c1\u00b4\3"+
-		"\2\2\2\u00c1\u00bd\3\2\2\2\u00c1\u00be\3\2\2\2\u00c1\u00bf\3\2\2\2\u00c1"+
-		"\u00c0\3\2\2\2\u00c2\'\3\2\2\2\u00c3\u00c4\7 \2\2\u00c4\u00c9\5&\24\2"+
-		"\u00c5\u00c6\7#\2\2\u00c6\u00c8\5&\24\2\u00c7\u00c5\3\2\2\2\u00c8\u00cb"+
-		"\3\2\2\2\u00c9\u00c7\3\2\2\2\u00c9\u00ca\3\2\2\2\u00ca\u00cc\3\2\2\2\u00cb"+
-		"\u00c9\3\2\2\2\u00cc\u00cd\7!\2\2\u00cd\u00d1\3\2\2\2\u00ce\u00cf\7 \2"+
-		"\2\u00cf\u00d1\7!\2\2\u00d0\u00c3\3\2\2\2\u00d0\u00ce\3\2\2\2\u00d1)\3"+
-		"\2\2\2\u00d2\u00d3\b\26\1\2\u00d3\u00d4\5,\27\2\u00d4\u00d9\3\2\2\2\u00d5"+
-		"\u00d6\f\3\2\2\u00d6\u00d8\5,\27\2\u00d7\u00d5\3\2\2\2\u00d8\u00db\3\2"+
-		"\2\2\u00d9\u00d7\3\2\2\2\u00d9\u00da\3\2\2\2\u00da+\3\2\2\2\u00db\u00d9"+
-		"\3\2\2\2\u00dc\u00df\5\60\31\2\u00dd\u00df\5\22\n\2\u00de\u00dc\3\2\2"+
-		"\2\u00de\u00dd\3\2\2\2\u00df-\3\2\2\2\u00e0\u00e1\t\2\2\2\u00e1/\3\2\2"+
-		"\2\u00e2\u00e4\7\b\2\2\u00e3\u00e5\5\66\34\2\u00e4\u00e3\3\2\2\2\u00e4"+
-		"\u00e5\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00ec\5.\30\2\u00e7\u00e8\7\33"+
-		"\2\2\u00e8\u00e9\58\35\2\u00e9\u00ea\7\34\2\2\u00ea\u00ed\3\2\2\2\u00eb"+
-		"\u00ed\5\34\17\2\u00ec\u00e7\3\2\2\2\u00ec\u00eb\3\2\2\2\u00ed\u00ef\3"+
-		"\2\2\2\u00ee\u00f0\5@!\2\u00ef\u00ee\3\2\2\2\u00ef\u00f0\3\2\2\2\u00f0"+
-		"\61\3\2\2\2\u00f1\u00f3\5\64\33\2\u00f2\u00f1\3\2\2\2\u00f2\u00f3\3\2"+
-		"\2\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\7\"\2\2\u00f5\u00f6\5F$\2\u00f6\63"+
-		"\3\2\2\2\u00f7\u00f8\b\33\1\2\u00f8\u00f9\5F$\2\u00f9\u00ff\3\2\2\2\u00fa"+
-		"\u00fb\f\3\2\2\u00fb\u00fc\7&\2\2\u00fc\u00fe\5F$\2\u00fd\u00fa\3\2\2"+
-		"\2\u00fe\u0101\3\2\2\2\u00ff\u00fd\3\2\2\2\u00ff\u0100\3\2\2\2\u0100\65"+
-		"\3\2\2\2\u0101\u00ff\3\2\2\2\u0102\u0103\7\31\2\2\u0103\u0104\5F$\2\u0104"+
-		"\u0105\7\32\2\2\u0105\67\3\2\2\2\u0106\u0107\b\35\1\2\u0107\u0108\t\3"+
-		"\2\2\u0108\u0115\58\35\13\u0109\u010a\7\31\2\2\u010a\u010b\58\35\2\u010b"+
-		"\u010c\7\32\2\2\u010c\u0115\3\2\2\2\u010d\u0115\5<\37\2\u010e\u010f\7"+
-		"\t\2\2\u010f\u0111\7\31\2\2\u0110\u0112\5:\36\2\u0111\u0110\3\2\2\2\u0111"+
-		"\u0112\3\2\2\2\u0112\u0113\3\2\2\2\u0113\u0115\7\32\2\2\u0114\u0106\3"+
-		"\2\2\2\u0114\u0109\3\2\2\2\u0114\u010d\3\2\2\2\u0114\u010e\3\2\2\2\u0115"+
-		"\u0127\3\2\2\2\u0116\u0117\f\t\2\2\u0117\u0118\t\4\2\2\u0118\u0126\58"+
-		"\35\n\u0119\u011a\f\b\2\2\u011a\u011b\t\5\2\2\u011b\u0126\58\35\t\u011c"+
-		"\u011d\f\7\2\2\u011d\u011e\t\6\2\2\u011e\u0126\58\35\b\u011f\u0120\f\6"+
-		"\2\2\u0120\u0121\t\7\2\2\u0121\u0126\58\35\7\u0122\u0123\f\5\2\2\u0123"+
-		"\u0124\t\b\2\2\u0124\u0126\58\35\6\u0125\u0116\3\2\2\2\u0125\u0119\3\2"+
-		"\2\2\u0125\u011c\3\2\2\2\u0125\u011f\3\2\2\2\u0125\u0122\3\2\2\2\u0126"+
-		"\u0129\3\2\2\2\u0127\u0125\3\2\2\2\u0127\u0128\3\2\2\2\u01289\3\2\2\2"+
-		"\u0129\u0127\3\2\2\2\u012a\u012b\b\36\1\2\u012b\u012c\58\35\2\u012c\u0132"+
-		"\3\2\2\2\u012d\u012e\f\3\2\2\u012e\u012f\7#\2\2\u012f\u0131\58\35\2\u0130"+
-		"\u012d\3\2\2\2\u0131\u0134\3\2\2\2\u0132\u0130\3\2\2\2\u0132\u0133\3\2"+
-		"\2\2\u0133;\3\2\2\2\u0134\u0132\3\2\2\2\u0135\u0140\7\16\2\2\u0136\u0138"+
-		"\7/\2\2\u0137\u0139\7\60\2\2\u0138\u0137\3\2\2\2\u0138\u0139\3\2\2\2\u0139"+
-		"\u013b\3\2\2\2\u013a\u013c\7\61\2\2\u013b\u013a\3\2\2\2\u013b\u013c\3"+
-		"\2\2\2\u013c\u0140\3\2\2\2\u013d\u0140\7\r\2\2\u013e\u0140\5> \2\u013f"+
-		"\u0135\3\2\2\2\u013f\u0136\3\2\2\2\u013f\u013d\3\2\2\2\u013f\u013e\3\2"+
-		"\2\2\u0140=\3\2\2\2\u0141\u0142\t\t\2\2\u0142?\3\2\2\2\u0143\u0146\5B"+
-		"\"\2\u0144\u0146\5D#\2\u0145\u0143\3\2\2\2\u0145\u0144\3\2\2\2\u0146A"+
-		"\3\2\2\2\u0147\u0148\t\n\2\2\u0148C\3\2\2\2\u0149\u014a\7 \2\2\u014a\u014b"+
-		"\7/\2\2\u014b\u014c\7#\2\2\u014c\u014d\7/\2\2\u014d\u014e\7!\2\2\u014e"+
-		"E\3\2\2\2\u014f\u0150\t\13\2\2\u0150G\3\2\2\2\"L^dv\177\u0082\u0085\u0099"+
-		"\u00a5\u00ac\u00b4\u00b8\u00bb\u00c1\u00c9\u00d0\u00d9\u00de\u00e4\u00ec"+
-		"\u00ef\u00f2\u00ff\u0111\u0114\u0125\u0127\u0132\u0138\u013b\u013f\u0145";
+		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\3\2\3\2\3\2\3\3\5\3Q\n\3\3\3\3\3\5"+
+		"\3U\n\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\7\5d\n\5\f"+
+		"\5\16\5g\13\5\3\6\3\6\3\6\5\6l\n\6\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\t"+
+		"\3\t\3\t\3\t\3\n\3\n\3\n\3\n\5\n~\n\n\3\n\3\n\3\13\3\13\3\13\3\f\3\f\5"+
+		"\f\u0087\n\f\3\f\5\f\u008a\n\f\3\f\5\f\u008d\n\f\3\f\3\f\3\r\3\r\3\r\3"+
+		"\r\3\16\3\16\3\16\3\16\3\17\3\17\3\17\3\17\3\20\3\20\3\20\3\20\5\20\u00a1"+
+		"\n\20\3\21\3\21\3\21\3\21\3\22\3\22\3\22\3\22\7\22\u00ab\n\22\f\22\16"+
+		"\22\u00ae\13\22\3\22\3\22\3\22\3\22\5\22\u00b4\n\22\3\23\3\23\3\23\3\23"+
+		"\3\24\3\24\5\24\u00bc\n\24\3\24\3\24\5\24\u00c0\n\24\3\24\5\24\u00c3\n"+
+		"\24\3\24\3\24\3\24\3\24\5\24\u00c9\n\24\3\25\3\25\3\25\3\25\7\25\u00cf"+
+		"\n\25\f\25\16\25\u00d2\13\25\3\25\3\25\3\25\3\25\5\25\u00d8\n\25\3\26"+
+		"\3\26\3\26\3\26\3\26\7\26\u00df\n\26\f\26\16\26\u00e2\13\26\3\27\3\27"+
+		"\5\27\u00e6\n\27\3\30\3\30\3\31\3\31\5\31\u00ec\n\31\3\31\3\31\3\31\5"+
+		"\31\u00f1\n\31\3\31\3\31\3\31\3\31\5\31\u00f7\n\31\3\31\5\31\u00fa\n\31"+
+		"\3\32\5\32\u00fd\n\32\3\32\3\32\3\32\3\33\3\33\3\33\3\33\3\33\3\33\7\33"+
+		"\u0108\n\33\f\33\16\33\u010b\13\33\3\34\3\34\3\34\3\34\3\35\3\35\3\35"+
+		"\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\5\35\u011c\n\35\3\35\3\35\3\35"+
+		"\5\35\u0121\n\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35"+
+		"\3\35\3\35\3\35\3\35\7\35\u0132\n\35\f\35\16\35\u0135\13\35\3\36\3\36"+
+		"\3\36\3\36\3\36\7\36\u013c\n\36\f\36\16\36\u013f\13\36\3\37\3\37\3\37"+
+		"\3\37\3\37\3 \3 \3 \3 \3 \3 \7 \u014c\n \f \16 \u014f\13 \3!\3!\3!\5!"+
+		"\u0154\n!\3!\5!\u0157\n!\3!\3!\5!\u015b\n!\3\"\3\"\3#\3#\5#\u0161\n#\3"+
+		"$\3$\3%\3%\3%\3%\3%\3%\3&\3&\3&\2\b\b*\648:>\'\2\4\6\b\n\f\16\20\22\24"+
+		"\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFHJ\2\f\4\2\37\37((\4\2\30"+
+		"\30%%\3\2+-\4\2%%))\3\2\21\24\3\2\17\20\3\2\25\26\3\2\13\f\3\2)+\4\2\t"+
+		"\t\63\63\2\u0177\2L\3\2\2\2\4P\3\2\2\2\6Z\3\2\2\2\b^\3\2\2\2\nk\3\2\2"+
+		"\2\fm\3\2\2\2\16r\3\2\2\2\20u\3\2\2\2\22y\3\2\2\2\24\u0081\3\2\2\2\26"+
+		"\u0084\3\2\2\2\30\u0090\3\2\2\2\32\u0094\3\2\2\2\34\u0098\3\2\2\2\36\u009c"+
+		"\3\2\2\2 \u00a2\3\2\2\2\"\u00b3\3\2\2\2$\u00b5\3\2\2\2&\u00c8\3\2\2\2"+
+		"(\u00d7\3\2\2\2*\u00d9\3\2\2\2,\u00e5\3\2\2\2.\u00e7\3\2\2\2\60\u00e9"+
+		"\3\2\2\2\62\u00fc\3\2\2\2\64\u0101\3\2\2\2\66\u010c\3\2\2\28\u0120\3\2"+
+		"\2\2:\u0136\3\2\2\2<\u0140\3\2\2\2>\u0145\3\2\2\2@\u015a\3\2\2\2B\u015c"+
+		"\3\2\2\2D\u0160\3\2\2\2F\u0162\3\2\2\2H\u0164\3\2\2\2J\u016a\3\2\2\2L"+
+		"M\5\b\5\2MN\7\2\2\3N\3\3\2\2\2OQ\5\6\4\2PO\3\2\2\2PQ\3\2\2\2QR\3\2\2\2"+
+		"RT\7\33\2\2SU\5:\36\2TS\3\2\2\2TU\3\2\2\2UV\3\2\2\2VW\58\35\2WX\7\34\2"+
+		"\2XY\7\2\2\3Y\5\3\2\2\2Z[\7 \2\2[\\\5J&\2\\]\7!\2\2]\7\3\2\2\2^_\b\5\1"+
+		"\2_`\5\n\6\2`e\3\2\2\2ab\f\3\2\2bd\5\n\6\2ca\3\2\2\2dg\3\2\2\2ec\3\2\2"+
+		"\2ef\3\2\2\2f\t\3\2\2\2ge\3\2\2\2hl\5\26\f\2il\5\16\b\2jl\5\f\7\2kh\3"+
+		"\2\2\2ki\3\2\2\2kj\3\2\2\2l\13\3\2\2\2mn\7\3\2\2no\7\31\2\2op\5B\"\2p"+
+		"q\7\32\2\2q\r\3\2\2\2rs\5\20\t\2st\5*\26\2t\17\3\2\2\2uv\7\n\2\2vw\7("+
+		"\2\2wx\5J&\2x\21\3\2\2\2yz\7\n\2\2z{\7\31\2\2{}\5J&\2|~\5\24\13\2}|\3"+
+		"\2\2\2}~\3\2\2\2~\177\3\2\2\2\177\u0080\7\32\2\2\u0080\23\3\2\2\2\u0081"+
+		"\u0082\7#\2\2\u0082\u0083\5\"\22\2\u0083\25\3\2\2\2\u0084\u0086\5\30\r"+
+		"\2\u0085\u0087\5\32\16\2\u0086\u0085\3\2\2\2\u0086\u0087\3\2\2\2\u0087"+
+		"\u0089\3\2\2\2\u0088\u008a\5\36\20\2\u0089\u0088\3\2\2\2\u0089\u008a\3"+
+		"\2\2\2\u008a\u008c\3\2\2\2\u008b\u008d\5 \21\2\u008c\u008b\3\2\2\2\u008c"+
+		"\u008d\3\2\2\2\u008d\u008e\3\2\2\2\u008e\u008f\5*\26\2\u008f\27\3\2\2"+
+		"\2\u0090\u0091\7\4\2\2\u0091\u0092\7(\2\2\u0092\u0093\5J&\2\u0093\31\3"+
+		"\2\2\2\u0094\u0095\7\5\2\2\u0095\u0096\7(\2\2\u0096\u0097\7\r\2\2\u0097"+
+		"\33\3\2\2\2\u0098\u0099\7,\2\2\u0099\u009a\5\62\32\2\u009a\u009b\7,\2"+
+		"\2\u009b\35\3\2\2\2\u009c\u009d\7\6\2\2\u009d\u00a0\7(\2\2\u009e\u00a1"+
+		"\5B\"\2\u009f\u00a1\5\34\17\2\u00a0\u009e\3\2\2\2\u00a0\u009f\3\2\2\2"+
+		"\u00a1\37\3\2\2\2\u00a2\u00a3\7\7\2\2\u00a3\u00a4\7(\2\2\u00a4\u00a5\5"+
+		"\"\22\2\u00a5!\3\2\2\2\u00a6\u00a7\7\33\2\2\u00a7\u00ac\5$\23\2\u00a8"+
+		"\u00a9\7#\2\2\u00a9\u00ab\5$\23\2\u00aa\u00a8\3\2\2\2\u00ab\u00ae\3\2"+
+		"\2\2\u00ac\u00aa\3\2\2\2\u00ac\u00ad\3\2\2\2\u00ad\u00af\3\2\2\2\u00ae"+
+		"\u00ac\3\2\2\2\u00af\u00b0\7\34\2\2\u00b0\u00b4\3\2\2\2\u00b1\u00b2\7"+
+		"\33\2\2\u00b2\u00b4\7\34\2\2\u00b3\u00a6\3\2\2\2\u00b3\u00b1\3\2\2\2\u00b4"+
+		"#\3\2\2\2\u00b5\u00b6\5B\"\2\u00b6\u00b7\7$\2\2\u00b7\u00b8\5&\24\2\u00b8"+
+		"%\3\2\2\2\u00b9\u00c9\5B\"\2\u00ba\u00bc\7%\2\2\u00bb\u00ba\3\2\2\2\u00bb"+
+		"\u00bc\3\2\2\2\u00bc\u00bd\3\2\2\2\u00bd\u00bf\7\60\2\2\u00be\u00c0\7"+
+		"\61\2\2\u00bf\u00be\3\2\2\2\u00bf\u00c0\3\2\2\2\u00c0\u00c2\3\2\2\2\u00c1"+
+		"\u00c3\7\62\2\2\u00c2\u00c1\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3\u00c9\3"+
+		"\2\2\2\u00c4\u00c9\5\"\22\2\u00c5\u00c9\5(\25\2\u00c6\u00c9\7\r\2\2\u00c7"+
+		"\u00c9\7\16\2\2\u00c8\u00b9\3\2\2\2\u00c8\u00bb\3\2\2\2\u00c8\u00c4\3"+
+		"\2\2\2\u00c8\u00c5\3\2\2\2\u00c8\u00c6\3\2\2\2\u00c8\u00c7\3\2\2\2\u00c9"+
+		"\'\3\2\2\2\u00ca\u00cb\7 \2\2\u00cb\u00d0\5&\24\2\u00cc\u00cd\7#\2\2\u00cd"+
+		"\u00cf\5&\24\2\u00ce\u00cc\3\2\2\2\u00cf\u00d2\3\2\2\2\u00d0\u00ce\3\2"+
+		"\2\2\u00d0\u00d1\3\2\2\2\u00d1\u00d3\3\2\2\2\u00d2\u00d0\3\2\2\2\u00d3"+
+		"\u00d4\7!\2\2\u00d4\u00d8\3\2\2\2\u00d5\u00d6\7 \2\2\u00d6\u00d8\7!\2"+
+		"\2\u00d7\u00ca\3\2\2\2\u00d7\u00d5\3\2\2\2\u00d8)\3\2\2\2\u00d9\u00da"+
+		"\b\26\1\2\u00da\u00db\5,\27\2\u00db\u00e0\3\2\2\2\u00dc\u00dd\f\3\2\2"+
+		"\u00dd\u00df\5,\27\2\u00de\u00dc\3\2\2\2\u00df\u00e2\3\2\2\2\u00e0\u00de"+
+		"\3\2\2\2\u00e0\u00e1\3\2\2\2\u00e1+\3\2\2\2\u00e2\u00e0\3\2\2\2\u00e3"+
+		"\u00e6\5\60\31\2\u00e4\u00e6\5\22\n\2\u00e5\u00e3\3\2\2\2\u00e5\u00e4"+
+		"\3\2\2\2\u00e6-\3\2\2\2\u00e7\u00e8\t\2\2\2\u00e8/\3\2\2\2\u00e9\u00eb"+
+		"\7\b\2\2\u00ea\u00ec\5\66\34\2\u00eb\u00ea\3\2\2\2\u00eb\u00ec\3\2\2\2"+
+		"\u00ec\u00ed\3\2\2\2\u00ed\u00f6\5.\30\2\u00ee\u00f0\7\33\2\2\u00ef\u00f1"+
+		"\5:\36\2\u00f0\u00ef\3\2\2\2\u00f0\u00f1\3\2\2\2\u00f1\u00f2\3\2\2\2\u00f2"+
+		"\u00f3\58\35\2\u00f3\u00f4\7\34\2\2\u00f4\u00f7\3\2\2\2\u00f5\u00f7\5"+
+		"\34\17\2\u00f6\u00ee\3\2\2\2\u00f6\u00f5\3\2\2\2\u00f7\u00f9\3\2\2\2\u00f8"+
+		"\u00fa\5D#\2\u00f9\u00f8\3\2\2\2\u00f9\u00fa\3\2\2\2\u00fa\61\3\2\2\2"+
+		"\u00fb\u00fd\5\64\33\2\u00fc\u00fb\3\2\2\2\u00fc\u00fd\3\2\2\2\u00fd\u00fe"+
+		"\3\2\2\2\u00fe\u00ff\7\"\2\2\u00ff\u0100\5J&\2\u0100\63\3\2\2\2\u0101"+
+		"\u0102\b\33\1\2\u0102\u0103\5J&\2\u0103\u0109\3\2\2\2\u0104\u0105\f\3"+
+		"\2\2\u0105\u0106\7&\2\2\u0106\u0108\5J&\2\u0107\u0104\3\2\2\2\u0108\u010b"+
+		"\3\2\2\2\u0109\u0107\3\2\2\2\u0109\u010a\3\2\2\2\u010a\65\3\2\2\2\u010b"+
+		"\u0109\3\2\2\2\u010c\u010d\7\31\2\2\u010d\u010e\5J&\2\u010e\u010f\7\32"+
+		"\2\2\u010f\67\3\2\2\2\u0110\u0111\b\35\1\2\u0111\u0112\t\3\2\2\u0112\u0121"+
+		"\58\35\f\u0113\u0114\7\31\2\2\u0114\u0115\58\35\2\u0115\u0116\7\32\2\2"+
+		"\u0116\u0121\3\2\2\2\u0117\u0121\5@!\2\u0118\u0119\7\t\2\2\u0119\u011b"+
+		"\7\31\2\2\u011a\u011c\5> \2\u011b\u011a\3\2\2\2\u011b\u011c\3\2\2\2\u011c"+
+		"\u011d\3\2\2\2\u011d\u0121\7\32\2\2\u011e\u011f\7.\2\2\u011f\u0121\5J"+
+		"&\2\u0120\u0110\3\2\2\2\u0120\u0113\3\2\2\2\u0120\u0117\3\2\2\2\u0120"+
+		"\u0118\3\2\2\2\u0120\u011e\3\2\2\2\u0121\u0133\3\2\2\2\u0122\u0123\f\n"+
+		"\2\2\u0123\u0124\t\4\2\2\u0124\u0132\58\35\13\u0125\u0126\f\t\2\2\u0126"+
+		"\u0127\t\5\2\2\u0127\u0132\58\35\n\u0128\u0129\f\b\2\2\u0129\u012a\t\6"+
+		"\2\2\u012a\u0132\58\35\t\u012b\u012c\f\7\2\2\u012c\u012d\t\7\2\2\u012d"+
+		"\u0132\58\35\b\u012e\u012f\f\6\2\2\u012f\u0130\t\b\2\2\u0130\u0132\58"+
+		"\35\7\u0131\u0122\3\2\2\2\u0131\u0125\3\2\2\2\u0131\u0128\3\2\2\2\u0131"+
+		"\u012b\3\2\2\2\u0131\u012e\3\2\2\2\u0132\u0135\3\2\2\2\u0133\u0131\3\2"+
+		"\2\2\u0133\u0134\3\2\2\2\u01349\3\2\2\2\u0135\u0133\3\2\2\2\u0136\u0137"+
+		"\b\36\1\2\u0137\u0138\5<\37\2\u0138\u013d\3\2\2\2\u0139\u013a\f\3\2\2"+
+		"\u013a\u013c\5<\37\2\u013b\u0139\3\2\2\2\u013c\u013f\3\2\2\2\u013d\u013b"+
+		"\3\2\2\2\u013d\u013e\3\2\2\2\u013e;\3\2\2\2\u013f\u013d\3\2\2\2\u0140"+
+		"\u0141\7.\2\2\u0141\u0142\5J&\2\u0142\u0143\7(\2\2\u0143\u0144\58\35\2"+
+		"\u0144=\3\2\2\2\u0145\u0146\b \1\2\u0146\u0147\58\35\2\u0147\u014d\3\2"+
+		"\2\2\u0148\u0149\f\3\2\2\u0149\u014a\7#\2\2\u014a\u014c\58\35\2\u014b"+
+		"\u0148\3\2\2\2\u014c\u014f\3\2\2\2\u014d\u014b\3\2\2\2\u014d\u014e\3\2"+
+		"\2\2\u014e?\3\2\2\2\u014f\u014d\3\2\2\2\u0150\u015b\7\16\2\2\u0151\u0153"+
+		"\7\60\2\2\u0152\u0154\7\61\2\2\u0153\u0152\3\2\2\2\u0153\u0154\3\2\2\2"+
+		"\u0154\u0156\3\2\2\2\u0155\u0157\7\62\2\2\u0156\u0155\3\2\2\2\u0156\u0157"+
+		"\3\2\2\2\u0157\u015b\3\2\2\2\u0158\u015b\7\r\2\2\u0159\u015b\5B\"\2\u015a"+
+		"\u0150\3\2\2\2\u015a\u0151\3\2\2\2\u015a\u0158\3\2\2\2\u015a\u0159\3\2"+
+		"\2\2\u015bA\3\2\2\2\u015c\u015d\t\t\2\2\u015dC\3\2\2\2\u015e\u0161\5F"+
+		"$\2\u015f\u0161\5H%\2\u0160\u015e\3\2\2\2\u0160\u015f\3\2\2\2\u0161E\3"+
+		"\2\2\2\u0162\u0163\t\n\2\2\u0163G\3\2\2\2\u0164\u0165\7 \2\2\u0165\u0166"+
+		"\7\60\2\2\u0166\u0167\7#\2\2\u0167\u0168\7\60\2\2\u0168\u0169\7!\2\2\u0169"+
+		"I\3\2\2\2\u016a\u016b\t\13\2\2\u016bK\3\2\2\2%PTek}\u0086\u0089\u008c"+
+		"\u00a0\u00ac\u00b3\u00bb\u00bf\u00c2\u00c8\u00d0\u00d7\u00e0\u00e5\u00eb"+
+		"\u00f0\u00f6\u00f9\u00fc\u0109\u011b\u0120\u0131\u0133\u013d\u014d\u0153"+
+		"\u0156\u015a\u0160";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

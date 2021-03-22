@@ -38,25 +38,25 @@ public interface NCIdlListener extends ParseTreeListener {
 	 */
 	void exitAlias(NCIdlParser.AliasContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIdlParser#idlItems}.
+	 * Enter a parse tree produced by {@link NCIdlParser#idlDecls}.
 	 * @param ctx the parse tree
 	 */
-	void enterIdlItems(NCIdlParser.IdlItemsContext ctx);
+	void enterIdlDecls(NCIdlParser.IdlDeclsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIdlParser#idlItems}.
+	 * Exit a parse tree produced by {@link NCIdlParser#idlDecls}.
 	 * @param ctx the parse tree
 	 */
-	void exitIdlItems(NCIdlParser.IdlItemsContext ctx);
+	void exitIdlDecls(NCIdlParser.IdlDeclsContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIdlParser#idlItem}.
+	 * Enter a parse tree produced by {@link NCIdlParser#idlDecl}.
 	 * @param ctx the parse tree
 	 */
-	void enterIdlItem(NCIdlParser.IdlItemContext ctx);
+	void enterIdlDecl(NCIdlParser.IdlDeclContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIdlParser#idlItem}.
+	 * Exit a parse tree produced by {@link NCIdlParser#idlDecl}.
 	 * @param ctx the parse tree
 	 */
-	void exitIdlItem(NCIdlParser.IdlItemContext ctx);
+	void exitIdlDecl(NCIdlParser.IdlDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIdlParser#imp}.
 	 * @param ctx the parse tree
@@ -208,25 +208,25 @@ public interface NCIdlListener extends ParseTreeListener {
 	 */
 	void exitJsonArr(NCIdlParser.JsonArrContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIdlParser#terms}.
+	 * Enter a parse tree produced by {@link NCIdlParser#termDecls}.
 	 * @param ctx the parse tree
 	 */
-	void enterTerms(NCIdlParser.TermsContext ctx);
+	void enterTermDecls(NCIdlParser.TermDeclsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIdlParser#terms}.
+	 * Exit a parse tree produced by {@link NCIdlParser#termDecls}.
 	 * @param ctx the parse tree
 	 */
-	void exitTerms(NCIdlParser.TermsContext ctx);
+	void exitTermDecls(NCIdlParser.TermDeclsContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NCIdlParser#termItem}.
+	 * Enter a parse tree produced by {@link NCIdlParser#termDecl}.
 	 * @param ctx the parse tree
 	 */
-	void enterTermItem(NCIdlParser.TermItemContext ctx);
+	void enterTermDecl(NCIdlParser.TermDeclContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NCIdlParser#termItem}.
+	 * Exit a parse tree produced by {@link NCIdlParser#termDecl}.
 	 * @param ctx the parse tree
 	 */
-	void exitTermItem(NCIdlParser.TermItemContext ctx);
+	void exitTermDecl(NCIdlParser.TermDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIdlParser#termEq}.
 	 * @param ctx the parse tree
@@ -338,6 +338,18 @@ public interface NCIdlListener extends ParseTreeListener {
 	 */
 	void exitAtomExpr(NCIdlParser.AtomExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code varRef}
+	 * labeled alternative in {@link NCIdlParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterVarRef(NCIdlParser.VarRefContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code varRef}
+	 * labeled alternative in {@link NCIdlParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitVarRef(NCIdlParser.VarRefContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code multDivModExpr}
 	 * labeled alternative in {@link NCIdlParser#expr}.
 	 * @param ctx the parse tree
@@ -385,6 +397,26 @@ public interface NCIdlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEqNeqExpr(NCIdlParser.EqNeqExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIdlParser#vars}.
+	 * @param ctx the parse tree
+	 */
+	void enterVars(NCIdlParser.VarsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIdlParser#vars}.
+	 * @param ctx the parse tree
+	 */
+	void exitVars(NCIdlParser.VarsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIdlParser#varDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterVarDecl(NCIdlParser.VarDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIdlParser#varDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitVarDecl(NCIdlParser.VarDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIdlParser#paramList}.
 	 * @param ctx the parse tree
