@@ -24,37 +24,44 @@
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ## What is Apache NLPCraft?
-[Apache NLPCraft](https://nlpcraft.apache.org/) is an open source library for adding a natural language interface for modern applications: 
+[Apache NLPCraft](https://nlpcraft.apache.org/) is an open source library for adding a natural language interface 
+for modern applications. It enables people to interact with your products using voice
+or text: 
 
  * Download, Maven/Grape/Gradle/SBT, installation [instructions](https://nlpcraft.apache.org/download.html) 
- * Read [documentation](https://nlpcraft.apache.org/docs.html)
+ * Read [docs](https://nlpcraft.apache.org/docs.html), [Javadoc](https://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
  * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples)
- * Latest [Javadoc](https://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
- * Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
  
 ## Why Natural Language?
-Natural Language Interface (NLI) enables users to explore any type of data sources using natural language augmenting existing UI/UX with fidelity and simplicity of a familiar spoken language.
-There is no learning curve, no special rules or UI to master, no cumbersome syntax or terms to remember - just a natural language that your users already speak.
- 
+Natural Language Interface enables users to interact with any type of products
+using natural language augmenting existing UI/UX with fidelity and simplicity of a familiar spoken language.
+Natural Language has no learning curve, no special rules or UI to master, no cumbersome syntax or 
+terms to remember - it's just a natural interface that your users already know.
+
 ## Key Features
-### Programmable Intents
-Fully programmable, advanced NLPCraft IDL (Intent Definition Language) with deterministic matching provides easy to use and expressive mechanism for a complex intent logic.
+### Intent Definition Language
+Advanced Intent Definition Language (IDL) coupled with deterministic intent matching
+provide ease of use and unprecedented expressiveness for designing real-life, non-trivial intents.
+
+### Composable Named Entities
+Easily compose, mix and match new named entities out of built-in or external ones, creating new
+reusable named entity recognizers on the fly.
 
 ### Short-Term-Memory
 Advanced out-of-the-box support for maintaining and managing conversational context that is fully integrated with intent matching.
  
-### English Focused
-NLPCraft focuses on processing English language delivering the ease of use and unparalleled comprehension for the language spoken by more than a billion people.
+### Model-As-A-Code
+Everything you do with NLPCraft is part of your source code. No more awkward web UIs
+splitting your logic across different incompatible places. Model-as-a-code is built by
+engineers, and it reflects how engineers work.
 
 ### By Devs - For Devs
-Built with a singular focus - provide developers with unprecedented productivity and efficiency when building  modern NLI applications.
+Built with a singular focus - provide state-of-the-art developers with unprecedented productivity and efficiency when building
+modern natural language applications.
 
-### Composable Named Entities
-Compose new reusable Named Entities out of existing internal or external ones, build new ones and mix and match using comprehensive NLPCraft IDL.
-                       
 ### Java-First
 REST API and Java-based implementation natively supports the world's largest ecosystem of development tools, multiple programming languages, frameworks and services.
 
@@ -62,9 +69,6 @@ REST API and Java-based implementation natively supports the world's largest eco
 <a target=_ href="https://scala-lang.org/"><img src="https://nlpcraft.apache.org/images/scala-logo.png" height="24px" alt=""></a>
 <a target=_ href="https://groovy-lang.org/"><img src="https://nlpcraft.apache.org/images/groovy.png" height="32px" alt=""></a>
 <a target=_ href="https://kotlinlang.org/"><img src="https://nlpcraft.apache.org/images/kotlin.png" height="32px" alt=""></a>
-
-### Model-As-A-Code
-Model-as-a-code convention natively supports any system development life cycle tools and frameworks in the Java ecosystem.
 
 ### Out-Of-The-Box Integration
 NLPCraft natively integrates with 3rd party libraries for base NLP processing and named entity recognition:
