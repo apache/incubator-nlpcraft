@@ -664,9 +664,14 @@ object NCSentenceManager extends NCService {
                     val delCombOthers =
                         delCombs.filter(_ != note).flatMap(n ⇒ if (getPartKeys(n).contains(key)) Some(n) else None)
 
-                    if (delCombOthers.exists(o ⇒ noteWordsIdxs == o.wordIndexes.toSet)) Some(note) else None
+                    if (
+                        delCombOthers.exists(o ⇒ noteWordsIdxs == o.wordIndexes.toSet) ||
+                        delCombOthers.nonEmpty && !delCombOthers.exists(o ⇒ noteWordsIdxs.subsetOf(o.wordIndexes.toSet))
+                    )
+                        Some(note)
+                    else
+                        None
                 })
-
 
         delCombs = delCombs.filter(p ⇒ !swallowed.contains(p))
         addDeleted(sen, sen, swallowed)

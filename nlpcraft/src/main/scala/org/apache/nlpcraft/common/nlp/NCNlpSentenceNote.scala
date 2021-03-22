@@ -173,8 +173,13 @@ class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) e
     override def toString: String =
         values.toSeq.sortBy(t ⇒ { // Don't show internal ID.
             val typeSort = t._1 match {
-                case "noteType" ⇒ 1
-                case _ ⇒ Math.abs(t._1.hashCode)
+                case "noteType" ⇒ 0
+                case "wordIndexes" ⇒ 1
+                case "direct" ⇒ 2
+                case "sparsity" ⇒ 3
+                case "parts" ⇒ 4
+
+                case _ ⇒ 100
             }
             (typeSort, t._1)
         }).map(p ⇒ s"${p._1}=${p._2}").mkString("NLP note [", ", ", "]")
