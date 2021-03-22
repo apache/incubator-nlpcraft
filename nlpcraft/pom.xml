@@ -278,6 +278,27 @@
             </resource>
         </resources>
 
+        <testResources>
+            <testResource>
+                <directory>src/test/scala</directory>
+                <includes>
+                    <include>**/*.txt</include>
+                    <include>**/*.json</include>
+                    <include>**/*.nc</include>
+                    <include>**/*.idl</include>
+                    <include>**/*.yaml</include>
+                    <include>**/*.sql</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
