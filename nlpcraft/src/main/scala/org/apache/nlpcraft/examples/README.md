@@ -24,7 +24,8 @@
 [![Gitter](https://badges.gitter.im/apache-nlpcraft/community.svg)](https://gitter.im/apache-nlpcraft/community)
 
 ### Examples
-This folder contains Java and Scala examples of NLPCraft data models. Each example is fully contained in its own sub-package. Every example provides data model implementation, and Junit 5-based unit test to easily run from IDE.
+This folder contains Java, Groovy, Kotlin and Scala examples of NLPCraft data models. Each example is fully 
+contained in its own sub-package. 
 
 Here's an example of the files for `time` example:
 <pre>
