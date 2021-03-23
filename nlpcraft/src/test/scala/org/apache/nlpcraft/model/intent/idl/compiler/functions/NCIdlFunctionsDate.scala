@@ -29,21 +29,26 @@ import java.util.Calendar
 class NCIdlFunctionsDate extends NCIdlFunctions {
     @Test
     def test(): Unit = {
-        def test0(): Unit =
+        def test0(): Unit = {
+            val d = LocalDate.now
+            val t = LocalTime.now
+            val c = Calendar.getInstance()
+
             test(
-                TrueFunc(truth = s"year() - ${LocalDate.now.getYear} == 0"),
-                TrueFunc(truth = s"month() - ${LocalDate.now.getMonthValue} == 0"),
-                TrueFunc(truth = s"day_of_month() - ${LocalDate.now.getDayOfMonth} == 0"),
-                TrueFunc(truth = s"day_of_week() - ${LocalDate.now.getDayOfWeek.getValue} == 0"),
-                TrueFunc(truth = s"day_of_year() - ${LocalDate.now.getDayOfYear} == 0"),
-                TrueFunc(truth = s"hour() - ${LocalTime.now.getHour} == 0"),
-                TrueFunc(truth = s"minute() - ${LocalTime.now.getMinute} == 0"),
-                TrueFunc(truth = s"second() - ${LocalTime.now.getSecond} < 5"),
-                TrueFunc(truth = s"week_of_month() - ${Calendar.getInstance().get(Calendar.WEEK_OF_MONTH)} == 0"),
-                TrueFunc(truth = s"week_of_year() - ${Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)} == 0"),
-                TrueFunc(truth = s"quarter() - ${LocalDate.now().get(IsoFields.QUARTER_OF_YEAR)} == 0"),
-                TrueFunc(truth = s"now() - ${System.currentTimeMillis()} < 5000")
+                TestData(truth = s"year() - ${d.getYear} == 0"),
+                TestData(truth = s"month() - ${d.getMonthValue} == 0"),
+                TestData(truth = s"day_of_month() - ${d.getDayOfMonth} == 0"),
+                TestData(truth = s"day_of_week() - ${d.getDayOfWeek.getValue} == 0"),
+                TestData(truth = s"day_of_year() - ${d.getDayOfYear} == 0"),
+                TestData(truth = s"hour() - ${t.getHour} == 0"),
+                TestData(truth = s"minute() - ${t.getMinute} == 0"),
+                TestData(truth = s"second() - ${t.getSecond} < 5"),
+                TestData(truth = s"week_of_month() - ${c.get(Calendar.WEEK_OF_MONTH)} == 0"),
+                TestData(truth = s"week_of_year() - ${c.get(Calendar.WEEK_OF_YEAR)} == 0"),
+                TestData(truth = s"quarter() - ${d.get(IsoFields.QUARTER_OF_YEAR)} == 0"),
+                TestData(truth = s"now() - ${System.currentTimeMillis()} < 5000")
             )
+        }
 
         try
             test0()

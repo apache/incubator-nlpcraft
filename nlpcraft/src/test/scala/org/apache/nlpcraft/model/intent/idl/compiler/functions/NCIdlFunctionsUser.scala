@@ -18,55 +18,34 @@
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
 import org.apache.nlpcraft.model.NCUser
-import org.apache.nlpcraft.server.rest.NCRestSpec
-import org.junit.jupiter.api.{BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
 import java.util
 import java.util.Optional
+import scala.collection.JavaConverters._
 
 /**
   * Tests for 'user' functions.
   */
-class NCIdlFunctionsUser extends NCRestSpec with NCIdlFunctions {
-    private var usr: NCUser = _
-
-    @BeforeEach
-    def setCompany(): Unit = {
-        var firstName: String = null
-        var lastName: String = null
-        var avatarUrl: String = null
-        var email: String = null
-        var adm: Boolean = false
-        var props: java.util.Map[String, AnyRef] = null
-
-        // Checks updated.
-        post("user/get")(
-            ("$.firstName", (v: String) ⇒ firstName = v),
-            ("$.lastName", (v: String) ⇒ lastName = v),
-            ("$.email", (v: String) ⇒ email = v),
-            ("$.avatarUrl", (v: String) ⇒ avatarUrl = v),
-            ("$.isAdmin", (v: Boolean) ⇒ adm = v),
-            ("$.properties", (v: java.util.Map[String, AnyRef]) ⇒ props = v)
-        )
-
-        usr = new NCUser {
-            override def getId: Long = -1  // TODO: No REST API data
-            override def getFirstName: Optional[String] = Optional.ofNullable(firstName)
-            override def getLastName: Optional[String] = Optional.ofNullable(lastName)
-            override def getEmail: Optional[String] = Optional.ofNullable(email)
-            override def getAvatarUrl: Optional[String] = Optional.ofNullable(avatarUrl)
-            override def isAdmin: Boolean = adm
-            override def getSignupTimestamp: Long = -1 // TODO: No REST API data
-            override def getMetadata: util.Map[String, AnyRef] = props
-        }
-    }
-
+class NCIdlFunctionsUser extends NCIdlFunctions {
     @Test
-    def test(): Unit =  {
+    def test(): Unit = {
+        val usr = new NCUser {
+            override def getId: Long = -1  // TODO: No REST API data
+            override def getFirstName: Optional[String] = Optional.of("firstName")
+            override def getLastName: Optional[String] = Optional.of("lastName")
+            override def getEmail: Optional[String] = Optional.of("email")
+            override def getAvatarUrl: Optional[String] = Optional.of("avatar")
+            override def isAdmin: Boolean = true
+            override def getSignupTimestamp: Long = -1 // TODO: No REST API data
+            override def getMetadata: util.Map[String, AnyRef] =
+                Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+        }
+
         val idlCtx = ctx(usr = usr)
 
         test(
-            TrueFunc(
+            TestData(
                 truth = s"user_email() == '${usr.getEmail.get()}'",
                 idlCtx = idlCtx
             )

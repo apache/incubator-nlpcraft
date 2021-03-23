@@ -19,15 +19,29 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
 import org.junit.jupiter.api.Test
 
+import scala.sys.SystemProperties
+
 /**
-  * Tests for 'math' functions.
+  * Tests for 'meta' functions.
   */
-class NCIdlFunctionsMath extends NCIdlFunctions {
+class NCIdlFunctionsMeta extends NCIdlFunctions {
     @Test
-    def test(): Unit =
+    def testSys(): Unit = {
+        val sys = new SystemProperties
+
+        sys.put("k1", "v1")
+
         test(
-            TestData(truth = "sin(90.0) == 0"),
-            TestData(truth = "sin(90) == 0"),
-            TestData(truth = "rand() < 1")
+            TestData(truth = "get(meta_sys(), 'k1') == 'v1'")
         )
+    }
+
+    @Test
+    def testRequest(): Unit = {
+        val idlCtx = ctx(reqData = Map("k1" → "v1"))
+
+        test(
+            TestData(truth = "get(meta_req(), 'k1') == 'v1'", idlCtx = idlCtx)
+        )
+    }
 }

@@ -26,11 +26,11 @@ class NCIdlFunctionsColl extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-            TrueFunc(truth = "is_empty(list()) == true"),
-            TrueFunc(truth = "is_empty(list(1)) == false"),
-            TrueFunc(truth = "non_empty(list()) == false"),
-            TrueFunc(truth = "non_empty(list(1)) == true"),
-            TrueFunc(truth = "first(list(1, 2, 3)) == 1"),
-            TrueFunc(truth = "last(list(1, 2, 3)) == 3")
+            TestData(truth = "is_empty(list()) == true"),
+            TestData(truth = "is_empty(list(1)) == false"),
+            TestData(truth = "non_empty(list()) == false"),
+            TestData(truth = "non_empty(list(1)) == true"),
+            TestData(truth = "first(list(1, 2, 3)) == 1"),
+            TestData(truth = "last(list(1, 2, 3)) == 3")
         )
 }

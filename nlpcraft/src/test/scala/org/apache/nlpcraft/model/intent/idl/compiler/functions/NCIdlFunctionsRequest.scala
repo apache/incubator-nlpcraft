@@ -28,7 +28,7 @@ class NCIdlFunctionsRequest extends NCIdlFunctions {
         val idlCtx = ctx(srvReqId = "req.id")
 
         test(
-            TrueFunc(
+            TestData(
                 truth = s"req_id() == '${idlCtx.req.getServerRequestId}'",
                 idlCtx = idlCtx
             )

@@ -18,60 +18,36 @@
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
 import org.apache.nlpcraft.model.NCCompany
-import org.apache.nlpcraft.server.rest.NCRestSpec
-import org.junit.jupiter.api.{BeforeEach, Test}
+import org.junit.jupiter.api.Test
 
 import java.util
 import java.util.Optional
+import scala.collection.JavaConverters._
 
 /**
   * Tests for 'company' functions.
   */
-class NCIdlFunctionsCompany extends NCRestSpec with NCIdlFunctions {
-    private var company: NCCompany = _
-
-    @BeforeEach
-    def setCompany(): Unit = {
-        var compName: String = null
-        var compWebsite: String = null
-        var compCountry: String = null
-        var compRegion: String = null
-        var compCity: String = null
-        var compAddress: String = null
-        var compPostalCode: String = null
-        var props: java.util.Map[String, AnyRef] = null
-
-        post("company/get")(
-            ("$.name", (v: String) ⇒ compName = v),
-            ("$.website", (v: String) ⇒ compWebsite = v),
-            ("$.country", (v: String) ⇒ compCountry = v),
-            ("$.region", (v: String) ⇒ compRegion = v),
-            ("$.city", (v: String) ⇒ compCity = v),
-            ("$.address", (v: String) ⇒ compAddress = v),
-            ("$.postalCode", (v: String) ⇒ compPostalCode = v),
-            ("$.properties", (v: java.util.Map[String, AnyRef]) ⇒ props = v)
-        )
-
-        company = new NCCompany() {
-            override def getId: Long = -1  // TODO: No REST API data
-            override def getName: String = compName
-            override def getWebsite: Optional[String] = Optional.ofNullable(compWebsite)
-            override def getCountry: Optional[String] = Optional.ofNullable(compCountry)
-            override def getRegion: Optional[String] = Optional.ofNullable(compRegion)
-            override def getCity: Optional[String] = Optional.ofNullable(compCity)
-            override def getAddress: Optional[String] = Optional.ofNullable(compAddress)
-            override def getPostalCode: Optional[String] = Optional.ofNullable(compPostalCode)
-            override def getMetadata: util.Map[String, AnyRef] = props
-        }
-    }
-
+class NCIdlFunctionsCompany extends NCIdlFunctions {
     @Test
     def test(): Unit = {
-        val idlCtx = ctx(comp = company)
+        val comp = new NCCompany {
+            override def getId: Long = -1 // TODO: No REST API data
+            override def getName: String = "name"
+            override def getWebsite: Optional[String] = Optional.of("website")
+            override def getCountry: Optional[String] = Optional.of("country")
+            override def getRegion: Optional[String] = Optional.of("region")
+            override def getCity: Optional[String] = Optional.of("city")
+            override def getAddress: Optional[String] = Optional.of("address")
+            override def getPostalCode: Optional[String] = Optional.of("code")
+            override def getMetadata: util.Map[String, AnyRef] =
+                Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+        }
+
+        val idlCtx = ctx(comp = comp)
 
         test(
-            TrueFunc(
-                truth = s"comp_name() == '${company.getName}'",
+            TestData(
+                truth = s"comp_name() == '${comp.getName}'",
                 idlCtx = idlCtx
             )
         )

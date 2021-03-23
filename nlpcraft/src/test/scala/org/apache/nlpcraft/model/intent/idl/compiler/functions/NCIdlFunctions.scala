@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGlobal}
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlStackItem}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction}
 import org.apache.nlpcraft.model.{NCCompany, NCModel, NCModelView, NCRequest, NCToken, NCUser}
 import org.junit.jupiter.api.BeforeEach
 
@@ -43,11 +43,7 @@ private[functions] trait NCIdlFunctions {
     @BeforeEach
     def before(): Unit = NCIdlCompilerGlobal.clearCache(MODEL_ID)
 
-    case class TrueFunc(
-        truth: String,
-        token: NCToken = tkn(),
-        idlCtx: NCIdlContext = ctx()
-    ) {
+    case class TestData(truth: String, token: NCToken = tkn(), idlCtx: NCIdlContext = ctx()) {
         val function: NCIdlFunction = {
             val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$truth}", MODEL, MODEL_ID)
 
@@ -57,10 +53,7 @@ private[functions] trait NCIdlFunctions {
 
             require(intent.terms.size == 1)
 
-            new NCIdlFunction() {
-                override def apply(v1: NCToken, v2: NCIdlContext): NCIdlStackItem = intent.terms.head.pred.apply(v1, v2)
-                override def toString(): String = s"Function, based on term: $function"
-            }
+            intent.terms.head.pred
         }
 
         private def nvl(s: String, name: String): String = if (s != null) s else s"$name (not set)"
@@ -120,7 +113,6 @@ private[functions] trait NCIdlFunctions {
 
         new NCToken {
             override def getModel: NCModelView = MODEL
-
             override def getServerRequestId: String = srvReqId
             override def getId: String = id
             override def getParentId: String = parentId
@@ -137,7 +129,7 @@ private[functions] trait NCIdlFunctions {
         }
     }
 
-    protected def test(funcs: TrueFunc*): Unit =
+    protected def test(funcs: TestData*): Unit =
         for (f ← funcs) {
             val res =
                 try
@@ -147,20 +139,14 @@ private[functions] trait NCIdlFunctions {
                 }
 
             res match {
-                case b: java.lang.Boolean ⇒
-                    require(
-                        b,
-                        s"Unexpected FALSE result [" +
-                            s"testFunc=$f " +
-                            s"]"
-                    )
+                case b: java.lang.Boolean ⇒ require(b, s"Unexpected FALSE result [testFunc=$f]")
                 case _ ⇒
                     require(
                         requirement = false,
                         s"Unexpected result type [" +
                             s"resType=${if (res == null) null else res.getClass.getName}, " +
-                            s"testFunc='$f', " +
-                            s"resValue=$res" +
+                            s"resValue=$res, " +
+                            s"testFunc='$f'" +
                             s"]"
                     )
             }
