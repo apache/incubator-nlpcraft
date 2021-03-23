@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.model.intent
 
-import org.apache.nlpcraft.model.NCToken
-
 /**
  * DSl synonym.
  *
@@ -28,7 +26,7 @@ import org.apache.nlpcraft.model.NCToken
 case class NCIdlSynonym(
     origin: String,
     alias: Option[String],
-    pred: NCIdlTokenPredicate,
+    pred: NCIdlFunction[Boolean],
 ) {
     require(origin != null)
     require(pred != null)

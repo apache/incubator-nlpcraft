@@ -24,7 +24,8 @@ import org.apache.nlpcraft.common._
  *
  * @param idl
  * @param id Optional ID of this term.
- * @param pred
+ * @param decls Term optional declarations.
+ * @param pred Term predicate.
  * @param min
  * @param max
  * @param conv
@@ -33,7 +34,8 @@ import org.apache.nlpcraft.common._
 case class NCIdlTerm(
     idl: String,
     id: Option[String],
-    pred: NCIdlTokenPredicate,
+    decls: List[NCIdlFunction[Object]],
+    pred: NCIdlFunction[Boolean],
     min: Int,
     max: Int,
     conv: Boolean,
@@ -51,6 +53,7 @@ case class NCIdlTerm(
         NCIdlTerm(
             idl,
             id,
+            decls,
             pred,
             min,
             max,

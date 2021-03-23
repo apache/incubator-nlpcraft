@@ -19,6 +19,9 @@ package org.apache.nlpcraft.model.intent
 
 import org.apache.nlpcraft.common.ScalaMeta
 import org.apache.nlpcraft.model.NCRequest
+import org.apache.nlpcraft.model.intent.compiler.NCIdlStackItem
+
+import scala.collection.mutable
 
 /**
  *
@@ -26,11 +29,13 @@ import org.apache.nlpcraft.model.NCRequest
  * @param convMeta Conversation metadata.
  * @param fragMeta Optional fragment (argument) metadata passed during intent fragment reference.
  * @param req Server request holder.
+ * @param vars Variable storage.
  */
 case class NCIdlContext(
     intentMeta: ScalaMeta = Map.empty[String, Object],
     convMeta: ScalaMeta = Map.empty[String, Object],
     fragMeta: ScalaMeta = Map.empty[String, Object],
-    req: NCRequest
+    req: NCRequest,
+    vars: mutable.Map[String, NCIdlStackItem]
 )
 
