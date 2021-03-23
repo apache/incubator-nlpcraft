@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
 import org.apache.commons.collections.CollectionUtils
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlStack, NCIdlStackItem ⇒ Z, NCIdlStackType}
 
-import java.lang.{Byte ⇒ JByte, Double ⇒ JDouble, Float ⇒ JFloat, Integer ⇒ JInt, Long ⇒ JLong, Number ⇒ JNumber, Short ⇒ JShort}
+import java.lang.{Byte ⇒ JByte, Double ⇒ JDouble, Float ⇒ JFloat, Integer ⇒ JInt, Long ⇒ JLong, Short ⇒ JShort}
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
@@ -73,7 +73,16 @@ trait NCIdlCompilerBase {
      * @return
      */
     //noinspection ComparingUnrelatedTypes
-    def isInt(v: Object): Boolean = v.isInstanceOf[JNumber]
+    def isInt(v: Object): Boolean = v.isInstanceOf[JLong] || v.isInstanceOf[JInt] || v.isInstanceOf[JByte] || v.isInstanceOf[JShort]
+
+    /**
+     * Check if given object is mathematically an real number.
+     *
+     * @param v
+     * @return
+     */
+    //noinspection ComparingUnrelatedTypes
+    def isReal(v: Object): Boolean = v.isInstanceOf[JDouble] || v.isInstanceOf[JFloat]
 
     /**
      *
@@ -87,15 +96,6 @@ trait NCIdlCompilerBase {
         case s: JShort ⇒ s.longValue()
         case _ ⇒ throw new AssertionError(s"Unexpected int value: $v")
     }
-
-    /**
-     * Check if given object is mathematically an real number.
-     *
-     * @param v
-     * @return
-     */
-    //noinspection ComparingUnrelatedTypes
-    def isReal(v: Object): Boolean = v.isInstanceOf[JDouble] || v.isInstanceOf[JFloat]
 
     /**
      *
@@ -366,6 +366,7 @@ trait NCIdlCompilerBase {
             else if (isBool(v1) && isBool(v2)) asBool(v1) == asBool(v2)
             else if (isStr(v1) && isStr(v2)) asStr(v1) == asStr(v2)
             else if (isJList(v1) && isJList(v2)) CollectionUtils.isEqualCollection(asJList(v1), asJList(v2))
+            else if ((isInt(v1) && isReal(v2)) || (isReal(v1) && isInt(v2))) false
             else
                 throw rtBinaryOpError(op, v1, v2)
         }
@@ -535,6 +536,14 @@ trait NCIdlCompilerBase {
         def toJMap(v: Object): JMap[_, _] = toX("map", v, isJMap, asJMap)
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
         def toBool(v: Object): Boolean = toX("boolean", v, isBool, asBool)
+        def toJDoubleSafe(v: Object): JDouble = {
+            if (isReal(v))
+                asReal(v)
+            else if (isInt(v))
+                asInt(v).toDouble
+            else
+                throw rtParamTypeError(fun, v, "double")
+        }
     
         def doSplit(): Unit = {
             val (x1, x2) = arg2()
@@ -892,31 +901,31 @@ trait NCIdlCompilerBase {
 
                 Z(Math.ceil(toJDouble(v)), f)
             }) }
-            case "floor" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toJDouble(v)), f) })
-            case "rint" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toJDouble(v)), f) })
-            case "round" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toJDouble(v)), f) })
-            case "signum" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.signum(toJDouble(v)), f) })
-            case "sqrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sqrt(toJDouble(v)), f) })
-            case "cbrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cbrt(toJDouble(v)), f) })
-            case "acos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.acos(toJDouble(v)), f) })
-            case "asin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.asin(toJDouble(v)), f) })
-            case "atan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.atan(toJDouble(v)), f) })
-            case "cos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cos(toJDouble(v)), f) })
-            case "sin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sin(toJDouble(v)), f) })
-            case "tan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tan(toJDouble(v)), f) })
-            case "cosh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toJDouble(v)), f) })
-            case "sinh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toJDouble(v)), f) })
-            case "tanh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toJDouble(v)), f) })
-            case "atn2" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.atan2(toJDouble(v1), toJDouble(v2)), n1 + n2) })
-            case "degrees" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toJDouble(v)), f) })
-            case "radians" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toJDouble(v)), f) })
-            case "exp" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toJDouble(v)), f) })
-            case "expm1" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.expm1(toJDouble(v)), f) })
-            case "hypot" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.hypot(toJDouble(v1), toJDouble(v2)), n1 + n2) })
-            case "log" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log(toJDouble(v)), f) })
-            case "log10" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log10(toJDouble(v)), f) })
-            case "log1p" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) })
-            case "pow" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, f1) = x._1(); val Z(v2, f2) = x._2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 + f2 + 1) })
+            case "floor" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toJDoubleSafe(v)), f) })
+            case "rint" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toJDoubleSafe(v)), f) })
+            case "round" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toJDoubleSafe(v)), f) })
+            case "signum" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.signum(toJDoubleSafe(v)), f) })
+            case "sqrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sqrt(toJDoubleSafe(v)), f) })
+            case "cbrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cbrt(toJDoubleSafe(v)), f) })
+            case "acos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.acos(toJDoubleSafe(v)), f) })
+            case "asin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.asin(toJDoubleSafe(v)), f) })
+            case "atan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.atan(toJDoubleSafe(v)), f) })
+            case "cos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cos(toJDoubleSafe(v)), f) })
+            case "sin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sin(toJDoubleSafe(v)), f) })
+            case "tan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tan(toJDoubleSafe(v)), f) })
+            case "cosh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toJDoubleSafe(v)), f) })
+            case "sinh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toJDoubleSafe(v)), f) })
+            case "tanh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toJDoubleSafe(v)), f) })
+            case "atn2" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.atan2(toJDoubleSafe(v1), toJDoubleSafe(v2)), n1 + n2) })
+            case "degrees" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toJDoubleSafe(v)), f) })
+            case "radians" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toJDoubleSafe(v)), f) })
+            case "exp" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toJDoubleSafe(v)), f) })
+            case "expm1" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.expm1(toJDoubleSafe(v)), f) })
+            case "hypot" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.hypot(toJDoubleSafe(v1), toJDoubleSafe(v2)), n1 + n2) })
+            case "log" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log(toJDoubleSafe(v)), f) })
+            case "log10" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log10(toJDoubleSafe(v)), f) })
+            case "log1p" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log1p(toJDoubleSafe(v)), f) })
+            case "pow" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, f1) = x._1(); val Z(v2, f2) = x._2(); Z(Math.pow(toJDoubleSafe(v1), toJDoubleSafe(v2)), f1 + f2 + 1) })
             case "square" ⇒ doSquare()
             case "pi" ⇒ z0(() ⇒ Z(Math.PI, 0))
             case "euler" ⇒ z0(() ⇒ Z(Math.E, 0))
