@@ -56,7 +56,7 @@ private[functions] trait NCIdlFunctions {
         override def toString: String =
             token match {
                 case Some(t) ⇒ s"Predicate [body='$truth', token=${t2s(t)}]"
-                case None ⇒ s"Predicate '$truth']"
+                case None ⇒ s"Predicate '$truth'"
             }
     }
 
@@ -147,7 +147,7 @@ private[functions] trait NCIdlFunctions {
                 }
 
             res match {
-                case b: java.lang.Boolean ⇒ require(b, s"Unexpected FALSE result for: $f]")
+                case b: java.lang.Boolean ⇒ require(b, s"Unexpected FALSE result for: $f")
                 case _ ⇒
                     require(
                         requirement = false,
