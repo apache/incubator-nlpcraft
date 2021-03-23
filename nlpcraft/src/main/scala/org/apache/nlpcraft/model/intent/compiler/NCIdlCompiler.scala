@@ -135,7 +135,8 @@ object NCIdlCompiler extends LazyLogging {
                 throw newSyntaxError(s"Unknown variable: @$varName")(ctx)
 
             val instr: SI = (tok: NCToken, stack: S, idlCtx: NCIdlContext) ⇒
-                stack.push(() ⇒ idlCtx.vars(varName)(tok, idlCtx))
+                 stack.push(() ⇒
+                     idlCtx.vars(varName)(tok, idlCtx))
 
             expr += instr
         }

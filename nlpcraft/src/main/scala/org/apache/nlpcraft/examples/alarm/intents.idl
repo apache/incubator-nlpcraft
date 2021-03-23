@@ -19,9 +19,10 @@
 fragment=buzz term~{id() == 'x:alarm'}
 fragment=when
     term(nums)~{
-        id() == 'nlpcraft:num' &&
-        meta_token('nlpcraft:num:unittype') == 'datetime' &&
-        meta_token('nlpcraft:num:isequalcondition') == true
+        @type = meta_token('nlpcraft:num:unittype')
+        @iseq = meta_token('nlpcraft:num:isequalcondition')
+
+        id() == 'nlpcraft:num' && @type == 'datetime' && @iseq == true
     }[0,7]
 
 // Intents

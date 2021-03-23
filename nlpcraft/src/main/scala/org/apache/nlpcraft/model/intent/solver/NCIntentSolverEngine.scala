@@ -26,7 +26,7 @@ import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlIntent, NCIdlStackItem ⇒ Z, NCIdlTerm}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlTerm, NCIdlStackItem ⇒ Z}
 
 import java.util.function.Function
 import scala.collection.JavaConverters._
@@ -490,15 +490,16 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             var lastTermMatch: TermMatch = null
             
             val x = ctx.getConversation.getMetadata
-
-            val termCtx = NCIdlContext(
-                intentMeta = intent.meta,
-                convMeta = if (x.isEmpty) Map.empty[String, Object] else x.asScala.toMap[String, Object],
-                req = ctx.getRequest
-            )
+            val convMeta = if (x.isEmpty) Map.empty[String, Object] else x.asScala.toMap[String, Object]
 
             // Check terms.
             for (term ← intent.terms if !abort) {
+                val termCtx = NCIdlContext(
+                    intentMeta = intent.meta,
+                    convMeta = convMeta,
+                    req = ctx.getRequest
+                )
+
                 solveTerm(
                     term,
                     termCtx,
