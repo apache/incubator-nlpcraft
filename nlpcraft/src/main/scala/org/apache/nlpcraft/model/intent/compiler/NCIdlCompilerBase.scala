@@ -577,7 +577,7 @@ trait NCIdlCompilerBase {
                 val jl = new util.ArrayList[Object]()
                 var z = 0
 
-                dump.reverse.foreach { x ⇒
+                dump.foreach { x ⇒
                     val Z(v, n) = x()
 
                     z += n
@@ -931,16 +931,16 @@ trait NCIdlCompilerBase {
             case "has" ⇒ doHas()
             case "has_any" ⇒ doHasAny()
             case "has_all" ⇒ doHasAll()
-            case "first" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)})
-            case "last" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], f)})
-            case "keys" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) })
-            case "values" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) })
-            case "size" | "count" | "length" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).size(), f)})
+            case "first" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], n)})
+            case "last" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], n)})
+            case "keys" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toJMap(v).keySet()), n) })
+            case "values" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toJMap(v).values()), n) })
+            case "size" | "count" | "length" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).size(), n)})
             case "reverse" ⇒ doReverse()
             case "sort" ⇒ doSort()
-            case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).isEmpty, f) })
-            case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(!toJList(v).isEmpty, f) })
-            case "to_string" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) })
+            case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).isEmpty, n) })
+            case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(!toJList(v).isEmpty, n) })
+            case "to_string" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).asScala.map(_.toString).asJava, n) })
 
             // Statistical operations on lists.
             case "max" ⇒ doMin()
