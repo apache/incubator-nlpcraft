@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test
 
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
-import java.util.Calendar
+import java.util.{Calendar ⇒ C}
 
 /**
   * Tests for 'dates' functions.
@@ -32,7 +32,7 @@ class NCIdlFunctionsDate extends NCIdlFunctions {
         def test0(): Unit = {
             val d = LocalDate.now
             val t = LocalTime.now
-            val c = Calendar.getInstance()
+            val c = C.getInstance()
 
             test(
                 s"year() - ${d.getYear} == 0",
@@ -43,8 +43,8 @@ class NCIdlFunctionsDate extends NCIdlFunctions {
                 s"hour() - ${t.getHour} == 0",
                 s"minute() - ${t.getMinute} == 0",
                 s"second() - ${t.getSecond} < 5",
-                s"week_of_month() - ${c.get(Calendar.WEEK_OF_MONTH)} == 0",
-                s"week_of_year() - ${c.get(Calendar.WEEK_OF_YEAR)} == 0",
+                s"week_of_month() - ${c.get(C.WEEK_OF_MONTH)} == 0",
+                s"week_of_year() - ${c.get(C.WEEK_OF_YEAR)} == 0",
                 s"quarter() - ${d.get(IsoFields.QUARTER_OF_YEAR)} == 0",
                 s"now() - ${System.currentTimeMillis()} < 5000"
             )
