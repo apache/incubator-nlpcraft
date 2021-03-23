@@ -420,15 +420,12 @@ trait NCIdlCompilerBase {
             stack.push(() ⇒ {
                 val (v1, v2, n) = extract()
 
-                val v =
-                    if (isInt(v1) && isInt(v2)) asInt(v1) - asInt(v2)
-                    else if (isInt(v1) && isReal(v2)) asInt(v1) - asReal(v2)
-                    else if (isReal(v1) && isInt(v2)) asReal(v1) - asInt(v2)
-                    else if (isReal(v1) && isReal(v2)) asReal(v1) - asReal(v2)
-                    else
-                        throw rtBinaryOpError("-", v1, v2)
-
-                Z(v, n)
+                if (isInt(v1) && isInt(v2)) Z(asInt(v1) - asInt(v2), n)
+                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) - asReal(v2), n)
+                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) - asInt(v2), n)
+                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) - asReal(v2), n)
+                else
+                    throw rtBinaryOpError("-", v1, v2)
             })
         }
     }
