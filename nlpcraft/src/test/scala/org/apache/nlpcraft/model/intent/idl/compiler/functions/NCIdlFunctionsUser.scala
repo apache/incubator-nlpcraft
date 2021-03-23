@@ -30,25 +30,45 @@ import scala.collection.JavaConverters._
 class NCIdlFunctionsUser extends NCIdlFunctions {
     @Test
     def test(): Unit = {
-        val usr = new NCUser {
-            override def getId: Long = -1  // TODO: No REST API data
-            override def getFirstName: Optional[String] = Optional.of("firstName")
-            override def getLastName: Optional[String] = Optional.of("lastName")
-            override def getEmail: Optional[String] = Optional.of("email")
-            override def getAvatarUrl: Optional[String] = Optional.of("avatar")
-            override def isAdmin: Boolean = true
-            override def getSignupTimestamp: Long = -1 // TODO: No REST API data
-            override def getMetadata: util.Map[String, AnyRef] =
-                Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
-        }
+        test(
+            new NCUser {
+                override def getId: Long = -1  // TODO: No REST API data (user_id() cannot be used)
+                override def getFirstName: Optional[String] = Optional.of("firstName")
+                override def getLastName: Optional[String] = Optional.of("lastName")
+                override def getEmail: Optional[String] = Optional.of("email")
+                override def getAvatarUrl: Optional[String] = Optional.of("avatar")
+                override def isAdmin: Boolean = true
+                override def getSignupTimestamp: Long = -1 // TODO: No REST API data (user_signup_tstamp() cannot be used)
+                override def getMetadata: util.Map[String, AnyRef] =
+                    Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+            }
+        )
+        test(
+            new NCUser {
+                override def getId: Long = -1  // TODO: No REST API data (user_id() cannot be used)
+                override def getFirstName: Optional[String] = Optional.empty()
+                override def getLastName: Optional[String] = Optional.empty
+                override def getEmail: Optional[String] = Optional.empty
+                override def getAvatarUrl: Optional[String] = Optional.empty
+                override def isAdmin: Boolean = false
+                override def getSignupTimestamp: Long = -1 // TODO: No REST API data (user_signup_tstamp() cannot be used)
+                override def getMetadata: util.Map[String, AnyRef] =
+                    Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
+            }
+        )
+    }
 
+    private def test(usr: NCUser): Unit = {
         val idlCtx = ctx(usr = usr)
 
+        def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
+        def get(opt: Optional[String]): String = if (opt.isEmpty) null else opt.get()
+
         test(
-            TestDesc(
-                truth = s"user_email() == '${usr.getEmail.get()}'",
-                idlCtx = idlCtx
-            )
+            mkTestDesc(s"user_fname() == '${get(usr.getFirstName)}'"),
+            mkTestDesc(s"user_lname() == '${get(usr.getLastName)}'"),
+            mkTestDesc(s"user_email() == '${get(usr.getEmail)}'"),
+            mkTestDesc(s"user_admin() == '${usr.isAdmin}'")
         )
     }
 }
