@@ -31,7 +31,7 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
     @Test
     def test(): Unit = {
         test(new NCCompany {
-            override def getId: Long = -1 // TODO: No REST API data (comp_id() cannot be used)
+            override def getId: Long = -1
             override def getName: String = "name"
             override def getWebsite: Optional[String] = Optional.of("website")
             override def getCountry: Optional[String] = Optional.of("country")
@@ -44,7 +44,7 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
         })
 
         test(new NCCompany {
-            override def getId: Long = -1 // TODO: No REST API data (comp_id() cannot be used)
+            override def getId: Long = -1
             override def getName: String = "name"
             override def getWebsite: Optional[String] = Optional.empty()
             override def getCountry: Optional[String] = Optional.empty()
@@ -62,16 +62,16 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
         val idlCtx = ctx(comp = comp)
 
         def mkTestDesc(truth: String): TestDesc = TestDesc(truth = truth, idlCtx = idlCtx)
-        def get(opt: Optional[String]): String = if (opt.isEmpty) null else opt.get()
+        def get(opt: Optional[String]): String = if (opt.isEmpty) null else s"'${opt.get()}'"
 
         test(
             mkTestDesc(s"comp_name() == '${comp.getName}'"),
-            mkTestDesc(s"comp_website() == '${get(comp.getWebsite)}'"),
-            mkTestDesc(s"comp_country() == '${get(comp.getCity)}'"),
-            mkTestDesc(s"comp_region() == '${get(comp.getRegion)}'"),
-            mkTestDesc(s"comp_city() == '${get(comp.getCity)}'"),
-            mkTestDesc(s"comp_addr() == '${get(comp.getAddress)}'"),
-            mkTestDesc(s"comp_postcode() == '${get(comp.getPostalCode)}'")
+            mkTestDesc(s"comp_website() == ${get(comp.getWebsite)}"),
+            mkTestDesc(s"comp_country() == ${get(comp.getCountry)}"),
+            mkTestDesc(s"comp_region() == ${get(comp.getRegion)}"),
+            mkTestDesc(s"comp_city() == ${get(comp.getCity)}"),
+            mkTestDesc(s"comp_addr() == ${get(comp.getAddress)}"),
+            mkTestDesc(s"comp_postcode() == ${get(comp.getPostalCode)}")
         )
     }
 }

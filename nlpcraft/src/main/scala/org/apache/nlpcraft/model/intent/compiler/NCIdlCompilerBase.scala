@@ -867,12 +867,12 @@ trait NCIdlCompilerBase {
             // Company data.
             case "comp_id" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getId, 0))
             case "comp_name" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getName, 0))
-            case "comp_website" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getWebsite, 0))
-            case "comp_country" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getCountry, 0))
-            case "comp_region" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getRegion, 0))
-            case "comp_city" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getCity, 0))
-            case "comp_addr" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getAddress, 0))
-            case "comp_postcode" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getPostalCode, 0))
+            case "comp_website" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getWebsite.orElse(null), 0))
+            case "comp_country" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getCountry.orElse(null), 0))
+            case "comp_region" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getRegion.orElse(null), 0))
+            case "comp_city" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getCity.orElse(null), 0))
+            case "comp_addr" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getAddress.orElse(null), 0))
+            case "comp_postcode" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getPostalCode.orElse(null), 0))
 
             // String functions.
             case "trim" | "strip" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toStr(v).trim, f) })
