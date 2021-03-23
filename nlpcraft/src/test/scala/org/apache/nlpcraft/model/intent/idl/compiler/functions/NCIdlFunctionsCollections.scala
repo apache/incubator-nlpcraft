@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test
 /**
   * Tests for 'collections' functions.
   */
-class NCIdlFunctionsColl extends NCIdlFunctions {
+class NCIdlFunctionsCollections extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(

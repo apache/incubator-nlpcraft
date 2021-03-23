@@ -33,7 +33,7 @@ import scala.collection.JavaConverters._
 private[functions] trait NCIdlFunctions {
     private final val MODEL_ID = "test.mdl.id"
 
-    private final val MODEL: NCModel = new NCModel {
+    final val MODEL: NCModel = new NCModel {
         override val getId: String = MODEL_ID
         override val getName: String = MODEL_ID
         override val getVersion: String = "1.0.0"
