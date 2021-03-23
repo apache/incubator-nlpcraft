@@ -619,8 +619,8 @@ trait NCIdlCompilerBase {
                 
                 try
                     if (lst.isEmpty)
-                        Z(0, n)
-                    else
+                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
+                    else 
                         Z(Collections.min(lst, null), n)
                 catch {
                     case e: Exception ⇒ throw rtListTypeError(fun, e)
@@ -638,7 +638,7 @@ trait NCIdlCompilerBase {
             
                 try
                     if (lst.isEmpty)
-                        Z(0, n)
+                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
                     else
                         Z(Collections.max(lst, null), n)
                 catch {
@@ -949,8 +949,8 @@ trait NCIdlCompilerBase {
             case "to_string" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).asScala.map(_.toString).asJava, n) })
 
             // Statistical operations on lists.
-            case "max" ⇒ doMin()
-            case "min" ⇒ doMax()
+            case "max" ⇒ doMax()
+            case "min" ⇒ doMin()
 
             // Date-time functions.
             case "year" ⇒ z0(() ⇒ Z(LocalDate.now.getYear, 0)) // 2021.
