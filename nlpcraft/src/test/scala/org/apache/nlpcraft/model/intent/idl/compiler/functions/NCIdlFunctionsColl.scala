@@ -28,9 +28,9 @@ class NCIdlFunctionsColl extends NCIdlFunctions {
         test(
             // BoolFunc(boolCondition = "first(list(1, 2, 3)) == 1"),
             // BoolFunc(boolCondition = "last(list(1, 2, 3)) == 3")
-            BoolFunc(bool = "is_empty(list()) == true"),
-            BoolFunc(bool = "is_empty(list(1)) == false"),
-            BoolFunc(bool = "non_empty(list()) == false"),
-            BoolFunc(bool = "non_empty(list(1)) == true")
+            TrueFunc(truth = "is_empty(list()) == true"),
+            TrueFunc(truth = "is_empty(list(1)) == false"),
+            TrueFunc(truth = "non_empty(list()) == false"),
+            TrueFunc(truth = "non_empty(list(1)) == true")
         )
 }

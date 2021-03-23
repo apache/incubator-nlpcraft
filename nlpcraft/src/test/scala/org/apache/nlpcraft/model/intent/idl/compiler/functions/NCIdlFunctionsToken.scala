@@ -26,10 +26,13 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-            BoolFunc(bool = "id() == 'a'", "a"),
-            BoolFunc(
-                bool = "parent() == 'a'",
-                mkToken(parentId = "a")
+            TrueFunc(
+                truth = "id() == 'a'",
+                tkn(id = "a")
+            ),
+            TrueFunc(
+                truth = "parent() == 'a'",
+                tkn(parentId = "a")
             )
         )
 }

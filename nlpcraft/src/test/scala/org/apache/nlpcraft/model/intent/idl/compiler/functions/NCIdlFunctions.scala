@@ -43,25 +43,27 @@ private[functions] trait NCIdlFunctions {
     @BeforeEach
     def before(): Unit = NCIdlCompilerGlobal.clearCache(MODEL_ID)
 
-    import BoolFunc._
+    import TrueFunc._
 
-    case class BoolFunc(
-        func: NCIdlFunction,
-        token: NCToken,
-        idlContext: NCIdlContext
+    case class TrueFunc(
+        truth: String,
+        token: NCToken = tkn(),
+        idlCtx: NCIdlContext = ctx()
     ) {
+        val function: NCIdlFunction = mkFunc(truth)
+
         override def toString: String =
             s"Boolean function [" +
                 s"token=${t2s(token)}, " +
-                s"function=$func" +
+                s"function=$truth" +
                 s"]"
     }
 
-    object BoolFunc {
+    object TrueFunc {
         private def t2s(t: NCToken) = s"${t.getOriginalText} (${t.getId})"
 
-        private def mkFunc(term: String): NCIdlFunction = {
-            val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$term}", MODEL, MODEL_ID)
+        private def mkFunc(function: String): NCIdlFunction = {
+            val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$function}", MODEL, MODEL_ID)
 
             require(intents.size == 1)
 
@@ -71,24 +73,12 @@ private[functions] trait NCIdlFunctions {
 
             new NCIdlFunction() {
                 override def apply(v1: NCToken, v2: NCIdlContext): NCIdlStackItem = intent.terms.head.pred.apply(v1, v2)
-                override def toString(): String = s"Function, based on term: $term"
+                override def toString(): String = s"Function, based on term: $function"
             }
         }
-
-        def apply(bool: String, tokenId: String): BoolFunc =
-            BoolFunc(func = mkFunc(bool), token = mkToken(tokenId), idlContext = mkIdlContext())
-
-        def apply(bool: String, token: NCToken): BoolFunc =
-            BoolFunc(func = mkFunc(bool), token, idlContext = mkIdlContext())
-
-        def apply(bool: String, idlContext: NCIdlContext): BoolFunc =
-            BoolFunc(func = mkFunc(bool), mkToken(), idlContext)
-
-        def apply(bool: String): BoolFunc =
-            BoolFunc(func = mkFunc(bool), mkToken(), idlContext = mkIdlContext())
     }
 
-    protected def mkIdlContext(
+    protected def ctx(
         usr: NCUser = null,
         comp: NCCompany = null,
         srvReqId: String = null,
@@ -97,7 +87,7 @@ private[functions] trait NCIdlFunctions {
         remAddress: String = null,
         clientAgent: String = null,
         reqData: Map[String, AnyRef] = Map.empty[String, AnyRef]
-    ): NCIdlContext = {
+    ): NCIdlContext =
         NCIdlContext(
             req =
                 new NCRequest() {
@@ -111,9 +101,8 @@ private[functions] trait NCIdlFunctions {
                     override def getRequestData: util.Map[String, AnyRef] = reqData.asJava
                 }
         )
-    }
 
-    protected def mkToken(
+    protected def tkn(
         id: String = null,
         srvReqId: String = null,
         parentId: String = null,
@@ -153,11 +142,11 @@ private[functions] trait NCIdlFunctions {
         }
     }
 
-    protected def test(funcs: BoolFunc*): Unit =
+    protected def test(funcs: TrueFunc*): Unit =
         for ((func, idx) ← funcs.zipWithIndex) {
             val res =
                 try
-                    func.func.apply(func.token, func.idlContext).value
+                    func.function.apply(func.token, func.idlCtx).value
                 catch {
                     case e: Exception ⇒ throw new Exception(s"Execution error [index=$idx, testFunc=$func]", e)
                 }

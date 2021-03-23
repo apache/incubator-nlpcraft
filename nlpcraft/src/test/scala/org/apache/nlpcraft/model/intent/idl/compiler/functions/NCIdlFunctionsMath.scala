@@ -26,8 +26,8 @@ class NCIdlFunctionsMath extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-            BoolFunc(bool = "sin(90.0) == 0"),
-            BoolFunc(bool = "sin(90) == 0"),
-            BoolFunc(bool = "rand() < 1")
+            TrueFunc(truth = "sin(90.0) == 0"),
+            TrueFunc(truth = "sin(90) == 0"),
+            TrueFunc(truth = "rand() < 1")
         )
 }

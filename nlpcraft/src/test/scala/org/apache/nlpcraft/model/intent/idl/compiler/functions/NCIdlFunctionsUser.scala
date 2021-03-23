@@ -63,10 +63,13 @@ class NCIdlFunctionsUser extends NCRestSpec with NCIdlFunctions {
 
     @Test
     def test(): Unit =  {
-        val ctx = mkIdlContext(usr = usr)
+        val idlCtx = ctx(usr = usr)
 
         test(
-            BoolFunc(s"user_email() == '${usr.getEmail.get()}'", ctx)
+            TrueFunc(
+                truth = s"user_email() == '${usr.getEmail.get()}'",
+                idlCtx = idlCtx
+            )
         )
     }
 }

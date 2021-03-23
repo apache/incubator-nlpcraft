@@ -67,10 +67,13 @@ class NCIdlFunctionsCompany extends NCRestSpec with NCIdlFunctions {
 
     @Test
     def test(): Unit = {
-        val ctx = mkIdlContext(comp = company)
+        val idlCtx = ctx(comp = company)
 
         test(
-            BoolFunc(s"comp_name() == '${company.getName}'", ctx)
+            TrueFunc(
+                truth = s"comp_name() == '${company.getName}'",
+                idlCtx = idlCtx
+            )
         )
     }
 }

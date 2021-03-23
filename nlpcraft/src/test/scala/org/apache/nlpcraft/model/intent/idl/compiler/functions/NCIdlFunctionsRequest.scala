@@ -25,10 +25,13 @@ import org.junit.jupiter.api.Test
 class NCIdlFunctionsRequest extends NCIdlFunctions {
     @Test
     def test(): Unit = {
-        val ctx = mkIdlContext(srvReqId = "req.id")
+        val idlCtx = ctx(srvReqId = "req.id")
 
         test(
-            BoolFunc(s"req_id() == '${ctx.req.getServerRequestId}'", ctx)
+            TrueFunc(
+                truth = s"req_id() == '${idlCtx.req.getServerRequestId}'",
+                idlCtx = idlCtx
+            )
         )
     }
 }

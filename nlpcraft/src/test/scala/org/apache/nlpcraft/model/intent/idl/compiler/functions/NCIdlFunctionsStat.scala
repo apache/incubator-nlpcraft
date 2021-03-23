@@ -26,7 +26,7 @@ class NCIdlFunctionsStat extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-             BoolFunc(bool = "max(list(1, 2, 3)) == 3"),
-             BoolFunc(bool = "min(list(1, 2, 3)) == 1")
+             TrueFunc(truth = "max(list(1, 2, 3)) == 3"),
+             TrueFunc(truth = "min(list(1, 2, 3)) == 1")
         )
 }

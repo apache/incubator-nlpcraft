@@ -28,7 +28,7 @@ class NCIdlFunctionsDate extends NCIdlFunctions {
         val now = System.currentTimeMillis()
 
         test(
-            BoolFunc(bool = s"now() - $now < 1000")
+            TrueFunc(truth = s"now() - $now < 1000")
         )
     }
 }
