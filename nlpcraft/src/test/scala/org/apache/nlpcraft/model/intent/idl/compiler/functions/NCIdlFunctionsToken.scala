@@ -28,11 +28,11 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
         test(
             TestData(
                 truth = "id() == 'a'",
-                tkn(id = "a")
+                token = tkn(id = "a")
             ),
             TestData(
                 truth = "parent() == 'a'",
-                tkn(parentId = "a")
+                token = tkn(parentId = "a")
             )
         )
 }

@@ -43,27 +43,35 @@ private[functions] trait NCIdlFunctions {
     @BeforeEach
     def before(): Unit = NCIdlCompilerGlobal.clearCache(MODEL_ID)
 
-    case class TestData(truth: String, token: NCToken = tkn(), idlCtx: NCIdlContext = ctx()) {
-        val function: NCIdlFunction = {
+    case class TestData(truth: String, token: Option[NCToken] = None, idlCtx: NCIdlContext = ctx()) {
+        val predicate: NCIdlFunction = {
             val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$truth}", MODEL, MODEL_ID)
 
             require(intents.size == 1)
+            require(intents.head.terms.size == 1)
 
-            val intent = intents.head
-
-            require(intent.terms.size == 1)
-
-            intent.terms.head.pred
+            intents.head.terms.head.pred
         }
 
-        private def nvl(s: String, name: String): String = if (s != null) s else s"$name (not set)"
-        private def t2s(t: NCToken) = s"text=${nvl(t.getOriginalText, "text")} [${nvl(t.getId, "id")}]"
-
         override def toString: String =
-            s"Function [" +
-            s"token=${t2s(token)}, " +
-            s"function=$truth" +
-            s"]"
+            token match {
+                case Some(t) ⇒ s"Function [definition=$truth, token=${t2s(t)}]"
+                case None ⇒ s"Function [definition=$truth]"
+            }
+    }
+
+    object TestData {
+        def apply(truth: String, token: NCToken, idlCtx: NCIdlContext): TestData =
+            TestData(truth = truth, token = Some(token), idlCtx = idlCtx)
+
+        def apply(truth: String, token: NCToken): TestData =
+            TestData(truth = truth, token = Some(token))
+    }
+
+    private def t2s(t: NCToken) = {
+        def nvl(s: String, name: String): String = if (s != null) s else s"$name (not set)"
+
+        s"text=${nvl(t.getOriginalText, "text")} [${nvl(t.getId, "id")}]"
     }
 
     protected def ctx(
@@ -133,7 +141,7 @@ private[functions] trait NCIdlFunctions {
         for (f ← funcs) {
             val res =
                 try
-                    f.function.apply(f.token, f.idlCtx).value
+                    f.predicate.apply(f.token.getOrElse(tkn()), f.idlCtx).value
                 catch {
                     case e: Exception ⇒ throw new Exception(s"Execution error [func=$f]", e)
                 }
@@ -144,7 +152,7 @@ private[functions] trait NCIdlFunctions {
                     require(
                         requirement = false,
                         s"Unexpected result type [" +
-                            s"resType=${if (res == null) null else res.getClass.getName}, " +
+                            s"resType=${if (res == null) "null" else res.getClass.getName}, " +
                             s"resValue=$res, " +
                             s"testFunc='$f'" +
                             s"]"
