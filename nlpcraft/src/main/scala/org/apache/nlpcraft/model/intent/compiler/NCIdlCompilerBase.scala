@@ -285,27 +285,21 @@ trait NCIdlCompilerBase {
                 val Z(v1, n1) = x1()
                 val Z(v2, n2) = x2()
 
-                val f =
-                    if (isInt(v1) && isInt(v2)) asInt(v1) * asInt(v2)
-                    else if (isInt(v1) && isReal(v2)) asInt(v1) * asReal(v2)
-                    else if (isReal(v1) && isInt(v2)) asReal(v1) * asInt(v2)
-                    else if (isReal(v1) && isReal(v2)) asReal(v1) * asReal(v2)
-                    else
-                        throw rtBinaryOpError("*", v1, v2)
-
-                Z(f, n1 + n2)
+                if (isInt(v1) && isInt(v2)) Z(asInt(v1) * asInt(v2), n1 + n2)
+                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) * asReal(v2), n1 + n2)
+                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) * asInt(v2), n1 + n2)
+                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) * asReal(v2), n1 + n2)
+                else
+                    throw rtBinaryOpError("*", v1, v2)
             })
         else if (mod != null)
             stack.push(() ⇒ {
                 val Z(v1, n1) = x1()
                 val Z(v2, n2) = x2()
 
-                val f =
-                    if (isInt(v1) && isInt(v2)) asInt(v1) % asInt(v2)
-                    else
-                        throw rtBinaryOpError("%", v1, v2)
-
-                Z(f, n1 + n2)
+                if (isInt(v1) && isInt(v2)) Z(asInt(v1) % asInt(v2), n1 + n2)
+                else
+                    throw rtBinaryOpError("%", v1, v2)
             })
         else {
             assert(div != null)
@@ -314,15 +308,12 @@ trait NCIdlCompilerBase {
                 val Z(v1, n1) = x1()
                 val Z(v2, n2) = x2()
 
-                val f =
-                    if (isInt(v1) && isInt(v2)) asInt(v1) / asInt(v2)
-                    else if (isInt(v1) && isReal(v2)) asInt(v1) / asReal(v2)
-                    else if (isReal(v1) && isInt(v2)) asReal(v1) / asInt(v2)
-                    else if (isReal(v1) && isReal(v2)) asReal(v1) / asReal(v2)
-                    else
-                        throw rtBinaryOpError("/", v1, v2)
-
-                Z(f, n1 + n2)
+                if (isInt(v1) && isInt(v2)) Z(asInt(v1) / asInt(v2), n1 + n2)
+                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) / asReal(v2), n1 + n2)
+                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) / asInt(v2), n1 + n2)
+                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) / asReal(v2), n1 + n2)
+                else
+                    throw rtBinaryOpError("/", v1, v2)
             })
         }
     }
@@ -454,13 +445,10 @@ trait NCIdlCompilerBase {
             stack.push(() ⇒ {
                 val Z(v, n) = x()
 
-                val z =
-                    if (isReal(v)) -asReal(v)
-                    else if (isInt(v)) -asInt(v)
-                    else
-                        throw rtUnaryOpError("-", v)
-
-                Z(z, n)
+                if (isReal(v)) Z(-asReal(v), n)
+                else if (isInt(v)) Z(-asInt(v), n)
+                else
+                    throw rtUnaryOpError("-", v)
             })
         else {
             assert(not != null)

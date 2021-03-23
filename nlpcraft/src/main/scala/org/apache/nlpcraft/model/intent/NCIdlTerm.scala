@@ -34,7 +34,7 @@ import org.apache.nlpcraft.common._
 case class NCIdlTerm(
     idl: String,
     id: Option[String],
-    decls: List[NCIdlFunction],
+    decls: Map[String, NCIdlFunction],
     pred: NCIdlFunction,
     min: Int,
     max: Int,

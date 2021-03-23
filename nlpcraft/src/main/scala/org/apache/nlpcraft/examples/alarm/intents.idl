@@ -19,6 +19,7 @@
 fragment=buzz term~{id() == 'x:alarm'}
 fragment=when
     term(nums)~{
+        // Demonstrating term variable.
         @type = meta_token('nlpcraft:num:unittype')
         @iseq = meta_token('nlpcraft:num:isequalcondition')
 

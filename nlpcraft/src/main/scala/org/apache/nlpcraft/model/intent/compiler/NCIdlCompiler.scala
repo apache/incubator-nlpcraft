@@ -134,9 +134,7 @@ object NCIdlCompiler extends LazyLogging {
             if (!vars.contains(varName))
                 throw newSyntaxError(s"Unknown variable: @$varName")(ctx)
 
-            val instr: SI = (tok: NCToken, stack: S, idlCtx: NCIdlContext) ⇒
-                 stack.push(() ⇒
-                     idlCtx.vars(varName)(tok, idlCtx))
+            val instr: SI = (tok: NCToken, stack: S, idlCtx: NCIdlContext) ⇒ stack.push(() ⇒ idlCtx.vars(varName)(tok, idlCtx))
 
             expr += instr
         }
@@ -320,7 +318,7 @@ object NCIdlCompiler extends LazyLogging {
             terms += NCIdlTerm(
                 ctx.getText,
                 Option(termId),
-                vars.values.toList,
+                vars.toMap,
                 pred,
                 min,
                 max,

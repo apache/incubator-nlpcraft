@@ -488,16 +488,19 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             var abort = false
             val ordered = intent.ordered
             var lastTermMatch: TermMatch = null
-            
+
+            // Conversation metadata (shared across all terms).
             val x = ctx.getConversation.getMetadata
             val convMeta = if (x.isEmpty) Map.empty[String, Object] else x.asScala.toMap[String, Object]
 
             // Check terms.
             for (term ← intent.terms if !abort) {
+                // Fresh context for each term.
                 val termCtx = NCIdlContext(
                     intentMeta = intent.meta,
                     convMeta = convMeta,
-                    req = ctx.getRequest
+                    req = ctx.getRequest,
+                    vars = mutable.HashMap.empty[String, NCIdlFunction] ++ term.decls
                 )
 
                 solveTerm(
@@ -604,7 +607,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         ctx: NCIdlContext,
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
-    ): Option[TermMatch] =
+    ): Option[TermMatch] = {
         solvePredicate(term.pred, ctx, term.min, term.max, senToks, convToks) match {
             case Some((usedToks, predWeight)) ⇒ Some(
                 TermMatch(
@@ -636,6 +639,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             // Term not found at all.
             case None ⇒ None
         }
+    }
 
     /**
      * Solves term's predicate.

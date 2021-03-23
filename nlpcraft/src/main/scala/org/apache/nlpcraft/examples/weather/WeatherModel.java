@@ -122,21 +122,24 @@ public class WeatherModel extends NCModelFileAdapter {
     @NCIntent(
         "intent=req " +
         "term~{id() == 'wt:phen'}* " + // Zero or more weather phenomenon.
-        "term(ind)~{has(groups(), 'indicator')}* " + // Optional indicator words (zero or more).
+        "term(ind)~{" +
+            "@isIndicator = has(groups(), 'indicator') " + // Just to demo term variable usage.
+            "@isIndicator" +
+        "}* " + // Optional indicator words (zero or more).
         "term(city)~{id() == 'nlpcraft:city'}? " + // Optional city.
         "term(date)~{id() == 'nlpcraft:date'}?" // Optional date (overrides indicator words).
     )
-    // NOTE: each samples group will reset conversation STM.
+    // NOTE: each samples group will reset conversation STM during auto-testing.
     @NCIntentSample({
         "Current forecast?",
         "Chance of rain in Berlin now?"
     })
-    // NOTE: each samples group will reset conversation STM.
+    // NOTE: each samples group will reset conversation STM during auto-testing.
     @NCIntentSample({
         "Moscow forecast?",
         "Chicago history"
     })
-    // NOTE: each samples group will reset conversation STM.
+    // NOTE: each samples group will reset conversation STM during auto-testing.
     @NCIntentSample({
         "What's the local weather forecast?",
         "What's the weather in Moscow?",
