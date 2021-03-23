@@ -28,6 +28,6 @@ class NCIdlFunctionsMath extends NCIdlFunctions {
         test(
             "sin(90.0) == 0",
             "sin(90) == 0",
-            "rand() < 1)"
+            "rand() < 1"
         )
 }
