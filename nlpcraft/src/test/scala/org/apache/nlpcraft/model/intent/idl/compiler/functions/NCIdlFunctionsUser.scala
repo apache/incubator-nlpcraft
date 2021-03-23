@@ -45,7 +45,7 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
         val idlCtx = ctx(usr = usr)
 
         test(
-            TestData(
+            TestDesc(
                 truth = s"user_email() == '${usr.getEmail.get()}'",
                 idlCtx = idlCtx
             )

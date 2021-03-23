@@ -26,11 +26,11 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-            TestData(
+            TestDesc(
                 truth = "id() == 'a'",
                 token = tkn(id = "a")
             ),
-            TestData(
+            TestDesc(
                 truth = "parent() == 'a'",
                 token = tkn(parentId = "a")
             )

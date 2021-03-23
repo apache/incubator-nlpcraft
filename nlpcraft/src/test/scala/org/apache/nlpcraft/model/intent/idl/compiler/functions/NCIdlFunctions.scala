@@ -43,7 +43,7 @@ private[functions] trait NCIdlFunctions {
     @BeforeEach
     def before(): Unit = NCIdlCompilerGlobal.clearCache(MODEL_ID)
 
-    case class TestData(truth: String, token: Option[NCToken] = None, idlCtx: NCIdlContext = ctx()) {
+    case class TestDesc(truth: String, token: Option[NCToken] = None, idlCtx: NCIdlContext = ctx()) {
         val predicate: NCIdlFunction = {
             val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$truth}", MODEL, MODEL_ID)
 
@@ -60,12 +60,12 @@ private[functions] trait NCIdlFunctions {
             }
     }
 
-    object TestData {
-        def apply(truth: String, token: NCToken, idlCtx: NCIdlContext): TestData =
-            TestData(truth = truth, token = Some(token), idlCtx = idlCtx)
+    object TestDesc {
+        def apply(truth: String, token: NCToken, idlCtx: NCIdlContext): TestDesc =
+            TestDesc(truth = truth, token = Some(token), idlCtx = idlCtx)
 
-        def apply(truth: String, token: NCToken): TestData =
-            TestData(truth = truth, token = Some(token))
+        def apply(truth: String, token: NCToken): TestDesc =
+            TestDesc(truth = truth, token = Some(token))
     }
 
     private def t2s(t: NCToken) = {
@@ -137,7 +137,7 @@ private[functions] trait NCIdlFunctions {
         }
     }
 
-    protected def test(funcs: TestData*): Unit =
+    protected def test(funcs: TestDesc*): Unit =
         for (f ← funcs) {
             val res =
                 try
@@ -159,4 +159,6 @@ private[functions] trait NCIdlFunctions {
                     )
             }
         }
+
+    protected implicit def convert(pred: String): TestDesc = TestDesc(truth = pred)
 }

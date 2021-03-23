@@ -29,8 +29,8 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
     def test1(): Unit =
         // If.
         test(
-            TestData(truth = "if(true, 1, 0) == 1"),
-            TestData(truth = "if(false, 1, 0) == 0")
+            TestDesc(truth = "if(true, 1, 0) == 1"),
+            TestDesc(truth = "if(false, 1, 0) == 0")
         )
 
     @Test
@@ -41,8 +41,8 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
 
         // JSON.
         test(
-            TestData(truth = "has(json(meta_sys()), 'k1') == true"),
-            TestData(truth = "has(json(meta_sys()), 'k2') == false")
+            "has(json(meta_sys()), 'k1') == true",
+            "has(json(meta_sys()), 'k2') == false"
         )
     }
 }

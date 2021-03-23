@@ -35,18 +35,18 @@ class NCIdlFunctionsDate extends NCIdlFunctions {
             val c = Calendar.getInstance()
 
             test(
-                TestData(truth = s"year() - ${d.getYear} == 0"),
-                TestData(truth = s"month() - ${d.getMonthValue} == 0"),
-                TestData(truth = s"day_of_month() - ${d.getDayOfMonth} == 0"),
-                TestData(truth = s"day_of_week() - ${d.getDayOfWeek.getValue} == 0"),
-                TestData(truth = s"day_of_year() - ${d.getDayOfYear} == 0"),
-                TestData(truth = s"hour() - ${t.getHour} == 0"),
-                TestData(truth = s"minute() - ${t.getMinute} == 0"),
-                TestData(truth = s"second() - ${t.getSecond} < 5"),
-                TestData(truth = s"week_of_month() - ${c.get(Calendar.WEEK_OF_MONTH)} == 0"),
-                TestData(truth = s"week_of_year() - ${c.get(Calendar.WEEK_OF_YEAR)} == 0"),
-                TestData(truth = s"quarter() - ${d.get(IsoFields.QUARTER_OF_YEAR)} == 0"),
-                TestData(truth = s"now() - ${System.currentTimeMillis()} < 5000")
+                s"year() - ${d.getYear} == 0",
+                s"month() - ${d.getMonthValue} == 0",
+                s"day_of_month() - ${d.getDayOfMonth} == 0",
+                s"day_of_week() - ${d.getDayOfWeek.getValue} == 0",
+                s"day_of_year() - ${d.getDayOfYear} == 0",
+                s"hour() - ${t.getHour} == 0",
+                s"minute() - ${t.getMinute} == 0",
+                s"second() - ${t.getSecond} < 5",
+                s"week_of_month() - ${c.get(Calendar.WEEK_OF_MONTH)} == 0",
+                s"week_of_year() - ${c.get(Calendar.WEEK_OF_YEAR)} == 0",
+                s"quarter() - ${d.get(IsoFields.QUARTER_OF_YEAR)} == 0",
+                s"now() - ${System.currentTimeMillis()} < 5000"
             )
         }
 

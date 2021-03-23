@@ -32,7 +32,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
         sys.put("k1", "v1")
 
         test(
-            TestData(truth = "get(meta_sys(), 'k1') == 'v1'")
+            TestDesc(truth = "get(meta_sys(), 'k1') == 'v1'")
         )
     }
 
@@ -41,7 +41,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
         val idlCtx = ctx(reqData = Map("k1" → "v1"))
 
         test(
-            TestData(truth = "get(meta_req(), 'k1') == 'v1'", idlCtx = idlCtx)
+            TestDesc(truth = "get(meta_req(), 'k1') == 'v1'", idlCtx = idlCtx)
         )
     }
 }

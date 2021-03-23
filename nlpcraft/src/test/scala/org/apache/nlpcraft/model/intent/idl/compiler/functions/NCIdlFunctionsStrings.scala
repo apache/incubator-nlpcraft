@@ -26,11 +26,11 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-            TestData(truth = "trim(' a b  ') == 'a b'"),
-            TestData(truth = "strip(' a b  ') == 'a b'"),
-            TestData(truth = "uppercase('aB') == 'AB'"),
-            TestData(truth = "lowercase('aB') == 'ab'"),
-            TestData(truth = "is_num('a') == false"),
-            TestData(truth = "is_num('1') == true")
+            "trim(' a b  ') == 'a b'",
+            "strip(' a b  ') == 'a b'",
+            "uppercase('aB') == 'AB'",
+            "lowercase('aB') == 'ab'",
+            "is_num('a') == false",
+            "is_num('1') == true"
         )
 }

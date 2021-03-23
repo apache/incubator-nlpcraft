@@ -46,7 +46,7 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
         val idlCtx = ctx(comp = comp)
 
         test(
-            TestData(
+            TestDesc(
                 truth = s"comp_name() == '${comp.getName}'",
                 idlCtx = idlCtx
             )
