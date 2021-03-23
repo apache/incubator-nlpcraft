@@ -620,7 +620,7 @@ trait NCIdlCompilerBase {
                 try
                     if (lst.isEmpty)
                         throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
-                    else 
+                    else
                         Z(Collections.min(lst, null), n)
                 catch {
                     case e: Exception ⇒ throw rtListTypeError(fun, e)
