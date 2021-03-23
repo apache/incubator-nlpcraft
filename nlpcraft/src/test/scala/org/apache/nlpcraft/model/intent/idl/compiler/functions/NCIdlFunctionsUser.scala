@@ -47,9 +47,9 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
             new NCUser {
                 override def getId: Long = -1  // TODO: No REST API data (user_id() cannot be used)
                 override def getFirstName: Optional[String] = Optional.empty()
-                override def getLastName: Optional[String] = Optional.empty
-                override def getEmail: Optional[String] = Optional.empty
-                override def getAvatarUrl: Optional[String] = Optional.empty
+                override def getLastName: Optional[String] = Optional.empty()
+                override def getEmail: Optional[String] = Optional.empty()
+                override def getAvatarUrl: Optional[String] = Optional.empty()
                 override def isAdmin: Boolean = false
                 override def getSignupTimestamp: Long = -1 // TODO: No REST API data (user_signup_tstamp() cannot be used)
                 override def getMetadata: util.Map[String, AnyRef] =
