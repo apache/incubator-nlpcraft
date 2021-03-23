@@ -43,8 +43,8 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
 
         // JSON.
         test(
-            s"has(json($js), 'k1') == true",
-            s"has(json($js), 'k2') == false"
+            s"has(json('$js'), 'k1') == true",
+            s"has(json('$js'), 'k2') == false"
         )
     }
 }
