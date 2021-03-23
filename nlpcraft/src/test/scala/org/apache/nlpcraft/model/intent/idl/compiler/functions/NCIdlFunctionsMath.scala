@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 import org.junit.jupiter.api.Test
 
 /**
-  * Tests for IDL functions.
+  * Tests for 'math' functions.
   */
 class NCIdlFunctionsMath extends NCIdlFunctions {
     @Test

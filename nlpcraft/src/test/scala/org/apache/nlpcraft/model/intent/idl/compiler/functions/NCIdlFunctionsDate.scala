@@ -19,16 +19,38 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
 import org.junit.jupiter.api.Test
 
+import java.time.temporal.IsoFields
+import java.time.{LocalDate, LocalTime}
+import java.util.Calendar
+
 /**
-  * Tests for IDL functions.
+  * Tests for 'dates' functions.
   */
 class NCIdlFunctionsDate extends NCIdlFunctions {
     @Test
     def test(): Unit = {
-        val now = System.currentTimeMillis()
+        def test0(): Unit =
+            test(
+                TrueFunc(truth = s"year() - ${LocalDate.now.getYear} == 0"),
+                TrueFunc(truth = s"month() - ${LocalDate.now.getMonthValue} == 0"),
+                TrueFunc(truth = s"day_of_month() - ${LocalDate.now.getDayOfMonth} == 0"),
+                TrueFunc(truth = s"day_of_week() - ${LocalDate.now.getDayOfWeek.getValue} == 0"),
+                TrueFunc(truth = s"day_of_year() - ${LocalDate.now.getDayOfYear} == 0"),
+                TrueFunc(truth = s"hour() - ${LocalTime.now.getHour} == 0"),
+                TrueFunc(truth = s"minute() - ${LocalTime.now.getMinute} == 0"),
+                TrueFunc(truth = s"second() - ${LocalTime.now.getSecond} < 5"),
+                TrueFunc(truth = s"week_of_month() - ${Calendar.getInstance().get(Calendar.WEEK_OF_MONTH)} == 0"),
+                TrueFunc(truth = s"week_of_year() - ${Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)} == 0"),
+                TrueFunc(truth = s"quarter() - ${LocalDate.now().get(IsoFields.QUARTER_OF_YEAR)} == 0"),
+                TrueFunc(truth = s"now() - ${System.currentTimeMillis()} < 5000")
+            )
 
-        test(
-            TrueFunc(truth = s"now() - $now < 1000")
-        )
+        try
+            test0()
+        catch {
+            case _: AssertionError ⇒
+                // Some field more than `second` can be changed. One more attempt.
+                test0()
+        }
     }
 }

@@ -25,7 +25,7 @@ import java.util
 import java.util.Optional
 
 /**
-  * Tests for IDL functions.
+  * Tests for 'user' functions.
   */
 class NCIdlFunctionsUser extends NCRestSpec with NCIdlFunctions {
     private var usr: NCUser = _

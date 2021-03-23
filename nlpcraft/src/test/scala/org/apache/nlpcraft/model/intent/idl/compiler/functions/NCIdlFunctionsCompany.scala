@@ -25,7 +25,7 @@ import java.util
 import java.util.Optional
 
 /**
-  * Tests for IDL functions.
+  * Tests for 'company' functions.
   */
 class NCIdlFunctionsCompany extends NCRestSpec with NCIdlFunctions {
     private var company: NCCompany = _

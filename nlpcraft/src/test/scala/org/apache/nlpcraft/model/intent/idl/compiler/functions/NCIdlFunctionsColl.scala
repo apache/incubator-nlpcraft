@@ -20,17 +20,17 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 import org.junit.jupiter.api.Test
 
 /**
-  * Tests for IDL functions.
+  * Tests for 'collections' functions.
   */
 class NCIdlFunctionsColl extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-            // BoolFunc(boolCondition = "first(list(1, 2, 3)) == 1"),
-            // BoolFunc(boolCondition = "last(list(1, 2, 3)) == 3")
             TrueFunc(truth = "is_empty(list()) == true"),
             TrueFunc(truth = "is_empty(list(1)) == false"),
             TrueFunc(truth = "non_empty(list()) == false"),
-            TrueFunc(truth = "non_empty(list(1)) == true")
+            TrueFunc(truth = "non_empty(list(1)) == true"),
+            TrueFunc(truth = "first(list(1, 2, 3)) == 1"),
+            TrueFunc(truth = "last(list(1, 2, 3)) == 3")
         )
 }

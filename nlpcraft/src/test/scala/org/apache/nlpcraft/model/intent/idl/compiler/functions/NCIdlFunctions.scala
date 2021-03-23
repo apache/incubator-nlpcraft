@@ -43,27 +43,13 @@ private[functions] trait NCIdlFunctions {
     @BeforeEach
     def before(): Unit = NCIdlCompilerGlobal.clearCache(MODEL_ID)
 
-    import TrueFunc._
-
     case class TrueFunc(
         truth: String,
         token: NCToken = tkn(),
         idlCtx: NCIdlContext = ctx()
     ) {
-        val function: NCIdlFunction = mkFunc(truth)
-
-        override def toString: String =
-            s"Boolean function [" +
-                s"token=${t2s(token)}, " +
-                s"function=$truth" +
-                s"]"
-    }
-
-    object TrueFunc {
-        private def t2s(t: NCToken) = s"${t.getOriginalText} (${t.getId})"
-
-        private def mkFunc(function: String): NCIdlFunction = {
-            val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$function}", MODEL, MODEL_ID)
+        val function: NCIdlFunction = {
+            val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$truth}", MODEL, MODEL_ID)
 
             require(intents.size == 1)
 
@@ -76,6 +62,15 @@ private[functions] trait NCIdlFunctions {
                 override def toString(): String = s"Function, based on term: $function"
             }
         }
+
+        private def nvl(s: String, name: String): String = if (s != null) s else s"$name (not set)"
+        private def t2s(t: NCToken) = s"text=${nvl(t.getOriginalText, "text")} [${nvl(t.getId, "id")}]"
+
+        override def toString: String =
+            s"Function [" +
+            s"token=${t2s(token)}, " +
+            s"function=$truth" +
+            s"]"
     }
 
     protected def ctx(
@@ -143,32 +138,31 @@ private[functions] trait NCIdlFunctions {
     }
 
     protected def test(funcs: TrueFunc*): Unit =
-        for ((func, idx) ← funcs.zipWithIndex) {
+        for (f ← funcs) {
             val res =
                 try
-                    func.function.apply(func.token, func.idlCtx).value
+                    f.function.apply(f.token, f.idlCtx).value
                 catch {
-                    case e: Exception ⇒ throw new Exception(s"Execution error [index=$idx, testFunc=$func]", e)
+                    case e: Exception ⇒ throw new Exception(s"Execution error [func=$f]", e)
                 }
 
             res match {
                 case b: java.lang.Boolean ⇒
-                    require(b,
-                        s"Unexpected result [" +
-                            s"index=$idx, " +
-                            s"testFunc=$func, " +
-                            s"result=$res" +
+                    require(
+                        b,
+                        s"Unexpected FALSE result [" +
+                            s"testFunc=$f " +
                             s"]"
                     )
                 case _ ⇒
-                    require(requirement = false,
+                    require(
+                        requirement = false,
                         s"Unexpected result type [" +
-                            s"index=$idx, " +
-                            s"testFunc=$func, " +
-                            s"result=$res" +
+                            s"resType=${if (res == null) null else res.getClass.getName}, " +
+                            s"testFunc='$f', " +
+                            s"resValue=$res" +
                             s"]"
                     )
             }
-
         }
 }

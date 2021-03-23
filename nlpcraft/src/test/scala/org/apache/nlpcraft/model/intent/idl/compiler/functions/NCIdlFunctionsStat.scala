@@ -20,13 +20,13 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 import org.junit.jupiter.api.Test
 
 /**
-  * Tests for IDL functions.
+  * Tests for 'stat' functions.
   */
 class NCIdlFunctionsStat extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-             TrueFunc(truth = "max(list(1, 2, 3)) == 3"),
-             TrueFunc(truth = "min(list(1, 2, 3)) == 1")
+            TrueFunc(truth = "max(list(1, 2, 3)) == 3"),
+            TrueFunc(truth = "min(list(1, 2, 3)) == 1")
         )
 }
