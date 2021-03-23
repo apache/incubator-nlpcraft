@@ -32,6 +32,7 @@ class NCIdlCompilerSpec {
         override val getId: String = MODEL_ID
         override val getName: String = MODEL_ID
         override val getVersion: String = "1.0.0"
+        override def getOrigin: String = "test"
     }
     
     /**
@@ -145,8 +146,10 @@ class NCIdlCompilerSpec {
         checkCompileError(
             """
               |intent=i1
-              |     meta={'a': true1, 'b': {'arr': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(id()) != -25}
+              |     meta={'a': true, 'b': {'arr': [1, 2, 3]}}
+              |     term(t1)={
+              |         @x == 2 && size(id()) != -25
+              |     }
               |""".stripMargin
         )
         checkCompileError(
@@ -154,6 +157,29 @@ class NCIdlCompilerSpec {
               |intent=i1
               |     flow="a[^0-9b"
               |     term(t1)={true}
+              |""".stripMargin
+        )
+        checkCompileError(
+            """
+              |intent=i1
+              |     flow="a[^0-9b]"
+              |     term(t1)={
+              |         @x = 2
+              |         @x = 2
+              |
+              |         true
+              |     }
+              |""".stripMargin
+        )
+        checkCompileError(
+            """
+              |intent=i1
+              |     flow="a[^0-9b]"
+              |     term(t1)={
+              |         true
+              |
+              |         @x = 2
+              |     }
               |""".stripMargin
         )
         checkCompileError(

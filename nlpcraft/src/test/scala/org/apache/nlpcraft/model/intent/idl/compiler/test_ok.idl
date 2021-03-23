@@ -38,12 +38,19 @@ intent=i2
     flow="a[^0-9]b"
     meta={'a': 42, 'b': {'Москва': [1, 2, 3]}}
     term(t1)={2 == 2 && !(id()) != -25 && meta_model('a') == 42}
-    term(t2)={meta_model('a') == 42}
+    term(t2)={
+        @a = meta_model('a')
+
+        @a == 42
+    }
 
 intent=i3
     flow="a[^0-9]b"
     term(t1)={
-        has(
+        @x = 2
+        @xx = @x * 2
+
+        @xx == 4 && has(
             json(meta_req('user_json_payload')),
             list("موسكو\"", 'v1\'v1', "k2", "v2")
         )

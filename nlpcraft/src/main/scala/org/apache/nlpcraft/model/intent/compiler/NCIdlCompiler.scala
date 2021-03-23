@@ -132,7 +132,7 @@ object NCIdlCompiler extends LazyLogging {
             val varName = ctx.id().getText
 
             if (!vars.contains(varName))
-                throw newSyntaxError(s"Unknown variable: $varName")(ctx)
+                throw newSyntaxError(s"Unknown variable: @$varName")(ctx)
 
             val instr: SI = (tok: NCToken, stack: S, idlCtx: NCIdlContext) ⇒
                 stack.push(() ⇒ idlCtx.vars(varName)(tok, idlCtx))
@@ -144,7 +144,7 @@ object NCIdlCompiler extends LazyLogging {
             val varName = ctx.id().getText
 
             if (vars.contains(varName))
-                throw newSyntaxError(s"Duplicate variable: $varName")(ctx)
+                throw newSyntaxError(s"Duplicate variable: @$varName")(ctx)
 
             vars += varName → exprToFunction("Variable declaration", _ ⇒ true)(ctx)
 
