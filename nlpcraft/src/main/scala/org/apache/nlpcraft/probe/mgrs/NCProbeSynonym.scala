@@ -117,7 +117,7 @@ class NCProbeSynonym(
                             r.matcher(get0(_.origText, _.origText)).matches() || r.matcher(get0(_.normText, _.normText)).matches()
 
                         case IDL ⇒
-                            get0(t ⇒ chunk.idlPred.apply(t, NCIdlContext(req = req))._1, _ ⇒ false)
+                            get0(t ⇒ chunk.idlPred.apply(t, NCIdlContext(req = req)).value.asInstanceOf[Boolean], _ ⇒ false)
 
                         case _ ⇒ throw new AssertionError()
                     }

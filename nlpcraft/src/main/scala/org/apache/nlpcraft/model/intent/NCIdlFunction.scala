@@ -22,4 +22,4 @@ import org.apache.nlpcraft.model.NCToken
 /**
  *
  */
-trait NCIdlFunction[T] extends ((NCToken, NCIdlContext) ⇒ (T , Int /* How many times a token was used. */ ))
+trait NCIdlFunction extends ((NCToken, NCIdlContext) ⇒ NCIdlStackItem)

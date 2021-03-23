@@ -22,10 +22,10 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.apache.nlpcraft.common._
-import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser, NCIdlParser ⇒ IDP}
+import org.apache.nlpcraft.model.intent.compiler.antlr4.{NCIdlBaseListener, NCIdlLexer, NCIdlParser ⇒ IDP}
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompilerGlobal ⇒ Global}
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlIntent, NCIdlSynonym, NCIdlTerm, NCIdlFunction}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlStack, NCIdlStackItem ⇒ Z, NCIdlSynonym, NCIdlTerm}
 
 import java.io._
 import java.net._
@@ -71,7 +71,7 @@ object NCIdlCompiler extends LazyLogging {
         private val terms = ArrayBuffer.empty[NCIdlTerm]
 
         // Currently term.
-        private var vars = mutable.HashMap.empty[String, NCIdlFunction[Object]]
+        private var vars = mutable.HashMap.empty[String, NCIdlFunction]
         private var termId: String = _
         private var termConv: Boolean = _
         private var min = 1
@@ -82,7 +82,7 @@ object NCIdlCompiler extends LazyLogging {
         private var refMtdName: Option[String] = None
 
         // List of instructions for the current expression.
-        private var expr = mutable.Buffer.empty[I]
+        private var expr = mutable.Buffer.empty[SI]
 
 
         /**
@@ -128,30 +128,25 @@ object NCIdlCompiler extends LazyLogging {
             this.max = max
         }
 
-        override def exitVarRef(ctx: NCIdlParser.VarRefContext): Unit = {
+        override def exitVarRef(ctx: IDP.VarRefContext): Unit = {
+            val varName = ctx.id().getText
 
+            if (!vars.contains(varName))
+                throw newSyntaxError(s"Unknown variable: $varName")(ctx)
+
+            val instr: SI = (tok: NCToken, stack: S, idlCtx: NCIdlContext) ⇒
+                stack.push(() ⇒ idlCtx.vars(varName)(tok, idlCtx))
+
+            expr += instr
         }
 
-        override def exitVarDecl(ctx: NCIdlParser.VarDeclContext): Unit = {
+        override def exitVarDecl(ctx: IDP.VarDeclContext): Unit = {
             val varName = ctx.id().getText
 
             if (vars.contains(varName))
                 throw newSyntaxError(s"Duplicate variable: $varName")(ctx)
 
-            vars += varName
-
-            val fun = exprToFunction[Object]("Variable declaration", _ ⇒ true, x ⇒ x)(ctx)
-
-            val instr = (tok: NCToken, ctx: NCIdlContext) ⇒ {
-                val (res, tokUses) = fun(tok, ctx)
-
-                (null, 0)
-            }
-
-
-
-
-
+            vars += varName → exprToFunction("Variable declaration", _ ⇒ true)(ctx)
 
             expr.clear()
         }
@@ -207,14 +202,14 @@ object NCIdlCompiler extends LazyLogging {
         override def exitSynonym(ctx: IDP.SynonymContext): Unit = {
             implicit val evidence: PRC = ctx
 
-            val pred = exprToFunction("Synonym", isBool, asBool)
+            val pred = exprToFunction("Synonym", isBool)
             val capture = alias
-            val wrapper: NCIdlFunction[Boolean] = (tok: NCToken, ctx: NCIdlContext) ⇒ {
-                val (res, tokUses) = pred(tok, ctx)
+            val wrapper: NCIdlFunction = (tok: NCToken, ctx: NCIdlContext) ⇒ {
+                val Z(res, tokUses) = pred(tok, ctx)
 
                 // Store predicate's alias, if any, in token metadata if this token satisfies this predicate.
                 // NOTE: token can have multiple aliases associated with it.
-                if (res && capture != null) { // NOTE: we ignore 'tokUses' here on purpose.
+                if (asBool(res) && capture != null) { // NOTE: we ignore 'tokUses' here on purpose.
                     val meta = tok.getMetadata
 
                     if (!meta.containsKey(TOK_META_ALIASES_KEY))
@@ -225,7 +220,7 @@ object NCIdlCompiler extends LazyLogging {
                     aliases.add(capture)
                 }
 
-                (res, tokUses)
+                Z(res, tokUses)
             }
 
             synonym = NCIdlSynonym(origin, Option(alias), wrapper)
@@ -283,7 +278,7 @@ object NCIdlCompiler extends LazyLogging {
             if (max < 1)
                 throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
 
-            val pred: NCIdlFunction[Boolean] = if (refMtdName.isDefined) { // User-code defined term.
+            val pred: NCIdlFunction = if (refMtdName.isDefined) { // User-code defined term.
                 // Closure copies.
                 val clsName = refClsName.orNull
                 val mtdName = refMtdName.orNull
@@ -309,7 +304,7 @@ object NCIdlCompiler extends LazyLogging {
                             javaCtx
                         )
 
-                        (res.getResult, res.getTokenUses)
+                        Z(res.getResult, res.getTokenUses)
                     }
                     catch {
                         case e: Exception ⇒
@@ -318,12 +313,13 @@ object NCIdlCompiler extends LazyLogging {
                 }
             }
             else  // IDL term.
-                exprToFunction("Intent term", isBool, asBool)(ctx.expr())
+                exprToFunction("Intent term", isBool)(ctx.expr())
 
             // Add term.
             terms += NCIdlTerm(
                 ctx.getText,
                 Option(termId),
+                vars.values.toList,
                 pred,
                 min,
                 max,
@@ -343,20 +339,17 @@ object NCIdlCompiler extends LazyLogging {
          *
          * @param subj
          * @param check
-         * @param cast
          * @param ctx
-         * @tparam T
          * @return
          */
-        private def exprToFunction[T](
+        private def exprToFunction(
             subj: String,
-            check: Object ⇒ Boolean,
-            cast: Object ⇒ T
+            check: Object ⇒ Boolean
         )
         (
             implicit ctx: PRC
-        ): NCIdlFunction[T] = {
-            val code = mutable.Buffer.empty[I]
+        ): NCIdlFunction = {
+            val code = mutable.Buffer.empty[SI]
 
             code ++= expr
 
@@ -370,10 +363,11 @@ object NCIdlCompiler extends LazyLogging {
                 val x = stack.pop()()
                 val v = x.value
 
+                // Check final value's type.
                 if (!check(v))
                     throw newRuntimeError(s"$subj returned value of unexpected type '$v' in: ${ctx.getText}")
 
-                (cast(v), x.tokUse)
+                Z(v, x.tokUse)
             }
         }
 

@@ -19,7 +19,6 @@ package org.apache.nlpcraft.model.intent
 
 import org.apache.nlpcraft.common.ScalaMeta
 import org.apache.nlpcraft.model.NCRequest
-import org.apache.nlpcraft.model.intent.compiler.NCIdlStackItem
 
 import scala.collection.mutable
 
@@ -36,6 +35,6 @@ case class NCIdlContext(
     convMeta: ScalaMeta = Map.empty[String, Object],
     fragMeta: ScalaMeta = Map.empty[String, Object],
     req: NCRequest,
-    vars: mutable.Map[String, NCIdlStackItem]
+    vars: mutable.Map[String, NCIdlFunction] = mutable.HashMap.empty[String, NCIdlFunction]
 )
 

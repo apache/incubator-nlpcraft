@@ -23,8 +23,7 @@ import org.apache.nlpcraft.model.NCToken
 import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
 import org.apache.commons.collections.CollectionUtils
-import org.apache.nlpcraft.model.intent.NCIdlContext
-import org.apache.nlpcraft.model.intent.compiler.{NCIdlStackItem ⇒ Z}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlStack, NCIdlStackItem ⇒ Z, NCIdlStackType}
 
 import java.lang.{Byte ⇒ JByte, Double ⇒ JDouble, Float ⇒ JFloat, Integer ⇒ JInt, Long ⇒ JLong, Number ⇒ JNumber, Short ⇒ JShort}
 import java.time.temporal.IsoFields
@@ -35,8 +34,8 @@ import scala.collection.JavaConverters._
 
 trait NCIdlCompilerBase {
     type S = NCIdlStack
-    type T = NCIdlStackType
-    type I = (NCToken, S, NCIdlContext) ⇒ Unit
+    type ST = NCIdlStackType
+    type SI = (NCToken, S, NCIdlContext) ⇒ Unit
 
     def syntaxError(errMsg: String, srcName: String, line: Int, pos: Int): NCE
     def runtimeError(errMsg: String, srcName: String, line: Int, pos: Int, cause: Exception = null): NCE
@@ -160,7 +159,7 @@ trait NCIdlCompilerBase {
      * @param stack
      * @return
      */
-    def pop1()(implicit stack: S, ctx: PRC): T = {
+    def pop1()(implicit stack: S, ctx: PRC): ST = {
         require(stack.nonEmpty, ctx.getText)
 
         stack.pop()
@@ -171,7 +170,7 @@ trait NCIdlCompilerBase {
      * @param stack
      * @return
      */
-    def pop2()(implicit stack: S, ctx: PRC): (T, T) = {
+    def pop2()(implicit stack: S, ctx: PRC): (ST, ST) = {
         require(stack.size >= 2, ctx.getText)
 
         // Stack pops in reverse order of push...
@@ -186,7 +185,7 @@ trait NCIdlCompilerBase {
      * @param stack
      * @return
      */
-    def pop3()(implicit stack: S, ctx: PRC): (T, T, T) = {
+    def pop3()(implicit stack: S, ctx: PRC): (ST, ST, ST) = {
         require(stack.size >= 3, ctx.getText)
 
         // Stack pops in reverse order of push...
@@ -204,13 +203,13 @@ trait NCIdlCompilerBase {
      * @param lteq
      * @param gteq
      */
-    def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN)(implicit ctx: PRC): I = (_, stack: S, _) ⇒ {
+    def parseCompExpr(lt: TN, gt: TN, lteq: TN, gteq: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
         if (lt != null)
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v1, n1) = x1()
+                val Z(v2, n2) = x2()
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) < asInt(v2)
@@ -224,8 +223,8 @@ trait NCIdlCompilerBase {
             })
         else if (gt != null)
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v1, n1) = x1()
+                val Z(v2, n2) = x2()
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) > asInt(v2)
@@ -239,8 +238,8 @@ trait NCIdlCompilerBase {
             })
         else if (lteq != null)
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v1, n1) = x1()
+                val Z(v2, n2) = x2()
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) <= asInt(v2)
@@ -256,8 +255,8 @@ trait NCIdlCompilerBase {
             require(gteq != null)
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v1, n1) = x1()
+                val Z(v2, n2) = x2()
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) >= asInt(v2)
@@ -278,13 +277,13 @@ trait NCIdlCompilerBase {
      * @param mod
      * @param div
      */
-    def parseMultDivModExpr(mult: TN, mod: TN, div: TN)(implicit ctx: PRC): I = (_, stack: S, _) ⇒ {
+    def parseMultDivModExpr(mult: TN, mod: TN, div: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
         if (mult != null)
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v1, n1) = x1()
+                val Z(v2, n2) = x2()
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) * asInt(v2)
@@ -298,8 +297,8 @@ trait NCIdlCompilerBase {
             })
         else if (mod != null)
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v1, n1) = x1()
+                val Z(v2, n2) = x2()
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) % asInt(v2)
@@ -312,8 +311,8 @@ trait NCIdlCompilerBase {
             assert(div != null)
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v1, n1) = x1()
+                val Z(v2, n2) = x2()
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) / asInt(v2)
@@ -334,13 +333,13 @@ trait NCIdlCompilerBase {
      * @param or
      * @return
      */
-    def parseAndOrExpr(and: TN, or: TN)(implicit ctx: PRC): I = (_, stack: S, _) ⇒ {
+    def parseAndOrExpr(and: TN, or: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
         stack.push(() ⇒ {
             val (op, flag) = if (and != null) ("&&", false) else ("||", true)
 
-            val NCIdlStackItem(v1, n1) = x1()
+            val Z(v1, n1) = x1()
 
             if (!isBool(v1))
                 throw rtBinaryOpError(op, v1, x2().value)
@@ -349,7 +348,7 @@ trait NCIdlCompilerBase {
             if (asBool(v1) == flag)
                 Z(flag, n1)
             else {
-                val NCIdlStackItem(v2, n2) = x2()
+                val Z(v2, n2) = x2()
 
                 if (!isBool(v2))
                     throw rtBinaryOpError(op, v2, v1)
@@ -365,7 +364,7 @@ trait NCIdlCompilerBase {
      * @param neq
      * @return
      */
-    def parseEqNeqExpr(eq: TN, neq: TN)(implicit ctx: PRC): I = (_, stack: S, _) ⇒ {
+    def parseEqNeqExpr(eq: TN, neq: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
         def doEq(op: String, v1: Object, v2: Object): Boolean = {
@@ -381,8 +380,8 @@ trait NCIdlCompilerBase {
         }
 
         stack.push(() ⇒ {
-            val NCIdlStackItem(v1, n1) = x1()
-            val NCIdlStackItem(v2, n2) = x2()
+            val Z(v1, n1) = x1()
+            val Z(v2, n2) = x2()
 
             val f =
                 if (eq != null)
@@ -402,12 +401,12 @@ trait NCIdlCompilerBase {
      * @param plus
      * @param minus
      */
-    def parsePlusMinusExpr(plus: TN, minus: TN)(implicit ctx: PRC): I = (_, stack: S, _) ⇒ {
+    def parsePlusMinusExpr(plus: TN, minus: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
         def extract(): (Object, Object, Int) = {
-            val NCIdlStackItem(v1, n1) = x1()
-            val NCIdlStackItem(v2, n2) = x2()
+            val Z(v1, n1) = x1()
+            val Z(v2, n2) = x2()
 
             (v1, v2, n1 + n2)
         }
@@ -448,12 +447,12 @@ trait NCIdlCompilerBase {
      * @param not
      * @return
      */
-    def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: PRC): I = (_, stack: S, _) ⇒ {
+    def parseUnaryExpr(minus: TN, not: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val x = pop1()(stack, ctx)
 
         if (minus != null)
             stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
 
                 val z =
                     if (isReal(v)) -asReal(v)
@@ -467,7 +466,7 @@ trait NCIdlCompilerBase {
             assert(not != null)
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
 
                 if (isBool(v)) Z(!asBool(v), n)
                 else
@@ -481,7 +480,7 @@ trait NCIdlCompilerBase {
      * @param txt
      * @return
      */
-    def parseAtom(txt: String)(implicit ctx: PRC): I = {
+    def parseAtom(txt: String)(implicit ctx: PRC): SI = {
         val atom =
             if (txt == "null") null // Try 'null'.
             else if (txt == "true") Boolean.box(true) // Try 'boolean'.
@@ -511,7 +510,7 @@ trait NCIdlCompilerBase {
      * @param id
      * @return
      */
-    def parseCallExpr(id: TN)(implicit ctx: PRC): I = (tok, stack: S, termCtx) ⇒ {
+    def parseCallExpr(id: TN)(implicit ctx: PRC): SI = (tok, stack: S, termCtx) ⇒ {
         implicit val evidence: S = stack
     
         val fun = id.getText
@@ -528,10 +527,10 @@ trait NCIdlCompilerBase {
             
             x
         }
-        def arg1(): T = arg(1, pop1)
-        def arg2(): (T, T) = arg(2, pop2)
-        def arg3(): (T, T, T) = arg(3, pop3)
-        def arg1Tok(): T =
+        def arg1(): ST = arg(1, pop1)
+        def arg2(): (ST, ST) = arg(2, pop2)
+        def arg3(): (ST, ST, ST) = arg(3, pop3)
+        def arg1Tok(): ST =
             if (stack.nonEmpty && stack.top == stack.PLIST_MARKER) {
                 popMarker()
             
@@ -557,8 +556,8 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val NCIdlStackItem(v1, n1) = x1()
-                    val NCIdlStackItem(v2, n2) = x2()
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
 
                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2))), n1 + n2)
                 }
@@ -570,8 +569,8 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val NCIdlStackItem(v1, n1) = x1()
-                    val NCIdlStackItem(v2, n2) = x2()
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
 
                     Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip)), n1 + n2)
                 }
@@ -591,7 +590,7 @@ trait NCIdlCompilerBase {
                 var z = 0
 
                 dump.reverse.foreach { x ⇒
-                    val NCIdlStackItem(v, n) = x()
+                    val Z(v, n) = x()
 
                     z += n
 
@@ -606,7 +605,7 @@ trait NCIdlCompilerBase {
             val x = arg1()
             
             stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
         
                 val jl = toJList(v)
         
@@ -620,7 +619,7 @@ trait NCIdlCompilerBase {
             val x = arg1()
     
             stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
                 
                 val lst = toJList(v).asInstanceOf[util.List[Object]]
                 
@@ -639,7 +638,7 @@ trait NCIdlCompilerBase {
             val x = arg1()
         
             stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
             
                 val lst = toJList(v).asInstanceOf[util.List[Object]]
             
@@ -658,7 +657,7 @@ trait NCIdlCompilerBase {
             val x = arg1()
         
             stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
             
                 val jl = toJList(v)
                 
@@ -672,8 +671,8 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(lst, n1) = x1()
-                val NCIdlStackItem(obj, n2) = x2()
+                val Z(lst, n1) = x1()
+                val Z(obj, n2) = x2()
 
                 Z(toJList(lst).contains(box(obj)), n1 + n2)
             })
@@ -683,8 +682,8 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(lst1, n1) = x1()
-                val NCIdlStackItem(lst2, n2) = x2()
+                val Z(lst1, n1) = x1()
+                val Z(lst2, n2) = x2()
 
                 Z(toJList(lst1).containsAll(toJList(lst2)), n1 + n2)
             })
@@ -694,8 +693,8 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(lst1, n1) = x1()
-                val NCIdlStackItem(lst2, n2) = x2()
+                val Z(lst1, n1) = x1()
+                val Z(lst2, n2) = x2()
 
                 Z(CollectionUtils.containsAny(toJList(lst1), toJList(lst2)), n1 + n2)
             })
@@ -705,8 +704,8 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(col, n1) = x1()
-                val NCIdlStackItem(key, n2) = x2()
+                val Z(col, n1) = x1()
+                val Z(key, n2) = x2()
                 val n = n1 + n2
 
                 if (isJList(col)) {
@@ -724,7 +723,7 @@ trait NCIdlCompilerBase {
 
         def doAbs(): Unit = arg1() match {
             case x ⇒ stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
 
                 v match {
                     case a: JLong ⇒ Z(Math.abs(a), n)
@@ -736,7 +735,7 @@ trait NCIdlCompilerBase {
 
         def doSquare(): Unit = arg1() match {
             case x ⇒ stack.push(() ⇒ {
-                val NCIdlStackItem(v, n) = x()
+                val Z(v, n) = x()
 
                 v match {
                     case a: JLong ⇒ Z(a * a, n)
@@ -750,15 +749,15 @@ trait NCIdlCompilerBase {
             val (x1, x2, x3) = arg3()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(v1, n1) = x1()
+                val Z(v1, n1) = x1()
 
                 if (toBool(v1)) {
-                    val NCIdlStackItem(v2, n2) = x2()
+                    val Z(v2, n2) = x2()
 
                     Z(v2, n1 + n2)
                 }
                 else {
-                    val NCIdlStackItem(v3, n3) = x3()
+                    val Z(v3, n3) = x3()
 
                     Z(v3, n1 + n3)
                 }
@@ -794,8 +793,8 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(tok, n1) = x1()
-                val NCIdlStackItem(aliasId, n2) = x2() // Token alias or token ID.
+                val Z(tok, n1) = x1()
+                val Z(aliasId, n2) = x2() // Token alias or token ID.
 
                 Z(box(findPart(toToken(tok), toStr(aliasId))), n1 + n2)
             })
@@ -805,8 +804,8 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
     
             stack.push(() ⇒ {
-                val NCIdlStackItem(aliasId, n1) = x1() // Token alias or token ID.
-                val NCIdlStackItem(key, n2) = x2()
+                val Z(aliasId, n1) = x1() // Token alias or token ID.
+                val Z(key, n2) = x2()
 
                 Z(box(findPart(tok, toStr(aliasId)).meta[Object](toStr(key))), n1 + n2)
             })
@@ -817,8 +816,8 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val NCIdlStackItem(t, n1) = x1()
-                val NCIdlStackItem(a, n2) = x2()
+                val Z(t, n1) = x1()
+                val Z(a, n2) = x2()
 
                 val tok = toToken(t)
                 val aliasId = toStr(a)
@@ -833,18 +832,18 @@ trait NCIdlCompilerBase {
         fun match {
             // Metadata access.
             case "meta_part" ⇒ doPartMeta()
-            case "meta_token" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
-            case "meta_model" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(tok.getModel.meta[Object](toStr(v))), 0) })
-            case "meta_req" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.req.getRequestData.get(toStr(v))), 0) })
-            case "meta_user" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.req.getUser.meta(toStr(v))), 0) })
-            case "meta_company" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.req.getCompany.meta(toStr(v))), 0) })
-            case "meta_intent" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.intentMeta.get(toStr(v)).orNull), 0) })
-            case "meta_conv" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(termCtx.convMeta.get(toStr(v)).orNull), 0) })
-            case "meta_frag" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(box(termCtx.fragMeta.get(toStr(v)).orNull), f) })
-            case "meta_sys" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, _) = x(); Z(box(U.sysEnv(toStr(v)).orNull), 0) })
+            case "meta_token" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
+            case "meta_model" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.getModel.meta[Object](toStr(v))), 0) })
+            case "meta_req" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.req.getRequestData.get(toStr(v))), 0) })
+            case "meta_user" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.req.getUser.meta(toStr(v))), 0) })
+            case "meta_company" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.req.getCompany.meta(toStr(v))), 0) })
+            case "meta_intent" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.intentMeta.get(toStr(v)).orNull), 0) })
+            case "meta_conv" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.convMeta.get(toStr(v)).orNull), 0) })
+            case "meta_frag" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(box(termCtx.fragMeta.get(toStr(v)).orNull), f) })
+            case "meta_sys" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(U.sysEnv(toStr(v)).orNull), 0) })
 
             // Converts JSON to map.
-            case "json" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(U.jsonToJavaMap(asStr(v)), f) })
+            case "json" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(U.jsonToJavaMap(asStr(v)), f) })
 
             // Inline if-statement.
             case "if" ⇒ doIf()
@@ -888,51 +887,51 @@ trait NCIdlCompilerBase {
             case "comp_postcode" ⇒ z0(() ⇒ Z(termCtx.req.getCompany.getPostalCode, 0))
 
             // String functions.
-            case "trim" | "strip" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toStr(v).trim, f) })
-            case "uppercase" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toStr(v).toUpperCase, f) })
-            case "lowercase" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toStr(v).toLowerCase, f) })
-            case "is_alpha" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlpha(toStr(v)), f) })
-            case "is_alphanum" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphanumeric(toStr(v)), f) })
-            case "is_whitespace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isWhitespace(toStr(v)), f) })
-            case "is_num" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isNumeric(toStr(v)), f) })
-            case "is_numspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isNumericSpace(toStr(v)), f) })
-            case "is_alphaspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphaSpace(toStr(v)), f) })
-            case "is_alphanumspace" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) })
+            case "trim" | "strip" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toStr(v).trim, f) })
+            case "uppercase" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toStr(v).toUpperCase, f) })
+            case "lowercase" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toStr(v).toLowerCase, f) })
+            case "is_alpha" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlpha(toStr(v)), f) })
+            case "is_alphanum" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphanumeric(toStr(v)), f) })
+            case "is_whitespace" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isWhitespace(toStr(v)), f) })
+            case "is_num" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isNumeric(toStr(v)), f) })
+            case "is_numspace" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isNumericSpace(toStr(v)), f) })
+            case "is_alphaspace" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphaSpace(toStr(v)), f) })
+            case "is_alphanumspace" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) })
             case "split" ⇒ doSplit()
             case "split_trim" ⇒ doSplitTrim()
 
             // Math functions.
             case "abs" ⇒ doAbs()
             case "ceil" ⇒ arg1() match { case item ⇒ stack.push(() ⇒ {
-                val NCIdlStackItem(v, f) = item()
+                val Z(v, f) = item()
 
                 Z(Math.ceil(toJDouble(v)), f)
             }) }
-            case "floor" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.floor(toJDouble(v)), f) })
-            case "rint" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.rint(toJDouble(v)), f) })
-            case "round" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.round(toJDouble(v)), f) })
-            case "signum" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.signum(toJDouble(v)), f) })
-            case "sqrt" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.sqrt(toJDouble(v)), f) })
-            case "cbrt" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.cbrt(toJDouble(v)), f) })
-            case "acos" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.acos(toJDouble(v)), f) })
-            case "asin" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.asin(toJDouble(v)), f) })
-            case "atan" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z( Math.atan(toJDouble(v)), f) })
-            case "cos" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.cos(toJDouble(v)), f) })
-            case "sin" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.sin(toJDouble(v)), f) })
-            case "tan" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.tan(toJDouble(v)), f) })
-            case "cosh" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.cosh(toJDouble(v)), f) })
-            case "sinh" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.sinh(toJDouble(v)), f) })
-            case "tanh" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.tanh(toJDouble(v)), f) })
-            case "atn2" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, n1) = x._1(); val NCIdlStackItem(v2, n2) = x._2(); Z(Math.atan2(toJDouble(v1), toJDouble(v2)), n1 + n2) })
-            case "degrees" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.toDegrees(toJDouble(v)), f) })
-            case "radians" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z( Math.toRadians(toJDouble(v)), f) })
-            case "exp" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.exp(toJDouble(v)), f) })
-            case "expm1" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.expm1(toJDouble(v)), f) })
-            case "hypot" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, n1) = x._1(); val NCIdlStackItem(v2, n2) = x._2(); Z(Math.hypot(toJDouble(v1), toJDouble(v2)), n1 + n2) })
-            case "log" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.log(toJDouble(v)), f) })
-            case "log10" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.log10(toJDouble(v)), f) })
-            case "log1p" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) })
-            case "pow" ⇒ z[(T, T)](arg2, { x ⇒ val NCIdlStackItem(v1, f1) = x._1(); val NCIdlStackItem(v2, f2) = x._2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 + f2 + 1) })
+            case "floor" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toJDouble(v)), f) })
+            case "rint" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toJDouble(v)), f) })
+            case "round" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toJDouble(v)), f) })
+            case "signum" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.signum(toJDouble(v)), f) })
+            case "sqrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sqrt(toJDouble(v)), f) })
+            case "cbrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cbrt(toJDouble(v)), f) })
+            case "acos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.acos(toJDouble(v)), f) })
+            case "asin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.asin(toJDouble(v)), f) })
+            case "atan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.atan(toJDouble(v)), f) })
+            case "cos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cos(toJDouble(v)), f) })
+            case "sin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sin(toJDouble(v)), f) })
+            case "tan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tan(toJDouble(v)), f) })
+            case "cosh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toJDouble(v)), f) })
+            case "sinh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toJDouble(v)), f) })
+            case "tanh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toJDouble(v)), f) })
+            case "atn2" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.atan2(toJDouble(v1), toJDouble(v2)), n1 + n2) })
+            case "degrees" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toJDouble(v)), f) })
+            case "radians" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toJDouble(v)), f) })
+            case "exp" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toJDouble(v)), f) })
+            case "expm1" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.expm1(toJDouble(v)), f) })
+            case "hypot" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.hypot(toJDouble(v1), toJDouble(v2)), n1 + n2) })
+            case "log" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log(toJDouble(v)), f) })
+            case "log10" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log10(toJDouble(v)), f) })
+            case "log1p" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log1p(toJDouble(v)), f) })
+            case "pow" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, f1) = x._1(); val Z(v2, f2) = x._2(); Z(Math.pow(toJDouble(v1), toJDouble(v2)), f1 + f2 + 1) })
             case "square" ⇒ doSquare()
             case "pi" ⇒ z0(() ⇒ Z(Math.PI, 0))
             case "euler" ⇒ z0(() ⇒ Z(Math.E, 0))
@@ -944,16 +943,16 @@ trait NCIdlCompilerBase {
             case "has" ⇒ doHas()
             case "has_any" ⇒ doHasAny()
             case "has_all" ⇒ doHasAll()
-            case "first" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)})
-            case "last" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], f)})
-            case "keys" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) })
-            case "values" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) })
-            case "size" | "count" | "length" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toJList(v).size(), f)})
+            case "first" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], f)})
+            case "last" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], f)})
+            case "keys" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).keySet()), f) })
+            case "values" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(new util.ArrayList(toJMap(v).values()), f) })
+            case "size" | "count" | "length" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).size(), f)})
             case "reverse" ⇒ doReverse()
             case "sort" ⇒ doSort()
-            case "is_empty" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toJList(v).isEmpty, f) })
-            case "non_empty" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(!toJList(v).isEmpty, f) })
-            case "to_string" ⇒ z[T](arg1, { x ⇒ val NCIdlStackItem(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) })
+            case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).isEmpty, f) })
+            case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(!toJList(v).isEmpty, f) })
+            case "to_string" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJList(v).asScala.map(_.toString).asJava, f) })
 
             // Statistical operations on lists.
             case "max" ⇒ doMin()

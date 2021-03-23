@@ -26,7 +26,7 @@ package org.apache.nlpcraft.model.intent
 case class NCIdlSynonym(
     origin: String,
     alias: Option[String],
-    pred: NCIdlFunction[Boolean],
+    pred: NCIdlFunction,
 ) {
     require(origin != null)
     require(pred != null)

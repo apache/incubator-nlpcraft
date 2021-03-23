@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.intent.compiler
+package org.apache.nlpcraft.model.intent
 
 import scala.collection.mutable
 

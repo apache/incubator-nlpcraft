@@ -26,8 +26,7 @@ import org.apache.nlpcraft.model.impl.NCTokenLogger
 import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
 import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
-import org.apache.nlpcraft.model.intent.compiler.NCIdlStackItem
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlIntent, NCIdlTerm}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlIntent, NCIdlStackItem ⇒ Z, NCIdlTerm}
 
 import java.util.function.Function
 import scala.collection.JavaConverters._
@@ -495,8 +494,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val termCtx = NCIdlContext(
                 intentMeta = intent.meta,
                 convMeta = if (x.isEmpty) Map.empty[String, Object] else x.asScala.toMap[String, Object],
-                req = ctx.getRequest,
-                vars = mutable.HashMap.empty[String, NCIdlStackItem]
+                req = ctx.getRequest
             )
 
             // Check terms.
@@ -651,7 +649,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
      */
     @throws[NCE]
     private def solvePredicate(
-        pred: (NCToken, NCIdlContext) ⇒ (Boolean /*Predicate.*/ , Int /*How many times a token was used.*/ ),
+        pred: (NCToken, NCIdlContext) ⇒ Z,
         ctx: NCIdlContext,
         min: Int,
         max: Int,
@@ -669,9 +667,9 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
         // Collect to the 'max' from sentence & conversation, if possible.
         for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
-            val (res, uses) = pred.apply(tok.token, ctx)
+            val Z(res, uses) = pred.apply(tok.token, ctx)
 
-            if (res) {
+            if (res.asInstanceOf[Boolean]) {
                 matches += 1
 
                 if (uses > 0) {
