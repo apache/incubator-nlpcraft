@@ -627,6 +627,19 @@ trait NCIdlCompilerBase {
                 }
             })
         }
+
+        def doToString(): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                if (isJList(v))
+                    Z(toJList(v).asScala.map(_.toString).asJava, n)
+                else
+                    Z(v.toString, n)
+            })
+        }
     
         def doMax(): Unit = {
             val x = arg1()
@@ -930,11 +943,12 @@ trait NCIdlCompilerBase {
             case "pi" ⇒ z0(() ⇒ Z(Math.PI, 0))
             case "euler" ⇒ z0(() ⇒ Z(Math.E, 0))
             case "rand" ⇒ z0(() ⇒ Z(Math.random, 0))
+            case "to_double" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJDoubleSafe(v).toDouble, f) })
 
             // Collection functions.
             case "list" ⇒ doList()
-            case "get" ⇒ doGet()
-            case "has" ⇒ doHas()
+            case "get" ⇒ doGet() // Works for both lists (int index) and maps (object key).
+            case "has" ⇒ doHas() // Only works for lists.
             case "has_any" ⇒ doHasAny()
             case "has_all" ⇒ doHasAll()
             case "first" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], n)})
@@ -946,7 +960,9 @@ trait NCIdlCompilerBase {
             case "sort" ⇒ doSort()
             case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).isEmpty, n) })
             case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(!toJList(v).isEmpty, n) })
-            case "to_string" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).asScala.map(_.toString).asJava, n) })
+
+            // Misc.
+            case "to_string" ⇒ doToString()
 
             // Statistical operations on lists.
             case "max" ⇒ doMax()

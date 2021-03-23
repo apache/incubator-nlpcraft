@@ -47,4 +47,12 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
             s"has(keys(json('$js')), 'k2') == false"
         )
     }
+
+    @Test
+    def test3(): Unit = {
+        test(
+            s"to_string(list(1, 2, 3)) == list('1', '2', '3')",
+            "to_string(3.123) == '3.123'"
+        )
+    }
 }

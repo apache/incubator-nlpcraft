@@ -189,6 +189,7 @@ FUN_NAME
     | 'sqrt'
     | 'cbrt'
     | 'pi'
+    | 'to_double'
     | 'euler'
     | 'acos'
     | 'asin'
