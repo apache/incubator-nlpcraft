@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
+import org.apache.nlpcraft.common.ScalaMeta
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGlobal}
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction}
 import org.apache.nlpcraft.model.{NCCompany, NCModel, NCModelView, NCRequest, NCToken, NCUser}
@@ -82,9 +83,15 @@ private[functions] trait NCIdlFunctions {
         recTimestamp: Long = 0,
         remAddress: String = null,
         clientAgent: String = null,
-        reqData: Map[String, AnyRef] = Map.empty[String, AnyRef]
+        reqData: ScalaMeta = Map.empty[String, AnyRef],
+        intentMeta: ScalaMeta = Map.empty[String, Object],
+        convMeta: ScalaMeta = Map.empty[String, Object],
+        fragMeta: ScalaMeta = Map.empty[String, Object]
     ): NCIdlContext =
         NCIdlContext(
+            intentMeta = intentMeta,
+            convMeta = convMeta,
+            fragMeta = fragMeta,
             req =
                 new NCRequest() {
                     override def getUser: NCUser = usr
