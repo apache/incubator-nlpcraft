@@ -55,4 +55,13 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
             "to_string(3.123) == '3.123'"
         )
     }
+
+    @Test
+    def test4(): Unit = {
+        test(
+            s"to_double(25) == 25.0",
+            s"to_double(25) != 25", // double != int without rounding.
+            s"round(to_double(25)) == 25"
+        )
+    }
 }
