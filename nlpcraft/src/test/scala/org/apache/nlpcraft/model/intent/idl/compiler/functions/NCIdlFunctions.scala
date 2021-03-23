@@ -19,13 +19,14 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
 import org.apache.nlpcraft.common.ScalaMeta
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGlobal}
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlTerm}
 import org.apache.nlpcraft.model.{NCCompany, NCModel, NCModelView, NCRequest, NCToken, NCUser}
 import org.junit.jupiter.api.BeforeEach
 
 import java.util
 import java.util.{Collections, Optional}
 import scala.collection.JavaConverters._
+import scala.language.implicitConversions
 
 /**
   * Tests for IDL functions.
@@ -45,13 +46,13 @@ private[functions] trait NCIdlFunctions {
     def before(): Unit = NCIdlCompilerGlobal.clearCache(MODEL_ID)
 
     case class TestDesc(truth: String, token: Option[NCToken] = None, idlCtx: NCIdlContext = ctx()) {
-        val predicate: NCIdlFunction = {
+        val term: NCIdlTerm = {
             val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$truth}", MODEL, MODEL_ID)
 
             require(intents.size == 1)
             require(intents.head.terms.size == 1)
 
-            intents.head.terms.head.pred
+            intents.head.terms.head
         }
 
         override def toString: String =
@@ -147,8 +148,13 @@ private[functions] trait NCIdlFunctions {
     protected def test(funcs: TestDesc*): Unit =
         for (f ← funcs) {
             val res =
-                try
-                    f.predicate.apply(f.token.getOrElse(tkn()), f.idlCtx).value
+                try {
+                    // Process declarations.
+                    f.idlCtx.vars ++= f.term.decls
+
+                    // Execute term's predicate.
+                    f.term.pred.apply(f.token.getOrElse(tkn()), f.idlCtx).value
+                }
                 catch {
                     case e: Exception ⇒ throw new Exception(s"Execution error processing: $f", e)
                 }

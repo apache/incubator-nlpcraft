@@ -31,6 +31,7 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "non_empty(list()) == false",
             "non_empty(list(1)) == true",
             "first(list(1, 2, 3)) == 1",
+            "@lst = list(1, 2, 3) first(reverse(@lst)) == last(@lst)",
             "last(list(1, 2, 3)) == 3"
         )
 }
