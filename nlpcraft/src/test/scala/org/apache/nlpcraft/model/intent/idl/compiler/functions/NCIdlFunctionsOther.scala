@@ -39,10 +39,12 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
 
         sys.put("k1", "v1")
 
+        val js = "{\"k1\": \"v1\"}"
+
         // JSON.
         test(
-            "has(json(meta_sys()), 'k1') == true",
-            "has(json(meta_sys()), 'k2') == false"
+            s"has(json($js), 'k1') == true",
+            s"has(json($js), 'k2') == false"
         )
     }
 }

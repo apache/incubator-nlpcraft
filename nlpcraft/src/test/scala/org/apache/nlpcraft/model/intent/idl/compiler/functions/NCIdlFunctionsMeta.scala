@@ -48,7 +48,6 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
             token = Some(tkn(meta = Map("k1" → "v1")))
         )
 
-
     @Test
     def testMetaRequest(): Unit =
         test(
@@ -109,8 +108,8 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
             )
         )
 
-    private def test(pred: String, idlCtx: ⇒ NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
+    private def test(f: String, idlCtx: ⇒ NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
         test(
-            TestDesc(truth = s"get($pred(), 'k1') == 'v1'", token = token, idlCtx = idlCtx)
+            TestDesc(truth = s"$f('k1') == 'v1'", token = token, idlCtx = idlCtx)
         )
 }
