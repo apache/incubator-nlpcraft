@@ -858,9 +858,9 @@ trait NCIdlCompilerBase {
 
             // User data.
             case "user_id" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getId, 0))
-            case "user_fname" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getFirstName, 0))
-            case "user_lname" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getLastName, 0))
-            case "user_email" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getEmail, 0))
+            case "user_fname" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getFirstName.orElse(null), 0))
+            case "user_lname" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getLastName.orElse(null), 0))
+            case "user_email" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getEmail.orElse(null), 0))
             case "user_admin" ⇒ z0(() ⇒ Z(termCtx.req.getUser.isAdmin, 0))
             case "user_signup_tstamp" ⇒ z0(() ⇒ Z(termCtx.req.getUser.getSignupTimestamp, 0))
 
