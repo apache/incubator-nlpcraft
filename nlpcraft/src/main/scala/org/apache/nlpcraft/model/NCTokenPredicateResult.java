@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model;
 
 /**
- * Result value of user-defined token predicate. Token predicates can be used in intent IDL.
+ * Result value of user-defined token predicate. Token predicates can be used in IDL.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
