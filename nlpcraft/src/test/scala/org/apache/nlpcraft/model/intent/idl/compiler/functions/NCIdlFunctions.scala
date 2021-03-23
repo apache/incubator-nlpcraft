@@ -55,8 +55,8 @@ private[functions] trait NCIdlFunctions {
 
         override def toString: String =
             token match {
-                case Some(t) ⇒ s"Function [definition=$truth, token=${t2s(t)}]"
-                case None ⇒ s"Function [definition=$truth]"
+                case Some(t) ⇒ s"Predicate [body='$truth', token=${t2s(t)}]"
+                case None ⇒ s"Predicate '$truth']"
             }
     }
 
@@ -143,18 +143,18 @@ private[functions] trait NCIdlFunctions {
                 try
                     f.predicate.apply(f.token.getOrElse(tkn()), f.idlCtx).value
                 catch {
-                    case e: Exception ⇒ throw new Exception(s"Execution error [func=$f]", e)
+                    case e: Exception ⇒ throw new Exception(s"Execution error processing: $f", e)
                 }
 
             res match {
-                case b: java.lang.Boolean ⇒ require(b, s"Unexpected FALSE result [testFunc=$f]")
+                case b: java.lang.Boolean ⇒ require(b, s"Unexpected FALSE result for: $f]")
                 case _ ⇒
                     require(
                         requirement = false,
                         s"Unexpected result type [" +
                             s"resType=${if (res == null) "null" else res.getClass.getName}, " +
                             s"resValue=$res, " +
-                            s"testFunc='$f'" +
+                            s"function=$f" +
                             s"]"
                     )
             }
