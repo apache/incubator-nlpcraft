@@ -202,10 +202,14 @@ object NCUtils extends LazyLogging {
     def trimEscapesQuotes(s: String): String = {
         val z = s.strip
 
-        if (z.head == '\'' && z.last == '\'')
-            trimEscapesQuotes(z.substring(1, z.length - 1).replace("\'", "'"))
-        else if (z.head == '"' && z.last == '"')
-            trimEscapesQuotes(z.substring(1, z.length - 1).replace("\\\"", "\""))
+        if (z.nonEmpty) {
+            if (z.head == '\'' && z.last == '\'')
+                trimEscapesQuotes(z.substring(1, z.length - 1).replace("\'", "'"))
+            else if (z.head == '"' && z.last == '"')
+                trimEscapesQuotes(z.substring(1, z.length - 1).replace("\\\"", "\""))
+            else
+                z
+        }
         else
             z
     }

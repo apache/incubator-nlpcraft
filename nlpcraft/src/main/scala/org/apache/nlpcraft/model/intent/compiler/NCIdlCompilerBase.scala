@@ -29,7 +29,7 @@ import java.lang.{Byte ⇒ JByte, Double ⇒ JDouble, Float ⇒ JFloat, Integer 
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
-import java.util.{Calendar, Collections, Comparator, Collection ⇒ JColl, List ⇒ JList, Map ⇒ JMap}
+import java.util.{Calendar, Collections, Collection ⇒ JColl, List ⇒ JList, Map ⇒ JMap}
 import scala.collection.JavaConverters._
 
 trait NCIdlCompilerBase {
@@ -383,7 +383,8 @@ trait NCIdlCompilerBase {
         val (x1, x2) = pop2()(stack, ctx)
 
         def doEq(op: String, v1: Object, v2: Object): Boolean = {
-            if (v1 == null && v2 == null) true
+            if (v1 eq v2) true
+            else if (v1 == null && v2 == null) true
             else if ((v1 == null && v2 != null) || (v1 != null && v2 == null)) false
             else if (isInt(v1) && isInt(v2)) asInt(v1) == asInt(v2)
             else if (isReal(v1) && isReal(v2)) asReal(v1) == asReal(v2)
@@ -392,7 +393,7 @@ trait NCIdlCompilerBase {
             else if (isList(v1) && isList(v2)) CollectionUtils.isEqualCollection(asList(v1), asList(v2))
             else if ((isInt(v1) && isReal(v2)) || (isReal(v1) && isInt(v2))) asReal(v1) == asReal(v2)
             else
-                throw rtBinaryOpError(op, v1, v2)
+                v1.equals(v2)
         }
 
         stack.push(() ⇒ {

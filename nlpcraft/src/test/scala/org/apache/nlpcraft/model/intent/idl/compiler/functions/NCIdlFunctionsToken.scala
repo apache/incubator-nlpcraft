@@ -105,22 +105,8 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
                 truth = "tok_end_idx() == 123",
                 token = tkn(end = 123)
             ),
-            // TODO: fix following.
-//            TestDesc(
-//                truth = "tok_aliases() == list('1')",
-//                token = tkn(aliases = Set("1"))
-//            ),
-//            TestDesc(
-//                truth = "tok_this() == tok_this()"
-//            ),
-//            TestDesc(
-//                truth = "tok_find_part() != null",
-//                token = tkn(partTokens = Seq(tkn("part1"), tkn("part2")))
-//            ),
-//            TestDesc(
-//                truth = "tok_find_parts() != null",
-//                token = tkn(partTokens = Seq(tkn("part1"), tkn("part2")))
-//            ),
-
+            TestDesc(
+                truth = "tok_this() == tok_this()"
+            )
         )
 }

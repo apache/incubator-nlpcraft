@@ -54,8 +54,7 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "non_empty(list(1)) == true",
             "reverse(list(1.0, 2, 3)) == list(3, 2, 1.0)",
             "sort(list(2, 1, 3)) == list(1, 2, 3)",
-            // TODO: Fix it.
-            "sort(list(2.0, 1, 3)) == list(1, 2.0, 3)",
+            "sort(list('c', 'a', 'b')) == list('a', 'b', 'c')",
             "size(list(2.0, 1, 3)) == 3",
             "length(list(2.0, 1, 3)) == 3",
             "count(list(2.0, 1, 3)) == 3",
@@ -67,7 +66,6 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             s"concat(list(1, 2, 3), list(1, 2, 3)) == list(1, 2, 3, 1, 2, 3)",
             s"concat(list(1, 2, 3), list()) == list(1, 2, 3)",
             s"concat(list(), list()) == list()",
-            // TODO: is it? Shouldn't be all values have one type?
             s"concat(list(1, 2), list(3.0)) == list(1, 2, 3.0)"
         )
 }
