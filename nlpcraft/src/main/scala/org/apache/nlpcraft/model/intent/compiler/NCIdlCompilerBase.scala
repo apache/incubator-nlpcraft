@@ -647,7 +647,7 @@ trait NCIdlCompilerBase {
                     val Z(v2, n2) = x2()
                     val Z(v3, n3) = x3()
 
-                    Z(toStr(v1).replaceAll(toStr(v2), toStr(v3)), n1 + n2)
+                    Z(toStr(v1).replaceAll(toStr(v2), toStr(v3)), n1 + n2 + n3)
                 }
             )
         }
