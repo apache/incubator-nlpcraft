@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,17 +18,79 @@
 
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
+import org.apache.nlpcraft.common.NCE
 import org.junit.jupiter.api.Test
 
 /**
   * Tests for 'math' functions.
   */
 class NCIdlFunctionsMath extends NCIdlFunctions {
+    private def testError(f: String): Unit =
+        try {
+            test(f)
+
+            require(false)
+        }
+        catch {
+            case e: NCE ⇒ println(s"Expected error: ${e.getLocalizedMessage}")
+            case e: Exception ⇒ throw e
+        }
+
+    @Test
+    def testError(): Unit = {
+        // Invalid name.
+        testError("xxx(1, 1)")
+        testError("xxx()")
+
+        // Invalid arguments count.
+        testError("atan(1, 1) == 1")
+        testError("pi(1)")
+    }
+
     @Test
     def test(): Unit =
         test(
-            "sin(90.0) != 1",
-            "sin(90) != 0",
-            "rand() < 1"
+            "abs(2) == 2",
+            "abs(-2.2) == 2.2",
+            "ceil(1.8) == 2.0",
+            "floor(1.1) == 1.0",
+            "rint(1.8) == 2.0",
+            "round(1.8) == 2",
+            "signum(-1.8) == -1.0",
+            "sqrt(4) - 2 < 0.001",
+            "cbrt(8) - 2 < 0.001",
+            "acos(8.1) != acos(9.1)",
+            "asin(8.1) != asin(9)",
+            "atan(8) != atan(9.1)",
+            "cos(1.5708) < 0.001",
+            "cos(1.5708) < 0.001",
+            "sin(1.5708) > 0.999",
+            "sin(1.5708) > 0.999",
+            "tan(8) != tan(9)",
+            "cosh(8) != cosh(9)",
+            "sinh(8) != sinh(9)",
+            "tanh(8) != tanh(9)",
+            "atn2(8, 2) != atn2(9, 2)",
+            "atn2(8.1, 2.1) != atn2(9.1, 2.1)",
+            "degrees(1.5708) - 90 < 0.001",
+            "radians(90) - 1.5708 < 0.001",
+            "exp(2) != exp(3)",
+            "expm1(8) != expm1(9)",
+            "hypot(2, 3) - 3.606  < 0.001",
+            "log(8) != log(9)",
+            "log10(8) != log10(9)",
+            "log1p(8) != log1p(9)",
+            "pow(2, 2) -4 < 0.001",
+            "pow(2.0, 2.0) -4 < 0.001",
+            "pow(2, 2.0) -4 < 0.001",
+            "pow(2.0, 2) -4 < 0.001",
+            "pow(2.0, 2) -4 < 0.001",
+            "rand() < 1",
+            "pi() - 3.142 < 0.01",
+            "euler() - 2.718 < 0.01",
+            "to_double(2) - 2.0 < 0.01",
+            "1.1 == 1.1",
+            "1.0 == 1",
+            "1 == 1.0"
         )
 }
