@@ -27,12 +27,12 @@ class NCIdlFunctionsMath extends NCIdlFunctions {
     @Test
     def testError(): Unit = {
         // Invalid name.
-        expectNceError("xxx(1, 1)")
-        expectNceError("xxx()")
+        expectError("xxx(1, 1)")
+        expectError("xxx()")
 
         // Invalid arguments count.
-        expectNceError("atan(1, 1) == 1")
-        expectNceError("pi(1)")
+        expectError("atan(1, 1) == 1")
+        expectError("pi(1)")
     }
 
     @Test

@@ -175,15 +175,14 @@ private[functions] trait NCIdlFunctions {
             }
         }
 
-    protected def expectNceError(f: String): Unit =
+    protected def expectError(f: String): Unit =
         try {
             test(f)
 
             require(false)
         }
         catch {
-            case e: NCE ⇒ println(s"Expected error: ${e.getLocalizedMessage}")
-            case e: Exception ⇒ throw e
+            case e: Exception ⇒ println(s"Expected error: ${e.getLocalizedMessage}")
         }
 
     protected implicit def convert(pred: String): TestDesc = TestDesc(truth = pred)

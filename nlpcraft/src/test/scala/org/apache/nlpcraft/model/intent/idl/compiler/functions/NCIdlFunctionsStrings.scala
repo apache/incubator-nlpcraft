@@ -26,48 +26,49 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-//            "trim(' a b  ') == 'a b'",
-//            "strip(' a b  ') == 'a b'",
-//            "uppercase('aB') == 'AB'",
-//            "lowercase('aB') == 'ab'",
-//            "is_alpha('aB') == true",
-//            "is_alpha('aB1') == false",
-//            "is_alphanum('aB1') == true",
-//            "is_whitespace('A') == false",
-//            "is_num('a') == false",
-//            "is_num('1') == true",
-//            "is_numspace('A') == false",
-//            "is_alphaspace('A') == true",
-//            "is_alphanumspace('A') == true",
-//            "is_alphanumspace('1 A') == true",
-//            "start_with('ab', 'a') == true",
-//            "start_with('ab', 'b') == false",
-//            "end_with('ab', 'a') == false",
-//            "end_with('ab', 'b') == true",
-//            "contains('ab', 'a') == true",
-//            "contains('ab', 'bc') == false",
-//            "index_of('ab', 'b') == 1",
-//            "index_of('ab', 'bc') == -1",
-//            "substr('abc', 0, 1) == 'a'",
-//            "substr('abc', 0, 2) == 'ab'",
-//            "replace('abc', 'a', 'X') == 'Xbc'",
-//            "replace('abc', '0',  '0') == 'abc'",
+            "trim(' a b  ') == 'a b'",
+            "strip(' a b  ') == 'a b'",
+            "uppercase('aB') == 'AB'",
+            "lowercase('aB') == 'ab'",
+            "is_alpha('aB') == true",
+            "is_alpha('aB1') == false",
+            "is_alphanum('aB1') == true",
+            "is_whitespace('A') == false",
+            "is_num('a') == false",
+            "is_num('1') == true",
+            "is_numspace('A') == false",
+            "is_alphaspace('A') == true",
+            "is_alphanumspace('A') == true",
+            "is_alphanumspace('1 A') == true",
+            "start_with('ab', 'a') == true",
+            "start_with('ab', 'b') == false",
+            "end_with('ab', 'a') == false",
+            "end_with('ab', 'b') == true",
+            "contains('ab', 'a') == true",
+            "contains('ab', 'bc') == false",
+            "index_of('ab', 'b') == 1",
+            "index_of('ab', 'bc') == -1",
+            "substr('abc', 0, 1) == 'a'",
+            "substr('abc', 0, 2) == 'ab'",
+            "replace('abc', 'a', 'X') == 'Xbc'",
+            "replace('abc', '0',  '0') == 'abc'",
             "split('1 A', ' ') == list('1', 'A')",
-//            "split_trim('1 A    ', ' ') == list('1', 'A')",
+            "split_trim('1 A    ', ' ') == list('1', 'A')",
 
             // Whitespaces.
-//            "replace('abc', 'ab',  '') == 'c'",
-//            "substr('abc', 20, 30) == ''",
-//            "is_alphanumspace(' ') == true",
-//            "is_alphanumspace('  ') == true",
-//            "is_alphanumspace(' ') == true",
-//            "is_whitespace(' ') == true",
-//            "trim('   ') == ''"
+            "replace('abc', 'ab',  '') == 'c'",
+            "substr('abc', 1, 3) == 'bc'",
+            "is_alphanumspace(' ') == true",
+            "is_alphanumspace('  ') == true",
+            "is_alphanumspace(' ') == true",
+            "is_whitespace(' ') == true",
+            "trim('   ') == ''"
         )
 
     @Test
     def testError(): Unit = {
-        expectNceError("split('1 A') == true")
-        expectNceError("split_trim('1 A') == true")
+        expectError("substr('abc', 10, 30) == 'bc'")
+        expectError("split('1 A') == true")
+        expectError("split_trim('1 A') == true")
     }
 }

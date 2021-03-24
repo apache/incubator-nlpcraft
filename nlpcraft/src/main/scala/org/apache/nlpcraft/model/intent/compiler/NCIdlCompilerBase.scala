@@ -154,8 +154,12 @@ trait NCIdlCompilerBase {
         newRuntimeError(s"Too many parameters for IDL function (only $argNum is required): $fun()")
     def rtParamTypeError(fun: String, invalid: Object, expectType: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Expected '$expectType' type of parameter for IDL function '$fun()', found: $invalid")
+    def rtParamNullError(fun: String)(implicit ctx: PRC): NCE =
+        newRuntimeError(s"Unexpected 'null' parameter for IDL function: $fun()")
     def rtListTypeError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Expected uniform list type for IDL function '$fun()', found polymorphic list.", cause)
+    def rtFunError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
+        newRuntimeError(s"Runtime error in IDL function: $fun()", cause)
 
     /**
      *
@@ -551,8 +555,11 @@ trait NCIdlCompilerBase {
             }
             else
                 arg1()
+
         def toX[T](typ: String, v: Object, is: Object ⇒ Boolean, as: Object ⇒ T): T = {
-            if (!is(v))
+            if (v == null)
+                throw rtParamNullError(fun)
+            else if (!is(v))
                 throw rtParamTypeError(fun, v, typ)
 
             as(v)
@@ -584,7 +591,7 @@ trait NCIdlCompilerBase {
                 () ⇒ {
                     val (v1, v2, n) = extract2(x1, x2)
 
-                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip)), n)
+                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip):_*), n)
                 }
             )
         }
@@ -991,7 +998,8 @@ trait NCIdlCompilerBase {
         def z[Y](args: () ⇒ Y, body: Y ⇒ Z): Unit = { val x = args(); stack.push(() ⇒ body(x)) }
         def z0(body: () ⇒ Z): Unit = { popMarker(0); stack.push(() ⇒ body()) }
 
-        fun match {
+        try
+            fun match {
             // Metadata access.
             case "meta_part" ⇒ doPartMeta()
             case "meta_token" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
@@ -1163,6 +1171,10 @@ trait NCIdlCompilerBase {
             case "now" ⇒ z0(() ⇒ Z(System.currentTimeMillis(), 0)) // Epoc time.
 
             case _ ⇒ throw rtUnknownFunError(fun) // Assertion.
+        }
+        catch {
+            case e: NCE ⇒ throw e // Rethrow.
+            case e: Exception ⇒ throw rtFunError(fun, e)
         }
     }
 }

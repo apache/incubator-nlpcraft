@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test
 class NCIdlFunctionsStat extends NCIdlFunctions {
     @Test
     def testError(): Unit = {
-        expectNceError("avg(list()) == 2")
-        expectNceError("avg(list('A')) == 2")
-        expectNceError("stdev(list()) == 2")
-        expectNceError("stdev(list('A')) == 2")
+        expectError("avg(list()) == 2")
+        expectError("avg(list('A')) == 2")
+        expectError("stdev(list()) == 2")
+        expectError("stdev(list('A')) == 2")
     }
 
     @Test

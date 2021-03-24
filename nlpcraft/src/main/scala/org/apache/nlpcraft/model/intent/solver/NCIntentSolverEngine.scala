@@ -608,36 +608,40 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
     ): Option[TermMatch] = {
-        solvePredicate(term.pred, ctx, term.min, term.max, senToks, convToks) match {
-            case Some((usedToks, predWeight)) ⇒ Some(
-                TermMatch(
-                    term.id,
-                    usedToks,
-                    if (usedToks.nonEmpty) {
-                        // If term match is non-empty we add the following weights:
-                        //   - min
-                        //   - delta between specified max and normalized max (how close the actual quantity was to the specified one).
-                        //   - normalized max
-                        predWeight
-                            .append(term.min)
-                            .append(-(term.max - usedToks.size))
-                            // Normalize max quantifier in case of unbound max.
-                            .append(if (term.max == Integer.MAX_VALUE) usedToks.size else term.max)
-                    } else {
-                        // Term is optional (found but empty).
-                        require(term.min == 0)
+        try
+            solvePredicate(term.pred, ctx, term.min, term.max, senToks, convToks) match {
+                case Some((usedToks, predWeight)) ⇒ Some(
+                    TermMatch(
+                        term.id,
+                        usedToks,
+                        if (usedToks.nonEmpty) {
+                            // If term match is non-empty we add the following weights:
+                            //   - min
+                            //   - delta between specified max and normalized max (how close the actual quantity was to the specified one).
+                            //   - normalized max
+                            predWeight
+                                .append(term.min)
+                                .append(-(term.max - usedToks.size))
+                                // Normalize max quantifier in case of unbound max.
+                                .append(if (term.max == Integer.MAX_VALUE) usedToks.size else term.max)
+                        } else {
+                            // Term is optional (found but empty).
+                            require(term.min == 0)
 
-                        predWeight
-                            .append(0)
-                            .append(-term.max)
-                            // Normalize max quantifier in case of unbound max.
-                            .append(if (term.max == Integer.MAX_VALUE) 0 else term.max)
-                    }
+                            predWeight
+                                .append(0)
+                                .append(-term.max)
+                                // Normalize max quantifier in case of unbound max.
+                                .append(if (term.max == Integer.MAX_VALUE) 0 else term.max)
+                        }
+                    )
                 )
-            )
 
-            // Term not found at all.
-            case None ⇒ None
+                // Term not found at all.
+                case None ⇒ None
+            }
+        catch {
+            case e: Exception ⇒ throw new NCE(s"Runtime error processing IDL term: ${term.toAnsiString}", e)
         }
     }
 
