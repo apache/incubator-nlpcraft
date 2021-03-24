@@ -118,6 +118,7 @@ private[functions] trait NCIdlFunctions {
         ancestors: Seq[String] = Seq.empty,
         aliases: Set[String] = Set.empty,
         partTokens: Seq[NCToken] = Seq.empty,
+        isAbstr: Boolean = false,
         meta: Map[String, AnyRef] = Map.empty[String, AnyRef]
     ): NCToken = {
         val map = new util.HashMap[String, AnyRef]
@@ -140,7 +141,7 @@ private[functions] trait NCIdlFunctions {
                 if (groups.isEmpty && id != null) Collections.singletonList(id) else groups.asJava
             override def getStartCharIndex: Int = start
             override def getEndCharIndex: Int = end
-            override def isAbstract: Boolean = false
+            override def isAbstract: Boolean = isAbstr
             override def getMetadata: util.Map[String, AnyRef] = map
         }
     }
