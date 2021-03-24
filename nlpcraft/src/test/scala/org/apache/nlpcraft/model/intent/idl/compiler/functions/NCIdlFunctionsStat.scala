@@ -27,6 +27,8 @@ class NCIdlFunctionsStat extends NCIdlFunctions {
     def test(): Unit =
         test(
             "max(list(1, 2, 3)) == 3",
-            "min(list(1, 2, 3)) == 1"
+            "max(list(1.0, 2.0, 3.0)) == 3.0",
+            "min(list(1, 2, 3)) == 1",
+            "min(list(1.0, 2.0, 3.0)) == 1.0"
         )
 }

@@ -44,7 +44,7 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
         })
 
         test(new NCCompany {
-            override def getId: Long = -1
+            override def getId: Long = 1
             override def getName: String = "name"
             override def getWebsite: Optional[String] = Optional.empty()
             override def getCountry: Optional[String] = Optional.empty()
@@ -71,7 +71,9 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
             mkTestDesc(s"comp_region() == ${get(comp.getRegion)}"),
             mkTestDesc(s"comp_city() == ${get(comp.getCity)}"),
             mkTestDesc(s"comp_addr() == ${get(comp.getAddress)}"),
-            mkTestDesc(s"comp_postcode() == ${get(comp.getPostalCode)}")
+            mkTestDesc(s"comp_postcode() == ${get(comp.getPostalCode)}"),
+            mkTestDesc(s"comp_id() == ${comp.getId}"),
+            mkTestDesc(s"comp_id() != ${comp.getId + 1}")
         )
     }
 }

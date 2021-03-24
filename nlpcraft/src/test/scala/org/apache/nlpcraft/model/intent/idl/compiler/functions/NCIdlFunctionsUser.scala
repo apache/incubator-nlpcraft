@@ -38,20 +38,20 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
                 override def getEmail: Optional[String] = Optional.of("email")
                 override def getAvatarUrl: Optional[String] = Optional.of("avatar")
                 override def isAdmin: Boolean = true
-                override def getSignupTimestamp: Long = -1
+                override def getSignupTimestamp: Long = -100
                 override def getMetadata: util.Map[String, AnyRef] =
                     Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
             }
         )
         test(
             new NCUser {
-                override def getId: Long = -1
+                override def getId: Long = 1
                 override def getFirstName: Optional[String] = Optional.empty()
                 override def getLastName: Optional[String] = Optional.empty()
                 override def getEmail: Optional[String] = Optional.empty()
                 override def getAvatarUrl: Optional[String] = Optional.empty()
                 override def isAdmin: Boolean = false
-                override def getSignupTimestamp: Long = -1
+                override def getSignupTimestamp: Long = 100
                 override def getMetadata: util.Map[String, AnyRef] =
                     Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
             }
@@ -68,7 +68,11 @@ class NCIdlFunctionsUser extends NCIdlFunctions {
             mkTestDesc(s"user_fname() == ${get(usr.getFirstName)}"),
             mkTestDesc(s"user_lname() == ${get(usr.getLastName)}"),
             mkTestDesc(s"user_email() == ${get(usr.getEmail)}"),
-            mkTestDesc(s"user_admin() == ${usr.isAdmin}")
+            mkTestDesc(s"user_admin() == ${usr.isAdmin}"),
+            mkTestDesc(s"user_signup_tstamp() == ${usr.getSignupTimestamp}"),
+            mkTestDesc(s"user_signup_tstamp() != user_signup_tstamp() + 1"),
+            mkTestDesc(s"user_id() == ${usr.getId}"),
+            mkTestDesc(s"user_id() != ${usr.getId + 1}")
         )
     }
 }
