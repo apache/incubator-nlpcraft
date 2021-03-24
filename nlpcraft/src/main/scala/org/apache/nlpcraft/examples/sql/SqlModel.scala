@@ -278,7 +278,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
       */
     @NCIntent(
         "intent=commonReport " +
-        "term(tbls)~{has(groups(), 'table')}[0,7] " +
+        "term(tbls)~{has(tok_groups(), 'table')}[0,7] " +
         "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), tok_id())}[0,7] " +
         "term(condNums)~{tok_id() == 'condition:num'}[0,7] " +
         "term(condVals)~{tok_id() == 'condition:value'}[0,7] " +

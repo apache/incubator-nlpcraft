@@ -1445,12 +1445,12 @@ elements:
   groups:
     - "element"
   synonyms:
-    - "^^[colName]{has(groups(), 'column') && value() == null}^^"
+    - "^^[colName]{has(tok_groups(), 'column') && tok_value() == null}^^"
 - id: "col:val"
   groups:
     - "element"
   synonyms:
-    - "^^[colVal]{has(groups(), 'column') && value() != null}^^"
+    - "^^[colVal]{has(tok_groups(), 'column') && tok_value() != null}^^"
 - id: "col:num"
   groups:
     - "element"

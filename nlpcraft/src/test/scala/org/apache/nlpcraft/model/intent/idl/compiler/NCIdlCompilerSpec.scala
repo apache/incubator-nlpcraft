@@ -79,7 +79,7 @@ class NCIdlCompilerSpec {
               |intent=i1
               |     flow="a[^0-9]b"
               |     meta={'a': true, 'b': {'Москва': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(id()) != -25}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
               |""".stripMargin
         )
         checkCompileOk(
@@ -140,7 +140,7 @@ class NCIdlCompilerSpec {
               | */
               |     flow="a[^0-9]b"
               |     meta={{'a': true, 'b': {'arr': [1, 2, 3]}}
-              |     term(t1)={2 == 2 && size(id()) != -25}
+              |     term(t1)={2 == 2 && size(tok_id()) != -25}
               |""".stripMargin
         )
         checkCompileError(
@@ -148,7 +148,7 @@ class NCIdlCompilerSpec {
               |intent=i1
               |     meta={'a': true, 'b': {'arr': [1, 2, 3]}}
               |     term(t1)={
-              |         @x == 2 && size(id()) != -25
+              |         @x == 2 && size(tok_id()) != -25
               |     }
               |""".stripMargin
         )
