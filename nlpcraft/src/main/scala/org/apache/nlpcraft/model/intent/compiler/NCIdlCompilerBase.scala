@@ -102,6 +102,10 @@ trait NCIdlCompilerBase {
      * @return
      */
     def asReal(v: Object): JDouble = v match {
+        case l: JLong ⇒ l.doubleValue()
+        case i: JInt ⇒ i.doubleValue()
+        case b: JByte ⇒ b.doubleValue()
+        case s: JShort ⇒ s.doubleValue()
         case d: JDouble ⇒ d
         case f: JFloat ⇒ f.doubleValue()
         case _ ⇒ throw new AssertionError(s"Unexpected real value: $v")
@@ -114,7 +118,7 @@ trait NCIdlCompilerBase {
             asInt(v)
         else if (isReal(v))
             asReal(v)
-        else if (isJList(v) || isJMap(v))
+        else if (isList(v) || isMap(v))
             v
         else if (isJColl(v)) // Convert any other Java collections to ArrayList.
             new java.util.ArrayList(asJColl(v)).asInstanceOf[Object]
@@ -124,15 +128,15 @@ trait NCIdlCompilerBase {
 
     //noinspection ComparingUnrelatedTypes
     def isBool(v: Object): Boolean = v.isInstanceOf[Boolean]
-    def isJList(v: Object): Boolean = v.isInstanceOf[JList[_]]
+    def isList(v: Object): Boolean = v.isInstanceOf[JList[_]]
     def isJColl(v: Object): Boolean = v.isInstanceOf[JColl[_]]
-    def isJMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
+    def isMap(v: Object): Boolean = v.isInstanceOf[JMap[_, _]]
     def isStr(v: Object): Boolean = v.isInstanceOf[String]
     def isToken(v: Object): Boolean = v.isInstanceOf[NCToken]
 
-    def asJList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
+    def asList(v: Object): JList[_] = v.asInstanceOf[JList[_]]
     def asJColl(v: Object): JColl[_] = v.asInstanceOf[JColl[_]]
-    def asJMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
+    def asMap(v: Object): JMap[_, _] = v.asInstanceOf[JMap[_, _]]
     def asStr(v: Object): String = v.asInstanceOf[String]
     def asToken(v: Object): NCToken = v.asInstanceOf[NCToken]
     def asBool(v: Object): Boolean = v.asInstanceOf[Boolean]
@@ -144,10 +148,10 @@ trait NCIdlCompilerBase {
         newRuntimeError(s"Unexpected '$op' IDL operation for values: $v1, $v2")
     def rtUnknownFunError(fun: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Unknown IDL function: $fun()")
-    def rtMinParamNumError(min: Int, fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Invalid number of parameters for function ($min is required): $fun()")
-    def rtParamNumError(fun: String)(implicit ctx: PRC): NCE =
-        newRuntimeError(s"Invalid number of parameters for IDL function: $fun()")
+    def rtMissingParamError(argNum: Int, fun: String)(implicit ctx: PRC): NCE =
+        newRuntimeError(s"Missing parameters for IDL function ($argNum is required): $fun()")
+    def rtTooManyParamsError(argNum: Int, fun: String)(implicit ctx: PRC): NCE =
+        newRuntimeError(s"Too many parameters for IDL function (only $argNum is required): $fun()")
     def rtParamTypeError(fun: String, invalid: Object, expectType: String)(implicit ctx: PRC): NCE =
         newRuntimeError(s"Expected '$expectType' type of parameter for IDL function '$fun()', found: $invalid")
     def rtListTypeError(fun: String, cause: Exception)(implicit ctx: PRC): NCE =
@@ -364,8 +368,8 @@ trait NCIdlCompilerBase {
             else if (isReal(v1) && isReal(v2)) asReal(v1) == asReal(v2)
             else if (isBool(v1) && isBool(v2)) asBool(v1) == asBool(v2)
             else if (isStr(v1) && isStr(v2)) asStr(v1) == asStr(v2)
-            else if (isJList(v1) && isJList(v2)) CollectionUtils.isEqualCollection(asJList(v1), asJList(v2))
-            else if ((isInt(v1) && isReal(v2)) || (isReal(v1) && isInt(v2))) false
+            else if (isList(v1) && isList(v2)) CollectionUtils.isEqualCollection(asList(v1), asList(v2))
+            else if ((isInt(v1) && isReal(v2)) || (isReal(v1) && isInt(v2))) asReal(v1) == asReal(v2)
             else
                 throw rtBinaryOpError(op, v1, v2)
         }
@@ -497,19 +501,19 @@ trait NCIdlCompilerBase {
      */
     def parseCallExpr(id: TN)(implicit ctx: PRC): SI = (tok, stack: S, termCtx) ⇒ {
         implicit val evidence: S = stack
-    
+
         val fun = id.getText
-    
-        def ensureStack(min: Int): Unit = if (stack.size < min) throw rtMinParamNumError(min, fun)
-        def popMarker(): Unit = require(pop1() == stack.PLIST_MARKER)
-        def arg[X](min: Int, f: () ⇒ X): X = {
-            ensureStack(min + 1) // +1 for the frame marker.
-            
+
+        def ensureStack(min: Int): Unit = if (stack.size < min) throw rtMissingParamError(min, fun)
+        def popMarker(argNum: Int): Unit = if (pop1() != stack.PLIST_MARKER) throw rtTooManyParamsError(argNum, fun)
+        def arg[X](argNum: Int, f: () ⇒ X): X = {
+            ensureStack(argNum + 1) // +1 for the frame marker.
+
             val x = f()
-        
+
             // Make sure to pop up the parameter list stack frame marker.
-            popMarker()
-            
+            popMarker(argNum)
+
             x
         }
         def arg1(): ST = arg(1, pop1)
@@ -517,8 +521,8 @@ trait NCIdlCompilerBase {
         def arg3(): (ST, ST, ST) = arg(3, pop3)
         def arg1Tok(): ST =
             if (stack.nonEmpty && stack.top == stack.PLIST_MARKER) {
-                popMarker()
-            
+                popMarker(1)
+
                 () ⇒ Z(tok, 1)
             }
             else
@@ -530,31 +534,35 @@ trait NCIdlCompilerBase {
             as(v)
         }
         def toStr(v: Object): String = toX("string", v, isStr, asStr)
-        def toJDouble(v: Object): JDouble = toX("double", v, isReal, asReal)
-        // TODO: check  - is it int only?
         def toInt(v: Object): JInt = toX("int", v, isInt, asInt).toInt
-        def toJList(v: Object): JList[_] = toX("list", v, isJList, asJList)
-        def toJMap(v: Object): JMap[_, _] = toX("map", v, isJMap, asJMap)
+        def toList(v: Object): JList[_] = toX("list", v, isList, asList)
+        def toMap(v: Object): JMap[_, _] = toX("map", v, isMap, asMap)
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
         def toBool(v: Object): Boolean = toX("boolean", v, isBool, asBool)
-        def toJDoubleSafe(v: Object): JDouble = {
-            if (isReal(v))
-                asReal(v)
-            else if (isInt(v))
-                asInt(v).toDouble
-            else
-                throw rtParamTypeError(fun, v, "double")
+        def toDouble(v: Object): JDouble = toX("double or int", v, x ⇒ isInt(x) || isReal(x), asReal)
+
+        def extract2(x1: ST, x2: ST): (Object, Object, Int) = {
+            val Z(v1, n1) = x1()
+            val Z(v2, n2) = x2()
+
+            (v1, v2, n1 + n2)
         }
-    
+        def extract3(x1: ST, x2: ST, x3: ST): (Object, Object, Object, Int) = {
+            val Z(v1, n1) = x1()
+            val Z(v2, n2) = x2()
+            val Z(v3, n3) = x3()
+
+            (v1, v2, v3, n1 + n2 + n3)
+        }
+
         def doSplit(): Unit = {
             val (x1, x2) = arg2()
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val (v1, v2, n) = extract2(x1, x2)
 
-                   Z(util.Arrays.asList(toStr(v1).split(toStr(v2))), n1 + n2)
+                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2))), n)
                 }
             )
         }
@@ -564,10 +572,9 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val (v1, v2, n) = extract2(x1, x2)
 
-                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip)), n1 + n2)
+                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip)), n)
                 }
             )
         }
@@ -577,10 +584,9 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val (v1, v2, n) = extract2(x1, x2)
 
-                    Z(toStr(v1).startsWith(toStr(v2)), n1 + n2)
+                    Z(toStr(v1).startsWith(toStr(v2)), n)
                 }
             )
         }
@@ -590,10 +596,9 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val (v1, v2, n) = extract2(x1, x2)
 
-                    Z(toStr(v1).endsWith(toStr(v2)), n1 + n2)
+                    Z(toStr(v1).endsWith(toStr(v2)), n)
                 }
             )
         }
@@ -603,10 +608,9 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val (v1, v2, n) = extract2(x1, x2)
 
-                    Z(toStr(v1).contains(toStr(v2)), n1 + n2)
+                    Z(toStr(v1).contains(toStr(v2)),n)
                 }
             )
         }
@@ -616,10 +620,9 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
+                    val (v1, v2, n) = extract2(x1, x2)
 
-                    Z(toStr(v1).indexOf(toStr(v2)), n1 + n2)
+                    Z(toStr(v1).indexOf(toStr(v2)), n)
                 }
             )
         }
@@ -629,11 +632,9 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
-                    val Z(v3, n3) = x3()
+                    val (v1, v2, v3, n) = extract3(x1, x2, x3)
 
-                    Z(toStr(v1).substring(toInt(v2), toInt(v3)), n1 + n2 + n3)
+                    Z(toStr(v1).substring(toInt(v2), toInt(v3)), n)
                 }
             )
         }
@@ -643,11 +644,9 @@ trait NCIdlCompilerBase {
 
             stack.push(
                 () ⇒ {
-                    val Z(v1, n1) = x1()
-                    val Z(v2, n2) = x2()
-                    val Z(v3, n3) = x3()
+                    val (v1, v2, v3, n) = extract3(x1, x2, x3)
 
-                    Z(toStr(v1).replaceAll(toStr(v2), toStr(v3)), n1 + n2 + n3)
+                    Z(toStr(v1).replaceAll(toStr(v2), toStr(v3)), n)
                 }
             )
         }
@@ -658,7 +657,10 @@ trait NCIdlCompilerBase {
             while (stack.nonEmpty && stack.top != stack.PLIST_MARKER)
                 dump += stack.pop()
 
-            popMarker()
+            require(stack.nonEmpty)
+
+            // Pop frame marker.
+            pop1()
 
             stack.push(() ⇒ {
                 val jl = new util.ArrayList[Object]()
@@ -675,29 +677,29 @@ trait NCIdlCompilerBase {
                 Z(jl, z)
             })
         }
-        
+
         def doReverse(): Unit = {
             val x = arg1()
-            
+
             stack.push(() ⇒ {
                 val Z(v, n) = x()
-        
-                val jl = toJList(v)
-        
+
+                val jl = toList(v)
+
                 Collections.reverse(jl)
-        
+
                 Z(jl, n)
             })
         }
-        
+
         def doMin(): Unit = {
             val x = arg1()
-    
+
             stack.push(() ⇒ {
                 val Z(v, n) = x()
-                
-                val lst = toJList(v).asInstanceOf[util.List[Object]]
-                
+
+                val lst = toList(v).asInstanceOf[util.List[Object]]
+
                 try
                     if (lst.isEmpty)
                         throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
@@ -715,7 +717,7 @@ trait NCIdlCompilerBase {
             stack.push(() ⇒ {
                 val Z(v, n) = x()
 
-                val lst = toJList(v).asInstanceOf[util.List[Object]]
+                val lst = toList(v).asInstanceOf[util.List[Object]]
 
                 try
                     if (lst.isEmpty)
@@ -737,7 +739,7 @@ trait NCIdlCompilerBase {
             stack.push(() ⇒ {
                 val Z(v, n) = x()
 
-                val lst = toJList(v).asInstanceOf[util.List[Object]]
+                val lst = toList(v).asInstanceOf[util.List[Object]]
 
                 try
                     if (lst.isEmpty)
@@ -762,21 +764,21 @@ trait NCIdlCompilerBase {
             stack.push(() ⇒ {
                 val Z(v, n) = x()
 
-                if (isJList(v))
-                    Z(toJList(v).asScala.map(_.toString).asJava, n)
+                if (isList(v))
+                    Z(toList(v).asScala.map(_.toString).asJava, n)
                 else
                     Z(v.toString, n)
             })
         }
-    
+
         def doMax(): Unit = {
             val x = arg1()
-        
+
             stack.push(() ⇒ {
                 val Z(v, n) = x()
-            
-                val lst = toJList(v).asInstanceOf[util.List[Object]]
-            
+
+                val lst = toList(v).asInstanceOf[util.List[Object]]
+
                 try
                     if (lst.isEmpty)
                         throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
@@ -790,14 +792,18 @@ trait NCIdlCompilerBase {
 
         def doSort(): Unit = {
             val x = arg1()
-        
+
             stack.push(() ⇒ {
                 val Z(v, n) = x()
-            
-                val jl = toJList(v)
-                
-                jl.sort(null) // Use natural order.
-            
+
+                val jl = toList(v)
+
+                try
+                    jl.sort(null) // Use natural order.
+                catch {
+                    case e: Exception ⇒ throw rtListTypeError(fun, e)
+                }
+
                 Z(jl, n)
             })
         }
@@ -808,7 +814,7 @@ trait NCIdlCompilerBase {
             stack.push(() ⇒ {
                 val Z(v, n) = x()
 
-                val jl = toJList(v).asScala.distinct.asJava
+                val jl = toList(v).asScala.distinct.asJava
 
                 Z(jl, n)
             })
@@ -818,10 +824,9 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(lst1, n1) = x1()
-                val Z(lst2, n2) = x2()
+                val (lst1, lst2, n) = extract2(x1, x2)
 
-                Z((toJList(lst1).asScala ++ toJList(lst2).asScala).asJava, n1 + n2)
+                Z((toList(lst1).asScala ++ toList(lst2).asScala).asJava, n)
             })
         }
 
@@ -829,10 +834,9 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(lst, n1) = x1()
-                val Z(obj, n2) = x2()
+                val (lst, obj, n) = extract2(x1, x2)
 
-                Z(toJList(lst).contains(box(obj)), n1 + n2)
+                Z(toList(lst).contains(box(obj)), n)
             })
         }
 
@@ -840,10 +844,9 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(lst1, n1) = x1()
-                val Z(lst2, n2) = x2()
+                val (lst1, lst2, n) = extract2(x1, x2)
 
-                Z(toJList(lst1).containsAll(toJList(lst2)), n1 + n2)
+                Z(toList(lst1).containsAll(toList(lst2)), n)
             })
         }
 
@@ -851,10 +854,9 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(lst1, n1) = x1()
-                val Z(lst2, n2) = x2()
+                val (lst1, lst2, n) = extract2(x1, x2)
 
-                Z(CollectionUtils.containsAny(toJList(lst1), toJList(lst2)), n1 + n2)
+                Z(CollectionUtils.containsAny(toList(lst1), toList(lst2)), n)
             })
         }
 
@@ -862,18 +864,16 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(col, n1) = x1()
-                val Z(key, n2) = x2()
-                val n = n1 + n2
+                val (col, key, n) = extract2(x1, x2)
 
-                if (isJList(col)) {
+                if (isList(col)) {
                     if (isInt(key))
-                        Z(asJList(col).get(asInt(key).intValue()).asInstanceOf[Object], n)
+                        Z(asList(col).get(asInt(key).intValue()).asInstanceOf[Object], n)
                     else
                         throw rtParamTypeError(fun, key, "numeric")
                 }
-                else if (isJMap(col))
-                    Z(asJMap(col).get(box(key)).asInstanceOf[Object], n)
+                else if (isMap(col))
+                    Z(asMap(col).get(box(key)).asInstanceOf[Object], n)
                 else
                     throw rtParamTypeError(fun, col, "list or map")
             })
@@ -951,10 +951,9 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(tok, n1) = x1()
-                val Z(aliasId, n2) = x2() // Token alias or token ID.
+                val (tok, aliasId, n) = extract2(x1, x2)
 
-                Z(box(findPart(toToken(tok), toStr(aliasId))), n1 + n2)
+                Z(box(findPart(toToken(tok), toStr(aliasId))), n)
             })
         }
         
@@ -962,10 +961,9 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
     
             stack.push(() ⇒ {
-                val Z(aliasId, n1) = x1() // Token alias or token ID.
-                val Z(key, n2) = x2()
+                val (aliasId, key, n) = extract2(x1, x2)
 
-                Z(box(findPart(tok, toStr(aliasId)).meta[Object](toStr(key))), n1 + n2)
+                Z(box(findPart(tok, toStr(aliasId)).meta[Object](toStr(key))), n)
             })
         }
 
@@ -974,18 +972,14 @@ trait NCIdlCompilerBase {
             val (x1, x2) = arg2()
 
             stack.push(() ⇒ {
-                val Z(t, n1) = x1()
-                val Z(a, n2) = x2()
+                val (t, a, n) = extract2(x1, x2)
 
-                val tok = toToken(t)
-                val aliasId = toStr(a)
-
-                Z(tok.findPartTokens(aliasId), n1 + n2)
+                Z(toToken(t).findPartTokens(toStr(a)), n)
             })
         }
 
         def z[Y](args: () ⇒ Y, body: Y ⇒ Z): Unit = { val x = args(); stack.push(() ⇒ body(x)) }
-        def z0(body: () ⇒ Z): Unit = { popMarker(); stack.push(() ⇒ body()) }
+        def z0(body: () ⇒ Z): Unit = { popMarker(0); stack.push(() ⇒ body()) }
 
         fun match {
             // Metadata access.
@@ -1084,38 +1078,38 @@ trait NCIdlCompilerBase {
             case "ceil" ⇒ arg1() match { case item ⇒ stack.push(() ⇒ {
                 val Z(v, f) = item()
 
-                Z(Math.ceil(toJDouble(v)), f)
+                Z(Math.ceil(toDouble(v)), f)
             }) }
-            case "floor" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toJDoubleSafe(v)), f) })
-            case "rint" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toJDoubleSafe(v)), f) })
-            case "round" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toJDoubleSafe(v)), f) })
-            case "signum" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.signum(toJDoubleSafe(v)), f) })
-            case "sqrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sqrt(toJDoubleSafe(v)), f) })
-            case "cbrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cbrt(toJDoubleSafe(v)), f) })
-            case "acos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.acos(toJDoubleSafe(v)), f) })
-            case "asin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.asin(toJDoubleSafe(v)), f) })
-            case "atan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.atan(toJDoubleSafe(v)), f) })
-            case "cos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cos(toJDoubleSafe(v)), f) })
-            case "sin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sin(toJDoubleSafe(v)), f) })
-            case "tan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tan(toJDoubleSafe(v)), f) })
-            case "cosh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toJDoubleSafe(v)), f) })
-            case "sinh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toJDoubleSafe(v)), f) })
-            case "tanh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toJDoubleSafe(v)), f) })
-            case "atn2" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.atan2(toJDoubleSafe(v1), toJDoubleSafe(v2)), n1 + n2) })
-            case "degrees" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toJDoubleSafe(v)), f) })
-            case "radians" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toJDoubleSafe(v)), f) })
-            case "exp" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toJDoubleSafe(v)), f) })
-            case "expm1" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.expm1(toJDoubleSafe(v)), f) })
-            case "hypot" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, n1) = x._1(); val Z(v2, n2) = x._2(); Z(Math.hypot(toJDoubleSafe(v1), toJDoubleSafe(v2)), n1 + n2) })
-            case "log" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log(toJDoubleSafe(v)), f) })
-            case "log10" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log10(toJDoubleSafe(v)), f) })
-            case "log1p" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log1p(toJDoubleSafe(v)), f) })
-            case "pow" ⇒ z[(ST, ST)](arg2, { x ⇒ val Z(v1, f1) = x._1(); val Z(v2, f2) = x._2(); Z(Math.pow(toJDoubleSafe(v1), toJDoubleSafe(v2)), f1 + f2 + 1) })
+            case "floor" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toDouble(v)), f) })
+            case "rint" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toDouble(v)), f) })
+            case "round" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toDouble(v)), f) })
+            case "signum" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.signum(toDouble(v)), f) })
+            case "sqrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sqrt(toDouble(v)), f) })
+            case "cbrt" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cbrt(toDouble(v)), f) })
+            case "acos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.acos(toDouble(v)), f) })
+            case "asin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.asin(toDouble(v)), f) })
+            case "atan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.atan(toDouble(v)), f) })
+            case "cos" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cos(toDouble(v)), f) })
+            case "sin" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sin(toDouble(v)), f) })
+            case "tan" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tan(toDouble(v)), f) })
+            case "cosh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toDouble(v)), f) })
+            case "sinh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toDouble(v)), f) })
+            case "tanh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toDouble(v)), f) })
+            case "atn2" ⇒ z[(ST, ST)](arg2, { x ⇒ val (v1, v2, n) = extract2(x._1, x._2); Z(Math.atan2(toDouble(v1), toDouble(v2)), n) })
+            case "degrees" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toDouble(v)), f) })
+            case "radians" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toDouble(v)), f) })
+            case "exp" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toDouble(v)), f) })
+            case "expm1" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.expm1(toDouble(v)), f) })
+            case "hypot" ⇒ z[(ST, ST)](arg2, { x ⇒ val (v1, v2, n) = extract2(x._1, x._2); Z(Math.hypot(toDouble(v1), toDouble(v2)), n) })
+            case "log" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log(toDouble(v)), f) })
+            case "log10" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log10(toDouble(v)), f) })
+            case "log1p" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.log1p(toDouble(v)), f) })
+            case "pow" ⇒ z[(ST, ST)](arg2, { x ⇒ val (v1, v2, n) = extract2(x._1, x._2); Z(Math.pow(toDouble(v1), toDouble(v2)), n) })
             case "square" ⇒ doSquare()
             case "pi" ⇒ z0(() ⇒ Z(Math.PI, 0))
             case "euler" ⇒ z0(() ⇒ Z(Math.E, 0))
             case "rand" ⇒ z0(() ⇒ Z(Math.random, 0))
-            case "to_double" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toJDoubleSafe(v).toDouble, f) })
+            case "to_double" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toDouble(v).toDouble, f) })
 
             // Collection functions.
             case "list" ⇒ doList()
@@ -1123,15 +1117,15 @@ trait NCIdlCompilerBase {
             case "has" ⇒ doHas() // Only works for lists.
             case "has_any" ⇒ doHasAny()
             case "has_all" ⇒ doHasAll()
-            case "first" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], n)})
-            case "last" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toJList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], n)})
-            case "keys" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toJMap(v).keySet()), n) })
-            case "values" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toJMap(v).values()), n) })
-            case "size" | "count" | "length" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).size(), n)})
+            case "first" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toList(v); Z(if (lst.isEmpty) null else lst.get(0).asInstanceOf[Object], n)})
+            case "last" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], n)})
+            case "keys" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toMap(v).keySet()), n) })
+            case "values" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toMap(v).values()), n) })
+            case "size" | "count" | "length" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toList(v).size(), n)})
             case "reverse" ⇒ doReverse()
             case "sort" ⇒ doSort()
-            case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).isEmpty, n) })
-            case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(!toJList(v).isEmpty, n) })
+            case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toList(v).isEmpty, n) })
+            case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(!toList(v).isEmpty, n) })
             case "distinct" ⇒ doDistinct()
             case "concat" ⇒ doConcat()
 

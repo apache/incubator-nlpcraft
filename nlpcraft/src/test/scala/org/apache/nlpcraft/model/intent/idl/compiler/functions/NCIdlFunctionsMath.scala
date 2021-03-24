@@ -18,7 +18,6 @@
 
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
-import org.apache.nlpcraft.common.NCE
 import org.junit.jupiter.api.Test
 
 /**
@@ -46,7 +45,7 @@ class NCIdlFunctionsMath extends NCIdlFunctions {
             "rint(1.8) == 2.0",
             "round(1.8) == 2",
             s"to_double(25) == 25.0",
-            s"to_double(25) != 25", // double != int without rounding.
+            s"to_double(25) == 25", // double != int without rounding.
             s"round(to_double(25)) == 25",
             "signum(-1.8) == -1.0",
             "sqrt(4) - 2 < 0.001",
