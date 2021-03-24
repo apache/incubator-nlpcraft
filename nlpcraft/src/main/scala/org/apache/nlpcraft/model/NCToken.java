@@ -236,6 +236,7 @@ public interface NCToken extends NCMetadata {
      * <pre class="brush: java">
      *     return meta("nlpcraft:nlp:stopword");
      * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      * 
      * @return Whether or not this token is a stopword.
      */
@@ -251,6 +252,7 @@ public interface NCToken extends NCMetadata {
      * <pre class="brush: java">
      *     return meta("nlpcraft:nlp:freeword");
      * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
      * @return Whether or not this token is a freeword.
      */
@@ -265,6 +267,7 @@ public interface NCToken extends NCMetadata {
      * <pre class="brush: java">
      *     return meta("nlpcraft:nlp:origtext");
      * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
      * @return Original user input text for this token.
      */
@@ -279,12 +282,168 @@ public interface NCToken extends NCMetadata {
      * <pre class="brush: java">
      *     return meta("nlpcraft:nlp:index");
      * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      *
      * @return Index of this token in the sentence.
      */
     default int getIndex() {
         return meta("nlpcraft:nlp:index");
     }
+
+    /**
+     * A shortcut method that gets normalized user input text for this token.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:normtext");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Normalized user input text for this token.
+     */
+    default String getNormalizedText() { return meta("nlpcraft:nlp:normtext"); }
+
+    /**
+     * A shortcut method on whether or not this token was matched on direct (not permutated) synonym.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:direct");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether or not this token was matched on direct (not permutated) synonym.
+     */
+    default boolean isDirect() { return meta("nlpcraft:nlp:direct"); }
+
+    /**
+     * A shortcut method on whether this token represents an English word. Note that this only
+     * checks that token's text consists of characters of English alphabet, i.e. the text
+     * doesn't have to be necessary a known valid English word.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:english");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether this token represents an English word.
+     */
+    default boolean isEnglish() { return meta("nlpcraft:nlp:english"); }
+
+    /**
+     * A shortcut method on whether or not this token is a swear word. NLPCraft has built-in list of
+     * common English swear words.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:swear");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether or not this token is a swear word.
+     */
+    default boolean isSwear() { return meta("nlpcraft:nlp:swear"); }
+
+    /**
+     * A shortcut method on whether or not this token is surrounded by single or double quotes.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:quoted");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether or not this token is surrounded by single or double quotes.
+     */
+    default boolean isQuoted() { return meta("nlpcraft:nlp:quoted"); }
+
+    /**
+     * A shortcut method on whether or not this token is surrounded by any of '[', ']', '{', '}', '(', ')' brackets.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:bracketed");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether or not this token is surrounded by any of '[', ']', '{', '}', '(', ')' brackets.
+     */
+    default boolean isBracketed() { return meta("nlpcraft:nlp:bracketed"); }
+
+    /**
+     * A shortcut method on whether or not this token is found in Princeton WordNet database.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:dict");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether or not this token is found in Princeton WordNet database.
+     */
+    default boolean isWordnet() { return meta("nlpcraft:nlp:dict"); }
+
+    /**
+     * A shortcut method to get lemma of this token, i.e. a canonical form of this word. Note that
+     * stemming and lemmatization allow to reduce inflectional forms and sometimes derivationally related
+     * forms of a word to a common base form. Lemmatization refers to the use of a vocabulary and
+     * morphological analysis of words, normally aiming to remove inflectional endings only and to
+     * return the base or dictionary form of a word, which is known as the lemma.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:lemma");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Lemma of this token, i.e. a canonical form of this word.
+     */
+    default String getLemma() { return meta("nlpcraft:nlp:lemma"); }
+
+    /**
+     * A shortcut method to get stem of this token. Note that stemming and lemmatization allow to reduce
+     * inflectional forms and sometimes derivationally related forms of a word to a common base form.
+     * Unlike lemma, stemming is a basic heuristic process that chops off the ends of words in the
+     * hope of achieving this goal correctly most of the time, and often includes the removal of derivational affixes.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:stem");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Stem of this token.
+     */
+    default String getStem() { return meta("nlpcraft:nlp:stem"); }
+
+    /**
+     * A shortcut method to get numeric value of how sparse the token is. Sparsity zero means that all
+     * individual words in the token follow each other.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:sparsity");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Numeric value of how sparse the token is.
+     */
+    default int getSparsity() { return meta("nlpcraft:nlp:sparsity"); }
+
+    /**
+     * A shortcut method to get Penn Treebank POS tag for this token. Note that additionally to standard Penn
+     * Treebank POS tags NLPCraft introduced '---' synthetic tag to indicate a POS tag for multiword tokens.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return meta("nlpcraft:nlp:pos");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Penn Treebank POS tag for this token.
+     */
+    default String getPos() { return meta("nlpcraft:nlp:pos"); }
 
     /**
      * A shortcut method that gets internal globally unique system ID of the token.
