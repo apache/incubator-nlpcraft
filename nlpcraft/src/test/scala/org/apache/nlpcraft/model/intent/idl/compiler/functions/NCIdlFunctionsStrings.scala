@@ -27,7 +27,6 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
     def test(): Unit =
         test(
             "trim(' a b  ') == 'a b'",
-
             "strip(' a b  ') == 'a b'",
             "uppercase('aB') == 'AB'",
             "lowercase('aB') == 'ab'",
@@ -71,7 +70,6 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
 
     @Test
     def testError(): Unit = {
-
         expectNceError("split('1 A') == true")
         expectNceError("split_trim('1 A') == true")
     }
