@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.intent.compiler
 import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.model.NCToken
-import org.antlr.v4.runtime.{ParserRuleContext ⇒PRC}
+import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
 import org.apache.commons.collections.CollectionUtils
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlStack, NCIdlStackType, NCIdlStackItem ⇒ Z}
@@ -29,7 +29,7 @@ import java.lang.{Byte ⇒ JByte, Double ⇒ JDouble, Float ⇒ JFloat, Integer 
 import java.time.temporal.IsoFields
 import java.time.{LocalDate, LocalTime}
 import java.util
-import java.util.{Calendar, Collections, Collection ⇒ JColl, List ⇒ JList, Map ⇒ JMap}
+import java.util.{Calendar, Collections, Comparator, Collection ⇒ JColl, List ⇒ JList, Map ⇒ JMap}
 import scala.collection.JavaConverters._
 
 trait NCIdlCompilerBase {
@@ -201,6 +201,34 @@ trait NCIdlCompilerBase {
 
     /**
      *
+     * @param x1
+     * @param x2
+     * @return
+     */
+    def extract2(x1: ST, x2: ST): (Object, Object, Int) = {
+        val Z(v1, n1) = x1()
+        val Z(v2, n2) = x2()
+
+        (v1, v2, n1 + n2)
+    }
+
+    /**
+     *
+     * @param x1
+     * @param x2
+     * @param x3
+     * @return
+     */
+    def extract3(x1: ST, x2: ST, x3: ST): (Object, Object, Object, Int) = {
+        val Z(v1, n1) = x1()
+        val Z(v2, n2) = x2()
+        val Z(v3, n3) = x3()
+
+        (v1, v2, v3, n1 + n2 + n3)
+    }
+
+    /**
+     *
      * @param lt
      * @param gt
      * @param lteq
@@ -211,8 +239,7 @@ trait NCIdlCompilerBase {
 
         if (lt != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val (v1, v2, n) = extract2(x1, x2)
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) < asInt(v2)
@@ -222,12 +249,11 @@ trait NCIdlCompilerBase {
                     else
                         throw rtBinaryOpError("<", v1, v2)
 
-                Z(f, n1 + n2)
+                Z(f, n)
             })
         else if (gt != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val (v1, v2, n) = extract2(x1, x2)
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) > asInt(v2)
@@ -237,12 +263,11 @@ trait NCIdlCompilerBase {
                     else
                         throw rtBinaryOpError(">", v1, v2)
 
-                Z(f, n1 + n2)
+                Z(f, n)
             })
         else if (lteq != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val (v1, v2, n) = extract2(x1, x2)
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) <= asInt(v2)
@@ -252,14 +277,13 @@ trait NCIdlCompilerBase {
                     else
                         throw rtBinaryOpError("<=", v1, v2)
 
-                Z(f, n1 + n2)
+                Z(f, n)
             })
         else {
             require(gteq != null)
 
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val (v1, v2, n) = extract2(x1, x2)
 
                 val f =
                     if (isInt(v1) && isInt(v2)) asInt(v1) >= asInt(v2)
@@ -269,7 +293,7 @@ trait NCIdlCompilerBase {
                     else
                         throw rtBinaryOpError(">=", v1, v2)
 
-                Z(f, n1 + n2)
+                Z(f, n)
             })
         }
     }
@@ -285,22 +309,20 @@ trait NCIdlCompilerBase {
 
         if (mult != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val (v1, v2, n) = extract2(x1, x2)
 
-                if (isInt(v1) && isInt(v2)) Z(asInt(v1) * asInt(v2), n1 + n2)
-                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) * asReal(v2), n1 + n2)
-                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) * asInt(v2), n1 + n2)
-                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) * asReal(v2), n1 + n2)
+                if (isInt(v1) && isInt(v2)) Z(asInt(v1) * asInt(v2), n)
+                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) * asReal(v2), n)
+                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) * asInt(v2), n)
+                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) * asReal(v2), n)
                 else
                     throw rtBinaryOpError("*", v1, v2)
             })
         else if (mod != null)
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val (v1, v2, n) = extract2(x1, x2)
 
-                if (isInt(v1) && isInt(v2)) Z(asInt(v1) % asInt(v2), n1 + n2)
+                if (isInt(v1) && isInt(v2)) Z(asInt(v1) % asInt(v2), n)
                 else
                     throw rtBinaryOpError("%", v1, v2)
             })
@@ -308,13 +330,12 @@ trait NCIdlCompilerBase {
             assert(div != null)
 
             stack.push(() ⇒ {
-                val Z(v1, n1) = x1()
-                val Z(v2, n2) = x2()
+                val (v1, v2, n) = extract2(x1, x2)
 
-                if (isInt(v1) && isInt(v2)) Z(asInt(v1) / asInt(v2), n1 + n2)
-                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) / asReal(v2), n1 + n2)
-                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) / asInt(v2), n1 + n2)
-                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) / asReal(v2), n1 + n2)
+                if (isInt(v1) && isInt(v2)) Z(asInt(v1) / asInt(v2), n)
+                else if (isInt(v1) && isReal(v2)) Z(asInt(v1) / asReal(v2), n)
+                else if (isReal(v1) && isInt(v2)) Z(asReal(v1) / asInt(v2), n)
+                else if (isReal(v1) && isReal(v2)) Z(asReal(v1) / asReal(v2), n)
                 else
                     throw rtBinaryOpError("/", v1, v2)
             })
@@ -375,8 +396,7 @@ trait NCIdlCompilerBase {
         }
 
         stack.push(() ⇒ {
-            val Z(v1, n1) = x1()
-            val Z(v2, n2) = x2()
+            val (v1, v2, n) = extract2(x1, x2)
 
             val f =
                 if (eq != null)
@@ -387,7 +407,7 @@ trait NCIdlCompilerBase {
                     !doEq("!='", v1, v2)
                 }
 
-            Z(f, n1 + n2)
+            Z(f, n)
         })
     }
 
@@ -399,16 +419,9 @@ trait NCIdlCompilerBase {
     def parsePlusMinusExpr(plus: TN, minus: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
-        def extract(): (Object, Object, Int) = {
-            val Z(v1, n1) = x1()
-            val Z(v2, n2) = x2()
-
-            (v1, v2, n1 + n2)
-        }
-
         if (plus != null)
             stack.push(() ⇒ {
-                val (v1, v2, n) = extract()
+                val (v1, v2, n) = extract2(x1, x2)
 
                 if (isStr(v1) && isStr(v2)) Z(asStr(v1) + asStr(v2), n)
                 else if (isInt(v1) && isInt(v2)) Z(asInt(v1) + asInt(v2), n)
@@ -422,7 +435,7 @@ trait NCIdlCompilerBase {
             assert(minus != null)
 
             stack.push(() ⇒ {
-                val (v1, v2, n) = extract()
+                val (v1, v2, n) = extract2(x1, x2)
 
                 if (isInt(v1) && isInt(v2)) Z(asInt(v1) - asInt(v2), n)
                 else if (isInt(v1) && isReal(v2)) Z(asInt(v1) - asReal(v2), n)
@@ -540,20 +553,6 @@ trait NCIdlCompilerBase {
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
         def toBool(v: Object): Boolean = toX("boolean", v, isBool, asBool)
         def toDouble(v: Object): JDouble = toX("double or int", v, x ⇒ isInt(x) || isReal(x), asReal)
-
-        def extract2(x1: ST, x2: ST): (Object, Object, Int) = {
-            val Z(v1, n1) = x1()
-            val Z(v2, n2) = x2()
-
-            (v1, v2, n1 + n2)
-        }
-        def extract3(x1: ST, x2: ST, x3: ST): (Object, Object, Object, Int) = {
-            val Z(v1, n1) = x1()
-            val Z(v2, n2) = x2()
-            val Z(v3, n3) = x3()
-
-            (v1, v2, v3, n1 + n2 + n3)
-        }
 
         def doSplit(): Unit = {
             val (x1, x2) = arg2()
