@@ -65,7 +65,7 @@ class NCMetaSpec extends NCRestSpec {
         MetaHolder(userMeta, companyMeta)
     }
 
-    private def post(h: MetaHolder): Unit = {
+    private def runTest(h: MetaHolder): Unit = {
         def convert(m: Meta): Meta = if (m == null) util.Collections.emptyMap() else m
 
         // 1. We have to save all existing company's fields for following updates.
@@ -129,7 +129,7 @@ class NCMetaSpec extends NCRestSpec {
 
         try {
             // Sets company and user metadata.
-            post(MetaHolder(m, m))
+            runTest(MetaHolder(m, m))
 
             // It is not enough.
             require(getClient.ask("a").isFailed)
@@ -141,7 +141,7 @@ class NCMetaSpec extends NCRestSpec {
             require(getClient.ask("a").isOk)
         }
         finally {
-            post(currUserCompMeta)
+            runTest(currUserCompMeta)
 
             sys.remove("k1")
         }
