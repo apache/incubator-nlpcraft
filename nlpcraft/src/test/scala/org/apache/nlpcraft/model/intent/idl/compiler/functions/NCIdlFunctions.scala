@@ -77,17 +77,17 @@ private[functions] trait NCIdlFunctions {
     }
 
     protected def ctx(
-        usr: NCUser = null,
-        comp: NCCompany = null,
-        srvReqId: String = null,
-        normTxt: String = null,
-        recTimestamp: Long = 0,
-        remAddress: String = null,
-        clientAgent: String = null,
+        reqUsr: NCUser = null,
+        reqComp: NCCompany = null,
+        reqSrvReqId: String = null,
+        reqNormText: String = null,
+        reqTstamp: Long = 0,
+        reqAddr: String = null,
+        reqAgent: String = null,
         reqData: ScalaMeta = Map.empty[String, AnyRef],
-        intentMeta: ScalaMeta = Map.empty[String, Object],
-        convMeta: ScalaMeta = Map.empty[String, Object],
-        fragMeta: ScalaMeta = Map.empty[String, Object]
+        intentMeta: ScalaMeta = Map.empty[String, AnyRef],
+        convMeta: ScalaMeta = Map.empty[String, AnyRef],
+        fragMeta: ScalaMeta = Map.empty[String, AnyRef]
     ): NCIdlContext =
         NCIdlContext(
             intentMeta = intentMeta,
@@ -95,13 +95,13 @@ private[functions] trait NCIdlFunctions {
             fragMeta = fragMeta,
             req =
                 new NCRequest() {
-                    override def getUser: NCUser = usr
-                    override def getCompany: NCCompany = comp
-                    override def getServerRequestId: String = srvReqId
-                    override def getNormalizedText: String = normTxt
-                    override def getReceiveTimestamp: Long = recTimestamp
-                    override def getRemoteAddress: Optional[String] = Optional.ofNullable(remAddress)
-                    override def getClientAgent: Optional[String] = Optional.ofNullable(clientAgent)
+                    override def getUser: NCUser = reqUsr
+                    override def getCompany: NCCompany = reqComp
+                    override def getServerRequestId: String = reqSrvReqId
+                    override def getNormalizedText: String = reqNormText
+                    override def getReceiveTimestamp: Long = reqTstamp
+                    override def getRemoteAddress: Optional[String] = Optional.ofNullable(reqAddr)
+                    override def getClientAgent: Optional[String] = Optional.ofNullable(reqAgent)
                     override def getRequestData: util.Map[String, AnyRef] = reqData.asJava
                 }
         )

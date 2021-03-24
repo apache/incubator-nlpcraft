@@ -71,7 +71,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
     def testMetaUser(): Unit =
         testValue(
             "meta_user",
-            ctx(usr =
+            ctx(reqUsr =
                 new NCUser {
                     override def getId: Long = -1
                     override def getFirstName: Optional[String] = Optional.empty()
@@ -90,7 +90,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
     def testMetaCompany(): Unit =
         testValue(
             "meta_company",
-            ctx(comp =
+            ctx(reqComp =
                 new NCCompany {
                     override def getId: Long = -1
                     override def getName: String = "name"
