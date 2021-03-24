@@ -342,7 +342,7 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
         "intent=customSortReport " +
             "term(sort)~{tok_id() == 'sort:best' || tok_id() == 'sort:worst'} " +
             "term(tbls)~{has(tok_groups(), 'table')}[0,7] " +
-            "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), id())}[0,7] " +
+            "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), tok_id())}[0,7] " +
             "term(condNums)~{tok_id() == 'condition:num'}[0,7] " +
             "term(condVals)~{tok_id() == 'condition:value'}[0,7] " +
             "term(condDates)~{tok_id() == 'condition:date'}[0,7] " +
