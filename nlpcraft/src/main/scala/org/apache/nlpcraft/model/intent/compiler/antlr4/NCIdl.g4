@@ -195,6 +195,12 @@ FUN_NAME
     | 'is_alphanumspace'
     | 'split'
     | 'split_trim'
+    | 'start_with'
+    | 'end_with'
+    | 'index_of'
+    | 'contains'
+    | 'substr'
+    | 'replace'
     | 'abs'
     | 'ceil'
     | 'floor'
@@ -243,9 +249,13 @@ FUN_NAME
     | 'reverse'
     | 'is_empty'
     | 'non_empty'
+    | 'distinct'
+    | 'concat'
     | 'to_string'
     | 'max'
     | 'min'
+    | 'avg'
+    | 'stdev'
     | 'year'
     | 'month'
     | 'day_of_month'
@@ -259,6 +269,13 @@ FUN_NAME
     | 'quarter'
     | 'now'
     ;
+
+IMPORT : 'import' ;
+INTENT : 'intent' ;
+ORDERED : 'ordered' ;
+FLOW : 'flow' ;
+META : 'meta' ;
+TERM : 'term' ;
 FRAG: 'fragment'; // To resolve ambiguity with ANTLR4 keyword.
 SQSTRING: SQUOTE ((~'\'') | ('\\''\''))* SQUOTE; // Allow for \' (escaped single quote) in the string.
 DQSTRING: DQUOTE ((~'"') | ('\\''"'))* DQUOTE; // Allow for \" (escape double quote) in the string.

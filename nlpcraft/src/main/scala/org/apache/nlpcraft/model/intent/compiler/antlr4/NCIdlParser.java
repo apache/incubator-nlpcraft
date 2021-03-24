@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIdl.g4 by ANTLR 4.9.1
+// Generated from /Users/skhisamov/apache/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -17,13 +17,13 @@ public class NCIdlParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, FUN_NAME=7, FRAG=8, SQSTRING=9, 
-		DQSTRING=10, BOOL=11, NULL=12, EQ=13, NEQ=14, GTEQ=15, LTEQ=16, GT=17, 
-		LT=18, AND=19, OR=20, VERT=21, NOT=22, LPAR=23, RPAR=24, LBRACE=25, RBRACE=26, 
-		SQUOTE=27, DQUOTE=28, TILDA=29, LBR=30, RBR=31, POUND=32, COMMA=33, COLON=34, 
-		MINUS=35, DOT=36, UNDERSCORE=37, ASSIGN=38, PLUS=39, QUESTION=40, MULT=41, 
-		DIV=42, MOD=43, AT=44, DOLLAR=45, INT=46, REAL=47, EXP=48, ID=49, COMMENT=50, 
-		WS=51, ErrorChar=52;
+		FUN_NAME=1, IMPORT=2, INTENT=3, ORDERED=4, FLOW=5, META=6, TERM=7, FRAG=8, 
+		SQSTRING=9, DQSTRING=10, BOOL=11, NULL=12, EQ=13, NEQ=14, GTEQ=15, LTEQ=16, 
+		GT=17, LT=18, AND=19, OR=20, VERT=21, NOT=22, LPAR=23, RPAR=24, LBRACE=25, 
+		RBRACE=26, SQUOTE=27, DQUOTE=28, TILDA=29, LBR=30, RBR=31, POUND=32, COMMA=33, 
+		COLON=34, MINUS=35, DOT=36, UNDERSCORE=37, ASSIGN=38, PLUS=39, QUESTION=40, 
+		MULT=41, DIV=42, MOD=43, AT=44, DOLLAR=45, INT=46, REAL=47, EXP=48, ID=49, 
+		COMMENT=50, WS=51, ErrorChar=52;
 	public static final int
 		RULE_idl = 0, RULE_synonym = 1, RULE_alias = 2, RULE_idlDecls = 3, RULE_idlDecl = 4, 
 		RULE_imp = 5, RULE_frag = 6, RULE_fragId = 7, RULE_fragRef = 8, RULE_fragMeta = 9, 
@@ -48,8 +48,8 @@ public class NCIdlParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'import'", "'intent'", "'ordered'", "'flow'", "'meta'", "'term'", 
-			null, "'fragment'", null, null, null, "'null'", "'=='", "'!='", "'>='", 
+			null, null, "'import'", "'intent'", "'ordered'", "'flow'", "'meta'", 
+			"'term'", "'fragment'", null, null, null, "'null'", "'=='", "'!='", "'>='", 
 			"'<='", "'>'", "'<'", "'&&'", "'||'", "'|'", "'!'", "'('", "')'", "'{'", 
 			"'}'", "'''", "'\"'", "'~'", "'['", "']'", "'#'", "','", "':'", "'-'", 
 			"'.'", "'_'", "'='", "'+'", "'?'", "'*'", "'/'", "'%'", "'@'", "'$'"
@@ -58,12 +58,13 @@ public class NCIdlParser extends Parser {
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, "FUN_NAME", "FRAG", "SQSTRING", 
-			"DQSTRING", "BOOL", "NULL", "EQ", "NEQ", "GTEQ", "LTEQ", "GT", "LT", 
-			"AND", "OR", "VERT", "NOT", "LPAR", "RPAR", "LBRACE", "RBRACE", "SQUOTE", 
-			"DQUOTE", "TILDA", "LBR", "RBR", "POUND", "COMMA", "COLON", "MINUS", 
-			"DOT", "UNDERSCORE", "ASSIGN", "PLUS", "QUESTION", "MULT", "DIV", "MOD", 
-			"AT", "DOLLAR", "INT", "REAL", "EXP", "ID", "COMMENT", "WS", "ErrorChar"
+			null, "FUN_NAME", "IMPORT", "INTENT", "ORDERED", "FLOW", "META", "TERM", 
+			"FRAG", "SQSTRING", "DQSTRING", "BOOL", "NULL", "EQ", "NEQ", "GTEQ", 
+			"LTEQ", "GT", "LT", "AND", "OR", "VERT", "NOT", "LPAR", "RPAR", "LBRACE", 
+			"RBRACE", "SQUOTE", "DQUOTE", "TILDA", "LBR", "RBR", "POUND", "COMMA", 
+			"COLON", "MINUS", "DOT", "UNDERSCORE", "ASSIGN", "PLUS", "QUESTION", 
+			"MULT", "DIV", "MOD", "AT", "DOLLAR", "INT", "REAL", "EXP", "ID", "COMMENT", 
+			"WS", "ErrorChar"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -386,7 +387,7 @@ public class NCIdlParser extends Parser {
 			setState(105);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case T__1:
+			case INTENT:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(102);
@@ -400,7 +401,7 @@ public class NCIdlParser extends Parser {
 				frag();
 				}
 				break;
-			case T__0:
+			case IMPORT:
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(104);
@@ -423,6 +424,7 @@ public class NCIdlParser extends Parser {
 	}
 
 	public static class ImpContext extends ParserRuleContext {
+		public TerminalNode IMPORT() { return getToken(NCIdlParser.IMPORT, 0); }
 		public TerminalNode LPAR() { return getToken(NCIdlParser.LPAR, 0); }
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
@@ -449,7 +451,7 @@ public class NCIdlParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(107);
-			match(T__0);
+			match(IMPORT);
 			setState(108);
 			match(LPAR);
 			setState(109);
@@ -704,7 +706,7 @@ public class NCIdlParser extends Parser {
 			setState(132);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==T__2) {
+			if (_la==ORDERED) {
 				{
 				setState(131);
 				orderedDecl();
@@ -714,7 +716,7 @@ public class NCIdlParser extends Parser {
 			setState(135);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==T__3) {
+			if (_la==FLOW) {
 				{
 				setState(134);
 				flowDecl();
@@ -724,7 +726,7 @@ public class NCIdlParser extends Parser {
 			setState(138);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==T__4) {
+			if (_la==META) {
 				{
 				setState(137);
 				metaDecl();
@@ -747,6 +749,7 @@ public class NCIdlParser extends Parser {
 	}
 
 	public static class IntentIdContext extends ParserRuleContext {
+		public TerminalNode INTENT() { return getToken(NCIdlParser.INTENT, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
@@ -772,7 +775,7 @@ public class NCIdlParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(142);
-			match(T__1);
+			match(INTENT);
 			setState(143);
 			match(ASSIGN);
 			setState(144);
@@ -791,6 +794,7 @@ public class NCIdlParser extends Parser {
 	}
 
 	public static class OrderedDeclContext extends ParserRuleContext {
+		public TerminalNode ORDERED() { return getToken(NCIdlParser.ORDERED, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public TerminalNode BOOL() { return getToken(NCIdlParser.BOOL, 0); }
 		public OrderedDeclContext(ParserRuleContext parent, int invokingState) {
@@ -814,7 +818,7 @@ public class NCIdlParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(146);
-			match(T__2);
+			match(ORDERED);
 			setState(147);
 			match(ASSIGN);
 			setState(148);
@@ -880,6 +884,7 @@ public class NCIdlParser extends Parser {
 	}
 
 	public static class FlowDeclContext extends ParserRuleContext {
+		public TerminalNode FLOW() { return getToken(NCIdlParser.FLOW, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public QstringContext qstring() {
 			return getRuleContext(QstringContext.class,0);
@@ -908,7 +913,7 @@ public class NCIdlParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(154);
-			match(T__3);
+			match(FLOW);
 			setState(155);
 			match(ASSIGN);
 			setState(158);
@@ -944,6 +949,7 @@ public class NCIdlParser extends Parser {
 	}
 
 	public static class MetaDeclContext extends ParserRuleContext {
+		public TerminalNode META() { return getToken(NCIdlParser.META, 0); }
 		public TerminalNode ASSIGN() { return getToken(NCIdlParser.ASSIGN, 0); }
 		public JsonObjContext jsonObj() {
 			return getRuleContext(JsonObjContext.class,0);
@@ -969,7 +975,7 @@ public class NCIdlParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(160);
-			match(T__4);
+			match(META);
 			setState(161);
 			match(ASSIGN);
 			setState(162);
@@ -1433,7 +1439,7 @@ public class NCIdlParser extends Parser {
 			setState(227);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case T__5:
+			case TERM:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(225);
@@ -1510,6 +1516,7 @@ public class NCIdlParser extends Parser {
 	}
 
 	public static class TermContext extends ParserRuleContext {
+		public TerminalNode TERM() { return getToken(NCIdlParser.TERM, 0); }
 		public TermEqContext termEq() {
 			return getRuleContext(TermEqContext.class,0);
 		}
@@ -1552,7 +1559,7 @@ public class NCIdlParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(231);
-			match(T__5);
+			match(TERM);
 			setState(233);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -2886,8 +2893,8 @@ public class NCIdlParser extends Parser {
 		"\u0154\n!\3!\5!\u0157\n!\3!\3!\5!\u015b\n!\3\"\3\"\3#\3#\5#\u0161\n#\3"+
 		"$\3$\3%\3%\3%\3%\3%\3%\3&\3&\3&\2\b\b*\648:>\'\2\4\6\b\n\f\16\20\22\24"+
 		"\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BDFHJ\2\f\4\2\37\37((\4\2\30"+
-		"\30%%\3\2+-\4\2%%))\3\2\21\24\3\2\17\20\3\2\25\26\3\2\13\f\3\2)+\4\2\t"+
-		"\t\63\63\2\u0177\2L\3\2\2\2\4P\3\2\2\2\6Z\3\2\2\2\b^\3\2\2\2\nk\3\2\2"+
+		"\30%%\3\2+-\4\2%%))\3\2\21\24\3\2\17\20\3\2\25\26\3\2\13\f\3\2)+\4\2\3"+
+		"\3\63\63\2\u0177\2L\3\2\2\2\4P\3\2\2\2\6Z\3\2\2\2\b^\3\2\2\2\nk\3\2\2"+
 		"\2\fm\3\2\2\2\16r\3\2\2\2\20u\3\2\2\2\22y\3\2\2\2\24\u0081\3\2\2\2\26"+
 		"\u0084\3\2\2\2\30\u0090\3\2\2\2\32\u0094\3\2\2\2\34\u0098\3\2\2\2\36\u009c"+
 		"\3\2\2\2 \u00a2\3\2\2\2\"\u00b3\3\2\2\2$\u00b5\3\2\2\2&\u00c8\3\2\2\2"+
@@ -2900,7 +2907,7 @@ public class NCIdlParser extends Parser {
 		"\2XY\7\2\2\3Y\5\3\2\2\2Z[\7 \2\2[\\\5J&\2\\]\7!\2\2]\7\3\2\2\2^_\b\5\1"+
 		"\2_`\5\n\6\2`e\3\2\2\2ab\f\3\2\2bd\5\n\6\2ca\3\2\2\2dg\3\2\2\2ec\3\2\2"+
 		"\2ef\3\2\2\2f\t\3\2\2\2ge\3\2\2\2hl\5\26\f\2il\5\16\b\2jl\5\f\7\2kh\3"+
-		"\2\2\2ki\3\2\2\2kj\3\2\2\2l\13\3\2\2\2mn\7\3\2\2no\7\31\2\2op\5B\"\2p"+
+		"\2\2\2ki\3\2\2\2kj\3\2\2\2l\13\3\2\2\2mn\7\4\2\2no\7\31\2\2op\5B\"\2p"+
 		"q\7\32\2\2q\r\3\2\2\2rs\5\20\t\2st\5*\26\2t\17\3\2\2\2uv\7\n\2\2vw\7("+
 		"\2\2wx\5J&\2x\21\3\2\2\2yz\7\n\2\2z{\7\31\2\2{}\5J&\2|~\5\24\13\2}|\3"+
 		"\2\2\2}~\3\2\2\2~\177\3\2\2\2\177\u0080\7\32\2\2\u0080\23\3\2\2\2\u0081"+
@@ -2909,12 +2916,12 @@ public class NCIdlParser extends Parser {
 		"\u0089\3\2\2\2\u0088\u008a\5\36\20\2\u0089\u0088\3\2\2\2\u0089\u008a\3"+
 		"\2\2\2\u008a\u008c\3\2\2\2\u008b\u008d\5 \21\2\u008c\u008b\3\2\2\2\u008c"+
 		"\u008d\3\2\2\2\u008d\u008e\3\2\2\2\u008e\u008f\5*\26\2\u008f\27\3\2\2"+
-		"\2\u0090\u0091\7\4\2\2\u0091\u0092\7(\2\2\u0092\u0093\5J&\2\u0093\31\3"+
-		"\2\2\2\u0094\u0095\7\5\2\2\u0095\u0096\7(\2\2\u0096\u0097\7\r\2\2\u0097"+
+		"\2\u0090\u0091\7\5\2\2\u0091\u0092\7(\2\2\u0092\u0093\5J&\2\u0093\31\3"+
+		"\2\2\2\u0094\u0095\7\6\2\2\u0095\u0096\7(\2\2\u0096\u0097\7\r\2\2\u0097"+
 		"\33\3\2\2\2\u0098\u0099\7,\2\2\u0099\u009a\5\62\32\2\u009a\u009b\7,\2"+
-		"\2\u009b\35\3\2\2\2\u009c\u009d\7\6\2\2\u009d\u00a0\7(\2\2\u009e\u00a1"+
+		"\2\u009b\35\3\2\2\2\u009c\u009d\7\7\2\2\u009d\u00a0\7(\2\2\u009e\u00a1"+
 		"\5B\"\2\u009f\u00a1\5\34\17\2\u00a0\u009e\3\2\2\2\u00a0\u009f\3\2\2\2"+
-		"\u00a1\37\3\2\2\2\u00a2\u00a3\7\7\2\2\u00a3\u00a4\7(\2\2\u00a4\u00a5\5"+
+		"\u00a1\37\3\2\2\2\u00a2\u00a3\7\b\2\2\u00a3\u00a4\7(\2\2\u00a4\u00a5\5"+
 		"\"\22\2\u00a5!\3\2\2\2\u00a6\u00a7\7\33\2\2\u00a7\u00ac\5$\23\2\u00a8"+
 		"\u00a9\7#\2\2\u00a9\u00ab\5$\23\2\u00aa\u00a8\3\2\2\2\u00ab\u00ae\3\2"+
 		"\2\2\u00ac\u00aa\3\2\2\2\u00ac\u00ad\3\2\2\2\u00ad\u00af\3\2\2\2\u00ae"+
@@ -2938,7 +2945,7 @@ public class NCIdlParser extends Parser {
 		"\3\2\2\2\u00e0\u00e1\3\2\2\2\u00e1+\3\2\2\2\u00e2\u00e0\3\2\2\2\u00e3"+
 		"\u00e6\5\60\31\2\u00e4\u00e6\5\22\n\2\u00e5\u00e3\3\2\2\2\u00e5\u00e4"+
 		"\3\2\2\2\u00e6-\3\2\2\2\u00e7\u00e8\t\2\2\2\u00e8/\3\2\2\2\u00e9\u00eb"+
-		"\7\b\2\2\u00ea\u00ec\5\66\34\2\u00eb\u00ea\3\2\2\2\u00eb\u00ec\3\2\2\2"+
+		"\7\t\2\2\u00ea\u00ec\5\66\34\2\u00eb\u00ea\3\2\2\2\u00eb\u00ec\3\2\2\2"+
 		"\u00ec\u00ed\3\2\2\2\u00ed\u00f6\5.\30\2\u00ee\u00f0\7\33\2\2\u00ef\u00f1"+
 		"\5:\36\2\u00f0\u00ef\3\2\2\2\u00f0\u00f1\3\2\2\2\u00f1\u00f2\3\2\2\2\u00f2"+
 		"\u00f3\58\35\2\u00f3\u00f4\7\34\2\2\u00f4\u00f7\3\2\2\2\u00f5\u00f7\5"+
@@ -2952,7 +2959,7 @@ public class NCIdlParser extends Parser {
 		"\u0109\3\2\2\2\u010c\u010d\7\31\2\2\u010d\u010e\5J&\2\u010e\u010f\7\32"+
 		"\2\2\u010f\67\3\2\2\2\u0110\u0111\b\35\1\2\u0111\u0112\t\3\2\2\u0112\u0121"+
 		"\58\35\f\u0113\u0114\7\31\2\2\u0114\u0115\58\35\2\u0115\u0116\7\32\2\2"+
-		"\u0116\u0121\3\2\2\2\u0117\u0121\5@!\2\u0118\u0119\7\t\2\2\u0119\u011b"+
+		"\u0116\u0121\3\2\2\2\u0117\u0121\5@!\2\u0118\u0119\7\3\2\2\u0119\u011b"+
 		"\7\31\2\2\u011a\u011c\5> \2\u011b\u011a\3\2\2\2\u011b\u011c\3\2\2\2\u011c"+
 		"\u011d\3\2\2\2\u011d\u0121\7\32\2\2\u011e\u011f\7.\2\2\u011f\u0121\5J"+
 		"&\2\u0120\u0110\3\2\2\2\u0120\u0113\3\2\2\2\u0120\u0117\3\2\2\2\u0120"+

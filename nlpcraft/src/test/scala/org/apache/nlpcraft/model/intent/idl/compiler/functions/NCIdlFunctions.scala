@@ -174,7 +174,7 @@ private[functions] trait NCIdlFunctions {
             }
         }
 
-    protected def testExpectedError(f: String): Unit =
+    protected def expectNceError(f: String): Unit =
         try {
             test(f)
 

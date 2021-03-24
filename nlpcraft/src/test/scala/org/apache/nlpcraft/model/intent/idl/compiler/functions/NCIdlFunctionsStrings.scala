@@ -27,30 +27,52 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
     def test(): Unit =
         test(
             "trim(' a b  ') == 'a b'",
+
             "strip(' a b  ') == 'a b'",
             "uppercase('aB') == 'AB'",
             "lowercase('aB') == 'ab'",
             "is_alpha('aB') == true",
             "is_alpha('aB1') == false",
             "is_alphanum('aB1') == true",
-            "is_whitespace(' ') == true",
             "is_whitespace('A') == false",
             "is_num('a') == false",
             "is_num('1') == true",
             "is_numspace('A') == false",
             "is_alphaspace('A') == true",
             "is_alphanumspace('A') == true",
-            "is_alphanumspace(' ') == true",
             "is_alphanumspace('1 A') == true",
+            "start_with('ab', 'a') == true",
+            "start_with('ab', 'b') == false",
+            "end_with('ab', 'a') == false",
+            "end_with('ab', 'b') == true",
+            "contains('ab', 'a') == true",
+            "contains('ab', 'bc') == false",
+            "index_of('ab', 'b') == 1",
+            "index_of('ab', 'bc') == -1",
+            "substr('abc', 0, 1) == 'a'",
+            "substr('abc', 0, 2) == 'ab'",
+            "replace('abc', 'a', 'X') == 'Xbc'",
+            "replace('abc', '0',  '0') == 'abc'",
+
+            // TODO: add correct test for `split` and `split_trim`
+            "split('1 A') == list('1', '2')",
+            "split_trim('1 A') == list('1', '2')",
+
+            // TODO: fix.
+            // Whitespaces.
+            "replace('abc', 'ab',  '') == 'c'",
+             "substr('abc', 20, 30) == ''",
             "is_alphanumspace(' ') == true",
             "is_alphanumspace('  ') == true",
-            "split('1 A') == list(1, 2)"
+            "is_alphanumspace(' ') == true",
+            "is_whitespace(' ') == true",
+            "trim('   ') == ''"
         )
 
     @Test
     def testError(): Unit = {
-        // TODO: add correct test for `split` and `split_trim`
-        testExpectedError("split('1 A') == true")
-        testExpectedError("split_trim('1 A') == true")
+
+        expectNceError("split('1 A') == true")
+        expectNceError("split_trim('1 A') == true")
     }
 }

@@ -20,10 +20,10 @@ package org.apache.nlpcraft.model.intent.compiler
 import org.apache.commons.lang3.StringUtils
 import org.apache.nlpcraft.common.{NCE, U}
 import org.apache.nlpcraft.model.NCToken
-import org.antlr.v4.runtime.{ParserRuleContext ⇒ PRC}
+import org.antlr.v4.runtime.{ParserRuleContext ⇒PRC}
 import org.antlr.v4.runtime.tree.{TerminalNode ⇒ TN}
 import org.apache.commons.collections.CollectionUtils
-import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlStack, NCIdlStackItem ⇒ Z, NCIdlStackType}
+import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlStack, NCIdlStackType, NCIdlStackItem ⇒ Z}
 
 import java.lang.{Byte ⇒ JByte, Double ⇒ JDouble, Float ⇒ JFloat, Integer ⇒ JInt, Long ⇒ JLong, Short ⇒ JShort}
 import java.time.temporal.IsoFields
@@ -64,7 +64,6 @@ trait NCIdlCompilerBase {
 
         runtimeError(errMsg, tok.getTokenSource.getSourceName, tok.getLine, tok.getCharPositionInLine, cause)
     }
-
 
     /**
      * Check if given object is mathematically an integer number.
@@ -532,6 +531,8 @@ trait NCIdlCompilerBase {
         }
         def toStr(v: Object): String = toX("string", v, isStr, asStr)
         def toJDouble(v: Object): JDouble = toX("double", v, isReal, asReal)
+        // TODO: check  - is it int only?
+        def toInt(v: Object): JInt = toX("int", v, isInt, asInt).toInt
         def toJList(v: Object): JList[_] = toX("list", v, isJList, asJList)
         def toJMap(v: Object): JMap[_, _] = toX("map", v, isJMap, asJMap)
         def toToken(v: Object): NCToken = toX("token", v, isToken, asToken)
@@ -567,6 +568,86 @@ trait NCIdlCompilerBase {
                     val Z(v2, n2) = x2()
 
                     Z(util.Arrays.asList(toStr(v1).split(toStr(v2)).toList.map(_.strip)), n1 + n2)
+                }
+            )
+        }
+
+        def doStartWith(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(
+                () ⇒ {
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
+
+                    Z(toStr(v1).startsWith(toStr(v2)), n1 + n2)
+                }
+            )
+        }
+
+        def doEndWith(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(
+                () ⇒ {
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
+
+                    Z(toStr(v1).endsWith(toStr(v2)), n1 + n2)
+                }
+            )
+        }
+
+        def doContains(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(
+                () ⇒ {
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
+
+                    Z(toStr(v1).contains(toStr(v2)), n1 + n2)
+                }
+            )
+        }
+
+        def doIndexOf(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(
+                () ⇒ {
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
+
+                    Z(toStr(v1).indexOf(toStr(v2)), n1 + n2)
+                }
+            )
+        }
+
+        def doSubstr(): Unit = {
+            val (x1, x2, x3) = arg3()
+
+            stack.push(
+                () ⇒ {
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
+                    val Z(v3, n3) = x3()
+
+                    Z(toStr(v1).substring(toInt(v2), toInt(v3)), n1 + n2 + n3)
+                }
+            )
+        }
+
+        def doReplace(): Unit = {
+            val (x1, x2, x3) = arg3()
+
+            stack.push(
+                () ⇒ {
+                    val Z(v1, n1) = x1()
+                    val Z(v2, n2) = x2()
+                    val Z(v3, n3) = x3()
+
+                    Z(toStr(v1).replaceAll(toStr(v2), toStr(v3)), n1 + n2)
                 }
             )
         }
@@ -628,6 +709,53 @@ trait NCIdlCompilerBase {
             })
         }
 
+        def doAvg(): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                val lst = toJList(v).asInstanceOf[util.List[Object]]
+
+                try
+                    if (lst.isEmpty)
+                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
+                    else {
+                        val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
+
+                        Z(seq.sum / seq.size, n)
+                    }
+                catch {
+                    case e: Exception ⇒ throw rtListTypeError(fun, e)
+                }
+            })
+        }
+
+        def doStdev(): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                val lst = toJList(v).asInstanceOf[util.List[Object]]
+
+                try
+                    if (lst.isEmpty)
+                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
+                    else {
+                        val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
+
+                        val mean = seq.sum / seq.length
+                        val stdDev = Math.sqrt(seq.map( _ - mean).map(t ⇒ t * t).sum /seq.length)
+
+                        Z(stdDev, n)
+                    }
+                catch {
+                    case e: Exception ⇒ throw rtListTypeError(fun, e)
+                }
+            })
+        }
+
         def doToString(): Unit = {
             val x = arg1()
 
@@ -671,6 +799,29 @@ trait NCIdlCompilerBase {
                 jl.sort(null) // Use natural order.
             
                 Z(jl, n)
+            })
+        }
+
+        def doDistinct(): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                val jl = toJList(v).asScala.distinct.asJava
+
+                Z(jl, n)
+            })
+        }
+
+        def doConcat(): Unit = {
+            val (x1, x2) = arg2()
+
+            stack.push(() ⇒ {
+                val Z(lst1, n1) = x1()
+                val Z(lst2, n2) = x2()
+
+                Z((toJList(lst1).asScala ++ toJList(lst2).asScala).asJava, n1 + n2)
             })
         }
 
@@ -921,6 +1072,12 @@ trait NCIdlCompilerBase {
             case "is_alphanumspace" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) })
             case "split" ⇒ doSplit()
             case "split_trim" ⇒ doSplitTrim()
+            case "start_with" ⇒ doStartWith()
+            case "end_with" ⇒ doEndWith()
+            case "contains" ⇒ doContains()
+            case "index_of" ⇒ doIndexOf()
+            case "substr" ⇒ doSubstr()
+            case "replace" ⇒ doReplace()
 
             // Math functions.
             case "abs" ⇒ doAbs()
@@ -975,6 +1132,8 @@ trait NCIdlCompilerBase {
             case "sort" ⇒ doSort()
             case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toJList(v).isEmpty, n) })
             case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(!toJList(v).isEmpty, n) })
+            case "distinct" ⇒ doDistinct()
+            case "concat" ⇒ doConcat()
 
             // Misc.
             case "to_string" ⇒ doToString()
@@ -982,6 +1141,8 @@ trait NCIdlCompilerBase {
             // Statistical operations on lists.
             case "max" ⇒ doMax()
             case "min" ⇒ doMin()
+            case "avg" ⇒ doAvg()
+            case "stdev" ⇒ doStdev()
 
             // Date-time functions.
             case "year" ⇒ z0(() ⇒ Z(LocalDate.now.getYear, 0)) // 2021.

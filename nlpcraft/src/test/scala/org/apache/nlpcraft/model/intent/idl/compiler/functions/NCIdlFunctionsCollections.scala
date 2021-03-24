@@ -35,8 +35,8 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "has(list(1, 2, 3), 1) == true",
             "has(list(1.1, 2.1, 3.1), 1.1) == true",
             "has(list(1.0, 2.0, 3.0), 1.0) == true",
-            // TODO: false?
-            //"has(list(1.0, 2.0, 3.0), 1) == true",
+            // Different types.
+            "has(list(1.0, 2.0, 3.0), 1) == false",
             "has(list('1', '2', '3'), '1') == true",
             "has(list(1, 2, 3), 5) == false",
             "has(list(1.1, 2.1, 3.1), 5.1) == false",
@@ -54,11 +54,20 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "non_empty(list(1)) == true",
             "reverse(list(1.0, 2, 3)) == list(3, 2, 1.0)",
             "sort(list(2, 1, 3)) == list(1, 2, 3)",
+            // TODO: Fix it.
             "sort(list(2.0, 1, 3)) == list(1, 2.0, 3)",
             "size(list(2.0, 1, 3)) == 3",
             "length(list(2.0, 1, 3)) == 3",
             "count(list(2.0, 1, 3)) == 3",
             s"keys(json('$js')) == list('k1')",
-            s"values(json('$js')) == list('v1')"
+            s"values(json('$js')) == list('v1')",
+            s"distinct(list(1, 2, 3, 3, 2)) == list(1, 2, 3)",
+            s"distinct(list(1.0, 2.0, 3.0, 3.0, 2.0)) == list(1.0, 2.0, 3.0)",
+            s"distinct(list('1', '2', '3', '3', '2')) == list('1', '2', '3')",
+            s"concat(list(1, 2, 3), list(1, 2, 3)) == list(1, 2, 3, 1, 2, 3)",
+            s"concat(list(1, 2, 3), list()) == list(1, 2, 3)",
+            s"concat(list(), list()) == list()",
+            // TODO: is it? Shouldn't be all values have one type?
+            s"concat(list(1, 2), list(3.0)) == list(1, 2, 3.0)"
         )
 }
