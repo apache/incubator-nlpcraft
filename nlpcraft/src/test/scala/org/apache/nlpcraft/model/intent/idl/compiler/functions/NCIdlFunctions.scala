@@ -157,6 +157,7 @@ private[functions] trait NCIdlFunctions {
                     f.term.pred.apply(f.token.getOrElse(tkn()), f.idlCtx).value
                 }
                 catch {
+                    case e: NCE ⇒ throw new NCE(s"Execution error processing: $f", e)
                     case e: Exception ⇒ throw new Exception(s"Execution error processing: $f", e)
                 }
 
