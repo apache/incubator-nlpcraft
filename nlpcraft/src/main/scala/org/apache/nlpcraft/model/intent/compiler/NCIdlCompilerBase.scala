@@ -500,7 +500,7 @@ trait NCIdlCompilerBase {
                         try
                             Double.box(JDouble.parseDouble(num)) // Try 'double'.
                         catch {
-                            case _: NumberFormatException ⇒ U.trimEscapesQuotes(txt) // String in the end.
+                            case _: NumberFormatException ⇒ U.escapesQuotes(txt) // String in the end.
                         }
                 }
             }
@@ -524,6 +524,16 @@ trait NCIdlCompilerBase {
             ensureStack(argNum + 1) // +1 for the frame marker.
 
             val x = f()
+
+            x match {
+                case p: Product ⇒
+                    for (e ← p.productIterator)
+                        if (e == stack.PLIST_MARKER)
+                            rtMissingParamError(argNum, fun)
+                case _ ⇒
+                    if (x.asInstanceOf[ST] == stack.PLIST_MARKER)
+                        rtMissingParamError(argNum, fun)
+            }
 
             // Make sure to pop up the parameter list stack frame marker.
             popMarker(argNum)
@@ -562,7 +572,7 @@ trait NCIdlCompilerBase {
                 () ⇒ {
                     val (v1, v2, n) = extract2(x1, x2)
 
-                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2))), n)
+                    Z(util.Arrays.asList(toStr(v1).split(toStr(v2)):_*), n)
                 }
             )
         }

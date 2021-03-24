@@ -35,8 +35,7 @@ class NCIdlFunctionsCollections extends NCIdlFunctions {
             "has(list(1, 2, 3), 1) == true",
             "has(list(1.1, 2.1, 3.1), 1.1) == true",
             "has(list(1.0, 2.0, 3.0), 1.0) == true",
-            // Different types.
-            "has(list(1.0, 2.0, 3.0), 1) == false",
+            "has(list(1.0, 2.0, 3.0), 1) == false", // Different types.
             "has(list('1', '2', '3'), '1') == true",
             "has(list(1, 2, 3), 5) == false",
             "has(list(1.1, 2.1, 3.1), 5.1) == false",

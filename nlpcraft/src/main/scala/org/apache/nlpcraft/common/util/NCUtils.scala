@@ -215,6 +215,25 @@ object NCUtils extends LazyLogging {
     }
 
     /**
+     * Recursively removes quotes and replaces escaped quotes from given string.
+     *
+     * @param s
+     * @return
+     */
+    @tailrec
+    def escapesQuotes(s: String): String =
+        if (s.nonEmpty) {
+            if (s.head == '\'' && s.last == '\'')
+                escapesQuotes(s.substring(1, s.length - 1).replace("\'", "'"))
+            else if (s.head == '"' && s.last == '"')
+                escapesQuotes(s.substring(1, s.length - 1).replace("\\\"", "\""))
+            else
+                s
+        }
+        else
+            s
+
+    /**
      *
      * @param s
      * @param sep

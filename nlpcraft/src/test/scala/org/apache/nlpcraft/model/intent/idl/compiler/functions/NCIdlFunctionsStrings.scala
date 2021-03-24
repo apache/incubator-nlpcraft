@@ -52,17 +52,17 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
 //            "substr('abc', 0, 2) == 'ab'",
 //            "replace('abc', 'a', 'X') == 'Xbc'",
 //            "replace('abc', '0',  '0') == 'abc'",
-//            "split('1 A') == list('1', '2')",
-//            "split_trim('1 A    ') == list('1', '2')",
-//
-//            // Whitespaces.
+            "split('1 A', ' ') == list('1', 'A')",
+//            "split_trim('1 A    ', ' ') == list('1', 'A')",
+
+            // Whitespaces.
 //            "replace('abc', 'ab',  '') == 'c'",
 //            "substr('abc', 20, 30) == ''",
-            "is_alphanumspace(' ') == true",
-            "is_alphanumspace('  ') == true",
-            "is_alphanumspace(' ') == true",
-            "is_whitespace(' ') == true",
-            "trim('   ') == ''"
+//            "is_alphanumspace(' ') == true",
+//            "is_alphanumspace('  ') == true",
+//            "is_alphanumspace(' ') == true",
+//            "is_whitespace(' ') == true",
+//            "trim('   ') == ''"
         )
 
     @Test
