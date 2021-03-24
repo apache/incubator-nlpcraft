@@ -279,13 +279,13 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
     @NCIntent(
         "intent=commonReport " +
         "term(tbls)~{has(groups(), 'table')}[0,7] " +
-        "term(cols)~{id() == 'col:date' || id() == 'col:num' || id() == 'col:varchar'}[0,7] " +
-        "term(condNums)~{id() == 'condition:num'}[0,7] " +
-        "term(condVals)~{id() == 'condition:value'}[0,7] " +
-        "term(condDates)~{id() == 'condition:date'}[0,7] " +
-        "term(condFreeDate)~{id() == 'nlpcraft:date'}? " +
-        "term(sort)~{id() == 'nlpcraft:sort'}? " +
-        "term(limit)~{id() == 'nlpcraft:limit'}?"
+        "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), tok_id())}[0,7] " +
+        "term(condNums)~{tok_id() == 'condition:num'}[0,7] " +
+        "term(condVals)~{tok_id() == 'condition:value'}[0,7] " +
+        "term(condDates)~{tok_id() == 'condition:date'}[0,7] " +
+        "term(condFreeDate)~{tok_id() == 'nlpcraft:date'}? " +
+        "term(sort)~{tok_id() == 'nlpcraft:sort'}? " +
+        "term(limit)~{tok_id() == 'nlpcraft:limit'}?"
     )
     @NCIntentSample(Array(
         "order date, please!",
@@ -340,14 +340,14 @@ class SqlModel extends NCModelFileAdapter("org/apache/nlpcraft/examples/sql/sql_
       */
     @NCIntent(
         "intent=customSortReport " +
-            "term(sort)~{id() == 'sort:best' || id() == 'sort:worst'} " +
-            "term(tbls)~{has(groups(), 'table')}[0,7] " +
+            "term(sort)~{tok_id() == 'sort:best' || tok_id() == 'sort:worst'} " +
+            "term(tbls)~{has(tok_groups(), 'table')}[0,7] " +
             "term(cols)~{has(list('col:date', 'col:num', 'col:varchar'), id())}[0,7] " +
-            "term(condNums)~{id() == 'condition:num'}[0,7] " +
-            "term(condVals)~{id() == 'condition:value'}[0,7] " +
-            "term(condDates)~{id() == 'condition:date'}[0,7] " +
-            "term(condFreeDate)~{id() == 'nlpcraft:date'}? " +
-            "term(limit)~{id() == 'nlpcraft:limit'}?"
+            "term(condNums)~{tok_id() == 'condition:num'}[0,7] " +
+            "term(condVals)~{tok_id() == 'condition:value'}[0,7] " +
+            "term(condDates)~{tok_id() == 'condition:date'}[0,7] " +
+            "term(condFreeDate)~{tok_id() == 'nlpcraft:date'}? " +
+            "term(limit)~{tok_id() == 'nlpcraft:limit'}?"
     )
     @NCIntentSample(Array(
         "What are the least performing categories for the last quarter?"

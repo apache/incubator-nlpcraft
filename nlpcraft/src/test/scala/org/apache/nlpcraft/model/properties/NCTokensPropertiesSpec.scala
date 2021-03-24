@@ -30,10 +30,10 @@ abstract class NCTokenPropertiesModelAbstract extends NCModelAdapter(
 ) {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("ab", "a b"), NCTestElement("xy", "x y"))
 
-    @NCIntent("intent=onAB term(t)={id() == 'ab'}")
+    @NCIntent("intent=onAB term(t)={tok_id() == 'ab'}")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onXY term(t)={id() == 'xy'}")
+    @NCIntent("intent=onXY term(t)={tok_id() == 'xy'}")
     def onXY(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

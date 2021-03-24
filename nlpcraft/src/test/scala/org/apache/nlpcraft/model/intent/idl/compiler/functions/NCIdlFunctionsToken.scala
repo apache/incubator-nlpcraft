@@ -27,11 +27,11 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
     def test(): Unit =
         test(
             TestDesc(
-                truth = "id() == 'a'",
+                truth = "tok_id() == 'a'",
                 token = tkn(id = "a")
             ),
             TestDesc(
-                truth = "parent() == 'a'",
+                truth = "tok_parent() == 'a'",
                 token = tkn(parentId = "a")
             )
         )

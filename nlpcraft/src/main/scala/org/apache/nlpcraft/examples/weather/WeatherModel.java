@@ -121,13 +121,13 @@ public class WeatherModel extends NCModelFileAdapter {
      */
     @NCIntent(
         "intent=req " +
-        "term~{id() == 'wt:phen'}* " + // Zero or more weather phenomenon.
+        "term~{tok_id() == 'wt:phen'}* " + // Zero or more weather phenomenon.
         "term(ind)~{" +
-            "@isIndicator = has(groups(), 'indicator') " + // Just to demo term variable usage.
+            "@isIndicator = has(tok_groups(), 'indicator') " + // Just to demo term variable usage.
             "@isIndicator" +
         "}* " + // Optional indicator words (zero or more).
-        "term(city)~{id() == 'nlpcraft:city'}? " + // Optional city.
-        "term(date)~{id() == 'nlpcraft:date'}?" // Optional date (overrides indicator words).
+        "term(city)~{tok_id() == 'nlpcraft:city'}? " + // Optional city.
+        "term(date)~{tok_id() == 'nlpcraft:date'}?" // Optional date (overrides indicator words).
     )
     // NOTE: each samples group will reset conversation STM during auto-testing.
     @NCIntentSample({

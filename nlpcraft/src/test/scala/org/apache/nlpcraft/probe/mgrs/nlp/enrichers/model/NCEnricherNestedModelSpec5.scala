@@ -31,12 +31,12 @@ class NCNestedTestModel5 extends NCModelAdapter(
 ) {
     override def getElements: util.Set[NCElement] =
         Set(
-            NCTestElement("cityWrapper", "^^[cityAlias]{id() == 'nlpcraft:city'}^^"),
+            NCTestElement("cityWrapper", "^^[cityAlias]{tok_id() == 'nlpcraft:city'}^^"),
         )
     @NCIntent(
         "intent=bigCity " +
         "term(city)={" +
-        "    id() == 'cityWrapper' && " +
+        "    tok_id() == 'cityWrapper' && " +
         "    get(meta_part('cityAlias', 'nlpcraft:city:citymeta'), 'population') >= 10381222" +
         "}"
     )

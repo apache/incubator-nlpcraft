@@ -22,16 +22,16 @@ import org.apache.nlpcraft.{NCTestContext, NCTestEnvironment}
 import org.junit.jupiter.api.Test
 
 class NCAbstractTokensModelIntents extends NCAbstractTokensModel {
-    @NCIntent("intent=wrapAnyWordIntent term(t)={id() == 'wrapAnyWord'}")
+    @NCIntent("intent=wrapAnyWordIntent term(t)={tok_id() == 'wrapAnyWord'}")
     private def onWrapInternal(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=wrapNumIntent term(t)={id() == 'wrapNum'}")
+    @NCIntent("intent=wrapNumIntent term(t)={tok_id() == 'wrapNum'}")
     private def onWrapNum(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=wrapLimitWrapAnyWord term(t1)={id() == 'wrapLimit'} term(t2)={id() == 'wrapAnyWord'}")
+    @NCIntent("intent=wrapLimitWrapAnyWord term(t1)={tok_id() == 'wrapLimit'} term(t2)={tok_id() == 'wrapAnyWord'}")
     private def wrapLimitWrapAnyWord(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=wrapWrapLimit term(t1)={id() == 'wrapWrapLimit'} term(t2)={id() == 'wrapAnyWord'}")
+    @NCIntent("intent=wrapWrapLimit term(t1)={tok_id() == 'wrapWrapLimit'} term(t2)={tok_id() == 'wrapAnyWord'}")
     private def wrapWrapLimit(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

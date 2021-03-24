@@ -1455,33 +1455,33 @@ elements:
   groups:
     - "element"
   synonyms:
-    - "^^{id() == 'col' && has(list(4, 8), meta_part('colName', 'sql:datatype'))}^^"
+    - "^^{tok_id() == 'col' && has(list(4, 8), meta_part('colName', 'sql:datatype'))}^^"
 - id: "col:date"
   groups:
     - "element"
   synonyms:
-    - "^^{id() == 'col' && meta_part('colName', 'sql:datatype') == 91}^^"
+    - "^^{tok_id() == 'col' && meta_part('colName', 'sql:datatype') == 91}^^"
 - id: "col:varchar"
   groups:
     - "element"
   synonyms:
-    - "^^{id() == 'col' && meta_part('colName', 'sql:datatype') == 12}^^"
+    - "^^{tok_id() == 'col' && meta_part('colName', 'sql:datatype') == 12}^^"
 - id: "condition:num"
   groups:
     - "condition"
   synonyms:
-    - "^^{id() == 'col:num'}^^ ^^{id() == 'nlpcraft:num'}^^ "
+    - "^^{tok_id() == 'col:num'}^^ ^^{tok_id() == 'nlpcraft:num'}^^ "
 - id: "condition:value"
   groups:
     - "condition"
   synonyms:
-    - "^^{id() == 'col:varchar'}^^ {is|equal|_} ^^{id() == 'col:val'}^^"
-    - "^^{id() == 'col:val'}^^"
+    - "^^{tok_id() == 'col:varchar'}^^ {is|equal|_} ^^{tok_id() == 'col:val'}^^"
+    - "^^{tok_id() == 'col:val'}^^"
 - id: "condition:date"
   groups:
     - "condition"
   synonyms:
-    - "^^{id() == 'col:date'}^^ ^^{id() == 'nlpcraft:date'}^^"
+    - "^^{tok_id() == 'col:date'}^^ ^^{tok_id() == 'nlpcraft:date'}^^"
 - id: "sort:best"
   groups:
     - "Sort criteria"

@@ -30,12 +30,12 @@ import java.util
 class NCNestedTestModel extends NCDefaultTestModel {
     override def getElements: util.Set[NCElement] =
         Set(
-            NCTestElement("x1", "{test|_} ^^{id() == 'nlpcraft:date'}^^"),
-            NCTestElement("x2", "{test1|_} ^^{id() == 'x1'}^^"),
-            NCTestElement("x3", "{test2|_} ^^{id() == 'x2'}^^"),
+            NCTestElement("x1", "{test|_} ^^{tok_id() == 'nlpcraft:date'}^^"),
+            NCTestElement("x2", "{test1|_} ^^{tok_id() == 'x1'}^^"),
+            NCTestElement("x3", "{test2|_} ^^{tok_id() == 'x2'}^^"),
             NCTestElement("y1", "y"),
-            NCTestElement("y2", "^^{id() == 'y1'}^^"),
-            NCTestElement("y3", "^^{id() == 'y2'}^^ ^^{id() == 'y2'}^^")
+            NCTestElement("y2", "^^{tok_id() == 'y1'}^^"),
+            NCTestElement("y3", "^^{tok_id() == 'y2'}^^ ^^{tok_id() == 'y2'}^^")
         )
 }
 

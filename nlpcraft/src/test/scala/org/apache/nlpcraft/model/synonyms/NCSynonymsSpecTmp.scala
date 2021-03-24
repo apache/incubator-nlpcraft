@@ -30,10 +30,10 @@ class NCSynonymsSpecModelTmp extends NCModelAdapter("nlpcraft.syns.test.mdl", "S
 
     override def getElements: util.Set[NCElement] =
         Set(
-            NCTestElement("wrapper", "^^{id() == 'unknown'}^^")
+            NCTestElement("wrapper", "^^{tok_id() == 'unknown'}^^")
         )
 
-    @NCIntent("intent=onWrapper term(t)={id() == 'wrapper'}")
+    @NCIntent("intent=onWrapper term(t)={tok_id() == 'wrapper'}")
     def onWrapper(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

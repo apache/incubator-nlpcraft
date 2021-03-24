@@ -50,9 +50,9 @@ public class PhoneModel extends NCModelFileAdapter {
      */
     @NCIntent("" +
         "intent=action " +
-        "term={id() == 'phone:act'} " +
+        "term={tok_id() == 'phone:act'} " +
         // Either organization, person or a phone number (or a combination of).
-        "term(rcpt)={id() == 'google:organization' || id() == 'google:person' || id() == 'google:phone_number'}[1,3]"
+        "term(rcpt)={has(list('google:organization', 'google:person', 'google:phone_number'), tok_id())}[1,3]"
     )
     @NCIntentSample({
         "Call to Apple office",

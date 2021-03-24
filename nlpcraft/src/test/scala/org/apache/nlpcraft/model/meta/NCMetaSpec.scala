@@ -36,7 +36,7 @@ class NcMetaModel extends NCAbstractTokensModel {
     @NCIntent(
         "intent=i " +
         "  term(t)={" +
-        "      id() == 'a' && " +
+        "      tok_id() == 'a' && " +
         "      meta_user('k1') == 'v1' && " +
         "      meta_company('k1') == 'v1' && " +
         "      meta_sys('k1') == 'v1'" +

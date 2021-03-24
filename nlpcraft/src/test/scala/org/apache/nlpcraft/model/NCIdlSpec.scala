@@ -38,15 +38,15 @@ class NCIdlSpecModel extends NCModelAdapter(
     // Moscow population filter.
     @NCIntent("intent=bigCity " +
         "term(city)={" +
-            "id() == 'nlpcraft:city' && " +
+            "tok_id() == 'nlpcraft:city' && " +
             "get(meta_token('nlpcraft:city:citymeta'), 'population') >= 10381222" +
         "}")
     private def onBigCity(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=otherCity term(city)={id() == 'nlpcraft:city'}")
+    @NCIntent("intent=otherCity term(city)={tok_id() == 'nlpcraft:city'}")
     private def onOtherCity(ctx: NCIntentMatch): NCResult = "OK"
 
-    @NCIntent("intent=userElement term(x)={id() == 'paris'}")
+    @NCIntent("intent=userElement term(x)={tok_id() == 'paris'}")
     private def onUserElement(ctx: NCIntentMatch): NCResult = "OK"
 }
 

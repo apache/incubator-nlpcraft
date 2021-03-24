@@ -16,14 +16,14 @@
  */
 
 // Fragments (mostly for demo purposes here).
-fragment=buzz term~{id() == 'x:alarm'}
+fragment=buzz term~{tok_id() == 'x:alarm'}
 fragment=when
     term(nums)~{
         // Demonstrating term variable.
         @type = meta_token('nlpcraft:num:unittype')
         @iseq = meta_token('nlpcraft:num:isequalcondition')
 
-        id() == 'nlpcraft:num' && @type == 'datetime' && @iseq == true
+        tok_id() == 'nlpcraft:num' && @type == 'datetime' && @iseq == true
     }[0,7]
 
 // Intents

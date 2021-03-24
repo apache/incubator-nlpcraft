@@ -29,16 +29,16 @@ class NCTokensRestrictionsModelAbstract extends NCModelAdapter(
 ) {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 
-    @NCIntent("intent=onA term(t)={id() == 'a'}+")
+    @NCIntent("intent=onA term(t)={tok_id() == 'a'}+")
     def onA(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onLimit term(t)={id() == 'nlpcraft:limit'} term(a)={id() == 'a'}")
+    @NCIntent("intent=onLimit term(t)={tok_id() == 'nlpcraft:limit'} term(a)={tok_id() == 'a'}")
     def onLimit(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onSort term(t)={id() == 'nlpcraft:sort'} term(a)={id() == 'a'}")
+    @NCIntent("intent=onSort term(t)={tok_id() == 'nlpcraft:sort'} term(a)={tok_id() == 'a'}")
     def onSort(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
-    @NCIntent("intent=onRelation term(t)={id() == 'nlpcraft:relation'} term(a)={id() == 'a'}[2,2]")
+    @NCIntent("intent=onRelation term(t)={tok_id() == 'nlpcraft:relation'} term(a)={tok_id() == 'a'}[2,2]")
     def onRelation(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

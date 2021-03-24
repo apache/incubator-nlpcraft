@@ -33,13 +33,13 @@ class NCNestedTestModel4 extends NCModelAdapter(
     override def getElements: util.Set[NCElement] =
         Set(
             NCTestElement("e1", "//[a-zA-Z0-9]+//"),
-            NCTestElement("e2", "the ^^{id() == 'e1'}^^")
+            NCTestElement("e2", "the ^^{tok_id() == 'e1'}^^")
         )
 
     override def getAbstractTokens: util.Set[String] = Set("e1").asJava
     override def getEnabledBuiltInTokens: util.Set[String] = Set.empty[String].asJava
 
-    @NCIntent("intent=onE2 term(t1)={id() == 'e2'}[8, 100]")
+    @NCIntent("intent=onE2 term(t1)={tok_id() == 'e2'}[8, 100]")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 

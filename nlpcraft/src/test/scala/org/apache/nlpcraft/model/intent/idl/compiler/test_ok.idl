@@ -21,7 +21,7 @@
 
 // Re-usable predicate #1.
 fragment=p1
-    term={id(find_part(token(), "alias")) == 2}
+    term={id(tok_find_part(token(), "alias")) == 2}
     term={meta_frag('a') && has_any(get(meta_frag('b'), 'Москва'), list(1, 2))}
     term(userDefined)=/org.apache.MyShit#myMethod/
 

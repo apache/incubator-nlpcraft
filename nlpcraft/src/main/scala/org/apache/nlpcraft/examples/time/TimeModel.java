@@ -41,8 +41,8 @@ import static java.time.format.FormatStyle.*;
  * See 'README.md' file in the same folder for running and testing instructions.
  */
 // Declaring intents on the class level for demo purposes.
-@NCIntent("intent=intent2 term~{id() == 'x:time'} term(city)~{id() == 'nlpcraft:city'}")
-@NCIntent("intent=intent1 term={id() == 'x:time'}")
+@NCIntent("intent=intent2 term~{tok_id() == 'x:time'} term(city)~{tok_id() == 'nlpcraft:city'}")
+@NCIntent("intent=intent1 term={tok_id() == 'x:time'}")
 public class TimeModel extends NCModelFileAdapter {
     // Medium data formatter.
     static private final DateTimeFormatter FMT = DateTimeFormatter.ofLocalizedDateTime(MEDIUM);
