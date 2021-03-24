@@ -45,6 +45,9 @@ class NCIdlFunctionsMath extends NCIdlFunctions {
             "floor(1.1) == 1.0",
             "rint(1.8) == 2.0",
             "round(1.8) == 2",
+            s"to_double(25) == 25.0",
+            s"to_double(25) != 25", // double != int without rounding.
+            s"round(to_double(25)) == 25",
             "signum(-1.8) == -1.0",
             "sqrt(4) - 2 < 0.001",
             "cbrt(8) - 2 < 0.001",

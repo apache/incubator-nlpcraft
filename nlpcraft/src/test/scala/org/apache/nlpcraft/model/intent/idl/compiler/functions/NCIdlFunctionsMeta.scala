@@ -28,8 +28,6 @@ import scala.sys.SystemProperties
 
 /**
   * Tests for 'meta' functions.
-  * TODO: add meta_model
-  * TODO: add meta_intent
   */
 class NCIdlFunctionsMeta extends NCIdlFunctions {
     @Test
@@ -38,40 +36,40 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
 
         sys.put("k1", "v1")
 
-        test("meta_sys")
+        testValue("meta_sys")
     }
 
     @Test
     def testMetaToken(): Unit =
-        test(
+        testValue(
             "meta_token",
             token = Some(tkn(meta = Map("k1" → "v1")))
         )
 
     @Test
     def testMetaRequest(): Unit =
-        test(
+        testValue(
             "meta_req",
             ctx(reqData = Map("k1" → "v1"))
         )
 
     @Test
     def testMetaConv(): Unit =
-        test(
+        testValue(
             "meta_conv",
             ctx(convMeta = Map("k1" → "v1"))
         )
 
     @Test
     def testMetaFrag(): Unit =
-        test(
+        testValue(
             "meta_frag",
             ctx(fragMeta = Map("k1" → "v1"))
         )
 
     @Test
     def testMetaUser(): Unit =
-        test(
+        testValue(
             "meta_user",
             ctx(usr =
                 new NCUser {
@@ -90,7 +88,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
 
     @Test
     def testMetaCompany(): Unit =
-        test(
+        testValue(
             "meta_company",
             ctx(comp =
                 new NCCompany {
@@ -108,8 +106,17 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
             )
         )
 
-    private def test(f: String, idlCtx: ⇒ NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
-        test(
-            TestDesc(truth = s"$f('k1') == 'v1'", token = token, idlCtx = idlCtx)
-        )
+    // Simplified test.
+    @Test
+    def testMetaModel(): Unit = testNoValue("meta_model", ctx())
+
+    // Simplified test.
+    @Test
+    def testMetaIntent(): Unit = testNoValue("meta_intent", ctx())
+
+    private def testValue(f: String, idlCtx: ⇒ NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
+        test(TestDesc(truth = s"$f('k1') == 'v1'", token = token, idlCtx = idlCtx))
+
+    private def testNoValue(f: String, idlCtx: ⇒ NCIdlContext = ctx(), token: Option[NCToken] = None): Unit =
+        test(TestDesc(truth = s"$f('k1') == null", token = token, idlCtx = idlCtx))
 }
