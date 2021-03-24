@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
-import org.apache.nlpcraft.common.ScalaMeta
+import org.apache.nlpcraft.common.{NCE, ScalaMeta}
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGlobal}
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlTerm}
 import org.apache.nlpcraft.model.{NCCompany, NCModel, NCModelView, NCRequest, NCToken, NCUser}
@@ -171,6 +171,17 @@ private[functions] trait NCIdlFunctions {
                             s"]"
                     )
             }
+        }
+
+    protected def testExpectedError(f: String): Unit =
+        try {
+            test(f)
+
+            require(false)
+        }
+        catch {
+            case e: NCE ⇒ println(s"Expected error: ${e.getLocalizedMessage}")
+            case e: Exception ⇒ throw e
         }
 
     protected implicit def convert(pred: String): TestDesc = TestDesc(truth = pred)

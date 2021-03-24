@@ -30,7 +30,27 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
             "strip(' a b  ') == 'a b'",
             "uppercase('aB') == 'AB'",
             "lowercase('aB') == 'ab'",
+            "is_alpha('aB') == true",
+            "is_alpha('aB1') == false",
+            "is_alphanum('aB1') == true",
+            "is_whitespace(' ') == true",
+            "is_whitespace('A') == false",
             "is_num('a') == false",
-            "is_num('1') == true"
+            "is_num('1') == true",
+            "is_numspace('A') == false",
+            "is_alphaspace('A') == true",
+            "is_alphanumspace('A') == true",
+            "is_alphanumspace(' ') == true",
+            "is_alphanumspace('1 A') == true",
+            "is_alphanumspace(' ') == true",
+            "is_alphanumspace('  ') == true",
+            "split('1 A') == list(1, 2)"
         )
+
+    @Test
+    def testError(): Unit = {
+        // TODO: add correct test for `split` and `split_trim`
+        testExpectedError("split('1 A') == true")
+        testExpectedError("split_trim('1 A') == true")
+    }
 }

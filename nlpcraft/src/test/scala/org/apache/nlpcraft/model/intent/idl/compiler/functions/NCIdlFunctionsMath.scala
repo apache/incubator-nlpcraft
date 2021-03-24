@@ -25,26 +25,15 @@ import org.junit.jupiter.api.Test
   * Tests for 'math' functions.
   */
 class NCIdlFunctionsMath extends NCIdlFunctions {
-    private def testError(f: String): Unit =
-        try {
-            test(f)
-
-            require(false)
-        }
-        catch {
-            case e: NCE ⇒ println(s"Expected error: ${e.getLocalizedMessage}")
-            case e: Exception ⇒ throw e
-        }
-
     @Test
     def testError(): Unit = {
         // Invalid name.
-        testError("xxx(1, 1)")
-        testError("xxx()")
+        testExpectedError("xxx(1, 1)")
+        testExpectedError("xxx()")
 
         // Invalid arguments count.
-        testError("atan(1, 1) == 1")
-        testError("pi(1)")
+        testExpectedError("atan(1, 1) == 1")
+        testExpectedError("pi(1)")
     }
 
     @Test
