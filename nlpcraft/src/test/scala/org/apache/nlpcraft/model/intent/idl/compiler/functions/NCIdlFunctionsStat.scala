@@ -45,6 +45,8 @@ class NCIdlFunctionsStat extends NCIdlFunctions {
             "avg(list(1.2, 2.2, 3.2)) == 2.2",
             "avg(list(1, 2.2, 3.1)) == 2.1",
             "stdev(list(1, 2.2, 3.1)) > 0",
+            "stdev(list(1, 2, 3)) > 0",
             "stdev(list(0.0, 0.0, 0.0)) == 0.0",
+            "stdev(list(0, 0, 0)) == 0.0",
         )
 }
