@@ -56,7 +56,15 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
             "split_trim('1 A    ', ' ') == list('1', 'A')",
             "is_empty('a') == false",
             "non_empty('a') == true",
+            "non_empty('a ') == true",
             "is_empty('') == true",
+            "length(' ') == 1",
+            "length('') == 0",
+            "to_double('1.1') == 1.1",
+            "to_double('1') == 1",
+            "to_double('1') == 1.0",
+            "to_int('1') == 1",
+            "to_int('1') == 1.0",
 
             // Whitespaces.
             "replace('abc', 'ab',  '') == 'c'",
@@ -73,5 +81,7 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
         expectError("substr('abc', 10, 30) == 'bc'")
         expectError("split('1 A') == true")
         expectError("split_trim('1 A') == true")
+        expectError("to_double('1, 1') == true")
+        expectError("to_double('A') == true")
     }
 }
