@@ -211,6 +211,7 @@ FUN_NAME
     | 'cbrt'
     | 'pi'
     | 'to_double'
+    | 'to_int'
     | 'euler'
     | 'acos'
     | 'asin'

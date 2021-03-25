@@ -807,6 +807,25 @@ trait NCIdlCompilerBase {
             })
         }
 
+        def doToInt(): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                if (isReal(v))
+                    Z(Math.round(asReal(v)), n)
+                else if (isStr(v))
+                    try
+                        Z(toStr(v).toLong, n)
+                    catch {
+                        case e: Exception ⇒ throw newRuntimeError(s"Invalid int value '$v' in IDL function: $fun()", e)
+                    }
+                else
+                    throw rtParamTypeError(fun, v, "double or string")
+            })
+        }
+
         def doMax(): Unit = {
             val x = arg1()
 
@@ -1140,6 +1159,7 @@ trait NCIdlCompilerBase {
             case "substr" ⇒ doSubstr()
             case "replace" ⇒ doReplace()
             case "to_double" ⇒ doToDouble()
+            case "to_int" ⇒ doToInt()
 
             // Math functions.
             case "abs" ⇒ doAbs()
