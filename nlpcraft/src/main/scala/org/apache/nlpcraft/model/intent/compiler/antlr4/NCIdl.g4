@@ -72,8 +72,19 @@ termEq
 term: 'term' termId? termEq ((LBRACE vars? expr RBRACE) | mtdDecl) minMax?;
 mtdRef: javaFqn? POUND id;
 javaFqn
+    : javaClass
+    | javaFqn DOT javaClass
+    ;
+javaClass
     : id
-    | javaFqn DOT id
+    // We need to include keywords to make sure they don't conflict.
+    | IMPORT
+    | INTENT
+    | ORDERED
+    | FLOW
+    | META
+    | TERM
+    | FRAG
     ;
 termId: LPAR id RPAR;
 expr

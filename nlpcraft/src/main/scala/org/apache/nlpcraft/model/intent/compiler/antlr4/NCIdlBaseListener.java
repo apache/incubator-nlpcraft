@@ -328,6 +328,18 @@ public class NCIdlBaseListener implements NCIdlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterJavaClass(NCIdlParser.JavaClassContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitJavaClass(NCIdlParser.JavaClassContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTermId(NCIdlParser.TermIdContext ctx) { }
 	/**
 	 * {@inheritDoc}

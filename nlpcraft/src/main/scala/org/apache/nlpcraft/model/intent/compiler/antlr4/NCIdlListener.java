@@ -268,6 +268,16 @@ public interface NCIdlListener extends ParseTreeListener {
 	 */
 	void exitJavaFqn(NCIdlParser.JavaFqnContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NCIdlParser#javaClass}.
+	 * @param ctx the parse tree
+	 */
+	void enterJavaClass(NCIdlParser.JavaClassContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIdlParser#javaClass}.
+	 * @param ctx the parse tree
+	 */
+	void exitJavaClass(NCIdlParser.JavaClassContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NCIdlParser#termId}.
 	 * @param ctx the parse tree
 	 */
