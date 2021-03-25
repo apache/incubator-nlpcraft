@@ -141,9 +141,9 @@ class NCMetaSpec extends NCRestSpec {
             require(getClient.ask("a").isOk)
         }
         finally {
-            runTest(currUserCompMeta)
-
             sys.remove("k1")
+
+            runTest(currUserCompMeta)
         }
     }
 }

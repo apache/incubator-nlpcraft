@@ -39,13 +39,17 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
 
         sys.put("k1", "v1")
 
-        val js = "{\"k1\": \"v1\"}"
+        try {
+            val js = "{\"k1\": \"v1\"}"
 
-        // JSON.
-        test(
-            s"has(keys(json('$js')), 'k1') == true",
-            s"has(keys(json('$js')), 'k2') == false"
-        )
+            // JSON.
+            test(
+                s"has(keys(json('$js')), 'k1') == true",
+                s"has(keys(json('$js')), 'k2') == false"
+            )
+        }
+        finally
+            sys.remove("k1")
     }
 
     @Test

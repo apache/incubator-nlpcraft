@@ -36,7 +36,10 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
 
         sys.put("k1", "v1")
 
-        testValue("meta_sys")
+        try
+            testValue("meta_sys")
+        finally
+            sys.remove("k1")
     }
 
     @Test
