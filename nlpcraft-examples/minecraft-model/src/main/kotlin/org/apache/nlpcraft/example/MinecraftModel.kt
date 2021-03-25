@@ -69,8 +69,9 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     @NCIntentSample(
         "give me iron sword",
         "give me 10 grass blocks",
-        "give PlayerName a jigsaw",
-        "give PlayerName 1 kilogram of feathers"
+        "give #PlayerName a jigsaw",
+        "give #PlayerName 1 kilogram of feathers",
+        "give potion to me"
     )
     fun onGiveMatch(
         ctx: NCIntentMatch,
@@ -95,7 +96,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "make a cube of gold near me",
         "make a line of grass with length of 2 near me",
 
-        "create a rectangle of dirt in front of PlayerName",
+        "create a rectangle of dirt in front of #PlayerName",
         "make a box of sand with the size of 2 10 meters in front of me"
     )
     fun onFillMatch(

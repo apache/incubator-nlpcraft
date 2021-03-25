@@ -24,16 +24,15 @@ description: Minecraft Model.
 ]
 
 macros:
-  - name: "<PLAYER_NAME>"
-    macro: "{me|I|my|//[a-zA-Z0-9]+//}"
-#  - name: "<PLAYER_NAME>"
-#    macro: "{me|I|my}"
+  - name: "<PLAYER_NICKNAME>"
+    macro: "{//[a-zA-Z0-9]+//}"
+
 
 elements:
   # General synonyms
   - id: mc:player
     synonyms:
-      - "<PLAYER_NAME>"
+      - "{I|me|my|#<PLAYER_NICKNAME>}"
   - id: mc:item
     metadata:
       mc:type: item
@@ -102,8 +101,6 @@ elements:
   - id: give:action
     synonyms:
       - "{give ^^[target]{tok_id() == 'mc:player'}^^}"
-    jiggleFactor: 0
-    permutateSynonyms: false
   - id: give:block-word
     synonyms:
       - "{block|blocks}"
@@ -133,16 +130,12 @@ elements:
       - fill:position
     synonyms:
       - "{{at|near} ^^[player]{tok_id() == 'mc:player'}^^ {position|_}|where ^^[player]{tok_id() == 'mc:player'}^^}"
-    jiggleFactor: 0
-    permutateSynonyms: false
 
   - id: position:front
     groups:
       - fill:position
     synonyms:
       - "{{^^[distance]{tok_id() == 'nlpcraft:num'}^^|_} {in|_} front {of|_} ^^[player]{tok_id() == 'mc:player'}^^}"
-    jiggleFactor: 0
-    permutateSynonyms: false
 
 # List of model intents.
 intents:
