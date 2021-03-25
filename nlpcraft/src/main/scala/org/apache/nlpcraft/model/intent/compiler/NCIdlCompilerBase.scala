@@ -995,6 +995,36 @@ trait NCIdlCompilerBase {
             })
         }
 
+        def doLength(): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                if (isList(v))
+                    Z(asList(v).size(), n)
+                else if (isStr(v))
+                    Z(asStr(v), n)
+                else
+                    throw rtParamTypeError(fun, v, "string or list")
+            })
+        }
+
+        def doIsEmpty(empty: Boolean): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                if (isList(v))
+                    Z(asList(v).isEmpty == empty, n)
+                else if (isStr(v))
+                    Z(asStr(v).isEmpty == empty, n)
+                else
+                    throw rtParamTypeError(fun, v, "string or list")
+            })
+        }
+
         def z[Y](args: () ⇒ Y, body: Y ⇒ Z): Unit = { val x = args(); stack.push(() ⇒ body(x)) }
         def z0(body: () ⇒ Z): Unit = { popMarker(0); stack.push(() ⇒ body()) }
 
@@ -1139,13 +1169,15 @@ trait NCIdlCompilerBase {
             case "last" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); val lst = toList(v); Z(if (lst.isEmpty) null else lst.get(lst.size() - 1).asInstanceOf[Object], n)})
             case "keys" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toMap(v).keySet()), n) })
             case "values" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(new util.ArrayList(toMap(v).values()), n) })
-            case "size" | "count" | "length" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toList(v).size(), n)})
             case "reverse" ⇒ doReverse()
             case "sort" ⇒ doSort()
-            case "is_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(toList(v).isEmpty, n) })
-            case "non_empty" ⇒ z[ST](arg1, { x ⇒ val Z(v, n) = x(); Z(!toList(v).isEmpty, n) })
+            case "is_empty" ⇒ doIsEmpty(true)
+            case "non_empty" ⇒ doIsEmpty(false)
             case "distinct" ⇒ doDistinct()
             case "concat" ⇒ doConcat()
+
+            // Applies to strings as well.
+            case "size" | "count" | "length" ⇒ doLength()
 
             // Misc.
             case "to_string" ⇒ doToString()

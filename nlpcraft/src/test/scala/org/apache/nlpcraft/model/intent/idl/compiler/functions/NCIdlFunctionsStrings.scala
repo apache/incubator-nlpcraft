@@ -54,6 +54,9 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
             "replace('abc', '0',  '0') == 'abc'",
             "split('1 A', ' ') == list('1', 'A')",
             "split_trim('1 A    ', ' ') == list('1', 'A')",
+            "is_empty('a') == false",
+            "non_empty('a') == true",
+            "is_empty('') == true",
 
             // Whitespaces.
             "replace('abc', 'ab',  '') == 'c'",
