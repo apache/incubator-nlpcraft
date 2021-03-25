@@ -1042,7 +1042,7 @@ trait NCIdlCompilerBase {
                 if (isList(v))
                     Z(asList(v).size(), n)
                 else if (isStr(v))
-                    Z(asStr(v), n)
+                    Z(asStr(v).length, n)
                 else
                     throw rtParamTypeError(fun, v, "string or list")
             })
