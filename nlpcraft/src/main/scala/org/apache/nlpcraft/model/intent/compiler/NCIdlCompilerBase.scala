@@ -719,7 +719,7 @@ trait NCIdlCompilerBase {
 
                 try
                     if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
+                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
                     else
                         Z(Collections.min(lst, null), n)
                 catch {
@@ -738,7 +738,7 @@ trait NCIdlCompilerBase {
 
                 try
                     if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
+                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
                     else {
                         val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
 
@@ -760,7 +760,7 @@ trait NCIdlCompilerBase {
 
                 try
                     if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
+                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
                     else {
                         val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
 
@@ -788,6 +788,25 @@ trait NCIdlCompilerBase {
             })
         }
 
+        def doToDouble(): Unit = {
+            val x = arg1()
+
+            stack.push(() ⇒ {
+                val Z(v, n) = x()
+
+                if (isInt(v))
+                    Z(asInt(v).toDouble, n)
+                else if (isStr(v))
+                    try
+                        Z(toStr(v).toDouble, n)
+                    catch {
+                        case e: Exception ⇒ throw newRuntimeError(s"Invalid double value '$v' in IDL function: $fun()", e)
+                    }
+                else
+                    throw rtParamTypeError(fun, v, "int or string")
+            })
+        }
+
         def doMax(): Unit = {
             val x = arg1()
 
@@ -798,7 +817,7 @@ trait NCIdlCompilerBase {
 
                 try
                     if (lst.isEmpty)
-                        throw newRuntimeError(s"Unexpected empty list in IDL function '$fun()'.")
+                        throw newRuntimeError(s"Unexpected empty list in IDL function: $fun()")
                     else
                         Z(Collections.max(lst, null), n)
                 catch {
@@ -1120,6 +1139,7 @@ trait NCIdlCompilerBase {
             case "index_of" ⇒ doIndexOf()
             case "substr" ⇒ doSubstr()
             case "replace" ⇒ doReplace()
+            case "to_double" ⇒ doToDouble()
 
             // Math functions.
             case "abs" ⇒ doAbs()
@@ -1157,7 +1177,6 @@ trait NCIdlCompilerBase {
             case "pi" ⇒ z0(() ⇒ Z(Math.PI, 0))
             case "euler" ⇒ z0(() ⇒ Z(Math.E, 0))
             case "rand" ⇒ z0(() ⇒ Z(Math.random, 0))
-            case "to_double" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(toDouble(v).toDouble, f) })
 
             // Collection functions.
             case "list" ⇒ doList()
