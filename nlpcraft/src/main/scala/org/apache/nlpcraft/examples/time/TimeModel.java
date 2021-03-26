@@ -40,8 +40,9 @@ import static java.time.format.FormatStyle.*;
  * <p>
  * See 'README.md' file in the same folder for running and testing instructions.
  */
-// Declaring intents on the class level for demo purposes.
-@NCIntent("intent=intent2 term~{tok_id() == 'x:time'} term(city)~{tok_id() == 'nlpcraft:city'}")
+// Declaring intents on the class level + fragment usage for demo purposes.
+@NCIntent("fragment=city term(city)~{tok_id() == 'nlpcraft:city'}")
+@NCIntent("intent=intent2 term~{tok_id() == 'x:time'} fragment(city)")
 @NCIntent("intent=intent1 term={tok_id() == 'x:time'}")
 public class TimeModel extends NCModelFileAdapter {
     // Medium data formatter.
