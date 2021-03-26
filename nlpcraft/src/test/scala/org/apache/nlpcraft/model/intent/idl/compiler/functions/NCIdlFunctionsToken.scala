@@ -105,8 +105,6 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
                 truth = "tok_end_idx() == 123",
                 token = tkn(end = 123)
             ),
-            TestDesc(
-                truth = "tok_this() == tok_this()"
-            )
+            TestDesc(truth = "tok_this() == tok_this()")
         )
 }

@@ -20,32 +20,35 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 import org.junit.jupiter.api.Test
 
 /**
-  * Tests for 'stat' functions.
+  * Tests for 'tokens used' result.
   */
-class NCIdlFunctionsStat extends NCIdlFunctions {
-    @Test
-    def testError(): Unit =
-        expectError(
-            "avg(list()) == 2",
-            "avg(list('A')) == 2",
-            "stdev(list()) == 2",
-            "stdev(list('A')) == 2"
-        )
-
+class NCIdlFunctionsTokensUsed extends NCIdlFunctions {
     @Test
     def test(): Unit =
         test(
-            "max(list(1, 2, 3)) == 3",
-            "max(list(1.0, 2.0, 3.0)) == 3.0",
-            "min(list(1, 2, 3)) == 1",
-            "min(list(1.0, 2.0, 3.0)) == 1.0",
-            "avg(list(1.0, 2.0, 3.0)) == 2.0",
-            "avg(list(1, 2, 3)) == 2.0",
-            "avg(list(1.2, 2.2, 3.2)) == 2.2",
-            "avg(list(1, 2.2, 3.1)) == 2.1",
-            "stdev(list(1, 2.2, 3.1)) > 0",
-            "stdev(list(1, 2, 3)) > 0",
-            "stdev(list(0.0, 0.0, 0.0)) == 0.0",
-            "stdev(list(0, 0, 0)) == 0.0"
+            TestDesc(
+                truth = "1 == 1",
+                tokensUsed = Some(0)
+            ),
+            TestDesc(
+                truth = "tok_id() == 'a'",
+                token = Some(tkn(id = "a")),
+                tokensUsed = Some(1)
+            ),
+            TestDesc(
+                truth = "tok_id() == 'a' && tok_id() == 'a'",
+                token = Some(tkn(id = "a")),
+                tokensUsed = Some(2)
+            ),
+            TestDesc(
+                truth = "tok_id() == 'a' && tok_parent() == 'b'",
+                token = Some(tkn(id = "a", parentId = "b")),
+                tokensUsed = Some(2)
+            ),
+            TestDesc(
+                truth = "tok_id() == 'a' && tok_id() == 'a' && tok_parent() == 'b'",
+                token = Some(tkn(id = "a", parentId = "b")),
+                tokensUsed = Some(3)
+            )
         )
 }

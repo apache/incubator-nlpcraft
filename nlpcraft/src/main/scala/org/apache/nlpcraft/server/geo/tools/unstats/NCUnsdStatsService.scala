@@ -72,7 +72,7 @@ object NCUnsdStatsService {
     private val codesPath = s"$dir/codes.txt"
 
     private def read(path: String): Seq[String] =
-        U.readPath(path, "UTF-8").map(_.strip).filter(_.nonEmpty).filter(_.head != '#')
+        U.readPath(path).map(_.strip).filter(_.nonEmpty).filter(_.head != '#')
 
     def skip(iso: String): Boolean = SKIPPED_COUNTRIES_ISO3.contains(iso)
 

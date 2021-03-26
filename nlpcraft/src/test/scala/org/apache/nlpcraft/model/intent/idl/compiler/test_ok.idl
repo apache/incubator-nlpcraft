@@ -56,3 +56,5 @@ intent=i3
             list("موسكو\"", 'v1\'v1', "k2", "v2")
         )
     }
+
+intent=i4 flow=/#flowModelMethod/ term(t1)=/#termModelMethod/

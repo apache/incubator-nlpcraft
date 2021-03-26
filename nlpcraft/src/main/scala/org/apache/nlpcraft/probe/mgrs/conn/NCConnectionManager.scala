@@ -17,13 +17,6 @@
 
 package org.apache.nlpcraft.probe.mgrs.conn
 
-import java.io.{EOFException, IOException, InterruptedIOException}
-import java.net.{InetAddress, NetworkInterface}
-import java.util
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.{Properties, TimeZone}
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.config.NCConfigurable
@@ -35,6 +28,11 @@ import org.apache.nlpcraft.probe.mgrs.NCProbeMessage
 import org.apache.nlpcraft.probe.mgrs.cmd.NCCommandManager
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
+import java.io.{EOFException, IOException, InterruptedIOException}
+import java.net.{InetAddress, NetworkInterface}
+import java.util
+import java.util.concurrent.CountDownLatch
+import java.util.{Properties, TimeZone}
 import scala.collection.mutable
 
 /**
@@ -176,11 +174,11 @@ object NCConnectionManager extends NCService {
                 val ver = NCVersion.getCurrent
                 val tmz = TimeZone.getDefault
     
-                val srvNlpEng =
+                val srvNlpEng: String =
                     hashResp.getOrElse(
                         "NLP_ENGINE",
                         throw new HandshakeError("NLP engine parameter missed in response.")
-                    )
+                    ).asInstanceOf[String]
 
                 val probeNlpEng = NCNlpCoreManager.getEngine
 

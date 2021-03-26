@@ -18,15 +18,15 @@
 package org.apache.nlpcraft.model.intent.solver
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
-import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
-import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlTerm, NCIdlStackItem ⇒ Z}
+import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
+import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
 import scala.collection.JavaConverters._
@@ -435,31 +435,31 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val str = flow.map(_.getIntentId).mkString(" ")
 
             def x(s: String): Unit = {
-                logger.info(s"Intent '$intentId' ${bo(s)} regex dialog flow $varStr:")
+                logger.info(s"Intent '$intentId' $s regex dialog flow $varStr:")
                 logger.info(s"  |-- ${c("Intent IDs  :")} $str")
                 logger.info(s"  +-- ${c("Match regex :")} ${flowRegex.get.toString}")
             }
 
             if (!flowRegex.get.matcher(str).find(0)) {
-                x("did not match")
+                x(s"${bo(r("did not match"))}")
 
                 flowMatched = false
             }
             else
-                x("matched")
+                x(s"matched")
         }
         else if (intent.flowMtdName.isDefined) {
-            require(intent.flowClsName.isDefined)
-
-            val clsName = intent.flowClsName.get
+            val clsName = intent.flowClsName.orNull
             val mtdName = intent.flowMtdName.get
-            
-            val fqn = s"$clsName.$mtdName(java.util.List[NCDialogFlowItem])"
-            
+
+            val fqn =
+                s"${if (clsName == null) ctx.getModel.getClass.getName else clsName}." +
+                s"$mtdName(java.util.List[NCDialogFlowItem])"
+
             val res =
                 try
                     U.callMethod[java.util.List[NCDialogFlowItem], java.lang.Boolean](
-                        U.mkObject(clsName),
+                        () ⇒ if (clsName == null) ctx.getModel else U.mkObject(clsName),
                         mtdName,
                         flow.toList.asJava
                     )
@@ -469,12 +469,12 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 }
 
             def x(s: String): Unit = {
-                logger.info(s"Intent '$intentId' ${bo(s)} custom flow callback $varStr:")
+                logger.info(s"Intent '$intentId' $s custom flow callback $varStr:")
                 logger.info(s"  +-- ${c("Custom callback :")} $fqn")
             }
 
             if (!res) {
-                x("did not match")
+                x(s"${bo(r("did not match"))}")
         
                 flowMatched = false
             }
@@ -541,7 +541,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                     case None ⇒
                         // Term is missing. Stop further processing for this intent. This intent cannot be matched.
-                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$term' $varStr.")
+                        logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because of unmatched term '$term' $varStr.")
 
                         abort = true
                 }
@@ -557,15 +557,15 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 var res: Option[IntentMatch] = None
 
                 if (usedSenToks.isEmpty && usedConvToks.isEmpty)
-                    logger.info(s"Intent '$intentId' ${r("did not")} match because no tokens were matched $varStr.")
+                    logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because no tokens were matched $varStr.")
                 else if (usedSenToks.isEmpty && usedConvToks.nonEmpty)
-                    logger.info(s"Intent '$intentId' ${r("did not")} match because all its matched tokens came from STM $varStr.")
+                    logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because all its matched tokens came from STM $varStr.")
                 else if (unusedSenToks.exists(_.token.isUserDefined))
                     NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isUserDefined).map(_.token)).
                         info(
                             logger,
                             Some(
-                                s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr." +
+                                s"Intent '$intentId' ${bo(r("did not match"))} because of remaining unused user tokens $varStr." +
                                 s"\nUnused user tokens for intent '$intentId' $varStr:"
                             )
                         )

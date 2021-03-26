@@ -77,11 +77,12 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
         )
 
     @Test
-    def testError(): Unit = {
-        expectError("substr('abc', 10, 30) == 'bc'")
-        expectError("split('1 A') == true")
-        expectError("split_trim('1 A') == true")
-        expectError("to_double('1, 1') == true")
-        expectError("to_double('A') == true")
-    }
+    def testError(): Unit =
+        expectError(
+            "substr('abc', 10, 30) == 'bc'",
+            "split('1 A') == true",
+            "split_trim('1 A') == true",
+            "to_double('1, 1') == true",
+            "to_double('A') == true"
+        )
 }

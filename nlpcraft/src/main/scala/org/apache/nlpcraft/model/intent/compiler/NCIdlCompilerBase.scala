@@ -386,7 +386,7 @@ trait NCIdlCompilerBase {
     def parseEqNeqExpr(eq: TN, neq: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
-        def doEq(op: String, v1: Object, v2: Object): Boolean = {
+        def doEq(v1: Object, v2: Object): Boolean = {
             if (v1 eq v2) true
             else if (v1 == null && v2 == null) true
             else if ((v1 == null && v2 != null) || (v1 != null && v2 == null)) false
@@ -405,11 +405,11 @@ trait NCIdlCompilerBase {
 
             val f =
                 if (eq != null)
-                    doEq("==", v1, v2)
+                    doEq(v1, v2)
                 else {
                     assert(neq != null)
 
-                    !doEq("!='", v1, v2)
+                    !doEq(v1, v2)
                 }
 
             Z(f, n)
@@ -742,7 +742,7 @@ trait NCIdlCompilerBase {
                     else {
                         val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
 
-                        Z(seq.sum / seq.size, n)
+                        Z(seq.sum / seq.length, n)
                     }
                 catch {
                     case e: Exception ⇒ throw rtListTypeError(fun, e)

@@ -25,15 +25,15 @@ import org.junit.jupiter.api.Test
   */
 class NCIdlFunctionsMath extends NCIdlFunctions {
     @Test
-    def testError(): Unit = {
-        // Invalid name.
-        expectError("xxx(1, 1)")
-        expectError("xxx()")
-
-        // Invalid arguments count.
-        expectError("atan(1, 1) == 1")
-        expectError("pi(1)")
-    }
+    def testError(): Unit =
+        expectError(
+            // Invalid name.
+            "xxx(1, 1)",
+            "xxx()",
+            // Invalid arguments count.
+            "atan(1, 1) == 1",
+            "pi(1)"
+        )
 
     @Test
     def test(): Unit =

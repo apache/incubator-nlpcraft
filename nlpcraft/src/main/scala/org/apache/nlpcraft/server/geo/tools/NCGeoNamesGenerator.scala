@@ -74,7 +74,7 @@ object NCGeoNamesGenerator extends App {
     // GEO name ID → internal representation mapping.
     private val ids = mutable.Map.empty[String, Location]
 
-    private def read(path: String): Seq[String] = U.readPath(path, "UTF-8").filter(!_.startsWith("#"))
+    private def read(path: String): Seq[String] = U.readPath(path).filter(!_.startsWith("#"))
 
     // Process country and continent information.
     private def processCountries(unsdContinents: Seq[NCUnsdStatsContinent]): Set[Country] = {

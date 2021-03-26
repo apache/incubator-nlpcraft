@@ -43,7 +43,7 @@ object NCGeoMetroGenerator extends App {
         U.normalize(s.replaceAll("\\(", " ").replaceAll("\\)", " "), " ")
 
     private def generate() {
-        val lines = U.readPath(in, "UTF-8").map(_.strip).filter(_.nonEmpty)
+        val lines = U.readPath(in).map(_.strip).filter(_.nonEmpty)
 
        // Skips header.
         val metro = lines.tail.filter(!_.contains("(not set)")).map(line ⇒ Holder(line.takeWhile(_ != ',')))

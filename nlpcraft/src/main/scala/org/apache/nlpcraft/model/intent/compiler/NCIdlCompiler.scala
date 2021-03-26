@@ -77,9 +77,11 @@ object NCIdlCompiler extends LazyLogging {
         private var min = 1
         private var max = 1
 
-        // Current method reference.
-        private var refClsName: Option[String] = None
-        private var refMtdName: Option[String] = None
+        // Class & method reference.
+        private var clsName: Option[String] = None
+        private var mtdName: Option[String] = None
+        private var flowClsName: Option[String] = None
+        private var flowMtdName: Option[String] = None
 
         // List of instructions for the current expression.
         private var expr = mutable.Buffer.empty[SI]
@@ -185,10 +187,8 @@ object NCIdlCompiler extends LazyLogging {
         }
 
         override def exitMtdRef(ctx: IDP.MtdRefContext): Unit = {
-            if (ctx.javaFqn() != null)
-                refClsName = Some(ctx.javaFqn().getText)
-
-            refMtdName = Some(ctx.id().getText)
+            clsName = if (ctx.javaFqn() != null) Some(ctx.javaFqn().getText) else None
+            mtdName = Some(ctx.id().getText)
         }
 
         override def exitTermId(ctx: IDP.TermIdContext): Unit = {
@@ -256,6 +256,9 @@ object NCIdlCompiler extends LazyLogging {
 
         override def exitFlowDecl(ctx: IDP.FlowDeclContext): Unit = {
             if (ctx.qstring() != null) {
+                flowClsName = None
+                flowMtdName = None
+                
                 val regex = U.trimQuotes(ctx.qstring().getText)
 
                 if (regex != null && regex.length > 2)
@@ -269,6 +272,13 @@ object NCIdlCompiler extends LazyLogging {
                             newSyntaxError(s"${e.getDescription} in intent flow regex '${e.getPattern}' near index ${e.getIndex}.")(ctx.qstring())
                     }
             }
+            else {
+                flowClsName = clsName
+                flowMtdName = mtdName
+            }
+            
+            clsName = None
+            mtdName = None
         }
 
         override def exitTerm(ctx: IDP.TermContext): Unit = {
@@ -276,11 +286,11 @@ object NCIdlCompiler extends LazyLogging {
                 throw newSyntaxError(s"Invalid intent term min quantifiers: $min (must be min >= 0 && min <= max).")(ctx.minMax())
             if (max < 1)
                 throw newSyntaxError(s"Invalid intent term max quantifiers: $max (must be max >= 1).")(ctx.minMax())
-
-            val pred: NCIdlFunction = if (refMtdName.isDefined) { // User-code defined term.
+                
+            val pred: NCIdlFunction = if (mtdName.isDefined) { // User-code defined term.
                 // Closure copies.
-                val clsName = refClsName.orNull
-                val mtdName = refMtdName.orNull
+                val cls = clsName.orNull
+                val mtd = mtdName.orNull
 
                 (tok: NCToken, termCtx: NCIdlContext) ⇒ {
                     val javaCtx: NCTokenPredicateContext = new NCTokenPredicateContext {
@@ -294,12 +304,12 @@ object NCIdlCompiler extends LazyLogging {
                     }
 
                     val mdl = tok.getModel
-                    val mdlCls = if (clsName == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else clsName
+                    val mdlCls = if (cls == null) mdl.meta[String](MDL_META_MODEL_CLASS_KEY) else cls
 
                     try {
                         val res = U.callMethod[NCTokenPredicateContext, NCTokenPredicateResult](
-                            () ⇒ if (clsName == null) mdl else U.mkObject(clsName),
-                            mtdName,
+                            () ⇒ if (cls == null) mdl else U.mkObject(cls),
+                            mtd,
                             javaCtx
                         )
 
@@ -307,7 +317,7 @@ object NCIdlCompiler extends LazyLogging {
                     }
                     catch {
                         case e: Exception ⇒
-                            throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtdName", e)(ctx.mtdDecl())
+                            throw newRuntimeError(s"Failed to invoke custom intent term: $mdlCls.$mtd(...)", e)(ctx.mtdDecl())
                     }
                 }
             }
@@ -330,8 +340,8 @@ object NCIdlCompiler extends LazyLogging {
             termId = null
             expr.clear()
             vars.clear()
-            refClsName = None
-            refMtdName = None
+            clsName = None
+            mtdName = None
         }
 
         /**
@@ -451,14 +461,14 @@ object NCIdlCompiler extends LazyLogging {
                     ordered,
                     if (intentMeta == null) Map.empty else intentMeta,
                     flowRegex,
-                    refClsName,
-                    refMtdName,
+                    flowClsName,
+                    flowMtdName,
                     terms.toList
                 )
             )(ctx.intentId())
 
-            refClsName = None
-            refMtdName = None
+            flowClsName = None
+            flowMtdName = None
             intentMeta = null
             terms.clear()
         }

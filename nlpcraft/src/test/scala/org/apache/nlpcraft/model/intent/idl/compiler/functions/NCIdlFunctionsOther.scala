@@ -53,10 +53,19 @@ class NCIdlFunctionsOther extends NCIdlFunctions {
     }
 
     @Test
-    def test3(): Unit = {
+    def test3(): Unit =
         test(
-            s"to_string(list(1, 2, 3)) == list('1', '2', '3')",
+            "to_string(list(1, 2, 3)) == list('1', '2', '3')",
             "to_string(3.123) == '3.123'"
         )
-    }
+
+    @Test
+    def test4(): Unit =
+        test(
+            "true",
+            "true == true",
+            "false == false",
+            "false != true",
+            "true != false"
+        )
 }

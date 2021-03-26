@@ -860,7 +860,7 @@ object NCUtils extends LazyLogging {
      * @param path File path.
      */
     @throws[NCE]
-    def serializePath(path: String, obj: Any): Unit = {
+    def serializePath(path: String, obj: Any): Unit =
         try {
             manageOutput(new FileOutputStream(path)) acquireAndGet { out ⇒
                 out.writeObject(obj)
@@ -871,7 +871,6 @@ object NCUtils extends LazyLogging {
         catch {
             case e: IOException ⇒ throw new NCE(s"Error writing file: $path", e)
         }
-    }
 
     /**
       * Serializes data from file.
@@ -1945,35 +1944,74 @@ object NCUtils extends LazyLogging {
     }
     
     /**
-      *
+      * Calling a method with one parameter and a non-null return value.
+     *
       * @param objFac
       * @param mtdName
       * @param arg
       * @tparam T
       * @return
       */
-    def callMethod[T: ClassTag, R](objFac: () ⇒ Object, mtdName: String, arg: T): R = {
-        val obj = objFac()
-        val mtd = obj.getClass.getMethod(mtdName, classTag[T].runtimeClass)
-    
-        var flag = mtd.canAccess(obj)
-    
+    @throws[NCE]
+    def callMethod[T: ClassTag, R: ClassTag](objFac: () ⇒ Any, mtdName: String, arg: T): R =
         try {
-            if (!flag) {
-                mtd.setAccessible(true)
-            
-                flag = true
+            val obj: Any = objFac()
+
+            if (obj == null)
+                throw new NCE(s"Invalid 'null' object created attempting to call method: $mtdName")
+
+            val argCls = classTag[T].runtimeClass
+            val retCls = classTag[R].runtimeClass
+
+            def mkErrors = s"[" +
+                s"name=${obj.getClass.getName}#$mtdName(...), " +
+                s"argType=${argCls.getCanonicalName}, " +
+                s"retType=${retCls.getCanonicalName}" +
+            s"]"
+
+            val mtd =
+                try
+                    obj.getClass.getMethod(mtdName, argCls)
+                catch {
+                    case e: NoSuchMethodException ⇒ throw new NCE(s"Method not found $mkErrors", e)
+                }
+
+            var flag = mtd.canAccess(obj)
+
+            try {
+                if (!flag) {
+                    mtd.setAccessible(true)
+
+                    flag = true
+                }
+                else
+                    flag = false
+
+                val res =
+                    try
+                        mtd.invoke(obj, arg.asInstanceOf[Object])
+                    catch {
+                        case e: Throwable ⇒ throw new NCE(s"Failed to execute method $mkErrors", e)
+                    }
+
+                if (res == null)
+                    throw new NCE(s"Unexpected 'null' result for method execution $mkErrors")
+
+                try
+                    res.asInstanceOf[R]
+                catch {
+                    case e: ClassCastException ⇒ throw new NCE(s"Invalid method result type $mkErrors", e)
+                }
             }
-            else
-                flag = false
-        
-            mtd.invoke(obj, arg.asInstanceOf[Object]).asInstanceOf[R]
+            finally {
+                if (flag)
+                    mtd.setAccessible(false)
+            }
         }
-        finally {
-            if (flag)
-                mtd.setAccessible(false)
+        catch {
+            case e: NCE ⇒ throw e
+            case e: Throwable ⇒ throw new NCE(s"Unexpected error calling method: $mtdName(...)", e)
         }
-    }
 
     /**
       *
@@ -1981,6 +2019,7 @@ object NCUtils extends LazyLogging {
       * @tparam T Type of the object to create.
       * @return New instance of the specified type.
       */
+    @throws[NCE]
     def mkObject[T](clsName: String): T = {
         try
             // Try Java reflection first.
