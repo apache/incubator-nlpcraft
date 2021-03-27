@@ -83,6 +83,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
     
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
+    private final val SUSP_SYNS = Seq("?", "*", "+")
+
     @volatile private var data: ArrayBuffer[NCProbeModel] = _
     @volatile private var mdlFactory: NCModelFactory = _
 
@@ -213,6 +215,18 @@ object NCDeployManager extends NCService with DecorateAsScala {
         // Process and check elements.
         for (elm ← mdl.getElements.asScala) {
             val elmId = elm.getId
+
+            // Checks before macros processing.
+            val susp = elm.getSynonyms.asScala.filter(syn ⇒ SUSP_SYNS.exists(susp ⇒ syn.contains(susp)))
+
+            if (susp.nonEmpty)
+                logger.warn(
+                    s"Suspicious synonyms definition [" +
+                    s"mdlId=$mdlId, " +
+                    s"elementId=$elmId, " +
+                    s"synonyms=[${susp.mkString(", ")}]" +
+                    s"]"
+                )
 
             def addSynonym(
                 isElementId: Boolean,
@@ -461,7 +475,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 logger.warn(s"Duplicate synonyms found in '$mdlId' model - turn on TRACE logging to see them.")
                 logger.warn(s"  ${b("|--")} NOTE: ID of the model element is its default built-in synonym - you don't need to add it explicitly to the list of synonyms.")
                 logger.warn(s"  ${b("+--")} Model '$mdlId' allows duplicate synonyms but the large number may degrade the performance.")
-            } else
+            }
+            else
                 throw new NCE(s"Duplicated synonyms found and not allowed [mdlId=$mdlId]")
         }
 
