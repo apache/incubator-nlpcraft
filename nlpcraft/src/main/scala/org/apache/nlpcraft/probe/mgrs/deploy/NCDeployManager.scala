@@ -83,7 +83,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
     
     private final val SEPARATORS = Seq('?', ',', '.', '-', '!')
 
-    private final val SUSP_SYNS = Seq("?", "*", "+")
+    private final val SUSP_SYNS_CHARS = Seq("?", "*", "+")
 
     @volatile private var data: ArrayBuffer[NCProbeModel] = _
     @volatile private var mdlFactory: NCModelFactory = _
@@ -217,14 +217,14 @@ object NCDeployManager extends NCService with DecorateAsScala {
             val elmId = elm.getId
 
             // Checks before macros processing.
-            val susp = elm.getSynonyms.asScala.filter(syn ⇒ SUSP_SYNS.exists(susp ⇒ syn.contains(susp)))
+            val susp = elm.getSynonyms.asScala.filter(syn ⇒ SUSP_SYNS_CHARS.exists(susp ⇒ syn.contains(susp)))
 
             if (susp.nonEmpty)
                 logger.warn(
                     s"Suspicious synonyms definition [" +
-                    s"mdlId=$mdlId, " +
-                    s"elementId=$elmId, " +
-                    s"synonyms=[${susp.mkString(", ")}]" +
+                        s"mdlId=$mdlId, " +
+                        s"elementId=$elmId, " +
+                        s"synonyms=[${susp.mkString(", ")}]" +
                     s"]"
                 )
 
