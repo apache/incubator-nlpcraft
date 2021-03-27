@@ -221,7 +221,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
             if (susp.nonEmpty)
                 logger.warn(
-                    s"Suspicious synonyms definition [" +
+                    s"Suspicious synonyms detected [" +
                         s"mdlId=$mdlId, " +
                         s"elementId=$elmId, " +
                         s"synonyms=[${susp.mkString(", ")}]" +
