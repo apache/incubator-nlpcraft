@@ -23,24 +23,27 @@ import org.junit.jupiter.api.Test
 
 import java.util
 
-class NCSynonymsSpecModelTmp extends NCModelAdapter("nlpcraft.syns.test.mdl", "Synonyms Test Model", "1.0") {
-    // Default values.
-    override def isPermutateSynonyms: Boolean = true
-    override def getJiggleFactor: Int = 4
-
+class NCSuspSynonymsSpecModel extends NCModelAdapter("nlpcraft.susp.syns.test.mdl", "Synonyms Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
-            NCTestElement("wrapper", "^^{tok_id() == 'unknown'}^^")
+            NCTestElement("a"),
+
+            NCTestElement("e1", "a?"),
+            NCTestElement("e2", "a*"),
+            NCTestElement("e3", "a+"),
+            NCTestElement("e4", "a? a+"),
+            NCTestElement("e5", "a? a+ a*"),
         )
 
-    @NCIntent("intent=onWrapper term(t)={tok_id() == 'wrapper'}")
-    def onWrapper(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+    @NCIntent("intent=onA term(t)={tok_id() == 'a'}")
+    def onA(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 
-@NCTestEnvironment(model = classOf[NCSynonymsSpecModelTmp], startClient = true)
-class NCSynonymsSpecTmp extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCSuspSynonymsSpecModel], startClient = true)
+class NCSuspSynonymsSpec extends NCTestContext {
     @Test
     def test(): Unit = {
-        require(getClient.ask("AAA").isFailed)
+        // Look at the warnings. It checks that probe was successfully started.
+        require(getClient.ask("a").isOk)
     }
 }
