@@ -42,8 +42,8 @@ UNDERSCORE: '_';
 fragment ESC_CHAR: [{}\\_[\]|,];
 fragment ESC: '\\' ESC_CHAR;
 fragment TXT_CHAR
-    : [~!@#$%^&*?()+.]
-    | [-=<>/\\;:`'"]
+    : [~!@#$%^&*?()+._]
+    | [-=<>/\\;:`'",]
     | 'A'..'Z'
     | 'a'..'z'
     | '0'..'9'
