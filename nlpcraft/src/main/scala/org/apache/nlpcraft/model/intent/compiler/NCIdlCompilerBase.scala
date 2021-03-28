@@ -1070,7 +1070,7 @@ trait NCIdlCompilerBase {
             fun match {
             // Metadata access.
             case "meta_part" ⇒ doPartMeta()
-            case "meta_token" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
+            case "meta_tok" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
             case "meta_model" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.getModel.meta[Object](toStr(v))), 0) })
             case "meta_req" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.req.getRequestData.get(toStr(v))), 0) })
             case "meta_user" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.req.getUser.meta(toStr(v))), 0) })

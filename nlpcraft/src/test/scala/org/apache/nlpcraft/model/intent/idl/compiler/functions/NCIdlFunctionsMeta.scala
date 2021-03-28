@@ -45,7 +45,7 @@ class NCIdlFunctionsMeta extends NCIdlFunctions {
     @Test
     def testMetaToken(): Unit =
         testValue(
-            "meta_token",
+            "meta_tok",
             token = Some(tkn(meta = Map("k1" → "v1")))
         )
 

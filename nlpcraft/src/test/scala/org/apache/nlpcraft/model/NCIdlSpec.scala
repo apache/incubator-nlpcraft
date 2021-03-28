@@ -39,7 +39,7 @@ class NCIdlSpecModel extends NCModelAdapter(
     @NCIntent("intent=bigCity " +
         "term(city)={" +
             "tok_id() == 'nlpcraft:city' && " +
-            "get(meta_token('nlpcraft:city:citymeta'), 'population') >= 10381222" +
+            "get(meta_tok('nlpcraft:city:citymeta'), 'population') >= 10381222" +
         "}")
     private def onBigCity(ctx: NCIntentMatch): NCResult = "OK"
 

@@ -136,7 +136,7 @@ id
 
 // Lexer.
 FUN_NAME
-    : 'meta_token'
+    : 'meta_tok'
     | 'meta_part'
     | 'meta_model'
     | 'meta_intent'
