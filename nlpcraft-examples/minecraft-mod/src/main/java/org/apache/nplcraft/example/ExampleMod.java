@@ -81,6 +81,7 @@ public class ExampleMod {
                 });
     }
 
+    // TODO: Move to util: better to be gradlew dump
     private <T extends ForgeRegistryEntry<?>> void dumpRegistry(DefaultedRegistry<T> registry) {
         Dump dump = new Dump();
         dump.version = server.getMinecraftVersion();
@@ -100,6 +101,7 @@ public class ExampleMod {
         LOGGER.info(gson.toJson(dump));
     }
 
+    // Move to util
     private String transformPath(String path) {
         return path.replaceAll("_", " ");
     }

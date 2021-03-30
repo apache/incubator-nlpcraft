@@ -18,6 +18,7 @@
 
 package org.apache.nlpcraft.example
 
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.nlpcraft.common.NCException
 import org.apache.nlpcraft.model.NCElement
@@ -26,6 +27,8 @@ import org.apache.nlpcraft.model.NCValue
 import org.apache.nlpcraft.model.NCValueLoader
 
 class MinecraftObjectValueLoader : NCValueLoader {
+    private val mapper = jacksonObjectMapper().enable(JsonParser.Feature.ALLOW_COMMENTS)
+
     companion object {
         internal var dumps = mutableMapOf<String, Map<String, String>>()
     }
@@ -35,8 +38,6 @@ class MinecraftObjectValueLoader : NCValueLoader {
 
         val inputStream = NCModelFileAdapter::class.java.classLoader.getResourceAsStream("${type}.json")
             ?: throw NCException("Minecraft object dump not found: ${type}.json")
-
-        val mapper = jacksonObjectMapper()
 
         val dump = try {
             mapper.readValue(inputStream, Dump::class.java)

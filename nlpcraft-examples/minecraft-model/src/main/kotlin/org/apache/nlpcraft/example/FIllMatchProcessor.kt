@@ -81,7 +81,7 @@ class FIllMatchProcessor {
             return position.partTokens.stream()
                 .filter { it.id == "mc:player" }
                 .findAny()
-                .orElseThrow { NCRejection("") }
+                .orElseThrow { AssertionError("Player wasn't found") }
                 .player()
         }
     }
