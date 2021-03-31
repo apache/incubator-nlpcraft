@@ -143,7 +143,7 @@ intents:
   - intent=timeIntent term(arg)={has(tok_groups(), 'time')}
   - "intent=giveIntent term(action)={tok_id() == 'give:action'} term(quantity)={tok_id() == 'nlpcraft:num'}?
   term(item)={tok_id() == 'mc:item'} term={tok_id() == 'give:block-word'}?"
-  - "intent=fillIntent term={tok_id() == 'fill:action'} term(shape)={has(tok_groups(), 'fill:shape')} term(block)={tok_id() == 'mc:item'}
+  - "intent=fillIntent term={tok_id() == 'fill:action'} term(shape)={has(tok_groups(), 'fill:shape')} term(block)={tok_id() == 'mc:block'}
   term(len)={tok_id() == 'fill:length'}? term(position)={has(tok_groups(), 'fill:position')}"
 
 # give me sand
