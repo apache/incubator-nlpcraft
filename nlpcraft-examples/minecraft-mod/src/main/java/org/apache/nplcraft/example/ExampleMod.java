@@ -26,19 +26,15 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FileUtil;
 import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,31 +75,6 @@ public class ExampleMod {
                     inRecursion = true;
                     server.getCommandManager().handleCommand(server.getCommandSource(), "/" + s);
                 });
-    }
-
-    // TODO: Move to util: better to be gradlew dump
-    private <T extends ForgeRegistryEntry<?>> void dumpRegistry(DefaultedRegistry<T> registry) {
-        Dump dump = new Dump();
-        dump.version = server.getMinecraftVersion();
-        // regular name -> registry name
-        dump.data = registry.stream().filter(x -> x.getRegistryName() != null).collect(Collectors.toMap(
-                x -> transformPath(x.getRegistryName().getPath()),
-                x -> x.getRegistryName().toString())
-        );
-        // add matching like grass -> grass_block
-        dump.data.putAll(registry.stream()
-                .filter(x -> x.getRegistryName() != null && x.getRegistryName().getPath().endsWith("_block"))
-                .collect(Collectors.toMap(
-                        x -> transformPath(x.getRegistryName().getPath().replace("_block", "")),
-                        x -> x.getRegistryName().toString())
-                )
-        );
-        LOGGER.info(gson.toJson(dump));
-    }
-
-    // Move to util
-    private String transformPath(String path) {
-        return path.replaceAll("_", " ");
     }
 
     private Optional<NCResponse> askProbe(String txt) {
@@ -217,10 +188,5 @@ public class ExampleMod {
         private String passwd;
         private String host;
         private String port;
-    }
-
-    private class Dump {
-        private String version;
-        private Map<String, String> data;
     }
 }
