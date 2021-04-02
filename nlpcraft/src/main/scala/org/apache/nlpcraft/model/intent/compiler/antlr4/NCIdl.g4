@@ -330,23 +330,9 @@ INT: '0' | [1-9] [_0-9]*;
 REAL: DOT [0-9]+;
 EXP: [Ee] [+\-]? INT;
 fragment UNI_CHAR // International chars.
-    : '\u0300'..'\u036F'
-    | '\u00A0'..'\u00FF' /* Latin-1 Supplement. */
-    | '\u0100'..'\u017F' /* Latin Extended-A. */
-    | '\u0180'..'\u024F' /* Latin Extended-B. */
-    | '\u1E02'..'\u1EF3' /* Latin Extended Additional. */
-    | '\u0259'..'\u0292' /* IPA Extensions. */
-    | '\u02B0'..'\u02FF' /* Spacing modifier letters. */
-    | '\u203F'..'\u2040'
-    | '\u1F01'..'\u1FFF' /* Greek Extended. */
-    | '\u0400'..'\u04FF' /* Cyrillic. */
-    | '\u200C'..'\u200D'
-    | '\u2070'..'\u218F'
-    | '\u2C00'..'\u2FEF'
-    | '\u3001'..'\uD7FF'
-    | '\uF900'..'\uFDCF'
-    | '\uFDF0'..'\uFFFD'
-    ; // Ignoring ['\u10000-'\uEFFFF].
+    : ~[\u0000-\u007F\uD800-\uDBFF] // Covers all characters above 0x7F which are not a surrogate.
+    | [\uD800-\uDBFF] [\uDC00-\uDFFF] // Covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF.
+    ;
 fragment LETTER: [a-zA-Z];
 ID: (UNI_CHAR|UNDERSCORE|LETTER|DOLLAR)+(UNI_CHAR|DOLLAR|LETTER|[0-9]|COLON|MINUS|UNDERSCORE)*;
 COMMENT : ('//' ~[\r\n]* '\r'? ('\n'| EOF) | '/*' .*? '*/' ) -> skip;
