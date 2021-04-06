@@ -21,7 +21,7 @@ import java.util.*;
 
 /**
  * An item of the dialog flow. Dialog flow is a chronologically ordered list of dialog flow
- * items. Each item represents a snapshot of winning intent's match and its associated data. An instance
+ * items. Each item represents a snapshot of winning intent's match and its associated data. List of instances
  * of this interface is passed into a custom user-defined dialog flow match method.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
