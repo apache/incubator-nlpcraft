@@ -819,8 +819,7 @@ public interface NCModelView extends NCMetadata {
 
     /**
      * Gets optional user defined model metadata that can be set by the developer and accessed later.
-     * By default, it returns an empty map. Note that this metadata is different from the one returned
-     * by {@link NCToken#getMetadata()} method. Note also that this metadata is mutable and can be
+     * By default, it returns an empty map. Note that this metadata is mutable and can be
      * changed at runtime by the model's code.
      * <p>
      * <b>JSON</b>
