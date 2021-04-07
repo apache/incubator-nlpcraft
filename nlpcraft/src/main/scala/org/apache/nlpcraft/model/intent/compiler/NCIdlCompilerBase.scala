@@ -1041,6 +1041,8 @@ trait NCIdlCompilerBase {
 
                 if (isList(v))
                     Z(asList(v).size(), n)
+                else if (isMap(v))
+                    Z(asMap(v).size(), n)
                 else if (isStr(v))
                     Z(asStr(v).length, n)
                 else
@@ -1056,6 +1058,8 @@ trait NCIdlCompilerBase {
 
                 if (isList(v))
                     Z(asList(v).isEmpty == empty, n)
+                else if (isMap(v))
+                    Z(asMap(v).isEmpty == empty, n)
                 else if (isStr(v))
                     Z(asStr(v).isEmpty == empty, n)
                 else
