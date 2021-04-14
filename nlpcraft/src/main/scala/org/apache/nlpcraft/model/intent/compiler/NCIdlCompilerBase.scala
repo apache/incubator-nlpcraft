@@ -596,7 +596,7 @@ trait NCIdlCompilerBase {
             )
         }
 
-        def doStartWith(): Unit = {
+        def doStartsWith(): Unit = {
             val (x1, x2) = arg2()
 
             stack.push(
@@ -608,7 +608,7 @@ trait NCIdlCompilerBase {
             )
         }
 
-        def doEndWith(): Unit = {
+        def doEndsWith(): Unit = {
             val (x1, x2) = arg2()
 
             stack.push(
@@ -1156,8 +1156,8 @@ trait NCIdlCompilerBase {
             case "is_alphanumspace" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) })
             case "split" ⇒ doSplit()
             case "split_trim" ⇒ doSplitTrim()
-            case "start_with" ⇒ doStartWith()
-            case "end_with" ⇒ doEndWith()
+            case "starts_with" ⇒ doStartsWith()
+            case "ends_with" ⇒ doEndsWith()
             case "contains" ⇒ doContains()
             case "index_of" ⇒ doIndexOf()
             case "substr" ⇒ doSubstr()
