@@ -27,7 +27,7 @@ import scala.collection.JavaConverters._
 /**
   * Nested Elements test model.
   */
-class NCNestedTestModel4 extends NCModelAdapter(
+class NCNestedTestModel41 extends NCModelAdapter(
     "nlpcraft.nested4.test.mdl", "Nested Data Test Model", "1.0"
 ) {
     override def getElements: util.Set[NCElement] =
@@ -41,13 +41,31 @@ class NCNestedTestModel4 extends NCModelAdapter(
 
     @NCIntent("intent=onE2 term(t1)={tok_id() == 'e2'}[8, 100]")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+
+    override def isPermutateSynonyms: Boolean = false
+    override def isSparse: Boolean = false
 }
 
 /**
   * It shouldn't be too slow.
   */
-@NCTestEnvironment(model = classOf[NCNestedTestModel4], startClient = true)
-class NCEnricherNestedModelSpec4 extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCNestedTestModel41], startClient = true)
+class NCEnricherNestedModelSpec41 extends NCTestContext {
     @Test
     def test(): Unit = checkIntent("the a " * 11, "onE2")
 }
+
+class NCNestedTestModel42 extends NCNestedTestModel41 {
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = true
+}
+
+/**
+  * It shouldn't be too slow.
+  */
+@NCTestEnvironment(model = classOf[NCNestedTestModel42], startClient = true)
+class NCEnricherNestedModelSpec42 extends NCTestContext {
+    @Test
+    def test(): Unit = checkIntent("the a " * 8, "onE2")
+}
+

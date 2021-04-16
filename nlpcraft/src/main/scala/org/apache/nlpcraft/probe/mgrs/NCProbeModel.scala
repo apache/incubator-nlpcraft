@@ -28,9 +28,9 @@ import scala.collection.{Map, Seq}
   * @param model
   * @param solver
   * @param intents
-  * @param synonyms
-  * @param synonymsDsl
-  * @param addStopWordsStems
+  * @param continuousSynonyms
+  * @param sparseSynonyms
+  * @param idlSynonyms
   * @param exclStopWordsStems
   * @param suspWordsStems
   * @param elements
@@ -39,11 +39,19 @@ case class NCProbeModel(
     model: NCModel,
     solver: NCIntentSolver,
     intents: Seq[NCIdlIntent],
-    synonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , NCProbeSynonymsWrapper]], // Fast access map.
-    synonymsDsl: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , Seq[NCProbeSynonym]]], // Fast access map.
+    continuousSynonyms: Map[String /*Element ID*/ , Map[Int /*Synonym length*/ , NCProbeSynonymsWrapper]], // Fast access map.
+    sparseSynonyms: Map[String /*Element ID*/, Seq[NCProbeSynonym]],
+    idlSynonyms: Map[String /*Element ID*/ , Seq[NCProbeSynonym]], // Fast access map.
     addStopWordsStems: Set[String],
     exclStopWordsStems: Set[String],
     suspWordsStems: Set[String],
     elements: Map[String /*Element ID*/ , NCElement],
     samples: Set[(String, Seq[Seq[String]])]
-)
+) {
+    lazy val hasIdlSynonyms: Boolean = idlSynonyms.nonEmpty
+    lazy val hasNoIdlSynonyms: Boolean = continuousSynonyms.nonEmpty || sparseSynonyms.nonEmpty
+    lazy val hasSparseSynonyms: Boolean = sparseSynonyms.nonEmpty || idlSynonyms.exists(_._2.exists(_.sparse))
+    lazy val hasContinuousSynonyms: Boolean = continuousSynonyms.nonEmpty || idlSynonyms.exists(_._2.exists(!_.sparse))
+
+    def hasIdlSynonyms(elemId: String): Boolean = idlSynonyms.contains(elemId)
+}

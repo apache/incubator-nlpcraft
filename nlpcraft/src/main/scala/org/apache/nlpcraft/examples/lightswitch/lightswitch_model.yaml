@@ -33,6 +33,8 @@ macros:
   - name: "<LIGHT>"
     macro: "{all|_} {it|them|light|illumination|lamp|lamplight}"
 enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
+permutateSynonyms: true
+sparse: true
 elements:
   - id: "ls:loc"
     description: "Location of lights."

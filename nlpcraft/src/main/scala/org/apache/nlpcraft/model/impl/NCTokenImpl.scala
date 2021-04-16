@@ -17,7 +17,7 @@
 
 package org.apache.nlpcraft.model.impl
 
-import java.io.Serializable
+import java.io.{Serializable ⇒ JSerializable}
 import java.util.Collections
 
 import org.apache.nlpcraft.common._
@@ -50,7 +50,7 @@ private[nlpcraft] class NCTokenImpl(
     endCharIndex: Int,
     meta: Map[String, Object],
     isAbstractProp: Boolean
-) extends NCToken with Serializable {
+) extends NCToken with JSerializable {
     require(mdl != null)
     require(srvReqId != null)
     require(id != null)
@@ -106,7 +106,7 @@ private[nlpcraft] object NCTokenImpl {
         // nlpcraft:nlp and some optional (after collapsing).
         require(tok.size <= 2, s"Unexpected token [size=${tok.size}, token=$tok]")
 
-        val md = mutable.HashMap.empty[String, java.io.Serializable]
+        val md = mutable.HashMap.empty[String, JSerializable]
 
         tok.foreach(n ⇒ {
             val id = n.noteType.toLowerCase
@@ -142,7 +142,7 @@ private[nlpcraft] object NCTokenImpl {
                 // Special synthetic meta data element.
                 md.put("nlpcraft:nlp:freeword", false)
 
-                elm.getMetadata.asScala.foreach { case (k, v) ⇒ md.put(k, v.asInstanceOf[java.io.Serializable]) }
+                elm.getMetadata.asScala.foreach { case (k, v) ⇒ md.put(k, v.asInstanceOf[JSerializable]) }
 
                 new NCTokenImpl(
                     mdl.model,

@@ -358,33 +358,28 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
-     * Measure of how much sparsity is allowed when user input words are permutated in attempt to
-     * match the multi-word synonyms. Zero means no reordering is allowed. One means
-     * that a word in a synonym can move only one position left or right, and so on. Empirically
-     * the value of {@code 2} proved to be a good default value in most cases. Note that larger
-     * values mean that synonym words can be almost in any random place in the user input which makes
-     * synonym matching practically meaningless. Maximum value is <code>4</code>.
+     * Whether or not this element allows non-stopword words, the gaps, in its multi-word synonyms.
      * <p>
-     * This property overrides the value from {@link NCModelView#getJiggleFactor()} ()}.
+     * This property overrides the value from {@link NCModelView#isSparse()}.
      * One should use this property if model's value isn't applicable to this element.
      * <p>
      * <b>JSON</b>
      * <br>
-     * If using JSON/YAML model presentation this is set by <code>jiggleFactor</code>:
+     * If using JSON/YAML model presentation this is set by <code>sparse</code>:
      * <pre class="brush: js, highlight: [4]">
      *     "elements": [
      *         {
      *              "id": "elem",
-     *              "jiggleFactor": 1,
+     *              "sparse": true,
      *              ...
      *         }
      *     ]
      * </pre>
      *
-     * @return Optional word jiggle factor (sparsity measure) overriding model's one.
-     * @see NCModelView#getJiggleFactor()
+     * @return Optional multi-word synonym sparsity property overriding model's one.
+     * @see NCModelView#isSparse()
      */
-    default Optional<Integer> getJiggleFactor() {
+    default Optional<Boolean> isSparse() {
         return Optional.empty();
     }
 }

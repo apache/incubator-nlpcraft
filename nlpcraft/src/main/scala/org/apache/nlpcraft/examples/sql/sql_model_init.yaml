@@ -1415,7 +1415,6 @@ maxWords: 50
 minTokens: 0
 maxTokens: 50
 minNonStopwords: 0
-jiggleFactor: 2
 maxTotalSynonyms: 2147483647
 nonEnglishAllowed: true
 notLatinCharsetAllowed: false
@@ -1423,4 +1422,5 @@ swearWordsAllowed: false
 noNounsAllowed: true
 noUserTokensAllowed: true
 dupSynonymsAllowed: true
-permutateSynonyms: true
+permutateSynonyms: false
+sparse: false

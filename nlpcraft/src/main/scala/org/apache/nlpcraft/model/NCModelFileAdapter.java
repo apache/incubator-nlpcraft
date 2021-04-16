@@ -353,8 +353,8 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
                         }
 
                         @Override
-                        public Optional<Integer> getJiggleFactor() {
-                            return nvl(js.getJiggleFactor(), proxy.getJiggleFactor());
+                        public Optional<Boolean> isSparse() {
+                            return nvl(js.isSparse(), proxy.isSparse());
                         }
 
                         private<T> Optional<T> nvl(T t, T dflt) {
@@ -479,8 +479,8 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
     }
 
     @Override
-    public int getJiggleFactor() {
-        return proxy.getJiggleFactor();
+    public boolean isSparse() {
+        return proxy.isSparse();
     }
 
     @Override

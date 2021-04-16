@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.model.jiggle
+package org.apache.nlpcraft.model.sparse
 
 import org.apache.nlpcraft.model.`abstract`.NCAbstractTokensModel
 import org.apache.nlpcraft.model.{NCContext, NCElement, NCResult, NCToken}
@@ -26,30 +26,32 @@ import java.util
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-class NJiggleModel extends NCAbstractTokensModel {
+class NCSparseModel extends NCAbstractTokensModel {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("xyz", "x y z"))
 
-    // Default values.
     override def isPermutateSynonyms: Boolean = true
-    override def getJiggleFactor: Int = 4
+    override def isSparse: Boolean = true
 
     override def onContext(ctx: NCContext): NCResult = {
         val variants = ctx.getVariants.asScala
 
         def checkOneVariant(sparsity: Int): Unit = {
-            require(variants.size == 1)
+            require(variants.size == 1, "There is should be single variant.")
 
             val toks = variants.head.asScala.filter(_.getId == "xyz")
 
-            require(toks.size == 3)
+            require(toks.size == 3, "There are should be 3 `xyz` tokens.")
 
             checkSparsity(sparsity, toks)
         }
 
         def checkSparsity(sparsity: Int, toks: mutable.Buffer[NCToken]): Unit =
-            require(toks.forall(_.getMetadata.get("nlpcraft:nlp:sparsity").asInstanceOf[Int] == sparsity))
+            require(
+                toks.forall(_.getMetadata.get("nlpcraft:nlp:sparsity").asInstanceOf[Int] == sparsity),
+                s"Sparsity of each tokens should be: $sparsity."
+            )
 
-        def checkExists(sparsity: Int): Unit = {
+        def checkExists(sparsity: Int): Unit =
             require(
                 variants.exists(v ⇒ {
                     val toks = v.asScala.filter(_.getId == "xyz")
@@ -59,11 +61,12 @@ class NJiggleModel extends NCAbstractTokensModel {
                             checkSparsity(sparsity, toks)
 
                             true
-                        case _ ⇒ false
+                        case _ ⇒
+                            false
                     }
-                })
+                }),
+                s"Variant with 3 `xyz` tokens should be exists."
             )
-        }
 
         ctx.getRequest.getNormalizedText match {
             case "x y z x y z x y z" ⇒ checkOneVariant(0)
@@ -80,8 +83,8 @@ class NJiggleModel extends NCAbstractTokensModel {
     }
 }
 
-@NCTestEnvironment(model = classOf[NJiggleModel], startClient = true)
-class NCJiggleSpec extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCSparseModel], startClient = true)
+class NCSparseSpec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkResult("x y z x y z x y z", "OK")

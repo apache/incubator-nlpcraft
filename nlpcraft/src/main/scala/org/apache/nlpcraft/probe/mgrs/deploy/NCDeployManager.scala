@@ -154,21 +154,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     s"regex=$ID_REGEX" +
                 s"]"
             )
-
-            elm.getJiggleFactor.asScala match {
-                case Some(elemJiggleFactor) ⇒
-                    if (elemJiggleFactor < JIGGLE_FACTOR_MIN || elemJiggleFactor > JIGGLE_FACTOR_MAX)
-                        throw new NCE(
-                            s"Model element 'jiggleFactor' property is out of range [" +
-                                s"mdlId=$mdlId, " +
-                                s"elm=${elm.getId}, " +
-                                s"value=$elemJiggleFactor," +
-                                s"min=$JIGGLE_FACTOR_MIN, " +
-                                s"max=$JIGGLE_FACTOR_MAX" +
-                            s"]"
-                        )
-                case None ⇒ // No-op.
-            }
         }
 
         checkMacros(mdl)
@@ -209,6 +194,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         val syns = mutable.HashSet.empty[SynonymHolder]
 
+        def ok(b: Boolean, exp: Boolean): Boolean = if (exp) b else !b
+        def idl(syns: Set[SynonymHolder], idl: Boolean): Set[SynonymHolder] = syns.filter(s ⇒ ok(s.syn.hasIdl, idl))
+        def sparse(syns: Set[SynonymHolder], sp: Boolean): Set[SynonymHolder] = syns.filter(s ⇒ ok(s.syn.sparse, sp))
+
         var cnt = 0
         val maxCnt = mdl.getMaxTotalSynonyms
 
@@ -228,15 +217,19 @@ object NCDeployManager extends NCService with DecorateAsScala {
                     s"]"
                 )
 
+            val sparseElem = elm.isSparse.orElse(mdl.isSparse)
+            val permuteElem = elm.isPermutateSynonyms.orElse(mdl.isPermutateSynonyms)
+
             def addSynonym(
                 isElementId: Boolean,
                 isValueName: Boolean,
                 value: String,
-                chunks: Seq[NCProbeSynonymChunk]): Unit = {
-                def add(chunks: Seq[NCProbeSynonymChunk], isDirect: Boolean): Unit = {
+                chunks: Seq[NCProbeSynonymChunk]
+            ): Unit = {
+                def add(chunks: Seq[NCProbeSynonymChunk], perm: Boolean, sparse: Boolean, isDirect: Boolean): Unit = {
                     val holder = SynonymHolder(
                         elmId = elmId,
-                        syn = NCProbeSynonym(isElementId, isValueName, isDirect, value, chunks)
+                        syn = NCProbeSynonym(isElementId, isValueName, isDirect, value, chunks, sparse, perm)
                     )
 
                     if (syns.add(holder)) {
@@ -269,13 +262,19 @@ object NCDeployManager extends NCService with DecorateAsScala {
                         )
                 }
 
+                val sp = sparseElem && chunks.size > 1
+
                 if (
-                    elm.isPermutateSynonyms.orElse(mdl.isPermutateSynonyms) &&
-                    !isElementId && chunks.forall(_.wordStem != null)
+                    permuteElem &&
+                    !sparseElem &&
+                    !isElementId &&
+                    chunks.forall(_.wordStem != null)
                 )
-                    simplePermute(chunks).map(p ⇒ p.map(_.wordStem) → p).toMap.values.foreach(p ⇒ add(p, p == chunks))
+                    simplePermute(chunks).map(p ⇒ p.map(_.wordStem) → p).toMap.values.foreach(seq ⇒
+                        add(seq, isDirect = seq == chunks, perm = true, sparse = sp)
+                    )
                 else
-                    add(chunks, isDirect = true)
+                    add(chunks, isDirect = true, perm = permuteElem, sparse = sp)
             }
 
             /**
@@ -482,7 +481,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
 
         // Scan for intent annotations in the model class.
         val intents = scanIntents(mdl)
-        
+
         var solver: NCIntentSolver = null
 
         if (intents.nonEmpty) {
@@ -504,12 +503,18 @@ object NCDeployManager extends NCService with DecorateAsScala {
         else
             logger.warn(s"Model has no intent: $mdlId")
 
+        def toMap(set: Set[SynonymHolder]): Map[String, Seq[NCProbeSynonym]] =
+            set.groupBy(_.elmId).map(p ⇒ p._1 → p._2.map(_.syn).toSeq.sorted.reverse)
+
+        val simple = idl(syns.toSet, idl = false)
+
         NCProbeModel(
             model = mdl,
             solver = solver,
             intents = intents.map(_._1).toSeq,
-            synonyms = mkFastAccessMap(filter(syns, dsl = false), NCProbeSynonymsWrapper(_)),
-            synonymsDsl = mkFastAccessMap(filter(syns, dsl = true), _.sorted.reverse),
+            continuousSynonyms = mkFastAccessMap(sparse(simple, sp = false), NCProbeSynonymsWrapper(_)),
+            sparseSynonyms = toMap(sparse(simple, sp = true)),
+            idlSynonyms = toMap(idl(syns.toSet, idl = true)),
             addStopWordsStems = addStopWords,
             exclStopWordsStems = exclStopWords,
             suspWordsStems = suspWords,
@@ -903,7 +908,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
         checkNum(mdl.getMinTokens, "minTokens", MIN_TOKENS_MIN, MIN_TOKENS_MAX)
         checkNum(mdl.getMaxTokens, "maxTokens", MAX_TOKENS_MIN, MAX_TOKENS_MAX)
         checkNum(mdl.getMaxWords, "maxWords", MAX_WORDS_MIN, MAX_WORDS_MAX)
-        checkNum(mdl.getJiggleFactor, "jiggleFactor", JIGGLE_FACTOR_MIN, JIGGLE_FACTOR_MAX)
         checkNum(mdl.getMaxElementSynonyms, "maxSynonymsThreshold", MAX_SYN_MIN, MAX_SYN_MAX)
         checkNum(mdl.getConversationDepth, "conversationDepth", CONV_DEPTH_MIN, CONV_DEPTH_MAX)
 
@@ -965,18 +969,6 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private def hasWhitespace(s: String): Boolean = s.exists(_.isWhitespace)
 
     /**
-      *
-      * @param set
-      * @param dsl
-      */
-    private def filter(set: mutable.HashSet[SynonymHolder], dsl: Boolean): Set[SynonymHolder] =
-        set.toSet.filter(s ⇒ {
-            val b = s.syn.exists(_.kind == IDL)
-
-            if (dsl) b else !b
-        })
-
-    /**
      *
      * @param mdl Model.
      * @param chunk Synonym chunk.
@@ -1010,8 +1002,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
         }
         // IDL-based synonym.
         else if (startsAndEnds(IDL_FIX, chunk)) {
-            val dsl = stripSuffix(IDL_FIX, chunk)
-            val compUnit = NCIdlCompiler.compileSynonym(dsl, mdl, mdl.getOrigin)
+            val idl = stripSuffix(IDL_FIX, chunk)
+            val compUnit = NCIdlCompiler.compileSynonym(idl, mdl, mdl.getOrigin)
 
             val x = NCProbeSynonymChunk(alias = compUnit.alias.orNull, kind = IDL, origText = chunk, idlPred = compUnit.pred)
 

@@ -517,6 +517,8 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             )
         })
 
+        NCSentenceManager.clearCache(srvReqId)
+
         // Final validation before execution.
         try
             sensSeq.foreach(NCValidateManager.postValidate(mdl, _, span))

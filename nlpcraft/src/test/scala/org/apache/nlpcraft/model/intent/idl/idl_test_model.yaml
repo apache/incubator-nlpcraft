@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-id: "nlpcraft.dsl.test"
+id: "nlpcraft.idl.test"
 name: "IDL Test Model"
 version: "1.0"
 description: "IDL test model."

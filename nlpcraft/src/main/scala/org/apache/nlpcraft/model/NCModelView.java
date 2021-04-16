@@ -124,16 +124,6 @@ public interface NCModelView extends NCMetadata {
     long MAX_WORDS_MAX = 100L;
 
     /**
-     * Min value for {@link #getJiggleFactor()} method.
-     */
-    long JIGGLE_FACTOR_MIN = 0L;
-
-    /**
-     * Max value for {@link #getJiggleFactor()} method.
-     */
-    long JIGGLE_FACTOR_MAX = 4L;
-
-    /**
      * Min value for {@link #getMaxElementSynonyms()} method.
      */
     long MAX_SYN_MIN = 1L;
@@ -169,9 +159,9 @@ public interface NCModelView extends NCMetadata {
     int MODEL_VERSION_MAXLEN = 16;
 
     /**
-     * Default value for {@link #getJiggleFactor()} method.
+     * Default value for {@link #isSparse()} method.
      */
-    int DFLT_JIGGLE_FACTOR = 2;
+    boolean DFLT_IS_SPARSE = false;
 
     /**
      * Default value for {@link #getMaxElementSynonyms()} method.
@@ -199,7 +189,7 @@ public interface NCModelView extends NCMetadata {
     int DFLT_CONV_DEPTH = 3;
 
     /**
-     * Default value for {@link #getJiggleFactor()} method.
+     * Default value fof {@link #getMetadata()} method.
      */
     Map<String, Object> DFLT_METADATA = new HashMap<>();
 
@@ -266,7 +256,7 @@ public interface NCModelView extends NCMetadata {
     /**
      * Default value for {@link #isPermutateSynonyms()} method.
      */
-    boolean DFLT_IS_PERMUTATE_SYNONYMS = true;
+    boolean DFLT_IS_PERMUTATE_SYNONYMS = false;
 
     /**
      * Default value for {@link #isDupSynonymsAllowed()} method.
@@ -696,6 +686,9 @@ public interface NCModelView extends NCMetadata {
      * For example, if permutation is allowed the synonym "a b c" will be automatically converted into a
      * sequence of synonyms of "a b c", "b a c", "a c b".
      * <p>
+     * Note that individual model elements can override this property using {@link NCElement#isPermutateSynonyms()}
+     * method.
+     * <p>
      * <b>Default</b>
      * <br>
      * If not provided by the model the default value {@link #DFLT_IS_PERMUTATE_SYNONYMS} will be used.
@@ -710,6 +703,7 @@ public interface NCModelView extends NCMetadata {
      * </pre>
      *
      * @return Whether or not to permutate multi-word synonyms.
+     * @see NCElement#isPermutateSynonyms()
      */
     default boolean isPermutateSynonyms() {
         return DFLT_IS_PERMUTATE_SYNONYMS;
@@ -791,30 +785,29 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Measure of how much sparsity is allowed when user input words are permutated in attempt to
-     * match the multi-word synonyms. Zero means no reordering is allowed. One means
-     * that a word in a synonym can move only one position left or right, and so on. Empirically
-     * the value of {@code 2} proved to be a good default value in most cases. Note that larger
-     * values mean that synonym words can be almost in any random place in the user input which makes
-     * synonym matching practically meaningless. Maximum value is <code>4</code>.
+     * Whether or not this model elements allows non-stopword words, the gaps, in their multi-word synonyms.
+     * <p>
+     * Note that individual model elements can override this property using {@link NCElement#isSparse()}
+     * method.
      * <p>
      * <b>Default</b>
      * <br>
-     * If not provided by the model the default value {@link #DFLT_JIGGLE_FACTOR} will be used.
+     * If not provided by the model the default value {@link #DFLT_IS_SPARSE} will be used.
      * <p>
      * <b>JSON</b>
      * <br>
-     * If using JSON/YAML model presentation this is set by <code>jiggleFactor</code> property:
-     * <pre class="brush: js">
+     * If using JSON/YAML model presentation this is set by <code>sparse</code>:
+     * <pre class="brush: js, highlight: [2]">
      * {
-     *      "jiggleFactor": 2
+     *      "sparse": true
      * }
      * </pre>
      *
-     * @return Word jiggle factor (sparsity measure).
+     * @return Optional multi-word synonym sparsity model property.
+     * @see NCElement#isSparse()
      */
-    default int getJiggleFactor() {
-        return DFLT_JIGGLE_FACTOR;
+    default boolean isSparse() {
+        return DFLT_IS_SPARSE;
     }
 
     /**

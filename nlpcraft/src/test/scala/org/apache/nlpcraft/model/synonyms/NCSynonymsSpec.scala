@@ -23,11 +23,7 @@ import org.junit.jupiter.api.Test
 
 import java.util
 
-class NCSynonymsSpecModel extends NCModelAdapter("nlpcraft.syns.test.mdl", "Synonyms Test Model", "1.0") {
-    // Default values.
-    override def isPermutateSynonyms: Boolean = true
-    override def getJiggleFactor: Int = 4
-
+abstract class NCSynonymsSpecModel extends NCModelAdapter("nlpcraft.syns.test.mdl", "Synonyms Test Model", "1.0") {
     override def getElements: util.Set[NCElement] =
         Set(
             NCTestElement("e1", "A"),
@@ -55,17 +51,58 @@ class NCSynonymsSpecModel extends NCModelAdapter("nlpcraft.syns.test.mdl", "Syno
     def onE4(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 }
 
-@NCTestEnvironment(model = classOf[NCSynonymsSpecModel], startClient = true)
 class NCSynonymsSpec extends NCTestContext {
-    @Test
-    def test(): Unit = {
+    def body(testNonDir: Boolean): Unit = {
         checkIntent("A", "onE1")
-
         checkIntent("X Y Z", "onE2") // Text direct.
-        checkIntent("Y X Z", "onE2") // Text not direct.
-
+        if (testNonDir)
+            checkIntent("Y X Z", "onE2") // Text not direct.
         checkIntent("AA AA AA", "onE3") // Regex.
-
         checkIntent("A A A", "onE4") // Nested.
     }
 }
+
+class NCSynonymsSpecModel1 extends NCSynonymsSpecModel {
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = true
+}
+
+@NCTestEnvironment(model = classOf[NCSynonymsSpecModel1], startClient = true)
+class NCSynonymsSpec1 extends NCSynonymsSpec {
+    @Test
+    def test(): Unit = body(testNonDir = true)
+}
+
+class NCSynonymsSpecModel2 extends NCSynonymsSpecModel {
+    override def isPermutateSynonyms: Boolean = false
+    override def isSparse: Boolean = true
+}
+
+@NCTestEnvironment(model = classOf[NCSynonymsSpecModel2], startClient = true)
+class NCSynonymsSpec2 extends NCSynonymsSpec {
+    @Test
+    def test(): Unit = body(testNonDir = false)
+}
+
+class NCSynonymsSpecModel3 extends NCSynonymsSpecModel {
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = false
+}
+
+@NCTestEnvironment(model = classOf[NCSynonymsSpecModel3], startClient = true)
+class NCSynonymsSpec3 extends NCSynonymsSpec {
+    @Test
+    def test(): Unit = body(testNonDir = true)
+}
+
+class NCSynonymsSpecModel4 extends NCSynonymsSpecModel {
+    override def isPermutateSynonyms: Boolean = false
+    override def isSparse: Boolean = false
+}
+
+@NCTestEnvironment(model = classOf[NCSynonymsSpecModel4], startClient = true)
+class NCSynonymsSpec4 extends NCSynonymsSpec {
+    @Test
+    def test(): Unit = body(testNonDir = false)
+}
+

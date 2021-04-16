@@ -37,16 +37,16 @@ class NCIdlCompilerSpec {
     
     /**
      *
-     * @param dsl
+     * @param idl
      */
-    private def checkCompileOk(dsl: String): Unit =
+    private def checkCompileOk(idl: String): Unit =
         try {
-            NCIdlCompiler.compileIntents(dsl, MODEL, MODEL_ID)
+            NCIdlCompiler.compileIntents(idl, MODEL, MODEL_ID)
 
             assert(true)
         }
         catch {
-            case e: Exception ⇒ assert(false, e)
+            case e: Exception ⇒ assert(assertion = false, e)
         }
 
     /**

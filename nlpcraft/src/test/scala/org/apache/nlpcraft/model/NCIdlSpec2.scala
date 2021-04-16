@@ -27,7 +27,7 @@ import scala.language.implicitConversions
   * IDL test model.
   */
 class NCIdlSpecModel2 extends NCModelAdapter(
-    "nlpcraft.intents.dsl.test", "IDL Test Model", "1.0"
+    "nlpcraft.intents.idl.test", "IDL Test Model", "1.0"
 ) {
     override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 

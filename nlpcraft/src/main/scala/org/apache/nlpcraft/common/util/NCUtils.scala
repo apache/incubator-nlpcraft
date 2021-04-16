@@ -878,8 +878,7 @@ object NCUtils extends LazyLogging {
       * @param file File.
       */
     @throws[NCE]
-    def serialize(file: File, obj: Any): Unit =
-        serializePath(file.getAbsolutePath, obj)
+    def serialize(file: File, obj: Any): Unit = serializePath(file.getAbsolutePath, obj)
 
     /**
       * Deserializes data from file.
@@ -908,11 +907,10 @@ object NCUtils extends LazyLogging {
       */
     @throws[NCE]
     def deserialize[T](arr: Array[Byte]): T =
-        try {
+        try
             manageInput(new ByteArrayInputStream(arr)) acquireAndGet { in ⇒
                 in.readObject().asInstanceOf[T]
             }
-        }
         catch {
             case e: IOException ⇒ throw new NCE(s"Error deserialization data", e)
         }
@@ -930,14 +928,14 @@ object NCUtils extends LazyLogging {
      *
      * @param in
      */
-    private def manageInput(in: InputStream) =
+    private def manageInput(in: InputStream): ManagedResource[ObjectInputStream] =
         managed(new ObjectInputStream(new BufferedInputStream(in)))
 
     /**
      *
      * @param out
      */
-    private def manageOutput(out: OutputStream) =
+    private def manageOutput(out: OutputStream): ManagedResource[ObjectOutputStream] =
         managed(new ObjectOutputStream(new BufferedOutputStream(out)))
 
     /**
@@ -945,8 +943,7 @@ object NCUtils extends LazyLogging {
       *
       * @param s String value.
       */
-    def wrapQuotes(s: String): String =
-        s""""$s""""
+    def wrapQuotes(s: String): String = s""""$s""""
 
     /**
       * Recursively removes all files and nested directories in a given folder.
@@ -960,7 +957,7 @@ object NCUtils extends LazyLogging {
 
         try
             Files.walkFileTree(rootPath, new SimpleFileVisitor[Path] {
-                private def delete(path: Path) = {
+                private def delete(path: Path): FileVisitResult = {
                     Files.delete(path)
 
                     FileVisitResult.CONTINUE
@@ -2113,4 +2110,52 @@ object NCUtils extends LazyLogging {
       * @return
       */
     def getYamlMapper: ObjectMapper = YAML
+
+    /**
+      *
+      * @param list
+      * @tparam T
+      * @return
+      */
+    def permute[T](list: List[List[T]]): List[List[T]] =
+        list match {
+            case Nil ⇒ List(Nil)
+            case head :: tail ⇒ for (h ← head; t ← permute(tail)) yield h :: t
+        }
+
+    /**
+      *
+      * @param idxs
+      * @return
+      */
+    def isContinuous(idxs: Seq[Int]): Boolean = {
+        require(idxs.nonEmpty)
+
+        idxs.size match {
+            case 0 ⇒ throw new AssertionError()
+            case 1 ⇒ true
+            case _ ⇒
+                val list = idxs.view
+
+                list.zip(list.tail).forall { case (x, y) ⇒ x + 1 == y }
+        }
+    }
+
+    /**
+      *
+      * @param idxs
+      * @return
+      */
+    def isIncreased(idxs: Seq[Int]): Boolean = {
+        require(idxs.nonEmpty)
+
+        idxs.size match {
+            case 0 ⇒ throw new AssertionError()
+            case 1 ⇒ true
+            case _ ⇒
+                val list = idxs.view
+
+                !list.zip(list.tail).exists { case (x, y) ⇒ x > y }
+        }
+    }
 }

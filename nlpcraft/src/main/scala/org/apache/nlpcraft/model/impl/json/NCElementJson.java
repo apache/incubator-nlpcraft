@@ -35,7 +35,7 @@ public class NCElementJson {
     // Can be null.
     private Boolean isPermutateSynonyms;
     // Can be null.
-    private Integer jiggleFactor;
+    private Boolean isSparse;
 
     public String getParentId() {
         return parentId;
@@ -91,10 +91,10 @@ public class NCElementJson {
     public void setPermutateSynonyms(Boolean permutateSynonyms) {
         isPermutateSynonyms = permutateSynonyms;
     }
-    public Integer getJiggleFactor() {
-        return jiggleFactor;
+    public Boolean isSparse() {
+        return isSparse;
     }
-    public void setJiggleFactor(Integer jiggleFactor) {
-        this.jiggleFactor = jiggleFactor;
+    public void setSparse(Boolean sparse) {
+        isSparse = sparse;
     }
 }

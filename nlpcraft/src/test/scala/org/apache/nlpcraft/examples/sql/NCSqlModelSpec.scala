@@ -107,13 +107,6 @@ class NCSqlModelSpec extends NCEnricherBaseSpec {
                 usr(text = "ship date", id = "col:date"),
             ),
             _ ⇒ checkExists(
-                txt = "give me the orders sorted by ship date",
-                nlp(text = "give me the", isStop = true),
-                usr(text = "orders", id = "tbl:orders"),
-                srt(text = "sorted by", typ = BY_ONLY, note = "col:date", index = 3),
-                usr(text = "ship date", id = "col:date"),
-            ),
-            _ ⇒ checkExists(
                 txt = "give me the orders sorted by ship date asc",
                 nlp(text = "give me the", isStop = true),
                 usr(text = "orders", id = "tbl:orders"),

@@ -28,7 +28,7 @@ import scala.language.implicitConversions
   * IDL test model.
   */
 class NCIdlSpecModel extends NCModelAdapter(
-    "nlpcraft.intents.dsl.test", "IDL Test Model", "1.0"
+    "nlpcraft.intents.idl.test", "IDL Test Model", "1.0"
 ) {
     private implicit def convert(s: String): NCResult = NCResult.text(s)
 
