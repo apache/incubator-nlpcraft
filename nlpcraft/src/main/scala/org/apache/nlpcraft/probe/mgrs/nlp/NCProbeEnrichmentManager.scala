@@ -144,7 +144,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
       * @param usrId User ID.
       * @param senMeta Sentence meta data.
       * @param mdlId Model ID.
-      * @param logEnable Log enabled flag.
+      * @param enableLog Log enabled flag.
       * @param parent Optional parent span.
       */
     @throws[NCE]
@@ -155,7 +155,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         usrId: Long,
         senMeta: Map[String, Serializable],
         mdlId: String,
-        logEnable: Boolean,
+        enableLog: Boolean,
         parent: Span = null
     ): Unit = {
         val span = startSpan("ask", parent,
@@ -166,7 +166,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         )
 
         startMs.set(System.currentTimeMillis())
-    
+
         try
             ask0(
                 srvReqId,
@@ -175,7 +175,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 usrId,
                 senMeta,
                 mdlId,
-                logEnable,
+                enableLog,
                 span
             )
         catch {
@@ -213,7 +213,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
       * @param usrId User ID.
       * @param senMeta Sentence meta data.
       * @param mdlId Model ID.
-      * @param logEnable Log enable flag.
+      * @param enableLog Log enable flag.
       */
     @throws[NCE]
     private def ask0(
@@ -223,7 +223,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         usrId: Long,
         senMeta: Map[String, Serializable],
         mdlId: String,
-        logEnable: Boolean,
+        enableLog: Boolean,
         span: Span
     ): Unit = {
         require(nlpSens.nonEmpty)
@@ -248,7 +248,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         tbl += (s"${b("Server Request ID")}", m(srvReqId))
 
         logger.info(s"New request received from server:\n$tbl")
-        
+
         /**
           *
           * @param code Pre or post checker error code.
@@ -337,7 +337,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             NCConnectionManager.send(msg, span)
 
             val durMs = System.currentTimeMillis() - startMs.get
-            
+
             if (errMsg.isEmpty)
                 logger.info(s"" +
                     s"\n" +
@@ -580,7 +580,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         conv.updateTokens(span)
 
         var logKey: String = null
-        val logHldr = if (logEnable) new NCLogHolder else null
+        val logHldr = if (enableLog) new NCLogHolder else null
         
         // Create model query context.
         val ctx: NCContext = new NCContext {

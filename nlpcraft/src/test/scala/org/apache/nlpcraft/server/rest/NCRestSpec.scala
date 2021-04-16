@@ -127,7 +127,7 @@ class NCRestSpec extends NCTestContext {
     type ResponseList = java.util.List[ResponseContent]
     type JList[T] = java.util.List[T]
 
-    private var tkn: String = _
+    protected var tkn: String = _
 
     /**
       *

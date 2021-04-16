@@ -36,8 +36,9 @@ import org.apache.nlpcraft.common.debug.NCLogHolder._
   * Log data holder.
   */
 class NCLogHolder extends Serializable {
-    private val intents = new util.ArrayList[IntentJson]()
-    private var queryContext: ContextJson = _
+    // Level set for test reasons.
+    private[debug] val intents = new util.ArrayList[IntentJson]()
+    private[debug] var queryContext: ContextJson = _
 
     case class TokenJson(
         metadata: util.Map[String, Object],
@@ -48,7 +49,7 @@ class NCLogHolder extends Serializable {
         groups: util.List[String]
     )
     
-    case class UserJson( // TODO: add metadata
+    case class UserJson(
         id: Long,
         firstName: String,
         lastName: String,
@@ -56,10 +57,10 @@ class NCLogHolder extends Serializable {
         avatarUrl: String,
         isAdmin: Boolean,
         signupTimestamp: Long,
-        meta: JavaMeta // TODO: remove.
+        meta: JavaMeta
     )
     
-    case class CompanyJson( // TODO: add metadata
+    case class CompanyJson(
         id: Long,
         name: String,
         website: String,
@@ -67,7 +68,8 @@ class NCLogHolder extends Serializable {
         city: String,
         region: String,
         postalCode: String,
-        address: String
+        address: String,
+        meta: JavaMeta
     )
 
     case class RequestJson(
@@ -171,7 +173,8 @@ class NCLogHolder extends Serializable {
             region = comp.getRegion.orElse(null),
             address = comp.getAddress.orElse(null),
             city = comp.getCity.orElse(null),
-            postalCode = comp.getPostalCode.orElse(null)
+            postalCode = comp.getPostalCode.orElse(null),
+            meta = comp.getMetadata
         )
 
         val reqJs = RequestJson(

@@ -112,7 +112,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       * @param usrAgent
       * @param rmtAddr
       * @param data
-      * @param enabledLog
+      * @param enableLog
       * @return
       */
     @throws[NCE]
@@ -123,25 +123,25 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         usrAgent: Option[String],
         rmtAddr: Option[String],
         data: Option[String],
-        enabledLog: Boolean,
+        enableLog: Boolean,
         parent: Span = null
     ): Future[NCQueryStateMdo] = {
         val srvReqId = U.genGuid()
-    
+
         startScopedSpan("syncAsk", parent,
             "srvReqId" → srvReqId,
             "usrId" → usrId,
             "txt" → txt,
             "mdlId" → mdlId,
-            "enableLog" → enabledLog,
+            "enableLog" → enableLog,
             "usrAgent" → usrAgent.orNull,
             "rmtAddr" → rmtAddr.orNull
         ) { span ⇒
             val promise = Promise[NCQueryStateMdo]()
-    
+
             asyncAsks.put(srvReqId, promise)
-            
-            spawnAskFuture(srvReqId, usrId, txt, mdlId, usrAgent, rmtAddr, data, enabledLog, span)
+
+            spawnAskFuture(srvReqId, usrId, txt, mdlId, usrAgent, rmtAddr, data, enableLog, span)
             
             promise.future
         }
@@ -156,7 +156,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       * @param usrAgent
       * @param rmtAddr
       * @param data
-      * @param enabledLog
+      * @param enableLog
       * @return Server request ID for newly submitted request.
       */
     @throws[NCE]
@@ -167,7 +167,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         usrAgent: Option[String],
         rmtAddr: Option[String],
         data: Option[String],
-        enabledLog: Boolean,
+        enableLog: Boolean,
         parent: Span = null
     ): String = {
         val srvReqId = U.genGuid()
@@ -177,10 +177,10 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             "usrId" → usrId,
             "txt" → txt,
             "mdlId" → mdlId,
-            "enableLog" → enabledLog,
+            "enableLog" → enableLog,
             "usrAgent" → usrAgent.orNull,
             "rmtAddr" → rmtAddr.orNull) { span ⇒
-            spawnAskFuture(srvReqId, usrId, txt, mdlId, usrAgent, rmtAddr, data, enabledLog, span)
+            spawnAskFuture(srvReqId, usrId, txt, mdlId, usrAgent, rmtAddr, data, enableLog, span)
             
             srvReqId
         }
@@ -199,7 +199,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       * @param usrAgent
       * @param rmtAddr
       * @param data
-      * @param enabledLog
+      * @param enableLog
       * @return
       */
     @throws[NCE]
@@ -211,13 +211,13 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         usrAgent: Option[String],
         rmtAddr: Option[String],
         data: Option[String],
-        enabledLog: Boolean,
+        enableLog: Boolean,
         parent: Span = null
     ): Unit = {
         val txt0 = txt.trim()
-        
+
         val rcvTstamp = U.nowUtcTs()
-        
+
         val usr = NCUserManager.getUserById(usrId, parent).getOrElse(throw new NCE(s"Unknown user ID: $usrId"))
         val company = NCCompanyManager.getCompany(usr.companyId, parent).getOrElse(throw new NCE(s"Unknown company ID: ${usr.companyId}"))
 
@@ -236,7 +236,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         // Check input length.
         if (txt0.split(" ").length > MAX_WORDS)
             throw new NCE(s"User input is too long (max is $MAX_WORDS words).")
-        
+
         catching(wrapIE) {
             // Enlist for tracking.
             cache += srvReqId → NCQueryStateMdo(
@@ -246,7 +246,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 companyId = company.id,
                 email = usr.email,
                 status = QRY_ENLISTED, // Initial status.
-                enabledLog = enabledLog,
+                enableLog = enableLog,
                 text = txt0,
                 userAgent = usrAgent,
                 remoteAddress = rmtAddr,
@@ -254,7 +254,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 updateTstamp = rcvTstamp
             )
         }
-        
+
         // Add processing log.
         NCProcessLogManager.newEntry(
             usrId,
@@ -268,7 +268,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
             data.orNull,
             parent
         )
-        
+
         Future {
             startScopedSpan("future", parent, "srvReqId" → srvReqId) { span ⇒
                 val tbl = NCAsciiTable()
@@ -284,7 +284,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                 logger.info(s"New request received:\n$tbl")
 
                 val enabledBuiltInToks = NCProbeManager.getModel(mdlId, span).enabledBuiltInTokens
-                
+
                 // Enrich the user input and send it to the probe.
                 NCProbeManager.askProbe(
                     srvReqId,
@@ -298,7 +298,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     data,
                     usrMeta,
                     compMeta,
-                    enabledLog,
+                    enableLog,
                     span
                 )
             }

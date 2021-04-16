@@ -835,7 +835,7 @@ object NCProbeManager extends NCService {
       * @param data
       * @param usrMeta
       * @param companyMeta
-      * @param logEnable
+      * @param enableLog
       * @param parent
       */
     @throws[NCE]
@@ -851,7 +851,7 @@ object NCProbeManager extends NCService {
         data: Option[String],
         usrMeta: Option[Map[String, String]],
         companyMeta: Option[Map[String, String]],
-        logEnable: Boolean,
+        enableLog: Boolean,
         parent: Span = null): Unit = {
         startScopedSpan("askProbe", parent, "srvReqId" → srvReqId, "usrId" → usr.id, "mdlId" → mdlId, "txt" → txt) { span ⇒
             def convertMeta(metaOpt: Option[Map[String, String]]): util.HashMap[String, String] =
@@ -860,13 +860,13 @@ object NCProbeManager extends NCService {
                         val map = new util.HashMap[String, String]()
 
                         meta.foreach { case (k, v) ⇒ map.put(k, v) }
-    
+
                         map
                     case None ⇒ null
                 }
 
             val senMeta = new util.HashMap[String, java.io.Serializable]()
-    
+
             Map(
                 "NORMTEXT" → nlpSen.text,
                 "USER_AGENT" → usrAgent.orNull,
@@ -893,7 +893,7 @@ object NCProbeManager extends NCService {
             ).
                 filter(_._2 != null).
                 foreach(p ⇒ senMeta.put(p._1, p._2.asInstanceOf[java.io.Serializable]))
-            
+
             getProbeForModelId(mdlId) match {
                 case Some(holder) ⇒
                     sendToProbe(
@@ -907,7 +907,7 @@ object NCProbeManager extends NCService {
                             "senMeta" → senMeta,
                             "userId" → usr.id,
                             "mdlId" → mdlId,
-                            "logEnable" → logEnable
+                            "enableLog" → enableLog
                         ),
                         span
                     )
