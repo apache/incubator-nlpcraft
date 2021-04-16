@@ -317,6 +317,19 @@ public interface NCToken extends NCMetadata {
     default boolean isDirect() { return meta("nlpcraft:nlp:direct"); }
 
     /**
+     * A shortcut method on whether or not this token was matched on permutated (not direct) synonym.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return !meta("nlpcraft:nlp:direct");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether or not this token was matched on permutated (not direct) synonym.
+     */
+    default boolean isPermutated() { return !isDirect(); }
+
+    /**
      * A shortcut method on whether this token represents an English word. Note that this only
      * checks that token's text consists of characters of English alphabet, i.e. the text
      * doesn't have to be necessary a known valid English word.

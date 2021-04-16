@@ -40,6 +40,7 @@ class NCTokenPimp(impl: NCToken) {
     def isFreeWord: Boolean = impl.meta("nlpcraft:nlp:freeword")
     def isQuoted: Boolean = impl.meta("nlpcraft:nlp:quoted")
     def isDirect: Boolean = impl.meta("nlpcraft:nlp:direct")
+    def isPermutated: Boolean = !isDirect
     def isBracketed: Boolean = impl.meta("nlpcraft:nlp:bracketed")
     def wordIndexes: List[Int] = impl.meta[java.util.List[Int]]("nlpcraft:nlp:wordindexes").asScala.toList
     def origText: String = impl.meta("nlpcraft:nlp:origtext")
