@@ -63,6 +63,7 @@ class NCIdlFunctionsToken extends NCIdlFunctions {
             mkMeta(truth = s"tok_is_abstract() == false"),
             mkMeta(truth = s"tok_is_bracketed() == ${meta("nlpcraft:nlp:bracketed")}"),
             mkMeta(truth = s"tok_is_direct() == ${meta("nlpcraft:nlp:direct")}"),
+            mkMeta(truth = s"tok_is_permutated() != ${meta("nlpcraft:nlp:direct")}"),
             mkMeta(truth = s"tok_is_english() == ${meta("nlpcraft:nlp:english")}"),
             mkMeta(truth = s"tok_is_freeWord() == ${meta("nlpcraft:nlp:freeword")}"),
             mkMeta(truth = s"tok_is_quoted() == ${meta("nlpcraft:nlp:quoted")}"),

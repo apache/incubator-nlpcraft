@@ -432,7 +432,7 @@ public interface NCToken extends NCMetadata {
 
     /**
      * A shortcut method to get numeric value of how sparse the token is. Sparsity zero means that all
-     * individual words in the token follow each other.
+     * individual words in the token follow each other (regardless of the order).
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">

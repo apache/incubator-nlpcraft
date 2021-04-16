@@ -157,6 +157,7 @@ FUN_NAME
     | 'tok_is_abstract'
     | 'tok_is_bracketed'
     | 'tok_is_direct'
+    | 'tok_is_permutated'
     | 'tok_is_english'
     | 'tok_is_freeWord'
     | 'tok_is_quoted'
