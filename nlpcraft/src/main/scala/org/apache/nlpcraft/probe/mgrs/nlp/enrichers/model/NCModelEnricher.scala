@@ -591,11 +591,11 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
     private def alreadyMarked(ns: Sentence, elemId: String, toks: Seq[NlpToken], sliceToksIdxsSorted: Seq[Int]): Boolean = {
         lazy val toksIdxsSorted = toks.map(_.index).sorted
 
-        sliceToksIdxsSorted.map(ns).forall(_.exists(n ⇒ n.noteType == elemId && n.isContiguous)) ||
+        sliceToksIdxsSorted.map(ns).forall(_.exists(n ⇒ n.noteType == elemId && n.sparsity == 0)) ||
         toks.exists(_.exists(n ⇒
             n.noteType == elemId &&
             (
-                (n.isContiguous &&
+                (n.sparsity == 0 &&
                     (sliceToksIdxsSorted.containsSlice(n.tokenIndexes) || n.tokenIndexes.containsSlice(toksIdxsSorted))
                 )
                     ||
