@@ -998,7 +998,6 @@ trait NCIdlCompilerBase {
                     s"]")
             else
                 parts.get(0)
-
         }
 
         //noinspection DuplicatedCode
@@ -1112,7 +1111,7 @@ trait NCIdlCompilerBase {
             case "tok_parent" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getParentId, 1) }) }
             case "tok_groups" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getGroups, 1) }) }
             case "tok_value" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getValue, 1) }) }
-            case "tok_aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getAliases, 1) }) }
+            case "tok_aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(new java.util.ArrayList[String](toToken(x().value).getAliases), 1) }) }
             case "tok_start_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getStartCharIndex, 1) }) }
             case "tok_end_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getEndCharIndex, 1) }) }
             case "tok_this" ⇒ z0(() ⇒ Z(tok, 1))
