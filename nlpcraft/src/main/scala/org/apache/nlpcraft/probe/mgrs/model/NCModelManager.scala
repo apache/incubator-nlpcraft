@@ -67,17 +67,17 @@ object NCModelManager extends NCService with DecorateAsScala {
                 def withWarn(i: Int): String = if (i == 0) s"0 ${r("(!)")}" else i.toString
 
                 tbl += Seq(
-                    s"Name:                  ${bo(c(mdl.getName))}",
-                    s"ID:                    ${bo(mdl.getId)}",
-                    s"Version:               ${mdl.getVersion}",
-                    s"Origin:                ${mdl.getOrigin}",
-                    s"Elements:              ${withWarn(w.elements.keySet.size)}",
-                    s"Synonyms:",
-                    s"   Simple continuous:  $contCnt",
-                    s"   Simple sparse:      $sparseCnt",
-                    s"   IDL continuous:     $contIdlCnt",
-                    s"   IDL sparse:         $sparseIdlCnt",
-                    s"Intents:               ${withWarn(w.intents.size)}"
+                    s"${B}Name:$RST                  ${bo(c(mdl.getName))}",
+                    s"${B}ID:$RST                    ${bo(mdl.getId)}",
+                    s"${B}Version:$RST               ${mdl.getVersion}",
+                    s"${B}Origin:$RST                ${mdl.getOrigin}",
+                    s"${B}Elements:$RST              ${withWarn(w.elements.keySet.size)}",
+                    s"${B}Synonyms:$RST",
+                    s"${B}   Simple continuous:$RST  $contCnt",
+                    s"${B}   Simple sparse:$RST      $sparseCnt",
+                    s"${B}   IDL continuous:$RST     $contIdlCnt",
+                    s"${B}   IDL sparse:$RST         $sparseIdlCnt",
+                    s"${B}Intents:$RST               ${withWarn(w.intents.size)}"
                 )
             })
         }
