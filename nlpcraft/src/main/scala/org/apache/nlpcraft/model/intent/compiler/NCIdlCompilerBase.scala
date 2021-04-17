@@ -1102,7 +1102,7 @@ trait NCIdlCompilerBase {
             case "tok_is_direct" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isDirect, 1) }) }
             case "tok_is_permutated" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(!toToken(x().value).isDirect, 1) }) }
             case "tok_is_english" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isEnglish, 1) }) }
-            case "tok_is_freeWord" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isFreeWord, 1) }) }
+            case "tok_is_freeword" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isFreeWord, 1) }) }
             case "tok_is_quoted" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isQuoted, 1) }) }
             case "tok_is_stopword" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isStopWord, 1) }) }
             case "tok_is_swear" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isSwear, 1) }) }

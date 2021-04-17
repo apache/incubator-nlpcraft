@@ -159,7 +159,7 @@ FUN_NAME
     | 'tok_is_direct'
     | 'tok_is_permutated'
     | 'tok_is_english'
-    | 'tok_is_freeWord'
+    | 'tok_is_freeword'
     | 'tok_is_quoted'
     | 'tok_is_stopword'
     | 'tok_is_swear'
