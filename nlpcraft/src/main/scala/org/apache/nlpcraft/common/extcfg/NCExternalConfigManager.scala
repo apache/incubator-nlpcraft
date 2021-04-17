@@ -312,7 +312,7 @@ object NCExternalConfigManager extends NCService {
                     IOUtils.copy(src, dest)
                 }
 
-                logger.info(s"External config downloaded [url='$url', file='$filePath']")
+                logger.info(s"One-time download for external config [url='$url', file='$filePath']")
             }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to download external config [url='$url', file='$filePath']", e)
