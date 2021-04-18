@@ -976,6 +976,19 @@ trait NCIdlCompilerBase {
                 }
             })
         }
+    
+        def doOrElse(): Unit = {
+            val (x1, x2) = arg2()
+        
+            stack.push(() ⇒ {
+                val Z(v1, n1) = x1()
+            
+                if (v1 != null)
+                    Z(v1, n1)
+                else
+                    x2()
+            })
+        }
 
         /**
          *
@@ -1098,6 +1111,8 @@ trait NCIdlCompilerBase {
 
             // Inline if-statement.
             case "if" ⇒ doIf()
+
+            case "or_else" ⇒ doOrElse()
 
             // Token functions.
             case "tok_id" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getId, 1) }) }

@@ -282,6 +282,7 @@ FUN_NAME
     | 'week_of_year'
     | 'quarter'
     | 'now'
+    | 'or_else'
     ;
 
 IMPORT : 'import' ;

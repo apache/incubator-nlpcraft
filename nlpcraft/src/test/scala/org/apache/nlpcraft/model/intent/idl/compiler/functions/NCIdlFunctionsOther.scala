@@ -26,13 +26,17 @@ import scala.sys.SystemProperties
   */
 class NCIdlFunctionsOther extends NCIdlFunctions {
     @Test
-    def test1(): Unit =
+    def test1(): Unit = {
         // If.
         test(
             TestDesc(truth = "if(true, 1, 0) == 1"),
-            TestDesc(truth = "if(false, 1, 0) == 0")
+            TestDesc(truth = "if(false, 1, 0) == 0"),
+            TestDesc(truth = "or_else(null, false) == false"),
+            TestDesc(truth = "or_else('s', list(1, 2, 3)) == 's'"),
+            TestDesc(truth = "or_else(meta_model('unknown_prop'), list(1, 2, 3)) == list(1, 2, 3)")
         )
-
+    }
+    
     @Test
     def test2(): Unit = {
         val sys = new SystemProperties
