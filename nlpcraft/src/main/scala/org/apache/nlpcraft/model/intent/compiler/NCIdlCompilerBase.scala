@@ -992,7 +992,7 @@ trait NCIdlCompilerBase {
                     s"partId=$aliasId" +
                     s"]")
             else if (parts.size() > 1)
-                throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
+                throw newRuntimeError(s"Too many parts found for token (use 'tok_find_parts' function instead) [" +
                     s"tokenId=${whole.getId}, " +
                     s"partId=$aliasId" +
                     s"]")
@@ -1029,6 +1029,16 @@ trait NCIdlCompilerBase {
                 val (t, a, n) = extract2(x1, x2)
 
                 Z(toToken(t).findPartTokens(toStr(a)), n)
+            })
+        }
+    
+        def doHasPart(): Unit = {
+            val (x1, x2) = arg2()
+        
+            stack.push(() ⇒ {
+                val (t, a, n) = extract2(x1, x2)
+                
+                Z(toToken(t).findPartTokens(toStr(a)).size() == 1, n)
             })
         }
 
@@ -1111,10 +1121,11 @@ trait NCIdlCompilerBase {
             case "tok_parent" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getParentId, 1) }) }
             case "tok_groups" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getGroups, 1) }) }
             case "tok_value" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getValue, 1) }) }
-            case "tok_aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(new java.util.ArrayList[String](toToken(x().value).getAliases), 1) }) }
+            case "tok_aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(box(toToken(x().value).getAliases), 1) }) }
             case "tok_start_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getStartCharIndex, 1) }) }
             case "tok_end_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getEndCharIndex, 1) }) }
             case "tok_this" ⇒ z0(() ⇒ Z(tok, 1))
+            case "tok_has_part" ⇒ doHasPart()
             case "tok_find_part" ⇒ doFindPart()
             case "tok_find_parts" ⇒ doFindParts()
 

@@ -174,6 +174,7 @@ FUN_NAME
     | 'tok_end_idx'
     | 'tok_this'
     | 'tok_find_part'
+    | 'tok_has_part'
     | 'tok_find_parts'
     | 'req_id'
     | 'req_normtext'
