@@ -235,7 +235,7 @@ FUN_NAME
     | 'cosh'
     | 'sinh'
     | 'tanh'
-    | 'atn2'
+    | 'atan2'
     | 'degrees'
     | 'radians'
     | 'exp'

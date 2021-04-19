@@ -1193,11 +1193,7 @@ trait NCIdlCompilerBase {
 
             // Math functions.
             case "abs" ⇒ doAbs()
-            case "ceil" ⇒ arg1() match { case item ⇒ stack.push(() ⇒ {
-                val Z(v, f) = item()
-
-                Z(Math.ceil(toDouble(v)), f)
-            }) }
+            case "ceil" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.ceil(toDouble(v)), f) })
             case "floor" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toDouble(v)), f) })
             case "rint" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toDouble(v)), f) })
             case "round" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toDouble(v)), f) })
@@ -1213,7 +1209,7 @@ trait NCIdlCompilerBase {
             case "cosh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toDouble(v)), f) })
             case "sinh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toDouble(v)), f) })
             case "tanh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toDouble(v)), f) })
-            case "atn2" ⇒ z[(ST, ST)](arg2, { x ⇒ val (v1, v2, n) = extract2(x._1, x._2); Z(Math.atan2(toDouble(v1), toDouble(v2)), n) })
+            case "atan2" ⇒ z[(ST, ST)](arg2, { x ⇒ val (v1, v2, n) = extract2(x._1, x._2); Z(Math.atan2(toDouble(v1), toDouble(v2)), n) })
             case "degrees" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toDouble(v)), f) })
             case "radians" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toDouble(v)), f) })
             case "exp" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toDouble(v)), f) })
