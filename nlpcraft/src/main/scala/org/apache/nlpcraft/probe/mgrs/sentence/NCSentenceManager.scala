@@ -754,6 +754,15 @@ object NCSentenceManager extends NCService {
             }).
             toSeq
 
+        sens =
+            sens.filter(s ⇒ {
+                def mkNotNlp(s: NCNlpSentence): Set[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp).toSet
+
+                val notNlpNotes = mkNotNlp(s)
+
+                !sens.filter(_ != s).map(mkNotNlp).exists(notNlpNotes.subsetOf)
+            })
+
         // Drops similar sentences (with same tokens structure).
         // Among similar sentences we prefer one with minimal free words count.
         sens.groupBy(notNlpNotes(_).map(_.getKey(withIndexes = false))).
