@@ -533,15 +533,19 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
 
                         // 2. IDL.
                         if (idlEnabled) {
+                            val allSyns = get(mdl.idlSynonyms, eId)
+                            lazy val allCombs = mkCombinations(ch, toks, idlCache.toSet)
+
                             // 2.1 Continuous.
+
                             if (!mdl.hasSparseSynonyms) {
                                 var found = false
 
                                 for (
-                                    s ← get(mdl.idlSynonyms, eId);
-                                        comb ← mkCombinations(ch, toks, idlCache.toSet);
-                                        data = comb.map(_.data)
-                                        if !found
+                                    s ← allSyns;
+                                    comb ← allCombs
+                                    if !found;
+                                    data = comb.map(_.data)
                                 )
                                     if (s.isMatch(data, req)) {
                                         add("IDL continuous", ns, contCache, e, toks, idxs, s, toParts(data, s))
@@ -553,7 +557,10 @@ object NCModelEnricher extends NCProbeEnricher with DecorateAsScala {
                             }
                             else
                                 // 2.2 Sparse.
-                                for (s ← get(mdl.idlSynonyms, eId); comb ← mkCombinations(ch, toks, idlCache.toSet))
+                                for (
+                                    s ← allSyns;
+                                    comb ← allCombs
+                                )
                                     s.sparseMatch(comb.map(_.data), req) match {
                                         case Some(res) ⇒
                                             val typ = if (s.sparse) "IDL sparse" else "IDL continuous"
