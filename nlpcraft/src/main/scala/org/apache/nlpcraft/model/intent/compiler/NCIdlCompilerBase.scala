@@ -765,7 +765,7 @@ trait NCIdlCompilerBase {
                         val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
 
                         val mean = seq.sum / seq.length
-                        val stdDev = Math.sqrt(seq.map( _ - mean).map(t ⇒ t * t).sum /seq.length)
+                        val stdDev = Math.sqrt(seq.map( _ - mean).map(t ⇒ t * t).sum / seq.length)
 
                         Z(stdDev, n)
                     }
