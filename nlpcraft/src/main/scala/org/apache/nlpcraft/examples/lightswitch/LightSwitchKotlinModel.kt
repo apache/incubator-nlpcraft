@@ -24,12 +24,11 @@ import java.util.stream.Collectors
  * This example provides very simple implementation for NLI-powered light switch.
  * You can say something like this:
  *
- *  * "Turn the lights off in the entire house."
- *  * "Switch on the illumination in the master bedroom closet."
+ *  - "Turn the lights off in the entire house."
+ *  - "Switch on the illumination in the master bedroom closet."
  *
  * You can easily modify intent callbacks to perform the actual light switching using
  * HomeKit or Arduino-based controllers.
- *
  *
  * See 'README.md' file in the same folder for running and testing instructions.
  */
