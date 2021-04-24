@@ -83,6 +83,10 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         var models: String,
         var lifecycle: Seq[String]
     ) {
+        require(id != null)
+        require(token != null)
+        require(models != null)
+
         lazy val upLinkString = s"${upLink._1}:${upLink._2}"
         lazy val downLinkString = s"${downLink._1}:${downLink._2}"
         lazy val modelsSeq: Seq[String] = U.splitTrimFilter(models,",")

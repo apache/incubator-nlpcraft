@@ -19,11 +19,9 @@ package org.apache.nlpcraft.model.tools.cmdline
 
 import java.io._
 import java.lang.ProcessBuilder.Redirect
-import java.lang.management.ManagementFactory
 import java.nio.charset.StandardCharsets
-import java.nio.file.Paths
 import java.text.DateFormat
-import java.{lang, util}
+import java.util
 import java.util.Date
 import java.util.regex.Pattern
 import java.util.zip.ZipInputStream
@@ -47,8 +45,6 @@ import org.apache.nlpcraft.common.ansi.NCAnsi._
 import org.apache.nlpcraft.common.ansi.{NCAnsi, NCAnsiProgressBar, NCAnsiSpinner}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.module.NCModule
-import org.apache.nlpcraft.common.version.NCVersion
-import org.apache.nlpcraft.model.tools.sqlgen.impl.NCSqlModelGeneratorImpl
 import org.jline.reader._
 import org.jline.reader.impl.DefaultParser
 import org.jline.reader.impl.DefaultParser.Bracket
@@ -60,7 +56,6 @@ import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
 import resource.managed
 
-import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
@@ -72,154 +67,12 @@ import scala.util.control.Exception.ignoring
 /**
  * NLPCraft CLI.
  */
-object NCCli extends App {
-    private final val NAME = "NLPCraft CLI"
+object NCCli extends NCCliBase {
+    var exitStatus = 0
 
-    /*
-     * Disable warnings from Ignite on JDK 11.
-     */
-    final val JVM_OPTS_RT_WARNS = Seq (
-        "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED",
-        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
-        "--add-opens=java.base/java.nio=ALL-UNNAMED",
-        "--add-opens=java.base/java.io=ALL-UNNAMED",
-        "--add-opens=java.base/java.util=ALL-UNNAMED",
-        "--add-opens=java.base/java.lang=ALL-UNNAMED",
-        "--add-opens=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
-        "--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
-        "--add-opens=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
-        "--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED",
-        "--illegal-access=permit"
-    )
-
-    //noinspection RegExpRedundantEscape
-    private final val TAILER_PTRN = Pattern.compile("^.*NC[a-zA-Z0-9]+ started \\[[\\d]+ms\\]$")
-    private final val CMD_NAME = Pattern.compile("(^\\s*[\\w-]+)(\\s)")
-    private final val CMD_PARAM = Pattern.compile("(\\s)(--?[\\w-]+)")
-
-    // Number of server and probe services that need to be started + 1 progress start.
-    // Used for progress bar functionality.
-    // +==================================================================+
-    // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
-    // +==================================================================+
-    private final val NUM_SRV_SERVICES = 31 /*services*/ + 1 /*progress start*/
-    private final val NUM_PRB_SERVICES = 23 /*services*/ + 1 /*progress start*/
-
-    private final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
-    private final val PRB_BEACON_PATH = ".nlpcraft/probe_beacon"
-    private final val HIST_PATH = ".nlpcraft/.cli_history"
-
-    private final val DFLT_USER_EMAIL = "admin@admin.com"
-    private final val DFLT_USER_PASSWD = "admin"
-
-    private final val VER = NCVersion.getCurrent
-    private final val CP_WIN_NIX_SEPS_REGEX = "[:;]"
-    private final val CP_SEP = File.pathSeparator
-    private final val JAVA = U.sysEnv("NLPCRAFT_CLI_JAVA").getOrElse(new File(SystemUtils.getJavaHome, s"bin/java${if (SystemUtils.IS_OS_UNIX) "" else ".exe"}").getAbsolutePath)
-    private final val USR_WORK_DIR = SystemUtils.USER_DIR
-    private final val USR_HOME_DIR = SystemUtils.USER_HOME
-    private final val INSTALL_HOME = U.sysEnv("NLPCRAFT_CLI_INSTALL_HOME").getOrElse(USR_WORK_DIR)
-    private final val JAVA_CP = U.sysEnv("NLPCRAFT_CLI_CP").getOrElse(ManagementFactory.getRuntimeMXBean.getClassPath)
-    private final val SCRIPT_NAME = U.sysEnv("NLPCRAFT_CLI_SCRIPT").getOrElse(s"nlpcraft.${if (SystemUtils.IS_OS_UNIX) "sh" else "cmd"}")
-    private final val PROMPT = if (SCRIPT_NAME.endsWith("cmd")) ">" else "$"
-    private final val IS_SCRIPT = U.sysEnv("NLPCRAFT_CLI").isDefined
-    private final val T___ = "    "
-    private final val OPEN_BRK = Seq('[', '{', '(')
-    private final val CLOSE_BRK = Seq(']', '}', ')')
-    private final val BRK_PAIR = OPEN_BRK.zip(CLOSE_BRK).toMap ++ CLOSE_BRK.zip(OPEN_BRK).toMap // Pair for each open or close bracket.
-
-    private var exitStatus = 0
-
-    private var term: Terminal = _
+    var term: Terminal = _
 
     NCModule.setModule(NCModule.CLI)
-
-    // See NCProbeMdo.
-    case class Probe(
-        probeToken: String,
-        probeId: String,
-        probeGuid: String,
-        probeApiVersion: String,
-        probeApiDate: String,
-        osVersion: String,
-        osName: String,
-        osArch: String,
-        startTstamp: Long,
-        tmzId: String,
-        tmzAbbr: String,
-        tmzName: String,
-        userName: String,
-        javaVersion: String,
-        javaVendor: String,
-        hostName: String,
-        hostAddr: String,
-        macAddr: String,
-        models: Array[ProbeModel]
-    )
-
-    // See NCProbeModelMdo.
-    case class ProbeModel(
-        id: String,
-        name: String,
-        version: String,
-        enabledBuiltInTokens: Array[String]
-    )
-
-    case class ProbeAllResponse(
-        probes: Array[Probe],
-        status: String
-    )
-
-    case class SplitError(index: Int)
-        extends Exception
-
-    case class UnknownCommand(cmd: String)
-        extends IllegalArgumentException(s"Unknown command ${c("'" + cmd + "'")}, type ${c("'help'")} to get help.")
-
-    case class NoLocalServer()
-        extends IllegalStateException(s"Local server not found, use $C'start-server'$RST command to start one.")
-
-    case class NoLocalProbe()
-        extends IllegalStateException(s"Local probe not found, use $C'start-probe'$RST command to start one.")
-
-    case class MissingParameter(cmd: Command, paramId: String)
-        extends IllegalArgumentException(
-            s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-            s"type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class NotSignedIn()
-        extends IllegalStateException(s"Not signed in. Use ${c("'signin'")} command to sign in first.")
-
-    case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String)
-        extends IllegalArgumentException(
-            s"Missing mandatory JSON parameters (${missingParams.map(s ⇒ y(s.name)).mkString(",")}) " +
-            s"for $C${"'" + cmd.name + s" --path=$path'"}$RST, type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class InvalidParameter(cmd: Command, paramId: String)
-        extends IllegalArgumentException(
-            s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-            s"type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class InvalidJsonParameter(cmd: Command, param: String)
-        extends IllegalArgumentException(
-            s"Invalid JSON parameter $C${"'" + param + "'"}$RST, " +
-            s"type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class HttpError(httpCode: Int)
-        extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
-
-    case class MalformedJson()
-        extends IllegalStateException(s"Malformed JSON. ${c("Tip:")} on Windows make sure to escape double quotes.")
-
-    case class TooManyArguments(cmd: Command)
-        extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
-
-    case class NotEnoughArguments(cmd: Command)
-        extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
 
     // Project templates for 'gen-project' command.
     private lazy val PRJ_TEMPLATES: Map[String, Seq[String]] = {
@@ -355,7 +208,7 @@ object NCCli extends App {
      * @param id
      */
     private def isParam(cmd: Command, args: Seq[Argument], id: String): Boolean =
-        args.find(_.parameter.id == id).nonEmpty
+        args.exists(_.parameter.id == id)
 
     /**
      * @param cmd
@@ -377,7 +230,7 @@ object NCCli extends App {
      */
     private def getFlagParam(cmd: Command, args: Seq[Argument], id: String, dflt: Boolean): Boolean =
         args.find(_.parameter.id == id) match {
-            case Some(b) ⇒ true
+            case Some(_) ⇒ true
             case None ⇒ dflt
         }
 
@@ -511,7 +364,7 @@ object NCCli extends App {
     private [cmdline] def cmdStartServer(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         val cfgPath = getPathParam(cmd, args, "config")
         val igniteCfgPath = getPathParam(cmd, args, "igniteConfig")
-        val noWait = getFlagParam(cmd, args, "noWait", false)
+        val noWait = getFlagParam(cmd, args, "noWait", dflt = false)
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 2)
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
             case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
@@ -535,7 +388,7 @@ object NCCli extends App {
         // Store in REPL state right away.
         state.serverLog = Some(output)
 
-        var srvArgs = mutable.ArrayBuffer.empty[String]
+        val srvArgs = mutable.ArrayBuffer.empty[String]
 
         srvArgs += JAVA
         srvArgs ++= jvmOpts
@@ -716,7 +569,7 @@ object NCCli extends App {
         if (mdls == null && addCp != null)
             warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
 
-        var jvmArgs = mutable.ArrayBuffer.empty[String]
+        val jvmArgs = mutable.ArrayBuffer.empty[String]
 
         jvmArgs += JAVA
         jvmArgs ++= jvmOpts
@@ -776,7 +629,7 @@ object NCCli extends App {
         }
 
         val cfgPath = getPathParam(cmd, args, "config")
-        val noWait = getFlagParam(cmd, args, "noWait", false)
+        val noWait = getFlagParam(cmd, args, "noWait", dflt = false)
         val addCp = getCpParam(cmd, args, "cp")
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
         val mdls = getParamOrNull(cmd, args, "models")
@@ -788,12 +641,12 @@ object NCCli extends App {
         if (mdls != null) {
             if (hasExternalModels(mdls) && addCp == null)
                 throw new IllegalStateException(
-                    s"Additional classpath is required when deploying your own models. " +
+                    s"Additional classpath is required when deploying user models. " +
                     s"Use ${c("--cp")} parameters to provide additional classpath.")
         }
 
         if (mdls == null && addCp != null)
-            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
+            warn(s"Additional classpath (${c("--cp")}) specified but no models (${c("--models")}).")
 
         val logTstamp = currentTime
 
@@ -803,7 +656,7 @@ object NCCli extends App {
         // Store in REPL state right away.
         state.probeLog = Some(output)
 
-        var prbArgs = mutable.ArrayBuffer.empty[String]
+        val prbArgs = mutable.ArrayBuffer.empty[String]
 
         prbArgs += JAVA
         prbArgs ++= jvmOpts
@@ -1115,7 +968,7 @@ object NCCli extends App {
                             name.startsWith(s".pid_$ph")
                     })
 
-                    if (files.size == 1) {
+                    if (files != null && files.size == 1) {
                         val split = files(0).getName.split("_")
 
                         if (split.size == 4) {
@@ -1221,7 +1074,7 @@ object NCCli extends App {
                             name.startsWith(s".pid_$ph")
                     })
 
-                    if (files.size == 1) {
+                    if (files != null && files.size == 1) {
                         val split = files(0).getName.split("_")
 
                         if (split.size == 4) {
@@ -1386,7 +1239,7 @@ object NCCli extends App {
          * @return
          */
         def mkCmdLines(cmd: Command): Seq[String] = {
-            var lines = mutable.Buffer.empty[String]
+            val lines = mutable.Buffer.empty[String]
 
             if (cmd.desc.isDefined)
                 lines += cmd.synopsis + " " + cmd.desc.get
@@ -1407,7 +1260,7 @@ object NCCli extends App {
                     lines += c(line)
 
                     if (param.optional)
-                        lines += s"$T___${T___}${g("Optional.")}"
+                        lines += s"$T___$T___${g("Optional.")}"
 
                     lines += s"$T___$T___${param.desc}"
                     lines += ""
@@ -1519,7 +1372,7 @@ object NCCli extends App {
      * @return
      */
     private def logProbeInfo(beacon: NCCliProbeBeacon): Unit = {
-        var tbl = new NCAsciiTable
+        val tbl = new NCAsciiTable
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
         val jarsFolder = if (beacon.jarsFolder != null) g(beacon.jarsFolder) else y("<not set>")
@@ -1547,6 +1400,8 @@ object NCCli extends App {
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
 
+        val epUrl = "http://" + beacon.restEndpoint
+
         tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("Database:", "")
         tbl += ("  URL", s"${g(beacon.dbUrl)}")
@@ -1557,7 +1412,7 @@ object NCCli extends App {
         tbl += ("  Pool increment", s"${g(beacon.dbPoolInc)}")
         tbl += ("  Reset on start", s"${g(beacon.dbInit)}")
         tbl += ("REST:", "")
-        tbl += ("  Endpoint", s"${g("http://" + beacon.restEndpoint)}")
+        tbl += ("  Endpoint", s"${g(epUrl)}")
         tbl += ("  API provider", s"${g(beacon.restApi)}")
         tbl += ("Probe:", "")
         tbl += ("  Uplink", s"${g(beacon.upLink)}")
@@ -1575,7 +1430,7 @@ object NCCli extends App {
 
         logln(s"Local server:\n${tbl.toString}")
 
-        tbl = new NCAsciiTable
+        tbl = new NCAsciiTable()
 
         def addProbeToTable(tbl: NCAsciiTable, probe: Probe): NCAsciiTable = {
             tbl += (
@@ -1756,7 +1611,7 @@ object NCCli extends App {
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
 
-        var jvmArgs = mutable.ArrayBuffer.empty[String]
+        val jvmArgs = mutable.ArrayBuffer.empty[String]
 
         jvmArgs += JAVA
         jvmArgs ++= jvmOpts
@@ -1781,7 +1636,7 @@ object NCCli extends App {
 
                 arg.value match {
                     case None ⇒ jvmArgs += p
-                    case Some(v) ⇒ jvmArgs += s"$p=${arg.value.get}"
+                    case Some(_) ⇒ jvmArgs += s"$p=${arg.value.get}"
                 }
             }
 
@@ -1838,7 +1693,7 @@ object NCCli extends App {
                 val mdlId = getParam(cmd, args, "mdlId")
                 val txt = getParam(cmd, args, "txt")
                 val data = getParamOrNull(cmd, args, "data")
-                val enableLog = getFlagParam(cmd, args, "enableLog", false)
+                val enableLog = getFlagParam(cmd, args, "enableLog", dflt = false)
 
                 httpRest(
                     cmd,
