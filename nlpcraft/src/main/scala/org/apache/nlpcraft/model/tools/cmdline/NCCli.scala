@@ -799,6 +799,12 @@ object NCCli extends NCCliBase {
 
                     logProbeInfo(beacon)
 
+                    // Reload server beacon to pick up new connected probe.
+                    loadServerBeacon()
+
+                    // Log all connected probes (including this one).
+                    logConnectedProbes()
+
                     showTip()
                 }
             }
@@ -998,7 +1004,7 @@ object NCCli extends NCCliBase {
                 try {
                     val baseUrl = "http://" + beacon.restEndpoint
 
-                    // Attempt to signin with the default account.
+                    // Attempt to sign in with the default account.
                     if (autoSignIn && state.accessToken.isEmpty)
                         httpPostResponseJson(
                             baseUrl,
@@ -1396,7 +1402,7 @@ object NCCli extends NCCliBase {
      * @return
      */
     private def logServerInfo(beacon: NCCliServerBeacon): Unit = {
-        var tbl = new NCAsciiTable
+        val tbl = new NCAsciiTable
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
 
@@ -1430,7 +1436,37 @@ object NCCli extends NCCliBase {
 
         logln(s"Local server:\n${tbl.toString}")
 
-        tbl = new NCAsciiTable()
+        logConnectedProbes()
+
+        logSignedInUser()
+    }
+
+    /**
+     *
+     */
+    private def logSignedInUser(): Unit = {
+        if (state.accessToken.isDefined) {
+            val tbl = new NCAsciiTable()
+
+            tbl += (s"${g("Email")}", state.userEmail.get)
+            tbl += (s"${g("Access token")}", state.accessToken.get)
+
+            logln(s"Signed in user account:\n$tbl")
+        }
+    }
+
+    /**
+     *
+     */
+    private def logConnectedProbes(): Unit = {
+        val tbl = new NCAsciiTable
+
+        tbl #= (
+            "Probe ID",
+            "Uptime",
+            "Host / OS",
+            "Model IDs"
+        )
 
         def addProbeToTable(tbl: NCAsciiTable, probe: Probe): NCAsciiTable = {
             tbl += (
@@ -1450,25 +1486,9 @@ object NCCli extends NCCliBase {
             tbl
         }
 
-        tbl #= (
-            "Probe ID",
-            "Uptime",
-            "Host / OS",
-            "Deployed Models"
-        )
-
         state.probes.foreach(addProbeToTable(tbl, _))
 
         logln(s"Connected probes (${state.probes.size}):\n${tbl.toString}")
-
-        if (state.accessToken.isDefined) {
-            val tbl = new NCAsciiTable()
-
-            tbl += (s"${g("Email")}", state.userEmail.get)
-            tbl += (s"${g("Access token")}", state.accessToken.get)
-
-            logln(s"Signed in user account:\n$tbl")
-        }
     }
 
     /**
