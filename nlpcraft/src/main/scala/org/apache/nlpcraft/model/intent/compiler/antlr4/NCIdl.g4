@@ -72,8 +72,19 @@ termEq
 term: 'term' termId? termEq ((LBRACE vars? expr RBRACE) | mtdDecl) minMax?;
 mtdRef: javaFqn? POUND id;
 javaFqn
+    : javaClass
+    | javaFqn DOT javaClass
+    ;
+javaClass
     : id
-    | javaFqn DOT id
+    // We need to include keywords to make sure they don't conflict.
+    | IMPORT
+    | INTENT
+    | ORDERED
+    | FLOW
+    | META
+    | TERM
+    | FRAG
     ;
 termId: LPAR id RPAR;
 expr
@@ -125,7 +136,7 @@ id
 
 // Lexer.
 FUN_NAME
-    : 'meta_token'
+    : 'meta_tok'
     | 'meta_part'
     | 'meta_model'
     | 'meta_intent'
@@ -146,8 +157,9 @@ FUN_NAME
     | 'tok_is_abstract'
     | 'tok_is_bracketed'
     | 'tok_is_direct'
+    | 'tok_is_permutated'
     | 'tok_is_english'
-    | 'tok_is_freeWord'
+    | 'tok_is_freeword'
     | 'tok_is_quoted'
     | 'tok_is_stopword'
     | 'tok_is_swear'
@@ -162,6 +174,7 @@ FUN_NAME
     | 'tok_end_idx'
     | 'tok_this'
     | 'tok_find_part'
+    | 'tok_has_part'
     | 'tok_find_parts'
     | 'req_id'
     | 'req_normtext'
@@ -195,8 +208,8 @@ FUN_NAME
     | 'is_alphanumspace'
     | 'split'
     | 'split_trim'
-    | 'start_with'
-    | 'end_with'
+    | 'starts_with'
+    | 'ends_with'
     | 'index_of'
     | 'contains'
     | 'substr'
@@ -222,7 +235,7 @@ FUN_NAME
     | 'cosh'
     | 'sinh'
     | 'tanh'
-    | 'atn2'
+    | 'atan2'
     | 'degrees'
     | 'radians'
     | 'exp'
@@ -269,6 +282,7 @@ FUN_NAME
     | 'week_of_year'
     | 'quarter'
     | 'now'
+    | 'or_else'
     ;
 
 IMPORT : 'import' ;
@@ -319,23 +333,9 @@ INT: '0' | [1-9] [_0-9]*;
 REAL: DOT [0-9]+;
 EXP: [Ee] [+\-]? INT;
 fragment UNI_CHAR // International chars.
-    : '\u0300'..'\u036F'
-    | '\u00A0'..'\u00FF' /* Latin-1 Supplement. */
-    | '\u0100'..'\u017F' /* Latin Extended-A. */
-    | '\u0180'..'\u024F' /* Latin Extended-B. */
-    | '\u1E02'..'\u1EF3' /* Latin Extended Additional. */
-    | '\u0259'..'\u0292' /* IPA Extensions. */
-    | '\u02B0'..'\u02FF' /* Spacing modifier letters. */
-    | '\u203F'..'\u2040'
-    | '\u1F01'..'\u1FFF' /* Greek Extended. */
-    | '\u0400'..'\u04FF' /* Cyrillic. */
-    | '\u200C'..'\u200D'
-    | '\u2070'..'\u218F'
-    | '\u2C00'..'\u2FEF'
-    | '\u3001'..'\uD7FF'
-    | '\uF900'..'\uFDCF'
-    | '\uFDF0'..'\uFFFD'
-    ; // Ignoring ['\u10000-'\uEFFFF].
+    : ~[\u0000-\u007F\uD800-\uDBFF] // Covers all characters above 0x7F which are not a surrogate.
+    | [\uD800-\uDBFF] [\uDC00-\uDFFF] // Covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF.
+    ;
 fragment LETTER: [a-zA-Z];
 ID: (UNI_CHAR|UNDERSCORE|LETTER|DOLLAR)+(UNI_CHAR|DOLLAR|LETTER|[0-9]|COLON|MINUS|UNDERSCORE)*;
 COMMENT : ('//' ~[\r\n]* '\r'? ('\n'| EOF) | '/*' .*? '*/' ) -> skip;

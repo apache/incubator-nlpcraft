@@ -83,6 +83,10 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         var models: String,
         var lifecycle: Seq[String]
     ) {
+        require(id != null)
+        require(token != null)
+        require(models != null)
+
         lazy val upLinkString = s"${upLink._1}:${upLink._2}"
         lazy val downLinkString = s"${downLink._1}:${downLink._2}"
         lazy val modelsSeq: Seq[String] = U.splitTrimFilter(models,",")
@@ -102,7 +106,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             withValue(s"$prefix.upLink", fromAnyRef("localhost:8201")).
             withValue(s"$prefix.downLink", fromAnyRef("localhost:8202")).
             withValue(s"$prefix.models", fromAnyRef("")).
-            withValue(s"$prefix.lifecycle", fromIterable(Seq().asJava)).
+            // CSV.
+            withValue(s"$prefix.lifecycle", fromAnyRef("")).
             withValue(s"$prefix.resultMaxSizeBytes", fromAnyRef(1048576)).
             withValue("nlpcraft.nlpEngine", fromAnyRef("opennlp"))
         

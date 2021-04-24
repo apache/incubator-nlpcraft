@@ -146,7 +146,7 @@ abstract class NCTestContext {
     protected def checkResult(req: String, expResp: String): Unit = {
         val res = getClient.ask(req)
 
-        assertTrue(res.isOk)
+        assertTrue(res.isOk, s"Unexpected result, error=${res.getResultError.orElse(null)}")
         assertTrue(res.getResult.isPresent)
         assertEquals(expResp, res.getResult.get)
     }

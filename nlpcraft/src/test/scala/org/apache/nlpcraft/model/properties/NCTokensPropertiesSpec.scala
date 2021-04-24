@@ -35,27 +35,28 @@ abstract class NCTokenPropertiesModelAbstract extends NCModelAdapter(
 
     @NCIntent("intent=onXY term(t)={tok_id() == 'xy'}")
     def onXY(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
+
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = true
 }
 
 case class NCPropTestElement(
-    id: String, synonym: String, permFlag: Option[Boolean] = None, jiggleFactor: Option[Int] = None
+    id: String, synonym: String, perm: Option[Boolean] = None, sparse: Option[Boolean] = None
 ) extends NCElement {
     override def getId: String = id
     override def getSynonyms: util.List[String] = util.Collections.singletonList(synonym)
-    override def isPermutateSynonyms: Optional[lang.Boolean] =
-        permFlag match {
+
+    private def get(opt: Option[Boolean], getSuper: () ⇒ Optional[lang.Boolean]): Optional[lang.Boolean] =
+        opt match {
             case Some(v) ⇒ Optional.of(v)
-            case None ⇒ super.isPermutateSynonyms
+            case None ⇒ getSuper()
         }
 
-    override def getJiggleFactor: Optional[Integer] =
-        jiggleFactor match {
-            case Some(v) ⇒ Optional.of(v)
-            case None ⇒ super.getJiggleFactor
-        }
+    override def isPermutateSynonyms: Optional[lang.Boolean] = get(perm, () ⇒ super.isPermutateSynonyms)
+    override def isSparse: Optional[lang.Boolean] = get(sparse, () ⇒ super.isSparse)
 }
 
-// 1. Default model. Default behaviour with default jiggle values and permuted synonyms.
+// 1. All enabled.
 class NCTokenPropertiesModel1() extends NCTokenPropertiesModelAbstract
 
 @NCTestEnvironment(model = classOf[NCTokenPropertiesModel1], startClient = true)
@@ -76,6 +77,7 @@ class NCTokenPropertiesModel1Spec extends NCTestContext {
 // 2. Permutation turned off.
 class NCTokenPropertiesModel2 extends NCTokenPropertiesModelAbstract {
     override def isPermutateSynonyms: Boolean = false
+    override def isSparse: Boolean = true
 }
 
 @NCTestEnvironment(model = classOf[NCTokenPropertiesModel2], startClient = true)
@@ -100,40 +102,14 @@ class NCTokenPropertiesModel2Spec extends NCTestContext {
     }
 }
 
-// 3. Permutation turned off for `ab` but enabled by default for 'xy'
+// 3. Sparse turned off.
 class NCTokenPropertiesModel3 extends NCTokenPropertiesModelAbstract {
-    override def getElements: util.Set[NCElement] = {
-        val set: Set[NCElement] = Set(
-            NCPropTestElement("ab", "a b", permFlag = Some(false)),
-            NCTestElement("xy", "x y")
-        )
-
-        set.asJava
-    }
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = false
 }
 
 @NCTestEnvironment(model = classOf[NCTokenPropertiesModel3], startClient = true)
 class NCTokenPropertiesModel3Spec extends NCTestContext {
-    @Test
-    def test(): Unit = {
-        checkIntent("a b", "onAB")
-        checkIntent("a test test b", "onAB")
-        fail("b a")
-
-        checkIntent("x y", "onXY")
-        checkIntent("x test test y", "onXY")
-        checkIntent("y x", "onXY")
-        checkIntent("y test test x", "onXY")
-    }
-}
-
-// 4. Jiggle factor turned off.
-class NCTokenPropertiesModel4 extends NCTokenPropertiesModelAbstract {
-    override def getJiggleFactor: Int = 0
-}
-
-@NCTestEnvironment(model = classOf[NCTokenPropertiesModel4], startClient = true)
-class NCTokenPropertiesModel4Spec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkIntent("a b", "onAB")
@@ -150,17 +126,40 @@ class NCTokenPropertiesModel4Spec extends NCTestContext {
             "b test test a",
             "x test test y",
             "y test test x"
+
         )
     }
 }
 
-// 5. Jiggle factor turned off for `ab` but enabled by default for 'xy'
-// Permutation for 'ab' is disabled.
+// 4. Permutation and sparse turned off.
+class NCTokenPropertiesModel4 extends NCTokenPropertiesModelAbstract {
+    override def isPermutateSynonyms: Boolean = false
+    override def isSparse: Boolean = false
+}
+
+@NCTestEnvironment(model = classOf[NCTokenPropertiesModel4], startClient = true)
+class NCTokenPropertiesModel4Spec extends NCTestContext {
+    @Test
+    def test(): Unit = {
+        checkIntent("a b", "onAB")
+        fail(
+            "b a",
+            "a test b",
+            "b test a"
+        )
+    }
+}
+
+// 5. Permutation turned off for `ab` but enabled for 'xy'.
+// Sparse turned on for both of them.
 class NCTokenPropertiesModel5 extends NCTokenPropertiesModelAbstract {
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = true
+
     override def getElements: util.Set[NCElement] = {
         val set: Set[NCElement] = Set(
-            NCPropTestElement("ab", "a b", permFlag = Some(false), jiggleFactor = Some(0)),
-            NCTestElement("xy", "x y")
+            NCPropTestElement("ab", "a b", perm = Some(false)),
+            NCPropTestElement("xy", "x y", perm = Some(true))
         )
 
         set.asJava
@@ -172,33 +171,25 @@ class NCTokenPropertiesModel5Spec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkIntent("a b", "onAB")
+        checkIntent("a test test b", "onAB")
         fail("b a")
-        checkIntent("y x", "onXY")
+
         checkIntent("x y", "onXY")
-
-        fail(
-            "a test b",
-            "b test a"
-        )
-        checkIntent("y test x", "onXY")
-        checkIntent("x test y", "onXY")
-
-        fail(
-            "a test test b",
-            "b test test a"
-        )
-        checkIntent("y test test x", "onXY")
         checkIntent("x test test y", "onXY")
+        checkIntent("y x", "onXY")
+        checkIntent("y test test x", "onXY")
     }
 }
 
-// 6. Jiggle factor restricted for `ab` but enabled by default for 'xy'.
-// Permutation for 'ab' is disabled.
+// 6. Sparse factor and permutation are turned off for `ab` but enabled for 'xy'.
 class NCTokenPropertiesModel6 extends NCTokenPropertiesModelAbstract {
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = true
+
     override def getElements: util.Set[NCElement] = {
         val set: Set[NCElement] = Set(
-            NCPropTestElement("ab", "a b", permFlag = Some(false), jiggleFactor = Some(1)),
-            NCTestElement("xy", "x y")
+            NCPropTestElement("ab", "a b", sparse = Some(false), perm = Some(false)),
+            NCPropTestElement("xy", "x y")
         )
 
         set.asJava
@@ -214,42 +205,6 @@ class NCTokenPropertiesModel6Spec extends NCTestContext {
         checkIntent("y x", "onXY")
         checkIntent("x y", "onXY")
 
-        checkIntent("a test b", "onAB")
-        fail("b test a")
-        checkIntent("y test x", "onXY")
-        checkIntent("x test y", "onXY")
-
-        fail(
-            "a test test b",
-            "b test test a"
-        )
-        checkIntent("y test test x", "onXY")
-        checkIntent("x test test y", "onXY")
-    }
-}
-
-// 7. Jiggle factor turned off for `ab` but enabled by default for 'xy'
-// Permutation for 'ab' - by default.
-class NCTokenPropertiesModel7 extends NCTokenPropertiesModelAbstract {
-    override def getElements: util.Set[NCElement] = {
-        val set: Set[NCElement] = Set(
-            NCPropTestElement("ab", "a b", jiggleFactor = Some(0)),
-            NCTestElement("xy", "x y")
-        )
-
-        set.asJava
-    }
-}
-
-@NCTestEnvironment(model = classOf[NCTokenPropertiesModel7], startClient = true)
-class NCTokenPropertiesModel7Spec extends NCTestContext {
-    @Test
-    def test(): Unit = {
-        checkIntent("a b", "onAB")
-        checkIntent("b a", "onAB")
-        checkIntent("y x", "onXY")
-        checkIntent("x y", "onXY")
-
         fail(
             "a test b",
             "b test a"
@@ -266,41 +221,33 @@ class NCTokenPropertiesModel7Spec extends NCTestContext {
     }
 }
 
+// 7. Sparse factor turned off for `ab` but enabled  for 'xy'.
+class NCTokenPropertiesModel7 extends NCTokenPropertiesModelAbstract {
+    override def isPermutateSynonyms: Boolean = true
+    override def isSparse: Boolean = true
 
-// 8. Jiggle factor restricted for `ab` but enabled by default for 'xy'
-// Permutation for 'ab' - by default.
-class NCTokenPropertiesModel8 extends NCTokenPropertiesModelAbstract {
     override def getElements: util.Set[NCElement] = {
         val set: Set[NCElement] = Set(
-            NCPropTestElement("ab", "a b", jiggleFactor = Some(1)),
-            NCTestElement("xy", "x y")
+            NCPropTestElement("ab", "a b", perm = Some(true), sparse = Some(false)),
+            NCPropTestElement("xy", "x y", perm = Some(true), sparse = Some(true))
         )
 
         set.asJava
     }
 }
 
-@NCTestEnvironment(model = classOf[NCTokenPropertiesModel8], startClient = true)
-class NCTokenPropertiesModel8Spec extends NCTestContext {
+@NCTestEnvironment(model = classOf[NCTokenPropertiesModel7], startClient = true)
+class NCTokenPropertiesModel7Spec extends NCTestContext {
     @Test
     def test(): Unit = {
         checkIntent("a b", "onAB")
         checkIntent("b a", "onAB")
+        fail("a test b")
+        fail("b test a")
         checkIntent("y x", "onXY")
         checkIntent("x y", "onXY")
-        checkIntent("a test b", "onAB")
-        checkIntent("b test a", "onAB")
-        checkIntent("y test x", "onXY")
-        checkIntent("x test y", "onXY")
-
-        fail(
-            "a test test b",
-            "b test test a"
-        )
         checkIntent("y test test x", "onXY")
         checkIntent("x test test y", "onXY")
     }
 }
-
-
 

@@ -54,10 +54,10 @@ public class NCModelJson {
     private boolean isSwearWordsAllowed = DFLT_IS_SWEAR_WORDS_ALLOWED;
     private boolean isNoNounsAllowed = DFLT_IS_NO_NOUNS_ALLOWED;
     private boolean isNoUserTokensAllowed = DFLT_IS_NO_USER_TOKENS_ALLOWED;
-    private int jiggleFactor = DFLT_JIGGLE_FACTOR;
     private boolean isDupSynonymsAllowed = DFLT_IS_DUP_SYNONYMS_ALLOWED;
     private int maxTotalSynonyms = DFLT_MAX_TOTAL_SYNONYMS;
     private boolean isPermutateSynonyms = DFLT_IS_PERMUTATE_SYNONYMS;
+    private boolean isSparse = DFLT_IS_SPARSE;
     private int maxElementSynonyms = DFLT_MAX_TOTAL_SYNONYMS;
     private boolean maxSynonymsThresholdError = DFLT_MAX_SYNONYMS_THRESHOLD_ERROR;
     private long conversationTimeout = DFLT_CONV_TIMEOUT_MS;
@@ -199,11 +199,11 @@ public class NCModelJson {
     public void setNoUserTokensAllowed(boolean noUserTokensAllowed) {
         isNoUserTokensAllowed = noUserTokensAllowed;
     }
-    public int getJiggleFactor() {
-        return jiggleFactor;
+    public boolean isSparse() {
+        return isSparse;
     }
-    public void setJiggleFactor(int jiggleFactor) {
-        this.jiggleFactor = jiggleFactor;
+    public void setSparse(boolean sparse) {
+        isSparse = sparse;
     }
     public boolean isDupSynonymsAllowed() {
         return isDupSynonymsAllowed;

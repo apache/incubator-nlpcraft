@@ -25,15 +25,15 @@ import org.junit.jupiter.api.Test
   */
 class NCIdlFunctionsMath extends NCIdlFunctions {
     @Test
-    def testError(): Unit = {
-        // Invalid name.
-        expectError("xxx(1, 1)")
-        expectError("xxx()")
-
-        // Invalid arguments count.
-        expectError("atan(1, 1) == 1")
-        expectError("pi(1)")
-    }
+    def testError(): Unit =
+        expectError(
+            // Invalid name.
+            "xxx(1, 1)",
+            "xxx()",
+            // Invalid arguments count.
+            "atan(1, 1) == 1",
+            "pi(1)"
+        )
 
     @Test
     def test(): Unit =
@@ -64,8 +64,8 @@ class NCIdlFunctionsMath extends NCIdlFunctions {
             "cosh(8) != cosh(9)",
             "sinh(8) != sinh(9)",
             "tanh(8) != tanh(9)",
-            "atn2(8, 2) != atn2(9, 2)",
-            "atn2(8.1, 2.1) != atn2(9.1, 2.1)",
+            "atan2(8, 2) != atan2(9, 2)",
+            "atan2(8.1, 2.1) != atan2(9.1, 2.1)",
             "degrees(1.5708) - 90 < 0.001",
             "radians(90) - 1.5708 < 0.001",
             "exp(2) != exp(3)",

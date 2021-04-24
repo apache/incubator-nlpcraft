@@ -18,15 +18,15 @@
 package org.apache.nlpcraft.model.intent.solver
 
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.debug.{NCLogGroupToken, NCLogHolder}
 import org.apache.nlpcraft.common.opencensus.NCOpenCensusTrace
-import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.impl.NCTokenLogger
-import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
-import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 import org.apache.nlpcraft.model.impl.NCTokenPimp._
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlFunction, NCIdlIntent, NCIdlTerm, NCIdlStackItem ⇒ Z}
+import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken}
+import org.apache.nlpcraft.probe.mgrs.dialogflow.NCDialogFlowManager
 
 import java.util.function.Function
 import scala.collection.JavaConverters._
@@ -353,7 +353,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                         )
                 })
 
-                tbl.info(logger, Some(s"Found ${sorted.size} matching intents (sorted ${g(bo("best"))} to worst):"))
+                tbl.info(logger, Some(s"Found ${sorted.size} matching intents (sorted $G${BO}best$RST to worst):"))
             }
             else
                 logger.info("No matching intent found.")
@@ -435,31 +435,31 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
             val str = flow.map(_.getIntentId).mkString(" ")
 
             def x(s: String): Unit = {
-                logger.info(s"Intent '$intentId' ${bo(s)} regex dialog flow $varStr:")
+                logger.info(s"Intent '$intentId' $s regex dialog flow $varStr:")
                 logger.info(s"  |-- ${c("Intent IDs  :")} $str")
                 logger.info(s"  +-- ${c("Match regex :")} ${flowRegex.get.toString}")
             }
 
             if (!flowRegex.get.matcher(str).find(0)) {
-                x("did not match")
+                x(s"${bo(r("did not match"))}")
 
                 flowMatched = false
             }
             else
-                x("matched")
+                x(s"matched")
         }
         else if (intent.flowMtdName.isDefined) {
-            require(intent.flowClsName.isDefined)
-
-            val clsName = intent.flowClsName.get
+            val clsName = intent.flowClsName.orNull
             val mtdName = intent.flowMtdName.get
-            
-            val fqn = s"$clsName.$mtdName(java.util.List[NCDialogFlowItem])"
-            
+
+            val fqn =
+                s"${if (clsName == null) ctx.getModel.getClass.getName else clsName}." +
+                s"$mtdName(java.util.List[NCDialogFlowItem])"
+
             val res =
                 try
                     U.callMethod[java.util.List[NCDialogFlowItem], java.lang.Boolean](
-                        U.mkObject(clsName),
+                        () ⇒ if (clsName == null) ctx.getModel else U.mkObject(clsName),
                         mtdName,
                         flow.toList.asJava
                     )
@@ -469,12 +469,12 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
                 }
 
             def x(s: String): Unit = {
-                logger.info(s"Intent '$intentId' ${bo(s)} custom flow callback $varStr:")
+                logger.info(s"Intent '$intentId' $s custom flow callback $varStr:")
                 logger.info(s"  +-- ${c("Custom callback :")} $fqn")
             }
 
             if (!res) {
-                x("did not match")
+                x(s"${bo(r("did not match"))}")
         
                 flowMatched = false
             }
@@ -541,7 +541,7 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                     case None ⇒
                         // Term is missing. Stop further processing for this intent. This intent cannot be matched.
-                        logger.info(s"Intent '$intentId' ${r("did not")} match because of unmatched term '$term' $varStr.")
+                        logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because of unmatched term '${term.toAnsiString}' $varStr.")
 
                         abort = true
                 }
@@ -556,20 +556,21 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
                 var res: Option[IntentMatch] = None
 
-                if (usedSenToks.isEmpty && usedConvToks.isEmpty)
-                    logger.info(s"Intent '$intentId' ${r("did not")} match because no tokens were matched $varStr.")
-                else if (usedSenToks.isEmpty && usedConvToks.nonEmpty)
-                    logger.info(s"Intent '$intentId' ${r("did not")} match because all its matched tokens came from STM $varStr.")
+                if (usedSenToks.isEmpty && usedConvToks.nonEmpty)
+                    logger.info(s"Intent '$intentId' ${bo(r("did not match"))} because all its matched tokens came from STM $varStr.")
                 else if (unusedSenToks.exists(_.token.isUserDefined))
                     NCTokenLogger.prepareTable(unusedSenToks.filter(_.token.isUserDefined).map(_.token)).
                         info(
                             logger,
                             Some(
-                                s"Intent '$intentId' ${r("did not")} match because of remaining unused user tokens $varStr." +
+                                s"Intent '$intentId' ${bo(r("did not match"))} because of remaining unused user tokens $varStr." +
                                 s"\nUnused user tokens for intent '$intentId' $varStr:"
                             )
                         )
                 else {
+                    if (usedSenToks.isEmpty && usedConvToks.isEmpty)
+                        logger.warn(s"Intent '$intentId' ${bo(y("matched"))} but no tokens were used $varStr.")
+    
                     // Number of remaining (unused) non-free words in the sentence is a measure of exactness of the match.
                     // The match is exact when all non-free words are used in that match.
                     // Negate to make sure the bigger (smaller negative number) is better.
@@ -608,32 +609,25 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
         senToks: Seq[UsedToken],
         convToks: Seq[UsedToken]
     ): Option[TermMatch] = {
+        if (senToks.isEmpty && convToks.isEmpty)
+            logger.warn(s"No tokens available to match on for term '${term.toAnsiString}'.")
+            
         try
             solvePredicate(term.pred, ctx, term.min, term.max, senToks, convToks) match {
                 case Some((usedToks, predWeight)) ⇒ Some(
                     TermMatch(
                         term.id,
                         usedToks,
-                        if (usedToks.nonEmpty) {
-                            // If term match is non-empty we add the following weights:
-                            //   - min
-                            //   - delta between specified max and normalized max (how close the actual quantity was to the specified one).
-                            //   - normalized max
-                            predWeight
-                                .append(term.min)
-                                .append(-(term.max - usedToks.size))
-                                // Normalize max quantifier in case of unbound max.
-                                .append(if (term.max == Integer.MAX_VALUE) usedToks.size else term.max)
-                        } else {
-                            // Term is optional (found but empty).
-                            require(term.min == 0)
-
-                            predWeight
-                                .append(0)
-                                .append(-term.max)
-                                // Normalize max quantifier in case of unbound max.
-                                .append(if (term.max == Integer.MAX_VALUE) 0 else term.max)
-                        }
+                        // If term match is non-empty we add the following weights:
+                        //   - min
+                        //   - delta between specified max and normalized max (how close the actual quantity was to the specified one).
+                        //   - normalized max
+                        // NOTE: 'usedToks' can be empty.
+                        predWeight
+                            .append(term.min)
+                            .append(-(term.max - usedToks.size))
+                            // Normalize max quantifier in case of unbound max.
+                            .append(if (term.max == Integer.MAX_VALUE) usedToks.size else term.max)
                     )
                 )
 
@@ -673,9 +667,11 @@ object NCIntentSolverEngine extends LazyLogging with NCOpenCensusTrace {
 
         var matches = 0
         var tokUses = 0
-
+        
+        val allToks = Seq(senToks, convToks)
+        
         // Collect to the 'max' from sentence & conversation, if possible.
-        for (col ← Seq(senToks, convToks); tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
+        for (col ← allToks; tok ← col.filter(!_.used) if usedToks.lengthCompare(max) < 0) {
             val Z(res, uses) = pred.apply(tok.token, ctx)
 
             if (res.asInstanceOf[Boolean]) {

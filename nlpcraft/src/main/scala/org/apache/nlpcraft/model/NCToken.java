@@ -72,7 +72,7 @@ public interface NCToken extends NCMetadata {
 
     /**
      * Gets the optional parent ID of the model element this token represents. This only available
-     * for user-defined model elements (built-in tokens do not have parents).
+     * for user-defined model elements - built-in tokens do not have parents and this will return {@code null}.
      *
      * @return ID of the token's element immediate parent or {@code null} if not available.
      * @see NCElement#getParentId()
@@ -82,7 +82,7 @@ public interface NCToken extends NCMetadata {
 
     /**
      * Gets the list of all parent IDs from this token up to the root. This only available
-     * for user-defined model elements (built-in tokens do not have parents).
+     * for user-defined model elements = built-in tokens do not have parents and will return an empty list.
      *
      * @return List, potentially empty but never {@code null}, of all parent IDs from this token up to the root.
      * @see #getParentId()
@@ -182,8 +182,8 @@ public interface NCToken extends NCMetadata {
 
     /**
      * Gets the value if this token was detected via element's value (or its synonyms). Otherwise
-     * returns {@code null}. Only applicable for user-defined model elements (built-in tokens
-     * do not have values).
+     * returns {@code null}. Only applicable for user-defined model elements - built-in tokens
+     * do not have values and it will return {@code null}.
      * 
      * @return Value for the user-defined model element or {@code null}, if not available.
      * @see NCElement#getValues()
@@ -191,8 +191,8 @@ public interface NCToken extends NCMetadata {
     String getValue();
 
     /**
-     * Gets the list of groups this token belongs to. By default, if not specified explicitly, the group
-     * is token's ID.
+     * Gets the list of groups this token belongs to. Note that, by default, if not specified explicitly,
+     * token always belongs to one group with ID equal to token ID.
      *
      * @return Token groups list. Never {@code null} - but can be empty.
      * @see NCElement#getGroups()
@@ -239,6 +239,8 @@ public interface NCToken extends NCMetadata {
      * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
      * 
      * @return Whether or not this token is a stopword.
+     * @see NCModelView#getAdditionalStopWords()
+     * @see NCModelView#getExcludedStopWords()
      */
     default boolean isStopWord() {
         return meta("nlpcraft:nlp:stopword");
@@ -315,6 +317,19 @@ public interface NCToken extends NCMetadata {
      * @return Whether or not this token was matched on direct (not permutated) synonym.
      */
     default boolean isDirect() { return meta("nlpcraft:nlp:direct"); }
+
+    /**
+     * A shortcut method on whether or not this token was matched on permutated (not direct) synonym.
+     * <p>
+     * This method is equivalent to:
+     * <pre class="brush: java">
+     *     return !meta("nlpcraft:nlp:direct");
+     * </pre>
+     * See more information on token metadata <a target=_ href="https://nlpcraft.apache.org/data-model.html#meta">here</a>.
+     *
+     * @return Whether or not this token was matched on permutated (not direct) synonym.
+     */
+    default boolean isPermutated() { return !isDirect(); }
 
     /**
      * A shortcut method on whether this token represents an English word. Note that this only
@@ -419,7 +434,7 @@ public interface NCToken extends NCMetadata {
 
     /**
      * A shortcut method to get numeric value of how sparse the token is. Sparsity zero means that all
-     * individual words in the token follow each other.
+     * individual words in the token follow each other (regardless of the order).
      * <p>
      * This method is equivalent to:
      * <pre class="brush: java">
@@ -460,9 +475,9 @@ public interface NCToken extends NCMetadata {
     }
 
     /**
-     * Tests whether or not this token is a user-defined token.
+     * Tests whether or not this token is for a user-defined model element.
      *
-     * @return {@code True} if this token is defined by the model element in the user model, {@code false} otherwise.
+     * @return {@code True} if this token is defined by the user model element, {@code false} otherwise.
      */
     default boolean isUserDefined() {
         String id = getId();

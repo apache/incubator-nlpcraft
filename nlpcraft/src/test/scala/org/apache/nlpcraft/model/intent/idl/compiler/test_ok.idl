@@ -56,3 +56,29 @@ intent=i3
             list("موسكو\"", 'v1\'v1', "k2", "v2")
         )
     }
+
+intent=i4 flow=/#flowModelMethod/ term(t1)=/#termModelMethod/
+
+intent=i5
+    flow="a[^0-9]b"
+    meta={'a': 42, 'b': {'Москва': [1, 2, 3]}}
+    term(t1)={month() >= 6 && !(tok_id()) != -25 && meta_model('a') == 42}
+    term(t2)={
+        @a = meta_model('a')
+        @list = list(1, 2, 3, 4)
+
+        @a == 42 && has_all(@list, list(3, 2))
+    }
+
+intent=i6
+    flow=/#flowModelMethod/
+    term(t1)=/org.mypackage.MyClass#termMethod/
+    term(t2)={
+        @x = 2
+        @xx = ((@x * @x) / 2) * 3
+
+        @xx == 6 && has(
+            json(meta_req('user_json_payload')),
+            list("موسكو\"", 'v1\'v1', "k2", "v2")
+        )
+    }

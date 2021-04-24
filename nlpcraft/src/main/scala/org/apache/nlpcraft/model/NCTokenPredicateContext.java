@@ -20,8 +20,7 @@ package org.apache.nlpcraft.model;
 import java.util.Optional;
 
 /**
- * Context passed into custom user-defined token predicate. Custom token predicates can be used in
- * IDL.
+ * Context passed into custom user-defined IDL term token predicate.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.

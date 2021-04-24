@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-id: "nlpcraft.dsl.test"
+id: "nlpcraft.idl.test"
 name: "IDL Test Model"
 version: "1.0"
 description: "IDL test model."
@@ -52,4 +52,4 @@ elements:
       - "{fourth|4th} ^^[alias4]{tok_id() == 'a3'}^^"
 
 intents:
-  - "intent=i1 term(t1)={tok_id() == 'a' && meta_token('txt') == 'x'}"
+  - "intent=i1 term(t1)={tok_id() == 'a' && meta_tok('txt') == 'x'}"

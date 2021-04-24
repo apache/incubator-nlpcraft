@@ -58,18 +58,26 @@ object NCModelManager extends NCService with DecorateAsScala {
             data.values.foreach(w ⇒ {
                 val mdl = w.model
 
-                val synCnt = w.synonyms.flatMap(_._2.map(_._2.count)).sum
-                val elmCnt = w.elements.keySet.size
-                val intentCnt = w.intents.size
+                val contCnt = w.continuousSynonyms.flatMap(_._2.map(_._2.count)).sum
+                val sparseCnt = w.sparseSynonyms.map(_._2.size).sum
+                val allIdlSyns = w.idlSynonyms.values.flatten
+                val sparseIdlCnt = allIdlSyns.count(_.sparse)
+                val contIdlCnt = allIdlSyns.size - sparseIdlCnt
+
+                def withWarn(i: Int): String = if (i == 0) s"0 ${r("(!)")}" else i.toString
 
                 tbl += Seq(
-                    s"Name:     ${bo(c(mdl.getName))}",
-                    s"ID:       ${bo(mdl.getId)}",
-                    s"Version:  ${mdl.getVersion}",
-                    s"Origin:   ${mdl.getOrigin}",
-                    s"Elements: $elmCnt" + (if (elmCnt == 0) s" ${r("(!)")}" else ""),
-                    s"Synonyms: $synCnt" + (if (synCnt == 0) s" ${r("(!)")}" else ""),
-                    s"Intents:  $intentCnt" + (if (intentCnt == 0) s" ${r("(!)")}" else "")
+                    s"${B}Name:$RST                  ${bo(c(mdl.getName))}",
+                    s"${B}ID:$RST                    ${bo(mdl.getId)}",
+                    s"${B}Version:$RST               ${mdl.getVersion}",
+                    s"${B}Origin:$RST                ${mdl.getOrigin}",
+                    s"${B}Elements:$RST              ${withWarn(w.elements.keySet.size)}",
+                    s"${B}Synonyms:$RST",
+                    s"${B}   Simple continuous:$RST  $contCnt",
+                    s"${B}   Simple sparse:$RST      $sparseCnt",
+                    s"${B}   IDL continuous:$RST     $contIdlCnt",
+                    s"${B}   IDL sparse:$RST         $sparseIdlCnt",
+                    s"${B}Intents:$RST               ${withWarn(w.intents.size)}"
                 )
             })
         }

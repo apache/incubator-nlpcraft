@@ -40,7 +40,7 @@ class NCIdlTestSpec {
         if (NCEmbeddedProbe.start(null, Collections.singletonList(classOf[NCIdlTestModel].getName))) {
             cli = new NCTestClientBuilder().newBuilder.build
 
-            cli.open("nlpcraft.dsl.test")
+            cli.open("nlpcraft.idl.test")
         }
     }
 

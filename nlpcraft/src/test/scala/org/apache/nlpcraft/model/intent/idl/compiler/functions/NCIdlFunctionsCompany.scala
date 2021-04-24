@@ -55,7 +55,6 @@ class NCIdlFunctionsCompany extends NCIdlFunctions {
             override def getMetadata: util.Map[String, AnyRef] =
                 Map("k1" → "v1").map(p ⇒ p._1 → p._2.asInstanceOf[AnyRef]).asJava
         })
-
     }
 
     private def test(comp: NCCompany): Unit = {

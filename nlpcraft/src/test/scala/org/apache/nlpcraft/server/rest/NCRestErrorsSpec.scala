@@ -71,24 +71,24 @@ class NCRestErrorsSpec extends NCRestSpec {
             401,
             "NC_INVALID_ACCESS_TOKEN",
             "acsTok" → "UNEXPECTED",
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
         postError("clear/dialog",
             401,
             "NC_INVALID_ACCESS_TOKEN",
             "acsTok" → "UNEXPECTED",
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
 
         // Invalid values.
         postError("clear/conversation",
-            400, "NC_INVALID_FIELD", "usrId" → -1, "mdlId" → "nlpcraft.time.ex"
+            400, "NC_INVALID_FIELD", "usrId" → -1, "mdlId" → "rest.test.model"
         )
         postError(
             "clear/dialog",
             400, "NC_INVALID_FIELD",
             "usrId" → -1,
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
 
         postError("clear/conversation", 400, "NC_INVALID_FIELD", "mdlId" → "UNEXPECTED")
@@ -290,14 +290,14 @@ class NCRestErrorsSpec extends NCRestSpec {
             "NC_INVALID_ACCESS_TOKEN",
             "acsTok" → "UNEXPECTED",
             "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
         postError("ask/sync",
             401,
             "NC_INVALID_ACCESS_TOKEN",
             "acsTok" → "UNEXPECTED",
             "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
 
         // Invalid values.
@@ -305,27 +305,27 @@ class NCRestErrorsSpec extends NCRestSpec {
             400,
             "NC_INVALID_FIELD",
             "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex",
+            "mdlId" → "rest.test.model",
             "usrId" → -1
         )
         postError("ask/sync",
             400,
             "NC_INVALID_FIELD",
             "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex",
+            "mdlId" → "rest.test.model",
             "usrId" → -1
         )
         postError("ask",
             400,
             "NC_INVALID_FIELD",
             "txt" → mkString(1025),
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
         postError("ask/sync",
             400,
             "NC_INVALID_FIELD",
             "txt" → mkString(1025),
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
         postError("ask",
             400,
@@ -344,12 +344,12 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("ask",
             400,
             "NC_ERROR",
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
         postError("ask/sync",
             400,
             "NC_ERROR",
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
     }
 
@@ -360,7 +360,7 @@ class NCRestErrorsSpec extends NCRestSpec {
             401,
             "NC_INVALID_ACCESS_TOKEN",
             "acsTok" → "UNEXPECTED",
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )
 
         // Invalid values.
@@ -372,7 +372,7 @@ class NCRestErrorsSpec extends NCRestSpec {
         postError("model/sugsyn",
             400,
             "NC_INVALID_FIELD",
-            "mdlId" → "nlpcraft.time.ex",
+            "mdlId" → "rest.test.model",
             "minScore" → 1000
         )
     }

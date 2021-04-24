@@ -39,7 +39,7 @@ case class NCQueryStateMdo(
     @NCMdoField createTstamp: Timestamp, // Creation timestamp.
     @NCMdoField var updateTstamp: Timestamp, // Last update timestamp.
     @NCMdoField var status: String,
-    @NCMdoField enabledLog: Boolean,
+    @NCMdoField enableLog: Boolean,
     @NCMdoField var logJson: Option[String] = None,
     @NCMdoField var intentId: Option[String] = None,
     // Query OK.

@@ -18,11 +18,10 @@
 package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.examples.time.TimeModel
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.{BeforeEach, Test}
 
-@NCTestEnvironment(model = classOf[TimeModel], startClient = false)
+@NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
 class NCRestClearSpec extends NCRestSpec {
     private var usrId: Long = 0
 
@@ -35,10 +34,10 @@ class NCRestClearSpec extends NCRestSpec {
 
     @Test
     def test(): Unit = {
-        post("clear/conversation", "mdlId" → "nlpcraft.time.ex")()
-        post("clear/conversation", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
+        post("clear/conversation", "mdlId" → "rest.test.model")()
+        post("clear/conversation", "mdlId" → "rest.test.model", "usrId" → usrId)()
 
-        post("clear/dialog", "mdlId" → "nlpcraft.time.ex")()
-        post("clear/dialog", "mdlId" → "nlpcraft.time.ex", "usrId" → usrId)()
+        post("clear/dialog", "mdlId" → "rest.test.model")()
+        post("clear/dialog", "mdlId" → "rest.test.model", "usrId" → usrId)()
     }
 }

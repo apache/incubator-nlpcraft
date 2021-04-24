@@ -239,14 +239,14 @@ object NCJson {
      *
      * @param f File to extract from.
      */
-    private def readFile(f: File): String = removeComments(U.readFile(f, "UTF-8").mkString)
+    private def readFile(f: File): String = removeComments(U.readFile(f).mkString)
 
     /**
       * Reads stream.
       *
       * @param in Stream to extract from.
       */
-    private def readStream(in: InputStream): String = removeComments(U.readStream(in, "UTF-8").mkString)
+    private def readStream(in: InputStream): String = removeComments(U.readStream(in).mkString)
 
     /**
      * Extracts type `T` from given JSON `file`.

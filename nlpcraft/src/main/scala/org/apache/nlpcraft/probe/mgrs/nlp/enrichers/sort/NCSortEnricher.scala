@@ -177,7 +177,7 @@ object NCSortEnricher extends NCProbeEnricher {
         toks.flatten.
             filter(!_.isNlp).
             filter(n ⇒ n.tokenIndexes.head >= min && n.tokenIndexes.last <= max).
-            map(n ⇒ NoteData(n.noteType, n.tokenFrom to n.tokenTo)).
+            map(n ⇒ NoteData(n.noteType, n.tokenIndexes)).
             sortBy(_.indexes.head).distinct
     }
 
@@ -188,7 +188,7 @@ object NCSortEnricher extends NCProbeEnricher {
       *
       * @param toksNoteData
       */
-    private def split(toks: Seq[NCNlpSentenceToken], toksNoteData: Seq[NoteData], nullable: Boolean): Seq[Seq[NoteData]] = {
+    private def split(toks: Seq[NCNlpSentenceToken], othersRefs: Seq[NCNlpSentenceToken], toksNoteData: Seq[NoteData], nullable: Boolean): Seq[Seq[NoteData]] = {
         val res =
             if (toksNoteData.nonEmpty) {
                 val res = mutable.ArrayBuffer.empty[Seq[NoteData]]
@@ -205,8 +205,10 @@ object NCSortEnricher extends NCProbeEnricher {
                     between.isEmpty || between.forall(p ⇒ p.isStopWord || p.stem == stemAnd)
                 }
 
-                val minIdx = toks.dropWhile(t ⇒ !isUserNotValue(t)).head.index
-                val maxIdx = toks.reverse.dropWhile(t ⇒ !isUserNotValue(t)).head.index
+                val toks2 = toks.filter(othersRefs.contains)
+
+                val minIdx = toks2.dropWhile(t ⇒ !isUserNotValue(t)).head.index
+                val maxIdx = toks2.reverse.dropWhile(t ⇒ !isUserNotValue(t)).head.index
 
                 require(minIdx <= maxIdx)
 
@@ -311,12 +313,9 @@ object NCSortEnricher extends NCProbeEnricher {
             val others = toks.filter(t ⇒ !all.contains(t))
 
             if (others.nonEmpty) {
-                val i1 = others.head.index
-                val i2 = others.last.index
+                val idxs = others.map(_.index).toSet
 
-                val othersRefs = others.filter(
-                    t ⇒ t.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.head >= i1 && n.tokenIndexes.last <= i2)
-                )
+                val othersRefs = others.filter(t ⇒ t.exists(n ⇒ isUserNotValue(n) && n.tokenIndexes.toSet.subsetOf(idxs)))
 
                 if (
                     othersRefs.nonEmpty &&
@@ -324,8 +323,7 @@ object NCSortEnricher extends NCProbeEnricher {
                         forall(p ⇒ (p.isStopWord || p.stem == stemAnd) && !maskWords.contains(p.stem))
                 ) {
                     // It removes duplicates (`SORT x x ORDER x x x` converts to `SORT x ORDER x`)
-                    val mask = toks.map(getKeyWordType).
-                        foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
+                    val mask = toks.map(getKeyWordType).foldLeft("")((x, y) ⇒ if (x.endsWith(y)) x else s"$x $y").trim
 
                     MASKS.get(mask) match {
                         case Some(typ) ⇒
@@ -349,12 +347,12 @@ object NCSortEnricher extends NCProbeEnricher {
                             if (data1.nonEmpty || data2.nonEmpty) {
                                 val seq1 =
                                     if (data1.nonEmpty)
-                                        split(part1, data1, nullable = false)
+                                        split(part1, othersRefs, data1, nullable = false)
                                     else
-                                        split(part2, data2, nullable = false)
+                                        split(part2, othersRefs, data2, nullable = false)
                                 val seq2 =
                                     if (data1.nonEmpty && data2.nonEmpty)
-                                        split(part2, data2, nullable = true)
+                                        split(part2, othersRefs, data2, nullable = true)
                                     else
                                         Seq.empty
                                 val asc = orderOpt.flatMap(o ⇒ Some(order(o.synonymIndex)._2))

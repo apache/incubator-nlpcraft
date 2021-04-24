@@ -27,8 +27,11 @@ import java.util
   * Nested Elements test model.
   */
 class NCNestedTestModel21 extends NCModelAdapter("nlpcraft.nested2.test.mdl", "Nested Test Model", "1.0") {
-    override def getElements: util.Set[NCElement] =
+    override def getElements: util.Set[NCElement] = {
+        // Note - it defines one simple and one DSL synonyms.
+        // But it should be caught by long (IDL) variant (for `10 word`)
         Set(NCTestElement("e1", "{^^{tok_id() == 'nlpcraft:num'}^^|_} word"))
+    }
 
     @NCIntent("intent=onE1 term(t1)={tok_id() == 'e1'}")
     def onAB(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
@@ -37,7 +40,7 @@ class NCNestedTestModel21 extends NCModelAdapter("nlpcraft.nested2.test.mdl", "N
     def onNumAndE1(ctx: NCIntentMatch): NCResult = NCResult.text("OK")
 
     override def isPermutateSynonyms: Boolean = false
-    override def getJiggleFactor: Int = 0
+    override def isSparse: Boolean = false
 }
 
 /**
@@ -58,7 +61,7 @@ class NCEnricherNestedModelSpec21 extends NCTestContext {
   */
 class NCNestedTestModel22 extends NCNestedTestModel21 {
     override def isPermutateSynonyms: Boolean = true
-    override def getJiggleFactor: Int = 4
+    override def isSparse: Boolean = true
 }
 
 /**

@@ -38,9 +38,9 @@ private [cmdline] case class RestSpecParameter(
     optional: Boolean = false // Mandatory by default.
 )
 
+// TODO: this needs to be loaded dynamically from OpenAPI spec.
 /**
  * NLPCraft REST specification.
- * TODO: this needs to be loaded dynamically from OpenAPI spec.
  */
 private [cmdline] object NCCliRestSpec {
     //noinspection DuplicatedCode

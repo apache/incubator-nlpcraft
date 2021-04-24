@@ -1,4 +1,4 @@
-// Generated from C:/Users/Nikita Ivanov/Documents/GitHub/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4\NCIdl.g4 by ANTLR 4.9.1
+// Generated from /Users/nivanov/incubator-nlpcraft/nlpcraft/src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/NCIdl.g4 by ANTLR 4.9.1
 package org.apache.nlpcraft.model.intent.compiler.antlr4;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -267,6 +267,16 @@ public interface NCIdlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitJavaFqn(NCIdlParser.JavaFqnContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NCIdlParser#javaClass}.
+	 * @param ctx the parse tree
+	 */
+	void enterJavaClass(NCIdlParser.JavaClassContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NCIdlParser#javaClass}.
+	 * @param ctx the parse tree
+	 */
+	void exitJavaClass(NCIdlParser.JavaClassContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NCIdlParser#termId}.
 	 * @param ctx the parse tree

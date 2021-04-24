@@ -37,6 +37,10 @@ import scala.language.implicitConversions
 object NCSentenceManager extends NCService {
     @volatile private var pool: java.util.concurrent.ForkJoinPool = _
 
+    type CacheKey = Seq[Set[NCNlpSentenceNote]]
+    type CacheValue = Seq[Seq[NCNlpSentenceNote]]
+    private val combCache = mutable.HashMap.empty[String, mutable.HashMap[CacheKey, CacheValue]]
+
     case class PartKey(id: String, start: Int, end: Int) {
         require(start <= end)
 
@@ -197,7 +201,7 @@ object NCSentenceManager extends NCService {
       * @param noteField
       * @param ns
       */
-    private def fixNoteIndexesList(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit = {
+    private def fixNoteIndexesList(note: String, idxsField: String, noteField: String, ns: NCNlpSentence): Unit =
         ns.flatMap(_.getNotes(note)).foreach(rel ⇒
             rel.dataOpt[JList[JList[Int]]](idxsField) match {
                 case Some(idxsList) ⇒
@@ -211,7 +215,6 @@ object NCSentenceManager extends NCService {
                 case None ⇒ // No-op.
             }
         )
-    }
 
     /**
       * Copies token.
@@ -686,8 +689,12 @@ object NCSentenceManager extends NCService {
                         toSeq.sortBy(-_.size)
 
                 val seqSens =
-                    NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala).
-                        par.
+                    combCache.
+                        getOrElseUpdate(sen.srvReqId, mutable.HashMap.empty[CacheKey, CacheValue]).
+                        getOrElseUpdate(
+                            toksByIdx,
+                            NCSentenceHelper.findCombinations(toksByIdx.map(_.asJava).asJava, pool).asScala.map(_.asScala)
+                        ).par.
                         flatMap(delComb ⇒ {
                             val nsClone = sen.clone()
 
@@ -734,9 +741,31 @@ object NCSentenceManager extends NCService {
             )
         )
 
+        def notNlpNotes(s: NCNlpSentence): Seq[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp)
+
+        // Drops similar sentences (with same notes structure). Keeps with more found.
+        sens = sens.groupBy(notNlpNotes(_).groupBy(_.noteType).keys.toSeq.sorted.distinct).
+            flatMap(p ⇒ {
+                val m: Map[NCNlpSentence, Int] = p._2.map(p ⇒ p → notNlpNotes(p).size).toMap
+
+                val max = m.values.max
+
+                m.filter(_._2 == max).keys
+            }).
+            toSeq
+
+        sens =
+            sens.filter(s ⇒ {
+                def mkNotNlp(s: NCNlpSentence): Set[NCNlpSentenceNote] = s.flatten.filter(!_.isNlp).toSet
+
+                val notNlpNotes = mkNotNlp(s)
+
+                !sens.filter(_ != s).map(mkNotNlp).exists(notNlpNotes.subsetOf)
+            })
+
         // Drops similar sentences (with same tokens structure).
         // Among similar sentences we prefer one with minimal free words count.
-        sens.groupBy(_.flatten.filter(!_.isNlp).map(_.getKey(withIndexes = false))).
+        sens.groupBy(notNlpNotes(_).map(_.getKey(withIndexes = false))).
             map { case (_, seq) ⇒ seq.minBy(_.filter(p ⇒ p.isNlp && !p.isStopWord).map(_.wordIndexes.length).sum) }.
             toSeq
     }
@@ -762,8 +791,13 @@ object NCSentenceManager extends NCService {
       * @param mdl
       * @param sen
       * @param lastPhase
-      * @return
       */
     def collapse(mdl: NCModel, sen: NCNlpSentence, lastPhase: Boolean = false): Seq[NCNlpSentence] =
         collapseSentence(sen, mdl, lastPhase)
+
+    /**
+      *
+      * @param srvReqId
+      */
+    def clearCache(srvReqId: String): Unit = combCache -= srvReqId
 }

@@ -37,5 +37,5 @@ class NCAbstractTokensModel extends NCModelAdapter(
 
     override def getAbstractTokens: util.Set[String] = Set("nlpcraft:num", "anyWord").asJava
     override def isPermutateSynonyms: Boolean = false
-    override def getJiggleFactor: Int = 0
+    override def isSparse: Boolean = false
 }

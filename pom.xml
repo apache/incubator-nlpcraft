@@ -73,8 +73,10 @@
     <properties>
         <!-- Major Scala version. -->
         <scala.base>2.12</scala.base>
-        <kotlin.ver>1.4.31</kotlin.ver>
-        <groovy.ver>3.0.7</groovy.ver>
+        <java.ver>11</java.ver>
+
+        <maven.build.timestamp.format>yyyy-MM-dd-HH-mm</maven.build.timestamp.format>
+        <timestamp>${maven.build.timestamp}</timestamp>
 
         <!-- Versions. -->
         <ignite.ver>2.9.1</ignite.ver>
@@ -164,7 +166,6 @@
             the end user, when required.
         -->
         <stanford.corenlp.ver>3.9.2</stanford.corenlp.ver>
-        <kotlin.version>1.4.30-M1</kotlin.version>
     </properties>
 
     <dependencyManagement>
@@ -504,53 +505,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.ver}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>${kotlin.ver}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <version>${groovy.ver}</version>
-        </dependency>
-    </dependencies>
-
-    <repositories>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray.kotlin.eap</id>
-            <name>Bintray Kotlin EAP Repository</name>
-            <url>https://dl.bintray.com/kotlin/kotlin-eap</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray.kotlin.eap</id>
-            <name>Bintray Kotlin EAP Repository</name>
-            <url>https://dl.bintray.com/kotlin/kotlin-eap</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <build>
         <plugins>
             <plugin>
@@ -596,8 +550,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin.ver}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${java.ver}</source>
+                    <target>${java.ver}</target>
                 </configuration>
             </plugin>
 
@@ -643,59 +597,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.ver}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jvmTarget>1.8</jvmTarget>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <version>1.12.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <sources>
-                        <source>
-                            <directory>${project.basedir}/src/main/scala</directory>
-                            <includes>
-                                <include>**/*.groovy</include>
-                            </includes>
-                        </source>
-                    </sources>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy</artifactId>
-                        <version>${groovy.ver}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
 
@@ -727,9 +628,17 @@
         </profile>
 
         <profile>
-            <id>example-minecraft</id>
+            <id>examples</id>
             <modules>
-                <module>nlpcraft-examples/minecraft-model</module>
+                <module>nlpcraft-examples/alarm</module>
+                <module>nlpcraft-examples/echo</module>
+                <module>nlpcraft-examples/helloworld</module>
+                <module>nlpcraft-examples/lightswitch</module>
+                <module>nlpcraft-examples/minecraft</module>
+                <module>nlpcraft-examples/phone</module>
+                <module>nlpcraft-examples/time</module>
+                <module>nlpcraft-examples/weather</module>
+                <module>nlpcraft-examples/sql</module>
             </modules>
         </profile>
 

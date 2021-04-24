@@ -21,11 +21,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <maven.build.timestamp.format>yyyy-MM-dd-HH-mm</maven.build.timestamp.format>
-        <timestamp>${maven.build.timestamp}</timestamp>
-    </properties>
-
     <name>NLPCraft</name>
     <artifactId>nlpcraft</artifactId>
 
@@ -372,12 +367,6 @@
                 <configuration>
                     <!-- Skips all tests on phase `test`. -->
                     <skip>true</skip>
-                    <systemProperties>
-                        <property>
-                            <name>NLPCRAFT_TEST_MAVEN_ENV</name>
-                            <value>true</value>
-                        </property>
-                    </systemProperties>
                 </configuration>
                 <executions>
                     <!-- All tests are defined as integration. -->
@@ -447,7 +436,7 @@
                         ]]>
                     </top>
                     <excludePackageNames>
-                        org.apache.nlpcraft.common.*:org.apache.nlpcraft.common:org.apache.nlpcraft.examples.*:org.apache.nlpcraft.examples:org.apache.nlpcraft.model.impl:org.apache.nlpcraft.model.impl.json:org.apache.nlpcraft.model.intent.impl.antlr4:org.apache.nlpcraft.model.intent.utils:org.apache.nlpcraft.probe.mgrs.model.antlr4:org.apache.nlpcraft.server.mdo.impl
+                        org.apache.nlpcraft.common.*:org.apache.nlpcraft.common:org.apache.nlpcraft.utils.*:org.apache.nlpcraft.examples:org.apache.nlpcraft.model.impl:org.apache.nlpcraft.model.impl.json:org.apache.nlpcraft.model.intent.impl.antlr4:org.apache.nlpcraft.model.intent.utils:org.apache.nlpcraft.probe.mgrs.model.antlr4:org.apache.nlpcraft.server.mdo.impl
                     </excludePackageNames>
                     <groups>
                         <group>

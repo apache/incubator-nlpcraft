@@ -87,12 +87,12 @@ object NCMacroCompiler extends LazyLogging {
             // Add harmless empty string.
             buf += ""
 
-            stack.push(StackItem(buf, false))
+            stack.push(StackItem(buf, isGroup = false))
         }
 
         override def enterGroup(ctx: P.GroupContext): Unit = {
             // NOTE: group cannot be empty based on the BNF grammar.
-            stack.push(StackItem(mutable.Buffer.empty[String], true))
+            stack.push(StackItem(mutable.Buffer.empty[String], isGroup = true))
         }
 
         override def exitExpr(ctx: NCMacroDslParser.ExprContext): Unit = {

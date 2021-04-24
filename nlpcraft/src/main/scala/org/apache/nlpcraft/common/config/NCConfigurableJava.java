@@ -62,7 +62,7 @@ public class NCConfigurableJava {
             abortWith(String.format("Invalid 'host:port' endpoint format: %s", ep));
 
         try {
-            return new Pair<String, Integer>(ep.substring(0, i), Integer.parseInt(ep.substring(i + 1)));
+            return new Pair<>(ep.substring(0, i), Integer.parseInt(ep.substring(i + 1)));
         }
         catch (NumberFormatException e) {
             abortWith(String.format("Invalid 'host:port' endpoint port: %s", ep));
@@ -80,7 +80,7 @@ public class NCConfigurableJava {
      * @return Pair of host and port from given configuration property or default values.
      */
     public Pair<String, Integer> getHostPortOrElse(String name, String dfltHost, int dfltPort) {
-        return cfg.hasPath(name) ? getHostPort(name) :  new Pair<String, Integer>(dfltHost, dfltPort);
+        return cfg.hasPath(name) ? getHostPort(name) : new Pair<>(dfltHost, dfltPort);
     }
 
     /**

@@ -386,7 +386,7 @@ trait NCIdlCompilerBase {
     def parseEqNeqExpr(eq: TN, neq: TN)(implicit ctx: PRC): SI = (_, stack: S, _) ⇒ {
         val (x1, x2) = pop2()(stack, ctx)
 
-        def doEq(op: String, v1: Object, v2: Object): Boolean = {
+        def doEq(v1: Object, v2: Object): Boolean = {
             if (v1 eq v2) true
             else if (v1 == null && v2 == null) true
             else if ((v1 == null && v2 != null) || (v1 != null && v2 == null)) false
@@ -405,11 +405,11 @@ trait NCIdlCompilerBase {
 
             val f =
                 if (eq != null)
-                    doEq("==", v1, v2)
+                    doEq(v1, v2)
                 else {
                     assert(neq != null)
 
-                    !doEq("!='", v1, v2)
+                    !doEq(v1, v2)
                 }
 
             Z(f, n)
@@ -596,7 +596,7 @@ trait NCIdlCompilerBase {
             )
         }
 
-        def doStartWith(): Unit = {
+        def doStartsWith(): Unit = {
             val (x1, x2) = arg2()
 
             stack.push(
@@ -608,7 +608,7 @@ trait NCIdlCompilerBase {
             )
         }
 
-        def doEndWith(): Unit = {
+        def doEndsWith(): Unit = {
             val (x1, x2) = arg2()
 
             stack.push(
@@ -742,7 +742,7 @@ trait NCIdlCompilerBase {
                     else {
                         val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
 
-                        Z(seq.sum / seq.size, n)
+                        Z(seq.sum / seq.length, n)
                     }
                 catch {
                     case e: Exception ⇒ throw rtListTypeError(fun, e)
@@ -765,7 +765,7 @@ trait NCIdlCompilerBase {
                         val seq: Seq[Double] = lst.asScala.map(p ⇒ JDouble.valueOf(p.toString).doubleValue())
 
                         val mean = seq.sum / seq.length
-                        val stdDev = Math.sqrt(seq.map( _ - mean).map(t ⇒ t * t).sum /seq.length)
+                        val stdDev = Math.sqrt(seq.map( _ - mean).map(t ⇒ t * t).sum / seq.length)
 
                         Z(stdDev, n)
                     }
@@ -976,6 +976,19 @@ trait NCIdlCompilerBase {
                 }
             })
         }
+    
+        def doOrElse(): Unit = {
+            val (x1, x2) = arg2()
+        
+            stack.push(() ⇒ {
+                val Z(v1, n1) = x1()
+            
+                if (v1 != null)
+                    Z(v1, n1)
+                else
+                    x2()
+            })
+        }
 
         /**
          *
@@ -992,13 +1005,12 @@ trait NCIdlCompilerBase {
                     s"partId=$aliasId" +
                     s"]")
             else if (parts.size() > 1)
-                throw newRuntimeError(s"Too many parts found for token (use 'parts' function instead) [" +
+                throw newRuntimeError(s"Too many parts found for token (use 'tok_find_parts' function instead) [" +
                     s"tokenId=${whole.getId}, " +
                     s"partId=$aliasId" +
                     s"]")
             else
                 parts.get(0)
-
         }
 
         //noinspection DuplicatedCode
@@ -1032,6 +1044,16 @@ trait NCIdlCompilerBase {
                 Z(toToken(t).findPartTokens(toStr(a)), n)
             })
         }
+    
+        def doHasPart(): Unit = {
+            val (x1, x2) = arg2()
+        
+            stack.push(() ⇒ {
+                val (t, a, n) = extract2(x1, x2)
+                
+                Z(toToken(t).findPartTokens(toStr(a)).size() == 1, n)
+            })
+        }
 
         def doLength(): Unit = {
             val x = arg1()
@@ -1041,8 +1063,10 @@ trait NCIdlCompilerBase {
 
                 if (isList(v))
                     Z(asList(v).size(), n)
+                else if (isMap(v))
+                    Z(asMap(v).size(), n)
                 else if (isStr(v))
-                    Z(asStr(v), n)
+                    Z(asStr(v).length, n)
                 else
                     throw rtParamTypeError(fun, v, "string or list")
             })
@@ -1056,6 +1080,8 @@ trait NCIdlCompilerBase {
 
                 if (isList(v))
                     Z(asList(v).isEmpty == empty, n)
+                else if (isMap(v))
+                    Z(asMap(v).isEmpty == empty, n)
                 else if (isStr(v))
                     Z(asStr(v).isEmpty == empty, n)
                 else
@@ -1070,7 +1096,7 @@ trait NCIdlCompilerBase {
             fun match {
             // Metadata access.
             case "meta_part" ⇒ doPartMeta()
-            case "meta_token" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
+            case "meta_tok" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.meta[Object](toStr(v))), 1) })
             case "meta_model" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(tok.getModel.meta[Object](toStr(v))), 0) })
             case "meta_req" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.req.getRequestData.get(toStr(v))), 0) })
             case "meta_user" ⇒ z[ST](arg1, { x ⇒ val Z(v, _) = x(); Z(box(termCtx.req.getUser.meta(toStr(v))), 0) })
@@ -1086,6 +1112,8 @@ trait NCIdlCompilerBase {
             // Inline if-statement.
             case "if" ⇒ doIf()
 
+            case "or_else" ⇒ doOrElse()
+
             // Token functions.
             case "tok_id" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getId, 1) }) }
             case "tok_lemma" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getLemma, 1) }) }
@@ -1096,8 +1124,9 @@ trait NCIdlCompilerBase {
             case "tok_is_abstract" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isAbstract, 1) }) }
             case "tok_is_bracketed" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isBracketed, 1) }) }
             case "tok_is_direct" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isDirect, 1) }) }
+            case "tok_is_permutated" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(!toToken(x().value).isDirect, 1) }) }
             case "tok_is_english" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isEnglish, 1) }) }
-            case "tok_is_freeWord" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isFreeWord, 1) }) }
+            case "tok_is_freeword" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isFreeWord, 1) }) }
             case "tok_is_quoted" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isQuoted, 1) }) }
             case "tok_is_stopword" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isStopWord, 1) }) }
             case "tok_is_swear" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).isSwear, 1) }) }
@@ -1107,10 +1136,11 @@ trait NCIdlCompilerBase {
             case "tok_parent" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getParentId, 1) }) }
             case "tok_groups" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getGroups, 1) }) }
             case "tok_value" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getValue, 1) }) }
-            case "tok_aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getAliases, 1) }) }
+            case "tok_aliases" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(box(toToken(x().value).getAliases), 1) }) }
             case "tok_start_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getStartCharIndex, 1) }) }
             case "tok_end_idx" ⇒ arg1Tok() match { case x ⇒ stack.push(() ⇒ { Z(toToken(x().value).getEndCharIndex, 1) }) }
             case "tok_this" ⇒ z0(() ⇒ Z(tok, 1))
+            case "tok_has_part" ⇒ doHasPart()
             case "tok_find_part" ⇒ doFindPart()
             case "tok_find_parts" ⇒ doFindParts()
 
@@ -1152,8 +1182,8 @@ trait NCIdlCompilerBase {
             case "is_alphanumspace" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(StringUtils.isAlphanumericSpace(toStr(v)), f) })
             case "split" ⇒ doSplit()
             case "split_trim" ⇒ doSplitTrim()
-            case "start_with" ⇒ doStartWith()
-            case "end_with" ⇒ doEndWith()
+            case "starts_with" ⇒ doStartsWith()
+            case "ends_with" ⇒ doEndsWith()
             case "contains" ⇒ doContains()
             case "index_of" ⇒ doIndexOf()
             case "substr" ⇒ doSubstr()
@@ -1163,11 +1193,7 @@ trait NCIdlCompilerBase {
 
             // Math functions.
             case "abs" ⇒ doAbs()
-            case "ceil" ⇒ arg1() match { case item ⇒ stack.push(() ⇒ {
-                val Z(v, f) = item()
-
-                Z(Math.ceil(toDouble(v)), f)
-            }) }
+            case "ceil" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.ceil(toDouble(v)), f) })
             case "floor" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.floor(toDouble(v)), f) })
             case "rint" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.rint(toDouble(v)), f) })
             case "round" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.round(toDouble(v)), f) })
@@ -1183,7 +1209,7 @@ trait NCIdlCompilerBase {
             case "cosh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.cosh(toDouble(v)), f) })
             case "sinh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.sinh(toDouble(v)), f) })
             case "tanh" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.tanh(toDouble(v)), f) })
-            case "atn2" ⇒ z[(ST, ST)](arg2, { x ⇒ val (v1, v2, n) = extract2(x._1, x._2); Z(Math.atan2(toDouble(v1), toDouble(v2)), n) })
+            case "atan2" ⇒ z[(ST, ST)](arg2, { x ⇒ val (v1, v2, n) = extract2(x._1, x._2); Z(Math.atan2(toDouble(v1), toDouble(v2)), n) })
             case "degrees" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.toDegrees(toDouble(v)), f) })
             case "radians" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z( Math.toRadians(toDouble(v)), f) })
             case "exp" ⇒ z[ST](arg1, { x ⇒ val Z(v, f) = x(); Z(Math.exp(toDouble(v)), f) })

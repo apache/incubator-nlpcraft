@@ -16,7 +16,7 @@
 #
 
 geo/cc_by40_geo_config.zip 52f209bd2b2105f7163280bbc428aafe
-badfilter/swear_words.txt f423c9e889afe4386e0aa4c86c460c5b
+badfilter/swear_words.txt 6999c71aec050f828ada106e84412c52
 spell/cc_by40_spell_config.zip a53e4cfc9517edd5b94024e3aaf03d83
 opennlp/en-pos-maxent.bin db2cd70395b9e2e4c6b9957015a10607
 opennlp/en-ner-location.bin 0e67e6ad484406c125faead56b5c225e

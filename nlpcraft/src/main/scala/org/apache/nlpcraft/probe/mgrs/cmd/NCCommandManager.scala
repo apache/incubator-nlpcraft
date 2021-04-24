@@ -101,7 +101,7 @@ object NCCommandManager extends NCService {
                             usrId = msg.data[Long]("userId"),
                             senMeta = msg.data[java.util.Map[String, JSerializable]]("senMeta").asScala,
                             mdlId = msg.data[String]("mdlId"),
-                            logEnable = msg.data[Boolean]("logEnable"),
+                            enableLog = msg.data[Boolean]("enableLog"),
                             span
                     )
 

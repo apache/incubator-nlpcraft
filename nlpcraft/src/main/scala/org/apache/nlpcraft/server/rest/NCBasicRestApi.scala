@@ -91,7 +91,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
         usrAgent: Option[String],
         rmtAddr: Option[String],
         data: Option[String],
-        enabledLog: Boolean,
+        enableLog: Boolean,
         parent: Span
     )
 
@@ -603,7 +603,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     h.usrAgent,
                     h.rmtAddr,
                     h.data,
-                    h.enabledLog,
+                    h.enableLog,
                     h.parent
                 )
 
@@ -634,7 +634,7 @@ class NCBasicRestApi extends NCRestApi with LazyLogging with NCOpenCensusTrace w
                     h.usrAgent,
                     h.rmtAddr,
                     h.data,
-                    h.enabledLog,
+                    h.enableLog,
                     h.parent
                 )
 

@@ -40,10 +40,10 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
             "is_alphaspace('A') == true",
             "is_alphanumspace('A') == true",
             "is_alphanumspace('1 A') == true",
-            "start_with('ab', 'a') == true",
-            "start_with('ab', 'b') == false",
-            "end_with('ab', 'a') == false",
-            "end_with('ab', 'b') == true",
+            "starts_with('ab', 'a') == true",
+            "starts_with('ab', 'b') == false",
+            "ends_with('ab', 'a') == false",
+            "ends_with('ab', 'b') == true",
             "contains('ab', 'a') == true",
             "contains('ab', 'bc') == false",
             "index_of('ab', 'b') == 1",
@@ -56,7 +56,15 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
             "split_trim('1 A    ', ' ') == list('1', 'A')",
             "is_empty('a') == false",
             "non_empty('a') == true",
+            "non_empty('a ') == true",
             "is_empty('') == true",
+            "length(' ') == 1",
+            "length('') == 0",
+            "to_double('1.1') == 1.1",
+            "to_double('1') == 1",
+            "to_double('1') == 1.0",
+            "to_int('1') == 1",
+            "to_int('1') == 1.0",
 
             // Whitespaces.
             "replace('abc', 'ab',  '') == 'c'",
@@ -69,9 +77,12 @@ class NCIdlFunctionsStrings extends NCIdlFunctions {
         )
 
     @Test
-    def testError(): Unit = {
-        expectError("substr('abc', 10, 30) == 'bc'")
-        expectError("split('1 A') == true")
-        expectError("split_trim('1 A') == true")
-    }
+    def testError(): Unit =
+        expectError(
+            "substr('abc', 10, 30) == 'bc'",
+            "split('1 A') == true",
+            "split_trim('1 A') == true",
+            "to_double('1, 1') == true",
+            "to_double('A') == true"
+        )
 }

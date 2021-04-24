@@ -24,12 +24,13 @@ import org.junit.jupiter.api.Test
   */
 class NCIdlFunctionsStat extends NCIdlFunctions {
     @Test
-    def testError(): Unit = {
-        expectError("avg(list()) == 2")
-        expectError("avg(list('A')) == 2")
-        expectError("stdev(list()) == 2")
-        expectError("stdev(list('A')) == 2")
-    }
+    def testError(): Unit =
+        expectError(
+            "avg(list()) == 2",
+            "avg(list('A')) == 2",
+            "stdev(list()) == 2",
+            "stdev(list('A')) == 2"
+        )
 
     @Test
     def test(): Unit =
@@ -45,6 +46,6 @@ class NCIdlFunctionsStat extends NCIdlFunctions {
             "stdev(list(1, 2.2, 3.1)) > 0",
             "stdev(list(1, 2, 3)) > 0",
             "stdev(list(0.0, 0.0, 0.0)) == 0.0",
-            "stdev(list(0, 0, 0)) == 0.0",
+            "stdev(list(0, 0, 0)) == 0.0"
         )
 }

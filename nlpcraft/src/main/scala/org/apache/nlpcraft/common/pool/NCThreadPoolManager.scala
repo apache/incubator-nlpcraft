@@ -28,9 +28,9 @@ import scala.concurrent.ExecutionContext
  * Common thread pool manager.
  */
 object NCThreadPoolManager extends NCService {
+    // TODO: in the future - we may need to open this to user configuration.
     /**
      * Pools that should NOT default to a system context.
-     * TODO: in the future - we may need to open this to user configuration.
      */
     private final val NON_SYS_POOLS = Seq(
         "probes.communication",

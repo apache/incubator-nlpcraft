@@ -18,11 +18,10 @@
 package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.examples.time.TimeModel
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
-@NCTestEnvironment(model = classOf[TimeModel], startClient = false)
+@NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
 class NCRestProbeSpec extends NCRestSpec {
     @Test
     def test(): Unit =

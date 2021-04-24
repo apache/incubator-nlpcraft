@@ -29,7 +29,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 version = '1.0'
 group = 'com.apache.nlpcraft'
-archivesBaseName = 'nlpcraft-mod'
+archivesBaseName = 'nlpcraft-example-minecraft-mod'
 
 ext {
     minecraftVersion = '1.16.4'
@@ -74,14 +74,14 @@ jar {
 task dumpBlocks(type: JavaExec) {
     description = 'Dumps game file objects. Supports 2 types: items and blocks'
     classpath sourceSets.main.runtimeClasspath
-    main = "org.apache.nplcraft.example.GameFilesDump"
+    main = "org.apache.nplcraft.example.minecraft.GameFilesDump"
     args "block", minecraftVersion
 }
 
 task dumpItems(type: JavaExec) {
     description = 'Dumps game file objects. Supports 2 types: items and blocks'
     classpath sourceSets.main.runtimeClasspath
-    main = "org.apache.nplcraft.example.GameFilesDump"
+    main = "org.apache.nplcraft.example.minecraft.GameFilesDump"
     args "block", minecraftVersion
 }
 

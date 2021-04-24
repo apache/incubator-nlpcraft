@@ -1,0 +1,162 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+id: nlpcraft.minecraft.ex
+name: Minecraft Model
+version: '1.0'
+description: Minecraft Model.
+"enabledBuiltInTokens": [
+    "nlpcraft:num"
+]
+
+macros:
+  - name: "<PLAYER_NICKNAME>"
+    macro: "{//[a-zA-Z0-9]+//}"
+
+elements:
+  # General synonyms
+  - id: mc:player
+    synonyms:
+      - "{I|me|my|#<PLAYER_NICKNAME>}"
+  - id: mc:item
+    metadata:
+      mc:type: item
+    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftObjectValueLoader
+  - id: mc:block
+    metadata:
+      mc:type: block
+    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftObjectValueLoader
+
+  # Weather intent
+  - id: weather:action
+    synonyms:
+      - "{make|start|cast}"
+  - id: rain
+    description: Set rain weather
+    groups:
+      - weather
+    synonyms:
+      - "{rain|rainy}"
+  - id: clear
+    description: Set sunny weather
+    groups:
+      - weather
+    synonyms:
+      - "{sun|sunny|clear sky}"
+  - id: thunder
+    description: Set stormy weather
+    groups:
+      - weather
+    synonyms:
+      - "{thunder|storm|stormy}"
+
+  # Time intent
+  - id: morning
+    groups:
+      - time
+    synonyms:
+      - "{morning}"
+  - id: day
+    groups:
+      - time
+    synonyms:
+      - "{day}"
+  - id: afternoon
+    groups:
+      - time
+    synonyms:
+      - "{afternoon|noon}"
+  - id: evening
+    groups:
+      - time
+    synonyms:
+      - "{evening}"
+  - id: night
+    groups:
+      - time
+    synonyms:
+      - "{night}"
+  - id: midnight
+    groups:
+      - time
+    synonyms:
+      - "{midnight}"
+
+  # Give intent
+  - id: give:action
+    synonyms:
+      - "{give ^^[target]{tok_id() == 'mc:player'}^^}"
+  - id: give:block-word
+    synonyms:
+      - "{block|blocks}"
+
+  # Fill intent
+  - id: fill:action
+    synonyms:
+      - "{fill|make|create}"
+  - id: cube
+    groups:
+      - fill:shape
+  - id: square
+    groups:
+      - fill:shape
+    synonyms:
+      - "{box|rectangle}"
+  - id: line
+    groups:
+      - fill:shape
+    synonyms:
+      - "wall"
+  - id: fill:length
+    synonyms:
+      - "{{size|length|diameter} {of|_} ^^[length]{tok_id() == 'nlpcraft:num'}^^}"
+  - id: position:player
+    groups:
+      - fill:position
+    synonyms:
+      - "{{at|near} ^^[player]{tok_id() == 'mc:player'}^^ {position|_}|where ^^[player]{tok_id() == 'mc:player'}^^}"
+
+  - id: position:front
+    groups:
+      - fill:position
+    synonyms:
+      - "{{^^[distance]{tok_id() == 'nlpcraft:num'}^^|_} {in|_} front {of|_} ^^[player]{tok_id() == 'mc:player'}^^}"
+
+abstractTokens:
+   - mc:player
+
+permutateSynonyms: true
+sparse: true
+
+# List of model intents.
+intents:
+  - "intent=weatherIntent
+        term={tok_id() == 'weather:action'}?
+        term(arg)={has(tok_groups(), 'weather')}"
+  - "intent=timeIntent
+        term(arg)={has(tok_groups(), 'time')}"
+  - "intent=giveIntent
+        term(action)={tok_id() == 'give:action'}
+        term(quantity)={tok_id() == 'nlpcraft:num'}?
+        term(item)={tok_id() == 'mc:item'}
+        term={tok_id() == 'give:block-word'}?"
+  - "intent=fillIntent
+        term={tok_id() == 'fill:action'}
+        term(shape)={has(tok_groups(), 'fill:shape')}
+        term(block)={tok_id() == 'mc:block'}
+        term(len)={tok_id() == 'fill:length'}?
+        term(position)={has(tok_groups(), 'fill:position')}"

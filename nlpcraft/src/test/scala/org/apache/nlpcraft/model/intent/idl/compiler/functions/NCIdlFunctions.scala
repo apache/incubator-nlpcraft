@@ -20,7 +20,7 @@ package org.apache.nlpcraft.model.intent.idl.compiler.functions
 import org.apache.nlpcraft.common.{NCE, ScalaMeta}
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGlobal}
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlTerm}
-import org.apache.nlpcraft.model.{NCCompany, NCModel, NCModelView, NCRequest, NCToken, NCUser}
+import org.apache.nlpcraft.model.{NCCompany, NCModel, NCModelView, NCRequest, NCToken, NCTokenPredicateContext, NCTokenPredicateResult, NCUser}
 import org.junit.jupiter.api.BeforeEach
 
 import java.util
@@ -34,20 +34,36 @@ import scala.language.implicitConversions
 private[functions] trait NCIdlFunctions {
     private final val MODEL_ID = "test.mdl.id"
 
-    final val MODEL: NCModel = new NCModel {
+    // It shouldn't be anonimous class because we need access to 'trueAlwaysCustomToken' method via reflection.
+    class TestModel extends NCModel {
         override val getId: String = MODEL_ID
         override val getName: String = MODEL_ID
         override val getVersion: String = "1.0.0"
 
         override def getOrigin: String = "test"
+
+        def trueAlwaysCustomToken(ctx: NCTokenPredicateContext): NCTokenPredicateResult =
+            new NCTokenPredicateResult(true, 1)
     }
+
+    final val MODEL: NCModel = new TestModel()
 
     @BeforeEach
     def before(): Unit = NCIdlCompilerGlobal.clearCache(MODEL_ID)
 
-    case class TestDesc(truth: String, token: Option[NCToken] = None, idlCtx: NCIdlContext = ctx()) {
-        val term: NCIdlTerm = {
-            val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)={$truth}", MODEL, MODEL_ID)
+    case class TestDesc(
+        truth: String,
+        token: Option[NCToken] = None,
+        idlCtx: NCIdlContext = ctx(),
+        isCustom: Boolean = false,
+        expectedRes: Boolean = true,
+        tokensUsed: Option[Int] = None
+    ) {
+        // It should be lazy for errors verification methods.
+        lazy val term: NCIdlTerm = {
+            val (s1, s2) = if (isCustom) ('/', '/') else ('{', '}')
+
+            val intents = NCIdlCompiler.compileIntents(s"intent=i term(t)=$s1$truth$s2", MODEL, MODEL_ID)
 
             require(intents.size == 1)
             require(intents.head.terms.size == 1)
@@ -70,7 +86,7 @@ private[functions] trait NCIdlFunctions {
             TestDesc(truth = truth, token = Some(token))
     }
 
-    private def t2s(t: NCToken) = {
+    private def t2s(t: NCToken): String = {
         def nvl(s: String, name: String): String = if (s != null) s else s"$name (not set)"
 
         s"text=${nvl(t.getOriginalText, "text")} [${nvl(t.getId, "id")}]"
@@ -148,42 +164,66 @@ private[functions] trait NCIdlFunctions {
 
     protected def test(funcs: TestDesc*): Unit =
         for (f ← funcs) {
-            val res =
+            val item =
                 try {
                     // Process declarations.
                     f.idlCtx.vars ++= f.term.decls
 
                     // Execute term's predicate.
-                    f.term.pred.apply(f.token.getOrElse(tkn()), f.idlCtx).value
+                    f.term.pred.apply(f.token.getOrElse(tkn()), f.idlCtx)
                 }
                 catch {
-                    case e: NCE ⇒ throw new NCE(s"Execution error processing: $f", e)
+                    case e: NCE ⇒ throw e
                     case e: Exception ⇒ throw new Exception(s"Execution error processing: $f", e)
                 }
 
-            res match {
-                case b: java.lang.Boolean ⇒ require(b, s"Unexpected FALSE result for: $f")
+            item.value match {
+                case b: java.lang.Boolean ⇒ require(if (f.expectedRes) b else !b, s"Unexpected '$b' result for: $f")
                 case _ ⇒
                     require(
                         requirement = false,
                         s"Unexpected result type [" +
-                            s"resType=${if (res == null) "null" else res.getClass.getName}, " +
-                            s"resValue=$res, " +
+                            s"resType=${if (item.value == null) "null" else item.value.getClass.getName}, " +
+                            s"resValue=${item.value}, " +
                             s"function=$f" +
                             s"]"
                     )
             }
+
+            f.tokensUsed match {
+                case Some(exp) ⇒
+                    require(
+                        exp == item.tokUse,
+                        s"Unexpected tokens used [" +
+                        s"expectedTokensUsed=$exp, " +
+                        s"resultTokensUsed=${item.tokUse}, " +
+                        s"function=$f" +
+                        s"]"
+                    )
+
+                case None ⇒ // No-op.
+            }
         }
 
-    protected def expectError(f: String): Unit =
-        try {
-            test(f)
+    protected def expectError(funcs: TestDesc*): Unit =
+        for (f ← funcs)
+            try {
+                test(f)
 
-            require(false)
-        }
-        catch {
-            case e: Exception ⇒ println(s"Expected error: ${e.getLocalizedMessage}")
-        }
+                require(false)
+            }
+            catch {
+                case e: Exception ⇒
+                    println(s"Expected error: ${e.getLocalizedMessage}")
+
+                    var cause = e.getCause
+
+                    while (cause != null) {
+                        println(s"  Cause: ${cause.getLocalizedMessage} (${cause.getClass.getName})")
+
+                        cause = cause.getCause
+                    }
+            }
 
     protected implicit def convert(pred: String): TestDesc = TestDesc(truth = pred)
 }

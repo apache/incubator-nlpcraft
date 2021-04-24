@@ -17,8 +17,6 @@
 
 package org.apache.nlpcraft.common;
 
-import org.apache.nlpcraft.common.util.*;
-
 /**
  * Base NLPCraft exception.
  */

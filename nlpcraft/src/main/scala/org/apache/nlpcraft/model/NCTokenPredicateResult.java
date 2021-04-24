@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.model;
 
 /**
- * Result value of user-defined token predicate. Token predicates can be used in IDL.
+ * Result value of user-defined IDL term token predicate.
  * <p>
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
@@ -35,6 +35,7 @@ public class NCTokenPredicateResult {
      * @param res Token predicate result.
      * @param tokUses How many times a token was used to match this predicate (if {@link #getResult() result} is {@code true}).
      *      The more times a token was used the "stronger" the this match will be when used by intent solver.
+     *      Must be greater than or equal to zero.
      */
     public NCTokenPredicateResult(boolean res, int tokUses) {
         this.res = res;
@@ -42,7 +43,7 @@ public class NCTokenPredicateResult {
     }
 
     /**
-     * Gets result of this predicate.
+     * Gets result of this predicate. {@code True} means that the term was matched, {@code false} otherwise.
      *
      * @return Predicate result.
      */
@@ -52,8 +53,11 @@ public class NCTokenPredicateResult {
 
     /**
      * Gets how many times a token was used to match this predicate (if {@link #getResult() result} is {@code true}).
+     * The zero value indicates that term was matched without using {@link NCTokenPredicateContext#getToken()}.
+     * Values greater than zero indicate that a token was used (once or more times) during term matching. Note also
+     * that greater token use value means greater match weight for the given term.
      *
-     * @return Number of times a token was used to match this term.
+     * @return Number of times a token was used to match this term. Must be greater than or equal to zero.
      */
     public int getTokenUses() {
         return tokUses;

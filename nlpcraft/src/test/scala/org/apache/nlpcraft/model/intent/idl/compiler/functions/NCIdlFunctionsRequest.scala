@@ -46,7 +46,7 @@ class NCIdlFunctionsRequest extends NCIdlFunctions {
             mkTestDesc(s"req_normtext() == '$reqNormText'"),
             mkTestDesc(s"req_tstamp() == $reqTstamp"),
             mkTestDesc(s"req_addr() == '$reqAddr'"),
-            mkTestDesc(s"req_agent() == '$reqAgent'"),
+            mkTestDesc(s"req_agent() == '$reqAgent'")
         )
     }
 }

@@ -231,7 +231,7 @@ object NCExternalConfigManager extends NCService {
     @throws[NCE]
     def getContent(typ: NCExternalConfigType, res: String, parent: Span = null): String =
         startScopedSpan("getContent", parent, "res" → res) { _ ⇒
-            mkString(U.readFile(mkFile(typ, res), "UTF-8"))
+            mkString(U.readFile(mkFile(typ, res)))
         }
 
     /**
@@ -269,7 +269,7 @@ object NCExternalConfigManager extends NCService {
                 d.listFiles(new FileFilter { override def accept(f: File): Boolean = f.isFile && resFilter(f.getName) })
 
             if (files != null)
-                files.toStream.map(f ⇒ NCExternalConfigHolder(typ, f.getName, mkString(U.readFile(f, "UTF-8"))))
+                files.toStream.map(f ⇒ NCExternalConfigHolder(typ, f.getName, mkString(U.readFile(f))))
             else
                 Stream.empty
         }
@@ -312,7 +312,7 @@ object NCExternalConfigManager extends NCService {
                     IOUtils.copy(src, dest)
                 }
 
-                logger.info(s"External config downloaded [url='$url', file='$filePath']")
+                logger.info(s"One-time download for external config [url='$url', file='$filePath']")
             }
         catch {
             case e: IOException ⇒ throw new NCE(s"Failed to download external config [url='$url', file='$filePath']", e)

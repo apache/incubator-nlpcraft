@@ -39,13 +39,17 @@ import org.apache.nlpcraft.common.nlp.NCNlpSentence._
   * @param text Normalized text.
   * @param enabledBuiltInToks Enabled built-in tokens.
   * @param tokens Initial buffer.
+  * @param firstProbePhase Processing phase flag.
   * @param deletedNotes Deleted overridden notes with their tokens.
+  * @param initNlpNotes Initial NLP tokens.
+  * @param nlpTokens NLP tokens.
   */
 class NCNlpSentence(
     val srvReqId: String,
     val text: String,
     val enabledBuiltInToks: Set[String],
     override val tokens: mutable.ArrayBuffer[NCNlpSentenceToken] = new mutable.ArrayBuffer[NCNlpSentenceToken](32),
+    var firstProbePhase: Boolean = true,
     private val deletedNotes: mutable.HashMap[NCNlpSentenceNote, Seq[NCNlpSentenceToken]] = mutable.HashMap.empty,
     private var initNlpNotes: Map[NoteKey, NCNlpSentenceNote] = null,
     private val nlpTokens: mutable.HashMap[TokenKey, NCNlpSentenceToken] = mutable.HashMap.empty
@@ -65,7 +69,8 @@ class NCNlpSentence(
             tokens = tokens.map(_.clone()),
             deletedNotes = deletedNotes.map(p ⇒ p._1.clone() → p._2.map(_.clone())),
             initNlpNotes = initNlpNotes,
-            nlpTokens = nlpTokens
+            nlpTokens = nlpTokens,
+            firstProbePhase = firstProbePhase
         )
 
     /**

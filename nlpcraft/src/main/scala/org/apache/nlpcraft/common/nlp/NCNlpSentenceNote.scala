@@ -17,18 +17,19 @@
 
 package org.apache.nlpcraft.common.nlp
 
-import org.apache.nlpcraft.common._
+import org.apache.nlpcraft.common.U
 import org.apache.nlpcraft.common.ascii._
 
 import scala.collection.JavaConverters._
 import scala.collection.{Seq, Set, mutable}
 import scala.language.implicitConversions
+import java.io.{Serializable ⇒ JSerializable}
 
 /**
   * Sentence token note is a typed map of KV pairs.
   *
   */
-class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) extends java.io.Serializable with NCAsciiLike {
+class NCNlpSentenceNote(private val values: Map[String, JSerializable]) extends JSerializable with NCAsciiLike {
     import NCNlpSentenceNote._
 
     @transient
@@ -41,7 +42,6 @@ class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) e
     lazy val tokenIndexes: Seq[Int] = values("tokWordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
     lazy val wordIndexes: Seq[Int] = values("wordIndexes").asInstanceOf[java.util.List[Int]].asScala // Includes 1st and last indices too.
     lazy val sparsity: Int = values("sparsity").asInstanceOf[Int]
-    lazy val isContiguous: Boolean = values("contiguous").asInstanceOf[Boolean]
     lazy val isDirect: Boolean = values("direct").asInstanceOf[Boolean]
     lazy val isUser: Boolean = {
         val i = noteType.indexOf(":")
@@ -75,7 +75,7 @@ class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) e
         )
 
     override def clone(): NCNlpSentenceNote = {
-        val m = mutable.Map.empty[String, java.io.Serializable] ++ values
+        val m = mutable.Map.empty[String, JSerializable] ++ values
 
         new NCNlpSentenceNote(m.toMap)
     }
@@ -91,20 +91,20 @@ class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) e
       *
       * @return
       */
-    def skipNlp(): Map[String, java.io.Serializable] =
+    def skipNlp(): Map[String, JSerializable] =
         values.filter { case (key, _) ⇒ !SKIP_CLONE.contains(key) && key != "noteType" }
 
     /**
       *
       */
-    def asMetadata(): Map[String, java.io.Serializable] =
+    def asMetadata(): Map[String, JSerializable] =
         if (isUser)
             values.get("meta") match {
-                case Some(meta) ⇒ meta.asInstanceOf[Map[String, java.io.Serializable]]
-                case None ⇒ Map.empty[String, java.io.Serializable]
+                case Some(meta) ⇒ meta.asInstanceOf[Map[String, JSerializable]]
+                case None ⇒ Map.empty[String, JSerializable]
             }
         else {
-            val md = mutable.Map.empty[String, java.io.Serializable]
+            val md = mutable.Map.empty[String, JSerializable]
 
             val m = if (noteType != "nlpcraft:nlp") skipNlp() else values
 
@@ -117,8 +117,8 @@ class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) e
      *
      * @param kvs
      */
-    def clone(kvs : (String, java.io.Serializable)*): NCNlpSentenceNote = {
-        val m = mutable.HashMap.empty[String, java.io.Serializable] ++ values
+    def clone(kvs : (String, JSerializable)*): NCNlpSentenceNote = {
+        val m = mutable.HashMap.empty[String, JSerializable] ++ values
 
         kvs.foreach(kv ⇒ m += kv._1 → kv._2)
 
@@ -174,10 +174,11 @@ class NCNlpSentenceNote(private val values: Map[String, java.io.Serializable]) e
         values.toSeq.sortBy(t ⇒ { // Don't show internal ID.
             val typeSort = t._1 match {
                 case "noteType" ⇒ 0
-                case "wordIndexes" ⇒ 1
-                case "direct" ⇒ 2
-                case "sparsity" ⇒ 3
-                case "parts" ⇒ 4
+                case "origText" ⇒ 1
+                case "wordIndexes" ⇒ 2
+                case "direct" ⇒ 3
+                case "sparsity" ⇒ 4
+                case "parts" ⇒ 5
 
                 case _ ⇒ 100
             }
@@ -196,7 +197,6 @@ object NCNlpSentenceNote {
         "tokMinIndex",
         "tokMaxIndex",
         "tokWordIndexes",
-        "contiguous",
         "sparsity"
     )
 
@@ -205,7 +205,7 @@ object NCNlpSentenceNote {
     /**
      * To immutable map.
      */
-    implicit def values(note: NCNlpSentenceNote): Map[String, java.io.Serializable] = note.values
+    implicit def values(note: NCNlpSentenceNote): Map[String, JSerializable] = note.values
 
     /**
       * Creates new note with given parameters.
@@ -227,7 +227,7 @@ object NCNlpSentenceNote {
         val (sparsity, tokMinIndex, tokMaxIndex, tokWordIndexes, len) = calc(wordIndexesOpt.getOrElse(indexes))
 
         new NCNlpSentenceNote(
-            mutable.HashMap[String, java.io.Serializable]((
+            mutable.HashMap[String, JSerializable]((
             params.filter(_._2 != null) :+
                ("noteType" → typ) :+
                ("tokMinIndex" → indexes.min) :+
@@ -237,9 +237,8 @@ object NCNlpSentenceNote {
                ("maxIndex" → tokMaxIndex) :+
                ("wordIndexes" → tokWordIndexes) :+
                ("wordLength" → len) :+
-               ("sparsity" → sparsity) :+
-               ("contiguous" → (sparsity == 0))
-            ).map(p ⇒ p._1 → p._2.asInstanceOf[java.io.Serializable]): _*).toMap
+               ("sparsity" → sparsity)
+            ).map(p ⇒ p._1 → p._2.asInstanceOf[JSerializable]): _*).toMap
         )
     }
 

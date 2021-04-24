@@ -336,10 +336,14 @@ object NCTokenLogger extends LazyLogging {
     
         val v = if (sorted.lengthCompare(1) > 0) vals2String(sorted) else sorted.map(p ⇒ s"${p._2}").mkString(", ")
     
-        if (note.tokenFrom < note.tokenTo)
-            s"$v ${s"<${note.tokenFrom} to ${note.tokenTo}>"}"
+        if (note.tokenFrom < note.tokenTo) {
+            if (note.tokenIndexes.tail.zipWithIndex.forall { case (v, i) ⇒ v == note.tokenIndexes(i) + 1 })
+                s"$v ${s"<${note.tokenFrom} to ${note.tokenTo}>"}"
+            else
+                s"$v ${s"<${note.tokenIndexes.mkString(",")}>"}"
+        }
         else
-            s"$v"
+            s"${if (v.isEmpty) "<>" else v}"
     }
 
     private def mkCells(hs: Seq[NoteMetadata], t: NCNlpSentenceToken): Seq[String] = {
