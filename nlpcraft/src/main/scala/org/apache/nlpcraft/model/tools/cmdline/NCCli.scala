@@ -357,7 +357,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
      */
@@ -500,7 +500,7 @@ object NCCli extends NCCliBase {
 
                         // Once beacon is loaded, ensure that REST endpoint is live.
                         if (beacon != null)
-                            online = Try(restHealth("http://" + beacon.restEndpoint) == 200).getOrElse(false)
+                            online = Try(restHealth(beacon.restUrl) == 200).getOrElse(false)
                     }
 
                     if (!online)
@@ -513,7 +513,8 @@ object NCCli extends NCCliBase {
                 if (!online && currentTime >= endOfWait) // Timed out - attempt to kill the timed out process...
                     ProcessHandle.of(srvPid).asScala match {
                         case Some(ph) ⇒
-                            ph.destroy()
+                            if (ph.destroy())
+                                error(s"Timed out server process terminated.")
 
                             if (beacon != null && beacon.beaconPath != null)
                                 new File(beacon.beaconPath).delete()
@@ -524,7 +525,7 @@ object NCCli extends NCCliBase {
                 if (!online) {
                     logln(r(" [Error]"))
 
-                    error(s"Server start failed, check full log for errors: ${c(output.getAbsolutePath)}")
+                    error(s"Server start failed - check full log for errors: ${c(output.getAbsolutePath)}")
 
                     tailFile(output.getAbsolutePath, 20)
                 }
@@ -543,7 +544,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
      */
@@ -609,7 +610,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not running from REPL.
      */
@@ -779,7 +780,8 @@ object NCCli extends NCCliBase {
                 if (currentTime >= endOfWait)
                     ProcessHandle.of(prbPid).asScala match {
                         case Some(ph) ⇒
-                            ph.destroy()
+                            if (ph.destroy())
+                                error(s"Timed out probe process terminated.")
 
                             if (beacon != null && beacon.beaconPath != null)
                                 new File(beacon.beaconPath).delete()
@@ -790,7 +792,7 @@ object NCCli extends NCCliBase {
                 if (beacon == null) {
                     logln(r(" [Error]"))
 
-                    error(s"Probe start failed, check full log for errors: ${c(output.getAbsolutePath)}")
+                    error(s"Probe start failed - check full log for errors: ${c(output.getAbsolutePath)}")
 
                     tailFile(output.getAbsolutePath, 20)
                 }
@@ -820,7 +822,7 @@ object NCCli extends NCCliBase {
      */
     private def getRestEndpointFromBeacon: String =
         loadServerBeacon() match {
-            case Some(beacon) ⇒ s"http://${beacon.restEndpoint}"
+            case Some(beacon) ⇒ beacon.restUrl
             case None ⇒ throw NoLocalServer()
         }
 
@@ -853,7 +855,7 @@ object NCCli extends NCCliBase {
         }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -870,7 +872,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -887,7 +889,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1002,12 +1004,10 @@ object NCCli extends NCCliBase {
                 state.isServerOnline = true
 
                 try {
-                    val baseUrl = "http://" + beacon.restEndpoint
-
                     // Attempt to sign in with the default account.
                     if (autoSignIn && state.accessToken.isEmpty)
                         httpPostResponseJson(
-                            baseUrl,
+                            beacon.restUrl,
                             "signin",
                             s"""{"email": "$DFLT_USER_EMAIL", "passwd": "$DFLT_USER_PASSWD"}""") match {
                             case Some(json) ⇒
@@ -1026,7 +1026,7 @@ object NCCli extends NCCliBase {
                     // Attempt to get all connected probes if successfully signed in prior.
                     if (state.accessToken.isDefined)
                         httpPostResponseJson(
-                            baseUrl,
+                            beacon.restUrl,
                             "probe/all",
                             "{\"acsTok\": \"" + state.accessToken.get + "\"}") match {
                             case Some(json) ⇒ state.probes =
@@ -1113,7 +1113,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1131,7 +1131,7 @@ object NCCli extends NCCliBase {
         }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1141,7 +1141,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1166,7 +1166,7 @@ object NCCli extends NCCliBase {
         }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1191,7 +1191,7 @@ object NCCli extends NCCliBase {
         }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1200,7 +1200,7 @@ object NCCli extends NCCliBase {
     }
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1208,7 +1208,7 @@ object NCCli extends NCCliBase {
         NCAnsi.setEnabled(false)
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1216,7 +1216,7 @@ object NCCli extends NCCliBase {
         NCAnsi.setEnabled(true)
 
     /**
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1406,8 +1406,6 @@ object NCCli extends NCCliBase {
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
 
-        val epUrl = "http://" + beacon.restEndpoint
-
         tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("Database:", "")
         tbl += ("  URL", s"${g(beacon.dbUrl)}")
@@ -1418,7 +1416,7 @@ object NCCli extends NCCliBase {
         tbl += ("  Pool increment", s"${g(beacon.dbPoolInc)}")
         tbl += ("  Reset on start", s"${g(beacon.dbInit)}")
         tbl += ("REST:", "")
-        tbl += ("  Endpoint", s"${g(epUrl)}")
+        tbl += ("  Endpoint", s"${g(beacon.restUrl)}")
         tbl += ("  API provider", s"${g(beacon.restApi)}")
         tbl += ("Probe:", "")
         tbl += ("  Uplink", s"${g(beacon.upLink)}")
@@ -1488,12 +1486,12 @@ object NCCli extends NCCliBase {
 
         state.probes.foreach(addProbeToTable(tbl, _))
 
-        logln(s"Connected probes (${state.probes.size}):\n${tbl.toString}")
+        logln(s"All server connected probes (${state.probes.size}):\n${tbl.toString}")
     }
 
     /**
      *
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1504,7 +1502,7 @@ object NCCli extends NCCliBase {
 
     /**
      *
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1517,7 +1515,7 @@ object NCCli extends NCCliBase {
 
     /**
      *
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1530,7 +1528,7 @@ object NCCli extends NCCliBase {
 
     /**
      *
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1547,7 +1545,7 @@ object NCCli extends NCCliBase {
 
     /**
      *
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1573,7 +1571,7 @@ object NCCli extends NCCliBase {
 
     /**
      *
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */
@@ -1612,7 +1610,7 @@ object NCCli extends NCCliBase {
 
     /**
      *
-     * @param cmd  Command descriptor.
+     * @param cmd Command descriptor.
      * @param args Arguments, if any, for this command.
      * @param repl Whether or not executing from REPL.
      */

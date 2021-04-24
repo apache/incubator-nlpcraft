@@ -65,5 +65,7 @@ case class NCCliServerBeacon(
     acsToksExpireMins: Int,
     @transient var logPath: String = null,
     @transient var ph: ProcessHandle = null
-)
+) {
+    lazy val restUrl: String = "http://" + restEndpoint
+}
 

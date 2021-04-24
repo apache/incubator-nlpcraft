@@ -20,6 +20,7 @@ package org.apache.nlpcraft.model.tools.cmdline
 import org.apache.commons.lang3.SystemUtils
 import org.apache.nlpcraft.common.version.NCVersion
 import org.apache.nlpcraft.common._
+import java.lang.{IllegalStateException => ISE}
 
 import java.io.File
 import java.lang.management.ManagementFactory
@@ -30,6 +31,8 @@ import java.util.regex.Pattern
  */
 class NCCliBase extends App {
     final val NAME = "NLPCraft CLI"
+
+    private final val dir = ".nlpcraft"
 
     /*
      * Disable warnings from Ignite on JDK 11.
@@ -57,13 +60,16 @@ class NCCliBase extends App {
     // Used for progress bar functionality.
     // +==================================================================+
     // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
-    // +==================================================================+
+    // +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^+
     final val NUM_SRV_SERVICES = 31 /*services*/ + 1 /*progress start*/
     final val NUM_PRB_SERVICES = 23 /*services*/ + 1 /*progress start*/
+    // +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^+
+    // | MAKE SURE TO UPDATE THIS VAR WHEN NUMBER OF SERVICES IS CHANGED. |
+    // +==================================================================+
 
-    final val SRV_BEACON_PATH = ".nlpcraft/server_beacon"
-    final val PRB_BEACON_PATH = ".nlpcraft/probe_beacon"
-    final val HIST_PATH = ".nlpcraft/.cli_history"
+    final val SRV_BEACON_PATH = s"$dir/server_beacon"
+    final val PRB_BEACON_PATH = s"$dir/probe_beacon"
+    final val HIST_PATH = s"$dir/.cli_history"
 
     final val DFLT_USER_EMAIL = "admin@admin.com"
     final val DFLT_USER_PASSWD = "admin"
@@ -113,61 +119,26 @@ class NCCliBase extends App {
          name: String,
          version: String,
          enabledBuiltInTokens: Array[String]
-     )
+    )
 
     case class ProbeAllResponse(
        probes: Array[Probe],
        status: String
-   )
+    )
 
-    case class SplitError(index: Int)
-        extends Exception
+    private def help(cmd: Command): String = s"type $C'help --cmd=${cmd.name}'$RST to get help."
 
-    case class UnknownCommand(cmd: String)
-        extends IllegalArgumentException(s"Unknown command ${c("'" + cmd + "'")}, type ${c("'help'")} to get help.")
-
-    case class NoLocalServer()
-        extends IllegalStateException(s"Local server not found, use $C'start-server'$RST command to start one.")
-
-    case class NoLocalProbe()
-        extends IllegalStateException(s"Local probe not found, use $C'start-probe'$RST command to start one.")
-
-    case class MissingParameter(cmd: Command, paramId: String)
-        extends IllegalArgumentException(
-            s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-                s"type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class NotSignedIn()
-        extends IllegalStateException(s"Not signed in. Use ${c("'signin'")} command to sign in first.")
-
-    case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String)
-        extends IllegalArgumentException(
-            s"Missing mandatory JSON parameters (${missingParams.map(s ⇒ y(s.name)).mkString(",")}) " +
-                s"for $C${"'" + cmd.name + s" --path=$path'"}$RST, type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class InvalidParameter(cmd: Command, paramId: String)
-        extends IllegalArgumentException(
-            s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, " +
-                s"type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class InvalidJsonParameter(cmd: Command, param: String)
-        extends IllegalArgumentException(
-            s"Invalid JSON parameter $C${"'" + param + "'"}$RST, " +
-                s"type $C'help --cmd=${cmd.name}'$RST to get help."
-        )
-
-    case class HttpError(httpCode: Int)
-        extends IllegalStateException(s"REST error (HTTP ${c(httpCode)}).")
-
-    case class MalformedJson()
-        extends IllegalStateException(s"Malformed JSON. ${c("Tip:")} on Windows make sure to escape double quotes.")
-
-    case class TooManyArguments(cmd: Command)
-        extends IllegalArgumentException(s"Too many arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
-
-    case class NotEnoughArguments(cmd: Command)
-        extends IllegalArgumentException(s"Not enough arguments, type $C'help --cmd=${cmd.name}'$RST to get help.")
+    case class SplitError(index: Int) extends Exception
+    case class UnknownCommand(cmd: String) extends ISE(s"Unknown command ${c("'" + cmd + "'")}, type ${c("'help'")} to get help.")
+    case class NoLocalServer() extends ISE(s"Local server not found, use $C'start-server'$RST command to start one.")
+    case class NotSignedIn() extends ISE(s"Not signed in. Use ${c("'signin'")} command to sign in first.")
+    case class NoLocalProbe() extends ISE(s"Local probe not found, use $C'start-probe'$RST command to start one.")
+    case class HttpError(httpCode: Int) extends ISE(s"REST error (HTTP ${c(httpCode)}).")
+    case class MalformedJson() extends ISE(s"Malformed JSON. ${c("Tip:")} on Windows make sure to escape double quotes.")
+    case class TooManyArguments(cmd: Command) extends ISE(s"Too many arguments, ${help(cmd)}")
+    case class NotEnoughArguments(cmd: Command) extends ISE(s"Not enough arguments, ${help(cmd)}")
+    case class MissingParameter(cmd: Command, paramId: String) extends ISE( s"Missing mandatory parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, ${help(cmd)}")
+    case class MissingMandatoryJsonParameters(cmd: Command, missingParams: Seq[RestSpecParameter], path: String) extends ISE(s"Missing mandatory JSON parameters (${missingParams.map(s ⇒ y(s.name)).mkString(",")}) for $C${"'" + cmd.name + s" --path=$path'"}$RST, ${help(cmd)}")
+    case class InvalidParameter(cmd: Command, paramId: String) extends ISE(s"Invalid parameter $C${"'" + cmd.params.find(_.id == paramId).get.names.head + "'"}$RST, ${help(cmd)}")
+    case class InvalidJsonParameter(cmd: Command, param: String) extends ISE(s"Invalid JSON parameter $C${"'" + param + "'"}$RST, ${help(cmd)}")
 }
