@@ -1521,7 +1521,13 @@ object NCCli extends NCCliBase {
      */
     private [cmdline] def cmdInfoProbe(cmd: Command, args: Seq[Argument], repl: Boolean): Unit = {
         loadProbeBeacon() match {
-            case Some(beacon) ⇒ logProbeInfo(beacon)
+            case Some(beacon) ⇒
+                // Log local probe.
+                logProbeInfo(beacon)
+
+                // Log all probes connected to the server.
+                logConnectedProbes()
+
             case None ⇒ throw NoLocalProbe()
         }
     }
