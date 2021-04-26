@@ -60,12 +60,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "examplemod",
-                "Specification-Vendor"    : "examplemodsareus",
-                "Specification-Version"   : "1",
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${version}",
-                "Implementation-Vendor"   : "examplemodsareus",
+                "Specification-Title": "examplemod",
+                "Specification-Vendor": "examplemodsareus",
+                "Specification-Version": "1",
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${version}",
+                "Implementation-Vendor": "examplemodsareus",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
@@ -74,14 +74,14 @@ jar {
 task dumpBlocks(type: JavaExec) {
     description = 'Dumps game file objects. Supports 2 types: items and blocks'
     classpath sourceSets.main.runtimeClasspath
-    main = "org.apache.nplcraft.example.minecraft.GameFilesDump"
+    main = "org.apache.nlpcraft.example.minecraft.GameFilesDump"
     args "block", minecraftVersion
 }
 
 task dumpItems(type: JavaExec) {
     description = 'Dumps game file objects. Supports 2 types: items and blocks'
     classpath sourceSets.main.runtimeClasspath
-    main = "org.apache.nplcraft.example.minecraft.GameFilesDump"
+    main = "org.apache.nlpcraft.example.minecraft.GameFilesDump"
     args "block", minecraftVersion
 }
 

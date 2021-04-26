@@ -21,8 +21,8 @@ license="Apache"
 [[mods]]
 modId="nlpcraft_mod"
 version="${file.jarVersion}"
-displayName="Nlpcraft example Mod"
+displayName="NLPCraft example mod"
 displayURL="https://nlpcraft.apache.org/"
 description='''
-Nlpcraft example mod
+NLPCraft example mod
 '''
