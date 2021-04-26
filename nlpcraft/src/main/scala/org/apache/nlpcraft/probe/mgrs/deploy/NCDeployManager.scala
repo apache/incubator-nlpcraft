@@ -18,7 +18,7 @@
 package org.apache.nlpcraft.probe.mgrs.deploy
 
 import java.io._
-import java.lang.reflect.{InvocationTargetException, Method, ParameterizedType, Type, WildcardType}
+import java.lang.reflect.{InvocationTargetException, Method, Modifier, ParameterizedType, Type, WildcardType}
 import java.util
 import java.util.function.Function
 import java.util.jar.JarInputStream
@@ -1212,7 +1212,9 @@ object NCDeployManager extends NCService with DecorateAsScala {
     private def invoke(mtd: Method, mdl: NCModel, args: Array[AnyRef]): NCResult = {
         val mdlId = mdl.getId
 
-        var flag = mtd.canAccess(mdl)
+        val obj = if (Modifier.isStatic(mtd.getModifiers)) null else mdl
+
+        var flag = mtd.canAccess(obj)
 
         try {
             if (!flag) {
@@ -1223,7 +1225,7 @@ object NCDeployManager extends NCService with DecorateAsScala {
             else
                 flag = false
 
-            mtd.invoke(mdl, args: _*).asInstanceOf[NCResult]
+            mtd.invoke(obj, args: _*).asInstanceOf[NCResult]
         }
         catch {
             case e: InvocationTargetException ⇒ e.getTargetException match {
