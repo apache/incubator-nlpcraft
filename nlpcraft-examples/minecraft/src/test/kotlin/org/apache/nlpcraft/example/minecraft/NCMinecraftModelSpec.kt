@@ -23,7 +23,9 @@ import org.apache.nlpcraft.NCTestEnvironment
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-
+/**
+ * JUnit model spec.
+ */
 @NCTestEnvironment(model = MinecraftModel::class, startClient = true)
 class NCMinecraftModelSpec : NCTestContext() {
     @Test
