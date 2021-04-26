@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>NLPCraft example Alarm</name>
+    <artifactId>nlpcraft-example-alarm</artifactId>
+
+    <parent>
+        <artifactId>nlpcraft-parent</artifactId>
+        <groupId>org.apache.nlpcraft</groupId>
+        <version>0.7.4</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <nlpcraft.server.module>nlpcraft</nlpcraft.server.module>
+        <nlpcraft.all.deps.jar>apache-${nlpcraft.server.module}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>nlpcraft</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.ver}</version>
+                <configuration>
+                    <source>${java.ver}</source>
+                    <target>${java.ver}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.bazaarvoice.maven.plugins</groupId>
+                <artifactId>process-exec-maven-plugin</artifactId>
+                <version>${maven.bazaarvoice.plugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                Depending on the console config and how maven is run this will produce the output with ANSI colors.
+                                To strip out ANSI escape sequences from the log file, see the following:
+                                https://stackoverflow.com/questions/17998978/removing-colors-from-output
+                            -->
+                            <name>server</name>
+                            <healthcheckUrl>http://localhost:8081/api/v1/health</healthcheckUrl>
+                            <waitAfterLaunch>600</waitAfterLaunch>
+                            <processLogFile>${project.build.directory}/server-${timestamp}.log</processLogFile>
+                            <arguments>
+                                <argument>${java.home}/bin/java</argument>
+                                <argument>-Xmx4G</argument>
+                                <argument>-Xms4G</argument>
+                                <argument>--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED</argument>
+                                <argument>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED</argument>
+                                <argument>--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED</argument>
+                                <argument>--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED</argument>
+                                <argument>--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED</argument>
+                                <argument>--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</argument>
+                                <argument>--illegal-access=permit</argument>
+                                <argument>-DNLPCRAFT_ANSI_COLOR_DISABLED=true</argument> <!-- Remove ANSI at least from NLPCraft output. -->
+                                <argument>-Djdk.tls.client.protocols=TLSv1.2</argument>
+                                <argument>-jar</argument>
+                                <argument>${project.basedir}/../../${nlpcraft.server.module}/target/${nlpcraft.all.deps.jar}</argument>
+                                <argument>-server</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-all</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop-all</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.ver}</version>
+                <configuration>
+                    <!-- Skips all tests on phase `test`. -->
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <!-- All tests are defined as integration. -->
+                    <execution>
+                        <id>integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <!-- Mandatory part. -->
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

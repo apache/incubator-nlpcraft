@@ -18,13 +18,12 @@
 package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.examples.time.TimeModel
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{BeforeEach, Test}
 
 import scala.collection.JavaConverters._
 
-@NCTestEnvironment(model = classOf[TimeModel], startClient = false)
+@NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
 class NCRestAskSpec extends NCRestSpec {
     private var usrId: Long = 0
 
@@ -39,19 +38,19 @@ class NCRestAskSpec extends NCRestSpec {
     def testSync(): Unit = {
         post(
             "ask/sync",
-            "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex"
+            "txt" → "a",
+            "mdlId" → "rest.test.model"
         )(
             ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status))
         )
 
         post(
             "ask/sync",
-            "txt" → "What's the local time?",
+            "txt" → "b",
             "enableLog" → true,
             "usrId" → usrId,
             "data" → Map("k1" → "v1", "k1" → "v2").asJava,
-            "mdlId" → "nlpcraft.time.ex"
+            "mdlId" → "rest.test.model"
         )(
             ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status))
         )
@@ -94,7 +93,6 @@ class NCRestAskSpec extends NCRestSpec {
         // Checks empty states.
         post("check")(("$.states", (states: ResponseList) ⇒ assertTrue(states.isEmpty)))
     }
-
     /**
       *
       */
@@ -103,8 +101,8 @@ class NCRestAskSpec extends NCRestSpec {
 
         post(
             "ask",
-            "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex"
+            "txt" → "a",
+            "mdlId" → "rest.test.model"
         )(
             ("$.srvReqId", (srvReqId: String) ⇒ id = srvReqId)
         )
@@ -143,8 +141,8 @@ class NCRestAskSpec extends NCRestSpec {
     ): Unit = {
         post(
             if (sync) "ask/sync" else "ask",
-            "txt" → "What's the local time?",
-            "mdlId" → "nlpcraft.time.ex",
+            "txt" → "a",
+            "mdlId" → "rest.test.model",
             "enableLog" → enableLog.orNull,
             "usrId" → usrId.orNull,
             "data" → data.orNull

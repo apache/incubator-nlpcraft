@@ -339,7 +339,7 @@ object NCProbeSynonym {
         sparse: Boolean,
         permute: Boolean
     ): NCProbeSynonym = {
-        var syn = new NCProbeSynonym(isElementId, isValueName, isDirect, value, sparse, permute)
+        val syn = new NCProbeSynonym(isElementId, isValueName, isDirect, value, sparse, permute)
         
         syn ++= chunks
         

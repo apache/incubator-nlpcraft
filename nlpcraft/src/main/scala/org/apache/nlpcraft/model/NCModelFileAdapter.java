@@ -164,10 +164,10 @@ abstract public class NCModelFileAdapter extends NCModelAdapter {
             return readModel(uri.toString(), uri.toURL().openStream(), uri.getPath().toLowerCase());
         }
         catch (MalformedURLException e) {
-            throw new NCException("Malformed model configuration URI: " + uri.toString(), e);
+            throw new NCException("Malformed model configuration URI: " + uri, e);
         }
         catch (IOException e) {
-            throw new NCException("Failed to read model configuration: " + uri.toString(), e);
+            throw new NCException("Failed to read model configuration: " + uri, e);
         }
     }
     

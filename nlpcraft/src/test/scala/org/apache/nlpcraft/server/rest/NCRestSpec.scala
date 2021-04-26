@@ -128,7 +128,6 @@ class NCRestSpec extends NCTestContext {
     type JList[T] = java.util.List[T]
 
     protected var tkn: String = _
-
     /**
       *
       */

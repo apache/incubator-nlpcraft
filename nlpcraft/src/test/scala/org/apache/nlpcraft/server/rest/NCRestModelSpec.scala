@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.server.rest
 
 import org.apache.nlpcraft.NCTestEnvironment
-import org.apache.nlpcraft.examples.alarm.AlarmModel
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 
@@ -27,17 +26,17 @@ import scala.collection.JavaConverters._
 /**
   * Note that context word server should be started.
   */
-@NCTestEnvironment(model = classOf[AlarmModel], startClient = false)
+@NCTestEnvironment(model = classOf[RestTestModel], startClient = false)
 class NCRestModelSpec extends NCRestSpec {
     @Test
     def test(): Unit = {
         def extract(data: java.util.List[java.util.Map[String, Object]]): Seq[Double] =
             data.asScala.map(_.get("score").asInstanceOf[Number].doubleValue())
 
-        // Note that checked values are valid for current configuration of `nlpcraft.alarm.ex` model.
-        post("model/sugsyn", "mdlId" → "nlpcraft.alarm.ex")(
+        // Note that checked values are valid for current configuration of `RestTestModel` model.
+        post("model/sugsyn", "mdlId" → "rest.test.model")(
             ("$.status", (status: String) ⇒ assertEquals("API_OK", status)),
-              ("$.result.suggestions[:1].x:alarm.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
+            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
                 val scores = extract(data)
 
                 assertTrue(scores.nonEmpty)
@@ -46,9 +45,9 @@ class NCRestModelSpec extends NCRestSpec {
                 assertTrue(scores.exists(_ <= 0.5))
             })
         )
-        post("model/sugsyn", "mdlId" → "nlpcraft.alarm.ex", "minScore" → 0.5)(
+        post("model/sugsyn", "mdlId" → "rest.test.model", "minScore" → 0.5)(
             ("$.status", (status: String) ⇒ assertEquals("API_OK", status)),
-            ("$.result.suggestions[:1].x:alarm.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
+            ("$.result.suggestions[:1].a.*", (data: java.util.List[java.util.Map[String, Object]]) ⇒ {
                 val scores = extract(data)
 
                 assertTrue(scores.nonEmpty)

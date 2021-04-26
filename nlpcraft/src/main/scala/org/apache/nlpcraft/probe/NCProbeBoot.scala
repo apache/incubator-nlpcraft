@@ -106,7 +106,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             withValue(s"$prefix.upLink", fromAnyRef("localhost:8201")).
             withValue(s"$prefix.downLink", fromAnyRef("localhost:8202")).
             withValue(s"$prefix.models", fromAnyRef("")).
-            withValue(s"$prefix.lifecycle", fromIterable(Seq().asJava)).
+            // CSV.
+            withValue(s"$prefix.lifecycle", fromAnyRef("")).
             withValue(s"$prefix.resultMaxSizeBytes", fromAnyRef(1048576)).
             withValue("nlpcraft.nlpEngine", fromAnyRef("opennlp"))
         

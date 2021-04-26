@@ -82,7 +82,7 @@ The following `pom.xml` files should be updates:
 
 ## 3. Make Maven Release
   - `cd <PROJECT_FOLDER>`
-  - `mvn -DskipTests=true clean deploy -P 'stanford-corenlp,release'`
+  - `mvn -DskipTests=true clean deploy -P 'stanford-corenlp,examples,release'`
   - Login into https://repository.apache.org
   - Look at staging repositories https://repository.apache.org/#stagingRepositories
   - Find and close `nlpcraft` release, then check its state.   
