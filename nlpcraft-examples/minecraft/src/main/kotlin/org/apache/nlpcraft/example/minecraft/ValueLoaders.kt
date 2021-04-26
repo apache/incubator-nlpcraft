@@ -27,6 +27,22 @@ import org.apache.nlpcraft.model.NCValue
 import org.apache.nlpcraft.model.NCValueLoader
 
 class MinecraftObjectValueLoader : NCValueLoader {
+    private data class Dump(val version: String, val data: Map<String, String>)
+
+    private class NCMinecraftValue(private var name: String, private var registry: String) : NCValue {
+        override fun getName(): String {
+            return name
+        }
+
+        override fun getSynonyms(): MutableList<String> {
+            return mutableListOf(name)
+        }
+
+        override fun toString(): String {
+            return registry
+        }
+    }
+
     private val mapper = jacksonObjectMapper().enable(JsonParser.Feature.ALLOW_COMMENTS)
 
     companion object {
@@ -36,14 +52,17 @@ class MinecraftObjectValueLoader : NCValueLoader {
     override fun load(owner: NCElement?): MutableSet<NCValue> {
         val type = owner!!.metax<String>("mc:type")
 
-        val inputStream = NCModelFileAdapter::class.java.classLoader.getResourceAsStream("${type}.json")
-            ?: throw NCException("Minecraft object dump not found: ${type}.json")
+        val inputStream =
+            NCModelFileAdapter::class.java.classLoader.getResourceAsStream("${type}.json") ?:
+            throw NCException("Minecraft object dump not found: ${type}.json")
 
-        val dump = try {
-            mapper.readValue(inputStream, Dump::class.java)
-        } catch (e: Exception) {
-            throw NCException("Failed to read file: ${type}.json", e)
-        }
+        val dump =
+            try {
+                mapper.readValue(inputStream, Dump::class.java)
+            }
+            catch (e: Exception) {
+                throw NCException("Failed to read file: ${type}.json", e)
+            }
 
         dumps[type] = dump.data
 
@@ -51,18 +70,3 @@ class MinecraftObjectValueLoader : NCValueLoader {
     }
 }
 
-private class NCMinecraftValue(private var name: String, private var registry: String) : NCValue {
-    override fun getName(): String {
-        return name
-    }
-
-    override fun getSynonyms(): MutableList<String> {
-        return mutableListOf(name)
-    }
-
-    override fun toString(): String {
-        return registry
-    }
-}
-
-private data class Dump(val version: String, val data: Map<String, String>)

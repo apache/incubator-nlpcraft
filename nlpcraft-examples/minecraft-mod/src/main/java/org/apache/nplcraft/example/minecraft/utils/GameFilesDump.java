@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.nplcraft.example.minecraft;
+package org.apache.nplcraft.example.minecraft.utils;
 
 import com.google.gson.Gson;
 import java.util.Map;
@@ -25,46 +25,56 @@ import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
+/**
+ * Utility for getting data from minecraft.
+ */
 public class GameFilesDump {
-    private final static Gson gson = new Gson();
-
-    private static <T extends ForgeRegistryEntry<?>> void dumpRegistry(DefaultedRegistry<T> registry, String version) {
-        Dump dump = new Dump();
-        dump.version = version;
-        // regular name -> registry name
-        dump.data = registry.stream().filter(x -> x.getRegistryName() != null).collect(Collectors.toMap(
-                x -> transformPath(x.getRegistryName().getPath()),
-                x -> x.getRegistryName().toString())
-        );
-        // add matching like grass -> grass_block
-        dump.data.putAll(registry.stream()
-                .filter(x -> x.getRegistryName() != null && x.getRegistryName().getPath().endsWith("_block"))
-                .collect(Collectors.toMap(
-                        x -> transformPath(x.getRegistryName().getPath().replace("_block", "")),
-                        x -> x.getRegistryName().toString())
-                )
-        );
-        System.out.println(gson.toJson(dump));
-    }
-
-    // Move to util
-    private static String transformPath(String path) {
-        return path.replaceAll("_", " ");
-    }
+    private final static Gson GSON = new Gson();
 
     private static class Dump {
         private String version;
         private Map<String, String> data;
     }
 
+    private static <T extends ForgeRegistryEntry<?>> void dumpRegistry(DefaultedRegistry<T> registry, String version) {
+        Dump dump = new Dump();
+
+        dump.version = version;
+
+        // regular name -> registry name
+        dump.data =
+            registry.stream().filter(x -> x.getRegistryName() != null).
+                collect(Collectors.toMap(
+                    x -> transformPath(x.getRegistryName().getPath()),
+                    x -> x.getRegistryName().toString())
+                );
+        // add matching like grass -> grass_block
+        dump.data.putAll(registry.stream()
+            .filter(x -> x.getRegistryName() != null && x.getRegistryName().getPath().endsWith("_block"))
+            .collect(Collectors.toMap(
+                x -> transformPath(x.getRegistryName().getPath().replace("_block", "")),
+                x -> x.getRegistryName().toString())
+            )
+        );
+
+        System.out.println(GSON.toJson(dump));
+    }
+
+    private static String transformPath(String path) {
+        return path.replaceAll("_", " ");
+    }
+
     public static void main(String[] args) {
         String type = args[0];
         String version = args[1];
+
         if (type.equals("block")) {
             dumpRegistry(Registry.BLOCK, version);
-        } else if (type.equals("item")) {
+        }
+        else if (type.equals("item")) {
             dumpRegistry(Registry.ITEM, version);
-        } else {
+        }
+        else {
             System.err.println("Unknown type");
         }
     }
