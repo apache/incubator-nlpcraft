@@ -25,10 +25,10 @@
 
 ### Overview
 This module is part of Minecraft example. This part provides model for Minecraft server commands. 
-Seconds part (**../minecraft-mod**) provides mod for Minecraft server sending requests to the NLPCraft server.
+Second part (**../minecraft-mod**) provides mod for Minecraft server sending requests to the NLPCraft server.
 
 ### Startup
-Start server normally. For running probe it's required to use dedicated configuration located in [resouces folder](src/main/resources/nlpcraft.conf)
+Start server normally. For running probe it's required to use dedicated configuration located in [resources folder](src/main/resources/nlpcraft.conf)
 
 ### Installation
 1. Download [Minecraft client](https://www.minecraft.net/en-us/download)
