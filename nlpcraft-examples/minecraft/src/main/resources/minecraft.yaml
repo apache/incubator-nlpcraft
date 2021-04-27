@@ -65,6 +65,9 @@ elements:
       - "{thunder|thunderstorm|storm|hurricane}"
 
   # Time intent
+  - id: time:action
+    synonyms:
+      - "{set|make} {it|_}"
   - id: morning
     groups:
       - time
@@ -148,6 +151,7 @@ intents:
         term={tok_id() == 'weather:action'}?
         term(arg)={has(tok_groups(), 'weather')}"
   - "intent=timeIntent
+        term={tok_id() == 'time:action'}?
         term(arg)={has(tok_groups(), 'time')}"
   - "intent=giveIntent
         term(action)={tok_id() == 'give:action'}
