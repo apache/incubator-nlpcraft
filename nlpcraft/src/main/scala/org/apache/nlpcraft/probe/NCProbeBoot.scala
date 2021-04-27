@@ -135,15 +135,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
             overrideCfg,
             args.find(_.startsWith("-config=")) match {
                 case Some(s) ⇒
-                    val fileName = s.substring("-config=".length)
-    
-                    val f = new java.io.File(fileName)
-    
-                    if (!(f.exists && f.canRead && f.isFile))
-                        throw new NCE(s"Specified probe configuration file does not exist or cannot be read: $fileName")
-    
-                    Some(fileName)
+                    val cfg = s.substring("-config=".length)
 
+                    if (!U.isSuitableConfig(cfg))
+                        throw new NCE(s"Specified probe configuration file does not exist or cannot be read: $cfg")
+    
+                    Some(cfg)
                 case None ⇒ Some("nlpcraft.conf")
             },
             Some(mkDefault()),

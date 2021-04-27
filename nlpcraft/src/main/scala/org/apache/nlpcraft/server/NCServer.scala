@@ -179,14 +179,12 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             None, // No overrides.
             args.find(_.startsWith("-config=")) match {
                 case Some(s) ⇒
-                    val fileName = s.substring("-config=".length)
+                    val cfg = s.substring("-config=".length)
 
-                    val f = new java.io.File(fileName)
+                    if (!U.isSuitableConfig(cfg))
+                        throw new NCE(s"Specified server configuration file does not exist or cannot be read: $cfg")
 
-                    if (!(f.exists && f.canRead && f.isFile))
-                        throw new NCE(s"Specified server configuration file does not exist or cannot be read: $fileName")
-
-                    Some(fileName)
+                    Some(cfg)
 
                 case None ⇒
                     Some("nlpcraft.conf") // Default to 'nlpcraft.conf'.

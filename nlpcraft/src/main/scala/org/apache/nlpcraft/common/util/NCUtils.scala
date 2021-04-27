@@ -2158,4 +2158,30 @@ object NCUtils extends LazyLogging {
                 !list.zip(list.tail).exists { case (x, y) ⇒ x > y }
         }
     }
+
+    /**
+      *
+      * @param s
+      */
+    def isSuitableConfig(s: String): Boolean = {
+        def isFile: Boolean = {
+            val f = new File(s)
+
+            f.exists() && f.isFile
+        }
+
+        def isResource: Boolean = getClass.getClassLoader.getResource(s) != null
+
+        def isUrl: Boolean =
+            try {
+                new URL(s)
+
+                true
+            }
+            catch {
+                case _: MalformedURLException ⇒ false
+            }
+
+        isFile || isResource || isUrl
+    }
 }
