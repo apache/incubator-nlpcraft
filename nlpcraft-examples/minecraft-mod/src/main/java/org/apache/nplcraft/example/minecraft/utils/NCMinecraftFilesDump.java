@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**

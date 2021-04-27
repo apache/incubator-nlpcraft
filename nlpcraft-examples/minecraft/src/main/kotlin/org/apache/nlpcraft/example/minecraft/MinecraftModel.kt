@@ -114,7 +114,6 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "make a box of sand with the size of 2 10 meters in front of me"
     )
     fun onFillMatch(
-        ctx: NCIntentMatch,
         @NCIntentTerm("shape") shape: NCToken,
         @NCIntentTerm("block") block: NCToken,
         @NCIntentTerm("len") length: Optional<NCToken>,
