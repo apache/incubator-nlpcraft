@@ -28,7 +28,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 /**
  * Utility for getting data from minecraft.
  */
-public class GameFilesDump {
+public class NCMinecraftFilesDump {
     private final static Gson GSON = new Gson();
 
     private static class Dump {
@@ -41,14 +41,14 @@ public class GameFilesDump {
 
         dump.version = version;
 
-        // regular name -> registry name
+        // Regular name -> registry name.
         dump.data =
             registry.stream().filter(x -> x.getRegistryName() != null).
                 collect(Collectors.toMap(
                     x -> transformPath(x.getRegistryName().getPath()),
                     x -> x.getRegistryName().toString())
                 );
-        // add matching like grass -> grass_block
+        // Add matching like grass -> grass_block.
         dump.data.putAll(registry.stream()
             .filter(x -> x.getRegistryName() != null && x.getRegistryName().getPath().endsWith("_block"))
             .collect(Collectors.toMap(

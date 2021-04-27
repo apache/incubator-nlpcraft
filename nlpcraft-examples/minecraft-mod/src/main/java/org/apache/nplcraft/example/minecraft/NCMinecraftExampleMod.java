@@ -41,10 +41,13 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Minecraft example mod for the Minecraft Forge server.
+ */
 @Mod("nlpcraft_mod")
-public class NCExampleMod {
+public class NCMinecraftExampleMod {
     private static final String DFLT_EMAIL = "admin@admin.com";
-    private static final String DFLT_PSWD = "admin";
+    private static final String DFLT_PWD = "admin";
     private static final String DFLT_HOST = "0.0.0.0";
     private static final int DFLT_PORT = 8081;
 
@@ -59,17 +62,26 @@ public class NCExampleMod {
     private MinecraftServer server;
     private String token;
 
+    /**
+     * JSON bean for REST call.
+     */
     private static class AskParams {
         private String mdlId;
         private String acsTok;
         private String txt;
     }
 
+    /**
+     * JSON bean for REST call.
+     */
     private static class NCResponse {
         private String status;
         private NCState state;
     }
 
+    /**
+     * JSON bean for REST call.
+     */
     private static class NCState {
         private Integer errorCode;
         private String error;
@@ -77,15 +89,24 @@ public class NCExampleMod {
         private String resBody;
     }
 
+    /**
+     * JSON bean for REST call.
+     */
     private static class NCSignIn {
         private String email;
-        private String passwd;
+        private String pwd;
     }
 
+    /**
+     * JSON bean for REST call.
+     */
     private static class NCSignResponse {
         private String acsTok;
     }
 
+    /**
+     * JSON bean for REST call.
+     */
     private static class NCSettings {
         private String email;
         private String passwd;
@@ -97,10 +118,18 @@ public class NCExampleMod {
         // No-op.
     }
 
-    public NCExampleMod() {
+    /**
+     * Creates new Minecraft Forge server.
+     */
+    public NCMinecraftExampleMod() {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    /**
+     * Lifecycle callback.
+     *
+     * @param event Forge server event.
+     */
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
         this.server = event.getServer();
@@ -108,14 +137,18 @@ public class NCExampleMod {
         loadSettings();
     }
 
+    /**
+     * Callback on new command.
+     *
+     * @param event Forge server event.
+     */
     @SubscribeEvent
     public void onCommandEvent(CommandEvent event) {
         String cmd = event.getParseResults().getReader().getString();
 
         // Converted command skipped.
-        if (convCmds.remove(cmd)) {
+        if (convCmds.remove(cmd))
             return;
-        }
 
         try {
             String convCmd = '/' + askProbe(cmd).state.resBody;
@@ -130,19 +163,30 @@ public class NCExampleMod {
             server.getCommandManager().handleCommand(server.getCommandSource(), convCmd);
         }
         catch (Exception e) {
-            LOGGER.error("Execution command unexpected error [cmd=" + cmd + ']', e);
+            LOGGER.error("Unexpected error executing command [cmd=" + cmd + ']', e);
         }
     }
 
-    private static NCSignIn mkSignin(String email, String passwd) {
+    /**
+     * Makes sign in JSON bean.
+     *
+     * @param email Email.
+     * @param pwd Password.
+     */
+    private static NCSignIn mkSignin(String email, String pwd) {
         NCSignIn s = new NCSignIn();
 
         s.email = email;
-        s.passwd = passwd;
+        s.pwd = pwd;
 
         return s;
     }
 
+    /**
+     * Does 'ask' REST call.
+     *
+     * @param txt Ask text.
+     */
     private NCResponse askProbe(String txt) throws Exception {
         assert baseUrl != null;
 
@@ -151,9 +195,8 @@ public class NCExampleMod {
         params.mdlId = MODEL_ID;
         params.txt = txt.startsWith("/") ? txt.substring(1) : txt;
 
-        if (token == null) {
+        if (token == null)
             this.token = signin();
-        }
 
         params.acsTok = this.token;
 
@@ -181,10 +224,20 @@ public class NCExampleMod {
         return resp;
     }
 
+    /**
+     * Does 'signin' REST call.
+     */
     private String signin() throws Exception {
         return post("signin", GSON.toJson(creds), NCSignResponse.class).acsTok;
     }
 
+    /**
+     * Does REST POST.
+     *
+     * @param url POST URL.
+     * @param postJson POST JSON payload.
+     * @param clazz Return value type.
+     */
     private <T> T post(String url, String postJson, Class<T> clazz) throws Exception {
         assert baseUrl != null;
 
@@ -199,21 +252,22 @@ public class NCExampleMod {
 
         try (DataOutputStream out = new DataOutputStream(conn.getOutputStream())) {
             out.writeBytes(postJson);
-
             out.flush();
         }
 
         int code = conn.getResponseCode();
 
-        if (code == 401) {
+        if (code == 401)
             throw new UnauthorizedException();
-        }
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
             return GSON.fromJson(in, clazz);
         }
     }
 
+    /**
+     * Loads settings.
+     */
     private void loadSettings() {
         try (
             Reader reader =
@@ -223,7 +277,7 @@ public class NCExampleMod {
         ) {
             NCSettings settings = GSON.fromJson(reader, NCSettings.class);
 
-            LOGGER.info("Credentials file read.");
+            LOGGER.info("Credentials file loaded.");
 
             this.creds = mkSignin(settings.email, settings.passwd);
             this.baseUrl = "http://" + settings.host + ":" + settings.port + "/api/v1/";
@@ -234,10 +288,10 @@ public class NCExampleMod {
             LOGGER.info("Credentials were not found, default configuration used.");
         }
         catch (Exception e) {
-            LOGGER.error("Setting loading unexpected error", e);
+            LOGGER.error("Unexpected error loading settings.", e);
         }
 
-        this.creds = mkSignin(DFLT_EMAIL, DFLT_PSWD);
+        this.creds = mkSignin(DFLT_EMAIL, DFLT_PWD);
         this.baseUrl = "http://" + DFLT_HOST + ":" + DFLT_PORT + "/api/v1/";
     }
 }
