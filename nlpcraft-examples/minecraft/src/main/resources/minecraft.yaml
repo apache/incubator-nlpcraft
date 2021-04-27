@@ -25,7 +25,7 @@ description: Minecraft Model.
 
 macros:
   - name: "<PLAYER_NICKNAME>"
-    macro: "//[a-zA-Z0-9]+//"
+    macro: "{//[a-zA-Z0-9]+//}"
 
 elements:
   # General synonyms
@@ -35,11 +35,11 @@ elements:
   - id: mc:item
     metadata:
       mc:type: item
-    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftObjectValueLoader
+    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftValueLoader
   - id: mc:block
     metadata:
       mc:type: block
-    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftObjectValueLoader
+    valueLoader: org.apache.nlpcraft.example.minecraft.MinecraftValueLoader
 
   # Weather intent
   - id: weather:action

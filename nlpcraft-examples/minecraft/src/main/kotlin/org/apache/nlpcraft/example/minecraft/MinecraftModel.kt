@@ -23,8 +23,14 @@ import org.apache.nlpcraft.example.minecraft.MinecraftValueLoader.Companion.dump
 import org.apache.nlpcraft.model.*
 import java.util.*
 
+/**
+ * Minecraft example model.
+ */
 @Suppress("unused")
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
+    /**
+     * Weather intent callback.
+     */
     @NCIntentRef("weatherIntent")
     @NCIntentSample(
         "make it rain",
@@ -40,6 +46,9 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         return NCResult.text("weather ${tok.id}")
     }
 
+    /**
+     * Time intent callback.
+     */
     @NCIntentRef("timeIntent")
     @NCIntentSample(
         "set time to evening",
@@ -65,6 +74,9 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         return NCResult.text("time set $time")
     }
 
+    /**
+     * Give intent callback.
+     */
     @NCIntentRef("giveIntent")
     @NCIntentSample(
         "give me iron sword",
@@ -90,12 +102,14 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         return NCResult.text("give $player $itemRegistry $itemQuantity")
     }
 
+    /**
+     * Fill intent callback.
+     */
     @NCIntentRef("fillIntent")
     @NCIntentSample(
         "make a box of sand in front of me",
         "make a cube of gold near me",
         "make a line of grass with length of 2 near me",
-
         "create a rectangle of dirt in front of #PlayerName",
         "make a box of sand with the size of 2 10 meters in front of me"
     )
@@ -106,6 +120,6 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         @NCIntentTerm("len") length: Optional<NCToken>,
         @NCIntentTerm("position") position: NCToken,
     ): NCResult {
-        return FIllMatchProcessor.process(ctx, shape, block, length, position)
+        return MinecraftFIllMatchProcessor.process(shape, block, length, position)
     }
 }

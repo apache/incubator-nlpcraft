@@ -22,10 +22,12 @@ import org.apache.nlpcraft.example.minecraft.MinecraftValueLoader.Companion.dump
 import org.apache.nlpcraft.model.*
 import java.util.*
 
-class FIllMatchProcessor {
+/**
+ * Utility fill processor.
+ */
+class MinecraftFIllMatchProcessor {
     companion object {
         fun process(
-            ctx: NCIntentMatch,
             @NCIntentTerm("shape") shape: NCToken,
             @NCIntentTerm("block") blockToken: NCToken,
             @NCIntentTerm("len") length: Optional<NCToken>,
@@ -50,15 +52,15 @@ class FIllMatchProcessor {
                     Coordinate((length - 1) / 2, 0, (length - 1) / 2)
                 "cube" -> Coordinate(-length / 2, -length / 2, -length / 2) to
                     Coordinate((length - 1) / 2, (length - 1) / 2, (length - 1) / 2)
-                else -> throw NCRejection("Unsupported shape")
+                else -> throw NCRejection("Unsupported shape: $shape")
             }
         }
 
-        private fun positionCoordinate(position: NCToken): Coordinate {
-            return when (position.id) {
+        private fun positionCoordinate(pos: NCToken): Coordinate {
+            return when (pos.id) {
                 "position:player" -> Coordinate()
-                "position:front" -> Coordinate(0, 0, transformLength(Optional.of(position), 10))
-                else -> throw NCRejection("Unsupported position")
+                "position:front" -> Coordinate(0, 0, transformLength(Optional.of(pos), 10))
+                else -> throw NCRejection("Unsupported position: ${pos.id}")
             }
         }
 
@@ -68,14 +70,15 @@ class FIllMatchProcessor {
                     .filter { it.id == "nlpcraft:num" }
                     .findAny()
                     .map { it.toInt() }
-            }.orElse(default)
+            }
+            .orElse(default)
         }
 
         private fun findPlayer(position: NCToken): String {
             return position.partTokens.stream()
                 .filter { it.id == "mc:player" }
                 .findAny()
-                .orElseThrow { AssertionError("Player wasn't found") }
+                .orElseThrow { AssertionError("Player wasn't found.") }
                 .player()
         }
     }
