@@ -44,7 +44,16 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "make it rain",
         "cast the sun rays",
         "it's rather rainy today",
-        "heavy storm is coming"
+        "heavy storm is coming",
+        "make it drizzle now",
+        "start downpour",
+        "start the rain",
+        "make the raindrops",
+        "start the raindrops downpour",
+        "make it a wet weather",
+        "make it a drizzle weather conditions",
+        "make it balmy",
+        "set it to sunny climate"
     )
     fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         checkAmbiguous(ctx)

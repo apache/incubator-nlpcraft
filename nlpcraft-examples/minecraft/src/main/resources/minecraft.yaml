@@ -44,19 +44,19 @@ elements:
   # Weather intent
   - id: weather:action
     synonyms:
-      - "{make|start|cast}"
+      - "{set|make|start|cast} {it|weather|temperature|climate|mode|{weather|_} condition|_}"
   - id: rain
-    description: Set rain weather
+    description: Set rainy weather
     groups:
       - weather
     synonyms:
-      - "{rain|downpour}"
+      - "{rain|downpour|rainy|wet|sprinkle|precipitation|raindrop|drizzle|shower|rainstorm} {downpour|_}"
   - id: clear
     description: Set sunny weather
     groups:
       - weather
     synonyms:
-      - "{sun|clear sky}"
+      - "{sun|sunny|balmy|clear|bright|clear sky}"
   - id: thunder
     description: Set stormy weather
     groups:
