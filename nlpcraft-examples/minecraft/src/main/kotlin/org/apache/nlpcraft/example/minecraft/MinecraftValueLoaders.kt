@@ -26,7 +26,7 @@ import org.apache.nlpcraft.model.NCModelFileAdapter
 import org.apache.nlpcraft.model.NCValue
 import org.apache.nlpcraft.model.NCValueLoader
 
-class MinecraftObjectValueLoader : NCValueLoader {
+class MinecraftValueLoader : NCValueLoader {
     private data class Dump(val version: String, val data: Map<String, String>)
 
     private class NCMinecraftValue(private var name: String, private var registry: String) : NCValue {

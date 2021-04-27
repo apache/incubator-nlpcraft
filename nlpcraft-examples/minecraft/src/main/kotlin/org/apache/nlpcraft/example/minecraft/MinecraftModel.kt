@@ -19,7 +19,7 @@
 package org.apache.nlpcraft.example.minecraft
 
 import org.apache.nlpcraft.common.NCException
-import org.apache.nlpcraft.example.minecraft.MinecraftObjectValueLoader.Companion.dumps
+import org.apache.nlpcraft.example.minecraft.MinecraftValueLoader.Companion.dumps
 import org.apache.nlpcraft.model.*
 import java.util.*
 

@@ -22,16 +22,12 @@ import org.apache.nlpcraft.model.NCToken
 
 private var firstPersonWords = setOf("me", "my", "i")
 
-internal fun NCToken.normText(): String {
-    return this.meta("nlpcraft:nlp:normtext")
-}
-
 internal fun NCToken.toInt(): Int {
     return this.meta<Double>("nlpcraft:num:from").toInt()
 }
 
 internal fun NCToken.player(): String {
-    return if (firstPersonWords.contains(this.normText())) "@p" else this.originalText ?: "@p"
+    return if (firstPersonWords.contains(this.normalizedText)) "@p" else this.originalText ?: "@p"
 }
 
 internal data class Coordinate(val x: Int = 0, val y: Int = 0, val z: Int = 0) {
