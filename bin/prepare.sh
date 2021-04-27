@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+# Make sure that maven and gradle installed on your PC.
+
 if [[ $1 = "" ]] ; then
     echo "Version must be set as input parameter."
     exit 1
@@ -32,19 +34,46 @@ zipFileBin=apache-nlpcraft-incubating-bin-$1.zip # NOT an official ASF release.
 zipFileSrc=apache-nlpcraft-incubating-$1.zip # An OFFICIAL ASF release.
 coreModule=nlpcraft
 stanfordModule=nlpcraft-stanford
+examples=nlpcraft-examples
+exampleAlarm=${examples}/alarm
+exampleEcho=${examples}/echo
+exampleHelloworld=${examples}/helloworld
+exampleLightswitch=${examples}/lightswitch
+exampleMinecraft=${examples}/minecraft
+exampleMinecraftMod=${examples}/minecraft-mod
+examplePhone=${examples}/phone
+exampleSql=${examples}/sql
+exampleTime=${examples}/time
+exampleWeather=${examples}/weather
 
 curDir=$(pwd)
 
 cd ../
 
-mvn clean package -P stanford-corenlp,release
+mvn clean package -P stanford-corenlp,release,examples
+
+cd nlpcraft-examples/minecraft-mod || exit
+./gradlew clean build
+
+cd ../../
 
 rm -R ${zipDir} 2> /dev/null
 
-mkdir ${zipDir}
-mkdir ${zipDir}/${tmpDir}
-mkdir ${zipDir}/${tmpDir}/${coreModule}
+mkdir -p ${zipDir}/${tmpDir}/${coreModule}
+mkdir -p ${zipDir}/${tmpDir}/${stanfordModule}
+mkdir -p ${zipDir}/${tmpDir}/${exampleAlarm}
+mkdir -p ${zipDir}/${tmpDir}/${exampleEcho}
+mkdir -p ${zipDir}/${tmpDir}/${exampleHelloworld}
+mkdir -p ${zipDir}/${tmpDir}/${exampleLightswitch}
+mkdir -p ${zipDir}/${tmpDir}/${exampleMinecraft}
+mkdir -p ${zipDir}/${tmpDir}/${exampleMinecraftMod}
+mkdir -p ${zipDir}/${tmpDir}/${examplePhone}
+mkdir -p ${zipDir}/${tmpDir}/${exampleSql}
+mkdir -p ${zipDir}/${tmpDir}/${exampleTime}
+mkdir -p ${zipDir}/${tmpDir}/${exampleWeather}
+
 mkdir ${zipDir}/${tmpDir}/build
+mkdir ${zipDir}/${tmpDir}/build/examples
 
 #=====================#
 # Prepare BINARY ZIP. #
@@ -52,20 +81,70 @@ mkdir ${zipDir}/${tmpDir}/build
 
 rsync -avzq bin ${zipDir}/${tmpDir} --exclude '**/.DS_Store' --exclude bin/prepare.sh --exclude bin/MAVEN-RELEASE.md
 rsync -avzq openapi ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
-rsync -avzq ${coreModule}/src ${zipDir}/${tmpDir}/${coreModule} --exclude '**/.DS_Store' --exclude '**/*.iml' --exclude '**/python/ctxword/data' --exclude '**/server/geo/tools/**/*.txt'
-rsync -avzq ${stanfordModule}/src ${zipDir}/${tmpDir}/${stanfordModule} --exclude '**/.DS_Store' --exclude '**/*.iml'
+
+function cpSrc() {
+  rsync -avzq "$1"/src ${zipDir}/${tmpDir}/"$1" --exclude '**/.DS_Store' --exclude '**/*.iml'
+}
+
+cpSrc ${coreModule}
+cpSrc ${stanfordModule}
+cpSrc ${exampleAlarm}
+cpSrc ${exampleEcho}
+cpSrc ${exampleHelloworld}
+cpSrc ${exampleLightswitch}
+cpSrc ${exampleMinecraft}
+cpSrc ${exampleMinecraftMod}
+cpSrc ${examplePhone}
+cpSrc ${exampleSql}
+cpSrc ${exampleTime}
+cpSrc ${exampleWeather}
 rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp bindist/LICENSE ${zipDir}/${tmpDir}
 cp bindist/NOTICE ${zipDir}/${tmpDir}
 cp DISCLAIMER ${zipDir}/${tmpDir}
+
 cp ${coreModule}/src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
+
+function cpConf() {
+  cp "$1"/src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build/examples/"$(echo "$1" | tr '/' '-')".conf
+}
+
+cpConf ${exampleAlarm}
+cpConf ${exampleEcho}
+cpConf ${exampleHelloworld}
+cpConf ${exampleLightswitch}
+cpConf ${exampleMinecraft}
+cpConf ${examplePhone}
+cpConf ${exampleSql}
+cpConf ${exampleTime}
+cpConf ${exampleWeather}
+
 cp ${coreModule}/src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
 cp ${coreModule}/src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
 
 rsync -avzq ${coreModule}/target/*all-deps.jar ${zipDir}/${tmpDir}/build
 rsync -avzq ${coreModule}/target/apidocs/** ${zipDir}/${tmpDir}/javadoc --exclude '**/.DS_Store'
-rsync -avzq ${stanfordModule}/target/*.jar ${zipDir}/${tmpDir}/build --exclude '*-sources.jar'
+
+function cpJar() {
+  rsync -avzq "$1"/target/*.jar ${zipDir}/${tmpDir}/build --exclude '*-sources.jar'
+}
+
+function cpJarExamples() {
+  rsync -avzq "$1"/target/*.jar ${zipDir}/${tmpDir}/build/examples --exclude '*-sources.jar'
+}
+
+cpJar ${stanfordModule}
+cpJarExamples ${exampleAlarm}
+cpJarExamples ${exampleEcho}
+cpJarExamples ${exampleHelloworld}
+cpJarExamples ${exampleLightswitch}
+cpJarExamples ${exampleMinecraft}
+cpJarExamples ${examplePhone}
+cpJarExamples ${exampleSql}
+cpJarExamples ${exampleTime}
+cpJarExamples ${exampleWeather}
+rsync -avzq ${exampleMinecraftMod}/build/libs/*.jar ${zipDir}/${tmpDir}/build/examples --exclude '*-sources.jar'
 
 # Prepares bin zip.
 cd ${zipDir} || exit
@@ -84,8 +163,26 @@ rm -R ${tmpDir}/javadoc 2> /dev/null
 cd ../
 mkdir ${zipDir}/${tmpDir}/javadoc
 
-cp ${coreModule}/pom.xml ${zipDir}/${tmpDir}/${coreModule}
-cp ${stanfordModule}/pom.xml ${zipDir}/${tmpDir}/${stanfordModule}
+function cpPom() {
+  cp "$1"/pom.xml ${zipDir}/${tmpDir}/"$1"
+}
+
+cpPom ${coreModule}
+cpPom ${stanfordModule}
+cpPom ${exampleAlarm}
+cpPom ${exampleEcho}
+cpPom ${exampleHelloworld}
+cpPom ${exampleLightswitch}
+cpPom ${exampleMinecraft}
+cpPom ${examplePhone}
+cpPom ${exampleSql}
+cpPom ${exampleTime}
+cpPom ${exampleWeather}
+
+cp ${exampleMinecraftMod}/build.gradle ${zipDir}/${tmpDir}/${exampleMinecraftMod}
+cp ${exampleMinecraftMod}/gradlew ${zipDir}/${tmpDir}/${exampleMinecraftMod}
+cp ${exampleMinecraftMod}/gradlew.bat ${zipDir}/${tmpDir}/${exampleMinecraftMod}
+
 cp pom.xml ${zipDir}/${tmpDir}
 cp LICENSE ${zipDir}/${tmpDir}
 cp NOTICE ${zipDir}/${tmpDir}

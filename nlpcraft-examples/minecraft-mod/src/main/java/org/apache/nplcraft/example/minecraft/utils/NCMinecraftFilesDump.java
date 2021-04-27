@@ -28,7 +28,7 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
- * Utility for getting data from minecraft.
+ * Utility for getting data from minecraft. These values are used for preparing synonyms for user defined elements.
  */
 public class NCMinecraftFilesDump {
     private final static Gson GSON = new Gson();

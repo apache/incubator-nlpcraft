@@ -78,6 +78,15 @@ For example, if version is `0.5.0` and tag name is `v0.5.0` following pom `scm` 
 The following `pom.xml` files should be updates:
 - nlpcraft/pom.xml
 - nlpcraft-stanford/pom.xml
+- nlpcraft-examples/alarm/pom.xml
+- nlpcraft-examples/echo/pom.xml
+- nlpcraft-examples/helloworld/pom.xml
+- nlpcraft-examples/lightswitch/pom.xml
+- nlpcraft-examples/minecraft/pom.xml
+- nlpcraft-examples/phone/pom.xml
+- nlpcraft-examples/sql/pom.xml
+- nlpcraft-examples/time/pom.xml
+- nlpcraft-examples/weather/pom.xml  
 - pom.xml
 
 ## 3. Make Maven Release

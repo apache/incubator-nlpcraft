@@ -24,10 +24,18 @@ import org.apache.nlpcraft.model.*
 import java.util.*
 
 /**
- * Minecraft example model.
+ * Minecraft example data model.
+ * TODO:
+ * <p>
+ * See 'README.md' file in the same folder for running and testing instructions.
  */
-@Suppress("unused")
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
+    private fun checkAmbiguous(ctx: NCIntentMatch) {
+        if (ctx.isAmbiguous) {
+            throw NCRejection("Ambiguous request")
+        }
+    }
+
     /**
      * Weather intent callback.
      */
@@ -39,9 +47,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "heavy storm is coming"
     )
     fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
-        if (ctx.isAmbiguous) {
-            throw NCRejection("Ambiguous request")
-        }
+        checkAmbiguous(ctx)
 
         return NCResult.text("weather ${tok.id}")
     }
@@ -57,9 +63,7 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "it's midnight"
     )
     fun onTimeMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
-        if (ctx.isAmbiguous) {
-            throw NCRejection("Ambiguous request")
-        }
+        checkAmbiguous(ctx)
 
         val time: Int = when (tok.id) {
             "morning" -> 23000
@@ -91,13 +95,14 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         @NCIntentTerm("action") target: NCToken,
         @NCIntentTerm("quantity") quantity: Optional<NCToken>
     ): NCResult {
-        if (ctx.isAmbiguous) {
-            throw NCRejection("Ambiguous request")
-        }
+        checkAmbiguous(ctx)
 
         val itemRegistry = dumps["item"]!![item.value]!!
-        val player = target.partTokens[1].player()
-        val itemQuantity = quantity.map(NCToken::toInt).orElse(1)
+
+        val part = target.partTokens[1]
+        val player = if (part.lemma == "i" || part.lemma == "my") "@p" else part.originalText ?: "@p"
+
+        val itemQuantity = if (quantity.isPresent) quantity.get().meta<Double>("nlpcraft:num:from").toInt() else 1
 
         return NCResult.text("give $player $itemRegistry $itemQuantity")
     }
@@ -114,11 +119,12 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "make a box of sand with the size of 2 10 meters in front of me"
     )
     fun onFillMatch(
+        ctx: NCIntentMatch,
         @NCIntentTerm("shape") shape: NCToken,
         @NCIntentTerm("block") block: NCToken,
         @NCIntentTerm("len") length: Optional<NCToken>,
         @NCIntentTerm("position") position: NCToken,
     ): NCResult {
-        return MinecraftFIllMatchProcessor.process(shape, block, length, position)
+        return MinecraftFIllMatchProcessor.process(ctx, shape, block, length, position)
     }
 }

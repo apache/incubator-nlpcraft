@@ -23,11 +23,27 @@ import org.apache.nlpcraft.model.*
 import java.util.*
 
 /**
- * Utility fill processor.
+ * Special processor for support 'fillIntent' intent processing.
+ * Is is designed as separated class to simplify main model class.
  */
 class MinecraftFIllMatchProcessor {
+    internal data class Coordinate(val x: Int = 0, val y: Int = 0, val z: Int = 0) {
+        override fun toString(): String {
+            return "$x $y $z"
+        }
+
+        fun relative(): String {
+            return "~$x ~$y ~$z"
+        }
+
+        fun relativeRotated(): String {
+            return "^$x ^$y ^$z"
+        }
+    }
+
     companion object {
         fun process(
+            ctx: NCIntentMatch,
             @NCIntentTerm("shape") shape: NCToken,
             @NCIntentTerm("block") blockToken: NCToken,
             @NCIntentTerm("len") length: Optional<NCToken>,
@@ -52,15 +68,15 @@ class MinecraftFIllMatchProcessor {
                     Coordinate((length - 1) / 2, 0, (length - 1) / 2)
                 "cube" -> Coordinate(-length / 2, -length / 2, -length / 2) to
                     Coordinate((length - 1) / 2, (length - 1) / 2, (length - 1) / 2)
-                else -> throw NCRejection("Unsupported shape: $shape")
+                else -> throw NCRejection("Unsupported shape")
             }
         }
 
-        private fun positionCoordinate(pos: NCToken): Coordinate {
-            return when (pos.id) {
+        private fun positionCoordinate(position: NCToken): Coordinate {
+            return when (position.id) {
                 "position:player" -> Coordinate()
-                "position:front" -> Coordinate(0, 0, transformLength(Optional.of(pos), 10))
-                else -> throw NCRejection("Unsupported position: ${pos.id}")
+                "position:front" -> Coordinate(0, 0, transformLength(Optional.of(position), 10))
+                else -> throw NCRejection("Unsupported position")
             }
         }
 
@@ -69,17 +85,17 @@ class MinecraftFIllMatchProcessor {
                 x.partTokens.stream()
                     .filter { it.id == "nlpcraft:num" }
                     .findAny()
-                    .map { it.toInt() }
-            }
-            .orElse(default)
+                    .map { it.meta<Double>("nlpcraft:num:from").toInt() }
+            }.orElse(default)
         }
 
         private fun findPlayer(position: NCToken): String {
-            return position.partTokens.stream()
-                .filter { it.id == "mc:player" }
-                .findAny()
-                .orElseThrow { AssertionError("Player wasn't found.") }
-                .player()
+            val part = position.partTokens.stream()
+                    .filter { it.id == "mc:player" }
+                    .findAny()
+                    .orElseThrow { AssertionError("Player wasn't found") }
+
+            return if (part.lemma == "i" || part.lemma == "my") "@p" else part.originalText ?: "@p"
         }
     }
 }

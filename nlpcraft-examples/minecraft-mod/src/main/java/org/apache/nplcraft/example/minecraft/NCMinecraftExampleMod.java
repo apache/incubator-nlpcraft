@@ -46,6 +46,8 @@ import java.util.Set;
  */
 @Mod("nlpcraft_mod")
 public class NCMinecraftExampleMod {
+    // Initial configuration values for communication with NLPCraft server.
+    // These values can be overridden by 'nlpcraft-settings.json' file values.
     private static final String DFLT_EMAIL = "admin@admin.com";
     private static final String DFLT_PWD = "admin";
     private static final String DFLT_HOST = "0.0.0.0";
@@ -94,7 +96,7 @@ public class NCMinecraftExampleMod {
      */
     private static class NCSignIn {
         private String email;
-        private String pwd;
+        private String passwd;
     }
 
     /**
@@ -171,13 +173,13 @@ public class NCMinecraftExampleMod {
      * Makes sign in JSON bean.
      *
      * @param email Email.
-     * @param pwd Password.
+     * @param pwd   Password.
      */
     private static NCSignIn mkSignin(String email, String pwd) {
         NCSignIn s = new NCSignIn();
 
         s.email = email;
-        s.pwd = pwd;
+        s.passwd = pwd;
 
         return s;
     }
@@ -206,7 +208,7 @@ public class NCMinecraftExampleMod {
             resp = post("ask/sync", GSON.toJson(params), NCResponse.class);
         }
         catch (UnauthorizedException e) {
-            // Token can be expired.
+            // Token can be expired, it tries to connect and process given command again.
             this.token = signin();
 
             params.acsTok = this.token;
@@ -234,9 +236,9 @@ public class NCMinecraftExampleMod {
     /**
      * Does REST POST.
      *
-     * @param url POST URL.
+     * @param url      POST URL.
      * @param postJson POST JSON payload.
-     * @param clazz Return value type.
+     * @param clazz    Return value type.
      */
     private <T> T post(String url, String postJson, Class<T> clazz) throws Exception {
         assert baseUrl != null;
