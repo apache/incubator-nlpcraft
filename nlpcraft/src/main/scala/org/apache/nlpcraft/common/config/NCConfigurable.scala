@@ -21,6 +21,8 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common._
 
+import java.io.File
+import java.net.{MalformedURLException, URL}
 import scala.collection.JavaConverters._
 
 /**
@@ -289,37 +291,38 @@ object NCConfigurable extends LazyLogging {
         overrideCfg: Option[Config],
         cfgFileOpt: Option[String],
         dfltCfg: Option[Config],
-        valFun: Config ⇒ Boolean): Unit = {
-        var tmpCfg: Config = null
-        
+        valFun: Config ⇒ Boolean
+    ): Unit = {
         require(cfgFileOpt.isDefined || dfltCfg.isDefined)
-        
-        // Only default configuration is provided.
-        if (cfgFileOpt.isEmpty) {
-            logger.info(s"Using built-in default configuration.")
 
-            tmpCfg = ConfigFactory.load(dfltCfg.get)
-        }
-        else {
-            val name = cfgFileOpt.get
-    
-            logger.info(s"Attempting to load/merge configuration from configuration file: $name")
-            
-            tmpCfg =
+        val tmpCfg =
+            // Only default configuration is provided.
+            if (cfgFileOpt.isEmpty) {
+                logger.info(s"Using built-in default configuration.")
+
+                ConfigFactory.load(dfltCfg.get)
+            }
+            else {
+                val name = cfgFileOpt.get
+
+                logger.info(s"Attempting to load/merge configuration from configuration file: $name")
+
+                // Order is: file, URL, resource (File and URL can override resource)
+                var cfg = ConfigFactory.parseFile(new File(name))
+
+                try
+                    cfg = cfg.withFallback(ConfigFactory.parseURL(new URL(name)))
+                catch {
+                    case _: MalformedURLException ⇒ // No-op.
+                }
+
+                cfg = cfg.withFallback(ConfigFactory.parseResources(name))
+
                 if (dfltCfg.isDefined)
-                    ConfigFactory.load(
-                        ConfigFactory.
-                            parseFile(new java.io.File(name)).
-                            withFallback(ConfigFactory.parseResources(name)).
-                            withFallback(dfltCfg.get)
-                    )
-                else
-                    ConfigFactory.load(
-                        ConfigFactory.
-                            parseFile(new java.io.File(name)).
-                            withFallback(ConfigFactory.parseResources(name))
-                    )
-        }
+                    cfg = cfg.withFallback(dfltCfg.get)
+
+                cfg
+            }
         
         // Validate.
         if (!valFun(tmpCfg)) {
