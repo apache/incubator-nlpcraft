@@ -123,16 +123,16 @@ macros:
   - name: "<ACTION>"
     macro: "{turn|switch|dial|control|let|set|get|put}"
   - name: "<ENTIRE_OPT>"
-    macro: "{entire|full|whole|total|*}"
+    macro: "{entire|full|whole|total|_}"
   - name: "<LIGHT>"
-    macro: "{all|*} {it|them|light|illumination|lamp|lamplight}"
+    macro: "{all|_} {it|them|light|illumination|lamp|lamplight}"
 enabledBuiltInTokens: [] # This example doesn't use any built-in tokens.
 elements:
   - id: "ls:loc"
     description: "Location of lights."
     synonyms:
-      - "<ENTIRE_OPT> {upstairs|downstairs|*} {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} room}"
-      - "<ENTIRE_OPT> {upstairs|downstairs|*} {master|kid|children|child|guest|*} {bedroom|bathroom|washroom|storage} {closet|*}"
+      - "<ENTIRE_OPT> {upstairs|downstairs|_} {kitchen|library|closet|garage|office|playroom|{dinning|laundry|play} room}"
+      - "<ENTIRE_OPT> {upstairs|downstairs|_} {master|kid|children|child|guest|_} {bedroom|bathroom|washroom|storage} {closet|_}"
       - "<ENTIRE_OPT> {house|home|building|{1st|first} floor|{2nd|second} floor}"
  
   - id: "ls:on"

@@ -50,46 +50,46 @@ elements:
     groups:
       - weather
     synonyms:
-      - "{rain|rainy}"
+      - "{rain|downpour}"
   - id: clear
     description: Set sunny weather
     groups:
       - weather
     synonyms:
-      - "{sun|sunny|clear sky}"
+      - "{sun|clear sky}"
   - id: thunder
     description: Set stormy weather
     groups:
       - weather
     synonyms:
-      - "{thunder|storm|stormy}"
+      - "{thunder|thunderstorm|storm|hurricane}"
 
   # Time intent
   - id: morning
     groups:
       - time
     synonyms:
-      - "{morning}"
+      - "morning"
   - id: day
     groups:
       - time
     synonyms:
-      - "{day}"
+      - "day"
   - id: afternoon
     groups:
       - time
     synonyms:
-      - "{afternoon|noon}"
+      - "{{late|_} afternoon|noon|midday}"
   - id: evening
     groups:
       - time
     synonyms:
-      - "{evening}"
+      - "{late|_} {evening}"
   - id: night
     groups:
       - time
     synonyms:
-      - "{night}"
+      - "{night|midnight|late evening}"
   - id: midnight
     groups:
       - time

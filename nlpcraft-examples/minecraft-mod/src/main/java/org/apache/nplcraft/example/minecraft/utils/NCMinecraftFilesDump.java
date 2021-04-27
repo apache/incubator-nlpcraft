@@ -64,6 +64,11 @@ public class NCMinecraftFilesDump {
         return path.replaceAll("_", " ");
     }
 
+    /**
+     * App entry point.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         String type = args[0];
         String version = args[1];
