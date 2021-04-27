@@ -53,7 +53,10 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "make it a wet weather",
         "make it a drizzle weather conditions",
         "make it balmy",
-        "set it to sunny climate"
+        "set it to sunny climate",
+        "make it super stormy",
+        "start a hurricane",
+        "cast super squall"
     )
     fun onWeatherMatch(ctx: NCIntentMatch, @NCIntentTerm("arg") tok: NCToken): NCResult {
         checkAmbiguous(ctx)

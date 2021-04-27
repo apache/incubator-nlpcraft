@@ -62,7 +62,7 @@ elements:
     groups:
       - weather
     synonyms:
-      - "{thunder|thunderstorm|storm|hurricane}"
+      - "{super|_} {thunder|thunderstorm|storm|stormy|cyclone|hurricane|gale|tornado|squall|typhoon|superstorm|hailstrorm}"
 
   # Time intent
   - id: time:action
@@ -82,22 +82,20 @@ elements:
     groups:
       - time
     synonyms:
-      - "{{late|_} afternoon|noon|midday}"
+      - "{{early|late|_} afternoon|noon|midday}"
   - id: evening
     groups:
       - time
     synonyms:
-      - "{late|_} {evening}"
+      - "{early|_} {evening}"
   - id: night
     groups:
       - time
     synonyms:
-      - "{night|midnight|late evening}"
+      - "late evening"
   - id: midnight
     groups:
       - time
-    synonyms:
-      - "{midnight}"
 
   # Give intent
   - id: give:action
