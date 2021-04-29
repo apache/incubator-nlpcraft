@@ -148,14 +148,17 @@ intents:
   - "intent=weatherIntent
         term={tok_id() == 'weather:action'}?
         term(arg)={has(tok_groups(), 'weather')}"
+
   - "intent=timeIntent
         term={tok_id() == 'time:action'}?
         term(arg)={has(tok_groups(), 'time')}"
+
   - "intent=giveIntent
         term(action)={tok_id() == 'give:action'}
         term(quantity)={tok_id() == 'nlpcraft:num'}?
         term(item)={tok_id() == 'mc:item'}
         term={tok_id() == 'give:block-word'}?"
+
   - "intent=fillIntent
         term={tok_id() == 'fill:action'}
         term(shape)={has(tok_groups(), 'fill:shape')}
