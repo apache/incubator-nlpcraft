@@ -2056,6 +2056,13 @@ object NCCli extends NCCliBase {
                 "templateModelId" → baseName
             )
 
+            cp(
+                s"src/main/resources/nlpcraft.conf",
+                None,
+                "com.company.nlp.TemplateModel" → s"$pkgName.$clsName",
+                "templateModelId" → baseName
+            )
+
             val resFileName =
                 if (baseName.contains("_")) baseName else CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, baseName)
 
