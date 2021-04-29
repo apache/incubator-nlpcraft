@@ -2099,8 +2099,6 @@ object NCCli extends NCCliBase {
                 Some(extractGradleHeader),
                 "myapplication" → baseName
             )
-            cp("gradlew", None)
-            cp("gradlew.bat", None)
         }
 
         @throws[NCE]
