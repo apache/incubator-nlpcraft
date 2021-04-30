@@ -2052,7 +2052,6 @@ object NCCli extends NCCliBase {
                 None,
                 "com.company.nlp.TemplateModel" → s"$pkgName.$clsName",
                 "NCEmbeddedProbe.start\\(TemplateModel.class\\);" → startClause,
-                "Java example" → exampleClause,
                 "templateModelId" → baseName
             )
 
