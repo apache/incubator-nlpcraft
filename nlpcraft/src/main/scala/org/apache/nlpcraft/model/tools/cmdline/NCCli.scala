@@ -434,7 +434,9 @@ object NCCli extends NCCliBase {
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
 
-            logln(s"Server output: ${c(output.getAbsolutePath)}")
+            logln(s"Server:")
+            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
+            logln(s"  ${y("+--")} cmd: \n      ${c(srvArgs.mkString("\n        "))}")
 
             /**
              *
@@ -708,7 +710,9 @@ object NCCli extends NCCliBase {
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${prbPid}_tstamp_$logTstamp").createNewFile()
             }
 
-            logln(s"Probe output: ${c(output.getAbsolutePath)}")
+            logln(s"Probe:")
+            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
+            logln(s"  ${y("+--")} cmd: \n      ${c(prbArgs.mkString("\n        "))}")
 
             /**
              *
