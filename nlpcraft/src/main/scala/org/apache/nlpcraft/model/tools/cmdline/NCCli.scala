@@ -1385,6 +1385,7 @@ object NCCli extends NCCliBase {
         val mdlSeq = beacon.models.split(",").map(s ⇒ s"${g(s.strip)}").toSeq
 
         tbl += ("PID", s"${g(beacon.pid)}")
+        tbl += ("Version", s"${g(beacon.ver)} released on ${g(beacon.relDate)}")
         tbl += ("Probe ID", s"${g(beacon.id)}")
         tbl += ("Probe Up-Link", s"${g(beacon.upLink)}")
         tbl += ("Probe Down-Link", s"${g(beacon.downLink)}")
@@ -1407,6 +1408,7 @@ object NCCli extends NCCliBase {
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
 
         tbl += ("PID", s"${g(beacon.pid)}")
+        tbl += ("Version", s"${g(beacon.ver)} released on ${g(beacon.relDate)}")
         tbl += ("Database:", "")
         tbl += ("  URL", s"${g(beacon.dbUrl)}")
         tbl += ("  Driver", s"${g(beacon.dbDriver)}")

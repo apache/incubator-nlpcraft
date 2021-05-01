@@ -256,8 +256,12 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         def save(): Unit = {
             try {
                 managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
+                    val ver = NCVersion.getCurrent
+
                     stream.writeObject(NCCliProbeBeacon(
                         pid = ProcessHandle.current().pid(),
+                        ver = ver.version,
+                        relDate = ver.date.toString,
                         id = cfg.id,
                         token = cfg.token,
                         upLink = s"${cfg.upLink._1}:${cfg.upLink._2}",

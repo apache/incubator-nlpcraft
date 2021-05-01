@@ -20,6 +20,8 @@ package org.apache.nlpcraft.model.tools.cmdline
 /**
  *
  * @param pid
+ * @param ver
+ * @param relDate
  * @param dbUrl
  * @param dbDriver
  * @param dbPoolMin
@@ -44,6 +46,8 @@ package org.apache.nlpcraft.model.tools.cmdline
  */
 case class NCCliServerBeacon(
     pid: Long,
+    ver: String,
+    relDate: String,
     dbUrl: String,
     dbDriver: String,
     dbPoolMin: Int,

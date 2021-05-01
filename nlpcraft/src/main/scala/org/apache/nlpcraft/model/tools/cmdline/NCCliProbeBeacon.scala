@@ -20,6 +20,8 @@ package org.apache.nlpcraft.model.tools.cmdline
 /**
  *
  * @param pid
+ * @param ver
+ * @param relDate
  * @param id
  * @param token
  * @param upLink
@@ -33,6 +35,8 @@ package org.apache.nlpcraft.model.tools.cmdline
  */
 case class NCCliProbeBeacon (
     pid: Long,
+    ver: String,
+    relDate: String,
     id: String,
     token: String,
     upLink: String,

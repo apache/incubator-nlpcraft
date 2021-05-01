@@ -264,8 +264,12 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
             try {
                 managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
+                    val ver = NCVersion.getCurrent
+
                     stream.writeObject(NCCliServerBeacon(
                         pid = Config.pid,
+                        ver = ver.version,
+                        relDate = ver.date.toString,
                         dbUrl = Config.dbUrl,
                         dbDriver = Config.dbDriver,
                         dbPoolMin = Config.dbPoolMin,
