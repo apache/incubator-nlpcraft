@@ -299,7 +299,10 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
                 val tbl = NCAsciiTable()
 
+                val ver = NCVersion.getCurrent
+
                 tbl += (s"${bo(b("PID"))}", Config.pid)
+                tbl += (s"${bo(b("Version"))}", s"${ver.version} released on ${ver.date.toString}")
                 tbl += (s"${bo(b("Database:"))}", "")
                 tbl += (s"${b("  JDBC URL")}", Config.dbUrl)
                 tbl += (s"${b("  JDBC Driver")}", Config.dbDriver)
@@ -323,7 +326,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
                 tbl += (s"${b("  URL")}", Config.extCfgUrl)
                 tbl += (s"${b("  Check MD5")}", Config.extCfgCheckMd5)
 
-                logger.info(s"Sever configuration:\n$tbl")
+                logger.info(s"Server configuration:\n$tbl")
             }
             catch {
                 case e: IOException ⇒ U.prettyError(logger, "Failed to save server beacon.", e)

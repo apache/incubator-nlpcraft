@@ -448,8 +448,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
         val ver = NCVersion.getCurrent
 
         tbl += (s"${B}Probe ID$RST", s"$BO${cfg.id}$RST")
+        tbl += (s"${B}Version$RST", s"${ver.version} released on ${ver.date.toString}")
         tbl += (s"${B}Probe Token$RST", cfg.token)
-        tbl += (s"${B}API Version$RST", ver.version + ", " + ver.date.toString)
         tbl += (s"${B}Down-Link$RST", cfg.downLinkString)
         tbl += (s"${B}Up-Link$RST", cfg.upLinkString)
         tbl += (s"${B}Lifecycle$RST", cfg.lifecycle)
