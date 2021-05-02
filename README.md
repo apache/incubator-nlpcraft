@@ -30,7 +30,7 @@ or text:
 
  * Download, Maven/Grape/Gradle/SBT, installation [instructions](https://nlpcraft.apache.org/download.html) 
  * Read [documentation](https://nlpcraft.apache.org/docs.html), latest [Javadoc](https://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
- * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples)
+ * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
  * Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
  * Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)

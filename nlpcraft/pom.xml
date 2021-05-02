@@ -461,7 +461,7 @@
                         <![CDATA[
                             <span style="vertical-align: super">Apache NLPCraft <span style="font-size: 80%">${project.version}</span></span>
                             <a style="vertical-align: super; margin-right: 10px" href="https://github.com/apache/incubator-nlpcraft" target="github"><i class="fa fa-github github-logo"></i></a>
-                            <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples" data-icon="octicon-eye" aria-label="NLPCraft Examples">Examples</a>
+                            <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples" data-icon="octicon-eye" aria-label="NLPCraft Examples">Examples</a>
                             <a class="github-button" href="https://github.com/apache/incubator-nlpcraft" data-icon="octicon-star" aria-label="Star on GitHub">Star</a>
                             <a class="github-button" href="https://github.com/apache/incubator-nlpcraft/fork" data-icon="octicon-repo-forked" aria-label="Fork on GitHub">Fork</a>
                             <script type="text/javascript">
