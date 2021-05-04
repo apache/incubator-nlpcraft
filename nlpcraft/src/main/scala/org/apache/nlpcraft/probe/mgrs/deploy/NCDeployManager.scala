@@ -461,21 +461,20 @@ object NCDeployManager extends NCService with DecorateAsScala {
         }
 
         if (dupSyns.nonEmpty) {
-            val tbl = NCAsciiTable("Elements", "Dup Synonym")
-
-            dupSyns.foreach(row ⇒ tbl += (
-                row._1,
-                row._2
-            ))
-
-            println("dupSyns="+dupSyns.size)
-
             if (mdl.isDupSynonymsAllowed) {
-                logger.warn(s"Duplicate synonyms found in '$mdlId' model:\n${tbl.toString}")
+                val tbl = NCAsciiTable("Elements", "Dup Synonym")
 
-                logger.warn(s"Duplicate synonyms found in '$mdlId' model - turn on TRACE logging to see them.")
-                logger.warn(s"  ${b("|--")} NOTE: ID of the model element is its default built-in synonym - you don't need to add it explicitly to the list of synonyms.")
-                logger.warn(s"  ${b("+--")} Model '$mdlId' allows duplicate synonyms but the large number may degrade the performance.")
+                dupSyns.foreach(row ⇒ tbl += (
+                    row._1,
+                    row._2
+                ))
+
+                logger.trace(s"Duplicate synonyms (${dupSyns.size}) found in '$mdlId' model.")
+                logger.trace(s"  ${b("|--")} NOTE: ID of the model element is its default built-in synonym - you don't need to add it explicitly to the list of synonyms.")
+                logger.trace(s"  ${b("+--")} Model '$mdlId' allows duplicate synonyms but the large number may degrade the performance.")
+                logger.trace(tbl.toString)
+
+                logger.warn(s"Duplicate synonyms (${dupSyns.size}) found in '$mdlId' model - turn on TRACE logging to see them.")
             }
             else
                 throw new NCE(s"Duplicated synonyms found and not allowed [mdlId=$mdlId]")
@@ -1668,8 +1667,8 @@ object NCDeployManager extends NCService with DecorateAsScala {
                             if (!allSyns.exists(_.intersect(seq).nonEmpty))
                                 logger.warn(s"@NCIntentSample sample doesn't contain any direct synonyms [" +
                                     s"mdlId=$mdlId, " +
-                                    s"mdlOrigin=${mdl.getOrigin}, " +
-                                    s"sample='$s'" +
+                                    s"origin=${mdl.getOrigin}, " +
+                                    s"""sample="$s"""" +
                                 s"]")
                         }
 
