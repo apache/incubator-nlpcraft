@@ -38,8 +38,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Minecraft example mod for the Minecraft Forge server.
@@ -57,7 +57,7 @@ public class NCMinecraftExampleMod {
     private static final String MODEL_ID = "nlpcraft.minecraft.ex";
     private static final Gson GSON = new Gson();
 
-    private final Set<String> convCmds = new HashSet<>();
+    private final Set<String> convCmds = ConcurrentHashMap.newKeySet();
 
     private NCSignIn creds;
     private String baseUrl;
@@ -117,7 +117,9 @@ public class NCMinecraftExampleMod {
     }
 
     private static class UnauthorizedException extends Exception {
-        // No-op.
+        public UnauthorizedException() {
+            super("Authorization error");
+        }
     }
 
     /**
