@@ -31,9 +31,8 @@ import java.util.*
  */
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     private fun checkAmbiguous(ctx: NCIntentMatch) {
-        if (ctx.isAmbiguous) {
+        if (ctx.isAmbiguous)
             throw NCRejection("Ambiguous request")
-        }
     }
 
     /**
@@ -131,12 +130,11 @@ class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
         "make a box of sand with the size of 2 10 meters in front of me"
     )
     fun onFillMatch(
-        ctx: NCIntentMatch,
         @NCIntentTerm("shape") shape: NCToken,
         @NCIntentTerm("block") block: NCToken,
         @NCIntentTerm("len") length: Optional<NCToken>,
         @NCIntentTerm("position") position: NCToken,
     ): NCResult {
-        return MinecraftFIllMatchProcessor.process(ctx, shape, block, length, position)
+        return MinecraftFillMatchProcessor.process(shape, block, length, position)
     }
 }

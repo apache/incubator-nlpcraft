@@ -26,7 +26,7 @@ import java.util.*
  * Special processor for support 'fillIntent' intent processing.
  * Is is designed as separated class to simplify main model class.
  */
-class MinecraftFIllMatchProcessor {
+class MinecraftFillMatchProcessor {
     internal data class Coordinate(val x: Int = 0, val y: Int = 0, val z: Int = 0) {
         override fun toString(): String {
             return "$x $y $z"
@@ -43,7 +43,6 @@ class MinecraftFIllMatchProcessor {
 
     companion object {
         fun process(
-            ctx: NCIntentMatch,
             @NCIntentTerm("shape") shape: NCToken,
             @NCIntentTerm("block") blockToken: NCToken,
             @NCIntentTerm("len") length: Optional<NCToken>,

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-# Make sure that maven and gradle installed on your PC.
+# Make sure that maven installed on your PC.
 
 if [[ $1 = "" ]] ; then
     echo "Version must be set as input parameter."
@@ -53,7 +53,6 @@ cd ../
 mvn clean package -P stanford-corenlp,release,examples
 
 cd nlpcraft-examples/minecraft-mod || exit
-./gradlew clean build
 
 cd ../../
 
@@ -180,8 +179,6 @@ cpPom ${exampleTime}
 cpPom ${exampleWeather}
 
 cp ${exampleMinecraftMod}/build.gradle ${zipDir}/${tmpDir}/${exampleMinecraftMod}
-cp ${exampleMinecraftMod}/gradlew ${zipDir}/${tmpDir}/${exampleMinecraftMod}
-cp ${exampleMinecraftMod}/gradlew.bat ${zipDir}/${tmpDir}/${exampleMinecraftMod}
 
 cp pom.xml ${zipDir}/${tmpDir}
 cp LICENSE ${zipDir}/${tmpDir}

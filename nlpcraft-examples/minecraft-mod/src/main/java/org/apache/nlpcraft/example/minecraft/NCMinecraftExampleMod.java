@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.nplcraft.example.minecraft;
+package org.apache.nlpcraft.example.minecraft;
 
 import com.google.gson.Gson;
 import net.minecraft.server.MinecraftServer;

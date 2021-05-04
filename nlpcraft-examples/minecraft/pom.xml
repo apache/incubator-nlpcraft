@@ -54,6 +54,11 @@
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.ver}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${kotlin.ver}</version>
+        </dependency>
 
         <!-- Test dependencies. -->
         <dependency>
