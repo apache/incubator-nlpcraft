@@ -20,7 +20,6 @@
  */
 
 {
-  "version": "1.16.4",
   "data": {
     "sea lantern": "minecraft:sea_lantern",
     "oak fence gate": "minecraft:oak_fence_gate",

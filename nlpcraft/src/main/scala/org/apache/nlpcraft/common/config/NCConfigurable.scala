@@ -282,47 +282,36 @@ object NCConfigurable extends LazyLogging {
       *   CONFIG_FORCE_nlpcraft_server_rest_host="localhost"
       *   CONFIG_FORCE_nlpcraft_server_models="com.mymodels.MyModel"
       *
+      * @param cfgFile File name.
       * @param overrideCfg Optional overriding configuration.
-      * @param cfgFileOpt Optional file name.
       * @param dfltCfg Optional default config.
       * @param valFun Validation method.
       */
     def initialize(
+        cfgFile: String,
         overrideCfg: Option[Config],
-        cfgFileOpt: Option[String],
         dfltCfg: Option[Config],
         valFun: Config ⇒ Boolean
     ): Unit = {
-        require(cfgFileOpt.isDefined || dfltCfg.isDefined)
+        val tmpCfg = {
+            logger.info(s"Attempting to load/merge configuration from configuration file: $cfgFile")
 
-        val tmpCfg =
-            // Only default configuration is provided.
-            if (cfgFileOpt.isEmpty) {
-                logger.info(s"Using built-in default configuration.")
+            // Order is: file, URL, resource (File and URL can override resource)
+            var cfg = ConfigFactory.parseFile(new File(cfgFile))
 
-                ConfigFactory.load(dfltCfg.get)
+            try
+                cfg = cfg.withFallback(ConfigFactory.parseURL(new URL(cfgFile)))
+            catch {
+                case _: MalformedURLException ⇒ // No-op.
             }
-            else {
-                val name = cfgFileOpt.get
 
-                logger.info(s"Attempting to load/merge configuration from configuration file: $name")
+            cfg = cfg.withFallback(ConfigFactory.parseResources(cfgFile))
 
-                // Order is: file, URL, resource (File and URL can override resource)
-                var cfg = ConfigFactory.parseFile(new File(name))
+            if (dfltCfg.isDefined)
+                cfg = cfg.withFallback(dfltCfg.get)
 
-                try
-                    cfg = cfg.withFallback(ConfigFactory.parseURL(new URL(name)))
-                catch {
-                    case _: MalformedURLException ⇒ // No-op.
-                }
-
-                cfg = cfg.withFallback(ConfigFactory.parseResources(name))
-
-                if (dfltCfg.isDefined)
-                    cfg = cfg.withFallback(dfltCfg.get)
-
-                cfg
-            }
+            cfg
+        }
         
         // Validate.
         if (!valFun(tmpCfg)) {

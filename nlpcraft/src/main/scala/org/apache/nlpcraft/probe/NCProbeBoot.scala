@@ -132,19 +132,25 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     @throws[NCE]
     private def initializeConfig(args: Array[String], overrideCfg: Option[Config]): ProbeConfig = {
         NCConfigurable.initialize(
-            overrideCfg,
-            args.find(_.startsWith("-config=")) match {
+            cfgFile = args.find(_.startsWith("-config=")) match {
                 case Some(s) ⇒
                     val cfg = s.substring("-config=".length)
 
                     if (!U.isSuitableConfig(cfg))
                         throw new NCE(s"Specified probe configuration file does not exist or cannot be read: $cfg")
-    
-                    Some(cfg)
-                case None ⇒ Some("nlpcraft.conf")
+
+                    cfg
+                case None ⇒
+                    if (U.isSuitableConfig("probe.conf"))
+                        "probe.conf"
+                    else if (U.isSuitableConfig("nlpcraft.conf"))
+                        "nlpcraft.conf"
+                    else
+                        throw new NCE(s"Default probe configuration file does not exist or cannot be read")
             },
-            Some(mkDefault()),
-            (cfg: Config) ⇒ cfg.hasPath("nlpcraft.probe")
+            overrideCfg = overrideCfg,
+            dfltCfg = Some(mkDefault()),
+            valFun = (cfg: Config) ⇒ cfg.hasPath("nlpcraft.probe")
         )
         
         object Cfg extends NCConfigurable {

@@ -47,7 +47,6 @@ import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.control.Exception._
 
-
 /**
   * Model deployment manager.
   */
@@ -469,8 +468,10 @@ object NCDeployManager extends NCService with DecorateAsScala {
                 row._2
             ))
 
+            println("dupSyns="+dupSyns.size)
+
             if (mdl.isDupSynonymsAllowed) {
-                logger.trace(s"Duplicate synonyms found in '$mdlId' model:\n${tbl.toString}")
+                logger.warn(s"Duplicate synonyms found in '$mdlId' model:\n${tbl.toString}")
 
                 logger.warn(s"Duplicate synonyms found in '$mdlId' model - turn on TRACE logging to see them.")
                 logger.warn(s"  ${b("|--")} NOTE: ID of the model element is its default built-in synonym - you don't need to add it explicitly to the list of synonyms.")

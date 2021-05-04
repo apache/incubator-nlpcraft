@@ -28,8 +28,6 @@ import org.apache.nlpcraft.model.NCValueLoader
 
 /**
  * Data loader from JSON data files.
- * These files which prepared via 'minectaft-mod' module org.apache.nplcraft.example.minecraft.utils.GameFilesDump
- * for this supported `minecraft` server version.
  */
 class MinecraftValueLoader : NCValueLoader {
     private data class Dump(val version: String, val data: Map<String, String>)

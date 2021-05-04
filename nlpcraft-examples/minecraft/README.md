@@ -27,30 +27,33 @@
 This module is part of Minecraft example. This part provides model for Minecraft server commands. 
 Second part (**../minecraft-mod**) provides mod for Minecraft server sending requests to the NLPCraft server.
 
-### Startup
-Start server normally. For running probe it's required to use dedicated configuration located in [resources folder](src/main/resources/nlpcraft.conf)
-
 ### Installation
-1. Download [Minecraft client](https://www.minecraft.net/en-us/download)
-1. Download [Forge server installer](https://files.minecraftforge.net/) and follow instructions
-1. Build mod (`cd ../minecraft-mod && ./gradlew clean build`)
-1. Copy mod to mods folder of your forge server folder (`cp build/libs/nlpcraft-mod-*.jar <forge-server-location>/mods`)
-1. (Optional) If non-default settings are used, put them in `main/resources/nlpcraft-settings.json` and copy file to `<forge-server-location>/config`
-1. Start server (`java -jar forge.jar`). For detailed instructions refer to [wiki](https://minecraft.gamepedia.com/Tutorials/Setting_up_a_server)
-1. Connect to the server from client and play!
+1. Download [Minecraft client](https://www.minecraft.net/en-us/download) and install it on your local machine. This is the actual
+   game. Note that Minecraft is NOT a free game, and you will need to purchase it and have an account to play it.
+1. Download Forge Server. Minecraft is a client-server game. This is the server to which the Minecraft client will connect to and where the NLPCraft's Minecraft mod will be
+   installed. [Download](https://github.com/apache/incubator-nlpcraft/raw/master/nlpcraft-examples/minecraft/assets/forge-1.16.5-36.1.0-installer.jar) 
+   the version 1.16.5-36.1.0 or grab the latest from [here](https://files.minecraftforge.net/) (warning: _this download location, however,
+   is full or harmful online ads and banners_). 
+1. Install downloaded Forge Server by going to your download location and running `java -jar forge-1.16.5-36.1.0-installer.jar`. Make sure
+   to select 'Install Server' when presented with options. Note the location of the installed Forge Server (default or selected by you) in the last line of the 
+   installer log output. For example, on Windows it installs by default to `C:\Users\User\AppData\Roaming\.minecraft`.
+   For convenience, set `%FORGE_SRV%` variable to point to this location.
+1. Copy pre-built NLPCraft's Minecraft mod to Forge Server `mods` folder. Pre-built mod is located in `assets` sub-folder of the `minecraft-mod` module. To copy, first 
+   create folder `%FORGE_SRV%\mods` and run this 
+   from the command line `cp .\nlpcraft-examples\minecraft-mod\assets\nlpcraft-example-minecraft-mod-1.0.jar %FORGE_SRV%\mods`
+
+### Start
+1. Start NLPCraft server in a [standard](http://nlpcraft.apache.org/server-and-probe.html#server) way.
+1. Start NLPCraft probe with Minecraft model in a [standard](http://nlpcraft.apache.org/server-and-probe.html#probe) way (from `minecraft` example).
+1. Accept Forge Server EULA by opening `%FORGE_SRV%\eula.txt` file and changing `eula=false` to `eula-=true`.
+1. Start Forge Server from the `%FORGE_SRV%` location: `java -jar .\forge-1.16.5-36.1.0.jar`. 
+1. Start Minecraft Client and login with your Minecraft account.
+1. Choose 'Multiplayer' -> 'Add Server' and add '127.0.0.1' local server. Double-click on the newly added server to connect to it.
+1. Play Minecraft! 🤘
 
 ### Usage
-After starting Minecraft server with mod, you can use natural language to invoke certain commands. It's not required to
-use modded client, so vanilla client could be used. Commands could be either invoked on server side (e.g. `make it sunny`) or
-on client side, prefixed with slash (`/make it sunny`)
-
-### Supported commands
-| Command | Example of usage | Commentary
-| :---: |:---:|:---|
-`/weather` | Make it rain | | 
-`/time` | Set current time to evening | |
-`/give` | Give me iron sword | You can specify quanity |
-`/fill` | Make a cube of gold near me | Can specify length (size of 10, length 10), position (10 meters in front of me/other player) |
+Natural language commands could be entered either on Forge Server (e.g. `make it sunny`) or in the game itself, i.e. on the Minecraft client side, 
+prefixed with slash (`/make it sunny`). See file `MinecraftModel.kt` file for some examples of possible commands.
 
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation

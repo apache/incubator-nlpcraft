@@ -72,7 +72,6 @@ mkdir -p ${zipDir}/${tmpDir}/${exampleTime}
 mkdir -p ${zipDir}/${tmpDir}/${exampleWeather}
 
 mkdir ${zipDir}/${tmpDir}/build
-mkdir ${zipDir}/${tmpDir}/build/examples
 
 #=====================#
 # Prepare BINARY ZIP. #
@@ -104,46 +103,28 @@ cp bindist/NOTICE ${zipDir}/${tmpDir}
 cp DISCLAIMER ${zipDir}/${tmpDir}
 
 cp ${coreModule}/src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
-
-function cpConf() {
-  cp "$1"/src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build/examples/"$(echo "$1" | tr '/' '-')".conf
-}
-
-cpConf ${exampleAlarm}
-cpConf ${exampleEcho}
-cpConf ${exampleHelloworld}
-cpConf ${exampleLightswitch}
-cpConf ${exampleMinecraft}
-cpConf ${examplePhone}
-cpConf ${exampleSql}
-cpConf ${exampleTime}
-cpConf ${exampleWeather}
-
 cp ${coreModule}/src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
 cp ${coreModule}/src/main/resources/log4j2.xml ${zipDir}/${tmpDir}/build
 
 rsync -avzq ${coreModule}/target/*all-deps.jar ${zipDir}/${tmpDir}/build
 rsync -avzq ${coreModule}/target/apidocs/** ${zipDir}/${tmpDir}/javadoc --exclude '**/.DS_Store'
 
-function cpJar() {
-  rsync -avzq "$1"/target/*.jar ${zipDir}/${tmpDir}/build --exclude '*-sources.jar'
+function cpExample() {
+  mkdir -p ${zipDir}/${tmpDir}/build/"$1"
+  cp "$1"/src/main/resources/probe.conf ${zipDir}/${tmpDir}/build/"$1"
+  rsync -avzq "$1"/target/*.jar ${zipDir}/${tmpDir}/build/"$1" --exclude '*-sources.jar'
 }
 
-function cpJarExamples() {
-  rsync -avzq "$1"/target/*.jar ${zipDir}/${tmpDir}/build/examples --exclude '*-sources.jar'
-}
-
-cpJar ${stanfordModule}
-cpJarExamples ${exampleAlarm}
-cpJarExamples ${exampleEcho}
-cpJarExamples ${exampleHelloworld}
-cpJarExamples ${exampleLightswitch}
-cpJarExamples ${exampleMinecraft}
-cpJarExamples ${examplePhone}
-cpJarExamples ${exampleSql}
-cpJarExamples ${exampleTime}
-cpJarExamples ${exampleWeather}
-rsync -avzq ${exampleMinecraftMod}/build/libs/*.jar ${zipDir}/${tmpDir}/build/examples --exclude '*-sources.jar'
+rsync -avzq "${stanfordModule}"/target/*.jar ${zipDir}/${tmpDir}/build --exclude '*-sources.jar'
+cpExample ${exampleAlarm}
+cpExample ${exampleEcho}
+cpExample ${exampleHelloworld}
+cpExample ${exampleLightswitch}
+cpExample ${exampleMinecraft}
+cpExample ${examplePhone}
+cpExample ${exampleSql}
+cpExample ${exampleTime}
+cpExample ${exampleWeather}
 
 # Prepares bin zip.
 cd ${zipDir} || exit

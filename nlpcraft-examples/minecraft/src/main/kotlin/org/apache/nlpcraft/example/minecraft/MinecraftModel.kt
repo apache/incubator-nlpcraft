@@ -25,9 +25,7 @@ import java.util.*
 
 /**
  * Minecraft example data model.
- * TODO:
- * <p>
- * See 'README.md' file in the same folder for running and testing instructions.
+ * See 'README.md' file for installation, running and testing instructions.
  */
 class MinecraftModel : NCModelFileAdapter("minecraft.yaml") {
     private fun checkAmbiguous(ctx: NCIntentMatch) {

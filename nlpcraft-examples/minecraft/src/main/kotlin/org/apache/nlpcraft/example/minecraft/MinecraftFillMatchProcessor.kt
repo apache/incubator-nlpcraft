@@ -23,8 +23,7 @@ import org.apache.nlpcraft.model.*
 import java.util.*
 
 /**
- * Special processor for support 'fillIntent' intent processing.
- * Is is designed as separated class to simplify main model class.
+ * Special processor to support 'fillIntent' intent processing.
  */
 class MinecraftFillMatchProcessor {
     internal data class Coordinate(val x: Int = 0, val y: Int = 0, val z: Int = 0) {

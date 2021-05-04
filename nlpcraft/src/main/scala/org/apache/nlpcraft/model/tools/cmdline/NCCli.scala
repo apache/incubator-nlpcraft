@@ -2044,11 +2044,11 @@ object NCCli extends NCCliBase {
         def cpCommon(langDir: String, langExt: String): Unit = {
             cp(".gitignore", None)
 
-            val (startClause, exampleClause) =
+            val startClause =
                 langExt match {
-                    case "java" ⇒ (s"NCEmbeddedProbe.start($clsName.class);", "Java example")
-                    case "kt" ⇒ (s"NCEmbeddedProbe.start($clsName::class.java)", "Kotlin example")
-                    case "scala" ⇒ (s"NCEmbeddedProbe.start(classOf[$clsName])", "Scala example")
+                    case "java" ⇒ s"NCEmbeddedProbe.start($clsName.class);"
+                    case "kt" ⇒ s"NCEmbeddedProbe.start($clsName::class.java)"
+                    case "scala" ⇒ s"NCEmbeddedProbe.start(classOf[$clsName])"
 
                     case  _ ⇒ throw new AssertionError(s"Unexpected language extension: $langExt")
                 }
@@ -2062,7 +2062,7 @@ object NCCli extends NCCliBase {
             )
 
             cp(
-                s"src/main/resources/nlpcraft.conf",
+                s"src/main/resources/probe.conf",
                 None,
                 "com.company.nlp.TemplateModel" → s"$pkgName.$clsName",
                 "templateModelId" → baseName
