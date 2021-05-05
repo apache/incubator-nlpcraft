@@ -640,8 +640,8 @@ private [cmdline] object NCCliCommands {
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Configuration file path. Server will automatically look for ${y("'nlpcraft.conf'")} " +
-                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
+                        s"Configuration file path. Server will automatically look for ${y("'server.conf'")} " +
+                        s"configuration file in ${y("'resources'")} folder or on the classpath. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the probe can use the same file for their configuration. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
@@ -690,7 +690,7 @@ private [cmdline] object NCCliCommands {
                     desc = "Starts local server with default configuration."
                 ),
                 Example(
-                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=~/myapp/nlpcraft.conf -t=5"),
+                    usage = Seq(s"$PROMPT $SCRIPT_NAME start-server -c=~/myapp/my_cofig.conf -t=5"),
                     desc = "Starts local server with alternative configuration file and timeout of 5 mins."
                 )
             )
@@ -706,28 +706,26 @@ private [cmdline] object NCCliCommands {
             body = NCCli.cmdStartProbe,
             params = Seq(
                 Parameter(
+                    id = "cp",
+                    names = Seq("--cp", "-p"),
+                    value = Some("path"),
+                    desc =
+                        s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
+                        s"When starting a probe with your own models you must " +
+                        s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
+                        s"Note that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
+                ),
+                Parameter(
                     id = "config",
                     names = Seq("--cfg", "-c"),
                     value = Some("path"),
                     optional = true,
                     desc =
-                        s"Configuration file path. Probe will automatically look for ${y("'nlpcraft.conf'")} " +
-                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
+                        s"Configuration file path. Probe will automatically look for ${y("'probe.conf'")} " +
+                        s"in ${y("'resources'")} folder or on the classpath. If the configuration file has " +
                         s"different name or in different location use this parameter to provide an alternative path. " +
                         s"Note that the server and the probe can use the same file for their configuration. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
-                ),
-                Parameter(
-                    id = "cp",
-                    names = Seq("--cp", "-p"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
-                        s"Although this configuration property is optional, when deploying your own models you must " +
-                        s"provide this additional classpath for the models and their dependencies this probe will be hosting. " +
-                        s"Note that this is only optional if you are running example models shipped with NLPCraft. " +
-                        s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
                 ),
                 Parameter(
                     id = "models",
@@ -774,9 +772,9 @@ private [cmdline] object NCCliCommands {
                 Example(
                     usage = Seq(
                         s"$PROMPT $SCRIPT_NAME start-probe ",
-                        "  --cfg=~/myapp/nlpcraft.conf ",
-                        "  --mdls=my.package.Model ",
                         "  --cp=~/myapp/target/classes ",
+                        "  --cfg=~/myapp/my_probe_config.conf ",
+                        "  --mdls=my.package.Model ",
                         "  --jmvOpts=\"-ea -Xms2048m\" ",
                         "  --timeoutMins=5"
                     ),
@@ -800,27 +798,26 @@ private [cmdline] object NCCliCommands {
             body = NCCli.cmdTestModel,
             params = Seq(
                 Parameter(
-                    id = "config",
-                    names = Seq("--cfg", "-c"),
-                    value = Some("path"),
-                    optional = true,
-                    desc =
-                        s"Configuration file path. By default, the embedded probe will automatically look for ${y("'nlpcraft.conf'")} " +
-                        s"configuration file in the same directory as NLPCraft JAR file. If the configuration file has " +
-                        s"different name or in different location use this parameter to provide an alternative path. " +
-                        s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
-                ),
-                Parameter(
                     id = "cp",
                     names = Seq("--cp", "-p"),
                     value = Some("path"),
-                    optional = true,
                     desc =
                         s"Additional JVM classpath that will be appended to the default NLPCraft JVM classpath. " +
                         s"Although this configuration property is optional, when testing your own models you must " +
                         s"provide this additional classpath for the models and their dependencies. " +
                         s"Note that this is only optional if you are testing example models shipped with NLPCraft. " +
                         s"Note also that you can use ${y("'~'")} at the beginning of the classpath component to specify user home directory."
+                ),
+                Parameter(
+                    id = "config",
+                    names = Seq("--cfg", "-c"),
+                    value = Some("path"),
+                    optional = true,
+                    desc =
+                        s"Configuration file path. By default, the embedded probe will automatically look for ${y("'probe.conf'")} " +
+                        s"in ${y("'resources'")} folder or on the classpath. If the configuration file has " +
+                        s"different name or in different location use this parameter to provide an alternative path. " +
+                        s"Note also that you can use ${y("'~'")} at the beginning of the path to specify user home directory."
                 ),
                 Parameter(
                     id = "models",
