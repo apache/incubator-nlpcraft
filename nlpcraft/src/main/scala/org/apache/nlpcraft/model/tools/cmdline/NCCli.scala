@@ -166,6 +166,15 @@ object NCCli extends NCCliBase {
                 dflt
         }
 
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @param dflt
+     * @throws
+     * @return
+     */
     @throws[InvalidParameter]
     private def getIntParam(cmd: Command, args: Seq[Argument], id: String, dflt: Int): Int = {
         getParamOpt(cmd, args, id) match {
@@ -180,6 +189,15 @@ object NCCli extends NCCliBase {
         }
     }
 
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @param id
+     * @param dflt
+     * @throws
+     * @return
+     */
     @throws[InvalidParameter]
     private def getDoubleParam(cmd: Command, args: Seq[Argument], id: String, dflt: Double): Double = {
         getParamOpt(cmd, args, id) match {
@@ -238,11 +256,19 @@ object NCCli extends NCCliBase {
      *
      * @param cmd
      * @param args
-     * @param id
      * @return
      */
-    private def getCpParam(cmd: Command, args: Seq[Argument], id: String): String =
-        getParamOpt(cmd, args, id) match {
+    private def getCpParam(cmd: Command, args: Seq[Argument]): String =
+        normalizeCp(U.trimQuotes(getParam(cmd, args, "cp")))
+
+    /**
+     *
+     * @param cmd
+     * @param args
+     * @return
+     */
+    private def getCpParamOpt(cmd: Command, args: Seq[Argument]): String =
+        getParamOpt(cmd, args, "cp") match {
             case Some(path) ⇒ normalizeCp(U.trimQuotes(path))
             case None ⇒ null
         }
@@ -423,6 +449,10 @@ object NCCli extends NCCliBase {
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
+            logln(s"Server:")
+            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
+            logln(s"  ${y("+--")} cmd: \n      ${c(srvArgs.mkString("\n        "))}")
+
             // Start the 'server | bleach > server log output' process pipeline.
             val procs = ProcessBuilder.startPipeline(Seq(srvPb, bleachPb).asJava)
 
@@ -433,10 +463,6 @@ object NCCli extends NCCliBase {
             ignoring(classOf[IOException]) {
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${srvPid}_tstamp_$logTstamp").createNewFile()
             }
-
-            logln(s"Server:")
-            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
-            logln(s"  ${y("+--")} cmd: \n      ${c(srvArgs.mkString("\n        "))}")
 
             /**
              *
@@ -555,22 +581,12 @@ object NCCli extends NCCliBase {
             throw NoLocalServer()
 
         val cfgPath = getPathParam(cmd, args, "config")
-        val addCp = getCpParam(cmd, args, "cp")
+        val addCp = getCpParam(cmd, args)
         val mdls = getParamOrNull(cmd, args, "models")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
             case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
-
-        if (mdls != null) {
-            if (hasExternalModels(mdls) && addCp == null)
-                throw new IllegalStateException(
-                    s"Additional classpath is required when deploying your own models. " +
-                    s"Use ${c("--cp")} parameters to provide additional classpath.")
-        }
-
-        if (mdls == null && addCp != null)
-            warn(s"Additional classpath (${c("--cp")}) but no models (${c("--models")}).")
 
         val jvmArgs = mutable.ArrayBuffer.empty[String]
 
@@ -601,6 +617,9 @@ object NCCli extends NCCliBase {
 
         validatorPb.directory(new File(USR_WORK_DIR))
         validatorPb.inheritIO()
+
+        logln(s"Validator:")
+        logln(s"  ${y("+--")} cmd: \n      ${c(jvmArgs.mkString("\n        "))}")
 
         try {
             validatorPb.start().onExit().get()
@@ -633,23 +652,13 @@ object NCCli extends NCCliBase {
 
         val cfgPath = getPathParam(cmd, args, "config")
         val noWait = getFlagParam(cmd, args, "noWait", dflt = false)
-        val addCp = getCpParam(cmd, args, "cp")
+        val addCp = getCpParam(cmd, args)
         val timeoutMins = getIntParam(cmd, args, "timeoutMins", 1)
         val mdls = getParamOrNull(cmd, args, "models")
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
             case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
         }
-
-        if (mdls != null) {
-            if (hasExternalModels(mdls) && addCp == null)
-                throw new IllegalStateException(
-                    s"Additional classpath is required when deploying user models. " +
-                    s"Use ${c("--cp")} parameters to provide additional classpath.")
-        }
-
-        if (mdls == null && addCp != null)
-            warn(s"Additional classpath (${c("--cp")}) specified but no models (${c("--models")}).")
 
         val logTstamp = currentTime
 
@@ -699,6 +708,10 @@ object NCCli extends NCCliBase {
         bleachPb.redirectOutput(Redirect.appendTo(output))
 
         try {
+            logln(s"Probe:")
+            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
+            logln(s"  ${y("+--")} cmd: \n      ${c(prbArgs.mkString("\n        "))}")
+
             // Start the 'probe | bleach > probe log output' process pipeline.
             val procs = ProcessBuilder.startPipeline(Seq(prbPb, bleachPb).asJava)
 
@@ -709,10 +722,6 @@ object NCCli extends NCCliBase {
             ignoring(classOf[IOException]) {
                 new File(SystemUtils.getUserHome, s".nlpcraft/.pid_${prbPid}_tstamp_$logTstamp").createNewFile()
             }
-
-            logln(s"Probe:")
-            logln(s"  ${y("|--")} log: ${c(output.getAbsolutePath)}")
-            logln(s"  ${y("+--")} cmd: \n      ${c(prbArgs.mkString("\n        "))}")
 
             /**
              *
@@ -1386,7 +1395,7 @@ object NCCli extends NCCliBase {
 
         val logPath = if (beacon.logPath != null) g(beacon.logPath) else y("<not available>")
         val jarsFolder = if (beacon.jarsFolder != null) g(beacon.jarsFolder) else y("<not set>")
-        val mdlSeq = beacon.models.split(",").map(s ⇒ s"${g(s.strip)}").toSeq
+        val mdlSeq = beacon.models.split(",").map(s ⇒ g(s.strip)).toSeq
 
         tbl += ("PID", s"${g(beacon.pid)}")
         tbl += ("Version", s"${g(beacon.ver)} released on ${g(beacon.relDate)}")
@@ -1635,7 +1644,7 @@ object NCCli extends NCCliBase {
             getParam(cmd, args, "url")
         }
 
-        val addCp = getCpParam(cmd, args, "cp")
+        val addCp = getCpParamOpt(cmd, args)
         val jvmOpts = getParamOpt(cmd, args, "jvmopts") match {
             case Some(opts) ⇒ U.splitTrimFilter(U.trimQuotes(opts), " ")
             case None ⇒ Seq("-ea", "-Xms1024m")
