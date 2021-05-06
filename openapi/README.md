@@ -25,12 +25,12 @@
 
 ### REST API
 For more REST API information:
- * Test and explore REST API at [Apiary](https://nlpcraft.docs.apiary.io/)
+ * Test and explore REST API at [SwaggerHub](https://app.swaggerhub.com/apis-docs/Apache-NLPCraft/apache-nlpcraft)
  * Learn more on how to [use REST API](https://nlpcraft.apache.org/using-rest.html)
 
 For any questions, feedback or suggestions:
 
- * View & run [examples](https://github.com/apache/incubator-nlpcraft/tree/master/src/main/scala/org/apache/nlpcraft/examples)
+ * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples)
  * Latest [Javadoc](https://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
  * Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
  * File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)

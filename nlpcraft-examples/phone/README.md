@@ -29,9 +29,6 @@ It doesn't actually do a phone dialing, but it recognizes the recipient and retu
 can easily add access to the contact database and issue the call via many existing REST services.
 
 ### Documentation  
-See [Getting Started](https://nlpcraft.apache.org/getting-started.html) guide for more instructions on how to run these examples.
-See also [Integrations](https://nlpcraft.apache.org/integrations.html) section on how to configure 3rd party token providers.
-
 For any questions, feedback or suggestions:
 
  * View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples)

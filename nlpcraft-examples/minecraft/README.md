@@ -55,6 +55,18 @@ Second part (**../minecraft-mod**) provides mod for Minecraft server sending req
 Natural language commands could be entered either on Forge Server (e.g. `make it sunny`) or in the game itself, i.e. on the Minecraft client side, 
 prefixed with slash (`/make it sunny`). See file `MinecraftModel.kt` file for some examples of possible commands.
 
+### Documentation
+For any questions, feedback or suggestions:
+
+* View & run other [examples](https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft-examples)
+* Read [documentation](https://nlpcraft.apache.org/docs.html), latest [Javadoc](https://nlpcraft.apache.org/apis/latest/index.html) and [REST APIs](https://nlpcraft.apache.org/using-rest.html)
+* Download & Maven/Grape/Gradle/SBT [instructions](https://nlpcraft.apache.org/download.html)
+* File a bug or improvement in [JIRA](https://issues.apache.org/jira/projects/NLPCRAFT)
+* Post a question at [Stack Overflow](https://stackoverflow.com/questions/ask) using <code>nlpcraft</code> tag
+* Access [GitHub](https://github.com/apache/incubator-nlpcraft) mirror repository.
+* Join project developers on [dev@nlpcraft.apache.org](mailto:dev-subscribe@nlpcraft.apache.org)
+
+
 ### Copyright
 Copyright (C) 2020 Apache Software Foundation
 
