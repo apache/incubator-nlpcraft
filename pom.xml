@@ -675,6 +675,10 @@
                                 <exclude>src/main/scala/org/apache/nlpcraft/model/intent/compiler/antlr4/*</exclude>
                                 <exclude>src/main/scala/org/apache/nlpcraft/common/makro/antlr4/*</exclude>
                                 <exclude>src/main/resources/opennlp/en-lemmatizer.dict</exclude>
+                                <exclude>nlpcraft-examples/minecraft-mod/build/**/*</exclude>
+                                <exclude>nlpcraft-examples/minecraft-mod/.gradle/**/*</exclude>
+                                <exclude>nlpcraft-examples/minecraft-mod/gradle/wrapper/gradle-wrapper.jar</exclude>
+                                <exclude>nlpcraft-examples/minecraft-mod/assets/nlpcraft-example-minecraft-mod-1.0.jar</exclude>
                             </excludes>
                             <numUnapprovedLicenses>0</numUnapprovedLicenses>
                         </configuration>
