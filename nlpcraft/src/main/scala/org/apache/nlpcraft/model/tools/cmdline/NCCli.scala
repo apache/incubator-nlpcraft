@@ -422,6 +422,7 @@ object NCCli extends NCCliBase {
         JVM_OPTS_RT_WARNS.foreach(srvArgs += _)
 
         srvArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
+        srvArgs += "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" // Fix for https://bugs.openjdk.java.net/browse/JDK-8213202
         srvArgs += "-cp"
         srvArgs += JAVA_CP
         srvArgs += "org.apache.nlpcraft.NCStart"
@@ -595,6 +596,8 @@ object NCCli extends NCCliBase {
 
         JVM_OPTS_RT_WARNS.foreach(jvmArgs += _)
 
+        jvmArgs += "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" // Fix for https://bugs.openjdk.java.net/browse/JDK-8213202
+
         if (cfgPath != null)
             jvmArgs += s"-DNLPCRAFT_PROBE_CONFIG=$cfgPath"
 
@@ -676,6 +679,7 @@ object NCCli extends NCCliBase {
         JVM_OPTS_RT_WARNS.foreach(prbArgs += _)
 
         prbArgs += "-DNLPCRAFT_ANSI_COLOR_DISABLED=true" // No ANSI colors for text log output to the file.
+        prbArgs += "-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" // Fix for https://bugs.openjdk.java.net/browse/JDK-8213202
 
         if (mdls != null)
             prbArgs += "-Dconfig.override_with_env_vars=true"
