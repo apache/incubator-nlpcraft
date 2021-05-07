@@ -116,6 +116,11 @@ function cpExample() {
 }
 
 rsync -avzq "${stanfordModule}"/target/*.jar ${zipDir}/${tmpDir}/build --exclude '*-sources.jar'
+
+mkdir -p ${zipDir}/${tmpDir}/build/"${exampleMinecraftMod}"
+rsync -avzq "${exampleMinecraftMod}"/assets/*.jar ${zipDir}/${tmpDir}/build/"${exampleMinecraftMod}"
+cp "${exampleMinecraftMod}"/src/main/resources/nlpcraft-settings.json ${zipDir}/${tmpDir}/build/"${exampleMinecraftMod}"
+
 cpExample ${exampleAlarm}
 cpExample ${exampleEcho}
 cpExample ${exampleHelloworld}
