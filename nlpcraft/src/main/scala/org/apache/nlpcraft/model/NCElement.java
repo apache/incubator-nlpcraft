@@ -358,7 +358,7 @@ public interface NCElement extends NCMetadata, Serializable {
     }
 
     /**
-     * Whether or not this element allows non-stopword words, the gaps, in its multi-word synonyms.
+     * Whether or not this element allows the non-stop words gaps in its multi-word synonyms.
      * <p>
      * This property overrides the value from {@link NCModelView#isSparse()}.
      * One should use this property if model's value isn't applicable to this element.

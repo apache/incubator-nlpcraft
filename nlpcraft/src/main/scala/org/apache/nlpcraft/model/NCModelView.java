@@ -785,7 +785,7 @@ public interface NCModelView extends NCMetadata {
     }
 
     /**
-     * Whether or not this model elements allows non-stopword words, the gaps, in their multi-word synonyms.
+     * Whether or not this model elements allows non-stop words gaps in their multi-word synonyms.
      * <p>
      * Note that individual model elements can override this property using {@link NCElement#isSparse()}
      * method.
@@ -1127,7 +1127,7 @@ public interface NCModelView extends NCMetadata {
      * about it and exclude it from conversation context. In other words, the term "Chicago" is no longer in
      * conversation's short-term-memory.
      * <p>
-     * Note that both conversation {@link #getConversationTimeout() timeout} and {@link #getConversationDepth() depth}
+     * Note that both conversation timeout and {@link #getConversationDepth() depth}
      * combined define the expiration policy for the conversation management. These two properties allow to
      * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
      * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better
@@ -1159,7 +1159,7 @@ public interface NCModelView extends NCMetadata {
      * about it and exclude it from conversation context. In other words, the term "Chicago" is no longer in
      * conversation's short-term-memory.
      * <p>
-     * Note that both conversation {@link #getConversationTimeout() timeout} and {@link #getConversationDepth() depth}
+     * Note that both conversation {@link #getConversationTimeout() timeout} and depth
      * combined define the expiration policy for the conversation management. These two properties allow to
      * fine tune for different types of dialogs. For example, setting longer timeout and smaller depth mimics
      * slow-moving but topic-focused conversation. Alternatively, settings shorter timeout and longer depth better

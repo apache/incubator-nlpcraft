@@ -64,7 +64,7 @@ public class NCResult implements Serializable {
     /** Sequence of tokens represents a fully parsed (see {@link NCContext#getVariants()} method) user input. */
     private Collection<NCToken> tokens;
 
-    /** ID of the intent defined externally. */
+    /** ID of the intent. */
     private String intentId;
     
     /**
@@ -225,7 +225,7 @@ public class NCResult implements Serializable {
     /**
      * Get optional intent ID. 
      *
-     * @return Intent ID or {@code null} if intent ID was not provided.
+     * @return Intent ID or {@code null} if intent ID was not available.
      */
     public String getIntentId() {
         return intentId;
