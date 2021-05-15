@@ -20,8 +20,7 @@ package org.apache.nlpcraft.common.util;
 import java.util.*;
 
 /**
- * Copied and modified from: https://github.com/peet/hashids.java/blob/master/src/HashidsJava/Hashids.java
- * Copyright (C) Peet Goddard 
+ * Implementation is based on https://github.com/peet/hashids.java/blob/master/src/HashidsJava/Hashids.java
  */
 public class NCIdGenerator {
     private static final String DEFAULT_ALPHABET = "xcS4F6h89aUbideAI7tkynuopqrXCgTE5GBKHLMjfRsz";
