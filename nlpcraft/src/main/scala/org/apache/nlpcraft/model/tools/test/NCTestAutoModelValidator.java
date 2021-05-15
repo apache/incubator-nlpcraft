@@ -54,7 +54,8 @@ import org.apache.nlpcraft.model.tools.test.impl.*;
  * @see NCIntentRef
  */
 public class NCTestAutoModelValidator {
-    private final static String PROP_MODELS = "NLPCRAFT_TEST_MODELS";
+    /** Optional, comma-separate list of class names for the models to test. */
+    public final static String PROP_MODELS = "NLPCRAFT_TEST_MODELS";
 
     /**
      * Performs validation based on {@link NCIntentSample} annotations.

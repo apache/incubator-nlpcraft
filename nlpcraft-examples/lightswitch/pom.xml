@@ -27,7 +27,7 @@
     <parent>
         <artifactId>nlpcraft-parent</artifactId>
         <groupId>org.apache.nlpcraft</groupId>
-        <version>0.7.5</version>
+        <version>0.8.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -35,7 +35,7 @@
         <nlpcraft.server.module>nlpcraft</nlpcraft.server.module>
         <nlpcraft.all.deps.jar>apache-${nlpcraft.server.module}-incubating-${project.version}-all-deps.jar</nlpcraft.all.deps.jar>
 
-        <kotlin.ver>1.4.32</kotlin.ver>
+        <kotlin.ver>1.5.0</kotlin.ver>
         <groovy.ver>3.0.7</groovy.ver>
         <gmavenplus.ver>1.12.1</gmavenplus.ver>
     </properties>

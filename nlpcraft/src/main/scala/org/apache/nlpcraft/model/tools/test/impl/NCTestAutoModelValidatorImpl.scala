@@ -21,7 +21,7 @@ import com.typesafe.scalalogging.LazyLogging
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedProbe
-import org.apache.nlpcraft.model.tools.test.NCTestClientBuilder
+import org.apache.nlpcraft.model.tools.test.{NCTestAutoModelValidator, NCTestClientBuilder}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
 import scala.collection.JavaConverters._
@@ -30,7 +30,6 @@ import scala.collection.JavaConverters._
   * Implementation for `NCTestAutoModelValidator` class.
   */
 private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
-    private final val PROP_MODELS = "NLPCRAFT_TEST_MODELS"
     private final val PROP_PROBE_CFG = "NLPCRAFT_PROBE_CONFIG"
 
     /**
@@ -40,9 +39,14 @@ private [test] object NCTestAutoModelValidatorImpl extends LazyLogging {
      */
     @throws[Exception]
     def isValid: Boolean = {
-        val classes = U.sysEnv(PROP_MODELS) match {
+        val prop = NCTestAutoModelValidator.PROP_MODELS
+
+        val classes = U.sysEnv(prop) match {
             case Some(s) ⇒ U.splitTrimFilter(s, ",")
-            case None ⇒ null
+            case None ⇒
+                logger.info(s"You can use $C-D$prop=my.Model1,my.Model2$RST to specify model(s) to test with model validator.")
+
+                null
         }
         val cfgFile = U.sysEnv(PROP_PROBE_CFG).orNull
 
