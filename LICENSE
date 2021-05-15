@@ -201,9 +201,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-Files under 'nlpcraft/src/main/resources/moby' folder are public domain. See
-https://en.wikipedia.org/wiki/Moby_Project for more information.
-   
 File org.apache.nlpcraft.common.util.NCIdGenerator.java is based on https://github.com/peet/hashids.java
 and licensed under MIT license:
 
@@ -241,7 +238,6 @@ and licensed as follows:
     ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-Files in src/main/resources/moby folder are released by Grady Ward into the public domain and licensed under
-Apache License, Version 2.0:
+Files in src/main/resources/moby folder are released by Grady Ward into the public domain:
    - https://en.wikipedia.org/wiki/Moby_Project
    - http://cs.sru.edu/~ddailey/whence.html
