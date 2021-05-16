@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.intent.idl.compiler.functions
 
 import org.apache.nlpcraft.common.{NCE, ScalaMeta}
+import org.apache.nlpcraft.model.impl.NCMetadataAdapter
 import org.apache.nlpcraft.model.intent.compiler.{NCIdlCompiler, NCIdlCompilerGlobal}
 import org.apache.nlpcraft.model.intent.{NCIdlContext, NCIdlTerm}
 import org.apache.nlpcraft.model.{NCCompany, NCModel, NCModelView, NCRequest, NCToken, NCTokenPredicateContext, NCTokenPredicateResult, NCUser}
@@ -109,17 +110,16 @@ private[functions] trait NCIdlFunctions {
             intentMeta = intentMeta,
             convMeta = convMeta,
             fragMeta = fragMeta,
-            req =
-                new NCRequest() {
-                    override def getUser: NCUser = reqUsr
-                    override def getCompany: NCCompany = reqComp
-                    override def getServerRequestId: String = reqSrvReqId
-                    override def getNormalizedText: String = reqNormText
-                    override def getReceiveTimestamp: Long = reqTstamp
-                    override def getRemoteAddress: Optional[String] = Optional.ofNullable(reqAddr)
-                    override def getClientAgent: Optional[String] = Optional.ofNullable(reqAgent)
-                    override def getRequestData: util.Map[String, AnyRef] = reqData.asJava
-                }
+            req = new NCMetadataAdapter with NCRequest {
+                override def getUser: NCUser = reqUsr
+                override def getCompany: NCCompany = reqComp
+                override def getServerRequestId: String = reqSrvReqId
+                override def getNormalizedText: String = reqNormText
+                override def getReceiveTimestamp: Long = reqTstamp
+                override def getRemoteAddress: Optional[String] = Optional.ofNullable(reqAddr)
+                override def getClientAgent: Optional[String] = Optional.ofNullable(reqAgent)
+                override def getRequestData: util.Map[String, AnyRef] = reqData.asJava
+            }
         )
 
     protected def tkn(

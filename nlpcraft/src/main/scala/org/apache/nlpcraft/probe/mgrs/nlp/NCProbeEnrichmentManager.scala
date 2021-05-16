@@ -26,7 +26,7 @@ import org.apache.nlpcraft.common.debug.NCLogHolder
 import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.model._
-import org.apache.nlpcraft.model.impl.NCTokenLogger
+import org.apache.nlpcraft.model.impl.{NCMetadataAdapter, NCTokenLogger}
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolverInput
 import org.apache.nlpcraft.model.opencensus.stats.NCOpenCensusModelStats
 import org.apache.nlpcraft.model.tools.embedded.NCEmbeddedResult
@@ -583,7 +583,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         val logHldr = if (enableLog) new NCLogHolder else null
         
         // Create model query context.
-        val ctx: NCContext = new NCContext {
+        val ctx: NCContext = new NCMetadataAdapter with NCContext {
             override lazy val getRequest: NCRequest = req
             override lazy val getModel: NCModel = mdl.model
 

@@ -24,7 +24,7 @@ import java.util.*;
  *
  * @see NCContext#getRequest()
  */
-public interface NCRequest {
+public interface NCRequest extends NCMetadata {
     /**
      * Gets descriptor of the user on behalf of which this request was submitted.
      *

@@ -26,7 +26,7 @@ import java.util.*;
  * 
  * @see NCIntentMatch#getContext() 
  */
-public interface NCContext extends Serializable {
+public interface NCContext extends NCMetadata, Serializable {
     /**
      * Tests if given token is part of the query this context is associated with.
      *

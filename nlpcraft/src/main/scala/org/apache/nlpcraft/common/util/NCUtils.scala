@@ -1778,6 +1778,14 @@ object NCUtils extends LazyLogging {
     def mkSha256Hash(s: String): String = DigestUtils.sha256Hex(s)
 
     /**
+     * Makes standard Java hashcode.
+     *
+     * @param items Items to construct the hashcode from.
+     * @return Hashcode.
+     */
+    def mkJavaHash(items: Any*): Int = Seq(items: _*).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
+
+    /**
       * Makes properties file based on input string.
       *
       * @param s String.

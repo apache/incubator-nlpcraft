@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.common.nlp
 
+import org.apache.nlpcraft.common._
 import java.io.{Serializable ⇒ JSerializable}
 import java.util.{Collections, List ⇒ JList}
 import scala.collection.JavaConverters._
@@ -57,8 +58,7 @@ class NCNlpSentence(
     @transient
     private var hash: java.lang.Integer = _
 
-    private def calcHash(): Int =
-        Seq(srvReqId, text, enabledBuiltInToks, tokens).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
+    private def calcHash(): Int = U.mkJavaHash(srvReqId, text, enabledBuiltInToks, tokens)
 
     // Deep copy.
     override def clone(): NCNlpSentence =

@@ -17,22 +17,30 @@
 
 package org.apache.nlpcraft.model.impl;
 
-import org.apache.nlpcraft.model.*;
-import java.util.*;
+import org.apache.nlpcraft.model.NCMetadata;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Default implementation for variant.
+ * Abstract adapter for metadata.
  */
-public class NCVariantImpl extends ArrayList<NCToken> implements NCVariant {
-    private final Map<String, Object> meta = new HashMap<>();
+public abstract class NCMetadataAdapter implements NCMetadata {
+    final private Map<String, Object> meta;
 
     /**
-     * Creates new variant with given tokens.
      *
-     * @param c Collection of tokens.
      */
-    public NCVariantImpl(Collection<? extends NCToken> c) {
-        super(c);
+    protected NCMetadataAdapter() {
+        meta = new HashMap<>();
+    }
+
+    /**
+     *
+     * @param meta Metadata container to use.
+     */
+    protected NCMetadataAdapter(Map<String, Object> meta) {
+        this.meta = meta;
     }
 
     @Override

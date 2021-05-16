@@ -29,7 +29,7 @@ import java.util.stream.*;
  * @see NCModel#onParsedVariant(NCVariant)
  * @see NCContext#getVariants()
  */
-public interface NCVariant extends List<NCToken> {
+public interface NCVariant extends List<NCToken>, NCMetadata {
     /**
      * Utility method that returns all non-freeword tokens. It's equivalent to:
      * <pre class="brush: java">

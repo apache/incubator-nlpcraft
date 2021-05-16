@@ -29,17 +29,17 @@ import scala.compat.java8.OptionConverters._
 
 /**
  *
- * @param meta NLP server sentence metadata.
+ * @param nlpMeta NLP server sentence metadata.
  * @param srvReqId Server request ID.
  */
-case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCRequest {
+case class NCRequestImpl(nlpMeta: Map[String, Any], srvReqId: String) extends NCMetadataAdapter with NCRequest {
     override lazy val getServerRequestId: String = srvReqId
     override lazy val getNormalizedText: String = {
-        val s: String = meta("NORMTEXT").asInstanceOf[String]
-        
+        val s: String = nlpMeta("NORMTEXT").asInstanceOf[String]
+
         s.toLowerCase
     }
-    override lazy val getReceiveTimestamp: Long = meta("RECEIVE_TSTAMP").asInstanceOf[Long] // UTC.
+    override lazy val getReceiveTimestamp: Long = nlpMeta("RECEIVE_TSTAMP").asInstanceOf[Long] // UTC.
     override lazy val getClientAgent: Optional[String] = getOpt("USER_AGENT")
     override lazy val getRemoteAddress: Optional[String] = getOpt("REMOTE_ADDR")
     override lazy val getRequestData: java.util.Map[String, Object] = getOpt[String]("DATA").asScala match {
@@ -47,8 +47,8 @@ case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCReq
         case None ⇒ Map.empty[String, Object].asJava
     }
     override lazy val getCompany: NCCompany = new NCCompanyImpl(
-        meta("COMPANY_ID").asInstanceOf[Long],
-        meta("COMPANY_NAME").asInstanceOf[String],
+        nlpMeta("COMPANY_ID").asInstanceOf[Long],
+        nlpMeta("COMPANY_NAME").asInstanceOf[String],
         getOpt("COMPANY_WEBSITE"),
         getOpt("COMPANY_COUNTRY"),
         getOpt("COMPANY_REGION"),
@@ -58,18 +58,18 @@ case class NCRequestImpl(meta: Map[String, Any], srvReqId: String) extends NCReq
         getMap("COMPANY_META")
     )
     override lazy val getUser: NCUser = new NCUserImpl(
-        meta("USER_ID").asInstanceOf[Long],
+        nlpMeta("USER_ID").asInstanceOf[Long],
         getOpt("FIRST_NAME"),
         getOpt("LAST_NAME"),
         getOpt("EMAIL"),
         getOpt("AVATAR_URL"),
         getMap("META"),
-        meta("IS_ADMIN").asInstanceOf[Boolean],
-        meta("SIGNUP_TSTAMP").asInstanceOf[Long]
+        nlpMeta("IS_ADMIN").asInstanceOf[Boolean],
+        nlpMeta("SIGNUP_TSTAMP").asInstanceOf[Long]
     )
-    
+
     private def getOpt[T](key: String): Optional[T] =
-        meta.get(key) match {
+        nlpMeta.get(key) match {
             case Some(v) ⇒ Optional.of(v.asInstanceOf[T])
             case None ⇒ Optional.empty()
         }

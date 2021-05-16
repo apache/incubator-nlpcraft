@@ -24,13 +24,12 @@ import java.util.*;
  * User descriptor implementation.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public class NCUserImpl implements NCUser {
+public class NCUserImpl extends NCMetadataAdapter implements NCUser {
     private final long id;
     private final Optional<String> firstName;
     private final Optional<String> lastName;
     private final Optional<String> email;
     private final Optional<String> avatarUrl;
-    private final Map<String, Object> meta;
     private final boolean isAdmin;
     private final long signupTstamp;
 
@@ -55,12 +54,13 @@ public class NCUserImpl implements NCUser {
         boolean isAdmin,
         long signupTstamp
     ) {
+        super(meta);
+
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.avatarUrl = avatarUrl;
-        this.meta = meta;
         this.isAdmin = isAdmin;
         this.signupTstamp = signupTstamp;
     }
@@ -78,11 +78,6 @@ public class NCUserImpl implements NCUser {
     @Override
     public Optional<String> getLastName() {
         return lastName;
-    }
-
-    @Override
-    public Map<String, Object> getMetadata() {
-        return meta;
     }
 
     @Override

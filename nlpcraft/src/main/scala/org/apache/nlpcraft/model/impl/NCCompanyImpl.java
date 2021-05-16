@@ -24,7 +24,7 @@ import java.util.*;
  * User descriptor implementation.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public class NCCompanyImpl implements NCCompany {
+public class NCCompanyImpl extends NCMetadataAdapter implements NCCompany {
     private final long id;
     private final String name;
     private final Optional<String> website;
@@ -33,7 +33,6 @@ public class NCCompanyImpl implements NCCompany {
     private final Optional<String> address;
     private final Optional<String> city;
     private final Optional<String> postalCode;
-    private final Map<String, Object> meta;
 
     /**
      * 
@@ -58,6 +57,8 @@ public class NCCompanyImpl implements NCCompany {
         Optional<String> postalCode,
         Map<String, Object> meta
     ) {
+        super(meta);
+
         this.id = id;
         this.name = name;
         this.website = website;
@@ -66,7 +67,6 @@ public class NCCompanyImpl implements NCCompany {
         this.address = address;
         this.city = city;
         this.postalCode = postalCode;
-        this.meta = meta;
     }
 
     @Override public long getId() {
@@ -93,5 +93,4 @@ public class NCCompanyImpl implements NCCompany {
     @Override public Optional<String> getPostalCode() {
         return postalCode;
     }
-    @Override public Map<String, Object> getMetadata() { return meta; }
 }

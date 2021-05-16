@@ -35,7 +35,7 @@ import java.util.*;
  * @see NCIntentSample
  * @see NCIntentRef
  */
-public interface NCIntentMatch extends Serializable {
+public interface NCIntentMatch extends NCMetadata, Serializable {
     /**
      * Gets ID of the matched intent.
      *

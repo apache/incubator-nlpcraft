@@ -50,7 +50,7 @@ private[nlpcraft] class NCTokenImpl(
     endCharIndex: Int,
     meta: Map[String, Object],
     isAbstractProp: Boolean
-) extends NCToken with JSerializable {
+) extends NCMetadataAdapter(mutable.HashMap(meta.toSeq:_ *).asJava) with NCToken with JSerializable {
     require(mdl != null)
     require(srvReqId != null)
     require(id != null)
@@ -58,13 +58,11 @@ private[nlpcraft] class NCTokenImpl(
     require(ancestors != null)
     require(meta != null)
 
-    private final val hash =
-        Seq(srvReqId, id, startCharIndex, endCharIndex).map(_.hashCode()).foldLeft(0)((a, b) ⇒ 31 * a + b)
+    private final val hash = U.mkJavaHash(mdl.getId, srvReqId, id, startCharIndex, endCharIndex)
 
     private var parts = Seq.empty[NCToken]
 
     override lazy val getModel: NCModelView = mdl
-    override lazy val getMetadata: java.util.Map[String, Object] = mutable.HashMap(meta.toSeq:_ *).asJava // We need mutable metadata.
     override lazy val getServerRequestId: String = srvReqId
     override lazy val getId: String = id
     override lazy val getGroups: java.util.List[String] = grps.asJava
