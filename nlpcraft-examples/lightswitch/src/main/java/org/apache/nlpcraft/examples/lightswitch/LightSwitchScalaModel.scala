@@ -42,20 +42,20 @@ class LightSwitchScalaModel extends NCModelFileAdapter("lightswitch_model.yaml")
     @NCIntentRef("ls")
     @NCIntentSample(Array(
         "Turn the lights off in the entire house.",
-        "Turn off all lights now"
-//        "Switch on the illumination in the master bedroom closet.",
-//        "Get the lights on.",
-//        "Lights up in the kitchen.",
-//        "Please, put the light out in the upstairs bedroom.",
-//        "Set the lights on in the entire house.",
-//        "Turn the lights off in the guest bedroom.",
-//        "Could you please switch off all the lights?",
-//        "Dial off illumination on the 2nd floor.",
-//        "Please, no lights!",
-//        "Kill off all the lights now!",
-//        "No lights in the bedroom, please.",
-//        "Light up the garage, please!",
-//        "Kill the illumination now!"
+        "Turn off all lights now",
+        "Switch on the illumination in the master bedroom closet.",
+        "Get the lights on.",
+        "Lights up in the kitchen.",
+        "Please, put the light out in the upstairs bedroom.",
+        "Set the lights on in the entire house.",
+        "Turn the lights off in the guest bedroom.",
+        "Could you please switch off all the lights?",
+        "Dial off illumination on the 2nd floor.",
+        "Please, no lights!",
+        "Kill off all the lights now!",
+        "No lights in the bedroom, please.",
+        "Light up the garage, please!",
+        "Kill the illumination now!"
     ))
     def onMatch(
         @NCIntentTerm("act") actTok: NCToken,
