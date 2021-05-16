@@ -123,10 +123,14 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 var cbRes: NCResult = null
     
                 startScopedSpan("intentCallback", span) { _ ⇒
+                    /*
+                     * This can throw NCIntentSkip exception.
+                     * ======================================
+                     */
                     cbRes = res.fn.apply(intentMatch)
                 }
                 
-                // Store winning intent match in the input.
+                // Store won intent match in the input.
                 in.intentMatch = intentMatch
                 
                 // Don't override if user already set it.
@@ -141,6 +145,7 @@ class NCIntentSolver(intents: List[(NCIdlIntent/*Intent*/, NCIntentMatch ⇒ NCR
                 NCDialogFlowManager.addMatchedIntent(
                     intentMatch,
                     res,
+                    cbRes,
                     ctx,
                     span
                 )

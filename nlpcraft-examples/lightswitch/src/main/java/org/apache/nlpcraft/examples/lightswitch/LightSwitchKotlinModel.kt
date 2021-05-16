@@ -69,7 +69,7 @@ class LightSwitchKotlinModel : NCModelFileAdapter("lightswitch_model.yaml") {
         // Add HomeKit, Arduino or other integration here.
 
         // By default - just return a descriptive action string.
-        return NCResult.text("Lights are [" + status + "] in [" + locations.toLowerCase() + "].")
+        return NCResult.text("Lights are [" + status + "] in [" + locations.lowercase() + "].")
     }
 
     override fun getId(): String {

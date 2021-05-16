@@ -20,9 +20,11 @@ package org.apache.nlpcraft.probe.mgrs.dialogflow
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.model.intent.solver.NCIntentSolverResult
-import org.apache.nlpcraft.model.{NCContext, NCDialogFlowItem, NCIntentMatch}
+import org.apache.nlpcraft.model.{NCCompany, NCContext, NCDialogFlowItem, NCIntentMatch, NCResult, NCToken, NCUser, NCVariant}
 import org.apache.nlpcraft.probe.mgrs.model.NCModelManager
 
+import java.util
+import java.util.Optional
 import scala.collection._
 
 /**
@@ -88,13 +90,15 @@ object NCDialogFlowManager extends NCService {
     }
 
     /**
-      * Adds matched (winning) intent to the dialog flow.
-      *
-      * @param intentMatch
-      * @param res Intent match result.
-      * @param ctx Original query context.
-      */
-    def addMatchedIntent(intentMatch: NCIntentMatch, res: NCIntentSolverResult, ctx: NCContext, parent: Span = null): Unit = {
+     * Adds matched (winning) intent to the dialog flow.
+     *
+     * @param intentMatch
+     * @param res Intent match result.
+     * @param cbRes Intent callback result.
+     * @param ctx Original query context.
+     * @param parent
+     */
+    def addMatchedIntent(intentMatch: NCIntentMatch, res: NCIntentSolverResult, cbRes: NCResult, ctx: NCContext, parent: Span = null): Unit = {
         val usrId = ctx.getRequest.getUser.getId
         val mdlId = ctx.getModel.getId
         val intentId = res.intentId
@@ -105,20 +109,22 @@ object NCDialogFlowManager extends NCService {
                 
                 val key = Key(usrId, mdlId)
                 val item: NCDialogFlowItem = new NCDialogFlowItem {
-                    override val getIntentId = intentId
-                    override val getIntentTokens = intentMatch.getIntentTokens
-                    override def getTermTokens(idx: Int) = intentMatch.getTermTokens(idx)
-                    override def getTermTokens(termId: String) = intentMatch.getTermTokens(termId)
-                    override val getVariant = intentMatch.getVariant
-                    override val isAmbiguous = !res.isExactMatch
-                    override val getUser = req.getUser
-                    override val getCompany = req.getCompany
-                    override val getServerRequestId = req.getServerRequestId
-                    override val getNormalizedText = req.getNormalizedText
-                    override val getReceiveTimestamp = req.getReceiveTimestamp
-                    override val getRemoteAddress = req.getRemoteAddress
-                    override val getClientAgent = req.getClientAgent
-                    override val getRequestData = req.getRequestData
+                    override val getIntentId: String = intentId
+                    override val getIntentTokens: util.List[util.List[NCToken]] = intentMatch.getIntentTokens
+                    override def getTermTokens(idx: Int): util.List[NCToken] = intentMatch.getTermTokens(idx)
+                    override def getTermTokens(termId: String): util.List[NCToken] = intentMatch.getTermTokens(termId)
+                    override val getVariant: NCVariant = intentMatch.getVariant
+                    override val isAmbiguous: Boolean = !res.isExactMatch
+                    override val getUser: NCUser = req.getUser
+                    override val getCompany: NCCompany = req.getCompany
+                    override val getServerRequestId: String = req.getServerRequestId
+                    override val getNormalizedText: String = req.getNormalizedText
+                    override val getReceiveTimestamp: Long = req.getReceiveTimestamp
+                    override val getRemoteAddress: Optional[String] = req.getRemoteAddress
+                    override val getClientAgent: Optional[String] = req.getClientAgent
+                    override val getRequestData: util.Map[String, AnyRef] = req.getRequestData
+                    override lazy val getMetadata: util.Map[String, AnyRef] = new util.HashMap[String, Object]
+                    override def getResult: NCResult = cbRes
                 }
                 
                 flow.getOrElseUpdate(key, mutable.ArrayBuffer.empty[NCDialogFlowItem]).append(item)

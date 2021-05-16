@@ -27,13 +27,20 @@ import java.util.*;
  * Read full documentation in <a target=_ href="https://nlpcraft.apache.org/intent-matching.html">Intent Matching</a> section and review
  * <a target=_ href="https://github.com/apache/incubator-nlpcraft/tree/master/nlpcraft/src/main/scala/org/apache/nlpcraft/examples/">examples</a>.
  */
-public interface NCDialogFlowItem {
+public interface NCDialogFlowItem extends NCMetadata {
     /**
      * Gets ID of the matched intent.
      *
      * @return ID of the matched intent.
      */
     String getIntentId();
+
+    /**
+     * Gets the winning intent's callback result.
+     *
+     * @return Winning intent's callback result.
+     */
+    NCResult getResult();
 
     /**
      * Gets a subset of tokens representing matched intent. This subset is grouped by the matched terms
@@ -44,19 +51,14 @@ public interface NCDialogFlowItem {
      * Note that unlike {@link #getVariant()} method
      * this method returns only subset of the tokens that were part of the matched intent. Specifically, it will
      * not return tokens for free words, stopwords or unmatched ("dangling") tokens.
-     * <p>
-     * Consider using {@link NCIntentTerm} annotation instead for simpler access to intent tokens.
      *
      * @return List of list of tokens representing matched intent.
      * @see #getVariant()
-     * @see NCIntentTerm
      */
     List<List<NCToken>> getIntentTokens();
 
     /**
      * Gets tokens for given term. This is a companion method for {@link #getIntentTokens()}.
-     * <p>
-     * Consider using {@link NCIntentTerm} annotation instead for simpler access to intent tokens.
      *
      * @param idx Index of the term (starting from <code>0</code>).
      * @return List of tokens, potentially {@code null}, for given term.
@@ -67,8 +69,6 @@ public interface NCDialogFlowItem {
 
     /**
      * Gets tokens for given term. This is a companion method for {@link #getIntentTokens()}.
-     * <p>
-     * Consider using {@link NCIntentTerm} annotation instead for simpler access to intent tokens.
      *
      * @param termId ID of the term for which to get tokens.
      * @return List of tokens, potentially {@code null}, for given term.
