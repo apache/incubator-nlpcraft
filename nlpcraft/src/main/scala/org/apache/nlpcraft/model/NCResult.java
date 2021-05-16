@@ -19,11 +19,10 @@ package org.apache.nlpcraft.model;
 
 import org.apache.nlpcraft.common.NCException;
 import org.apache.nlpcraft.common.util.*;
+import org.apache.nlpcraft.model.impl.NCMetadataAdapter;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Data model result returned from model intent callbacks. Result consists of the
@@ -56,7 +55,7 @@ import java.util.Map;
  * accordingly. For example, the REST client interfacing between NLPCraft and Amazon Alexa or Apple HomeKit can only
  * accept {@code text} result type and ignore everything else.
  */
-public class NCResult implements Serializable, NCMetadata {
+public class NCResult extends NCMetadataAdapter implements Serializable, NCMetadata {
     /** Data Model result text. */
     private String body;
 
@@ -69,9 +68,6 @@ public class NCResult implements Serializable, NCMetadata {
     /** ID of the intent. */
     private String intentId;
 
-    /** Result's metadata. */
-    private final Map<String, Object> meta = new HashMap<>();
-    
     /**
      * Creates new result with given body and type.
      *
@@ -244,6 +240,4 @@ public class NCResult implements Serializable, NCMetadata {
     public void setIntentId(String intentId) {
         this.intentId = intentId;
     }
-
-    @Override public Map<String, Object> getMetadata() { return meta; }
 }
