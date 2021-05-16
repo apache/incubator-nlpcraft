@@ -100,7 +100,7 @@ rsync -avzq sql ${zipDir}/${tmpDir} --exclude '**/.DS_Store'
 
 cp bindist/LICENSE ${zipDir}/${tmpDir}
 cp bindist/NOTICE ${zipDir}/${tmpDir}
-cp DISCLAIMER ${zipDir}/${tmpDir}
+cp DISCLAIMER-WIP ${zipDir}/${tmpDir}
 
 cp ${coreModule}/src/main/resources/nlpcraft.conf ${zipDir}/${tmpDir}/build
 cp ${coreModule}/src/main/resources/ignite.xml ${zipDir}/${tmpDir}/build
