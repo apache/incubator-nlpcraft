@@ -37,6 +37,7 @@ CREATE TABLE nc_company (
     postal_code VARCHAR2(32),
     auth_token VARCHAR2(64) NOT NULL,
     auth_token_hash VARCHAR2(64) NOT NULL,
+    properties_gzip CLOB NULL,
     created_on DATE DEFAULT sysdate NOT NULL,
     last_modified_on DATE DEFAULT sysdate NOT NULL
 );
@@ -44,21 +45,6 @@ CREATE TABLE nc_company (
 CREATE UNIQUE INDEX nc_company_idx_1 ON nc_company(name);
 CREATE UNIQUE INDEX nc_company_idx_2 ON nc_company(auth_token);
 CREATE UNIQUE INDEX nc_company_idx_3 ON nc_company(auth_token_hash);
-
---
--- Company properties table.
---
-CREATE TABLE nc_company_property (
-    id NUMBER PRIMARY KEY,
-    company_id NUMBER NOT NULL,
-    property VARCHAR2(64) NOT NULL,
-    value VARCHAR2(512) NULL,
-    created_on DATE DEFAULT sysdate NOT NULL,
-    last_modified_on DATE DEFAULT sysdate NOT NULL,
-    CONSTRAINT fk_company_id_company_property FOREIGN KEY (company_id) REFERENCES nc_company(id)
-);
-
-CREATE INDEX nc_company_property_idx1 ON nc_company_property(company_id);
 
 --
 -- User table.
@@ -73,6 +59,7 @@ CREATE TABLE nc_user (
     last_name VARCHAR2(64) NULL,
     is_admin NUMBER(1) NOT NULL, -- Whether or not created with admin token.
     passwd_salt VARCHAR2(64) NULL,
+    properties_gzip CLOB NULL,
     created_on DATE DEFAULT sysdate NOT NULL,
     last_modified_on DATE DEFAULT sysdate NOT NULL,
     CONSTRAINT fk_company_id_user FOREIGN KEY (company_id) REFERENCES nc_company(id)
@@ -81,21 +68,6 @@ CREATE TABLE nc_user (
 CREATE UNIQUE INDEX nc_user_idx_1 ON nc_user(email);
 CREATE UNIQUE INDEX nc_user_idx_2 ON nc_user(company_id, ext_id);
 CREATE INDEX nc_user_idx_3 ON nc_user(company_id);
-
---
--- User properties table.
---
-CREATE TABLE nc_user_property (
-    id NUMBER PRIMARY KEY,
-    user_id NUMBER NOT NULL,
-    property VARCHAR2(64) NOT NULL,
-    value VARCHAR2(512) NULL,
-    created_on DATE DEFAULT sysdate NOT NULL,
-    last_modified_on DATE DEFAULT sysdate NOT NULL,
-    CONSTRAINT fk_user_id_user_property FOREIGN KEY (user_id) REFERENCES nc_user(id)
-);
-
-CREATE INDEX nc_user_property_idx1 ON nc_user_property(user_id);
 
 --
 -- Pool of password hashes.
@@ -125,6 +97,7 @@ CREATE TABLE proc_log (
     -- Result parts.
     res_type VARCHAR2(32) NULL,
     res_body_gzip CLOB NULL, -- GZIP-ed result body.
+    res_body_meta CLOB NULL, -- GZIP-ed result meta.
     intent_id VARCHAR2(256) NULL,
     error CLOB NULL,
     -- Probe information for this request.

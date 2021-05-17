@@ -275,6 +275,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
           *
           * @param resType Result type.
           * @param resBody Result body.
+          * @param resMeta Result meta.
           * @param errMsg Error message.
           * @param errCode Error code.
           * @param msgName Message name.
@@ -284,6 +285,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         def respond(
             resType: Option[String],
             resBody: Option[String],
+            resMeta: Option[JavaMeta],
             errMsg: Option[String],
             errCode: Option[Int],
             msgName: String,
@@ -302,6 +304,10 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 if (vOpt.isDefined)
                     msg += name → vOpt.get
 
+            def addMeta(name: String, vOpt: Option[JavaMeta]): Unit =
+                if (vOpt.isDefined)
+                    msg += name → vOpt.get.asInstanceOf[Serializable]
+
             if (resBody.isDefined && resBody.get.length > Config.resultMaxSize) {
                 addOptional("error", Some("Result is too big. Model result must be corrected."))
                 addOptional("errorCode", Some(RESULT_TOO_BIG))
@@ -311,6 +317,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 addOptional("errorCode", errCode.map(Integer.valueOf))
                 addOptional("resType", resType)
                 addOptional("resBody", resBody)
+                addMeta("resMeta", resMeta)
                 addOptional("log", log)
                 addOptional("intentId", intentId)
             }
@@ -322,11 +329,12 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                     override val getOriginalText: String = txt
                     override val getUserId: Long = usrId
                     override val getBody: String = msg.dataOpt[String]("resBody").orNull
+                    override val getMetadata: JavaMeta = msg.dataOpt[JavaMeta]("resMeta").orNull
                     override val getType: String = msg.dataOpt[String]("resType").orNull
                     override val getErrorMessage: String = msg.dataOpt[String]("error").orNull
                     override val getErrorCode: Int = msg.dataOpt[Int]("errorCode").getOrElse(0)
                     override def getProbeId: String = Config.id
-                    override def getLogHolderJson: String = log.orNull
+                    override def getLogJson: String = log.orNull
                     override def getIntentId: String = intentId.orNull
                 }
 
@@ -392,6 +400,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
             val (errMsg, errCode) = errData.get
 
             respond(
+                None,
                 None,
                 None,
                 Some(errMsg),
@@ -531,6 +540,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                 respond(
                     None,
                     None,
+                    None,
                     Some(errMsg),
                     Some(errCode),
                     "P2S_ASK_RESULT",
@@ -621,6 +631,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
         def respondWithResult(res: NCResult, log: Option[String]): Unit = respond(
             Some(res.getType),
             Some(res.getBody),
+            Some(res.getMetadata),
             None,
             None,
             "P2S_ASK_RESULT",
@@ -693,6 +704,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             respond(
                                 None,
                                 None,
+                                None,
                                 Some(e.getMessage), // User provided rejection message.
                                 Some(MODEL_REJECTION),
                                 "P2S_ASK_RESULT",
@@ -720,6 +732,7 @@ object NCProbeEnrichmentManager extends NCService with NCOpenCensusModelStats {
                             respondWithResult(res, None)
                         else
                             respond(
+                                None,
                                 None,
                                 None,
                                 Some("Processing failed with unexpected error."), // System error message.

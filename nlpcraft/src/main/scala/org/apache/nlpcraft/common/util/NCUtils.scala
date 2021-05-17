@@ -1149,14 +1149,20 @@ object NCUtils extends LazyLogging {
       * @param rawStr String to compress.
       * @return Compressed Base64-encoded string.
       */
+    @throws[NCE]
     def compress(rawStr: String): String = {
         val arr = new ByteArrayOutputStream(1024)
 
-        managed(new GOS(arr)) acquireAndGet { zip ⇒
-            zip.write(rawStr.getBytes)
-        }
+        try {
+            managed(new GOS(arr)) acquireAndGet { zip ⇒
+                zip.write(rawStr.getBytes)
+            }
 
-        Base64.encodeBase64String(arr.toByteArray)
+            Base64.encodeBase64String(arr.toByteArray)
+        }
+        catch {
+            case e: Exception ⇒ throw new NCE("Error during data compression.", e)
+        }
     }
 
     /**
@@ -1165,8 +1171,13 @@ object NCUtils extends LazyLogging {
       * @param zipStr Compressed string.
       * @return Uncompressed string.
       */
+    @throws[NCE]
     def uncompress(zipStr: String): String =
-        IOUtils.toString(new GIS(new ByteArrayInputStream(Base64.decodeBase64(zipStr))), Charset.defaultCharset())
+        try
+            IOUtils.toString(new GIS(new ByteArrayInputStream(Base64.decodeBase64(zipStr))), Charset.defaultCharset())
+        catch {
+            case e: Exception ⇒ throw new NCE("Error during data decompression.", e)
+        }
 
     /**
       * Sleeps number of milliseconds properly handling exceptions.
@@ -1672,6 +1683,7 @@ object NCUtils extends LazyLogging {
      * @param json JSON to convert.
      * @return
      */
+    @throws[Exception]
     def jsonToScalaMap(json: String): Map[String, Object] =
         GSON.fromJson(json, classOf[java.util.HashMap[String, Object]]).asScala.toMap
 
@@ -1681,8 +1693,14 @@ object NCUtils extends LazyLogging {
      * @param json JSON to convert.
      * @return
      */
-    def jsonToJavaMap(json: String): java.util.Map[String, Object] =
-        GSON.fromJson(json, classOf[java.util.HashMap[String, Object]])
+    @throws[NCE]
+    def jsonToJavaMap(json: String): java.util.Map[String, Object] = {
+        try
+            GSON.fromJson(json, classOf[java.util.HashMap[String, Object]])
+        catch {
+            case e: Exception ⇒ throw new NCE(s"Cannot deserialize JSON to map: '$json'", e)
+        }
+    }
 
     /**
      *
@@ -1690,9 +1708,13 @@ object NCUtils extends LazyLogging {
      * @param field
      * @return
      */
-    @throws[Exception]
+    @throws[NCE]
     def getJsonBooleanField(json: String, field: String): Boolean =
-        GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
+        try
+            GSON.getAdapter(classOf[JsonElement]).fromJson(json).getAsJsonObject.get(field).getAsBoolean
+        catch {
+            case e: Exception ⇒ throw new NCE(s"Cannot deserialize JSON to map: '$json'", e)
+        }
 
     /**
      *

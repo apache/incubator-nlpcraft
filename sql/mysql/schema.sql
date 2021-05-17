@@ -39,6 +39,7 @@ CREATE TABLE nc_company (
     postal_code VARCHAR(32),
     auth_token VARCHAR(64) NOT NULL,
     auth_token_hash VARCHAR(64) NOT NULL,
+    properties_gzip TEXT NULL,
     created_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
     last_modified_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3)
 );
@@ -46,19 +47,6 @@ CREATE TABLE nc_company (
 CREATE UNIQUE INDEX nc_company_idx_1 ON nc_company(name);
 CREATE UNIQUE INDEX nc_company_idx_2 ON nc_company(auth_token);
 CREATE UNIQUE INDEX nc_company_idx_3 ON nc_company(auth_token_hash);
-
---
--- Company properties table.
---
-CREATE TABLE nc_company_property (
-    id SERIAL PRIMARY KEY,
-    company_id BIGINT UNSIGNED NOT NULL,
-    property VARCHAR(64) NOT NULL,
-    value VARCHAR(512) NULL,
-    created_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
-    last_modified_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
-    FOREIGN KEY (company_id) REFERENCES nc_company(id)
-);
 
 --
 -- User table.
@@ -73,6 +61,7 @@ CREATE TABLE nc_user (
     last_name VARCHAR(64) NULL,
     is_admin BOOLEAN NOT NULL, -- Whether or not created with admin token.
     passwd_salt VARCHAR(64) NULL,
+    properties_gzip TEXT NULL,
     created_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
     last_modified_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
     FOREIGN KEY (company_id) REFERENCES nc_company(id)
@@ -80,19 +69,6 @@ CREATE TABLE nc_user (
 
 CREATE UNIQUE INDEX nc_user_idx_1 ON nc_user(email);
 CREATE UNIQUE INDEX nc_user_idx_2 ON nc_user(company_id, ext_id);
-
---
--- User properties table.
---
-CREATE TABLE nc_user_property (
-    id SERIAL PRIMARY KEY,
-    user_id BIGINT UNSIGNED NOT NULL,
-    property VARCHAR(64) NOT NULL,
-    value VARCHAR(512) NULL,
-    created_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
-    last_modified_on TIMESTAMP(3) NOT NULL DEFAULT current_timestamp(3),
-    FOREIGN KEY (user_id) REFERENCES nc_user(id)
-);
 
 --
 -- Pool of password hashes.
@@ -122,6 +98,7 @@ CREATE TABLE proc_log (
     -- Result parts.
     res_type VARCHAR(32) NULL,
     res_body_gzip TEXT NULL, -- GZIP-ed result body.
+    res_body_meta TEXT NULL, -- GZIP-ed result meta.
     intent_id VARCHAR(256) NULL,
     error TEXT NULL,
     -- Probe information for this request.

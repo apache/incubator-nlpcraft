@@ -27,7 +27,7 @@ import org.apache.nlpcraft.common.config.NCConfigurable
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
-import org.apache.nlpcraft.server.mdo.{NCUserMdo, NCUserPropertyMdo}
+import org.apache.nlpcraft.server.mdo.NCUserMdo
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.tx.NCTxManager
 
@@ -190,7 +190,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
       * @param parent Optional parent span.
       */
     @throws[NCE]
-    def getAllUsers(compId: Long, parent: Span = null): Map[NCUserMdo, Seq[NCUserPropertyMdo]] =
+    def getAllUsers(compId: Long, parent: Span = null): Seq[NCUserMdo] =
         NCSql.sql {
             NCSqlManager.getAllUsers(compId, parent)
         }
@@ -313,20 +313,6 @@ object NCUserManager extends NCService with NCIgniteInstance {
         }
 
     /**
-      * Gets user properties for given user ID.
-      *
-      * @param id User ID.
-      * @param parent Optional parent span.
-      */
-    @throws[NCE]
-    def getUserProperties(id: Long, parent: Span = null): Seq[NCUserPropertyMdo] =
-        startScopedSpan("getUserProperties", parent, "usrId" → id) { span ⇒
-            NCSql.sql {
-                NCSqlManager.getUserProperties(id, span)
-            }
-        }
-
-    /**
       *
       * @param email User email (as username).
       * @param passwd User password.
@@ -391,7 +377,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
         firstName: String,
         lastName: String,
         avatarUrl: Option[String],
-        props: Option[Map[String, String]],
+        props: Option[String],
         parent: Span = null
     ): Unit =
         startScopedSpan("updateUser", parent, "usrId" → id) { span ⇒
@@ -488,7 +474,7 @@ object NCUserManager extends NCService with NCIgniteInstance {
         lastName: String,
         avatarUrl: Option[String],
         isAdmin: Boolean,
-        props: Option[Map[String, String]],
+        props: Option[String],
         usrExtIdOpt: Option[String],
         parent: Span = null
     ): Long =

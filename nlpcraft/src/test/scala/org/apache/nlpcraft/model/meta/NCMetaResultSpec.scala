@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.nlpcraft.server.rest
+package org.apache.nlpcraft.model.meta
 
-import org.apache.nlpcraft.NCTestElement
-import org.apache.nlpcraft.model.{NCElement, NCIntent, NCIntentSample, NCModelAdapter, NCResult}
+import org.apache.nlpcraft.model.`abstract`.NCAbstractTokensModel
+import org.apache.nlpcraft.model.{NCElement, NCIntent, NCResult}
+import org.apache.nlpcraft.{NCTestElement, NCTestEnvironment}
+import org.junit.jupiter.api.Test
 
 import java.util
 
 /**
-  * REST test model helper.
+  * Test model.
   */
-object RestTestModel {
+object NCMetaResultSpecModel {
     final val K1 = "k1"
     final val K2 = "k2"
     final val K3 = "k3"
@@ -38,31 +40,13 @@ object RestTestModel {
     V3.put(K2, V2)
 }
 
-import RestTestModel._
+import org.apache.nlpcraft.model.meta.NCMetaResultSpecModel._
 
-/**
-  * REST test model.
-  */
-class RestTestModel extends NCModelAdapter("rest.test.model", "REST test model", "1.0.0") {
-    override def getElements: util.Set[NCElement] =
-        Set(
-            NCTestElement("a"),
-            NCTestElement("b"),
-            NCTestElement("x", "cat"),
-            NCTestElement("meta")
-        )
+class NCMetaResultSpecModel extends NCAbstractTokensModel {
+    override def getElements: util.Set[NCElement] = Set(NCTestElement("a"))
 
-    @NCIntent("intent=onA term(t)={tok_id() == 'a'}")
-    @NCIntentSample(Array("My A"))
-    private def a(): NCResult = NCResult.text("OK")
-
-    @NCIntent("intent=onB term(t)={tok_id() == 'b'}")
-    @NCIntentSample(Array("My B"))
-    private def b(): NCResult = NCResult.text("OK")
-
-    @NCIntent("intent=onMeta term(t)={tok_id() == 'meta'}")
-    @NCIntentSample(Array("meta"))
-    private def meta(): NCResult = {
+    @NCIntent("intent=i term(t)={tok_id() == 'a'}")
+    def onIntent(): NCResult = {
         val res = NCResult.text("OK")
 
         res.getMetadata.put(K1, V1)
@@ -70,5 +54,24 @@ class RestTestModel extends NCModelAdapter("rest.test.model", "REST test model",
         res.getMetadata.put(K3, V3)
 
         res
+    }
+}
+
+@NCTestEnvironment(model = classOf[NCMetaResultSpecModel], startClient = true)
+class NCMetaResultSpec extends NCMetaSpecAdapter {
+    @Test
+    def test(): Unit = {
+        val res = getClient.ask("a")
+
+        require(res.isOk)
+        require(res.getResultMeta.isPresent)
+
+        val meta = res.getResultMeta.get()
+
+        println(s"Meta received: $meta")
+
+        require(meta.get(K1) == V1)
+        require(meta.get(K2) == V2)
+        require(meta.get(K3) == V3)
     }
 }

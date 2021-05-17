@@ -17,6 +17,7 @@
 
 package org.apache.nlpcraft.model.tools.test;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -61,7 +62,16 @@ public interface NCTestResult {
      * @see #isOk()
      */
     Optional<String> getResultType();
-    
+
+    /**
+     * Gets optional execution result metadata. Only provided if processing succeeded.
+     *
+     * @return Optional execution result metadata.
+     * @see #isFailed()
+     * @see #isOk()
+     */
+    Optional<Map<String, Object>> getResultMeta();
+
     /**
      * Gets optional execution error. Only provided if processing failed.
      *

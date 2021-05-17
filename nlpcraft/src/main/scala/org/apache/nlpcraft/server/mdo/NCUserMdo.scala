@@ -36,6 +36,7 @@ case class NCUserMdo(
     @NCMdoField(column = "last_name") lastName: Option[String],
     @NCMdoField(column = "avatar_url") avatarUrl: Option[String],
     @NCMdoField(column = "passwd_salt") passwordSalt: Option[String],
+    @NCMdoField(column = "properties_gzip") propertiesGzip: Option[String],
     @NCMdoField(column = "is_admin") isAdmin: Boolean,
     @NCMdoField(column = "created_on") createdOn: Timestamp,
     @NCMdoField(column = "last_modified_on") lastModifiedOn: Timestamp
@@ -54,11 +55,12 @@ object NCUserMdo {
         lastName: Option[String],
         avatarUrl: Option[String],
         passwordSalt: Option[String],
+        propertiesGzip: Option[String],
         isAdmin: Boolean
     ): NCUserMdo = {
         val now = U.nowUtcTs()
 
-        NCUserMdo(id, companyId, extId, email, firstName, lastName, avatarUrl, passwordSalt, isAdmin, now, now)
+        NCUserMdo(id, companyId, extId, email, firstName, lastName, avatarUrl, passwordSalt, propertiesGzip, isAdmin, now, now)
     }
 
     def apply(
@@ -70,11 +72,12 @@ object NCUserMdo {
         lastName: Option[String],
         avatarUrl: Option[String],
         passwordSalt: Option[String],
+        propertiesGzip: Option[String],
         isAdmin: Boolean,
         createdOn: Timestamp
     ): NCUserMdo = {
         require(createdOn != null, "Created date cannot be null.")
 
-        NCUserMdo(id, companyId, extId, email, firstName, lastName, avatarUrl, passwordSalt, isAdmin, createdOn, createdOn)
+        NCUserMdo(id, companyId, extId, email, firstName, lastName, avatarUrl, passwordSalt, propertiesGzip, isAdmin, createdOn, createdOn)
     }
 }

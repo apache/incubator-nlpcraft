@@ -91,6 +91,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
       * @param errMsg
       * @param resType
       * @param resBody
+      * @param resMeta
       * @param intentId
       * @param parent Optional parent span.
       */
@@ -101,6 +102,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
         errMsg: Option[String],
         resType: Option[String],
         resBody: Option[String],
+        resMeta: Option[JavaMeta],
         intentId: Option[String],
         parent: Span = null
     ): Unit =
@@ -115,6 +117,7 @@ object NCProcessLogManager extends NCService with NCIgniteInstance {
                     errMsg.orNull,
                     resType.orNull,
                     resBody.orNull,
+                    resMeta.orNull,
                     intentId.orNull,
                     tstamp,
                     span

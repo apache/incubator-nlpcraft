@@ -21,7 +21,7 @@ import io.opencensus.trace.Span
 import org.apache.ignite.{IgniteAtomicSequence, IgniteSemaphore}
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
-import org.apache.nlpcraft.server.mdo.{NCCompanyMdo, NCCompanyPropertyMdo}
+import org.apache.nlpcraft.server.mdo.NCCompanyMdo
 import org.apache.nlpcraft.server.sql.{NCSql, NCSqlManager}
 import org.apache.nlpcraft.server.user.NCUserManager
 
@@ -168,7 +168,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         city: Option[String],
         address: Option[String],
         postalCode: Option[String],
-        props: Option[Map[String, String]],
+        props: Option[String],
         parent: Span = null
     ): Unit =
         startScopedSpan("updateCompany", parent, "id" → id) { span ⇒
@@ -282,7 +282,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         adminFirstName: String,
         adminLastName: String,
         adminAvatarUrl: Option[String],
-        props: Option[Map[String, String]],
+        props: Option[String],
         mkToken: () ⇒ String,
         parent: Span = null
     ): NCCompanyCreationData = {
@@ -371,7 +371,7 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
         adminFirstName: String,
         adminLastName: String,
         adminAvatarUrl: Option[String],
-        props: Option[Map[String, String]],
+        props: Option[String],
         parent: Span = null
     ): NCCompanyCreationData = startScopedSpan("addCompany", parent, "name" → name) { _ ⇒
         addCompany0(
@@ -391,18 +391,4 @@ object NCCompanyManager extends NCService with NCIgniteInstance {
             () ⇒ mkToken()
         )
     }
-
-    /**
-      * Gets company properties for given company ID.
-      *
-      * @param id User ID.
-      * @param parent Optional parent span.
-      */
-    @throws[NCE]
-    def getCompanyProperties(id: Long, parent: Span = null): Seq[NCCompanyPropertyMdo] =
-        startScopedSpan("getCompanyProperties", parent, "companyId" → id) { span ⇒
-            NCSql.sql {
-                NCSqlManager.getCompanyProperties(id, span)
-            }
-        }
 }

@@ -22,6 +22,7 @@ import org.apache.ignite.IgniteCache
 import org.apache.ignite.events.{CacheEvent, EventType}
 import org.apache.nlpcraft.common.ascii.NCAsciiTable
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
+import org.apache.nlpcraft.common.util.NCUtils.{jsonToJavaMap, uncompress}
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.apicodes.NCApiStatusCode._
 import org.apache.nlpcraft.server.company.NCCompanyManager
@@ -221,18 +222,6 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         val usr = NCUserManager.getUserById(usrId, parent).getOrElse(throw new NCE(s"Unknown user ID: $usrId"))
         val company = NCCompanyManager.getCompany(usr.companyId, parent).getOrElse(throw new NCE(s"Unknown company ID: ${usr.companyId}"))
 
-        val usrMeta = {
-            val m = NCUserManager.getUserProperties(usrId, parent)
-
-            if (m.isEmpty) None else Some(m.map(p ⇒ p.property → p.value).toMap)
-        }
-
-        val compMeta = {
-            val m = NCCompanyManager.getCompanyProperties(usr.companyId, parent)
-
-            if (m.isEmpty) None else Some(m.map(p ⇒ p.property → p.value).toMap)
-        }
-
         // Check input length.
         if (txt0.split(" ").length > MAX_WORDS)
             throw new NCE(s"User input is too long (max is $MAX_WORDS words).")
@@ -285,6 +274,13 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
 
                 val enabledBuiltInToks = NCProbeManager.getModel(mdlId, span).enabledBuiltInTokens
 
+                @throws[NCE]
+                def unzipProperties(gzipOpt: Option[String]): Option[JavaMeta] =
+                    gzipOpt match {
+                        case Some(gzip) ⇒ Some(jsonToJavaMap(uncompress(gzip)))
+                        case None ⇒ None
+                    }
+
                 // Enrich the user input and send it to the probe.
                 NCProbeManager.askProbe(
                     srvReqId,
@@ -296,8 +292,8 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     usrAgent,
                     rmtAddr,
                     data,
-                    usrMeta,
-                    compMeta,
+                    unzipProperties(usr.propertiesGzip),
+                    unzipProperties(company.propertiesGzip),
                     enableLog,
                     span
                 )
@@ -369,6 +365,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     None,
                     None,
                     None,
+                    None,
                     span
                 )
         }
@@ -379,6 +376,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
       * @param srvReqId Server request ID.
       * @param resType
       * @param resBody
+      * @param resMeta
       * @param logJson
       * @param intentId
       * @param parent Optional parent span.
@@ -388,6 +386,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
         srvReqId: String,
         resType: String,
         resBody: String,
+        resMeta: Option[JavaMeta],
         logJson: Option[String],
         intentId: Option[String],
         parent: Span = null
@@ -407,6 +406,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                         copy.status = QRY_READY.toString
                         copy.resultType = Some(resType)
                         copy.resultBody = Some(resBody)
+                        copy.resultMeta = resMeta
                         copy.logJson = logJson
                         copy.intentId = intentId
     
@@ -430,6 +430,7 @@ object NCQueryManager extends NCService with NCIgniteInstance with NCOpenCensusS
                     None,
                     resType = Some(resType),
                     resBody = Some(resBody),
+                    resMeta = resMeta,
                     intentId = intentId,
                     span
                 )

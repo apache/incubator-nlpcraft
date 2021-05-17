@@ -352,6 +352,11 @@ paths:
                         Optional body (string or JSON object) of the result if returned by model
                         (provided only if status is <code>QRY_READY</code> and processing was
                         not rejected or terminated due to an exception).
+                    resMeta:
+                      type: object
+                      description: >-
+                        Optional result metadata as JSON object (provided only if status is
+                        <code>QRY_READY</code> and processing was not rejected or terminated due to an exception).
                     error:
                       type: string
                       description: >-
@@ -650,6 +655,10 @@ paths:
                       Optional body (string or JSON object) of the result if returned by model
                       (provided only if status is <code>QRY_READY</code> and processing was
                       not rejected or terminated due to an exception).
+                  resMeta:
+                    type: object
+                    description: >-
+                      Optional meta JSON object. TODO:
                   error:
                     type: string
                     description: >-
@@ -871,7 +880,7 @@ paths:
                 maxLength: 512000
               properties:
                 type: object
-                description: <em>Optional.</em> Additional user properties.
+                description: <em>Optional.</em> Additional user properties with maximum JSON length of 512000 bytes.
                 additionalProperties:
                   type: string
       responses:
@@ -1064,7 +1073,7 @@ paths:
                 description: Admin flag.
               properties:
                 type: object
-                description: <em>Optional.</em> Additional user properties.
+                description: <em>Optional.</em> Additional user properties with maximum JSON length of 512000 bytes.
                 additionalProperties:
                   type: string
               usrExtId:
@@ -1240,7 +1249,7 @@ paths:
                 maxLength: 512000
               properties:
                 type: object
-                description: <em>Optional.</em> Additional company properties.
+                description: <em>Optional.</em> Additional company properties with maximum JSON length of 512000 bytes.
                 additionalProperties:
                   type: string
       responses:
@@ -1323,7 +1332,7 @@ paths:
                 maxLength: 512
               properties:
                 type: object
-                description: <em>Optional.</em> Additional company properties.
+                description: <em>Optional.</em> Additional company properties with maximum JSON length of 512000 bytes.
                 additionalProperties:
                   type: string
       responses:

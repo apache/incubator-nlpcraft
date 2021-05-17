@@ -30,6 +30,7 @@ CREATE TABLE nc_company (
     postal_code VARCHAR,
     auth_token VARCHAR NOT NULL, -- Unique.
     auth_token_hash VARCHAR NOT NULL, -- Unique.
+    properties_gzip VARCHAR NULL,
     created_on TIMESTAMP NOT NULL,
     last_modified_on TIMESTAMP NOT NULL
 ) WITH "template=replicated, atomicity=transactional";
@@ -37,18 +38,6 @@ CREATE TABLE nc_company (
 CREATE INDEX nc_company_idx_1 ON nc_company(name);
 CREATE INDEX nc_company_idx_2 ON nc_company(auth_token);
 CREATE INDEX nc_company_idx_3 ON nc_company(auth_token_hash);
-
-DROP TABLE IF EXISTS nc_company_property;
-CREATE TABLE nc_company_property (
-    id LONG PRIMARY KEY,
-    company_id LONG NOT NULL, -- Foreign key nc_company.id.
-    property VARCHAR NOT NULL,
-    value VARCHAR NULL,
-    created_on TIMESTAMP NOT NULL,
-    last_modified_on TIMESTAMP NOT NULL
-) WITH "template=replicated, atomicity=transactional";
-
-CREATE INDEX nc_company_property_idx_1 ON nc_company_property(company_id);
 
 DROP TABLE IF EXISTS nc_user;
 CREATE TABLE nc_user (
@@ -61,6 +50,7 @@ CREATE TABLE nc_user (
     last_name VARCHAR NULL,
     is_admin BOOL NOT NULL,
     passwd_salt VARCHAR NULL,
+    properties_gzip VARCHAR NULL,
     created_on TIMESTAMP NOT NULL,
     last_modified_on TIMESTAMP NOT NULL
 ) WITH "template=replicated, atomicity=transactional";
@@ -68,18 +58,6 @@ CREATE TABLE nc_user (
 CREATE INDEX nc_user_idx_1 ON nc_user(email);
 CREATE INDEX nc_user_idx_2 ON nc_user(company_id, ext_id);
 CREATE INDEX nc_user_idx_3 ON nc_user(company_id);
-
-DROP TABLE IF EXISTS nc_user_property;
-CREATE TABLE nc_user_property (
-    id LONG PRIMARY KEY,
-    user_id LONG NOT NULL, -- Foreign key nc_user.id.
-    property VARCHAR NOT NULL,
-    value VARCHAR NULL,
-    created_on TIMESTAMP NOT NULL,
-    last_modified_on TIMESTAMP NOT NULL
-) WITH "template=replicated, atomicity=transactional";
-
-CREATE INDEX nc_user_property_idx_1 ON nc_user_property(user_id);
 
 DROP TABLE IF EXISTS passwd_pool;
 CREATE TABLE passwd_pool (
@@ -103,6 +81,7 @@ CREATE TABLE proc_log (
     cancel_tstamp TIMESTAMP NULL,
     res_type VARCHAR NULL,
     res_body_gzip VARCHAR NULL,
+    res_meta_gzip VARCHAR NULL,
     intent_id VARCHAR NULL,
     error VARCHAR NULL,
     probe_token VARCHAR NULL,

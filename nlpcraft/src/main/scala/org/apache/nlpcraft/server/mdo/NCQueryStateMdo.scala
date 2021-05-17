@@ -17,8 +17,9 @@
 
 package org.apache.nlpcraft.server.mdo
 
-import java.sql.Timestamp
+import org.apache.nlpcraft.common.JavaMeta
 
+import java.sql.Timestamp
 import org.apache.nlpcraft.server.sql.NCSql.Implicits.RsParser
 import org.apache.nlpcraft.server.mdo.impl._
 
@@ -45,6 +46,7 @@ case class NCQueryStateMdo(
     // Query OK.
     @NCMdoField var resultType: Option[String] = None,
     @NCMdoField var resultBody: Option[String] = None,
+    @NCMdoField var resultMeta: Option[JavaMeta] = None,
     // Query ERROR.
     @NCMdoField var error: Option[String] = None,
     @NCMdoField var errorCode: Option[Int] = None

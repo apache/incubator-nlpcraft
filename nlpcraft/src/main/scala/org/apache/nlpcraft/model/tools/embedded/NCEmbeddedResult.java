@@ -18,6 +18,7 @@
 package org.apache.nlpcraft.model.tools.embedded;
 
 import org.apache.nlpcraft.model.*;
+
 import java.util.function.*;
 
 /**
@@ -30,7 +31,7 @@ import java.util.function.*;
  * @see NCResult
  * @see NCEmbeddedProbe
  */
-public interface NCEmbeddedResult {
+public interface NCEmbeddedResult extends NCMetadata {
     /**
      * Gets the ID of the model that produced this result. Note that embedded probe can host more than one
      * data model hence this parameter is important to distinguish to which model this result belongs.
@@ -173,11 +174,11 @@ public interface NCEmbeddedResult {
     String getProbeId();
 
     /**
-     * Gets request processing log holder as JSON string.
+     * Gets request processing log as JSON string.
      * 
-     * @return Request processing log holder as JSON string.
+     * @return Request processing log as JSON string.
      */
-    String getLogHolderJson();
+    String getLogJson();
 
     /**
      * Gets ID of the intent that was matched against the input sentence. Only set if result was

@@ -17,14 +17,13 @@
 
 package org.apache.nlpcraft.probe.mgrs.nlp.impl
 
-import java.util.{Collections, Optional}
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.model._
 import org.apache.nlpcraft.model.impl._
 
-import java.util
-import scala.collection._
+import java.util.{Collections, Optional}
 import scala.collection.JavaConverters._
+import scala.collection._
 import scala.compat.java8.OptionConverters._
 
 /**
@@ -55,7 +54,7 @@ case class NCRequestImpl(nlpMeta: Map[String, Any], srvReqId: String) extends NC
         getOpt("COMPANY_CITY"),
         getOpt("COMPANY_ADDRESS"),
         getOpt("COMPANY_POSTAL"),
-        getMap("COMPANY_META")
+        getOpt("COMPANY_META").orElse(Collections.emptyMap())
     )
     override lazy val getUser: NCUser = new NCUserImpl(
         nlpMeta("USER_ID").asInstanceOf[Long],
@@ -63,7 +62,7 @@ case class NCRequestImpl(nlpMeta: Map[String, Any], srvReqId: String) extends NC
         getOpt("LAST_NAME"),
         getOpt("EMAIL"),
         getOpt("AVATAR_URL"),
-        getMap("META"),
+        getOpt("META").orElse(Collections.emptyMap()),
         nlpMeta("IS_ADMIN").asInstanceOf[Boolean],
         nlpMeta("SIGNUP_TSTAMP").asInstanceOf[Long]
     )
@@ -73,10 +72,4 @@ case class NCRequestImpl(nlpMeta: Map[String, Any], srvReqId: String) extends NC
             case Some(v) ⇒ Optional.of(v.asInstanceOf[T])
             case None ⇒ Optional.empty()
         }
-
-    private def getMap(key: String): util.Map[String, AnyRef] = {
-        val m: Optional[JavaMeta] = getOpt(key)
-
-        if (m.isPresent) m.get() else Collections.emptyMap()
-    }
 }

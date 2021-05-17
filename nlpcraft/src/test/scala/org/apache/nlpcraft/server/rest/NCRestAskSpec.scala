@@ -152,4 +152,20 @@ class NCRestAskSpec extends NCRestSpec {
 
         post("cancel")()
     }
+
+    @Test
+    def testSyncMeta(): Unit = {
+        post(
+            "ask/sync",
+            "txt" → "meta",
+            "mdlId" → "rest.test.model"
+        )(
+            ("$.state.status", (status: String) ⇒ assertEquals("QRY_READY", status)),
+            ("$.state.resMeta", (meta: java.util.Map[String, Object]) ⇒ {
+                import RestTestModel._
+
+                assertEquals(Map(K1 → V1, K2 → V2, K3 → V3).asJava, meta)
+            })
+        )
+    }
 }

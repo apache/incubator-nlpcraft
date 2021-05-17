@@ -192,6 +192,7 @@ public class NCTestClientBuilder {
         @SerializedName("usrId") private long userId;
         @SerializedName("resType") private String resType;
         @SerializedName("resBody") private Object resBody;
+        @SerializedName("resMeta") private Map<String, Object>  resMeta;
         @SerializedName("status") private String status;
         @SerializedName("error") private String error;
         @SerializedName("createTstamp") private long createTstamp;
@@ -284,6 +285,22 @@ public class NCTestClientBuilder {
          */
         public Object getResultBody() {
             return resBody;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public Map<String, Object> getResultMeta() {
+            return resMeta;
+        }
+
+        /**
+         *
+         * @param resMeta
+         */
+        public void setResultMeta(Map<String, Object> resMeta) {
+            this.resMeta = resMeta;
         }
 
         /**
@@ -557,7 +574,7 @@ public class NCTestClientBuilder {
                     e.getLocalizedMessage()
                 );
 
-                return mkResult(txt, mdlId, null, null, e.getLocalizedMessage(), null, 0);
+                return mkResult(txt, mdlId, null, null, null, e.getLocalizedMessage(), null, 0);
             }
 
             NCRequestStateJson state = resJs.getState();
@@ -573,6 +590,7 @@ public class NCTestClientBuilder {
                             gson.toJson(state.getResultBody()) :
                             (String)state.getResultBody() :
                         null,
+                    state.getResultMeta(),
                     state.getError(),
                     state.getIntentId(),
                     System.currentTimeMillis() - now
@@ -600,7 +618,7 @@ public class NCTestClientBuilder {
                     e.getLocalizedMessage()
                 );
 
-                return mkResult(txt, mdlId, null, null, e.getLocalizedMessage(), null,0);
+                return mkResult(txt, mdlId, null, null, null, e.getLocalizedMessage(), null,0);
             }
 
             long maxTime = System.currentTimeMillis() + DFLT_MAX_WAIT_TIME;
@@ -637,6 +655,7 @@ public class NCTestClientBuilder {
                     res.getBody() != null ?
                         "json".equals(res.getType()) ? gson.toJson(res.getBody()) : res.getBody() :
                         null,
+                    res.getMetadata(),
                     res.getErrorMessage(),
                     res.getIntentId(),
                     System.currentTimeMillis() - now
@@ -1007,6 +1026,7 @@ public class NCTestClientBuilder {
          * @param mdlId Model ID.
          * @param resType
          * @param resBody
+         * @param resMeta
          * @param errMsg
          * @param intentId
          * @param time
@@ -1017,6 +1037,7 @@ public class NCTestClientBuilder {
             String mdlId,
             String resType,
             String resBody,
+            Map<String, Object> resMeta,
             String errMsg,
             String intentId,
             long time
@@ -1026,7 +1047,7 @@ public class NCTestClientBuilder {
             assert (resType != null && resBody != null) ^ errMsg != null;
 
             return new NCTestResult() {
-                private Optional<String> convert(String s) {
+                private<T> Optional<T> convert(T s) {
                     return s == null ? Optional.empty() : Optional.of(s);
                 }
 
@@ -1063,6 +1084,11 @@ public class NCTestClientBuilder {
                 @Override
                 public String getIntentId() {
                     return intentId;
+                }
+
+                @Override
+                public Optional<Map<String, Object>> getResultMeta() {
+                    return convert(resMeta);
                 }
             };
         }

@@ -722,6 +722,7 @@ object NCProbeManager extends NCService {
                         val errCodeOpt = probeMsg.dataOpt[Int]("errorCode")
                         val resTypeOpt = probeMsg.dataOpt[String]("resType")
                         val resBodyOpt = probeMsg.dataOpt[String]("resBody")
+                        val resMetaOpt = probeMsg.dataOpt[JavaMeta]("resMeta")
                         val logJson = probeMsg.dataOpt[String]("log")
                         val intentId = probeMsg.dataOpt[String]("intentId")
 
@@ -740,13 +741,11 @@ object NCProbeManager extends NCService {
                         else { // OK result.
                             require(resTypeOpt.isDefined && resBodyOpt.isDefined, "Result defined")
                      
-                            val resType = resTypeOpt.get
-                            val resBody = resBodyOpt.get
-                     
                             NCQueryManager.setResult(
                                 srvReqId,
-                                resType,
-                                resBody,
+                                resTypeOpt.get,
+                                resBodyOpt.get,
+                                resMetaOpt,
                                 logJson,
                                 intentId
                             )
@@ -849,22 +848,11 @@ object NCProbeManager extends NCService {
         usrAgent: Option[String],
         rmtAddr: Option[String],
         data: Option[String],
-        usrMeta: Option[Map[String, String]],
-        companyMeta: Option[Map[String, String]],
+        usrMeta: Option[JavaMeta],
+        companyMeta: Option[JavaMeta],
         enableLog: Boolean,
         parent: Span = null): Unit = {
         startScopedSpan("askProbe", parent, "srvReqId" → srvReqId, "usrId" → usr.id, "mdlId" → mdlId, "txt" → txt) { span ⇒
-            def convertMeta(metaOpt: Option[Map[String, String]]): util.HashMap[String, String] =
-                metaOpt match {
-                    case Some(meta) ⇒
-                        val map = new util.HashMap[String, String]()
-
-                        meta.foreach { case (k, v) ⇒ map.put(k, v) }
-
-                        map
-                    case None ⇒ null
-                }
-
             val senMeta = new util.HashMap[String, java.io.Serializable]()
 
             Map(
@@ -880,7 +868,7 @@ object NCProbeManager extends NCService {
                 "IS_ADMIN" → usr.isAdmin,
                 "AVATAR_URL" → usr.avatarUrl.orNull,
                 "DATA" → data.orNull,
-                "META" → convertMeta(usrMeta),
+                "META" → usrMeta.orNull,
                 "COMPANY_ID" → company.id,
                 "COMPANY_NAME" → company.name,
                 "COMPANY_WEBSITE" → company.website.orNull,
@@ -889,7 +877,7 @@ object NCProbeManager extends NCService {
                 "COMPANY_CITY" → company.city.orNull,
                 "COMPANY_ADDRESS" → company.address.orNull,
                 "COMPANY_POSTAL" → company.postalCode.orNull,
-                "COMPANY_META" → convertMeta(companyMeta)
+                "COMPANY_META" → companyMeta.orNull
             ).
                 filter(_._2 != null).
                 foreach(p ⇒ senMeta.put(p._1, p._2.asInstanceOf[java.io.Serializable]))

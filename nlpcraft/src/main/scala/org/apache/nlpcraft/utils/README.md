@@ -15,8 +15,6 @@
  limitations under the License.
 -->
 
-TODO: add here that we need it for tests (examples).
-
 <img src="https://nlpcraft.apache.org/images/nlpcraft_logo_black.gif" height="80px">
 <br>
 

@@ -16,9 +16,7 @@
 --
 
 DROP TABLE IF EXISTS proc_log;
-DROP TABLE IF EXISTS nc_user_property;
 DROP TABLE IF EXISTS nc_user;
-DROP TABLE IF EXISTS nc_company_property;
 DROP TABLE IF EXISTS nc_company;
 DROP TABLE IF EXISTS passwd_pool;
 DROP TABLE IF EXISTS feedback;

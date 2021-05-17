@@ -48,6 +48,9 @@ object NCRestSpec {
             val code = resp.getStatusLine.getStatusCode
             val js = mkJs(code, resp.getEntity)
 
+            if (js == null)
+                throw new RuntimeException(s"Unexpected response [code=$code, response=$js]")
+
             code match {
                 case 200 ⇒ GSON.fromJson(js, TYPE_RESP)
 

@@ -37,6 +37,7 @@ case class NCCompanyMdo(
     @NCMdoField(column = "postal_code") postalCode: Option[String],
     @NCMdoField(column = "auth_token") authToken: String,
     @NCMdoField(column = "auth_token_hash") authTokenHash: String,
+    @NCMdoField(column = "properties_gzip") propertiesGzip: Option[String],
     @NCMdoField(column = "created_on") createdOn: Timestamp,
     @NCMdoField(column = "last_modified_on") lastModifiedOn: Timestamp
 ) extends NCAnnotatedMdo[NCCompanyMdo]

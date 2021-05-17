@@ -86,7 +86,6 @@ object NCIdlCompiler extends LazyLogging {
         // List of instructions for the current expression.
         private var expr = mutable.Buffer.empty[SI]
 
-
         /**
          *
          * @return
