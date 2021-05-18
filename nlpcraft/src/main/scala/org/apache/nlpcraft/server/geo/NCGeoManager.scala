@@ -144,7 +144,7 @@ object NCGeoManager extends NCService {
         val metro = mutable.HashSet.empty[NCGeoMetro]
 
         // Add location internal representation.
-        def addEntry(key: String, geo: NCGeoEntry, lowerCase: Boolean) {
+        def addEntry(key: String, geo: NCGeoEntry, lowerCase: Boolean): Unit = {
             val k = if (lowerCase) key.toLowerCase else key
 
             geoEntries.get(k) match {

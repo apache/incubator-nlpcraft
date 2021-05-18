@@ -290,7 +290,7 @@ object NCSentenceManager extends NCService {
       * @param ns Sentence.
       * @param userNoteTypes Notes types.
       */
-    private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]) {
+    private def fixIndexes(ns: NCNlpSentence, userNoteTypes: Seq[String]): Unit = {
         // Replaces other notes indexes.
         for (t <- userNoteTypes :+ "nlpcraft:nlp"; note <- ns.getNotes(t)) {
             val toks = ns.filter(_.contains(note)).sortBy(_.index)

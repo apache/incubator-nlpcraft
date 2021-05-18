@@ -42,7 +42,7 @@ object NCGeoMetroGenerator extends App {
     private def deleteBrackets(s: String): String =
         U.normalize(s.replaceAll("\\(", " ").replaceAll("\\)", " "), " ")
 
-    private def generate() {
+    private def generate(): Unit = {
         val lines = U.readPath(in).map(_.strip).filter(_.nonEmpty)
 
        // Skips header.

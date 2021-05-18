@@ -37,7 +37,7 @@ object NCIgniteRunner extends LazyLogging {
       * @param body Function to execute on running Ignite node.
       */
     @throws[NCE]
-    def runWith(cfgPath: String, body: => Unit) {
+    def runWith(cfgPath: String, body: => Unit): Unit = {
         val sysProps = new SystemProperties
 
         // Set up Ignite system properties.

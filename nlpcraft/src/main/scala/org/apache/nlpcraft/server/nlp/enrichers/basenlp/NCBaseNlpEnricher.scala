@@ -101,7 +101,7 @@ object NCBaseNlpEnricher extends NCServerEnricher {
      * @throws NCE
      */
     @throws[NCE]
-    override def enrich(ns: NCNlpSentence, parent: Span = null) {
+    override def enrich(ns: NCNlpSentence, parent: Span = null): Unit = {
         require(isStarted)
 
         startScopedSpan("enrich", parent, "srvReqId" -> ns.srvReqId, "txt" -> ns.text) { _ =>

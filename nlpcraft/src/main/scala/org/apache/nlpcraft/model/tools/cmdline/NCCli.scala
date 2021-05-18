@@ -849,13 +849,13 @@ object NCCli extends NCCliBase {
      */
     private def tailFile(path: String, lines: Int): Unit =
         try
-            managed(new ReversedLinesFileReader(new File(path), StandardCharsets.UTF_8)) acquireAndGet { in =>
+            Using.resource(new ReversedLinesFileReader(new File(path), StandardCharsets.UTF_8)) { in =>
                 var tail = List.empty[String]
 
                 breakable {
                     for (_ <- 0 until lines)
                         in.readLine() match {
-                            case null => break
+                            case null => break()
                             case line => tail ::= line
                         }
                 }
@@ -970,13 +970,13 @@ object NCCli extends NCCliBase {
     private def loadServerBeacon(autoSignIn: Boolean = false): Option[NCCliServerBeacon] = {
         val beaconOpt = try {
             val beacon = (
-                managed(
+                Using.resource(
                     new ObjectInputStream(
                         new FileInputStream(
                             new File(SystemUtils.getUserHome, SRV_BEACON_PATH)
                         )
                     )
-                ) acquireAndGet {
+                ) {
                     _.readObject()
                 }
             )
@@ -1074,13 +1074,13 @@ object NCCli extends NCCliBase {
     private def loadProbeBeacon(): Option[NCCliProbeBeacon] = {
         val beaconOpt = try {
             val beacon = (
-                managed(
+                Using.resource(
                     new ObjectInputStream(
                         new FileInputStream(
                             new File(SystemUtils.getUserHome, PRB_BEACON_PATH)
                         )
                     )
-                ) acquireAndGet {
+                ) {
                     _.readObject()
                 }
             )
@@ -1895,7 +1895,7 @@ object NCCli extends NCCliBase {
         outEntry: String,
         extractHeader: Option[Seq[String] => (Int, Int)],
         repls: (String, String)*
-    ) {
+    ): Unit = {
         val key = s"$zipInDir/$inEntry"
 
         require(PRJ_TEMPLATES.contains(key), s"Unexpected template entry for: $key")
@@ -1937,8 +1937,8 @@ object NCCli extends NCCliBase {
         cont = repls.foldLeft(cont)((s, repl) => s.replaceAll(repl._1, repl._2))
 
         try
-            managed(new FileWriter(outFile)) acquireAndGet { w =>
-                managed(new BufferedWriter(w)) acquireAndGet { bw =>
+            Using.resource(new FileWriter(outFile)) { w =>
+                Using.resource(new BufferedWriter(w)) { bw =>
                     bw.write(cont)
                 }
             }

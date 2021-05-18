@@ -171,14 +171,14 @@ class NCAsciiTable {
     /**
      * Starts data row.
      */
-    def startRow() {
+    def startRow(): Unit = {
         curRow = IndexedSeq.empty[Cell]
     }
 
     /**
      * Ends data row.
      */
-    def endRow() {
+    def endRow(): Unit = {
         rows :+= curRow
 
         curRow = null

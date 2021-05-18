@@ -70,7 +70,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     /**
      * Prints ASCII-logo.
      */
-    private def asciiLogo() {
+    private def asciiLogo(): Unit =  {
         val ver = NCVersion.getCurrent
 
         logger.info(
@@ -146,7 +146,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
     /**
      * Acks server start.
      */
-    protected def ackStart() {
+    protected def ackStart(): Unit = {
         val dur = s"[${U.format((currentTime - executionStart) / 1000.0, 2)}s]"
 
         val tbl = NCAsciiTable()

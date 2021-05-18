@@ -53,9 +53,8 @@ import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
 
 import java.io._
 import java.util.concurrent.CompletableFuture
-import scala.collection.JavaConverters._
 import scala.collection.mutable
-import scala.compat.Platform.currentTime
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 import scala.util.Using
 import scala.util.control.Exception.{catching, ignoring}
 
@@ -275,7 +274,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
                         jarsFolder = cfg.jarsFolder.orNull,
                         models = cfg.models,
                         beaconPath = path.getAbsolutePath,
-                        startMs = currentTime
+                        startMs = java.lang.System.currentTimeMillis()
                     ))
 
                     stream.flush()
@@ -432,7 +431,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Prints ASCII-logo.
       */
-    private def asciiLogo() {
+    private def asciiLogo(): Unit = {
         val ver = NCVersion.getCurrent
 
         println(
@@ -468,8 +467,8 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
     /**
       * Asks server start.
       */
-    private def ackStart() {
-        val dur = s"[${U.format((currentTime - execStart) / 1000.0, 2)} sec]"
+    private def ackStart(): Unit = {
+        val dur = s"[${U.format((java.lang.System.currentTimeMillis() - execStart) / 1000.0, 2)} sec]"
         
         val tbl = NCAsciiTable()
         

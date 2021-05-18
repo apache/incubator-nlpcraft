@@ -19,7 +19,7 @@ package org.apache.nlpcraft.server.nlp.enrichers.date
 
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.config.NCConfigurable
-import org.apache.nlpcraft.common.nlp.{NCNlpSentence => Sentence, NCNlpSentenceNote => Note, NCNlpSentenceToken => Token}
+import org.apache.nlpcraft.common.nlp.{NCNlpSentence ⇒ Sentence, NCNlpSentenceNote ⇒ Note, NCNlpSentenceToken ⇒ Token}
 import org.apache.nlpcraft.common.pool.NCThreadPoolManager
 import org.apache.nlpcraft.common.{NCService, _}
 import org.apache.nlpcraft.server.nlp.enrichers.NCServerEnricher
@@ -27,12 +27,12 @@ import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateConstants._
 import org.apache.nlpcraft.server.nlp.enrichers.date.NCDateFormatType._
 
 import java.util
-import java.util.{Calendar => C}
-import scala.collection.JavaConverters._
+import java.util.{Calendar ⇒ C}
 import scala.collection.immutable.Iterable
 import scala.collection.mutable
-import scala.collection.mutable.{LinkedHashMap => LHM}
+import scala.collection.mutable.{LinkedHashMap ⇒ LHM}
 import scala.concurrent.ExecutionContext
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * Date enricher.
@@ -174,7 +174,7 @@ object NCDateEnricher extends NCServerEnricher {
      * @throws NCE
      */
     @throws[NCE]
-    override def enrich(ns: Sentence, parent: Span = null) {
+    override def enrich(ns: Sentence, parent: Span = null): Unit = {
         require(isStarted)
 
         // This stage must not be 1st enrichment stage.
@@ -383,7 +383,7 @@ object NCDateEnricher extends NCServerEnricher {
         fromIncl: Boolean,
         toIncl: Boolean,
         tokens: Seq[Token],
-        base: Long) {
+        base: Long): Unit = {
         val note = mkNote(
             NCDateParser.calculate(body, base, fromIncl, toIncl).mkInclusiveDateRange,
             tokens.head.index,
@@ -396,7 +396,7 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def mark(processed: F*): Unit = processed.foreach(_.isProcessed = true)
 
-    private def collapse(ns: Sentence) {
+    private def collapse(ns: Sentence): Unit = {
         removeDuplicates(ns)
         collapsePeriods(ns)
         removeDuplicates(ns)
@@ -404,7 +404,7 @@ object NCDateEnricher extends NCServerEnricher {
 
     private def isValidRange(n: Note): Boolean = n("from").asInstanceOf[Long] < n("to").asInstanceOf[Long]
 
-    private def collapsePeriods(ns: Sentence) {
+    private def collapsePeriods(ns: Sentence): Unit = {
         // a) Months and years.
         // 1. "m", "m"... "y, m" -> fix year for firsts; try to union all.
         // Example: January, February of 2009.
@@ -563,7 +563,7 @@ object NCDateEnricher extends NCServerEnricher {
         ns: Sentence,
         seq: Seq[Note],
         before: Option[Note] = None,
-        after: Option[Note] = None) {
+        after: Option[Note] = None): Unit = {
         if (!compressNotes(ns, seq, before, after)) {
             def remove(nOpt: Option[Note]): Unit =
                 nOpt match {

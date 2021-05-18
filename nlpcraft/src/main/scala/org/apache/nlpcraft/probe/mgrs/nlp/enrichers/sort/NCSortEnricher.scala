@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers.sort
 
 import java.io.Serializable
-
 import io.opencensus.trace.Span
 import org.apache.nlpcraft.common.NCService
 import org.apache.nlpcraft.common.makro.NCMacroParser
@@ -27,9 +26,10 @@ import org.apache.nlpcraft.common.nlp.{NCNlpSentence, NCNlpSentenceNote, NCNlpSe
 import org.apache.nlpcraft.probe.mgrs.NCProbeModel
 import org.apache.nlpcraft.probe.mgrs.nlp.NCProbeEnricher
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{Map, Seq, mutable}
+import scala.compat.java8.FunctionConverters.enrichAsJavaFunction
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
   * Sort enricher.
@@ -132,7 +132,7 @@ object NCSortEnricher extends NCProbeEnricher {
     /**
       *
       */
-    private def validate() {
+    private def validate(): Unit = {
         // Not duplicated.
         require(sort.size + by.size + order.size == (sort ++ by ++ order.map(_._1)).distinct.size)
 
@@ -279,8 +279,8 @@ object NCSortEnricher extends NCProbeEnricher {
                     map(toks => toks.map(_.stem).mkString(" ") -> toks).toMap.
                     flatMap { case (stem, stemToks) =>
                         if (keyStems.contains(stem)) Some(KeyWord(stemToks, keyStems.indexOf(stem))) else None
-                    }.toStream.headOption
-            ).toStream.headOption
+                    }.to(LazyList).headOption
+            ).to(LazyList).headOption
         }
 
         var res: Option[Match] = None

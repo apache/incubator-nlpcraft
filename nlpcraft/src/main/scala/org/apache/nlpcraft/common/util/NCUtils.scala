@@ -759,7 +759,7 @@ object NCUtils extends LazyLogging {
       * @param sort Whether to sort output or not.
       */
     @throws[IOException]
-    def mkTextFile(path: String, lines: Iterable[Any], sort: Boolean = true) {
+    def mkTextFile(path: String, lines: Iterable[Any], sort: Boolean = true): Unit = {
         val file = new File(path)
 
         Using.resource(new PrintStream(file)) {
@@ -951,7 +951,7 @@ object NCUtils extends LazyLogging {
       * @param delFolder Flag, deleted or not root folder itself.
       */
     @throws[NCE]
-    def clearFolder(rootDir: String, delFolder: Boolean = false) {
+    def clearFolder(rootDir: String, delFolder: Boolean = false): Unit = {
         val rootPath = Paths.get(rootDir)
 
         try
