@@ -38,9 +38,10 @@ public interface NCMetadata {
     }
 
     /**
-     * Gets mutable metadata.
+     * Gets mutable metadata underlying container.
+     * Returned map can be used to mutate the metadata or perform any other operations.
      *
-     * @return Metadata.
+     * @return Mutable, underlying metadata container.
      * @see #meta(String)
      * @see #metaOpt(String)
      * @see #meta(String, Object)
