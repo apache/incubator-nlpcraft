@@ -18,15 +18,13 @@
 package org.apache.nlpcraft.common.ascii
 
 import java.io.{IOException, PrintStream}
-
 import com.typesafe.scalalogging.Logger
 import org.apache.nlpcraft.common._
 import org.apache.nlpcraft.common.ascii.NCAsciiTable._
-import resource._
 import org.apache.nlpcraft.common.ansi.NCAnsi._
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /**
  * `ASCII`-based table with minimal styling support.

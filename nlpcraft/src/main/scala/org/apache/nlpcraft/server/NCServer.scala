@@ -51,12 +51,12 @@ import org.apache.nlpcraft.server.sql.NCSqlManager
 import org.apache.nlpcraft.server.sugsyn.NCSuggestSynonymManager
 import org.apache.nlpcraft.server.tx.NCTxManager
 import org.apache.nlpcraft.server.user.NCUserManager
-import resource.managed
 
 import java.io._
 import java.util.concurrent.CountDownLatch
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
+import scala.util.Using
 import scala.util.control.Exception.{catching, ignoring}
 
 /**
@@ -267,7 +267,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
             }
 
             try {
-                managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
+                Using.resource(new ObjectOutputStream(new FileOutputStream(path))) { stream ⇒
                     val ver = NCVersion.getCurrent
 
                     stream.writeObject(NCCliServerBeacon(
@@ -339,7 +339,7 @@ object NCServer extends App with NCIgniteInstance with LazyLogging with NCOpenCe
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet {
+                Using.resource(new ObjectInputStream(new FileInputStream(path))) {
                     _.readObject()
                 }
             } match {

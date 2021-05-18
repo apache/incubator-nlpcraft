@@ -18,7 +18,6 @@
 package org.apache.nlpcraft.probe.mgrs.nlp.enrichers
 
 import org.apache.nlpcraft.model.NCToken
-import resource.managed
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 import java.nio.charset.StandardCharsets.UTF_8
@@ -26,6 +25,7 @@ import java.util
 import java.util.{Base64, Optional}
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
+import scala.util.Using
 
 /**
   * Tests infrastructure beans.
@@ -368,8 +368,8 @@ case class NCTestSentence(tokens: Seq[NCTestToken]) {
 
 object NCTestSentence {
     def serialize(sens: Iterable[NCTestSentence]): String =
-        managed(new ByteArrayOutputStream()) acquireAndGet { bos ⇒
-            managed(new ObjectOutputStream(bos)) acquireAndGet { os ⇒
+        Using.resource(new ByteArrayOutputStream()) { bos ⇒
+            Using.resource(new ObjectOutputStream(bos)) { os ⇒
                 os.writeObject(sens)
 
                 os.flush()
@@ -379,9 +379,9 @@ object NCTestSentence {
         }
 
     def deserialize(s: String): Iterable[NCTestSentence] =
-        managed(new ObjectInputStream(
+        Using.resource(new ObjectInputStream(
             new ByteArrayInputStream(Base64.getDecoder.decode(s.getBytes(UTF_8))))
-        ) acquireAndGet { is ⇒
+        ) { is ⇒
             is.readObject.asInstanceOf[Iterable[NCTestSentence]]
         }
 }

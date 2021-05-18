@@ -50,17 +50,16 @@ import org.apache.nlpcraft.common.blowfish.NCBlowfishHasher
 import org.apache.nlpcraft.common.version.NCVersion
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import resource._
 
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.io.{BufferedSource, Source}
+import scala.jdk.CollectionConverters._
 import scala.language.{implicitConversions, postfixOps}
 import scala.reflect.{ClassTag, classTag}
 import scala.reflect.runtime.universe._
@@ -393,7 +392,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readFile(f: File, enc: String = "UTF-8", log: Logger = logger): List[String] =
         try
-            managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromFile(f, enc)) { src ⇒
                 getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
             }
         catch {
@@ -422,7 +421,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def mapStream[T](in: InputStream, enc: String, log: Logger = logger, mapper: Iterator[String] ⇒ T): T =
         try {
-            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromInputStream(in, enc)) { src ⇒
                 mapper(src.getLines())
             }
         }
@@ -441,7 +440,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextFile(f: File, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromFile(f, enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromFile(f, enc)) { src ⇒
                 getAndLog(
                     readLcTrimFilter(src),
                     f,
@@ -463,7 +462,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) { src ⇒
                 getAndLog(
                     readLcTrimFilter(src),
                     f,
@@ -485,7 +484,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextStream(in: InputStream, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(in, enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromInputStream(in, enc)) { src ⇒
                 readLcTrimFilter(src)
             }
         catch {
@@ -503,7 +502,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readTextGzipResource(res: String, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(getStream(res)), enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromInputStream(new GIS(getStream(res)), enc)) { src ⇒
                 readLcTrimFilter(src)
             }
         catch {
@@ -646,7 +645,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readGzipFile(f: File, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromInputStream(new GIS(new FileInputStream(f)), enc)) { src ⇒
                 getAndLog(src.getLines().map(p ⇒ p).toList, f, log)
             }
         catch {
@@ -663,7 +662,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def readGzipResource(in: InputStream, enc: String, log: Logger = logger): List[String] =
         try
-            managed(Source.fromInputStream(new GIS(in), enc)) acquireAndGet { src ⇒
+            Using.resource(Source.fromInputStream(new GIS(in), enc)) { src ⇒
                 src.getLines().map(p ⇒ p).toList
             }
         catch {
@@ -690,7 +689,7 @@ object NCUtils extends LazyLogging {
         try {
             val arr = new Array[Byte](f.length().toInt)
 
-            managed(new FileInputStream(f)) acquireAndGet { in ⇒
+            Using.resource(new FileInputStream(f)) { in ⇒
                 in.read(arr)
             }
 
@@ -727,7 +726,7 @@ object NCUtils extends LazyLogging {
 
         // Do not user BOS here - it makes files corrupted.
         try
-            managed(new GOS(new FileOutputStream(gz))) acquireAndGet { stream ⇒
+            Using.resource(new GOS(new FileOutputStream(gz))) { stream ⇒
                 stream.write(readFileBytes(f))
 
                 stream.flush()
@@ -760,10 +759,10 @@ object NCUtils extends LazyLogging {
       * @param sort Whether to sort output or not.
       */
     @throws[IOException]
-    def mkTextFile(path: String, lines: Traversable[Any], sort: Boolean = true) {
+    def mkTextFile(path: String, lines: Iterable[Any], sort: Boolean = true) {
         val file = new File(path)
 
-        managed(new PrintStream(file)) acquireAndGet {
+        Using.resource(new PrintStream(file)) {
             ps ⇒
                 import java.util._
 
@@ -841,8 +840,8 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def serialize(obj: Any): Array[Byte] = {
         try {
-            managed(new ByteArrayOutputStream()) acquireAndGet { baos ⇒
-                manageOutput(baos) acquireAndGet { out ⇒
+            Using.resource(new ByteArrayOutputStream()) { baos ⇒
+                Using.resource(objOutput(baos)) { out ⇒
                     out.writeObject(obj)
                 }
 
@@ -862,7 +861,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def serializePath(path: String, obj: Any): Unit =
         try {
-            manageOutput(new FileOutputStream(path)) acquireAndGet { out ⇒
+            Using.resource(objOutput(new FileOutputStream(path))) { out ⇒
                 out.writeObject(obj)
             }
 
@@ -888,7 +887,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def deserializePath[T](path: String, log: Logger = logger): T =
         try {
-            val res = manageInput(new FileInputStream(path)) acquireAndGet { in ⇒
+            val res = Using.resource(objInput(new FileInputStream(path))) { in ⇒
                 in.readObject().asInstanceOf[T]
             }
 
@@ -908,7 +907,7 @@ object NCUtils extends LazyLogging {
     @throws[NCE]
     def deserialize[T](arr: Array[Byte]): T =
         try
-            manageInput(new ByteArrayInputStream(arr)) acquireAndGet { in ⇒
+            Using.resource(objInput(new ByteArrayInputStream(arr))) { in ⇒
                 in.readObject().asInstanceOf[T]
             }
         catch {
@@ -928,15 +927,15 @@ object NCUtils extends LazyLogging {
      *
      * @param in
      */
-    private def manageInput(in: InputStream): ManagedResource[ObjectInputStream] =
-        managed(new ObjectInputStream(new BufferedInputStream(in)))
+    private def objInput(in: InputStream): ObjectInputStream =
+        new ObjectInputStream(new BufferedInputStream(in))
 
     /**
      *
      * @param out
      */
-    private def manageOutput(out: OutputStream): ManagedResource[ObjectOutputStream] =
-        managed(new ObjectOutputStream(new BufferedOutputStream(out)))
+    private def objOutput(out: OutputStream): ObjectOutputStream =
+        new ObjectOutputStream(new BufferedOutputStream(out))
 
     /**
       * Wrap string value.
@@ -1128,7 +1127,7 @@ object NCUtils extends LazyLogging {
 
         (0 until n).foreach(_ ⇒ dest += src.remove(RND.nextInt(src.size)))
 
-        dest
+        dest.toSeq
     }
 
     /**
@@ -1154,7 +1153,7 @@ object NCUtils extends LazyLogging {
         val arr = new ByteArrayOutputStream(1024)
 
         try {
-            managed(new GOS(arr)) acquireAndGet { zip ⇒
+            Using.resource(new GOS(arr)) { zip ⇒
                 zip.write(rawStr.getBytes)
             }
 
@@ -1685,7 +1684,7 @@ object NCUtils extends LazyLogging {
      */
     @throws[Exception]
     def jsonToScalaMap(json: String): Map[String, Object] =
-        GSON.fromJson(json, classOf[java.util.HashMap[String, Object]]).asScala.toMap
+        GSON.fromJson(json, classOf[java.util.HashMap[String, Object]]).toMap
 
     /**
      * Shortcut to convert given JSON to Java map with default mapping.
@@ -1758,7 +1757,7 @@ object NCUtils extends LazyLogging {
 
         mkDir(new File(outDir))
 
-        managed(new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) acquireAndGet { in ⇒
+        Using.resource(new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)))) { in ⇒
             var entry = in.getNextEntry
 
             while (entry != null) {
@@ -1771,7 +1770,7 @@ object NCUtils extends LazyLogging {
                         if (!f.createNewFile())
                             throw new NCE(s"File cannot be created: ${f.getAbsolutePath}")
 
-                        managed(new BufferedOutputStream(new FileOutputStream(f))) acquireAndGet { out ⇒
+                        Using.resource(new BufferedOutputStream(new FileOutputStream(f))) { out ⇒
                             IOUtils.copy(in, out)
                         }
                     }
@@ -1831,8 +1830,8 @@ object NCUtils extends LazyLogging {
       * @param t Error.
       */
     def toString(t: Throwable): String =
-        managed(new ByteArrayOutputStream()) acquireAndGet { out ⇒
-            managed(new PrintStream(out)) acquireAndGet { ps ⇒
+        Using.resource(new ByteArrayOutputStream()) { out ⇒
+            Using.resource(new PrintStream(out)) { ps ⇒
                 t.printStackTrace(ps)
 
                 new String(out.toByteArray, "UTF-8")
@@ -1879,11 +1878,13 @@ object NCUtils extends LazyLogging {
 
         url.getProtocol match {
             case "file" ⇒
-                managed(new InputStreamReader(getStream(resDir))) acquireAndGet { reader ⇒
-                    managed(new BufferedReader(reader)) acquireAndGet { bReader ⇒
+                Using.resource(new InputStreamReader(getStream(resDir))) { reader ⇒
+                    Using.resource(new BufferedReader(reader)) { bReader ⇒
                         bReader.lines().collect(Collectors.toList[String]).asScala.map(p ⇒ s"$resDir/$p")
                     }
                 }
+                .toSeq
+
             case "jar" ⇒
                 val jar = new JarFile(URLDecoder.decode(url.getPath.substring(5, url.getPath.indexOf("!")), "UTF-8"))
                 val entries = jar.entries
@@ -1897,7 +1898,8 @@ object NCUtils extends LazyLogging {
                         res += name
                 }
 
-                res
+                res.toSeq
+
             case _ ⇒ throw new NCE(s"Cannot list files for: $resDir")
         }
     }
@@ -1907,9 +1909,9 @@ object NCUtils extends LazyLogging {
       */
     @throws[IOException]
     def getExternalIp: String =
-        managed(new URL("http://checkip.amazonaws.com").openStream()) acquireAndGet { is ⇒
-            managed(new InputStreamReader(is)) acquireAndGet { reader ⇒
-                managed(new BufferedReader(reader)) acquireAndGet { bufReader ⇒
+        Using.resource(new URL("http://checkip.amazonaws.com").openStream()) { is ⇒
+            Using.resource(new InputStreamReader(is)) { reader ⇒
+                Using.resource(new BufferedReader(reader)) { bufReader ⇒
                     bufReader.readLine()
                 }
             }

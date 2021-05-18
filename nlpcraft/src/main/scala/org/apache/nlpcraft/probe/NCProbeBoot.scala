@@ -50,13 +50,13 @@ import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.stopword.NCStopWordEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.enrichers.suspicious.NCSuspiciousNounsEnricher
 import org.apache.nlpcraft.probe.mgrs.nlp.validate.NCValidateManager
 import org.apache.nlpcraft.probe.mgrs.sentence.NCSentenceManager
-import resource.managed
 
 import java.io._
 import java.util.concurrent.CompletableFuture
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
+import scala.util.Using
 import scala.util.control.Exception.{catching, ignoring}
 
 /**
@@ -261,7 +261,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
          */
         def save(): Unit = {
             try {
-                managed(new ObjectOutputStream(new FileOutputStream(path))) acquireAndGet { stream ⇒
+                Using.resource(new ObjectOutputStream(new FileOutputStream(path))) { stream ⇒
                     val ver = NCVersion.getCurrent
 
                     stream.writeObject(NCCliProbeBeacon(
@@ -291,7 +291,7 @@ private [probe] object NCProbeBoot extends LazyLogging with NCOpenCensusTrace {
 
         if (path.exists())
             catching(classOf[IOException]) either {
-                managed(new ObjectInputStream(new FileInputStream(path))) acquireAndGet { _.readObject() }
+                Using.resource(new ObjectInputStream(new FileInputStream(path))) { _.readObject() }
             } match {
                 case Left(e) ⇒
                     logger.trace(s"Failed to read existing probe beacon: ${path.getAbsolutePath}", e)

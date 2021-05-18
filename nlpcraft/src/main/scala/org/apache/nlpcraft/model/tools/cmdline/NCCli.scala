@@ -54,13 +54,12 @@ import org.jline.utils.AttributedString
 import org.jline.utils.InfoCmp.Capability
 import org.apache.nlpcraft.model.tools.cmdline.NCCliRestSpec._
 import org.apache.nlpcraft.model.tools.cmdline.NCCliCommands._
-import resource.managed
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.compat.Platform.currentTime
 import scala.compat.java8.OptionConverters._
-import scala.util.Try
+import scala.util.{Try, Using}
 import scala.util.control.Breaks.{break, breakable}
 import scala.util.control.Exception.ignoring
 
@@ -79,7 +78,7 @@ object NCCli extends NCCliBase {
         val m = mutable.HashMap.empty[String, Seq[String]]
 
         try
-            managed(new ZipInputStream(U.getStream("cli/templates.zip"))) acquireAndGet { zis ⇒
+            Using.resource(new ZipInputStream(U.getStream("cli/templates.zip"))) { zis ⇒
                 var entry = zis.getNextEntry
 
                 while (entry != null) {

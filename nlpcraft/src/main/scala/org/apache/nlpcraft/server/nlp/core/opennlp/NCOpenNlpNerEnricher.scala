@@ -29,9 +29,9 @@ import org.apache.nlpcraft.common.{NCService, U}
 import org.apache.nlpcraft.server.ignite.NCIgniteHelpers._
 import org.apache.nlpcraft.server.ignite.NCIgniteInstance
 import org.apache.nlpcraft.server.nlp.core.NCNlpNerEnricher
-import resource.managed
 
 import scala.concurrent.ExecutionContext
+import scala.util.Using
 import scala.util.control.Exception.catching
 
 /**
@@ -57,7 +57,7 @@ object NCOpenNlpNerEnricher extends NCService with NCNlpNerEnricher with NCIgnit
 
         def add(typ: String, res: String): Unit = {
             val f =
-                managed(NCExternalConfigManager.getStream(OPENNLP, res, span)) acquireAndGet { in ⇒
+                Using.resource(NCExternalConfigManager.getStream(OPENNLP, res, span)) { in ⇒
                     new NameFinderME(new TokenNameFinderModel(in))
                 }
 
